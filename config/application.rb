@@ -26,6 +26,11 @@ module RedappServer
     # -- all .rb files in that directory are automatically loaded.
 
     # Don't generate system test files.
-    config.generators.system_tests = nil
+    config.generators do |g|
+      g.system_tests false
+      g.assets false
+      g.helper false
+      g.view false
+    end
   end
 end
