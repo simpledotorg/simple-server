@@ -16,5 +16,7 @@ FactoryBot.define do
     age_when_created { rand(18..100) unless has_date_of_birth? }
     created_at { Time.now }
     updated_at { Time.now }
+    address
+    phone_numbers { FactoryBot.create_list(:phone_number, rand(3)) }
   end
 end
