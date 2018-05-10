@@ -4,7 +4,9 @@ class CreatePatients < ActiveRecord::Migration[5.1]
       t.uuid :id, primary_key: true
       t.string :full_name
       t.integer :age_when_created
-      t.integer :gender
+      t.string :gender
+      t.date :date_of_birth
+      t.string :status
       t.timestamps
     end
   end
