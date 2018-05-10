@@ -2,7 +2,6 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::PatientsController, type: :controller do
   describe "POST sync" do
-
     it "creates new patients" do
       patients = { patients: FactoryBot.attributes_for_list(:patient, 10) }
       post :sync_from_user, params: patients
