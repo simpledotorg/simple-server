@@ -10,7 +10,6 @@ class Api::V1::PatientsController < ApplicationController
     invalid_records = validated_patients.reject(&:valid?)
 
     response = invalid_records.empty? ? nil : { errors: invalid_records.map(&:errors) }
-    print response
     render json: response, status: :ok
   end
 

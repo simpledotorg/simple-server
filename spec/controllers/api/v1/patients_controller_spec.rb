@@ -11,10 +11,10 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
 
     it "updates the existing patients" do
       existing_patients = FactoryBot.create_list(:patient, 10)
-      updated_patients = existing_patients.take(5).each do |p|
+      updated_patients = existing_patients.take(5).each do |patient|
         FactoryBot.attributes_for(
             :patient,
-            id: p.id,
+            id: patient.id,
             updated_at: Time.now + 10.seconds)
       end
 
