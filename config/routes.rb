@@ -3,7 +3,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resource :patients, only: [] do
+      scope '/patients' do
         post 'sync', to: 'patients#sync_from_user'
       end
     end
