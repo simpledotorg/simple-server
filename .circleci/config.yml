@@ -9,6 +9,7 @@ jobs:
     docker:
       # specify the version you desire here
       - image: circleci/ruby:2.5.1-node-browsers
+        environment:
           PGHOST: localhost
           PGUSER: redapp-server
           RAILS_ENV: test
