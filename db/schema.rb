@@ -27,6 +27,12 @@ ActiveRecord::Schema.define(version: 20180510102039) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "patient_phone_numbers", id: false, force: :cascade do |t|
+    t.uuid "patient_id"
+    t.uuid "phone_number_id"
+    t.index ["phone_number_id", "patient_id"], name: "index_patient_phone_numbers_on_phone_number_id_and_patient_id", unique: true
+  end
+
   create_table "patients", id: :uuid, default: nil, force: :cascade do |t|
     t.string "full_name"
     t.integer "age_when_created"
@@ -36,12 +42,6 @@ ActiveRecord::Schema.define(version: 20180510102039) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "address_id"
-  end
-
-  create_table "patients_phone_numbers", id: false, force: :cascade do |t|
-    t.uuid "patient_id"
-    t.uuid "phone_number_id"
-    t.index ["phone_number_id", "patient_id"], name: "index_patients_phone_numbers_on_phone_number_id_and_patient_id", unique: true
   end
 
   create_table "phone_numbers", id: :uuid, default: nil, force: :cascade do |t|

@@ -8,7 +8,7 @@ module MergeRecord
 
   def self.bulk_merge_on_id(records)
     records.each do |record|
-      merge({id: record.id}, record)
+      merge({ id: record.id }, record)
     end
   end
 end

@@ -4,7 +4,7 @@ FactoryBot.define do
     street_address { Faker::Address.street_address }
     colony { Faker::Address.community }
     village { Faker::Address.community }
-    district { Faker::Address.city}
+    district { Faker::Address.city }
     state { Faker::Address.state }
     country { Faker::Address.country }
     pin { Faker::Address.zip }
