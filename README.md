@@ -1,4 +1,6 @@
-# README
+# RedApp Server
+
+[![Build Status](https://semaphoreci.com/api/v1/resolvetosavelives/redapp-server/branches/master/badge.svg)](https://semaphoreci.com/resolvetosavelives/redapp-server)
 
 This README would normally document whatever steps are necessary to get the
 application up and running.
