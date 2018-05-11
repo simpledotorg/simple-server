@@ -5,14 +5,22 @@
 version: 2
 jobs:
   build:
+    parallelism: 4
     docker:
       # specify the version you desire here
       - image: circleci/ruby:2.5.1-node-browsers
+          PGHOST: localhost
+          PGUSER: redapp-server
+          RAILS_ENV: test
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
       - image: circleci/postgres:10.3
+        environment:
+          POSTGRES_USER: redapp-server
+          POSTGRES_DB: redapp-server_test
+          POSTGRES_PASSWORD: ""
 
     working_directory: ~/repo
 
@@ -22,9 +30,9 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "Gemfile.lock" }}
+          - redapp-server-dependencies-{{ checksum "Gemfile.lock" }}
           # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+          - redapp-server-dependencies-
 
       - run:
           name: install dependencies
@@ -34,13 +42,16 @@ jobs:
       - save_cache:
           paths:
             - ./vendor/bundle
-          key: v1-dependencies-{{ checksum "Gemfile.lock" }}
+          key: redapp-server-dependencies-{{ checksum "Gemfile.lock" }}
 
-      # Database setup
-      - run: bundle exec rake db:create
-      - run: bundle exec rake db:schema:load
+      # Set up the DB
+      - run:
+          name: Wait for DB
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
 
-      # run tests!
+      - run: bundle exec rake db:setup
+
+      # Run tests
       - run:
           name: run tests
           command: |
@@ -53,7 +64,7 @@ jobs:
                             --format progress \
                             $TEST_FILES
 
-      # collect reports
+      # Collect reports
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
