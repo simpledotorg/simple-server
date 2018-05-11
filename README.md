@@ -1,5 +1,7 @@
 # README
 
+[![CircleCI](https://circleci.com/gh/resolvetosavelives/redapp-server.svg?style=shield)](https://circleci.com/gh/resolvetosavelives/redapp-server)
+
 This README would normally document whatever steps are necessary to get the
 application up and running.
 
