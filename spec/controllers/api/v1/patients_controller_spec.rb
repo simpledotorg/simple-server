@@ -12,6 +12,23 @@ end
 
 RSpec.describe Api::V1::PatientsController, type: :controller do
   describe 'POST sync' do
+    it 'merges patients correctly' do
+      pending
+      # things to test:
+      #
+      # [✓] create new patient
+      # [✓] create new address
+      # [✓] create new phone nos
+      # [✓] update patient only
+      # [X] update address only
+      # [X] update ph nos only
+      # [✓] update patient + address
+      # [X] update patient + address + ph no
+      # [X] update where address is old
+      # [X] update where patient is old, address is new
+      # [X] create/update with validation errors
+    end
+
     it 'creates new patients' do
       patients = (1..10).map { build_patient }
       post(:sync_from_user, params: { patients: patients })
