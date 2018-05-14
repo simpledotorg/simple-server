@@ -3,7 +3,7 @@ class CreatePhoneNumbers < ActiveRecord::Migration[5.1]
     create_table :phone_numbers, id: false do |t|
       t.uuid :id, primary_key: true
       t.string :number
-      t.string :type
+      t.string :phone_type
       t.boolean :active
 
       t.timestamps

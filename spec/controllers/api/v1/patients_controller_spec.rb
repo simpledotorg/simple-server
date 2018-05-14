@@ -1,11 +1,30 @@
 require 'rails_helper'
 
+def build_patient
+  patient       = FactoryBot.build(:patient)
+  address       = patient.address
+  phone_numbers = patient.phone_numbers
+  payload       = patient.attributes.merge(
+    address:       address.attributes,
+    phone_numbers: phone_numbers.map(&:attributes)
+  ).except("address_id")
+end
+
 RSpec.describe Api::V1::PatientsController, type: :controller do
   describe 'POST sync' do
     it 'creates new patients' do
-      patients = { patients: FactoryBot.attributes_for_list(:patient, 10) }
-      post :sync_from_user, params: patients
+      patients = (1..10).map { build_patient }
+      post(:sync_from_user, params: { patients: patients})
       expect(Patient.count).to eq 10
+      expect(Address.count).to eq 10
+      expect(PhoneNumber.count).to eq(patients.sum {|p| p[:phone_numbers].count})
+      expect(response).to have_http_status(200)
+    end
+
+    it 'creates new patients without address' do
+      post(:sync_from_user, params: { patients: [build_patient.except(:address)] })
+      expect(Patient.count).to eq 1
+      expect(Address.count).to eq 0
       expect(response).to have_http_status(200)
     end
 

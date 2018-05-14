@@ -46,7 +46,7 @@ ActiveRecord::Schema.define(version: 20180510102039) do
 
   create_table "phone_numbers", id: :uuid, default: nil, force: :cascade do |t|
     t.string "number"
-    t.string "type"
+    t.string "phone_type"
     t.boolean "active"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
