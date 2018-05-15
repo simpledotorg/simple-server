@@ -15,12 +15,12 @@ gem 'pry-rails'
 gem 'sentry-raven'
 gem 'dotenv'
 gem 'rswag', '~> 1.6.0'
+gem 'rspec-rails', '~> 3.7'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'database_cleaner'
   gem 'factory_bot_rails'
-  gem 'rspec-rails', '~> 3.7'
   gem 'shoulda-matchers', '~> 3.1'
   gem 'faker'
 end
