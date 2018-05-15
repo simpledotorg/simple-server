@@ -17,19 +17,17 @@ class Patient < ApplicationRecord
     end
   end
 
-  def self.new_patient_from_nested_params(params)
-    address       = Address.new(params['address']) if params['address'].present?
-    phone_numbers = []
-    if params['phone_numbers'].present?
-      phone_numbers = params['phone_numbers'].map do |phone_number_params|
-        PhoneNumber.new(phone_number_params)
-      end
-    end
-
-    patient               = Patient.new(params.except(:address, :phone_numbers))
-    patient.address       = address
-    patient.phone_numbers = phone_numbers
-    patient
+  def has_errors?
+    invalid? ||
+      (address.present? && address.has_errors?) ||
+      phone_numbers.map(&:has_errors?).any?
   end
 
+  def errors_hash
+    errors.to_hash.merge(
+      id:            id,
+      address:       address.errors_hash,
+      phone_numbers: phone_numbers.map(&:errors_hash)
+    )
+  end
 end

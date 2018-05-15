@@ -24,13 +24,13 @@ class Api::V1::PatientsController < ApplicationController
   end
 
   def sync_from_user
-    invalid_patient_ids = []
-    patient_params.each do |single_patient_params|
+    errors = patient_params.reduce([]) do |errors, single_patient_params|
       patient = merge_patient single_patient_params
-      invalid_patient_ids << single_patient_params[:id] unless patient
+      errors << patient.errors_hash if patient.has_errors?
+      errors
     end
 
-    response = invalid_patient_ids.empty? ? nil : { errors: invalid_patient_ids }
+    response = errors.nil? ? nil : { errors: errors }
     render json: response, status: :ok
   end
 

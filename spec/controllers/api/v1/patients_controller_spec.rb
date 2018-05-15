@@ -2,23 +2,6 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::PatientsController, type: :controller do
   describe 'POST sync' do
-    it 'merges patients correctly' do
-      pending
-      # things to test:
-      #
-      # [✓] create new patient
-      # [✓] create new address
-      # [✓] create new phone nos
-      # [✓] update patient only
-      # [X] update address only
-      # [X] update ph nos only
-      # [✓] update patient + address
-      # [X] update patient + address + ph no
-      # [X] update where address is old
-      # [X] update where patient is old, address is new
-      # [X] create/update with validation errors
-    end
-
     it 'creates new patients' do
       patients = (1..10).map { build_patient }
       post(:sync_from_user, params: { patients: patients })
@@ -33,6 +16,25 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
       expect(Patient.count).to eq 1
       expect(Address.count).to eq 0
       expect(response).to have_http_status(200)
+    end
+
+    it 'returns errors for invalid records' do
+      patients                          = build_patient
+      patients['created_at']            = nil
+      patients['address']['created_at'] = nil
+      patients['phone_numbers'].each do |phone_number|
+        phone_number.merge!('created_at' => nil)
+      end
+      post(:sync_from_user, params: { patients: [patients] })
+
+      patient_errors = JSON(response.body)['errors'].first
+      expect(patient_errors).to be_present
+      expect(patient_errors['created_at']).to be_present
+      expect(patient_errors['id']).to be_present
+      expect(patient_errors['address']['created_at']).to be_present
+      expect(patient_errors['address']['id']).to be_present
+      expect(patient_errors['phone_numbers'].map { |phno| phno['id'] }).to all(be_present)
+      expect(patient_errors['phone_numbers'].map { |phno| phno['created_at'] }).to all(be_present)
     end
 
     it 'updates the existing patients' do
@@ -78,7 +80,6 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
           .to eq updated_patient['address'].except('created_at', 'updated_at')
         expect(patient.address.created_at.to_i).to eq(updated_patient['address']['created_at'].to_i)
         expect(patient.address.updated_at.to_i).to eq(updated_patient['address']['updated_at'].to_i)
-
       end
     end
 
@@ -92,7 +93,10 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
       post :sync_from_user, params: { patients: [patient_outdated] }
 
       db_patient = Patient.find(patient_latest.id)
-      expect(db_patient.attributes).to eq(patient_latest.attributes)
+      expect(db_patient.attributes.except('created_at', 'updated_at'))
+        .to eq(patient_latest.attributes.except('created_at', 'updated_at'))
+      expect(db_patient.created_at.to_i).to eq(patient_latest.created_at.to_i)
+      expect(db_patient.updated_at.to_i).to eq(patient_latest.updated_at.to_i)
     end
   end
 end
