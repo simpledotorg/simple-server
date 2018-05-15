@@ -32,3 +32,13 @@ def build_patient
     'phone_numbers' => phone_numbers.map(&:attributes)
   ).except('address_id')
 end
+
+def build_invalid_patient
+  patient                          = build_patient
+  patient['created_at']            = nil
+  patient['address']['created_at'] = nil
+  patient['phone_numbers'].each do |phone_number|
+    phone_number.merge!('created_at' => nil)
+  end
+  patient
+end

@@ -26,7 +26,7 @@ class Patient < ApplicationRecord
   def errors_hash
     errors.to_hash.merge(
       id:            id,
-      address:       address.errors_hash,
+      address:       address.present? ? address.errors_hash : nil,
       phone_numbers: phone_numbers.map(&:errors_hash)
     )
   end

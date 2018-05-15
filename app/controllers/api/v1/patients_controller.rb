@@ -30,7 +30,7 @@ class Api::V1::PatientsController < ApplicationController
       errors
     end
 
-    response = errors.nil? ? nil : { errors: errors }
+    response = { errors: errors.nil? ? nil : errors }
     render json: response, status: :ok
   end
 

@@ -101,7 +101,18 @@
         ],
         "responses": {
           "200": {
-            "description": "patients created"
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/patient_error_spec"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -244,6 +255,45 @@
       "items": {
         "$ref": "#/definitions/phone_number"
       }
+    },
+    "error_spec": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "field_with_error": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "patient_error_spec": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "address": {
+          "$ref": "#/definitions/error_spec"
+        },
+        "phone_numbers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/error_spec"
+          }
+        }
+      },
+      "required": [
+        "id"
+      ]
     }
   }
 }

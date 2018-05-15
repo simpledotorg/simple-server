@@ -11,14 +11,13 @@ describe 'Patients API' do
 
       response '200', 'patients created' do
         let(:patients) { { patients: (1..10).map { build_patient } } }
+        run_test!
+      end
 
-        before do |example|
-          submit_request(example.metadata)
-        end
-
-        it 'returns a valid 201 response' do |example|
-          assert_response_matches_metadata(example.metadata)
-        end
+      response '200', 'some, or no errors were found' do
+        schema patient_sync_errors_spec
+        let(:patients) { { patients: (1..10).map { build_invalid_patient } } }
+        run_test!
       end
     end
   end

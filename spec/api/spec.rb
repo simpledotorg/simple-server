@@ -48,7 +48,7 @@ module Spec
 
   def phone_numbers_spec
     { type:  :array,
-      items: { '$ref' => '#/definitions/phone_number'} }
+      items: { '$ref' => '#/definitions/phone_number' } }
   end
 
   def patient_sync_request_spec
@@ -56,17 +56,42 @@ module Spec
       properties: { patients:
                       { type:  :array,
                         items: patient_spec.deep_merge(
-                          properties: { address:       { '$ref' => '#/definitions/address'},
-                                        phone_numbers: { '$ref' => '#/definitions/phone_numbers'} }
+                          properties: { address:       { '$ref' => '#/definitions/address' },
+                                        phone_numbers: { '$ref' => '#/definitions/phone_numbers' } }
                         ) } },
       required:   %w[patients] }
   end
 
+  def error_spec
+    { type:       :object,
+      properties: { id:               { type: :string, format: :uuid },
+                    field_with_error: { type:  :array,
+                                        items: { type: :string } } },
+      required:   %w[id] }
+  end
+
+  def patient_error_spec
+    { type:       :object,
+      properties: { id:            { type: :string, format: :uuid },
+                    address:       { '$ref' => '#/definitions/error_spec' },
+                    phone_numbers: { type:  :array,
+                                     items: { '$ref' => '#/definitions/error_spec' } } },
+      required:   %w[id] }
+  end
+
+  def patient_sync_errors_spec
+    { type:       :object,
+      properties: { errors: { type:  :array,
+                              items: { '$ref' => '#/definitions/patient_error_spec' } } } }
+  end
+
   def all_definitions
-    { patient:       patient_spec,
-      address:       address_spec,
-      phone_number:  phone_number_spec,
-      phone_numbers: phone_numbers_spec }
+    { patient:            patient_spec,
+      address:            address_spec,
+      phone_number:       phone_number_spec,
+      phone_numbers:      phone_numbers_spec,
+      error_spec:         error_spec,
+      patient_error_spec: patient_error_spec }
   end
 
 end

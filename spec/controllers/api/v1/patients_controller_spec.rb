@@ -19,13 +19,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
     end
 
     it 'returns errors for invalid records' do
-      patients                          = build_patient
-      patients['created_at']            = nil
-      patients['address']['created_at'] = nil
-      patients['phone_numbers'].each do |phone_number|
-        phone_number.merge!('created_at' => nil)
-      end
-      post(:sync_from_user, params: { patients: [patients] })
+      post(:sync_from_user, params: { patients: [build_invalid_patient] })
 
       patient_errors = JSON(response.body)['errors'].first
       expect(patient_errors).to be_present
