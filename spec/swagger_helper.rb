@@ -19,9 +19,17 @@ RSpec.configure do |config|
     'v1/swagger.json' => {
       swagger:     '2.0',
       basePath: '/api/v1',
-      info:        {
-        title:   'API V1',
-        version: 'v1'
+      info: {
+        description: 'API specification for RedApp Server',
+        version: 'v1',
+        title: 'RedApp Server',
+        contact: {
+          email: 'eng-backend@resolvetosavelives.org'
+        },
+        license: {
+          name: 'MIT',
+          url: 'https://github.com/resolvetosavelives/redapp-server/blob/master/LICENSE'
+        }
       },
       paths:       {},
       definitions: all_definitions
