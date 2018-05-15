@@ -1,15 +1,5 @@
 require 'rails_helper'
 
-def build_patient
-  patient       = FactoryBot.build(:patient)
-  address       = patient.address
-  phone_numbers = patient.phone_numbers
-  payload       = patient.attributes.merge(
-    'address'       => address.attributes,
-    'phone_numbers' => phone_numbers.map(&:attributes)
-  ).except('address_id')
-end
-
 RSpec.describe Api::V1::PatientsController, type: :controller do
   describe 'POST sync' do
     it 'merges patients correctly' do

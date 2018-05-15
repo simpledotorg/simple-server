@@ -1,0 +1,241 @@
+{
+  "swagger": "2.0",
+  "basePath": "/api/v1",
+  "info": {
+    "title": "API V1",
+    "version": "v1"
+  },
+  "paths": {
+    "/patients/sync": {
+      "post": {
+        "summary": "Syncs patient, address and phone number data from device to server.",
+        "tags": [
+          "patient"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "patients",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "patients": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "gender": {
+                        "type": "string",
+                        "enum": [
+                          "male",
+                          "female",
+                          "transgender"
+                        ]
+                      },
+                      "full_name": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "active",
+                          "dead",
+                          "migrated",
+                          "unresponsive",
+                          "inactive"
+                        ]
+                      },
+                      "date_of_birth": {
+                        "type": "string",
+                        "format": "date"
+                      },
+                      "age_when_created": {
+                        "type": "integer"
+                      },
+                      "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "address": {
+                        "$ref": "#/definitions/address"
+                      },
+                      "phone_numbers": {
+                        "$ref": "#/definitions/phone_numbers"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "gender",
+                      "full_name",
+                      "created_at",
+                      "updated_at",
+                      "status"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "patients"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "patients created"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "patient": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "gender": {
+          "type": "string",
+          "enum": [
+            "male",
+            "female",
+            "transgender"
+          ]
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "dead",
+            "migrated",
+            "unresponsive",
+            "inactive"
+          ]
+        },
+        "date_of_birth": {
+          "type": "string",
+          "format": "date"
+        },
+        "age_when_created": {
+          "type": "integer"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "gender",
+        "full_name",
+        "created_at",
+        "updated_at",
+        "status"
+      ]
+    },
+    "address": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "street_address": {
+          "type": "string"
+        },
+        "colony": {
+          "type": "string"
+        },
+        "village": {
+          "type": "string"
+        },
+        "district": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "pin": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "phone_number": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "number": {
+          "type": "string"
+        },
+        "phone_type": {
+          "type": "string",
+          "enum": [
+            "mobile",
+            "landline"
+          ]
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "phone_numbers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/phone_number"
+      }
+    }
+  }
+}

@@ -14,6 +14,7 @@ gem 'jbuilder', '~> 2.5'
 gem 'pry-rails'
 gem 'sentry-raven'
 gem 'dotenv'
+gem 'rswag', '~> 1.6.0'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

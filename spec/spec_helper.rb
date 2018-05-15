@@ -1,5 +1,6 @@
 require 'database_cleaner'
 require 'simplecov'
+require 'api/spec'
 
 RSpec.configure do |config|
 
@@ -18,4 +19,6 @@ RSpec.configure do |config|
   config.after :each do
     DatabaseCleaner.clean_with(:truncation, reset_ids: true)
   end
+
+  config.extend Spec
 end
