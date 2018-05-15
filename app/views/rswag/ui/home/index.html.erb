@@ -1,56 +1,24 @@
-<!-- HTML for static distribution bundle build -->
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>RedApp API</title>
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Source+Code+Pro:300,600|Titillium+Web:400,600,700" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.14.2/swagger-ui.css">
+  <title>ReDoc</title>
+  <!-- needed for adaptive design -->
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
+
+  <!--
+  ReDoc doesn't change outer page styles
+  -->
   <style>
-    html {
-      box-sizing: border-box;
-      overflow: -moz-scrollbars-vertical;
-      overflow-y: scroll;
-    }
-
-    *,
-    *:before,
-    *:after {
-      box-sizing: inherit;
-    }
-
     body {
       margin: 0;
-      background: #fafafa;
+      padding: 0;
     }
   </style>
 </head>
-
 <body>
-<div id="swagger-ui"></div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.14.2/swagger-ui-bundle.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.14.2/swagger-ui-standalone-preset.js"></script>
-<script>
-    window.onload = function () {
-
-        // Build a system
-        const ui = SwaggerUIBundle({
-            url: "<%= url_for(rswag_api: nil) + 'v1/swagger.json' %>",
-            dom_id: '#swagger-ui',
-            deepLinking: true,
-            presets: [
-                SwaggerUIBundle.presets.apis,
-                SwaggerUIStandalonePreset
-            ],
-            plugins: [
-                SwaggerUIBundle.plugins.DownloadUrl
-            ],
-            layout: "StandaloneLayout"
-        })
-
-        window.ui = ui
-    }
-</script>
+<redoc spec-url="<%= url_for(rswag_api: nil) + 'v1/swagger.json' %>"></redoc>
+<script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"> </script>
 </body>
 </html>
