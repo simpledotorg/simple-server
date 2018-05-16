@@ -1,10 +1,23 @@
 {
   "swagger": "2.0",
   "basePath": "/api/v1",
+  "produces": [
+    "application/json"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "schemes": [
+    "https"
+  ],
   "info": {
-    "description": "API specification for RedApp Server",
+    "description": "# API specification for RedApp\n## Sync APIs\nThis API spec documents the endpoints that the devices (that are offline to varying levels) will use to sync data. The sync end points will send and receive bulk (a list of) entities. Both sending and receiving can be batched with configurable batch-sizes to accommodate low network bandwidth situations.\n## Nesting resources\nThe APIs have been designed to provide an optimal balance between accuracy and simplicity. Some of the APIs (patients) will be nested, and some other (blood pressures) will be flat.\n## Authentication\nTODO",
     "version": "v1",
     "title": "RedApp Server",
+    "x-logo": {
+      "url": "https://static1.squarespace.com/static/59945d559f7456b755d759f2/t/59aebc5ecf81e0ac9b4b6f59/1526304079797/?format=1500w",
+      "backgroundColor": "#FFFFFF"
+    },
     "contact": {
       "email": "eng-backend@resolvetosavelives.org"
     },
