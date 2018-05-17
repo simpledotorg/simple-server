@@ -16,9 +16,5 @@ RSpec.configure do |config|
 
   config.shared_context_metadata_behavior = :apply_to_host_groups
 
-  config.after :each do
-    DatabaseCleaner.clean_with(:truncation, reset_ids: true)
-  end
-
   config.extend Spec
 end
