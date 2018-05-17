@@ -95,13 +95,24 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
   end
 
   describe 'GET sync' do
-    it 'Gets all the patients updated since last sync' do
-      synced_patients                  = FactoryBot.create_list(:patient, 5, updated_on_server_at: 15.minutes.ago)
-      patients_latest_record_timestamp = 10.minutes.ago
-      expected_patient_ids = []
+    before :each do
       5.times do
-        patients_hash                         = build_patient.with_indifferent_access
-        patients_hash['updated_on_server_at'] = 5.minutes.ago
+        patients_hash                                    = build_patient.with_indifferent_access
+        patients_hash['updated_on_server_at']            = 15.minutes.ago
+        patients_hash['address']['updated_on_server_at'] = 15.minutes.ago
+        patients_hash['phone_numbers'].each do |phone_number|
+          phone_number['updated_on_server_at'] = 15.minutes.ago
+        end
+        MergePatientService.new(patients_hash).merge
+      end
+    end
+
+    it 'Gets all the patients updated since last sync' do
+      patients_latest_record_timestamp = 10.minutes.ago
+      expected_patient_ids             = []
+      5.times do
+        patients_hash                                    = build_patient.with_indifferent_access
+        patients_hash['updated_on_server_at']            = 5.minutes.ago
         patients_hash['address']['updated_on_server_at'] = 15.minutes.ago
         patients_hash['phone_numbers'].each do |phone_number|
           phone_number['updated_on_server_at'] = 15.minutes.ago
@@ -115,7 +126,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
       response_body = JSON(response.body)
       expect(response_body['patients'].count).to eq 5
       expect(response_body['patients'].map { |patient| patient['id'] }.to_set)
-        .to eq(patients_to_fetch.map(&:id).to_set)
+        .to eq(expected_patient_ids.to_set)
     end
 
     it 'Gets all the patients records with address updated_on_server_at >= last_synced_at' do

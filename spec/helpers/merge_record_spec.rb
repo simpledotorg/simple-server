@@ -12,7 +12,7 @@ describe MergeRecord do
   it 'creates a new record if there is no existing record' do
     new_patient = FactoryBot.build(:patient, address: FactoryBot.create(:address))
     patient     = MergeRecord.merge_by_id(new_patient)
-    expect(Patient.first.attributes).to eq patient.attributes
+    expect(Patient.first.attributes.except('updated_on_server_at')).to eq patient.attributes.except('updated_on_server_at')
   end
 
   it 'updates the existing record, if it exists' do
@@ -37,12 +37,12 @@ describe MergeRecord do
   it 'works for all models' do
     new_patient = FactoryBot.build(:patient, address: FactoryBot.create(:address))
     patient     = MergeRecord.merge_by_id(new_patient)
-    expect(Patient.first.attributes).to eq patient.attributes
+    expect(Patient.first.attributes.except('updated_on_server_at')).to eq patient.attributes.except('updated_on_server_at')
 
     address = MergeRecord.merge_by_id(FactoryBot.build(:address))
-    expect(Address.first.attributes).to eq address.attributes
+    expect(Address.first.attributes.except('updated_on_server_at')).to eq address.attributes.except('updated_on_server_at')
 
     phone_number = MergeRecord.merge_by_id(FactoryBot.build(:phone_number))
-    expect(PhoneNumber.first.attributes).to eq phone_number.attributes
+    expect(PhoneNumber.first.attributes.except('updated_on_server_at')).to eq phone_number.attributes.except('updated_on_server_at')
   end
 end
