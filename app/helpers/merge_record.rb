@@ -7,7 +7,7 @@ module MergeRecord
       record
     elsif record.updated_at > existing_record.updated_at
       existing_record.update(record.attributes)
-      record
+      existing_record
     else
       existing_record
     end
