@@ -30,4 +30,11 @@ class Patient < ApplicationRecord
       phone_numbers: phone_numbers.map(&:errors_hash)
     )
   end
+
+  def nested_hash(options = {})
+    as_json(options.merge(
+      except:  %i[address_id  updated_on_server_at],
+      include: { address:       { except: :updated_on_server_at },
+                 phone_numbers: { except: :updated_on_server_at } }))
+  end
 end

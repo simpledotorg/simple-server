@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       scope '/patients' do
+        get 'sync', to: 'patients#sync_to_user'
         post 'sync', to: 'patients#sync_from_user'
       end
     end
