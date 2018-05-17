@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180510102039) do
+ActiveRecord::Schema.define(version: 20180516103835) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,12 +25,16 @@ ActiveRecord::Schema.define(version: 20180510102039) do
     t.string "pin"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "updated_on_server_at", null: false
+    t.index ["updated_on_server_at"], name: "index_addresses_on_updated_on_server_at"
   end
 
   create_table "patient_phone_numbers", id: false, force: :cascade do |t|
     t.uuid "patient_id"
     t.uuid "phone_number_id"
+    t.datetime "updated_on_server_at", null: false
     t.index ["phone_number_id", "patient_id"], name: "index_patient_phone_numbers_on_phone_number_id_and_patient_id", unique: true
+    t.index ["updated_on_server_at"], name: "index_patient_phone_numbers_on_updated_on_server_at"
   end
 
   create_table "patients", id: :uuid, default: nil, force: :cascade do |t|
@@ -42,6 +46,8 @@ ActiveRecord::Schema.define(version: 20180510102039) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "address_id"
+    t.datetime "updated_on_server_at", null: false
+    t.index ["updated_on_server_at"], name: "index_patients_on_updated_on_server_at"
   end
 
   create_table "phone_numbers", id: :uuid, default: nil, force: :cascade do |t|
@@ -50,6 +56,8 @@ ActiveRecord::Schema.define(version: 20180510102039) do
     t.boolean "active"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "updated_on_server_at", null: false
+    t.index ["updated_on_server_at"], name: "index_phone_numbers_on_updated_on_server_at"
   end
 
   add_foreign_key "patients", "addresses"

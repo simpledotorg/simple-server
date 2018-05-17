@@ -1,6 +1,6 @@
-require 'database_cleaner'
 require 'simplecov'
 require 'api/spec'
+require 'utils'
 
 RSpec.configure do |config|
 
@@ -15,10 +15,6 @@ RSpec.configure do |config|
   end
 
   config.shared_context_metadata_behavior = :apply_to_host_groups
-
-  config.after :each do
-    DatabaseCleaner.clean_with(:truncation, reset_ids: true)
-  end
 
   config.extend Spec
 end
