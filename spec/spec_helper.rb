@@ -1,4 +1,3 @@
-require 'database_cleaner'
 require 'simplecov'
 require 'api/spec'
 
