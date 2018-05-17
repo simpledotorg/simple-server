@@ -1,4 +1,4 @@
-class Api::V1::PatientsController < ApplicationController
+class Api::V1::PatientsController < APIController
 
   def merge_address(address_params)
     address = Address.new(address_params)
