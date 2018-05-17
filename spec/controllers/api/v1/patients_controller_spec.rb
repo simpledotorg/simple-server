@@ -62,18 +62,13 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
 
       updated_patients.each do |updated_patient|
         patient = Patient.find(updated_patient['id'])
-        expect(patient.attributes.except('created_at', 'updated_at', 'updated_on_server_at'))
-          .to eq updated_patient
-                   .except('address', 'phone_numbers', 'created_at', 'updated_at', 'updated_on_server_at')
+        expect(Utils.with_int_timestamps(patient.attributes).except('updated_on_server_at'))
+          .to eq Utils.with_int_timestamps(updated_patient)
+                   .except('address', 'phone_numbers', 'updated_on_server_at')
                    .merge('address_id' => updated_patient['address']['id'])
 
-        expect(patient.created_at.to_i).to eq(updated_patient['created_at'].to_i)
-        expect(patient.updated_at.to_i).to eq(updated_patient['updated_at'].to_i)
-
-        expect(patient.address.attributes.except('created_at', 'updated_at', 'updated_on_server_at'))
-          .to eq updated_patient['address'].except('created_at', 'updated_at', 'updated_on_server_at')
-        expect(patient.address.created_at.to_i).to eq(updated_patient['address']['created_at'].to_i)
-        expect(patient.address.updated_at.to_i).to eq(updated_patient['address']['updated_at'].to_i)
+        expect(Utils.with_int_timestamps(patient.address.attributes).except('updated_on_server_at'))
+          .to eq Utils.with_int_timestamps(updated_patient['address']).except('updated_on_server_at')
       end
     end
 
@@ -87,8 +82,8 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
       post :sync_from_user, params: { patients: [patient_outdated] }
 
       db_patient = Patient.find(patient_latest.id)
-      expect(db_patient.attributes.except('created_at', 'updated_at'))
-        .to eq(patient_latest.attributes.except('created_at', 'updated_at'))
+      expect(Utils.with_int_timestamps(db_patient.attributes))
+        .to eq(Utils.with_int_timestamps(patient_latest.attributes))
       expect(db_patient.created_at.to_i).to eq(patient_latest.created_at.to_i)
       expect(db_patient.updated_at.to_i).to eq(patient_latest.updated_at.to_i)
     end

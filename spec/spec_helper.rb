@@ -1,5 +1,6 @@
 require 'simplecov'
 require 'api/spec'
+require 'utils'
 
 RSpec.configure do |config|
 
