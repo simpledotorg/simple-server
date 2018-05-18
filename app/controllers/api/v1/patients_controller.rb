@@ -49,28 +49,4 @@ class Api::V1::PatientsController < APIController
       )
     end
   end
-
-  def merge_patient(single_patient_params)
-    patient = Patient.new(single_patient_params.except(:address, :phone_numbers))
-    patient.address = merge_address(single_patient_params[:address]) if single_patient_params[:address].present?
-    patient.phone_numbers = merge_phone_numbers(single_patient_params)
-
-    MergeRecord.merge_by_id(patient)
-  end
-
-  def merge_address(address_params)
-    address = Address.new(address_params)
-    MergeRecord.merge_by_id(address)
-  end
-
-  def merge_phone_number(phone_number_params)
-    phone_number = PhoneNumber.new(phone_number_params)
-    MergeRecord.merge_by_id(phone_number)
-  end
-
-  def merge_phone_numbers(single_patient_params)
-    single_patient_params[:phone_numbers].to_a.map do |phone_number_params|
-      merge_phone_number phone_number_params
-    end
-  end
 end
