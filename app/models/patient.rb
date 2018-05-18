@@ -6,21 +6,18 @@ class Patient < ApplicationRecord
   has_many :patient_phone_numbers
   has_many :phone_numbers, through: :patient_phone_numbers
 
-  validates_presence_of :created_at, :updated_at
+  validates_presence_of :created_at, :updated_at, :full_name
   validates_inclusion_of :gender, in: GENDERS
   validates_inclusion_of :status, in: STATUSES
   validate :presence_of_age
+
+  validates_associated :address, if: :address
+  validates_associated :phone_numbers, if: :phone_numbers
 
   def presence_of_age
     unless date_of_birth.present? || age_when_created.present?
       errors.add(:age, 'Either date_of_birth or age_when_created should be present')
     end
-  end
-
-  def has_errors?
-    invalid? ||
-      (address.present? && address.has_errors?) ||
-      phone_numbers.map(&:has_errors?).any?
   end
 
   def errors_hash

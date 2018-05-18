@@ -20,14 +20,14 @@ class MergePatientService
     MergeRecord.merge_by_id(address)
   end
 
-  def merge_phone_number(phone_number_params)
-    phone_number = PhoneNumber.new(phone_number_params)
-    MergeRecord.merge_by_id(phone_number)
-  end
-
   def merge_phone_numbers(patient_record)
     patient_record[:phone_numbers].to_a.map do |phone_number_params|
       merge_phone_number phone_number_params
     end
+  end
+
+  def merge_phone_number(phone_number_params)
+    phone_number = PhoneNumber.new(phone_number_params)
+    MergeRecord.merge_by_id(phone_number)
   end
 end

@@ -4,8 +4,6 @@ class PhoneNumber < ApplicationRecord
   has_many :patient_phone_numbers
   has_many :patients, through: :patient_phone_numbers
 
-  alias_method :has_errors?, :invalid?
-
   def errors_hash
     errors.to_hash.merge(id: id)
   end

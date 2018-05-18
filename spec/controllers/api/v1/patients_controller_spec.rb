@@ -18,6 +18,13 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
       expect(response).to have_http_status(200)
     end
 
+    it 'creates new patients without phone numbers' do
+      post(:sync_from_user, params: { patients: [build_patient.except('phone_numbers')] })
+      expect(Patient.count).to eq 1
+      expect(PhoneNumber.count).to eq 0
+      expect(response).to have_http_status(200)
+    end
+
     it 'returns errors for invalid records' do
       post(:sync_from_user, params: { patients: [build_invalid_patient] })
 
@@ -102,7 +109,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
       end
     end
 
-    it 'Gets all the patients updated since last sync' do
+    it 'Returns all the patients updated since last sync' do
       patients_latest_record_timestamp = 10.minutes.ago
       expected_patient_ids             = []
       5.times do

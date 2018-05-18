@@ -4,6 +4,7 @@ describe Patient, type: :model do
   describe "Validations" do
     it { should validate_presence_of(:created_at) }
     it { should validate_presence_of(:updated_at) }
+    it { should validate_presence_of(:full_name) }
     it { should validate_inclusion_of(:gender).in_array(Patient::GENDERS) }
     it { should validate_inclusion_of(:status).in_array(Patient::STATUSES) }
 

@@ -2,7 +2,7 @@ class Api::V1::PatientsController < APIController
   def sync_from_user
     errors = patients_params.reduce([]) do |errors, single_patient_params|
       patient = MergePatientService.new(single_patient_params).merge
-      errors << patient.errors_hash if patient.has_errors?
+      errors << patient.errors_hash if patient.invalid?
       errors
     end
 

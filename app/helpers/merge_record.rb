@@ -1,6 +1,7 @@
 module MergeRecord
   def self.merge(where_clauses, record)
     return record if record.invalid?
+
     existing_record = record.class.find_by(where_clauses)
     if existing_record.nil?
       record.class.create(record.attributes)
