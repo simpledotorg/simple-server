@@ -10,24 +10,6 @@ class Api::V1::PatientsController < APIController
     render json: response, status: :ok
   end
 
-  def sync_to_user
-    latest_record_timestamp = params[:latest_record_timestamp].to_time
-
-    patients_to_sync = Patient.distinct
-      .left_outer_joins(:address)
-      .left_outer_joins(:phone_numbers)
-      .where(
-        'patients.updated_on_server_at >= ?
-        or addresses.updated_on_server_at >= ?
-        or phone_numbers.updated_on_server_at >= ?',
-        latest_record_timestamp,
-        latest_record_timestamp,
-        latest_record_timestamp
-      )
-
-    render json: { patients: patients_to_sync.map(&:nested_hash) }, status: :ok
-  end
-
   private
 
   def patients_params
