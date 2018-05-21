@@ -122,18 +122,17 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         end
       end
     end
+  end
 
-    describe 'GET sync' do
-      before :each do
-        # setup existing records on the server
-        FactoryBot.create_list(:patient, 5, updated_on_server_at: 15.minutes.ago).each do |patient|
-          patient.address.update_column(:updated_on_server_at, 15.minutes.ago)
-          patient.phone_numbers.each do |phone_number|
-            phone_number.update_column(:updated_on_server_at, 15.minutes.ago)
-          end
-        end
+  describe 'GET sync: send data from server to device;' do
+    before :each do
+      Timecop.freeze(15.minutes.ago) do
+        FactoryBot.create_list(:patient, 10)
       end
+    end
 
+
+    describe 'first time sync' do
       it 'Returns records from the beginning of time, when first_time param is true' do
         get :sync_to_user, params: { first_time: true }
 
@@ -145,25 +144,22 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
 
       it 'complains when first_time is not true, and latest_record_timestamp is not set' do
         get :sync_to_user, params: { first_time: false }
-
         expect(response.status).to eq 400
       end
 
-      it 'Returns all the patients updated since last sync' do
-        patients_latest_record_timestamp = 10.minutes.ago
-        expected_patients                = FactoryBot.create_list(:patient, 5, updated_on_server_at: 5.minutes.ago).each do |patient|
-          patient.address.update_column(:updated_on_server_at, 15.minutes.ago)
-          patient.phone_numbers.each do |phone_number|
-            phone_number.update_column(:updated_on_server_at, 15.minutes.ago)
-          end
-        end
 
-        get :sync_to_user, params: { latest_record_timestamp: patients_latest_record_timestamp }
+      it 'Returns new patients added since last sync' do
+        expected_patients = FactoryBot.create_list(:patient, 5, updated_on_server_at: 5.minutes.ago)
+        get :sync_to_user, params: { latest_record_timestamp: 10.minutes.ago }
 
         response_body = JSON(response.body)
         expect(response_body['patients'].count).to eq 5
+
         expect(response_body['patients'].map { |patient| patient['id'] }.to_set)
           .to eq(expected_patients.map(&:id).to_set)
+
+        expect(response_body['latest_record_timestamp'].to_time.to_i)
+          .to eq(expected_patients.map(&:updated_on_server_at).max.to_i)
       end
     end
   end

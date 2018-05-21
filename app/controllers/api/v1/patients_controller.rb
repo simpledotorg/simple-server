@@ -11,8 +11,11 @@ class Api::V1::PatientsController < APIController
   end
 
   def sync_to_user
-    patients_to_sync = Patient.updated_on_server_since(latest_record_timestamp)
-    render json:   { patients: patients_to_sync.map(&:nested_hash), },
+    patients_to_sync             = Patient.updated_on_server_since(latest_record_timestamp)
+    next_latest_record_timestamp = patients_to_sync.last.updated_on_server_at
+
+    render json:   { patients:                patients_to_sync.map(&:nested_hash),
+                     latest_record_timestamp: next_latest_record_timestamp },
            status: :ok
   end
 
