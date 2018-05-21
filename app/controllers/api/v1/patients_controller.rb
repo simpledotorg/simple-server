@@ -11,7 +11,7 @@ class Api::V1::PatientsController < APIController
   end
 
   def sync_to_user
-    patients_to_sync             = Patient.updated_on_server_since(latest_record_timestamp)
+    patients_to_sync             = Patient.updated_on_server_since(latest_record_timestamp, number_of_records)
     next_latest_record_timestamp = patients_to_sync.last.updated_on_server_at
 
     render json:   { patients:                patients_to_sync.map(&:nested_hash),
@@ -46,6 +46,14 @@ class Api::V1::PatientsController < APIController
       Time.new(0)
     else
       params.require(:latest_record_timestamp).to_time
+    end
+  end
+
+  def number_of_records
+    if params[:number_of_records].present?
+      params[:number_of_records].to_i
+    else
+      10 # todo: extract this into config
     end
   end
 end

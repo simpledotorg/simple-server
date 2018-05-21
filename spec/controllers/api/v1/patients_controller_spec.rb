@@ -126,11 +126,10 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
 
   describe 'GET sync: send data from server to device;' do
     before :each do
-      Timecop.freeze(15.minutes.ago) do
+      Timecop.travel(15.minutes.ago) do
         FactoryBot.create_list(:patient, 10)
       end
     end
-
 
     describe 'first time sync' do
       it 'Returns records from the beginning of time, when first_time param is true' do
@@ -146,20 +145,44 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         get :sync_to_user, params: { first_time: false }
         expect(response.status).to eq 400
       end
+    end
 
+    it 'Returns new patients added since last sync' do
+      expected_patients = FactoryBot.create_list(:patient, 5, updated_on_server_at: 5.minutes.ago)
+      get :sync_to_user, params: { latest_record_timestamp: 10.minutes.ago }
 
-      it 'Returns new patients added since last sync' do
-        expected_patients = FactoryBot.create_list(:patient, 5, updated_on_server_at: 5.minutes.ago)
-        get :sync_to_user, params: { latest_record_timestamp: 10.minutes.ago }
+      response_body = JSON(response.body)
+      expect(response_body['patients'].count).to eq 5
 
+      expect(response_body['patients'].map { |patient| patient['id'] }.to_set)
+        .to eq(expected_patients.map(&:id).to_set)
+
+      expect(response_body['latest_record_timestamp'].to_time.to_i)
+        .to eq(expected_patients.map(&:updated_on_server_at).max.to_i)
+    end
+
+    describe 'batching' do
+      it 'Returns the number of records requested with number_of_records' do
+        get :sync_to_user, params: { latest_record_timestamp: 20.minutes.ago,
+                                     number_of_records:       2 }
         response_body = JSON(response.body)
-        expect(response_body['patients'].count).to eq 5
+        expect(response_body['patients'].count).to eq 2
+      end
 
-        expect(response_body['patients'].map { |patient| patient['id'] }.to_set)
-          .to eq(expected_patients.map(&:id).to_set)
+      it 'Returns all the records on server over multiple small batches' do
+        get :sync_to_user, params: { latest_record_timestamp: 20.minutes.ago,
+                                     number_of_records:       7 }
+        response_1 = JSON(response.body)
 
-        expect(response_body['latest_record_timestamp'].to_time.to_i)
-          .to eq(expected_patients.map(&:updated_on_server_at).max.to_i)
+        get :sync_to_user, params: { latest_record_timestamp: response_1['latest_record_timestamp'],
+                                     number_of_records:       7 }
+        response_2 = JSON(response.body)
+
+        received_patients = response_1['patients'].concat(response_2['patients']).to_set
+        expect(received_patients.count).to eq Patient.count
+
+        expect(received_patients.to_set)
+          .to eq JSON(Patient.all.map(&:nested_hash).to_json).to_set
       end
     end
   end
