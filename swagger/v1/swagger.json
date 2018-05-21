@@ -33,9 +33,6 @@
         "tags": [
           "patient"
         ],
-        "consumes": [
-          "application/json"
-        ],
         "parameters": [
           {
             "name": "patients",
@@ -44,66 +41,7 @@
               "type": "object",
               "properties": {
                 "patients": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "type": "string",
-                        "format": "uuid"
-                      },
-                      "gender": {
-                        "type": "string",
-                        "enum": [
-                          "male",
-                          "female",
-                          "transgender"
-                        ]
-                      },
-                      "full_name": {
-                        "type": "string"
-                      },
-                      "status": {
-                        "type": "string",
-                        "enum": [
-                          "active",
-                          "dead",
-                          "migrated",
-                          "unresponsive",
-                          "inactive"
-                        ]
-                      },
-                      "date_of_birth": {
-                        "type": "string",
-                        "format": "date"
-                      },
-                      "age_when_created": {
-                        "type": "integer"
-                      },
-                      "created_at": {
-                        "type": "string",
-                        "format": "date-time"
-                      },
-                      "updated_at": {
-                        "type": "string",
-                        "format": "date-time"
-                      },
-                      "address": {
-                        "$ref": "#/definitions/address"
-                      },
-                      "phone_numbers": {
-                        "$ref": "#/definitions/phone_numbers"
-                      }
-                    },
-                    "required": [
-                      "id",
-                      "gender",
-                      "full_name",
-                      "created_at",
-                      "updated_at",
-                      "status"
-                    ]
-                  }
+                  "$ref": "#/definitions/nested_patients"
                 }
               },
               "required": [
@@ -123,6 +61,51 @@
                   "items": {
                     "$ref": "#/definitions/patient_error_spec"
                   }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs patient, address and phone number data from server to device.",
+        "tags": [
+          "patient"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "latest_record_timestamp",
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of the latest record synced with server."
+          },
+          {
+            "in": "query",
+            "name": "first_time",
+            "type": "boolean",
+            "description": "Set to true only when syncing for the first time"
+          },
+          {
+            "in": "query",
+            "name": "number_of_records",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "patients received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "patients": {
+                  "$ref": "#/definitions/nested_patients"
+                },
+                "latest_record_timestamp": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Use this in the next request to continue fetching records."
                 }
               }
             }
@@ -161,11 +144,17 @@
           ]
         },
         "date_of_birth": {
-          "type": "string",
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date"
         },
         "age_when_created": {
-          "type": "integer"
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "created_at": {
           "type": "string",
@@ -307,6 +296,75 @@
       "required": [
         "id"
       ]
+    },
+    "nested_patients": {
+      "type": "array",
+      "description": "List of patients with address and phone numbers nested.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "male",
+              "female",
+              "transgender"
+            ]
+          },
+          "full_name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "dead",
+              "migrated",
+              "unresponsive",
+              "inactive"
+            ]
+          },
+          "date_of_birth": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "age_when_created": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "address": {
+            "$ref": "#/definitions/address"
+          },
+          "phone_numbers": {
+            "$ref": "#/definitions/phone_numbers"
+          }
+        },
+        "required": [
+          "id",
+          "gender",
+          "full_name",
+          "created_at",
+          "updated_at",
+          "status"
+        ]
+      }
     }
   }
 }
