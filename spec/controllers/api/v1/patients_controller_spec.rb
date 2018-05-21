@@ -161,6 +161,16 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         .to eq(expected_patients.map(&:updated_on_server_at).max.to_i)
     end
 
+    describe 'nothing to sync' do
+      it 'Returns an empty list when there is nothing to sync' do
+        sync_time = 10.minutes.ago
+        get :sync_to_user, params: { latest_record_timestamp: sync_time}
+        response_body = JSON(response.body)
+        expect(response_body['patients'].count).to eq 0
+        expect(response_body['latest_record_timestamp'].to_time.to_i).to eq sync_time.to_i
+      end
+
+    end
     describe 'batching' do
       it 'Returns the number of records requested with number_of_records' do
         get :sync_to_user, params: { latest_record_timestamp: 20.minutes.ago,

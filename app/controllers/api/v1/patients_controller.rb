@@ -11,8 +11,14 @@ class Api::V1::PatientsController < APIController
   end
 
   def sync_to_user
-    patients_to_sync             = Patient.updated_on_server_since(latest_record_timestamp, number_of_records)
-    next_latest_record_timestamp = patients_to_sync.last.updated_on_server_at
+    patients_to_sync = Patient.updated_on_server_since(latest_record_timestamp, number_of_records)
+
+    next_latest_record_timestamp =
+      if patients_to_sync.empty?
+        latest_record_timestamp
+      else
+        patients_to_sync.last.updated_on_server_at
+      end
 
     render json:   { patients:                patients_to_sync.map(&:nested_hash),
                      latest_record_timestamp: next_latest_record_timestamp },
