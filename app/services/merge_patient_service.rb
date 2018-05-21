@@ -6,9 +6,26 @@ class MergePatientService
 
   def merge
     patient = Patient.new(patient_record.except(:address, :phone_numbers))
-    patient.address = merge_address(patient_record[:address]) if patient_record[:address].present?
-    patient.phone_numbers = merge_phone_numbers(patient_record)
-    MergeRecord.merge_by_id(patient)
+
+    merged_address = nil
+    if patient_record[:address]
+      merged_address  = merge_address(patient_record[:address])
+      patient.address = merged_address.record
+    end
+
+    merged_phone_numbers = []
+    if patient_record[:phone_numbers].present?
+      merged_phone_numbers  = merge_phone_numbers(patient_record[:phone_numbers])
+      patient.phone_numbers = merged_phone_numbers.map(&:record)
+    end
+
+    merged_patient = MergeableRecord.new(patient).merge
+
+    if (merged_address.present? && merged_address.merged?) || merged_phone_numbers.any?(&:merged?)
+      merged_patient.record.update_column(:updated_on_server_at, Time.now)
+    end
+
+    merged_patient.record
   end
 
   private
@@ -16,18 +33,12 @@ class MergePatientService
   attr_reader :patient_record
 
   def merge_address(address_params)
-    address = Address.new(address_params)
-    MergeRecord.merge_by_id(address)
+    MergeableRecord.new(Address.new(address_params)).merge
   end
 
-  def merge_phone_numbers(patient_record)
-    patient_record[:phone_numbers].to_a.map do |phone_number_params|
-      merge_phone_number phone_number_params
+  def merge_phone_numbers(phone_number_params)
+    phone_number_params.map do |single_phone_number_params|
+      MergeableRecord.new(PhoneNumber.new(single_phone_number_params)).merge
     end
-  end
-
-  def merge_phone_number(phone_number_params)
-    phone_number = PhoneNumber.new(phone_number_params)
-    MergeRecord.merge_by_id(phone_number)
   end
 end

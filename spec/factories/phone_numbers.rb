@@ -6,5 +6,6 @@ FactoryBot.define do
     active { [true, false].sample }
     created_at { Time.now }
     updated_at { Time.now }
+    updated_on_server_at { Time.now }
   end
 end

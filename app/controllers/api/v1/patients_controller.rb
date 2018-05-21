@@ -10,11 +10,17 @@ class Api::V1::PatientsController < APIController
     render json: response, status: :ok
   end
 
+  def sync_to_user
+    patients_to_sync = Patient.updated_on_server_since(latest_record_timestamp)
+    render json:   { patients: patients_to_sync.map(&:nested_hash), },
+           status: :ok
+  end
+
   private
 
   def patients_params
-    permitted_address_params = %i[id street_address colony village district state country pin created_at updated_at]
-    permitted_phone_number_params = %i[id number type active created_at updated_at]
+    permitted_address_params      = %i[id street_address colony village district state country pin created_at updated_at]
+    permitted_phone_number_params = %i[id number phone_type active created_at updated_at]
 
     params.require(:patients).map do |single_patient_params|
       single_patient_params.permit(
@@ -27,8 +33,16 @@ class Api::V1::PatientsController < APIController
         :created_at,
         :updated_at,
         phone_numbers: [permitted_phone_number_params],
-        address: permitted_address_params
+        address:       permitted_address_params
       )
+    end
+  end
+
+  def latest_record_timestamp
+    if params[:first_time].present? && params[:first_time] == 'true'
+      Time.new(0)
+    else
+      params.require(:latest_record_timestamp).to_time
     end
   end
 end

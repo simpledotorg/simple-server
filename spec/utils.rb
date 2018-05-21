@@ -1,8 +1,8 @@
-module Utils
-  def self.with_int_timestamps(hash)
+class Hash
+  def with_int_timestamps
     ['created_at', 'updated_at', 'updated_on_server_at'].each do |key|
-      hash[key] = hash[key].to_i if hash[key].present?
+      self[key] = self[key].to_i if self[key].present?
     end
-    hash
+    self
   end
 end
