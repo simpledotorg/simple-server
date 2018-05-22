@@ -59,7 +59,7 @@ class Api::V1::PatientsController < APIController
     if params[:number_of_records].present?
       params[:number_of_records].to_i
     else
-      10 # todo: extract this into config
+      ENV['DEFAULT_NUMBER_OF_RECORDS'].to_i
     end
   end
 end

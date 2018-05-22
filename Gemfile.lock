@@ -57,6 +57,9 @@ GEM
     diff-lcs (1.3)
     docile (1.3.0)
     dotenv (2.4.0)
+    dotenv-rails (2.4.0)
+      dotenv (= 2.4.0)
+      railties (>= 3.2, < 6.0)
     erubi (1.7.1)
     execjs (2.7.0)
     factory_bot (4.8.2)
@@ -218,7 +221,7 @@ PLATFORMS
 DEPENDENCIES
   byebug
   capybara
-  dotenv
+  dotenv-rails
   factory_bot_rails
   faker
   jbuilder (~> 2.5)

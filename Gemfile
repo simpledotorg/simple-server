@@ -13,7 +13,7 @@ gem 'uglifier', '>= 1.3.0'
 gem 'jbuilder', '~> 2.5'
 gem 'pry-rails'
 gem 'sentry-raven'
-gem 'dotenv'
+gem 'dotenv-rails'
 gem 'rswag', '~> 1.6.0'
 gem 'rspec-rails', '~> 3.7'
 
