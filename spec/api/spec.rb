@@ -3,6 +3,20 @@ module Spec
   ###############
   # Models
 
+  def timestamp
+    { type:        :string,
+      format:      'date-time',
+      description: 'Timestamp with millisecond precision' }
+  end
+
+  def latest_record_timestamp
+    timestamp.merge(
+      name:        'latest_record_timestamp',
+      description: 'Timestamp of the latest record synced with server, with millisecond precision.
+                    Use the server returned value in the next request to continue fetching records.'
+    )
+  end
+
   def patient_spec
     { type:       :object,
       properties: {
@@ -12,8 +26,8 @@ module Spec
         status:           { type: :string, enum: Patient::STATUSES },
         date_of_birth:    { type: [:string, 'null'], format: :date },
         age_when_created: { type: [:integer, 'null'] },
-        created_at:       { type: :string, format: 'date-time' },
-        updated_at:       { type: :string, format: 'date-time' } },
+        created_at:       { '$ref' => '#/definitions/timestamp' },
+        updated_at:       { '$ref' => '#/definitions/timestamp' } },
       required:   %w[id gender full_name created_at updated_at status] }
   end
 
@@ -28,8 +42,8 @@ module Spec
         state:          { type: :string },
         country:        { type: :string },
         pin:            { type: :string },
-        created_at:     { type: :string, format: 'date-time' },
-        updated_at:     { type: :string, format: 'date-time' } },
+        created_at:     { '$ref' => '#/definitions/timestamp' },
+        updated_at:     { '$ref' => '#/definitions/timestamp' } },
       required:   %w[id created_at updated_at] }
   end
 
@@ -40,8 +54,8 @@ module Spec
         number:     { type: :string },
         phone_type: { type: :string, enum: PhoneNumber::PHONE_TYPE },
         active:     { type: :boolean },
-        created_at: { type: :string, format: 'date-time' },
-        updated_at: { type: :string, format: 'date-time' } },
+        created_at: { '$ref' => '#/definitions/timestamp' },
+        updated_at: { '$ref' => '#/definitions/timestamp' } },
       required:   %w[id created_at updated_at] }
   end
 
@@ -55,9 +69,9 @@ module Spec
   end
 
   def nested_patients
-    { type:  :array,
+    { type:        :array,
       description: 'List of patients with address and phone numbers nested.',
-      items: patient_spec.deep_merge(
+      items:       patient_spec.deep_merge(
         properties: {
           address:       { '$ref' => '#/definitions/address' },
           phone_numbers: { '$ref' => '#/definitions/phone_numbers' } }
@@ -92,8 +106,7 @@ module Spec
   end
 
   def patient_sync_to_user_request_spec
-    [{ in:          :query, name: :latest_record_timestamp, type: :string, format: 'date-time',
-       description: 'Timestamp of the latest record synced with server.' },
+    [latest_record_timestamp.merge(in: :query),
      { in:          :query, name: :first_time, type: :boolean,
        description: 'Set to true only when syncing for the first time' },
      { in:          :query, name: :number_of_records, type: :integer,
@@ -111,20 +124,19 @@ module Spec
     { type:       :object,
       properties: {
         patients:                { '$ref' => '#/definitions/nested_patients' },
-        latest_record_timestamp: {
-          type:        :string,
-          format:      'date-time',
-          description: 'Use this in the next request to continue fetching records.' } } }
+        latest_record_timestamp: { '$ref' => '#/definitions/latest_record_timestamp' } } }
   end
 
   def all_definitions
-    { patient:            patient_spec,
-      address:            address_spec,
-      phone_number:       phone_number_spec,
-      phone_numbers:      phone_numbers_spec,
-      error_spec:         error_spec,
-      patient_error_spec: patient_error_spec,
-      nested_patients:    nested_patients }
+    { timestamp:               timestamp,
+      latest_record_timestamp: latest_record_timestamp,
+      patient:                 patient_spec,
+      address:                 address_spec,
+      phone_number:            phone_number_spec,
+      phone_numbers:           phone_numbers_spec,
+      error_spec:              error_spec,
+      patient_error_spec:      patient_error_spec,
+      nested_patients:         nested_patients }
   end
 
 end

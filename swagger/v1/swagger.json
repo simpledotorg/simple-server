@@ -74,11 +74,11 @@
         ],
         "parameters": [
           {
-            "in": "query",
-            "name": "latest_record_timestamp",
             "type": "string",
             "format": "date-time",
-            "description": "Timestamp of the latest record synced with server."
+            "description": "Timestamp of the latest record synced with server, with millisecond precision.\n                    Use the server returned value in the next request to continue fetching records.",
+            "name": "latest_record_timestamp",
+            "in": "query"
           },
           {
             "in": "query",
@@ -103,9 +103,7 @@
                   "$ref": "#/definitions/nested_patients"
                 },
                 "latest_record_timestamp": {
-                  "type": "string",
-                  "format": "date-time",
-                  "description": "Use this in the next request to continue fetching records."
+                  "$ref": "#/definitions/latest_record_timestamp"
                 }
               }
             }
@@ -115,6 +113,17 @@
     }
   },
   "definitions": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp with millisecond precision"
+    },
+    "latest_record_timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of the latest record synced with server, with millisecond precision.\n                    Use the server returned value in the next request to continue fetching records.",
+      "name": "latest_record_timestamp"
+    },
     "patient": {
       "type": "object",
       "properties": {
@@ -157,12 +166,10 @@
           ]
         },
         "created_at": {
-          "type": "string",
-          "format": "date-time"
+          "$ref": "#/definitions/timestamp"
         },
         "updated_at": {
-          "type": "string",
-          "format": "date-time"
+          "$ref": "#/definitions/timestamp"
         }
       },
       "required": [
@@ -203,12 +210,10 @@
           "type": "string"
         },
         "created_at": {
-          "type": "string",
-          "format": "date-time"
+          "$ref": "#/definitions/timestamp"
         },
         "updated_at": {
-          "type": "string",
-          "format": "date-time"
+          "$ref": "#/definitions/timestamp"
         }
       },
       "required": [
@@ -238,12 +243,10 @@
           "type": "boolean"
         },
         "created_at": {
-          "type": "string",
-          "format": "date-time"
+          "$ref": "#/definitions/timestamp"
         },
         "updated_at": {
-          "type": "string",
-          "format": "date-time"
+          "$ref": "#/definitions/timestamp"
         }
       },
       "required": [
@@ -342,12 +345,10 @@
             ]
           },
           "created_at": {
-            "type": "string",
-            "format": "date-time"
+            "$ref": "#/definitions/timestamp"
           },
           "updated_at": {
-            "type": "string",
-            "format": "date-time"
+            "$ref": "#/definitions/timestamp"
           },
           "address": {
             "$ref": "#/definitions/address"

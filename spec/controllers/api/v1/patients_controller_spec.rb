@@ -1,18 +1,21 @@
 require 'rails_helper'
 
-def patient_attrs(patient_hash)
-  patient_hash.except('address_id', 'address', 'phone_numbers', 'updated_on_server_at')
-end
-
 RSpec.describe Api::V1::PatientsController, type: :controller do
   describe 'POST sync: send data from device to server;' do
 
     describe 'creates new patients' do
+
+      it 'returns 400 when there are no patients in the request' do
+        post(:sync_from_user, params: { patients: [] })
+        expect(response.status).to eq 400
+      end
+
       it 'creates new patients' do
         patients = (1..10).map { build_patient_payload }
         post(:sync_from_user, params: { patients: patients })
         expect(Patient.count).to eq 10
         expect(Address.count).to eq 10
+        # expect(PatientPhoneNumber.count).to eq 10
         expect(PhoneNumber.count).to eq(patients.sum { |patient| patient['phone_numbers'].count })
         expect(response).to have_http_status(200)
       end
@@ -43,26 +46,28 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         expect(patient_errors['phone_numbers'].map { |phno| phno['id'] }).to all(be_present)
         expect(patient_errors['phone_numbers'].map { |phno| phno['created_at'] }).to all(be_present)
       end
+
+      it 'returns errors for some invalid records, and accepts others' do
+        invalid_patients_payload = (1..5).map { build_invalid_patient_payload }
+        valid_patients_payload   = (1..5).map { build_patient_payload }
+        post(:sync_from_user, params: { patients: invalid_patients_payload + valid_patients_payload })
+
+        patient_errors = JSON(response.body)['errors']
+        expect(patient_errors.count).to eq 5
+        expect(patient_errors.map { |error| error['id'] })
+          .to match_array(invalid_patients_payload.map { |patient| patient['id'] })
+
+        expect(Patient.count).to eq 5
+        expect(Patient.pluck(:id))
+          .to match_array(valid_patients_payload.map { |patient| patient['id'] })
+      end
     end
 
     describe 'updates patients' do
 
       let(:existing_patients) { FactoryBot.create_list(:patient, 10) }
-      let(:updated_patients_payload) do
-        existing_patients.map do |existing_patient|
-          phone_number = existing_patient.phone_numbers.sample || FactoryBot.build(:phone_number)
-          update_time  = 10.days.from_now
-          build_patient_payload(existing_patient).deep_merge(
-            'full_name'     => Faker::Name.name,
-            'updated_at'    => update_time,
-            'address'       => { 'updated_at'     => update_time,
-                                 'street_address' => Faker::Address.street_address },
-            'phone_numbers' => [phone_number.attributes.merge(
-              'updated_at' => update_time,
-              'number'     => Faker::PhoneNumber.phone_number).except('updated_on_server_at')]
-          )
-        end
-      end
+      let(:updated_patients_payload) { existing_patients.map { |patient| updated_patient_payload patient } }
+
 
       it 'with only updated patient attributes' do
         patients_payload = updated_patients_payload.map { |patient| patient.except('address', 'phone_numbers') }
@@ -106,19 +111,20 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         post :sync_from_user, params: { patients: patients_payload }
 
         patients_payload.each do |updated_patient|
+          updated_patient.with_int_timestamps
           db_patient = Patient.find(updated_patient['id'])
           expect(db_patient.attributes.with_int_timestamps.except('address_id', 'updated_on_server_at'))
-            .to eq(updated_patient.with_int_timestamps.except('address', 'phone_numbers'))
+            .to eq(updated_patient.except('address', 'phone_numbers'))
           expect(db_patient.address.attributes.with_int_timestamps.except('updated_on_server_at'))
-            .to eq(updated_patient['address'].with_int_timestamps)
+            .to eq(updated_patient['address'])
+        end
 
-          expect(PhoneNumber.updated_on_server_since(sync_time).count).to eq 10
-          patients_payload.each do |updated_patient|
-            updated_phone_number = updated_patient['phone_numbers'].first
-            db_phone_number      = PhoneNumber.find(updated_phone_number['id'])
-            expect(db_phone_number.attributes.with_int_timestamps.except('updated_on_server_at'))
-              .to eq(updated_phone_number.with_int_timestamps)
-          end
+        expect(PhoneNumber.updated_on_server_since(sync_time).count).to eq 10
+        patients_payload.each do |updated_patient|
+          updated_phone_number = updated_patient['phone_numbers'].first
+          db_phone_number      = PhoneNumber.find(updated_phone_number['id'])
+          expect(db_phone_number.attributes.with_int_timestamps.except('updated_on_server_at'))
+            .to eq(updated_phone_number)
         end
       end
     end
@@ -164,13 +170,14 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
     describe 'nothing to sync' do
       it 'Returns an empty list when there is nothing to sync' do
         sync_time = 10.minutes.ago
-        get :sync_to_user, params: { latest_record_timestamp: sync_time}
+        get :sync_to_user, params: { latest_record_timestamp: sync_time }
         response_body = JSON(response.body)
         expect(response_body['patients'].count).to eq 0
         expect(response_body['latest_record_timestamp'].to_time.to_i).to eq sync_time.to_i
       end
 
     end
+
     describe 'batching' do
       it 'Returns the number of records requested with number_of_records' do
         get :sync_to_user, params: { latest_record_timestamp: 20.minutes.ago,

@@ -43,3 +43,17 @@ def build_invalid_patient_payload
   end
   patient
 end
+
+def updated_patient_payload(existing_patient)
+  phone_number = existing_patient.phone_numbers.sample || FactoryBot.build(:phone_number)
+  update_time  = 10.days.from_now
+  build_patient_payload(existing_patient).deep_merge(
+    'full_name'     => Faker::Name.name,
+    'updated_at'    => update_time,
+    'address'       => { 'updated_at'     => update_time,
+                         'street_address' => Faker::Address.street_address },
+    'phone_numbers' => [phone_number.attributes.merge(
+      'updated_at' => update_time,
+      'number'     => Faker::PhoneNumber.phone_number).except('updated_on_server_at')]
+  )
+end
