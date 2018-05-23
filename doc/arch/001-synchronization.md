@@ -19,7 +19,7 @@ facilities multiple times during a week.
 The device needs to keep track of records that need to be
 synced. These can be new records, or records that have one or more
 fields updated. These records need to be formatted into the payload
-schemas as defined in the individual APIs below. The API does not
+schemas as defined in the individual APIs below. The API will not
 differentiate between new and updated records; this is handled by the
 server.  These payloads then need to be sent in batches, where each
 batch is inherently independent of the previous one. However, it is
@@ -39,8 +39,14 @@ list.
 
 3. Merge records on device
 
-The server may send back the same record multiple times. The merging
-functionality on the device needs to be idempotent for this reason.
+After receiving records from the server, the device will match the
+records in the local database using the ID field of the entity, and
+update them to the server's version. If the local record in the
+database is pending a sync, it will not update it. The merging of
+records will be handled only by the server.
+
+The server may send back the same record multiple times, so updating
+records on the device needs to be idempotent.
 
 ### Levers
 
