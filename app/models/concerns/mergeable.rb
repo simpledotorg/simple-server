@@ -7,8 +7,6 @@ module Mergeable
 
   class_methods do
     def merge(attributes)
-      return nil unless attributes.present?
-
       new_record = new(attributes)
       existing_record = find_by(id: attributes['id'])
 

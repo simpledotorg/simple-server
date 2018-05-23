@@ -5,7 +5,7 @@ class MergePatientService
   end
 
   def merge
-    merged_address = Address.merge(payload[:address])
+    merged_address = Address.merge(payload[:address]) if payload[:address].present?
     merged_phone_numbers = merge_phone_numbers(payload[:phone_numbers])
 
     patient_attributes = payload.except(:address, :phone_numbers)
