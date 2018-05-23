@@ -20,9 +20,13 @@ class Api::V1::PatientsController < APIController
         patients_to_sync.last.updated_on_server_at
       end
 
-    render json:   { patients:                patients_to_sync.map(&:nested_hash),
-                     latest_record_timestamp: next_latest_record_timestamp },
-           status: :ok
+    render(
+      json:   {
+        patients: patients_to_sync.map(&:nested_hash),
+        latest_record_timestamp: next_latest_record_timestamp
+      },
+      status: :ok
+    )
   end
 
   private
