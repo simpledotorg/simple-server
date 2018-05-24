@@ -39,7 +39,8 @@ class Api::V1::PatientsController < APIController
       single_patient_params.permit(
         :id,
         :full_name,
-        :age_when_created,
+        :age,
+        :age_updated_at,
         :gender,
         :status,
         :date_of_birth,
