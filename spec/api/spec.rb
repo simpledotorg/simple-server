@@ -9,9 +9,9 @@ module Spec
       description: 'Timestamp with millisecond precision' }
   end
 
-  def latest_record_timestamp
+  def processed_since
     timestamp.merge(
-      name:        'latest_record_timestamp',
+      name:        'processed_since',
       description: 'Timestamp of the latest record synced with server, with millisecond precision.
                     Use the server returned value in the next request to continue fetching records.'
     )
@@ -106,10 +106,8 @@ module Spec
   end
 
   def patient_sync_to_user_request_spec
-    [latest_record_timestamp.merge(in: :query),
-     { in:          :query, name: :first_time, type: :boolean,
-       description: 'Set to true only when syncing for the first time' },
-     { in:          :query, name: :number_of_records, type: :integer,
+    [processed_since.merge(in: :query),
+     { in:          :query, name: :limit, type: :integer,
        description: 'Number of record to retrieve (a.k.a batch-size)' }]
   end
 
@@ -123,20 +121,20 @@ module Spec
   def patient_sync_to_user_response_spec
     { type:       :object,
       properties: {
-        patients:                { '$ref' => '#/definitions/nested_patients' },
-        latest_record_timestamp: { '$ref' => '#/definitions/latest_record_timestamp' } } }
+        patients:        { '$ref' => '#/definitions/nested_patients' },
+        processed_since: { '$ref' => '#/definitions/processed_since' } } }
   end
 
   def all_definitions
-    { timestamp:               timestamp,
-      latest_record_timestamp: latest_record_timestamp,
-      patient:                 patient_spec,
-      address:                 address_spec,
-      phone_number:            phone_number_spec,
-      phone_numbers:           phone_numbers_spec,
-      error_spec:              error_spec,
-      patient_error_spec:      patient_error_spec,
-      nested_patients:         nested_patients }
+    { timestamp:          timestamp,
+      processed_since:    processed_since,
+      patient:            patient_spec,
+      address:            address_spec,
+      phone_number:       phone_number_spec,
+      phone_numbers:      phone_numbers_spec,
+      error_spec:         error_spec,
+      patient_error_spec: patient_error_spec,
+      nested_patients:    nested_patients }
   end
 
 end

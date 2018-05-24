@@ -34,9 +34,8 @@ describe 'Patients API' do
 
       response '200', 'patients received' do
         schema patient_sync_to_user_response_spec
-        let(:latest_record_timestamp) { 10.minutes.ago }
-        let(:first_time) { true }
-        let(:number_of_records) { 10 }
+        let(:processed_since) { 10.minutes.ago }
+        let(:limit) { 10 }
         run_test!
       end
     end

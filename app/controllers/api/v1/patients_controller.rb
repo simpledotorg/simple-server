@@ -11,11 +11,11 @@ class Api::V1::PatientsController < APIController
   end
 
   def sync_to_user
-    patients_to_sync = Patient.updated_on_server_since(latest_record_timestamp, number_of_records)
+    patients_to_sync = Patient.updated_on_server_since(processed_since, limit)
 
-    next_latest_record_timestamp =
+    most_recent_record_timestamp =
       if patients_to_sync.empty?
-        latest_record_timestamp
+        processed_since
       else
         patients_to_sync.last.updated_on_server_at
       end
@@ -23,7 +23,7 @@ class Api::V1::PatientsController < APIController
     render(
       json:   {
         patients: patients_to_sync.map(&:nested_hash),
-        latest_record_timestamp: next_latest_record_timestamp
+        processed_since: most_recent_record_timestamp
       },
       status: :ok
     )
@@ -51,17 +51,13 @@ class Api::V1::PatientsController < APIController
     end
   end
 
-  def latest_record_timestamp
-    if params[:first_time].present? && params[:first_time] == 'true'
-      Time.new(0)
-    else
-      params.require(:latest_record_timestamp).to_time
-    end
+  def processed_since
+    params[:processed_since] || Time.new(0)
   end
 
-  def number_of_records
-    if params[:number_of_records].present?
-      params[:number_of_records].to_i
+  def limit
+    if params[:limit].present?
+      params[:limit].to_i
     else
       ENV['DEFAULT_NUMBER_OF_RECORDS'].to_i
     end

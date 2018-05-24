@@ -77,18 +77,12 @@
             "type": "string",
             "format": "date-time",
             "description": "Timestamp of the latest record synced with server, with millisecond precision.\n                    Use the server returned value in the next request to continue fetching records.",
-            "name": "latest_record_timestamp",
+            "name": "processed_since",
             "in": "query"
           },
           {
             "in": "query",
-            "name": "first_time",
-            "type": "boolean",
-            "description": "Set to true only when syncing for the first time"
-          },
-          {
-            "in": "query",
-            "name": "number_of_records",
+            "name": "limit",
             "type": "integer",
             "description": "Number of record to retrieve (a.k.a batch-size)"
           }
@@ -102,8 +96,8 @@
                 "patients": {
                   "$ref": "#/definitions/nested_patients"
                 },
-                "latest_record_timestamp": {
-                  "$ref": "#/definitions/latest_record_timestamp"
+                "processed_since": {
+                  "$ref": "#/definitions/processed_since"
                 }
               }
             }
@@ -118,11 +112,11 @@
       "format": "date-time",
       "description": "Timestamp with millisecond precision"
     },
-    "latest_record_timestamp": {
+    "processed_since": {
       "type": "string",
       "format": "date-time",
       "description": "Timestamp of the latest record synced with server, with millisecond precision.\n                    Use the server returned value in the next request to continue fetching records.",
-      "name": "latest_record_timestamp"
+      "name": "processed_since"
     },
     "patient": {
       "type": "object",
