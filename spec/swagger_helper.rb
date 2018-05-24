@@ -29,7 +29,11 @@ This API spec documents the endpoints that the devices (that are offline to vary
 ## Nesting resources
 The APIs have been designed to provide an optimal balance between accuracy and simplicity. Some of the APIs (patients) will be nested, and some other (blood pressures) will be flat.
 ## Authentication
-TODO',
+TODO
+
+## Sync Mechanism
+Refer to the [related ADR](https://github.com/resolvetosavelives/redapp-server/blob/master/doc/arch/001-synchronization.md).
+',
         version: 'v1',
         title: 'RedApp Server',
         'x-logo' => {

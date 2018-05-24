@@ -1,10 +1,9 @@
 class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
 
-  before_save :set_updated_on_server_at
-
-  def set_updated_on_server_at
-    self.updated_on_server_at = Time.now unless self.updated_on_server_at.present?
+  def self.updated_on_server_since(timestamp, number_of_records = nil)
+    where('updated_on_server_at >= ?', timestamp)
+      .order(:updated_on_server_at)
+      .limit(number_of_records)
   end
-
 end
