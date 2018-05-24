@@ -12,7 +12,7 @@ module Spec
   def processed_since
     timestamp.merge(
       name:        'processed_since',
-      description: 'Timestamp of the latest record synced with server, with millisecond precision.
+      description: 'The timestamp since which records have been processed by the server.
                     Use the server returned value in the next request to continue fetching records.'
     )
   end
