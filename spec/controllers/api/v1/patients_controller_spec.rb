@@ -15,8 +15,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         post(:sync_from_user, params: { patients: patients })
         expect(Patient.count).to eq 10
         expect(Address.count).to eq 10
-        # expect(PatientPhoneNumber.count).to eq 10
-        expect(PhoneNumber.count).to eq(patients.sum { |patient| patient['phone_numbers'].count })
+        expect(PatientPhoneNumber.count).to eq(patients.sum { |patient| patient['phone_numbers'].count })
         expect(response).to have_http_status(200)
       end
 
@@ -30,7 +29,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
       it 'creates new patients without phone numbers' do
         post(:sync_from_user, params: { patients: [build_patient_payload.except('phone_numbers')] })
         expect(Patient.count).to eq 1
-        expect(PhoneNumber.count).to eq 0
+        expect(PatientPhoneNumber.count).to eq 0
         expect(response).to have_http_status(200)
       end
 
@@ -96,10 +95,10 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         sync_time        = Time.now
         post :sync_from_user, params: { patients: patients_payload }
 
-        expect(PhoneNumber.updated_on_server_since(sync_time).count).to eq 10
+        expect(PatientPhoneNumber.updated_on_server_since(sync_time).count).to eq 10
         patients_payload.each do |updated_patient|
           updated_phone_number = updated_patient['phone_numbers'].first
-          db_phone_number      = PhoneNumber.find(updated_phone_number['id'])
+          db_phone_number      = PatientPhoneNumber.find(updated_phone_number['id'])
           expect(db_phone_number.attributes.with_int_timestamps.except('updated_on_server_at'))
             .to eq(updated_phone_number.with_int_timestamps)
         end
@@ -119,10 +118,10 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
             .to eq(updated_patient['address'])
         end
 
-        expect(PhoneNumber.updated_on_server_since(sync_time).count).to eq 10
+        expect(PatientPhoneNumber.updated_on_server_since(sync_time).count).to eq 10
         patients_payload.each do |updated_patient|
           updated_phone_number = updated_patient['phone_numbers'].first
-          db_phone_number      = PhoneNumber.find(updated_phone_number['id'])
+          db_phone_number      = PatientPhoneNumber.find(updated_phone_number['id'])
           expect(db_phone_number.attributes.with_int_timestamps.except('updated_on_server_at'))
             .to eq(updated_phone_number)
         end
@@ -186,6 +185,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
 
         get :sync_to_user, params: { processed_since: response_1['processed_since'],
                                      limit:           7 }
+
         response_2 = JSON(response.body)
 
         received_patients = response_1['patients'].concat(response_2['patients']).to_set

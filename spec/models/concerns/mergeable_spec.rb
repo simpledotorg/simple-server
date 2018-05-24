@@ -42,9 +42,9 @@ describe Mergeable do
     expect(Address.first.attributes.except('updated_on_server_at').with_int_timestamps)
       .to eq(new_address.attributes.except('updated_on_server_at').with_int_timestamps)
 
-    new_phone_number = FactoryBot.build(:phone_number)
-    PhoneNumber.merge(new_phone_number.attributes)
-    expect(PhoneNumber.first.attributes.except('updated_on_server_at').with_int_timestamps)
+    new_phone_number = FactoryBot.build(:patient_phone_number)
+    PatientPhoneNumber.merge(new_phone_number.attributes)
+    expect(PatientPhoneNumber.first.attributes.except('updated_on_server_at').with_int_timestamps)
       .to eq(new_phone_number.attributes.except('updated_on_server_at').with_int_timestamps)
   end
 end

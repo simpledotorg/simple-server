@@ -27,7 +27,7 @@ class MergePatientService
   def merge_phone_numbers(phone_number_params)
     return [] unless phone_number_params.present?
     phone_number_params.map do |single_phone_number_params|
-      PhoneNumber.merge(single_phone_number_params)
+      PatientPhoneNumber.merge(single_phone_number_params.merge(patient_id: payload[:id]))
     end
   end
 end

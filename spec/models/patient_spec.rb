@@ -30,7 +30,6 @@ describe Patient, type: :model do
 
   describe "Associations" do
     it { should belong_to(:address) }
-    it { should have_many(:patient_phone_numbers) }
-    it { should have_many(:phone_numbers).through(:patient_phone_numbers) }
+    it { should have_many(:phone_numbers) }
   end
 end

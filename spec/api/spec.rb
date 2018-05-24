@@ -52,7 +52,7 @@ module Spec
       properties: {
         id:         { type: :string, format: :uuid },
         number:     { type: :string },
-        phone_type: { type: :string, enum: PhoneNumber::PHONE_TYPE },
+        phone_type: { type: :string, enum: PatientPhoneNumber::PHONE_TYPE },
         active:     { type: :boolean },
         created_at: { '$ref' => '#/definitions/timestamp' },
         updated_at: { '$ref' => '#/definitions/timestamp' } },
@@ -136,5 +136,4 @@ module Spec
       patient_error_spec: patient_error_spec,
       nested_patients:    nested_patients }
   end
-
 end
