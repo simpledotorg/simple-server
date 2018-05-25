@@ -7,6 +7,5 @@ FactoryBot.define do
     created_at { Time.now }
     updated_at { Time.now }
     updated_on_server_at { Time.now }
-    patient
   end
 end
