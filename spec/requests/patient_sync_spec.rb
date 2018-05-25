@@ -43,7 +43,7 @@ RSpec.describe 'Patients sync', type: :request do
     response_body = JSON(response.body)
     expect(response.status).to eq 200
     expect(response_body['patients'].map(&:with_int_timestamps))
-      .to eq([valid_patient.merge('phone_numbers' => []).with_int_timestamps.to_json_and_back])
+      .to eq([valid_patient.with_int_timestamps.to_json_and_back])
     expect(response_body['processed_since'].to_time.to_i).to eq(Patient.first.updated_on_server_at.to_i)
   end
 

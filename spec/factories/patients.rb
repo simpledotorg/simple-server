@@ -19,6 +19,7 @@ FactoryBot.define do
     updated_at { Time.now }
     updated_on_server_at { Time.now }
     association :address, strategy: :build
+    phone_numbers { build_list(:patient_phone_number, rand(0..3), patient_id: id) }
   end
 end
 
