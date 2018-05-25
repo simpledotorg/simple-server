@@ -1,8 +1,13 @@
 require 'rails_helper'
 
-describe PatientPhoneNumber, type: :model do
+RSpec.describe PatientPhoneNumber, type: :model do
+  describe 'Validations' do
+    it { should validate_presence_of(:created_at) }
+    it { should validate_presence_of(:updated_at) }
+    it { should validate_presence_of(:number) }
+  end
+
   describe 'Associations' do
     it { should belong_to(:patient) }
-    it { should belong_to(:phone_number) }
   end
 end

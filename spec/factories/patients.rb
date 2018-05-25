@@ -18,10 +18,7 @@ FactoryBot.define do
     updated_at { Time.now }
     updated_on_server_at { Time.now }
     association :address, strategy: :build
-    after :build do |patient|
-      patient.phone_numbers = build_list(:phone_number, (rand 0..3))
-      patient.patient_phone_numbers.each { |phno| phno.updated_on_server_at = Time.now }
-    end
+    phone_numbers { build_list(:patient_phone_number, rand(0..3), patient_id: id) }
   end
 end
 
@@ -45,7 +42,7 @@ def build_invalid_patient_payload
 end
 
 def updated_patient_payload(existing_patient)
-  phone_number = existing_patient.phone_numbers.sample || FactoryBot.build(:phone_number)
+  phone_number = existing_patient.phone_numbers.sample || FactoryBot.build(:patient_phone_number, patient: existing_patient)
   update_time  = 10.days.from_now
   build_patient_payload(existing_patient).deep_merge(
     'full_name'     => Faker::Name.name,

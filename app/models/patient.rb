@@ -5,8 +5,7 @@ class Patient < ApplicationRecord
   STATUSES = %w[active dead migrated unresponsive inactive].freeze
 
   belongs_to :address, optional: true
-  has_many :patient_phone_numbers
-  has_many :phone_numbers, through: :patient_phone_numbers
+  has_many :phone_numbers, class_name: 'PatientPhoneNumber'
 
   validates_presence_of :created_at, :updated_at, :full_name
   validates_inclusion_of :gender, in: GENDERS
