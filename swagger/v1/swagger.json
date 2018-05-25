@@ -112,6 +112,14 @@
       "format": "date-time",
       "description": "Timestamp with millisecond precision"
     },
+    "nullable_timestamp": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "description": "Timestamp with millisecond precision"
+    },
     "processed_since": {
       "type": "string",
       "format": "date-time",
@@ -153,11 +161,14 @@
           ],
           "format": "date"
         },
-        "age_when_created": {
+        "age": {
           "type": [
             "integer",
             "null"
           ]
+        },
+        "age_updated_at": {
+          "$ref": "#/definitions/nullable_timestamp"
         },
         "created_at": {
           "$ref": "#/definitions/timestamp"
@@ -332,11 +343,14 @@
             ],
             "format": "date"
           },
-          "age_when_created": {
+          "age": {
             "type": [
               "integer",
               "null"
             ]
+          },
+          "age_updated_at": {
+            "$ref": "#/definitions/nullable_timestamp"
           },
           "created_at": {
             "$ref": "#/definitions/timestamp"

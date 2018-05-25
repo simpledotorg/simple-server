@@ -13,7 +13,8 @@ FactoryBot.define do
     full_name { common_names[gender].sample + " " + common_names[gender].sample }
     status { Patient::STATUSES.sample }
     date_of_birth { Date.today if has_date_of_birth? }
-    age_when_created { rand(18..100) unless has_date_of_birth? }
+    age { rand(18..100) unless has_date_of_birth? }
+    age_updated_at { Time.now - rand(10).days if age.present? }
     created_at { Time.now }
     updated_at { Time.now }
     updated_on_server_at { Time.now }

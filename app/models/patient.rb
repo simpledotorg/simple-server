@@ -16,7 +16,7 @@ class Patient < ApplicationRecord
   validates_associated :phone_numbers, if: :phone_numbers
 
   def presence_of_age
-    unless date_of_birth.present? || age_when_created.present?
+    unless date_of_birth.present? || (age.present? && age_updated_at.to_time.present?)
       errors.add(:age, 'Either date_of_birth or age_when_created should be present')
     end
   end

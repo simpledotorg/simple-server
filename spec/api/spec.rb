@@ -9,6 +9,10 @@ module Spec
       description: 'Timestamp with millisecond precision' }
   end
 
+  def nullable_timestamp
+    timestamp.merge(type: [:string, 'null'])
+  end
+
   def processed_since
     timestamp.merge(
       name:        'processed_since',
@@ -20,14 +24,15 @@ module Spec
   def patient_spec
     { type:       :object,
       properties: {
-        id:               { type: :string, format: :uuid },
-        gender:           { type: :string, enum: Patient::GENDERS },
-        full_name:        { type: :string },
-        status:           { type: :string, enum: Patient::STATUSES },
-        date_of_birth:    { type: [:string, 'null'], format: :date },
-        age_when_created: { type: [:integer, 'null'] },
-        created_at:       { '$ref' => '#/definitions/timestamp' },
-        updated_at:       { '$ref' => '#/definitions/timestamp' } },
+        id:             { type: :string, format: :uuid },
+        gender:         { type: :string, enum: Patient::GENDERS },
+        full_name:      { type: :string },
+        status:         { type: :string, enum: Patient::STATUSES },
+        date_of_birth:  { type: [:string, 'null'], format: :date },
+        age:            { type: [:integer, 'null'] },
+        age_updated_at: { '$ref' => '#/definitions/nullable_timestamp' },
+        created_at:     { '$ref' => '#/definitions/timestamp' },
+        updated_at:     { '$ref' => '#/definitions/timestamp' } },
       required:   %w[id gender full_name created_at updated_at status] }
   end
 
@@ -127,6 +132,7 @@ module Spec
 
   def all_definitions
     { timestamp:          timestamp,
+      nullable_timestamp: nullable_timestamp,
       processed_since:    processed_since,
       patient:            patient_spec,
       address:            address_spec,
