@@ -32,7 +32,7 @@ class Api::V1::PatientsController < APIController
   private
 
   def patients_params
-    permitted_address_params      = %i[id street_address colony village district state country pin created_at updated_at]
+    permitted_address_params      = %i[id street_address village_or_colony district state country pin created_at updated_at]
     permitted_phone_number_params = %i[id number phone_type active created_at updated_at]
 
     params.require(:patients).map do |single_patient_params|
