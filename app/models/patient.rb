@@ -7,19 +7,8 @@ class Patient < ApplicationRecord
   belongs_to :address, optional: true
   has_many :phone_numbers, class_name: 'PatientPhoneNumber'
 
-  validates_presence_of :created_at, :updated_at, :full_name
-  validates_inclusion_of :gender, in: GENDERS
-  validates_inclusion_of :status, in: STATUSES
-  validate :presence_of_age
-
   validates_associated :address, if: :address
   validates_associated :phone_numbers, if: :phone_numbers
-
-  def presence_of_age
-    unless date_of_birth.present? || (age.present? && age_updated_at.to_time.present?)
-      errors.add(:age, 'Either date_of_birth or age_when_created should be present')
-    end
-  end
 
   def errors_hash
     errors.to_hash.merge(

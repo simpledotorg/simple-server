@@ -11,8 +11,9 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
       end
 
       it 'creates new patients' do
-        patients = (1..10).map { build_patient_payload }
-        post(:sync_from_user, params: { patients: patients })
+        request.env["HTTP_ACCEPT"] = 'application/json'
+        patients                   = (1..10).map { build_patient_payload }
+        post(:sync_from_user, params: { patients: patients }, format: 'json')
         expect(Patient.count).to eq 10
         expect(Address.count).to eq 10
         expect(PatientPhoneNumber.count).to eq(patients.sum { |patient| patient['phone_numbers'].count })

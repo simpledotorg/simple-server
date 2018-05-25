@@ -3,17 +3,17 @@ module Api::V1::Spec
   ###############
   # Models
 
-  def timestamp
+  def self.timestamp
     { type:        :string,
       format:      'date-time',
       description: 'Timestamp with millisecond precision' }
   end
 
-  def nullable_timestamp
+  def self.nullable_timestamp
     timestamp.merge(type: [:string, 'null'])
   end
 
-  def processed_since
+  def self.processed_since
     timestamp.merge(
       name:        'processed_since',
       description: 'The timestamp since which records have been processed by the server.
@@ -21,12 +21,12 @@ module Api::V1::Spec
     )
   end
 
-  def patient_spec
+  def self.patient_spec
     { type:       :object,
       properties: {
         id:             { type: :string, format: :uuid },
         gender:         { type: :string, enum: Patient::GENDERS },
-        full_name:      { type: :string },
+        full_name:      { type: :string, required: true },
         status:         { type: :string, enum: Patient::STATUSES },
         date_of_birth:  { type: [:string, 'null'], format: :date },
         age:            { type: [:integer, 'null'] },
@@ -36,7 +36,7 @@ module Api::V1::Spec
       required:   %w[id gender full_name created_at updated_at status] }
   end
 
-  def address_spec
+  def self.address_spec
     { type:       :object,
       properties: {
         id:             { type: :string, format: :uuid },
@@ -52,7 +52,7 @@ module Api::V1::Spec
       required:   %w[id created_at updated_at] }
   end
 
-  def phone_number_spec
+  def self.phone_number_spec
     { type:       :object,
       properties: {
         id:         { type: :string, format: :uuid },
@@ -68,22 +68,26 @@ module Api::V1::Spec
   ###############
   # API Specs
 
-  def phone_numbers_spec
+  def self.phone_numbers_spec
     { type:  :array,
       items: { '$ref' => '#/definitions/phone_number' } }
   end
 
-  def nested_patients
-    { type:        :array,
-      description: 'List of patients with address and phone numbers nested.',
-      items:       patient_spec.deep_merge(
-        properties: {
-          address:       { '$ref' => '#/definitions/address' },
-          phone_numbers: { '$ref' => '#/definitions/phone_numbers' } }
-      ) }
+  def self.nested_patient
+    patient_spec.deep_merge(
+      properties: {
+        address:       { '$ref' => '#/definitions/address' },
+        phone_numbers: { '$ref' => '#/definitions/phone_numbers' } }
+    )
   end
 
-  def error_spec
+  def self.nested_patients
+    { type:        :array,
+      description: 'List of patients with address and phone numbers nested.',
+      items:       { '$ref' => '#/definitions/nested_patient' } }
+  end
+
+  def self.error_spec
     { type:       :object,
       properties: {
         id:               { type: :string, format: :uuid },
@@ -92,7 +96,7 @@ module Api::V1::Spec
       required:   %w[id] }
   end
 
-  def patient_error_spec
+  def self.patient_error_spec
     { type:       :object,
       properties: {
         id:            { type: :string, format: :uuid },
@@ -102,7 +106,7 @@ module Api::V1::Spec
       required:   %w[id] }
   end
 
-  def patient_sync_from_user_errors_spec
+  def self.patient_sync_from_user_errors_spec
     { type:       :object,
       properties: {
         errors: {
@@ -110,27 +114,27 @@ module Api::V1::Spec
           items: { '$ref' => '#/definitions/patient_error_spec' } } } }
   end
 
-  def patient_sync_to_user_request_spec
+  def self.patient_sync_to_user_request_spec
     [processed_since.merge(in: :query),
      { in:          :query, name: :limit, type: :integer,
        description: 'Number of record to retrieve (a.k.a batch-size)' }]
   end
 
-  def patient_sync_from_user_request_spec
+  def self.patient_sync_from_user_request_spec
     { type:       :object,
       properties: {
         patients: { '$ref' => '#/definitions/nested_patients' } },
       required:   %w[patients] }
   end
 
-  def patient_sync_to_user_response_spec
+  def self.patient_sync_to_user_response_spec
     { type:       :object,
       properties: {
         patients:        { '$ref' => '#/definitions/nested_patients' },
         processed_since: { '$ref' => '#/definitions/processed_since' } } }
   end
 
-  def all_definitions
+  def self.all_definitions
     { timestamp:          timestamp,
       nullable_timestamp: nullable_timestamp,
       processed_since:    processed_since,
@@ -140,6 +144,37 @@ module Api::V1::Spec
       phone_numbers:      phone_numbers_spec,
       error_spec:         error_spec,
       patient_error_spec: patient_error_spec,
+      nested_patient:     nested_patient,
       nested_patients:    nested_patients }
+  end
+
+  def self.swagger_docs
+    {
+      'v1/swagger.json' => {
+        swagger:     '2.0',
+        basePath:    '/api/v1',
+        produces:    ['application/json'],
+        consumes:    ['application/json'],
+        schemes:     ['https'],
+        info:        {
+          description: I18n.t('api_description'),
+          version:     'v1',
+          title:       'RedApp Server',
+          'x-logo'     => {
+            url:             'https://static1.squarespace.com/static/59945d559f7456b755d759f2/t/59aebc5ecf81e0ac9b4b6f59/1526304079797/?format=1500w',
+            backgroundColor: '#FFFFFF'
+          },
+          contact:     {
+            email: 'eng-backend@resolvetosavelives.org'
+          },
+          license:     {
+            name: 'MIT',
+            url:  'https://github.com/resolvetosavelives/redapp-server/blob/master/LICENSE'
+          }
+        },
+        paths:       {},
+        definitions: all_definitions
+      }
+    }
   end
 end
