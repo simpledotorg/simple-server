@@ -1,4 +1,4 @@
-module Spec
+module Api::V1::Spec
 
   ###############
   # Models
