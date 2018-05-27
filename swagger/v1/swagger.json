@@ -165,7 +165,8 @@
           "type": [
             "integer",
             "null"
-          ]
+          ],
+          "description": "When age is present, age_updated_at must be present as well."
         },
         "age_updated_at": {
           "$ref": "#/definitions/nullable_timestamp"
@@ -347,7 +348,8 @@
             "type": [
               "integer",
               "null"
-            ]
+            ],
+            "description": "When age is present, age_updated_at must be present as well."
           },
           "age_updated_at": {
             "$ref": "#/definitions/nullable_timestamp"

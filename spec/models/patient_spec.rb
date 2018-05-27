@@ -9,20 +9,27 @@ describe Patient, type: :model do
     it { should validate_inclusion_of(:status).in_array(Patient::STATUSES) }
 
     it "Validates that either age or date of birth is present" do
-      patient_with_date_of_birth           = FactoryBot.build(
+      patient_with_date_of_birth              = FactoryBot.build(
         :patient,
         age:           nil,
         date_of_birth: Date.today)
-      patient_with_age                     = FactoryBot.build(
+      patient_with_age_without_age_updated_at = FactoryBot.build(
         :patient,
-        age:           rand(18..100),
-        date_of_birth: nil)
-      patient_without_age_or_date_of_birth = FactoryBot.build(
+        age:            rand(18..100),
+        age_updated_at: nil,
+        date_of_birth:  nil)
+      patient_with_age                        = FactoryBot.build(
+        :patient,
+        age:            rand(18..100),
+        age_updated_at: Time.now,
+        date_of_birth:  nil)
+      patient_without_age_or_date_of_birth    = FactoryBot.build(
         :patient,
         age:           nil,
         date_of_birth: nil)
 
       expect(patient_with_date_of_birth.valid?).to be true
+      expect(patient_with_age_without_age_updated_at.valid?).to be false
       expect(patient_with_age.valid?).to be true
       expect(patient_without_age_or_date_of_birth.valid?).to be false
     end
