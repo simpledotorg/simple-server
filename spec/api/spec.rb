@@ -29,8 +29,8 @@ module Spec
         full_name:      { type: :string },
         status:         { type: :string, enum: Patient::STATUSES },
         date_of_birth:  { type: [:string, 'null'], format: :date },
-        age:            { type: [:integer, 'null'],
-                          description: 'When age is present, age_updated_at must be present as well.'},
+        age:            { type:        [:integer, 'null'],
+                          description: 'When age is present, age_updated_at must be present as well.' },
         age_updated_at: { '$ref' => '#/definitions/nullable_timestamp' },
         created_at:     { '$ref' => '#/definitions/timestamp' },
         updated_at:     { '$ref' => '#/definitions/timestamp' } },
@@ -40,16 +40,15 @@ module Spec
   def address_spec
     { type:       :object,
       properties: {
-        id:             { type: :string, format: :uuid },
-        street_address: { type: :string },
-        colony:         { type: :string },
-        village:        { type: :string },
-        district:       { type: :string },
-        state:          { type: :string },
-        country:        { type: :string },
-        pin:            { type: :string },
-        created_at:     { '$ref' => '#/definitions/timestamp' },
-        updated_at:     { '$ref' => '#/definitions/timestamp' } },
+        id:                { type: :string, format: :uuid },
+        street_address:    { type: :string },
+        village_or_colony: { type: :string },
+        district:          { type: :string },
+        state:             { type: :string },
+        country:           { type: :string },
+        pin:               { type: :string },
+        created_at:        { '$ref' => '#/definitions/timestamp' },
+        updated_at:        { '$ref' => '#/definitions/timestamp' } },
       required:   %w[id created_at updated_at] }
   end
 
