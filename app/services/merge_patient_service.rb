@@ -15,7 +15,7 @@ class MergePatientService
     merged_phone_numbers = merge_phone_numbers(payload[:phone_numbers], merged_patient)
 
     if (merged_address.present? && merged_address.merged?) || merged_phone_numbers.any?(&:merged?)
-      merged_patient.update_column(:updated_on_server_at, Time.now)
+      merged_patient.update_column(:updated_on_server_at, Time.now) if merged_patient.valid?
     end
 
     merged_patient
