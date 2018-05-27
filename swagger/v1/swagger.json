@@ -197,10 +197,7 @@
         "street_address": {
           "type": "string"
         },
-        "colony": {
-          "type": "string"
-        },
-        "village": {
+        "village_or_colony": {
           "type": "string"
         },
         "district": {
