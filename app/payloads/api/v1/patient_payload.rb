@@ -1,10 +1,6 @@
 class Api::V1::PatientPayload
   include ActiveModel::Model
 
-  # todo
-  # - rename keys
-  # - structure payload object?
-
   attr_accessor(
     :id,
     :full_name,
@@ -51,23 +47,22 @@ class Api::V1::PatientPayload
     end
   end
 
-  def build_model
-    patient_address       = Address.new(rename_attributes(address)) if address.present?
-    patient_phone_numbers = phone_numbers.map { |phone_number| PatientPhoneNumber.new(rename_attributes(phone_number))} if phone_numbers.present?
-    patient               = Patient.new(@attributes.except('address', 'phone_numbers'))
-    patient.address       = patient_address
-    patient.phone_numbers = patient_phone_numbers
-    patient
+  def model_attributes
+    address_attributes       = rename_attributes(address) if address.present?
+    phone_numbers_attributes = phone_numbers.map { |phone_number| rename_attributes(phone_number) } if phone_numbers.present?
+    patient_attributes       = rename_attributes(@attributes)
+    patient_attributes.merge(
+      address:       address_attributes,
+      phone_numbers: phone_numbers_attributes
+    ).with_indifferent_access
   end
 
-  private
-
   def rename_attributes(attributes)
-    rename_keys = {
+    key_mapping = {
       created_at: :device_created_at,
       updated_at: :device_updated_at
     }.with_indifferent_access
 
-    Hash[attributes.map { |key, value| rename_keys[key].present? ? [rename_keys[key], value] : [key, value] }]
+    attributes.transform_keys { |key| key_mapping[key] || key }
   end
 end

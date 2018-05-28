@@ -72,7 +72,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
 
         patients_payload.each do |updated_patient|
           db_patient = Patient.find(updated_patient['id'])
-          expect(db_patient.attributes.with_int_timestamps.except('address_id', 'updated_on_server_at'))
+          expect(with_payload_keys(db_patient.attributes).with_int_timestamps.except('address_id'))
             .to eq(updated_patient.with_int_timestamps)
         end
       end
@@ -83,7 +83,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
 
         patients_payload.each do |updated_patient|
           db_patient = Patient.find(updated_patient['id'])
-          expect(db_patient.address.attributes.with_int_timestamps.except('updated_on_server_at'))
+          expect(with_payload_keys(db_patient.address.attributes).with_int_timestamps)
             .to eq(updated_patient['address'].with_int_timestamps)
         end
       end
@@ -97,7 +97,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         patients_payload.each do |updated_patient|
           updated_phone_number = updated_patient['phone_numbers'].first
           db_phone_number      = PatientPhoneNumber.find(updated_phone_number['id'])
-          expect(db_phone_number.attributes.with_int_timestamps.except('updated_on_server_at'))
+          expect(with_payload_keys(db_phone_number.attributes).with_int_timestamps)
             .to eq(updated_phone_number.with_int_timestamps)
         end
       end
@@ -110,9 +110,9 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         patients_payload.each do |updated_patient|
           updated_patient.with_int_timestamps
           db_patient = Patient.find(updated_patient['id'])
-          expect(db_patient.attributes.with_int_timestamps.except('address_id', 'updated_on_server_at'))
+          expect(with_payload_keys(db_patient.attributes).with_int_timestamps.except('address_id'))
             .to eq(updated_patient.except('address', 'phone_numbers'))
-          expect(db_patient.address.attributes.with_int_timestamps.except('updated_on_server_at'))
+          expect(with_payload_keys(db_patient.address.attributes).with_int_timestamps)
             .to eq(updated_patient['address'])
         end
 
@@ -120,7 +120,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         patients_payload.each do |updated_patient|
           updated_phone_number = updated_patient['phone_numbers'].first
           db_phone_number      = PatientPhoneNumber.find(updated_phone_number['id'])
-          expect(db_phone_number.attributes.with_int_timestamps.except('updated_on_server_at'))
+          expect(with_payload_keys(db_phone_number.attributes).with_int_timestamps)
             .to eq(updated_phone_number)
         end
       end
@@ -144,7 +144,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
     end
 
     it 'Returns new patients added since last sync' do
-      expected_patients = FactoryBot.create_list(:patient, 5, updated_on_server_at: 5.minutes.ago)
+      expected_patients = FactoryBot.create_list(:patient, 5, updated_at: 5.minutes.ago)
       get :sync_to_user, params: { processed_since: 10.minutes.ago }
 
       response_body = JSON(response.body)
@@ -154,7 +154,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         .to eq(expected_patients.map(&:id).to_set)
 
       expect(response_body['processed_since'].to_time.to_i)
-        .to eq(expected_patients.map(&:updated_on_server_at).max.to_i)
+        .to eq(expected_patients.map(&:updated_at).max.to_i)
     end
 
     describe 'nothing to sync' do

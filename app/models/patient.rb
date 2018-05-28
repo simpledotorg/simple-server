@@ -18,10 +18,22 @@ class Patient < ApplicationRecord
     )
   end
 
+  def with_payload_keys(attributes)
+    key_mapping = {
+      'device_created_at' => 'created_at',
+      'device_updated_at' => 'updated_at'
+    }.with_indifferent_access
+
+    attributes.transform_keys { |key| key_mapping[key] || key }
+  end
+
   def nested_hash(options = {})
-    as_json(options.merge(
-      except:  %i[address_id  updated_on_server_at],
-      include: { address:       { except: :updated_on_server_at },
-                 phone_numbers: { except: :updated_on_server_at } }))
+    with_payload_keys(attributes)
+      .except('address_id')
+      .merge(
+        'address'       => with_payload_keys(address.attributes),
+        'phone_numbers' => phone_numbers.map { |phno| with_payload_keys(phno.attributes).except('patient_id') }
+      )
+      .as_json
   end
 end

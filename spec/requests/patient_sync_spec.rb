@@ -29,7 +29,7 @@ RSpec.describe 'Patients sync', type: :request do
     response_body = JSON(response.body)
     expect(response.status).to eq 200
     expect(response_body['patients']).to eq([])
-    expect(response_body['processed_since'].to_time.to_i).to eq(Time.new(0).to_i)
+    expect(response_body['processed_since']).to eq(Time.new(0).strftime('%FT%T.%3NZ'))
   end
 
   it 'push a new valid patient and pull first time' do
@@ -44,7 +44,7 @@ RSpec.describe 'Patients sync', type: :request do
     expect(response.status).to eq 200
     expect(response_body['patients'].map(&:with_int_timestamps))
       .to eq([valid_patient.with_int_timestamps.to_json_and_back])
-    expect(response_body['processed_since'].to_time.to_i).to eq(Patient.first.updated_on_server_at.to_i)
+    expect(response_body['processed_since'].to_time.to_i).to eq(Patient.first.updated_at.to_i)
   end
 
   it 'pushes 10 new patients, updates 5, and pulls only updated ones' do
