@@ -166,7 +166,8 @@
           "type": [
             "integer",
             "null"
-          ]
+          ],
+          "description": "When age is present, age_updated_at must be present as well."
         },
         "age_updated_at": {
           "$ref": "#/definitions/nullable_timestamp"
@@ -200,10 +201,7 @@
         "street_address": {
           "type": "string"
         },
-        "colony": {
-          "type": "string"
-        },
-        "village": {
+        "village_or_colony": {
           "type": "string"
         },
         "district": {
@@ -353,7 +351,8 @@
           "type": [
             "integer",
             "null"
-          ]
+          ],
+          "description": "When age is present, age_updated_at must be present as well."
         },
         "age_updated_at": {
           "$ref": "#/definitions/nullable_timestamp"
