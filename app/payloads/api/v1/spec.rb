@@ -37,7 +37,7 @@ module Api::V1::Spec
   end
 
   def self.address_spec
-    { type:       :object,
+    { type:       ['null', :object],
       properties: {
         id:             { type: :string, format: :uuid },
         street_address: { type: :string },
@@ -61,7 +61,7 @@ module Api::V1::Spec
         active:     { type: :boolean },
         created_at: { '$ref' => '#/definitions/timestamp' },
         updated_at: { '$ref' => '#/definitions/timestamp' } },
-      required:   %w[id created_at updated_at] }
+      required:   %w[id created_at updated_at number] }
   end
 
 
@@ -69,15 +69,15 @@ module Api::V1::Spec
   # API Specs
 
   def self.phone_numbers_spec
-    { type:  :array,
+    { type:  ['null', :array],
       items: { '$ref' => '#/definitions/phone_number' } }
   end
 
   def self.nested_patient
     patient_spec.deep_merge(
       properties: {
-        address:       { type: ['null', { '$ref' => '#/definitions/address' }] },
-        phone_numbers: { type: ['null', { '$ref' => '#/definitions/phone_numbers' }] }, }
+        address:       { '$ref' => '#/definitions/address' },
+        phone_numbers: { '$ref' => '#/definitions/phone_numbers' }, }
     )
   end
 

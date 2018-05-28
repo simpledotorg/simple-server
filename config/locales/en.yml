@@ -32,8 +32,8 @@
 en:
   hello: "Hello world"
 
-  api_description:
-  > # API specification for RedApp
+  api_description: |
+    # API specification for RedApp
     ## Sync APIs
     This API spec documents the endpoints that the devices (that are offline to varying levels) will use to sync data. The sync end points will send and receive bulk (a list of) entities. Both sending and receiving can be batched with configurable batch-sizes to accommodate low network bandwidth situations.
     ## Nesting resources

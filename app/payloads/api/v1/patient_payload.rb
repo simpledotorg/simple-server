@@ -1,13 +1,7 @@
 class Api::V1::PatientPayload
   include ActiveModel::Model
 
-  # - swagger validation
-  # - build errors
-
-  # - custom validation
-  # - build errors
-  # - coerce params to ruby/rails data types
-  # - build errors
+  # todo
   # - rename keys
   # - structure payload object?
 
@@ -25,11 +19,11 @@ class Api::V1::PatientPayload
     :phone_numbers
   )
 
-  validate :presence_of_age
   validate :validate_schema
+  validate :presence_of_age
 
   def presence_of_age
-    unless date_of_birth.present? || (age.present? && age_updated_at.present? && age_updated_at.to_time.present?)
+    unless date_of_birth.present? || (age.present? && age_updated_at.present?)
       errors.add(:age, 'Either date_of_birth or age and age_updated_at should be present')
     end
   end

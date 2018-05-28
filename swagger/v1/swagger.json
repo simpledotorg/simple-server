@@ -11,7 +11,7 @@
     "https"
   ],
   "info": {
-    "description": "## Sync APIs This API spec documents the endpoints that the devices (that are offline to varying levels) will use to sync data. The sync end points will send and receive bulk (a list of) entities. Both sending and receiving can be batched with configurable batch-sizes to accommodate low network bandwidth situations. ## Nesting resources The APIs have been designed to provide an optimal balance between accuracy and simplicity. Some of the APIs (patients) will be nested, and some other (blood pressures) will be flat. ## Authentication TODO\n## Sync Mechanism Refer to the [related ADR](https://github.com/resolvetosavelives/redapp-server/blob/master/doc/arch/001-synchronization.md).",
+    "description": "# API specification for RedApp\n## Sync APIs\nThis API spec documents the endpoints that the devices (that are offline to varying levels) will use to sync data. The sync end points will send and receive bulk (a list of) entities. Both sending and receiving can be batched with configurable batch-sizes to accommodate low network bandwidth situations.\n## Nesting resources\nThe APIs have been designed to provide an optimal balance between accuracy and simplicity. Some of the APIs (patients) will be nested, and some other (blood pressures) will be flat.\n## Authentication\nTODO\n\n## Sync Mechanism\nRefer to the [related ADR](https://github.com/resolvetosavelives/redapp-server/blob/master/doc/arch/001-synchronization.md).",
     "version": "v1",
     "title": "RedApp Server",
     "x-logo": {
@@ -188,7 +188,10 @@
       ]
     },
     "address": {
-      "type": "object",
+      "type": [
+        "null",
+        "object"
+      ],
       "properties": {
         "id": {
           "type": "string",
@@ -258,11 +261,15 @@
       "required": [
         "id",
         "created_at",
-        "updated_at"
+        "updated_at",
+        "number"
       ]
     },
     "phone_numbers": {
-      "type": "array",
+      "type": [
+        "null",
+        "array"
+      ],
       "items": {
         "$ref": "#/definitions/phone_number"
       }
@@ -358,20 +365,10 @@
           "$ref": "#/definitions/timestamp"
         },
         "address": {
-          "type": [
-            "null",
-            {
-              "$ref": "#/definitions/address"
-            }
-          ]
+          "$ref": "#/definitions/address"
         },
         "phone_numbers": {
-          "type": [
-            "null",
-            {
-              "$ref": "#/definitions/phone_numbers"
-            }
-          ]
+          "$ref": "#/definitions/phone_numbers"
         }
       },
       "required": [
