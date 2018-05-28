@@ -76,8 +76,8 @@ module Api::V1::Spec
   def self.nested_patient
     patient_spec.deep_merge(
       properties: {
-        address:       { '$ref' => '#/definitions/address' },
-        phone_numbers: { '$ref' => '#/definitions/phone_numbers' } }
+        address:       { type: ['null', { '$ref' => '#/definitions/address' }] },
+        phone_numbers: { type: ['null', { '$ref' => '#/definitions/phone_numbers' }] }, }
     )
   end
 

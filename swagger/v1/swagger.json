@@ -11,7 +11,7 @@
     "https"
   ],
   "info": {
-    "description": "# API specification for RedApp\n## Sync APIs\nThis API spec documents the endpoints that the devices (that are offline to varying levels) will use to sync data. The sync end points will send and receive bulk (a list of) entities. Both sending and receiving can be batched with configurable batch-sizes to accommodate low network bandwidth situations.\n## Nesting resources\nThe APIs have been designed to provide an optimal balance between accuracy and simplicity. Some of the APIs (patients) will be nested, and some other (blood pressures) will be flat.\n## Authentication\nTODO\n\n## Sync Mechanism\nRefer to the [related ADR](https://github.com/resolvetosavelives/redapp-server/blob/master/doc/arch/001-synchronization.md).\n",
+    "description": "## Sync APIs This API spec documents the endpoints that the devices (that are offline to varying levels) will use to sync data. The sync end points will send and receive bulk (a list of) entities. Both sending and receiving can be batched with configurable batch-sizes to accommodate low network bandwidth situations. ## Nesting resources The APIs have been designed to provide an optimal balance between accuracy and simplicity. Some of the APIs (patients) will be nested, and some other (blood pressures) will be flat. ## Authentication TODO\n## Sync Mechanism Refer to the [related ADR](https://github.com/resolvetosavelives/redapp-server/blob/master/doc/arch/001-synchronization.md).",
     "version": "v1",
     "title": "RedApp Server",
     "x-logo": {
@@ -142,7 +142,8 @@
           ]
         },
         "full_name": {
-          "type": "string"
+          "type": "string",
+          "required": true
         },
         "status": {
           "type": "string",
@@ -305,74 +306,88 @@
         "id"
       ]
     },
+    "nested_patient": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "gender": {
+          "type": "string",
+          "enum": [
+            "male",
+            "female",
+            "transgender"
+          ]
+        },
+        "full_name": {
+          "type": "string",
+          "required": true
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "dead",
+            "migrated",
+            "unresponsive",
+            "inactive"
+          ]
+        },
+        "date_of_birth": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "age": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "age_updated_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "address": {
+          "type": [
+            "null",
+            {
+              "$ref": "#/definitions/address"
+            }
+          ]
+        },
+        "phone_numbers": {
+          "type": [
+            "null",
+            {
+              "$ref": "#/definitions/phone_numbers"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "gender",
+        "full_name",
+        "created_at",
+        "updated_at",
+        "status"
+      ]
+    },
     "nested_patients": {
       "type": "array",
       "description": "List of patients with address and phone numbers nested.",
       "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "gender": {
-            "type": "string",
-            "enum": [
-              "male",
-              "female",
-              "transgender"
-            ]
-          },
-          "full_name": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "active",
-              "dead",
-              "migrated",
-              "unresponsive",
-              "inactive"
-            ]
-          },
-          "date_of_birth": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "format": "date"
-          },
-          "age": {
-            "type": [
-              "integer",
-              "null"
-            ]
-          },
-          "age_updated_at": {
-            "$ref": "#/definitions/nullable_timestamp"
-          },
-          "created_at": {
-            "$ref": "#/definitions/timestamp"
-          },
-          "updated_at": {
-            "$ref": "#/definitions/timestamp"
-          },
-          "address": {
-            "$ref": "#/definitions/address"
-          },
-          "phone_numbers": {
-            "$ref": "#/definitions/phone_numbers"
-          }
-        },
-        "required": [
-          "id",
-          "gender",
-          "full_name",
-          "created_at",
-          "updated_at",
-          "status"
-        ]
+        "$ref": "#/definitions/nested_patient"
       }
     }
   }
