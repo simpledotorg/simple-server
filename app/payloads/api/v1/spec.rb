@@ -148,6 +148,25 @@ module Api::V1::Spec
       nested_patients:    nested_patients }
   end
 
+  def self.swagger_info
+    {
+      description: I18n.t('api_description'),
+      version:     'v1',
+      title:       'RedApp Server',
+      'x-logo'     => {
+        url:             'https://static1.squarespace.com/static/59945d559f7456b755d759f2/t/59aebc5ecf81e0ac9b4b6f59/1526304079797/?format=1500w',
+        backgroundColor: '#FFFFFF'
+      },
+      contact:     {
+        email: 'eng-backend@resolvetosavelives.org'
+      },
+      license:     {
+        name: 'MIT',
+        url:  'https://github.com/resolvetosavelives/redapp-server/blob/master/LICENSE'
+      }
+    }
+  end
+
   def self.swagger_docs
     {
       'v1/swagger.json' => {
@@ -156,22 +175,7 @@ module Api::V1::Spec
         produces:    ['application/json'],
         consumes:    ['application/json'],
         schemes:     ['https'],
-        info:        {
-          description: I18n.t('api_description'),
-          version:     'v1',
-          title:       'RedApp Server',
-          'x-logo'     => {
-            url:             'https://static1.squarespace.com/static/59945d559f7456b755d759f2/t/59aebc5ecf81e0ac9b4b6f59/1526304079797/?format=1500w',
-            backgroundColor: '#FFFFFF'
-          },
-          contact:     {
-            email: 'eng-backend@resolvetosavelives.org'
-          },
-          license:     {
-            name: 'MIT',
-            url:  'https://github.com/resolvetosavelives/redapp-server/blob/master/LICENSE'
-          }
-        },
+        info:        swagger_info,
         paths:       {},
         definitions: all_definitions
       }
