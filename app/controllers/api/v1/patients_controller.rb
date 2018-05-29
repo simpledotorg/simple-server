@@ -2,6 +2,7 @@ class Api::V1::PatientsController < APIController
 
   def merge_patient(single_patient_params)
     patient_payload = Api::V1::PatientPayload.new(single_patient_params)
+    logger.debug "Patient had errors: #{patient_payload.errors_hash}" if patient_payload.invalid?
     return patient_payload.errors_hash if patient_payload.invalid?
 
     MergePatientService.new(single_patient_params).merge
