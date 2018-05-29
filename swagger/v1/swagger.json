@@ -59,7 +59,7 @@
                 "errors": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/definitions/patient_error_spec"
+                    "$ref": "#/definitions/error_spec"
                   }
                 }
               }
@@ -272,45 +272,6 @@
         "$ref": "#/definitions/phone_number"
       }
     },
-    "error_spec": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "field_with_error": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      },
-      "required": [
-        "id"
-      ]
-    },
-    "patient_error_spec": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "address": {
-          "$ref": "#/definitions/error_spec"
-        },
-        "phone_numbers": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/error_spec"
-          }
-        }
-      },
-      "required": [
-        "id"
-      ]
-    },
     "nested_patient": {
       "type": "object",
       "properties": {
@@ -384,6 +345,29 @@
       "description": "List of patients with address and phone numbers nested.",
       "items": {
         "$ref": "#/definitions/nested_patient"
+      }
+    },
+    "error_spec": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Id of the record with errors"
+        },
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of json schema error strings describing validation errors"
+        },
+        "field_with_error": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     }
   }
