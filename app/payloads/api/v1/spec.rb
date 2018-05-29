@@ -73,7 +73,7 @@ module Api::V1::Spec
         created_at: { '$ref' => '#/definitions/timestamp' },
         updated_at: { '$ref' => '#/definitions/timestamp' },
         patient_id: { type: :string, format: :uuid } },
-      required:   %w[systolic, diastolic, created_at, updated_at, patient_id]
+      required:   %w[systolic diastolic created_at updated_at patient_id]
     }
   end
 
@@ -107,7 +107,7 @@ module Api::V1::Spec
       items:       { '$ref' => '#/definitions/nested_patient' } }
   end
 
-  def self.patient_sync_from_user_errors_spec
+  def self.sync_from_user_errors_spec
     { type:       :object,
       properties: {
         errors: {

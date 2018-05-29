@@ -14,7 +14,7 @@ describe 'Patients API' do
       end
 
       response '200', 'some, or no errors were found' do
-        schema Api::V1::Spec.patient_sync_from_user_errors_spec
+        schema Api::V1::Spec.sync_from_user_errors_spec
         let(:patients) { { patients: (1..10).map { build_invalid_patient_payload } } }
         run_test!
       end

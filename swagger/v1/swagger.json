@@ -27,6 +27,50 @@
     }
   },
   "paths": {
+    "/blood_pressures/sync": {
+      "post": {
+        "summary": "Syncs blood pressure data from device to server.",
+        "tags": [
+          "Blood Pressure"
+        ],
+        "parameters": [
+          {
+            "name": "blood_pressures",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "blood_pressures": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/blood_pressure"
+                  }
+                }
+              },
+              "required": [
+                "blood_pressures"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/error_spec"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/patients/sync": {
       "post": {
         "summary": "Syncs patient, address and phone number data from device to server.",
@@ -372,10 +416,10 @@
         }
       },
       "required": [
-        "systolic,",
-        "diastolic,",
-        "created_at,",
-        "updated_at,",
+        "systolic",
+        "diastolic",
+        "created_at",
+        "updated_at",
         "patient_id"
       ]
     },
