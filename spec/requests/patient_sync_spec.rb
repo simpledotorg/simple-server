@@ -11,7 +11,6 @@ RSpec.describe 'Patients sync', type: :request do
     expect(received_patients.count)
       .to eq Patient.updated_on_server_since(processed_since.to_time).count
 
-    # fix phone numbers
     expect(received_patients
              .map { |patient_response| patient_response.with_int_timestamps }
              .to_set)
@@ -24,7 +23,7 @@ RSpec.describe 'Patients sync', type: :request do
     post sync_route, params: { patients: [] }.to_json, headers: headers
     expect(response.status).to eq 400
 
-    get sync_route, params: { first_time: true }, headers: headers
+    get sync_route, params: { }, headers: headers
 
     response_body = JSON(response.body)
     expect(response.status).to eq 200
@@ -38,7 +37,7 @@ RSpec.describe 'Patients sync', type: :request do
     expect(response.status).to eq 200
     expect(JSON(response.body)['errors']).to eq []
 
-    get sync_route, params: { first_time: true }, headers: headers
+    get sync_route, params: {}, headers: headers
 
     response_body = JSON(response.body)
     expect(response.status).to eq 200
@@ -50,7 +49,7 @@ RSpec.describe 'Patients sync', type: :request do
   it 'pushes 10 new patients, updates 5, and pulls only updated ones' do
     first_patients_payload = (1..10).map { build_patient_payload }
     post sync_route, params: { patients: first_patients_payload }.to_json, headers: headers
-    get sync_route, params: { first_time: true }, headers: headers
+    get sync_route, params: {}, headers: headers
     processed_since = JSON(response.body)['processed_since']
 
     created_patients         = Patient.find(first_patients_payload.map { |patient| patient['id'] })
@@ -64,7 +63,7 @@ RSpec.describe 'Patients sync', type: :request do
   it 'pushes 10 new patients, updates only address or phone numbers, and pulls updated ones' do
     first_patients_payload = (1..10).map { build_patient_payload }
     post sync_route, params: { patients: first_patients_payload }.to_json, headers: headers
-    get sync_route, params: { first_time: true }, headers: headers
+    get sync_route, params: {}, headers: headers
     processed_since = JSON(response.body)['processed_since']
 
     created_patients         = Patient.find(first_patients_payload.map { |patient| patient['id'] })
