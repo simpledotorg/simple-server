@@ -19,5 +19,25 @@ describe 'BloodPressures API' do
         run_test!
       end
     end
+
+    get 'Syncs blood pressure data from server to device.' do
+      tags 'Blood Pressure'
+      Api::V1::Spec.sync_to_user_request_spec.each do |param|
+        parameter param
+      end
+
+      before :each do
+        Timecop.travel(10.minutes.ago) do
+          FactoryBot.create_list(:blood_pressure, 10)
+        end
+      end
+
+      response '200', 'blood pressures received' do
+        schema Api::V1::Spec.blood_pressure_sync_to_user_response_spec
+        let(:processed_since) { 10.minutes.ago }
+        let(:limit) { 10 }
+        run_test!
+      end
+    end
   end
 end

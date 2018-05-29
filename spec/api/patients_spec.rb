@@ -22,7 +22,7 @@ describe 'Patients API' do
 
     get 'Syncs patient, address and phone number data from server to device.' do
       tags 'patient'
-      Api::V1::Spec.patient_sync_to_user_request_spec.each do |param|
+      Api::V1::Spec.sync_to_user_request_spec.each do |param|
         parameter param
       end
 

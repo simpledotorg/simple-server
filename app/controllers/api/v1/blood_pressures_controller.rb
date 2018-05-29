@@ -15,6 +15,25 @@ class Api::V1::BloodPressuresController < APIController
     render json: response, status: :ok
   end
 
+  def sync_to_user
+    blood_pressures_to_sync = BloodPressure.updated_on_server_since(processed_since, limit)
+
+    most_recent_record_timestamp =
+      if blood_pressures_to_sync.empty?
+        processed_since
+      else
+        blood_pressures_to_sync.last.updated_at
+      end
+
+    render(
+      json:   {
+        blood_pressures: blood_pressures_to_sync.map(&:nested_hash),
+        processed_since: most_recent_record_timestamp.strftime('%FT%T.%3NZ')
+      },
+      status: :ok
+    )
+  end
+
   private
 
   def blood_pressures_params

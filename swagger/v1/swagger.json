@@ -41,10 +41,7 @@
               "type": "object",
               "properties": {
                 "blood_pressures": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/blood_pressure"
-                  }
+                  "$ref": "#/definitions/blood_pressures"
                 }
               },
               "required": [
@@ -64,6 +61,43 @@
                   "items": {
                     "$ref": "#/definitions/error_spec"
                   }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs blood pressure data from server to device.",
+        "tags": [
+          "Blood Pressure"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+            "name": "processed_since",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "blood pressures received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "blood_pressures": {
+                  "$ref": "#/definitions/blood_pressures"
+                },
+                "processed_since": {
+                  "$ref": "#/definitions/processed_since"
                 }
               }
             }
@@ -422,6 +456,12 @@
         "updated_at",
         "patient_id"
       ]
+    },
+    "blood_pressures": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/blood_pressure"
+      }
     },
     "error_spec": {
       "type": "object",

@@ -77,14 +77,19 @@ module Api::V1::Spec
     }
   end
 
+  def self.blood_pressures
+    { type:  :array,
+      items: { '$ref' => '#/definitions/blood_pressure' } }
+  end
+
   ###############
   # API Specs
+
 
   def self.blood_pressure_sync_from_user_request_spec
     { type:       :object,
       properties: {
-        blood_pressures: { type:  :array,
-                           items: { '$ref' => '#/definitions/blood_pressure' } } },
+        blood_pressures: { '$ref' => '#/definitions/blood_pressures' } },
       required:   %w[blood_pressures] }
   end
 
@@ -128,7 +133,7 @@ module Api::V1::Spec
                             items: { type: :string } } } }
   end
 
-  def self.patient_sync_to_user_request_spec
+  def self.sync_to_user_request_spec
     [processed_since.merge(in: :query),
      { in:          :query, name: :limit, type: :integer,
        description: 'Number of record to retrieve (a.k.a batch-size)' }]
@@ -148,6 +153,13 @@ module Api::V1::Spec
         processed_since: { '$ref' => '#/definitions/processed_since' } } }
   end
 
+  def self.blood_pressure_sync_to_user_response_spec
+    { type:       :object,
+      properties: {
+        blood_pressures: { '$ref' => '#/definitions/blood_pressures' },
+        processed_since: { '$ref' => '#/definitions/processed_since' } } }
+  end
+
   def self.all_definitions
     { timestamp:          timestamp,
       nullable_timestamp: nullable_timestamp,
@@ -159,6 +171,7 @@ module Api::V1::Spec
       nested_patient:     nested_patient,
       nested_patients:    nested_patients,
       blood_pressure:     blood_pressure_spec,
+      blood_pressures:    blood_pressures,
       error_spec:         error_spec }
   end
 
