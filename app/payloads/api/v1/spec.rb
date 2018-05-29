@@ -64,9 +64,29 @@ module Api::V1::Spec
       required:   %w[id created_at updated_at number] }
   end
 
+  def self.blood_pressure_spec
+    { type:       :object,
+      properties: {
+        id:         { type: :string, format: :uuid },
+        systolic:   { type: :integer },
+        diastolic:  { type: :integer },
+        created_at: { '$ref' => '#/definitions/timestamp' },
+        updated_at: { '$ref' => '#/definitions/timestamp' },
+        patient_id: { type: :string, format: :uuid } },
+      required:   %w[systolic, diastolic, created_at, updated_at, patient_id]
+    }
+  end
 
   ###############
   # API Specs
+
+  def self.blood_pressure_sync_from_user_request_spec
+    { type:       :object,
+      properties: {
+        blood_pressures: { type:  :array,
+                           items: { '$ref' => '#/definitions/blood_pressure' } } },
+      required:   %w[blood_pressures] }
+  end
 
   def self.phone_numbers_spec
     { type:  ['null', :array],
@@ -138,7 +158,8 @@ module Api::V1::Spec
       phone_numbers:      phone_numbers_spec,
       nested_patient:     nested_patient,
       nested_patients:    nested_patients,
-      error_spec: error_spec }
+      blood_pressure:     blood_pressure_spec,
+      error_spec:         error_spec }
   end
 
   def self.swagger_info

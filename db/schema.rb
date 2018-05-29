@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180528103059) do
+ActiveRecord::Schema.define(version: 20180529105725) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,6 +22,16 @@ ActiveRecord::Schema.define(version: 20180528103059) do
     t.string "state"
     t.string "country"
     t.string "pin"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "device_created_at", null: false
+    t.datetime "device_updated_at", null: false
+  end
+
+  create_table "blood_pressures", id: :uuid, default: nil, force: :cascade do |t|
+    t.integer "systolic", null: false
+    t.integer "diastolic", null: false
+    t.uuid "patient_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "device_created_at", null: false

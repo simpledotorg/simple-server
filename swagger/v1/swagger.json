@@ -347,6 +347,38 @@
         "$ref": "#/definitions/nested_patient"
       }
     },
+    "blood_pressure": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "systolic": {
+          "type": "integer"
+        },
+        "diastolic": {
+          "type": "integer"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "patient_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "systolic,",
+        "diastolic,",
+        "created_at,",
+        "updated_at,",
+        "patient_id"
+      ]
+    },
     "error_spec": {
       "type": "object",
       "properties": {
