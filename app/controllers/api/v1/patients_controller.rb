@@ -2,12 +2,10 @@ class Api::V1::PatientsController < APIController
 
   def merge_patient(single_patient_params)
     patient_payload = Api::V1::PatientPayload.new(single_patient_params)
-    if patient_payload.invalid?
-      patient_payload.errors_hash
-    else
-      patient = MergePatientService.new(single_patient_params).merge
-      patient.errors_hash if patient.invalid?
-    end
+    return patient_payload.errors_hash if patient_payload.invalid?
+
+    MergePatientService.new(single_patient_params).merge
+    nil
   end
 
   def sync_from_user

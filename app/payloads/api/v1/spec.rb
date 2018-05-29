@@ -87,31 +87,25 @@ module Api::V1::Spec
       items:       { '$ref' => '#/definitions/nested_patient' } }
   end
 
-  def self.error_spec
-    { type:       :object,
-      properties: {
-        id:               { type: :string, format: :uuid },
-        field_with_error: { type:  :array,
-                            items: { type: :string } } },
-      required:   %w[id] }
-  end
-
-  def self.patient_error_spec
-    { type:       :object,
-      properties: {
-        id:            { type: :string, format: :uuid },
-        address:       { '$ref' => '#/definitions/error_spec' },
-        phone_numbers: { type:  :array,
-                         items: { '$ref' => '#/definitions/error_spec' } } },
-      required:   %w[id] }
-  end
-
   def self.patient_sync_from_user_errors_spec
     { type:       :object,
       properties: {
         errors: {
           type:  :array,
-          items: { '$ref' => '#/definitions/patient_error_spec' } } } }
+          items: { '$ref' => '#/definitions/error_spec' } } } }
+  end
+
+  def self.error_spec
+    { type:       :object,
+      properties: {
+        id:               { type:        :string,
+                            format:      :uuid,
+                            description: 'Id of the record with errors' },
+        schema:           { type:        :array,
+                            items:       { type: :string },
+                            description: 'List of json schema error strings describing validation errors' },
+        field_with_error: { type:  :array,
+                            items: { type: :string } } } }
   end
 
   def self.patient_sync_to_user_request_spec
@@ -142,10 +136,9 @@ module Api::V1::Spec
       address:            address_spec,
       phone_number:       phone_number_spec,
       phone_numbers:      phone_numbers_spec,
-      error_spec:         error_spec,
-      patient_error_spec: patient_error_spec,
       nested_patient:     nested_patient,
-      nested_patients:    nested_patients }
+      nested_patients:    nested_patients,
+      error_spec: error_spec }
   end
 
   def self.swagger_info
