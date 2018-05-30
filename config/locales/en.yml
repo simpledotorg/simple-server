@@ -32,14 +32,26 @@
 en:
   hello: "Hello world"
 
-  api_description: |
-    # API specification for RedApp
-    ## Sync APIs
-    This API spec documents the endpoints that the devices (that are offline to varying levels) will use to sync data. The sync end points will send and receive bulk (a list of) entities. Both sending and receiving can be batched with configurable batch-sizes to accommodate low network bandwidth situations.
-    ## Nesting resources
-    The APIs have been designed to provide an optimal balance between accuracy and simplicity. Some of the APIs (patients) will be nested, and some other (blood pressures) will be flat.
-    ## Authentication
-    TODO
+  api:
+    documentation:
+      description: |
+        # API specification for RedApp
+        ## Sync APIs
+        This API spec documents the endpoints that the devices (that are offline to varying levels) will use to sync data. The sync end points will send and receive bulk (a list of) entities. Both sending and receiving can be batched with configurable batch-sizes to accommodate low network bandwidth situations.
+        ## Nesting resources
+        The APIs have been designed to provide an optimal balance between accuracy and simplicity. Some of the APIs (patients) will be nested, and some other (blood pressures) will be flat.
+        ## Authentication
+        TODO
 
-    ## Sync Mechanism
-    Refer to the [related ADR](https://github.com/resolvetosavelives/redapp-server/blob/master/doc/arch/001-synchronization.md).
+        ## Sync Mechanism
+        Refer to the [related ADR](https://github.com/resolvetosavelives/redapp-server/blob/master/doc/arch/001-synchronization.md).
+
+      title: 'RedApp Server'
+      logo:
+        url: 'https://static1.squarespace.com/static/59945d559f7456b755d759f2/t/59aebc5ecf81e0ac9b4b6f59/1526304079797/?format=1500w'
+        background_color: '#FFFFFF'
+      contact:
+        email: 'eng-backend@resolvetosavelives.org'
+      license:
+        name: 'MIT'
+        url: 'https://github.com/resolvetosavelives/redapp-server/blob/master/LICENSE'
