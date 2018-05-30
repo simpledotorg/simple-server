@@ -147,7 +147,7 @@ module Api::V1::Spec
       version:     'v1',
       title:       I18n.t('api.documentation.title'),
       'x-logo'     => {
-        url:             I18n.t('api.documentation.logo.url'),
+        url:             ActionController::Base.helpers.image_path(I18n.t('api.documentation.logo.image')),
         backgroundColor: I18n.t('api.documentation.logo.background_color')
       },
       contact:     {
