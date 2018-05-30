@@ -1,14 +1,6 @@
 require 'rails_helper'
 
 describe Mergeable do
-  it 'returns record with errors if invalid, and does not merge' do
-    invalid_patient = FactoryBot.build(:patient, created_at: nil)
-    patient         = Patient.merge(invalid_patient.attributes)
-    expect(patient).to be_invalid
-    expect(Patient.count).to eq 0
-    expect(Patient).to_not receive(:create)
-  end
-
   it 'creates a new record if there is no existing record' do
     new_patient = FactoryBot.build(:patient, address: FactoryBot.create(:address))
     Patient.merge(new_patient.attributes)
@@ -42,7 +34,7 @@ describe Mergeable do
     expect(Address.first.attributes.except('updated_on_server_at').with_int_timestamps)
       .to eq(new_address.attributes.except('updated_on_server_at').with_int_timestamps)
 
-    new_patient = FactoryBot.create(:patient, phone_numbers: [])
+    new_patient      = FactoryBot.create(:patient, phone_numbers: [])
     new_phone_number = FactoryBot.build(:patient_phone_number, patient: new_patient)
     PatientPhoneNumber.merge(new_phone_number.attributes)
     expect(PatientPhoneNumber.first.attributes.except('updated_on_server_at').with_int_timestamps)

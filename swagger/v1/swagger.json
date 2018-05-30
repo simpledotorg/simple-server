@@ -15,7 +15,7 @@
     "version": "v1",
     "title": "RedApp Server",
     "x-logo": {
-      "url": "https://static1.squarespace.com/static/59945d559f7456b755d759f2/t/59aebc5ecf81e0ac9b4b6f59/1526304079797/?format=1500w",
+      "url": "/assets/rtsl_logo-d7e4808e72f6d12641fd4a4f64669ed76d32170cd7a1e7fb9206ef7d1ba413c9.png",
       "backgroundColor": "#FFFFFF"
     },
     "contact": {
@@ -59,7 +59,7 @@
                 "errors": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/definitions/patient_error_spec"
+                    "$ref": "#/definitions/error_spec"
                   }
                 }
               }
@@ -142,7 +142,8 @@
           ]
         },
         "full_name": {
-          "type": "string"
+          "type": "string",
+          "required": true
         },
         "status": {
           "type": "string",
@@ -188,7 +189,10 @@
       ]
     },
     "address": {
-      "type": "object",
+      "type": [
+        "null",
+        "object"
+      ],
       "properties": {
         "id": {
           "type": "string",
@@ -255,13 +259,92 @@
       "required": [
         "id",
         "created_at",
-        "updated_at"
+        "updated_at",
+        "number"
       ]
     },
     "phone_numbers": {
-      "type": "array",
+      "type": [
+        "null",
+        "array"
+      ],
       "items": {
         "$ref": "#/definitions/phone_number"
+      }
+    },
+    "nested_patient": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "gender": {
+          "type": "string",
+          "enum": [
+            "male",
+            "female",
+            "transgender"
+          ]
+        },
+        "full_name": {
+          "type": "string",
+          "required": true
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "dead",
+            "migrated",
+            "unresponsive",
+            "inactive"
+          ]
+        },
+        "date_of_birth": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "age": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "When age is present, age_updated_at must be present as well."
+        },
+        "age_updated_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "address": {
+          "$ref": "#/definitions/address"
+        },
+        "phone_numbers": {
+          "$ref": "#/definitions/phone_numbers"
+        }
+      },
+      "required": [
+        "id",
+        "gender",
+        "full_name",
+        "created_at",
+        "updated_at",
+        "status"
+      ]
+    },
+    "nested_patients": {
+      "type": "array",
+      "description": "List of patients with address and phone numbers nested.",
+      "items": {
+        "$ref": "#/definitions/nested_patient"
       }
     },
     "error_spec": {
@@ -269,7 +352,15 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "description": "Id of the record with errors"
+        },
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of json schema error strings describing validation errors"
         },
         "field_with_error": {
           "type": "array",
@@ -277,101 +368,6 @@
             "type": "string"
           }
         }
-      },
-      "required": [
-        "id"
-      ]
-    },
-    "patient_error_spec": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "address": {
-          "$ref": "#/definitions/error_spec"
-        },
-        "phone_numbers": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/error_spec"
-          }
-        }
-      },
-      "required": [
-        "id"
-      ]
-    },
-    "nested_patients": {
-      "type": "array",
-      "description": "List of patients with address and phone numbers nested.",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "gender": {
-            "type": "string",
-            "enum": [
-              "male",
-              "female",
-              "transgender"
-            ]
-          },
-          "full_name": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "active",
-              "dead",
-              "migrated",
-              "unresponsive",
-              "inactive"
-            ]
-          },
-          "date_of_birth": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "format": "date"
-          },
-          "age": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "description": "When age is present, age_updated_at must be present as well."
-          },
-          "age_updated_at": {
-            "$ref": "#/definitions/nullable_timestamp"
-          },
-          "created_at": {
-            "$ref": "#/definitions/timestamp"
-          },
-          "updated_at": {
-            "$ref": "#/definitions/timestamp"
-          },
-          "address": {
-            "$ref": "#/definitions/address"
-          },
-          "phone_numbers": {
-            "$ref": "#/definitions/phone_numbers"
-          }
-        },
-        "required": [
-          "id",
-          "gender",
-          "full_name",
-          "created_at",
-          "updated_at",
-          "status"
-        ]
       }
     }
   }

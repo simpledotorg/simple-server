@@ -1,10 +1,16 @@
 class Api::V1::PatientsController < APIController
+
+  def merge_patient(single_patient_params)
+    patient_payload = Api::V1::PatientPayload.new(single_patient_params)
+    logger.debug "Patient had errors: #{patient_payload.errors_hash}" if patient_payload.invalid?
+    return patient_payload.errors_hash if patient_payload.invalid?
+
+    MergePatientService.new(single_patient_params).merge
+    nil
+  end
+
   def sync_from_user
-    errors = patients_params.reduce([]) do |errors, single_patient_params|
-      patient = MergePatientService.new(single_patient_params).merge
-      errors << patient.errors_hash if patient.invalid?
-      errors
-    end
+    errors = patients_params.flat_map { |single_patient_params| merge_patient(single_patient_params) || [] }
 
     response = { errors: errors.nil? ? nil : errors }
     render json: response, status: :ok
@@ -22,7 +28,7 @@ class Api::V1::PatientsController < APIController
 
     render(
       json:   {
-        patients: patients_to_sync.map(&:nested_hash),
+        patients:        patients_to_sync.map(&:nested_hash),
         processed_since: most_recent_record_timestamp
       },
       status: :ok

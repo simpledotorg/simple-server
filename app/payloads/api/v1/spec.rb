@@ -1,19 +1,19 @@
-module Spec
+module Api::V1::Spec
 
   ###############
   # Models
 
-  def timestamp
+  def self.timestamp
     { type:        :string,
       format:      'date-time',
       description: 'Timestamp with millisecond precision' }
   end
 
-  def nullable_timestamp
+  def self.nullable_timestamp
     timestamp.merge(type: [:string, 'null'])
   end
 
-  def processed_since
+  def self.processed_since
     timestamp.merge(
       name:        'processed_since',
       description: 'The timestamp since which records have been processed by the server.
@@ -21,12 +21,12 @@ module Spec
     )
   end
 
-  def patient_spec
+  def self.patient_spec
     { type:       :object,
       properties: {
         id:             { type: :string, format: :uuid },
         gender:         { type: :string, enum: Patient::GENDERS },
-        full_name:      { type: :string },
+        full_name:      { type: :string, required: true },
         status:         { type: :string, enum: Patient::STATUSES },
         date_of_birth:  { type: [:string, 'null'], format: :date },
         age:            { type:        [:integer, 'null'],
@@ -37,8 +37,8 @@ module Spec
       required:   %w[id gender full_name created_at updated_at status] }
   end
 
-  def address_spec
-    { type:       :object,
+  def self.address_spec
+    { type:       ['null', :object],
       properties: {
         id:                { type: :string, format: :uuid },
         street_address:    { type: :string },
@@ -52,7 +52,7 @@ module Spec
       required:   %w[id created_at updated_at] }
   end
 
-  def phone_number_spec
+  def self.phone_number_spec
     { type:       :object,
       properties: {
         id:         { type: :string, format: :uuid },
@@ -61,76 +61,74 @@ module Spec
         active:     { type: :boolean },
         created_at: { '$ref' => '#/definitions/timestamp' },
         updated_at: { '$ref' => '#/definitions/timestamp' } },
-      required:   %w[id created_at updated_at] }
+      required:   %w[id created_at updated_at number] }
   end
 
 
   ###############
   # API Specs
 
-  def phone_numbers_spec
-    { type:  :array,
+  def self.phone_numbers_spec
+    { type:  ['null', :array],
       items: { '$ref' => '#/definitions/phone_number' } }
   end
 
-  def nested_patients
+  def self.nested_patient
+    patient_spec.deep_merge(
+      properties: {
+        address:       { '$ref' => '#/definitions/address' },
+        phone_numbers: { '$ref' => '#/definitions/phone_numbers' }, }
+    )
+  end
+
+  def self.nested_patients
     { type:        :array,
       description: 'List of patients with address and phone numbers nested.',
-      items:       patient_spec.deep_merge(
-        properties: {
-          address:       { '$ref' => '#/definitions/address' },
-          phone_numbers: { '$ref' => '#/definitions/phone_numbers' } }
-      ) }
+      items:       { '$ref' => '#/definitions/nested_patient' } }
   end
 
-  def error_spec
-    { type:       :object,
-      properties: {
-        id:               { type: :string, format: :uuid },
-        field_with_error: { type:  :array,
-                            items: { type: :string } } },
-      required:   %w[id] }
-  end
-
-  def patient_error_spec
-    { type:       :object,
-      properties: {
-        id:            { type: :string, format: :uuid },
-        address:       { '$ref' => '#/definitions/error_spec' },
-        phone_numbers: { type:  :array,
-                         items: { '$ref' => '#/definitions/error_spec' } } },
-      required:   %w[id] }
-  end
-
-  def patient_sync_from_user_errors_spec
+  def self.patient_sync_from_user_errors_spec
     { type:       :object,
       properties: {
         errors: {
           type:  :array,
-          items: { '$ref' => '#/definitions/patient_error_spec' } } } }
+          items: { '$ref' => '#/definitions/error_spec' } } } }
   end
 
-  def patient_sync_to_user_request_spec
+  def self.error_spec
+    { type:       :object,
+      properties: {
+        id:               { type:        :string,
+                            format:      :uuid,
+                            description: 'Id of the record with errors' },
+        schema:           { type:        :array,
+                            items:       { type: :string },
+                            description: 'List of json schema error strings describing validation errors' },
+        field_with_error: { type:  :array,
+                            items: { type: :string } } } }
+  end
+
+  def self.patient_sync_to_user_request_spec
     [processed_since.merge(in: :query),
      { in:          :query, name: :limit, type: :integer,
        description: 'Number of record to retrieve (a.k.a batch-size)' }]
   end
 
-  def patient_sync_from_user_request_spec
+  def self.patient_sync_from_user_request_spec
     { type:       :object,
       properties: {
         patients: { '$ref' => '#/definitions/nested_patients' } },
       required:   %w[patients] }
   end
 
-  def patient_sync_to_user_response_spec
+  def self.patient_sync_to_user_response_spec
     { type:       :object,
       properties: {
         patients:        { '$ref' => '#/definitions/nested_patients' },
         processed_since: { '$ref' => '#/definitions/processed_since' } } }
   end
 
-  def all_definitions
+  def self.all_definitions
     { timestamp:          timestamp,
       nullable_timestamp: nullable_timestamp,
       processed_since:    processed_since,
@@ -138,8 +136,42 @@ module Spec
       address:            address_spec,
       phone_number:       phone_number_spec,
       phone_numbers:      phone_numbers_spec,
-      error_spec:         error_spec,
-      patient_error_spec: patient_error_spec,
-      nested_patients:    nested_patients }
+      nested_patient:     nested_patient,
+      nested_patients:    nested_patients,
+      error_spec: error_spec }
+  end
+
+  def self.swagger_info
+    {
+      description: I18n.t('api.documentation.description'),
+      version:     'v1',
+      title:       I18n.t('api.documentation.title'),
+      'x-logo'     => {
+        url:             ActionController::Base.helpers.image_path(I18n.t('api.documentation.logo.image')),
+        backgroundColor: I18n.t('api.documentation.logo.background_color')
+      },
+      contact:     {
+        email: I18n.t('api.documentation.contact.email')
+      },
+      license:     {
+        name: I18n.t('api.documentation.license.name'),
+        url:  I18n.t('api.documentation.license.url')
+      }
+    }
+  end
+
+  def self.swagger_docs
+    {
+      'v1/swagger.json' => {
+        swagger:     '2.0',
+        basePath:    '/api/v1',
+        produces:    ['application/json'],
+        consumes:    ['application/json'],
+        schemes:     ['https'],
+        info:        swagger_info,
+        paths:       {},
+        definitions: all_definitions
+      }
+    }
   end
 end
