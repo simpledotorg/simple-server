@@ -1,12 +1,12 @@
 class Api::V1::PatientsController < APIController
-
   def merge_patient(single_patient_params)
-    patient_payload = Api::V1::PatientPayload.new(single_patient_params)
+    patient_payload = Api::V1::PatientPayload.new(single_patient_params.to_hash.with_indifferent_access)
     logger.debug "Patient had errors: #{patient_payload.errors_hash}" if patient_payload.invalid?
-    return patient_payload.errors_hash if patient_payload.invalid?
+    unless patient_payload.invalid?
+      MergePatientService.new(patient_payload.model_attributes).merge
+    end
 
-    MergePatientService.new(single_patient_params).merge
-    nil
+    patient_payload.errors_hash if patient_payload.invalid?
   end
 
   def sync_from_user
@@ -23,13 +23,13 @@ class Api::V1::PatientsController < APIController
       if patients_to_sync.empty?
         processed_since
       else
-        patients_to_sync.last.updated_on_server_at
+        patients_to_sync.last.updated_at
       end
 
     render(
       json:   {
         patients:        patients_to_sync.map(&:nested_hash),
-        processed_since: most_recent_record_timestamp
+        processed_since: most_recent_record_timestamp.strftime(TIME_WITHOUT_TIMEZONE_FORMAT)
       },
       status: :ok
     )
@@ -59,7 +59,7 @@ class Api::V1::PatientsController < APIController
   end
 
   def processed_since
-    params[:processed_since] || Time.new(0)
+    params[:processed_since].try(:to_time) || Time.new(0)
   end
 
   def limit

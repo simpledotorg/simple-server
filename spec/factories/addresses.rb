@@ -7,8 +7,7 @@ FactoryBot.define do
     state { Faker::Address.state }
     country { Faker::Address.country }
     pin { Faker::Address.zip }
-    created_at { Time.now }
-    updated_at { Time.now }
-    updated_on_server_at { Time.now }
+    device_created_at { Time.now }
+    device_updated_at { Time.now }
   end
 end

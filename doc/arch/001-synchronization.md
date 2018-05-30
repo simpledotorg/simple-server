@@ -66,12 +66,12 @@ Accepted
 ## Consequences
 
 The computation of records to be sent is currently based on the
-`updated_on_server_at` field on the server, and the
-`latest_record_timestamp` in the query parameters. This implies, that
-if there are multiple records with the same timestamp, the same record
-will be sent multiple times. And if there are as many records with the
-same timestamp as the batch size, the same response is sent over and
-over again, effectively breaking the batching mechanism.
+`updated_at` field on the server, and the `processed_since` in the
+query parameters. This implies, that if there are multiple records
+with the same timestamp, the same record will be sent multiple times.
+And if there are as many records with the same timestamp as the batch
+size, the same response is sent over and over again, effectively
+breaking the batching mechanism.
 
 This implies we need sequencing of records on the server. We rely on
 timestamps for this now. But we could have a separate sequence, or an

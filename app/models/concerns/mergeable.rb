@@ -14,7 +14,7 @@ module Mergeable
         invalid_record(new_record)
       elsif existing_record.nil?
         create_new_record(attributes)
-      elsif attributes['updated_at'] > existing_record.updated_at
+      elsif new_record.device_updated_at > existing_record.device_updated_at
         update_existing_record(existing_record, attributes)
       else
         return_old_record(existing_record)
@@ -35,21 +35,21 @@ module Mergeable
 
     def create_new_record(attributes)
       logger.debug "#{self} with id #{attributes['id']} is new, creating."
-      record = create(attributes.merge(updated_on_server_at: Time.now))
+      record = create(attributes)
       record.merge_status = :new
       record
     end
 
     def update_existing_record(existing_record, attributes)
       logger.debug "#{self} with id #{existing_record.id} is existing, updating."
-      existing_record.update(attributes.merge(updated_on_server_at: Time.now))
+      existing_record.update(attributes)
       existing_record.merge_status = :updated
       existing_record
     end
 
     def return_old_record(existing_record)
       logger.debug "#{self} with id #{existing_record.id} is old, keeping existing."
-      existing_record.update_column('updated_on_server_at', Time.now)
+      existing_record.touch
       existing_record.merge_status = :old
       existing_record
     end
