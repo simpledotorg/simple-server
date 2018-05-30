@@ -177,19 +177,19 @@ module Api::V1::Spec
 
   def self.swagger_info
     {
-      description: I18n.t('api_description'),
+      description: I18n.t('api.documentation.description'),
       version:     'v1',
-      title:       'RedApp Server',
+      title:       I18n.t('api.documentation.title'),
       'x-logo'     => {
-        url:             'https://static1.squarespace.com/static/59945d559f7456b755d759f2/t/59aebc5ecf81e0ac9b4b6f59/1526304079797/?format=1500w',
-        backgroundColor: '#FFFFFF'
+        url:             I18n.t('api.documentation.logo.url'),
+        backgroundColor: I18n.t('api.documentation.logo.background_color')
       },
       contact:     {
-        email: 'eng-backend@resolvetosavelives.org'
+        email: I18n.t('api.documentation.contact.email')
       },
       license:     {
-        name: 'MIT',
-        url:  'https://github.com/resolvetosavelives/redapp-server/blob/master/LICENSE'
+        name: I18n.t('api.documentation.license.name'),
+        url:  I18n.t('api.documentation.license.url')
       }
     }
   end

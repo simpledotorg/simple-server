@@ -11,14 +11,6 @@ class Patient < ApplicationRecord
   validates_associated :address, if: :address
   validates_associated :phone_numbers, if: :phone_numbers
 
-  def errors_hash
-    errors.to_hash.merge(
-      id:            id,
-      address:       address.present? ? address.errors_hash : nil,
-      phone_numbers: phone_numbers.map(&:errors_hash)
-    )
-  end
-
   def with_payload_keys(attributes)
     key_mapping = {
       'device_created_at' => 'created_at',
@@ -33,7 +25,7 @@ class Patient < ApplicationRecord
       .except('address_id')
       .merge(
         'address'       => with_payload_keys(address.attributes),
-        'phone_numbers' => phone_numbers.map { |phno| with_payload_keys(phno.attributes).except('patient_id') }
+        'phone_numbers' => phone_numbers.map { |phone_number| with_payload_keys(phone_number.attributes).except('patient_id') }
       )
       .as_json
   end
