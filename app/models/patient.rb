@@ -24,7 +24,7 @@ class Patient < ApplicationRecord
       .except('address_id')
       .merge(
         'address'       => with_payload_keys(address.attributes),
-        'phone_numbers' => phone_numbers.map { |phno| with_payload_keys(phno.attributes).except('patient_id') }
+        'phone_numbers' => phone_numbers.map { |phone_number| with_payload_keys(phone_number.attributes).except('patient_id') }
       )
       .as_json
   end
