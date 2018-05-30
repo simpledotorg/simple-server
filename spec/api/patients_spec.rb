@@ -1,7 +1,6 @@
 require 'swagger_helper'
 
 describe 'Patients API' do
-
   path '/patients/sync' do
 
     post 'Syncs patient, address and phone number data from device to server.' do

@@ -11,4 +11,9 @@ describe Patient, type: :model do
     it { should validate_presence_of(:device_created_at)}
     it { should validate_presence_of(:device_updated_at)}
   end
+
+  describe 'Validations' do
+    it { should validate_presence_of(:device_created_at)}
+    it { should validate_presence_of(:device_updated_at)}
+  end
 end

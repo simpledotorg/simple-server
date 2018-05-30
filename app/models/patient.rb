@@ -10,7 +10,7 @@ class Patient < ApplicationRecord
 
   validates_associated :address, if: :address
   validates_associated :phone_numbers, if: :phone_numbers
-
+  
   def with_payload_keys(attributes)
     key_mapping = {
       'device_created_at' => 'created_at',

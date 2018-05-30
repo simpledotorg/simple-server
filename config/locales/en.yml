@@ -48,7 +48,7 @@ en:
 
       title: 'RedApp Server'
       logo:
-        url: 'https://static1.squarespace.com/static/59945d559f7456b755d759f2/t/59aebc5ecf81e0ac9b4b6f59/1526304079797/?format=1500w'
+        image: 'rtsl_logo.png'
         background_color: '#FFFFFF'
       contact:
         email: 'eng-backend@resolvetosavelives.org'

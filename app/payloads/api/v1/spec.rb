@@ -85,7 +85,6 @@ module Api::V1::Spec
   ###############
   # API Specs
 
-
   def self.blood_pressure_sync_from_user_request_spec
     { type:       :object,
       properties: {
@@ -172,7 +171,7 @@ module Api::V1::Spec
       nested_patients:    nested_patients,
       blood_pressure:     blood_pressure_spec,
       blood_pressures:    blood_pressures,
-      error_spec:         error_spec }
+      error_spec: error_spec }
   end
 
   def self.swagger_info
@@ -181,7 +180,7 @@ module Api::V1::Spec
       version:     'v1',
       title:       I18n.t('api.documentation.title'),
       'x-logo'     => {
-        url:             I18n.t('api.documentation.logo.url'),
+        url:             ActionController::Base.helpers.image_path(I18n.t('api.documentation.logo.image')),
         backgroundColor: I18n.t('api.documentation.logo.background_color')
       },
       contact:     {
