@@ -9,6 +9,17 @@ module Api::V1::Spec
       description: 'Timestamp with millisecond precision' }
   end
 
+  def self.uuid
+    { type:    :string,
+      format:  :uuid,
+      pattern: '[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}' }
+  end
+
+  def self.non_empty_string
+    { type:      :string,
+      minLength: 1 }
+  end
+
   def self.nullable_timestamp
     timestamp.merge(type: [:string, 'null'])
   end
@@ -24,9 +35,9 @@ module Api::V1::Spec
   def self.patient_spec
     { type:       :object,
       properties: {
-        id:             { type: :string, format: :uuid },
+        id:             { '$ref' => '#/definitions/uuid' },
         gender:         { type: :string, enum: Patient::GENDERS },
-        full_name:      { type: :string, required: true },
+        full_name:      { '$ref' => '#/definitions/non_empty_string' },
         status:         { type: :string, enum: Patient::STATUSES },
         date_of_birth:  { type: [:string, 'null'], format: :date },
         age:            { type:        [:integer, 'null'],
@@ -40,7 +51,7 @@ module Api::V1::Spec
   def self.address_spec
     { type:       ['null', :object],
       properties: {
-        id:                { type: :string, format: :uuid },
+        id:                { '$ref' => '#/definitions/uuid' },
         street_address:    { type: :string },
         village_or_colony: { type: :string },
         district:          { type: :string },
@@ -55,8 +66,8 @@ module Api::V1::Spec
   def self.phone_number_spec
     { type:       :object,
       properties: {
-        id:         { type: :string, format: :uuid },
-        number:     { type: :string },
+        id:         { '$ref' => '#/definitions/uuid' },
+        number:     { '$ref' => '#/definitions/non_empty_string' },
         phone_type: { type: :string, enum: PatientPhoneNumber::PHONE_TYPE },
         active:     { type: :boolean },
         created_at: { '$ref' => '#/definitions/timestamp' },
@@ -67,12 +78,12 @@ module Api::V1::Spec
   def self.blood_pressure_spec
     { type:       :object,
       properties: {
-        id:         { type: :string, format: :uuid },
+        id:         { '$ref' => '#/definitions/uuid' },
         systolic:   { type: :integer },
         diastolic:  { type: :integer },
         created_at: { '$ref' => '#/definitions/timestamp' },
         updated_at: { '$ref' => '#/definitions/timestamp' },
-        patient_id: { type: :string, format: :uuid } },
+        patient_id: { '$ref' => '#/definitions/uuid' } },
       required:   %w[systolic diastolic created_at updated_at patient_id]
     }
   end
@@ -161,6 +172,7 @@ module Api::V1::Spec
 
   def self.all_definitions
     { timestamp:          timestamp,
+      uuid:               uuid,
       nullable_timestamp: nullable_timestamp,
       processed_since:    processed_since,
       patient:            patient_spec,
@@ -171,7 +183,8 @@ module Api::V1::Spec
       nested_patients:    nested_patients,
       blood_pressure:     blood_pressure_spec,
       blood_pressures:    blood_pressures,
-      error_spec: error_spec }
+      non_empty_string:   non_empty_string,
+      error_spec:         error_spec }
   end
 
   def self.swagger_info
