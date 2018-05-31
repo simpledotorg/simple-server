@@ -12,10 +12,10 @@ RSpec.describe 'BloodPressures sync', type: :request do
       .to eq BloodPressure.updated_on_server_since(processed_since.to_time).count
 
     expect(received_blood_pressures
-             .map { |blood_pressure_response| blood_pressure_response.with_int_timestamps }
+             .map { |blood_pressure_response| blood_pressure_response }
              .to_set)
       .to eq BloodPressure.updated_on_server_since(processed_since.to_time)
-               .map { |blood_pressure| blood_pressure.nested_hash.with_int_timestamps.to_json_and_back }
+               .map { |blood_pressure| Api::V1::Transformer.to_response(blood_pressure) }
                .to_set
   end
 
@@ -31,7 +31,7 @@ RSpec.describe 'BloodPressures sync', type: :request do
     expect(response_body['processed_since']).to eq(Time.new(0).strftime('%FT%T.%3NZ'))
   end
 
-  it 'push a new valid blood_pressure and pull first time' do
+  it 'pushes a new valid blood_pressure and pull first time' do
     valid_blood_pressure = build_blood_pressure_payload
     post sync_route, params: { blood_pressures: [valid_blood_pressure] }.to_json, headers: headers
     expect(response.status).to eq 200

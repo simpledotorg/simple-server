@@ -136,7 +136,7 @@ RSpec.describe Api::V1::BloodPressuresController, type: :controller do
         expect(received_blood_pressures.count).to eq BloodPressure.count
 
         expect(received_blood_pressures.to_set)
-          .to eq JSON(BloodPressure.all.map(&:nested_hash).to_json).to_set
+          .to eq (BloodPressure.all.map {|blood_pressure| Api::V1::Transformer.to_response(blood_pressure) }).to_set
       end
     end
   end

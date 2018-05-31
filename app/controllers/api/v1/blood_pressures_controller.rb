@@ -1,11 +1,12 @@
 class Api::V1::BloodPressuresController < APIController
   def merge_blood_pressure(blood_pressure_params)
-    payload = Api::V1::BloodPressurePayload.new(blood_pressure_params.to_hash.with_indifferent_access)
-    logger.debug "Blood Pressure had errors: #{payload.errors_hash}" if payload.invalid?
-    return payload.errors_hash if payload.invalid?
+    validator = Api::V1::BloodPressurePayloadValidator.new(blood_pressure_params)
+    logger.debug "Blood Pressure had errors: #{validator.errors_hash}" if validator.invalid?
+    unless validator.invalid?
+      BloodPressure.merge(Api::V1::Transformer.from_request(blood_pressure_params))
+    end
 
-    BloodPressure.merge(payload.model_attributes)
-    nil
+    validator.errors_hash if validator.invalid?
   end
 
   def sync_from_user
@@ -27,8 +28,8 @@ class Api::V1::BloodPressuresController < APIController
 
     render(
       json:   {
-        blood_pressures: blood_pressures_to_sync.map(&:nested_hash),
-        processed_since: most_recent_record_timestamp.strftime('%FT%T.%3NZ')
+        blood_pressures: blood_pressures_to_sync.map { |blood_pressure| Api::V1::Transformer.to_response(blood_pressure) },
+        processed_since: most_recent_record_timestamp.strftime(TIME_WITHOUT_TIMEZONE_FORMAT)
       },
       status: :ok
     )

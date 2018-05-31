@@ -15,7 +15,7 @@ RSpec.describe 'Patients sync', type: :request do
              .map { |patient_response| patient_response.with_int_timestamps }
              .to_set)
       .to eq Patient.updated_on_server_since(processed_since.to_time)
-               .map { |patient| patient.nested_hash.with_int_timestamps.to_json_and_back }
+               .map { |patient| Api::V1::PatientTransformer.to_nested_response(patient).with_int_timestamps }
                .to_set
   end
 
@@ -23,7 +23,7 @@ RSpec.describe 'Patients sync', type: :request do
     post sync_route, params: { patients: [] }.to_json, headers: headers
     expect(response.status).to eq 400
 
-    get sync_route, params: { }, headers: headers
+    get sync_route, params: {}, headers: headers
 
     response_body = JSON(response.body)
     expect(response.status).to eq 200

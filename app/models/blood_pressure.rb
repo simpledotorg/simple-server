@@ -10,8 +10,4 @@ class BloodPressure < ApplicationRecord
 
     attributes.transform_keys { |key| key_mapping[key] || key }
   end
-
-  def nested_hash(options = {})
-    with_payload_keys(attributes).as_json
-  end
 end

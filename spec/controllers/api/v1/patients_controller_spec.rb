@@ -190,7 +190,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         expect(received_patients.count).to eq Patient.count
 
         expect(received_patients.to_set)
-          .to eq JSON(Patient.all.map(&:nested_hash).to_json).to_set
+          .to eq (Patient.all.map { |patient| Api::V1::PatientTransformer.to_nested_response(patient) }).to_set
       end
     end
   end
