@@ -72,7 +72,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
 
         patients_payload.each do |updated_patient|
           db_patient = Patient.find(updated_patient['id'])
-          expect(with_payload_keys(db_patient.attributes).with_int_timestamps.except('address_id'))
+          expect(db_patient.attributes.with_payload_keys.with_int_timestamps.except('address_id'))
             .to eq(updated_patient.with_int_timestamps)
         end
       end
@@ -83,7 +83,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
 
         patients_payload.each do |updated_patient|
           db_patient = Patient.find(updated_patient['id'])
-          expect(with_payload_keys(db_patient.address.attributes).with_int_timestamps)
+          expect(db_patient.address.attributes.with_payload_keys.with_int_timestamps)
             .to eq(updated_patient['address'].with_int_timestamps)
         end
       end
@@ -97,7 +97,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         patients_payload.each do |updated_patient|
           updated_phone_number = updated_patient['phone_numbers'].first
           db_phone_number      = PatientPhoneNumber.find(updated_phone_number['id'])
-          expect(with_payload_keys(db_phone_number.attributes).with_int_timestamps)
+          expect(db_phone_number.attributes.with_payload_keys.with_int_timestamps)
             .to eq(updated_phone_number.with_int_timestamps)
         end
       end
@@ -110,9 +110,9 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         patients_payload.each do |updated_patient|
           updated_patient.with_int_timestamps
           db_patient = Patient.find(updated_patient['id'])
-          expect(with_payload_keys(db_patient.attributes).with_int_timestamps.except('address_id'))
+          expect(db_patient.attributes.with_payload_keys.with_int_timestamps.except('address_id'))
             .to eq(updated_patient.except('address', 'phone_numbers'))
-          expect(with_payload_keys(db_patient.address.attributes).with_int_timestamps)
+          expect(db_patient.address.attributes.with_payload_keys.with_int_timestamps)
             .to eq(updated_patient['address'])
         end
 
@@ -120,7 +120,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         patients_payload.each do |updated_patient|
           updated_phone_number = updated_patient['phone_numbers'].first
           db_phone_number      = PatientPhoneNumber.find(updated_phone_number['id'])
-          expect(with_payload_keys(db_phone_number.attributes).with_int_timestamps)
+          expect(db_phone_number.attributes.with_payload_keys.with_int_timestamps)
             .to eq(updated_phone_number)
         end
       end
@@ -190,7 +190,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         expect(received_patients.count).to eq Patient.count
 
         expect(received_patients.to_set)
-          .to eq JSON(Patient.all.map(&:nested_hash).to_json).to_set
+          .to eq (Patient.all.map { |patient| Api::V1::PatientTransformer.to_nested_response(patient) }).to_set
       end
     end
   end

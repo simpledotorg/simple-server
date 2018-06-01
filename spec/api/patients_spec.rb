@@ -1,7 +1,6 @@
 require 'swagger_helper'
 
 describe 'Patients API' do
-
   path '/patients/sync' do
 
     post 'Syncs patient, address and phone number data from device to server.' do
@@ -14,7 +13,7 @@ describe 'Patients API' do
       end
 
       response '200', 'some, or no errors were found' do
-        schema Api::V1::Spec.patient_sync_from_user_errors_spec
+        schema Api::V1::Spec.sync_from_user_errors_spec
         let(:patients) { { patients: (1..10).map { build_invalid_patient_payload } } }
         run_test!
       end
@@ -22,7 +21,7 @@ describe 'Patients API' do
 
     get 'Syncs patient, address and phone number data from server to device.' do
       tags 'patient'
-      Api::V1::Spec.patient_sync_to_user_request_spec.each do |param|
+      Api::V1::Spec.sync_to_user_request_spec.each do |param|
         parameter param
       end
 

@@ -47,5 +47,10 @@ describe Mergeable do
     PatientPhoneNumber.merge(new_phone_number.attributes)
     expect(PatientPhoneNumber.first.attributes.except('updated_at', 'created_at').with_int_timestamps)
       .to eq(new_phone_number.attributes.except('updated_at', 'created_at').with_int_timestamps)
+
+    new_blood_pressure = FactoryBot.build(:blood_pressure)
+    BloodPressure.merge(new_blood_pressure.attributes)
+    expect(BloodPressure.first.attributes.except('updated_at', 'created_at').with_int_timestamps)
+      .to eq(new_blood_pressure.attributes.except('updated_at', 'created_at').with_int_timestamps)
   end
 end

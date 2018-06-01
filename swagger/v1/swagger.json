@@ -27,6 +27,84 @@
     }
   },
   "paths": {
+    "/blood_pressures/sync": {
+      "post": {
+        "summary": "Syncs blood pressure data from device to server.",
+        "tags": [
+          "Blood Pressure"
+        ],
+        "parameters": [
+          {
+            "name": "blood_pressures",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "blood_pressures": {
+                  "$ref": "#/definitions/blood_pressures"
+                }
+              },
+              "required": [
+                "blood_pressures"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/error_spec"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs blood pressure data from server to device.",
+        "tags": [
+          "Blood Pressure"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+            "name": "processed_since",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "blood pressures received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "blood_pressures": {
+                  "$ref": "#/definitions/blood_pressures"
+                },
+                "processed_since": {
+                  "$ref": "#/definitions/processed_since"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/patients/sync": {
       "post": {
         "summary": "Syncs patient, address and phone number data from device to server.",
@@ -345,6 +423,44 @@
       "description": "List of patients with address and phone numbers nested.",
       "items": {
         "$ref": "#/definitions/nested_patient"
+      }
+    },
+    "blood_pressure": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "systolic": {
+          "type": "integer"
+        },
+        "diastolic": {
+          "type": "integer"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "patient_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "systolic",
+        "diastolic",
+        "created_at",
+        "updated_at",
+        "patient_id"
+      ]
+    },
+    "blood_pressures": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/blood_pressure"
       }
     },
     "error_spec": {

@@ -17,4 +17,9 @@ class Hash
   def to_json_and_back
     JSON(self.to_json)
   end
+
+  def with_payload_keys
+    Api::V1::Transformer.rename_attributes(
+      self, Api::V1::Transformer.inverted_key_mapping)
+  end
 end
