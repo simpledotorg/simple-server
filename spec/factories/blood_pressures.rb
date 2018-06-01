@@ -9,17 +9,8 @@ FactoryBot.define do
   end
 end
 
-def with_payload_keys(attributes)
-  key_mapping = {
-    'device_created_at' => 'created_at',
-    'device_updated_at' => 'updated_at'
-  }.with_indifferent_access
-
-  attributes.transform_keys { |key| key_mapping[key] || key }
-end
-
 def build_blood_pressure_payload(blood_pressure = FactoryBot.build(:blood_pressure))
-  with_payload_keys(blood_pressure.attributes)
+  blood_pressure.attributes.with_payload_keys
 end
 
 def build_invalid_blood_pressure_payload

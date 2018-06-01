@@ -1,5 +1,4 @@
 class Api::V1::SyncController < APIController
-
   def __sync_from_user__(params)
     errors = params.flat_map do |single_entity_params|
       merge_if_valid(single_entity_params) || []
