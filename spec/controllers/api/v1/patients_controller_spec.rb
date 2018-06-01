@@ -1,15 +1,32 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::PatientsController, type: :controller do
+  let(:model) { Patient }
+
+  let(:empty_payload) { { patients: [] } }
+
+  let(:new_records) do
+    (1..10).map { build_patient_payload.except(:address, :phone_numbers) }
+  end
+  let(:new_records_payload) { { patients: new_records } }
+
+  let(:existing_records) { FactoryBot.create_list(:patient, 10) }
+  let(:updated_records) { existing_records.map { |record| updated_patient_payload record } }
+  let(:updated_payload) { { patients: updated_records } }
+
+  let(:invalid_record) { build_invalid_patient_payload }
+  let(:invalid_payload) { { patients: [invalid_record] } }
+  let(:number_of_schema_errors) { 2 + invalid_record['phone_numbers'].count }
+
+  let(:invalid_records_payload) { (1..5).map { build_invalid_patient_payload } }
+  let(:valid_records_payload) { (1..5).map { build_patient_payload } }
+  let(:partially_valid_payload) { { patients: invalid_records_payload + valid_records_payload } }
+
+
   describe 'POST sync: send data from device to server;' do
+    it_behaves_like 'sync controller - create new records'
 
     describe 'creates new patients' do
-
-      it 'returns 400 when there are no patients in the request' do
-        post(:sync_from_user, params: { patients: [] })
-        expect(response.status).to eq 400
-      end
-
       it 'creates new patients' do
         patients = (1..10).map { build_patient_payload }
         post(:sync_from_user, params: { patients: patients }, as: :json)
@@ -18,7 +35,6 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         expect(PatientPhoneNumber.count).to eq(patients.sum { |patient| patient['phone_numbers'].count })
         expect(response).to have_http_status(200)
       end
-
       it 'creates new patients without address' do
         post(:sync_from_user, params: { patients: [build_patient_payload.except('address')] }, as: :json)
         expect(Patient.count).to eq 1
@@ -32,39 +48,11 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         expect(PatientPhoneNumber.count).to eq 0
         expect(response).to have_http_status(200)
       end
-
-      it 'returns errors for invalid records' do
-        payload = build_invalid_patient_payload
-        post(:sync_from_user, params: { patients: [payload] }, as: :json)
-
-        patient_errors = JSON(response.body)['errors'].first
-        expect(patient_errors).to be_present
-        expect(patient_errors['schema']).to be_present
-        expect(patient_errors['id']).to be_present
-        expect(patient_errors['schema'].count).to eq 2 + payload['phone_numbers'].count
-      end
-
-      it 'returns errors for some invalid records, and accepts others' do
-        invalid_patients_payload = (1..5).map { build_invalid_patient_payload }
-        valid_patients_payload   = (1..5).map { build_patient_payload }
-        post(:sync_from_user, params: { patients: invalid_patients_payload + valid_patients_payload }, as: :json)
-
-        patient_errors = JSON(response.body)['errors']
-        expect(patient_errors.count).to eq 5
-        expect(patient_errors.map { |error| error['id'] })
-          .to match_array(invalid_patients_payload.map { |patient| patient['id'] })
-
-        expect(Patient.count).to eq 5
-        expect(Patient.pluck(:id))
-          .to match_array(valid_patients_payload.map { |patient| patient['id'] })
-      end
     end
 
     describe 'updates patients' do
-
       let(:existing_patients) { FactoryBot.create_list(:patient, 10) }
       let(:updated_patients_payload) { existing_patients.map { |patient| updated_patient_payload patient } }
-
 
       it 'with only updated patient attributes' do
         patients_payload = updated_patients_payload.map { |patient| patient.except('address', 'phone_numbers') }
@@ -128,70 +116,6 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
   end
 
   describe 'GET sync: send data from server to device;' do
-    before :each do
-      Timecop.travel(15.minutes.ago) do
-        FactoryBot.create_list(:patient, 10)
-      end
-    end
-
-    it 'Returns records from the beginning of time, when processed_since is not set' do
-      get :sync_to_user
-
-      response_body = JSON(response.body)
-      expect(response_body['patients'].count).to eq Patient.count
-      expect(response_body['patients'].map { |patient| patient['id'] }.to_set)
-        .to eq(Patient.all.pluck(:id).to_set)
-    end
-
-    it 'Returns new patients added since last sync' do
-      expected_patients = FactoryBot.create_list(:patient, 5, updated_at: 5.minutes.ago)
-      get :sync_to_user, params: { processed_since: 10.minutes.ago }
-
-      response_body = JSON(response.body)
-      expect(response_body['patients'].count).to eq 5
-
-      expect(response_body['patients'].map { |patient| patient['id'] }.to_set)
-        .to eq(expected_patients.map(&:id).to_set)
-
-      expect(response_body['processed_since'].to_time.to_i)
-        .to eq(expected_patients.map(&:updated_at).max.to_i)
-    end
-
-    describe 'nothing to sync' do
-      it 'Returns an empty list when there is nothing to sync' do
-        sync_time = 10.minutes.ago
-        get :sync_to_user, params: { processed_since: sync_time }
-        response_body = JSON(response.body)
-        expect(response_body['patients'].count).to eq 0
-        expect(response_body['processed_since'].to_time.to_i).to eq sync_time.to_i
-      end
-
-    end
-
-    describe 'batching' do
-      it 'Returns the number of records requested with limit' do
-        get :sync_to_user, params: { processed_since: 20.minutes.ago,
-                                     limit:           2 }
-        response_body = JSON(response.body)
-        expect(response_body['patients'].count).to eq 2
-      end
-
-      it 'Returns all the records on server over multiple small batches' do
-        get :sync_to_user, params: { processed_since: 20.minutes.ago,
-                                     limit:           7 }
-        response_1 = JSON(response.body)
-
-        get :sync_to_user, params: { processed_since: response_1['processed_since'],
-                                     limit:           7 }
-
-        response_2 = JSON(response.body)
-
-        received_patients = response_1['patients'].concat(response_2['patients']).to_set
-        expect(received_patients.count).to eq Patient.count
-
-        expect(received_patients.to_set)
-          .to eq (Patient.all.map { |patient| Api::V1::PatientTransformer.to_nested_response(patient) }).to_set
-      end
-    end
+    it_behaves_like 'sync controller - get records'
   end
 end
