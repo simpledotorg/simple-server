@@ -22,21 +22,12 @@ FactoryBot.define do
   end
 end
 
-def with_payload_keys(attributes)
-  key_mapping = {
-    'device_created_at' => 'created_at',
-    'device_updated_at' => 'updated_at'
-  }.with_indifferent_access
-
-  attributes.transform_keys { |key| key_mapping[key] || key }
-end
-
 def build_patient_payload(patient = FactoryBot.build(:patient))
-  with_payload_keys(patient.attributes)
+  patient.attributes.with_payload_keys
     .except('address_id')
     .merge(
-      'address'       => with_payload_keys(patient.address.attributes),
-      'phone_numbers' => patient.phone_numbers.map { |phno| with_payload_keys(phno.attributes).except('patient_id') }
+      'address'       => patient.address.attributes.with_payload_keys,
+      'phone_numbers' => patient.phone_numbers.map { |phno| phno.attributes.with_payload_keys.except('patient_id') }
     )
 end
 
@@ -58,7 +49,7 @@ def updated_patient_payload(existing_patient)
     'updated_at'    => update_time,
     'address'       => { 'updated_at'     => update_time,
                          'street_address' => Faker::Address.street_address },
-    'phone_numbers' => [with_payload_keys(phone_number.attributes).merge(
+    'phone_numbers' => [phone_number.attributes.with_payload_keys.merge(
       'updated_at' => update_time,
       'number'     => Faker::PhoneNumber.phone_number)]
   )

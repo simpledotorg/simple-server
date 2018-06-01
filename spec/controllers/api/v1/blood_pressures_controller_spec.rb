@@ -66,7 +66,7 @@ RSpec.describe Api::V1::BloodPressuresController, type: :controller do
 
         updated_blood_pressures_payload.each do |updated_blood_pressure|
           db_blood_pressure = BloodPressure.find(updated_blood_pressure['id'])
-          expect(with_payload_keys(db_blood_pressure.attributes).with_int_timestamps)
+          expect(db_blood_pressure.attributes.with_payload_keys.with_int_timestamps)
             .to eq(updated_blood_pressure.with_int_timestamps)
         end
       end

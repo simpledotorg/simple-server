@@ -1,5 +1,15 @@
-class Api::V1::PatientsController < APIController
-  def merge_patient(single_patient_params)
+class Api::V1::PatientsController < Api::V1::SyncController
+  def sync_from_user
+    __sync_from_user__(patients_params)
+  end
+
+  def sync_to_user
+    __sync_to_user__('patients')
+  end
+
+  private
+
+  def merge_if_valid(single_patient_params)
     validator = Api::V1::PatientPayloadValidator.new(single_patient_params)
     logger.debug "Patient had errors: #{validator.errors_hash}" if validator.invalid?
     unless validator.invalid?
@@ -11,33 +21,13 @@ class Api::V1::PatientsController < APIController
     validator.errors_hash if validator.invalid?
   end
 
-  def sync_from_user
-    errors = patients_params.flat_map { |single_patient_params| merge_patient(single_patient_params) || [] }
-
-    response = { errors: errors.nil? ? nil : errors }
-    render json: response, status: :ok
+  def find_records_to_sync(since, limit)
+    Patient.updated_on_server_since(processed_since, limit)
   end
 
-  def sync_to_user
-    patients_to_sync = Patient.updated_on_server_since(processed_since, limit)
-
-    most_recent_record_timestamp =
-      if patients_to_sync.empty?
-        processed_since
-      else
-        patients_to_sync.last.updated_at
-      end
-
-    render(
-      json:   {
-        patients:        patients_to_sync.map { |patient| Api::V1::PatientTransformer.to_nested_response(patient) },
-        processed_since: most_recent_record_timestamp.strftime(TIME_WITHOUT_TIMEZONE_FORMAT)
-      },
-      status: :ok
-    )
+  def transform_to_response(patient)
+    Api::V1::PatientTransformer.to_nested_response(patient)
   end
-
-  private
 
   def patients_params
     permitted_address_params      = %i[id street_address village_or_colony district state country pin created_at updated_at]
@@ -57,18 +47,6 @@ class Api::V1::PatientsController < APIController
         phone_numbers: [permitted_phone_number_params],
         address:       permitted_address_params
       )
-    end
-  end
-
-  def processed_since
-    params[:processed_since].try(:to_time) || Time.new(0)
-  end
-
-  def limit
-    if params[:limit].present?
-      params[:limit].to_i
-    else
-      ENV['DEFAULT_NUMBER_OF_RECORDS'].to_i
     end
   end
 end
