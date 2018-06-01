@@ -6,7 +6,7 @@ module Api::V1::Spec
   def self.timestamp
     { type:        :string,
       format:      'date-time',
-      description: 'Timestamp with millisecond precision' }
+      description: 'Timestamp with millisecond precision.' }
   end
 
   def self.uuid
@@ -16,8 +16,9 @@ module Api::V1::Spec
   end
 
   def self.non_empty_string
-    { type:      :string,
-      minLength: 1 }
+    { type:        :string,
+      minLength:   1,
+      description: 'This string should not be empty.' }
   end
 
   def self.nullable_timestamp
