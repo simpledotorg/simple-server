@@ -46,8 +46,17 @@ describe Api::V1::PatientPayloadValidator, type: :model do
       expect(payload.valid?).to be false
       expect(payload.errors[:schema]).to be_present
 
+      # non empty validation
+      payload = new_patient_payload('full_name' => "")
+      expect(payload.valid?).to be false
+      expect(payload.errors[:schema]).to be_present
+
       # type and format validation
       payload = new_patient_payload('created_at' => 'foo')
+      expect(payload.valid?).to be false
+      expect(payload.errors[:schema]).to be_present
+
+      payload = new_patient_payload('id' => 'not-a-uuid')
       expect(payload.valid?).to be false
       expect(payload.errors[:schema]).to be_present
 
