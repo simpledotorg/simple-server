@@ -188,7 +188,12 @@
     "timestamp": {
       "type": "string",
       "format": "date-time",
-      "description": "Timestamp with millisecond precision"
+      "description": "Timestamp with millisecond precision."
+    },
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}"
     },
     "nullable_timestamp": {
       "type": [
@@ -196,7 +201,7 @@
         "null"
       ],
       "format": "date-time",
-      "description": "Timestamp with millisecond precision"
+      "description": "Timestamp with millisecond precision."
     },
     "processed_since": {
       "type": "string",
@@ -208,8 +213,7 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "string",
-          "format": "uuid"
+          "$ref": "#/definitions/uuid"
         },
         "gender": {
           "type": "string",
@@ -220,8 +224,7 @@
           ]
         },
         "full_name": {
-          "type": "string",
-          "required": true
+          "$ref": "#/definitions/non_empty_string"
         },
         "status": {
           "type": "string",
@@ -273,8 +276,7 @@
       ],
       "properties": {
         "id": {
-          "type": "string",
-          "format": "uuid"
+          "$ref": "#/definitions/uuid"
         },
         "street_address": {
           "type": "string"
@@ -311,11 +313,10 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "string",
-          "format": "uuid"
+          "$ref": "#/definitions/uuid"
         },
         "number": {
-          "type": "string"
+          "$ref": "#/definitions/non_empty_string"
         },
         "phone_type": {
           "type": "string",
@@ -354,8 +355,7 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "string",
-          "format": "uuid"
+          "$ref": "#/definitions/uuid"
         },
         "gender": {
           "type": "string",
@@ -366,8 +366,7 @@
           ]
         },
         "full_name": {
-          "type": "string",
-          "required": true
+          "$ref": "#/definitions/non_empty_string"
         },
         "status": {
           "type": "string",
@@ -429,8 +428,7 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "string",
-          "format": "uuid"
+          "$ref": "#/definitions/uuid"
         },
         "systolic": {
           "type": "integer"
@@ -445,8 +443,7 @@
           "$ref": "#/definitions/timestamp"
         },
         "patient_id": {
-          "type": "string",
-          "format": "uuid"
+          "$ref": "#/definitions/uuid"
         }
       },
       "required": [
@@ -462,6 +459,11 @@
       "items": {
         "$ref": "#/definitions/blood_pressure"
       }
+    },
+    "non_empty_string": {
+      "type": "string",
+      "minLength": 1,
+      "description": "This string should not be empty."
     },
     "error_spec": {
       "type": "object",
