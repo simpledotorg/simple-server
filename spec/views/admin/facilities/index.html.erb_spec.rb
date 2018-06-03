@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "facilities/index", type: :view do
+RSpec.describe "admin/facilities/index", type: :view do
   before(:each) do
     assign(:facilities, [
       Facility.create!(
@@ -28,7 +28,7 @@ RSpec.describe "facilities/index", type: :view do
 
   it "renders a list of facilities" do
     render
-    assert_select "tr>td", :text => "Name".to_s, :count => 2
+    assert_select "tr>td a", :text => "Name".to_s, :count => 2
     assert_select "tr>td", :text => "Street Address".to_s, :count => 2
     assert_select "tr>td", :text => "Village Or Colony".to_s, :count => 2
     assert_select "tr>td", :text => "District".to_s, :count => 2

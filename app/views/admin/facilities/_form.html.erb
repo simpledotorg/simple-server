@@ -1,4 +1,4 @@
-<%= form_with(model: facility, local: true) do |form| %>
+<%= form_with(model: [:admin, facility], local: true) do |form| %>
   <% if facility.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(facility.errors.count, "error") %> prohibited this facility from being saved:</h2>

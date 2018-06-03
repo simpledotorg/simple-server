@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "facilities/show", type: :view do
+RSpec.describe "admin/facilities/show", type: :view do
   before(:each) do
     @facility = assign(:facility, Facility.create!(
       :name => "Name",

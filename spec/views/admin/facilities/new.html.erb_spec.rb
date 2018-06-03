@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "facilities/new", type: :view do
+RSpec.describe "admin/facilities/new", type: :view do
   before(:each) do
     assign(:facility, Facility.new(
       :name => "MyString",
@@ -17,7 +17,7 @@ RSpec.describe "facilities/new", type: :view do
   it "renders new facility form" do
     render
 
-    assert_select "form[action=?][method=?]", facilities_path, "post" do
+    assert_select "form[action=?][method=?]", admin_facilities_path, "post" do
 
       assert_select "input[name=?]", "facility[name]"
 

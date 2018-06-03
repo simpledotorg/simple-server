@@ -16,5 +16,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :facilities
+  namespace :admin do
+    resources :facilities
+  end
 end
