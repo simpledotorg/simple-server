@@ -1,0 +1,44 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @facility.name %>
+</p>
+
+<p>
+  <strong>Street address:</strong>
+  <%= @facility.street_address %>
+</p>
+
+<p>
+  <strong>Village or colony:</strong>
+  <%= @facility.village_or_colony %>
+</p>
+
+<p>
+  <strong>District:</strong>
+  <%= @facility.district %>
+</p>
+
+<p>
+  <strong>State:</strong>
+  <%= @facility.state %>
+</p>
+
+<p>
+  <strong>Country:</strong>
+  <%= @facility.country %>
+</p>
+
+<p>
+  <strong>Pin:</strong>
+  <%= @facility.pin %>
+</p>
+
+<p>
+  <strong>Facility type:</strong>
+  <%= @facility.facility_type %>
+</p>
+
+<%= link_to 'Edit', edit_facility_path(@facility) %> |
+<%= link_to 'Back', facilities_path %>
