@@ -14,6 +14,7 @@ ActiveRecord::Schema.define(version: 20180603185002) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pgcrypto"
 
   create_table "addresses", id: :uuid, default: nil, force: :cascade do |t|
     t.string "street_address"
@@ -38,7 +39,7 @@ ActiveRecord::Schema.define(version: 20180603185002) do
     t.datetime "device_updated_at", null: false
   end
 
-  create_table "facilities", id: :uuid, default: nil, force: :cascade do |t|
+  create_table "facilities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.string "street_address"
     t.string "village_or_colony"
