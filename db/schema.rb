@@ -66,7 +66,6 @@ ActiveRecord::Schema.define(version: 20180604085551) do
   create_table "protocol_drugs", id: :uuid, default: nil, force: :cascade do |t|
     t.string "name", null: false
     t.string "dosage", null: false
-    t.integer "follow_up_days"
     t.string "rxnorm_code"
     t.uuid "protocol_id"
   end

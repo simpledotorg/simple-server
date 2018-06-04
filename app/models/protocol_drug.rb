@@ -1,9 +1,9 @@
-class Protocol < ApplicationRecord
-  has_many :protocol_drugs
+class ProtocolDrug < ApplicationRecord
+  belongs_to :protocol
   before_create :assign_id
 
   validates :name, presence: true
-  validates :follow_up_days, numericality: true
+  validates :dosage, presence: true
 
   def assign_id
     self.id = SecureRandom.uuid

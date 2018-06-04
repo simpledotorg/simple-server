@@ -4,26 +4,58 @@
 
 <table>
   <thead>
-    <tr>
-      <th>Name</th>
-      <th>Follow up days</th>
-      <th colspan="3"></th>
-    </tr>
+  <tr>
+    <th>Name</th>
+    <th>Follow up days</th>
+    <th colspan="3"></th>
+  </tr>
   </thead>
 
   <tbody>
-    <% @protocols.each do |protocol| %>
-      <tr>
-        <td><%= protocol.name %></td>
-        <td><%= protocol.follow_up_days %></td>
-        <td><%= link_to 'Show', protocol %></td>
-        <td><%= link_to 'Edit', edit_protocol_path(protocol) %></td>
-        <td><%= link_to 'Destroy', protocol, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
+  <% @protocols.each do |protocol| %>
+    <tr>
+      <td><%= protocol.name %></td>
+      <td><%= protocol.follow_up_days %></td>
+      <td><%= link_to 'Show', protocol %></td>
+      <td><%= link_to 'Edit', edit_protocol_path(protocol) %></td>
+      <td><%= link_to 'Destroy', protocol, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    </tr>
+  <% end %>
   </tbody>
 </table>
 
 <br>
 
 <%= link_to 'New Protocol', new_protocol_path %>
+
+<% @protocols.each do |protocol| %>
+  <h1>Protocol Drugs for <%= protocol.name %> </h1>
+
+  <table>
+    <thead>
+    <tr>
+      <th>Name</th>
+      <th>Dosage</th>
+      <th>Rxnorm code</th>
+      <th colspan="3"></th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <% protocol.protocol_drugs.each do |protocol_drug| %>
+      <tr>
+        <td><%= protocol_drug.name %></td>
+        <td><%= protocol_drug.dosage %></td>
+        <td><%= protocol_drug.rxnorm_code %></td>
+        <td><%= link_to 'Show', protocol_drug %></td>
+        <td><%= link_to 'Edit', edit_protocol_drug_path(protocol_drug) %></td>
+        <td><%= link_to 'Destroy', protocol_drug, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+
+  <br>
+
+  <%= link_to 'New Protocol Drug', new_protocol_drug_path %>
+<% end %>

@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :protocol_drugs
   resources :protocols
   mount Rswag::Ui::Engine => '/api-docs'
   mount Rswag::Api::Engine => '/api-docs'

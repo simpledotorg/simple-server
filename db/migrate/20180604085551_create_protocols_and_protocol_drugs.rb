@@ -10,7 +10,6 @@ class CreateProtocolsAndProtocolDrugs < ActiveRecord::Migration[5.1]
       t.uuid :id, primary_key: true
       t.string :name, null: false
       t.string :dosage, null: false
-      t.integer :follow_up_days
       t.string :rxnorm_code
       t.uuid :protocol_id
     end

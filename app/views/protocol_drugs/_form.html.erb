@@ -1,0 +1,37 @@
+<%= form_with(model: protocol_drug, local: true) do |form| %>
+  <% if protocol_drug.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(protocol_drug.errors.count, "error") %> prohibited this protocol_drug from being saved:</h2>
+
+      <ul>
+      <% protocol_drug.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :name %>
+    <%= form.text_field :name, id: :protocol_drug_name %>
+  </div>
+
+  <div class="field">
+    <%= form.label :dosage %>
+    <%= form.text_field :dosage, id: :protocol_drug_dosage %>
+  </div>
+
+  <div class="field">
+    <%= form.label :rxnorm_code %>
+    <%= form.text_field :rxnorm_code, id: :protocol_drug_rxnorm_code %>
+  </div>
+
+  <div class="field">
+    <%= form.label :protocol_id %>
+    <%= form.select 'protocol_id', options_from_collection_for_select(@protocols, "id", "name") %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>
