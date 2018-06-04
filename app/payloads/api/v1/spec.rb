@@ -94,6 +94,26 @@ module Api::V1::Spec
       items: { '$ref' => '#/definitions/blood_pressure' } }
   end
 
+  def self.facility_spec
+    {
+      type: :object,
+      properties: {
+        id: { '$ref' => '#/definitions/uuid' },
+        created_at: { '$ref' => '#/definitions/timestamp' },
+        updated_at: { '$ref' => '#/definitions/timestamp' },
+        name: { type: :string },
+        street_address: { type: :string },
+        village_or_colony: { type: :string },
+        district: { type: :string },
+        state: { type: :string },
+        country: { type: :string },
+        pin: { type: :string },
+        facility_type: { type: :string }
+      },
+      required: %w[id name protocol_drugs]
+    }
+  end
+
   ###############
   # API Specs
 
@@ -171,6 +191,20 @@ module Api::V1::Spec
         processed_since: { '$ref' => '#/definitions/processed_since' } } }
   end
 
+  def self.facility_sync_to_user_response_spec
+    {
+      type: :object,
+      properties: {
+        facilities: {
+          type:  :array,
+          items: { '$ref' => '#/definitions/facility' }
+        },
+        processed_since: { '$ref' => '#/definitions/processed_since' }
+      },
+      required:   %w[facilities processed_since]
+    }
+  end
+
   def self.all_definitions
     { timestamp:          timestamp,
       uuid:               uuid,
@@ -184,6 +218,7 @@ module Api::V1::Spec
       nested_patients:    nested_patients,
       blood_pressure:     blood_pressure_spec,
       blood_pressures:    blood_pressures,
+      facility:           facility_spec,
       non_empty_string:   non_empty_string,
       error_spec:         error_spec }
   end

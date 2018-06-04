@@ -105,6 +105,52 @@
         }
       }
     },
+    "/facilities/sync": {
+      "get": {
+        "summary": "Syncs facilities data from server to device.",
+        "tags": [
+          "facility"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+            "name": "processed_since",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "facilities received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "facilities": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/facility"
+                  }
+                },
+                "processed_since": {
+                  "$ref": "#/definitions/processed_since"
+                }
+              },
+              "required": [
+                "facilities",
+                "processed_since"
+              ]
+            }
+          }
+        }
+      }
+    },
     "/patients/sync": {
       "post": {
         "summary": "Syncs patient, address and phone number data from device to server.",
@@ -459,6 +505,49 @@
       "items": {
         "$ref": "#/definitions/blood_pressure"
       }
+    },
+    "facility": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "name": {
+          "type": "string"
+        },
+        "street_address": {
+          "type": "string"
+        },
+        "village_or_colony": {
+          "type": "string"
+        },
+        "district": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "pin": {
+          "type": "string"
+        },
+        "facility_type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "protocol_drugs"
+      ]
     },
     "non_empty_string": {
       "type": "string",

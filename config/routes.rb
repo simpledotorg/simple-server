@@ -9,9 +9,14 @@ Rails.application.routes.draw do
         get 'sync', to: 'patients#sync_to_user'
         post 'sync', to: 'patients#sync_from_user'
       end
+
       scope '/blood_pressures' do
         get 'sync', to: 'blood_pressures#sync_to_user'
         post 'sync', to: 'blood_pressures#sync_from_user'
+      end
+
+      scope '/facilities' do
+        get 'sync', to: 'facilities#sync_to_user'
       end
     end
   end

@@ -5,3 +5,12 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+Facility.find_or_create_by(
+  name: "Civil Hospital Hoshiarpur",
+  street_address: "Jalandhar Road",
+  village_or_colony: "Kamalpur",
+  district: "Hoshiarpur",
+  state: "Punjab",
+  country: "India"
+)
