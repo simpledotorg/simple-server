@@ -28,6 +28,7 @@ RSpec.describe "admin/facilities/index", type: :view do
 
   it "renders a list of facilities" do
     render
+
     assert_select "tr>td a", :text => "Name".to_s, :count => 2
     assert_select "tr>td", :text => "Street Address".to_s, :count => 2
     assert_select "tr>td", :text => "Village Or Colony".to_s, :count => 2
