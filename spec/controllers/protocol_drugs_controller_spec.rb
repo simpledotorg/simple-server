@@ -76,7 +76,8 @@ RSpec.describe ProtocolDrugsController, type: :controller do
         protocol_drug = ProtocolDrug.create! valid_attributes
         put :update, params: {id: protocol_drug.to_param, protocol_drug: new_attributes}
         protocol_drug.reload
-        expect(protocol_drug.attributes.except('id')).to eq new_attributes.with_indifferent_access
+        expect(protocol_drug.attributes.except('id', 'created_at', 'updated_at'))
+          .to eq new_attributes.with_indifferent_access
       end
 
       it "redirects to the list of protocols" do

@@ -75,7 +75,8 @@ RSpec.describe ProtocolsController, type: :controller do
         put :update, params: {id: protocol.to_param, protocol: new_attributes}
         protocol.reload
         expect(response).to redirect_to(protocol)
-        expect(protocol.attributes.except('id')).to eq new_attributes.with_indifferent_access
+        expect(protocol.attributes.except('id', 'created_at', 'updated_at'))
+          .to eq new_attributes.with_indifferent_access
       end
 
       it "redirects to the protocol" do
