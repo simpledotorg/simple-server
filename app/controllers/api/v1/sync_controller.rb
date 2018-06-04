@@ -4,6 +4,7 @@ class Api::V1::SyncController < APIController
       merge_if_valid(single_entity_params) || []
     end
 
+    capture_errors params, errors
     response = { errors: errors.nil? ? nil : errors }
     render json: response, status: :ok
   end
@@ -20,6 +21,27 @@ class Api::V1::SyncController < APIController
   end
 
   private
+
+  def params_with_errors(params, errors)
+    error_ids = errors.map { |error| error[:id] }
+    params
+      .select { |param| error_ids.include? param[:id] }
+      .map(&:to_hash)
+  end
+
+  def capture_errors(params, errors)
+    return unless errors.present?
+
+    Raven.capture_message(
+      'Validation Error',
+      logger: 'logger',
+      extra:  {
+        params_with_errors: params_with_errors(params, errors),
+        errors: errors
+      },
+      tags: { type: 'validation' }
+    )
+  end
 
   def most_recent_record_timestamp(records_to_sync)
     if records_to_sync.empty?
