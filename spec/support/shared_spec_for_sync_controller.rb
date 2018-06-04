@@ -1,6 +1,19 @@
 require 'rails_helper'
 
 RSpec.shared_examples 'sync controller - create new records' do
+  let(:request_key) { model.to_s.underscore.pluralize }
+  let(:empty_payload) { Hash[request_key, []] }
+
+  let(:new_records) { (1..10).map { build_payload.call } }
+  let(:new_records_payload) { Hash[request_key, new_records]}
+
+  let(:invalid_record) { build_invalid_payload.call }
+  let(:invalid_payload) { Hash[request_key, [invalid_record]] }
+
+  let(:invalid_records_payload) { (1..5).map { build_invalid_payload.call } }
+  let(:valid_records_payload) { (1..5).map { build_payload.call } }
+  let(:partially_valid_payload) { Hash[request_key, invalid_records_payload + valid_records_payload] }
+
   describe 'creates new records' do
     it 'returns 400 when there are no records in the request' do
       post(:sync_from_user, params: empty_payload)
@@ -39,6 +52,11 @@ RSpec.shared_examples 'sync controller - create new records' do
 end
 
 RSpec.shared_examples 'sync controller - update exiting records' do
+  let(:request_key) { model.to_s.underscore.pluralize }
+  let(:existing_records) { FactoryBot.create_list(model.to_s.underscore.to_sym, 10) }
+  let(:updated_records) { existing_records.map(&update_payload) }
+  let(:updated_payload) { Hash[request_key, updated_records] }
+
   describe 'updates records' do
     it 'with updated record attributes' do
       post :sync_from_user, params: updated_payload, as: :json
@@ -118,7 +136,7 @@ RSpec.shared_examples 'sync controller - get records' do
         received_records = response_1[response_key].concat(response_2[response_key]).to_set
         expect(received_records.count).to eq model.count
 
-        expect(received_records.map {|record| record['id']}.to_set)
+        expect(received_records.map { |record| record['id'] }.to_set)
           .to eq(model.all.pluck(:id).to_set)
       end
 

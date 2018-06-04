@@ -1,6 +1,26 @@
 require 'rails_helper'
 
 RSpec.shared_examples 'sync requests' do
+  let(:headers) { { 'ACCEPT' => 'application/json', 'CONTENT_TYPE' => 'application/json' } }
+  let(:response_key) { model.to_s.underscore.pluralize }
+  let(:empty_payload) { Hash[response_key.to_sym, []] }
+  let(:valid_payload) { Hash[response_key.to_sym, [build_payload.call]]}
+  let(:created_records) { (1..10).map { build_payload.call } }
+  let(:many_valid_records) { Hash[response_key.to_sym, created_records] }
+  let(:expected_response) do
+    valid_payload[response_key.to_sym].map do |patient|
+      patient.with_int_timestamps.to_json_and_back
+    end
+  end
+  let(:updated_records) do
+    model
+      .find(created_records.map { |record| record['id'] })
+      .take(5)
+      .map(&update_payload)
+  end
+  let(:updated_payload) { Hash[response_key.to_sym, updated_records] }
+
+
   def assert_sync_success(response, processed_since)
     received_records = JSON(response.body)[response_key]
 

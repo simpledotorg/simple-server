@@ -3,25 +3,11 @@ require 'rails_helper'
 RSpec.describe Api::V1::PatientsController, type: :controller do
   let(:model) { Patient }
 
-  let(:empty_payload) { { patients: [] } }
+  let(:build_payload) { lambda { build_patient_payload } }
+  let(:build_invalid_payload) { lambda { build_invalid_patient_payload } }
+  let(:update_payload) { lamda { |record| updated_patient_payload record } }
 
-  let(:new_records) do
-    (1..10).map { build_patient_payload.except(:address, :phone_numbers) }
-  end
-  let(:new_records_payload) { { patients: new_records } }
-
-  let(:existing_records) { FactoryBot.create_list(:patient, 10) }
-  let(:updated_records) { existing_records.map { |record| updated_patient_payload record } }
-  let(:updated_payload) { { patients: updated_records } }
-
-  let(:invalid_record) { build_invalid_patient_payload }
-  let(:invalid_payload) { { patients: [invalid_record] } }
   let(:number_of_schema_errors) { 2 + invalid_record['phone_numbers'].count }
-
-  let(:invalid_records_payload) { (1..5).map { build_invalid_patient_payload } }
-  let(:valid_records_payload) { (1..5).map { build_patient_payload } }
-  let(:partially_valid_payload) { { patients: invalid_records_payload + valid_records_payload } }
-
 
   describe 'POST sync: send data from device to server;' do
     it_behaves_like 'sync controller - create new records'
