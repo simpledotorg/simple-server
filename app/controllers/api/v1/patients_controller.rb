@@ -24,7 +24,7 @@ class Api::V1::PatientsController < Api::V1::SyncController
   end
 
   def find_records_to_sync(since, limit)
-    Patient.updated_on_server_since(processed_since, limit)
+    Patient.updated_on_server_since(since, limit)
   end
 
   def transform_to_response(patient)

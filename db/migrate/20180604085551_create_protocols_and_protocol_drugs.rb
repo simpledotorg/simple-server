@@ -4,6 +4,7 @@ class CreateProtocolsAndProtocolDrugs < ActiveRecord::Migration[5.1]
       t.uuid :id, primary_key: true
       t.string :name, null: false
       t.integer :follow_up_days
+      t.timestamps
     end
 
     create_table :protocol_drugs, id: false do |t|
@@ -12,6 +13,7 @@ class CreateProtocolsAndProtocolDrugs < ActiveRecord::Migration[5.1]
       t.string :dosage, null: false
       t.string :rxnorm_code
       t.uuid :protocol_id
+      t.timestamps
     end
 
     add_foreign_key :protocol_drugs, :protocols

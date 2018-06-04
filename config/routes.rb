@@ -15,6 +15,9 @@ Rails.application.routes.draw do
         get 'sync', to: 'blood_pressures#sync_to_user'
         post 'sync', to: 'blood_pressures#sync_from_user'
       end
+      scope '/protocols' do
+        get 'sync', to: 'protocols#sync_to_user'
+      end
     end
   end
 end
