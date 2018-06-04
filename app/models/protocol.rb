@@ -3,7 +3,7 @@ class Protocol < ApplicationRecord
   before_create :assign_id
 
   validates :name, presence: true
-  validates :follow_up_days, numericality: true
+  validates :follow_up_days, numericality: true, presence: true
 
   def assign_id
     self.id = SecureRandom.uuid
