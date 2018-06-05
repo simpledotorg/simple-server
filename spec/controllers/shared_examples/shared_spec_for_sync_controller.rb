@@ -7,7 +7,7 @@ RSpec.shared_examples 'sync controller - create new records' do
   let(:new_records) { (1..10).map { build_payload.call } }
   let(:new_records_payload) { Hash[request_key, new_records]}
 
-  let(:invalid_record) { build_invalid_payload.call }
+
   let(:invalid_payload) { Hash[request_key, [invalid_record]] }
 
   let(:invalid_records_payload) { (1..5).map { build_invalid_payload.call } }
@@ -33,7 +33,7 @@ RSpec.shared_examples 'sync controller - create new records' do
       expect(response_errors).to be_present
       expect(response_errors['schema']).to be_present
       expect(response_errors['id']).to be_present
-      expect(response_errors['schema'].count).to eq number_of_schema_errors
+      expect(response_errors['schema'].count).to eq number_of_schema_errors_in_invalid_payload
     end
 
     it 'returns errors for some invalid records, and accepts others' do

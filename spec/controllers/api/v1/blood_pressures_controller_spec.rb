@@ -5,9 +5,9 @@ RSpec.describe Api::V1::BloodPressuresController, type: :controller do
 
   let(:build_payload) { lambda { build_blood_pressure_payload } }
   let(:build_invalid_payload) { lambda { build_invalid_blood_pressure_payload } }
+  let(:invalid_record) { build_invalid_payload.call }
   let(:update_payload) { lambda { |blood_pressure| updated_blood_pressure_payload blood_pressure } }
-
-  let(:number_of_schema_errors) { 3 }
+  let(:number_of_schema_errors_in_invalid_payload) { 3 }
 
   describe 'POST sync: send data from device to server;' do
     it_behaves_like 'sync controller - create new records'

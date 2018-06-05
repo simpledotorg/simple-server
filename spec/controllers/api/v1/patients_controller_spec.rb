@@ -6,8 +6,9 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
   let(:build_payload) { lambda { build_patient_payload } }
   let(:build_invalid_payload) { lambda { build_invalid_patient_payload } }
   let(:update_payload) { lamda { |record| updated_patient_payload record } }
+  let(:invalid_record) { build_invalid_payload.call }
 
-  let(:number_of_schema_errors) { 2 + invalid_record['phone_numbers'].count }
+  let(:number_of_schema_errors_in_invalid_payload) { 2 + invalid_record['phone_numbers'].count }
 
   describe 'POST sync: send data from device to server;' do
     it_behaves_like 'sync controller - create new records'
