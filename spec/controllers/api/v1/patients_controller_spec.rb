@@ -11,7 +11,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
   let(:number_of_schema_errors_in_invalid_payload) { 2 + invalid_record['phone_numbers'].count }
 
   describe 'POST sync: send data from device to server;' do
-    it_behaves_like 'sync controller - create new records'
+    it_behaves_like 'a working sync controller creating records'
 
     describe 'creates new patients' do
       it 'creates new patients' do
@@ -103,6 +103,6 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
   end
 
   describe 'GET sync: send data from server to device;' do
-    it_behaves_like 'sync controller - get records'
+    it_behaves_like 'a working sync controller sending records'
   end
 end

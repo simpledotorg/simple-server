@@ -10,12 +10,12 @@ RSpec.describe Api::V1::BloodPressuresController, type: :controller do
   let(:number_of_schema_errors_in_invalid_payload) { 3 }
 
   describe 'POST sync: send data from device to server;' do
-    it_behaves_like 'sync controller - create new records'
-    it_behaves_like 'sync controller - update exiting records'
+    it_behaves_like 'a working sync controller creating records'
+    it_behaves_like 'a working sync controller updating records'
 
     describe 'creates new blood pressures' do
       it 'creates new blood pressures with associated patient' do
-        patient         = FactoryBot.create(:patient)
+        patient = FactoryBot.create(:patient)
         blood_pressures = (1..10).map do
           build_blood_pressure_payload(FactoryBot.build(:blood_pressure, patient: patient))
         end
@@ -28,6 +28,6 @@ RSpec.describe Api::V1::BloodPressuresController, type: :controller do
   end
 
   describe 'GET sync: send data from server to device;' do
-    it_behaves_like 'sync controller - get records'
+    it_behaves_like 'a working sync controller sending records'
   end
 end

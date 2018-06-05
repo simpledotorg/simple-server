@@ -8,6 +8,6 @@ describe Patient, type: :model do
   end
 
   describe 'Validations' do
-    it_behaves_like 'application record'
+    it_behaves_like 'a record that can be synced remotely'
   end
 end

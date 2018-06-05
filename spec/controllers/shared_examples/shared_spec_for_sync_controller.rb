@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.shared_examples 'sync controller - create new records' do
+RSpec.shared_examples 'a working sync controller creating records' do
   let(:request_key) { model.to_s.underscore.pluralize }
   let(:empty_payload) { Hash[request_key, []] }
 
@@ -51,7 +51,7 @@ RSpec.shared_examples 'sync controller - create new records' do
   end
 end
 
-RSpec.shared_examples 'sync controller - update exiting records' do
+RSpec.shared_examples 'a working sync controller updating records' do
   let(:request_key) { model.to_s.underscore.pluralize }
   let(:existing_records) { FactoryBot.create_list(model.to_s.underscore.to_sym, 10) }
   let(:updated_records) { existing_records.map(&update_payload) }
@@ -70,7 +70,7 @@ RSpec.shared_examples 'sync controller - update exiting records' do
   end
 end
 
-RSpec.shared_examples 'sync controller - get records' do
+RSpec.shared_examples 'a working sync controller sending records' do
   before :each do
     Timecop.travel(15.minutes.ago) do
       FactoryBot.create_list(model.to_s.underscore, 10)
