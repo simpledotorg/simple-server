@@ -2,8 +2,7 @@ require 'rails_helper'
 
 RSpec.describe BloodPressure, type: :model do
   describe 'Validations' do
-    it { should validate_presence_of(:device_created_at)}
-    it { should validate_presence_of(:device_updated_at)}
+    it_behaves_like 'a record that can be synced remotely'
   end
 
   describe 'Associations' do
