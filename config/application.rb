@@ -28,9 +28,7 @@ module RedappServer
     # Don't generate system test files.
     config.generators do |g|
       g.system_tests false
-      g.assets false
       g.helper false
-      g.view false
     end
   end
 end
