@@ -8,6 +8,9 @@ class Patient < ApplicationRecord
   has_many :phone_numbers, class_name: 'PatientPhoneNumber'
   has_many :blood_pressures
 
+  has_many :facility_patients
+  has_many :facilities, through: :facility_patients
+
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
