@@ -99,7 +99,11 @@
                 "processed_since": {
                   "$ref": "#/definitions/processed_since"
                 }
-              }
+              },
+              "required": [
+                "blood_pressures",
+                "processed_since"
+              ]
             }
           }
         }
@@ -177,7 +181,57 @@
                 "processed_since": {
                   "$ref": "#/definitions/processed_since"
                 }
-              }
+              },
+              "required": [
+                "patients",
+                "processed_since"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "/protocols/sync": {
+      "get": {
+        "summary": "Syncs protocols and protocol drugs data from server to device.",
+        "tags": [
+          "protocol"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+            "name": "processed_since",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "protocols received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "protocols": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/protocol"
+                  }
+                },
+                "processed_since": {
+                  "$ref": "#/definitions/processed_since"
+                }
+              },
+              "required": [
+                "protocols",
+                "processed_since"
+              ]
             }
           }
         }
@@ -459,6 +513,69 @@
       "items": {
         "$ref": "#/definitions/blood_pressure"
       }
+    },
+    "protocol": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "name": {
+          "type": "string"
+        },
+        "follow_up_days": {
+          "type": "integer"
+        },
+        "protocol_drugs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protocol_drug"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "protocol_drugs"
+      ]
+    },
+    "protocol_drug": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "protocol_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "rxnorm_code": {
+          "type": "string"
+        },
+        "dosage": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "dosage",
+        "name",
+        "protocol_id"
+      ]
     },
     "non_empty_string": {
       "type": "string",

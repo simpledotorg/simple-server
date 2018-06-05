@@ -1,0 +1,27 @@
+<%= form_with(model: [:admin, protocol], local: true) do |form| %>
+  <% if protocol.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(protocol.errors.count, "error") %> prohibited this protocol from being saved:</h2>
+
+      <ul>
+      <% protocol.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :name %>
+    <%= form.text_field :name, id: :protocol_name %>
+  </div>
+
+  <div class="field">
+    <%= form.label :follow_up_days %>
+    <%= form.number_field :follow_up_days, id: :protocol_follow_up_days %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>
