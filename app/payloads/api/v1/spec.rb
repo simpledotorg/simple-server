@@ -110,7 +110,7 @@ module Api::V1::Spec
         pin: { type: :string },
         facility_type: { type: :string }
       },
-      required: %w[id name protocol_drugs]
+      required: %w[id name district state country]
     }
   end
 
