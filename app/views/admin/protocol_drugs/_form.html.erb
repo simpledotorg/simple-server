@@ -1,4 +1,4 @@
-<%= form_with(model: protocol_drug, local: true) do |form| %>
+<%= form_with(model: [:admin, protocol_drug], local: true) do |form| %>
   <% if protocol_drug.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(protocol_drug.errors.count, "error") %> prohibited this protocol_drug from being saved:</h2>

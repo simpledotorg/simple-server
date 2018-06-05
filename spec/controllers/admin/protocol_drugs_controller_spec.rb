@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe ProtocolDrugsController, type: :controller do
+RSpec.describe Admin::ProtocolDrugsController, type: :controller do
 
   let(:valid_attributes) {
     protocol = FactoryBot.create(:protocol)
@@ -53,7 +53,7 @@ RSpec.describe ProtocolDrugsController, type: :controller do
 
       it "redirects to the list of protocols" do
         post :create, params: {protocol_drug: valid_attributes}
-        expect(response).to redirect_to(:protocols)
+        expect(response).to redirect_to([:admin, :protocols])
       end
     end
 
@@ -83,7 +83,7 @@ RSpec.describe ProtocolDrugsController, type: :controller do
       it "redirects to the list of protocols" do
         protocol_drug = ProtocolDrug.create! valid_attributes
         put :update, params: {id: protocol_drug.to_param, protocol_drug: valid_attributes}
-        expect(response).to redirect_to(:protocols)
+        expect(response).to redirect_to([:admin, :protocols])
       end
     end
 
@@ -107,7 +107,7 @@ RSpec.describe ProtocolDrugsController, type: :controller do
     it "redirects to the protocol_drugs list" do
       protocol_drug = ProtocolDrug.create! valid_attributes
       delete :destroy, params: {id: protocol_drug.to_param}
-      expect(response).to redirect_to(protocol_drugs_url)
+      expect(response).to redirect_to(admin_protocols_url)
     end
   end
 

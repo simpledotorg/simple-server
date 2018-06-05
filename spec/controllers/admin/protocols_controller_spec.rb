@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe ProtocolsController, type: :controller do
+RSpec.describe Admin::ProtocolsController, type: :controller do
 
   let(:valid_attributes) {
     FactoryBot.attributes_for(:protocol)
@@ -51,7 +51,7 @@ RSpec.describe ProtocolsController, type: :controller do
 
       it "redirects to the created protocol" do
         post :create, params: {protocol: valid_attributes}
-        expect(response).to redirect_to(Protocol.last)
+        expect(response).to redirect_to([:admin, Protocol.last])
       end
     end
 
@@ -74,7 +74,7 @@ RSpec.describe ProtocolsController, type: :controller do
         protocol = Protocol.create! valid_attributes
         put :update, params: {id: protocol.to_param, protocol: new_attributes}
         protocol.reload
-        expect(response).to redirect_to(protocol)
+        expect(response).to redirect_to([:admin, protocol])
         expect(protocol.attributes.except('id', 'created_at', 'updated_at'))
           .to eq new_attributes.with_indifferent_access
       end
@@ -82,7 +82,7 @@ RSpec.describe ProtocolsController, type: :controller do
       it "redirects to the protocol" do
         protocol = Protocol.create! valid_attributes
         put :update, params: {id: protocol.to_param, protocol: valid_attributes}
-        expect(response).to redirect_to(protocol)
+        expect(response).to redirect_to([:admin, protocol])
       end
     end
 
@@ -106,7 +106,7 @@ RSpec.describe ProtocolsController, type: :controller do
     it "redirects to the protocols list" do
       protocol = Protocol.create! valid_attributes
       delete :destroy, params: {id: protocol.to_param}
-      expect(response).to redirect_to(protocols_url)
+      expect(response).to redirect_to(admin_protocols_url)
     end
   end
 end

@@ -16,9 +16,9 @@
     <tr>
       <td><%= protocol.name %></td>
       <td><%= protocol.follow_up_days %></td>
-      <td><%= link_to 'Show', protocol %></td>
-      <td><%= link_to 'Edit', edit_protocol_path(protocol) %></td>
-      <td><%= link_to 'Destroy', protocol, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      <td><%= link_to 'Show', [:admin, protocol] %></td>
+      <td><%= link_to 'Edit', edit_admin_protocol_path(protocol) %></td>
+      <td><%= link_to 'Destroy', [:admin, protocol], method: :delete, data: { confirm: 'Are you sure?' } %></td>
     </tr>
   <% end %>
   </tbody>
@@ -26,7 +26,7 @@
 
 <br>
 
-<%= link_to 'New Protocol', new_protocol_path %>
+<%= link_to 'New Protocol', new_admin_protocol_path %>
 
 <% @protocols.each do |protocol| %>
   <h1>Protocol Drugs for <%= protocol.name %> </h1>
@@ -47,9 +47,9 @@
         <td><%= protocol_drug.name %></td>
         <td><%= protocol_drug.dosage %></td>
         <td><%= protocol_drug.rxnorm_code %></td>
-        <td><%= link_to 'Show', protocol_drug %></td>
-        <td><%= link_to 'Edit', edit_protocol_drug_path(protocol_drug) %></td>
-        <td><%= link_to 'Destroy', protocol_drug, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= link_to 'Show', [:admin, protocol_drug] %></td>
+        <td><%= link_to 'Edit', edit_admin_protocol_drug_path(protocol_drug) %></td>
+        <td><%= link_to 'Destroy', [:admin, protocol_drug], method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
     <% end %>
     </tbody>
@@ -57,5 +57,5 @@
 
   <br>
 
-  <%= link_to 'New Protocol Drug', new_protocol_drug_path %>
+  <%= link_to 'New Protocol Drug', new_admin_protocol_drug_path %>
 <% end %>
