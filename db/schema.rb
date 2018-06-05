@@ -86,8 +86,25 @@ ActiveRecord::Schema.define(version: 20180604211555) do
     t.datetime "device_updated_at", null: false
   end
 
+  create_table "protocol_drugs", id: :uuid, default: nil, force: :cascade do |t|
+    t.string "name", null: false
+    t.string "dosage", null: false
+    t.string "rxnorm_code"
+    t.uuid "protocol_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "protocols", id: :uuid, default: nil, force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "follow_up_days"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   add_foreign_key "facility_patients", "facilities"
   add_foreign_key "facility_patients", "patients"
   add_foreign_key "patient_phone_numbers", "patients"
   add_foreign_key "patients", "addresses"
+  add_foreign_key "protocol_drugs", "protocols"
 end

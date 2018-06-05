@@ -18,10 +18,16 @@ Rails.application.routes.draw do
       scope '/facilities' do
         get 'sync', to: 'facilities#sync_to_user'
       end
+
+      scope '/protocols' do
+        get 'sync', to: 'protocols#sync_to_user'
+      end
     end
   end
 
   namespace :admin do
     resources :facilities
+    resources :protocol_drugs
+    resources :protocols
   end
 end

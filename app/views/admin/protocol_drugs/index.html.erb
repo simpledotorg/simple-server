@@ -1,0 +1,33 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Protocol Drugs</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Dosage</th>
+      <th>Rxnorm code</th>
+      <th>Protocol</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @protocol_drugs.each do |protocol_drug| %>
+      <tr>
+        <td><%= protocol_drug.name %></td>
+        <td><%= protocol_drug.dosage %></td>
+        <td><%= protocol_drug.rxnorm_code %></td>
+        <td><%= protocol_drug.protocol %></td>
+        <td><%= link_to 'Show', [:admin, protocol_drug] %></td>
+        <td><%= link_to 'Edit', edit_admin_protocol_drug_path(protocol_drug) %></td>
+        <td><%= link_to 'Destroy', [:admin, protocol_drug], method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Protocol Drug', new_admin_protocol_drug_path %>

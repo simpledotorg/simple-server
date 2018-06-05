@@ -114,6 +114,32 @@ module Api::V1::Spec
     }
   end
 
+  def self.protocol_drug
+    { type:       :object,
+      properties: {
+        id:          { '$ref' => '#/definitions/uuid' },
+        created_at:  { '$ref' => '#/definitions/timestamp' },
+        updated_at:  { '$ref' => '#/definitions/timestamp' },
+        protocol_id: { '$ref' => '#/definitions/uuid' },
+        rxnorm_code: { type: :string },
+        dosage:      { type: :string },
+        name:        { type: :string } },
+      required:   %w[id dosage name protocol_id] }
+  end
+
+  def self.protocol
+    { type:       :object,
+      properties: {
+        id:             { '$ref' => '#/definitions/uuid' },
+        created_at:     { '$ref' => '#/definitions/timestamp' },
+        updated_at:     { '$ref' => '#/definitions/timestamp' },
+        name:           { type: :string },
+        follow_up_days: { type: :integer },
+        protocol_drugs: { type:  :array,
+                          items: { '$ref' => '#/definitions/protocol_drug' } } },
+      required:   %w[id name protocol_drugs] }
+  end
+
   ###############
   # API Specs
 
@@ -181,14 +207,25 @@ module Api::V1::Spec
     { type:       :object,
       properties: {
         patients:        { '$ref' => '#/definitions/nested_patients' },
-        processed_since: { '$ref' => '#/definitions/processed_since' } } }
+        processed_since: { '$ref' => '#/definitions/processed_since' } },
+      required:   %w[patients processed_since] }
   end
 
   def self.blood_pressure_sync_to_user_response_spec
     { type:       :object,
       properties: {
         blood_pressures: { '$ref' => '#/definitions/blood_pressures' },
-        processed_since: { '$ref' => '#/definitions/processed_since' } } }
+        processed_since: { '$ref' => '#/definitions/processed_since' } },
+      required:   %w[blood_pressures processed_since]}
+  end
+
+  def self.protocol_sync_to_user_response_spec
+    { type:       :object,
+      properties: {
+        protocols:       { type:  :array,
+                           items: { '$ref' => '#/definitions/protocol' } },
+        processed_since: { '$ref' => '#/definitions/processed_since' } },
+      required:   %w[protocols processed_since] }
   end
 
   def self.facility_sync_to_user_response_spec
@@ -219,6 +256,8 @@ module Api::V1::Spec
       blood_pressure:     blood_pressure_spec,
       blood_pressures:    blood_pressures,
       facility:           facility_spec,
+      protocol:           protocol,
+      protocol_drug:      protocol_drug,
       non_empty_string:   non_empty_string,
       error_spec:         error_spec }
   end
