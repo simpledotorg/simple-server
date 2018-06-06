@@ -79,12 +79,12 @@ module Api::V1::Spec
   def self.blood_pressure_spec
     { type:       :object,
       properties: {
-        id:         { '$ref' => '#/definitions/uuid' },
-        systolic:   { type: :integer },
-        diastolic:  { type: :integer },
-        created_at: { '$ref' => '#/definitions/timestamp' },
-        updated_at: { '$ref' => '#/definitions/timestamp' },
-        patient_id: { '$ref' => '#/definitions/uuid' },
+        id:          { '$ref' => '#/definitions/uuid' },
+        systolic:    { type: :integer },
+        diastolic:   { type: :integer },
+        created_at:  { '$ref' => '#/definitions/timestamp' },
+        updated_at:  { '$ref' => '#/definitions/timestamp' },
+        patient_id:  { '$ref' => '#/definitions/uuid' },
         facility_id: { '$ref' => '#/definitions/uuid' } },
       required:   %w[systolic diastolic created_at updated_at patient_id facility_id]
     }
@@ -97,21 +97,21 @@ module Api::V1::Spec
 
   def self.facility_spec
     {
-      type: :object,
+      type:       :object,
       properties: {
-        id: { '$ref' => '#/definitions/uuid' },
-        created_at: { '$ref' => '#/definitions/timestamp' },
-        updated_at: { '$ref' => '#/definitions/timestamp' },
-        name: { type: :string },
-        street_address: { type: :string },
+        id:                { '$ref' => '#/definitions/uuid' },
+        created_at:        { '$ref' => '#/definitions/timestamp' },
+        updated_at:        { '$ref' => '#/definitions/timestamp' },
+        name:              { '$ref' => '#/definitions/non_empty_string' },
+        street_address:    { type: :string },
         village_or_colony: { type: :string },
-        district: { type: :string },
-        state: { type: :string },
-        country: { type: :string },
-        pin: { type: :string },
-        facility_type: { type: :string }
+        district:          { '$ref' => '#/definitions/non_empty_string' },
+        state:             { '$ref' => '#/definitions/non_empty_string' },
+        country:           { '$ref' => '#/definitions/non_empty_string' },
+        pin:               { type: :string },
+        facility_type:     { type: :string }
       },
-      required: %w[id name district state country]
+      required:   %w[id name district state country]
     }
   end
 
@@ -217,7 +217,7 @@ module Api::V1::Spec
       properties: {
         blood_pressures: { '$ref' => '#/definitions/blood_pressures' },
         processed_since: { '$ref' => '#/definitions/processed_since' } },
-      required:   %w[blood_pressures processed_since]}
+      required:   %w[blood_pressures processed_since] }
   end
 
   def self.protocol_sync_to_user_response_spec
@@ -231,9 +231,9 @@ module Api::V1::Spec
 
   def self.facility_sync_to_user_response_spec
     {
-      type: :object,
+      type:       :object,
       properties: {
-        facilities: {
+        facilities:      {
           type:  :array,
           items: { '$ref' => '#/definitions/facility' }
         },

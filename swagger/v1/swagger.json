@@ -544,6 +544,9 @@
         },
         "patient_id": {
           "$ref": "#/definitions/uuid"
+        },
+        "facility_id": {
+          "$ref": "#/definitions/uuid"
         }
       },
       "required": [
@@ -551,7 +554,8 @@
         "diastolic",
         "created_at",
         "updated_at",
-        "patient_id"
+        "patient_id",
+        "facility_id"
       ]
     },
     "blood_pressures": {
@@ -573,7 +577,7 @@
           "$ref": "#/definitions/timestamp"
         },
         "name": {
-          "type": "string"
+          "$ref": "#/definitions/non_empty_string"
         },
         "street_address": {
           "type": "string"
@@ -582,13 +586,13 @@
           "type": "string"
         },
         "district": {
-          "type": "string"
+          "$ref": "#/definitions/non_empty_string"
         },
         "state": {
-          "type": "string"
+          "$ref": "#/definitions/non_empty_string"
         },
         "country": {
-          "type": "string"
+          "$ref": "#/definitions/non_empty_string"
         },
         "pin": {
           "type": "string"
