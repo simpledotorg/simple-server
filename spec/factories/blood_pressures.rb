@@ -5,6 +5,7 @@ FactoryBot.define do
     diastolic { rand(60..140) }
     device_created_at { Time.now }
     device_updated_at { Time.now }
+    association :facility, strategy: :build
     association :patient, strategy: :build
   end
 end

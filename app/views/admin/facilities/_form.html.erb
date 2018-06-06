@@ -1,0 +1,57 @@
+<%= form_with(model: [:admin, facility], local: true) do |form| %>
+  <% if facility.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(facility.errors.count, "error") %> prohibited this facility from being saved:</h2>
+
+      <ul>
+      <% facility.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :name %>
+    <%= form.text_field :name, id: :facility_name %>
+  </div>
+
+  <div class="field">
+    <%= form.label :street_address %>
+    <%= form.text_field :street_address, id: :facility_street_address %>
+  </div>
+
+  <div class="field">
+    <%= form.label :village_or_colony %>
+    <%= form.text_field :village_or_colony, id: :facility_village_or_colony %>
+  </div>
+
+  <div class="field">
+    <%= form.label :district %>
+    <%= form.text_field :district, id: :facility_district %>
+  </div>
+
+  <div class="field">
+    <%= form.label :state %>
+    <%= form.text_field :state, id: :facility_state %>
+  </div>
+
+  <div class="field">
+    <%= form.label :country %>
+    <%= form.text_field :country, id: :facility_country %>
+  </div>
+
+  <div class="field">
+    <%= form.label :pin %>
+    <%= form.text_field :pin, id: :facility_pin %>
+  </div>
+
+  <div class="field">
+    <%= form.label :facility_type %>
+    <%= form.text_field :facility_type, id: :facility_facility_type %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>

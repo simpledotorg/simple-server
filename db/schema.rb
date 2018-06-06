@@ -10,10 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180604085551) do
+ActiveRecord::Schema.define(version: 20180606024835) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pgcrypto"
 
   create_table "addresses", id: :uuid, default: nil, force: :cascade do |t|
     t.string "street_address"
@@ -36,6 +37,20 @@ ActiveRecord::Schema.define(version: 20180604085551) do
     t.datetime "updated_at", null: false
     t.datetime "device_created_at", null: false
     t.datetime "device_updated_at", null: false
+    t.uuid "facility_id", null: false
+  end
+
+  create_table "facilities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name"
+    t.string "street_address"
+    t.string "village_or_colony"
+    t.string "district"
+    t.string "state"
+    t.string "country"
+    t.string "pin"
+    t.string "facility_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "patient_phone_numbers", id: :uuid, default: nil, force: :cascade do |t|
