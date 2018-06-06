@@ -1,6 +1,7 @@
 class BloodPressure < ApplicationRecord
   include Mergeable
 
+  belongs_to :facility
   belongs_to :patient, optional: true
 
   validates :device_created_at, presence: true

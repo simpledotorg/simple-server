@@ -1,8 +1,8 @@
 class Facility < ApplicationRecord
   include Mergeable
 
-  has_many :facility_patients
-  has_many :patients, through: :facility_patients
+  has_many :blood_pressures
+  has_many :patients, through: :blood_pressures
 
   validates :name, presence: true
   validates :district, presence: true

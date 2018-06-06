@@ -6,8 +6,8 @@ describe Patient, type: :model do
     it { should have_many(:phone_numbers) }
     it { should have_many(:blood_pressures) }
 
-    it { should have_many(:facility_patients) }
-    it { should have_many(:facilities).through(:facility_patients) }
+    it { should have_many(:blood_pressures) }
+    it { should have_many(:facilities).through(:blood_pressures) }
   end
 
   describe 'Validations' do

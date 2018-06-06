@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180604211555) do
+ActiveRecord::Schema.define(version: 20180606024835) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -37,6 +37,8 @@ ActiveRecord::Schema.define(version: 20180604211555) do
     t.datetime "updated_at", null: false
     t.datetime "device_created_at", null: false
     t.datetime "device_updated_at", null: false
+    t.uuid "facility_id", null: false
+    t.index ["facility_id"], name: "index_blood_pressures_on_facility_id"
   end
 
   create_table "facilities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -50,15 +52,6 @@ ActiveRecord::Schema.define(version: 20180604211555) do
     t.string "facility_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "facility_patients", force: :cascade do |t|
-    t.uuid "facility_id"
-    t.uuid "patient_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["facility_id"], name: "index_facility_patients_on_facility_id"
-    t.index ["patient_id"], name: "index_facility_patients_on_patient_id"
   end
 
   create_table "patient_phone_numbers", id: :uuid, default: nil, force: :cascade do |t|
@@ -102,8 +95,6 @@ ActiveRecord::Schema.define(version: 20180604211555) do
     t.datetime "updated_at", null: false
   end
 
-  add_foreign_key "facility_patients", "facilities"
-  add_foreign_key "facility_patients", "patients"
   add_foreign_key "patient_phone_numbers", "patients"
   add_foreign_key "patients", "addresses"
   add_foreign_key "protocol_drugs", "protocols"
