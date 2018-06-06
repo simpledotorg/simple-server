@@ -5,6 +5,7 @@ class Api::V1::BloodPressurePayloadValidator < Api::V1::PayloadValidator
     :systolic,
     :diastolic,
     :patient_id,
+    :facility_id,
     :created_at,
     :updated_at
   )

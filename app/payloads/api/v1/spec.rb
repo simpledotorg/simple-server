@@ -84,8 +84,9 @@ module Api::V1::Spec
         diastolic:  { type: :integer },
         created_at: { '$ref' => '#/definitions/timestamp' },
         updated_at: { '$ref' => '#/definitions/timestamp' },
-        patient_id: { '$ref' => '#/definitions/uuid' } },
-      required:   %w[systolic diastolic created_at updated_at patient_id]
+        patient_id: { '$ref' => '#/definitions/uuid' },
+        facility_id: { '$ref' => '#/definitions/uuid' } },
+      required:   %w[systolic diastolic created_at updated_at patient_id facility_id]
     }
   end
 

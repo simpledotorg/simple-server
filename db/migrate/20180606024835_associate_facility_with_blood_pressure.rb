@@ -1,5 +1,5 @@
 class AssociateFacilityWithBloodPressure < ActiveRecord::Migration[5.1]
   def change
-    add_reference :blood_pressures, :facility, type: :uuid, null: false
+    add_column :blood_pressures, :facility_id, :uuid, null: false
   end
 end

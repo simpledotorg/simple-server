@@ -38,7 +38,6 @@ ActiveRecord::Schema.define(version: 20180606024835) do
     t.datetime "device_created_at", null: false
     t.datetime "device_updated_at", null: false
     t.uuid "facility_id", null: false
-    t.index ["facility_id"], name: "index_blood_pressures_on_facility_id"
   end
 
   create_table "facilities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
