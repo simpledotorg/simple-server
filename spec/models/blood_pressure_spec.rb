@@ -6,6 +6,7 @@ RSpec.describe BloodPressure, type: :model do
   end
 
   describe 'Associations' do
+    it { should belong_to(:facility)}
     it { should belong_to(:patient)}
   end
 end

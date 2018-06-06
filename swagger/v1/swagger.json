@@ -59,7 +59,7 @@
                 "errors": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/definitions/error_spec"
+                    "$ref": "#/definitions/error"
                   }
                 }
               }
@@ -109,6 +109,52 @@
         }
       }
     },
+    "/facilities/sync": {
+      "get": {
+        "summary": "Syncs facilities data from server to device.",
+        "tags": [
+          "facility"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+            "name": "processed_since",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "facilities received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "facilities": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/facility"
+                  }
+                },
+                "processed_since": {
+                  "$ref": "#/definitions/processed_since"
+                }
+              },
+              "required": [
+                "facilities",
+                "processed_since"
+              ]
+            }
+          }
+        }
+      }
+    },
     "/patients/sync": {
       "post": {
         "summary": "Syncs patient, address and phone number data from device to server.",
@@ -141,7 +187,7 @@
                 "errors": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/definitions/error_spec"
+                    "$ref": "#/definitions/error"
                   }
                 }
               }
@@ -239,6 +285,35 @@
     }
   },
   "definitions": {
+    "error": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Id of the record with errors"
+        },
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of json schema error strings describing validation errors"
+        },
+        "field_with_error": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "processed_since": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+      "name": "processed_since"
+    },
     "timestamp": {
       "type": "string",
       "format": "date-time",
@@ -256,12 +331,6 @@
       ],
       "format": "date-time",
       "description": "Timestamp with millisecond precision."
-    },
-    "processed_since": {
-      "type": "string",
-      "format": "date-time",
-      "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
-      "name": "processed_since"
     },
     "patient": {
       "type": "object",
@@ -498,6 +567,9 @@
         },
         "patient_id": {
           "$ref": "#/definitions/uuid"
+        },
+        "facility_id": {
+          "$ref": "#/definitions/uuid"
         }
       },
       "required": [
@@ -505,7 +577,8 @@
         "diastolic",
         "created_at",
         "updated_at",
-        "patient_id"
+        "patient_id",
+        "facility_id"
       ]
     },
     "blood_pressures": {
@@ -513,6 +586,51 @@
       "items": {
         "$ref": "#/definitions/blood_pressure"
       }
+    },
+    "facility": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "name": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "street_address": {
+          "type": "string"
+        },
+        "village_or_colony": {
+          "type": "string"
+        },
+        "district": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "state": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "country": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "pin": {
+          "type": "string"
+        },
+        "facility_type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "district",
+        "state",
+        "country"
+      ]
     },
     "protocol": {
       "type": "object",
@@ -581,29 +699,6 @@
       "type": "string",
       "minLength": 1,
       "description": "This string should not be empty."
-    },
-    "error_spec": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "uuid",
-          "description": "Id of the record with errors"
-        },
-        "schema": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "List of json schema error strings describing validation errors"
-        },
-        "field_with_error": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
     }
   }
 }

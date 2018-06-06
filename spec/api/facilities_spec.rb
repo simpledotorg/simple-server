@@ -1,23 +1,21 @@
 require 'swagger_helper'
 
-describe 'Protocols API' do
-  path '/protocols/sync' do
-
-    get 'Syncs protocols and protocol drugs data from server to device.' do
-      tags 'protocol'
+describe 'Facilities API' do
+  path '/facilities/sync' do
+    get 'Syncs facilities data from server to device.' do
+      tags 'facility'
       Api::V1::Schema.sync_to_user_request.each do |param|
         parameter param
       end
 
       before :each do
         Timecop.travel(10.minutes.ago) do
-          protocol = FactoryBot.create(:protocol)
-          FactoryBot.create_list(:protocol_drug, 10, protocol: protocol)
+          facility = FactoryBot.create(:facility)
         end
       end
 
-      response '200', 'protocols received' do
-        schema Api::V1::Schema.protocol_sync_to_user_response
+      response '200', 'facilities received' do
+        schema Api::V1::Schema.facility_sync_to_user_response
         let(:processed_since) { 10.minutes.ago }
         let(:limit) { 10 }
 
@@ -32,3 +30,4 @@ describe 'Protocols API' do
     end
   end
 end
+
