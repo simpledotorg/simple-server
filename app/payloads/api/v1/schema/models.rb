@@ -1,7 +1,6 @@
-module Api::V1::Spec
-
-  ###############
-  # Models
+module Api::V1::Schema::Models
+###############
+# Models
 
   def self.timestamp
     { type:        :string,
@@ -25,15 +24,7 @@ module Api::V1::Spec
     timestamp.merge(type: [:string, 'null'])
   end
 
-  def self.processed_since
-    timestamp.merge(
-      name:        'processed_since',
-      description: 'The timestamp since which records have been processed by the server.
-                    Use the server returned value in the next request to continue fetching records.'
-    )
-  end
-
-  def self.patient_spec
+  def self.patient
     { type:       :object,
       properties: {
         id:             { '$ref' => '#/definitions/uuid' },
@@ -49,7 +40,7 @@ module Api::V1::Spec
       required:   %w[id gender full_name created_at updated_at status] }
   end
 
-  def self.address_spec
+  def self.address
     { type:       ['null', :object],
       properties: {
         id:                { '$ref' => '#/definitions/uuid' },
@@ -64,7 +55,7 @@ module Api::V1::Spec
       required:   %w[id created_at updated_at] }
   end
 
-  def self.phone_number_spec
+  def self.phone_number
     { type:       :object,
       properties: {
         id:         { '$ref' => '#/definitions/uuid' },
@@ -76,7 +67,7 @@ module Api::V1::Spec
       required:   %w[id created_at updated_at number] }
   end
 
-  def self.blood_pressure_spec
+  def self.blood_pressure
     { type:       :object,
       properties: {
         id:          { '$ref' => '#/definitions/uuid' },
@@ -95,7 +86,7 @@ module Api::V1::Spec
       items: { '$ref' => '#/definitions/blood_pressure' } }
   end
 
-  def self.facility_spec
+  def self.facility
     {
       type:       :object,
       properties: {
@@ -141,23 +132,13 @@ module Api::V1::Spec
       required:   %w[id name protocol_drugs] }
   end
 
-  ###############
-  # API Specs
-
-  def self.blood_pressure_sync_from_user_request_spec
-    { type:       :object,
-      properties: {
-        blood_pressures: { '$ref' => '#/definitions/blood_pressures' } },
-      required:   %w[blood_pressures] }
-  end
-
-  def self.phone_numbers_spec
+  def self.phone_numbers
     { type:  ['null', :array],
       items: { '$ref' => '#/definitions/phone_number' } }
   end
 
   def self.nested_patient
-    patient_spec.deep_merge(
+    patient.deep_merge(
       properties: {
         address:       { '$ref' => '#/definitions/address' },
         phone_numbers: { '$ref' => '#/definitions/phone_numbers' }, }
@@ -170,130 +151,21 @@ module Api::V1::Spec
       items:       { '$ref' => '#/definitions/nested_patient' } }
   end
 
-  def self.sync_from_user_errors_spec
-    { type:       :object,
-      properties: {
-        errors: {
-          type:  :array,
-          items: { '$ref' => '#/definitions/error_spec' } } } }
-  end
-
-  def self.error_spec
-    { type:       :object,
-      properties: {
-        id:               { type:        :string,
-                            format:      :uuid,
-                            description: 'Id of the record with errors' },
-        schema:           { type:        :array,
-                            items:       { type: :string },
-                            description: 'List of json schema error strings describing validation errors' },
-        field_with_error: { type:  :array,
-                            items: { type: :string } } } }
-  end
-
-  def self.sync_to_user_request_spec
-    [processed_since.merge(in: :query),
-     { in:          :query, name: :limit, type: :integer,
-       description: 'Number of record to retrieve (a.k.a batch-size)' }]
-  end
-
-  def self.patient_sync_from_user_request_spec
-    { type:       :object,
-      properties: {
-        patients: { '$ref' => '#/definitions/nested_patients' } },
-      required:   %w[patients] }
-  end
-
-  def self.patient_sync_to_user_response_spec
-    { type:       :object,
-      properties: {
-        patients:        { '$ref' => '#/definitions/nested_patients' },
-        processed_since: { '$ref' => '#/definitions/processed_since' } },
-      required:   %w[patients processed_since] }
-  end
-
-  def self.blood_pressure_sync_to_user_response_spec
-    { type:       :object,
-      properties: {
-        blood_pressures: { '$ref' => '#/definitions/blood_pressures' },
-        processed_since: { '$ref' => '#/definitions/processed_since' } },
-      required:   %w[blood_pressures processed_since] }
-  end
-
-  def self.protocol_sync_to_user_response_spec
-    { type:       :object,
-      properties: {
-        protocols:       { type:  :array,
-                           items: { '$ref' => '#/definitions/protocol' } },
-        processed_since: { '$ref' => '#/definitions/processed_since' } },
-      required:   %w[protocols processed_since] }
-  end
-
-  def self.facility_sync_to_user_response_spec
-    {
-      type:       :object,
-      properties: {
-        facilities:      {
-          type:  :array,
-          items: { '$ref' => '#/definitions/facility' }
-        },
-        processed_since: { '$ref' => '#/definitions/processed_since' }
-      },
-      required:   %w[facilities processed_since]
-    }
-  end
-
-  def self.all_definitions
+  def self.definitions
     { timestamp:          timestamp,
       uuid:               uuid,
       nullable_timestamp: nullable_timestamp,
-      processed_since:    processed_since,
-      patient:            patient_spec,
-      address:            address_spec,
-      phone_number:       phone_number_spec,
-      phone_numbers:      phone_numbers_spec,
+      patient:            patient,
+      address:            address,
+      phone_number:       phone_number,
+      phone_numbers:      phone_numbers,
       nested_patient:     nested_patient,
       nested_patients:    nested_patients,
-      blood_pressure:     blood_pressure_spec,
+      blood_pressure:     blood_pressure,
       blood_pressures:    blood_pressures,
-      facility:           facility_spec,
+      facility:           facility,
       protocol:           protocol,
       protocol_drug:      protocol_drug,
-      non_empty_string:   non_empty_string,
-      error_spec:         error_spec }
-  end
-
-  def self.swagger_info
-    {
-      description: I18n.t('api.documentation.description'),
-      version:     'v1',
-      title:       I18n.t('api.documentation.title'),
-      'x-logo'     => {
-        url:             ActionController::Base.helpers.image_path(I18n.t('api.documentation.logo.image')),
-        backgroundColor: I18n.t('api.documentation.logo.background_color')
-      },
-      contact:     {
-        email: I18n.t('api.documentation.contact.email')
-      },
-      license:     {
-        name: I18n.t('api.documentation.license.name'),
-        url:  I18n.t('api.documentation.license.url')
-      }
-    }
-  end
-
-  def self.swagger_docs
-    {
-      'v1/swagger.json' => {
-        swagger:     '2.0',
-        basePath:    '/api/v1',
-        produces:    ['application/json'],
-        consumes:    ['application/json'],
-        schemes:     ['https'],
-        info:        swagger_info,
-        paths:       {},
-        definitions: all_definitions
-      }
-    }
+      non_empty_string:   non_empty_string }
   end
 end

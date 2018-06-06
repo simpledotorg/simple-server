@@ -7,7 +7,7 @@ class Api::V1::PayloadValidator
   end
 
   def schema_with_definitions
-    schema.merge(definitions: Api::V1::Spec.all_definitions)
+    schema.merge(definitions: Api::V1::Schema.all_definitions)
   end
 
   def errors_hash

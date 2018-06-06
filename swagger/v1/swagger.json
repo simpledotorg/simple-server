@@ -59,7 +59,7 @@
                 "errors": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/definitions/error_spec"
+                    "$ref": "#/definitions/error"
                   }
                 }
               }
@@ -187,7 +187,7 @@
                 "errors": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/definitions/error_spec"
+                    "$ref": "#/definitions/error"
                   }
                 }
               }
@@ -285,6 +285,35 @@
     }
   },
   "definitions": {
+    "error": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Id of the record with errors"
+        },
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of json schema error strings describing validation errors"
+        },
+        "field_with_error": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "processed_since": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+      "name": "processed_since"
+    },
     "timestamp": {
       "type": "string",
       "format": "date-time",
@@ -302,12 +331,6 @@
       ],
       "format": "date-time",
       "description": "Timestamp with millisecond precision."
-    },
-    "processed_since": {
-      "type": "string",
-      "format": "date-time",
-      "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
-      "name": "processed_since"
     },
     "patient": {
       "type": "object",
@@ -676,29 +699,6 @@
       "type": "string",
       "minLength": 1,
       "description": "This string should not be empty."
-    },
-    "error_spec": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "uuid",
-          "description": "Id of the record with errors"
-        },
-        "schema": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "List of json schema error strings describing validation errors"
-        },
-        "field_with_error": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
     }
   }
 }

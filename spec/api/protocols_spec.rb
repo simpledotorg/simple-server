@@ -5,7 +5,7 @@ describe 'Protocols API' do
 
     get 'Syncs protocols and protocol drugs data from server to device.' do
       tags 'protocol'
-      Api::V1::Spec.sync_to_user_request_spec.each do |param|
+      Api::V1::Schema.sync_to_user_request.each do |param|
         parameter param
       end
 
@@ -17,7 +17,7 @@ describe 'Protocols API' do
       end
 
       response '200', 'protocols received' do
-        schema Api::V1::Spec.protocol_sync_to_user_response_spec
+        schema Api::V1::Schema.protocol_sync_to_user_response
         let(:processed_since) { 10.minutes.ago }
         let(:limit) { 10 }
 

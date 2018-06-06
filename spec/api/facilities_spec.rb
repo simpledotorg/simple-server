@@ -4,7 +4,7 @@ describe 'Facilities API' do
   path '/facilities/sync' do
     get 'Syncs facilities data from server to device.' do
       tags 'facility'
-      Api::V1::Spec.sync_to_user_request_spec.each do |param|
+      Api::V1::Schema.sync_to_user_request.each do |param|
         parameter param
       end
 
@@ -15,7 +15,7 @@ describe 'Facilities API' do
       end
 
       response '200', 'facilities received' do
-        schema Api::V1::Spec.facility_sync_to_user_response_spec
+        schema Api::V1::Schema.facility_sync_to_user_response
         let(:processed_since) { 10.minutes.ago }
         let(:limit) { 10 }
 

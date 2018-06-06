@@ -24,6 +24,6 @@ class Api::V1::PatientPayloadValidator < Api::V1::PayloadValidator
   end
 
   def schema
-    Api::V1::Spec.nested_patient
+    Api::V1::Schema::Models.nested_patient
   end
 end
