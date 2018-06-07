@@ -8,21 +8,6 @@ module Api::V1::Schema
     )
   end
 
-  def self.blood_pressure_sync_from_user_request
-    { type:       :object,
-      properties: {
-        blood_pressures: { '$ref' => '#/definitions/blood_pressures' } },
-      required:   %w[blood_pressures] }
-  end
-
-  def self.sync_from_user_errors
-    { type:       :object,
-      properties: {
-        errors: {
-          type:  :array,
-          items: { '$ref' => '#/definitions/error' } } } }
-  end
-
   def self.error
     { type:       :object,
       properties: {
@@ -36,17 +21,39 @@ module Api::V1::Schema
                             items: { type: :string } } } }
   end
 
-  def self.sync_to_user_request
-    [processed_since.merge(in: :query),
-     { in:          :query, name: :limit, type: :integer,
-       description: 'Number of record to retrieve (a.k.a batch-size)' }]
-  end
-
   def self.patient_sync_from_user_request
     { type:       :object,
       properties: {
         patients: { '$ref' => '#/definitions/nested_patients' } },
       required:   %w[patients] }
+  end
+
+  def self.blood_pressure_sync_from_user_request
+    { type:       :object,
+      properties: {
+        blood_pressures: { '$ref' => '#/definitions/blood_pressures' } },
+      required:   %w[blood_pressures] }
+  end
+
+  def self.prescription_drugs_sync_from_user_request
+    { type:       :object,
+      properties: {
+        prescription_drugs: { '$ref' => '#/definitions/prescription_drugs' } },
+      required:   %w[prescription_drugs] }
+  end
+
+  def self.sync_from_user_errors
+    { type:       :object,
+      properties: {
+        errors: {
+          type:  :array,
+          items: { '$ref' => '#/definitions/error' } } } }
+  end
+
+  def self.sync_to_user_request
+    [processed_since.merge(in: :query),
+     { in:          :query, name: :limit, type: :integer,
+       description: 'Number of record to retrieve (a.k.a batch-size)' }]
   end
 
   def self.patient_sync_to_user_response
@@ -65,11 +72,18 @@ module Api::V1::Schema
       required:   %w[blood_pressures processed_since] }
   end
 
+  def self.prescription_drug_sync_to_user_response
+    { type:       :object,
+      properties: {
+        prescription_drugs: { '$ref' => '#/definitions/prescription_drugs' },
+        processed_since:    { '$ref' => '#/definitions/processed_since' } },
+      required:   %w[prescription_drugs processed_since] }
+  end
+
   def self.protocol_sync_to_user_response
     { type:       :object,
       properties: {
-        protocols:       { type:  :array,
-                           items: { '$ref' => '#/definitions/protocol' } },
+        protocols:       { '$ref' => '#/definitions/protocols' },
         processed_since: { '$ref' => '#/definitions/processed_since' } },
       required:   %w[protocols processed_since] }
   end
@@ -78,10 +92,7 @@ module Api::V1::Schema
     {
       type:       :object,
       properties: {
-        facilities:      {
-          type:  :array,
-          items: { '$ref' => '#/definitions/facility' }
-        },
+        facilities:      { '$ref' => '#/definitions/facilities' },
         processed_since: { '$ref' => '#/definitions/processed_since' }
       },
       required:   %w[facilities processed_since]

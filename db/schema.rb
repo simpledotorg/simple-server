@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180606024835) do
+ActiveRecord::Schema.define(version: 20180607063809) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -76,6 +76,18 @@ ActiveRecord::Schema.define(version: 20180606024835) do
     t.datetime "age_updated_at"
     t.datetime "device_created_at", null: false
     t.datetime "device_updated_at", null: false
+  end
+
+  create_table "prescription_drugs", id: :uuid, default: nil, force: :cascade do |t|
+    t.string "name", null: false
+    t.string "rxnorm_code"
+    t.string "dosage"
+    t.datetime "device_created_at", null: false
+    t.datetime "device_updated_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "patient_id", null: false
+    t.uuid "facility_id", null: false
   end
 
   create_table "protocol_drugs", id: :uuid, default: nil, force: :cascade do |t|
