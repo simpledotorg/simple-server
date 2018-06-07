@@ -1,4 +1,14 @@
 Rails.application.routes.draw do
+  devise_scope :admin do
+    authenticated :admin do
+      root to: redirect("admin/facilities"), as: :admin_root
+    end
+
+    unauthenticated :admin do
+      root to: "devise/sessions#new"
+    end
+  end
+
   mount Rswag::Ui::Engine => '/api-docs'
   mount Rswag::Api::Engine => '/api-docs'
 
