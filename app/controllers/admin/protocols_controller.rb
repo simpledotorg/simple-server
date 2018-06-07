@@ -1,4 +1,4 @@
-class Admin::ProtocolsController < ApplicationController
+class Admin::ProtocolsController < AdminController
   before_action :set_protocol, only: %i[show edit update destroy]
 
   def index
