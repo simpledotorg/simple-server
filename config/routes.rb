@@ -29,5 +29,6 @@ Rails.application.routes.draw do
     resources :facilities
     resources :protocol_drugs
     resources :protocols
+    resources :users
   end
 end
