@@ -14,6 +14,10 @@
   <strong>Security pin hash:</strong>
   <%= @user.security_pin_hash %>
 </p>
+<p>
+  <strong>Facility:</strong>
+  <%= link_to @user.facility.name, [:admin, @user.facility] %>
+</p>
 
 <%= link_to 'Edit', edit_admin_user_path(@user) %> |
 <%= link_to 'Back', admin_users_path %>

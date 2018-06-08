@@ -40,5 +40,31 @@
   <%= @facility.facility_type %>
 </p>
 
+<h1>Users for <%= @facility.name %> </h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Phone Number</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @facility.users.each do |user| %>
+      <tr>
+        <td><%= user.name %></td>
+        <td><%= user.phone_number %></td>
+        <td><%= link_to 'Show', [:admin, user] %></td>
+        <td><%= link_to 'Edit', edit_admin_protocol_drug_path(user) %></td>
+        <td><%= link_to 'Destroy', [:admin, user], method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
 <%= link_to 'Edit', edit_admin_facility_path(@facility) %> |
 <%= link_to 'Back', admin_facilities_path %>

@@ -98,6 +98,7 @@ ActiveRecord::Schema.define(version: 20180608081018) do
     t.string "name"
     t.string "phone_number"
     t.string "security_pin_hash"
+    t.uuid "facility_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -105,4 +106,5 @@ ActiveRecord::Schema.define(version: 20180608081018) do
   add_foreign_key "patient_phone_numbers", "patients"
   add_foreign_key "patients", "addresses"
   add_foreign_key "protocol_drugs", "protocols"
+  add_foreign_key "users", "facilities"
 end

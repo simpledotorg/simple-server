@@ -26,6 +26,11 @@
     <%= form.text_field :security_pin_hash, id: :user_security_pin_hash %>
   </div>
 
+  <div class="field">
+    <%= form.label :facility_id %>
+    <%= form.select 'facility_id', options_from_collection_for_select(@facilities, "id", "name") %>
+  </div>
+
   <div class="actions">
     <%= form.submit %>
   </div>

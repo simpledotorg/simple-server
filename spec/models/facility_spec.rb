@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Facility, type: :model do
   describe 'Associations' do
+    it { should have_many(:users) }
     it { should have_many(:blood_pressures) }
     it { should have_many(:patients).through(:blood_pressures) }
   end

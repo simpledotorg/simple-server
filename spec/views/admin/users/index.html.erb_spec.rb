@@ -6,12 +6,14 @@ RSpec.describe "admin/users/index", type: :view do
       User.create!(
         :name => "Name",
         :phone_number => "Phone Number",
-        :security_pin_hash => "Security Pin Hash"
+        :security_pin_hash => "Security Pin Hash",
+        :facility_id => FactoryBot.create(:facility).id
       ),
       User.create!(
         :name => "Name",
         :phone_number => "Phone Number",
-        :security_pin_hash => "Security Pin Hash"
+        :security_pin_hash => "Security Pin Hash",
+        :facility_id => FactoryBot.create(:facility).id
       )
     ])
   end

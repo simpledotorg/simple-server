@@ -2,10 +2,12 @@ require 'rails_helper'
 
 RSpec.describe "admin/users/edit", type: :view do
   before(:each) do
+    facility = FactoryBot.create(:facility)
     @user = assign(:user, User.create!(
       :name => "MyString",
       :phone_number => "MyString",
-      :security_pin_hash => "MyString"
+      :security_pin_hash => "MyString",
+      :facility_id => facility.id
     ))
   end
 
