@@ -10,14 +10,9 @@ module Api::V1::Schema
   def self.error
     { type:       :object,
       properties: {
-        id:               { type:        :string,
-                            format:      :uuid,
-                            description: 'Id of the record with errors' },
-        schema:           { type:        :array,
-                            items:       { type: :string },
-                            description: 'List of json schema error strings describing validation errors' },
-        field_with_error: { type:  :array,
-                            items: { type: :string } } } }
+        errors: {
+          type:  :array,
+          items: { '$ref' => '#/definitions/error' } } } }
   end
 
   def self.sync_from_user_request(request_key, schema_type = request_key)
@@ -74,6 +69,14 @@ module Api::V1::Schema
 
   def self.prescription_drug_sync_to_user_response
     sync_to_user_response(:prescription_drugs)
+  end
+
+  def self.prescription_drug_sync_to_user_response
+    { type:       :object,
+      properties: {
+        prescription_drugs: { '$ref' => '#/definitions/prescription_drugs' },
+        processed_since:    { '$ref' => '#/definitions/processed_since' } },
+      required:   %w[prescription_drugs processed_since] }
   end
 
   def self.protocol_sync_to_user_response

@@ -228,6 +228,85 @@
         }
       }
     },
+    "/prescription_drugs/sync": {
+      "post": {
+        "summary": "Syncs prescription drugs data from device to server.",
+        "tags": [
+          "Prescription Drug"
+        ],
+        "parameters": [
+          {
+            "name": "prescription_drugs",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "prescription_drugs": {
+                  "$ref": "#/definitions/prescription_drugs"
+                }
+              },
+              "required": [
+                "prescription_drugs"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs prescription drugs data from server to device.",
+        "tags": [
+          "Prescription Drug"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+            "name": "processed_since",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "blood pressures received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "prescription_drugs": {
+                  "$ref": "#/definitions/prescription_drugs"
+                },
+                "processed_since": {
+                  "$ref": "#/definitions/processed_since"
+                }
+              },
+              "required": [
+                "prescription_drugs",
+                "processed_since"
+              ]
+            }
+          }
+        }
+      }
+    },
     "/protocols/sync": {
       "get": {
         "summary": "Syncs protocols and protocol drugs data from server to device.",
@@ -355,22 +434,10 @@
     "error": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "format": "uuid",
-          "description": "Id of the record with errors"
-        },
-        "schema": {
+        "errors": {
           "type": "array",
           "items": {
-            "type": "string"
-          },
-          "description": "List of json schema error strings describing validation errors"
-        },
-        "field_with_error": {
-          "type": "array",
-          "items": {
-            "type": "string"
+            "$ref": "#/definitions/error"
           }
         }
       }
