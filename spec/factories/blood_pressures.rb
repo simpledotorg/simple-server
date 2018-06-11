@@ -7,6 +7,7 @@ FactoryBot.define do
     device_updated_at { Time.now }
     association :facility, strategy: :build
     association :patient, strategy: :build
+    user
   end
 end
 

@@ -76,8 +76,9 @@ module Api::V1::Schema::Models
         created_at:  { '$ref' => '#/definitions/timestamp' },
         updated_at:  { '$ref' => '#/definitions/timestamp' },
         patient_id:  { '$ref' => '#/definitions/uuid' },
-        facility_id: { '$ref' => '#/definitions/uuid' } },
-      required:   %w[systolic diastolic created_at updated_at patient_id facility_id]
+        facility_id: { '$ref' => '#/definitions/uuid' },
+        user_id: { '$ref' => '#/definitions/uuid' } },
+      required:   %w[systolic diastolic created_at updated_at patient_id facility_id user_id]
     }
   end
 

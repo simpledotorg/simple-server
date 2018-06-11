@@ -38,6 +38,8 @@ ActiveRecord::Schema.define(version: 20180608081018) do
     t.datetime "device_created_at", null: false
     t.datetime "device_updated_at", null: false
     t.uuid "facility_id", null: false
+    t.uuid "user_id"
+    t.index ["user_id"], name: "index_blood_pressures_on_user_id"
   end
 
   create_table "facilities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -98,13 +100,13 @@ ActiveRecord::Schema.define(version: 20180608081018) do
     t.string "name"
     t.string "phone_number"
     t.string "security_pin_hash"
-    t.uuid "facility_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "facility_id"
+    t.index ["facility_id"], name: "index_users_on_facility_id"
   end
 
   add_foreign_key "patient_phone_numbers", "patients"
   add_foreign_key "patients", "addresses"
   add_foreign_key "protocol_drugs", "protocols"
-  add_foreign_key "users", "facilities"
 end

@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe "admin/users/new", type: :view do
   before(:each) do
+    FactoryBot.create_list(:facility, 5)
+    @facilities = Facility.all
     assign(:user, User.new(
       :name => "MyString",
       :phone_number => "MyString",
