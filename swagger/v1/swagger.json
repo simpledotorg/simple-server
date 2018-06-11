@@ -57,10 +57,7 @@
               "type": "object",
               "properties": {
                 "errors": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/error"
-                  }
+                  "$ref": "#/definitions/errors"
                 }
               }
             }
@@ -182,10 +179,7 @@
               "type": "object",
               "properties": {
                 "errors": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/error"
-                  }
+                  "$ref": "#/definitions/errors"
                 }
               }
             }
@@ -307,10 +301,7 @@
               "type": "object",
               "properties": {
                 "errors": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/error"
-                  }
+                  "$ref": "#/definitions/errors"
                 }
               }
             }
@@ -343,7 +334,7 @@
             "schema": {
               "type": "object",
               "properties": {
-                "facilities": {
+                "users": {
                   "$ref": "#/definitions/users"
                 },
                 "processed_since": {
@@ -382,6 +373,15 @@
             "type": "string"
           }
         }
+      }
+    },
+    "errors": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/error"
       }
     },
     "processed_since": {

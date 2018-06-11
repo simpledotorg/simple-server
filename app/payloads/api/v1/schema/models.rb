@@ -21,6 +21,11 @@ module Api::V1::Schema::Models
     timestamp.merge(type: [:string, 'null'])
   end
 
+  def self.array_of(type)
+    { type:  ['null', :array],
+      items: { '$ref' => "#/definitions/#{type}" } }
+  end
+
   def self.patient
     { type:       :object,
       properties: {
@@ -159,11 +164,6 @@ module Api::V1::Schema::Models
         security_pin_hash: { '$ref' => '#/definitions/non_empty_string' },
         facility_id:       { '$ref' => '#/definitions/uuid' } },
       required:   %w[id created_at updated_at full_name phone_number security_pin_hash facility_id] }
-  end
-
-  def self.array_of(type)
-    { type:  ['null', :array],
-      items: { '$ref' => "#/definitions/#{type}" } }
   end
 
   def self.definitions

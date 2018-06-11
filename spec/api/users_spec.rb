@@ -6,7 +6,7 @@ describe 'Users API' do
 
     post 'Syncs user data from device to server.' do
       tags 'User'
-      parameter name: :users, in: :body, schema: Api::V1::Schema.users_sync_from_user_request
+      parameter name: :users, in: :body, schema: Api::V1::Schema.user_sync_from_user_request
 
       response '200', 'users created' do
         let(:users) { { users: (1..10).map { build_user_payload } } }
