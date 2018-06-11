@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  include Mergeable
+
   belongs_to :facility
   has_many :blood_pressures
   has_many :patients, through: :blood_pressures

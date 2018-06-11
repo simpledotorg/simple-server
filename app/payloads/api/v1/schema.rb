@@ -42,6 +42,13 @@ module Api::V1::Schema
       required:   %w[prescription_drugs] }
   end
 
+  def self.users_sync_from_user_request
+    { type:       :object,
+      properties: {
+        users: { '$ref' => '#/definitions/users' } },
+      required:   %w[users] }
+  end
+
   def self.sync_from_user_errors
     { type:       :object,
       properties: {
@@ -96,6 +103,17 @@ module Api::V1::Schema
         processed_since: { '$ref' => '#/definitions/processed_since' }
       },
       required:   %w[facilities processed_since]
+    }
+  end
+
+  def self.user_sync_to_user_response
+    {
+      type:       :object,
+      properties: {
+        facilities:      { '$ref' => '#/definitions/users' },
+        processed_since: { '$ref' => '#/definitions/processed_since' }
+      },
+      required:   %w[users processed_since]
     }
   end
 

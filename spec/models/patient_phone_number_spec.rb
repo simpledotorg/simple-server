@@ -5,6 +5,6 @@ RSpec.describe PatientPhoneNumber, type: :model do
     it { should belong_to(:patient) }
   end
   describe 'Validations' do
-    it_behaves_like 'a record that can be synced remotely'
+    it_behaves_like 'a record that validates device timestamps'
   end
 end

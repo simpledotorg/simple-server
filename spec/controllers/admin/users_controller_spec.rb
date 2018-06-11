@@ -78,13 +78,14 @@ RSpec.describe Admin::UsersController, type: :controller do
       let(:new_attributes) {
         facility = FactoryBot.create(:facility)
         FactoryBot.attributes_for(:user, facility_id: facility.id)
+          .except(:device_created_at, :device_updated_at)
       }
 
       it "updates the requested user" do
         user = User.create! valid_attributes
         put :update, params: {id: user.to_param, user: new_attributes}, session: valid_session
         user.reload
-        expect(user.attributes.except('id', 'created_at', 'updated_at'))
+        expect(user.attributes.except('id', 'created_at', 'updated_at', 'device_created_at', 'device_updated_at'))
           .to eq new_attributes.with_indifferent_access
       end
 

@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe PrescriptionDrug, type: :model do
   describe 'Validations' do
-    it_behaves_like 'a record that can be synced remotely'
+    it_behaves_like 'a record that validates device timestamps'
   end
 
   describe 'Associations' do

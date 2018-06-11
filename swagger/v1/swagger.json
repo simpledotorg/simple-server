@@ -276,6 +276,88 @@
           }
         }
       }
+    },
+    "/users/sync": {
+      "post": {
+        "summary": "Syncs user data from device to server.",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "users",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "users": {
+                  "$ref": "#/definitions/users"
+                }
+              },
+              "required": [
+                "users"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs user data from server to device.",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+            "name": "processed_since",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "users received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "facilities": {
+                  "$ref": "#/definitions/users"
+                },
+                "processed_since": {
+                  "$ref": "#/definitions/processed_since"
+                }
+              },
+              "required": [
+                "users",
+                "processed_since"
+              ]
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -572,6 +654,9 @@
         },
         "facility_id": {
           "$ref": "#/definitions/uuid"
+        },
+        "user_id": {
+          "$ref": "#/definitions/uuid"
         }
       },
       "required": [
@@ -580,7 +665,8 @@
         "created_at",
         "updated_at",
         "patient_id",
-        "facility_id"
+        "facility_id",
+        "user_id"
       ]
     },
     "blood_pressures": {
@@ -768,6 +854,50 @@
       ],
       "items": {
         "$ref": "#/definitions/prescription_drug"
+      }
+    },
+    "user": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "full_name": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "phone_number": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "security_pin_hash": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "facility_id": {
+          "$ref": "#/definitions/uuid"
+        }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "updated_at",
+        "full_name",
+        "phone_number",
+        "security_pin_hash",
+        "facility_id"
+      ]
+    },
+    "users": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/user"
       }
     }
   }

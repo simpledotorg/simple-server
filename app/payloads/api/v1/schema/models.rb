@@ -83,7 +83,7 @@ module Api::V1::Schema::Models
         updated_at:  { '$ref' => '#/definitions/timestamp' },
         patient_id:  { '$ref' => '#/definitions/uuid' },
         facility_id: { '$ref' => '#/definitions/uuid' },
-        user_id: { '$ref' => '#/definitions/uuid' } },
+        user_id:     { '$ref' => '#/definitions/uuid' } },
       required:   %w[systolic diastolic created_at updated_at patient_id facility_id user_id]
     }
   end
@@ -148,6 +148,19 @@ module Api::V1::Schema::Models
       required:   %w[id created_at updated_at name patient_id facility_id] }
   end
 
+  def self.user
+    { type:       :object,
+      properties: {
+        id:                { '$ref' => '#/definitions/uuid' },
+        created_at:        { '$ref' => '#/definitions/timestamp' },
+        updated_at:        { '$ref' => '#/definitions/timestamp' },
+        full_name:         { '$ref' => '#/definitions/non_empty_string' },
+        phone_number:      { '$ref' => '#/definitions/non_empty_string' },
+        security_pin_hash: { '$ref' => '#/definitions/non_empty_string' },
+        facility_id:       { '$ref' => '#/definitions/uuid' } },
+      required:   %w[id created_at updated_at full_name phone_number security_pin_hash facility_id] }
+  end
+
   def self.array_of(type)
     { type:  ['null', :array],
       items: { '$ref' => "#/definitions/#{type}" } }
@@ -173,6 +186,8 @@ module Api::V1::Schema::Models
       protocol:           protocol,
       protocols:          array_of('protocol'),
       prescription_drug:  prescription_drug,
-      prescription_drugs: array_of('prescription_drug') }
+      prescription_drugs: array_of('prescription_drug'),
+      user:               user,
+      users:              array_of('user') }
   end
 end
