@@ -3,7 +3,7 @@ lock "~> 3.11.0"
 
 set :application, "redapp-server"
 set :repo_url, "https://github.com/resolvetosavelives/redapp-server.git"
-set :deploy_to, "/home/ubuntu/apps"
+set :deploy_to, -> { "/home/deploy/apps/#{fetch(:application)}" }
 set :rbenv_ruby, '2.3.4'
 set :rails_env, 'production'
 
