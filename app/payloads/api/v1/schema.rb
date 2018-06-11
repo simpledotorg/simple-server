@@ -35,7 +35,7 @@ module Api::V1::Schema
       required:   %w[blood_pressures] }
   end
 
-  def self.prescription_drugs_sync_from_user_request
+  def self.prescription_drug_sync_from_user_request
     { type:       :object,
       properties: {
         prescription_drugs: { '$ref' => '#/definitions/prescription_drugs' } },
