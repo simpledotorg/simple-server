@@ -1,7 +1,4 @@
 module Api::V1::Schema::Models
-###############
-# Models
-
   def self.timestamp
     { type:        :string,
       format:      'date-time',
@@ -67,6 +64,15 @@ module Api::V1::Schema::Models
       required:   %w[id created_at updated_at number] }
   end
 
+  def self.nested_patient
+    patient.deep_merge(
+      properties:  {
+        address:       { '$ref' => '#/definitions/address' },
+        phone_numbers: { '$ref' => '#/definitions/phone_numbers' }, },
+      description: 'Patient with address and phone numbers nested.',
+    )
+  end
+
   def self.blood_pressure
     { type:       :object,
       properties: {
@@ -80,11 +86,6 @@ module Api::V1::Schema::Models
         user_id: { '$ref' => '#/definitions/uuid' } },
       required:   %w[systolic diastolic created_at updated_at patient_id facility_id user_id]
     }
-  end
-
-  def self.blood_pressures
-    { type:  :array,
-      items: { '$ref' => '#/definitions/blood_pressure' } }
   end
 
   def self.facility
@@ -128,45 +129,50 @@ module Api::V1::Schema::Models
         updated_at:     { '$ref' => '#/definitions/timestamp' },
         name:           { type: :string },
         follow_up_days: { type: :integer },
-        protocol_drugs: { type:  :array,
-                          items: { '$ref' => '#/definitions/protocol_drug' } } },
+        protocol_drugs: { '$ref' => '#/definitions/protocol_drugs' } },
       required:   %w[id name protocol_drugs] }
   end
 
-  def self.phone_numbers
-    { type:  ['null', :array],
-      items: { '$ref' => '#/definitions/phone_number' } }
-  end
-
-  def self.nested_patient
-    patient.deep_merge(
+  def self.prescription_drug
+    { type:       :object,
       properties: {
-        address:       { '$ref' => '#/definitions/address' },
-        phone_numbers: { '$ref' => '#/definitions/phone_numbers' }, }
-    )
+        id:          { '$ref' => '#/definitions/uuid' },
+        created_at:  { '$ref' => '#/definitions/timestamp' },
+        updated_at:  { '$ref' => '#/definitions/timestamp' },
+        name:        { '$ref' => '#/definitions/non_empty_string' },
+        dosage:      { type: :string },
+        rxnorm_code: { type: :string },
+        patient_id:  { '$ref' => '#/definitions/uuid' },
+        facility_id: { '$ref' => '#/definitions/uuid' }
+      },
+      required:   %w[id created_at updated_at name patient_id facility_id] }
   end
 
-  def self.nested_patients
-    { type:        :array,
-      description: 'List of patients with address and phone numbers nested.',
-      items:       { '$ref' => '#/definitions/nested_patient' } }
+  def self.array_of(type)
+    { type:  ['null', :array],
+      items: { '$ref' => "#/definitions/#{type}" } }
   end
 
   def self.definitions
     { timestamp:          timestamp,
       uuid:               uuid,
+      non_empty_string:   non_empty_string,
       nullable_timestamp: nullable_timestamp,
       patient:            patient,
       address:            address,
       phone_number:       phone_number,
-      phone_numbers:      phone_numbers,
+      phone_numbers:      array_of('phone_number'),
       nested_patient:     nested_patient,
-      nested_patients:    nested_patients,
+      nested_patients:    array_of('nested_patient'),
       blood_pressure:     blood_pressure,
-      blood_pressures:    blood_pressures,
+      blood_pressures:    array_of('blood_pressure'),
       facility:           facility,
-      protocol:           protocol,
+      facilities:         array_of('facility'),
       protocol_drug:      protocol_drug,
-      non_empty_string:   non_empty_string }
+      protocol_drugs:     array_of('protocol_drug'),
+      protocol:           protocol,
+      protocols:          array_of('protocol'),
+      prescription_drug:  prescription_drug,
+      prescription_drugs: array_of('prescription_drug') }
   end
 end

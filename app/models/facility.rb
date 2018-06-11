@@ -4,6 +4,7 @@ class Facility < ApplicationRecord
   has_many :users
   has_many :blood_pressures
   has_many :patients, through: :blood_pressures
+  has_many :prescription_drugs
 
   validates :name, presence: true
   validates :district, presence: true

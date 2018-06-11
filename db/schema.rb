@@ -80,6 +80,18 @@ ActiveRecord::Schema.define(version: 20180608081018) do
     t.datetime "device_updated_at", null: false
   end
 
+  create_table "prescription_drugs", id: :uuid, default: nil, force: :cascade do |t|
+    t.string "name", null: false
+    t.string "rxnorm_code"
+    t.string "dosage"
+    t.datetime "device_created_at", null: false
+    t.datetime "device_updated_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "patient_id", null: false
+    t.uuid "facility_id", null: false
+  end
+
   create_table "protocol_drugs", id: :uuid, default: nil, force: :cascade do |t|
     t.string "name", null: false
     t.string "dosage", null: false

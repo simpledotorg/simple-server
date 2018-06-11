@@ -15,6 +15,11 @@ Rails.application.routes.draw do
         post 'sync', to: 'blood_pressures#sync_from_user'
       end
 
+      scope '/prescription_drugs' do
+        get 'sync', to: 'prescription_drugs#sync_to_user'
+        post 'sync', to: 'prescription_drugs#sync_from_user'
+      end
+
       scope '/facilities' do
         get 'sync', to: 'facilities#sync_to_user'
       end
