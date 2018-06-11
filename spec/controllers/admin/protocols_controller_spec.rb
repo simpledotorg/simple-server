@@ -10,6 +10,10 @@ RSpec.describe Admin::ProtocolsController, type: :controller do
     FactoryBot.attributes_for(:protocol, name: nil)
   }
 
+  before do
+    sign_in(create(:admin))
+  end
+
   describe "GET #index" do
     it "returns a success response" do
       protocol = Protocol.create! valid_attributes
