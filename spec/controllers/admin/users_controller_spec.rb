@@ -12,7 +12,7 @@ RSpec.describe Admin::UsersController, type: :controller do
 
   let(:invalid_attributes) {
     facility = FactoryBot.create(:facility)
-    FactoryBot.attributes_for(:user, facility_id: facility.id).merge(name: nil)
+    FactoryBot.attributes_for(:user, facility_id: facility.id).merge(full_name: nil)
   }
 
   # This should return the minimal set of values that should be in the session

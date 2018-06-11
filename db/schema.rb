@@ -97,7 +97,7 @@ ActiveRecord::Schema.define(version: 20180608081018) do
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "name"
+    t.string "full_name"
     t.string "phone_number"
     t.string "security_pin_hash"
     t.datetime "created_at", null: false
