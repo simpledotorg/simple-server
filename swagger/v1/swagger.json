@@ -137,10 +137,7 @@
               "type": "object",
               "properties": {
                 "facilities": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/facility"
-                  }
+                  "$ref": "#/definitions/facilities"
                 },
                 "processed_since": {
                   "$ref": "#/definitions/processed_since"
@@ -237,6 +234,88 @@
         }
       }
     },
+    "/prescription_drugs/sync": {
+      "post": {
+        "summary": "Syncs prescription drugs data from device to server.",
+        "tags": [
+          "Prescription Drug"
+        ],
+        "parameters": [
+          {
+            "name": "prescription_drugs",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "prescription_drugs": {
+                  "$ref": "#/definitions/prescription_drugs"
+                }
+              },
+              "required": [
+                "prescription_drugs"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs prescription drugs data from server to device.",
+        "tags": [
+          "Prescription Drug"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+            "name": "processed_since",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "blood pressures received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "prescription_drugs": {
+                  "$ref": "#/definitions/prescription_drugs"
+                },
+                "processed_since": {
+                  "$ref": "#/definitions/processed_since"
+                }
+              },
+              "required": [
+                "prescription_drugs",
+                "processed_since"
+              ]
+            }
+          }
+        }
+      }
+    },
     "/protocols/sync": {
       "get": {
         "summary": "Syncs protocols and protocol drugs data from server to device.",
@@ -265,10 +344,7 @@
               "type": "object",
               "properties": {
                 "protocols": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/protocol"
-                  }
+                  "$ref": "#/definitions/protocols"
                 },
                 "processed_since": {
                   "$ref": "#/definitions/processed_since"
@@ -323,6 +399,11 @@
       "type": "string",
       "format": "uuid",
       "pattern": "[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}"
+    },
+    "non_empty_string": {
+      "type": "string",
+      "minLength": 1,
+      "description": "This string should not be empty."
     },
     "nullable_timestamp": {
       "type": [
@@ -538,11 +619,14 @@
         "created_at",
         "updated_at",
         "status"
-      ]
+      ],
+      "description": "Patient with address and phone numbers nested."
     },
     "nested_patients": {
-      "type": "array",
-      "description": "List of patients with address and phone numbers nested.",
+      "type": [
+        "null",
+        "array"
+      ],
       "items": {
         "$ref": "#/definitions/nested_patient"
       }
@@ -582,7 +666,10 @@
       ]
     },
     "blood_pressures": {
-      "type": "array",
+      "type": [
+        "null",
+        "array"
+      ],
       "items": {
         "$ref": "#/definitions/blood_pressure"
       }
@@ -632,36 +719,14 @@
         "country"
       ]
     },
-    "protocol": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "$ref": "#/definitions/uuid"
-        },
-        "created_at": {
-          "$ref": "#/definitions/timestamp"
-        },
-        "updated_at": {
-          "$ref": "#/definitions/timestamp"
-        },
-        "name": {
-          "type": "string"
-        },
-        "follow_up_days": {
-          "type": "integer"
-        },
-        "protocol_drugs": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/protocol_drug"
-          }
-        }
-      },
-      "required": [
-        "id",
-        "name",
-        "protocol_drugs"
-      ]
+    "facilities": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/facility"
+      }
     },
     "protocol_drug": {
       "type": "object",
@@ -695,10 +760,97 @@
         "protocol_id"
       ]
     },
-    "non_empty_string": {
-      "type": "string",
-      "minLength": 1,
-      "description": "This string should not be empty."
+    "protocol_drugs": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/protocol_drug"
+      }
+    },
+    "protocol": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "name": {
+          "type": "string"
+        },
+        "follow_up_days": {
+          "type": "integer"
+        },
+        "protocol_drugs": {
+          "$ref": "#/definitions/protocol_drugs"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "protocol_drugs"
+      ]
+    },
+    "protocols": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/protocol"
+      }
+    },
+    "prescription_drug": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "name": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "dosage": {
+          "type": "string"
+        },
+        "rxnorm_code": {
+          "type": "string"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "facility_id": {
+          "$ref": "#/definitions/uuid"
+        }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "updated_at",
+        "name",
+        "patient_id",
+        "facility_id"
+      ]
+    },
+    "prescription_drugs": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/prescription_drug"
+      }
     }
   }
 }

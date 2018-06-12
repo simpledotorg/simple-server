@@ -7,8 +7,7 @@ class Patient < ApplicationRecord
   belongs_to :address, optional: true
   has_many :phone_numbers, class_name: 'PatientPhoneNumber'
   has_many :blood_pressures
-
-  has_many :blood_pressures
+  has_many :prescription_drugs
   has_many :facilities, through: :blood_pressures
 
   validates :device_created_at, presence: true

@@ -7,7 +7,7 @@ end
 
 gem 'rails', '~> 5.1.6'
 gem 'pg', '>= 0.18', '< 2.0'
-gem 'puma', '~> 3.7'
+gem 'passenger'
 gem 'sass-rails', '~> 5.0'
 gem 'uglifier', '>= 1.3.0'
 gem 'jbuilder', '~> 2.5'
@@ -25,6 +25,10 @@ group :development, :test do
   gem 'shoulda-matchers', '~> 3.1'
   gem 'faker'
   gem 'timecop', '~> 0.9.0'
+  gem 'capistrano', '~> 3.10'
+  gem 'capistrano-rails'
+  gem 'capistrano-rbenv'
+  gem 'capistrano-passenger'
 end
 
 group :development do
