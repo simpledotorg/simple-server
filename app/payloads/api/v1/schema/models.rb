@@ -21,6 +21,12 @@ module Api::V1::Schema::Models
     timestamp.merge(type: [:string, 'null'])
   end
 
+  def self.bcrypt_password
+    { type:    :string,
+      pattern: '^\$[0-9a-z]{2}\$[0-9]{2}\$[A-Za-z0-9\.\/]{53}$',
+      description: 'Bcrypt password digest'}
+  end
+
   def self.array_of(type)
     { type:  ['null', :array],
       items: { '$ref' => "#/definitions/#{type}" } }
@@ -156,14 +162,14 @@ module Api::V1::Schema::Models
   def self.user
     { type:       :object,
       properties: {
-        id:                { '$ref' => '#/definitions/uuid' },
-        created_at:        { '$ref' => '#/definitions/timestamp' },
-        updated_at:        { '$ref' => '#/definitions/timestamp' },
-        full_name:         { '$ref' => '#/definitions/non_empty_string' },
-        phone_number:      { '$ref' => '#/definitions/non_empty_string' },
-        security_pin_hash: { '$ref' => '#/definitions/non_empty_string' },
-        facility_id:       { '$ref' => '#/definitions/uuid' } },
-      required:   %w[id created_at updated_at full_name phone_number security_pin_hash facility_id] }
+        id:              { '$ref' => '#/definitions/uuid' },
+        created_at:      { '$ref' => '#/definitions/timestamp' },
+        updated_at:      { '$ref' => '#/definitions/timestamp' },
+        full_name:       { '$ref' => '#/definitions/non_empty_string' },
+        phone_number:    { '$ref' => '#/definitions/non_empty_string' },
+        password_digest: { '$ref' => '#/definitions/bcrypt_password' },
+        facility_id:     { '$ref' => '#/definitions/uuid' } },
+      required:   %w[id created_at updated_at full_name phone_number password_digest facility_id] }
   end
 
   def self.definitions
@@ -171,6 +177,7 @@ module Api::V1::Schema::Models
       uuid:               uuid,
       non_empty_string:   non_empty_string,
       nullable_timestamp: nullable_timestamp,
+      bcrypt_password:    bcrypt_password,
       patient:            patient,
       address:            address,
       phone_number:       phone_number,

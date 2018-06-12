@@ -3,7 +3,7 @@ class CreateUsers < ActiveRecord::Migration[5.1]
     create_table :users, id: :uuid do |t|
       t.string :full_name
       t.string :phone_number
-      t.string :security_pin_hash
+      t.string :password_digest
       t.datetime :device_created_at, null: false, default: -> { 'CURRENT_TIMESTAMP' }
       t.datetime :device_updated_at, null: false, default: -> { 'CURRENT_TIMESTAMP' }
       t.timestamps

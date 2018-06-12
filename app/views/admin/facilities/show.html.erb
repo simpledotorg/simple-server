@@ -54,7 +54,7 @@
   <tbody>
     <% @facility.users.each do |user| %>
       <tr>
-        <td><%= user.name %></td>
+        <td><%= user.full_name %></td>
         <td><%= user.phone_number %></td>
         <td><%= link_to 'Show', [:admin, user] %></td>
         <td><%= link_to 'Edit', edit_admin_protocol_drug_path(user) %></td>

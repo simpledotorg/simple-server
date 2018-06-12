@@ -37,7 +37,7 @@ class Api::V1::UsersController < Api::V1::SyncController
         :updated_at,
         :full_name,
         :phone_number,
-        :security_pin_hash,
+        :password_digest,
         :facility_id
       )
     end

@@ -2,14 +2,18 @@ FactoryBot.define do
   factory :user do
     full_name { Faker::Name.name }
     phone_number { Faker::PhoneNumber.phone_number }
-    security_pin_hash { Faker::Crypto.sha256 }
+    password { rand(1000..9999).to_s }
+    password_confirmation { password }
     association :facility, strategy: :build
-    device_created_at { Time.now }
     device_updated_at { Time.now }
+    device_created_at { Time.now }
 
     trait :created_on_device do
       id { SecureRandom.uuid }
       facility
+      password_digest { BCrypt::Password.create(password) }
+      password nil
+      password_confirmation nil
     end
 
     factory :user_created_on_device, traits: [:created_on_device]

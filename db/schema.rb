@@ -111,9 +111,9 @@ ActiveRecord::Schema.define(version: 20180608081018) do
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "full_name"
     t.string "phone_number"
-    t.string "security_pin_hash"
-    t.datetime "device_created_at", default: -> { "now()" }, null: false
-    t.datetime "device_updated_at", default: -> { "now()" }, null: false
+    t.string "password_digest"
+    t.datetime "device_created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "device_updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "facility_id"

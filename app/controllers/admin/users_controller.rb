@@ -49,7 +49,8 @@ class Admin::UsersController < ApplicationController
     params.require(:user).permit(
       :full_name, 
       :phone_number,
-      :security_pin_hash,
+      :password,
+      :password_confirmation,
       :facility_id
     )
   end

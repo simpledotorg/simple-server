@@ -2,7 +2,7 @@
 
 <p>
   <strong>Name:</strong>
-  <%= @user.name %>
+  <%= @user.full_name %>
 </p>
 
 <p>
@@ -10,10 +10,6 @@
   <%= @user.phone_number %>
 </p>
 
-<p>
-  <strong>Security pin hash:</strong>
-  <%= @user.security_pin_hash %>
-</p>
 <p>
   <strong>Facility:</strong>
   <%= link_to @user.facility.name, [:admin, @user.facility] %>

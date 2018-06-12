@@ -7,7 +7,6 @@
     <tr>
       <th>Name</th>
       <th>Phone number</th>
-      <th>Security pin hash</th>
       <th colspan="3"></th>
     </tr>
   </thead>
@@ -15,9 +14,8 @@
   <tbody>
     <% @users.each do |user| %>
       <tr>
-        <td><%= user.name %></td>
+        <td><%= user.full_name %></td>
         <td><%= user.phone_number %></td>
-        <td><%= user.security_pin_hash %></td>
         <td><%= link_to 'Show', [:admin, user] %></td>
         <td><%= link_to 'Edit', edit_admin_user_path(user) %></td>
         <td><%= link_to 'Destroy', [:admin, user], method: :delete, data: { confirm: 'Are you sure?' } %></td>

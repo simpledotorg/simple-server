@@ -6,7 +6,7 @@ class Api::V1::UserPayloadValidator < Api::V1::PayloadValidator
     :updated_at,
     :full_name,
     :phone_number,
-    :security_pin_hash,
+    :password_digest,
     :facility_id
   )
 
