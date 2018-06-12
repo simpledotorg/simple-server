@@ -30,3 +30,15 @@ RAILS_ENV=test bundle exec rspec
 - API Documentation can be accessed at /api-docs on local server
   - They are also available https://redapp-server-temporary.herokuapp.com/api-docs
 - Architecture decisions are captured in ADR format and are available in /doc/arch
+
+## Deployment
+redapp-server is deployed to the enviroment using capistrano.
+```bash
+bundle exec cap <enviroment> deploy
+# eg: bundle exec cap staging deploy
+``` 
+
+Rake tasks can be run on the deployed server using capistrano as well. For example,
+```bash
+bundle exec cap staging deploy:rake task=db:seed
+```

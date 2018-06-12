@@ -42,7 +42,6 @@ module Api::V1::Schema
       required:   [response_key, :processed_since] }
   end
 
-
   def self.patient_sync_from_user_request
     sync_from_user_request(:patients, 'nested_patients')
   end
@@ -69,14 +68,6 @@ module Api::V1::Schema
 
   def self.prescription_drug_sync_to_user_response
     sync_to_user_response(:prescription_drugs)
-  end
-
-  def self.prescription_drug_sync_to_user_response
-    { type:       :object,
-      properties: {
-        prescription_drugs: { '$ref' => '#/definitions/prescription_drugs' },
-        processed_since:    { '$ref' => '#/definitions/processed_since' } },
-      required:   %w[prescription_drugs processed_since] }
   end
 
   def self.protocol_sync_to_user_response
