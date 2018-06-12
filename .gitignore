@@ -18,4 +18,5 @@
 
 .byebug_history
 coverage
+.env
 .env.production
