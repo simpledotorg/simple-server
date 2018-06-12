@@ -11,14 +11,14 @@ module Api::V1::Transformer
     mapping = mapping.with_indifferent_access
     attributes
       .to_hash
-      .transform_keys { |key| mapping[key] || key }
+      .transform_keys! { |key| mapping[key] || key }
       .with_indifferent_access
   end
 
   def self.key_mapping
     {
-      created_at: :device_created_at,
-      updated_at: :device_updated_at
+      'created_at' => 'device_created_at',
+      'updated_at' => 'device_updated_at'
     }
   end
 
