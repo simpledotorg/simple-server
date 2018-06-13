@@ -1,4 +1,4 @@
-class Admin::FacilitiesController < ApplicationController
+class Admin::FacilitiesController < AdminController
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
 
   def index
