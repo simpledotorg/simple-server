@@ -12,6 +12,10 @@ RSpec.describe Admin::ProtocolDrugsController, type: :controller do
     FactoryBot.attributes_for(:protocol_drug, name: nil, protocol_id: protocol.id)
   }
 
+  before do
+    sign_in(create(:admin))
+  end
+
   describe "GET #index" do
     it "returns a success response" do
       protocol_drug = ProtocolDrug.create! valid_attributes

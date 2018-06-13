@@ -1,4 +1,4 @@
-class Admin::ProtocolDrugsController < ApplicationController
+class Admin::ProtocolDrugsController < AdminController
   before_action :set_protocol_drug, only: %i[show edit update destroy]
   before_action :set_protocols, only: %i[create edit update new]
 
