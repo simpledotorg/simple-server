@@ -21,6 +21,17 @@ module Api::V1::Schema::Models
     timestamp.merge(type: [:string, 'null'])
   end
 
+  def self.bcrypt_password
+    { type:    :string,
+      pattern: '^\$[0-9a-z]{2}\$[0-9]{2}\$[A-Za-z0-9\.\/]{53}$',
+      description: 'Bcrypt password digest'}
+  end
+
+  def self.array_of(type)
+    { type:  ['null', :array],
+      items: { '$ref' => "#/definitions/#{type}" } }
+  end
+
   def self.patient
     { type:       :object,
       properties: {
@@ -82,8 +93,9 @@ module Api::V1::Schema::Models
         created_at:  { '$ref' => '#/definitions/timestamp' },
         updated_at:  { '$ref' => '#/definitions/timestamp' },
         patient_id:  { '$ref' => '#/definitions/uuid' },
-        facility_id: { '$ref' => '#/definitions/uuid' } },
-      required:   %w[systolic diastolic created_at updated_at patient_id facility_id]
+        facility_id: { '$ref' => '#/definitions/uuid' },
+        user_id:     { '$ref' => '#/definitions/uuid' } },
+      required:   %w[systolic diastolic created_at updated_at patient_id facility_id user_id]
     }
   end
 
@@ -147,9 +159,17 @@ module Api::V1::Schema::Models
       required:   %w[id created_at updated_at name patient_id facility_id] }
   end
 
-  def self.array_of(type)
-    { type:  ['null', :array],
-      items: { '$ref' => "#/definitions/#{type}" } }
+  def self.user
+    { type:       :object,
+      properties: {
+        id:              { '$ref' => '#/definitions/uuid' },
+        created_at:      { '$ref' => '#/definitions/timestamp' },
+        updated_at:      { '$ref' => '#/definitions/timestamp' },
+        full_name:       { '$ref' => '#/definitions/non_empty_string' },
+        phone_number:    { '$ref' => '#/definitions/non_empty_string' },
+        password_digest: { '$ref' => '#/definitions/bcrypt_password' },
+        facility_id:     { '$ref' => '#/definitions/uuid' } },
+      required:   %w[id created_at updated_at full_name phone_number password_digest facility_id] }
   end
 
   def self.definitions
@@ -157,6 +177,7 @@ module Api::V1::Schema::Models
       uuid:               uuid,
       non_empty_string:   non_empty_string,
       nullable_timestamp: nullable_timestamp,
+      bcrypt_password:    bcrypt_password,
       patient:            patient,
       address:            address,
       phone_number:       phone_number,
@@ -172,6 +193,8 @@ module Api::V1::Schema::Models
       protocol:           protocol,
       protocols:          array_of('protocol'),
       prescription_drug:  prescription_drug,
-      prescription_drugs: array_of('prescription_drug') }
+      prescription_drugs: array_of('prescription_drug'),
+      user:               user,
+      users:              array_of('user') }
   end
 end

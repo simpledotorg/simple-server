@@ -2,7 +2,7 @@ require File.expand_path('spec/utils')
 
 HOST = 'http://localhost:3000'.freeze
 
-def post(path, request_body)
+def api_post(path, request_body)
   uri          = URI.parse(HOST + path)
   header       = { 'Content-Type' => 'application/json',
                    'ACCEPT'       => 'application/json' }
@@ -13,7 +13,7 @@ def post(path, request_body)
   print response.body
 end
 
-def get(path, query_params = {})
+def api_get(path, query_params = {})
   uri       = URI.parse(HOST + path)
   uri.query = URI.encode_www_form(query_params)
   header    = { 'Content-Type' => 'application/json',
@@ -34,32 +34,32 @@ end
 
 def create_patients
   log 'creating 10 patients'
-  post '/api/v1/patients/sync', patients: (1..10).map { build_patient_payload }
+  api_post '/api/v1/patients/sync', patients: (1..10).map { build_patient_payload }
 end
 
 def create_invalid_patients
   log 'creating 10 invalid patients'
-  post '/api/v1/patients/sync', patients: (1..10).map { build_invalid_patient_payload }
+  api_post '/api/v1/patients/sync', patients: (1..10).map { build_invalid_patient_payload }
 end
 
 def get_patients
   log 'getting all patients'
-  get '/api/v1/patients/sync', limit: 100_000
+  api_get '/api/v1/patients/sync', limit: 100_000
 end
 
 def create_bps
   log 'creating 10 BPs'
-  post '/api/v1/blood_pressures/sync', blood_pressures: (1..10).map { build_blood_pressure_payload }
+  api_post '/api/v1/blood_pressures/sync', blood_pressures: (1..10).map { build_blood_pressure_payload }
 end
 
 def create_invalid_bps
   log 'creating 10 invalid BPs'
-  post '/api/v1/blood_pressures/sync', blood_pressures: (1..10).map { build_invalid_blood_pressure_payload }
+  api_post '/api/v1/blood_pressures/sync', blood_pressures: (1..10).map { build_invalid_blood_pressure_payload }
 end
 
 def get_bps
   log 'getting all BPs'
-  get '/api/v1/blood_pressures/sync', limit: 100_000
+  api_get '/api/v1/blood_pressures/sync', limit: 100_000
 end
 
 

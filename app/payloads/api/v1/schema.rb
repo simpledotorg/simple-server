@@ -1,5 +1,4 @@
 module Api::V1::Schema
-
   def self.processed_since
     Models.timestamp.merge(
       name:        'processed_since',
@@ -11,43 +10,22 @@ module Api::V1::Schema
   def self.error
     { type:       :object,
       properties: {
-        id:               { type:        :string,
-                            format:      :uuid,
-                            description: 'Id of the record with errors' },
-        schema:           { type:        :array,
-                            items:       { type: :string },
-                            description: 'List of json schema error strings describing validation errors' },
-        field_with_error: { type:  :array,
-                            items: { type: :string } } } }
+        errors: {
+          type:  :array,
+          items: { '$ref' => '#/definitions/error' } } } }
   end
 
-  def self.patient_sync_from_user_request
+  def self.sync_from_user_request(request_key, schema_type = request_key)
     { type:       :object,
       properties: {
-        patients: { '$ref' => '#/definitions/nested_patients' } },
-      required:   %w[patients] }
-  end
-
-  def self.blood_pressure_sync_from_user_request
-    { type:       :object,
-      properties: {
-        blood_pressures: { '$ref' => '#/definitions/blood_pressures' } },
-      required:   %w[blood_pressures] }
-  end
-
-  def self.prescription_drug_sync_from_user_request
-    { type:       :object,
-      properties: {
-        prescription_drugs: { '$ref' => '#/definitions/prescription_drugs' } },
-      required:   %w[prescription_drugs] }
+        request_key => { '$ref' => "#/definitions/#{schema_type}" } },
+      required:   [request_key] }
   end
 
   def self.sync_from_user_errors
     { type:       :object,
       properties: {
-        errors: {
-          type:  :array,
-          items: { '$ref' => '#/definitions/error' } } } }
+        errors: { '$ref' => '#/definitions/errors' } } }
   end
 
   def self.sync_to_user_request
@@ -56,51 +34,57 @@ module Api::V1::Schema
        description: 'Number of record to retrieve (a.k.a batch-size)' }]
   end
 
-  def self.patient_sync_to_user_response
+  def self.sync_to_user_response(response_key, schema_type = response_key)
     { type:       :object,
       properties: {
-        patients:        { '$ref' => '#/definitions/nested_patients' },
-        processed_since: { '$ref' => '#/definitions/processed_since' } },
-      required:   %w[patients processed_since] }
+        response_key     => { '$ref' => "#/definitions/#{schema_type}" },
+        :processed_since => { '$ref' => '#/definitions/processed_since' } },
+      required:   [response_key, :processed_since] }
+  end
+
+  def self.patient_sync_from_user_request
+    sync_from_user_request(:patients, 'nested_patients')
+  end
+
+  def self.blood_pressure_sync_from_user_request
+    sync_from_user_request(:blood_pressures)
+  end
+
+  def self.prescription_drug_sync_from_user_request
+    sync_from_user_request(:prescription_drugs)
+  end
+
+  def self.user_sync_from_user_request
+    sync_from_user_request(:users)
+  end
+
+  def self.patient_sync_to_user_response
+    sync_to_user_response(:patients, 'nested_patients')
   end
 
   def self.blood_pressure_sync_to_user_response
-    { type:       :object,
-      properties: {
-        blood_pressures: { '$ref' => '#/definitions/blood_pressures' },
-        processed_since: { '$ref' => '#/definitions/processed_since' } },
-      required:   %w[blood_pressures processed_since] }
+    sync_to_user_response(:blood_pressures)
   end
 
   def self.prescription_drug_sync_to_user_response
-    { type:       :object,
-      properties: {
-        prescription_drugs: { '$ref' => '#/definitions/prescription_drugs' },
-        processed_since:    { '$ref' => '#/definitions/processed_since' } },
-      required:   %w[prescription_drugs processed_since] }
+    sync_to_user_response(:prescription_drugs)
   end
 
   def self.protocol_sync_to_user_response
-    { type:       :object,
-      properties: {
-        protocols:       { '$ref' => '#/definitions/protocols' },
-        processed_since: { '$ref' => '#/definitions/processed_since' } },
-      required:   %w[protocols processed_since] }
+    sync_to_user_response(:protocols)
   end
 
   def self.facility_sync_to_user_response
-    {
-      type:       :object,
-      properties: {
-        facilities:      { '$ref' => '#/definitions/facilities' },
-        processed_since: { '$ref' => '#/definitions/processed_since' }
-      },
-      required:   %w[facilities processed_since]
-    }
+    sync_to_user_response(:facilities)
+  end
+
+  def self.user_sync_to_user_response
+    sync_to_user_response(:users)
   end
 
   def self.definitions
     { error:           error,
+      errors:          Models.array_of('error'),
       processed_since: processed_since }
   end
 

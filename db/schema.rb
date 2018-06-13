@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180607063809) do
+ActiveRecord::Schema.define(version: 20180608081018) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -59,6 +59,8 @@ ActiveRecord::Schema.define(version: 20180607063809) do
     t.datetime "device_created_at", null: false
     t.datetime "device_updated_at", null: false
     t.uuid "facility_id", null: false
+    t.uuid "user_id"
+    t.index ["user_id"], name: "index_blood_pressures_on_user_id"
   end
 
   create_table "facilities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -125,6 +127,18 @@ ActiveRecord::Schema.define(version: 20180607063809) do
     t.integer "follow_up_days"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "full_name"
+    t.string "phone_number"
+    t.string "password_digest"
+    t.datetime "device_created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "device_updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "facility_id"
+    t.index ["facility_id"], name: "index_users_on_facility_id"
   end
 
   add_foreign_key "patient_phone_numbers", "patients"

@@ -11,6 +11,7 @@ module Api::V1::Transformer
     mapping = mapping.with_indifferent_access
     attributes
       .to_hash
+      .except(*mapping.values)
       .transform_keys! { |key| mapping[key] || key }
       .with_indifferent_access
   end

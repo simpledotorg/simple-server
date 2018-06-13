@@ -28,6 +28,11 @@ Rails.application.routes.draw do
         get 'sync', to: 'prescription_drugs#sync_to_user'
         post 'sync', to: 'prescription_drugs#sync_from_user'
       end
+      
+      scope '/users' do
+        get 'sync', to: 'users#sync_to_user'
+        post 'sync', to: 'users#sync_from_user'
+      end
 
       scope '/facilities' do
         get 'sync', to: 'facilities#sync_to_user'
@@ -45,5 +50,6 @@ Rails.application.routes.draw do
     resources :facilities
     resources :protocol_drugs
     resources :protocols
+    resources :users
   end
 end

@@ -57,10 +57,7 @@
               "type": "object",
               "properties": {
                 "errors": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/error"
-                  }
+                  "$ref": "#/definitions/errors"
                 }
               }
             }
@@ -182,10 +179,7 @@
               "type": "object",
               "properties": {
                 "errors": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/error"
-                  }
+                  "$ref": "#/definitions/errors"
                 }
               }
             }
@@ -264,10 +258,7 @@
               "type": "object",
               "properties": {
                 "errors": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/error"
-                  }
+                  "$ref": "#/definitions/errors"
                 }
               }
             }
@@ -358,30 +349,106 @@
           }
         }
       }
+    },
+    "/users/sync": {
+      "post": {
+        "summary": "Syncs user data from device to server.",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "users",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "users": {
+                  "$ref": "#/definitions/users"
+                }
+              },
+              "required": [
+                "users"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs user data from server to device.",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+            "name": "processed_since",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "users received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "users": {
+                  "$ref": "#/definitions/users"
+                },
+                "processed_since": {
+                  "$ref": "#/definitions/processed_since"
+                }
+              },
+              "required": [
+                "users",
+                "processed_since"
+              ]
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
     "error": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "format": "uuid",
-          "description": "Id of the record with errors"
-        },
-        "schema": {
+        "errors": {
           "type": "array",
           "items": {
-            "type": "string"
-          },
-          "description": "List of json schema error strings describing validation errors"
-        },
-        "field_with_error": {
-          "type": "array",
-          "items": {
-            "type": "string"
+            "$ref": "#/definitions/error"
           }
         }
+      }
+    },
+    "errors": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/error"
       }
     },
     "processed_since": {
@@ -412,6 +479,11 @@
       ],
       "format": "date-time",
       "description": "Timestamp with millisecond precision."
+    },
+    "bcrypt_password": {
+      "type": "string",
+      "pattern": "^\\$[0-9a-z]{2}\\$[0-9]{2}\\$[A-Za-z0-9\\.\\/]{53}$",
+      "description": "Bcrypt password digest"
     },
     "patient": {
       "type": "object",
@@ -654,6 +726,9 @@
         },
         "facility_id": {
           "$ref": "#/definitions/uuid"
+        },
+        "user_id": {
+          "$ref": "#/definitions/uuid"
         }
       },
       "required": [
@@ -662,7 +737,8 @@
         "created_at",
         "updated_at",
         "patient_id",
-        "facility_id"
+        "facility_id",
+        "user_id"
       ]
     },
     "blood_pressures": {
@@ -850,6 +926,50 @@
       ],
       "items": {
         "$ref": "#/definitions/prescription_drug"
+      }
+    },
+    "user": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "full_name": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "phone_number": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "password_digest": {
+          "$ref": "#/definitions/bcrypt_password"
+        },
+        "facility_id": {
+          "$ref": "#/definitions/uuid"
+        }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "updated_at",
+        "full_name",
+        "phone_number",
+        "password_digest",
+        "facility_id"
+      ]
+    },
+    "users": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/user"
       }
     }
   }

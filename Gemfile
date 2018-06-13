@@ -17,6 +17,7 @@ gem 'dotenv-rails'
 gem 'rswag', '~> 1.6.0'
 gem 'rspec-rails', '~> 3.7'
 gem 'newrelic_rpm'
+gem 'bcrypt', '~> 3.1', '>= 3.1.11'
 gem 'devise', '~> 4.4.3'
 
 group :development, :test do

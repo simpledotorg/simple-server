@@ -37,6 +37,7 @@ class Api::V1::BloodPressuresController < Api::V1::SyncController
         :diastolic,
         :patient_id,
         :facility_id,
+        :user_id,
         :created_at,
         :updated_at
       )
