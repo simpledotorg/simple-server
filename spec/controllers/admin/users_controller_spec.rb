@@ -63,6 +63,17 @@ RSpec.describe Admin::UsersController, type: :controller do
         post :create, params: {user: valid_attributes}
         expect(response).to redirect_to([:admin, User.order(:created_at).last])
       end
+
+      it 'adds otp and otp_valid_until to the user' do
+        Timecop.freeze do
+          timedelta = ENV['USER_OTP_VALID_UNTIL_DELTA_IN_MINUTESS'].to_i.minutes
+          post :create, params: {user: valid_attributes}
+
+          user = User.find_by(phone_number: valid_attributes[:phone_number])
+          expect(user.otp).to be_present
+          expect(user.otp_valid_until.to_i).to eq((Time.now + timedelta).to_i)
+        end
+      end
     end
 
     context "with invalid params" do
@@ -78,14 +89,14 @@ RSpec.describe Admin::UsersController, type: :controller do
       let(:new_attributes) {
         facility = FactoryBot.create(:facility)
         FactoryBot.attributes_for(:user, facility_id: facility.id)
-          .except(:device_created_at, :device_updated_at)
+          .except(:device_created_at, :device_updated_at, :otp, :otp_valid_until)
       }
 
       it "updates the requested user" do
         user = User.create! valid_attributes
         put :update, params: {id: user.to_param, user: new_attributes}
         user.reload
-        expect(user.attributes.except('id', 'created_at', 'updated_at', 'device_created_at', 'device_updated_at', 'password_digest'))
+        expect(user.attributes.except('id', 'created_at', 'updated_at', 'device_created_at', 'device_updated_at', 'password_digest', 'otp', 'otp_valid_until'))
           .to eq new_attributes.with_indifferent_access.except('password', 'password_confirmation')
       end
 
