@@ -434,10 +434,22 @@
     "error": {
       "type": "object",
       "properties": {
-        "errors": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Id of the record with errors"
+        },
+        "schema": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/error"
+            "type": "string"
+          },
+          "description": "List of json schema error strings describing validation errors"
+        },
+        "field_with_error": {
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
