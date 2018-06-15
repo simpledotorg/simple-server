@@ -13,5 +13,6 @@ RSpec.describe Facility, type: :model do
     it { should validate_presence_of(:district)}
     it { should validate_presence_of(:state)}
     it { should validate_presence_of(:country)}
+    it { should validate_numericality_of(:pin)}
   end
 end
