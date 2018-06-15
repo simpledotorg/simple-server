@@ -10,9 +10,14 @@ module Api::V1::Schema
   def self.error
     { type:       :object,
       properties: {
-        errors: {
-          type:  :array,
-          items: { '$ref' => '#/definitions/error' } } } }
+        id:               { type:        :string,
+                            format:      :uuid,
+                            description: 'Id of the record with errors' },
+        schema:           { type:        :array,
+                            items:       { type: :string },
+                            description: 'List of json schema error strings describing validation errors' },
+        field_with_error: { type:  :array,
+                            items: { type: :string } } } }
   end
 
   def self.sync_from_user_request(request_key, schema_type = request_key)
