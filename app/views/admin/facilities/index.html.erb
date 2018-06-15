@@ -21,7 +21,6 @@
     <% @facilities.each do |facility| %>
       <tr>
         <td><%= link_to facility.name, [:admin, facility] %></td>
-        <td><%= facility.name %></td>
         <td><%= facility.street_address %></td>
         <td><%= facility.village_or_colony %></td>
         <td><%= facility.district %></td>
