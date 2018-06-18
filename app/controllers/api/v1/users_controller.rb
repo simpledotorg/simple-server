@@ -26,7 +26,7 @@ class Api::V1::UsersController < Api::V1::SyncController
   end
 
   def transform_to_response(user)
-    Api::V1::UserTransformer.to_response(user)
+    Api::V1::UserTransformer.to_response(user).except('access_token')
   end
 
   def users_params

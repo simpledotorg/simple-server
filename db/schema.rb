@@ -140,6 +140,8 @@ ActiveRecord::Schema.define(version: 20180614061014) do
     t.uuid "facility_id"
     t.string "otp"
     t.datetime "otp_valid_until"
+    t.string "access_token"
+    t.boolean "is_access_token_valid"
     t.index ["facility_id"], name: "index_users_on_facility_id"
   end
 

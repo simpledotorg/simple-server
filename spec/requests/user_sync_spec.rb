@@ -8,10 +8,10 @@ RSpec.describe 'Users sync', type: :request do
   let(:build_payload) { lambda { build_user_payload } }
   let(:build_invalid_payload) { lambda { build_invalid_user_payload } }
   let(:update_payload) { lambda { |user| updated_user_payload user } }
-  let(:keys_not_expected_in_response) { %i[otp otp_valid_until] }
+  let(:keys_not_expected_in_response) { %i[otp otp_valid_until access_token is_access_token_valid] }
 
   def to_response(user)
-    Api::V1::UserTransformer.to_response(user)
+    Api::V1::UserTransformer.to_response(user).except('access_token')
   end
 
   include_examples 'sync requests'
