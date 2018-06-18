@@ -18,9 +18,6 @@ class Admin::UsersController < ApplicationController
 
   def create
     @user = User.new(user_params)
-    @user.otp = user_otp
-    @user.otp_valid_until = user_otp_valid_until
-
 
     if @user.save
       redirect_to [:admin, @user], notice: 'User was successfully created.'
@@ -60,18 +57,5 @@ class Admin::UsersController < ApplicationController
 
   def set_facilities
     @facilities = Facility.all
-  end
-
-  def user_otp
-    digits = (0..9).to_a
-    otp = ''
-    6.times do
-      otp += digits.sample.to_s
-    end
-    otp
-  end
-
-  def user_otp_valid_until
-    Time.now + ENV['USER_OTP_VALID_UNTIL_DELTA_IN_MINUTESS'].to_i.minutes
   end
 end

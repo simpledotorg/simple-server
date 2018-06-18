@@ -8,8 +8,12 @@ RSpec.shared_examples 'sync requests' do
   let(:created_records) { (1..10).map { build_payload.call } }
   let(:many_valid_records) { Hash[response_key.to_sym, created_records] }
   let(:expected_response) do
-    valid_payload[response_key.to_sym].map do |patient|
-      patient.with_int_timestamps.to_json_and_back
+    valid_payload[response_key.to_sym].map do |payload|
+      response = payload
+      if defined? keys_not_expected_in_response.present?
+        response = payload.except(*keys_not_expected_in_response)
+      end
+      response.with_int_timestamps.to_json_and_back
     end
   end
   let(:updated_records) do
