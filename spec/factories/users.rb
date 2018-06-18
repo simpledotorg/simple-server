@@ -4,8 +4,6 @@ FactoryBot.define do
     phone_number { Faker::PhoneNumber.phone_number }
     password { rand(1000..9999).to_s }
     password_confirmation { password }
-    otp { rand(10**6..10**7) }
-    otp_valid_until { Time.now + ENV['USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES'].to_i.minutes }
     association :facility, strategy: :build
     device_updated_at { Time.now }
     device_created_at { Time.now }
@@ -16,8 +14,6 @@ FactoryBot.define do
       password_digest { BCrypt::Password.create(password) }
       password nil
       password_confirmation nil
-      otp nil
-      otp_valid_until nil
     end
 
     factory :user_created_on_device, traits: [:created_on_device]

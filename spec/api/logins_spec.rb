@@ -1,7 +1,6 @@
 require 'swagger_helper'
 
 describe 'Login API' do
-
   path '/login' do
     post 'Login in valid user' do
       tags 'User Login'
@@ -21,7 +20,9 @@ describe 'Login API' do
       end
 
       response '401', 'user is not logged in with expired otp' do
-        let(:db_user) { FactoryBot.create(:user, password: '1234', otp_valid_until: Time.now) }
+        let(:db_user) do
+          Timecop.freeze(Date.today - 30) { FactoryBot.create(:user, password: '1234') }
+        end
         let(:user) do
           { user: { phone_number: db_user.phone_number,
                     password:     '1234',
@@ -29,10 +30,8 @@ describe 'Login API' do
           } }
         end
 
-        schema Api::V1::Schema.user_login_failure_response
-        Timecop.travel(20.minutes.from_now) do
-          run_test!
-        end
+        schema Api::V1::Schema.error
+        run_test!
       end
 
       response '401', 'user is not logged in with wrong password' do
@@ -44,7 +43,7 @@ describe 'Login API' do
           } }
         end
 
-        schema Api::V1::Schema.user_login_failure_response
+        schema Api::V1::Schema.error
         run_test!
       end
 
@@ -57,7 +56,7 @@ describe 'Login API' do
           } }
         end
 
-        schema Api::V1::Schema.user_login_failure_response
+        schema Api::V1::Schema.error
         run_test!
       end
     end

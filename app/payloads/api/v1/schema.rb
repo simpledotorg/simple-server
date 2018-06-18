@@ -87,6 +87,21 @@ module Api::V1::Schema
     sync_to_user_response(:users)
   end
 
+  def self.user_login_request
+    { type:       :object,
+      properties: {
+        user: { '$ref' => '#/definitions/login_user' } },
+      required:   [:user] }
+  end
+
+  def self.user_login_success_response
+    { type:       :object,
+      properties: {
+        access_token: { type: :string },
+        user: { '$ref' => '#/definitions/user' } },
+      required:   [:user] }
+  end
+
   def self.definitions
     { error:           error,
       errors:          Models.array_of('error'),

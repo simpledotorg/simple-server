@@ -26,7 +26,7 @@ class Api::V1::UsersController < Api::V1::SyncController
   end
 
   def transform_to_response(user)
-    Api::V1::Transformer.to_response(user).except('otp', 'otp_valid_until')
+    Api::V1::UserTransformer.to_response(user)
   end
 
   def users_params
