@@ -1,11 +1,12 @@
 require 'rails_helper'
 
 RSpec.shared_examples 'a working sync controller creating records' do
+
   let(:request_key) { model.to_s.underscore.pluralize }
   let(:empty_payload) { Hash[request_key, []] }
 
   let(:new_records) { (1..10).map { build_payload.call } }
-  let(:new_records_payload) { Hash[request_key, new_records]}
+  let(:new_records_payload) { Hash[request_key, new_records] }
 
 
   let(:invalid_payload) { Hash[request_key, [invalid_record]] }
@@ -77,6 +78,7 @@ RSpec.shared_examples 'a working sync controller sending records' do
     end
   end
 
+
   describe 'GET sync: send data from server to device;' do
     let(:response_key) { model.to_s.underscore.pluralize }
     it 'Returns records from the beginning of time, when processed_since is not set' do
@@ -139,7 +141,6 @@ RSpec.shared_examples 'a working sync controller sending records' do
         expect(received_records.map { |record| record['id'] }.to_set)
           .to eq(model.all.pluck(:id).to_set)
       end
-
     end
   end
 end

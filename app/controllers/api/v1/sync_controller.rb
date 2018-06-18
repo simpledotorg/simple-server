@@ -1,4 +1,6 @@
 class Api::V1::SyncController < APIController
+  before_action :validate_access_token
+
   def __sync_from_user__(params)
     errors = params.flat_map do |single_entity_params|
       merge_if_valid(single_entity_params) || []
@@ -21,6 +23,15 @@ class Api::V1::SyncController < APIController
   end
 
   private
+
+  def validate_access_token
+    user_id = request.headers["X_USER_ID"]
+    user = User.find_by(id: user_id)
+    return head :unauthorized unless user.present?
+    authenticate_or_request_with_http_token do |token, options|
+      ActiveSupport::SecurityUtils.secure_compare(token, user.access_token)
+    end
+  end
 
   def params_with_errors(params, errors)
     error_ids = errors.map { |error| error[:id] }

@@ -1,12 +1,31 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::LoginsController, type: :controller do
+  before :each do
+    request_user = FactoryBot.create(:user)
+    request.env['X_USER_ID'] = request_user.id
+    request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
+  end
+
   describe '#create' do
     let(:password) { '1234' }
     let(:db_user) { FactoryBot.create(:user, password: password) }
     describe 'request with valid phone number, password and otp' do
-      it 'should create and respond with access token for the user' do
+      let(:request_params) do
+        { user:
+            { phone_number: db_user.phone_number,
+              password:     password,
+              otp:          db_user.otp
+            }
+        }
+      end
 
+      it 'should create and respond with access token for the user' do
+        post :create, params: request_params
+
+        expect(response.code).to eq('200')
+        expect(JSON(response.body)['user']['id']).to eq(db_user.id)
+        expect(JSON(response.body)['access_token']).to eq(db_user.access_token)
       end
     end
 

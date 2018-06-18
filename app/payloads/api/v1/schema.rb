@@ -98,7 +98,7 @@ module Api::V1::Schema
     { type:       :object,
       properties: {
         access_token: { type: :string },
-        user: { '$ref' => '#/definitions/user' } },
+        user:         { '$ref' => '#/definitions/user' } },
       required:   [:user] }
   end
 
@@ -131,6 +131,12 @@ module Api::V1::Schema
     }
   end
 
+  def self.security_definitions
+    { basic: {
+      type: :basic
+    } }
+  end
+
   def self.swagger_docs
     {
       'v1/swagger.json' => {
@@ -141,7 +147,8 @@ module Api::V1::Schema
         schemes:     ['https'],
         info:        swagger_info,
         paths:       {},
-        definitions: all_definitions
+        definitions: all_definitions,
+        securityDefinitions: security_definitions
       }
     }
   end
