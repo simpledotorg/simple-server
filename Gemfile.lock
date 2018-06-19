@@ -110,6 +110,7 @@ GEM
     json (2.1.0)
     json-schema (2.8.0)
       addressable (>= 2.4)
+    jwt (2.1.0)
     listen (3.1.5)
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
@@ -243,6 +244,10 @@ GEM
     thread_safe (0.3.6)
     tilt (2.0.8)
     timecop (0.9.1)
+    twilio-ruby (5.10.3)
+      faraday (~> 0.9)
+      jwt (>= 1.5, <= 2.5)
+      nokogiri (>= 1.6, < 2.0)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
     uglifier (4.1.10)
@@ -290,6 +295,7 @@ DEPENDENCIES
   shoulda-matchers (~> 3.1)
   simplecov
   timecop (~> 0.9.0)
+  twilio-ruby (~> 5.10, >= 5.10.3)
   tzinfo-data
   uglifier (>= 1.3.0)
   web-console (>= 3.3.0)

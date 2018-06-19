@@ -20,6 +20,7 @@ class Admin::UsersController < ApplicationController
     @user = User.new(user_params)
 
     if @user.save
+      SmsNotificationService.new(@user).notify
       redirect_to [:admin, @user], notice: 'User was successfully created.'
     else
       render :new

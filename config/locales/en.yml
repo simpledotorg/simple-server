@@ -31,7 +31,8 @@
 
 en:
   hello: "Hello world"
-
+  sms:
+    notification: ! 'The otp for login is %{otp}'
   api:
     documentation:
       description: |
