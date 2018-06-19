@@ -4,16 +4,7 @@ class Api::V1::LoginsController < APIController
   def create
     user = User.find_by(phone_number: login_params[:phone_number])
 
-    errors = nil
-    if !user.present?
-      errors = { user: ['user is not present'] }
-    elsif user.otp != login_params[:otp]
-      errors = { user: ['otp is not valid'] }
-    elsif user.otp_valid_until <= Time.now
-      errors = { user: ['otp has expired'] }
-    elsif !user.authenticate(login_params[:password])
-      errors = { user: ['password is not valid'] }
-    end
+    errors = errors_in_user_login(user)
 
     if errors.present?
       render json: { errors: errors }, status: :unauthorized
@@ -37,5 +28,20 @@ class Api::V1::LoginsController < APIController
 
   def login_params
     params.require(:user).permit(:phone_number, :password, :otp)
+  end
+
+  def errors_in_user_login(user)
+    errors = nil
+    if !user.present?
+      errors = { user: ['user is not present'] }
+    elsif user.otp != login_params[:otp]
+      errors = { user: ['otp is not valid'] }
+    elsif user.otp_valid_until <= Time.now
+      errors = { user: ['otp has expired'] }
+    elsif !user.authenticate(login_params[:password])
+      errors = { user: ['password is not valid'] }
+    end
+
+    errors
   end
 end
