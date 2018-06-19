@@ -36,6 +36,8 @@ class Api::V1::PrescriptionDrugsController < Api::V1::SyncController
         :name,
         :dosage,
         :rxnorm_code,
+        :is_protocol_drug,
+        :is_deleted,
         :patient_id,
         :facility_id,
         :created_at,
