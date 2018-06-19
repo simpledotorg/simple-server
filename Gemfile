@@ -21,7 +21,6 @@ gem 'bcrypt', '~> 3.1', '>= 3.1.11'
 gem 'devise', '~> 4.4.3'
 gem 'twilio-ruby', '~> 5.10', '>= 5.10.3'
 
-
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'factory_bot_rails'
