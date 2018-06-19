@@ -52,6 +52,11 @@ RSpec.describe Admin::UsersController, type: :controller do
   end
 
   describe "POST #create" do
+    before :each do
+      sms_nofication_service = double(SmsNotificationService.new(nil))
+      allow(SmsNotificationService).to receive(:new).and_return(sms_nofication_service)
+      allow(sms_nofication_service).to receive(:notify).and_return(true)
+    end
     context "with valid params" do
       it "creates a new User" do
         expect {
