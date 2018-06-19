@@ -19,6 +19,8 @@
         <td><%= link_to 'Show', [:admin, user] %></td>
         <td><%= link_to 'Edit', edit_admin_user_path(user) %></td>
         <td><%= link_to 'Destroy', [:admin, user], method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= link_to 'Reset OTP', admin_user_reset_otp_path(user), method: :put, data: { confirm: I18n.t('admin.reset_otp_alert') } %></td>
+        <td><%= link_to 'Disable Access', admin_user_disable_access_path(user), method: :put, data: { confirm: I18n.t('admin.disable_access_alert') } %></td>
       </tr>
     <% end %>
   </tbody>

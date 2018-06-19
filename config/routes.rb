@@ -52,6 +52,9 @@ Rails.application.routes.draw do
     resources :facilities
     resources :protocol_drugs
     resources :protocols
-    resources :users
+    resources :users do
+      put 'reset_otp', to: 'users#reset_otp'
+      put 'disable_access', to: 'users#disable_access'
+    end
   end
 end

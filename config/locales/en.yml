@@ -33,6 +33,9 @@ en:
   hello: "Hello world"
   sms:
     notification: ! 'The otp for login is %{otp}'
+  admin:
+    reset_otp_alert: 'Are you sure you want to reset the OTP? A SMS will be sent to the user with the new OTP'
+    disable_access_alert: 'Are you sure you want to disable the access for user?'
   api:
     documentation:
       description: |

@@ -40,6 +40,20 @@ class Admin::UsersController < ApplicationController
     redirect_to admin_users_url, notice: 'User was successfully destroyed.'
   end
 
+  def reset_otp
+    user = User.find(params[:user_id])
+    user.set_otp
+    user.save
+    SmsNotificationService.new(user).notify
+    redirect_to admin_users_url, notice: 'User otp has been reset.'
+  end
+
+  def disable_access
+    user = User.find(params[:user_id])
+    user.is_access_token_valid = false
+    user.save
+    redirect_to admin_users_url, notice: 'User access token has be disabled.'
+  end
   private
 
   def set_user
