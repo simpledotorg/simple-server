@@ -1,7 +1,7 @@
 class Api::V1::LoginsController < APIController
   before_action :validate_login_payload, only: %i[create]
 
-  def create
+  def login_user
     user = User.find_by(phone_number: login_params[:phone_number])
 
     errors = errors_in_user_login(user)

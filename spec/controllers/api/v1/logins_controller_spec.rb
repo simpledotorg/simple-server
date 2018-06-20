@@ -1,13 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::LoginsController, type: :controller do
-  before :each do
-    request_user = FactoryBot.create(:user)
-    request.env['X_USER_ID'] = request_user.id
-    request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
-  end
-
-  describe '#create' do
+  describe '#login_user' do
     let(:password) { '1234' }
     let(:db_user) { FactoryBot.create(:user, password: password) }
     describe 'request with valid phone number, password and otp' do
@@ -21,7 +15,7 @@ RSpec.describe Api::V1::LoginsController, type: :controller do
       end
 
       it 'should create and respond with access token for the user' do
-        post :create, params: request_params
+        post :login_user, params: request_params
 
         expect(response.code).to eq('200')
         expect(JSON(response.body)['user']['id']).to eq(db_user.id)
@@ -42,7 +36,7 @@ RSpec.describe Api::V1::LoginsController, type: :controller do
         }
       end
       it 'should respond with http status 401' do
-        post :create, params: request_params
+        post :login_user, params: request_params
         expect(response.status).to eq(401)
         expect(JSON(response.body))
           .to eq('errors' => {
@@ -61,7 +55,7 @@ RSpec.describe Api::V1::LoginsController, type: :controller do
         }
       end
       it 'should respond with http status 401' do
-        post :create, params: request_params
+        post :login_user, params: request_params
         expect(response.status).to eq(401)
         expect(JSON(response.body))
           .to eq('errors' => {
@@ -80,7 +74,7 @@ RSpec.describe Api::V1::LoginsController, type: :controller do
         }
       end
       it 'should respond with http status 401' do
-        post :create, params: request_params
+        post :login_user, params: request_params
         expect(response.status).to eq(401)
         expect(JSON(response.body))
           .to eq('errors' => {
@@ -99,7 +93,7 @@ RSpec.describe Api::V1::LoginsController, type: :controller do
         }
       end
       it 'should respond with http status 401' do
-        post :create, params: request_params
+        post :login_user, params: request_params
         expect(response.status).to eq(401)
         expect(JSON(response.body))
           .to eq('errors' => {
