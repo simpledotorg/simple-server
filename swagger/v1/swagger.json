@@ -33,7 +33,19 @@
         "tags": [
           "Blood Pressure"
         ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
         "parameters": [
+          {
+            "name": "X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
           {
             "name": "blood_pressures",
             "in": "body",
@@ -69,7 +81,19 @@
         "tags": [
           "Blood Pressure"
         ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
         "parameters": [
+          {
+            "name": "X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
           {
             "type": "string",
             "format": "date-time",
@@ -112,7 +136,19 @@
         "tags": [
           "facility"
         ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
         "parameters": [
+          {
+            "name": "X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
           {
             "type": "string",
             "format": "date-time",
@@ -149,13 +185,95 @@
         }
       }
     },
+    "/login": {
+      "post": {
+        "summary": "Login in valid user",
+        "tags": [
+          "User Login"
+        ],
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user": {
+                  "$ref": "#/definitions/login_user"
+                }
+              },
+              "required": [
+                "user"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user is logged in",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "access_token": {
+                  "type": "string"
+                },
+                "user": {
+                  "$ref": "#/definitions/user"
+                }
+              },
+              "required": [
+                "user"
+              ]
+            }
+          },
+          "401": {
+            "description": "user is not logged in with otp",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "Id of the record with errors"
+                },
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of json schema error strings describing validation errors"
+                },
+                "field_with_error": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/patients/sync": {
       "post": {
         "summary": "Syncs patient, address and phone number data from device to server.",
         "tags": [
           "patient"
         ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
         "parameters": [
+          {
+            "name": "X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
           {
             "name": "patients",
             "in": "body",
@@ -191,7 +309,19 @@
         "tags": [
           "patient"
         ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
         "parameters": [
+          {
+            "name": "X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
           {
             "type": "string",
             "format": "date-time",
@@ -234,7 +364,19 @@
         "tags": [
           "Prescription Drug"
         ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
         "parameters": [
+          {
+            "name": "X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
           {
             "name": "prescription_drugs",
             "in": "body",
@@ -270,7 +412,19 @@
         "tags": [
           "Prescription Drug"
         ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
         "parameters": [
+          {
+            "name": "X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
           {
             "type": "string",
             "format": "date-time",
@@ -313,7 +467,19 @@
         "tags": [
           "protocol"
         ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
         "parameters": [
+          {
+            "name": "X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
           {
             "type": "string",
             "format": "date-time",
@@ -991,6 +1157,30 @@
       "items": {
         "$ref": "#/definitions/user"
       }
+    },
+    "login_user": {
+      "type": "object",
+      "properties": {
+        "phone_number": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "password": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "otp": {
+          "$ref": "#/definitions/non_empty_string"
+        }
+      },
+      "required": [
+        "phone_number",
+        "password",
+        "otp"
+      ]
+    }
+  },
+  "securityDefinitions": {
+    "basic": {
+      "type": "basic"
     }
   }
 }

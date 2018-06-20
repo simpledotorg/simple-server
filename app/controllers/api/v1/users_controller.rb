@@ -1,4 +1,6 @@
 class Api::V1::UsersController < Api::V1::SyncController
+  skip_before_action :validate_access_token
+
   def sync_from_user
     __sync_from_user__(users_params)
   end
@@ -26,7 +28,7 @@ class Api::V1::UsersController < Api::V1::SyncController
   end
 
   def transform_to_response(user)
-    Api::V1::Transformer.to_response(user)
+    Api::V1::UserTransformer.to_response(user)
   end
 
   def users_params

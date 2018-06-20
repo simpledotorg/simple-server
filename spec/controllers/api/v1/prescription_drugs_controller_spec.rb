@@ -1,6 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::PrescriptionDrugsController, type: :controller do
+  before :each do
+    request_user = FactoryBot.create(:user)
+    request.env['X_USER_ID'] = request_user.id
+    request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
+  end
+
   let(:model) { PrescriptionDrug }
 
   let(:build_payload) { lambda { build_prescription_drug_payload } }

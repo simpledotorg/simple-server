@@ -4,6 +4,9 @@ describe 'Facilities API' do
   path '/facilities/sync' do
     get 'Syncs facilities data from server to device.' do
       tags 'facility'
+      security [ basic: [] ]
+
+      parameter name: 'X_USER_ID', in: :header, type: :uuid
       Api::V1::Schema.sync_to_user_request.each do |param|
         parameter param
       end
@@ -15,17 +18,14 @@ describe 'Facilities API' do
       end
 
       response '200', 'facilities received' do
+        let(:request_user) { FactoryBot.create(:user) }
+        let(:X_USER_ID) { request_user.id }
+        let(:Authorization) { "Bearer #{request_user.access_token}" }
         schema Api::V1::Schema.facility_sync_to_user_response
         let(:processed_since) { 10.minutes.ago }
         let(:limit) { 10 }
 
-        before do |example|
-          submit_request(example.metadata)
-        end
-
-        it 'returns a valid 201 response' do |example|
-          assert_response_matches_metadata(example.metadata)
-        end
+        run_test!
       end
     end
   end

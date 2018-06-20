@@ -87,6 +87,21 @@ module Api::V1::Schema
     sync_to_user_response(:users)
   end
 
+  def self.user_login_request
+    { type:       :object,
+      properties: {
+        user: { '$ref' => '#/definitions/login_user' } },
+      required:   [:user] }
+  end
+
+  def self.user_login_success_response
+    { type:       :object,
+      properties: {
+        access_token: { '$ref' => '#/definitions/non_empty_string' },
+        user:         { '$ref' => '#/definitions/user' } },
+      required:   %i[user access_token] }
+  end
+
   def self.definitions
     { error:           error,
       errors:          Models.array_of('error'),
@@ -116,6 +131,12 @@ module Api::V1::Schema
     }
   end
 
+  def self.security_definitions
+    { basic: {
+      type: :basic
+    } }
+  end
+
   def self.swagger_docs
     {
       'v1/swagger.json' => {
@@ -126,7 +147,8 @@ module Api::V1::Schema
         schemes:     ['https'],
         info:        swagger_info,
         paths:       {},
-        definitions: all_definitions
+        definitions: all_definitions,
+        securityDefinitions: security_definitions
       }
     }
   end

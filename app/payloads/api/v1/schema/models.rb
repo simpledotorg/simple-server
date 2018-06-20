@@ -174,6 +174,15 @@ module Api::V1::Schema::Models
       required:   %w[id created_at updated_at full_name phone_number password_digest facility_id] }
   end
 
+  def self.login_user
+    { type:       :object,
+      properties: {
+        phone_number: { '$ref' => '#/definitions/non_empty_string' },
+        password:     { '$ref' => '#/definitions/non_empty_string' },
+        otp:          { '$ref' => '#/definitions/non_empty_string' } },
+      required:   %w[phone_number password otp] }
+  end
+
   def self.definitions
     { timestamp:          timestamp,
       uuid:               uuid,
@@ -197,6 +206,7 @@ module Api::V1::Schema::Models
       prescription_drug:  prescription_drug,
       prescription_drugs: array_of('prescription_drug'),
       user:               user,
-      users:              array_of('user') }
+      users:              array_of('user'),
+      login_user:         login_user }
   end
 end

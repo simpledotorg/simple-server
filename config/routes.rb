@@ -14,6 +14,8 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      post 'login', to: 'logins#login_user'
+
       scope '/patients' do
         get 'sync', to: 'patients#sync_to_user'
         post 'sync', to: 'patients#sync_from_user'
@@ -50,6 +52,9 @@ Rails.application.routes.draw do
     resources :facilities
     resources :protocol_drugs
     resources :protocols
-    resources :users
+    resources :users do
+      put 'reset_otp', to: 'users#reset_otp'
+      put 'disable_access', to: 'users#disable_access'
+    end
   end
 end
