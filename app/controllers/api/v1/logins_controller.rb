@@ -31,17 +31,16 @@ class Api::V1::LoginsController < APIController
   end
 
   def errors_in_user_login(user)
-    errors = nil
-    if !user.present?
-      errors = { user: ['user is not present'] }
+    error_string = if !user.present?
+      I18n.t('login.error_messages.unknown_user')
     elsif user.otp != login_params[:otp]
-      errors = { user: ['otp is not valid'] }
+      I18n.t('login.error_messages.invalid_otp')
     elsif user.otp_valid_until <= Time.now
-      errors = { user: ['otp has expired'] }
+      I18n.t('login.error_messages.expired_otp')
     elsif !user.authenticate(login_params[:password])
-      errors = { user: ['password is not valid'] }
+      I18n.t('login.error_messages.invalid_password')
     end
 
-    errors
+    { user: [error_string] } if error_string.present?
   end
 end

@@ -23,13 +23,13 @@ class User < ApplicationRecord
 
   def set_otp
     generated_otp        = self.class.generate_otp
-    self.otp             ||= generated_otp[:otp]
-    self.otp_valid_until ||= generated_otp[:otp_valid_until]
+    self.otp             = generated_otp[:otp]
+    self.otp_valid_until = generated_otp[:otp_valid_until]
   end
 
   def set_access_token
-    self.access_token ||= self.class.generate_access_token
-    self.is_access_token_valid ||= true
+    self.access_token = self.class.generate_access_token
+    self.is_access_token_valid = true
   end
 
   def self.generate_otp
@@ -45,5 +45,9 @@ class User < ApplicationRecord
 
   def self.generate_access_token
     SecureRandom.hex(32)
+  end
+
+  def access_token_valid?
+    is_access_token_valid
   end
 end

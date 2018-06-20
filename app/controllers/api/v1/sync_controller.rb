@@ -27,7 +27,7 @@ class Api::V1::SyncController < APIController
   def validate_access_token
     user_id = request.headers["X_USER_ID"]
     user = User.find_by(id: user_id)
-    return head :unauthorized unless (user.present? && user.is_access_token_valid)
+    return head :unauthorized unless user.present? && user.access_token_valid?
     authenticate_or_request_with_http_token do |token, options|
       ActiveSupport::SecurityUtils.secure_compare(token, user.access_token)
     end

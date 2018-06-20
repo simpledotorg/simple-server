@@ -97,9 +97,9 @@ module Api::V1::Schema
   def self.user_login_success_response
     { type:       :object,
       properties: {
-        access_token: { type: :string },
+        access_token: { '$ref' => '#/definitions/non_empty_string' },
         user:         { '$ref' => '#/definitions/user' } },
-      required:   [:user] }
+      required:   %i[user access_token] }
   end
 
   def self.definitions
