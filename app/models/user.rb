@@ -17,7 +17,7 @@ class User < ApplicationRecord
 
   def presence_of_password
     unless password_digest.present? || password.present?
-      errors.add(:age, 'Either password_digest or password should be present')
+      errors.add(:password, 'Either password_digest or password should be present')
     end
   end
 
