@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180614061014) do
+ActiveRecord::Schema.define(version: 20180619105933) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -111,6 +111,8 @@ ActiveRecord::Schema.define(version: 20180614061014) do
     t.datetime "updated_at", null: false
     t.uuid "patient_id", null: false
     t.uuid "facility_id", null: false
+    t.boolean "is_protocol_drug", null: false
+    t.boolean "is_deleted", null: false
   end
 
   create_table "protocol_drugs", id: :uuid, default: nil, force: :cascade do |t|

@@ -1081,6 +1081,12 @@
         "rxnorm_code": {
           "type": "string"
         },
+        "is_protocol_drug": {
+          "type": "boolean"
+        },
+        "is_deleted": {
+          "type": "boolean"
+        },
         "patient_id": {
           "$ref": "#/definitions/uuid"
         },
@@ -1093,6 +1099,8 @@
         "created_at",
         "updated_at",
         "name",
+        "is_protocol_drug",
+        "is_deleted",
         "patient_id",
         "facility_id"
       ]

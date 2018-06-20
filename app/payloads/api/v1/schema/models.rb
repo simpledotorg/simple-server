@@ -147,16 +147,18 @@ module Api::V1::Schema::Models
   def self.prescription_drug
     { type:       :object,
       properties: {
-        id:          { '$ref' => '#/definitions/uuid' },
-        created_at:  { '$ref' => '#/definitions/timestamp' },
-        updated_at:  { '$ref' => '#/definitions/timestamp' },
-        name:        { '$ref' => '#/definitions/non_empty_string' },
-        dosage:      { type: :string },
-        rxnorm_code: { type: :string },
-        patient_id:  { '$ref' => '#/definitions/uuid' },
-        facility_id: { '$ref' => '#/definitions/uuid' }
+        id:               { '$ref' => '#/definitions/uuid' },
+        created_at:       { '$ref' => '#/definitions/timestamp' },
+        updated_at:       { '$ref' => '#/definitions/timestamp' },
+        name:             { '$ref' => '#/definitions/non_empty_string' },
+        dosage:           { type: :string },
+        rxnorm_code:      { type: :string },
+        is_protocol_drug: { type: :boolean },
+        is_deleted:       { type: :boolean },
+        patient_id:       { '$ref' => '#/definitions/uuid' },
+        facility_id:      { '$ref' => '#/definitions/uuid' }
       },
-      required:   %w[id created_at updated_at name patient_id facility_id] }
+      required:   %w[id created_at updated_at name is_protocol_drug is_deleted patient_id facility_id] }
   end
 
   def self.user

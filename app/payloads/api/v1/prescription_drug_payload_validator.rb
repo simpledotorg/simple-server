@@ -5,6 +5,8 @@ class Api::V1::PrescriptionDrugPayloadValidator < Api::V1::PayloadValidator
     :name,
     :dosage,
     :rxnorm_code,
+    :is_deleted,
+    :is_protocol_drug,
     :patient_id,
     :facility_id,
     :created_at,
