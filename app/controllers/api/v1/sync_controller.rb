@@ -24,14 +24,28 @@ class Api::V1::SyncController < APIController
 
   private
 
+  def current_user
+    User.find_by(id: request.headers["X_USER_ID"])
+  end
+
   def validate_access_token
     return unless FeatureToggle.is_enabled?('SYNC_API_AUTHENTICATION')
-    user = User.find_by(id: request.headers["X_USER_ID"])
-    return head :unauthorized unless user.present? && user.access_token_valid?
-    authenticate_or_request_with_http_token do |token, options|
-      ActiveSupport::SecurityUtils.secure_compare(token, user.access_token)
-    end
+    user = current_user
+    return head :unauthorized unless user.present?
+    unauthorize_user_with_invalid_access_token(user)
+  end
+
+  def expire_otp(user)
     user.expire_otp if user.otp_valid?
+  end
+
+  def unauthorize_user_with_invalid_access_token(user)
+    return head :unauthorized unless user.access_token_valid?
+    authenticate_or_request_with_http_token do |token, options|
+      result = ActiveSupport::SecurityUtils.secure_compare(token, user.access_token)
+      user.expire_otp if result && user.otp_valid?
+      result
+    end
   end
 
   def params_with_errors(params, errors)
