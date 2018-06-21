@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::BloodPressuresController, type: :controller do
+  let(:request_user) { FactoryBot.create(:user) }
   before :each do
-    request_user = FactoryBot.create(:user)
     request.env['X_USER_ID'] = request_user.id
     request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
   end
@@ -20,6 +20,11 @@ RSpec.describe Api::V1::BloodPressuresController, type: :controller do
     it_behaves_like 'a working sync controller updating records'
 
     describe 'creates new blood pressures' do
+      before :each do
+        request.env['X_USER_ID'] = request_user.id
+        request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
+      end
+
       it 'creates new blood pressures with associated patient' do
         patient = FactoryBot.create(:patient)
         blood_pressures = (1..10).map do
