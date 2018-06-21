@@ -26,11 +26,12 @@ class Api::V1::SyncController < APIController
 
   def validate_access_token
     if FeatureToggle.is_enabled?('SYNC_API_AUTHENTICATION')
-      user_id = request.headers["X_USER_ID"]
-      user = User.find_by(id: user_id)
+      user = User.find_by(id: request.headers['X_USER_ID'])
       return head :unauthorized unless user.present? && user.access_token_valid?
       authenticate_or_request_with_http_token do |token, options|
-        ActiveSupport::SecurityUtils.secure_compare(token, user.access_token)
+        is_token_valid = ActiveSupport::SecurityUtils.secure_compare(token, user.access_token)
+        user.expire_otp if is_token_valid && user.otp_valid?
+        is_token_valid
       end
     end
   end

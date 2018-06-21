@@ -50,4 +50,12 @@ class User < ApplicationRecord
   def access_token_valid?
     is_access_token_valid
   end
+
+  def otp_valid?
+    self.otp_valid_until >= Time.now
+  end
+
+  def expire_otp
+    self.update(otp_valid_until: Time.now)
+  end
 end
