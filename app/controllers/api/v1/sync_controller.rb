@@ -15,7 +15,7 @@ class Api::V1::SyncController < APIController
     records_to_sync = find_records_to_sync(processed_since, limit)
     render(
       json:   {
-        response_key => records_to_sync.map { |record| transform_to_response(record) },
+        response_key      => records_to_sync.map { |record| transform_to_response(record) },
         'processed_since' => most_recent_record_timestamp(records_to_sync).strftime(TIME_WITHOUT_TIMEZONE_FORMAT)
       },
       status: :ok
@@ -25,14 +25,13 @@ class Api::V1::SyncController < APIController
   private
 
   def validate_access_token
-    if FeatureToggle.is_enabled?('SYNC_API_AUTHENTICATION')
-      user = User.find_by(id: request.headers['X_USER_ID'])
-      return head :unauthorized unless user.present? && user.access_token_valid?
-      authenticate_or_request_with_http_token do |token, options|
-        is_token_valid = ActiveSupport::SecurityUtils.secure_compare(token, user.access_token)
-        user.expire_otp if is_token_valid && user.otp_valid?
-        is_token_valid
-      end
+    return unless FeatureToggle.is_enabled?('SYNC_API_AUTHENTICATION')
+    user = User.find_by(id: request.headers["X_USER_ID"])
+    return head :unauthorized unless user.present? && user.access_token_valid?
+    authenticate_or_request_with_http_token do |token, options|
+      is_token_valid = ActiveSupport::SecurityUtils.secure_compare(token, user.access_token)
+      user.expire_otp if is_token_valid && user.otp_valid?
+      is_token_valid
     end
   end
 
@@ -51,9 +50,9 @@ class Api::V1::SyncController < APIController
       logger: 'logger',
       extra:  {
         params_with_errors: params_with_errors(params, errors),
-        errors: errors
+        errors:             errors
       },
-      tags: { type: 'validation' }
+      tags:   { type: 'validation' }
     )
   end
 

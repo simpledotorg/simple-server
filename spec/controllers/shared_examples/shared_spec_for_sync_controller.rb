@@ -1,5 +1,10 @@
 require 'rails_helper'
 
+def set_authentication_headers
+  request.env['X_USER_ID']          = request_user.id
+  request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
+end
+
 RSpec.shared_examples 'a sync controller that authenticates user requests' do
   describe 'user api authentication' do
     describe 'SYNC_API_AUTHENTICATION feature is disabled' do
@@ -33,12 +38,12 @@ RSpec.shared_examples 'a sync controller that authenticates user requests' do
       let(:empty_payload) { Hash[request_key, []] }
 
       before :each do
-        ENV['ENABLE_SYNC_API_AUTHENTICATION'] = 'true'
+        request_user = FactoryBot.create(:user)
+        set_authentication_headers
       end
 
       before :each do
-        request.env['X_USER_ID']          = request_user.id
-        request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
+        ENV['ENABLE_SYNC_API_AUTHENTICATION'] = 'true'
       end
 
       it 'allows sync_from_user requests to the controller with valid user_id and access_token' do
@@ -95,10 +100,7 @@ RSpec.shared_examples 'a working sync controller creating records' do
   let(:partially_valid_payload) { Hash[request_key, invalid_records_payload + valid_records_payload] }
 
   before :each do
-    if defined? request_user
-      request.env['X_USER_ID']          = request_user.id
-      request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
-    end
+    set_authentication_headers if defined? request_user
   end
 
   describe 'creates new records' do
@@ -145,10 +147,7 @@ RSpec.shared_examples 'a working sync controller updating records' do
   let(:updated_payload) { Hash[request_key, updated_records] }
 
   before :each do
-    if defined? request_user
-      request.env['X_USER_ID']          = request_user.id
-      request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
-    end
+    set_authentication_headers if defined? request_user
   end
 
   describe 'updates records' do
@@ -172,10 +171,7 @@ RSpec.shared_examples 'a working sync controller sending records' do
   end
 
   before :each do
-    if defined? request_user
-      request.env['X_USER_ID']          = request_user.id
-      request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
-    end
+    set_authentication_headers if defined? request_user
   end
 
   describe 'GET sync: send data from server to device;' do
