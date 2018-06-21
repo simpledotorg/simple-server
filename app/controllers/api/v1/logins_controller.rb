@@ -35,7 +35,7 @@ class Api::V1::LoginsController < APIController
       I18n.t('login.error_messages.unknown_user')
     elsif user.otp != login_params[:otp]
       I18n.t('login.error_messages.invalid_otp')
-    elsif user.otp_valid?
+    elsif !user.otp_valid?
       I18n.t('login.error_messages.expired_otp')
     elsif !user.authenticate(login_params[:password])
       I18n.t('login.error_messages.invalid_password')

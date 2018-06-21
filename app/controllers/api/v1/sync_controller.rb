@@ -29,10 +29,9 @@ class Api::V1::SyncController < APIController
     user = User.find_by(id: request.headers["X_USER_ID"])
     return head :unauthorized unless user.present? && user.access_token_valid?
     authenticate_or_request_with_http_token do |token, options|
-      is_token_valid = ActiveSupport::SecurityUtils.secure_compare(token, user.access_token)
-      user.expire_otp if is_token_valid && user.otp_valid?
-      is_token_valid
+      ActiveSupport::SecurityUtils.secure_compare(token, user.access_token)
     end
+    user.expire_otp if user.otp_valid?
   end
 
   def params_with_errors(params, errors)

@@ -14,7 +14,7 @@ RSpec.describe Api::V1::LoginsController, type: :controller do
         }
       end
 
-      it 'should create and respond with access token for the user' do
+      it 'should respond with access token for the user' do
         post :login_user, params: request_params
 
         expect(response.code).to eq('200')
