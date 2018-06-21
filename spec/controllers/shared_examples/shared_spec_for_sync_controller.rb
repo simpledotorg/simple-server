@@ -58,12 +58,21 @@ RSpec.shared_examples 'a sync controller that authenticates user requests' do
         expect(response.status).not_to eq(401)
       end
 
-
-      it 'expires the user otp if not already expired on success full authentication' do
+      it 'expires the user otp if not already expired on successful authentication' do
         get :sync_to_user, params: empty_payload
 
         request_user.reload
         expect(request_user.otp_valid?).to eq(false)
+      end
+
+      it 'sets user logged_in_at on successful authentication' do
+        now = Time.now
+        Timecop.freeze(now) do
+          get :sync_to_user, params: empty_payload
+
+          request_user.reload
+          expect(request_user.logged_in_at.to_i).to eq(now.to_i)
+        end
       end
 
       it 'does not allow sync_from_user requests to the controller with invalid user_id and access_token' do
