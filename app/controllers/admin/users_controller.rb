@@ -50,15 +50,16 @@ class Admin::UsersController < ApplicationController
 
   def disable_access
     user = User.find(params[:user_id])
-    user.is_access_token_valid = false
+    user.disable_access
     user.save
     redirect_to admin_users_url, notice: 'User access token has be disabled.'
   end
 
   def enable_access
     user = User.find(params[:user_id])
-    user.is_access_token_valid = true
+    user.enable_access
     user.save
+    SmsNotificationService.new(user).notify
     redirect_to admin_users_url, notice: 'User access token has be enabled.'
   end
 
