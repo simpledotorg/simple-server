@@ -38,7 +38,7 @@ en:
       expired_otp: 'otp has expired'
       invalid_password: 'password is not valid'
   sms:
-    notification: ! 'The otp for login is %{otp}'
+    notification: "The otp for login is %{otp}"
   admin:
     reset_otp_alert: 'Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP'
     disable_access_alert: 'Are you sure you want to disable the access for user?'
