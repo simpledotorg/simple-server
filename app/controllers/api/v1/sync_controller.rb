@@ -1,5 +1,5 @@
 class Api::V1::SyncController < APIController
-  before_action :validate_access_token
+  before_action :authenticate
 
   def __sync_from_user__(params)
     errors = params.flat_map do |single_entity_params|
@@ -15,7 +15,7 @@ class Api::V1::SyncController < APIController
     records_to_sync = find_records_to_sync(processed_since, limit)
     render(
       json:   {
-        response_key => records_to_sync.map { |record| transform_to_response(record) },
+        response_key      => records_to_sync.map { |record| transform_to_response(record) },
         'processed_since' => most_recent_record_timestamp(records_to_sync).strftime(TIME_WITHOUT_TIMEZONE_FORMAT)
       },
       status: :ok
@@ -24,12 +24,23 @@ class Api::V1::SyncController < APIController
 
   private
 
-  def validate_access_token
-    user_id = request.headers["X_USER_ID"]
-    user = User.find_by(id: user_id)
-    return head :unauthorized unless user.present? && user.access_token_valid?
+  def current_user
+    @current_user ||= User.find_by(id: request.headers["X_USER_ID"])
+  end
+
+  def authenticate
+    return unless FeatureToggle.is_enabled?('SYNC_API_AUTHENTICATION')
+    return head :unauthorized unless authenticated?
+    current_user.mark_as_logged_in if current_user.has_never_logged_in?
+  end
+
+  def authenticated?
+    current_user.present? && current_user.access_token_valid? && access_token_authorized?
+  end
+
+  def access_token_authorized?
     authenticate_or_request_with_http_token do |token, options|
-      ActiveSupport::SecurityUtils.secure_compare(token, user.access_token)
+      ActiveSupport::SecurityUtils.secure_compare(token, current_user.access_token)
     end
   end
 
@@ -48,9 +59,9 @@ class Api::V1::SyncController < APIController
       logger: 'logger',
       extra:  {
         params_with_errors: params_with_errors(params, errors),
-        errors: errors
+        errors:             errors
       },
-      tags: { type: 'validation' }
+      tags:   { type: 'validation' }
     )
   end
 

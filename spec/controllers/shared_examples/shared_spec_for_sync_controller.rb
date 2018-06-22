@@ -1,7 +1,100 @@
 require 'rails_helper'
 
-RSpec.shared_examples 'a working sync controller creating records' do
+def set_authentication_headers
+  request.env['X_USER_ID']          = request_user.id
+  request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
+end
 
+RSpec.shared_examples 'a sync controller that authenticates user requests' do
+  describe 'user api authentication' do
+    describe 'SYNC_API_AUTHENTICATION feature is disabled' do
+      let(:request_key) { model.to_s.underscore.pluralize }
+      let(:empty_payload) { Hash[request_key, []] }
+
+      before :each do
+        request.env['X_USER_ID']          = 'invalid user id'
+        request.env['HTTP_AUTHORIZATION'] = 'invalid access token'
+      end
+
+      before :each do
+        ENV['ENABLE_SYNC_API_AUTHENTICATION'] = 'false'
+      end
+
+      it 'allows sync_from_user requests to the controller' do
+        post :sync_from_user, params: empty_payload
+
+        expect(response.status).not_to eq(401)
+      end
+
+      it 'allows sync_to_user requests to the controller' do
+        post :sync_from_user, params: empty_payload
+
+        expect(response.status).not_to eq(401)
+      end
+    end
+
+    describe 'SYNC_API_AUTHENTICATION feature is enabled' do
+      let(:request_key) { model.to_s.underscore.pluralize }
+      let(:empty_payload) { Hash[request_key, []] }
+
+      before :each do
+        request_user = FactoryBot.create(:user)
+        set_authentication_headers
+      end
+
+      before :each do
+        ENV['ENABLE_SYNC_API_AUTHENTICATION'] = 'true'
+      end
+
+      it 'allows sync_from_user requests to the controller with valid user_id and access_token' do
+        post :sync_from_user, params: empty_payload
+
+        expect(response.status).not_to eq(401)
+      end
+
+      it 'allows sync_to_user requests to the controller with valid user_id and access_token' do
+        get :sync_to_user, params: empty_payload
+
+        expect(response.status).not_to eq(401)
+      end
+
+      it 'expires the user otp if not already expired on successful authentication' do
+        get :sync_to_user, params: empty_payload
+
+        request_user.reload
+        expect(request_user.otp_valid?).to eq(false)
+      end
+
+      it 'sets user logged_in_at on successful authentication' do
+        now = Time.now
+        Timecop.freeze(now) do
+          get :sync_to_user, params: empty_payload
+
+          request_user.reload
+          expect(request_user.logged_in_at.to_i).to eq(now.to_i)
+        end
+      end
+
+      it 'does not allow sync_from_user requests to the controller with invalid user_id and access_token' do
+        request.env['X_USER_ID']          = 'invalid user id'
+        request.env['HTTP_AUTHORIZATION'] = 'invalid access token'
+        post :sync_from_user, params: empty_payload
+
+        expect(response.status).to eq(401)
+      end
+
+      it 'does not allow sync_to_user requests to the controller with invalid user_id and access_token' do
+        request.env['X_USER_ID']          = 'invalid user id'
+        request.env['HTTP_AUTHORIZATION'] = 'invalid access token'
+        get :sync_to_user, params: empty_payload
+
+        expect(response.status).to eq(401)
+      end
+    end
+  end
+end
+
+RSpec.shared_examples 'a working sync controller creating records' do
   let(:request_key) { model.to_s.underscore.pluralize }
   let(:empty_payload) { Hash[request_key, []] }
 
@@ -14,6 +107,10 @@ RSpec.shared_examples 'a working sync controller creating records' do
   let(:invalid_records_payload) { (1..5).map { build_invalid_payload.call } }
   let(:valid_records_payload) { (1..5).map { build_payload.call } }
   let(:partially_valid_payload) { Hash[request_key, invalid_records_payload + valid_records_payload] }
+
+  before :each do
+    set_authentication_headers if defined? request_user
+  end
 
   describe 'creates new records' do
     it 'returns 400 when there are no records in the request' do
@@ -58,6 +155,10 @@ RSpec.shared_examples 'a working sync controller updating records' do
   let(:updated_records) { existing_records.map(&update_payload) }
   let(:updated_payload) { Hash[request_key, updated_records] }
 
+  before :each do
+    set_authentication_headers if defined? request_user
+  end
+
   describe 'updates records' do
     it 'with updated record attributes' do
       post :sync_from_user, params: updated_payload, as: :json
@@ -78,6 +179,9 @@ RSpec.shared_examples 'a working sync controller sending records' do
     end
   end
 
+  before :each do
+    set_authentication_headers if defined? request_user
+  end
 
   describe 'GET sync: send data from server to device;' do
     let(:response_key) { model.to_s.underscore.pluralize }

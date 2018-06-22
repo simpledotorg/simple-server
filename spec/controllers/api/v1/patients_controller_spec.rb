@@ -1,11 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::PatientsController, type: :controller do
-  before :each do
-    request_user = FactoryBot.create(:user)
-    request.env['X_USER_ID'] = request_user.id
-    request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
-  end
+  let(:request_user) { FactoryBot.create(:user) }
 
   let(:model) { Patient }
 
@@ -16,10 +12,16 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
 
   let(:number_of_schema_errors_in_invalid_payload) { 2 + invalid_record['phone_numbers'].count }
 
+  it_behaves_like 'a sync controller that authenticates user requests'
   describe 'POST sync: send data from device to server;' do
     it_behaves_like 'a working sync controller creating records'
 
     describe 'creates new patients' do
+      before :each do
+        request.env['X_USER_ID'] = request_user.id
+        request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
+      end
+
       it 'creates new patients' do
         patients = (1..10).map { build_patient_payload }
         post(:sync_from_user, params: { patients: patients }, as: :json)
@@ -44,6 +46,11 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
     end
 
     describe 'updates patients' do
+      before :each do
+        request.env['X_USER_ID'] = request_user.id
+        request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
+      end
+
       let(:existing_patients) { FactoryBot.create_list(:patient, 10) }
       let(:updated_patients_payload) { existing_patients.map { |patient| updated_patient_payload patient } }
 

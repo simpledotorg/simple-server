@@ -1,5 +1,5 @@
 class Api::V1::UsersController < Api::V1::SyncController
-  skip_before_action :validate_access_token
+  skip_before_action :authenticate
 
   def sync_from_user
     __sync_from_user__(users_params)

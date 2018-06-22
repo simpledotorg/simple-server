@@ -1,12 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::PrescriptionDrugsController, type: :controller do
-  before :each do
-    request_user = FactoryBot.create(:user)
-    request.env['X_USER_ID'] = request_user.id
-    request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
-  end
-
+  let(:request_user) { FactoryBot.create(:user) }
   let(:model) { PrescriptionDrug }
 
   let(:build_payload) { lambda { build_prescription_drug_payload } }
@@ -15,17 +10,21 @@ RSpec.describe Api::V1::PrescriptionDrugsController, type: :controller do
   let(:update_payload) { lambda { |prescription_drug| updated_prescription_drug_payload prescription_drug } }
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
+  it_behaves_like 'a sync controller that authenticates user requests'
   describe 'POST sync: send data from device to server;' do
     it_behaves_like 'a working sync controller creating records'
     it_behaves_like 'a working sync controller updating records'
 
     describe 'creates new prescription drugs' do
       it 'creates new prescription drugs with associated patient, and facility' do
-        patient = FactoryBot.create(:patient)
-        facility = FactoryBot.create(:facility)
+        request.env['X_USER_ID']          = request_user.id
+        request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
+        
+        patient            = FactoryBot.create(:patient)
+        facility           = FactoryBot.create(:facility)
         prescription_drugs = (1..10).map do
           build_prescription_drug_payload(FactoryBot.build(:prescription_drug,
-                                                           patient: patient,
+                                                           patient:  patient,
                                                            facility: facility))
         end
         post(:sync_from_user, params: { prescription_drugs: prescription_drugs }, as: :json)

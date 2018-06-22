@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180619105933) do
+ActiveRecord::Schema.define(version: 20180621114114) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -144,6 +144,7 @@ ActiveRecord::Schema.define(version: 20180619105933) do
     t.datetime "otp_valid_until", null: false
     t.string "access_token", null: false
     t.boolean "is_access_token_valid", null: false
+    t.datetime "logged_in_at"
     t.index ["facility_id"], name: "index_users_on_facility_id"
   end
 
