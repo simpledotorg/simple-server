@@ -66,4 +66,18 @@ class User < ApplicationRecord
   def has_never_logged_in?
     !logged_in_at.present?
   end
+
+  def reset_login
+    self.logged_in_at = nil
+  end
+
+  def disable_access
+    self.is_access_token_valid = false
+  end
+
+  def enable_access
+    set_access_token
+    set_otp
+    reset_login
+  end
 end

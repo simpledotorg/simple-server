@@ -6,10 +6,15 @@ class SmsNotificationService
   end
 
   def notify
+    unless FeatureToggle.is_enabled?('SMS_NOTIFICATION_FOR_OTP')
+      logger.info "SMS_NOTIFICATION_FOR_OTP Feature is disabled. Skipping SMS notification to user #{user.id}"
+      return
+    end
+
     client.messages.create(
       from: ENV['TWILIO_PHONE_NUMBER'],
       to: user.phone_number.prepend(I18n.t('sms.country_code')),
-      body: I18n.t('sms.notification', otp: I18n.t(user.otp))
+      body: I18n.t('sms.notification', otp: user.otp)
     )
   end
 

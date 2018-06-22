@@ -46,7 +46,8 @@
   <thead>
   <tr>
     <th>Name</th>
-    <th>Phone Number</th>
+    <th>Phone number</th>
+    <th>First login in at</th>
     <th>OTP Valid Until</th>
     <th>Is access token valid?</th>
     <th colspan="5"></th>
@@ -55,16 +56,21 @@
 
   <tbody>
   <% @facility.users.each do |user| %>
-    <tr>
+    <tr class=<%= user.access_token_valid? ? 'active' : 'inactive' %>>
       <td><%= user.full_name %></td>
       <td><%= user.phone_number %></td>
       <td><%= user.otp_valid_until %></td>
       <td><%= user.is_access_token_valid %></td>
+      <td><%= user.logged_in_at.try(:iso8601) || 'Has not logged in yet' %></td>
       <td><%= link_to 'Show', [:admin, user] %></td>
       <td><%= link_to 'Edit', edit_admin_user_path(user) %></td>
       <td><%= link_to 'Destroy', [:admin, user], method: :delete, data: { confirm: 'Are you sure?' } %></td>
       <td><%= link_to 'Reset OTP', admin_user_reset_otp_path(user), method: :put, data: { confirm: I18n.t('admin.reset_otp_alert') } %></td>
-      <td><%= link_to 'Disable Access', admin_user_disable_access_path(user), method: :put, data: { confirm: I18n.t('admin.disable_access_alert') } %></td>
+      <% if user.access_token_valid? %>
+        <td><%= link_to 'Disable Access', admin_user_disable_access_path(user), method: :put, data: { confirm: I18n.t('admin.disable_access_alert') } %></td>
+      <% else %>
+        <td><%= link_to 'Enable Access', admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %></td>
+      <% end %>
     </tr>
   <% end %>
   </tbody>

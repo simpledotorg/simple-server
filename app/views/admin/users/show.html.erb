@@ -1,6 +1,6 @@
 <p id="notice"><%= notice %></p>
 
-<p>
+<p class=<%= @user.access_token_valid? ? 'active' : 'inactive' %>>
   <strong>Name:</strong>
   <%= @user.full_name %>
 </p>
@@ -15,7 +15,23 @@
   <%= link_to @user.facility.name, [:admin, @user.facility] %>
 </p>
 
+<p>
+  <strong>First login in at:</strong>
+  <%= @user.logged_in_at.try(:iso8601) || 'Not logged in yet' %>
+</p>
+
+<% unless FeatureToggle.is_enabled?('SMS_NOTIFICATION_FOR_OTP') %>
+  <p>
+    <strong>OTP message for user</strong>
+    <%= I18n.t('sms.notification', otp: @user.otp) %>
+  </p>
+<% end %>
+
 <%= link_to 'Edit', edit_admin_user_path(@user) %> |
 <%= link_to 'Back', admin_users_path %> |
 <%= link_to 'Reset OTP', admin_user_reset_otp_path(@user), method: :put, data: { confirm: I18n.t('admin.reset_otp_alert') } %> |
-<%= link_to 'Disable Access', admin_user_disable_access_path(@user), method: :put, data: { confirm: I18n.t('admin.disable_access_alert') } %>
+<% if @user.access_token_valid? %>
+  <%= link_to 'Disable Access', admin_user_disable_access_path(@user), method: :put, data: { confirm: I18n.t('admin.disable_access_alert') } %>
+<% else %>
+  <%= link_to 'Enable Access', admin_user_enable_access_path(@user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
+<% end %>
