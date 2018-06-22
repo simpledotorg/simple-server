@@ -52,7 +52,7 @@ class Admin::UsersController < ApplicationController
     user = User.find(params[:user_id])
     user.disable_access
     user.save
-    redirect_to admin_users_url, notice: 'User access token has be disabled.'
+    redirect_to admin_users_url, notice: 'User access has been disabled.'
   end
 
   def enable_access
@@ -60,7 +60,7 @@ class Admin::UsersController < ApplicationController
     user.enable_access
     user.save
     SmsNotificationService.new(user).notify
-    redirect_to admin_users_url, notice: 'User access token has be enabled.'
+    redirect_to admin_users_url, notice: 'User access has been enabled.'
   end
 
   private
