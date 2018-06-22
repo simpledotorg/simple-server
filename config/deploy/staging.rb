@@ -1,1 +1,1 @@
-server "13.127.130.247", user: "deploy", roles: %w(web app db)
+server "api-staging.simple.org", user: "deploy", roles: %w(web app db)
