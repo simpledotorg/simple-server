@@ -54,6 +54,14 @@ class Admin::UsersController < ApplicationController
     user.save
     redirect_to admin_users_url, notice: 'User access token has be disabled.'
   end
+
+  def enable_access
+    user = User.find(params[:user_id])
+    user.is_access_token_valid = true
+    user.save
+    redirect_to admin_users_url, notice: 'User access token has be enabled.'
+  end
+
   private
 
   def set_user

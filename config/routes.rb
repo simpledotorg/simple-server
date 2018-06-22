@@ -55,6 +55,7 @@ Rails.application.routes.draw do
     resources :users do
       put 'reset_otp', to: 'users#reset_otp'
       put 'disable_access', to: 'users#disable_access'
+      put 'enable_access', to: 'users#enable_access'
     end
   end
 end

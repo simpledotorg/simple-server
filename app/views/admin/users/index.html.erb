@@ -4,25 +4,31 @@
 
 <table>
   <thead>
-    <tr>
-      <th>Name</th>
-      <th>Phone number</th>
-      <th colspan="3"></th>
-    </tr>
+  <tr>
+    <th>Name</th>
+    <th>Phone number</th>
+    <th>First login in at</th>
+    <th colspan="3"></th>
+  </tr>
   </thead>
 
   <tbody>
-    <% @users.each do |user| %>
-      <tr>
-        <td><%= user.full_name %></td>
-        <td><%= user.phone_number %></td>
-        <td><%= link_to 'Show', [:admin, user] %></td>
-        <td><%= link_to 'Edit', edit_admin_user_path(user) %></td>
-        <td><%= link_to 'Destroy', [:admin, user], method: :delete, data: { confirm: 'Are you sure?' } %></td>
-        <td><%= link_to 'Reset OTP', admin_user_reset_otp_path(user), method: :put, data: { confirm: I18n.t('admin.reset_otp_alert') } %></td>
+  <% @users.each do |user| %>
+    <tr>
+      <td class=<%= user.access_token_valid? ? 'active' : 'inactive' %>><%= user.full_name %></td>
+      <td class=<%= user.access_token_valid? ? 'active' : 'inactive' %>><%= user.phone_number %></td>
+      <td class=<%= user.access_token_valid? ? 'active' : 'inactive' %>><%= user.logged_in_at.try(:iso8601) || 'Has not logged in yet' %></td>
+      <td><%= link_to 'Show', [:admin, user] %></td>
+      <td><%= link_to 'Edit', edit_admin_user_path(user) %></td>
+      <td><%= link_to 'Destroy', [:admin, user], method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      <td><%= link_to 'Reset OTP', admin_user_reset_otp_path(user), method: :put, data: { confirm: I18n.t('admin.reset_otp_alert') } %></td>
+      <% if user.access_token_valid? %>
         <td><%= link_to 'Disable Access', admin_user_disable_access_path(user), method: :put, data: { confirm: I18n.t('admin.disable_access_alert') } %></td>
-      </tr>
-    <% end %>
+      <% else %>
+        <td><%= link_to 'Enable Access', admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %></td>
+      <% end %>
+    </tr>
+  <% end %>
   </tbody>
 </table>
 

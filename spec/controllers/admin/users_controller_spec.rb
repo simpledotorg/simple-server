@@ -145,5 +145,4 @@ RSpec.describe Admin::UsersController, type: :controller do
       expect(response).to redirect_to(admin_users_url)
     end
   end
-
 end
