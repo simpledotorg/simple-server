@@ -17,9 +17,9 @@
   </div>
 
   <div class="field">
-    <%= form.label :phone_number %>
+    <%= form.label :phone_number, "Phone Number (10 digits)" %>
     <%= I18n.t('sms.country_code') %>
-    <%= form.text_field :phone_number, id: :user_phone_number %>
+    <%= form.text_field :phone_number, id: :user_phone_number , pattern: '(6|7|8|9)\d{9}'%>
   </div>
 
   <div class="field">
