@@ -3,7 +3,6 @@ class Admin::UsersController < ApplicationController
   before_action :set_facilities, only: %i[create edit update new]
 
   def index
-    @users = User.all
   end
 
   def show
