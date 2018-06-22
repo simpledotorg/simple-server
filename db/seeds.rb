@@ -6,14 +6,42 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-Facility.find_or_create_by(
-  name: "Civil Hospital Hoshiarpur",
-  street_address: "Jalandhar Road",
-  village_or_colony: "Kamalpur",
-  district: "Hoshiarpur",
-  state: "Punjab",
-  country: "India"
-)
+facilities = [
+  { name:           "CHC Nathana",
+    facility_type:  "CHC",
+    district:       "Bathinda",
+    state:          "Punjab",
+    country:        "India" },
+
+  { name:           "CHC Bagta",
+    facility_type:  "CHC",
+    district:       "Bathinda",
+    state:          "Punjab",
+    country:        "India" },
+
+  { name:           "CHC Buccho",
+    facility_type:  "CHC",
+    district:       "Bathinda",
+    state:          "Punjab",
+    country:        "India" },
+
+  { name:           "PHC Meheraj",
+    facility_type:  "PHC",
+    district:       "Bathinda",
+    state:          "Punjab",
+    country:        "India" },
+
+  { name:           "CHC Khyalakalan",
+    facility_type:  "CHC",
+    district:       "Mansa",
+    state:          "Punjab",
+    country:        "India" },
+
+  { name:           "PHC Joga",
+    facility_type:  "PHC",
+    district:       "Mansa",
+    state:          "Punjab",
+    country:        "India" }]
 
 protocol_data = {
   name:           'Punjab Hypertension Protocol',
@@ -47,7 +75,11 @@ protocol_drugs_data = [
   }
 ]
 
-protocol = Protocol.create(protocol_data)
+facilities.each do |facility_data|
+  Facility.find_or_create_by(facility_data)
+end
+
+protocol = Protocol.find_or_create_by(protocol_data)
 protocol_drugs_data.each do |drug_data|
-  ProtocolDrug.create(drug_data.merge(protocol_id: protocol.id))
+  ProtocolDrug.find_or_create_by(drug_data.merge(protocol_id: protocol.id))
 end
