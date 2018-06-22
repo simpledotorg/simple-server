@@ -13,7 +13,7 @@ class SmsNotificationService
 
     client.messages.create(
       from: ENV['TWILIO_PHONE_NUMBER'],
-      to: user.phone_number,
+      to: user.phone_number.prepend(I18n.t('sms.country_code')),
       body: I18n.t('sms.notification', otp: user.otp)
     )
   end
