@@ -50,4 +50,20 @@ class User < ApplicationRecord
   def access_token_valid?
     is_access_token_valid
   end
+
+  def otp_valid?
+    otp_valid_until >= Time.now
+  end
+
+  def mark_as_logged_in
+    now = Time.now
+    update(
+      otp_valid_until: now,
+      logged_in_at: now
+    )
+  end
+
+  def has_never_logged_in?
+    !logged_in_at.present?
+  end
 end
