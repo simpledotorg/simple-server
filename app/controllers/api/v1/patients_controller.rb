@@ -20,8 +20,8 @@ class Api::V1::PatientsController < Api::V1::SyncController
       ).merge
     end
 
-    { record: patient
-      errors_hash:  (validator.errors_hash if validator.valid?) }
+    { record:      patient,
+      errors_hash: (validator.errors_hash if validator.valid?) }
   end
 
   def find_records_to_sync(since, limit)

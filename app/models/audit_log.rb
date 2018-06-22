@@ -30,4 +30,12 @@ class AuditLog < ApplicationRecord
       auditable_id:   record.id,
       action:         'fetch')
   end
+
+  def self.login_log(user)
+    create(
+      user:           user,
+      auditable_type: 'User',
+      auditable_id:   user.id,
+      action:         'login')
+  end
 end

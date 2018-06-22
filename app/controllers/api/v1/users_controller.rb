@@ -17,10 +17,11 @@ class Api::V1::UsersController < Api::V1::SyncController
     if validator.invalid?
       NewRelic::Agent.increment_metric('Merge/User/schema_invalid')
     else
-      User.merge(Api::V1::Transformer.from_request(user_params))
+      user = User.merge(Api::V1::Transformer.from_request(user_params))
     end
 
-    validator.errors_hash if validator.invalid?
+    { record:      user,
+      errors_hash: (validator.errors_hash if validator.valid?) }
   end
 
   def find_records_to_sync(since, limit)
