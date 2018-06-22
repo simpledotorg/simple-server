@@ -36,6 +36,7 @@ RSpec.shared_examples 'a sync controller that authenticates user requests' do
     describe 'SYNC_API_AUTHENTICATION feature is enabled' do
       let(:request_key) { model.to_s.underscore.pluralize }
       let(:empty_payload) { Hash[request_key, []] }
+
       before :each do
         request_user = FactoryBot.create(:user)
         set_authentication_headers
@@ -52,9 +53,26 @@ RSpec.shared_examples 'a sync controller that authenticates user requests' do
       end
 
       it 'allows sync_to_user requests to the controller with valid user_id and access_token' do
-        get :sync_from_user, params: empty_payload
+        get :sync_to_user, params: empty_payload
 
         expect(response.status).not_to eq(401)
+      end
+
+      it 'expires the user otp if not already expired on successful authentication' do
+        get :sync_to_user, params: empty_payload
+
+        request_user.reload
+        expect(request_user.otp_valid?).to eq(false)
+      end
+
+      it 'sets user logged_in_at on successful authentication' do
+        now = Time.now
+        Timecop.freeze(now) do
+          get :sync_to_user, params: empty_payload
+
+          request_user.reload
+          expect(request_user.logged_in_at.to_i).to eq(now.to_i)
+        end
       end
 
       it 'does not allow sync_from_user requests to the controller with invalid user_id and access_token' do
@@ -68,7 +86,7 @@ RSpec.shared_examples 'a sync controller that authenticates user requests' do
       it 'does not allow sync_to_user requests to the controller with invalid user_id and access_token' do
         request.env['X_USER_ID']          = 'invalid user id'
         request.env['HTTP_AUTHORIZATION'] = 'invalid access token'
-        get :sync_from_user, params: empty_payload
+        get :sync_to_user, params: empty_payload
 
         expect(response.status).to eq(401)
       end
