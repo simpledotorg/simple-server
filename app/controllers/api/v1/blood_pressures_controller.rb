@@ -14,12 +14,11 @@ class Api::V1::BloodPressuresController < Api::V1::SyncController
     logger.debug "Blood Pressure had errors: #{validator.errors_hash}" if validator.invalid?
     if validator.invalid?
       NewRelic::Agent.increment_metric('Merge/BloodPressure/schema_invalid')
+      { errors_hash: validator.errors_hash }
     else
       blood_pressure = BloodPressure.merge(Api::V1::Transformer.from_request(blood_pressure_params))
+      { record: blood_pressure }
     end
-
-    { record:      blood_pressure,
-      errors_hash: (validator.errors_hash if validator.valid?) }
   end
 
   def find_records_to_sync(since, limit)

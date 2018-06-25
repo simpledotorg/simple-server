@@ -4,7 +4,7 @@ class Api::V1::SyncController < APIController
   def __sync_from_user__(params)
     errors = params.flat_map do |single_entity_params|
       res = merge_if_valid(single_entity_params)
-      AuditLog.merge_log(current_user, res[:record])
+      AuditLog.merge_log(current_user, res[:record]) if res[:record].present?
       res[:errors_hash] || []
     end
 
