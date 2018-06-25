@@ -59,9 +59,9 @@
     <tr class=<%= user.access_token_valid? ? 'active' : 'inactive' %>>
       <td><%= user.full_name %></td>
       <td><%= user.phone_number %></td>
+      <td><%= user.logged_in_at.try(:iso8601) || 'Has not logged in yet' %></td>
       <td><%= user.otp_valid_until %></td>
       <td><%= user.is_access_token_valid %></td>
-      <td><%= user.logged_in_at.try(:iso8601) || 'Has not logged in yet' %></td>
       <td><%= link_to 'Show', [:admin, user] %></td>
       <td><%= link_to 'Edit', edit_admin_user_path(user) %></td>
       <td><%= link_to 'Destroy', [:admin, user], method: :delete, data: { confirm: 'Are you sure?' } %></td>

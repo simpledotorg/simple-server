@@ -58,12 +58,28 @@ RSpec.shared_examples 'a sync controller that authenticates user requests' do
         expect(response.status).not_to eq(401)
       end
 
-      it 'expires the user otp if not already expired on successful authentication' do
-        get :sync_to_user, params: empty_payload
+      describe 'MULTIPLE_LOGIN feature' do
+        describe 'is enabled' do
+          it 'does not expire the user otp if not already expired on successful authentication' do
+            ENV['ENABLE_MULTIPLE_LOGIN'] = 'true'
+            get :sync_to_user, params: empty_payload
 
-        request_user.reload
-        expect(request_user.otp_valid?).to eq(false)
+            request_user.reload
+            expect(request_user.otp_valid?).to eq(true)
+          end
+        end
+
+        describe 'is disabled' do
+          it 'expires the user otp if not already expired on successful authentication' do
+            ENV['ENABLE_MULTIPLE_LOGIN'] = 'false'
+            get :sync_to_user, params: empty_payload
+
+            request_user.reload
+            expect(request_user.otp_valid?).to eq(false)
+          end
+        end
       end
+
 
       it 'sets user logged_in_at on successful authentication' do
         now = Time.now

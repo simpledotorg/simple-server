@@ -57,10 +57,9 @@ class User < ApplicationRecord
 
   def mark_as_logged_in
     now = Time.now
-    update(
-      otp_valid_until: now,
-      logged_in_at: now
-    )
+    self.otp_valid_until = now unless FeatureToggle.is_enabled?('MULTIPLE_LOGIN')
+    self.logged_in_at = now
+    save
   end
 
   def has_never_logged_in?
