@@ -42,7 +42,7 @@
         ],
         "parameters": [
           {
-            "name": "X_USER_ID",
+            "name": "HTTP_X_USER_ID",
             "in": "header",
             "type": "uuid"
           },
@@ -90,7 +90,7 @@
         ],
         "parameters": [
           {
-            "name": "X_USER_ID",
+            "name": "HTTP_X_USER_ID",
             "in": "header",
             "type": "uuid"
           },
@@ -145,7 +145,7 @@
         ],
         "parameters": [
           {
-            "name": "X_USER_ID",
+            "name": "HTTP_X_USER_ID",
             "in": "header",
             "type": "uuid"
           },
@@ -271,7 +271,7 @@
         ],
         "parameters": [
           {
-            "name": "X_USER_ID",
+            "name": "HTTP_X_USER_ID",
             "in": "header",
             "type": "uuid"
           },
@@ -319,7 +319,7 @@
         ],
         "parameters": [
           {
-            "name": "X_USER_ID",
+            "name": "HTTP_X_USER_ID",
             "in": "header",
             "type": "uuid"
           },
@@ -374,7 +374,7 @@
         ],
         "parameters": [
           {
-            "name": "X_USER_ID",
+            "name": "HTTP_X_USER_ID",
             "in": "header",
             "type": "uuid"
           },
@@ -422,7 +422,7 @@
         ],
         "parameters": [
           {
-            "name": "X_USER_ID",
+            "name": "HTTP_X_USER_ID",
             "in": "header",
             "type": "uuid"
           },
@@ -477,7 +477,7 @@
         ],
         "parameters": [
           {
-            "name": "X_USER_ID",
+            "name": "HTTP_X_USER_ID",
             "in": "header",
             "type": "uuid"
           },
