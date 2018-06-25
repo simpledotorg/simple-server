@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 def set_authentication_headers
-  request.env['X_USER_ID']          = request_user.id
+  request.env['HTTP_X_USER_ID']     = request_user.id
   request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
 end
 

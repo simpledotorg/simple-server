@@ -17,7 +17,7 @@ RSpec.describe Api::V1::PrescriptionDrugsController, type: :controller do
 
     describe 'creates new prescription drugs' do
       it 'creates new prescription drugs with associated patient, and facility' do
-        request.env['X_USER_ID']          = request_user.id
+        request.env['HTTP_X_USER_ID']          = request_user.id
         request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
         
         patient            = FactoryBot.create(:patient)
