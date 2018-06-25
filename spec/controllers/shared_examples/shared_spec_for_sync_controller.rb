@@ -248,3 +248,66 @@ RSpec.shared_examples 'a working sync controller sending records' do
     end
   end
 end
+
+RSpec.shared_examples 'a sync controller that audits the data access' do
+  before :each do
+    set_authentication_headers if defined? request_user
+  end
+
+  let(:auditable_type) { model.to_s }
+  let(:request_key) { model.to_s.underscore.pluralize }
+  let(:model_class_sym) { model.to_s.underscore.to_sym }
+
+  describe 'creates an audit log for data synced from user' do
+    let(:record) { build_payload.call }
+    let(:payload) { Hash[request_key, [record]] }
+
+    it 'creates an audit log for new data created by the user' do
+      post :sync_from_user, params: payload, as: :json
+
+      audit_logs = AuditLog.where(user_id: request_user.id, auditable_type: auditable_type, auditable_id: record[:id])
+      expect(audit_logs.count).to be 1
+      expect(audit_logs.first.action).to eq('create')
+    end
+
+    it 'creates an audit log for data updated by the user' do
+      exiting_record = FactoryBot.create(model_class_sym)
+      record[:id] = exiting_record.id
+      payload[request_key] = [record]
+
+      post :sync_from_user, params: payload, as: :json
+
+      audit_logs = AuditLog.where(user_id: request_user.id, auditable_type: auditable_type, auditable_id: record[:id])
+      expect(audit_logs.count).to be 1
+      expect(audit_logs.first.action).to eq('update')
+    end
+
+    it 'creates an audit log for data touched by the user' do
+      exiting_record = FactoryBot.create(model_class_sym)
+      record[:id] = exiting_record.id
+      record[:updated_at] = 3.days.ago
+      payload[request_key] = [record]
+
+      post :sync_from_user, params: payload, as: :json
+
+      audit_logs = AuditLog.where(user_id: request_user.id, auditable_type: auditable_type, auditable_id: record[:id])
+      expect(audit_logs.count).to be 1
+      expect(audit_logs.first.action).to eq('touch')
+    end
+  end
+
+  describe 'creates an audit log for data synced to user' do
+    let!(:records) { FactoryBot.create_list(model_class_sym, 5) }
+    it 'creates an audit log for data fetched by the user' do
+      get :sync_to_user, params: {
+        processed_since: 20.minutes.ago,
+        limit:           5
+      },  as: :json
+
+      audit_logs = AuditLog.where(user_id: request_user.id, auditable_type: auditable_type)
+      expect(audit_logs.count).to be 5
+      expect(audit_logs.map(&:auditable_id).to_set).to eq(records.map(&:id).to_set)
+      expect(audit_logs.map(&:action).to_set).to eq(['fetch'].to_set)
+    end
+  end
+end
