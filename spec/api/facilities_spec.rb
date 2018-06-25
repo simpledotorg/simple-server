@@ -6,7 +6,7 @@ describe 'Facilities API' do
       tags 'facility'
       security [ basic: [] ]
 
-      parameter name: 'X_USER_ID', in: :header, type: :uuid
+      parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       Api::V1::Schema.sync_to_user_request.each do |param|
         parameter param
       end
@@ -19,7 +19,7 @@ describe 'Facilities API' do
 
       response '200', 'facilities received' do
         let(:request_user) { FactoryBot.create(:user) }
-        let(:X_USER_ID) { request_user.id }
+        let(:HTTP_X_USER_ID) { request_user.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
         schema Api::V1::Schema.facility_sync_to_user_response
         let(:processed_since) { 10.minutes.ago }
