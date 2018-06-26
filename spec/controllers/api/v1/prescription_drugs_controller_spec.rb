@@ -11,6 +11,8 @@ RSpec.describe Api::V1::PrescriptionDrugsController, type: :controller do
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
   it_behaves_like 'a sync controller that authenticates user requests'
+  it_behaves_like 'a working sync controller that short circuits disabled apis'
+
   describe 'POST sync: send data from device to server;' do
     it_behaves_like 'a working sync controller creating records'
     it_behaves_like 'a working sync controller updating records'

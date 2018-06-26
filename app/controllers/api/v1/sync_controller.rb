@@ -1,4 +1,5 @@
 class Api::V1::SyncController < APIController
+  before_action :short_circuit_disabled_api
   before_action :authenticate
 
   def __sync_from_user__(params)
@@ -23,6 +24,17 @@ class Api::V1::SyncController < APIController
   end
 
   private
+
+  def short_circuit_disabled_api
+    return if sync_api_toggled_on?
+    logger.info "Short circuiting #{request.env['PATH_INFO']} since it's a disabled feature"
+    head :ok
+  end
+
+  def sync_api_toggled_on?
+    api_name = controller_path.split('/')[-1]
+    FeatureToggle.is_enabled_in_list?("SYNC_API", api_name)
+  end
 
   def current_user
     @current_user ||= User.find_by(id: request.headers["HTTP_X_USER_ID"])
