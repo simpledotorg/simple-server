@@ -277,7 +277,7 @@ RSpec.shared_examples 'a working sync controller that short circuits disabled ap
     it 'returns 200 for all POST calls' do
       post(:sync_from_user, params: payload)
 
-      expect(response.status).to eq(200)
+      expect(response.status).to eq(403)
     end
 
     it 'does not create any entries in the database' do

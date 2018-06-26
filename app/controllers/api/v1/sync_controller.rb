@@ -28,7 +28,7 @@ class Api::V1::SyncController < APIController
   def short_circuit_disabled_api
     return if sync_api_toggled_on?
     logger.info "Short circuiting #{request.env['PATH_INFO']} since it's a disabled feature"
-    head :ok
+    head :forbidden
   end
 
   def sync_api_toggled_on?
