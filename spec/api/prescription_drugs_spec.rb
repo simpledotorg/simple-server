@@ -7,12 +7,12 @@ describe 'PrescriptionDrugs API' do
     post 'Syncs prescription drugs data from device to server.' do
       tags 'Prescription Drug'
       security [ basic: [] ]
-      parameter name: 'X_USER_ID', in: :header, type: :uuid
+      parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: :prescription_drugs, in: :body, schema: Api::V1::Schema.prescription_drug_sync_from_user_request
 
       response '200', 'blood pressures created' do
         let(:request_user) { FactoryBot.create(:user) }
-        let(:X_USER_ID) { request_user.id }
+        let(:HTTP_X_USER_ID) { request_user.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
         let(:prescription_drugs) { { prescription_drugs: (1..10).map { build_prescription_drug_payload } } }
@@ -21,7 +21,7 @@ describe 'PrescriptionDrugs API' do
 
       response '200', 'some, or no errors were found' do
         let(:request_user) { FactoryBot.create(:user) }
-        let(:X_USER_ID) { request_user.id }
+        let(:HTTP_X_USER_ID) { request_user.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
         schema Api::V1::Schema.sync_from_user_errors
@@ -33,7 +33,7 @@ describe 'PrescriptionDrugs API' do
     get 'Syncs prescription drugs data from server to device.' do
       tags 'Prescription Drug'
       security [ basic: [] ]
-      parameter name: 'X_USER_ID', in: :header, type: :uuid
+      parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       Api::V1::Schema.sync_to_user_request.each do |param|
         parameter param
       end
@@ -46,7 +46,7 @@ describe 'PrescriptionDrugs API' do
 
       response '200', 'blood pressures received' do
         let(:request_user) { FactoryBot.create(:user) }
-        let(:X_USER_ID) { request_user.id }
+        let(:HTTP_X_USER_ID) { request_user.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
         schema Api::V1::Schema.prescription_drug_sync_to_user_response

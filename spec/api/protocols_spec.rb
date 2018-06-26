@@ -6,7 +6,7 @@ describe 'Protocols API' do
     get 'Syncs protocols and protocol drugs data from server to device.' do
       tags 'protocol'
       security [ basic: [] ]
-      parameter name: 'X_USER_ID', in: :header, type: :uuid
+      parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       Api::V1::Schema.sync_to_user_request.each do |param|
         parameter param
       end
@@ -20,7 +20,7 @@ describe 'Protocols API' do
 
       response '200', 'protocols received' do
         let(:request_user) { FactoryBot.create(:user) }
-        let(:X_USER_ID) { request_user.id }
+        let(:HTTP_X_USER_ID) { request_user.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
         schema Api::V1::Schema.protocol_sync_to_user_response

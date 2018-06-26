@@ -28,7 +28,7 @@ class Api::V1::SyncController < APIController
   private
 
   def current_user
-    @current_user ||= User.find_by(id: request.headers["X_USER_ID"])
+    @current_user ||= User.find_by(id: request.headers["HTTP_X_USER_ID"])
   end
 
   def authenticate

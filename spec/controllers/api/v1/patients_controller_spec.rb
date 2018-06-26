@@ -20,7 +20,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
 
     describe 'creates new patients' do
       before :each do
-        request.env['X_USER_ID'] = request_user.id
+        request.env['HTTP_X_USER_ID'] = request_user.id
         request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
       end
 
@@ -49,7 +49,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
 
     describe 'updates patients' do
       before :each do
-        request.env['X_USER_ID'] = request_user.id
+        request.env['HTTP_X_USER_ID'] = request_user.id
         request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
       end
 
