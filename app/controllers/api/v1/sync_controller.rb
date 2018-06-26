@@ -1,5 +1,5 @@
 class Api::V1::SyncController < APIController
-  before_action :short_circuit_disabled_api
+  before_action :check_disabled_api
   before_action :authenticate
 
   def __sync_from_user__(params)
@@ -25,7 +25,7 @@ class Api::V1::SyncController < APIController
 
   private
 
-  def short_circuit_disabled_api
+  def check_disabled_api
     return if sync_api_toggled_on?
     logger.info "Short circuiting #{request.env['PATH_INFO']} since it's a disabled feature"
     head :forbidden
