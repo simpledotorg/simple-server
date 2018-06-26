@@ -32,12 +32,11 @@ class Api::V1::SyncController < APIController
   end
 
   def sync_api_toggled_on?
-    api_name = controller_path.split('/')[-1]
-    FeatureToggle.is_enabled_in_list?("SYNC_API", api_name)
+    FeatureToggle.is_enabled_for_regex?('ACCESSIBLE_SYNC_APIS', controller_name)
   end
 
   def current_user
-    @current_user ||= User.find_by(id: request.headers["HTTP_X_USER_ID"])
+    @current_user ||= User.find_by(id: request.headers['HTTP_X_USER_ID'])
   end
 
   def authenticate
@@ -51,7 +50,7 @@ class Api::V1::SyncController < APIController
   end
 
   def access_token_authorized?
-    authenticate_or_request_with_http_token do |token, options|
+    authenticate_or_request_with_http_token do |token, _options|
       ActiveSupport::SecurityUtils.secure_compare(token, current_user.access_token)
     end
   end

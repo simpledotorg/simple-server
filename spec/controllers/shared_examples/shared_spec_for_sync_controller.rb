@@ -271,7 +271,7 @@ RSpec.shared_examples 'a working sync controller that short circuits disabled ap
     let(:payload) { Hash[request_key, (1..10).map { build_payload.call }] }
 
     before 'each' do
-      expect(FeatureToggle).to receive(:is_enabled_in_list?).with('SYNC_API', request_key).and_return(false)
+      expect(FeatureToggle).to receive(:is_enabled_for_regex?).with('ACCESSIBLE_SYNC_APIS', request_key).and_return(false)
     end
 
     it 'returns 200 for all POST calls' do
