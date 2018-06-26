@@ -6,7 +6,7 @@ class SmsNotificationService
   end
 
   def notify
-    unless FeatureToggle.is_enabled?('SMS_NOTIFICATION_FOR_OTP')
+    unless FeatureToggle.enabled?('SMS_NOTIFICATION_FOR_OTP')
       Rails.logger.info "SMS_NOTIFICATION_FOR_OTP Feature is disabled. Skipping SMS notification to user #{user.id}"
       return
     end

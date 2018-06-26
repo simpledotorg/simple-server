@@ -32,7 +32,7 @@ class Api::V1::SyncController < APIController
   end
 
   def sync_api_toggled_on?
-    FeatureToggle.is_enabled_for_regex?('ACCESSIBLE_SYNC_APIS', controller_name)
+    FeatureToggle.enabled_for_regex?('ACCESSIBLE_SYNC_APIS', controller_name)
   end
 
   def current_user
@@ -40,7 +40,7 @@ class Api::V1::SyncController < APIController
   end
 
   def authenticate
-    return unless FeatureToggle.is_enabled?('SYNC_API_AUTHENTICATION')
+    return unless FeatureToggle.enabled?('SYNC_API_AUTHENTICATION')
     return head :unauthorized unless authenticated?
     current_user.mark_as_logged_in if current_user.has_never_logged_in?
   end

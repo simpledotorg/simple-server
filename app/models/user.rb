@@ -57,7 +57,7 @@ class User < ApplicationRecord
 
   def mark_as_logged_in
     now = Time.now
-    self.otp_valid_until = now unless FeatureToggle.is_enabled?('MULTIPLE_LOGIN')
+    self.otp_valid_until = now unless FeatureToggle.enabled?('MULTIPLE_LOGIN')
     self.logged_in_at = now
     save
   end

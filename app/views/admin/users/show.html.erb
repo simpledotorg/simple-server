@@ -20,7 +20,7 @@
   <%= @user.logged_in_at.try(:iso8601) || 'Not logged in yet' %>
 </p>
 
-<% unless FeatureToggle.is_enabled?('SMS_NOTIFICATION_FOR_OTP') %>
+<% unless FeatureToggle.enabled?('SMS_NOTIFICATION_FOR_OTP') %>
   <p>
     <strong>OTP message for user</strong>
     <%= I18n.t('sms.notification', otp: @user.otp) %>
