@@ -1,4 +1,5 @@
 class Api::V1::SyncController < APIController
+  before_action :check_disabled_api
   before_action :authenticate
 
   def __sync_from_user__(params)
@@ -27,12 +28,22 @@ class Api::V1::SyncController < APIController
 
   private
 
+  def check_disabled_api
+    return if sync_api_toggled_on?
+    logger.info "Short circuiting #{request.env['PATH_INFO']} since it's a disabled feature"
+    head :forbidden
+  end
+
+  def sync_api_toggled_on?
+    FeatureToggle.enabled_for_regex?('ACCESSIBLE_SYNC_APIS', controller_name)
+  end
+
   def current_user
-    @current_user ||= User.find_by(id: request.headers["HTTP_X_USER_ID"])
+    @current_user ||= User.find_by(id: request.headers['HTTP_X_USER_ID'])
   end
 
   def authenticate
-    return unless FeatureToggle.is_enabled?('SYNC_API_AUTHENTICATION')
+    return unless FeatureToggle.enabled?('SYNC_API_AUTHENTICATION')
     return head :unauthorized unless authenticated?
     current_user.mark_as_logged_in if current_user.has_never_logged_in?
   end
@@ -42,7 +53,7 @@ class Api::V1::SyncController < APIController
   end
 
   def access_token_authorized?
-    authenticate_or_request_with_http_token do |token, options|
+    authenticate_or_request_with_http_token do |token, _options|
       ActiveSupport::SecurityUtils.secure_compare(token, current_user.access_token)
     end
   end

@@ -327,3 +327,26 @@ RSpec.shared_examples 'a sync controller that audits the data access' do
     end
   end
 end
+
+RSpec.shared_examples 'a working sync controller that short circuits disabled apis' do
+  describe 'if API is disabled' do
+    let(:request_key) { model.to_s.underscore.pluralize }
+    let(:payload) { Hash[request_key, (1..10).map { build_payload.call }] }
+
+    before 'each' do
+      expect(FeatureToggle).to receive(:enabled_for_regex?).with('ACCESSIBLE_SYNC_APIS', request_key).and_return(false)
+    end
+
+    it 'returns 200 for all POST calls' do
+      post(:sync_from_user, params: payload)
+
+      expect(response.status).to eq(403)
+    end
+
+    it 'does not create any entries in the database' do
+      post(:sync_from_user, params: payload)
+
+      expect(model.count).to eq(0)
+    end
+  end
+end
