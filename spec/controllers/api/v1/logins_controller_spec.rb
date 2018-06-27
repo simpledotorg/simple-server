@@ -101,5 +101,28 @@ RSpec.describe Api::V1::LoginsController, type: :controller do
           })
       end
     end
+
+    describe 'audit logs for login' do
+      let(:password) { '1234' }
+      let(:db_user) { FactoryBot.create(:user, password: password) }
+
+      let(:request_params) do
+        { user:
+            { phone_number: db_user.phone_number,
+              password:     password,
+              otp:          db_user.otp
+            }
+        }
+      end
+
+      it 'creates an audit log of the user login' do
+        post :login_user, params: request_params
+        audit_log = AuditLog.where(user_id: db_user.id).first
+
+        expect(audit_log.action).to eq('login')
+        expect(audit_log.auditable_type).to eq('User')
+        expect(audit_log.auditable_id).to eq(db_user.id)
+      end
+    end
   end
 end
