@@ -6,6 +6,7 @@ class User < ApplicationRecord
   belongs_to :facility
   has_many :blood_pressures
   has_many :patients, through: :blood_pressures
+  has_many :audit_logs, as: :auditable
 
   before_create :set_otp
   before_create :set_access_token

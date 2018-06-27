@@ -14,13 +14,13 @@ class Api::V1::PatientsController < Api::V1::SyncController
     logger.debug "Patient had errors: #{validator.errors_hash}" if validator.invalid?
     if validator.invalid?
       NewRelic::Agent.increment_metric('Merge/Patient/schema_invalid')
+      { errors_hash: validator.errors_hash }
     else
-      MergePatientService.new(
+      patient = MergePatientService.new(
         Api::V1::PatientTransformer.from_nested_request(single_patient_params)
       ).merge
+      { record: patient }
     end
-
-    validator.errors_hash if validator.invalid?
   end
 
   def find_records_to_sync(since, limit)

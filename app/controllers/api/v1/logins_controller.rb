@@ -9,6 +9,7 @@ class Api::V1::LoginsController < APIController
     if errors.present?
       render json: { errors: errors }, status: :unauthorized
     else
+      AuditLog.login_log(user)
       render json: {
         user: Api::V1::UserTransformer.to_response(user),
         access_token: user.access_token

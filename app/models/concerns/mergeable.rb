@@ -3,6 +3,7 @@ module Mergeable
 
   included do
     attr_accessor :merge_status
+    has_many :audit_logs, as: :auditable
   end
 
   class_methods do
