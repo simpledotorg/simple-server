@@ -21,7 +21,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
 
     describe 'creates new patients' do
       before :each do
-        request.env['HTTP_X_USER_ID'] = request_user.id
+        request.env['HTTP_X_USER_ID']     = request_user.id
         request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
       end
 
@@ -50,7 +50,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
 
     describe 'updates patients' do
       before :each do
-        request.env['HTTP_X_USER_ID'] = request_user.id
+        request.env['HTTP_X_USER_ID']     = request_user.id
         request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
       end
 
@@ -120,5 +120,46 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
 
   describe 'GET sync: send data from server to device;' do
     it_behaves_like 'a working sync controller sending records'
+
+    describe 'test data feature' do
+      before :each do
+        request.env['HTTP_X_USER_ID']     = request_user.id
+        request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
+        expect(FeatureToggle).to receive(:enabled?).with('SYNC_API_AUTHENTICATION').and_return(true)
+        expect(FeatureToggle).to receive(:enabled?).with('MULTIPLE_LOGIN').and_return(false)
+        expect(FeatureToggle).to receive(:enabled?).with('PATIENT_TEST_DATA').and_return(is_feature_enabled)
+      end
+      describe 'is enabled' do
+        let(:is_feature_enabled) { true }
+
+        it "returns patient test data with status 'testdata'" do
+          FactoryBot.create_list(:patient, 2, status: 'active')
+          FactoryBot.create_list(:patient, 2, status: 'testdata')
+
+          get :sync_to_user
+
+          response_body = JSON(response.body)
+          patient_testdata = response_body['patients'].select { |patient| patient['status'] == 'testdata'}
+          expect(response_body['patients'].count).to eq(4)
+          expect(patient_testdata.count).to eq(2)
+        end
+      end
+
+      describe 'is disabled' do
+        let(:is_feature_enabled) { false }
+
+        it "does not return patient test data" do
+          FactoryBot.create_list(:patient, 2, status: 'active')
+          FactoryBot.create_list(:patient, 2, status: 'testdata')
+
+          get :sync_to_user
+
+          response_body = JSON(response.body)
+          patient_testdata = response_body['patients'].select { |patient| patient['status'] == 'testdata'}
+          expect(response_body['patients'].count).to eq(2)
+          expect(patient_testdata.count).to eq(0)
+        end
+      end
+    end
   end
 end
