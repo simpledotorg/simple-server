@@ -39,7 +39,7 @@ en:
       invalid_password: 'password is not valid'
   sms:
     country_code: '+91'
-    notification: 'The otp for login is %{otp}'
+    notification: 'You are now registered as a user for the Simple app. Please login using this link: https://simple.org/register?otp=%{otp}'
   admin:
     reset_otp_alert: 'Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP'
     disable_access_alert: 'Are you sure you want to disable the access for user?'
