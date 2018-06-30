@@ -59,4 +59,10 @@ Rails.application.routes.draw do
       put 'enable_access', to: 'users#enable_access'
     end
   end
+
+  if FeatureToggle.enabled?('PURGE_ENDPOINT_FOR_QA')
+    namespace :qa do
+      delete 'purge', to: 'purges#purge_patient_data'
+    end
+  end
 end
