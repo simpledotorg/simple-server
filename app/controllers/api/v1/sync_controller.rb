@@ -16,7 +16,6 @@ class Api::V1::SyncController < APIController
 
   def __sync_to_user__(response_key)
     records_to_sync = find_records_to_sync(processed_since, limit)
-
     records_to_sync.each { |record| AuditLog.fetch_log(current_user, record) }
     render(
       json:   {

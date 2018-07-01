@@ -24,9 +24,7 @@ class Api::V1::PatientsController < Api::V1::SyncController
   end
 
   def find_records_to_sync(since, limit)
-    records_to_sync = Patient.updated_on_server_since(since, limit)
-    return records_to_sync.where.not(status: 'testdata') unless FeatureToggle.enabled?('PATIENT_TEST_DATA')
-    records_to_sync
+    Patient.updated_on_server_since(since, limit)
   end
 
   def transform_to_response(patient)

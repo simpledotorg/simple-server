@@ -2,7 +2,7 @@ class Patient < ApplicationRecord
   include Mergeable
 
   GENDERS  = %w[male female transgender].freeze
-  STATUSES = %w[active dead migrated unresponsive inactive testdata].freeze
+  STATUSES = %w[active dead migrated unresponsive inactive].freeze
 
   belongs_to :address, optional: true
   has_many :phone_numbers, class_name: 'PatientPhoneNumber'
