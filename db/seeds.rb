@@ -199,7 +199,7 @@ if FeatureToggle.enabled?('PATIENT_TEST_DATA')
     language = common_addresses[district].keys.sample
     address  = create_random_address(district, language)
     patient  = create_random_patient(address.id, language)
-    max_patient_phone_numbers.times do
+    rand(1..max_patient_phone_numbers).times do
       create_random_patient_phone_number(patient.id)
     end
   end
