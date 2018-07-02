@@ -108,7 +108,7 @@ end
 namespace :generate do
   desc 'Generate test patients for user tests'
   # Example: rake "generate:patients_for_user_tests[20]"
-  task :patients_for_user_tests, [:number_of_patients_to_generate] =>  :environment do |_t, args|
+  task :random_patients_for_user_tests, [:number_of_patients_to_generate] => :environment do |_t, args|
     max_patient_phone_numbers      = 1
     number_of_patients_to_generate = args.number_of_patients_to_generate.to_i
 
@@ -120,6 +120,47 @@ namespace :generate do
       rand(1..max_patient_phone_numbers).times do
         create_random_patient_phone_number(patient.id)
       end
+    end
+  end
+
+  task :patients_for_user_tests => :environment do
+    test_patient_data = [
+      { full_name: "Govind Lamba", age: 46, language: 'english' },
+      { full_name: "Govind Bahl", age: 29, language: 'english' },
+      { full_name: "Govind Sodhi", age: 30, language: 'english' },
+      { full_name: "Govind Sardana", age: 51, language: 'english' },
+      { full_name: "Govind Puri", age: 55, language: 'english' },
+      { full_name: "Harjeet Lamba", age: 20, language: 'english' },
+      { full_name: "Harjeet Bahl", age: 62, language: 'english' },
+      { full_name: "Harjeet Sodhi", age: 67, language: 'english' },
+      { full_name: "Harjeet Sardana", age: 44, language: 'english' },
+      { full_name: "Harjeet Puri", age: 41, language: 'english' },
+      { full_name: "ਗੋਵਿੰਦ ਲੰਬਾ", age: 46, language: 'punjabi' },
+      { full_name: "ਗੋਵਿੰਦ ਬਹਿਲ", age: 29, language: 'punjabi' },
+      { full_name: "ਗੋਵਿੰਦ ਸੋਢੀ", age: 30, language: 'punjabi' },
+      { full_name: "ਗੋਵਿੰਦ ਸਰਦਾਨਾ", age: 51, language: 'punjabi' },
+      { full_name: "ਗੋਵਿੰਦ ਪੂਰੀ", age: 55, language: 'punjabi' },
+      { full_name: "ਹਰਜੀਤ ਲੰਬਾ", age: 20, language: 'punjabi' },
+      { full_name: "ਹਰਜੀਤ ਬਹਿਲ", age: 62, language: 'punjabi' },
+      { full_name: "ਹਰਜੀਤ ਸੋਢੀ", age: 67, language: 'punjabi' },
+      { full_name: "ਹਰਜੀਤ ਸਰਦਾਨਾ", age: 44, language: 'punjabi' },
+      { full_name: "ਹਰਜੀਤ ਪੂਰੀ", age: 4, language: 'punjabi' }
+    ]
+
+    test_patient_data.each do |patient_data|
+      patient = Patient.create(
+        id:                SecureRandom.uuid,
+        full_name:         patient_data[:full_name],
+        age:               patient_data[:age],
+        gender:            'male',
+        status:            'active',
+        age_updated_at:    Time.now,
+        address_id:        create_random_address('bathinda', patient_data[:language]).id,
+        date_of_birth:     nil,
+        device_created_at: Time.now,
+        device_updated_at: Time.now,
+        test_data:         true)
+      create_random_patient_phone_number(patient.id)
     end
   end
 end
