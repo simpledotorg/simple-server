@@ -42,6 +42,17 @@ class Api::V1::LoginsController < APIController
       I18n.t('login.error_messages.invalid_password')
     end
 
-    { user: [error_string] } if error_string.present?
+    if error_string.present?
+      Raven.capture_message(
+        'Login Error',
+        logger: 'logger',
+        extra:  {
+          login_params: login_params,
+          errors: error_string
+        },
+        tags:   { type: 'login' }
+      )
+      { user: [error_string] } if error_string.present?
+    end
   end
 end
