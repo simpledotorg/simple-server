@@ -48,6 +48,7 @@
     <th>Name</th>
     <th>Phone number</th>
     <th>First login in at</th>
+    <th>OTP Link</th>
     <th>OTP Valid Until</th>
     <th>Is access token valid?</th>
     <th colspan="5"></th>
@@ -60,6 +61,7 @@
       <td><%= user.full_name %></td>
       <td><%= user.phone_number %></td>
       <td><%= user.logged_in_at.try(:iso8601) || 'Has not logged in yet' %></td>
+      <td><%= link_to "https://simple.org/register?otp=#{user.otp}" %></td>
       <td><%= user.otp_valid_until %></td>
       <td><%= user.is_access_token_valid %></td>
       <td><%= link_to 'Show', [:admin, user] %></td>

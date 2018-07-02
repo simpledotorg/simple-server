@@ -16,6 +16,7 @@ module Api::V1::PatientTransformer
   def self.to_nested_response(patient)
     Api::V1::Transformer.to_response(patient)
       .except('address_id')
+      .except('test_data')
       .merge(
         'address'       => Api::V1::Transformer.to_response(patient.address),
         'phone_numbers' => patient.phone_numbers.map { |phone_number| Api::V1::Transformer.to_response(phone_number).except('patient_id') }
