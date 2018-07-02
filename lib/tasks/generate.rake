@@ -107,8 +107,8 @@ end
 
 namespace :generate do
   desc 'Generate test patients for user tests'
-  # Example: rake "generate:patients_for_user_tests[20]"
-  task :patients_for_user_tests, [:number_of_patients_to_generate] =>  :environment do |_t, args|
+  # Example: rake "generate:random_patients_for_user_tests[20]"
+  task :random_patients_for_user_tests, [:number_of_patients_to_generate] => :environment do |_t, args|
     max_patient_phone_numbers      = 1
     number_of_patients_to_generate = args.number_of_patients_to_generate.to_i
 
@@ -120,6 +120,87 @@ namespace :generate do
       rand(1..max_patient_phone_numbers).times do
         create_random_patient_phone_number(patient.id)
       end
+    end
+  end
+
+  task :patients_for_user_tests => :environment do
+    test_patient_data = [
+      { full_name: "Govind Lamba", age: 57, language: 'english' },
+      { full_name: "Govind Lamba", age: 41, language: 'english' },
+      { full_name: "Govind Lamba", age: 79, language: 'english' },
+      { full_name: "Govind Lamba", age: 33, language: 'english' },
+      { full_name: "Govind Lamba", age: 30, language: 'english' },
+      { full_name: "Govind Bahl", age: 51, language: 'english' },
+      { full_name: "Govind Bahl", age: 48, language: 'english' },
+      { full_name: "Govind Bahl", age: 21, language: 'english' },
+      { full_name: "Govind Bahl", age: 54, language: 'english' },
+      { full_name: "Govind Bahl", age: 77, language: 'english' },
+      { full_name: "Govind Sodhi", age: 89, language: 'english' },
+      { full_name: "Govind Sodhi", age: 36, language: 'english' },
+      { full_name: "Govind Sodhi", age: 82, language: 'english' },
+      { full_name: "Govind Sodhi", age: 64, language: 'english' },
+      { full_name: "Govind Sodhi", age: 79, language: 'english' },
+      { full_name: "Harjeet Lamba", age: 54, language: 'english' },
+      { full_name: "Harjeet Lamba", age: 67, language: 'english' },
+      { full_name: "Harjeet Lamba", age: 40, language: 'english' },
+      { full_name: "Harjeet Lamba", age: 29, language: 'english' },
+      { full_name: "Harjeet Lamba", age: 67, language: 'english' },
+      { full_name: "Harjeet Bahl", age: 66, language: 'english' },
+      { full_name: "Harjeet Bahl", age: 22, language: 'english' },
+      { full_name: "Harjeet Bahl", age: 37, language: 'english' },
+      { full_name: "Harjeet Bahl", age: 52, language: 'english' },
+      { full_name: "Harjeet Bahl", age: 31, language: 'english' },
+      { full_name: "Harjeet Sodhi", age: 30, language: 'english' },
+      { full_name: "Harjeet Sodhi", age: 44, language: 'english' },
+      { full_name: "Harjeet Sodhi", age: 68, language: 'english' },
+      { full_name: "Harjeet Sodhi", age: 51, language: 'english' },
+      { full_name: "Harjeet Sodhi", age: 55, language: 'english' },
+      { full_name: "ਗੋਵਿੰਦ ਲੰਬਾ", age: 83, language: 'punjabi' },
+      { full_name: "ਗੋਵਿੰਦ ਲੰਬਾ", age: 52, language: 'punjabi' },
+      { full_name: "ਗੋਵਿੰਦ ਲੰਬਾ", age: 69, language: 'punjabi' },
+      { full_name: "ਗੋਵਿੰਦ ਲੰਬਾ", age: 24, language: 'punjabi' },
+      { full_name: "ਗੋਵਿੰਦ ਲੰਬਾ", age: 44, language: 'punjabi' },
+      { full_name: "ਗੋਵਿੰਦ ਬਹਿਲ", age: 84, language: 'punjabi' },
+      { full_name: "ਗੋਵਿੰਦ ਬਹਿਲ", age: 76, language: 'punjabi' },
+      { full_name: "ਗੋਵਿੰਦ ਬਹਿਲ", age: 85, language: 'punjabi' },
+      { full_name: "ਗੋਵਿੰਦ ਬਹਿਲ", age: 39, language: 'punjabi' },
+      { full_name: "ਗੋਵਿੰਦ ਬਹਿਲ", age: 81, language: 'punjabi' },
+      { full_name: "ਗੋਵਿੰਦ ਸੋਢੀ", age: 22, language: 'punjabi' },
+      { full_name: "ਗੋਵਿੰਦ ਸੋਢੀ", age: 90, language: 'punjabi' },
+      { full_name: "ਗੋਵਿੰਦ ਸੋਢੀ", age: 44, language: 'punjabi' },
+      { full_name: "ਗੋਵਿੰਦ ਸੋਢੀ", age: 22, language: 'punjabi' },
+      { full_name: "ਗੋਵਿੰਦ ਸੋਢੀ", age: 23, language: 'punjabi' },
+      { full_name: "ਹਰਜੀਤ ਲੰਬਾ", age: 38, language: 'punjabi' },
+      { full_name: "ਹਰਜੀਤ ਲੰਬਾ", age: 30, language: 'punjabi' },
+      { full_name: "ਹਰਜੀਤ ਲੰਬਾ", age: 43, language: 'punjabi' },
+      { full_name: "ਹਰਜੀਤ ਲੰਬਾ", age: 42, language: 'punjabi' },
+      { full_name: "ਹਰਜੀਤ ਲੰਬਾ", age: 90, language: 'punjabi' },
+      { full_name: "ਹਰਜੀਤ ਬਹਿਲ", age: 56, language: 'punjabi' },
+      { full_name: "ਹਰਜੀਤ ਬਹਿਲ", age: 34, language: 'punjabi' },
+      { full_name: "ਹਰਜੀਤ ਬਹਿਲ", age: 31, language: 'punjabi' },
+      { full_name: "ਹਰਜੀਤ ਬਹਿਲ", age: 69, language: 'punjabi' },
+      { full_name: "ਹਰਜੀਤ ਬਹਿਲ", age: 57, language: 'punjabi' },
+      { full_name: "ਹਰਜੀਤ ਸੋਢੀ", age: 30, language: 'punjabi' },
+      { full_name: "ਹਰਜੀਤ ਸੋਢੀ", age: 81, language: 'punjabi' },
+      { full_name: "ਹਰਜੀਤ ਸੋਢੀ", age: 29, language: 'punjabi' },
+      { full_name: "ਹਰਜੀਤ ਸੋਢੀ", age: 66, language: 'punjabi' },
+      { full_name: "ਹਰਜੀਤ ਸੋਢੀ", age: 57, language: 'punjabi' }
+    ]
+
+    test_patient_data.each do |patient_data|
+      patient = Patient.create(
+        id:                SecureRandom.uuid,
+        full_name:         patient_data[:full_name],
+        age:               patient_data[:age],
+        gender:            'male',
+        status:            'active',
+        age_updated_at:    Time.now,
+        address_id:        create_random_address('bathinda', patient_data[:language]).id,
+        date_of_birth:     nil,
+        device_created_at: Time.now,
+        device_updated_at: Time.now,
+        test_data:         true)
+      create_random_patient_phone_number(patient.id)
     end
   end
 end
