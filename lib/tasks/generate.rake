@@ -109,7 +109,7 @@ namespace :generate do
   desc 'Generate test patients for user tests'
   # Example: rake "generate:patients_for_user_tests[20]"
   task :patients_for_user_tests, [:number_of_patients_to_generate] =>  :environment do |_t, args|
-    max_patient_phone_numbers      = 3
+    max_patient_phone_numbers      = 1
     number_of_patients_to_generate = args.number_of_patients_to_generate.to_i
 
     number_of_patients_to_generate.times do
