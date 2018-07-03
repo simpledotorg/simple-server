@@ -10,6 +10,7 @@ class Admin::UsersController < ApplicationController
 
   def new
     @user = User.new
+    @facility = Facility.find(params[:facility])
   end
 
   def edit
@@ -20,7 +21,7 @@ class Admin::UsersController < ApplicationController
 
     if @user.save
       SmsNotificationService.new(@user).notify
-      redirect_to [:admin, @user], notice: 'User was successfully created.'
+      redirect_to [:admin, @user.facility], notice: 'User was successfully created.'
     else
       render :new
     end

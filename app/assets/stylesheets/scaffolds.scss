@@ -1,4 +1,5 @@
 body {
+  height: 100%;
   background-color: #fff;
   color: #333;
   margin: 33px;
@@ -89,4 +90,34 @@ label {
 .inactive {
   color: #7C7C7C;
   text-decoration: line-through;
+}
+
+.panes {
+  display: flex;
+  flex-direction: row;
+
+  .left-pane {
+    border-right: 1px solid;
+    margin-right: 5%;
+    padding-right: 3%;
+  }
+}
+
+.users-table {
+  td {
+    vertical-align: top;
+    padding: 20px 10px;
+  }
+  ul {
+    margin: 0 20px;
+    padding: 0;
+  }
+}
+
+form .field {
+  display: flex;
+  max-width: 500px;
+  label, input, select {
+    flex: 1;
+  }
 }

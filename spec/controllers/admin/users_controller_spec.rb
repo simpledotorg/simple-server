@@ -66,7 +66,7 @@ RSpec.describe Admin::UsersController, type: :controller do
 
       it 'redirects to the created user' do
         post :create, params: { user: valid_attributes }
-        expect(response).to redirect_to([:admin, User.order(:created_at).last])
+        expect(response).to redirect_to([:admin, User.order(:created_at).last.facility])
       end
 
       it 'adds otp and otp_valid_until to the user' do
