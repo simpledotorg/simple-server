@@ -53,7 +53,7 @@
             <ul>
               <li>
                 <%= if (user.logged_in_at.present?)
-                      'Logged in at:' + user.logged_in_at
+                      'Logged in at:' + user.logged_in_at.to_s
                     else
                       'Has not logged in yet'
                     end
