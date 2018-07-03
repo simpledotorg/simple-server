@@ -38,7 +38,7 @@ RSpec.describe Admin::UsersController, type: :controller do
 
   describe 'GET #new' do
     it 'returns a success response' do
-      get :new, params: {}
+      get :new, params: { facility: valid_attributes[:facility_id] }
       expect(response).to be_success
     end
   end

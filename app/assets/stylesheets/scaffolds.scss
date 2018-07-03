@@ -1,3 +1,6 @@
+$break-small: 600px;
+$break-large: 1200px;
+
 body {
   height: 100%;
   background-color: #fff;
@@ -6,6 +9,9 @@ body {
   font-family: verdana, arial, helvetica, sans-serif;
   font-size: 13px;
   line-height: 18px;
+  @media screen and (max-width: $break-small) {
+    margin: 4%;
+  }
 }
 
 p, ol, ul, td {
@@ -87,6 +93,7 @@ label {
     color: red;
   }
 }
+
 .inactive {
   color: #7C7C7C;
   text-decoration: line-through;
@@ -100,6 +107,13 @@ label {
     border-right: 1px solid;
     margin-right: 5%;
     padding-right: 3%;
+  }
+
+  @media screen and (max-width: $break-small) {
+    flex-direction: column;
+    .left-pane{
+      border-right: none;
+    }
   }
 }
 
@@ -119,5 +133,8 @@ form .field {
   max-width: 500px;
   label, input, select {
     flex: 1;
+  }
+  @media screen and (max-width: $break-small) {
+    flex-direction: column;
   }
 }
