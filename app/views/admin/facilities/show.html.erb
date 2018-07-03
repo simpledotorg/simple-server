@@ -1,85 +1,92 @@
-<p id="notice"><%= notice %></p>
+<div class="panes">
+  <div class="facility-details left-pane">
+    <p id="notice"><%= notice %></p>
+    <h1><%= @facility.name %></h1>
+    <p>
+      <strong>Street address:</strong>
+      <%= @facility.street_address %>
+    </p>
 
-<p>
-  <strong>Name:</strong>
-  <%= @facility.name %>
-</p>
+    <p>
+      <strong>Village or colony:</strong>
+      <%= @facility.village_or_colony %>
+    </p>
 
-<p>
-  <strong>Street address:</strong>
-  <%= @facility.street_address %>
-</p>
+    <p>
+      <strong>District:</strong>
+      <%= @facility.district %>
+    </p>
 
-<p>
-  <strong>Village or colony:</strong>
-  <%= @facility.village_or_colony %>
-</p>
+    <p>
+      <strong>State:</strong>
+      <%= @facility.state %>
+    </p>
 
-<p>
-  <strong>District:</strong>
-  <%= @facility.district %>
-</p>
+    <p>
+      <strong>Country:</strong>
+      <%= @facility.country %>
+    </p>
 
-<p>
-  <strong>State:</strong>
-  <%= @facility.state %>
-</p>
+    <p>
+      <strong>Pin:</strong>
+      <%= @facility.pin %>
+    </p>
 
-<p>
-  <strong>Country:</strong>
-  <%= @facility.country %>
-</p>
+    <p>
+      <strong>Facility type:</strong>
+      <%= @facility.facility_type %>
+    </p>
+    <%= link_to 'Edit Facility', edit_admin_facility_path(@facility) %>
+  </div>
 
-<p>
-  <strong>Pin:</strong>
-  <%= @facility.pin %>
-</p>
+  <div class="right-pane">
+    <h1>Users</h1>
+    <table class="users-table">
+      <tbody>
+      <% @facility.users.each do |user| %>
+        <tr class=<%= user.access_token_valid? ? 'active' : 'inactive' %>>
+          <td class="user-identity"><%= user.full_name %>
+            <br>
+            <%= user.phone_number %></td>
 
-<p>
-  <strong>Facility type:</strong>
-  <%= @facility.facility_type %>
-</p>
-
-<h1>Users for <%= @facility.name %> </h1>
-
-<table>
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Phone number</th>
-    <th>First login in at</th>
-    <th>OTP Link</th>
-    <th>OTP Valid Until</th>
-    <th>Is access token valid?</th>
-    <th colspan="5"></th>
-  </tr>
-  </thead>
-
-  <tbody>
-  <% @facility.users.each do |user| %>
-    <tr class=<%= user.access_token_valid? ? 'active' : 'inactive' %>>
-      <td><%= user.full_name %></td>
-      <td><%= user.phone_number %></td>
-      <td><%= user.logged_in_at.try(:iso8601) || 'Has not logged in yet' %></td>
-      <td><%= link_to "https://simple.org/register?otp=#{user.otp}" %></td>
-      <td><%= user.otp_valid_until %></td>
-      <td><%= user.is_access_token_valid %></td>
-      <td><%= link_to 'Show', [:admin, user] %></td>
-      <td><%= link_to 'Edit', edit_admin_user_path(user) %></td>
-      <td><%= link_to 'Destroy', [:admin, user], method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      <td><%= link_to 'Reset OTP', admin_user_reset_otp_path(user), method: :put, data: { confirm: I18n.t('admin.reset_otp_alert') } %></td>
-      <% if user.access_token_valid? %>
-        <td><%= link_to 'Disable Access', admin_user_disable_access_path(user), method: :put, data: { confirm: I18n.t('admin.disable_access_alert') } %></td>
-      <% else %>
-        <td><%= link_to 'Enable Access', admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %></td>
+          <td class="user-details">
+            <ul>
+              <li>
+                <%= if (user.logged_in_at.present?)
+                      'Logged in at:' + user.logged_in_at
+                    else
+                      'Has not logged in yet'
+                    end
+                %>
+              </li>
+              <li>
+                Login link: <%= "https://simple.org/register?otp=#{user.otp}" %>
+              </li>
+              <li>
+                OTP valid until: <%= user.otp_valid_until %>
+              </li>
+              <li>
+                Is access token valid?: <%= user.is_access_token_valid %>
+              </li>
+              <li>
+                <%= link_to 'Show', [:admin, user] %> |
+                <%= link_to 'Edit', edit_admin_user_path(user) %> |
+                <%= link_to 'Destroy', [:admin, user], method: :delete, data: { confirm: 'Are you sure?' } %> |
+                <%= link_to 'Reset OTP', admin_user_reset_otp_path(user), method: :put, data: { confirm: I18n.t('admin.reset_otp_alert') } %> |
+                <% if user.access_token_valid? %>
+                  <%= link_to 'Disable Access', admin_user_disable_access_path(user), method: :put, data: { confirm: I18n.t('admin.disable_access_alert') } %>
+                <% else %>
+                  <%= link_to 'Enable Access', admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
+                <% end %>
+              </li>
+            </ul>
+        </tr>
       <% end %>
-    </tr>
-  <% end %>
-  </tbody>
-</table>
+      </tbody>
+    </table>
 
-<%= link_to 'New User', new_admin_user_path(facility: @facility) %>
-<br>
+    <%= link_to 'New User', new_admin_user_path(facility: @facility) %>
+  </div>
+</div>
 
-<%= link_to 'Edit', edit_admin_facility_path(@facility) %> |
 <%= link_to 'Back', admin_facilities_path %>

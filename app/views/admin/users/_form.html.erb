@@ -18,7 +18,6 @@
 
   <div class="field">
     <%= form.label :phone_number, "Phone Number (10 digits)" %>
-    <%= I18n.t('sms.country_code') %>
     <%= form.text_field :phone_number, id: :user_phone_number , pattern: '(6|7|8|9)\d{9}'%>
   </div>
 
@@ -34,7 +33,8 @@
 
   <div class="field">
     <%= form.label :facility_id %>
-    <%= form.select 'facility_id', options_from_collection_for_select(@facilities, "id", "name") %>
+    <%= form.label :facility_id, @facility.name %>
+    <%= form.text_field :facility_id, hidden: true, value: @facility.id %>
   </div>
 
   <div class="actions">
