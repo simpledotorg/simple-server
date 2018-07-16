@@ -2,20 +2,20 @@ default: &default
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  host: <%= ENV['REDAPP_SERVER_DATABASE_HOST'] %>
-  username: <%= ENV['REDAPP_SERVER_DATABASE_USERNAME'] %>
-  password: <%= ENV['REDAPP_SERVER_DATABASE_PASSWORD'] %>
-  database: <%= ENV['REDAPP_SERVER_DATABASE_NAME'] %>
+  host: <%= ENV['SIMPLE_SERVER_DATABASE_HOST'] %>
+  username: <%= ENV['SIMPLE_SERVER_DATABASE_USERNAME'] %>
+  password: <%= ENV['SIMPLE_SERVER_DATABASE_PASSWORD'] %>
+  database: <%= ENV['SIMPLE_SERVER_DATABASE_NAME'] %>
 
 development:
   <<: *default
   host: localhost
-  database: redapp-server_development
+  database: simple-server_development
 
 test:
   <<: *default
   host: localhost
-  database: redapp-server_test
+  database: simple-server_test
 
 production:
   <<: *default

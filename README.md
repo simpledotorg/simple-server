@@ -1,4 +1,4 @@
-# RedApp Server
+# Simple Server
 
 [![Build Status](https://semaphoreci.com/api/v1/simpledotorg/simple-server/branches/master/badge.svg)](https://semaphoreci.com/simpledotorg/simple-server)
 
