@@ -5,5 +5,7 @@ RSpec.describe Admin, type: :model do
     it { should validate_presence_of(:email)}
     it { should validate_presence_of(:password)}
     it { should validate_presence_of(:role) }
+
+    it { should define_enum_for(:role).with([:admin, :supervisor]) }
   end
 end

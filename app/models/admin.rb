@@ -4,7 +4,7 @@ class Admin < ApplicationRecord
 
   enum role: [
     :admin,
-    :cvho
+    :supervisor
   ]
 
   validates :role, presence: true
