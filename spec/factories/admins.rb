@@ -4,6 +4,6 @@ FactoryBot.define do
     password "helloworld"
     role :admin
 
-    trait(:supervisor) { role: :supervisor }
+    trait(:supervisor) { role :supervisor }
   end
 end
