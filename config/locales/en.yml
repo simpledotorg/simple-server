@@ -47,7 +47,7 @@ en:
   api:
     documentation:
       description: |
-        # API specification for RedApp
+        # API specification for Simple Server
         ## Sync APIs
         This API spec documents the endpoints that the devices (that are offline to varying levels) will use to sync data. The sync end points will send and receive bulk (a list of) entities. Both sending and receiving can be batched with configurable batch-sizes to accommodate low network bandwidth situations.
         ## Nesting resources
@@ -56,9 +56,9 @@ en:
         TODO
 
         ## Sync Mechanism
-        Refer to the [related ADR](https://github.com/resolvetosavelives/redapp-server/blob/master/doc/arch/001-synchronization.md).
+        Refer to the [related ADR](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/001-synchronization.md).
 
-      title: 'RedApp Server'
+      title: 'Simple Server'
       logo:
         image: 'rtsl_logo.png'
         background_color: '#FFFFFF'
@@ -66,4 +66,4 @@ en:
         email: 'eng-backend@resolvetosavelives.org'
       license:
         name: 'MIT'
-        url: 'https://github.com/resolvetosavelives/redapp-server/blob/master/LICENSE'
+        url: 'https://github.com/simpledotorg/simple-server/blob/master/LICENSE'

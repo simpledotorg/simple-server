@@ -1,8 +1,8 @@
 # config valid for current version and patch releases of Capistrano
 lock "~> 3.11.0"
 
-set :application, "redapp-server"
-set :repo_url, "https://github.com/resolvetosavelives/redapp-server.git"
+set :application, "simple-server"
+set :repo_url, "https://github.com/simpledotorg/simple-server.git"
 set :deploy_to, -> { "/home/deploy/apps/#{fetch(:application)}" }
 set :rbenv_ruby, '2.5.1'
 set :rails_env, 'production'

@@ -1,5 +1,5 @@
 {
-  "name": "redapp-server",
+  "name": "simple-server",
   "private": true,
   "dependencies": {}
 }
