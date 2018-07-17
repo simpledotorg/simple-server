@@ -11,5 +11,11 @@ describe Patient, type: :model do
 
   describe 'Validations' do
     it_behaves_like 'a record that validates device timestamps'
+
+    it 'validates that date of birth is not in the future' do
+      patient = FactoryBot.build(:patient)
+      patient.date_of_birth = 3.days.from_now
+      expect(patient).to be_invalid
+    end
   end
 end

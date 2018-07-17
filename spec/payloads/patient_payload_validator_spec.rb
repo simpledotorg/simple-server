@@ -32,6 +32,12 @@ describe Api::V1::PatientPayloadValidator, type: :model do
                                  'date_of_birth' => nil).valid?).to be false
     end
 
+    it 'validates patient date_of_birth is less than today' do
+      payload = new_patient_payload('date_of_birth' => 3.days.from_now)
+      expect(payload.valid?).to be false
+      expect(payload.errors[:date_of_birth]).to be_present
+    end
+
     it "Validates json spec for patient sync request" do
       # required validation
       payload = new_patient_payload('created_at' => nil)
