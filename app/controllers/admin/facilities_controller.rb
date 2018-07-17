@@ -2,6 +2,7 @@ class Admin::FacilitiesController < AdminController
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
 
   def index
+    authorize Facility
     @facilities = Facility.all
   end
 
@@ -10,6 +11,7 @@ class Admin::FacilitiesController < AdminController
 
   def new
     @facility = Facility.new
+    authorize @facility
   end
 
   def edit
@@ -17,6 +19,7 @@ class Admin::FacilitiesController < AdminController
 
   def create
     @facility = Facility.new(facility_params)
+    authorize @facility
 
     if @facility.save
       redirect_to [:admin, @facility], notice: 'Facility was successfully created.'
@@ -41,6 +44,7 @@ class Admin::FacilitiesController < AdminController
   private
     def set_facility
       @facility = Facility.find(params[:id])
+      authorize @facility
     end
 
     def facility_params
