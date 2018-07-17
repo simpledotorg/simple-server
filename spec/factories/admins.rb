@@ -2,8 +2,9 @@ FactoryBot.define do
   factory :admin do
     sequence(:email) { |n| "admin_#{n}@example.com" }
     password "helloworld"
-    role :admin
+    role :owner
 
+    trait(:owner) { role :owner }
     trait(:supervisor) { role :supervisor }
   end
 end

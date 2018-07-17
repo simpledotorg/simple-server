@@ -1,6 +1,6 @@
 class FacilityPolicy < ApplicationPolicy
   def index?
-    user.admin? || user.supervisor?
+    user.owner? || user.supervisor?
   end
 
   def show?

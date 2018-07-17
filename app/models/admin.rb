@@ -3,7 +3,7 @@ class Admin < ApplicationRecord
          :timeoutable, :trackable, :validatable
 
   enum role: [
-    :admin,
+    :owner,
     :supervisor
   ]
 
