@@ -28,8 +28,10 @@
         <td><%= facility.country %></td>
         <td><%= facility.pin %></td>
         <td><%= facility.facility_type %></td>
-        <td><%= link_to 'Edit', edit_admin_facility_path(facility) %></td>
-        <td><%= link_to 'Destroy', [:admin, facility], method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <% if policy(facility).edit? %>
+          <td><%= link_to 'Edit', edit_admin_facility_path(facility) %></td>
+          <td><%= link_to 'Destroy', [:admin, facility], method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <% end %>
       </tr>
     <% end %>
   </tbody>
@@ -37,4 +39,6 @@
 
 <br>
 
-<%= link_to 'New Facility', new_admin_facility_path %>
+<% if policy(Facility).new? %>
+  <%= link_to 'New Facility', new_admin_facility_path %>
+<% end %>
