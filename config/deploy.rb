@@ -7,7 +7,11 @@ set :deploy_to, -> { "/home/deploy/apps/#{fetch(:application)}" }
 set :rbenv_ruby, '2.5.1'
 set :rails_env, 'production'
 
-ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
+if ENV['DEPLOY_BRANCH']
+  set :branch, ENV['DEPLOY_BRANCH']
+else
+  ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
+end
 
 append :linked_files, ".env.production"
 append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
