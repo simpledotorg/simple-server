@@ -7,18 +7,21 @@
   <tr>
     <th>Name</th>
     <th>Follow up days</th>
-    <th colspan="3"></th>
+    <th colspan="2"></th>
   </tr>
   </thead>
 
   <tbody>
   <% @protocols.each do |protocol| %>
     <tr>
-      <td><%= protocol.name %></td>
+      <td><%= link_to protocol.name, [:admin, protocol] %></td>
       <td><%= protocol.follow_up_days %></td>
-      <td><%= link_to 'Show', [:admin, protocol] %></td>
-      <td><%= link_to 'Edit', edit_admin_protocol_path(protocol) %></td>
-      <td><%= link_to 'Destroy', [:admin, protocol], method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      <% if policy(protocol).edit? %>
+        <td><%= link_to 'Edit', edit_admin_protocol_path(protocol) %></td>
+      <% end %>
+      <% if policy(protocol).destroy? %>
+        <td><%= link_to 'Destroy', [:admin, protocol], method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      <% end %>
     </tr>
   <% end %>
   </tbody>
