@@ -29,7 +29,9 @@
 
 <br>
 
-<%= link_to 'New Protocol', new_admin_protocol_path %>
+<% if policy(Protocol).new? %>
+  <%= link_to 'New Protocol', new_admin_protocol_path %>
+<% end %>
 
 <% @protocols.each do |protocol| %>
   <h1>Protocol Drugs for <%= protocol.name %> </h1>
