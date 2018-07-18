@@ -11,7 +11,7 @@ class ApplicationPolicy
   end
 
   def show?
-    scope.where(:id => record.id).exists?
+    user.owner?
   end
 
   def create?
@@ -34,10 +34,6 @@ class ApplicationPolicy
     user.owner?
   end
 
-  def scope
-    Pundit.policy_scope!(user, record.class)
-  end
-
   class Scope
     attr_reader :user, :scope
 
@@ -47,7 +43,7 @@ class ApplicationPolicy
     end
 
     def resolve
-      scope
+      scope.all
     end
   end
 end
