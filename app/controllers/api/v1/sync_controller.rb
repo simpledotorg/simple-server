@@ -43,7 +43,6 @@ class Api::V1::SyncController < APIController
   end
 
   def authenticate
-    return unless FeatureToggle.enabled?('SYNC_API_AUTHENTICATION')
     return head :unauthorized unless authenticated?
     current_user.mark_as_logged_in if current_user.has_never_logged_in?
   end
