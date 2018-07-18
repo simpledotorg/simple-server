@@ -6,12 +6,7 @@ set :repo_url, "https://github.com/simpledotorg/simple-server.git"
 set :deploy_to, -> { "/home/deploy/apps/#{fetch(:application)}" }
 set :rbenv_ruby, '2.5.1'
 set :rails_env, 'production'
-
-if ENV['DEPLOY_BRANCH']
-  set :branch, ENV['DEPLOY_BRANCH']
-else
-  ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
-end
+set :branch, ENV["BRANCH"] || "master"
 
 append :linked_files, ".env.production"
 append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
