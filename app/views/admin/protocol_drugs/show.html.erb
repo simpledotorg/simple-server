@@ -20,5 +20,7 @@
   <%= @protocol_drug.protocol %>
 </p>
 
-<%= link_to 'Edit', edit_protocol_drug_path(@protocol_drug) %> |
+<% if policy(@protocol_drug).edit? %>
+  <%= link_to 'Edit', edit_protocol_drug_path(@protocol_drug) %> |
+<% end %>
 <%= link_to 'Back', protocol_drugs_path %>

@@ -39,20 +39,23 @@
     <tr>
       <th>Name</th>
       <th>Dosage</th>
-      <th>Rxnorm code</th>
-      <th colspan="3"></th>
+      <th>RxNorm code</th>
+      <th colspan="2"></th>
     </tr>
     </thead>
 
     <tbody>
     <% protocol.protocol_drugs.each do |protocol_drug| %>
       <tr>
-        <td><%= protocol_drug.name %></td>
+        <td><%= link_to protocol_drug.name, [:admin, protocol_drug] %></td>
         <td><%= protocol_drug.dosage %></td>
         <td><%= protocol_drug.rxnorm_code %></td>
-        <td><%= link_to 'Show', [:admin, protocol_drug] %></td>
-        <td><%= link_to 'Edit', edit_admin_protocol_drug_path(protocol_drug) %></td>
-        <td><%= link_to 'Destroy', [:admin, protocol_drug], method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <% if policy(protocol_drug).edit? %>
+          <td><%= link_to 'Edit', edit_admin_protocol_drug_path(protocol_drug) %></td>
+        <% end %>
+        <% if policy(protocol_drug).destroy? %>
+          <td><%= link_to 'Destroy', [:admin, protocol_drug], method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <% end %>
       </tr>
     <% end %>
     </tbody>
@@ -60,5 +63,7 @@
 
   <br>
 
-  <%= link_to 'New Protocol Drug', new_admin_protocol_drug_path %>
+  <% if policy(ProtocolDrug).new? %>
+    <%= link_to 'New Protocol Drug', new_admin_protocol_drug_path %>
+   <% end %>
 <% end %>
