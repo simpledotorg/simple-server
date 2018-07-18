@@ -125,7 +125,7 @@ RSpec.shared_examples 'a working sync controller creating records' do
   let(:partially_valid_payload) { Hash[request_key, invalid_records_payload + valid_records_payload] }
 
   before :each do
-    set_authentication_headers if defined? request_user
+    set_authentication_headers
   end
 
   describe 'creates new records' do
@@ -172,7 +172,7 @@ RSpec.shared_examples 'a working sync controller updating records' do
   let(:updated_payload) { Hash[request_key, updated_records] }
 
   before :each do
-    set_authentication_headers if defined? request_user
+    set_authentication_headers
   end
 
   describe 'updates records' do
@@ -196,7 +196,7 @@ RSpec.shared_examples 'a working sync controller sending records' do
   end
 
   before :each do
-    set_authentication_headers if defined? request_user
+    set_authentication_headers
   end
 
   describe 'GET sync: send data from server to device;' do
@@ -267,7 +267,7 @@ end
 
 RSpec.shared_examples 'a sync controller that audits the data access' do
   before :each do
-    set_authentication_headers if defined? request_user
+    set_authentication_headers
   end
 
   let(:auditable_type) { model.to_s }
