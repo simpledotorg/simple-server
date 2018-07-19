@@ -30,6 +30,8 @@
         <td><%= facility.facility_type %></td>
         <% if policy(facility).edit? %>
           <td><%= link_to 'Edit', edit_admin_facility_path(facility) %></td>
+        <% end %>
+        <% if policy(facility).destroy? %>
           <td><%= link_to 'Destroy', [:admin, facility], method: :delete, data: { confirm: 'Are you sure?' } %></td>
         <% end %>
       </tr>
