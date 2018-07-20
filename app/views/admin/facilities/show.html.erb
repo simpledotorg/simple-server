@@ -36,7 +36,9 @@
       <strong>Facility type:</strong>
       <%= @facility.facility_type %>
     </p>
-    <%= link_to 'Edit Facility', edit_admin_facility_path(@facility) %>
+    <% if policy(@facility).edit? %>
+      <%= link_to 'Edit Facility', edit_admin_facility_path(@facility) %>
+    <% end %>
   </div>
 
   <div class="right-pane">

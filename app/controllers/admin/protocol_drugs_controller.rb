@@ -3,6 +3,7 @@ class Admin::ProtocolDrugsController < AdminController
   before_action :set_protocols, only: %i[create edit update new]
 
   def index
+    authorize ProtocolDrug
     @protocol_drugs = ProtocolDrug.all
   end
 
@@ -11,6 +12,7 @@ class Admin::ProtocolDrugsController < AdminController
 
   def new
     @protocol_drug = ProtocolDrug.new
+    authorize @protocol_drug
   end
 
   def edit
@@ -18,6 +20,8 @@ class Admin::ProtocolDrugsController < AdminController
 
   def create
     @protocol_drug = ProtocolDrug.new(protocol_drug_params)
+    authorize @protocol_drug
+
     if @protocol_drug.save
       redirect_to [:admin, :protocols], notice: 'Protocol drug was successfully created.'
     else
@@ -41,11 +45,13 @@ class Admin::ProtocolDrugsController < AdminController
   private
 
   def set_protocols
+    authorize Protocol
     @protocols = Protocol.all
   end
 
   def set_protocol_drug
     @protocol_drug = ProtocolDrug.find(params[:id])
+    authorize @protocol_drug
   end
 
   def protocol_drug_params

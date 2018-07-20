@@ -2,6 +2,7 @@ class Admin::ProtocolsController < AdminController
   before_action :set_protocol, only: %i[show edit update destroy]
 
   def index
+    authorize Protocol
     @protocols = Protocol.all
   end
 
@@ -10,6 +11,7 @@ class Admin::ProtocolsController < AdminController
 
   def new
     @protocol = Protocol.new
+    authorize @protocol
   end
 
   def edit
@@ -17,6 +19,8 @@ class Admin::ProtocolsController < AdminController
 
   def create
     @protocol = Protocol.new(protocol_params)
+    authorize @protocol
+
     if @protocol.save
       redirect_to [:admin, @protocol], notice: 'Protocol was successfully created.'
     else
@@ -41,6 +45,7 @@ class Admin::ProtocolsController < AdminController
 
   def set_protocol
     @protocol = Protocol.find(params[:id])
+    authorize @protocol
   end
 
   def protocol_params
