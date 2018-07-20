@@ -31,7 +31,7 @@ Rails.application.routes.draw do
         get 'sync', to: 'prescription_drugs#sync_to_user'
         post 'sync', to: 'prescription_drugs#sync_from_user'
       end
-      
+
       scope '/users' do
         get 'sync', to: 'users#sync_to_user'
         post 'sync', to: 'users#sync_from_user'
@@ -50,13 +50,16 @@ Rails.application.routes.draw do
   devise_for :admins
 
   namespace :admin do
-    resources :facilities
-    resources :protocol_drugs
-    resources :protocols
-    resources :users do
-      put 'reset_otp', to: 'users#reset_otp'
-      put 'disable_access', to: 'users#disable_access'
-      put 'enable_access', to: 'users#enable_access'
+    resources :facilities do
+      resources :users do
+        put 'reset_otp', to: 'users#reset_otp'
+        put 'disable_access', to: 'users#disable_access'
+        put 'enable_access', to: 'users#enable_access'
+      end
+    end
+
+    resources :protocols do
+      resources :protocol_drugs
     end
   end
 
