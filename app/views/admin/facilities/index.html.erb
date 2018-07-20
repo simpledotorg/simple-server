@@ -2,8 +2,8 @@
 
 <h1>Facilities</h1>
 
-<table>
-  <thead>
+<table class="table">
+  <thead class="thead-light">
     <tr>
       <th>Name</th>
       <th>Street address</th>
@@ -39,8 +39,6 @@
   </tbody>
 </table>
 
-<br>
-
 <% if policy(Facility).new? %>
-  <%= link_to 'New Facility', new_admin_facility_path %>
+  <%= link_to 'New Facility', new_admin_facility_path, class: "btn btn-primary" %>
 <% end %>

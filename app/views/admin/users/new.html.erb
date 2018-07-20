@@ -1,5 +1,4 @@
-<h1>New User</h1>
+<h1><%= link_to @facility.name, [:admin, @facility] %></h1>
+<h3>New User</h3>
 
 <%= render 'form', user: @user %>
-
-<%= link_to 'Back', admin_facility_path(@facility.id) %>
