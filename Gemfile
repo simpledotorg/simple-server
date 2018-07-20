@@ -20,6 +20,8 @@ gem 'newrelic_rpm'
 gem 'bcrypt', '~> 3.1', '>= 3.1.11'
 gem 'devise', '~> 4.4.3'
 gem 'twilio-ruby', '~> 5.10', '>= 5.10.3'
+gem 'bootstrap', '~> 4.1.1'
+gem 'jquery-rails'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
