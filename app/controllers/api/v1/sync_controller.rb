@@ -35,7 +35,7 @@ class Api::V1::SyncController < APIController
   end
 
   def sync_api_toggled_on?
-    FeatureToggle.enabled_for_regex?('ACCESSIBLE_SYNC_APIS', controller_name)
+    FeatureToggle.enabled_for_regex?('MATCHING_SYNC_APIS', controller_name)
   end
 
   def current_user

@@ -14,7 +14,7 @@ Default: false
 Enables SMSes to be sent with OTPs for login
 The feature can be turned off in environments where otp sms notifications need not be sent, eg: qa, development
 
-#### ENABLE_REGEX_MATCH_FOR_ACCESSIBLE_SYNC_APIS
+#### ENABLE_REGEX_MATCHING_SYNC_APIS
 Type: Regex
 Default: nil
 
