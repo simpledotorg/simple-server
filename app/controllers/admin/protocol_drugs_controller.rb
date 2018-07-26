@@ -39,7 +39,7 @@ class Admin::ProtocolDrugsController < AdminController
 
   def destroy
     @protocol_drug.destroy
-    redirect_to [:admin, @protocol], notice: 'Protocol drug was successfully destroyed.'
+    redirect_to [:admin, @protocol], notice: 'Protocol drug was successfully deleted.'
   end
 
   private

@@ -37,7 +37,7 @@ class Admin::UsersController < ApplicationController
 
   def destroy
     @user.destroy
-    redirect_to [:admin, @facility], notice: 'User was successfully destroyed.'
+    redirect_to [:admin, @facility], notice: 'User was successfully deleted.'
   end
 
   def reset_otp
