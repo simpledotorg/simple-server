@@ -4,23 +4,55 @@
     <title>Simple Server</title>
     <%= csrf_meta_tags %>
 
+    <meta charset="utf-8">
+
     <%= stylesheet_link_tag    'application', media: 'all' %>
     <%= javascript_include_tag 'application' %>
 
     <!-- mobile-friendly -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, shrink-to-fit=no"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
   </head>
 
   <body>
-    <%= yield %>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+      <div class="container">
+        <a class="navbar-brand mr-5" href="#">Simple Server</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
 
-    <% if admin_signed_in? %>
-      <footer>
-        <%= link_to('Log Out', destroy_admin_session_path, method: :delete) %>
-      </footer>
-    <% end %>
+        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+          <% if admin_signed_in? %>
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item">
+                <%= link_to "Facilities", admin_facilities_path, class: "nav-link #{active_controller?("admin/facilities")}" %>
+              </li>
+              <li class="nav-item">
+                <%= link_to "Protocols", admin_protocols_path, class: "nav-link #{active_controller?("admin/protocols")}" %>
+              </li>
+            </ul>
+
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+                <%= link_to('Log Out', destroy_admin_session_path, method: :delete, class: "nav-link") %>
+              </li>
+            </ul>
+          <% else %>
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+                <%= link_to('Log In', new_admin_session_path, class: "nav-link") %>
+              </li>
+            </ul>
+          <% end %>
+        </div>
+      </div>
+    </nav>
+
+    <main role="main" class="container">
+      <%= yield %>
+    </main>
   </body>
 </html>

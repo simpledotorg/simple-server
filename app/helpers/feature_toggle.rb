@@ -5,7 +5,7 @@ module FeatureToggle
   end
 
   def self.enabled_for_regex?(regex_name, feature_name)
-    feature_list_name = "ENABLED_REGEX_MATCH_FOR_#{regex_name}"
+    feature_list_name = "ENABLE_REGEX_#{regex_name}"
     Regexp.new(ENV[feature_list_name]).match(feature_name)
   end
 end

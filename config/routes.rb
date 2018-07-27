@@ -45,13 +45,16 @@ Rails.application.routes.draw do
   devise_for :admins
 
   namespace :admin do
-    resources :facilities
-    resources :protocol_drugs
-    resources :protocols
-    resources :users do
-      put 'reset_otp', to: 'users#reset_otp'
-      put 'disable_access', to: 'users#disable_access'
-      put 'enable_access', to: 'users#enable_access'
+    resources :facilities do
+      resources :users do
+        put 'reset_otp', to: 'users#reset_otp'
+        put 'disable_access', to: 'users#disable_access'
+        put 'enable_access', to: 'users#enable_access'
+      end
+    end
+
+    resources :protocols do
+      resources :protocol_drugs
     end
   end
 
