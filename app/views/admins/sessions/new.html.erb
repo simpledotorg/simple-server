@@ -1,26 +1,22 @@
 <h2>Log in</h2>
 
-<%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+<div class="row">
+  <div class="col-md-6">
+    <%= bootstrap_form_for(resource, as: resource_name, url: session_path(resource_name), label_errors: true) do |f| %>
+      <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+      <%= f.password_field :password, autocomplete: "off" %>
+
+      <% if devise_mapping.rememberable? -%>
+        <%= f.form_group :remember_me do %>
+          <%= f.check_box :remember_me %>
+        <% end %>
+      <% end -%>
+
+      <%= f.primary "Log in" %>
+    <% end %>
   </div>
+</div>
 
-  <div class="field">
-    <%= f.label :password %><br />
-    <%= f.password_field :password, autocomplete: "off" %>
-  </div>
-
-  <% if devise_mapping.rememberable? -%>
-    <div class="field">
-      <%= f.check_box :remember_me %>
-      <%= f.label :remember_me %>
-    </div>
-  <% end -%>
-
-  <div class="actions">
-    <%= f.submit "Log in" %>
-  </div>
-<% end %>
-
-<%= render "admins/shared/links" %>
+<div class="actions mt-4">
+  <%= render "admins/shared/links" %>
+</div>

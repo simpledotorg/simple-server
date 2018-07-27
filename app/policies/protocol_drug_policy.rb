@@ -1,0 +1,2 @@
+class ProtocolDrugPolicy < ApplicationPolicy
+end

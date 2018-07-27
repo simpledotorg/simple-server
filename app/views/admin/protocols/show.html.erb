@@ -1,14 +1,42 @@
-<p id="notice"><%= notice %></p>
-
-<p>
-  <strong>Name:</strong>
-  <%= @protocol.name %>
-</p>
-
+<h1><%= @protocol.name %></h1>
 <p>
   <strong>Follow up days:</strong>
   <%= @protocol.follow_up_days %>
 </p>
 
-<%= link_to 'Edit', edit_admin_protocol_path(@protocol) %> |
-<%= link_to 'Back', admin_protocols_path %>
+<% if policy(@protocol).edit? %>
+  <%= link_to "Edit Protocol", edit_admin_protocol_path(@protocol), class: "btn btn-sm btn-primary" %>
+<% end %>
+
+<h2 class="mt-4">Protocol Drugs</h2>
+
+<table class="table">
+  <thead class="thead-light">
+    <tr>
+      <th>Name</th>
+      <th>Dosage</th>
+      <th>RxNorm code</th>
+      <th colspan="2"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @protocol.protocol_drugs.each do |protocol_drug| %>
+      <tr>
+        <td><%= protocol_drug.name %></td>
+        <td><%= protocol_drug.dosage %></td>
+        <td><%= protocol_drug.rxnorm_code %></td>
+        <% if policy(protocol_drug).edit? %>
+          <td><%= link_to 'Edit', edit_admin_protocol_protocol_drug_path(@protocol, protocol_drug) %></td>
+        <% end %>
+        <% if policy(protocol_drug).destroy? %>
+          <td><%= link_to 'Destroy', [:admin, @protocol, protocol_drug], method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<% if policy(ProtocolDrug).new? %>
+  <%= link_to 'New Protocol Drug', new_admin_protocol_protocol_drug_path(@protocol), class: "btn btn-sm btn-primary" %>
+<% end %>

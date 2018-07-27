@@ -2,8 +2,8 @@
 
 <h1>Facilities</h1>
 
-<table>
-  <thead>
+<table class="table">
+  <thead class="thead-light">
     <tr>
       <th>Name</th>
       <th>Street address</th>
@@ -13,7 +13,7 @@
       <th>Country</th>
       <th>Pin</th>
       <th>Facility type</th>
-      <th colspan="3"></th>
+      <th colspan="2"></th>
     </tr>
   </thead>
 
@@ -28,13 +28,17 @@
         <td><%= facility.country %></td>
         <td><%= facility.pin %></td>
         <td><%= facility.facility_type %></td>
-        <td><%= link_to 'Edit', edit_admin_facility_path(facility) %></td>
-        <td><%= link_to 'Destroy', [:admin, facility], method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <% if policy(facility).edit? %>
+          <td><%= link_to 'Edit', edit_admin_facility_path(facility) %></td>
+        <% end %>
+        <% if policy(facility).destroy? %>
+          <td><%= link_to 'Destroy', [:admin, facility], method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <% end %>
       </tr>
     <% end %>
   </tbody>
 </table>
 
-<br>
-
-<%= link_to 'New Facility', new_admin_facility_path %>
+<% if policy(Facility).new? %>
+  <%= link_to 'New Facility', new_admin_facility_path, class: "btn btn-primary" %>
+<% end %>

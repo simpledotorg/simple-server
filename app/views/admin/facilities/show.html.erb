@@ -1,7 +1,7 @@
-<div class="panes">
-  <div class="facility-details left-pane">
-    <p id="notice"><%= notice %></p>
-    <h1><%= @facility.name %></h1>
+<h1><%= @facility.name %></h1>
+
+<div class="row">
+  <div class="col-md-4 col-lg-3">
     <p>
       <strong>Street address:</strong>
       <%= @facility.street_address %>
@@ -36,57 +36,58 @@
       <strong>Facility type:</strong>
       <%= @facility.facility_type %>
     </p>
-    <%= link_to 'Edit Facility', edit_admin_facility_path(@facility) %>
+
+    <% if policy(@facility).edit? %>
+      <%= link_to 'Edit Facility', edit_admin_facility_path(@facility), class: "btn btn-sm btn-primary" %>
+    <% end %>
   </div>
 
-  <div class="right-pane">
-    <h1>Users</h1>
-    <table class="users-table">
-      <tbody>
-      <% @facility.users.each do |user| %>
-        <tr class=<%= user.access_token_valid? ? 'active' : 'inactive' %>>
-          <td class="user-identity"><%= user.full_name %>
-            <br>
-            <%= user.phone_number %></td>
+  <div class="col-md-8 col-lg-9">
+    <h3>App Users</h3>
 
-          <td class="user-details">
-            <ul>
-              <li>
-                <%= if (user.logged_in_at.present?)
-                      'Logged in at:' + user.logged_in_at.to_s
-                    else
-                      'Has not logged in yet'
-                    end
-                %>
-              </li>
-              <li>
-                Login link: <%= "https://simple.org/register?otp=#{user.otp}" %>
-              </li>
-              <li>
-                OTP valid until: <%= user.otp_valid_until %>
-              </li>
-              <li>
-                Is access token valid?: <%= user.is_access_token_valid %>
-              </li>
-              <li>
-                <%= link_to 'Show', [:admin, user] %> |
-                <%= link_to 'Edit', edit_admin_user_path(user) %> |
-                <%= link_to 'Destroy', [:admin, user], method: :delete, data: { confirm: 'Are you sure?' } %> |
-                <%= link_to 'Reset OTP', admin_user_reset_otp_path(user), method: :put, data: { confirm: I18n.t('admin.reset_otp_alert') } %> |
-                <% if user.access_token_valid? %>
-                  <%= link_to 'Disable Access', admin_user_disable_access_path(user), method: :put, data: { confirm: I18n.t('admin.disable_access_alert') } %>
-                <% else %>
-                  <%= link_to 'Enable Access', admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
-                <% end %>
-              </li>
-            </ul>
-        </tr>
-      <% end %>
-      </tbody>
-    </table>
+    <% @facility.users.each do |user| %>
+      <div class="row border-bottom mb-4">
+        <div class="col-lg-3">
+          <%= user.full_name %>
+          <br>
+          <%= user.phone_number %>
+        </div>
 
-    <%= link_to 'New User', new_admin_user_path(facility: @facility) %>
+        <div class="col-lg-9">
+          <ul>
+            <li>
+              <%=
+                if (user.logged_in_at.present?)
+                  'Logged in at:' + user.logged_in_at.to_s
+                else
+                  'Has not logged in yet'
+                end
+              %>
+            </li>
+            <li>
+              Login link: <%= "https://simple.org/register?otp=#{user.otp}" %>
+            </li>
+            <li>
+              OTP valid until: <%= user.otp_valid_until %>
+            </li>
+            <li>
+              Is access token valid?: <%= user.is_access_token_valid %>
+            </li>
+            <li>
+              <%= link_to 'Edit', edit_admin_facility_user_path(@facility, user) %> |
+              <%= link_to 'Destroy', [:admin, @facility, user], method: :delete, data: { confirm: 'Are you sure?' } %> |
+              <%= link_to 'Reset OTP', admin_facility_user_reset_otp_path(@facility, user), method: :put, data: { confirm: I18n.t('admin.reset_otp_alert') } %> |
+              <% if user.access_token_valid? %>
+                <%= link_to 'Disable Access', admin_facility_user_disable_access_path(@facility, user), method: :put, data: { confirm: I18n.t('admin.disable_access_alert') } %>
+              <% else %>
+                <%= link_to 'Enable Access', admin_facility_user_enable_access_path(@facility, user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
+              <% end %>
+            </li>
+          </ul>
+        </div>
+      </div>
+    <% end %>
+
+    <%= link_to 'New User', new_admin_facility_user_path(@facility), class: "btn btn-sm btn-primary" %>
   </div>
 </div>
-
-<%= link_to 'Back', admin_facilities_path %>

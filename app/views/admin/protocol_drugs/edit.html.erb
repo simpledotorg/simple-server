@@ -1,6 +1,4 @@
-<h1>Editing Protocol Drug</h1>
+<h1><%= link_to @protocol.name, [:admin, @protocol] %></h1>
+<h3>Edit Protocol Drug</h3>
 
 <%= render 'form', protocol_drug: @protocol_drug %>
-
-<%= link_to 'Show', [:admin, @protocol_drug] %> |
-<%= link_to 'Back', admin_protocol_drugs_path %>
