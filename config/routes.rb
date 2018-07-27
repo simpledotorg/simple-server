@@ -32,11 +32,6 @@ Rails.application.routes.draw do
         post 'sync', to: 'prescription_drugs#sync_from_user'
       end
 
-      scope '/users' do
-        get 'sync', to: 'users#sync_to_user'
-        post 'sync', to: 'users#sync_from_user'
-      end
-
       scope '/facilities' do
         get 'sync', to: 'facilities#sync_to_user'
       end

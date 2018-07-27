@@ -6,13 +6,9 @@ RSpec.shared_examples 'sync requests' do
     {'HTTP_X_USER_ID' => request_user.id, 'HTTP_AUTHORIZATION' => "Bearer #{request_user.access_token}" }
   end
   let(:headers) do
-    default_headers = { 'ACCEPT' => 'application/json', 'CONTENT_TYPE' => 'application/json' }
-    if defined?(auth_not_required)
-      default_headers
-    else
-      default_headers.merge(auth_headers)
-    end
+    { 'ACCEPT' => 'application/json', 'CONTENT_TYPE' => 'application/json' }.merge(auth_headers)
   end
+
   let(:response_key) { model.to_s.underscore.pluralize }
   let(:empty_payload) { Hash[response_key.to_sym, []] }
   let(:valid_payload) { Hash[response_key.to_sym, [build_payload.call]]}
