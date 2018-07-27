@@ -38,7 +38,7 @@ class Admin::FacilitiesController < AdminController
 
   def destroy
     @facility.destroy
-    redirect_to admin_facilities_url, notice: 'Facility was successfully destroyed.'
+    redirect_to admin_facilities_url, notice: 'Facility was successfully deleted.'
   end
 
   private

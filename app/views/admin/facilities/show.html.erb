@@ -75,7 +75,7 @@
             </li>
             <li>
               <%= link_to 'Edit', edit_admin_facility_user_path(@facility, user) %> |
-              <%= link_to 'Destroy', [:admin, @facility, user], method: :delete, data: { confirm: 'Are you sure?' } %> |
+              <%= link_to 'Delete', [:admin, @facility, user], method: :delete, data: { confirm: 'Are you sure?' } %> |
               <%= link_to 'Reset OTP', admin_facility_user_reset_otp_path(@facility, user), method: :put, data: { confirm: I18n.t('admin.reset_otp_alert') } %> |
               <% if user.access_token_valid? %>
                 <%= link_to 'Disable Access', admin_facility_user_disable_access_path(@facility, user), method: :put, data: { confirm: I18n.t('admin.disable_access_alert') } %>
