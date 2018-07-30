@@ -188,13 +188,12 @@ module Api::V1::Schema::Models
       properties: {
         full_name: { '$ref' => '#/definitions/non_empty_string' },
         phone_number: { '$ref' => '#/definitions/non_empty_string' },
-        password: { '$ref' => '#/definitions/non_empty_string' },
-        password_confirmation: { '$ref' => '#/definitions/non_empty_string' },
+        password_digest: { '$ref' => '#/definitions/non_empty_string' },
         facility_id: { '$ref' => '#/definitions/uuid' },
         created_at: { '$ref' => '#/definitions/timestamp' },
         updated_at: { '$ref' => '#/definitions/timestamp' }
       },
-      required: %w[full_name phone_number password password_confirmation facility_id created_at updated_at]
+      required: %w[full_name phone_number password_digest facility_id created_at updated_at]
     }
   end
 

@@ -16,9 +16,10 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       let(:user) do
         FactoryBot.attributes_for(:user)
           .slice(:full_name, :phone_number)
-          .merge(password: 1234,
-                 password_confirmation: 1234,
-                 facility_id: facility.id)
+          .merge(password_digest: BCrypt::Password.create("1234"),
+                 facility_id: facility.id,
+                 created_at: Time.now.iso8601,
+                 updated_at: Time.now.iso8601)
       end
 
       it 'creates a user, and responds with the created user object' do

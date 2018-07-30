@@ -30,8 +30,7 @@ class Api::V1::UsersController < APIController
       .permit(
         :full_name,
         :phone_number,
-        :password,
-        :password_confirmation,
+        :password_digest,
         :facility_id,
         :updated_at,
         :created_at)

@@ -3,8 +3,7 @@ class Api::V1::UserRegistrationPayloadValidator < Api::V1::PayloadValidator
   attr_accessor(
     :full_name,
     :phone_number,
-    :password,
-    :password_confirmation,
+    :password_digest,
     :facility_id,
     :created_at,
     :updated_at
