@@ -183,20 +183,6 @@ module Api::V1::Schema::Models
       required: %w[phone_number password otp] }
   end
 
-  def self.register_user
-    { type: :object,
-      properties: {
-        full_name: { '$ref' => '#/definitions/non_empty_string' },
-        phone_number: { '$ref' => '#/definitions/non_empty_string' },
-        password_digest: { '$ref' => '#/definitions/non_empty_string' },
-        facility_id: { '$ref' => '#/definitions/uuid' },
-        created_at: { '$ref' => '#/definitions/timestamp' },
-        updated_at: { '$ref' => '#/definitions/timestamp' }
-      },
-      required: %w[full_name phone_number password_digest facility_id created_at updated_at]
-    }
-  end
-
   def self.definitions
     { timestamp: timestamp,
       uuid: uuid,

@@ -16,7 +16,8 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       let(:user) do
         FactoryBot.attributes_for(:user)
           .slice(:full_name, :phone_number)
-          .merge(password_digest: BCrypt::Password.create("1234"),
+          .merge(id: SecureRandom.uuid,
+                 password_digest: BCrypt::Password.create("1234"),
                  facility_id: facility.id,
                  created_at: Time.now.iso8601,
                  updated_at: Time.now.iso8601)
@@ -29,7 +30,14 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         expect(response.status).to eq(201)
         expect(created_user).to be_present
         expect(JSON(response.body)['user'].with_int_timestamps.except('device_updated_at', 'device_created_at'))
-          .to eq(created_user.as_json.with_int_timestamps.except('device_updated_at', 'device_created_at'))
+          .to eq(created_user.as_json.with_int_timestamps.except(
+            'device_updated_at',
+            'device_created_at',
+            'access_token',
+            'is_access_token_valid',
+            'logged_in_at',
+            'otp',
+            'otp_valid_until'))
       end
     end
   end
