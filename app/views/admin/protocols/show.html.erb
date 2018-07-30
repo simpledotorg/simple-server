@@ -30,7 +30,7 @@
           <td><%= link_to 'Edit', edit_admin_protocol_protocol_drug_path(@protocol, protocol_drug) %></td>
         <% end %>
         <% if policy(protocol_drug).destroy? %>
-          <td><%= link_to 'Destroy', [:admin, @protocol, protocol_drug], method: :delete, data: { confirm: 'Are you sure?' } %></td>
+          <td><%= link_to 'Delete', [:admin, @protocol, protocol_drug], method: :delete, data: { confirm: 'Are you sure?' } %></td>
         <% end %>
       </tr>
     <% end %>

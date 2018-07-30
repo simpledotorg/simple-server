@@ -38,7 +38,7 @@ class Admin::ProtocolsController < AdminController
 
   def destroy
     @protocol.destroy
-    redirect_to admin_protocols_url, notice: 'Protocol was successfully destroyed.'
+    redirect_to admin_protocols_url, notice: 'Protocol was successfully deleted.'
   end
 
   private

@@ -4,13 +4,27 @@
 
 This is the backend for the Simple app to help track hypertensive patients across a population.
 
-## Setup
+## Development Setup
 First, you need to install ruby: https://www.ruby-lang.org/en/documentation/installation/
 ```bash
 gem install bundler
 bundle install
 rake db:create db:setup db:migrate
 ```
+
+### Testing Email
+
+We use [Mailcatcher](https://mailcatcher.me/) for testing email in development. Please use the
+following to set it up on your machine.
+
+_Note: Please don't add Mailcatcher to the `Gemfile`, as it causes conflicts._
+
+```bash
+gem install mailcatcher
+mailcatcher
+```
+
+Now you should be able to see test emails at http://localhost:1080
 
 ## Configuring
 The app can be configured using a .env file. Look at .env.development for sample configuration
