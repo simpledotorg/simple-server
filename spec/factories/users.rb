@@ -7,6 +7,7 @@ FactoryBot.define do
     association :facility, strategy: :build
     device_updated_at { Time.now }
     device_created_at { Time.now }
+    status { User::STATUSES.sample }
 
     trait :created_on_device do
       id { SecureRandom.uuid }

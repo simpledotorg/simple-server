@@ -158,6 +158,7 @@ ActiveRecord::Schema.define(version: 20180730082447) do
     t.string "access_token", null: false
     t.boolean "is_access_token_valid", null: false
     t.datetime "logged_in_at"
+    t.string "status", default: "waiting_for_approval"
     t.index ["facility_id"], name: "index_users_on_facility_id"
     t.index ["phone_number"], name: "index_users_on_phone_number", unique: true
   end

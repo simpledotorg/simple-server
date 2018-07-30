@@ -1,6 +1,8 @@
 class User < ApplicationRecord
   include Mergeable
 
+  STATUSES = %w(waiting_for_approval approved declined).freeze
+
   has_secure_password
 
   belongs_to :facility
@@ -14,8 +16,8 @@ class User < ApplicationRecord
   validates :full_name, presence: true
   validates :phone_number, presence: true, uniqueness: true
   validates :password, allow_blank: true, length: { is: 4 }, format: { with: /[0-9]/, message: 'only allows numbers' }
+  validates :status, inclusion: STATUSES
   validate :presence_of_password
-
   def presence_of_password
     unless password_digest.present? || password.present?
       errors.add(:password, 'Either password_digest or password should be present')
