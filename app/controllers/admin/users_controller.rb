@@ -75,7 +75,8 @@ class Admin::UsersController < ApplicationController
       :full_name,
       :phone_number,
       :password,
-      :password_confirmation
+      :password_confirmation,
+      :status
     )
   end
 end
