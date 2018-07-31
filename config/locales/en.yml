@@ -33,10 +33,10 @@ en:
   hello: "Hello world"
   login:
     error_messages:
-      unknown_user: 'user is not present'
-      invalid_otp: 'otp is not valid'
-      expired_otp: 'otp has expired'
-      invalid_password: 'password is not valid'
+      unknown_user: "We don't recognize that user. Please check and try again.We don't recognize that user. Please check and try again."
+      invalid_otp: 'Your OTP does not match. Try again?'
+      expired_otp: 'You need a fresh OTP. Request a new one.'
+      invalid_password: 'Your password does not match. Try again?'
   sms:
     country_code: '+91'
     notification: 'You are now registered as a user for the Simple app. Please login using this link: https://simple.org/register?otp=%{otp}'

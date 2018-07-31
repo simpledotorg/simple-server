@@ -40,7 +40,7 @@ RSpec.describe Api::V1::LoginsController, type: :controller do
         expect(response.status).to eq(401)
         expect(JSON(response.body))
           .to eq('errors' => {
-            'user' => ['otp has expired']
+            'user' => [I18n.t('login.error_messages.expired_otp')]
           })
       end
     end
@@ -59,7 +59,7 @@ RSpec.describe Api::V1::LoginsController, type: :controller do
         expect(response.status).to eq(401)
         expect(JSON(response.body))
           .to eq('errors' => {
-            'user' => ['otp is not valid']
+            'user' => [I18n.t('login.error_messages.invalid_otp')]
           })
       end
     end
@@ -78,7 +78,7 @@ RSpec.describe Api::V1::LoginsController, type: :controller do
         expect(response.status).to eq(401)
         expect(JSON(response.body))
           .to eq('errors' => {
-            'user' => ['password is not valid']
+            'user' => [I18n.t('login.error_messages.invalid_password')]
           })
       end
     end
@@ -97,7 +97,7 @@ RSpec.describe Api::V1::LoginsController, type: :controller do
         expect(response.status).to eq(401)
         expect(JSON(response.body))
           .to eq('errors' => {
-            'user' => ['user is not present']
+            'user' => [I18n.t('login.error_messages.unknown_user')]
           })
       end
     end
