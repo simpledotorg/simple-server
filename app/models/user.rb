@@ -1,11 +1,11 @@
 class User < ApplicationRecord
   include Mergeable
 
-  SYNC_STATUSES = %w(
-    waiting_for_approval
-    approved_for_syncing
-    disapproved_for_syncing
-  ).freeze
+  SYNC_STATUSES = {
+    waiting: 'waiting_for_approval',
+    approved: 'approved_for_syncing',
+    disapproved: 'disapproved_for_syncing'
+  }
 
   has_secure_password
 
@@ -20,7 +20,7 @@ class User < ApplicationRecord
   validates :full_name, presence: true
   validates :phone_number, presence: true, uniqueness: true
   validates :password, allow_blank: true, length: { is: 4 }, format: { with: /[0-9]/, message: 'only allows numbers' }
-  validates :sync_approval_status, inclusion: SYNC_STATUSES
+  validates :sync_approval_status, inclusion: SYNC_STATUSES.values
   validate :presence_of_password
 
   def presence_of_password

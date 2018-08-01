@@ -11,7 +11,7 @@ class Api::V1::UsersController < APIController
 
   def user_from_request
     Api::V1::Transformer.from_request(registration_params)
-      .merge(sync_approval_status: 'waiting_for_approval')
+      .merge(sync_approval_status: User::SYNC_STATUSES[:waiting])
   end
 
   def user_to_response(user)
