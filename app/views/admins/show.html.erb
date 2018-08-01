@@ -1,0 +1,93 @@
+<h1><%= @admin.name %></h1>
+
+<div class="row">
+  <div class="col-md-4 col-lg-3">
+    <p>
+      <strong>Street address:</strong>
+      <%= @admin.street_address %>
+    </p>
+
+    <p>
+      <strong>Village or colony:</strong>
+      <%= @admin.village_or_colony %>
+    </p>
+
+    <p>
+      <strong>District:</strong>
+      <%= @admin.district %>
+    </p>
+
+    <p>
+      <strong>State:</strong>
+      <%= @admin.state %>
+    </p>
+
+    <p>
+      <strong>Country:</strong>
+      <%= @admin.country %>
+    </p>
+
+    <p>
+      <strong>Pin:</strong>
+      <%= @admin.pin %>
+    </p>
+
+    <p>
+      <strong>Admin type:</strong>
+      <%= @admin.admin_type %>
+    </p>
+
+    <% if policy(@admin).edit? %>
+      <%= link_to 'Edit Admin', edit_admin_admin_path(@admin), class: "btn btn-sm btn-primary" %>
+    <% end %>
+  </div>
+
+  <div class="col-md-8 col-lg-9">
+    <h3>App Users</h3>
+
+    <% @admin.users.each do |user| %>
+      <div class="row border-bottom mb-4">
+        <div class="col-lg-3">
+          <%= user.full_name %>
+          <br>
+          <%= user.phone_number %>
+        </div>
+
+        <div class="col-lg-9">
+          <ul>
+            <li>
+              <%=
+                if (user.logged_in_at.present?)
+                  'Logged in at:' + user.logged_in_at.to_s
+                else
+                  'Has not logged in yet'
+                end
+              %>
+            </li>
+            <li>
+              Login link: <%= "https://simple.org/register?otp=#{user.otp}" %>
+            </li>
+            <li>
+              OTP valid until: <%= user.otp_valid_until %>
+            </li>
+            <li>
+              Is access token valid?: <%= user.is_access_token_valid %>
+            </li>
+            <li>
+              <%= link_to 'Edit', edit_admin_admin_user_path(@admin, user) %> |
+              <%= link_to 'Delete', [:admin, @admin, user], method: :delete, data: { confirm: 'Are you sure?' } %> |
+              <%= link_to 'Reset OTP', admin_admin_user_reset_otp_path(@admin, user), method: :put, data: { confirm: I18n.t('admin.reset_otp_alert') } %> |
+              <% if user.access_token_valid? %>
+                <%= link_to 'Disable Access', admin_admin_user_disable_access_path(@admin, user), method: :put, data: { confirm: I18n.t('admin.disable_access_alert') } %>
+              <% else %>
+                <%= link_to 'Enable Access', admin_admin_user_enable_access_path(@admin, user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
+              <% end %>
+            </li>
+          </ul>
+        </div>
+      </div>
+    <% end %>
+
+    <%= link_to 'New User', new_admin_admin_user_path(@admin), class: "btn btn-sm btn-primary" %>
+  </div>
+</div>
