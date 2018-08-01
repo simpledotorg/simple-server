@@ -11,6 +11,6 @@ RSpec.describe User, type: :model do
     it { should validate_presence_of(:full_name) }
     it { should validate_presence_of(:phone_number) }
     it { should validate_uniqueness_of(:phone_number) }
-    it { should validate_inclusion_of(:status).in_array(User::STATUSES) }
+    it { should validate_inclusion_of(:sync_approval_status).in_array(User::STATUSES) }
   end
 end

@@ -39,6 +39,12 @@ RSpec.describe Api::V1::UsersController, type: :controller do
             'otp',
             'otp_valid_until'))
       end
+
+      it 'sets the user status to waiting_for_approval' do
+        post :create, params: { user: user }
+        created_user = User.find_by(full_name: user[:full_name], phone_number: user[:phone_number])
+        expect(created_user.sync_approval_status).to eq('waiting_for_approval')
+      end
     end
   end
 end

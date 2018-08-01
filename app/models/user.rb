@@ -1,7 +1,11 @@
 class User < ApplicationRecord
   include Mergeable
 
-  STATUSES = %w(waiting_for_approval approved_for_syncing disapproved_for_syncing).freeze
+  SYNC_STATUSES = %w(
+    waiting_for_approval
+    approved_for_syncing
+    disapproved_for_syncing
+  ).freeze
 
   has_secure_password
 
@@ -16,8 +20,9 @@ class User < ApplicationRecord
   validates :full_name, presence: true
   validates :phone_number, presence: true, uniqueness: true
   validates :password, allow_blank: true, length: { is: 4 }, format: { with: /[0-9]/, message: 'only allows numbers' }
-  validates :status, inclusion: STATUSES
+  validates :sync_approval_status, inclusion: SYNC_STATUSES
   validate :presence_of_password
+
   def presence_of_password
     unless password_digest.present? || password.present?
       errors.add(:password, 'Either password_digest or password should be present')
@@ -25,8 +30,8 @@ class User < ApplicationRecord
   end
 
   def set_otp
-    generated_otp        = self.class.generate_otp
-    self.otp             = generated_otp[:otp]
+    generated_otp = self.class.generate_otp
+    self.otp = generated_otp[:otp]
     self.otp_valid_until = generated_otp[:otp_valid_until]
   end
 
@@ -37,7 +42,7 @@ class User < ApplicationRecord
 
   def self.generate_otp
     digits = (0..9).to_a
-    otp    = ''
+    otp = ''
     6.times do
       otp += digits.sample.to_s
     end
