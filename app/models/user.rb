@@ -1,7 +1,7 @@
 class User < ApplicationRecord
   include Mergeable
 
-  STATUSES = %w(waiting_for_approval approved declined).freeze
+  STATUSES = %w(waiting_for_approval approved_for_syncing disapproved_for_syncing).freeze
 
   has_secure_password
 
