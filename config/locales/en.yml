@@ -33,7 +33,7 @@ en:
   hello: "Hello world"
   login:
     error_messages:
-      unknown_user: "We don't recognize that user. Please check and try again.We don't recognize that user. Please check and try again."
+      unknown_user: "We don't recognize that user. Please check and try again."
       invalid_otp: 'Your OTP does not match. Try again?'
       expired_otp: 'You need a fresh OTP. Request a new one.'
       invalid_password: 'Your password does not match. Try again?'
