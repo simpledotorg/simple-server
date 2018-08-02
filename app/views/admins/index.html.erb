@@ -7,15 +7,20 @@
     <tr>
       <th>Email</th>
       <th>Role</th>
-      <th colspan="2"></th>
+      <th colspan="3"></th>
     </tr>
   </thead>
 
   <tbody>
-    <% @facilities.each do |admin| %>
+    <% @admins.each do |admin| %>
       <tr>
         <td><%= link_to admin.email, admin %></td>
         <td><%= admin.role.titleize %></td>
+        <td>
+          <% if admin.invited_to_sign_up? %>
+            Invitation sent
+          <% end %>
+        </td>
         <% if policy(admin).edit? %>
           <td><%= link_to 'Edit', edit_admin_path(admin) %></td>
         <% end %>

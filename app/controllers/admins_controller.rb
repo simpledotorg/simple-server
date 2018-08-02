@@ -3,7 +3,7 @@ class AdminsController < AdminController
 
   def index
     authorize Admin
-    @facilities = Admin.all
+    @admins = Admin.all.order(:email)
   end
 
   def show
@@ -14,7 +14,7 @@ class AdminsController < AdminController
 
   def update
     if @admin.update(admin_params)
-      redirect_to [:admin, @admin], notice: 'Admin was successfully updated.'
+      redirect_to @admin, notice: 'Admin was successfully updated.'
     else
       render :edit
     end

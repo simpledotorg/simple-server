@@ -1,16 +1,16 @@
-<h2><%= t 'devise.invitations.edit.header' %></h2>
+<h1><%= t 'devise.invitations.edit.header' %></h1>
 
-<%= form_for resource, :as => resource_name, :url => invitation_path(resource_name), :html => { :method => :put } do |f| %>
-  <%= devise_error_messages! %>
-  <%= f.hidden_field :invitation_token, readonly: true %>
+<div class="row">
+  <div class="col-md-6">
+    <%= bootstrap_form_for(resource, as: resource_name, url: invitation_path(resource_name), html: { method: :put }) do |f| %>
+      <%= f.hidden_field :invitation_token, readonly: true %>
 
-  <% if f.object.class.require_password_on_accepting %>
-  <p><%= f.label :password %><br />
-  <%= f.password_field :password %></p>
+      <% if f.object.class.require_password_on_accepting %>
+        <%= f.password_field :password %>
+        <%= f.password_field :password_confirmation %>
+      <% end %>
 
-  <p><%= f.label :password_confirmation %><br />
-  <%= f.password_field :password_confirmation %></p>
-  <% end %>
-
-  <p><%= f.submit t("devise.invitations.edit.submit_button") %></p>
-<% end %>
+      <%= f.primary t("devise.invitations.edit.submit_button") %>
+    <% end %>
+  </div>
+</div>
