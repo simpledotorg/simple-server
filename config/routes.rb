@@ -17,7 +17,9 @@ Rails.application.routes.draw do
       get 'ping', to: 'pings#show'
       post 'login', to: 'logins#login_user'
 
-      resource :users, only: [:create]
+      resource :users, only: [:create] do
+        get 'find', to: 'users#find'
+      end
 
       scope '/patients' do
         get 'sync', to: 'patients#sync_to_user'
