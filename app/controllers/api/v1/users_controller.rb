@@ -1,7 +1,7 @@
 class Api::V1::UsersController < APIController
   before_action :validate_registration_payload, only: %i[create]
 
-  def create
+  def register
     user = User.create(user_from_request)
     return render json: { errors: user.errors }, status: :bad_request if user.invalid?
     render json: { user: user_to_response(user) }, status: :created

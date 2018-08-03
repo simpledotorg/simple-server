@@ -1,11 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::UsersController, type: :controller do
-  describe '#create' do
+  describe '#register' do
     describe 'registration payload is invalid' do
       let(:request_params) { { user: FactoryBot.attributes_for(:user).slice(:full_name, :phone_number) } }
       it 'responds with 400' do
-        post :create, params: request_params
+        post :register, params: request_params
 
         expect(response.status).to eq(400)
       end
@@ -24,7 +24,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       end
 
       it 'creates a user, and responds with the created user object' do
-        post :create, params: { user: user }
+        post :register, params: { user: user }
 
         created_user = User.find_by(full_name: user[:full_name], phone_number: user[:phone_number])
         expect(response.status).to eq(201)
@@ -41,7 +41,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       end
 
       it 'sets the user status to waiting_for_approval' do
-        post :create, params: { user: user }
+        post :register, params: { user: user }
         created_user = User.find_by(full_name: user[:full_name], phone_number: user[:phone_number])
         expect(created_user.sync_approval_status).to eq('waiting_for_approval')
       end
