@@ -6,11 +6,22 @@ This is the backend for the Simple app to help track hypertensive patients acros
 
 ## Development Setup
 First, you need to install ruby: https://www.ruby-lang.org/en/documentation/installation/
+It is recommended to use rbenv to manage ruby versions: https://github.com/rbenv/rbenv
 ```bash
 gem install bundler
 bundle install
 rake db:create db:setup db:migrate
 ```
+
+To run simple-android app with the server running locally, you can use ngrok https://ngrok.com/
+```bash
+brew cask install ngrok
+rails server
+ngrok http 3000
+```
+The output of the ngrok command will have an url that can be used to access local-server. 
+This url should be set as `qaApiEndpoint` in gradle.properties.
+
 
 ### Testing Email
 
