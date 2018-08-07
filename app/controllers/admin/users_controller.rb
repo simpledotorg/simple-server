@@ -1,23 +1,29 @@
-class Admin::UsersController < ApplicationController
+class Admin::UsersController < AdminController
   before_action :set_facility
   before_action :set_user, except: [:index, :new, :create]
 
   def index
+    authorize @facility
     @users = @facility.users
   end
 
   def show
+    authorize @user
+    @current_admin = current_admin
   end
 
   def new
     @user = @facility.users.new
+    authorize @user
   end
 
   def edit
+    authorize @user
   end
 
   def create
     @user = @facility.users.new(user_params)
+    authorize @user
 
     if @user.save
       SmsNotificationService.new(@user).notify
@@ -28,6 +34,7 @@ class Admin::UsersController < ApplicationController
   end
 
   def update
+    authorize @user
     if @user.update(user_params)
       redirect_to [:admin, @facility], notice: 'User was successfully updated.'
     else
@@ -36,6 +43,7 @@ class Admin::UsersController < ApplicationController
   end
 
   def destroy
+    authorize @user
     @user.destroy
     redirect_to [:admin, @facility], notice: 'User was successfully deleted.'
   end
@@ -48,16 +56,18 @@ class Admin::UsersController < ApplicationController
   end
 
   def disable_access
+    authorize @user
     @user.disable_access
     @user.save
-    redirect_to [:admin, @facility], notice: 'User access has been disabled.'
+    redirect_to [:admin, @facility, @user], notice: 'User access has been disabled.'
   end
 
   def enable_access
+    authorize @user
     @user.enable_access
     @user.save
     SmsNotificationService.new(@user).notify
-    redirect_to [:admin, @facility], notice: 'User access has been enabled.'
+    redirect_to [:admin, @facility, @user], notice: 'User access has been enabled.'
   end
 
   private
