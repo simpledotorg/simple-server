@@ -43,7 +43,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       it 'sets the user status to waiting_for_approval' do
         post :register, params: { user: user_params }
         created_user = User.find_by(full_name: user_params[:full_name], phone_number: user_params[:phone_number])
-        expect(created_user.sync_approval_status).to eq('waiting_for_approval')
+        expect(created_user.sync_approval_status).to eq('waiting')
       end
     end
   end

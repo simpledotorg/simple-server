@@ -1,10 +1,10 @@
 class User < ApplicationRecord
   include Mergeable
 
-  SYNC_STATUSES = {
-    waiting: 'waiting_for_approval',
-    approved: 'approved_for_syncing',
-    disapproved: 'disapproved_for_syncing'
+  enum sync_approval_status: {
+    waiting: 'waiting',
+    approved: 'approved',
+    disapproved: 'disapproved'
   }
 
   has_secure_password
@@ -20,7 +20,6 @@ class User < ApplicationRecord
   validates :full_name, presence: true
   validates :phone_number, presence: true, uniqueness: true
   validates :password, allow_blank: true, length: { is: 4 }, format: { with: /[0-9]/, message: 'only allows numbers' }
-  validates :sync_approval_status, inclusion: SYNC_STATUSES.values
   validate :presence_of_password
 
   def presence_of_password
