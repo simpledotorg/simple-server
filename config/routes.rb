@@ -17,6 +17,11 @@ Rails.application.routes.draw do
       get 'ping', to: 'pings#show'
       post 'login', to: 'logins#login_user'
 
+      scope :users do
+        post 'register', to: 'users#register'
+        get 'find', to: 'users#find'
+      end
+
       scope '/patients' do
         get 'sync', to: 'patients#sync_to_user'
         post 'sync', to: 'patients#sync_from_user'
