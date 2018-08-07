@@ -71,7 +71,7 @@
               OTP valid until: <%= user.otp_valid_until %>
             </li>
             <li>
-              Is access token valid?: <%= user.is_access_token_valid %>
+              Is access token valid?: <%= user.access_token_valid? %>
             </li>
             <li>
               <%= link_to 'Edit', edit_admin_facility_user_path(@facility, user) %> |

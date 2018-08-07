@@ -80,7 +80,7 @@ RSpec.describe Admin::UsersController, type: :controller do
         end
       end
 
-      it 'adds access_token and is_access_token_valid to the user' do
+      it 'adds access_token to the user' do
         post :create, params: { user: valid_attributes, facility_id: facility.id }
 
         user = User.find_by(phone_number: valid_attributes[:phone_number])
@@ -109,7 +109,7 @@ RSpec.describe Admin::UsersController, type: :controller do
         user.reload
         expect(user.attributes.except(
           'id', 'created_at', 'updated_at', 'device_created_at', 'device_updated_at',
-          'password_digest', 'otp', 'otp_valid_until', 'access_token', 'is_access_token_valid', 'logged_in_at'))
+          'password_digest', 'otp', 'otp_valid_until', 'access_token', 'logged_in_at'))
           .to eq new_attributes.with_indifferent_access.except('password', 'password_confirmation')
       end
 
