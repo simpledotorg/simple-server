@@ -5,7 +5,7 @@ namespace :data_migration do
     users = User.where(sync_approval_status: nil).where("created_at <= ?", now)
     puts "Updating approval status for #{users.count} users"
 
-    users.update(sync_approval_status: User::SYNC_STATUSES[:approved])
+    users.update(sync_approval_status: User.sync_approval_statuses[:allowed])
 
     puts "Updated sync approval status to approved for users created before #{now}"
   end
