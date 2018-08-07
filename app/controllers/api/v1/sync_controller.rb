@@ -1,6 +1,5 @@
 class Api::V1::SyncController < APIController
   before_action :check_disabled_api
-  before_action :authenticate
 
   def __sync_from_user__(params)
     errors = params.flat_map do |single_entity_params|

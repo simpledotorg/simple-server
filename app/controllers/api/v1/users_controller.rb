@@ -1,4 +1,5 @@
 class Api::V1::UsersController < APIController
+  skip_before_action :authenticate, only: [:register, :find]
   before_action :validate_registration_payload, only: %i[create]
 
   def register
