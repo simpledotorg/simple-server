@@ -2,10 +2,10 @@ class User < ApplicationRecord
   include Mergeable
 
   enum sync_approval_status: {
-    waiting: 'waiting',
-    approved: 'approved',
-    disapproved: 'disapproved'
-  }
+    requested: 'requested',
+    allowed: 'allowed',
+    denied: 'denied'
+  }, _prefix: true
 
   has_secure_password
 
@@ -36,7 +36,6 @@ class User < ApplicationRecord
 
   def set_access_token
     self.access_token = self.class.generate_access_token
-    self.is_access_token_valid = true
   end
 
   def self.generate_otp
