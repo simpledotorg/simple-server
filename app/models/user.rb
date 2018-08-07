@@ -54,7 +54,7 @@ class User < ApplicationRecord
   end
 
   def access_token_valid?
-    is_access_token_valid
+    self.sync_approval_status_allowed?
   end
 
   def otp_valid?
@@ -77,7 +77,7 @@ class User < ApplicationRecord
   end
 
   def disable_access
-    self.is_access_token_valid = false
+    self.sync_approval_status = :denied
   end
 
   def enable_access

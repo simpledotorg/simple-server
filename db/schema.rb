@@ -156,7 +156,6 @@ ActiveRecord::Schema.define(version: 20180730082447) do
     t.string "otp", null: false
     t.datetime "otp_valid_until", null: false
     t.string "access_token", null: false
-    t.boolean "is_access_token_valid", null: false
     t.datetime "logged_in_at"
     t.string "sync_approval_status"
     t.index ["facility_id"], name: "index_users_on_facility_id"

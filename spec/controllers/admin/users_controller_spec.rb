@@ -85,7 +85,6 @@ RSpec.describe Admin::UsersController, type: :controller do
 
         user = User.find_by(phone_number: valid_attributes[:phone_number])
         expect(user.access_token).to be_present
-        expect(user.is_access_token_valid).to be true
       end
     end
 
