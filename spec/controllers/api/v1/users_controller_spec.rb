@@ -13,7 +13,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
     describe 'registration payload is valid' do
       let(:facility) { FactoryBot.create(:facility) }
-      let(:user) do
+      let(:user_params) do
         FactoryBot.attributes_for(:user)
           .slice(:full_name, :phone_number)
           .merge(id: SecureRandom.uuid,
@@ -24,9 +24,9 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       end
 
       it 'creates a user, and responds with the created user object' do
-        post :register, params: { user: user }
+        post :register, params: { user: user_params }
 
-        created_user = User.find_by(full_name: user[:full_name], phone_number: user[:phone_number])
+        created_user = User.find_by(full_name: user_params[:full_name], phone_number: user_params[:phone_number])
         expect(response.status).to eq(201)
         expect(created_user).to be_present
         expect(JSON(response.body)['user'].with_int_timestamps.except('device_updated_at', 'device_created_at'))
@@ -41,8 +41,8 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       end
 
       it 'sets the user status to waiting_for_approval' do
-        post :register, params: { user: user }
-        created_user = User.find_by(full_name: user[:full_name], phone_number: user[:phone_number])
+        post :register, params: { user: user_params }
+        created_user = User.find_by(full_name: user_params[:full_name], phone_number: user_params[:phone_number])
         expect(created_user.sync_approval_status).to eq('waiting_for_approval')
       end
     end
