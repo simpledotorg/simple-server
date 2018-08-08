@@ -59,8 +59,8 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     it 'lists the users with the given phone number' do
       get :find, params: { phone_number: phone_number }
       expect(response.status).to eq(200)
-      expect(JSON(response.body).with_int_timestamps)
-        .to eq(Api::V1::UserTransformer.to_response(user).with_int_timestamps)
+      expect(JSON(response.body).except('facility_ids').with_int_timestamps)
+        .to eq(Api::V1::UserTransformer.to_response(user).except(:facility_ids).with_int_timestamps)
     end
   end
 end

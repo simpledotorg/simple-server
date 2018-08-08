@@ -8,7 +8,7 @@ RSpec.describe Admin::UsersController, type: :controller do
 
   let(:facility) { FactoryBot.create(:facility) }
   let(:valid_attributes) {
-    FactoryBot.attributes_for(:user, facility_ids: [facility.id])
+    FactoryBot.attributes_for(:user).merge(facility_ids: [facility.id])
   }
 
   let(:invalid_attributes) {
