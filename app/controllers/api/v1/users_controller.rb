@@ -40,7 +40,7 @@ class Api::V1::UsersController < APIController
         :full_name,
         :phone_number,
         :password_digest,
-        :facility_id,
+        :facility_ids,
         :updated_at,
         :created_at)
   end

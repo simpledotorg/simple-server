@@ -2,7 +2,8 @@ require 'rails_helper'
 
 RSpec.describe User, type: :model do
   describe 'Associations' do
-    it { should belong_to(:facility) }
+    it { should have_many(:user_facilities) }
+    it { should have_many(:facilities).through(:user_facilities) }
     it { should have_many(:blood_pressures) }
     it { should have_many(:patients).through(:blood_pressures) }
   end

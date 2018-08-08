@@ -8,11 +8,11 @@ RSpec.describe Admin::UsersController, type: :controller do
 
   let(:facility) { FactoryBot.create(:facility) }
   let(:valid_attributes) {
-    FactoryBot.attributes_for(:user, facility_id: facility.id)
+    FactoryBot.attributes_for(:user, facility_ids: [facility.id])
   }
 
   let(:invalid_attributes) {
-    FactoryBot.attributes_for(:user, facility_id: facility.id).merge(full_name: nil)
+    FactoryBot.attributes_for(:user, facility_ids: [facility.id]).merge(full_name: nil)
   }
 
   # This should return the minimal set of values that should be in the session
@@ -66,7 +66,7 @@ RSpec.describe Admin::UsersController, type: :controller do
 
       it 'redirects to the created user' do
         post :create, params: { user: valid_attributes, facility_id: facility.id }
-        expect(response).to redirect_to([:admin, User.order(:created_at).last.facility])
+         expect(response).to redirect_to([:admin, User.order(:created_at).last.facility])
       end
 
       it 'adds otp and otp_valid_until to the user' do
@@ -147,14 +147,14 @@ RSpec.describe Admin::UsersController, type: :controller do
   describe 'PUT #disable_access' do
     it 'disables the access token for the user' do
       user = User.create! valid_attributes
-      put :disable_access, params: { user_id: user.id, facility_id: user.facility.id }
+      put :disable_access, params: { user_id: user.id, facility_id: user.facilities.first.id }
       user.reload
       expect(user.access_token_valid?).to be false
     end
   end
 
   describe 'PUT #enable_access' do
-    let(:user) { FactoryBot.create(:user, facility: facility) }
+    let(:user) { FactoryBot.create(:user, facility_ids: [facility.id]) }
 
     before :each do
       sms_notification_service = double(SmsNotificationService.new(user))

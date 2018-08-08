@@ -1,7 +1,8 @@
 class Facility < ApplicationRecord
   include Mergeable
 
-  has_many :users
+  has_many :user_facilities
+  has_many :users, through: :user_facilities
   has_many :blood_pressures
   has_many :patients, through: :blood_pressures
   has_many :prescription_drugs
