@@ -150,6 +150,7 @@ ActiveRecord::Schema.define(version: 20180807101604) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["facility_id"], name: "index_user_facilities_on_facility_id"
+    t.index ["user_id", "facility_id"], name: "index_user_facilities_on_user_id_and_facility_id", unique: true
     t.index ["user_id"], name: "index_user_facilities_on_user_id"
   end
 
