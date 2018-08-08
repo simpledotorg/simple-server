@@ -4,7 +4,7 @@ class Api::V1::SyncController < APIController
   def __sync_from_user__(params)
     errors = params.flat_map do |single_entity_params|
       res = merge_if_valid(single_entity_params)
-      AuditLog.merge_log(current_user, res[:record]) if res[:record].present?
+      AuditLog.merge_log(current_user, res[:record]) if current_user.present? && res[:record].present?
       res[:errors_hash] || []
     end
 
@@ -15,7 +15,7 @@ class Api::V1::SyncController < APIController
 
   def __sync_to_user__(response_key)
     records_to_sync = find_records_to_sync(processed_since, limit)
-    records_to_sync.each { |record| AuditLog.fetch_log(current_user, record) }
+    records_to_sync.each { |record| AuditLog.fetch_log(current_user, record) } if current_user.present?
     render(
       json:   {
         response_key      => records_to_sync.map { |record| transform_to_response(record) },
