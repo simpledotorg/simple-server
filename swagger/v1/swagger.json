@@ -516,6 +516,132 @@
           }
         }
       }
+    },
+    "/users/find": {
+      "get": {
+        "summary": "Find a existing user",
+        "tags": [
+          "user"
+        ],
+        "parameters": [
+          {
+            "name": "phone_number",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user is found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "$ref": "#/definitions/uuid"
+                },
+                "created_at": {
+                  "$ref": "#/definitions/timestamp"
+                },
+                "updated_at": {
+                  "$ref": "#/definitions/timestamp"
+                },
+                "full_name": {
+                  "$ref": "#/definitions/non_empty_string"
+                },
+                "phone_number": {
+                  "$ref": "#/definitions/non_empty_string"
+                },
+                "password_digest": {
+                  "$ref": "#/definitions/bcrypt_password"
+                },
+                "facility_id": {
+                  "$ref": "#/definitions/uuid"
+                }
+              },
+              "required": [
+                "id",
+                "created_at",
+                "updated_at",
+                "full_name",
+                "phone_number",
+                "password_digest",
+                "facility_id"
+              ]
+            }
+          },
+          "404": {
+            "description": "user is found"
+          }
+        }
+      }
+    },
+    "/users/register": {
+      "post": {
+        "summary": "Register a new user",
+        "tags": [
+          "user"
+        ],
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "type": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "$ref": "#/definitions/uuid"
+                },
+                "created_at": {
+                  "$ref": "#/definitions/timestamp"
+                },
+                "updated_at": {
+                  "$ref": "#/definitions/timestamp"
+                },
+                "full_name": {
+                  "$ref": "#/definitions/non_empty_string"
+                },
+                "phone_number": {
+                  "$ref": "#/definitions/non_empty_string"
+                },
+                "password_digest": {
+                  "$ref": "#/definitions/bcrypt_password"
+                },
+                "facility_id": {
+                  "$ref": "#/definitions/uuid"
+                }
+              },
+              "required": [
+                "id",
+                "created_at",
+                "updated_at",
+                "full_name",
+                "phone_number",
+                "password_digest",
+                "facility_id"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "user is registered",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user": {
+                  "$ref": "#/definitions/user"
+                }
+              },
+              "required": [
+                "user"
+              ]
+            }
+          },
+          "400": {
+            "description": "returns bad request if phone number already exists"
+          }
+        }
+      }
     }
   },
   "definitions": {
