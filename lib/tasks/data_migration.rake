@@ -9,4 +9,16 @@ namespace :data_migration do
 
     puts "Updated sync approval status to approved for users created before #{now}"
   end
+
+  desc "Populate user facilities table from users table"
+  task create_user_facility_records_for_users: :environment do
+    ActiveRecord::Base.transaction do
+      users = User.all
+      puts "Creating UserFacility records fors #{users.count} users"
+      users.each do |user|
+        UserFacility.create(user_id: user.id, facility_id: user.facility.id)
+      end
+      puts "Created UserFacility records fors #{users.count} users"
+    end
+  end
 end
