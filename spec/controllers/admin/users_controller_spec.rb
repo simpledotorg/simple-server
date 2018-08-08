@@ -66,7 +66,7 @@ RSpec.describe Admin::UsersController, type: :controller do
 
       it 'redirects to the created user' do
         post :create, params: { user: valid_attributes, facility_id: facility.id }
-         expect(response).to redirect_to([:admin, User.order(:created_at).last.facility])
+         expect(response).to redirect_to([:admin, User.order(:created_at).last])
       end
 
       it 'adds otp and otp_valid_until to the user' do
@@ -99,7 +99,7 @@ RSpec.describe Admin::UsersController, type: :controller do
   describe 'PUT #update' do
     context 'with valid params' do
       let(:new_attributes) {
-        FactoryBot.attributes_for(:user, facility_id: facility.id)
+        FactoryBot.attributes_for(:user)
           .except(:device_created_at, :device_updated_at, :otp, :otp_valid_until)
       }
 
@@ -116,7 +116,7 @@ RSpec.describe Admin::UsersController, type: :controller do
       it 'redirects to the user' do
         user = User.create! valid_attributes
         put :update, params: { id: user.to_param, user: valid_attributes, facility_id: facility.id }
-        expect(response).to redirect_to([:admin, facility])
+        expect(response).to redirect_to([:admin, user])
       end
     end
 
@@ -140,7 +140,7 @@ RSpec.describe Admin::UsersController, type: :controller do
     it 'redirects to the users list' do
       user = User.create! valid_attributes
       delete :destroy, params: { id: user.to_param, facility_id: facility.id }
-      expect(response).to redirect_to([:admin, facility])
+      expect(response).to redirect_to([:admin, :users])
     end
   end
 
