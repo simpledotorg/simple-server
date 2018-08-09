@@ -7,6 +7,7 @@ FactoryBot.define do
     association :facility, strategy: :build
     device_updated_at { Time.now }
     device_created_at { Time.now }
+    sync_approval_status { User.sync_approval_statuses[:allowed] }
 
     trait :created_on_device do
       id { SecureRandom.uuid }
@@ -14,6 +15,10 @@ FactoryBot.define do
       password_digest { BCrypt::Password.create(password) }
       password nil
       password_confirmation nil
+    end
+
+    trait :requested_sync_approval do
+      sync_approval_status { User.sync_approval_statuses[:requested] }
     end
 
     factory :user_created_on_device, traits: [:created_on_device]

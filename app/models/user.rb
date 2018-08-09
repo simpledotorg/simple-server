@@ -1,6 +1,12 @@
 class User < ApplicationRecord
   include Mergeable
 
+  enum sync_approval_status: {
+    requested: 'requested',
+    allowed: 'allowed',
+    denied: 'denied'
+  }, _prefix: true
+
   has_secure_password
 
   belongs_to :facility
@@ -12,7 +18,7 @@ class User < ApplicationRecord
   before_create :set_access_token
 
   validates :full_name, presence: true
-  validates :phone_number, presence: true
+  validates :phone_number, presence: true, uniqueness: true
   validates :password, allow_blank: true, length: { is: 4 }, format: { with: /[0-9]/, message: 'only allows numbers' }
   validate :presence_of_password
 
@@ -23,19 +29,18 @@ class User < ApplicationRecord
   end
 
   def set_otp
-    generated_otp        = self.class.generate_otp
-    self.otp             = generated_otp[:otp]
+    generated_otp = self.class.generate_otp
+    self.otp = generated_otp[:otp]
     self.otp_valid_until = generated_otp[:otp_valid_until]
   end
 
   def set_access_token
     self.access_token = self.class.generate_access_token
-    self.is_access_token_valid = true
   end
 
   def self.generate_otp
     digits = (0..9).to_a
-    otp    = ''
+    otp = ''
     6.times do
       otp += digits.sample.to_s
     end
@@ -49,7 +54,7 @@ class User < ApplicationRecord
   end
 
   def access_token_valid?
-    is_access_token_valid
+    self.sync_approval_status_allowed?
   end
 
   def otp_valid?
@@ -72,7 +77,7 @@ class User < ApplicationRecord
   end
 
   def disable_access
-    self.is_access_token_valid = false
+    self.sync_approval_status = :denied
   end
 
   def enable_access
