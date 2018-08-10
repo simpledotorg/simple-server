@@ -50,7 +50,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         approval_email = ActionMailer::Base.deliveries.last
         expect(ENV['SUPERVISOR_EMAILS']).to match(/#{Regexp.quote(approval_email.to.first)}/)
         expect(ENV['OWNER_EMAILS']).to match(/#{Regexp.quote(approval_email.cc.first)}/)
-        expect(approval_email.body.to_s).to match(user_params[:full_name])
+        expect(approval_email.body.to_s).to match(user_params[:phone_number])
       end
     end
   end
