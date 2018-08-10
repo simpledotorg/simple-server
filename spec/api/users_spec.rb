@@ -8,7 +8,7 @@ describe 'Users API' do
 
       let(:known_phone_number) { Faker::PhoneNumber.phone_number }
       let(:facility) { FactoryBot.create(:facility) }
-      let!(:user) { FactoryBot.create(:user, phone_number: known_phone_number, facility_id: facility.id) }
+      let!(:user) { FactoryBot.create(:user, phone_number: known_phone_number, facility_ids: [facility.id]) }
 
       response '200', 'user is found' do
         schema '$ref' => '#/definitions/user'
@@ -34,7 +34,7 @@ describe 'Users API' do
       response '201', 'user is registered' do
         schema Api::V1::Schema.user_registration_response
         let(:user) do
-          FactoryBot.attributes_for(:user, :created_on_device, facility_id: facility.id)
+          FactoryBot.attributes_for(:user, :created_on_device, facility_ids: [facility.id])
             .merge(created_at: Time.now, updated_at: Time.now)
         end
 
@@ -43,7 +43,7 @@ describe 'Users API' do
 
       response '400', 'returns bad request for invalid params' do
         let(:user) do
-          FactoryBot.attributes_for(:user, :created_on_device, facility_id: facility.id)
+          FactoryBot.attributes_for(:user, :created_on_device, facility_ids: [facility.id])
             .merge(created_at: Time.now, updated_at: Time.now, full_name: nil)
         end
         run_test!

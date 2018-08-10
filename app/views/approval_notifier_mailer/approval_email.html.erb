@@ -17,9 +17,11 @@
 </p>
 
 <p>
-  <strong><%=t('facility') %>:</strong>
-  <%= @user.facility.name %>
+  <strong><%= t('facilities') %>:</strong>
+  <% @user.facilities.each do |facility| %>
+    <%= facility.name %>
+  <% end %>
 </p>
-<%= link_to t('approval_email.allow_or_deny_access'), admin_facility_user_url(@user.facility, @user) %>
+<%= link_to t('approval_email.allow_or_deny_access'), admin_user_url(@user) %>
 </body>
 </html>

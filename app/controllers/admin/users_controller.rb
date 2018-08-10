@@ -42,6 +42,7 @@ class Admin::UsersController < ApplicationController
 
   def destroy
     authorize @user
+    UserFacility.delete(@user.user_facilities )
     @user.destroy
     redirect_to [:admin, :users], notice: 'User was successfully deleted.'
   end

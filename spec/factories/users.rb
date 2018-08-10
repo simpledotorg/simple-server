@@ -10,7 +10,6 @@ FactoryBot.define do
 
     trait :created_on_device do
       id { SecureRandom.uuid }
-      facility
       password_digest { BCrypt::Password.create(password) }
       password nil
       password_confirmation nil
