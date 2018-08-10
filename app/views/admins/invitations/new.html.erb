@@ -7,7 +7,6 @@
         <%= f.text_field field %></p>
         <%= f.select(:role, Admin.roles.keys.map { |role| [role.titleize, role]} ) %>
       <% end -%>
-
       <%= f.primary t("devise.invitations.new.submit_button") %>
     <% end %>
   </div>

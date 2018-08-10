@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
+</head>
+<body>
+<h3><%=  %></h3>
+
+<p class=<%= @user.access_token_valid? ? 'active' : 'inactive' %>>
+  <strong><%= t('name') %>:</strong>
+  <%= @user.full_name %>
+</p>
+
+<p>
+  <strong><%= t('phone_number') %>:</strong>
+  <a href="tel:<%= @user.phone_number %>"><%= @user.phone_number %></a>
+</p>
+
+<p>
+  <strong><%=t('facility') %>:</strong>
+  <%= @user.facility.name %>
+</p>
+<%= link_to t('approval_email.allow_or_deny_access'), admin_facility_user_url(@user.facility, @user) %>
+</body>
+</html>
