@@ -81,7 +81,8 @@ class Admin::UsersController < ApplicationController
       :phone_number,
       :password,
       :password_confirmation,
-      :sync_approval_status
+      :sync_approval_status,
+      facility_ids: []
     )
   end
 end
