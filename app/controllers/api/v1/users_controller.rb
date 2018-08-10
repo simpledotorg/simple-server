@@ -1,6 +1,6 @@
 class Api::V1::UsersController < APIController
   skip_before_action :authenticate, only: [:register, :find]
-  before_action :validate_registration_payload, only: %i[create]
+  before_action :validate_registration_payload, only: %i[register]
 
   def register
     user = User.create(user_from_request)
@@ -41,9 +41,9 @@ class Api::V1::UsersController < APIController
         :full_name,
         :phone_number,
         :password_digest,
-        :facility_ids,
         :updated_at,
-        :created_at)
+        :created_at,
+        facility_ids: [])
   end
 
   def find_params

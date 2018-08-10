@@ -170,9 +170,7 @@ module Api::V1::Schema::Models
         full_name: { '$ref' => '#/definitions/non_empty_string' },
         phone_number: { '$ref' => '#/definitions/non_empty_string' },
         password_digest: { '$ref' => '#/definitions/bcrypt_password' },
-        facility_ids: {
-          type: :array,
-          items: { '$ref' => '#/definitions/uuid' } }
+        facility_ids: array_of(:uuid)
       },
       required: %w[id created_at updated_at full_name phone_number password_digest facility_ids] }
   end
