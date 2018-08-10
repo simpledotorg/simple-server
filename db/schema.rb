@@ -187,4 +187,6 @@ ActiveRecord::Schema.define(version: 20180807101604) do
   add_foreign_key "patient_phone_numbers", "patients"
   add_foreign_key "patients", "addresses"
   add_foreign_key "protocol_drugs", "protocols"
+  add_foreign_key "user_facilities", "facilities"
+  add_foreign_key "user_facilities", "users"
 end
