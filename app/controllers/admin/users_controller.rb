@@ -2,11 +2,11 @@ class Admin::UsersController < ApplicationController
   before_action :set_user, except: [:index, :new, :create]
 
   def index
+    authorize User
     @users = User.all
   end
 
   def show
-    authorize @user
     @current_admin = current_admin
   end
 
@@ -16,7 +16,6 @@ class Admin::UsersController < ApplicationController
   end
 
   def edit
-    authorize @user
   end
 
   def create
@@ -32,7 +31,6 @@ class Admin::UsersController < ApplicationController
   end
 
   def update
-    authorize @user
     if @user.update(user_params)
       redirect_to [:admin, @user], notice: 'User was successfully updated.'
     else
@@ -41,7 +39,6 @@ class Admin::UsersController < ApplicationController
   end
 
   def destroy
-    authorize @user
     UserFacility.delete(@user.user_facilities )
     @user.destroy
     redirect_to [:admin, :users], notice: 'User was successfully deleted.'
@@ -73,6 +70,7 @@ class Admin::UsersController < ApplicationController
 
   def set_user
     @user = User.find(params[:id] || params[:user_id])
+    authorize @user
   end
 
   def user_params
