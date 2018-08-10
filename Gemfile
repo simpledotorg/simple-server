@@ -19,6 +19,7 @@ gem 'rspec-rails', '~> 3.7'
 gem 'newrelic_rpm'
 gem 'bcrypt', '~> 3.1', '>= 3.1.11'
 gem 'devise', '~> 4.4.3'
+gem 'devise_invitable', '~> 1.7.0'
 gem 'twilio-ruby', '~> 5.10', '>= 5.10.3'
 gem 'pundit'
 gem 'bootstrap', '~> 4.1.1'
@@ -46,7 +47,7 @@ end
 group :test do
   gem 'capybara'
   gem 'simplecov', require: false
-
+  gem 'launchy'
 end
 
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]

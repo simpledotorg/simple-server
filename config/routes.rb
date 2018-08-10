@@ -48,6 +48,7 @@ Rails.application.routes.draw do
   end
 
   devise_for :admins
+  resources :admins
 
   namespace :admin do
     resources :facilities do

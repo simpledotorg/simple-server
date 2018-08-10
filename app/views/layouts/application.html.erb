@@ -33,6 +33,11 @@
               <li class="nav-item">
                 <%= link_to "Protocols", admin_protocols_path, class: "nav-link #{active_controller?("admin/protocols")}" %>
               </li>
+              <% if policy(Admin).index? %>
+                <li class="nav-item">
+                  <%= link_to "Admins", admins_path, class: "nav-link #{active_controller?("admins")}" %>
+                </li>
+              <% end %>
             </ul>
 
             <ul class="navbar-nav ml-auto">
