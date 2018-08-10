@@ -26,7 +26,7 @@ describe 'Users API' do
   path '/users/register' do
     post 'Register a new user' do
       tags 'User'
-      parameter name: :user, in: :body, '$ref' => '#/definitions/user'
+      parameter name: :user, in: :body, schema: Api::V1::Schema.user_registration_request
 
       let!(:facility) { FactoryBot.create(:facility) }
       let(:phone_number) { Faker::PhoneNumber.phone_number }

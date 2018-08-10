@@ -44,6 +44,14 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         created_user = User.find_by(full_name: user_params[:full_name], phone_number: user_params[:phone_number])
         expect(created_user.sync_approval_status).to eq(User.sync_approval_statuses[:requested])
       end
+
+      it 'sends an email to a list of owners and supervisors' do
+        post :register, params: { user: user_params }
+        approval_email = ActionMailer::Base.deliveries.last
+        expect(ENV['SUPERVISOR_EMAILS']).to match(/#{Regexp.quote(approval_email.to.first)}/)
+        expect(ENV['OWNER_EMAILS']).to match(/#{Regexp.quote(approval_email.cc.first)}/)
+        expect(approval_email.body.to_s).to match(user_params[:phone_number])
+      end
     end
   end
 

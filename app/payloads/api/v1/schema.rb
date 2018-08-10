@@ -101,6 +101,13 @@ module Api::V1::Schema
       required:   %i[user] }
   end
 
+  def self.user_registration_request
+    { type:       :object,
+      properties: {
+        user:         { '$ref' => '#/definitions/user' } },
+      required:   %i[user] }
+  end
+
   def self.definitions
     { error:           error,
       errors:          Models.array_of('error'),

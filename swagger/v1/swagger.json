@@ -553,7 +553,17 @@
           {
             "name": "user",
             "in": "body",
-            "$ref": "#/definitions/user"
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user": {
+                  "$ref": "#/definitions/user"
+                }
+              },
+              "required": [
+                "user"
+              ]
+            }
           }
         ],
         "responses": {
