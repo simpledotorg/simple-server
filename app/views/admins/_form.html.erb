@@ -1,0 +1,10 @@
+<div class="row">
+  <div class="col-md-6">
+    <%= bootstrap_form_with(model: admin, local: true, autocomplete: "off", label_errors: true) do |form| %>
+      <%= form.text_field :email, id: :admin_email, required: true, autocomplete: "off" %>
+      <%= form.select(:role, Admin.roles.keys.map { |role| [role.titleize, role]} ) %>
+
+      <%= form.primary %>
+    <% end %>
+  </div>
+</div>
