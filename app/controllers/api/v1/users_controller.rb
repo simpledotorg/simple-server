@@ -5,6 +5,7 @@ class Api::V1::UsersController < APIController
   def register
     user = User.create(user_from_request)
     return render json: { errors: user.errors }, status: :bad_request if user.invalid?
+    ApprovalNotifierMailer.with(user: user).approval_email.deliver_later
     render json: { user: user_to_response(user) }, status: :created
   end
 

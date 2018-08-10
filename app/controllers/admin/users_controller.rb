@@ -6,17 +6,22 @@ class Admin::UsersController < ApplicationController
   end
 
   def show
+    authorize @user
+    @current_admin = current_admin
   end
 
   def new
     @user = User.new
+    authorize @user
   end
 
   def edit
+    authorize @user
   end
 
   def create
     @user = User.new(user_params)
+    authorize @user
 
     if @user.save
       SmsNotificationService.new(@user).notify
@@ -27,6 +32,7 @@ class Admin::UsersController < ApplicationController
   end
 
   def update
+    authorize @user
     if @user.update(user_params)
       redirect_to [:admin, @user], notice: 'User was successfully updated.'
     else
@@ -35,6 +41,7 @@ class Admin::UsersController < ApplicationController
   end
 
   def destroy
+    authorize @user
     @user.destroy
     redirect_to [:admin, :users], notice: 'User was successfully deleted.'
   end
@@ -47,12 +54,14 @@ class Admin::UsersController < ApplicationController
   end
 
   def disable_access
+    authorize @user
     @user.disable_access
     @user.save
     redirect_to [:admin, @user], notice: 'User access has been disabled.'
   end
 
   def enable_access
+    authorize @user
     @user.enable_access
     @user.save
     SmsNotificationService.new(@user).notify

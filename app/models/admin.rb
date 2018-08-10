@@ -1,6 +1,6 @@
 class Admin < ApplicationRecord
-  devise :database_authenticatable, :lockable, :recoverable, :rememberable,
-         :timeoutable, :trackable, :validatable
+  devise :database_authenticatable, :invitable, :lockable, :recoverable,
+         :rememberable, :timeoutable, :trackable, :validatable
 
   enum role: [
     :owner,

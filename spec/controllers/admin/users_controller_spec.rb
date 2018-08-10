@@ -1,5 +1,11 @@
 require 'rails_helper'
 
+def login_user
+  @request.env["devise.mapping"] = Devise.mappings[:admin]
+  admin = FactoryBot.create(:admin)
+  sign_in admin
+end
+
 RSpec.describe Admin::UsersController, type: :controller do
 
   # This should return the minimal set of attributes required to create a valid
@@ -14,6 +20,9 @@ RSpec.describe Admin::UsersController, type: :controller do
   let(:invalid_attributes) {
     FactoryBot.attributes_for(:user, facility_ids: [facility.id]).merge(full_name: nil)
   }
+  before(:each) do
+    login_user
+  end
 
   # This should return the minimal set of values that should be in the session
   # in order to pass any filters (e.g. authentication) defined in
@@ -182,6 +191,12 @@ RSpec.describe Admin::UsersController, type: :controller do
       put :enable_access, params: { user_id: user.id, facility_id: facility.id }
       user.reload
       expect(user.logged_in_at).to be nil
+      end
+
+    it 'sets sync_approval_status to allowed' do
+      put :enable_access, params: { user_id: user.id, facility_id: facility.id }
+      user.reload
+      expect(user.sync_approval_status_allowed?).to be true
     end
   end
 end

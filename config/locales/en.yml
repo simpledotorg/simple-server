@@ -30,7 +30,9 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  name: "Name"
+  phone_number: "Phone Number"
+  facility: "Facility"
   login:
     error_messages:
       unknown_user: "We don't recognize that user. Please check and try again."
@@ -40,6 +42,10 @@ en:
   sms:
     country_code: '+91'
     notification: 'You are now registered as a user for the Simple app. Please login using this link: https://simple.org/register?otp=%{otp}'
+  approval_email:
+    subject: 'User %{full_name} is requesting access'
+    allow_or_deny_access: "Allow or deny access"
+
   admin:
     reset_otp_alert: 'Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP'
     disable_access_alert: 'Are you sure you want to disable the access for user?'
