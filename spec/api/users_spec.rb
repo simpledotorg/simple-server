@@ -3,7 +3,7 @@ require 'swagger_helper'
 describe 'Users API' do
   path '/users/find' do
     get 'Find a existing user' do
-      tags 'user'
+      tags 'User'
       parameter name: :phone_number, in: :query, type: :string
 
       let(:known_phone_number) { Faker::PhoneNumber.phone_number }
@@ -11,7 +11,7 @@ describe 'Users API' do
       let!(:user) { FactoryBot.create(:user, phone_number: known_phone_number, facility_id: facility.id) }
 
       response '200', 'user is found' do
-        schema Api::V1::Schema::Models.user
+        schema '$ref' => '#/definitions/user'
         let(:phone_number) { known_phone_number }
         run_test!
       end
@@ -25,8 +25,8 @@ describe 'Users API' do
 
   path '/users/register' do
     post 'Register a new user' do
-      tags 'user'
-      parameter name: :user, in: :body, type: Api::V1::Schema::Models.user
+      tags 'User'
+      parameter name: :user, in: :body, '$ref' => '#/definitions/user'
 
       let!(:facility) { FactoryBot.create(:facility) }
       let(:phone_number) { Faker::PhoneNumber.phone_number }
