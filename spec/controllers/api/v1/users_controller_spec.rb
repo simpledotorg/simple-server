@@ -34,7 +34,6 @@ RSpec.describe Api::V1::UsersController, type: :controller do
             'device_updated_at',
             'device_created_at',
             'access_token',
-            'is_access_token_valid',
             'logged_in_at',
             'otp',
             'otp_valid_until'))
