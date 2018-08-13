@@ -69,6 +69,20 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       expect(response.status).to eq(200)
       expect(JSON(response.body).except('facility_ids').with_int_timestamps)
         .to eq(Api::V1::UserTransformer.to_response(user).except(:facility_ids).with_int_timestamps)
+      expect(JSON(response.body)['facility_ids']).to match_array(user.facility_ids)
+    end
+
+    it 'lists the users with the given id' do
+      get :find, params: { id: user.id }
+      expect(response.status).to eq(200)
+      expect(JSON(response.body).except('facility_ids').with_int_timestamps)
+        .to eq(Api::V1::UserTransformer.to_response(user).except(:facility_ids).with_int_timestamps)
+      expect(JSON(response.body)['facility_ids']).to match_array(user.facility_ids)
+    end
+
+    it 'returns 404 when user is not found' do
+      get :find, params: { phone_number: Faker::PhoneNumber.phone_number }
+      expect(response.status).to eq(404)
     end
   end
 end

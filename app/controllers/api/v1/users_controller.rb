@@ -10,6 +10,7 @@ class Api::V1::UsersController < APIController
   end
 
   def find
+    return head :bad_request unless find_params.present?
     user = User.find_by(find_params)
     return head :not_found unless user.present?
     render json: user_to_response(user), status: 200
@@ -47,6 +48,6 @@ class Api::V1::UsersController < APIController
   end
 
   def find_params
-    params.permit(:phone_number)
+    params.permit(:id, :phone_number)
   end
 end

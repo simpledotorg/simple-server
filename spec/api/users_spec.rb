@@ -5,14 +5,17 @@ describe 'Users API' do
     get 'Find a existing user' do
       tags 'User'
       parameter name: :phone_number, in: :query, type: :string
+      parameter name: :id, in: :query, type: :string, description: 'User UUID'
 
       let(:known_phone_number) { Faker::PhoneNumber.phone_number }
       let(:facility) { FactoryBot.create(:facility) }
       let!(:user) { FactoryBot.create(:user, phone_number: known_phone_number, facility_ids: [facility.id]) }
+      let(:id) { user.id }
 
       response '200', 'user is found' do
         schema '$ref' => '#/definitions/user'
         let(:phone_number) { known_phone_number }
+        let(:id) { user.id }
         run_test!
       end
 
