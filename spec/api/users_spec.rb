@@ -34,7 +34,7 @@ describe 'Users API' do
       let!(:facility) { FactoryBot.create(:facility) }
       let(:phone_number) { Faker::PhoneNumber.phone_number }
 
-      response '201', 'user is registered' do
+      response '200', 'user is registered' do
         let(:user) do
           { user: FactoryBot.attributes_for(:user_created_on_device, facility_ids: [facility.id])
                     .merge(created_at: Time.now, updated_at: Time.now) }
