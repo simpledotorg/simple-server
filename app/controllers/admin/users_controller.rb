@@ -51,14 +51,12 @@ class Admin::UsersController < ApplicationController
   end
 
   def disable_access
-    authorize @user
     @user.disable_access
     @user.save
     redirect_to [:admin, @user], notice: 'User access has been disabled.'
   end
 
   def enable_access
-    authorize @user
     @user.enable_access
     @user.save
     SmsNotificationService.new(@user).notify
