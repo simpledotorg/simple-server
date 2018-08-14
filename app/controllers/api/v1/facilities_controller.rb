@@ -1,4 +1,6 @@
 class Api::V1::FacilitiesController < Api::V1::SyncController
+  skip_before_action :authenticate, only: [:sync_to_user]
+
   def sync_to_user
     __sync_to_user__('facilities')
   end

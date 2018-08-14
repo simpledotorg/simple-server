@@ -1,5 +1,40 @@
 <p id="notice"><%= notice %></p>
 
 <h1>Users</h1>
-<h3>Users are listed under their facilities</h3>
-<%= link_to 'List facilites', admin_facilities_path %>
+
+<table class="table">
+  <thead class="thead-light">
+  <tr>
+    <th>Name</th>
+    <th>Facilities</th>
+    <th>Sync Approval Status</th>
+    <th colspan="2"></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @users.each do |user| %>
+    <tr>
+      <td><%= link_to user.full_name, [:admin, user] %></td>
+      <td>
+        <ul class="list-unstyled">
+          <% user.facilities.each do |facility| %>
+            <li><%= link_to facility.name, [:admin, facility] %></li>
+          <% end %>
+        </ul>
+      </td>
+      <td><%= user.sync_approval_status %></td>
+      <% if policy(user).edit? %>
+        <td><%= link_to 'Edit', edit_admin_user_path(user) %></td>
+      <% end %>
+      <% if policy(user).destroy? %>
+        <td><%= link_to 'Delete', [:admin, user], method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      <% end %>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<% if policy(User).new? %>
+  <%= link_to 'New User', new_admin_user_path, class: "btn btn-sm btn-primary" %>
+<% end %>

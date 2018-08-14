@@ -1,14 +1,16 @@
 class Api::V1::UsersController < APIController
-  before_action :validate_registration_payload, only: %i[create]
+  skip_before_action :authenticate, only: [:register, :find]
+  before_action :validate_registration_payload, only: %i[register]
 
   def register
     user = User.create(user_from_request)
     return render json: { errors: user.errors }, status: :bad_request if user.invalid?
     ApprovalNotifierMailer.with(user: user).approval_email.deliver_later
-    render json: { user: user_to_response(user) }, status: :created
+    render json: { user: user_to_response(user) }, status: :ok
   end
 
   def find
+    return head :bad_request unless find_params.present?
     user = User.find_by(find_params)
     return head :not_found unless user.present?
     render json: user_to_response(user), status: 200
@@ -40,12 +42,12 @@ class Api::V1::UsersController < APIController
         :full_name,
         :phone_number,
         :password_digest,
-        :facility_id,
         :updated_at,
-        :created_at)
+        :created_at,
+        facility_ids: [])
   end
 
   def find_params
-    params.permit(:phone_number)
+    params.permit(:id, :phone_number)
   end
 end

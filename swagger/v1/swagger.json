@@ -528,6 +528,12 @@
             "name": "phone_number",
             "in": "query",
             "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string",
+            "description": "User UUID"
           }
         ],
         "responses": {
@@ -554,15 +560,7 @@
             "name": "user",
             "in": "body",
             "schema": {
-              "type": "object",
-              "properties": {
-                "user": {
-                  "$ref": "#/definitions/user"
-                }
-              },
-              "required": [
-                "user"
-              ]
+              "$ref": "#/definitions/user"
             }
           }
         ],
@@ -583,6 +581,9 @@
           },
           "400": {
             "description": "returns bad request if phone number already exists"
+          },
+          "404": {
+            "description": "returns not found if any of the facility ids are not known"
           }
         }
       }
@@ -1127,8 +1128,14 @@
         "password_digest": {
           "$ref": "#/definitions/bcrypt_password"
         },
-        "facility_id": {
-          "$ref": "#/definitions/uuid"
+        "facility_ids": {
+          "type": [
+            "null",
+            "array"
+          ],
+          "items": {
+            "$ref": "#/definitions/uuid"
+          }
         }
       },
       "required": [
@@ -1138,7 +1145,7 @@
         "full_name",
         "phone_number",
         "password_digest",
-        "facility_id"
+        "facility_ids"
       ]
     },
     "users": {

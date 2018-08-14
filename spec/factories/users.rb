@@ -4,14 +4,12 @@ FactoryBot.define do
     phone_number { Faker::PhoneNumber.phone_number }
     password { rand(1000..9999).to_s }
     password_confirmation { password }
-    association :facility, strategy: :build
     device_updated_at { Time.now }
     device_created_at { Time.now }
     sync_approval_status { User.sync_approval_statuses[:allowed] }
 
     trait :created_on_device do
       id { SecureRandom.uuid }
-      facility
       password_digest { BCrypt::Password.create(password) }
       password nil
       password_confirmation nil
