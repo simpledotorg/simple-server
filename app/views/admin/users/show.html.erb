@@ -2,7 +2,7 @@
 
 <p>
   <strong>Name:</strong>
-  <span class=<%= @user.access_token_valid? ? 'active' : 'inactive' %>><%= @user.full_name %></span>
+  <%= @user.full_name %>
 </p>
 
 <p>
@@ -15,6 +15,11 @@
   <% @user.facilities.each do |facility| %>
     - <%= link_to facility.name, [:admin, facility] %><br/>
   <% end %>
+</p>
+
+<p>
+  <strong>Sync Approval Status:</strong>
+  <%= @user.sync_approval_status %>
 </p>
 
 <p>
