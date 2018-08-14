@@ -27,12 +27,16 @@
         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
           <% if admin_signed_in? %>
             <ul class="navbar-nav mr-auto">
-              <li class="nav-item">
-                <%= link_to "Facilities", admin_facilities_path, class: "nav-link #{active_controller?("admin/facilities")}" %>
-              </li>
-              <li class="nav-item">
-                <%= link_to "Protocols", admin_protocols_path, class: "nav-link #{active_controller?("admin/protocols")}" %>
-              </li>
+              <% if policy(Facility).index? %>
+                <li class="nav-item">
+                  <%= link_to "Facilities", admin_facilities_path, class: "nav-link #{active_controller?("admin/facilities")}" %>
+                </li>
+              <% end %>
+              <% if policy(Protocol).index? %>
+                <li class="nav-item">
+                  <%= link_to "Protocols", admin_protocols_path, class: "nav-link #{active_controller?("admin/protocols")}" %>
+                </li>
+              <% end %>
               <% if policy(Admin).index? %>
                 <li class="nav-item">
                   <%= link_to "Admins", admins_path, class: "nav-link #{active_controller?("admins")}" %>
