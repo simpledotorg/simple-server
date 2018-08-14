@@ -42,6 +42,11 @@
                   <%= link_to "Admins", admins_path, class: "nav-link #{active_controller?("admins")}" %>
                 </li>
               <% end %>
+              <% if policy(User).index? %>
+                <li class="nav-item">
+                  <%= link_to "Users", admin_users_path, class: "nav-link #{active_controller?("users")}" %>
+                </li>
+              <% end %>
             </ul>
 
             <ul class="navbar-nav ml-auto">

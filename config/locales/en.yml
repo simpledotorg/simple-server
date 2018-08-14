@@ -32,7 +32,7 @@
 en:
   name: "Name"
   phone_number: "Phone Number"
-  facility: "Facility"
+  facilities: "Facilities"
   login:
     error_messages:
       unknown_user: "We don't recognize that user. Please check and try again."

@@ -16,6 +16,7 @@ class AuditLog < ApplicationRecord
   validates :auditable_id, presence: true
 
   def self.merge_log(user, record)
+    return unless user.present?
     create(
       user:           user,
       auditable_type: record.class.to_s,
@@ -24,6 +25,7 @@ class AuditLog < ApplicationRecord
   end
 
   def self.fetch_log(user, record)
+    return unless user.present?
     create(
       user:           user,
       auditable_type: record.class.to_s,
@@ -32,6 +34,7 @@ class AuditLog < ApplicationRecord
   end
 
   def self.login_log(user)
+    return unless user.present?
     create(
       user:           user,
       auditable_type: 'User',

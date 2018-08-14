@@ -279,6 +279,7 @@ RSpec.shared_examples 'a working sync controller that short circuits disabled ap
     let(:payload) { Hash[request_key, (1..10).map { build_payload.call }] }
 
     before 'each' do
+      set_authentication_headers
       expect(FeatureToggle).to receive(:enabled_for_regex?).with('MATCHING_SYNC_APIS', request_key).and_return(false)
     end
 
