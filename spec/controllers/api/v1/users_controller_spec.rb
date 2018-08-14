@@ -27,7 +27,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         post :register, params: { user: user_params }
 
         created_user = User.find_by(full_name: user_params[:full_name], phone_number: user_params[:phone_number])
-        expect(response.status).to eq(201)
+        expect(response.status).to eq(200)
         expect(created_user).to be_present
         expect(JSON(response.body)['user'].except('device_updated_at', 'device_created_at', 'facility_ids').with_int_timestamps)
           .to eq(created_user.attributes
@@ -54,7 +54,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         approval_email = ActionMailer::Base.deliveries.last
         expect(ENV['SUPERVISOR_EMAILS']).to match(/#{Regexp.quote(approval_email.to.first)}/)
         expect(ENV['OWNER_EMAILS']).to match(/#{Regexp.quote(approval_email.cc.first)}/)
-        # expect(approval_email.body.to_s).to match(user_params[:phone_number])
+        expect(approval_email.body.to_s).to match(Regexp.quote(user_params[:phone_number]))
       end
     end
   end
@@ -64,6 +64,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     let(:facility) { FactoryBot.create(:facility) }
     let!(:db_users) { FactoryBot.create_list(:user, 10, facility_ids: [facility.id]) }
     let!(:user) { FactoryBot.create(:user, phone_number: phone_number, facility_ids: [facility.id]) }
+
     it 'lists the users with the given phone number' do
       get :find, params: { phone_number: phone_number }
       expect(response.status).to eq(200)

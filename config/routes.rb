@@ -53,14 +53,14 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :facilities
 
+    resources :protocols do
+      resources :protocol_drugs
+    end
+
     resources :users do
       put 'reset_otp', to: 'users#reset_otp'
       put 'disable_access', to: 'users#disable_access'
       put 'enable_access', to: 'users#enable_access'
-    end
-
-    resources :protocols do
-      resources :protocol_drugs
     end
   end
 

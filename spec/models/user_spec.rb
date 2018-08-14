@@ -9,7 +9,7 @@ RSpec.describe User, type: :model do
     it 'deletes all dependent user facilities' do
       user = FactoryBot.create(:user)
       FactoryBot.create_list(:user_facility, 5, user: user)
-      expect { user.destroy }.tow change { UserFacility.count }.by(-5)
+      expect { user.destroy }.to change { UserFacility.count }.by(-5)
     end
   end
 

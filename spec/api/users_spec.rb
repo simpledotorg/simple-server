@@ -41,13 +41,7 @@ describe 'Users API' do
         end
 
         schema Api::V1::Schema.user_registration_response
-        before do |example|
-          submit_request(example.metadata)
-        end
-
-        it 'returns a valid 201 response' do |example|
-          assert_response_matches_metadata(example.metadata)
-        end
+        run_test!
       end
 
       response '400', 'returns bad request for invalid params' do
