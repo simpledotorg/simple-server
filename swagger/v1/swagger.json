@@ -544,7 +544,7 @@
             }
           },
           "404": {
-            "description": "user is found"
+            "description": "user is not found"
           }
         }
       }
@@ -565,7 +565,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "user is registered",
             "schema": {
               "type": "object",
@@ -584,6 +584,40 @@
           },
           "404": {
             "description": "returns not found if any of the facility ids are not known"
+          }
+        }
+      }
+    },
+    "/users/request_otp": {
+      "post": {
+        "summary": "Request OTP for login",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "body",
+            "description": "User UUID",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "$ref": "#/definitions/uuid"
+                }
+              },
+              "required": [
+                "id"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user otp is reset and new otp is sent as an sms"
+          },
+          "404": {
+            "description": "user is not found"
           }
         }
       }

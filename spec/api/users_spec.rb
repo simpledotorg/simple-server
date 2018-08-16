@@ -73,7 +73,7 @@ describe 'Users API' do
   end
 
   path '/users/request_otp' do
-    post 'Reset users otp and send the new otp to the user in a SMS' do
+    post 'Request OTP for login' do
       tags 'User'
       parameter name: :id, in: :body, description: 'User UUID', schema: Api::V1::Schema.user_request_otp_request
 
