@@ -18,8 +18,9 @@ Rails.application.routes.draw do
       post 'login', to: 'logins#login_user'
 
       scope :users do
-        post 'register', to: 'users#register'
         get 'find', to: 'users#find'
+        post 'register', to: 'users#register'
+        post 'request_otp', to: 'users#request_otp'
       end
 
       scope '/patients' do

@@ -86,4 +86,31 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       expect(response.status).to eq(404)
     end
   end
+
+  describe '#request_otp' do
+    let(:user) { FactoryBot.create(:user) }
+
+    it 'returns 400 if id is not present in the params' do
+      post :request_otp
+
+      expect(response.status).to eq(400)
+    end
+
+    it "returns 404 if the user with id doesn't exist" do
+      post :request_otp, params: { id: SecureRandom.uuid }
+
+      expect(response.status).to eq(404)
+    end
+
+    it "updates the user otp and sends an sms to the user's phone number with the new otp" do
+      existing_otp = user.otp
+      sms_notification_service = double(SmsNotificationService.new(nil))
+      expect(SmsNotificationService).to receive(:new).and_return(sms_notification_service)
+      expect(sms_notification_service).to receive(:send_request_otp_sms).and_return(true)
+
+      post :request_otp, params: { id: user.id }
+      user.reload
+      expect(user.otp).not_to eq(existing_otp)
+    end
+  end
 end

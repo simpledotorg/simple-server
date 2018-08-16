@@ -108,6 +108,13 @@ module Api::V1::Schema
       required:   %i[user] }
   end
 
+  def self.user_request_otp_request
+    { type:       :object,
+      properties: {
+        id:         { '$ref' => '#/definitions/uuid' } },
+      required:   %i[id] }
+  end
+
   def self.definitions
     { error:           error,
       errors:          Models.array_of('error'),
