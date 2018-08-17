@@ -1,5 +1,5 @@
 class Api::V1::UsersController < APIController
-  skip_before_action :authenticate, only: [:register, :find]
+  skip_before_action :authenticate, only: [:register, :find, :request_otp]
   before_action :validate_registration_payload, only: %i[register]
 
   def register
@@ -17,6 +17,14 @@ class Api::V1::UsersController < APIController
     user = User.find_by(find_params)
     return head :not_found unless user.present?
     render json: user_to_response(user), status: 200
+  end
+
+  def request_otp
+    user = User.find(request_otp_id_param)
+    user.set_otp
+    user.save
+    SmsNotificationService.new(user).send_request_otp_sms
+    head :ok
   end
 
   private
@@ -52,5 +60,9 @@ class Api::V1::UsersController < APIController
 
   def find_params
     params.permit(:id, :phone_number)
+  end
+
+  def request_otp_id_param
+    params.require(:id)
   end
 end

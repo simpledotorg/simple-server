@@ -19,7 +19,7 @@ describe 'Users API' do
         run_test!
       end
 
-      response '404', 'user is found' do
+      response '404', 'user is not found' do
         let(:phone_number) { Faker::PhoneNumber.phone_number }
         run_test!
       end
@@ -67,6 +67,32 @@ describe 'Users API' do
           { user: FactoryBot.attributes_for(:user, :created_on_device, phone_number: phone_number)
                     .merge(created_at: Time.now, updated_at: Time.now, facility_ids: [SecureRandom.uuid, facility.id]) }
         end
+        run_test!
+      end
+    end
+  end
+
+  path '/users/{id}/request_otp' do
+    post 'Request OTP for login' do
+      tags 'User'
+      parameter name: :id, in: :path, description: 'User UUID', type: :string
+
+      let(:facility) { FactoryBot.create(:facility) }
+      let!(:user) { FactoryBot.create(:user, facility_ids: [facility.id]) }
+
+      before :each do
+        sms_notification_service = double(SmsNotificationService.new(nil))
+        allow(SmsNotificationService).to receive(:new).and_return(sms_notification_service)
+        allow(sms_notification_service).to receive(:send_request_otp_sms).and_return(true)
+      end
+
+      response '200', 'user otp is reset and new otp is sent as an sms' do
+        let(:id) { user.id }
+        run_test!
+      end
+
+      response '404', 'user is not found' do
+        let(:id) { SecureRandom.uuid }
         run_test!
       end
     end

@@ -544,7 +544,7 @@
             }
           },
           "404": {
-            "description": "user is found"
+            "description": "user is not found"
           }
         }
       }
@@ -588,6 +588,31 @@
           },
           "404": {
             "description": "returns not found if any of the facility ids are not known"
+          }
+        }
+      }
+    },
+    "/users/{id}/request_otp": {
+      "post": {
+        "summary": "Request OTP for login",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "User UUID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user otp is reset and new otp is sent as an sms"
+          },
+          "404": {
+            "description": "user is not found"
           }
         }
       }
