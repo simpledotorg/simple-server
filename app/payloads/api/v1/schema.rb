@@ -86,7 +86,7 @@ module Api::V1::Schema
       required:   [:user] }
   end
 
-  def self.user_login_success_response
+  def self.user_registration_response
     { type:       :object,
       properties: {
         access_token: { '$ref' => '#/definitions/non_empty_string' },
@@ -94,11 +94,8 @@ module Api::V1::Schema
       required:   %i[user access_token] }
   end
 
-  def self.user_registration_response
-    { type:       :object,
-      properties: {
-        user:         { '$ref' => '#/definitions/user' } },
-      required:   %i[user] }
+  def self.user_login_success_response
+    user_registration_response
   end
 
   def self.user_registration_request

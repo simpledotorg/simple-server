@@ -570,12 +570,16 @@
             "schema": {
               "type": "object",
               "properties": {
+                "access_token": {
+                  "$ref": "#/definitions/non_empty_string"
+                },
                 "user": {
                   "$ref": "#/definitions/user"
                 }
               },
               "required": [
-                "user"
+                "user",
+                "access_token"
               ]
             }
           },
