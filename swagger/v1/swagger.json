@@ -592,7 +592,7 @@
         }
       }
     },
-    "/users/request_otp": {
+    "/users/{id}/request_otp": {
       "post": {
         "summary": "Request OTP for login",
         "tags": [
@@ -601,19 +601,10 @@
         "parameters": [
           {
             "name": "id",
-            "in": "body",
+            "in": "path",
             "description": "User UUID",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "$ref": "#/definitions/uuid"
-                }
-              },
-              "required": [
-                "id"
-              ]
-            }
+            "type": "string",
+            "required": true
           }
         ],
         "responses": {

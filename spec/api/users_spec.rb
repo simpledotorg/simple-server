@@ -72,10 +72,10 @@ describe 'Users API' do
     end
   end
 
-  path '/users/request_otp' do
+  path '/users/{id}/request_otp' do
     post 'Request OTP for login' do
       tags 'User'
-      parameter name: :id, in: :body, description: 'User UUID', schema: Api::V1::Schema.user_request_otp_request
+      parameter name: :id, in: :path, description: 'User UUID', type: :string
 
       let(:facility) { FactoryBot.create(:facility) }
       let!(:user) { FactoryBot.create(:user, facility_ids: [facility.id]) }
@@ -87,12 +87,12 @@ describe 'Users API' do
       end
 
       response '200', 'user otp is reset and new otp is sent as an sms' do
-        let(:id) { { id:  user.id } }
+        let(:id) { user.id }
         run_test!
       end
 
       response '404', 'user is not found' do
-        let(:id) { { id: SecureRandom.uuid } }
+        let(:id) { SecureRandom.uuid }
         run_test!
       end
     end

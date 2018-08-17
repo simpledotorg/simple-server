@@ -20,7 +20,7 @@ Rails.application.routes.draw do
       scope :users do
         get 'find', to: 'users#find'
         post 'register', to: 'users#register'
-        post 'request_otp', to: 'users#request_otp'
+        post '/:id/request_otp', to: 'users#request_otp'
       end
 
       scope '/patients' do

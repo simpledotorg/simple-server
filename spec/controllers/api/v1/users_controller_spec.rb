@@ -91,12 +91,6 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   describe '#request_otp' do
     let(:user) { FactoryBot.create(:user) }
 
-    it 'returns 400 if id is not present in the params' do
-      post :request_otp
-
-      expect(response.status).to eq(400)
-    end
-
     it "returns 404 if the user with id doesn't exist" do
       post :request_otp, params: { id: SecureRandom.uuid }
 
