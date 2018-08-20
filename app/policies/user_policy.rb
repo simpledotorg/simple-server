@@ -14,4 +14,8 @@ class UserPolicy < ApplicationPolicy
   def enable_access?
     index?
   end
+
+  def reset_otp?
+    index?
+  end
 end
