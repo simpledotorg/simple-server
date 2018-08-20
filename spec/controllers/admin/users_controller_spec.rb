@@ -75,7 +75,7 @@ RSpec.describe Admin::UsersController, type: :controller do
 
       it 'redirects to the created user' do
         post :create, params: { user: valid_attributes, facility_id: facility.id }
-         expect(response).to redirect_to([:admin, User.order(:created_at).last])
+        expect(response).to redirect_to([:admin, User.order(:created_at).last])
       end
 
       it 'adds otp and otp_valid_until to the user' do
@@ -191,12 +191,30 @@ RSpec.describe Admin::UsersController, type: :controller do
       put :enable_access, params: { user_id: user.id, facility_id: facility.id }
       user.reload
       expect(user.logged_in_at).to be nil
-      end
+    end
 
     it 'sets sync_approval_status to allowed' do
       put :enable_access, params: { user_id: user.id, facility_id: facility.id }
       user.reload
       expect(user.sync_approval_status_allowed?).to be true
+    end
+  end
+
+  describe 'PUT #reset_otp' do
+    let(:user) { FactoryBot.create(:user, facility_ids: [facility.id]) }
+
+    before :each do
+      sms_notification_service = double(SmsNotificationService.new(user))
+      allow(SmsNotificationService).to receive(:new).with(user).and_return(sms_notification_service)
+      expect(sms_notification_service).to receive(:notify)
+    end
+
+    it 'resets OTP' do
+      old_otp = user.otp
+      put :reset_otp, params: { user_id: user.id, facility_id: facility.id }
+      user.reload
+      expect(user.otp_valid?).to be true
+      expect(user.otp).not_to eq(old_otp)
     end
   end
 end
