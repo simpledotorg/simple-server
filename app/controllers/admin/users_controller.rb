@@ -46,7 +46,7 @@ class Admin::UsersController < AdminController
   def reset_otp
     @user.set_otp
     @user.save
-    SmsNotificationService.new(@user).notify
+    SmsNotificationService.new(@user).send_request_otp_sms
     redirect_to [:admin, @user], notice: 'User otp has been reset.'
   end
 
