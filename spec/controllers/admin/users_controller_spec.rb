@@ -165,12 +165,6 @@ RSpec.describe Admin::UsersController, type: :controller do
   describe 'PUT #enable_access' do
     let(:user) { FactoryBot.create(:user, facility_ids: [facility.id]) }
 
-    before :each do
-      sms_notification_service = double(SmsNotificationService.new(user))
-      allow(SmsNotificationService).to receive(:new).with(user).and_return(sms_notification_service)
-      expect(sms_notification_service).to receive(:notify)
-    end
-
     it 'resets access token' do
       old_access_token = user.access_token
       put :enable_access, params: { user_id: user.id, facility_id: facility.id }
@@ -206,7 +200,7 @@ RSpec.describe Admin::UsersController, type: :controller do
     before :each do
       sms_notification_service = double(SmsNotificationService.new(user))
       allow(SmsNotificationService).to receive(:new).with(user).and_return(sms_notification_service)
-      expect(sms_notification_service).to receive(:notify)
+      expect(sms_notification_service).to receive(:send_request_otp_sms)
     end
 
     it 'resets OTP' do
