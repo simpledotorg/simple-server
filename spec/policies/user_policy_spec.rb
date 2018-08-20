@@ -6,7 +6,7 @@ RSpec.describe UserPolicy do
   let(:owner) { create(:admin, :owner) }
   let(:supervisor) { create(:admin, :supervisor) }
 
-  permissions :index?, :show?, :enable_access?, :disable_access? do
+  permissions :index?, :show?, :enable_access?, :disable_access?, :reset_otp? do
     it "permits owners" do
       expect(subject).to permit(owner, User)
     end
