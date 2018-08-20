@@ -59,7 +59,6 @@ class Admin::UsersController < AdminController
   def enable_access
     @user.enable_access
     @user.save
-    SmsNotificationService.new(@user).notify
     redirect_to [:admin, @user], notice: 'User access has been enabled.'
   end
 
