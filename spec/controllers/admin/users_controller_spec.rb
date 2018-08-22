@@ -165,28 +165,6 @@ RSpec.describe Admin::UsersController, type: :controller do
   describe 'PUT #enable_access' do
     let(:user) { FactoryBot.create(:user, facility_ids: [facility.id]) }
 
-    it 'resets access token' do
-      old_access_token = user.access_token
-      put :enable_access, params: { user_id: user.id, facility_id: facility.id }
-      user.reload
-      expect(user.access_token_valid?).to be true
-      expect(user.access_token).not_to eq(old_access_token)
-    end
-
-    it 'resets OTP' do
-      old_otp = user.otp
-      put :enable_access, params: { user_id: user.id, facility_id: facility.id }
-      user.reload
-      expect(user.otp_valid?).to be true
-      expect(user.otp).not_to eq(old_otp)
-    end
-
-    it 'resets logged_in_at' do
-      put :enable_access, params: { user_id: user.id, facility_id: facility.id }
-      user.reload
-      expect(user.logged_in_at).to be nil
-    end
-
     it 'sets sync_approval_status to allowed' do
       put :enable_access, params: { user_id: user.id, facility_id: facility.id }
       user.reload
