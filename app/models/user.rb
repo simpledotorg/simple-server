@@ -83,8 +83,5 @@ class User < ApplicationRecord
 
   def enable_access
     self.sync_approval_status = :allowed
-    set_access_token
-    set_otp
-    reset_login
   end
 end
