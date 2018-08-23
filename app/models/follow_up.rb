@@ -1,4 +1,6 @@
 class FollowUp < ApplicationRecord
+  include Mergeable
+
   belongs_to :follow_up_schedule
   belongs_to :user
   belongs_to :patient

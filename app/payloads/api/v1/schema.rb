@@ -93,7 +93,7 @@ module Api::V1::Schema
 
 
   def self.follow_up_schedule_sync_to_user_response
-    sync_to_user_response(:follow_up_schedule)
+    sync_to_user_response(:follow_up_schedules)
   end
 
   def self.user_login_request

@@ -45,6 +45,11 @@ Rails.application.routes.draw do
       scope '/protocols' do
         get 'sync', to: 'protocols#sync_to_user'
       end
+
+      scope '/follow_up_schedules' do
+        get 'sync', to: 'follow_up_schedules#sync_to_user'
+        post 'sync', to: 'follow_up_schedules#sync_from_user'
+      end
     end
   end
 

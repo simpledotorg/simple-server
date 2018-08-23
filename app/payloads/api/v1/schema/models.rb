@@ -193,10 +193,10 @@ module Api::V1::Schema::Models
         next_visit: { type: :string, format: :date },
         action_by_user_id: { '$ref' => '#/definitions/uuid' },
         user_action: { type: :string, enum: FollowUpSchedule.user_actions.keys },
-        reasons_for_action: { type: :string, enum: FollowUpSchedule.reason_for_actions.keys },
+        reason_for_action: { type: :string, enum: FollowUpSchedule.reason_for_actions.keys },
         created_at: { '$ref' => '#/definitions/timestamp' },
         updated_at: { '$ref' => '#/definitions/timestamp' } },
-      required: %w[id patient_id facility_id next_visit is_skipped skipped_by_user reason_to_skip created_at updated_at]
+      required: %w[id patient_id facility_id next_visit action_by_user_id user_action reason_for_action created_at updated_at]
     }
   end
 

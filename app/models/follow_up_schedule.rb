@@ -1,5 +1,7 @@
 class FollowUpSchedule < ApplicationRecord
-  belongs_to :patient
+  include Mergeable
+
+  belongs_to :patient, optional: true
   belongs_to :facility
   belongs_to :user, foreign_key: :action_by_user_id
 
