@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180808093531) do
+ActiveRecord::Schema.define(version: 20180822071129) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -100,6 +100,35 @@ ActiveRecord::Schema.define(version: 20180808093531) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "follow_up_schedules", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "patient_id", null: false
+    t.uuid "facility_id", null: false
+    t.date "next_visit", null: false
+    t.uuid "action_by_user_id"
+    t.string "user_action"
+    t.string "reason_for_action"
+    t.datetime "device_created_at", null: false
+    t.datetime "device_updated_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["action_by_user_id"], name: "index_follow_up_schedules_on_action_by_user_id"
+    t.index ["facility_id"], name: "index_follow_up_schedules_on_facility_id"
+    t.index ["patient_id"], name: "index_follow_up_schedules_on_patient_id"
+  end
+
+  create_table "follow_ups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "follow_up_schedule_id", null: false
+    t.uuid "user_id", null: false
+    t.string "follow_up_type"
+    t.string "follow_up_result"
+    t.datetime "device_created_at", null: false
+    t.datetime "device_updated_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["follow_up_schedule_id"], name: "index_follow_ups_on_follow_up_schedule_id"
+    t.index ["user_id"], name: "index_follow_ups_on_user_id"
+  end
+
   create_table "patient_phone_numbers", id: :uuid, default: nil, force: :cascade do |t|
     t.string "number"
     t.string "phone_type"
@@ -182,6 +211,9 @@ ActiveRecord::Schema.define(version: 20180808093531) do
     t.index ["phone_number"], name: "index_users_on_phone_number", unique: true
   end
 
+  add_foreign_key "follow_up_schedules", "facilities"
+  add_foreign_key "follow_up_schedules", "users", column: "action_by_user_id"
+  add_foreign_key "follow_ups", "users"
   add_foreign_key "patient_phone_numbers", "patients"
   add_foreign_key "patients", "addresses"
   add_foreign_key "protocol_drugs", "protocols"

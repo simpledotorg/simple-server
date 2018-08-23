@@ -184,6 +184,36 @@ module Api::V1::Schema::Models
       required: %w[phone_number password otp] }
   end
 
+  def self.follow_up_schedule
+    { type: :object,
+      properties: {
+        id: { '$ref' => '#/definitions/uuid' },
+        patient_id: { '$ref' => '#/definitions/uuid' },
+        facility_id: { '$ref' => '#/definitions/uuid' },
+        next_visit: { type: :string, format: :date },
+        action_by_user_id: { '$ref' => '#/definitions/uuid' },
+        user_action: { type: :string, enum: FollowUpSchedule.user_actions.keys },
+        reasons_for_action: { type: :string, enum: FollowUpSchedule.reason_for_actions.keys },
+        created_at: { '$ref' => '#/definitions/timestamp' },
+        updated_at: { '$ref' => '#/definitions/timestamp' } },
+      required: %w[id patient_id facility_id next_visit is_skipped skipped_by_user reason_to_skip created_at updated_at]
+    }
+  end
+
+  def self.follow_up
+    { type: :object,
+      properties: {
+        id: { '$ref' => '#/definitions/uuid' },
+        follow_up_schedule_id: { '$ref' => '#/definitions/uuid' },
+        user_id: { '$ref' => '#/definitions/uuid' },
+        follow_up_type: { type: :string, enum: FollowUp.follow_up_types.keys },
+        follow_up_result: { type: :string, enum: FollowUp.follow_up_results.keys },
+        created_at: { '$ref' => '#/definitions/timestamp' },
+        updated_at: { '$ref' => '#/definitions/timestamp' } },
+      required: %w[id follow_up_schedule_id user_id follow_up_type follow_up_result created_at updated_at]
+    }
+  end
+
   def self.definitions
     { timestamp: timestamp,
       uuid: uuid,
@@ -208,6 +238,11 @@ module Api::V1::Schema::Models
       prescription_drugs: array_of('prescription_drug'),
       user: user,
       users: array_of('user'),
-      login_user: login_user }
+      login_user: login_user,
+      follow_up: follow_up,
+      follow_ups: array_of('follow_up'),
+      follow_up_schedule: follow_up_schedule,
+      follow_up_schedules: array_of('follow_up_schedule')
+    }
   end
 end

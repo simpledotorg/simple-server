@@ -7,6 +7,7 @@ describe Patient, type: :model do
     it { should have_many(:blood_pressures) }
     it { should have_many(:prescription_drugs) }
     it { should have_many(:facilities).through(:blood_pressures) }
+    it { should have_many(:follow_up_schedules) }
   end
 
   describe 'Validations' do
