@@ -50,6 +50,11 @@ Rails.application.routes.draw do
         get 'sync', to: 'follow_up_schedules#sync_to_user'
         post 'sync', to: 'follow_up_schedules#sync_from_user'
       end
+
+      scope '/follow_ups' do
+        get 'sync', to: 'follow_ups#sync_to_user'
+        post 'sync', to: 'follow_ups#sync_from_user'
+      end
     end
   end
 

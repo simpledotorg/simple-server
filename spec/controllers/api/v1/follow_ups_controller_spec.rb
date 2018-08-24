@@ -1,19 +1,19 @@
 require 'rails_helper'
 
-RSpec.describe Api::V1::FollowUpSchedulesController, type: :controller do
+RSpec.describe Api::V1::FollowUpsController, type: :controller do
   let(:request_user) { FactoryBot.create(:user) }
   before :each do
     request.env['X_USER_ID'] = request_user.id
     request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
   end
 
-  let(:model) { FollowUpSchedule }
+  let(:model) { FollowUp }
 
-  let(:build_payload) { lambda { build_follow_up_schedule_payload } }
-  let(:build_invalid_payload) { lambda { build_invalid_follow_up_schedule_payload } }
+  let(:build_payload) { lambda { build_follow_up_payload } }
+  let(:build_invalid_payload) { lambda { build_invalid_follow_up_payload } }
   let(:invalid_record) { build_invalid_payload.call }
-  let(:update_payload) { lambda { |follow_up_schedule| updated_follow_up_schedule_payload follow_up_schedule } }
-  let(:number_of_schema_errors_in_invalid_payload) { 2 }
+  let(:update_payload) { lambda { |follow_up| updated_follow_up_payload follow_up } }
+  let(:number_of_schema_errors_in_invalid_payload) { 3 }
 
   it_behaves_like 'a sync controller that authenticates user requests'
   it_behaves_like 'a sync controller that audits the data access'

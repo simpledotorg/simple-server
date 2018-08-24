@@ -88,7 +88,7 @@ module Api::V1::Schema
   end
 
   def self.follow_up_sync_to_user_response
-    sync_to_user_response(:follow_up)
+    sync_to_user_response(:follow_ups)
   end
 
 
