@@ -27,11 +27,6 @@
   <%= @user.logged_in_at.try(:iso8601) || 'Not logged in yet' %>
 </p>
 
-<p>
-  <strong>OTP message for user</strong>
-  <%= I18n.t('sms.notification', otp: @user.otp) %>
-</p>
-
 <% if current_admin.owner? %>
   <%= link_to 'Edit', edit_admin_user_path(@user) %> |
   <%= link_to 'Back', admin_users_path %> |
