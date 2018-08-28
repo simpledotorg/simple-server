@@ -7,7 +7,7 @@ class Facility < ApplicationRecord
   has_many :patients, through: :blood_pressures
   has_many :prescription_drugs
 
-  has_many :follow_up_schedules
+  has_many :appointments
 
   validates :name, presence: true
   validates :district, presence: true

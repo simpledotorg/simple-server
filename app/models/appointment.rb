@@ -1,18 +1,20 @@
-class FollowUpSchedule < ApplicationRecord
+class Appointment < ApplicationRecord
   include Mergeable
 
   belongs_to :patient, optional: true
   belongs_to :facility
-  belongs_to :user, foreign_key: :action_by_user_id
 
-  enum user_action: {
+  enum status: {
     scheduled: 'scheduled',
-    skipped: 'skipped'
+    cancelled: 'cancelled',
+    visited: 'visited'
   }, _prefix: true
 
-  enum reason_for_action: {
+  enum status_reason: {
+    not_called_yet: 'not_called_yet',
     not_responding: 'not_responding',
-    already_visited: 'already_visited'
+    moved: 'moved',
+    dead: 'dead'
   }
 
   validates :device_created_at, presence: true

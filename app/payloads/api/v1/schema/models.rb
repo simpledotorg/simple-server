@@ -184,33 +184,32 @@ module Api::V1::Schema::Models
       required: %w[phone_number password otp] }
   end
 
-  def self.follow_up_schedule
+  def self.appointment
     { type: :object,
       properties: {
         id: { '$ref' => '#/definitions/uuid' },
         patient_id: { '$ref' => '#/definitions/uuid' },
         facility_id: { '$ref' => '#/definitions/uuid' },
-        next_visit: { type: :string, format: :date },
-        action_by_user_id: { '$ref' => '#/definitions/uuid' },
-        user_action: { type: :string, enum: FollowUpSchedule.user_actions.keys },
-        reason_for_action: { type: :string, enum: FollowUpSchedule.reason_for_actions.keys },
+        date: { type: :string, format: :date },
+        status: { type: :string, enum: Appointment.statuses.keys },
+        status_reason: { type: :string, enum: Appointment.status_reasons.keys },
         created_at: { '$ref' => '#/definitions/timestamp' },
         updated_at: { '$ref' => '#/definitions/timestamp' } },
-      required: %w[id patient_id facility_id next_visit action_by_user_id user_action reason_for_action created_at updated_at]
+      required: %w[id patient_id facility_id date status status_reason created_at updated_at]
     }
   end
 
-  def self.follow_up
+  def self.communication
     { type: :object,
       properties: {
         id: { '$ref' => '#/definitions/uuid' },
-        follow_up_schedule_id: { '$ref' => '#/definitions/uuid' },
+        appointment_id: { '$ref' => '#/definitions/uuid' },
         user_id: { '$ref' => '#/definitions/uuid' },
-        follow_up_type: { type: :string, enum: FollowUp.follow_up_types.keys },
-        follow_up_result: { type: :string, enum: FollowUp.follow_up_results.keys },
+        communication_type: { type: :string, enum: Communication.communication_types.keys },
+        communication_result: { type: :string, enum: Communication.communication_results.keys },
         created_at: { '$ref' => '#/definitions/timestamp' },
         updated_at: { '$ref' => '#/definitions/timestamp' } },
-      required: %w[id follow_up_schedule_id user_id follow_up_type follow_up_result created_at updated_at]
+      required: %w[id appointment_id user_id communication_type communication_result created_at updated_at]
     }
   end
 
@@ -239,10 +238,10 @@ module Api::V1::Schema::Models
       user: user,
       users: array_of('user'),
       login_user: login_user,
-      follow_up: follow_up,
-      follow_ups: array_of('follow_up'),
-      follow_up_schedule: follow_up_schedule,
-      follow_up_schedules: array_of('follow_up_schedule')
+      communication: communication,
+      communications: array_of('communication'),
+      appointment: appointment,
+      appointments: array_of('appointment')
     }
   end
 end

@@ -1,9 +1,9 @@
 require 'rails_helper'
 
-describe FollowUp, type: :model do
+describe Communication, type: :model do
   describe 'Associations' do
     it { should belong_to(:user) }
-    it { should belong_to(:follow_up_schedule) }
+    it { should belong_to(:appointment) }
   end
 
   describe 'Validations' do

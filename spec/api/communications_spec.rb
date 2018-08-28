@@ -1,20 +1,20 @@
 require 'swagger_helper'
 
-describe 'FollowUpSchedule API' do
-  path '/follow_up_schedules/sync' do
+describe 'Communication API' do
+  path '/communications/sync' do
 
-    post 'Syncs follow_up_schedule data from device to server.' do
-      tags 'Follow Up Schedule'
+    post 'Syncs communication data from device to server.' do
+      tags 'Follow Up'
       security [ basic: [] ]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
-      parameter name: :follow_up_schedules, in: :body, schema: Api::V1::Schema.follow_up_schedule_sync_from_user_request
+      parameter name: :communications, in: :body, schema: Api::V1::Schema.communication_sync_from_user_request
 
-      response '200', 'follow_up_schedules created' do
+      response '200', 'communications created' do
         let(:request_user) { FactoryBot.create(:user) }
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
-        let(:follow_up_schedules) { { follow_up_schedules: (1..10).map { build_follow_up_schedule_payload } } }
+        let(:communications) { { communications: (1..10).map { build_communication_payload } } }
 
         run_test!
       end
@@ -25,13 +25,13 @@ describe 'FollowUpSchedule API' do
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
         schema Api::V1::Schema.sync_from_user_errors
-        let(:follow_up_schedules) { { follow_up_schedules: (1..10).map { build_invalid_follow_up_schedule_payload } } }
+        let(:communications) { { communications: (1..10).map { build_invalid_communication_payload } } }
         run_test!
       end
     end
 
-    get 'Syncs follow_up_schedule data from server to device.' do
-      tags 'Follow Up Schedule'
+    get 'Syncs communication data from server to device.' do
+      tags 'Follow Up'
       security [ basic: [] ]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       Api::V1::Schema.sync_to_user_request.each do |param|
@@ -40,16 +40,16 @@ describe 'FollowUpSchedule API' do
 
       before :each do
         Timecop.travel(10.minutes.ago) do
-          FactoryBot.create_list(:follow_up_schedule, 10)
+          FactoryBot.create_list(:communication, 10)
         end
       end
 
-      response '200', 'follow_up_schedules received' do
+      response '200', 'communications received' do
         let(:request_user) { FactoryBot.create(:user) }
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
-        schema Api::V1::Schema.follow_up_schedule_sync_to_user_response
+        schema Api::V1::Schema.communication_sync_to_user_response
         let(:processed_since) { 10.minutes.ago }
         let(:limit) { 10 }
         before do |example|

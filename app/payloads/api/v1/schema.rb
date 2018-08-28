@@ -59,12 +59,12 @@ module Api::V1::Schema
     sync_from_user_request(:prescription_drugs)
   end
 
-  def self.follow_up_sync_from_user_request
-    sync_from_user_request(:follow_up)
+  def self.communication_sync_from_user_request
+    sync_from_user_request(:communication)
   end
 
-  def self.follow_up_schedule_sync_from_user_request
-    sync_from_user_request(:follow_up_schedule)
+  def self.appointment_sync_from_user_request
+    sync_from_user_request(:appointment)
   end
   
   def self.patient_sync_to_user_response
@@ -87,13 +87,13 @@ module Api::V1::Schema
     sync_to_user_response(:facilities)
   end
 
-  def self.follow_up_sync_to_user_response
-    sync_to_user_response(:follow_ups)
+  def self.communication_sync_to_user_response
+    sync_to_user_response(:communications)
   end
 
 
-  def self.follow_up_schedule_sync_to_user_response
-    sync_to_user_response(:follow_up_schedules)
+  def self.appointment_sync_to_user_response
+    sync_to_user_response(:appointments)
   end
 
   def self.user_login_request
