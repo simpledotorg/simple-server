@@ -58,6 +58,14 @@ module Api::V1::Schema
   def self.prescription_drug_sync_from_user_request
     sync_from_user_request(:prescription_drugs)
   end
+
+  def self.communication_sync_from_user_request
+    sync_from_user_request(:communication)
+  end
+
+  def self.appointment_sync_from_user_request
+    sync_from_user_request(:appointment)
+  end
   
   def self.patient_sync_to_user_response
     sync_to_user_response(:patients, 'nested_patients')
@@ -77,6 +85,15 @@ module Api::V1::Schema
 
   def self.facility_sync_to_user_response
     sync_to_user_response(:facilities)
+  end
+
+  def self.communication_sync_to_user_response
+    sync_to_user_response(:communications)
+  end
+
+
+  def self.appointment_sync_to_user_response
+    sync_to_user_response(:appointments)
   end
 
   def self.user_login_request

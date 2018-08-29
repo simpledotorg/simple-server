@@ -10,6 +10,8 @@ class Patient < ApplicationRecord
   has_many :prescription_drugs
   has_many :facilities, through: :blood_pressures
 
+  has_many :appointments
+
   validate :past_date_of_birth
 
   validates :device_created_at, presence: true

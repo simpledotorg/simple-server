@@ -27,6 +27,109 @@
     }
   },
   "paths": {
+    "/appointments/sync": {
+      "post": {
+        "summary": "Syncs appointment data from device to server.",
+        "tags": [
+          "Follow Up Schedule"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "appointments",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "appointment": {
+                  "$ref": "#/definitions/appointment"
+                }
+              },
+              "required": [
+                "appointment"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs appointment data from server to device.",
+        "tags": [
+          "Follow Up Schedule"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+            "name": "processed_since",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "appointments received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "appointments": {
+                  "$ref": "#/definitions/appointments"
+                },
+                "processed_since": {
+                  "$ref": "#/definitions/processed_since"
+                }
+              },
+              "required": [
+                "appointments",
+                "processed_since"
+              ]
+            }
+          }
+        }
+      }
+    },
     "/blood_pressures/sync": {
       "post": {
         "summary": "Syncs blood pressure data from device to server.",
@@ -123,6 +226,109 @@
               },
               "required": [
                 "blood_pressures",
+                "processed_since"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "/communications/sync": {
+      "post": {
+        "summary": "Syncs communication data from device to server.",
+        "tags": [
+          "Follow Up"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "communications",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "communication": {
+                  "$ref": "#/definitions/communication"
+                }
+              },
+              "required": [
+                "communication"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs communication data from server to device.",
+        "tags": [
+          "Follow Up"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+            "name": "processed_since",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "communications received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "communications": {
+                  "$ref": "#/definitions/communications"
+                },
+                "processed_since": {
+                  "$ref": "#/definitions/processed_since"
+                }
+              },
+              "required": [
+                "communications",
                 "processed_since"
               ]
             }
@@ -1204,6 +1410,119 @@
         "password",
         "otp"
       ]
+    },
+    "communication": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "appointment_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "user_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "communication_type": {
+          "type": "string",
+          "enum": [
+            "manual_call",
+            "voip_call"
+          ]
+        },
+        "communication_result": {
+          "type": "string",
+          "enum": [
+            "unavailable",
+            "agreed_to_visit",
+            "denied_to_visit"
+          ]
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "appointment_id",
+        "user_id",
+        "communication_type",
+        "communication_result",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "communications": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/communication"
+      }
+    },
+    "appointment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "facility_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "scheduled",
+            "cancelled",
+            "visited"
+          ]
+        },
+        "status_reason": {
+          "type": "string",
+          "enum": [
+            "not_called_yet",
+            "not_responding",
+            "moved",
+            "dead"
+          ]
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "patient_id",
+        "facility_id",
+        "date",
+        "status",
+        "status_reason",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "appointments": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/appointment"
+      }
     }
   },
   "securityDefinitions": {

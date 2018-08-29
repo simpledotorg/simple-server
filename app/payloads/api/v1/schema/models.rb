@@ -184,6 +184,35 @@ module Api::V1::Schema::Models
       required: %w[phone_number password otp] }
   end
 
+  def self.appointment
+    { type: :object,
+      properties: {
+        id: { '$ref' => '#/definitions/uuid' },
+        patient_id: { '$ref' => '#/definitions/uuid' },
+        facility_id: { '$ref' => '#/definitions/uuid' },
+        date: { type: :string, format: :date },
+        status: { type: :string, enum: Appointment.statuses.keys },
+        status_reason: { type: :string, enum: Appointment.status_reasons.keys },
+        created_at: { '$ref' => '#/definitions/timestamp' },
+        updated_at: { '$ref' => '#/definitions/timestamp' } },
+      required: %w[id patient_id facility_id date status status_reason created_at updated_at]
+    }
+  end
+
+  def self.communication
+    { type: :object,
+      properties: {
+        id: { '$ref' => '#/definitions/uuid' },
+        appointment_id: { '$ref' => '#/definitions/uuid' },
+        user_id: { '$ref' => '#/definitions/uuid' },
+        communication_type: { type: :string, enum: Communication.communication_types.keys },
+        communication_result: { type: :string, enum: Communication.communication_results.keys },
+        created_at: { '$ref' => '#/definitions/timestamp' },
+        updated_at: { '$ref' => '#/definitions/timestamp' } },
+      required: %w[id appointment_id user_id communication_type communication_result created_at updated_at]
+    }
+  end
+
   def self.definitions
     { timestamp: timestamp,
       uuid: uuid,
@@ -208,6 +237,11 @@ module Api::V1::Schema::Models
       prescription_drugs: array_of('prescription_drug'),
       user: user,
       users: array_of('user'),
-      login_user: login_user }
+      login_user: login_user,
+      communication: communication,
+      communications: array_of('communication'),
+      appointment: appointment,
+      appointments: array_of('appointment')
+    }
   end
 end

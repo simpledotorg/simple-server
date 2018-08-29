@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180808093531) do
+ActiveRecord::Schema.define(version: 20180822071129) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -63,6 +63,20 @@ ActiveRecord::Schema.define(version: 20180808093531) do
     t.index ["unlock_token"], name: "index_admins_on_unlock_token", unique: true
   end
 
+  create_table "appointments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "patient_id", null: false
+    t.uuid "facility_id", null: false
+    t.date "date", null: false
+    t.string "status"
+    t.string "status_reason"
+    t.datetime "device_created_at", null: false
+    t.datetime "device_updated_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["facility_id"], name: "index_appointments_on_facility_id"
+    t.index ["patient_id"], name: "index_appointments_on_patient_id"
+  end
+
   create_table "audit_logs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "action", null: false
     t.string "auditable_type", null: false
@@ -85,6 +99,19 @@ ActiveRecord::Schema.define(version: 20180808093531) do
     t.uuid "facility_id", null: false
     t.uuid "user_id"
     t.index ["user_id"], name: "index_blood_pressures_on_user_id"
+  end
+
+  create_table "communications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "appointment_id", null: false
+    t.uuid "user_id", null: false
+    t.string "communication_type"
+    t.string "communication_result"
+    t.datetime "device_created_at", null: false
+    t.datetime "device_updated_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["appointment_id"], name: "index_communications_on_appointment_id"
+    t.index ["user_id"], name: "index_communications_on_user_id"
   end
 
   create_table "facilities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -182,6 +209,8 @@ ActiveRecord::Schema.define(version: 20180808093531) do
     t.index ["phone_number"], name: "index_users_on_phone_number", unique: true
   end
 
+  add_foreign_key "appointments", "facilities"
+  add_foreign_key "communications", "users"
   add_foreign_key "patient_phone_numbers", "patients"
   add_foreign_key "patients", "addresses"
   add_foreign_key "protocol_drugs", "protocols"
