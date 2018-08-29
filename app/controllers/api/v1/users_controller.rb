@@ -9,7 +9,7 @@ class Api::V1::UsersController < APIController
     render json: {
       user: user_to_response(user),
       access_token: user.access_token
-    }, status:   :ok
+    }, status: :ok
   end
 
   def find

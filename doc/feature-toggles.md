@@ -19,3 +19,10 @@ Type: Regex
 Default: nil
 
 Allows selectively enabling the sync apis. Sync apis which match the regex are turned on.
+
+#### ENABLE_FIXED_OTP_ON_REQUEST_FOR_QA
+Type: Boolean
+Default: false
+
+Does not reset otp for user when requested
+This feature should only be turned on for the QA env.
