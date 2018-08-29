@@ -6,6 +6,7 @@
   <thead class="thead-light">
   <tr>
     <th>Name</th>
+    <th>Phone Number</th>
     <th>Facilities</th>
     <th>Sync Approval Status</th>
     <th colspan="2"></th>
@@ -16,6 +17,7 @@
   <% @users.each do |user| %>
     <tr>
       <td><%= link_to user.full_name, [:admin, user] %></td>
+      <td><%= user.phone_number %></td>
       <td>
         <ul class="list-unstyled">
           <% user.facilities.each do |facility| %>
