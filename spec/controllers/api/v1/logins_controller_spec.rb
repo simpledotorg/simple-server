@@ -17,9 +17,19 @@ RSpec.describe Api::V1::LoginsController, type: :controller do
       it 'should respond with access token for the user' do
         post :login_user, params: request_params
 
+        db_user.reload
         expect(response.code).to eq('200')
         expect(JSON(response.body)['user']['id']).to eq(db_user.id)
         expect(JSON(response.body)['access_token']).to eq(db_user.access_token)
+      end
+
+      it 'should update the access token for the user' do
+        old_access_token = db_user.access_token
+        post :login_user, params: request_params
+
+        db_user.reload
+        new_access_token = db_user.access_token
+        expect(new_access_token).not_to eq(old_access_token)
       end
     end
 
