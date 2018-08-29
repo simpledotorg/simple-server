@@ -1426,14 +1426,16 @@
         "communication_type": {
           "type": "string",
           "enum": [
-            "call"
+            "manual_call",
+            "voip_call"
           ]
         },
         "communication_result": {
           "type": "string",
           "enum": [
-            "answered",
-            "did_not_answer"
+            "unavailable",
+            "agreed_to_visit",
+            "denied_to_visit"
           ]
         },
         "created_at": {
@@ -1482,14 +1484,17 @@
           "type": "string",
           "enum": [
             "scheduled",
-            "skipped"
+            "cancelled",
+            "visited"
           ]
         },
         "status_reason": {
           "type": "string",
           "enum": [
+            "not_called_yet",
             "not_responding",
-            "already_visited"
+            "moved",
+            "dead"
           ]
         },
         "created_at": {
