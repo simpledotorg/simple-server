@@ -52,12 +52,12 @@
             "schema": {
               "type": "object",
               "properties": {
-                "appointment": {
-                  "$ref": "#/definitions/appointment"
+                "appointments": {
+                  "$ref": "#/definitions/appointments"
                 }
               },
               "required": [
-                "appointment"
+                "appointments"
               ]
             }
           }

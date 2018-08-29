@@ -64,7 +64,7 @@ module Api::V1::Schema
   end
 
   def self.appointment_sync_from_user_request
-    sync_from_user_request(:appointment)
+    sync_from_user_request(:appointments)
   end
   
   def self.patient_sync_to_user_response
