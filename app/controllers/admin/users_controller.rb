@@ -3,7 +3,7 @@ class Admin::UsersController < AdminController
 
   def index
     authorize User
-    @users = User.all
+    @users = User.all.order(:full_name)
   end
 
   def show
