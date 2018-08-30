@@ -3,7 +3,7 @@ class Admin::FacilitiesController < AdminController
 
   def index
     authorize Facility
-    @facilities = Facility.all
+    @facilities = Facility.all.order(:name)
   end
 
   def show
