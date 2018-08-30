@@ -5,7 +5,7 @@ class Api::V1::UsersController < APIController
   def register
     user = User.create(user_from_request)
     return render json: { errors: user.errors }, status: :bad_request if user.invalid?
-    ApprovalNotifierMailer.with(user: user).approval_email.deliver_later
+    ApprovalNotifierMailer.with(user: user).approval_email.deliver_later unless auto_approve?
     render json: {
       user: user_to_response(user),
       access_token: user.access_token
@@ -30,8 +30,9 @@ class Api::V1::UsersController < APIController
   private
 
   def user_from_request
+    user_status =  auto_approve? ? :allowed : :requested
     Api::V1::Transformer.from_request(registration_params)
-      .merge(sync_approval_status: :requested)
+      .merge(sync_approval_status: user_status)
   end
 
   def user_to_response(user)
@@ -56,6 +57,10 @@ class Api::V1::UsersController < APIController
         :updated_at,
         :created_at,
         facility_ids: [])
+  end
+
+  def auto_approve?
+    FeatureToggle.enabled?('AUTO_APPROVE_USER_FOR_QA')
   end
 
   def find_params

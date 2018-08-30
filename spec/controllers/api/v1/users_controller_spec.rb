@@ -50,6 +50,15 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         expect(created_user.sync_approval_status).to eq(User.sync_approval_statuses[:requested])
       end
 
+      it 'sets the user status to approved if AUTO_APPROVE_USER_FOR_QA feature is enabled' do
+        allow(FeatureToggle).to receive(:enabled?).with('FIXED_OTP_ON_REQUEST_FOR_QA').and_return(false)
+        allow(FeatureToggle).to receive(:enabled?).with('AUTO_APPROVE_USER_FOR_QA').and_return(true)
+
+        post :register, params: { user: user_params }
+        created_user = User.find_by(full_name: user_params[:full_name], phone_number: user_params[:phone_number])
+        expect(created_user.sync_approval_status).to eq(User.sync_approval_statuses[:allowed])
+      end
+
       it 'sends an email to a list of owners and supervisors' do
         post :register, params: { user: user_params }
         approval_email = ActionMailer::Base.deliveries.last
