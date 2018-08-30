@@ -26,3 +26,10 @@ Default: false
 
 Does not reset otp for user when requested
 This feature should only be turned on for the QA env.
+
+#### ENABLE_AUTO_APPROVE_USER_FOR_QA
+Type: Boolean
+Default: false
+
+Users are automatically approved when registered if true.
+This feature should only be turned on for the QA env.
