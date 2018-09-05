@@ -9,6 +9,7 @@ class Qa::PurgesController < APIController
     PatientPhoneNumber.delete_all
     Communication.delete_all
     Appointment.delete_all
+    MedicalHistory.delete_all
     Patient.delete_all
     Address.delete_all
 
