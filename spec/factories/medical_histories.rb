@@ -27,6 +27,6 @@ def updated_medical_history_payload(existing_medical_history)
 
   build_medical_history_payload(existing_medical_history).merge(
     'updated_at' => update_time,
-    'is_on_treatment_for_hypertension' => !existing_medical_history.is_on_treatment_for_hypertension
+    'has_prior_heart_attack' => !existing_medical_history.has_prior_heart_attack
   )
 end

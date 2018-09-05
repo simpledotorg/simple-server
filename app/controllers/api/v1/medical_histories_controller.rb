@@ -37,7 +37,9 @@ class Api::V1::MedicalHistoriesController < Api::V1::SyncController
         :has_prior_heart_attack,
         :has_prior_stroke,
         :has_chronic_kidney_disease,
-        :is_on_treatment_for_hypertension)
+        :is_on_treatment_for_hypertension,
+        :created_at,
+        :updated_at)
     end
   end
 end
