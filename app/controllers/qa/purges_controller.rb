@@ -7,6 +7,8 @@ class Qa::PurgesController < APIController
     BloodPressure.delete_all
     PrescriptionDrug.delete_all
     PatientPhoneNumber.delete_all
+    Communication.delete_all
+    Appointment.delete_all
     Patient.delete_all
     Address.delete_all
 
