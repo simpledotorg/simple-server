@@ -213,6 +213,29 @@ module Api::V1::Schema::Models
     }
   end
 
+  def self.medical_history
+    { type: :object,
+      properties: {
+        id: { '$ref' => '#/definitions/uuid' },
+        patient_id: { '$ref' => '#/definitions/uuid' },
+        has_prior_heart_attack: { type: :boolean },
+        has_prior_stroke: { type: :boolean },
+        has_chronic_kidney_disease: { type: :boolean },
+        is_on_treatment_for_hypertension: { type: :boolean },
+        created_at: { '$ref' => '#/definitions/timestamp' },
+        updated_at: { '$ref' => '#/definitions/timestamp' } },
+      required: [
+        :id,
+        :patient_id,
+        :has_prior_heart_attack,
+        :has_prior_stroke,
+        :has_chronic_kidney_disease,
+        :is_on_treatment_for_hypertension,
+        :created_at,
+        :updated_at
+      ] }
+  end
+
   def self.definitions
     { timestamp: timestamp,
       uuid: uuid,
@@ -241,7 +264,9 @@ module Api::V1::Schema::Models
       communication: communication,
       communications: array_of('communication'),
       appointment: appointment,
-      appointments: array_of('appointment')
+      appointments: array_of('appointment'),
+      medical_history: medical_history,
+      medical_histories: array_of('medical_history')
     }
   end
 end
