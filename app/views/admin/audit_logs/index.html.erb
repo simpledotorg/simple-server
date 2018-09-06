@@ -1,0 +1,31 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Audit Logs</h1>
+
+<%= render 'search_form' %>
+<br/>
+
+<table class="table">
+  <thead class="thead-light">
+  <tr>
+    <th>Time stamp</th>
+    <th>Action type</th>
+    <th>Model type</th>
+    <th>Model id</th>
+    <th>User Name</th>
+    <th colspan="2"></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @audit_logs.each do |audit_log| %>
+    <tr>
+      <td><%= link_to audit_log.created_at, [:admin, audit_log] %></td>
+      <td><%= audit_log.action %></td>
+      <td><%= audit_log.auditable_type%></td>
+      <td><%= audit_log.auditable_id %></td>
+      <td><%= link_to audit_log.user.full_name, [:admin, audit_log.user] %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
