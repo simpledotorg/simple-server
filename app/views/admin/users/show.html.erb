@@ -37,3 +37,6 @@
 <% else %>
   <%= link_to 'Enable Access', admin_user_enable_access_path(@user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
 <% end %>
+<% if policy(@user.audit_logs).edit? %>
+  | <%= link_to 'Audit Logs', admin_audit_logs_url(user_name: @user.full_name) %>
+<% end %>
