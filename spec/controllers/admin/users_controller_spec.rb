@@ -80,7 +80,7 @@ RSpec.describe Admin::UsersController, type: :controller do
 
       it 'adds otp and otp_valid_until to the user' do
         Timecop.freeze do
-          timedelta = ENV['USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES'].to_i.minutes
+          timedelta = Config.get('USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES').to_i.minutes
           post :create, params: { user: valid_attributes, facility_id: facility.id }
 
           user = User.find_by(phone_number: valid_attributes[:phone_number])

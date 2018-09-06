@@ -2,11 +2,11 @@ class ApprovalNotifierMailer < ApplicationMailer
   default :from => 'help@simple.org'
 
   def supervisor_emails
-    ENV['SUPERVISOR_EMAILS']
+    Config.get('SUPERVISOR_EMAILS')
   end
 
   def owner_emails
-    ENV['OWNER_EMAILS']
+    Config.get('OWNER_EMAILS')
   end
 
   def approval_email
