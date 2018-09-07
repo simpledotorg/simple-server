@@ -10,7 +10,7 @@ class SmsNotificationService
   end
 
   def send_request_otp_sms
-    app_signature = Config.get('SIMPLE_APP_SIGNATURE')
+    app_signature = ENV.fetch('SIMPLE_APP_SIGNATURE')
     send_sms(I18n.t('sms.request_otp', otp: user.otp, app_signature: app_signature))
   end
 
@@ -25,7 +25,7 @@ class SmsNotificationService
     end
 
     client.messages.create(
-      from: Config.get('TWILIO_PHONE_NUMBER'),
+      from: ENV.fetch('TWILIO_PHONE_NUMBER'),
       to: user.phone_number.prepend(I18n.t('sms.country_code')),
       body: body
     )

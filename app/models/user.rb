@@ -45,7 +45,7 @@ class User < ApplicationRecord
     6.times do
       otp += digits.sample.to_s
     end
-    otp_valid_until = Time.now + Config.get('USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES').to_i.minutes
+    otp_valid_until = Time.now + ENV.fetch('USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES').to_i.minutes
 
     { otp: otp, otp_valid_until: otp_valid_until }
   end
