@@ -4,7 +4,7 @@ describe 'Communication API' do
   path '/communications/sync' do
 
     post 'Syncs communication data from device to server.' do
-      tags 'Communication'
+      tags 'Follow Up'
       security [ basic: [] ]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: :communications, in: :body, schema: Api::V1::Schema.communication_sync_from_user_request
@@ -31,7 +31,7 @@ describe 'Communication API' do
     end
 
     get 'Syncs communication data from server to device.' do
-      tags 'Communication'
+      tags 'Follow Up'
       security [ basic: [] ]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       Api::V1::Schema.sync_to_user_request.each do |param|

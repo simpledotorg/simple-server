@@ -31,7 +31,7 @@
       "post": {
         "summary": "Syncs appointment data from device to server.",
         "tags": [
-          "Appointment"
+          "Follow Up Schedule"
         ],
         "security": [
           {
@@ -79,7 +79,7 @@
       "get": {
         "summary": "Syncs appointment data from server to device.",
         "tags": [
-          "Appointment"
+          "Follow Up Schedule"
         ],
         "security": [
           {
@@ -237,7 +237,7 @@
       "post": {
         "summary": "Syncs communication data from device to server.",
         "tags": [
-          "Communication"
+          "Follow Up"
         ],
         "security": [
           {
@@ -285,7 +285,7 @@
       "get": {
         "summary": "Syncs communication data from server to device.",
         "tags": [
-          "Communication"
+          "Follow Up"
         ],
         "security": [
           {
@@ -1636,16 +1636,19 @@
         "patient_id": {
           "$ref": "#/definitions/uuid"
         },
-        "has_prior_heart_attack": {
+        "prior_heart_attack": {
           "type": "boolean"
         },
-        "has_prior_stroke": {
+        "prior_stroke": {
           "type": "boolean"
         },
-        "has_chronic_kidney_disease": {
+        "chronic_kidney_disease": {
           "type": "boolean"
         },
-        "is_on_treatment_for_hypertension": {
+        "receiving_treatment_for_hypertension": {
+          "type": "boolean"
+        },
+        "diabetes": {
           "type": "boolean"
         },
         "created_at": {
@@ -1658,10 +1661,11 @@
       "required": [
         "id",
         "patient_id",
-        "has_prior_heart_attack",
-        "has_prior_stroke",
-        "has_chronic_kidney_disease",
-        "is_on_treatment_for_hypertension",
+        "prior_heart_attack",
+        "prior_stroke",
+        "chronic_kidney_disease",
+        "receiving_treatment_for_hypertension",
+        "diabetes",
         "created_at",
         "updated_at"
       ]
