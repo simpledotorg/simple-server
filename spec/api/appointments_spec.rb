@@ -4,7 +4,7 @@ describe 'Appointment API' do
   path '/appointments/sync' do
 
     post 'Syncs appointment data from device to server.' do
-      tags 'Follow Up Schedule'
+      tags 'Appointments'
       security [ basic: [] ]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: :appointments, in: :body, schema: Api::V1::Schema.appointment_sync_from_user_request
@@ -31,7 +31,7 @@ describe 'Appointment API' do
     end
 
     get 'Syncs appointment data from server to device.' do
-      tags 'Follow Up Schedule'
+      tags 'Appointments'
       security [ basic: [] ]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       Api::V1::Schema.sync_to_user_request.each do |param|
