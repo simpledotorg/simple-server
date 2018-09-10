@@ -218,19 +218,19 @@ module Api::V1::Schema::Models
       properties: {
         id: { '$ref' => '#/definitions/uuid' },
         patient_id: { '$ref' => '#/definitions/uuid' },
-        has_prior_heart_attack: { type: :boolean },
-        has_prior_stroke: { type: :boolean },
-        has_chronic_kidney_disease: { type: :boolean },
-        is_on_treatment_for_hypertension: { type: :boolean },
+        prior_heart_attack: { type: :boolean },
+        prior_stroke: { type: :boolean },
+        chronic_kidney_disease: { type: :boolean },
+        receiving_treatment_for_hypertension: { type: :boolean },
         created_at: { '$ref' => '#/definitions/timestamp' },
         updated_at: { '$ref' => '#/definitions/timestamp' } },
       required: [
         :id,
         :patient_id,
-        :has_prior_heart_attack,
-        :has_prior_stroke,
-        :has_chronic_kidney_disease,
-        :is_on_treatment_for_hypertension,
+        :prior_heart_attack,
+        :prior_stroke,
+        :chronic_kidney_disease,
+        :receiving_treatment_for_hypertension,
         :created_at,
         :updated_at
       ] }
