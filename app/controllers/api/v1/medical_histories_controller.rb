@@ -38,6 +38,7 @@ class Api::V1::MedicalHistoriesController < Api::V1::SyncController
         :prior_stroke,
         :chronic_kidney_disease,
         :receiving_treatment_for_hypertension,
+        :diabetes,
         :created_at,
         :updated_at)
     end

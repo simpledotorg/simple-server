@@ -6,6 +6,7 @@ class CreateMedicalHistories < ActiveRecord::Migration[5.1]
       t.boolean :prior_stroke
       t.boolean :chronic_kidney_disease
       t.boolean :receiving_treatment_for_hypertension
+      t.boolean :diabetes
       t.datetime :device_created_at, null: false
       t.datetime :device_updated_at, null: false
       t.timestamps

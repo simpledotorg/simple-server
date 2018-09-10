@@ -6,6 +6,7 @@ FactoryBot.define do
     prior_stroke { false }
     chronic_kidney_disease { false }
     receiving_treatment_for_hypertension { false }
+    diabetes { false }
     device_created_at { Time.now }
     device_updated_at { Time.now }
   end
