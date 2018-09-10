@@ -25,7 +25,7 @@ class SmsNotificationService
     end
 
     client.messages.create(
-      from: ENV['TWILIO_PHONE_NUMBER'],
+      from: ENV.fetch('TWILIO_PHONE_NUMBER'),
       to: user.phone_number.prepend(I18n.t('sms.country_code')),
       body: body
     )
