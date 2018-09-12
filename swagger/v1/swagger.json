@@ -31,7 +31,7 @@
       "post": {
         "summary": "Syncs appointment data from device to server.",
         "tags": [
-          "Follow Up Schedule"
+          "Appointments"
         ],
         "security": [
           {
@@ -79,7 +79,7 @@
       "get": {
         "summary": "Syncs appointment data from server to device.",
         "tags": [
-          "Follow Up Schedule"
+          "Appointments"
         ],
         "security": [
           {
@@ -237,7 +237,7 @@
       "post": {
         "summary": "Syncs communication data from device to server.",
         "tags": [
-          "Follow Up"
+          "Communications"
         ],
         "security": [
           {
@@ -285,7 +285,7 @@
       "get": {
         "summary": "Syncs communication data from server to device.",
         "tags": [
-          "Follow Up"
+          "Communications"
         ],
         "security": [
           {
