@@ -66,6 +66,10 @@ module Api::V1::Schema
   def self.appointment_sync_from_user_request
     sync_from_user_request(:appointments)
   end
+
+  def self.medical_history_sync_from_user_request
+    sync_from_user_request(:medical_histories)
+  end
   
   def self.patient_sync_to_user_response
     sync_to_user_response(:patients, 'nested_patients')
@@ -94,6 +98,10 @@ module Api::V1::Schema
 
   def self.appointment_sync_to_user_response
     sync_to_user_response(:appointments)
+  end
+
+  def self.medical_history_sync_to_user_response
+    sync_to_user_response(:medical_histories)
   end
 
   def self.user_login_request
