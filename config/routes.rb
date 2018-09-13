@@ -61,6 +61,8 @@ Rails.application.routes.draw do
   devise_for :admins
   resources :admins
 
+  get "admin", to: "admin/dashboard#show", as: :admin_dashboard
+
   namespace :admin do
     resources :facilities
 

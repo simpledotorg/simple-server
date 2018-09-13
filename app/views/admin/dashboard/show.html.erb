@@ -1,0 +1,21 @@
+<h1>Dashboard</h1>
+
+<h3>Patients Registered</h3>
+<table class="table">
+  <thead class="thead-light">
+    <tr>
+      <th>Facility Name</th>
+      <th>Last 30 Days</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @facilities.each do |facility| %>
+      <tr>
+        <td><%= facility.name %></td>
+        <td><%= @patients_per_facility_30days[facility.id] %></td>
+        <td><%= @patients_per_facility_total[facility.id] %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
