@@ -31,7 +31,7 @@
       "post": {
         "summary": "Syncs appointment data from device to server.",
         "tags": [
-          "Follow Up Schedule"
+          "Appointments"
         ],
         "security": [
           {
@@ -79,7 +79,7 @@
       "get": {
         "summary": "Syncs appointment data from server to device.",
         "tags": [
-          "Follow Up Schedule"
+          "Appointments"
         ],
         "security": [
           {
@@ -237,7 +237,7 @@
       "post": {
         "summary": "Syncs communication data from device to server.",
         "tags": [
-          "Follow Up"
+          "Communications"
         ],
         "security": [
           {
@@ -285,7 +285,7 @@
       "get": {
         "summary": "Syncs communication data from server to device.",
         "tags": [
-          "Follow Up"
+          "Communications"
         ],
         "security": [
           {
@@ -457,6 +457,109 @@
                   }
                 }
               }
+            }
+          }
+        }
+      }
+    },
+    "/medical_histories/sync": {
+      "post": {
+        "summary": "Syncs medical_history data from device to server.",
+        "tags": [
+          "Medical History"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "medical_histories",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "medical_histories": {
+                  "$ref": "#/definitions/medical_histories"
+                }
+              },
+              "required": [
+                "medical_histories"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs medical_history data from server to device.",
+        "tags": [
+          "Medical History"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+            "name": "processed_since",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "medical_histories received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "medical_histories": {
+                  "$ref": "#/definitions/medical_histories"
+                },
+                "processed_since": {
+                  "$ref": "#/definitions/processed_since"
+                }
+              },
+              "required": [
+                "medical_histories",
+                "processed_since"
+              ]
             }
           }
         }
@@ -1522,6 +1625,58 @@
       ],
       "items": {
         "$ref": "#/definitions/appointment"
+      }
+    },
+    "medical_history": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "prior_heart_attack": {
+          "type": "boolean"
+        },
+        "prior_stroke": {
+          "type": "boolean"
+        },
+        "chronic_kidney_disease": {
+          "type": "boolean"
+        },
+        "receiving_treatment_for_hypertension": {
+          "type": "boolean"
+        },
+        "diabetes": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "patient_id",
+        "prior_heart_attack",
+        "prior_stroke",
+        "chronic_kidney_disease",
+        "receiving_treatment_for_hypertension",
+        "diabetes",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "medical_histories": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/medical_history"
       }
     }
   },

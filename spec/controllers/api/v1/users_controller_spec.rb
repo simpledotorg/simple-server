@@ -62,8 +62,8 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       it 'sends an email to a list of owners and supervisors' do
         post :register, params: { user: user_params }
         approval_email = ActionMailer::Base.deliveries.last
-        expect(ENV['SUPERVISOR_EMAILS']).to match(/#{Regexp.quote(approval_email.to.first)}/)
-        expect(ENV['OWNER_EMAILS']).to match(/#{Regexp.quote(approval_email.cc.first)}/)
+        expect(ENV.fetch('SUPERVISOR_EMAILS')).to match(/#{Regexp.quote(approval_email.to.first)}/)
+        expect(ENV.fetch('OWNER_EMAILS')).to match(/#{Regexp.quote(approval_email.cc.first)}/)
         expect(approval_email.body.to_s).to match(Regexp.quote(user_params[:phone_number]))
       end
     end

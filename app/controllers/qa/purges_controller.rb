@@ -9,6 +9,7 @@ class Qa::PurgesController < APIController
     PatientPhoneNumber.delete_all
     Communication.delete_all
     Appointment.delete_all
+    MedicalHistory.delete_all
     Patient.delete_all
     Address.delete_all
 
@@ -16,7 +17,7 @@ class Qa::PurgesController < APIController
   end
 
   def validate_access
-    purge_access_token = ENV['PURGE_URL_ACCESS_TOKEN']
+    purge_access_token = ENV.fetch('PURGE_URL_ACCESS_TOKEN')
     authenticate_or_request_with_http_token do |token, _options|
       ActiveSupport::SecurityUtils.secure_compare(token, purge_access_token)
     end

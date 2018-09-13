@@ -55,6 +55,11 @@ Rails.application.routes.draw do
         get 'sync', to: 'communications#sync_to_user'
         post 'sync', to: 'communications#sync_from_user'
       end
+
+      scope '/medical_histories' do
+        get 'sync', to: 'medical_histories#sync_to_user'
+        post 'sync', to: 'medical_histories#sync_from_user'
+      end
     end
   end
 
@@ -64,6 +69,7 @@ Rails.application.routes.draw do
   get "admin", to: "admin/dashboard#show", as: :admin_dashboard
 
   namespace :admin do
+    resources :audit_logs, only: [:index, :show]
     resources :facilities
 
     resources :protocols do

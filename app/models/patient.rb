@@ -11,6 +11,7 @@ class Patient < ApplicationRecord
   has_many :facilities, through: :blood_pressures
 
   has_many :appointments
+  has_one :medical_history
 
   validate :past_date_of_birth
 
