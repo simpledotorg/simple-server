@@ -14,5 +14,6 @@ Config.ensure_required_keys_are_present(required_keys: [
   'TWILIO_PHONE_NUMBER',
   'USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES',
   'SUPERVISOR_EMAILS',
-  'OWNER_EMAILS'
+  'OWNER_EMAILS',
+  'ENABLE_PURGE_ENDPOINT_FOR_QA'
 ])
