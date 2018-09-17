@@ -7,14 +7,11 @@
 ### Security 
 
 # 2018-09-17
+## API
 
 ### Changed 
 
 - User can belong to multiple facilities
-- Sort users by fullname in admin portal
-- Remove user otp message from admin portal
-- Add phone numbers to users index view   
-- Order facilities by name
 - Rename tags in swagger schema
 
 ### Fixed
@@ -34,10 +31,17 @@
 - Sync APIs for Patient medical history
 - Sync APIs for Appointments and Communications (for overdue list)
 - API for users to request OTPs for login  
-- Views for audit logs
 - Feature toggles
    - to auto approve users after registration (for QA)
    - to have fixed OTPs (for QA)
+
+## Portal
+
+- Add views for audit logs
+- Sort users by fullname 
+- Remove user otp message
+- Add phone numbers to users index view   
+- Order facilities by name
 
 ## 2018-08-13
 ## 2018-07-02
