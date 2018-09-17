@@ -2,11 +2,11 @@ class ApprovalNotifierMailer < ApplicationMailer
   default :from => 'help@simple.org'
 
   def supervisor_emails
-    ENV.fetch('SUPERVISOR_EMAILS')
+    ENV['SUPERVISOR_EMAILS']
   end
 
   def owner_emails
-    ENV.fetch('OWNER_EMAILS')
+    ENV['OWNER_EMAILS']
   end
 
   def approval_email
