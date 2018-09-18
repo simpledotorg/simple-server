@@ -77,6 +77,10 @@ class User < ApplicationRecord
     self.logged_in_at = nil
   end
 
+  def self.requested_sync_approval
+    where(sync_approval_status: :requested)
+  end
+
   def disable_access
     self.sync_approval_status = :denied
   end
