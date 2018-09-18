@@ -1,4 +1,28 @@
-<h1>Dashboard</h1>
+<% if @users_requesting_approval.any? %>
+  <h3>Users waiting for approval</h3>
+  <table class="table">
+    <thead class="thead-light">
+      <tr>
+        <th>Name</th>
+        <th>Phone Number</th>
+        <th>Facilities</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @users_requesting_approval.each do |user| %>
+        <tr>
+          <td><%= user.full_name %></td>
+          <td><%= user.phone_number %></td>
+          <td><%= user.facilities.map(&:name).join(", ") %></td>
+          <td>
+            <%= link_to "Approve Sync Access", admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
 
 <h3>Patients Registered</h3>
 <table class="table">
