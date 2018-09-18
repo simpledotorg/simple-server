@@ -2,7 +2,7 @@ class Admin::DashboardController < AdminController
   def show
     skip_authorization
 
-    @users_requesting_approval = User.where(sync_approval_status: :requested)
+    @users_requesting_approval = User.requested_sync_approval
 
     @facilities = Facility.all
     @patients_per_facility_total = Facility.joins(:patients).group("facilities.id").count("patients.id")
