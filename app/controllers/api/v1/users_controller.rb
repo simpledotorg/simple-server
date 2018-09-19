@@ -9,7 +9,7 @@ class Api::V1::UsersController < APIController
       user.sync_approval_allowed
       user.save
     else
-      user.sync_approval_requested
+      user.sync_approval_requested(I18n.t('registration'))
       user.save
       ApprovalNotifierMailer.with(user: user).registration_approval_email.deliver_later
     end

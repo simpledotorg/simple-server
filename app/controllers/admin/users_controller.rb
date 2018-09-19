@@ -1,9 +1,16 @@
 class Admin::UsersController < AdminController
   before_action :set_user, except: [:index, :new, :create]
 
+  def ordered_sync_approval_statuses
+    { requested: 0, denied: 1, allowed: 2 }.with_indifferent_access
+  end
+
   def index
     authorize User
-    @users = User.all.order(:full_name)
+    @users = User.all.sort_by do |user|
+      [ordered_sync_approval_statuses[user.sync_approval_status],
+       user.updated_at]
+    end
   end
 
   def show
@@ -51,13 +58,13 @@ class Admin::UsersController < AdminController
   end
 
   def disable_access
-    @user.disable_access
+    @user.sync_approval_denied(I18n.t('admin.denied_access_to_user', admin_name: @current_admin.email.split('@').first))
     @user.save
     redirect_to [:admin, @user], notice: 'User access has been disabled.'
   end
 
   def enable_access
-    @user.enable_access
+    @user.sync_approval_allowed(I18n.t('admin.allowed_access_to_user', admin_name: @current_admin.email.split('@').first))
     @user.save
     redirect_to [:admin, @user], notice: 'User access has been enabled.'
   end

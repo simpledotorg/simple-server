@@ -54,6 +54,8 @@ en:
     reset_otp_alert: 'Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP'
     disable_access_alert: 'Are you sure you want to disable the access for user?'
     enable_access_alert: 'Are you sure you want to enable the access for user?'
+    allowed_access_to_user: '%{admin_name} allowed access'
+    denied_access_to_user: '%{admin_name} denied access'
   api:
     documentation:
       description: |
@@ -77,3 +79,5 @@ en:
       license:
         name: 'MIT'
         url: 'https://github.com/simpledotorg/simple-server/blob/master/LICENSE'
+  registration: 'Registration'
+  reset_password: 'Reset PIN'

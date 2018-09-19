@@ -48,6 +48,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         post :register, params: { user: user_params }
         created_user = User.find_by(full_name: user_params[:full_name], phone_number: user_params[:phone_number])
         expect(created_user.sync_approval_status).to eq(User.sync_approval_statuses[:requested])
+        expect(created_user.sync_approval_status_reason).to eq(I18n.t('registration'))
       end
 
       it 'sets the user status to approved if AUTO_APPROVE_USER_FOR_QA feature is enabled' do
@@ -132,6 +133,8 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       user.reload
       expect(response.status).to eq(200)
       expect(user.password_digest).to eq(new_password_digest)
+      expect(user.sync_approval_status).to eq('requested')
+      expect(user.sync_approval_status_reason).to eq(I18n.t('reset_password'))
     end
 
     it 'Returns 401 if the user is not authorized' do
