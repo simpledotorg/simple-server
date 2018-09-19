@@ -11,7 +11,7 @@ class Api::V1::UsersController < APIController
     else
       user.sync_approval_requested
       user.save
-      ApprovalNotifierMailer.with(user: user).approval_email.deliver_later
+      ApprovalNotifierMailer.with(user: user).registration_approval_email.deliver_later
     end
     render json: {
       user: user_to_response(user),
@@ -35,8 +35,9 @@ class Api::V1::UsersController < APIController
   end
 
   def reset_password
-    @current_user.reset_password(reset_password_digest)
-    @current_user.save
+    current_user.reset_password(reset_password_digest)
+    current_user.save
+    ApprovalNotifierMailer.with(user: current_user).reset_password_approval_email.deliver_later
     head :ok
   end
 

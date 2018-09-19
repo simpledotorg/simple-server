@@ -126,7 +126,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       request.env['HTTP_AUTHORIZATION'] = "Bearer #{user.access_token}"
     end
 
-    it "Resets the password for the given user with the given digest" do
+    it 'Resets the password for the given user with the given digest' do
       new_password_digest = BCrypt::Password.create('1234').to_s
       post :reset_password, params: { id: user.id, password_digest: new_password_digest }
       user.reload
@@ -134,16 +134,26 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       expect(user.password_digest).to eq(new_password_digest)
     end
 
-    it "returns 401 if the user is not authorized" do
+    it 'Returns 401 if the user is not authorized' do
       request.env['HTTP_AUTHORIZATION'] = 'an invalid access token'
       post :reset_password, params: { id: user.id }
       expect(response.status).to eq(401)
     end
 
-    it "returns 401 if the user is not present" do
+    it 'Returns 401 if the user is not present' do
       request.env['HTTP_X_USER_ID'] = SecureRandom.uuid
       post :reset_password, params: { id: SecureRandom.uuid }
       expect(response.status).to eq(401)
+    end
+
+    it 'Sends an email to a list of owners and supervisors' do
+      post :reset_password, params: { id: user.id, password_digest: BCrypt::Password.create('1234').to_s }
+      approval_email = ActionMailer::Base.deliveries.last
+      expect(approval_email).to be_present
+      expect(ENV['SUPERVISOR_EMAILS']).to match(/#{Regexp.quote(approval_email.to.first)}/)
+      expect(ENV['OWNER_EMAILS']).to match(/#{Regexp.quote(approval_email.cc.first)}/)
+      expect(approval_email.body.to_s).to match(Regexp.quote(user.phone_number))
+      expect(approval_email.body.to_s).to match("reset")
     end
   end
 end

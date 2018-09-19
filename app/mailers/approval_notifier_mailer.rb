@@ -9,9 +9,17 @@ class ApprovalNotifierMailer < ApplicationMailer
     ENV['OWNER_EMAILS']
   end
 
-  def approval_email
+  def registration_approval_email
     @user = params[:user]
-    subject = I18n.t('approval_email.subject', full_name: @user.full_name)
+    subject = I18n.t('registration_approval_email.subject', full_name: @user.full_name)
+    mail(subject: subject,
+         to: supervisor_emails,
+         cc: owner_emails)
+  end
+
+  def reset_password_approval_email
+    @user = params[:user]
+    subject = I18n.t('reset_password_approval_email.subject', full_name: @user.full_name)
     mail(subject: subject,
          to: supervisor_emails,
          cc: owner_emails)
