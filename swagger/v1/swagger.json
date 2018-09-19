@@ -925,6 +925,52 @@
           }
         }
       }
+    },
+    "/users/{id}/reset_password": {
+      "parameters": [
+        {
+          "name": "HTTP_X_USER_ID",
+          "in": "header",
+          "type": "uuid"
+        }
+      ],
+      "post": {
+        "summary": "Request for reset password",
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "User UUID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "password_digest",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/bcrypt_password"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user password reset request is received"
+          },
+          "401": {
+            "description": "user is not unauthorized"
+          }
+        }
+      }
     }
   },
   "definitions": {

@@ -20,10 +20,15 @@ class Api::V1::UsersController < APIController
   end
 
   def request_otp
-    user = User.find(request_otp_id_param)
+    user = User.find(request_user_id)
     user.set_otp
     user.save
     SmsNotificationService.new(user).send_request_otp_sms
+    head :ok
+  end
+
+  def reset_password
+    user = User.find(request_user_id)
     head :ok
   end
 
@@ -67,7 +72,7 @@ class Api::V1::UsersController < APIController
     params.permit(:id, :phone_number)
   end
 
-  def request_otp_id_param
+  def request_user_id
     params.require(:id)
   end
 end

@@ -97,4 +97,31 @@ describe 'Users API' do
       end
     end
   end
+
+  path '/users/{id}/reset_password' do
+    parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
+
+    post 'Request for reset password' do
+      tags 'User'
+      security [ basic: [] ]
+      parameter name: :id, in: :path, description: 'User UUID', type: :string
+      parameter name: :password_digest, in: :body, schema: { '$ref' => '#/definitions/bcrypt_password' }
+      let(:facility) { FactoryBot.create(:facility) }
+      let(:user) { FactoryBot.create(:user, facility_ids: [facility.id]) }
+      let(:HTTP_X_USER_ID) { user.id }
+      let(:Authorization) { "Bearer #{user.access_token}" }
+
+      response '200', 'user password reset request is received' do
+        let(:id) { user.id }
+        let(:password_digest) { BCrypt::Password.create('1234') }
+        run_test!
+      end
+
+      response '401', 'user is not unauthorized' do
+        let(:id) { user.id }
+        let(:Authorization) { "Bearer #{SecureRandom.hex(32)}" }
+        run_test!
+      end
+    end
+  end
 end
