@@ -39,6 +39,14 @@ class User < ApplicationRecord
     self.access_token = self.class.generate_access_token
   end
 
+  def sync_approval_allowed
+    self.sync_approval_status = :allowed
+  end
+
+  def sync_approval_requested
+    self.sync_approval_status = :requested
+  end
+
   def self.generate_otp
     digits = FeatureToggle.enabled?('FIXED_OTP_ON_REQUEST_FOR_QA') ? [0] : (0..9).to_a
     otp = ''
@@ -83,5 +91,11 @@ class User < ApplicationRecord
 
   def enable_access
     self.sync_approval_status = :allowed
+  end
+
+  def reset_password(password_digest)
+    self.password_digest = password_digest
+    self.set_access_token
+    self.sync_approval_status = :requested
   end
 end

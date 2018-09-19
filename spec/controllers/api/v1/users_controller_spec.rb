@@ -117,4 +117,33 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       expect(user.otp).not_to eq(existing_otp)
     end
   end
+
+  describe '#reset_password' do
+    let(:user) { FactoryBot.create(:user) }
+
+    before(:each) do
+      request.env['HTTP_X_USER_ID'] = user.id
+      request.env['HTTP_AUTHORIZATION'] = "Bearer #{user.access_token}"
+    end
+
+    it "Resets the password for the given user with the given digest" do
+      new_password_digest = BCrypt::Password.create('1234').to_s
+      post :reset_password, params: { id: user.id, password_digest: new_password_digest }
+      user.reload
+      expect(response.status).to eq(200)
+      expect(user.password_digest).to eq(new_password_digest)
+    end
+
+    it "returns 401 if the user is not authorized" do
+      request.env['HTTP_AUTHORIZATION'] = 'an invalid access token'
+      post :reset_password, params: { id: user.id }
+      expect(response.status).to eq(401)
+    end
+
+    it "returns 401 if the user is not present" do
+      request.env['HTTP_X_USER_ID'] = SecureRandom.uuid
+      post :reset_password, params: { id: SecureRandom.uuid }
+      expect(response.status).to eq(401)
+    end
+  end
 end

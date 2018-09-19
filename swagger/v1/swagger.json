@@ -926,7 +926,7 @@
         }
       }
     },
-    "/users/{id}/reset_password": {
+    "/users/me/reset_password": {
       "parameters": [
         {
           "name": "HTTP_X_USER_ID",
@@ -948,17 +948,18 @@
         ],
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "description": "User UUID",
-            "type": "string",
-            "required": true
-          },
-          {
             "name": "password_digest",
             "in": "body",
             "schema": {
-              "$ref": "#/definitions/bcrypt_password"
+              "type": "object",
+              "properties": {
+                "password_digest": {
+                  "$ref": "#/definitions/bcrypt_password"
+                }
+              },
+              "required": [
+                "passowrd_digest"
+              ]
             }
           }
         ],
