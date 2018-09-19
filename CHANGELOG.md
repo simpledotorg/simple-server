@@ -43,5 +43,5 @@
 - Add phone numbers to users index view   
 - Order facilities by name
 
-## 2018-08-13
-## 2018-07-02
+## 2018-08-13-1
+## 2018-07-02-1
