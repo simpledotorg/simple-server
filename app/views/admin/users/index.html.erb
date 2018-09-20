@@ -18,13 +18,6 @@
     <tr>
       <td><%= link_to user.full_name, [:admin, user] %></td>
       <td><%= user.phone_number %></td>
-      <td>
-        <ul class="list-unstyled">
-          <% user.facilities.each do |facility| %>
-            <li><%= link_to facility.name, [:admin, facility] %></li>
-          <% end %>
-        </ul>
-      </td>
       <td><%= user.sync_approval_status %></td>
       <% if policy(user).edit? %>
         <td><%= link_to 'Edit', edit_admin_user_path(user) %></td>

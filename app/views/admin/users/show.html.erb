@@ -10,12 +10,14 @@
   <%= @user.phone_number %>
 </p>
 
-<p>
-  <strong>Facilities:</strong><br/>
-  <% @user.facilities.each do |facility| %>
-    - <%= link_to facility.name, [:admin, facility] %><br/>
-  <% end %>
-</p>
+<% if @user.facilities.present? %>
+  <p>
+    <strong>Facilities:</strong><br/>
+    <% @user.facilities.each do |facility| %>
+      - <%= link_to facility.name, [:admin, facility] %><br/>
+    <% end %>
+  </p>
+<% end %>
 
 <p>
   <strong>Sync Approval Status:</strong>
