@@ -1,10 +1,6 @@
 class Admin::UsersController < AdminController
   before_action :set_user, except: [:index, :new, :create]
 
-  def ordered_sync_approval_statuses
-    { requested: 0, denied: 1, allowed: 2 }.with_indifferent_access
-  end
-
   def index
     authorize User
     @users = User.all.sort_by do |user|
@@ -70,6 +66,10 @@ class Admin::UsersController < AdminController
   end
 
   private
+
+  def ordered_sync_approval_statuses
+    { requested: 0, denied: 1, allowed: 2 }.with_indifferent_access
+  end
 
   def set_user
     @user = User.find(params[:id] || params[:user_id])

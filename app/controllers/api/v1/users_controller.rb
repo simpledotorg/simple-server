@@ -38,7 +38,10 @@ class Api::V1::UsersController < APIController
     current_user.reset_password(reset_password_digest)
     current_user.save
     ApprovalNotifierMailer.with(user: current_user).reset_password_approval_email.deliver_later
-    head :ok
+    render json: {
+      user: user_to_response(current_user),
+      access_token: current_user.access_token
+    }, status: :ok
   end
 
   private

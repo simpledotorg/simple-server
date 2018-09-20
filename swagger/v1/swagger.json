@@ -965,7 +965,22 @@
         ],
         "responses": {
           "200": {
-            "description": "user password reset request is received"
+            "description": "user password reset request is received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "access_token": {
+                  "$ref": "#/definitions/non_empty_string"
+                },
+                "user": {
+                  "$ref": "#/definitions/user"
+                }
+              },
+              "required": [
+                "user",
+                "access_token"
+              ]
+            }
           },
           "401": {
             "description": "user is not unauthorized"

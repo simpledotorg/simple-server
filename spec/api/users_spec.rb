@@ -112,6 +112,7 @@ describe 'Users API' do
       let(:password_digest) { { password_digest:  BCrypt::Password.create('1234') } }
 
       response '200', 'user password reset request is received' do
+        schema Api::V1::Schema.user_registration_response
         run_test!
       end
 

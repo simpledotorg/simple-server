@@ -2,7 +2,7 @@
   <div class="col-md-6">
     <%= bootstrap_form_with(model: [:admin, user], local: true, label_errors: true) do |form| %>
       <%= form.text_field :full_name, id: :user_name %>
-      <%= form.text_field :phone_number, id: :user_phone_number, pattern: '(6|7|8|9)\d{9}', help: "10 digits only; must start with 6, 7, 8, or 9" %>
+      <%= form.text_field :phone_number, id: :user_phone_numbergst, pattern: '(6|7|8|9)\d{9}', help: "10 digits only; must start with 6, 7, 8, or 9" %>
 
       <%= form.password_field :password, id: :user_password, pattern: "[0-9]{4}", label: "PIN", help: "4 digits only" %>
       <%= form.password_field :password_confirmation, id: :user_password_confirmation, pattern: "[0-9]{4}", label: "PIN confirmation" %>
