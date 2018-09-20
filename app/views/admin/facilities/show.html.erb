@@ -65,18 +65,11 @@
               %>
             </li>
             <li>
-              Login link: <%= "https://simple.org/register?otp=#{user.otp}" %>
-            </li>
-            <li>
-              OTP valid until: <%= user.otp_valid_until %>
-            </li>
-            <li>
               Is access token valid?: <%= user.access_token_valid? %>
             </li>
             <li>
               <%= link_to 'Edit', edit_admin_user_path(user) %> |
               <%= link_to 'Delete', [:admin, user], method: :delete, data: { confirm: 'Are you sure?' } %> |
-              <%= link_to 'Reset OTP', admin_user_reset_otp_path(user), method: :put, data: { confirm: I18n.t('admin.reset_otp_alert') } %> |
               <% if user.access_token_valid? %>
                 <%= link_to 'Disable Access', admin_user_disable_access_path(user), method: :put, data: { confirm: I18n.t('admin.disable_access_alert') } %>
               <% else %>
