@@ -7,7 +7,7 @@
   <tr>
     <th>Name</th>
     <th>Phone Number</th>
-    <th>Facilities</th>
+    <th>Registrated at Facility</th>
     <th>Sync Approval Status</th>
     <th>Status Reason</th>
     <th colspan="2"></th>
@@ -20,14 +20,12 @@
       <td><%= link_to user.full_name, [:admin, user] %></td>
       <td><a href="tel:<%= user.phone_number %>"><%= user.phone_number %></a></td>
       <td>
-        <ul class="list-unstyled">
-          <% user.facilities.each do |facility| %>
-            <li><%= link_to facility.name, [:admin, facility] %></li>
-          <% end %>
-        </ul>
+        <% if user.registered_at_facility.present? %>
+          <%= link_to user.registered_at_facility.name, [:admin, user.registered_at_facility] %>
+        <% end %>
       </td>
       <td class="sync_approval_status">
-        <span class="label <%=user.sync_approval_status %>"><%= user.sync_approval_status.capitalize %></span>
+        <span class="label <%= user.sync_approval_status %>"><%= user.sync_approval_status.capitalize %></span>
       </td>
       <td><%= user.sync_approval_status_reason %></td>
       <% if policy(user).edit? %>

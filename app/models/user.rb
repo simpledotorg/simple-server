@@ -97,4 +97,8 @@ class User < ApplicationRecord
     self.set_access_token
     self.sync_approval_requested(I18n.t('reset_password'))
   end
+
+  def registered_at_facility
+    self.facilities.order(:created_at).first
+  end
 end
