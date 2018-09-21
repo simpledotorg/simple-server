@@ -7,3 +7,22 @@ body {
 span.inactive {
   text-decoration: line-through;
 }
+
+.sync_approval_status {
+  span {
+    padding: 5px 10px;
+    border-radius: 5px;
+  }
+  .requested {
+    background-color: theme-color("warning");
+  }
+
+  .allowed {
+    background-color: theme-color("success");
+    color: white;
+  }
+  .denied{
+    background-color: theme-color("danger");
+    color: white;
+  }
+}

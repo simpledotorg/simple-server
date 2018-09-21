@@ -9,6 +9,7 @@
     <th>Phone Number</th>
     <th>Facilities</th>
     <th>Sync Approval Status</th>
+    <th>Status Reason</th>
     <th colspan="2"></th>
   </tr>
   </thead>
@@ -17,7 +18,7 @@
   <% @users.each do |user| %>
     <tr>
       <td><%= link_to user.full_name, [:admin, user] %></td>
-      <td><%= user.phone_number %></td>
+      <td><a href="tel:<%= user.phone_number %>"><%= user.phone_number %></a></td>
       <td>
         <ul class="list-unstyled">
           <% user.facilities.each do |facility| %>
@@ -25,7 +26,10 @@
           <% end %>
         </ul>
       </td>
-      <td><%= user.sync_approval_status %></td>
+      <td class="sync_approval_status">
+        <span class="label <%=user.sync_approval_status %>"><%= user.sync_approval_status.capitalize %></span>
+      </td>
+      <td><%= user.sync_approval_status_reason %></td>
       <% if policy(user).edit? %>
         <td><%= link_to 'Edit', edit_admin_user_path(user) %></td>
       <% end %>
