@@ -1599,8 +1599,8 @@
           "type": "string",
           "enum": [
             "unavailable",
-            "agreed_to_visit",
-            "denied_to_visit"
+            "unreachable",
+            "successful"
           ]
         },
         "created_at": {
@@ -1641,7 +1641,7 @@
         "facility_id": {
           "$ref": "#/definitions/uuid"
         },
-        "date": {
+        "scheduled_date": {
           "type": "string",
           "format": "date"
         },
@@ -1656,10 +1656,23 @@
         "status_reason": {
           "type": "string",
           "enum": [
-            "not_called_yet",
             "not_responding",
             "moved",
-            "dead"
+            "dead",
+            "other"
+          ]
+        },
+        "remind_on": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "agreed_to_visit": {
+          "type": [
+            "boolean",
+            "null"
           ]
         },
         "created_at": {
@@ -1673,9 +1686,9 @@
         "id",
         "patient_id",
         "facility_id",
-        "date",
+        "scheduled_date",
         "status",
-        "status_reason",
+        "cancel_reason",
         "created_at",
         "updated_at"
       ]

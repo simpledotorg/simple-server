@@ -12,8 +12,8 @@ class Communication < ApplicationRecord
 
   enum communication_result: {
     unavailable: 'unavailable',
-    agreed_to_visit: 'agreed_to_visit',
-    denied_to_visit: 'denied_to_visit'
+    unreachable: 'unreachable',
+    successful: 'successful'
   }
 
   validates :device_created_at, presence: true

@@ -4,7 +4,7 @@ FactoryBot.define do
     appointment
     user
     communication_type { :manual_call }
-    communication_result { :agreed_to_visit }
+    communication_result { :successful }
     device_created_at { Time.now }
     device_updated_at { Time.now }
   end
