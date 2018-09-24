@@ -4,9 +4,11 @@ class Api::V1::AppointmentPayloadValidator < Api::V1::PayloadValidator
     :id,
     :patient_id,
     :facility_id,
-    :date,
+    :scheduled_date,
     :status,
-    :status_reason,
+    :cancel_reason,
+    :remind_on,
+    :agreed_to_visit,
     :created_at,
     :updated_at
   )
