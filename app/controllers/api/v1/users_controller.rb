@@ -3,9 +3,16 @@ class Api::V1::UsersController < APIController
   before_action :validate_registration_payload, only: %i[register]
 
   def register
-    user = User.create(user_from_request)
+    user = User.new(user_from_request)
     return render json: { errors: user.errors }, status: :bad_request if user.invalid?
-    ApprovalNotifierMailer.with(user: user).approval_email.deliver_later unless auto_approve?
+    if FeatureToggle.auto_approve?
+      user.sync_approval_allowed
+      user.save
+    else
+      user.sync_approval_requested(I18n.t('registration'))
+      user.save
+      ApprovalNotifierMailer.with(user: user).registration_approval_email.deliver_later
+    end
     render json: {
       user: user_to_response(user),
       access_token: user.access_token
@@ -20,19 +27,27 @@ class Api::V1::UsersController < APIController
   end
 
   def request_otp
-    user = User.find(request_otp_id_param)
+    user = User.find(request_user_id)
     user.set_otp
     user.save
     SmsNotificationService.new(user).send_request_otp_sms
     head :ok
   end
 
+  def reset_password
+    current_user.reset_password(reset_password_digest)
+    current_user.save
+    ApprovalNotifierMailer.with(user: current_user).reset_password_approval_email.deliver_later
+    render json: {
+      user: user_to_response(current_user),
+      access_token: current_user.access_token
+    }, status: :ok
+  end
+
   private
 
   def user_from_request
-    user_status =  auto_approve? ? :allowed : :requested
     Api::V1::Transformer.from_request(registration_params)
-      .merge(sync_approval_status: user_status)
   end
 
   def user_to_response(user)
@@ -59,15 +74,15 @@ class Api::V1::UsersController < APIController
         facility_ids: [])
   end
 
-  def auto_approve?
-    FeatureToggle.enabled?('AUTO_APPROVE_USER_FOR_QA')
-  end
-
   def find_params
     params.permit(:id, :phone_number)
   end
 
-  def request_otp_id_param
+  def request_user_id
     params.require(:id)
+  end
+
+  def reset_password_digest
+    params.require(:password_digest)
   end
 end

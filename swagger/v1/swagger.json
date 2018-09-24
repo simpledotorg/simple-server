@@ -925,6 +925,68 @@
           }
         }
       }
+    },
+    "/users/me/reset_password": {
+      "parameters": [
+        {
+          "name": "HTTP_X_USER_ID",
+          "in": "header",
+          "type": "uuid"
+        }
+      ],
+      "post": {
+        "summary": "Request for reset password",
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "password_digest",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "password_digest": {
+                  "$ref": "#/definitions/bcrypt_password"
+                }
+              },
+              "required": [
+                "passowrd_digest"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user password reset request is received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "access_token": {
+                  "$ref": "#/definitions/non_empty_string"
+                },
+                "user": {
+                  "$ref": "#/definitions/user"
+                }
+              },
+              "required": [
+                "user",
+                "access_token"
+              ]
+            }
+          },
+          "401": {
+            "description": "user is not unauthorized"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -1537,8 +1599,8 @@
           "type": "string",
           "enum": [
             "unavailable",
-            "agreed_to_visit",
-            "denied_to_visit"
+            "unreachable",
+            "successful"
           ]
         },
         "created_at": {
@@ -1579,7 +1641,7 @@
         "facility_id": {
           "$ref": "#/definitions/uuid"
         },
-        "date": {
+        "scheduled_date": {
           "type": "string",
           "format": "date"
         },
@@ -1591,13 +1653,30 @@
             "visited"
           ]
         },
-        "status_reason": {
-          "type": "string",
+        "cancel_reason": {
+          "type": [
+            "null",
+            "string"
+          ],
           "enum": [
-            "not_called_yet",
             "not_responding",
             "moved",
-            "dead"
+            "dead",
+            "other",
+            null
+          ]
+        },
+        "remind_on": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "agreed_to_visit": {
+          "type": [
+            "boolean",
+            "null"
           ]
         },
         "created_at": {
@@ -1611,9 +1690,8 @@
         "id",
         "patient_id",
         "facility_id",
-        "date",
+        "scheduled_date",
         "status",
-        "status_reason",
         "created_at",
         "updated_at"
       ]

@@ -21,6 +21,7 @@ Rails.application.routes.draw do
         get 'find', to: 'users#find'
         post 'register', to: 'users#register'
         post '/:id/request_otp', to: 'users#request_otp'
+        post '/me/reset_password', to: 'users#reset_password'
       end
 
       scope '/patients' do

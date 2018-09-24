@@ -6,7 +6,7 @@ RSpec.feature "Dashboards", type: :feature do
   let!(:bathinda) { create(:facility, name: "Bathinda") }
   let!(:mansa) { create(:facility, name: "Mansa") }
 
-  let!(:new_user) { create(:user, :requested_sync_approval, facilities: [bathinda, mansa]) }
+  let!(:new_user) { create(:user, :sync_requested, facilities: [bathinda, mansa]) }
 
   before do
     sign_in(supervisor)

@@ -74,7 +74,7 @@ class Api::V1::SyncController < APIController
     if params[:limit].present?
       params[:limit].to_i
     else
-      ENV.fetch('DEFAULT_NUMBER_OF_RECORDS').to_i
+      ENV['DEFAULT_NUMBER_OF_RECORDS'].to_i
     end
   end
 end

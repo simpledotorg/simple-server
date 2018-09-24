@@ -39,13 +39,28 @@ class User < ApplicationRecord
     self.access_token = self.class.generate_access_token
   end
 
+  def sync_approval_denied(reason = "")
+    self.sync_approval_status = :denied
+    self.sync_approval_status_reason = reason
+  end
+
+  def sync_approval_allowed(reason = "")
+    self.sync_approval_status = :allowed
+    self.sync_approval_status_reason = reason
+  end
+
+  def sync_approval_requested(reason)
+    self.sync_approval_status = :requested
+    self.sync_approval_status_reason = reason
+  end
+
   def self.generate_otp
     digits = FeatureToggle.enabled?('FIXED_OTP_ON_REQUEST_FOR_QA') ? [0] : (0..9).to_a
     otp = ''
     6.times do
       otp += digits.sample.to_s
     end
-    otp_valid_until = Time.now + ENV.fetch('USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES').to_i.minutes
+    otp_valid_until = Time.now + ENV['USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES'].to_i.minutes
 
     { otp: otp, otp_valid_until: otp_valid_until }
   end
@@ -81,11 +96,13 @@ class User < ApplicationRecord
     where(sync_approval_status: :requested)
   end
 
-  def disable_access
-    self.sync_approval_status = :denied
+  def reset_password(password_digest)
+    self.password_digest = password_digest
+    self.set_access_token
+    self.sync_approval_requested(I18n.t('reset_password'))
   end
 
-  def enable_access
-    self.sync_approval_status = :allowed
+  def registered_at_facility
+    self.facilities.order(:created_at).first
   end
 end

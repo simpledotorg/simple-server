@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180904083728) do
+ActiveRecord::Schema.define(version: 20180921095941) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -66,13 +66,15 @@ ActiveRecord::Schema.define(version: 20180904083728) do
   create_table "appointments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "patient_id", null: false
     t.uuid "facility_id", null: false
-    t.date "date", null: false
+    t.date "scheduled_date", null: false
     t.string "status"
-    t.string "status_reason"
+    t.string "cancel_reason"
     t.datetime "device_created_at", null: false
     t.datetime "device_updated_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.date "remind_on"
+    t.boolean "agreed_to_visit"
     t.index ["facility_id"], name: "index_appointments_on_facility_id"
     t.index ["patient_id"], name: "index_appointments_on_patient_id"
   end
@@ -220,6 +222,7 @@ ActiveRecord::Schema.define(version: 20180904083728) do
     t.string "access_token", null: false
     t.datetime "logged_in_at"
     t.string "sync_approval_status"
+    t.text "sync_approval_status_reason"
     t.index ["phone_number"], name: "index_users_on_phone_number", unique: true
   end
 

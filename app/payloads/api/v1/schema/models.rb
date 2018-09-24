@@ -190,12 +190,14 @@ module Api::V1::Schema::Models
         id: { '$ref' => '#/definitions/uuid' },
         patient_id: { '$ref' => '#/definitions/uuid' },
         facility_id: { '$ref' => '#/definitions/uuid' },
-        date: { type: :string, format: :date },
+        scheduled_date: { type: :string, format: :date },
         status: { type: :string, enum: Appointment.statuses.keys },
-        status_reason: { type: :string, enum: Appointment.status_reasons.keys },
+        cancel_reason: { type: ['null', :string], enum: Appointment.cancel_reasons.keys + [nil] },
+        remind_on: { type: [:string, 'null'], format: :date },
+        agreed_to_visit: { type: [:boolean, 'null'] },
         created_at: { '$ref' => '#/definitions/timestamp' },
         updated_at: { '$ref' => '#/definitions/timestamp' } },
-      required: %w[id patient_id facility_id date status status_reason created_at updated_at]
+      required: %w[id patient_id facility_id scheduled_date status created_at updated_at]
     }
   end
 

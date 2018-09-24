@@ -70,7 +70,7 @@ module Api::V1::Schema
   def self.medical_history_sync_from_user_request
     sync_from_user_request(:medical_histories)
   end
-  
+
   def self.patient_sync_to_user_response
     sync_to_user_response(:patients, 'nested_patients')
   end
@@ -128,6 +128,13 @@ module Api::V1::Schema
       properties: {
         user:         { '$ref' => '#/definitions/user' } },
       required:   %i[user] }
+  end
+
+  def self.user_reset_password_request
+    { type: :object,
+      properties: {
+        password_digest: { '$ref' => '#/definitions/bcrypt_password' } },
+      required: %i[passowrd_digest] }
   end
 
   def self.definitions

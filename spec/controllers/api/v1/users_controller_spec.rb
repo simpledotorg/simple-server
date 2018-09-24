@@ -48,6 +48,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         post :register, params: { user: user_params }
         created_user = User.find_by(full_name: user_params[:full_name], phone_number: user_params[:phone_number])
         expect(created_user.sync_approval_status).to eq(User.sync_approval_statuses[:requested])
+        expect(created_user.sync_approval_status_reason).to eq(I18n.t('registration'))
       end
 
       it 'sets the user status to approved if AUTO_APPROVE_USER_FOR_QA feature is enabled' do
@@ -62,8 +63,8 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       it 'sends an email to a list of owners and supervisors' do
         post :register, params: { user: user_params }
         approval_email = ActionMailer::Base.deliveries.last
-        expect(ENV.fetch('SUPERVISOR_EMAILS')).to match(/#{Regexp.quote(approval_email.to.first)}/)
-        expect(ENV.fetch('OWNER_EMAILS')).to match(/#{Regexp.quote(approval_email.cc.first)}/)
+        expect(ENV['SUPERVISOR_EMAILS']).to match(/#{Regexp.quote(approval_email.to.first)}/)
+        expect(ENV['OWNER_EMAILS']).to match(/#{Regexp.quote(approval_email.cc.first)}/)
         expect(approval_email.body.to_s).to match(Regexp.quote(user_params[:phone_number]))
       end
     end
@@ -115,6 +116,47 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       post :request_otp, params: { id: user.id }
       user.reload
       expect(user.otp).not_to eq(existing_otp)
+    end
+  end
+
+  describe '#reset_password' do
+    let(:user) { FactoryBot.create(:user) }
+
+    before(:each) do
+      request.env['HTTP_X_USER_ID'] = user.id
+      request.env['HTTP_AUTHORIZATION'] = "Bearer #{user.access_token}"
+    end
+
+    it 'Resets the password for the given user with the given digest' do
+      new_password_digest = BCrypt::Password.create('1234').to_s
+      post :reset_password, params: { id: user.id, password_digest: new_password_digest }
+      user.reload
+      expect(response.status).to eq(200)
+      expect(user.password_digest).to eq(new_password_digest)
+      expect(user.sync_approval_status).to eq('requested')
+      expect(user.sync_approval_status_reason).to eq(I18n.t('reset_password'))
+    end
+
+    it 'Returns 401 if the user is not authorized' do
+      request.env['HTTP_AUTHORIZATION'] = 'an invalid access token'
+      post :reset_password, params: { id: user.id }
+      expect(response.status).to eq(401)
+    end
+
+    it 'Returns 401 if the user is not present' do
+      request.env['HTTP_X_USER_ID'] = SecureRandom.uuid
+      post :reset_password, params: { id: SecureRandom.uuid }
+      expect(response.status).to eq(401)
+    end
+
+    it 'Sends an email to a list of owners and supervisors' do
+      post :reset_password, params: { id: user.id, password_digest: BCrypt::Password.create('1234').to_s }
+      approval_email = ActionMailer::Base.deliveries.last
+      expect(approval_email).to be_present
+      expect(ENV['SUPERVISOR_EMAILS']).to match(/#{Regexp.quote(approval_email.to.first)}/)
+      expect(ENV['OWNER_EMAILS']).to match(/#{Regexp.quote(approval_email.cc.first)}/)
+      expect(approval_email.body.to_s).to match(Regexp.quote(user.phone_number))
+      expect(approval_email.body.to_s).to match("reset")
     end
   end
 end

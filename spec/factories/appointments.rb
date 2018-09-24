@@ -3,11 +3,13 @@ FactoryBot.define do
     id { SecureRandom.uuid }
     facility
     association :patient, strategy: :build
-    date { 30.days.from_now }
+    scheduled_date { 30.days.from_now }
     status { :scheduled }
-    status_reason { :not_called_yet }
+    cancel_reason nil
     device_created_at { Time.now }
     device_updated_at { Time.now }
+    agreed_to_visit nil
+    remind_on nil
   end
 end
 
@@ -18,7 +20,7 @@ end
 def build_invalid_appointment_payload
   build_appointment_payload.merge(
     'status' => nil,
-    'date' => 'foo'
+    'scheduled_date' => 'foo'
   )
 end
 
