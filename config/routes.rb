@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   devise_scope :admin do
     authenticated :admin do
-      root to: redirect("admin/facilities"), as: :admin_root
+      root to: redirect("admin"), as: :admin_root
     end
 
     unauthenticated :admin do
