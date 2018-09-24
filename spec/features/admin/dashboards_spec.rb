@@ -4,9 +4,8 @@ RSpec.feature "Dashboards", type: :feature do
   let!(:supervisor) { create(:admin, :supervisor, email: "supervisor@example.com") }
 
   let!(:bathinda) { create(:facility, name: "Bathinda") }
-  let!(:mansa) { create(:facility, name: "Mansa") }
 
-  let!(:new_user) { create(:user, :sync_requested, facilities: [bathinda, mansa]) }
+  let!(:new_user) { create(:user, :sync_requested, facilities: [bathinda]) }
 
   before do
     sign_in(supervisor)
@@ -23,7 +22,7 @@ RSpec.feature "Dashboards", type: :feature do
 
       within find("tr", text: new_user.full_name) do
         expect(page).to have_content(new_user.phone_number)
-        expect(page).to have_content("Bathinda, Mansa")
+        expect(page).to have_content("Bathinda")
         expect(page).to have_link("Approve Sync Access")
       end
     end
