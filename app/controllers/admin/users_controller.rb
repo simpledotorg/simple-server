@@ -56,13 +56,13 @@ class Admin::UsersController < AdminController
   def disable_access
     @user.sync_approval_denied(I18n.t('admin.denied_access_to_user', admin_name: @current_admin.email.split('@').first))
     @user.save
-    redirect_to [:admin, @user], notice: 'User access has been disabled.'
+    redirect_to request.referer, notice: 'User access has been disabled.'
   end
 
   def enable_access
     @user.sync_approval_allowed(I18n.t('admin.allowed_access_to_user', admin_name: @current_admin.email.split('@').first))
     @user.save
-    redirect_to [:admin, @user], notice: 'User access has been enabled.'
+    redirect_to request.referer, notice: 'User access has been enabled.'
   end
 
   private
