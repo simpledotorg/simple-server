@@ -1653,13 +1653,17 @@
             "visited"
           ]
         },
-        "status_reason": {
-          "type": "string",
+        "cancel_reason": {
+          "type": [
+            "null",
+            "string"
+          ],
           "enum": [
             "not_responding",
             "moved",
             "dead",
-            "other"
+            "other",
+            null
           ]
         },
         "remind_on": {
@@ -1688,7 +1692,6 @@
         "facility_id",
         "scheduled_date",
         "status",
-        "cancel_reason",
         "created_at",
         "updated_at"
       ]
