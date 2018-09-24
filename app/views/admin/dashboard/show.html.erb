@@ -1,5 +1,5 @@
+<h3>Users waiting for approval - <%= @users_requesting_approval.count || 0 %></h3>
 <% if @users_requesting_approval.any? %>
-  <h3>Users waiting for approval</h3>
   <table class="table">
     <thead class="thead-light">
       <tr>
@@ -12,9 +12,9 @@
     <tbody>
       <% @users_requesting_approval.each do |user| %>
         <tr>
-          <td><%= user.full_name %></td>
-          <td><%= user.phone_number %></td>
-          <td><%= user.facilities.map(&:name).join(", ") %></td>
+          <td><%= link_to user.full_name, [:admin, user] %></td>
+          <td><a href="tel:<%= user.phone_number %>"><%= user.phone_number %></a></td>
+          <td><%= link_to user.registered_at_facility.name, [:admin, user.registered_at_facility] %></td>
           <td>
             <%= link_to "Approve Sync Access", admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
           </td>
@@ -22,6 +22,8 @@
       <% end %>
     </tbody>
   </table>
+<% else %>
+  <p>No users are awaiting approval</p>
 <% end %>
 
 <h3>Patients Registered</h3>
@@ -37,8 +39,8 @@
     <% @facilities.each do |facility| %>
       <tr>
         <td><%= facility.name %></td>
-        <td><%= @patients_per_facility_30days[facility.id] %></td>
-        <td><%= @patients_per_facility_total[facility.id] %></td>
+        <td><%= @patients_per_facility_30days[facility.id] || 0 %></td>
+        <td><%= @patients_per_facility_total[facility.id] || 0 %></td>
       </tr>
     <% end %>
   </tbody>
