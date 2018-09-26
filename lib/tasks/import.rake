@@ -5,7 +5,7 @@ namespace :import do
     facilities_file = args.facilities_file
     created_facilities = 0
     facilities_csv = open(facilities_file)
-    CSV.foreach(facilities_csv, headers: true) do |row|
+    CSV.parse(facilities_csv, headers: true) do |row|
       facility_attributes = {
         name: row['name'],
         facility_type: row['facility_type'],
