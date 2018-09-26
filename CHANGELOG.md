@@ -6,6 +6,21 @@
 ### Removed 
 ### Security 
 
+# 2018-09-26-1
+## API
+### Added
+- Document deployment process
+- Upload beta 20 facilities
+- Add api and schema specification for reset password api
+ 
+### Changed
+- Update appointments model
+
+ 
+## Portal
+### Fixed
+Bug fixes on Admin UI
+
 # 2018-09-17-1
 ## API
 
