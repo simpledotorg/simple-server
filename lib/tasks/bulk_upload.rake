@@ -14,7 +14,9 @@ namespace :import do
         district: row['district'],
         state: row['state'],
         country: row['country'],
-        pin: row['pin']
+        pin: row['pin'],
+        latitude: row['latitude'],
+        longitude: row['longitude']
       }
       existing_facility = Facility.find_by(name: facility_attributes[:name], district: facility_attributes[:district])
       if existing_facility.present?

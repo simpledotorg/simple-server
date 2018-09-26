@@ -37,6 +37,16 @@
       <%= @facility.facility_type %>
     </p>
 
+    <p>
+      <strong>Latitude:</strong>
+      <%= @facility.latitude %>
+    </p>
+
+    <p>
+      <strong>Longitude:</strong>
+      <%= @facility.longitude %>
+    </p>
+
     <% if policy(@facility).edit? %>
       <%= link_to 'Edit Facility', edit_admin_facility_path(@facility), class: "btn btn-sm btn-primary" %>
     <% end %>
