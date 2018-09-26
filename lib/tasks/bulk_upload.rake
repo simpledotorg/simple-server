@@ -1,10 +1,11 @@
 require 'csv'
-namespace :bulk_upload do
-  desc 'Bulk upload facilites from CSV; Example: rake "bulk_upload:facilities_from_csv[path/to/file]"'
+namespace :import do
+  desc 'Import facilites from CSV; Example: rake "bulk_upload:facilities_from_csv[path/to/file]"'
   task :facilities_from_csv, [:facilities_file] => :environment do |_t, args|
     facilities_file = args.facilities_file
     created_facilities = 0
-    CSV.foreach(facilities_file, headers: true) do |row|
+    facilities_csv = open(facilities_file)
+    CSV.foreach(facilities_csv, headers: true) do |row|
       facility_attributes = {
         name: row['name'],
         facility_type: row['facility_type'],
@@ -15,7 +16,7 @@ namespace :bulk_upload do
         country: row['country'],
         pin: row['pin']
       }
-      existing_facility = Facility.find_by(name: facility_attributes[:name])
+      existing_facility = Facility.find_by(name: facility_attributes[:name], district: facility_attributes[:district])
       if existing_facility.present?
         puts "Skipping existing facility: #{facility_attributes[:name]}"
       else
