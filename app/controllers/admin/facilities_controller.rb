@@ -42,21 +42,24 @@ class Admin::FacilitiesController < AdminController
   end
 
   private
-    def set_facility
-      @facility = Facility.find(params[:id])
-      authorize @facility
-    end
 
-    def facility_params
-      params.require(:facility).permit(
-        :name,
-        :street_address,
-        :village_or_colony,
-        :district,
-        :state,
-        :country,
-        :pin,
-        :facility_type
-      )
-    end
+  def set_facility
+    @facility = Facility.find(params[:id])
+    authorize @facility
+  end
+
+  def facility_params
+    params.require(:facility).permit(
+      :name,
+      :street_address,
+      :village_or_colony,
+      :district,
+      :state,
+      :country,
+      :pin,
+      :facility_type,
+      :latitude,
+      :longitude
+    )
+  end
 end
