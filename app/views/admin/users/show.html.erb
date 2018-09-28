@@ -25,6 +25,11 @@
 </p>
 
 <p>
+  <strong>Sync Approval Reason:</strong>
+  <%= @user.sync_approval_status_reason %>
+</p>
+
+<p>
   <strong>First login in at:</strong>
   <%= @user.logged_in_at.try(:iso8601) || 'Not logged in yet' %>
 </p>
@@ -34,10 +39,34 @@
   <%= link_to 'Back', admin_users_path %> |
 <% end %>
 <% if @user.access_token_valid? %>
-  <%= link_to 'Disable Access', admin_user_disable_access_path(@user), method: :put, data: { confirm: I18n.t('admin.disable_access_alert') } %>
+  <%#= link_to 'Disable Access', admin_user_disable_access_path(@user), method: :put, data: { confirm: I18n.t('admin.disable_access_alert') } %>
+  <%= link_to 'Deny Access', '#deny-access-modal', 'data-toggle' => 'modal' %>
 <% else %>
-  <%= link_to 'Enable Access', admin_user_enable_access_path(@user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
+  <%= link_to 'Allow Access', admin_user_enable_access_path(@user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
 <% end %>
 <% if policy(@user.audit_logs).edit? %>
   | <%= link_to 'Audit Logs', admin_audit_logs_url(user_name: @user.full_name) %>
 <% end %>
+
+<div class="modal fade" id="deny-access-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">Deny Access</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+      </div>
+      <%= bootstrap_form_with(url: admin_user_disable_access_path(@user), method: :put, local: true, label_errors: true) do |form| %>
+        <div class="modal-body">
+          <div class="col-md-12">
+            <%= form.text_field :reason_for_denial, id: :reason_for_denial, label: 'Reason for denying access', required: true %>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <%= form.primary 'Deny Access' %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
