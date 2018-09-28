@@ -22,7 +22,7 @@ class Admin::DashboardController < AdminController
     control_rate
   end
 
-  def hypertensive_patients(since: 9.months.ago, upto: 6.months.ago)
+  def hypertensive_patients(since: Time.new(0), upto: Time.now)
     hypertensive_patients = {}
     BloodPressure.hypertensive
       .select(:facility_id, 'array_agg(distinct(patient_id)) as hypertensive_patient_ids')
@@ -33,15 +33,12 @@ class Admin::DashboardController < AdminController
     hypertensive_patients
   end
 
-  def patients_under_control_for_facility(facility_id, patient_ids, since: 3.months.ago, upto: Date.today)
-    BloodPressure.under_control
-      .select(:facility_id, 'array_agg(distinct(patient_id)) as under_control_patient_ids')
-      .where("created_at >= ?", since).where("created_at <= ?", upto)
-      .where(patient: patient_ids)
+  def patients_under_control_for_facility(facility_id, patient_ids)
+    BloodPressure.select('distinct on (patient_id) *')
       .where(facility_id: facility_id)
-      .group(:facility_id)
-      .to_a
-      .first
-      .under_control_patient_ids
+      .where(patient: patient_ids)
+      .order(:patient_id, created_at: :desc)
+      .select { |blood_pressure| blood_pressure.under_control? }
+      .map(&:patient_id)
   end
 end

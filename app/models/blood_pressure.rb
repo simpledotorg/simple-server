@@ -10,4 +10,8 @@ class BloodPressure < ApplicationRecord
 
   scope :hypertensive, -> { where("systolic >= 140 OR diastolic >= 90") }
   scope :under_control, -> { where("systolic < 140 AND diastolic < 90") }
+
+  def under_control?
+    systolic < 140 && diastolic < 90
+  end
 end
