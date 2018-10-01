@@ -14,7 +14,13 @@
         <tr>
           <td><%= link_to user.full_name, [:admin, user] %></td>
           <td><a href="tel:<%= user.phone_number %>"><%= user.phone_number %></a></td>
-          <td><%= link_to user.registered_at_facility.name, [:admin, user.registered_at_facility] %></td>
+          <td>
+            <% if user.registered_at_facility.present? %>
+              <%= link_to user.registered_at_facility.name, [:admin, user.registered_at_facility] %>
+            <% else %>
+              N/A
+            <% end %>
+          </td>
           <td>
             <%= link_to "Approve Sync Access", admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
           </td>
