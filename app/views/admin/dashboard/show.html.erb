@@ -1,4 +1,4 @@
-<h3>Users waiting for approval - <%= @users_requesting_approval.count || 0 %></h3>
+<h3>Users waiting for access - <%= @users_requesting_approval.count || 0 %></h3>
 <% if @users_requesting_approval.any? %>
   <table class="table">
     <thead class="thead-light">
@@ -22,14 +22,14 @@
             <% end %>
           </td>
           <td>
-            <%= link_to "Approve Sync Access", admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
+            <%= link_to "Allow Access", admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
           </td>
         </tr>
       <% end %>
     </tbody>
   </table>
 <% else %>
-  <p>No users are awaiting approval</p>
+  <p>No users are waiting for access</p>
 <% end %>
 
 <h3>Patients Registered</h3>
