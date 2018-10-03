@@ -39,7 +39,7 @@
   <%= link_to 'Back', admin_users_path %>
 <% end %>
 <% unless @user.sync_approval_status == 'denied' %>
-  | <%= link_to 'Deny Access', '#deny-access-modal', 'data-toggle' => 'modal' %>
+  | <%= link_to 'Deny Access', '#deny-access-modal-' + @user.id , 'data-toggle' => 'modal' %>
 <% end %>
 <% unless @user.sync_approval_status == 'allowed' %>
   | <%= link_to 'Allow Access', admin_user_enable_access_path(@user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
@@ -48,25 +48,4 @@
   | <%= link_to 'Audit Logs', admin_audit_logs_url(user_name: @user.full_name) %>
 <% end %>
 
-<div class="modal fade" id="deny-access-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title" id="myModalLabel">Deny Access</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span></button>
-      </div>
-      <%= bootstrap_form_with(url: admin_user_disable_access_path(@user), method: :put, local: true, label_errors: true) do |form| %>
-        <div class="modal-body">
-          <div class="col-md-12">
-            <%= form.text_field :reason_for_denial, id: :reason_for_denial, label: 'Reason for denying access', required: true %>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <%= form.primary 'Deny Access' %>
-        </div>
-      <% end %>
-    </div>
-  </div>
-</div>
+<%= render partial: "deny_access_modal", locals: {user: @user} %>
