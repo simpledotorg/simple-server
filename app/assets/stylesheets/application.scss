@@ -30,3 +30,19 @@ span.inactive {
 .sync_approval_status_reason {
   max-width: 100px;
 }
+
+.card-cell-header {
+  @extend .text-muted;
+  @extend .small;
+}
+
+@include media-breakpoint-down(md) {
+  .card .row .row {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+
+    .col {
+      margin-bottom: 0.5rem;
+    }
+  }
+}

@@ -1,36 +1,37 @@
-<h3>Users waiting for access - <%= @users_requesting_approval.count || 0 %></h3>
 <% if @users_requesting_approval.any? %>
-  <table class="table">
-    <thead class="thead-light">
-      <tr>
-        <th>Name</th>
-        <th>Phone Number</th>
-        <th>Facilities</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @users_requesting_approval.each do |user| %>
-        <tr>
-          <td><%= link_to user.full_name, [:admin, user] %></td>
-          <td><a href="tel:<%= user.phone_number %>"><%= user.phone_number %></a></td>
-          <td>
-            <% if user.registered_at_facility.present? %>
-              <%= link_to user.registered_at_facility.name, [:admin, user.registered_at_facility] %>
-            <% else %>
-              N/A
-            <% end %>
-          </td>
-          <td>
-            <%= link_to "Allow Access", admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <p>No users are waiting for access</p>
+  <h4><%= pluralize(@users_requesting_approval.count || 0, "User") %> Waiting for Approval</h4>
+
+  <% @users_requesting_approval.each do |user| %>
+    <div class="card">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-3">
+            <div class="card-cell-header d-none d-md-block">Name:</div>
+            <%= link_to user.full_name, [:admin, user] %><br>
+          </div>
+          <div class="col">
+            <div class="row">
+              <div class="col">
+                <div class="card-cell-header">Phone:</div>
+                <a href="tel:<%= user.phone_number %>"><%= user.phone_number %></a><br>
+              </div>
+              <div class="col">
+                <div class="card-cell-header">Facility:</div>
+                <%= user.registered_at_facility.present? ? link_to(user.registered_at_facility.name, [:admin, user.registered_at_facility]) : "N/A" %><br>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <%= link_to "Allow Access", admin_user_enable_access_path(user), method: :put, class: "btn btn-sm btn-success", data: { confirm: I18n.t('admin.enable_access_alert') } %>
+            <%= link_to "Deny Access", admin_user_disable_access_path(user), method: :put, class: "btn btn-sm btn-outline-danger", data: { confirm: I18n.t('admin.disable_access_alert') } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
 <% end %>
+
+<hr>
 
 <h3>Patients Registered</h3>
 <table class="table">
@@ -46,7 +47,7 @@
     <% @facilities.each do |facility| %>
       <tr>
         <td><%= facility.name %></td>
-        <td><%= @control_rate_per_facility[facility.id] || 'N/A' %></td>
+        <td><%= number_to_percentage(@control_rate_per_facility[facility.id], precision: 1) || 'N/A' %></td>
         <td><%= @patients_per_facility_30days[facility.id] || 0 %></td>
         <td><%= @patients_per_facility_total[facility.id] || 0 %></td>
       </tr>
