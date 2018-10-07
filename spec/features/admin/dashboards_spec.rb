@@ -18,13 +18,36 @@ RSpec.feature "Dashboards", type: :feature do
 
   context "outstanding approval requests" do
     it "shows a task list for approvals" do
-      expect(page).to have_content("Users waiting for approval")
+      expect(page).to have_content("1 User Waiting for Access")
 
-      within find("tr", text: new_user.full_name) do
+      within find(".card", text: new_user.full_name) do
         expect(page).to have_content(new_user.phone_number)
         expect(page).to have_content("Bathinda")
-        expect(page).to have_link("Approve Sync Access")
+        expect(page).to have_link("Allow Access")
+        expect(page).to have_link("Deny Access")
       end
+    end
+
+    it "lets admins allow access" do
+      within find(".card", text: new_user.full_name) do
+        click_link "Allow Access"
+      end
+
+      expect(page).not_to have_content(new_user.full_name)
+
+      new_user.reload
+      expect(new_user.sync_approval_status).to eq("allowed")
+    end
+
+    it "lets admins deny access" do
+      within find(".card", text: new_user.full_name) do
+        click_link "Deny Access"
+      end
+
+      expect(page).not_to have_content(new_user.full_name)
+
+      new_user.reload
+      expect(new_user.sync_approval_status).to eq("denied")
     end
   end
 end
