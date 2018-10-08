@@ -6,6 +6,21 @@
 ### Removed 
 ### Security 
 
+# 2018-10-08-1
+## API
+### Added
+- Add diagnosed with hypertension to medical histories 
+### Security
+- Bump nokogiri from 1.8.2 to 1.8.4
+- Bump ffi from 1.9.23 to 1.9.25
+
+## Portal 
+### Added
+ - Added route, controller, and views for admin dashboard
+ - Added a basic task list for approving sync requests
+ - Display control rate in the dashboard
+ - Add reason for denial when disabling access
+
 # 2018-09-26-1
 ## API
 ### Added
