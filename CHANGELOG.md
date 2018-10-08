@@ -6,6 +6,11 @@
 ### Removed 
 ### Security 
 
+# 2018-10-08-2
+## API
+### Changed
+- Update swagger.json
+
 # 2018-10-08-1
 ## API
 ### Added
