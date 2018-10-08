@@ -4,9 +4,9 @@ class Admin::DashboardController < AdminController
 
     @users_requesting_approval = User.requested_sync_approval
 
-    @facilities = Facility.all
-    @patients_per_facility_total = Facility.joins(:patients).group("facilities.id").count("patients.id")
-    @patients_per_facility_30days = Facility.joins(:patients).where('patients.created_at > ?', 30.days.ago.beginning_of_day).group("facilities.id").count("patients.id")
+    @facilities = Facility.all.order(:name)
+    @patients_per_facility_total = Facility.joins(:patients).group("facilities.id").distinct('patient.id').count("patients.id")
+    @patients_per_facility_30days = Facility.joins(:patients).where('patients.created_at > ?', 30.days.ago.beginning_of_day).group("facilities.id").distinct('patient.id').count("patients.id")
     @control_rate_per_facility = control_rate_per_facility
   end
 
