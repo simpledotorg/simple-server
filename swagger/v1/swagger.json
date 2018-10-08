@@ -1729,6 +1729,9 @@
         "diabetes": {
           "type": "boolean"
         },
+        "diagnosed_with_hypertension": {
+          "type": "boolean"
+        },
         "created_at": {
           "$ref": "#/definitions/timestamp"
         },
