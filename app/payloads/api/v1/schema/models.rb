@@ -235,7 +235,6 @@ module Api::V1::Schema::Models
         :prior_stroke,
         :chronic_kidney_disease,
         :receiving_treatment_for_hypertension,
-        :diagnosed_with_hypertension,
         :diabetes,
         :created_at,
         :updated_at
