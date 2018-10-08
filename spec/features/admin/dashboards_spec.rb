@@ -18,7 +18,7 @@ RSpec.feature "Dashboards", type: :feature do
 
   context "outstanding approval requests" do
     it "shows a task list for approvals" do
-      expect(page).to have_content("1 User Waiting for Access")
+      expect(page).to have_content("1 User waiting for access")
 
       within find(".card", text: new_user.full_name) do
         expect(page).to have_content(new_user.phone_number)
@@ -42,6 +42,8 @@ RSpec.feature "Dashboards", type: :feature do
     it "lets admins deny access" do
       within find(".card", text: new_user.full_name) do
         click_link "Deny Access"
+        fill_in "reason_for_denial", with: 'reason for denial'
+        find('input[name="commit"]').click
       end
 
       expect(page).not_to have_content(new_user.full_name)

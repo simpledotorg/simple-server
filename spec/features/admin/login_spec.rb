@@ -14,7 +14,7 @@ RSpec.feature 'Admin::Login', type: :feature do
     click_button 'Log in'
 
     expect(current_path).to eq(admin_dashboard_path)
-    expect(page).to have_selector('h4', text: '1 User waiting for Access')
+    expect(page).to have_selector('h4', text: '1 User waiting for access')
     expect(page).to have_selector('h3', text: 'Patients Registered')
   end
 
