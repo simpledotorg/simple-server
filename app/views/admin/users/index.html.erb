@@ -6,10 +6,10 @@
   <thead class="thead-light">
   <tr>
     <th>Name</th>
+    <th>Sync Status</th>
+    <th>Status Reason</th>
     <th>Phone Number</th>
     <th>Registered at Facility</th>
-    <th>Sync Approval Status</th>
-    <th>Status Reason</th>
     <th colspan="2"></th>
   </tr>
   </thead>
@@ -18,22 +18,31 @@
   <% @users.each do |user| %>
     <tr>
       <td><%= link_to user.full_name, [:admin, user] %></td>
+      <td class="sync_approval_status">
+        <span class="label <%= user.sync_approval_status %>"><%= user.sync_approval_status.capitalize %></span>
+      </td>
+      <td class="sync_approval_status_reason"><%= user.sync_approval_status_reason %></td>
       <td><a href="tel:<%= user.phone_number %>"><%= user.phone_number %></a></td>
       <td>
         <% if user.registered_at_facility.present? %>
           <%= link_to user.registered_at_facility.name, [:admin, user.registered_at_facility] %>
         <% end %>
       </td>
-      <td class="sync_approval_status">
-        <span class="label <%= user.sync_approval_status %>"><%= user.sync_approval_status.capitalize %></span>
+      <td>
+        <% if policy(user).edit? %>
+          <%= link_to 'Edit', edit_admin_user_path(user) %>
+        <% end %>
+        <% if policy(user).destroy? %>
+          | <%= link_to 'Delete', [:admin, user], method: :delete, data: { confirm: 'Are you sure?' } %>
+        <% end %>
+        <% unless user.sync_approval_status == 'denied' %>
+          | <%= link_to 'Deny Access', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal' %>
+        <% end %>
+        <% unless user.sync_approval_status == 'allowed' %>
+          | <%= link_to 'Allow Access', admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
+        <% end %>
+        <%= render partial: "deny_access_modal", locals: {user: user} %>
       </td>
-      <td><%= user.sync_approval_status_reason %></td>
-      <% if policy(user).edit? %>
-        <td><%= link_to 'Edit', edit_admin_user_path(user) %></td>
-      <% end %>
-      <% if policy(user).destroy? %>
-        <td><%= link_to 'Delete', [:admin, user], method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      <% end %>
     </tr>
   <% end %>
   </tbody>
