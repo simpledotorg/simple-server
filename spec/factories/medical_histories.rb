@@ -7,6 +7,7 @@ FactoryBot.define do
     chronic_kidney_disease { false }
     receiving_treatment_for_hypertension { false }
     diabetes { false }
+    diagnosed_with_hypertension { false }
     device_created_at { Time.now }
     device_updated_at { Time.now }
   end

@@ -225,6 +225,7 @@ module Api::V1::Schema::Models
         chronic_kidney_disease: { type: :boolean },
         receiving_treatment_for_hypertension: { type: :boolean },
         diabetes: { type: :boolean },
+        diagnosed_with_hypertension: { type: :boolean },
         created_at: { '$ref' => '#/definitions/timestamp' },
         updated_at: { '$ref' => '#/definitions/timestamp' } },
       required: [
@@ -234,6 +235,7 @@ module Api::V1::Schema::Models
         :prior_stroke,
         :chronic_kidney_disease,
         :receiving_treatment_for_hypertension,
+        :diagnosed_with_hypertension,
         :diabetes,
         :created_at,
         :updated_at
