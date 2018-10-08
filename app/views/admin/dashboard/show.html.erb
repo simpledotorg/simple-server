@@ -1,5 +1,5 @@
 <% if @users_requesting_approval.any? %>
-  <h4><%= pluralize(@users_requesting_approval.count || 0, "User") %> Waiting for Access</h4>
+  <h4><%= pluralize(@users_requesting_approval.count || 0, "User") %> waiting for Access</h4>
 
   <% @users_requesting_approval.each do |user| %>
     <div class="card">
