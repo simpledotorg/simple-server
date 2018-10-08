@@ -6,6 +6,11 @@
 ### Removed 
 ### Security 
 
+# 2018-10-08-3
+## Portal 
+### Fixed
+- Fix patient count in dashboard
+ 
 # 2018-10-08-2
 ## API
 ### Changed
@@ -21,10 +26,10 @@
 
 ## Portal 
 ### Added
- - Added route, controller, and views for admin dashboard
- - Added a basic task list for approving sync requests
- - Display control rate in the dashboard
- - Add reason for denial when disabling access
+- Added route, controller, and views for admin dashboard
+- Added a basic task list for approving sync requests
+- Display control rate in the dashboard
+- Add reason for denial when disabling access
 
 # 2018-09-26-1
 ## API
