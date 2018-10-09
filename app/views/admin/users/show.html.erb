@@ -20,8 +20,13 @@
 <% end %>
 
 <p>
-  <strong>Sync Approval Status:</strong>
+  <strong>Sync Status:</strong>
   <%= @user.sync_approval_status %>
+</p>
+
+<p>
+  <strong>Sync Reason:</strong>
+  <%= @user.sync_approval_status_reason %>
 </p>
 
 <p>
@@ -31,13 +36,16 @@
 
 <% if current_admin.owner? %>
   <%= link_to 'Edit', edit_admin_user_path(@user) %> |
-  <%= link_to 'Back', admin_users_path %> |
+  <%= link_to 'Back', admin_users_path %>
 <% end %>
-<% if @user.access_token_valid? %>
-  <%= link_to 'Disable Access', admin_user_disable_access_path(@user), method: :put, data: { confirm: I18n.t('admin.disable_access_alert') } %>
-<% else %>
-  <%= link_to 'Enable Access', admin_user_enable_access_path(@user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
+<% unless @user.sync_approval_status == 'denied' %>
+  | <%= link_to 'Deny Access', '#deny-access-modal-' + @user.id , 'data-toggle' => 'modal' %>
+<% end %>
+<% unless @user.sync_approval_status == 'allowed' %>
+  | <%= link_to 'Allow Access', admin_user_enable_access_path(@user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
 <% end %>
 <% if policy(@user.audit_logs).edit? %>
   | <%= link_to 'Audit Logs', admin_audit_logs_url(user_name: @user.full_name) %>
 <% end %>
+
+<%= render partial: "deny_access_modal", locals: {user: @user} %>

@@ -92,6 +92,10 @@ class User < ApplicationRecord
     self.logged_in_at = nil
   end
 
+  def self.requested_sync_approval
+    where(sync_approval_status: :requested)
+  end
+
   def reset_password(password_digest)
     self.password_digest = password_digest
     self.set_access_token

@@ -1,0 +1,59 @@
+<% if @users_requesting_approval.any? %>
+  <h4><%= pluralize(@users_requesting_approval.count || 0, "User") %> waiting for access</h4>
+
+  <% @users_requesting_approval.each do |user| %>
+    <div class="card">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-3">
+            <div class="card-cell-header d-none d-md-block">Name:</div>
+            <%= link_to user.full_name, [:admin, user] %> [<%= user.sync_approval_status_reason %>]
+            <br>
+          </div>
+          <div class="col">
+            <div class="row">
+              <div class="col">
+                <div class="card-cell-header">Phone:</div>
+                <a href="tel:<%= user.phone_number %>"><%= user.phone_number %></a><br>
+              </div>
+              <div class="col">
+                <div class="card-cell-header">Facility:</div>
+                <%= user.registered_at_facility.present? ? link_to(user.registered_at_facility.name, [:admin, user.registered_at_facility]) : "N/A" %><br>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <%= link_to "Allow Access", admin_user_enable_access_path(user), method: :put, class: "btn btn-sm btn-success", data: { confirm: I18n.t('admin.enable_access_alert') } %>
+            <%= link_to 'Deny Access', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal', class: "btn btn-sm btn-outline-danger" %>
+
+            <%= render partial: "admin/users/deny_access_modal", locals: {user: user} %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>
+
+<hr>
+
+<h3>Patients Registered</h3>
+<table class="table">
+  <thead class="thead-light">
+    <tr>
+      <th>Facility Name</th>
+      <th>Control Rate</th>
+      <th>Last 30 Days</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @facilities.each do |facility| %>
+      <tr>
+        <td><%= facility.name %></td>
+        <td><%= number_to_percentage(@control_rate_per_facility[facility.id], precision: 1) || 'N/A' %></td>
+        <td><%= @patients_per_facility_30days[facility.id] || 0 %></td>
+        <td><%= @patients_per_facility_total[facility.id] || 0 %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
