@@ -11,7 +11,7 @@
 </p>
 
 <p>
-  <strong>Rxnorm code:</strong>
+  <strong>RxNorm code:</strong>
   <%= @protocol_drug.rxnorm_code %>
 </p>
 
@@ -23,4 +23,3 @@
 <% if policy(@protocol_drug).edit? %>
   <%= link_to 'Edit', edit_protocol_drug_path(@protocol_drug) %> |
 <% end %>
-<%= link_to 'Back', protocol_drugs_path %>

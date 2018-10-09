@@ -32,7 +32,7 @@
           <td><%= link_to 'Edit', edit_admin_facility_path(facility) %></td>
         <% end %>
         <% if policy(facility).destroy? %>
-          <td><%= link_to 'Delete', [:admin, facility], method: :delete, data: { confirm: 'Are you sure?' } %></td>
+          <td><%= link_to 'Delete', [:admin, facility], method: :delete, data: { confirm: "Are you sure you want to delete #{facility.name}?" } %></td>
         <% end %>
       </tr>
     <% end %>
@@ -40,5 +40,5 @@
 </table>
 
 <% if policy(Facility).new? %>
-  <%= link_to 'New Facility', new_admin_facility_path, class: "btn btn-primary" %>
+  <%= link_to 'New facility', new_admin_facility_path, class: "btn btn-primary" %>
 <% end %>

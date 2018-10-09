@@ -5,7 +5,7 @@
 <div class="row">
   <div class="col-md-6">
     <%= bootstrap_form_tag(url: [:admin, :audit_logs], local: true, label_errors: true, method: :get) do |form| %>
-      <%= form.text_field :user_name, id: :protocol_drug_name %>
+      <%= form.text_field :user_name, label: "Search by user's full name" %>
 
       <%= form.primary 'Search' %>
     <% end %>

@@ -1,5 +1,5 @@
 <% if @users_requesting_approval.any? %>
-  <h4><%= pluralize(@users_requesting_approval.count || 0, "User") %> waiting for access</h4>
+  <h4><%= pluralize(@users_requesting_approval.count || 0, "user") %> waiting for access</h4>
 
   <% @users_requesting_approval.each do |user| %>
     <div class="card">
@@ -23,8 +23,8 @@
             </div>
           </div>
           <div class="col-lg-4">
-            <%= link_to "Allow Access", admin_user_enable_access_path(user), method: :put, class: "btn btn-sm btn-success", data: { confirm: I18n.t('admin.enable_access_alert') } %>
-            <%= link_to 'Deny Access', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal', class: "btn btn-sm btn-outline-danger" %>
+            <%= link_to "Allow access", admin_user_enable_access_path(user), method: :put, class: "btn btn-sm btn-success", data: { confirm: I18n.t('admin.enable_access_alert') } %>
+            <%= link_to 'Deny access', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal', class: "btn btn-sm btn-outline-danger" %>
 
             <%= render partial: "admin/users/deny_access_modal", locals: {user: user} %>
           </div>
@@ -36,13 +36,13 @@
 
 <hr>
 
-<h3>Patients Registered</h3>
+<h3>Patients registered</h3>
 <table class="table">
   <thead class="thead-light">
     <tr>
-      <th>Facility Name</th>
-      <th>Control Rate</th>
-      <th>Last 30 Days</th>
+      <th>Facility name</th>
+      <th>Control rate</th>
+      <th>Last 30 days</th>
       <th>Total</th>
     </tr>
   </thead>

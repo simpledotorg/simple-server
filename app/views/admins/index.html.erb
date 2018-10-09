@@ -15,7 +15,7 @@
     <% @admins.each do |admin| %>
       <tr>
         <td><%= link_to admin.email, admin %></td>
-        <td><%= admin.role.titleize %></td>
+        <td><%= admin.role.humanize %></td>
         <td>
           <% if admin.invited_to_sign_up? %>
             Invitation sent
@@ -25,7 +25,7 @@
           <td><%= link_to 'Edit', edit_admin_path(admin) %></td>
         <% end %>
         <% if policy(admin).destroy? %>
-          <td><%= link_to 'Delete', admin, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+          <td><%= link_to 'Delete', admin, method: :delete, data: { confirm: "Are you sure you want to delete #{admin.email}?" } %></td>
         <% end %>
       </tr>
     <% end %>
@@ -33,5 +33,5 @@
 </table>
 
 <% if policy(Admin).new? %>
-  <%= link_to 'Invite Admin', new_admin_invitation_path, class: "btn btn-primary" %>
+  <%= link_to 'Invite admin', new_admin_invitation_path, class: "btn btn-primary" %>
 <% end %>
