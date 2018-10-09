@@ -6,9 +6,9 @@
       <div class="card-body">
         <div class="row">
           <div class="col-lg-3">
-            <div class="card-cell-header d-none d-md-block">Name:</div>
-            <%= link_to user.full_name, [:admin, user] %> [<%= user.sync_approval_status_reason %>]
+            <%= link_to user.full_name, [:admin, user] %>
             <br>
+            <small><%= user.sync_approval_status_reason %></small>
           </div>
           <div class="col">
             <div class="row">
