@@ -50,7 +50,7 @@
     <% @facilities.each do |facility| %>
       <tr>
         <td><%= facility.name %></td>
-        <td><%= number_to_percentage(@control_rate_per_facility[facility.id], precision: 1) || 'N/A' %></td>
+        <td><%= number_to_percentage(@control_rate_per_facility[facility.id] * 100, precision: 1) || 'N/A' %></td>
         <td><%= @patients_per_facility_30days[facility.id] || 0 %></td>
         <td><%= @patients_per_facility_total[facility.id] || 0 %></td>
       </tr>
