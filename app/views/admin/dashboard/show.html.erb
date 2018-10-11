@@ -36,6 +36,40 @@
 
 <hr>
 
+<h3>Recent BPs recorded</h3>
+<table class="table">
+  <thead class="thead-light">
+    <tr>
+      <th>Facility</th>
+      <th>User</th>
+      <% 6.downto(2).each do |since| %>
+        <th>
+          <small><%= time_ago_in_words(since.days.ago) %> ago</small>
+          <br>
+          <%= since.days.ago.strftime("%A") %>
+        </th>
+      <% end %>
+      <th>Yesterday</th>
+      <th>Today</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @bps_by_facility_nurse_per_day.sort.each do |facility_name, users| %>
+      <% users.sort.each do |user_name, dates| %>
+        <tr>
+          <td><%= facility_name %></td>
+          <td><%= user_name %></td>
+          <% 6.downto(0).each do |since| %>
+            <td><%= dates[since.days.ago.to_date] %></th>
+          <% end %>
+        </tr>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>
+
+<hr>
+
 <h3>Patients registered</h3>
 <table class="table">
   <thead class="thead-light">

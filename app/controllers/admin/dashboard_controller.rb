@@ -8,9 +8,30 @@ class Admin::DashboardController < AdminController
     @patients_per_facility_total = patient_count_per_facility
     @patients_per_facility_30days = patient_count_per_facility(since: 30.days.ago.beginning_of_day)
     @control_rate_per_facility = control_rate_per_facility
+
+    @bps_by_facility_nurse_per_day = bps_by_facility_nurse_per_day
   end
 
   private
+
+  def bps_by_facility_nurse_per_day
+    bp_counts_by_day = BloodPressure.group_by_day(:device_created_at, last: 7).group(:facility_id, :user_id).count(:id)
+
+    facilities = Hash.new { |hash, key| hash[key] = Hash.new { |hash, key| hash[key] = {} } }
+
+    bp_counts_by_day.each do |key, bp_count|
+      date, facility_id, user_id = key
+
+      facility = Facility.find_by(id: facility_id)
+      user = User.find_by(id: user_id)
+
+      if facility.present? && user.present?
+        facilities[facility.name][user.full_name][date] = bp_count
+      end
+    end
+
+    facilities
+  end
 
   def patient_count_per_facility(since: nil)
     patients_by_facility = Facility.joins(:patients).group("facilities.id").distinct('patient.id')
