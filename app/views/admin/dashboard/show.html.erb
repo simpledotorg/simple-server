@@ -40,27 +40,35 @@
 <table class="table">
   <thead class="thead-light">
     <tr>
-      <th>Facility</th>
-      <th>User</th>
+      <th>Facility &amp; Users</th>
+      <th class="text-center">All-time<br>total</th>
       <% 6.downto(2).each do |since| %>
-        <th>
-          <small><%= time_ago_in_words(since.days.ago) %> ago</small>
-          <br>
-          <%= since.days.ago.strftime("%A") %>
+        <th class="text-center">
+          <small><%= time_ago_in_words(since.days.ago) %> ago</small><br><%= since.days.ago.strftime("%A") %>
         </th>
       <% end %>
-      <th>Yesterday</th>
-      <th>Today</th>
+      <th class="text-center">Yesterday</th>
+      <th class="text-center">Today</th>
     </tr>
   </thead>
   <tbody>
-    <% @bps_by_facility_nurse_per_day.sort.each do |facility_name, users| %>
-      <% users.sort.each do |user_name, dates| %>
+    <% @facilities.each do |facility| %>
+      <tr class="table-light">
+        <td><strong><%= facility.name %></strong>
+        <td class="text-center"><%= @bps_by_facility[facility.id] || 0 %></td>
+        <td colspan="7"></td>
+      </tr>
+
+      <% facility.users.each do |user| %>
         <tr>
-          <td><%= facility_name %></td>
-          <td><%= user_name %></td>
+          <td><small class="pl-4"><%= user.full_name %></small></td>
+          <td class="text-center">
+            <small><%= @bps_by_facility_user[[facility.id, user.id]] || '<span class="text-muted">0</span>'.html_safe %></small>
+          </td>
           <% 6.downto(0).each do |since| %>
-            <td><%= dates[since.days.ago.to_date] %></th>
+            <td class="text-center">
+              <small><%= @bps_by_date_facility_user[[since.days.ago.to_date, facility.id, user.id]] || '<span class="text-muted">0</span>'.html_safe %></small>
+            </td>
           <% end %>
         </tr>
       <% end %>
@@ -84,7 +92,7 @@
     <% @facilities.each do |facility| %>
       <tr>
         <td><%= facility.name %></td>
-        <td><%= number_to_percentage(@control_rate_per_facility[facility.id] * 100, precision: 1) || 'N/A' %></td>
+        <td><%= number_to_percentage((@control_rate_per_facility[facility.id] || 0) * 100, precision: 1) || 'N/A' %></td>
         <td><%= @patients_per_facility_30days[facility.id] || 0 %></td>
         <td><%= @patients_per_facility_total[facility.id] || 0 %></td>
       </tr>

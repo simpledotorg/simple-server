@@ -9,38 +9,41 @@ class Admin::DashboardController < AdminController
     @patients_per_facility_30days = patient_count_per_facility(since: 30.days.ago.beginning_of_day)
     @control_rate_per_facility = control_rate_per_facility
 
-    @bps_by_facility_nurse_per_day = bps_by_facility_nurse_per_day
+    @patients_per_user_total = patient_count_per_user
+
+    #@bps_by_facility_nurse_per_day = bps_by_facility_nurse_per_day
+
+    @bps_by_facility = bps_by_facility
+    @bps_by_facility_user = bps_by_facility_user
+    @bps_by_date_facility_user = bps_by_date_facility_user
   end
 
   private
 
-  def bps_by_facility_nurse_per_day
-    bp_counts_by_day = BloodPressure.group_by_day(:device_created_at, last: 7).group(:facility_id, :user_id).count(:id)
+  def bps_by_facility
+    bp_counts_by_day = BloodPressure.group(:facility_id).count
+  end
 
-    facilities = Hash.new { |hash, key| hash[key] = Hash.new { |hash, key| hash[key] = {} } }
+  def bps_by_facility_user
+    bp_counts_by_day = BloodPressure.group(:facility_id, :user_id).count
+  end
 
-    bp_counts_by_day.each do |key, bp_count|
-      date, facility_id, user_id = key
-
-      facility = Facility.find_by(id: facility_id)
-      user = User.find_by(id: user_id)
-
-      if facility.present? && user.present?
-        facilities[facility.name][user.full_name][date] = bp_count
-      end
-    end
-
-    facilities
+  def bps_by_date_facility_user
+    bp_counts_by_day = BloodPressure.group_by_day(:device_created_at, last: 7).group(:facility_id, :user_id).count
   end
 
   def patient_count_per_facility(since: nil)
-    patients_by_facility = Facility.joins(:patients).group("facilities.id").distinct('patient.id')
+    patients_by_facility = Facility.joins(:patients).group("facilities.id").distinct('patients.id')
 
     if since.present?
       patients_by_facility.where('patients.created_at > ?', since)
     end
 
     patients_by_facility.count("patients.id")
+  end
+
+  def patient_count_per_user
+    User.joins(:patients).group("users.id").distinct('patients.id').count("patients.id")
   end
 
   def control_rate_per_facility
