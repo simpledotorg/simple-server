@@ -13,24 +13,24 @@ RSpec.feature "Dashboards", type: :feature do
   end
 
   it "shows a basic dashboard" do
-    expect(page).to have_content("Patients Registered")
+    expect(page).to have_content("Patients registered")
   end
 
   context "outstanding approval requests" do
     it "shows a task list for approvals" do
-      expect(page).to have_content("1 User waiting for access")
+      expect(page).to have_content("1 user waiting for access")
 
       within find(".card", text: new_user.full_name) do
         expect(page).to have_content(new_user.phone_number)
         expect(page).to have_content("Bathinda")
-        expect(page).to have_link("Allow Access")
-        expect(page).to have_link("Deny Access")
+        expect(page).to have_link("Allow access")
+        expect(page).to have_link("Deny access")
       end
     end
 
     it "lets admins allow access" do
       within find(".card", text: new_user.full_name) do
-        click_link "Allow Access"
+        click_link "Allow access"
       end
 
       expect(page).not_to have_content(new_user.full_name)
@@ -41,7 +41,7 @@ RSpec.feature "Dashboards", type: :feature do
 
     it "lets admins deny access" do
       within find(".card", text: new_user.full_name) do
-        click_link "Deny Access"
+        click_link "Deny access"
         fill_in "reason_for_denial", with: 'reason for denial'
         find('input[name="commit"]').click
       end
