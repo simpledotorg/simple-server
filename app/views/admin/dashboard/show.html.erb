@@ -38,11 +38,11 @@
 
 <h3>Recent BPs recorded</h3>
 <div class="table-responsive">
-  <table class="table">
+  <table class="table table-sm">
     <thead class="thead-light">
       <tr>
         <th>Facility &amp; Users</th>
-        <th class="text-center">All-time<br>total</th>
+        <th class="text-center">Total BPs</th>
         <% 6.downto(2).each do |since| %>
           <th class="text-center">
             <small><%= time_ago_in_words(since.days.ago.in_time_zone("New Delhi")) %> ago</small><br><%= since.days.ago.strftime("%A") %>
@@ -60,21 +60,21 @@
       <% @facilities.sort_by(&:name).each do |facility| %>
         <% next if @bps_by_facility.fetch(facility.id, 0)  == 0 %>
 
-        <tr class="table-light">
-          <td><strong><%= facility.name %></strong>
+        <tr class="table-info table-row-small">
+          <td><strong><%= facility.name %></strong></td>
           <td class="text-center"><%= lighten_if_zero(@bps_by_facility[facility.id] || 0) %></td>
           <td colspan="7"></td>
         </tr>
 
         <% facility.users.sort_by(&:full_name).each do |user| %>
-          <tr>
-            <td class="pl-lg-4"><small><%= user.full_name %></small></td>
+          <tr class="table-row-small">
+            <td class="pl-lg-4"><%= user.full_name %></td>
             <td class="text-center">
-              <small><%= lighten_if_zero(@bps_by_facility_user[[facility.id, user.id]] || 0) %></small>
+              <%= lighten_if_zero(@bps_by_facility_user[[facility.id, user.id]] || 0) %>
             </td>
             <% 6.downto(0).each do |since| %>
               <td class="text-center">
-                <small><%= lighten_if_zero(@bps_by_facility_user_day[[facility.id, user.id, since.days.ago.in_time_zone("New Delhi").to_date]] || 0) %></small>
+                <%= lighten_if_zero(@bps_by_facility_user_day[[facility.id, user.id, since.days.ago.in_time_zone("New Delhi").to_date]] || 0) %>
               </td>
             <% end %>
           </tr>
@@ -88,11 +88,11 @@
 
 <h3>Control rates and patients registered</h3>
 <div class="table-responsive">
-  <table class="table">
+  <table class="table table-sm">
     <thead class="thead-light">
       <tr>
         <th>Facility</th>
-        <th>Control rate</th>
+        <th class="text-center">Control rate</th>
         <th class="text-center">All-time<br>total</th>
         <% 3.downto(0).each do |since| %>
           <th class="text-center">
