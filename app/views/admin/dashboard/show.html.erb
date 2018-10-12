@@ -1,5 +1,3 @@
-<% Time.zone = "New Delhi" %>
-
 <% if @users_requesting_approval.any? %>
   <h4><%= pluralize(@users_requesting_approval.count || 0, "user") %> waiting for access</h4>
 
@@ -47,11 +45,11 @@
         <th class="text-center">All-time<br>total</th>
         <% 6.downto(2).each do |since| %>
           <th class="text-center">
-            <small><%= time_ago_in_words(since.days.ago) %> ago</small><br><%= since.days.ago.strftime("%A") %>
+            <small><%= time_ago_in_words(since.days.ago.in_zone("New Delhi")) %> ago</small><br><%= since.days.ago.strftime("%A") %>
           </th>
         <% end %>
         <th class="text-center">
-          <small>Yesterday</small><br><%= 1.day.ago.strftime("%A") %>
+          <small>Yesterday</small><br><%= 1.day.ago.in_zone("New Delhi").strftime("%A") %>
         </th>
         <th class="text-center">
           <small>Today</small><br><%= Time.zone.now.strftime("%A") %>
@@ -76,7 +74,7 @@
             </td>
             <% 6.downto(0).each do |since| %>
               <td class="text-center">
-                <small><%= lighten_if_zero(@bps_by_facility_user_day[[facility.id, user.id, since.days.ago.to_date]] || 0) %></small>
+                <small><%= lighten_if_zero(@bps_by_facility_user_day[[facility.id, user.id, since.days.ago.in_zone("New Delhi").to_date]] || 0) %></small>
               </td>
             <% end %>
           </tr>
@@ -98,7 +96,7 @@
         <th class="text-center">All-time<br>total</th>
         <% 3.downto(0).each do |since| %>
           <th class="text-center">
-            <%= since.months.ago.strftime("%b %Y") %>
+            <%= since.months.ago.in_zone("New Delhi").strftime("%b %Y") %>
           </th>
         <% end %>
       </tr>
@@ -113,7 +111,7 @@
           <td class="text-center"><%= lighten_if_zero(@patients_by_facility[facility.id] || 0) %></td>
           <% 3.downto(0).each do |since| %>
             <td class="text-center">
-              <%= lighten_if_zero(@patients_by_facility_month[[facility.id, since.months.ago.beginning_of_month.to_date]] || 0) %>
+              <%= lighten_if_zero(@patients_by_facility_month[[facility.id, since.months.ago.in_zone("New Delhi").beginning_of_month.to_date]] || 0) %>
             </td>
           <% end %>
         </tr>

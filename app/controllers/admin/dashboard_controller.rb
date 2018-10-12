@@ -16,6 +16,9 @@ class Admin::DashboardController < AdminController
     @patients_by_facility_month = patients_by_facility_month
 
     @control_rate_by_facility = control_rate_by_facility
+
+    # Reset when done
+    Groupdate.time_zone = "UTC"
   end
 
   private
