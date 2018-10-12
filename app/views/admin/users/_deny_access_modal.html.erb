@@ -9,7 +9,7 @@
       <%= bootstrap_form_with(url: admin_user_disable_access_path(user), method: :put, local: true, label_errors: true) do |form| %>
         <div class="modal-body">
           <div class="col-md-12">
-            <%= form.text_field :reason_for_denial, id: :reason_for_denial, label: 'Reason for denying access', required: true %>
+            <%= form.text_field :reason_for_denial, id: :reason_for_denial, label: "Reason for denying access to #{user.full_name}", required: true %>
           </div>
         </div>
         <div class="modal-footer">
