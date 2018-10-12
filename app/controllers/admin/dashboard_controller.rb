@@ -35,7 +35,7 @@ class Admin::DashboardController < AdminController
   end
 
   def patients_by_facility_month
-    Facility.joins(:patients).group("facilities.id").distinct('patients.id').group_by_month("patients.device_created_at", last: 3).count("patients.id")
+    Facility.joins(:patients).group("facilities.id").distinct('patients.id').group_by_month("patients.device_created_at", last: 4).count("patients.id")
   end
 
   def control_rate_by_facility
