@@ -34,6 +34,10 @@ span.inactive {
 .card-cell-header {
   @extend .text-muted;
   @extend .small;
+
+  @include media-breakpoint-up(md) {
+    display: none;
+  }
 }
 
 @include media-breakpoint-down(md) {
@@ -45,4 +49,8 @@ span.inactive {
       margin-bottom: 0.5rem;
     }
   }
+}
+
+.zero {
+  color: #ddd;
 }

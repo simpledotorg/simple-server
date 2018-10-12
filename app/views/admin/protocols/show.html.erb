@@ -5,10 +5,10 @@
 </p>
 
 <% if policy(@protocol).edit? %>
-  <%= link_to "Edit Protocol", edit_admin_protocol_path(@protocol), class: "btn btn-sm btn-primary" %>
+  <%= link_to "Edit protocol", edit_admin_protocol_path(@protocol), class: "btn btn-sm btn-primary" %>
 <% end %>
 
-<h2 class="mt-4">Protocol Drugs</h2>
+<h2 class="mt-4">Protocol drugs</h2>
 
 <table class="table">
   <thead class="thead-light">
@@ -30,7 +30,7 @@
           <td><%= link_to 'Edit', edit_admin_protocol_protocol_drug_path(@protocol, protocol_drug) %></td>
         <% end %>
         <% if policy(protocol_drug).destroy? %>
-          <td><%= link_to 'Delete', [:admin, @protocol, protocol_drug], method: :delete, data: { confirm: 'Are you sure?' } %></td>
+          <td><%= link_to 'Delete', [:admin, @protocol, protocol_drug], method: :delete, data: { confirm: "Are you sure you want to delete #{protocol_drug.name}?" } %></td>
         <% end %>
       </tr>
     <% end %>
@@ -38,5 +38,5 @@
 </table>
 
 <% if policy(ProtocolDrug).new? %>
-  <%= link_to 'New Protocol Drug', new_admin_protocol_protocol_drug_path(@protocol), class: "btn btn-sm btn-primary" %>
+  <%= link_to 'New protocol drug', new_admin_protocol_protocol_drug_path(@protocol), class: "btn btn-sm btn-primary" %>
 <% end %>

@@ -6,10 +6,10 @@
   <thead class="thead-light">
   <tr>
     <th>Name</th>
-    <th>Sync Status</th>
-    <th>Status Reason</th>
-    <th>Phone Number</th>
-    <th>Registered at Facility</th>
+    <th>Sync status</th>
+    <th>Status reason</th>
+    <th>Phone number</th>
+    <th>Registered at facility</th>
     <th colspan="2"></th>
   </tr>
   </thead>
@@ -19,7 +19,7 @@
     <tr>
       <td><%= link_to user.full_name, [:admin, user] %></td>
       <td class="sync_approval_status">
-        <span class="label <%= user.sync_approval_status %>"><%= user.sync_approval_status.capitalize %></span>
+        <span class="label <%= user.sync_approval_status %>"><%= user.sync_approval_status&.capitalize %></span>
       </td>
       <td class="sync_approval_status_reason"><%= user.sync_approval_status_reason %></td>
       <td><a href="tel:<%= user.phone_number %>"><%= user.phone_number %></a></td>
@@ -33,15 +33,16 @@
           <%= link_to 'Edit', edit_admin_user_path(user) %>
         <% end %>
         <% if policy(user).destroy? %>
-          | <%= link_to 'Delete', [:admin, user], method: :delete, data: { confirm: 'Are you sure?' } %>
+          | <%= link_to 'Delete', [:admin, user], method: :delete, data: { confirm: "Are you sure you want to delete #{user.full_name}?" } %>
         <% end %>
         <% unless user.sync_approval_status == 'denied' %>
-          | <%= link_to 'Deny Access', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal' %>
+          | <%= link_to 'Deny access', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal' %>
         <% end %>
         <% unless user.sync_approval_status == 'allowed' %>
-          | <%= link_to 'Allow Access', admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
+          | <%= link_to 'Allow access', admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
         <% end %>
-        <%= render partial: "deny_access_modal", locals: {user: user} %>
+
+        <%= render partial: "deny_access_modal", locals: { user: user } %>
       </td>
     </tr>
   <% end %>
@@ -49,5 +50,5 @@
 </table>
 
 <% if policy(User).new? %>
-  <%= link_to 'New User', new_admin_user_path, class: "btn btn-sm btn-primary" %>
+  <%= link_to 'New user', new_admin_user_path, class: "btn btn-sm btn-primary" %>
 <% end %>
