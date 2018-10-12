@@ -22,7 +22,7 @@ class AdminsController < AdminController
 
   def destroy
     @admin.destroy
-    redirect_to admin_facilities_url, notice: 'Admin was successfully deleted.'
+    redirect_to admins_url, notice: 'Admin was successfully deleted.'
   end
 
   private
