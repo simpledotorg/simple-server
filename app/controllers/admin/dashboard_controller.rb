@@ -55,7 +55,7 @@ class Admin::DashboardController < AdminController
     control_rate
   end
 
-  def hypertensive_patients_by_facility(since: Time.new(0), upto: Time.now)
+  def hypertensive_patients_by_facility(since: Time.new(0), upto: Time.now.in_time_zone("New Delhi"))
     hypertensive_patients = {}
 
     BloodPressure.hypertensive
