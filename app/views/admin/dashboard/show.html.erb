@@ -50,8 +50,12 @@
             <small><%= time_ago_in_words(since.days.ago) %> ago</small><br><%= since.days.ago.strftime("%A") %>
           </th>
         <% end %>
-        <th class="text-center">Yesterday</th>
-        <th class="text-center">Today</th>
+        <th class="text-center">
+          <small>Yesterday</small><br><%= 1.day.ago.strftime("%A") %>
+        </th>
+        <th class="text-center">
+          <small>Today</small><br><%= Time.zone.now.strftime("%A") %>
+        </th>
       </tr>
     </thead>
     <tbody>
