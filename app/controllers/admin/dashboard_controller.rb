@@ -2,6 +2,8 @@ class Admin::DashboardController < AdminController
   def show
     skip_authorization
 
+    Groupdate.time_zone = "New Delhi"
+
     @users_requesting_approval = User.requested_sync_approval
 
     @facilities = Facility.all.order(:name)
@@ -14,6 +16,9 @@ class Admin::DashboardController < AdminController
     @patients_by_facility_month = patients_by_facility_month
 
     @control_rate_by_facility = control_rate_by_facility
+
+    # Reset when done
+    Groupdate.time_zone = "UTC"
   end
 
   private
@@ -50,7 +55,7 @@ class Admin::DashboardController < AdminController
     control_rate
   end
 
-  def hypertensive_patients_by_facility(since: Time.new(0), upto: Time.now)
+  def hypertensive_patients_by_facility(since: Time.new(0), upto: Time.now.in_time_zone("New Delhi"))
     hypertensive_patients = {}
 
     BloodPressure.hypertensive
