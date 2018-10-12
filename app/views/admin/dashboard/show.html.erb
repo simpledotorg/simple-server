@@ -1,3 +1,5 @@
+<% Time.zone = "New Delhi" %>
+
 <% if @users_requesting_approval.any? %>
   <h4><%= pluralize(@users_requesting_approval.count || 0, "user") %> waiting for access</h4>
 

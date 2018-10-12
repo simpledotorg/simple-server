@@ -2,6 +2,8 @@ class Admin::DashboardController < AdminController
   def show
     skip_authorization
 
+    Groupdate.time_zone = "New Delhi"
+
     @users_requesting_approval = User.requested_sync_approval
 
     @facilities = Facility.all.order(:name)
