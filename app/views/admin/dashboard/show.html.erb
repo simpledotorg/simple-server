@@ -22,7 +22,7 @@
               </div>
             </div>
           </div>
-          <div class="col-lg-4">
+          <div class="col-lg-4 text-lg-right">
             <%= link_to "Allow access", admin_user_enable_access_path(user), method: :put, class: "btn btn-sm btn-success", data: { confirm: I18n.t('admin.enable_access_alert') } %>
             <%= link_to 'Deny access', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal', class: "btn btn-sm btn-outline-danger" %>
 
@@ -52,7 +52,7 @@
           <small>Yesterday</small><br><%= 1.day.ago.in_time_zone("New Delhi").strftime("%A") %>
         </th>
         <th class="text-center">
-          <small>Today</small><br><%= Time.zone.now.strftime("%A") %>
+          <small>Today</small><br><%= Time.in_time_zone("New Delhi").now.strftime("%A") %>
         </th>
       </tr>
     </thead>
