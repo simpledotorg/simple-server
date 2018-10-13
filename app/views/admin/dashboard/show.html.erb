@@ -52,7 +52,7 @@
           <small>Yesterday</small><br><%= 1.day.ago.in_time_zone("New Delhi").strftime("%A") %>
         </th>
         <th class="text-center">
-          <small>Today</small><br><%= Time.in_time_zone("New Delhi").now.strftime("%A") %>
+          <small>Today</small><br><%= Time.now.in_time_zone("New Delhi").strftime("%A") %>
         </th>
       </tr>
     </thead>
