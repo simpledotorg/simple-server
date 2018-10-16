@@ -5,6 +5,7 @@ RSpec.describe FacilityPolicy do
 
   let(:owner) { create(:admin, :owner) }
   let(:supervisor) { create(:admin, :supervisor) }
+  let(:analyst) { create(:admin, :analyst) }
 
   permissions :index?, :show? do
     it "permits owners" do
@@ -13,6 +14,10 @@ RSpec.describe FacilityPolicy do
 
     it "permits supervisors" do
       expect(subject).to permit(supervisor, Facility)
+    end
+
+    it "denies analysts" do
+      expect(subject).not_to permit(analyst, Facility)
     end
   end
 
@@ -23,6 +28,10 @@ RSpec.describe FacilityPolicy do
 
     it "denies supervisors" do
       expect(subject).not_to permit(supervisor, Facility)
+    end
+
+    it "denies analysts" do
+      expect(subject).not_to permit(analyst, Facility)
     end
   end
 end

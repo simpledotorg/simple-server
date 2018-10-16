@@ -1,4 +1,4 @@
-<% if @users_requesting_approval.any? %>
+<% if policy(User).enable_access? && @users_requesting_approval.any? %>
   <h4><%= pluralize(@users_requesting_approval.count || 0, "user") %> waiting for access</h4>
 
   <% @users_requesting_approval.each do |user| %>
@@ -32,9 +32,9 @@
       </div>
     </div>
   <% end %>
-<% end %>
 
-<hr>
+  <hr>
+<% end %>
 
 <h3>Recent BPs recorded</h3>
 <div class="table-responsive">
