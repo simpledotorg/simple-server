@@ -21,4 +21,20 @@ namespace :data_migration do
       puts "Created UserFacility records fors #{users.count} users"
     end
   end
+
+  desc "Populate initial registration facility and user for patients"
+  task update_initial_registration_for_patients: :environment do
+    ActiveRecord::Base.transaction do
+      patients = Patient.all
+      puts "Updating initial registration associations for #{patients.count} patients"
+
+      patients.each do |patient|
+        if first_bp = patient.blood_pressures.order(:device_created_at).first
+          patient.update(registration_facility: first_bp.facility, registration_user: first_bp.user)
+        end
+      end
+
+      puts "Updated initial registration associations for #{patients.count} patients"
+    end
+  end
 end
