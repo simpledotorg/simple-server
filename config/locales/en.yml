@@ -79,5 +79,5 @@ en:
       license:
         name: 'MIT'
         url: 'https://github.com/simpledotorg/simple-server/blob/master/LICENSE'
-  registration: 'Registration'
+  registration: 'New registration'
   reset_password: 'Reset PIN'

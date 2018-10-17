@@ -34,6 +34,10 @@ span.inactive {
 .card-cell-header {
   @extend .text-muted;
   @extend .small;
+
+  @include media-breakpoint-up(md) {
+    display: none;
+  }
 }
 
 @include media-breakpoint-down(md) {
@@ -46,3 +50,17 @@ span.inactive {
     }
   }
 }
+
+.zero {
+  color: #ddd;
+}
+
+.table-row-small > td {
+  font-size: 80%;
+  font-weight: 400;
+}
+
+.table-info > td {
+  background-color: #E9F3FF;
+}
+

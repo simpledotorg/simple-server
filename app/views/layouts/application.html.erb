@@ -19,7 +19,10 @@
   <body>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
       <div class="container">
-        <a class="navbar-brand mr-5" href="#">Simple Server</a>
+        <%= link_to root_path, class: "navbar-brand" do %>
+          <%= image_tag "simple_logo.svg", width: 30, height: 30, class: "d-inline-block mr-2 align-top", alt: "Simple Server Logo" %>
+          Simple Server
+        <% end %>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -76,6 +79,15 @@
     </nav>
 
     <main role="main" class="container">
+      <% flash.each do |type, message| %>
+        <div class="alert <%= bootstrap_class_for_flash(type) %> alert-dismissable fade show">
+          <%= message %>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      <% end %>
+
       <%= yield %>
     </main>
   </body>

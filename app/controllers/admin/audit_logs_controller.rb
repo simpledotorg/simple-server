@@ -1,4 +1,4 @@
-class Admin::AuditLogsController < ApplicationController
+class Admin::AuditLogsController < AdminController
   before_action :set_audit_log, only: [:show]
 
   def index
