@@ -86,7 +86,7 @@
 
 <hr>
 
-<h3>Control rates and patients registered</h3>
+<h3>Control rates and new patients registered</h3>
 <div class="table-responsive">
   <table class="table table-sm">
     <thead class="thead-light">
@@ -94,7 +94,7 @@
         <th>Facility</th>
         <th class="text-center">Control rate</th>
         <th class="text-center">All-time<br>total</th>
-        <% 3.downto(0).each do |since| %>
+        <% 8.downto(0).each do |since| %>
           <th class="text-center">
             <%= since.months.ago.in_time_zone("New Delhi").strftime("%b %Y") %>
           </th>
@@ -103,15 +103,45 @@
     </thead>
     <tbody>
       <% @facilities.sort_by(&:name).each do |facility| %>
-        <% next if @bps_by_facility.fetch(facility.id, 0)  == 0 %>
+        <% next if @bps_by_facility.fetch(facility.id, 0) == 0 %>
 
         <tr class="table-light">
           <td><%= facility.name %></td>
           <td class="text-center"><%= number_to_percentage((@control_rate_by_facility[facility.id] || 0) * 100, precision: 1) || 'N/A' %></td>
-          <td class="text-center"><%= lighten_if_zero(@patients_by_facility[facility.id] || 0) %></td>
-          <% 3.downto(0).each do |since| %>
+          <td class="text-center"><%= lighten_if_zero(@new_patients_by_facility[facility.id] || 0) %></td>
+          <% 8.downto(0).each do |since| %>
             <td class="text-center">
-              <%= lighten_if_zero(@patients_by_facility_month[[facility.id, since.months.ago.in_time_zone("New Delhi").beginning_of_month.to_date]] || 0) %>
+              <%= lighten_if_zero(@new_patients_by_facility_month[[facility.id, since.months.ago.in_time_zone("New Delhi").beginning_of_month.to_date]] || 0) %>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<h3>Unique patients seen</h3>
+<div class="table-responsive">
+  <table class="table table-sm">
+    <thead class="thead-light">
+      <tr>
+        <th>Facility</th>
+        <% 8.downto(0).each do |since| %>
+          <th class="text-center">
+            <%= since.months.ago.in_time_zone("New Delhi").strftime("%b %Y") %>
+          </th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <% @facilities.sort_by(&:name).each do |facility| %>
+        <% next if @bps_by_facility.fetch(facility.id, 0) == 0 %>
+
+        <tr class="table-light">
+          <td><%= facility.name %></td>
+          <% 8.downto(0).each do |since| %>
+            <td class="text-center">
+              <%= lighten_if_zero(@visits_by_facility_month[[facility.id, since.months.ago.in_time_zone("New Delhi").beginning_of_month.to_date]] || 0) %>
             </td>
           <% end %>
         </tr>
