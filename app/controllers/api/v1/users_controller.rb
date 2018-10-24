@@ -11,7 +11,7 @@ class Api::V1::UsersController < APIController
     else
       user.sync_approval_requested(I18n.t('registration'))
       user.save
-      ApprovalNotifierMailer.with(user: user).registration_approval_email.deliver_now
+      ApprovalNotifierMailer.with(user: user).registration_approval_email.deliver_later
     end
     render json: {
       user: user_to_response(user),
@@ -37,7 +37,7 @@ class Api::V1::UsersController < APIController
   def reset_password
     current_user.reset_password(reset_password_digest)
     current_user.save
-    ApprovalNotifierMailer.with(user: current_user).reset_password_approval_email.deliver_now
+    ApprovalNotifierMailer.with(user: current_user).reset_password_approval_email.deliver_later
     render json: {
       user: user_to_response(current_user),
       access_token: current_user.access_token
