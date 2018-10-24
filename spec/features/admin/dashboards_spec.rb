@@ -14,7 +14,7 @@ RSpec.feature "Dashboards", type: :feature do
 
   it "shows a basic dashboard" do
     expect(page).to have_content("Recent BPs recorded")
-    expect(page).to have_content("Control rates and patients registered")
+    expect(page).to have_content("Control rates and new patients registered")
   end
 
   context "outstanding approval requests" do
