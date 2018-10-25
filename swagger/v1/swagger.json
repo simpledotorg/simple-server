@@ -1715,22 +1715,40 @@
           "$ref": "#/definitions/uuid"
         },
         "prior_heart_attack": {
-          "type": "boolean"
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "prior_stroke": {
-          "type": "boolean"
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "chronic_kidney_disease": {
-          "type": "boolean"
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "receiving_treatment_for_hypertension": {
-          "type": "boolean"
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "diabetes": {
-          "type": "boolean"
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "diagnosed_with_hypertension": {
-          "type": "boolean"
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "created_at": {
           "$ref": "#/definitions/timestamp"

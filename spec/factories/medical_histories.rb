@@ -19,8 +19,8 @@ end
 
 def build_invalid_medical_history_payload
   build_medical_history_payload.merge(
-    prior_heart_attack: nil,
-    prior_stroke: nil
+    prior_heart_attack: 'invalid',
+    prior_stroke: 'invalid'
   )
 end
 
