@@ -26,7 +26,7 @@ class Api::V1::MedicalHistoriesController < Api::V1::SyncController
   end
 
   def transform_to_response(medical_history)
-    Api::V1::Transformer.to_response(medical_history)
+    Api::V1::MedicalHistoryTransformer.to_response(medical_history)
   end
 
   def medical_histories_params

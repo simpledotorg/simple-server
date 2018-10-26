@@ -21,10 +21,6 @@ module Api::V1::Schema::Models
     timestamp.merge(type: [:string, 'null'])
   end
 
-  def self.nullable_boolean
-    { type: [:boolean, 'null'] }
-  end
-
   def self.bcrypt_password
     { type: :string,
       pattern: '^\$[0-9a-z]{2}\$[0-9]{2}\$[A-Za-z0-9\.\/]{53}$',
@@ -224,12 +220,12 @@ module Api::V1::Schema::Models
       properties: {
         id: { '$ref' => '#/definitions/uuid' },
         patient_id: { '$ref' => '#/definitions/uuid' },
-        prior_heart_attack: nullable_boolean,
-        prior_stroke: nullable_boolean,
-        chronic_kidney_disease: nullable_boolean,
-        receiving_treatment_for_hypertension: nullable_boolean,
-        diabetes: nullable_boolean,
-        diagnosed_with_hypertension: nullable_boolean,
+        prior_heart_attack: { type: :boolean },
+        prior_stroke: { type: :boolean },
+        chronic_kidney_disease: { type: :boolean },
+        receiving_treatment_for_hypertension: { type: :boolean },
+        diabetes: { type: :boolean },
+        diagnosed_with_hypertension: { type: :boolean },
         created_at: { '$ref' => '#/definitions/timestamp' },
         updated_at: { '$ref' => '#/definitions/timestamp' } },
       required: [
