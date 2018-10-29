@@ -55,8 +55,8 @@ span.inactive {
   color: #ddd;
 }
 
-th.holiday {
-  background-color: darken(#e9ecef, 10%) !important;
+.table thead .holiday {
+  background-color: darken(#e9ecef, 10%);
 }
 
 .table-row-small > td {
