@@ -1,7 +1,28 @@
+$accent-color: #FF3355; /* PINK */
+$dark-grey: #777;
+$highlight: #E9F3FF; /* LIGHT BLUE */
+/********/
+
 @import "bootstrap";
 
 body {
   padding-top: 5rem;
+}
+
+h3 {
+    font-size: 16px;
+    color: $accent-color;
+    font-weight: 500;
+}
+
+.table thead.thead-light th {
+    //background: #fff;
+    font-size: 12px;
+    color: $dark-grey;
+}
+
+.table thead.thead-light th small {
+    font-size: 12px;
 }
 
 span.inactive {
@@ -55,12 +76,37 @@ span.inactive {
   color: #ddd;
 }
 
+.table {
+    font-size: 14px;
+    margin-bottom: 2.5em;
+}
+
+.table .table-info strong {
+    font-size: 14px;
+}
+
+.table thead.thead-light th {
+    background: #fff;
+    border: none;
+}
+
+.table thead.thead-light .holiday {
+  background-color: #f6f6f6;
+}
+
 .table-row-small > td {
   font-size: 80%;
   font-weight: 400;
+
+  &.holiday {
+    background-color: #f6f6f6;
+  }
 }
 
 .table-info > td {
-  background-color: #E9F3FF;
+  background-color: $highlight;
+    
+    &.holiday {
+        background: #eee;
+    }
 }
-
