@@ -43,9 +43,9 @@
       <tr>
         <th>Facility &amp; Users</th>
         <th class="text-center">Total BPs</th>
-        <% @days_previous.downto(0).each do |since| %>
-          <th class="text-center">
-            <small><strong><%= since.days.ago.strftime("%b") %><br><%= since.days.ago.strftime("%d") %></strong></small>
+        <% @days_previous.downto(0).map { |since| since.days.ago }.each do |day| %>
+          <th class="text-center <%= "holiday" if day.sunday? %>">
+            <small><strong><%= day.strftime("%b") %><br><%= day.strftime("%d") %></strong></small>
           </th>
         <% end %>
       </tr>
@@ -57,7 +57,9 @@
         <tr class="table-info table-row-small">
           <td><strong><%= facility.name %></strong></td>
           <td class="text-center"><%= lighten_if_zero(@bps_by_facility[facility.id] || 0) %></td>
-          <td colspan="<%= @days_previous + 1 %>"></td>
+          <% @days_previous.downto(0).map { |since| since.days.ago }.each do |day| %>
+            <td class="text-center <%= "holiday" if day.sunday? %>"></td>
+          <% end %>
         </tr>
 
         <% facility.users.sort_by(&:full_name).each do |user| %>
@@ -66,9 +68,9 @@
             <td class="text-center">
               <%= lighten_if_zero(@bps_by_facility_user[[facility.id, user.id]] || 0) %>
             </td>
-            <% @days_previous.downto(0).each do |since| %>
-              <td class="text-center">
-                <%= lighten_if_zero(@bps_by_facility_user_day[[facility.id, user.id, since.days.ago.in_time_zone("New Delhi").to_date]] || 0) %>
+            <% @days_previous.downto(0).map { |since| since.days.ago }.each do |day| %>
+              <td class="text-center <%= "holiday" if day.sunday? %>">
+                <%= lighten_if_zero(@bps_by_facility_user_day[[facility.id, user.id, day.in_time_zone("New Delhi").to_date]] || 0) %>
               </td>
             <% end %>
           </tr>

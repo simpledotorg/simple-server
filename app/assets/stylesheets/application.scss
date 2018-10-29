@@ -55,12 +55,19 @@ span.inactive {
   color: #ddd;
 }
 
+th.holiday {
+  background-color: darken(#e9ecef, 10%) !important;
+}
+
 .table-row-small > td {
   font-size: 80%;
   font-weight: 400;
+
+  &.holiday {
+    background-color: #e9ecef;
+  }
 }
 
 .table-info > td {
   background-color: #E9F3FF;
 }
-
