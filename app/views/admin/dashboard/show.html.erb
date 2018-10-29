@@ -43,17 +43,11 @@
       <tr>
         <th>Facility &amp; Users</th>
         <th class="text-center">Total BPs</th>
-        <% @days_previous.downto(2).each do |since| %>
+        <% @days_previous.downto(0).each do |since| %>
           <th class="text-center">
-            <small><%= time_ago_in_words(since.days.ago.in_time_zone("New Delhi")) %> ago</small><br><%= since.days.ago.strftime("%A") %>
+            <small><strong><%= since.days.ago.strftime("%b") %><br><%= since.days.ago.strftime("%d") %></strong></small>
           </th>
         <% end %>
-        <th class="text-center">
-          <small>Yesterday</small><br><%= 1.day.ago.in_time_zone("New Delhi").strftime("%A") %>
-        </th>
-        <th class="text-center">
-          <small>Today</small><br><%= Time.now.in_time_zone("New Delhi").strftime("%A") %>
-        </th>
       </tr>
     </thead>
     <tbody>
@@ -63,7 +57,7 @@
         <tr class="table-info table-row-small">
           <td><strong><%= facility.name %></strong></td>
           <td class="text-center"><%= lighten_if_zero(@bps_by_facility[facility.id] || 0) %></td>
-          <td colspan="7"></td>
+          <td colspan="<%= @days_previous + 1 %>"></td>
         </tr>
 
         <% facility.users.sort_by(&:full_name).each do |user| %>
@@ -96,7 +90,8 @@
         <th class="text-center">All-time<br>total</th>
         <% @months_previous.downto(0).each do |since| %>
           <th class="text-center">
-            <%= since.months.ago.in_time_zone("New Delhi").strftime("%b %Y") %>
+            <%= since.months.ago.in_time_zone("New Delhi").strftime("%b") %><br>
+            <%= since.months.ago.in_time_zone("New Delhi").strftime("%Y") %>
           </th>
         <% end %>
       </tr>
@@ -128,7 +123,8 @@
         <th>Facility</th>
         <% @months_previous.downto(0).each do |since| %>
           <th class="text-center">
-            <%= since.months.ago.in_time_zone("New Delhi").strftime("%b %Y") %>
+            <%= since.months.ago.in_time_zone("New Delhi").strftime("%b") %><br>
+            <%= since.months.ago.in_time_zone("New Delhi").strftime("%Y") %>
           </th>
         <% end %>
       </tr>
