@@ -51,6 +51,22 @@ nav.navbar button.navbar-toggler {
     font-size: 12px;
 }
 
+h3 {
+    font-size: 16px;
+    color: $accent-color;
+    font-weight: 500;
+}
+
+.table thead.thead-light th {
+    //background: #fff;
+    font-size: 12px;
+    color: $dark-grey;
+}
+
+.table thead.thead-light th small {
+    font-size: 12px;
+}
+
 span.inactive {
   text-decoration: line-through;
 }
@@ -125,6 +141,7 @@ span.inactive {
   background-color: #f6f6f6;
 }
 
+
 .table td {
     vertical-align: middle;
 }
@@ -141,10 +158,11 @@ span.inactive {
 .table-info > td {
   background-color: $highlight;
   border-top-color: #666;
-    
+
     &.holiday {
         background: #eee;
     }
+
 }
 
 .card .row.tight {

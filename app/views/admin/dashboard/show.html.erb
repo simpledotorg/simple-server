@@ -35,14 +35,18 @@
       </div>
     </div>
   <% end %>
+
 <% end %>
 
 <section>
+
 <div class="table-responsive">
   <table class="table table-sm">
     <thead class="thead-light">
       <tr>
+
         <th><h3>BPs recorded</h3></th>
+
         <th class="text-center">Total BPs</th>
         <% @days_previous.downto(0).map { |since| since.days.ago }.each do |day| %>
           <th class="text-center <%= "holiday" if day.sunday? %>">
@@ -83,6 +87,7 @@
 </section>
 
 <section>
+
 <div class="table-responsive">
   <table class="table table-sm">
     <thead class="thead-light">
@@ -102,6 +107,7 @@
         <% next if @bps_by_facility.fetch(facility.id, 0) == 0 %>
 
         <tr class="table-light">
+
           <td class="row-title"><strong><%= facility.name %></strong> <small style="display: block;">(<%= number_to_percentage((@control_rate_by_facility[facility.id] || 0) * 100, precision: 1) || 'N/A' %> control)</small></td>
           <td class="text-center"><%= lighten_if_zero(@new_patients_by_facility[facility.id] || 0) %></td>
           <% @months_previous.downto(0).each do |since| %>
@@ -115,6 +121,7 @@
   </table>
 </div>
 </section>
+
 
 <section>
 <div class="table-responsive">
@@ -135,6 +142,7 @@
         <% next if @bps_by_facility.fetch(facility.id, 0) == 0 %>
 
         <tr class="table-light">
+
           <td class="row-title" style="padding: 0.7em 0;"><strong><%= facility.name %></strong></td>
           <% @months_previous.downto(0).each do |since| %>
             <td class="text-center">

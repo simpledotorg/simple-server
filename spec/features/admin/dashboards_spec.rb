@@ -13,6 +13,7 @@ RSpec.feature "Dashboards", type: :feature do
   end
 
   it "shows a basic dashboard" do
+
     expect(page).to have_content("BPs recorded")
     expect(page).to have_content("Patients registered")
   end
