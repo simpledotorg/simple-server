@@ -7,6 +7,7 @@ $highlight: #E9F3FF; /* LIGHT BLUE */
 
 body {
   padding-top: 5rem;
+  font-size: 14px;
 }
 
 h3 {
@@ -15,10 +16,38 @@ h3 {
     font-weight: 500;
 }
 
+nav.navbar a.navbar-brand img {
+    background: #fff;
+    border-radius: 5px;
+    box-shadow:
+        1px 1px 0 rgba(0,0,0,0.05),
+        0 1px 5px rgba(0,0,0,0.1)
+    ;
+}
+
+section {
+    margin-right: -1rem;
+}
+
+nav.navbar button.navbar-toggler {
+    border: none;
+    padding: 2px 5px;
+    font-size: 14px;
+}
+
 .table thead.thead-light th {
     //background: #fff;
     font-size: 12px;
     color: $dark-grey;
+}
+
+.card {
+    margin-top: 0.3em;
+}
+
+.card .row.tight {
+    margin-top: 0.2em !important;
+    margin-bottom: 0.2em !important;
 }
 
 .table thead.thead-light th small {
@@ -78,11 +107,16 @@ span.inactive {
 
 .table {
     font-size: 14px;
-    margin-bottom: 2.5em;
+    margin-top: 1.5em;
 }
 
 .table .table-info strong {
     font-size: 14px;
+}
+
+.table td.row-title,
+.table h3 {
+    white-space: nowrap;
 }
 
 .table thead.thead-light th {
@@ -109,4 +143,8 @@ span.inactive {
     &.holiday {
         background: #eee;
     }
+}
+
+.card .card-body {
+    padding: 16px;
 }
