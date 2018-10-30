@@ -25,8 +25,10 @@ nav.navbar a.navbar-brand img {
     ;
 }
 
-section {
-    margin-right: -1rem;
+@include media-breakpoint-down(md) {
+    section {
+        margin-right: -1rem;
+    }
 }
 
 nav.navbar button.navbar-toggler {
@@ -35,19 +37,14 @@ nav.navbar button.navbar-toggler {
     font-size: 14px;
 }
 
+.col-lg-3 {
+    transform: translate(0, 10%);
+}
+
 .table thead.thead-light th {
     //background: #fff;
     font-size: 12px;
     color: $dark-grey;
-}
-
-.card {
-    margin-top: 0.3em;
-}
-
-.card .row.tight {
-    margin-top: 0.2em !important;
-    margin-bottom: 0.2em !important;
 }
 
 .table thead.thead-light th small {
@@ -128,6 +125,10 @@ span.inactive {
   background-color: #f6f6f6;
 }
 
+.table td {
+    vertical-align: middle;
+}
+
 .table-row-small > td {
   font-size: 80%;
   font-weight: 400;
@@ -139,12 +140,25 @@ span.inactive {
 
 .table-info > td {
   background-color: $highlight;
+  border-top-color: #666;
     
     &.holiday {
         background: #eee;
     }
 }
 
+.card .row.tight {
+    margin-top: 0.2em !important;
+    margin-bottom: 0.2em !important;
+}
+
+.card {
+    border: none;
+    background: #fff;
+    box-shadow: 0px 0px 4px rgba(0,0,0,0.1);
+    margin-top: 8px;
+}
+
 .card .card-body {
-    padding: 16px;
+    padding: 8px 16px 8px 16px;
 }

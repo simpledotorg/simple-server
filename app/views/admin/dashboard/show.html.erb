@@ -7,9 +7,10 @@
       <div class="card-body">
         <div class="row">
           <div class="col-lg-3">
-            <strong><%= link_to user.full_name, [:admin, user] %></strong>
             
-            (<small><%= user.sync_approval_status_reason %></small>)
+              <strong><%= link_to user.full_name, [:admin, user] %></strong>
+              (<small><%= user.sync_approval_status_reason %></small>)
+            
           </div>
           <div class="col">
             <div class="row tight">
@@ -134,7 +135,7 @@
         <% next if @bps_by_facility.fetch(facility.id, 0) == 0 %>
 
         <tr class="table-light">
-          <td class="row-title"><strong><%= facility.name %></strong></td>
+          <td class="row-title" style="padding: 0.7em 0;"><strong><%= facility.name %></strong></td>
           <% @months_previous.downto(0).each do |since| %>
             <td class="text-center">
               <%= lighten_if_zero(@visits_by_facility_month[[facility.id, since.months.ago.in_time_zone("New Delhi").beginning_of_month.to_date]] || 0) %>
