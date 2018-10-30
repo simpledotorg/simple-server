@@ -1,6 +1,4 @@
-<p id="notice"><%= notice %></p>
-
-<h1>Protocol Drugs</h1>
+<h1>Protocol drugs</h1>
 
 <table>
   <thead>
@@ -24,7 +22,7 @@
           <td><%= link_to 'Edit', edit_admin_protocol_drug_path(protocol_drug) %></td>
         <% end %>
         <% if policy(protocol_drug).destroy? %>
-          <td><%= link_to 'Delete', [:admin, protocol_drug], method: :delete, data: { confirm: 'Are you sure?' } %></td>
+          <td><%= link_to 'Delete', [:admin, protocol_drug], method: :delete, data: { confirm: "Are you sure you want to delete #{protocol_drug.name}?" } %></td>
         <% end %>
       </tr>
     <% end %>
@@ -34,5 +32,5 @@
 <br>
 
 <% if policy(ProtocolDrug).new? %>
-  <%= link_to 'New Protocol Drug', new_admin_protocol_drug_path %>
+  <%= link_to 'New protocol drug', new_admin_protocol_drug_path %>
 <% end %>

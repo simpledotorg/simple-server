@@ -10,4 +10,43 @@ RSpec.describe BloodPressure, type: :model do
     it { should belong_to(:patient)}
     it { should belong_to(:user)}
   end
+
+  context "utility methods" do
+    let(:bp_normal)         { create(:blood_pressure, systolic: 120, diastolic: 80) }
+    let(:bp_high_systolic)  { create(:blood_pressure, systolic: 140, diastolic: 80) }
+    let(:bp_high_diastolic) { create(:blood_pressure, systolic: 120, diastolic: 90) }
+    let(:bp_high_both)      { create(:blood_pressure, systolic: 150, diastolic: 100) }
+
+    describe ".hypertensive" do
+      it "only includes hypertensive BPs" do
+        expect(BloodPressure.hypertensive).to include(bp_high_systolic, bp_high_diastolic, bp_high_both)
+        expect(BloodPressure.hypertensive).not_to include(bp_normal)
+      end
+    end
+
+    describe ".hypertensive" do
+      it "only includes BPs under control" do
+        expect(BloodPressure.under_control).to include(bp_normal)
+        expect(BloodPressure.under_control).not_to include(bp_high_systolic, bp_high_diastolic, bp_high_both)
+      end
+    end
+
+    describe "#under_control?" do
+      it "returns true if both systolic and diastolic are under control" do
+        expect(bp_normal.under_control?).to eq(true)
+      end
+
+      it "returns false if systolic is high" do
+        expect(bp_high_systolic.under_control?).to eq(false)
+      end
+
+      it "returns false if diastolic is high" do
+        expect(bp_high_diastolic.under_control?).to eq(false)
+      end
+
+      it "returns false if both systolic and diastolic are high" do
+        expect(bp_high_both.under_control?).to eq(false)
+      end
+    end
+  end
 end

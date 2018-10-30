@@ -8,7 +8,7 @@ RSpec.feature 'Admin::AuditLogs', type: :feature do
   it 'Display Empty table when user name is empty' do
     login_as admin, :scope => :admin
     visit '/admin/audit_logs'
-    fill_in 'User name', with: ''
+    fill_in "user_name", with: ""
     click_button 'Search'
 
     expect(page).not_to have_selector('tbody tr')
@@ -25,7 +25,7 @@ RSpec.feature 'Admin::AuditLogs', type: :feature do
       FactoryBot.create_list(:audit_log, 5, user: rohit)
       login_as admin, :scope => :admin
       visit '/admin/audit_logs'
-      fill_in 'User name', with: 'Ya'
+      fill_in 'user_name', with: 'Ya'
       click_button 'Search'
 
       expect(page).to have_selector('tbody tr', count: 10)
