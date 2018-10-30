@@ -1,24 +1,27 @@
+
 <% if policy(User).enable_access? && @users_requesting_approval.any? %>
-  <h4><%= pluralize(@users_requesting_approval.count || 0, "user") %> waiting for access</h4>
+  <h3><%= pluralize(@users_requesting_approval.count || 0, "user") %> waiting for access</h3>
 
   <% @users_requesting_approval.each do |user| %>
     <div class="card">
       <div class="card-body">
         <div class="row">
           <div class="col-lg-3">
-            <%= link_to user.full_name, [:admin, user] %>
-            <br>
-            <small><%= user.sync_approval_status_reason %></small>
+            
+              <strong><%= link_to user.full_name, [:admin, user] %></strong>
+              (<small><%= user.sync_approval_status_reason %></small>)
+            
           </div>
           <div class="col">
-            <div class="row">
+            <div class="row tight">
               <div class="col">
-                <div class="card-cell-header">Phone:</div>
-                <a href="tel:<%= user.phone_number %>"><%= user.phone_number %></a><br>
+                
+                <small>Ph: <a href="tel:<%= user.phone_number %>"><%= user.phone_number %></a></small>
               </div>
-              <div class="col">
-                <div class="card-cell-header">Facility:</div>
-                <%= user.registered_at_facility.present? ? link_to(user.registered_at_facility.name, [:admin, user.registered_at_facility]) : "N/A" %><br>
+              <div class="col tight">
+                <small>
+                <%= user.registered_at_facility.present? ? link_to(user.registered_at_facility.name, [:admin, user.registered_at_facility]) : "N/A" %>
+                </small>
               </div>
             </div>
           </div>
@@ -35,11 +38,15 @@
 
 <% end %>
 
+<section>
+
 <div class="table-responsive">
   <table class="table table-sm">
     <thead class="thead-light">
       <tr>
-        <th><h3>Recent BPs recorded</h3></th>
+
+        <th><h3>BPs recorded</h3></th>
+
         <th class="text-center">Total BPs</th>
         <% @days_previous.downto(0).map { |since| since.days.ago }.each do |day| %>
           <th class="text-center <%= "holiday" if day.sunday? %>">
@@ -53,7 +60,7 @@
         <% next if @bps_by_facility.fetch(facility.id, 0)  == 0 %>
 
         <tr class="table-info table-row-small">
-          <td><strong><%= facility.name %></strong></td>
+          <td class="row-title"><strong><%= facility.name %></strong></td>
           <td class="text-center"><%= lighten_if_zero(@bps_by_facility[facility.id] || 0) %></td>
           <% @days_previous.downto(0).map { |since| since.days.ago }.each do |day| %>
             <td class="text-center <%= "holiday" if day.sunday? %>"></td>
@@ -77,13 +84,16 @@
     </tbody>
   </table>
 </div>
+</section>
+
+<section>
 
 <div class="table-responsive">
   <table class="table table-sm">
     <thead class="thead-light">
       <tr>
-        <th><h3>New patients registered (and control)</h3></th>
-        <th class="text-center">All-time<br>total</th>
+        <th><h3>Patients registered</h3></th>
+        <th class="text-center">Total</th>
         <% @months_previous.downto(0).each do |since| %>
           <th class="text-center">
             <%= since.months.ago.in_time_zone("New Delhi").strftime("%b") %><br>
@@ -97,7 +107,8 @@
         <% next if @bps_by_facility.fetch(facility.id, 0) == 0 %>
 
         <tr class="table-light">
-          <td><strong><%= facility.name %></strong> (<%= number_to_percentage((@control_rate_by_facility[facility.id] || 0) * 100, precision: 1) || 'N/A' %> control)</td>
+
+          <td class="row-title"><strong><%= facility.name %></strong> <small style="display: block;">(<%= number_to_percentage((@control_rate_by_facility[facility.id] || 0) * 100, precision: 1) || 'N/A' %> control)</small></td>
           <td class="text-center"><%= lighten_if_zero(@new_patients_by_facility[facility.id] || 0) %></td>
           <% @months_previous.downto(0).each do |since| %>
             <td class="text-center">
@@ -109,7 +120,10 @@
     </tbody>
   </table>
 </div>
+</section>
 
+
+<section>
 <div class="table-responsive">
   <table class="table table-sm">
     <thead class="thead-light">
@@ -128,7 +142,8 @@
         <% next if @bps_by_facility.fetch(facility.id, 0) == 0 %>
 
         <tr class="table-light">
-          <td><strong><%= facility.name %></strong></td>
+
+          <td class="row-title" style="padding-top: 0.7em; padding-bottom: 0.7em;"><strong><%= facility.name %></strong></td>
           <% @months_previous.downto(0).each do |since| %>
             <td class="text-center">
               <%= lighten_if_zero(@visits_by_facility_month[[facility.id, since.months.ago.in_time_zone("New Delhi").beginning_of_month.to_date]] || 0) %>
@@ -139,5 +154,7 @@
     </tbody>
   </table>
 </div>
+</section>
 
-<p class="text-muted"><small>Note: All times are in India Standard Time</small><p>
+
+<p class="text-muted"><small>Note: All times are in India Standard Time</small></p>
