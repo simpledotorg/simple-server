@@ -112,7 +112,7 @@
           <td class="text-center"><%= lighten_if_zero(@new_patients_by_facility[facility.id] || 0) %></td>
           <% @months_previous.downto(0).each do |since| %>
             <td class="text-center">
-              <%= lighten_if_zero(@new_patients_by_facility_month[[facility.id, since.months.ago.in_time_zone("New Delhi").beginning_of_month.to_date]] || 0) %> 
+              <%= lighten_if_zero(@new_patients_by_facility_month[[facility.id, since.months.ago.in_time_zone("New Delhi").beginning_of_month.to_date]] || 0) %>
             </td>
           <% end %>
         </tr>
@@ -129,6 +129,7 @@
     <thead class="thead-light">
       <tr>
         <th><h3>Unique patients seen</h3></th>
+        <th class="text-center">&nbsp;&nbsp;&nbsp;</th> <!-- Spacer to match next able above -->
         <% @months_previous.downto(0).each do |since| %>
           <th class="text-center">
             <%= since.months.ago.in_time_zone("New Delhi").strftime("%b") %><br>
@@ -144,6 +145,7 @@
         <tr class="table-light">
 
           <td class="row-title"><strong><%= facility.name %></strong></td>
+          <td>&nbsp;</td> <!-- Spacer to match next able above -->
           <% @months_previous.downto(0).each do |since| %>
             <td class="text-center">
               <%= lighten_if_zero(@visits_by_facility_month[[facility.id, since.months.ago.in_time_zone("New Delhi").beginning_of_month.to_date]] || 0) %>
