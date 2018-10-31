@@ -1,16 +1,20 @@
-<h1>Facilities</h1>
+<div class="top-buttons">
+<% if policy(Facility).new? %>
+  <%= link_to 'New facility', new_admin_facility_path, class: "btn btn-sm btn-primary" %>
+<% end %>
+</div>
 
-<table class="table">
+<table class="table-responsive table">
   <thead class="thead-light">
     <tr>
-      <th>Name</th>
-      <th>Street address</th>
-      <th>Village or colony</th>
+      <th><h1>Facilities</h1></th>
+      <th>Address</th>
+      <th>Village/colony</th>
       <th>District</th>
       <th>State</th>
       <th>Country</th>
       <th>Pin</th>
-      <th>Facility type</th>
+      <th>Facility&nbsp;type</th>
       <th colspan="2"></th>
     </tr>
   </thead>
@@ -18,7 +22,7 @@
   <tbody>
     <% @facilities.each do |facility| %>
       <tr>
-        <td><%= link_to facility.name, [:admin, facility] %></td>
+        <td class="nowrap"><%= link_to facility.name, [:admin, facility] %></td>
         <td><%= facility.street_address %></td>
         <td><%= facility.village_or_colony %></td>
         <td><%= facility.district %></td>
@@ -36,7 +40,3 @@
     <% end %>
   </tbody>
 </table>
-
-<% if policy(Facility).new? %>
-  <%= link_to 'New facility', new_admin_facility_path, class: "btn btn-primary" %>
-<% end %>

@@ -10,10 +10,56 @@ body {
   font-size: 14px;
 }
 
+h1 {
+    font-size: 24px;
+    color: $accent-color;
+    font-weight: 500;
+}
+
+h2 {
+    font-size: 18px;
+    color: $accent-color;
+    font-weight: 500;
+}
+
 h3 {
     font-size: 16px;
     color: $accent-color;
     font-weight: 500;
+}
+
+.light {
+    color: #ddd;
+}
+
+.divider {
+    padding: 0 5px;
+}
+
+input.btn,
+button.btn,
+a.btn {
+    text-transform: capitalize;
+}
+
+label {
+    font-weight: 600;
+}
+
+table span.label {
+    min-width: 95%;
+    display: block;
+    text-align: center;
+    box-sizing: border-box;
+    font-size: 85%;
+}
+
+.nowrap a {
+    white-space: nowrap;
+}
+
+.top-buttons {
+    text-align: right;
 }
 
 nav.navbar a.navbar-brand img {

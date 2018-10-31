@@ -1,3 +1,9 @@
+<div class="top-buttons">
+    <% if policy(Admin).new? %>
+      <%= link_to 'Invite admin', new_admin_invitation_path, class: "btn btn-sm btn-primary" %>
+    <% end %>
+</div>
+
 <h1>Admins</h1>
 
 <table class="table">
@@ -29,7 +35,3 @@
     <% end %>
   </tbody>
 </table>
-
-<% if policy(Admin).new? %>
-  <%= link_to 'Invite admin', new_admin_invitation_path, class: "btn btn-primary" %>
-<% end %>

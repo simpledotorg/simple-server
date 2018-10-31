@@ -1,19 +1,22 @@
+<div class="top-buttons">
+    <% if policy(@protocol).edit? %>
+      <%= link_to "Edit protocol", edit_admin_protocol_path(@protocol), class: "btn btn-sm btn-primary" %>
+    <% end %>
+    <% if policy(ProtocolDrug).new? %>
+      <%= link_to 'New protocol drug', new_admin_protocol_protocol_drug_path(@protocol), class: "btn btn-sm btn-primary" %>
+    <% end %>
+</div>
+
 <h1><%= @protocol.name %></h1>
 <p>
   <strong>Follow up days:</strong>
   <%= @protocol.follow_up_days %>
 </p>
 
-<% if policy(@protocol).edit? %>
-  <%= link_to "Edit protocol", edit_admin_protocol_path(@protocol), class: "btn btn-sm btn-primary" %>
-<% end %>
-
-<h2 class="mt-4">Protocol drugs</h2>
-
 <table class="table">
   <thead class="thead-light">
     <tr>
-      <th>Name</th>
+      <th><h2 class="mt-4">Protocol drugs</h2></th>
       <th>Dosage</th>
       <th>RxNorm code</th>
       <th colspan="2"></th>
@@ -36,7 +39,3 @@
     <% end %>
   </tbody>
 </table>
-
-<% if policy(ProtocolDrug).new? %>
-  <%= link_to 'New protocol drug', new_admin_protocol_protocol_drug_path(@protocol), class: "btn btn-sm btn-primary" %>
-<% end %>
