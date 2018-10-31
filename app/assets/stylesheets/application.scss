@@ -65,6 +65,22 @@ a.btn {
     text-transform: capitalize;
 }
 
+.btn-outline-danger {
+    border-color: rgba(255,0,0,0.15);
+}
+
+.btn-success {
+    background: #E0FFED;
+    border-color: #E0FFED;
+    color: #007A31;
+}
+
+.btn-success:hover {
+    background: #00B849;
+    border-color: #00B849;
+    color: #FFF;
+}
+
 label {
     font-weight: 600;
 }
