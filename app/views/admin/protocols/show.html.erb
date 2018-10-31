@@ -7,18 +7,19 @@
     <% end %>
 </div>
 
-<h1><%= @protocol.name %></h1>
+<h1 style="margin-top: 1em;"><%= @protocol.name %></h1>
 <p>
   <strong>Follow up days:</strong>
   <%= @protocol.follow_up_days %>
 </p>
 
+<div class="table-responsive">
 <table class="table">
   <thead class="thead-light">
     <tr>
-      <th><h2 class="mt-4">Protocol drugs</h2></th>
+      <th class="nowrap"><h2 class="mt-4">Protocol drugs</h2></th>
       <th>Dosage</th>
-      <th>RxNorm code</th>
+      <th class="nowrap">RxNorm code</th>
       <th colspan="2"></th>
     </tr>
   </thead>
@@ -26,9 +27,9 @@
   <tbody>
     <% @protocol.protocol_drugs.each do |protocol_drug| %>
       <tr>
-        <td><%= protocol_drug.name %></td>
-        <td><%= protocol_drug.dosage %></td>
-        <td><%= protocol_drug.rxnorm_code %></td>
+        <td class="nowrap"><%= protocol_drug.name %></td>
+        <td class="nowrap"><%= protocol_drug.dosage %></td>
+        <td class="nowrap"><%= protocol_drug.rxnorm_code %></td>
         <% if policy(protocol_drug).edit? %>
           <td><%= link_to 'Edit', edit_admin_protocol_protocol_drug_path(@protocol, protocol_drug) %></td>
         <% end %>
@@ -39,3 +40,4 @@
     <% end %>
   </tbody>
 </table>
+</div>

@@ -4,11 +4,11 @@
 <% end %>
 </div>
 
-<table class="table">
+<table class="table table-responsive">
   <thead class="thead-light">
     <tr>
       <th><h1>Protocols</h1></th>
-      <th>Follow up days</th>
+      <th class="nowrap">Follow up days</th>
       <th colspan="2"></th>
     </tr>
   </thead>
@@ -16,7 +16,7 @@
   <tbody>
     <% @protocols.each do |protocol| %>
       <tr>
-        <td><%= link_to protocol.name, [:admin, protocol] %></td>
+        <td class="nowrap"><%= link_to protocol.name, [:admin, protocol] %></td>
         <td><%= protocol.follow_up_days %></td>
         <% if policy(protocol).edit? %>
           <td><%= link_to 'Edit', edit_admin_protocol_path(protocol) %></td>

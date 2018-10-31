@@ -108,7 +108,7 @@
 
         <tr class="table-light">
 
-          <td class="row-title"><strong><%= facility.name %></strong> <small style="display: block;">(<%= number_to_percentage((@control_rate_by_facility[facility.id] || 0) * 100, precision: 1) || 'N/A' %> control)</small></td>
+          <td class="row-title"><strong><%= facility.name %></strong> <!--small style="display: block;">(<%= number_to_percentage((@control_rate_by_facility[facility.id] || 0) * 100, precision: 1) || 'N/A' %> control)</small--></td>
           <td class="text-center"><%= lighten_if_zero(@new_patients_by_facility[facility.id] || 0) %></td>
           <% @months_previous.downto(0).each do |since| %>
             <td class="text-center">
@@ -143,7 +143,7 @@
 
         <tr class="table-light">
 
-          <td class="row-title" style="padding-top: 0.7em; padding-bottom: 0.7em;"><strong><%= facility.name %></strong></td>
+          <td class="row-title"><strong><%= facility.name %></strong></td>
           <% @months_previous.downto(0).each do |since| %>
             <td class="text-center">
               <%= lighten_if_zero(@visits_by_facility_month[[facility.id, since.months.ago.in_time_zone("New Delhi").beginning_of_month.to_date]] || 0) %>
@@ -156,5 +156,6 @@
 </div>
 </section>
 
-
-<p class="text-muted"><small>Note: All times are in India Standard Time</small></p>
+<footer class="text-muted">
+    <p><small>Note: All times are in India Standard Time</small></p>
+</footer>

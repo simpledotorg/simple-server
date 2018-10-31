@@ -4,6 +4,7 @@
     <% end %>
 </div>
 
+<div class="table-responsive">
 <table class="table">
   <thead class="thead-light">
   <tr>
@@ -19,18 +20,18 @@
   <tbody>
   <% @users.each do |user| %>
     <tr>
-      <td><%= link_to user.full_name, [:admin, user] %></td>
-      <td class="sync_approval_status">
+      <td class="nowrap"><%= link_to user.full_name, [:admin, user] %></td>
+      <td class="sync_approval_status nowrap">
         <span class="label <%= user.sync_approval_status %>"><%= user.sync_approval_status&.capitalize %></span>
       </td>
-      <td class="sync_approval_status_reason"><%= user.sync_approval_status_reason %></td>
-      <td><a href="tel:<%= user.phone_number %>"><%= user.phone_number %></a></td>
-      <td>
+      <td class="sync_approval_status_reason nowrap"><%= user.sync_approval_status_reason %></td>
+      <td class="nowrap"><a href="tel:<%= user.phone_number %>"><%= user.phone_number %></a></td>
+      <td class="nowrap">
         <% if user.registered_at_facility.present? %>
           <%= link_to user.registered_at_facility.name, [:admin, user.registered_at_facility] %>
         <% end %>
       </td>
-      <td>
+      <td class="nowrap">
         <% if policy(user).edit? %>
           <%= link_to 'Edit', edit_admin_user_path(user) %>
         <% end %>
@@ -50,3 +51,4 @@
   <% end %>
   </tbody>
 </table>
+</div>
