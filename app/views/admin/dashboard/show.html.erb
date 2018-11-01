@@ -45,7 +45,7 @@
     <thead class="thead-light">
       <tr>
 
-        <th><h3>Patients recorded</h3></th>
+        <th><h3>Daily unique patients</h3></th>
 
         <th class="text-center">Total Patients</th>
         <% @days_previous.downto(0).map { |since| since.days.ago }.each do |day| %>
@@ -128,7 +128,7 @@
   <table class="table table-sm">
     <thead class="thead-light">
       <tr>
-        <th><h3>Unique patients recorded</h3></th>
+        <th><h3>Monthly unique patients</h3></th>
         <th class="text-center">&nbsp;&nbsp;&nbsp;</th> <!-- Spacer to match next table above -->
         <% @months_previous.downto(0).each do |since| %>
           <th class="text-center">
