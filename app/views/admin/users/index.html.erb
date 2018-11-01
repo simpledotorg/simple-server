@@ -24,9 +24,9 @@
       <td class="sync_approval_status nowrap">
         <span class="label <%= user.sync_approval_status %>"><%= user.sync_approval_status&.capitalize %></span>
       </td>
-      <td class="sync_approval_status_reason nowrap"><%= user.sync_approval_status_reason %></td>
+      <td class="sync_approval_status_reason"><%= user.sync_approval_status_reason %></td>
       <td class="nowrap"><a href="tel:<%= user.phone_number %>"><%= user.phone_number %></a></td>
-      <td class="nowrap">
+      <td>
         <% if user.registered_at_facility.present? %>
           <%= link_to user.registered_at_facility.name, [:admin, user.registered_at_facility] %>
         <% end %>
