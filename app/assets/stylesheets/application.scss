@@ -10,10 +10,96 @@ body {
   font-size: 14px;
 }
 
+h1 {
+    font-size: 24px;
+    color: $accent-color;
+    font-weight: 500;
+}
+
+h2 {
+    font-size: 18px;
+    color: $accent-color;
+    font-weight: 500;
+}
+
 h3 {
     font-size: 16px;
     color: $accent-color;
     font-weight: 500;
+}
+
+footer {
+    padding: 2em 0 1em 0;
+}
+
+@include media-breakpoint-down(sm) {
+    .navbar-nav {
+        margin-top: 8px;
+    }
+    .navbar-nav li a {
+        padding: 1em 0;
+        border-top: 1px solid rgba(0,0,0,0.05);
+    }
+}
+
+@include media-breakpoint-up(md) {
+    .navbar {
+        border-bottom: 1px solid rgba(0,0,0,0.07);
+    }
+    .navbar-nav li a.active {
+        color: #000 !important;
+    }
+}
+
+.light {
+    color: #ddd;
+}
+
+.divider {
+    padding: 0 5px;
+}
+
+input.btn,
+button.btn,
+a.btn {
+    text-transform: capitalize;
+}
+
+.btn-outline-danger {
+    border-color: rgba(255,0,0,0.15);
+}
+
+.btn-success {
+    background: #E0FFED;
+    border-color: #E0FFED;
+    color: #007A31;
+}
+
+.btn-success:hover {
+    background: #00B849;
+    border-color: #00B849;
+    color: #FFF;
+}
+
+label {
+    font-weight: 600;
+}
+
+table span.label {
+    min-width: 95%;
+    display: block;
+    text-align: center;
+    box-sizing: border-box;
+    font-size: 85%;
+}
+
+.nowrap a,
+.nowrap {
+    white-space: nowrap;
+}
+
+.top-buttons {
+    text-align: right;
 }
 
 nav.navbar a.navbar-brand img {
