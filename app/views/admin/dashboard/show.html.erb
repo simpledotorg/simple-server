@@ -108,7 +108,7 @@
 
         <tr class="table-light">
 
-          <td class="row-title"><strong><%= facility.name %></strong> <!--small style="display: block;">(<%= number_to_percentage((@control_rate_by_facility[facility.id] || 0) * 100, precision: 1) || 'N/A' %> control)</small--></td>
+          <td class="row-title"><strong><%= facility.name %></strong></td>
           <td class="text-center"><%= lighten_if_zero(@new_patients_by_facility[facility.id] || 0) %></td>
           <% @months_previous.downto(0).each do |since| %>
             <td class="text-center">
