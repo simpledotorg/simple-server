@@ -1,5 +1,6 @@
 class Api::V1::TwilioVoiceCallsController < APIController
   skip_before_action :authenticate, only: [:initiate, :connect]
+  http_basic_authenticate_with name: ENV['TWILIO_CALLBACK_USERNAME'], password: ENV['TWILIO_CALLBACK_PASSWORD']
   before_action :set_user, :verify_incoming_from_nurse
 
   def initiate
