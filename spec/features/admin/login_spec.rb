@@ -11,7 +11,7 @@ RSpec.feature 'Admin::Login', type: :feature do
     fill_in 'Email', with: admin.email
     fill_in 'Password', with: admin.password
 
-    click_button 'Log in'
+    click_button 'Login'
 
     expect(current_path).to eq(admin_dashboard_path)
   end
@@ -20,9 +20,9 @@ RSpec.feature 'Admin::Login', type: :feature do
     sign_in(admin)
     visit admin_facilities_path
 
-    click_link 'Log Out'
+    click_link 'Logout'
 
     expect(current_path).to eq(root_path)
-    expect(page).to have_content('Log in')
+    expect(page).to have_content('Login')
   end
 end

@@ -11,14 +11,13 @@ class Admin::DashboardController < AdminController
     @days_previous = 20
     @months_previous = 8
 
-    @bps_by_facility          = bps_by_facility
-    @bps_by_facility_user     = bps_by_facility_user
-    @bps_by_facility_user_day = bps_by_facility_user_day
+    @visits_by_facility          = visits_by_facility
+    @visits_by_facility_user     = visits_by_facility_user
+    @visits_by_facility_user_day = visits_by_facility_user_day
+    @visits_by_facility_month    = visits_by_facility_month
 
     @new_patients_by_facility       = new_patients_by_facility
     @new_patients_by_facility_month = new_patients_by_facility_month
-
-    @visits_by_facility_month = visits_by_facility_month
 
     @control_rate_by_facility = control_rate_by_facility
 
@@ -28,16 +27,20 @@ class Admin::DashboardController < AdminController
 
   private
 
-  def bps_by_facility
-    BloodPressure.group(:facility_id).count
+  def visits_by_facility
+    BloodPressure.group(:facility_id).count("distinct patient_id")
   end
 
-  def bps_by_facility_user
-    BloodPressure.group(:facility_id, :user_id).count
+  def visits_by_facility_user
+    BloodPressure.group(:facility_id, :user_id).count("distinct patient_id")
   end
 
-  def bps_by_facility_user_day
-    BloodPressure.group(:facility_id, :user_id).group_by_day(:device_created_at, last: @days_previous + 1).count
+  def visits_by_facility_user_day
+    BloodPressure.group(:facility_id, :user_id).group_by_day(:device_created_at, last: @days_previous + 1).count("distinct patient_id")
+  end
+
+  def visits_by_facility_month
+    BloodPressure.group(:facility_id).group_by_month(:device_created_at, last: @months_previous + 1).count("distinct patient_id")
   end
 
   def new_patients_by_facility
@@ -46,10 +49,6 @@ class Admin::DashboardController < AdminController
 
   def new_patients_by_facility_month
     Facility.joins(:patients).group("facilities.id").distinct('patients.id').group_by_month("patients.device_created_at", last: @months_previous + 1).count("patients.id")
-  end
-
-  def visits_by_facility_month
-    BloodPressure.group(:facility_id).group_by_month(:device_created_at, last: @months_previous + 1).distinct(:patient_id).count(:patient_id)
   end
 
   def control_rate_by_facility
