@@ -17,6 +17,13 @@ Rails.application.routes.draw do
       get 'ping', to: 'pings#show'
       post 'login', to: 'logins#login_user'
 
+      scope :voice do
+        scope :twilio do
+          post 'initiate', to: 'twilio_voice_calls#initiate'
+          post 'connect', to: 'twilio_voice_calls#connect'
+        end
+      end
+
       scope :users do
         get 'find', to: 'users#find'
         post 'register', to: 'users#register'

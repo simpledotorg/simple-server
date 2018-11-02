@@ -81,3 +81,7 @@ en:
         url: 'https://github.com/simpledotorg/simple-server/blob/master/LICENSE'
   registration: 'New registration'
   reset_password: 'Reset PIN'
+  voice_call:
+    unknown_user: "Please dial with your registered number"
+    twilio:
+      voice: "alice"
