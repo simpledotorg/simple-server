@@ -8,7 +8,7 @@ class Admin::DashboardController < AdminController
 
     @facilities = Facility.all.order(:name)
 
-    @days_previous = 6
+    @days_previous = 20
     @months_previous = 8
 
     @bps_by_facility          = bps_by_facility
