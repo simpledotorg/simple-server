@@ -31,6 +31,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         expect(created_user).to be_present
         expect(JSON(response.body)['user'].except('device_updated_at', 'device_created_at', 'facility_ids').with_int_timestamps)
           .to eq(created_user.attributes
+                   .merge('voice_calling_number' => ENV['VOICE_CALLING_PHONE_NUMBER'])
                    .except(
                      'device_updated_at',
                      'device_created_at',
@@ -79,16 +80,18 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     it 'lists the users with the given phone number' do
       get :find, params: { phone_number: phone_number }
       expect(response.status).to eq(200)
-      expect(JSON(response.body).except('facility_ids').with_int_timestamps)
-        .to eq(Api::V1::UserTransformer.to_response(user).except(:facility_ids).with_int_timestamps)
+      expect(JSON(response.body).except('facility_ids', 'voice_calling_number').with_int_timestamps)
+        .to eq(Api::V1::UserTransformer.to_response(user).except(:facility_ids, :voice_calling_number).with_int_timestamps)
+      expect(JSON(response.body)['voice_calling_number']).to eq(ENV['VOICE_CALLING_PHONE_NUMBER'])
       expect(JSON(response.body)['facility_ids']).to match_array(user.facility_ids)
     end
 
     it 'lists the users with the given id' do
       get :find, params: { id: user.id }
       expect(response.status).to eq(200)
-      expect(JSON(response.body).except('facility_ids').with_int_timestamps)
-        .to eq(Api::V1::UserTransformer.to_response(user).except(:facility_ids).with_int_timestamps)
+      expect(JSON(response.body).except('facility_ids', 'voice_calling_number').with_int_timestamps)
+        .to eq(Api::V1::UserTransformer.to_response(user).except(:facility_ids, :voice_calling_number).with_int_timestamps)
+      expect(JSON(response.body)['voice_calling_number']).to eq(ENV['VOICE_CALLING_PHONE_NUMBER'])
       expect(JSON(response.body)['facility_ids']).to match_array(user.facility_ids)
     end
 

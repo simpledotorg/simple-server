@@ -1536,6 +1536,9 @@
           "items": {
             "$ref": "#/definitions/uuid"
           }
+        },
+        "voice_calling_number": {
+          "$ref": "#/definitions/non_empty_string"
         }
       },
       "required": [
