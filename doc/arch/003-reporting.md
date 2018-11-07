@@ -94,6 +94,11 @@ performance needs improvement, we will consider other designs:
   into multiple tables.  Over time, each child table should have about
   100m rows, not more.
 
+### API design
+We need a reporting API for the Nurse/In-app reports seen on mobile.
+- The API could send JSON data representing daily reports
+- If we are experimenting with reports, the API could deliver an inlined HTML report that can be cached on the device.
+
 ### Performance
 - Avoid doing anything without profiling.
 - Avoid caching until we _need_ it.
