@@ -95,6 +95,8 @@ performance needs improvement, we will consider other designs:
   100m rows, not more.
 
 ### Performance
+- Avoid doing anything without profiling.
+- Avoid caching until we _need_ it.
 - We'll cache reports at the application level, and into the database
   for fine control
 - Once we hit 10s of millions of BPs, we'll need to aggregate daily
