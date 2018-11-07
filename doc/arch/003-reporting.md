@@ -10,7 +10,7 @@ will want to view vital information to track control of hypertension and adoptio
 1. Admin/Web reports
     - Admins, CVHOs, STSes, and officials on Simple that have access to the admin dashboard see these reports.
     - They provide analyis of adoption, and usage of the app.
-    - They also provide the registration and control data that came from the IHMI registries at facilities.
+    - They also provide the registration and control data that previously came from the IHMI registries at facilities.
 
 2. Nurse/In-app reports
     - These are available inside the app for the nurses, MOs and officials at the facilities.
@@ -58,7 +58,7 @@ Note that daily is the smallest time interval that matters for reports.
 - Country
 
 #### Other characteristics of reports
-- Data for a date might change up to a few months from the date. The reports should account for this.
+- Data for a date might change up to a few months from the date depending on when a user's device syncs. The reports should account for this.
 - BP, User, and Patient data can be aggregated daily.
 - Control data can't be aggregated, and it should be regenerated from scratch every time.
 - Computing reports needs to be idempotent.
