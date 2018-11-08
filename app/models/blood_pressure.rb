@@ -7,4 +7,11 @@ class BloodPressure < ApplicationRecord
 
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
+
+  scope :hypertensive, -> { where("systolic >= 140 OR diastolic >= 90") }
+  scope :under_control, -> { where("systolic < 140 AND diastolic < 90") }
+
+  def under_control?
+    systolic < 140 && diastolic < 90
+  end
 end

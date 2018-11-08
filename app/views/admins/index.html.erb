@@ -1,7 +1,11 @@
-<p id="notice"><%= notice %></p>
+<div class="top-buttons">
+    <% if policy(Admin).new? %>
+      <%= link_to 'Invite admin', new_admin_invitation_path, class: "btn btn-sm btn-primary" %>
+    <% end %>
+</div>
 
 <h1>Admins</h1>
-
+<div class="table-responsive">
 <table class="table">
   <thead class="thead-light">
     <tr>
@@ -15,7 +19,7 @@
     <% @admins.each do |admin| %>
       <tr>
         <td><%= link_to admin.email, admin %></td>
-        <td><%= admin.role.titleize %></td>
+        <td><%= admin.role.humanize %></td>
         <td>
           <% if admin.invited_to_sign_up? %>
             Invitation sent
@@ -25,13 +29,10 @@
           <td><%= link_to 'Edit', edit_admin_path(admin) %></td>
         <% end %>
         <% if policy(admin).destroy? %>
-          <td><%= link_to 'Delete', admin, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+          <td><%= link_to 'Delete', admin, method: :delete, data: { confirm: "Are you sure you want to delete #{admin.email}?" } %></td>
         <% end %>
       </tr>
     <% end %>
   </tbody>
 </table>
-
-<% if policy(Admin).new? %>
-  <%= link_to 'Invite Admin', new_admin_invitation_path, class: "btn btn-primary" %>
-<% end %>
+</div>

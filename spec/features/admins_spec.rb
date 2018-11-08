@@ -31,7 +31,7 @@ RSpec.feature "Admins", type: :feature do
 
       visit admins_path
 
-      click_link "Invite Admin"
+      click_link "Invite admin"
 
       fill_in "Email", with: email
       select "Supervisor", from: "Role"

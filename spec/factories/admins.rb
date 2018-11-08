@@ -6,5 +6,6 @@ FactoryBot.define do
 
     trait(:owner) { role :owner }
     trait(:supervisor) { role :supervisor }
+    trait(:analyst) { role :analyst }
   end
 end

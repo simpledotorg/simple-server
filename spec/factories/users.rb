@@ -16,7 +16,15 @@ FactoryBot.define do
       password_confirmation nil
     end
 
-    trait :requested_sync_approval do
+    trait :sync_allowed do
+      sync_approval_status { User.sync_approval_statuses[:allowed] }
+    end
+
+    trait :sync_denied do
+      sync_approval_status { User.sync_approval_statuses[:denied] }
+    end
+
+    trait :sync_requested do
       sync_approval_status { User.sync_approval_statuses[:requested] }
     end
 

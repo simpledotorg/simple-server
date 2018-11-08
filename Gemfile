@@ -22,9 +22,10 @@ gem 'devise', '~> 4.4.3'
 gem 'devise_invitable', '~> 1.7.0'
 gem 'twilio-ruby', '~> 5.10', '>= 5.10.3'
 gem 'pundit'
-gem 'bootstrap', '~> 4.1.1'
+gem 'bootstrap', '~> 4.1.3'
 gem 'jquery-rails'
 gem "bootstrap_form", ">= 4.0.0.alpha1"
+gem 'groupdate'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   devise_scope :admin do
     authenticated :admin do
-      root to: redirect("admin/facilities"), as: :admin_root
+      root to: redirect("admin"), as: :admin_root
     end
 
     unauthenticated :admin do
@@ -66,6 +66,8 @@ Rails.application.routes.draw do
 
   devise_for :admins
   resources :admins
+
+  get "admin", to: "admin/dashboard#show", as: :admin_dashboard
 
   namespace :admin do
     resources :audit_logs, only: [:index, :show]
