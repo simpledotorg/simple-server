@@ -1,9 +1,14 @@
-<h1>Users</h1>
+<div class="top-buttons">
+    <% if policy(User).new? %>
+      <%= link_to 'New user', new_admin_user_path, class: "btn btn-sm btn-primary" %>
+    <% end %>
+</div>
 
+<div class="table-responsive">
 <table class="table">
   <thead class="thead-light">
   <tr>
-    <th>Name</th>
+    <th><h1>Users</h1></th>
     <th>Sync status</th>
     <th>Status reason</th>
     <th>Phone number</th>
@@ -15,29 +20,29 @@
   <tbody>
   <% @users.each do |user| %>
     <tr>
-      <td><%= link_to user.full_name, [:admin, user] %></td>
-      <td class="sync_approval_status">
+      <td class="nowrap"><%= link_to user.full_name, [:admin, user] %></td>
+      <td class="sync_approval_status nowrap">
         <span class="label <%= user.sync_approval_status %>"><%= user.sync_approval_status&.capitalize %></span>
       </td>
       <td class="sync_approval_status_reason"><%= user.sync_approval_status_reason %></td>
-      <td><a href="tel:<%= user.phone_number %>"><%= user.phone_number %></a></td>
+      <td class="nowrap"><a href="tel:<%= user.phone_number %>"><%= user.phone_number %></a></td>
       <td>
         <% if user.registered_at_facility.present? %>
           <%= link_to user.registered_at_facility.name, [:admin, user.registered_at_facility] %>
         <% end %>
       </td>
-      <td>
+      <td class="nowrap">
         <% if policy(user).edit? %>
           <%= link_to 'Edit', edit_admin_user_path(user) %>
         <% end %>
         <% if policy(user).destroy? %>
-          | <%= link_to 'Delete', [:admin, user], method: :delete, data: { confirm: "Are you sure you want to delete #{user.full_name}?" } %>
+          <span class="light divider">|</span> <%= link_to 'Delete', [:admin, user], method: :delete, data: { confirm: "Are you sure you want to delete #{user.full_name}?" } %>
         <% end %>
         <% unless user.sync_approval_status == 'denied' %>
-          | <%= link_to 'Deny access', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal' %>
+          <span class="light divider">|</span> <%= link_to 'Deny access', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal' %>
         <% end %>
         <% unless user.sync_approval_status == 'allowed' %>
-          | <%= link_to 'Allow access', admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
+          <span class="light divider">|</span> <%= link_to 'Allow access', admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
         <% end %>
 
         <%= render partial: "deny_access_modal", locals: { user: user } %>
@@ -46,7 +51,4 @@
   <% end %>
   </tbody>
 </table>
-
-<% if policy(User).new? %>
-  <%= link_to 'New user', new_admin_user_path, class: "btn btn-sm btn-primary" %>
-<% end %>
+</div>
