@@ -27,6 +27,7 @@ For example: adding new models, new feilds to existing models only require incre
 The api version is derived from the schema version, and is simply the minor version of the schema. 
 Adding a new api is backwards compatible and don't require us to increment the api verion. Any breaking change to the api requires us to publish a new api version. It should be noted that all other endpoints, except for the new breaking changes, should be compatible with the previous version of the API. 
 
+We also maintain the code in the latest api, and update older versions to maintain backwards compatibility.
 ## Consequences
 
 - Any change to an existing api, should be forethought.

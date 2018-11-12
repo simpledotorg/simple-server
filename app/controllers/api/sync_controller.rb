@@ -1,4 +1,4 @@
-class Api::V1::SyncController < APIController
+class Api::SyncController < APIController
   before_action :check_disabled_api
 
   def __sync_from_user__(params)
