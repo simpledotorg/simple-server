@@ -1,2 +1,2 @@
-class Api::V1::PatientsController < Api::V2::PatientsController
+class Api::V1::PatientsController < Api::Latest::PatientsController
 end

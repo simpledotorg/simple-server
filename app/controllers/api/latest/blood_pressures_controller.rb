@@ -1,4 +1,4 @@
-class Api::V2::BloodPressuresController < Api::SyncController
+class Api::Latest::BloodPressuresController < Api::SyncController
   def sync_from_user
     __sync_from_user__(blood_pressures_params)
   end

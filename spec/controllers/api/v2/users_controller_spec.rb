@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::V2::UsersController, type: :controller do
+RSpec.describe Api::Latest::UsersController, type: :controller do
   describe '#register' do
     describe 'registration payload is invalid' do
       let(:request_params) { { user: FactoryBot.attributes_for(:user).slice(:full_name, :phone_number) } }

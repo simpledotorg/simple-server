@@ -1,4 +1,4 @@
-class Api::V2::PingsController < APIController
+class Api::Latest::PingsController < APIController
   skip_before_action :authenticate, only: [:show]
 
   def show

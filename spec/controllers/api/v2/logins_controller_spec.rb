@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::V2::LoginsController, type: :controller do
+RSpec.describe Api::Latest::LoginsController, type: :controller do
   describe '#login_user' do
     let(:password) { '1234' }
     let(:db_user) { FactoryBot.create(:user, password: password) }

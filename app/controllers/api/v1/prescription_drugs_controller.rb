@@ -1,2 +1,2 @@
-class Api::V1::PrescriptionDrugsController < Api::V2::PrescriptionDrugsController
+class Api::V1::PrescriptionDrugsController < Api::Latest::PrescriptionDrugsController
 end

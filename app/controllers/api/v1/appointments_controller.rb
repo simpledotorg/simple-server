@@ -1,2 +1,2 @@
-class Api::V1::AppointmentsController < Api::V2::AppointmentsController
+class Api::V1::AppointmentsController < Api::Latest::AppointmentsController
 end

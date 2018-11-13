@@ -1,4 +1,4 @@
-class Api::V2::MedicalHistoriesController < Api::SyncController
+class Api::Latest::MedicalHistoriesController < Api::SyncController
   def sync_from_user
     __sync_from_user__(medical_histories_params)
   end

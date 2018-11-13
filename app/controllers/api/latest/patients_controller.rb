@@ -1,4 +1,4 @@
-class Api::V2::PatientsController < Api::SyncController
+class Api::Latest::PatientsController < Api::SyncController
   def sync_from_user
     __sync_from_user__(patients_params)
   end

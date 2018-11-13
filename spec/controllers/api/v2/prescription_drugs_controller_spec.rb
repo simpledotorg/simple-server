@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::V2::PrescriptionDrugsController, type: :controller do
+RSpec.describe Api::Latest::PrescriptionDrugsController, type: :controller do
   let(:request_user) { FactoryBot.create(:user) }
   let(:model) { PrescriptionDrug }
 

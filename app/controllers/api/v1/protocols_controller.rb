@@ -1,2 +1,2 @@
-class Api::V1::ProtocolsController < Api::V2::ProtocolsController
+class Api::V1::ProtocolsController < Api::Latest::ProtocolsController
 end

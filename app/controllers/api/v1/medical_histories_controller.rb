@@ -1,2 +1,2 @@
-class Api::V1::MedicalHistoriesController < Api::V2::MedicalHistoriesController
+class Api::V1::MedicalHistoriesController < Api::Latest::MedicalHistoriesController
 end

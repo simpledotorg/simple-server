@@ -1,2 +1,2 @@
-class Api::V1::BloodPressuresController < Api::V2::BloodPressuresController
+class Api::V1::BloodPressuresController < Api::Latest::BloodPressuresController
 end

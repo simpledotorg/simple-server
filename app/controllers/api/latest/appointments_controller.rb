@@ -1,4 +1,4 @@
-class Api::V2::AppointmentsController < Api::SyncController
+class Api::Latest::AppointmentsController < Api::SyncController
   def sync_from_user
     __sync_from_user__(appointments_params)
   end

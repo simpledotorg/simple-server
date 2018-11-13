@@ -1,2 +1,2 @@
-class Api::V1::CommunicationsController < Api::V2::CommunicationsController
+class Api::V1::CommunicationsController < Api::Latest::CommunicationsController
 end

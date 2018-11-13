@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::V2::AppointmentsController, type: :controller do
+RSpec.describe Api::Latest::AppointmentsController, type: :controller do
   let(:request_user) { FactoryBot.create(:user) }
   before :each do
     request.env['X_USER_ID'] = request_user.id
