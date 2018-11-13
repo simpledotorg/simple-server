@@ -184,7 +184,19 @@ module Api::V1::Schema
         paths:       {},
         definitions: all_definitions,
         securityDefinitions: security_definitions
+      },
+      'v2/swagger.json' => {
+        swagger:     '2.0',
+        basePath:    '/api/v2',
+        produces:    ['application/json'],
+        consumes:    ['application/json'],
+        schemes:     ['https'],
+        info:        swagger_info,
+        paths:       {},
+        definitions: all_definitions,
+        securityDefinitions: security_definitions
       }
+
     }
   end
 end

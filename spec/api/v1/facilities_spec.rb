@@ -1,6 +1,6 @@
 require 'swagger_helper'
 
-describe 'Facilities API' do
+describe 'Facilities API', swagger_doc: 'v1/swagger.json' do
   path '/facilities/sync' do
     get 'Syncs facilities data from server to device.' do
       tags 'facility'
