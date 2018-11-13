@@ -1,50 +1,50 @@
 module Api::V1::Schema
   def self.processed_since
     Models.timestamp.merge(
-      name:        'processed_since',
+      name: 'processed_since',
       description: 'The timestamp since which records have been processed by the server.
                     Use the server returned value in the next request to continue fetching records.'
     )
   end
 
   def self.error
-    { type:       :object,
+    { type: :object,
       properties: {
-        id:               { type:        :string,
-                            format:      :uuid,
-                            description: 'Id of the record with errors' },
-        schema:           { type:        :array,
-                            items:       { type: :string },
-                            description: 'List of json schema error strings describing validation errors' },
-        field_with_error: { type:  :array,
+        id: { type: :string,
+              format: :uuid,
+              description: 'Id of the record with errors' },
+        schema: { type: :array,
+                  items: { type: :string },
+                  description: 'List of json schema error strings describing validation errors' },
+        field_with_error: { type: :array,
                             items: { type: :string } } } }
   end
 
   def self.sync_from_user_request(request_key, schema_type = request_key)
-    { type:       :object,
+    { type: :object,
       properties: {
         request_key => { '$ref' => "#/definitions/#{schema_type}" } },
-      required:   [request_key] }
+      required: [request_key] }
   end
 
   def self.sync_from_user_errors
-    { type:       :object,
+    { type: :object,
       properties: {
         errors: { '$ref' => '#/definitions/errors' } } }
   end
 
   def self.sync_to_user_request
     [processed_since.merge(in: :query),
-     { in:          :query, name: :limit, type: :integer,
+     { in: :query, name: :limit, type: :integer,
        description: 'Number of record to retrieve (a.k.a batch-size)' }]
   end
 
   def self.sync_to_user_response(response_key, schema_type = response_key)
-    { type:       :object,
+    { type: :object,
       properties: {
-        response_key     => { '$ref' => "#/definitions/#{schema_type}" },
+        response_key => { '$ref' => "#/definitions/#{schema_type}" },
         :processed_since => { '$ref' => '#/definitions/processed_since' } },
-      required:   [response_key, :processed_since] }
+      required: [response_key, :processed_since] }
   end
 
   def self.patient_sync_from_user_request
@@ -105,18 +105,18 @@ module Api::V1::Schema
   end
 
   def self.user_login_request
-    { type:       :object,
+    { type: :object,
       properties: {
         user: { '$ref' => '#/definitions/login_user' } },
-      required:   [:user] }
+      required: [:user] }
   end
 
   def self.user_registration_response
-    { type:       :object,
+    { type: :object,
       properties: {
         access_token: { '$ref' => '#/definitions/non_empty_string' },
-        user:         { '$ref' => '#/definitions/user' } },
-      required:   %i[user access_token] }
+        user: { '$ref' => '#/definitions/user' } },
+      required: %i[user access_token] }
   end
 
   def self.user_login_success_response
@@ -124,10 +124,10 @@ module Api::V1::Schema
   end
 
   def self.user_registration_request
-    { type:       :object,
+    { type: :object,
       properties: {
-        user:         { '$ref' => '#/definitions/user' } },
-      required:   %i[user] }
+        user: { '$ref' => '#/definitions/user' } },
+      required: %i[user] }
   end
 
   def self.user_reset_password_request
@@ -138,8 +138,8 @@ module Api::V1::Schema
   end
 
   def self.definitions
-    { error:           error,
-      errors:          Models.array_of('error'),
+    { error: error,
+      errors: Models.array_of('error'),
       processed_since: processed_since }
   end
 
@@ -147,21 +147,21 @@ module Api::V1::Schema
     definitions.merge(Models.definitions)
   end
 
-  def self.swagger_info
+  def self.swagger_info(version)
     {
       description: I18n.t('api.documentation.description'),
-      version:     'v1',
-      title:       I18n.t('api.documentation.title'),
-      'x-logo'     => {
-        url:             ActionController::Base.helpers.image_path(I18n.t('api.documentation.logo.image')),
+      version: version.to_s,
+      title: I18n.t('api.documentation.title'),
+      'x-logo' => {
+        url: ActionController::Base.helpers.image_path(I18n.t('api.documentation.logo.image')),
         backgroundColor: I18n.t('api.documentation.logo.background_color')
       },
-      contact:     {
+      contact: {
         email: I18n.t('api.documentation.contact.email')
       },
-      license:     {
+      license: {
         name: I18n.t('api.documentation.license.name'),
-        url:  I18n.t('api.documentation.license.url')
+        url: I18n.t('api.documentation.license.url')
       }
     }
   end
@@ -174,29 +174,28 @@ module Api::V1::Schema
 
   def self.swagger_docs
     {
-      'v1/swagger.json' => {
-        swagger:     '2.0',
-        basePath:    '/api/v1',
-        produces:    ['application/json'],
-        consumes:    ['application/json'],
-        schemes:     ['https'],
-        info:        swagger_info,
-        paths:       {},
+      'v2/swagger.json' => {
+        swagger: '2.0',
+        basePath: '/api/v2',
+        produces: ['application/json'],
+        consumes: ['application/json'],
+        schemes: ['https'],
+        info: swagger_info(:v2),
+        paths: {},
         definitions: all_definitions,
         securityDefinitions: security_definitions
       },
-      'v2/swagger.json' => {
-        swagger:     '2.0',
-        basePath:    '/api/v2',
-        produces:    ['application/json'],
-        consumes:    ['application/json'],
-        schemes:     ['https'],
-        info:        swagger_info,
-        paths:       {},
+      'v1/swagger.json' => {
+        swagger: '2.0',
+        basePath: '/api/v1',
+        produces: ['application/json'],
+        consumes: ['application/json'],
+        schemes: ['https'],
+        info: swagger_info(:v1),
+        paths: {},
         definitions: all_definitions,
         securityDefinitions: security_definitions
       }
-
     }
   end
 end
