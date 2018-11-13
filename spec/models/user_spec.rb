@@ -11,6 +11,12 @@ RSpec.describe User, type: :model do
       FactoryBot.create_list(:user_facility, 5, user: user)
       expect { user.destroy }.to change { UserFacility.count }.by(-5)
     end
+    it 'has distinct patients' do
+      user = FactoryBot.create(:user)
+      patient = FactoryBot.create(:patient)
+      FactoryBot.create_list(:blood_pressure, 5, user: user, patient: patient)
+      expect(user.patients.count).to eq(1)
+    end
   end
 
   describe 'Validations' do
