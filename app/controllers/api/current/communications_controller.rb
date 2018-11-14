@@ -1,4 +1,4 @@
-class Api::Current::CommunicationsController < Api::SyncController
+class Api::Current::CommunicationsController < Api::Current::SyncController
   def sync_from_user
     __sync_from_user__(communications_params)
   end

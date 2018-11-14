@@ -1,4 +1,4 @@
-class Api::Current::FacilitiesController < Api::SyncController
+class Api::Current::FacilitiesController < Api::Current::SyncController
   skip_before_action :authenticate, only: [:sync_to_user]
 
   def sync_to_user

@@ -1,4 +1,4 @@
-class Api::Current::ProtocolsController < Api::SyncController
+class Api::Current::ProtocolsController < Api::Current::SyncController
   def sync_to_user
     __sync_to_user__('protocols')
   end
