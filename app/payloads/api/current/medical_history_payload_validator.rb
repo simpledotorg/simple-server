@@ -1,4 +1,4 @@
-class Api::V1::MedicalHistoryPayloadValidator < Api::V1::PayloadValidator
+class Api::Current::MedicalHistoryPayloadValidator < Api::Current::PayloadValidator
 
   attr_accessor(
     :id,
@@ -16,6 +16,6 @@ class Api::V1::MedicalHistoryPayloadValidator < Api::V1::PayloadValidator
   validate :validate_schema
 
   def schema
-    Api::V1::Schema::Models.medical_history
+    Api::Current::Schema::Models.medical_history
   end
 end

@@ -14,7 +14,7 @@ class Api::Current::LoginsController < APIController
       user.save
       AuditLog.login_log(user)
       render json: {
-        user: Api::V1::UserTransformer.to_response(user),
+        user: Api::Current::UserTransformer.to_response(user),
         access_token: user.access_token
       }, status:   :ok
     end
@@ -23,7 +23,7 @@ class Api::Current::LoginsController < APIController
   private
 
   def validate_login_payload
-    validator = Api::V1::UserLoginPayloadValidator.new(login_params)
+    validator = Api::Current::UserLoginPayloadValidator.new(login_params)
     logger.debug "User login params had errors: #{validator.errors_hash}" if validator.invalid?
     if validator.invalid?
       render json: { errors: validator.errors }, status: :unauthorized

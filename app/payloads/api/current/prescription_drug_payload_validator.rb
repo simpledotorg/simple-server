@@ -1,4 +1,4 @@
-class Api::V1::PrescriptionDrugPayloadValidator < Api::V1::PayloadValidator
+class Api::Current::PrescriptionDrugPayloadValidator < Api::Current::PayloadValidator
 
   attr_accessor(
     :id,
@@ -16,6 +16,6 @@ class Api::V1::PrescriptionDrugPayloadValidator < Api::V1::PayloadValidator
   validate :validate_schema
 
   def schema
-    Api::V1::Schema::Models.prescription_drug
+    Api::Current::Schema::Models.prescription_drug
   end
 end

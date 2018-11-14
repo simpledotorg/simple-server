@@ -1,4 +1,4 @@
-class Api::V1::PatientPayloadValidator < Api::V1::PayloadValidator
+class Api::Current::PatientPayloadValidator < Api::Current::PayloadValidator
 
   attr_accessor(
     :id,
@@ -31,6 +31,6 @@ class Api::V1::PatientPayloadValidator < Api::V1::PayloadValidator
   end
 
   def schema
-    Api::V1::Schema::Models.nested_patient
+    Api::Current::Schema::Models.nested_patient
   end
 end

@@ -1,4 +1,4 @@
-class Api::V1::AppointmentPayloadValidator < Api::V1::PayloadValidator
+class Api::Current::AppointmentPayloadValidator < Api::Current::PayloadValidator
 
   attr_accessor(
     :id,
@@ -16,6 +16,6 @@ class Api::V1::AppointmentPayloadValidator < Api::V1::PayloadValidator
   validate :validate_schema
 
   def schema
-    Api::V1::Schema::Models.appointment
+    Api::Current::Schema::Models.appointment
   end
 end

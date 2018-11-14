@@ -1,4 +1,4 @@
-class Api::V1::UserRegistrationPayloadValidator < Api::V1::PayloadValidator
+class Api::Current::UserRegistrationPayloadValidator < Api::Current::PayloadValidator
 
   attr_accessor(
     :id,
@@ -13,7 +13,7 @@ class Api::V1::UserRegistrationPayloadValidator < Api::V1::PayloadValidator
   validate :validate_schema
 
   def schema
-    Api::V1::Schema::Models.user
+    Api::Current::Schema::Models.user
   end
 
   def errors_hash

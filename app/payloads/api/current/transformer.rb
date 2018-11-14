@@ -1,4 +1,4 @@
-module Api::V1::Transformer
+module Api::Current::Transformer
   def self.from_request(attributes_of_payload)
     rename_attributes(attributes_of_payload, key_mapping)
   end

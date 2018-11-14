@@ -10,13 +10,13 @@ class Api::Current::MedicalHistoriesController < Api::Current::SyncController
   private
 
   def merge_if_valid(medical_history_params)
-    validator = Api::V1::MedicalHistoryPayloadValidator.new(medical_history_params)
+    validator = Api::Current::MedicalHistoryPayloadValidator.new(medical_history_params)
     logger.debug "Follow Up Schedule had errors: #{validator.errors_hash}" if validator.invalid?
     if validator.invalid?
       NewRelic::Agent.increment_metric('Merge/MedicalHistory/schema_invalid')
       { errors_hash: validator.errors_hash }
     else
-      medical_history = MedicalHistory.merge(Api::V1::Transformer.from_request(medical_history_params))
+      medical_history = MedicalHistory.merge(Api::Current::Transformer.from_request(medical_history_params))
       { record: medical_history }
     end
   end
@@ -26,7 +26,7 @@ class Api::Current::MedicalHistoriesController < Api::Current::SyncController
   end
 
   def transform_to_response(medical_history)
-    Api::V1::MedicalHistoryTransformer.to_response(medical_history)
+    Api::Current::MedicalHistoryTransformer.to_response(medical_history)
   end
 
   def medical_histories_params

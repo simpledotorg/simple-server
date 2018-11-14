@@ -1,4 +1,4 @@
-class Api::V1::CommunicationPayloadValidator < Api::V1::PayloadValidator
+class Api::Current::CommunicationPayloadValidator < Api::Current::PayloadValidator
 
   attr_accessor(
     :id,
@@ -13,6 +13,6 @@ class Api::V1::CommunicationPayloadValidator < Api::V1::PayloadValidator
   validate :validate_schema
 
   def schema
-    Api::V1::Schema::Models.communication
+    Api::Current::Schema::Models.communication
   end
 end

@@ -10,13 +10,13 @@ class Api::Current::CommunicationsController < Api::Current::SyncController
   private
 
   def merge_if_valid(communication_params)
-    validator = Api::V1::CommunicationPayloadValidator.new(communication_params)
+    validator = Api::Current::CommunicationPayloadValidator.new(communication_params)
     logger.debug "Follow Up  had errors: #{validator.errors_hash}" if validator.invalid?
     if validator.invalid?
       NewRelic::Agent.increment_metric('Merge/Communication/schema_invalid')
       { errors_hash: validator.errors_hash }
     else
-      communication = Communication.merge(Api::V1::Transformer.from_request(communication_params))
+      communication = Communication.merge(Api::Current::Transformer.from_request(communication_params))
       { record: communication }
     end
   end
@@ -26,7 +26,7 @@ class Api::Current::CommunicationsController < Api::Current::SyncController
   end
 
   def transform_to_response(communication)
-    Api::V1::Transformer.to_response(communication)
+    Api::Current::Transformer.to_response(communication)
   end
 
   def communications_params

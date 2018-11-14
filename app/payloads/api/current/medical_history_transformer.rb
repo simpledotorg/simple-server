@@ -1,4 +1,4 @@
-module Api::V1::MedicalHistoryTransformer
+module Api::Current::MedicalHistoryTransformer
   MEDICAL_HISTORY_QUESTIONS = [
     :prior_heart_attack,
     :prior_stroke,
@@ -15,6 +15,6 @@ module Api::V1::MedicalHistoryTransformer
   def self.to_response(medical_history)
     medical_history_attributes = medical_history.attributes.with_indifferent_access
     updates = MEDICAL_HISTORY_QUESTIONS.map { |key| [key.to_s, medical_history_attributes[key] || false] }.to_h
-    Api::V1::Transformer.to_response(medical_history).merge(updates)
+    Api::Current::Transformer.to_response(medical_history).merge(updates)
   end
 end

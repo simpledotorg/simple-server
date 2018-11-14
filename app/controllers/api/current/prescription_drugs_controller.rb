@@ -10,13 +10,13 @@ class Api::Current::PrescriptionDrugsController < Api::Current::SyncController
   private
 
   def merge_if_valid(prescription_drug_params)
-    validator = Api::V1::PrescriptionDrugPayloadValidator.new(prescription_drug_params)
+    validator = Api::Current::PrescriptionDrugPayloadValidator.new(prescription_drug_params)
     logger.debug "Prescription Drug had errors: #{validator.errors_hash}" if validator.invalid?
     if validator.invalid?
       NewRelic::Agent.increment_metric('Merge/PrescriptionDrug/schema_invalid')
       { errors_hash: validator.errors_hash }
     else
-      prescription_drug = PrescriptionDrug.merge(Api::V1::Transformer.from_request(prescription_drug_params))
+      prescription_drug = PrescriptionDrug.merge(Api::Current::Transformer.from_request(prescription_drug_params))
       { record: prescription_drug }
     end
   end
@@ -26,7 +26,7 @@ class Api::Current::PrescriptionDrugsController < Api::Current::SyncController
   end
 
   def transform_to_response(prescription_drug)
-    Api::V1::Transformer.to_response(prescription_drug)
+    Api::Current::Transformer.to_response(prescription_drug)
   end
 
   def prescription_drugs_params

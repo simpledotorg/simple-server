@@ -47,15 +47,15 @@ class Api::Current::UsersController < APIController
   private
 
   def user_from_request
-    Api::V1::Transformer.from_request(registration_params)
+    Api::Current::Transformer.from_request(registration_params)
   end
 
   def user_to_response(user)
-    Api::V1::UserTransformer.to_response(user)
+    Api::Current::UserTransformer.to_response(user)
   end
 
   def validate_registration_payload
-    validator = Api::V1::UserRegistrationPayloadValidator.new(registration_params)
+    validator = Api::Current::UserRegistrationPayloadValidator.new(registration_params)
     logger.debug "User registration params had errors: #{validator.errors_hash}" if validator.invalid?
     if validator.invalid?
       render json: { errors: validator.errors }, status: :bad_request

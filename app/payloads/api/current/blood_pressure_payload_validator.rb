@@ -1,4 +1,4 @@
-class Api::V1::BloodPressurePayloadValidator < Api::V1::PayloadValidator
+class Api::Current::BloodPressurePayloadValidator < Api::Current::PayloadValidator
 
   attr_accessor(
     :id,
@@ -14,6 +14,6 @@ class Api::V1::BloodPressurePayloadValidator < Api::V1::PayloadValidator
   validate :validate_schema
 
   def schema
-    Api::V1::Schema::Models.blood_pressure
+    Api::Current::Schema::Models.blood_pressure
   end
 end
