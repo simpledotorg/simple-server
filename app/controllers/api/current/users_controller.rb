@@ -1,4 +1,4 @@
-class Api::Latest::UsersController < APIController
+class Api::Current::UsersController < APIController
   skip_before_action :authenticate, only: [:register, :find, :request_otp]
   before_action :validate_registration_payload, only: %i[register]
 

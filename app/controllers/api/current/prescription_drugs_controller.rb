@@ -1,4 +1,4 @@
-class Api::Latest::PrescriptionDrugsController < Api::SyncController
+class Api::Current::PrescriptionDrugsController < Api::SyncController
   def sync_from_user
     __sync_from_user__(prescription_drugs_params)
   end

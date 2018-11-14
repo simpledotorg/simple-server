@@ -1,4 +1,4 @@
-class Api::Latest::LoginsController < APIController
+class Api::Current::LoginsController < APIController
   skip_before_action :authenticate, only: [:login_user]
   before_action :validate_login_payload, only: %i[create]
 

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::Latest::MedicalHistoriesController, type: :controller do
+RSpec.describe Api::Current::MedicalHistoriesController, type: :controller do
   let(:request_user) { FactoryBot.create(:user) }
   before :each do
     request.env['X_USER_ID'] = request_user.id

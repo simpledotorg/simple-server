@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::Latest::PatientsController, type: :controller do
+RSpec.describe Api::Current::PatientsController, type: :controller do
   let(:request_user) { FactoryBot.create(:user) }
 
   let(:model) { Patient }

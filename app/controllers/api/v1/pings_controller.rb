@@ -1,2 +1,2 @@
-class Api::V1::PingsController < Api::Latest::PingsController
+class Api::V1::PingsController < Api::Current::PingsController
 end
