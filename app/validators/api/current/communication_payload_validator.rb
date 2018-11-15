@@ -13,6 +13,6 @@ class Api::Current::CommunicationPayloadValidator < Api::Current::PayloadValidat
   validate :validate_schema
 
   def schema
-    Api::Current::Schema::Models.communication
+    Api::Current::Models.communication
   end
 end

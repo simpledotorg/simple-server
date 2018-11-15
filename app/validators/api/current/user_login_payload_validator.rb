@@ -9,6 +9,6 @@ class Api::Current::UserLoginPayloadValidator < Api::Current::PayloadValidator
   validate :validate_schema
 
   def schema
-    Api::Current::Schema::Models.login_user
+    Api::Current::Models.login_user
   end
 end

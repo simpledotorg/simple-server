@@ -1,7 +1,7 @@
 class Api::Current::Schema
   class << self
     def processed_since
-      Api::Current::Schema::Models.timestamp.merge(
+      Api::Current::Models.timestamp.merge(
         name: 'processed_since',
         description: 'The timestamp since which records have been processed by the server.
                     Use the server returned value in the next request to continue fetching records.'
@@ -140,64 +140,12 @@ class Api::Current::Schema
 
     def definitions
       { error: error,
-        errors: Api::Current::Schema::Models.array_of('error'),
+        errors: Api::Current::Models.array_of('error'),
         processed_since: processed_since }
     end
 
     def all_definitions
-      definitions.merge(Api::Current::Schema::Models.definitions)
-    end
-
-    def swagger_info(version)
-      {
-        description: I18n.t('api.documentation.description'),
-        version: version.to_s,
-        title: I18n.t('api.documentation.title'),
-        'x-logo' => {
-          url: ActionController::Base.helpers.image_path(I18n.t('api.documentation.logo.image')),
-          backgroundColor: I18n.t('api.documentation.logo.background_color')
-        },
-        contact: {
-          email: I18n.t('api.documentation.contact.email')
-        },
-        license: {
-          name: I18n.t('api.documentation.license.name'),
-          url: I18n.t('api.documentation.license.url')
-        }
-      }
-    end
-
-    def security_definitions
-      { basic: {
-        type: :basic
-      } }
-    end
-
-    def swagger_docs
-      {
-        'v2/swagger.json' => {
-          swagger: '2.0',
-          basePath: '/api/v2',
-          produces: ['application/json'],
-          consumes: ['application/json'],
-          schemes: ['https'],
-          info: swagger_info(:v2),
-          paths: {},
-          definitions: all_definitions,
-          securityDefinitions: security_definitions
-        },
-        'v1/swagger.json' => {
-          swagger: '2.0',
-          basePath: '/api/v1',
-          produces: ['application/json'],
-          consumes: ['application/json'],
-          schemes: ['https'],
-          info: swagger_info(:v1),
-          paths: {},
-          definitions: all_definitions,
-          securityDefinitions: security_definitions
-        }
-      }
+      definitions.merge(Api::Current::Models.definitions)
     end
   end
 end

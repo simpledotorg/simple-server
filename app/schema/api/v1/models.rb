@@ -1,4 +1,4 @@
-class Api::V1::Schema::Models < Api::Current::Schema::Models
+class Api::V1::Models < Api::Current::Models
   class << self
     def medical_history
       { type: :object,
@@ -25,6 +25,10 @@ class Api::V1::Schema::Models < Api::Current::Schema::Models
           :updated_at
         ]
       }
+    end
+
+    def definitions
+      Api::Current::Models.definitions.merge(medical_history: medical_history)
     end
   end
 end

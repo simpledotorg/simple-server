@@ -1,4 +1,4 @@
-class Api::Current::Schema::Models
+class Api::Current::Models
   class << self
     def timestamp
       { type: :string,

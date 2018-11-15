@@ -16,6 +16,6 @@ class Api::Current::AppointmentPayloadValidator < Api::Current::PayloadValidator
   validate :validate_schema
 
   def schema
-    Api::Current::Schema::Models.appointment
+    Api::Current::Models.appointment
   end
 end

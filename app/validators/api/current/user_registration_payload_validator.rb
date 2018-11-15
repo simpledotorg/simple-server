@@ -13,7 +13,7 @@ class Api::Current::UserRegistrationPayloadValidator < Api::Current::PayloadVali
   validate :validate_schema
 
   def schema
-    Api::Current::Schema::Models.user
+    Api::Current::Models.user
   end
 
   def errors_hash

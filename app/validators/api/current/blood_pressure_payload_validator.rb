@@ -14,6 +14,6 @@ class Api::Current::BloodPressurePayloadValidator < Api::Current::PayloadValidat
   validate :validate_schema
 
   def schema
-    Api::Current::Schema::Models.blood_pressure
+    Api::Current::Models.blood_pressure
   end
 end
