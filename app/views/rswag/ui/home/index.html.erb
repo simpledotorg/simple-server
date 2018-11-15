@@ -32,13 +32,13 @@
   </div>
 </nav>
 
-<redoc scroll-y-offset="body > nav" spec-url="<%= url_for(rswag_api: nil) + 'v2/swagger.json' %>"></redoc>
+<redoc scroll-y-offset="body > nav" spec-url="<%= url_for(rswag_api: nil) + 'current/swagger.json' %>"></redoc>
 <script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"></script>
 <script>
     var apis = [
         {
-            name: 'V2',
-            url: "<%= url_for(rswag_api: nil) + 'v2/swagger.json' %>"
+            name: 'Current',
+            url: "<%= url_for(rswag_api: nil) + 'current/swagger.json' %>"
         },
         {
             name: 'V1',

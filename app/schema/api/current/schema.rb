@@ -175,7 +175,7 @@ class Api::Current::Schema
 
     def swagger_docs
       {
-        'v2/swagger.json' => {
+        'current/swagger.json' => {
           swagger: '2.0',
           basePath: '/api/v2',
           produces: ['application/json'],

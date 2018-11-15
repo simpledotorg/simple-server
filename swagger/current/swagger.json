@@ -47,6 +47,11 @@
             "type": "uuid"
           },
           {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
             "name": "appointments",
             "in": "body",
             "schema": {
@@ -64,15 +69,7 @@
         ],
         "responses": {
           "200": {
-            "description": "some, or no errors were found",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "errors": {
-                  "$ref": "#/definitions/errors"
-                }
-              }
-            }
+            "description": "some, or no errors were found"
           }
         }
       },
@@ -91,6 +88,11 @@
         "parameters": [
           {
             "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
             "in": "header",
             "type": "uuid"
           },
@@ -150,6 +152,11 @@
             "type": "uuid"
           },
           {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
             "name": "blood_pressures",
             "in": "body",
             "schema": {
@@ -194,6 +201,11 @@
         "parameters": [
           {
             "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
             "in": "header",
             "type": "uuid"
           },
@@ -253,6 +265,11 @@
             "type": "uuid"
           },
           {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
             "name": "communications",
             "in": "body",
             "schema": {
@@ -297,6 +314,11 @@
         "parameters": [
           {
             "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
             "in": "header",
             "type": "uuid"
           },
@@ -352,6 +374,11 @@
         "parameters": [
           {
             "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
             "in": "header",
             "type": "uuid"
           },
@@ -482,6 +509,11 @@
             "type": "uuid"
           },
           {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
             "name": "medical_histories",
             "in": "body",
             "schema": {
@@ -526,6 +558,11 @@
         "parameters": [
           {
             "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
             "in": "header",
             "type": "uuid"
           },
@@ -585,6 +622,11 @@
             "type": "uuid"
           },
           {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
             "name": "patients",
             "in": "body",
             "schema": {
@@ -629,6 +671,11 @@
         "parameters": [
           {
             "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
             "in": "header",
             "type": "uuid"
           },
@@ -688,6 +735,11 @@
             "type": "uuid"
           },
           {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
             "name": "prescription_drugs",
             "in": "body",
             "schema": {
@@ -732,6 +784,11 @@
         "parameters": [
           {
             "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
             "in": "header",
             "type": "uuid"
           },
@@ -787,6 +844,11 @@
         "parameters": [
           {
             "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
             "in": "header",
             "type": "uuid"
           },
