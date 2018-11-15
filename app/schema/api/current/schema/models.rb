@@ -221,12 +221,12 @@ class Api::Current::Schema::Models
         properties: {
           id: { '$ref' => '#/definitions/uuid' },
           patient_id: { '$ref' => '#/definitions/uuid' },
-          prior_heart_attack: { type: :boolean },
-          prior_stroke: { type: :boolean },
-          chronic_kidney_disease: { type: :boolean },
-          receiving_treatment_for_hypertension: { type: :boolean },
-          diabetes: { type: :boolean },
-          diagnosed_with_hypertension: { type: :boolean },
+          prior_heart_attack: { type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys },
+          prior_stroke: { type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys },
+          chronic_kidney_disease: { type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys },
+          receiving_treatment_for_hypertension: { type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys },
+          diabetes: { type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys },
+          diagnosed_with_hypertension: { type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' } },
         required: [
