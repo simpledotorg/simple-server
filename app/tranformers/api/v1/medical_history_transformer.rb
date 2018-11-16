@@ -1,6 +1,4 @@
 class Api::V1::MedicalHistoryTransformer
-
-
   MEDICAL_HISTORY_ANSWERS_MAP = {
     yes: true,
     no: false,
