@@ -11,14 +11,13 @@ class Api::V1::MedicalHistoryTransformer
   }.with_indifferent_access.freeze
 
   class << self
-    def medical_history_questions
-      MedicalHistory::MEDICAL_HISTORY_QUESTIONS
-    end
-
     def to_response(medical_history)
       medical_history_attributes = medical_history.attributes.with_indifferent_access
       updates = MedicalHistory::MEDICAL_HISTORY_QUESTIONS.map { |key| [key.to_s, MEDICAL_HISTORY_ANSWERS_MAP[medical_history_attributes[key]]] }.to_h
-      Api::Current::Transformer.to_response(medical_history).merge(updates)
+      Api::Current::Transformer
+        .to_response(medical_history)
+        .merge(updates)
+        .except(*MedicalHistory::MEDICAL_HISTORY_QUESTIONS.map { |question| "#{question}_boolean"})
     end
 
     def from_request(params)
