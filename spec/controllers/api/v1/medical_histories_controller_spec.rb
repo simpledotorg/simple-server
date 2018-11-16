@@ -26,12 +26,12 @@ RSpec.describe Api::V1::MedicalHistoriesController, type: :controller do
       let(:existing_records) do
         FactoryBot.create_list(:medical_history, 10)
       end
-      let(:record_updates) { Api::V1::MedicalHistoryTransformer::MEDICAL_HISTORY_QUESTIONS.map { |key| [key.to_s, %w(no yes).sample] }.to_h }
+      let(:record_updates) { MedicalHistory::MEDICAL_HISTORY_QUESTIONS.map { |key| [key.to_s, %w(no yes).sample] }.to_h }
       let(:updated_records) { existing_records.map { |record| build_medical_history_payload_current(record).merge(record_updates).merge(updated_at: 10.minutes.from_now) } }
       let(:updated_payload) do
         medical_histories = updated_records.map do |payload|
           payload.map do |key, value|
-            if Api::V1::MedicalHistoryTransformer::MEDICAL_HISTORY_QUESTIONS.include?(key.to_sym)
+            if MedicalHistory::MEDICAL_HISTORY_QUESTIONS.include?(key.to_sym)
               [key, Api::V1::MedicalHistoryTransformer::MEDICAL_HISTORY_ANSWERS_MAP[value]]
             else
               [key, value]
@@ -54,6 +54,33 @@ RSpec.describe Api::V1::MedicalHistoriesController, type: :controller do
             .to eq(record.to_json_and_back.with_int_timestamps)
         end
       end
+
+      describe 'updating from unknown to false' do
+        let(:existing_record) do
+          FactoryBot.create(:medical_history, :unknown)
+        end
+
+        let(:updated_payload) do
+          updates = MedicalHistory::MEDICAL_HISTORY_QUESTIONS.map { |key| [key, false] }.to_h
+          updates[:prior_heart_attack] = true
+          { medical_histories: [existing_record.attributes.merge(updates)] }
+        end
+
+        it 'ignores fields marked false in the updates' do
+          post :sync_from_user, params: updated_payload, as: :json
+
+          db_record = MedicalHistory.find(existing_record.id)
+          expect(db_record.prior_heart_attack).to eq('yes')
+          (MedicalHistory::MEDICAL_HISTORY_QUESTIONS - [:prior_heart_attack]).each do |key|
+            expect(db_record.read_attribute(key)).to eq('unknown')
+          end
+        end
+
+        it 'creates a sentry alert' do
+          expect(Raven).to receive(:capture_message)
+          post :sync_from_user, params: updated_payload, as: :json
+        end
+      end
     end
   end
 
@@ -61,7 +88,7 @@ RSpec.describe Api::V1::MedicalHistoriesController, type: :controller do
     it_behaves_like 'a working sync controller sending records'
 
     context 'medical histories with nil questions' do
-      let(:medical_history_questions) { Api::V1::MedicalHistoryTransformer.medical_history_questions.map(&:to_s) }
+      let(:medical_history_questions) { MedicalHistory::MEDICAL_HISTORY_QUESTIONS.map(&:to_s) }
       let(:false_medical_history_questions) { medical_history_questions.map { |key| [key, false] }.to_h }
       before :each do
         set_authentication_headers

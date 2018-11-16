@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe Api::V1::MedicalHistoryTransformer do
   describe 'to_response' do
-    let(:medical_history_questions) { Api::V1::MedicalHistoryTransformer.medical_history_questions.map(&:to_s) }
+    let(:medical_history_questions) { MedicalHistory::MEDICAL_HISTORY_QUESTIONS.map(&:to_s) }
     let(:false_medical_history_questions) { medical_history_questions.map { |key| [key, false] }.to_h }
     let(:medical_history_questions_marked_no) {  }
     let(:unknown_medical_history) { FactoryBot.build(:medical_history, :unknown) }
