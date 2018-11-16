@@ -1,7 +1,156 @@
+$accent-color: #FF3355; /* PINK */
+$dark-grey: #777;
+$highlight: #E9F3FF; /* LIGHT BLUE */
+/********/
+
 @import "bootstrap";
 
 body {
   padding-top: 5rem;
+  font-size: 14px;
+}
+
+h1 {
+    font-size: 24px;
+    color: $accent-color;
+    font-weight: 500;
+}
+
+h2 {
+    font-size: 18px;
+    color: $accent-color;
+    font-weight: 500;
+}
+
+h3 {
+    font-size: 16px;
+    color: $accent-color;
+    font-weight: 500;
+}
+
+footer {
+    padding: 2em 0 1em 0;
+}
+
+@include media-breakpoint-down(sm) {
+    .navbar-nav {
+        margin-top: 8px;
+    }
+    .navbar-nav li a {
+        padding: 1em 0;
+        border-top: 1px solid rgba(0,0,0,0.05);
+    }
+}
+
+@include media-breakpoint-up(md) {
+    .navbar {
+        border-bottom: 1px solid rgba(0,0,0,0.07);
+    }
+    .navbar-nav li a.active {
+        color: #000 !important;
+    }
+}
+
+.light {
+    color: #ddd;
+}
+
+.divider {
+    padding: 0 5px;
+}
+
+input.btn,
+button.btn,
+a.btn {
+    text-transform: capitalize;
+}
+
+.btn-outline-danger {
+    border-color: rgba(255,0,0,0.15);
+}
+
+.btn-success {
+    background: #E0FFED;
+    border-color: #E0FFED;
+    color: #007A31;
+}
+
+.btn-success:hover {
+    background: #00B849;
+    border-color: #00B849;
+    color: #FFF;
+}
+
+label {
+    font-weight: 600;
+}
+
+table span.label {
+    min-width: 95%;
+    display: block;
+    text-align: center;
+    box-sizing: border-box;
+    font-size: 85%;
+}
+
+.nowrap a,
+.nowrap {
+    white-space: nowrap;
+}
+
+.top-buttons {
+    text-align: right;
+}
+
+nav.navbar a.navbar-brand img {
+    background: #fff;
+    border-radius: 5px;
+    box-shadow:
+        1px 1px 0 rgba(0,0,0,0.05),
+        0 1px 5px rgba(0,0,0,0.1)
+    ;
+}
+
+@include media-breakpoint-down(md) {
+    section {
+        margin-right: -1rem;
+    }
+}
+
+nav.navbar button.navbar-toggler {
+    border: none;
+    padding: 2px 5px;
+    font-size: 14px;
+}
+
+.col-lg-3 {
+    transform: translate(0, 10%);
+}
+
+.table thead.thead-light th {
+    //background: #fff;
+    font-size: 12px;
+    color: $dark-grey;
+}
+
+.table thead.thead-light th small {
+    font-size: 12px;
+}
+
+h3 {
+    font-size: 16px;
+    color: $accent-color;
+    font-weight: 500;
+}
+
+.table thead.thead-light th {
+    //background: #fff;
+    font-size: 12px;
+    color: $dark-grey;
+}
+
+.table thead.thead-light th small {
+    font-size: 12px;
 }
 
 span.inactive {
@@ -55,12 +204,65 @@ span.inactive {
   color: #ddd;
 }
 
+.table {
+    font-size: 14px;
+    margin-top: 1.5em;
+}
+
+.table .table-info strong {
+    font-size: 14px;
+}
+
+.table td.row-title,
+.table h3 {
+    white-space: nowrap;
+}
+
+.table thead.thead-light th {
+    background: #fff;
+    border: none;
+}
+
+.table thead.thead-light .holiday {
+  background-color: #f6f6f6;
+}
+
+
+.table td {
+    vertical-align: middle;
+}
+
 .table-row-small > td {
   font-size: 80%;
   font-weight: 400;
+
+  &.holiday {
+    background-color: #f6f6f6;
+  }
 }
 
 .table-info > td {
-  background-color: #E9F3FF;
+  background-color: $highlight;
+  border-top-color: #666;
+
+    &.holiday {
+        background: #eee;
+    }
+
 }
 
+.card .row.tight {
+    margin-top: 0.2em !important;
+    margin-bottom: 0.2em !important;
+}
+
+.card {
+    border: none;
+    background: #fff;
+    box-shadow: 0px 0px 4px rgba(0,0,0,0.1);
+    margin-top: 8px;
+}
+
+.card .card-body {
+    padding: 8px 16px 8px 16px;
+}

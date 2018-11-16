@@ -17,11 +17,10 @@
   </head>
 
   <body>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top">
       <div class="container">
         <%= link_to root_path, class: "navbar-brand" do %>
           <%= image_tag "simple_logo.svg", width: 30, height: 30, class: "d-inline-block mr-2 align-top", alt: "Simple Server Logo" %>
-          Simple Server
         <% end %>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -64,13 +63,13 @@
 
             <ul class="navbar-nav ml-auto">
               <li class="nav-item">
-                <%= link_to('Log Out', destroy_admin_session_path, method: :delete, class: "nav-link") %>
+                <%= link_to('Logout', destroy_admin_session_path, method: :delete, class: "nav-link") %>
               </li>
             </ul>
           <% else %>
             <ul class="navbar-nav ml-auto">
               <li class="nav-item">
-                <%= link_to('Log In', new_admin_session_path, class: "nav-link") %>
+                <%= link_to('Login', new_admin_session_path, class: "nav-link") %>
               </li>
             </ul>
           <% end %>
