@@ -7,11 +7,11 @@ class AddEnumFieldsForMedicalHistoryQuestions < ActiveRecord::Migration[5.1]
     rename_column :medical_histories, :diabetes, :diabetes_boolean
     rename_column :medical_histories, :diagnosed_with_hypertension, :diagnosed_with_hypertension_boolean
 
-    add_column :medical_histories, :prior_heart_attack, :text, null: false
-    add_column :medical_histories, :prior_stroke, :text, null: false
-    add_column :medical_histories, :chronic_kidney_disease, :text, null: false
-    add_column :medical_histories, :receiving_treatment_for_hypertension, :text, null: false
-    add_column :medical_histories, :diabetes, :text, null: false
-    add_column :medical_histories, :diagnosed_with_hypertension, :text, null: false
+    add_column :medical_histories, :prior_heart_attack, :text, null: true
+    add_column :medical_histories, :prior_stroke, :text, null: true
+    add_column :medical_histories, :chronic_kidney_disease, :text, null: true
+    add_column :medical_histories, :receiving_treatment_for_hypertension, :text, null: true
+    add_column :medical_histories, :diabetes, :text, null: true
+    add_column :medical_histories, :diagnosed_with_hypertension, :text, null: true
   end
 end

@@ -21,4 +21,16 @@ namespace :data_migration do
       puts "Created UserFacility records fors #{users.count} users"
     end
   end
+
+  desc "Populate questions in medical histories from deprecated boolean fields"
+  task populate_medical_history_records_from_boolean_fields: :environment do
+    MedicalHistory.all do |record|
+      MedicalHistory::MEDICAL_HISTORY_QUESTIONS.each do |question|
+        boolean_value = record.read_attribute(question.to_s + '_boolean')
+        enum_value = Api::V1::MedicalHistoryTransformer.INVERTED_MEDICAL_HISTORY_ANSWERS_MAP[boolean_value]
+        record.set_attribute(question, enum_value)
+      end
+      record.save
+    end
+  end
 end

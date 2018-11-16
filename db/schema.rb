@@ -143,12 +143,12 @@ ActiveRecord::Schema.define(version: 20181115091323) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "diagnosed_with_hypertension_boolean"
-    t.text "prior_heart_attack", null: false
-    t.text "prior_stroke", null: false
-    t.text "chronic_kidney_disease", null: false
-    t.text "receiving_treatment_for_hypertension", null: false
-    t.text "diabetes", null: false
-    t.text "diagnosed_with_hypertension", null: false
+    t.text "prior_heart_attack"
+    t.text "prior_stroke"
+    t.text "chronic_kidney_disease"
+    t.text "receiving_treatment_for_hypertension"
+    t.text "diabetes"
+    t.text "diagnosed_with_hypertension"
     t.index ["patient_id"], name: "index_medical_histories_on_patient_id"
   end
 
