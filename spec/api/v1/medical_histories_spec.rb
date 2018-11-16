@@ -14,7 +14,7 @@ describe 'Medical History API', swagger_doc: 'v1/swagger.json' do
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
-        let(:medical_histories) { { medical_histories: (1..10).map { build_medical_history_payload } } }
+        let(:medical_histories) { { medical_histories: (1..10).map { build_medical_history_payload_v1 } } }
 
         run_test!
       end
@@ -25,7 +25,7 @@ describe 'Medical History API', swagger_doc: 'v1/swagger.json' do
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
         schema Api::V1::Schema.sync_from_user_errors
-        let(:medical_histories) { { medical_histories: (1..10).map { build_invalid_medical_history_payload } } }
+        let(:medical_histories) { { medical_histories: (1..10).map { build_invalid_medical_history_payload_v1 } } }
         run_test!
       end
     end
@@ -52,13 +52,7 @@ describe 'Medical History API', swagger_doc: 'v1/swagger.json' do
         schema Api::V1::Schema.medical_history_sync_to_user_response
         let(:processed_since) { 10.minutes.ago }
         let(:limit) { 10 }
-        before do |example|
-          submit_request(example.metadata)
-        end
-
-        it 'returns a valid 201 response' do |example|
-          assert_response_matches_metadata(example.metadata)
-        end
+        run_test!
       end
     end
   end

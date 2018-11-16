@@ -9,10 +9,10 @@ RSpec.describe Api::Current::MedicalHistoriesController, type: :controller do
 
   let(:model) { MedicalHistory }
 
-  let(:build_payload) { lambda { build_medical_history_payload } }
-  let(:build_invalid_payload) { lambda { build_invalid_medical_history_payload } }
+  let(:build_payload) { lambda { build_medical_history_payload_current } }
+  let(:build_invalid_payload) { lambda { build_invalid_medical_history_payload_current } }
   let(:invalid_record) { build_invalid_payload.call }
-  let(:update_payload) { lambda { |medical_history| updated_medical_history_payload medical_history } }
+  let(:update_payload) { lambda { |medical_history| updated_medical_history_payload_current medical_history } }
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
   it_behaves_like 'a sync controller that authenticates user requests'

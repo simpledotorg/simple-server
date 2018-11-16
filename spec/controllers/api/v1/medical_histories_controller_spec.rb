@@ -9,10 +9,10 @@ RSpec.describe Api::V1::MedicalHistoriesController, type: :controller do
 
   let(:model) { MedicalHistory }
 
-  let(:build_payload) { lambda { build_medical_history_payload } }
-  let(:build_invalid_payload) { lambda { build_invalid_medical_history_payload } }
+  let(:build_payload) { lambda { build_medical_history_payload_v1 } }
+  let(:build_invalid_payload) { lambda { build_invalid_medical_history_payload_v1 } }
   let(:invalid_record) { build_invalid_payload.call }
-  let(:update_payload) { lambda { |medical_history| updated_medical_history_payload medical_history } }
+  let(:update_payload) { lambda { |medical_history| updated_medical_history_payload_v1 medical_history } }
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
   it_behaves_like 'a sync controller that authenticates user requests'
@@ -21,7 +21,40 @@ RSpec.describe Api::V1::MedicalHistoriesController, type: :controller do
 
   describe 'POST sync: send data from device to server;' do
     it_behaves_like 'a working sync controller creating records'
-    it_behaves_like 'a working sync controller updating records'
+
+    describe 'updates records' do
+      let(:existing_records) do
+        FactoryBot.create_list(:medical_history, 10)
+      end
+      let(:record_updates) { Api::V1::MedicalHistoryTransformer::MEDICAL_HISTORY_QUESTIONS.map { |key| [key.to_s, %w(no yes).sample] }.to_h }
+      let(:updated_records) { existing_records.map { |record| build_medical_history_payload_current(record).merge(record_updates).merge(updated_at: 10.minutes.from_now) } }
+      let(:updated_payload) do
+        medical_histories = updated_records.map do |payload|
+          payload.map do |key, value|
+            if Api::V1::MedicalHistoryTransformer::MEDICAL_HISTORY_QUESTIONS.include?(key.to_sym)
+              [key, Api::V1::MedicalHistoryTransformer::MEDICAL_HISTORY_ANSWERS_MAP[value]]
+            else
+              [key, value]
+            end
+          end.to_h
+        end
+        { medical_histories: medical_histories }
+      end
+
+      before :each do
+        set_authentication_headers
+      end
+
+      it 'with updated record attributes' do
+        post :sync_from_user, params: updated_payload, as: :json
+
+        updated_records.each do |record|
+          db_record = MedicalHistory.find(record['id'])
+          expect(db_record.attributes.to_json_and_back.with_payload_keys.with_int_timestamps)
+            .to eq(record.to_json_and_back.with_int_timestamps)
+        end
+      end
+    end
   end
 
   describe 'GET sync: send data from server to device;' do
@@ -29,14 +62,14 @@ RSpec.describe Api::V1::MedicalHistoriesController, type: :controller do
 
     context 'medical histories with nil questions' do
       let(:medical_history_questions) { Api::V1::MedicalHistoryTransformer.medical_history_questions.map(&:to_s) }
-      let(:nil_medical_history_questions) { medical_history_questions.map { |key| [key, nil] }.to_h }
       let(:false_medical_history_questions) { medical_history_questions.map { |key| [key, false] }.to_h }
       before :each do
         set_authentication_headers
-        FactoryBot.create_list(:medical_history, 10, nil_medical_history_questions)
+        FactoryBot.create_list(:medical_history, 10, :unknown)
+        FactoryBot.create_list(:medical_history, 10)
       end
 
-      it 'converts nil to false in the response' do
+      it 'converts :unknown and :no to false in the response' do
         get :sync_to_user
 
         response_body = JSON(response.body)
