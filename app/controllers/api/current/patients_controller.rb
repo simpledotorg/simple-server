@@ -7,6 +7,11 @@ class Api::Current::PatientsController < Api::Current::SyncController
     __sync_to_user__('patients')
   end
 
+  def metadata
+    { registration_user_id: current_user.id,
+      registration_facility_id: current_facility.id }
+  end
+
   private
 
   def merge_if_valid(single_patient_params)
@@ -16,8 +21,9 @@ class Api::Current::PatientsController < Api::Current::SyncController
       NewRelic::Agent.increment_metric('Merge/Patient/schema_invalid')
       { errors_hash: validator.errors_hash }
     else
+      patients_params_with_metadata = single_patient_params.merge(metadata)
       patient = MergePatientService.new(
-        Api::Current::PatientTransformer.from_nested_request(single_patient_params)
+        Api::Current::PatientTransformer.from_nested_request(patients_params_with_metadata)
       ).merge
       { record: patient }
     end
@@ -32,7 +38,7 @@ class Api::Current::PatientsController < Api::Current::SyncController
   end
 
   def patients_params
-    permitted_address_params      = %i[id street_address village_or_colony district state country pin created_at updated_at]
+    permitted_address_params = %i[id street_address village_or_colony district state country pin created_at updated_at]
     permitted_phone_number_params = %i[id number phone_type active created_at updated_at]
 
     params.require(:patients).map do |single_patient_params|
@@ -47,7 +53,7 @@ class Api::Current::PatientsController < Api::Current::SyncController
         :created_at,
         :updated_at,
         phone_numbers: [permitted_phone_number_params],
-        address:       permitted_address_params
+        address: permitted_address_params
       )
     end
   end

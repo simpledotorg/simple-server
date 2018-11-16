@@ -16,6 +16,10 @@ class APIController < ApplicationController
     @current_user ||= User.find_by(id: request.headers['HTTP_X_USER_ID'])
   end
 
+  def current_facility
+    @current_facility ||= Facility.find_by(id: request.headers['HTTP_X_FACILITY_ID'])
+  end
+
   def authenticate
     return head :unauthorized unless authenticated?
     current_user.mark_as_logged_in if current_user.has_never_logged_in?
