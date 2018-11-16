@@ -100,6 +100,7 @@ describe 'Users API', swagger_doc: 'current/swagger.json' do
 
   path '/users/me/reset_password' do
     parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
+    parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
 
     post 'Request for reset password' do
       tags 'User'
@@ -108,6 +109,7 @@ describe 'Users API', swagger_doc: 'current/swagger.json' do
       let(:facility) { FactoryBot.create(:facility) }
       let(:user) { FactoryBot.create(:user, facility_ids: [facility.id]) }
       let(:HTTP_X_USER_ID) { user.id }
+      let(:HTTP_X_FACILITY_ID) { facility.id }
       let(:Authorization) { "Bearer #{user.access_token}" }
       let(:password_digest) { { password_digest:  BCrypt::Password.create('1234') } }
 

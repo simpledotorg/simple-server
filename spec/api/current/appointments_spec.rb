@@ -12,8 +12,9 @@ describe 'Appointment API', swagger_doc: 'current/swagger.json' do
 
       response '200', 'appointments created' do
         let(:request_user) { FactoryBot.create(:user) }
+        let(:request_facility) { FactoryBot.create(:facility) }
         let(:HTTP_X_USER_ID) { request_user.id }
-        let(:HTTP_X_FACILITY_ID) { FactoryBot.create(:user_facility, user: request_user).facility.id }
+        let(:HTTP_X_FACILITY_ID) { request_facility.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
         let(:appointments) { { appointments: (1..10).map { build_appointment_payload } } }
@@ -23,8 +24,9 @@ describe 'Appointment API', swagger_doc: 'current/swagger.json' do
 
       response '200', 'some, or no errors were found' do
         let(:request_user) { FactoryBot.create(:user) }
+        let(:request_facility) { FactoryBot.create(:facility) }
         let(:HTTP_X_USER_ID) { request_user.id }
-        let(:HTTP_X_FACILITY_ID) { FactoryBot.create(:user_facility, user: request_user).facility.id }
+        let(:HTTP_X_FACILITY_ID) { request_facility.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
         let(:appointments) { { appointments: (1..10).map { build_invalid_appointment_payload } } }
@@ -49,8 +51,9 @@ describe 'Appointment API', swagger_doc: 'current/swagger.json' do
 
       response '200', 'appointments received' do
         let(:request_user) { FactoryBot.create(:user) }
+        let(:request_facility) { FactoryBot.create(:facility) }
         let(:HTTP_X_USER_ID) { request_user.id }
-        let(:HTTP_X_FACILITY_ID) { FactoryBot.create(:user_facility, user: request_user).facility.id }
+        let(:HTTP_X_FACILITY_ID) { request_facility.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
         schema Api::Current::Schema.appointment_sync_to_user_response
