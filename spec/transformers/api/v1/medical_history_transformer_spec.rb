@@ -19,5 +19,12 @@ describe Api::V1::MedicalHistoryTransformer do
       expect(transformed_medical_history.slice(*medical_history_questions))
         .to eq(false_medical_history_questions)
     end
+
+    it 'removes boolean fields from medical history hashes' do
+      transformed_medical_history = Api::V1::MedicalHistoryTransformer.to_response(medical_history)
+      MedicalHistory::MEDICAL_HISTORY_QUESTIONS.each do |question|
+        expect(transformed_medical_history["#{question}_boolean"]).not_to be_present
+      end
+    end
   end
 end
