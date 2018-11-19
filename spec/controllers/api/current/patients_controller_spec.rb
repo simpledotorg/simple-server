@@ -140,6 +140,28 @@ RSpec.describe Api::Current::PatientsController, type: :controller do
             .to eq(updated_phone_number)
         end
       end
+
+      it 'does not change registration user or facility' do
+        current_user = FactoryBot.create(:user)
+        current_facility = FactoryBot.create(:facility)
+        request.env['HTTP_X_USER_ID'] = current_user.id
+        request.env['HTTP_X_FACILITY_ID'] = current_facility.id
+        request.env['HTTP_AUTHORIZATION'] = "Bearer #{current_user.access_token}"
+
+        patients_payload = updated_patients_payload
+
+        previous_registration_user_id = Patient.first.registration_user_id
+        previous_registration_facility_id = Patient.first.registration_facility_id
+
+        post :sync_from_user, params: { patients: patients_payload }, as: :json
+
+        expect(response).to have_http_status(200)
+        patient = Patient.first
+        expect(patient.registration_user.id).to eq previous_registration_user_id
+        expect(patient.registration_facility.id).to eq previous_registration_facility_id
+        expect(patient.registration_user.id).to_not eq current_user.id
+        expect(patient.registration_facility.id).to_not eq current_facility.id
+      end
     end
   end
 

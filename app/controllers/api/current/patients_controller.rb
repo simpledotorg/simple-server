@@ -21,7 +21,7 @@ class Api::Current::PatientsController < Api::Current::SyncController
       NewRelic::Agent.increment_metric('Merge/Patient/schema_invalid')
       { errors_hash: validator.errors_hash }
     else
-      patients_params_with_metadata = single_patient_params.merge(metadata)
+      patients_params_with_metadata = single_patient_params.merge(metadata: metadata)
       patient = MergePatientService.new(
         Api::Current::PatientTransformer.from_nested_request(patients_params_with_metadata)
       ).merge
