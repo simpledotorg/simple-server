@@ -1,6 +1,6 @@
 require 'swagger_helper'
 
-describe 'PrescriptionDrugs API', swagger_doc: 'v2/swagger.json' do
+describe 'PrescriptionDrugs API', swagger_doc: 'current/swagger.json' do
   path '/prescription_drugs/sync' do
 
     post 'Syncs prescription drugs data from device to server.' do
