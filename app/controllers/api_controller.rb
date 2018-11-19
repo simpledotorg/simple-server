@@ -1,5 +1,5 @@
 class APIController < ApplicationController
-  before_action :authenticate
+  before_action :authenticate, :validate_facility
   TIME_WITHOUT_TIMEZONE_FORMAT = '%FT%T.%3NZ'.freeze
 
   skip_before_action :verify_authenticity_token
@@ -18,6 +18,10 @@ class APIController < ApplicationController
 
   def current_facility
     @current_facility ||= Facility.find_by(id: request.headers['HTTP_X_FACILITY_ID'])
+  end
+
+  def validate_facility
+    return head :unauthorized unless current_facility.present?
   end
 
   def authenticate

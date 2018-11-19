@@ -28,6 +28,7 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
     describe 'creates new blood pressures' do
       before :each do
         request.env['HTTP_X_USER_ID'] = request_user.id
+        request.env['HTTP_X_FACILITY_ID'] = request_facility.id
         request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
       end
 
