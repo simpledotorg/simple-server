@@ -228,7 +228,7 @@ RSpec.shared_examples 'a sync controller that audits the data access' do
       post :sync_from_user, params: payload, as: :json
 
       audit_logs = AuditLog.where(user_id: request_user.id, auditable_type: auditable_type, auditable_id: record[:id])
-      expect(audit_logs.count).to be 1
+      expect(audit_logs.count).to eq 1
       expect(audit_logs.first.action).to eq('create')
     end
 

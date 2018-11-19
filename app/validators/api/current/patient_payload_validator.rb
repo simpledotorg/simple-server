@@ -31,6 +31,6 @@ class Api::Current::PatientPayloadValidator < Api::Current::PayloadValidator
   end
 
   def schema
-    Api::Current::Schema::Models.nested_patient
+    Api::Current::Models.nested_patient
   end
 end

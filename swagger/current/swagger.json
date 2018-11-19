@@ -994,6 +994,11 @@
           "name": "HTTP_X_USER_ID",
           "in": "header",
           "type": "uuid"
+        },
+        {
+          "name": "HTTP_X_FACILITY_ID",
+          "in": "header",
+          "type": "uuid"
         }
       ],
       "post": {
@@ -1777,22 +1782,52 @@
           "$ref": "#/definitions/uuid"
         },
         "prior_heart_attack": {
-          "type": "boolean"
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
         },
         "prior_stroke": {
-          "type": "boolean"
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
         },
         "chronic_kidney_disease": {
-          "type": "boolean"
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
         },
         "receiving_treatment_for_hypertension": {
-          "type": "boolean"
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
         },
         "diabetes": {
-          "type": "boolean"
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
         },
         "diagnosed_with_hypertension": {
-          "type": "boolean"
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
         },
         "created_at": {
           "$ref": "#/definitions/timestamp"

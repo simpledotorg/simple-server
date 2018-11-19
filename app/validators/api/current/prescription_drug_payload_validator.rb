@@ -16,6 +16,6 @@ class Api::Current::PrescriptionDrugPayloadValidator < Api::Current::PayloadVali
   validate :validate_schema
 
   def schema
-    Api::Current::Schema::Models.prescription_drug
+    Api::Current::Models.prescription_drug
   end
 end

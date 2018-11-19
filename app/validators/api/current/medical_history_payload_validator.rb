@@ -16,6 +16,6 @@ class Api::Current::MedicalHistoryPayloadValidator < Api::Current::PayloadValida
   validate :validate_schema
 
   def schema
-    Api::Current::Schema::Models.medical_history
+    Api::Current::Models.medical_history
   end
 end
