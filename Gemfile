@@ -38,6 +38,7 @@ group :development, :test do
   gem 'capistrano-rbenv'
   gem 'capistrano-passenger'
   gem 'capistrano-rails-console', require: false
+  gem 'parallel_tests', group: [:development, :test]
 end
 
 group :development do
