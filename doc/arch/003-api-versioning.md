@@ -8,9 +8,9 @@ Proposed
 
 As the application evolves over time, we will
 - add more apis
-- change the behavior exiting apis
+- change the behaviour of existing apis
 - deprecate unused apis
-- add feilds to requests and response schemas
+- add fields to requests and response schemas
 - modify existing fields in the schema
 
 This requires the clients of the api to update as the application updates as well. 
@@ -33,4 +33,4 @@ We also maintain the code in the latest api, and update older versions to mainta
 - Any change to an existing api, should be forethought.
 - Collorary: Adding new apis is preferrred over updating existing ones.
 - We need to maintain controllers and views for every api version. This can cause code duplication across versions.
-- We need to meaure the number of clients using each version of the api so we can deprecate older apis.
+- We need to measure the number of clients using each version of the api so we can deprecate older apis.
