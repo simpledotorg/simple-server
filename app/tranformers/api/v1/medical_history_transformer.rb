@@ -7,7 +7,7 @@ class Api::V1::MedicalHistoryTransformer
 
   INVERTED_MEDICAL_HISTORY_ANSWERS_MAP = {
     true => :yes,
-    false => :no
+    false => :unknown
   }.with_indifferent_access.freeze
 
   class << self

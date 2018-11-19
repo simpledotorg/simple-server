@@ -26,7 +26,7 @@ RSpec.describe Api::V1::MedicalHistoriesController, type: :controller do
       let(:existing_records) do
         FactoryBot.create_list(:medical_history, 10)
       end
-      let(:record_updates) { MedicalHistory::MEDICAL_HISTORY_QUESTIONS.map { |key| [key.to_s, %w(no yes).sample] }.to_h }
+      let(:record_updates) { MedicalHistory::MEDICAL_HISTORY_QUESTIONS.map { |key| [key.to_s, %w(unknown yes).sample] }.to_h }
       let(:updated_records) { existing_records.map { |record| build_medical_history_payload_current(record).merge(record_updates).merge(updated_at: 10.minutes.from_now) } }
       let(:updated_payload) do
         medical_histories = updated_records.map do |payload|
