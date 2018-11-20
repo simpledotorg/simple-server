@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181008050747) do
+ActiveRecord::Schema.define(version: 20181115091323) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -133,16 +133,22 @@ ActiveRecord::Schema.define(version: 20181008050747) do
 
   create_table "medical_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "patient_id", null: false
-    t.boolean "prior_heart_attack"
-    t.boolean "prior_stroke"
-    t.boolean "chronic_kidney_disease"
-    t.boolean "receiving_treatment_for_hypertension"
-    t.boolean "diabetes"
+    t.boolean "prior_heart_attack_boolean"
+    t.boolean "prior_stroke_boolean"
+    t.boolean "chronic_kidney_disease_boolean"
+    t.boolean "receiving_treatment_for_hypertension_boolean"
+    t.boolean "diabetes_boolean"
     t.datetime "device_created_at", null: false
     t.datetime "device_updated_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "diagnosed_with_hypertension"
+    t.boolean "diagnosed_with_hypertension_boolean"
+    t.text "prior_heart_attack"
+    t.text "prior_stroke"
+    t.text "chronic_kidney_disease"
+    t.text "receiving_treatment_for_hypertension"
+    t.text "diabetes"
+    t.text "diagnosed_with_hypertension"
     t.index ["patient_id"], name: "index_medical_histories_on_patient_id"
   end
 
