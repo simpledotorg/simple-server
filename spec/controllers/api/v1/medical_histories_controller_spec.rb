@@ -28,7 +28,7 @@ RSpec.describe Api::V1::MedicalHistoriesController, type: :controller do
     it_behaves_like 'a working sync controller sending records'
 
     context 'medical histories with nil questions' do
-      let(:medical_history_questions) { Api::V1::MedicalHistoryTransformer.medical_history_questions.map(&:to_s) }
+      let(:medical_history_questions) { MedicalHistory::MEDICAL_HISTORY_QUESTIONS.map(&:to_s) }
       let(:nil_medical_history_questions) { medical_history_questions.map { |key| [key, nil] }.to_h }
       let(:false_medical_history_questions) { medical_history_questions.map { |key| [key, false] }.to_h }
       before :each do

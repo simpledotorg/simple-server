@@ -1,0 +1,1799 @@
+{
+  "swagger": "2.0",
+  "basePath": "/api/v2",
+  "produces": [
+    "application/json"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "schemes": [
+    "https"
+  ],
+  "info": {
+    "description": "# API specification for Simple Server\n## Sync APIs\nThis API spec documents the endpoints that the devices (that are offline to varying levels) will use to sync data. The sync end points will send and receive bulk (a list of) entities. Both sending and receiving can be batched with configurable batch-sizes to accommodate low network bandwidth situations.\n## Nesting resources\nThe APIs have been designed to provide an optimal balance between accuracy and simplicity. Some of the APIs (patients) will be nested, and some other (blood pressures) will be flat.\n## Authentication\nTODO\n\n## Sync Mechanism\nRefer to the [related ADR](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/001-synchronization.md).\n",
+    "version": "v2",
+    "title": "Simple Server",
+    "x-logo": {
+      "url": "/assets/rtsl_logo-d7e4808e72f6d12641fd4a4f64669ed76d32170cd7a1e7fb9206ef7d1ba413c9.png",
+      "backgroundColor": "#FFFFFF"
+    },
+    "contact": {
+      "email": "eng-backend@resolvetosavelives.org"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://github.com/simpledotorg/simple-server/blob/master/LICENSE"
+    }
+  },
+  "paths": {
+    "/appointments/sync": {
+      "post": {
+        "summary": "Syncs appointment data from device to server.",
+        "tags": [
+          "Appointments"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "appointments",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "appointments": {
+                  "$ref": "#/definitions/appointments"
+                }
+              },
+              "required": [
+                "appointments"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs appointment data from server to device.",
+        "tags": [
+          "Appointments"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+            "name": "processed_since",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "appointments received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "appointments": {
+                  "$ref": "#/definitions/appointments"
+                },
+                "processed_since": {
+                  "$ref": "#/definitions/processed_since"
+                }
+              },
+              "required": [
+                "appointments",
+                "processed_since"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "/blood_pressures/sync": {
+      "post": {
+        "summary": "Syncs blood pressure data from device to server.",
+        "tags": [
+          "Blood Pressure"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "blood_pressures",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "blood_pressures": {
+                  "$ref": "#/definitions/blood_pressures"
+                }
+              },
+              "required": [
+                "blood_pressures"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs blood pressure data from server to device.",
+        "tags": [
+          "Blood Pressure"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+            "name": "processed_since",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "blood pressures received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "blood_pressures": {
+                  "$ref": "#/definitions/blood_pressures"
+                },
+                "processed_since": {
+                  "$ref": "#/definitions/processed_since"
+                }
+              },
+              "required": [
+                "blood_pressures",
+                "processed_since"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "/communications/sync": {
+      "post": {
+        "summary": "Syncs communication data from device to server.",
+        "tags": [
+          "Communications"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "communications",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "communication": {
+                  "$ref": "#/definitions/communication"
+                }
+              },
+              "required": [
+                "communication"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs communication data from server to device.",
+        "tags": [
+          "Communications"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+            "name": "processed_since",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "communications received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "communications": {
+                  "$ref": "#/definitions/communications"
+                },
+                "processed_since": {
+                  "$ref": "#/definitions/processed_since"
+                }
+              },
+              "required": [
+                "communications",
+                "processed_since"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "/facilities/sync": {
+      "get": {
+        "summary": "Syncs facilities data from server to device.",
+        "tags": [
+          "facility"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+            "name": "processed_since",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "facilities received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "facilities": {
+                  "$ref": "#/definitions/facilities"
+                },
+                "processed_since": {
+                  "$ref": "#/definitions/processed_since"
+                }
+              },
+              "required": [
+                "facilities",
+                "processed_since"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "summary": "Login in valid user",
+        "tags": [
+          "User Login"
+        ],
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user": {
+                  "$ref": "#/definitions/login_user"
+                }
+              },
+              "required": [
+                "user"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user is logged in",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "access_token": {
+                  "$ref": "#/definitions/non_empty_string"
+                },
+                "user": {
+                  "$ref": "#/definitions/user"
+                }
+              },
+              "required": [
+                "user",
+                "access_token"
+              ]
+            }
+          },
+          "401": {
+            "description": "user is not logged in with otp",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "Id of the record with errors"
+                },
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of json schema error strings describing validation errors"
+                },
+                "field_with_error": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/medical_histories/sync": {
+      "post": {
+        "summary": "Syncs medical_history data from device to server.",
+        "tags": [
+          "Medical History"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "medical_histories",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "medical_histories": {
+                  "$ref": "#/definitions/medical_histories"
+                }
+              },
+              "required": [
+                "medical_histories"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs medical_history data from server to device.",
+        "tags": [
+          "Medical History"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+            "name": "processed_since",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "medical_histories received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "medical_histories": {
+                  "$ref": "#/definitions/medical_histories"
+                },
+                "processed_since": {
+                  "$ref": "#/definitions/processed_since"
+                }
+              },
+              "required": [
+                "medical_histories",
+                "processed_since"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "/patients/sync": {
+      "post": {
+        "summary": "Syncs patient, address and phone number data from device to server.",
+        "tags": [
+          "patient"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "patients",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "patients": {
+                  "$ref": "#/definitions/nested_patients"
+                }
+              },
+              "required": [
+                "patients"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs patient, address and phone number data from server to device.",
+        "tags": [
+          "patient"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+            "name": "processed_since",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "patients received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "patients": {
+                  "$ref": "#/definitions/nested_patients"
+                },
+                "processed_since": {
+                  "$ref": "#/definitions/processed_since"
+                }
+              },
+              "required": [
+                "patients",
+                "processed_since"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "/prescription_drugs/sync": {
+      "post": {
+        "summary": "Syncs prescription drugs data from device to server.",
+        "tags": [
+          "Prescription Drug"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "prescription_drugs",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "prescription_drugs": {
+                  "$ref": "#/definitions/prescription_drugs"
+                }
+              },
+              "required": [
+                "prescription_drugs"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs prescription drugs data from server to device.",
+        "tags": [
+          "Prescription Drug"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+            "name": "processed_since",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "blood pressures received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "prescription_drugs": {
+                  "$ref": "#/definitions/prescription_drugs"
+                },
+                "processed_since": {
+                  "$ref": "#/definitions/processed_since"
+                }
+              },
+              "required": [
+                "prescription_drugs",
+                "processed_since"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "/protocols/sync": {
+      "get": {
+        "summary": "Syncs protocols and protocol drugs data from server to device.",
+        "tags": [
+          "protocol"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+            "name": "processed_since",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "protocols received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "protocols": {
+                  "$ref": "#/definitions/protocols"
+                },
+                "processed_since": {
+                  "$ref": "#/definitions/processed_since"
+                }
+              },
+              "required": [
+                "protocols",
+                "processed_since"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "/users/find": {
+      "get": {
+        "summary": "Find a existing user",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "phone_number",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string",
+            "description": "User UUID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user is found",
+            "schema": {
+              "$ref": "#/definitions/user"
+            }
+          },
+          "404": {
+            "description": "user is not found"
+          }
+        }
+      }
+    },
+    "/users/register": {
+      "post": {
+        "summary": "Register a new user",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/user"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user is registered",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "access_token": {
+                  "$ref": "#/definitions/non_empty_string"
+                },
+                "user": {
+                  "$ref": "#/definitions/user"
+                }
+              },
+              "required": [
+                "user",
+                "access_token"
+              ]
+            }
+          },
+          "400": {
+            "description": "returns bad request if phone number already exists"
+          },
+          "404": {
+            "description": "returns not found if any of the facility ids are not known"
+          }
+        }
+      }
+    },
+    "/users/{id}/request_otp": {
+      "post": {
+        "summary": "Request OTP for login",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "User UUID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user otp is reset and new otp is sent as an sms"
+          },
+          "404": {
+            "description": "user is not found"
+          }
+        }
+      }
+    },
+    "/users/me/reset_password": {
+      "parameters": [
+        {
+          "name": "HTTP_X_USER_ID",
+          "in": "header",
+          "type": "uuid"
+        }
+      ],
+      "post": {
+        "summary": "Request for reset password",
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "password_digest",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "password_digest": {
+                  "$ref": "#/definitions/bcrypt_password"
+                }
+              },
+              "required": [
+                "passowrd_digest"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user password reset request is received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "access_token": {
+                  "$ref": "#/definitions/non_empty_string"
+                },
+                "user": {
+                  "$ref": "#/definitions/user"
+                }
+              },
+              "required": [
+                "user",
+                "access_token"
+              ]
+            }
+          },
+          "401": {
+            "description": "user is not unauthorized"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "error": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Id of the record with errors"
+        },
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of json schema error strings describing validation errors"
+        },
+        "field_with_error": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "errors": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/error"
+      }
+    },
+    "processed_since": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+      "name": "processed_since"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp with millisecond precision."
+    },
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}"
+    },
+    "non_empty_string": {
+      "type": "string",
+      "minLength": 1,
+      "description": "This string should not be empty."
+    },
+    "nullable_timestamp": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "description": "Timestamp with millisecond precision."
+    },
+    "bcrypt_password": {
+      "type": "string",
+      "pattern": "^\\$[0-9a-z]{2}\\$[0-9]{2}\\$[A-Za-z0-9\\.\\/]{53}$",
+      "description": "Bcrypt password digest"
+    },
+    "patient": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "gender": {
+          "type": "string",
+          "enum": [
+            "male",
+            "female",
+            "transgender"
+          ]
+        },
+        "full_name": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "dead",
+            "migrated",
+            "unresponsive",
+            "inactive"
+          ]
+        },
+        "date_of_birth": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "age": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "When age is present, age_updated_at must be present as well."
+        },
+        "age_updated_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "gender",
+        "full_name",
+        "created_at",
+        "updated_at",
+        "status"
+      ]
+    },
+    "address": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "street_address": {
+          "type": "string"
+        },
+        "village_or_colony": {
+          "type": "string"
+        },
+        "district": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "pin": {
+          "type": "string"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "phone_number": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "number": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "phone_type": {
+          "type": "string",
+          "enum": [
+            "mobile",
+            "landline"
+          ]
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "updated_at",
+        "number"
+      ]
+    },
+    "phone_numbers": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/phone_number"
+      }
+    },
+    "nested_patient": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "gender": {
+          "type": "string",
+          "enum": [
+            "male",
+            "female",
+            "transgender"
+          ]
+        },
+        "full_name": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "dead",
+            "migrated",
+            "unresponsive",
+            "inactive"
+          ]
+        },
+        "date_of_birth": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "age": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "When age is present, age_updated_at must be present as well."
+        },
+        "age_updated_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "address": {
+          "$ref": "#/definitions/address"
+        },
+        "phone_numbers": {
+          "$ref": "#/definitions/phone_numbers"
+        }
+      },
+      "required": [
+        "id",
+        "gender",
+        "full_name",
+        "created_at",
+        "updated_at",
+        "status"
+      ],
+      "description": "Patient with address and phone numbers nested."
+    },
+    "nested_patients": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/nested_patient"
+      }
+    },
+    "blood_pressure": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "systolic": {
+          "type": "integer"
+        },
+        "diastolic": {
+          "type": "integer"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "facility_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "user_id": {
+          "$ref": "#/definitions/uuid"
+        }
+      },
+      "required": [
+        "systolic",
+        "diastolic",
+        "created_at",
+        "updated_at",
+        "patient_id",
+        "facility_id",
+        "user_id"
+      ]
+    },
+    "blood_pressures": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/blood_pressure"
+      }
+    },
+    "facility": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "name": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "street_address": {
+          "type": "string"
+        },
+        "village_or_colony": {
+          "type": "string"
+        },
+        "district": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "state": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "country": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "pin": {
+          "type": "string"
+        },
+        "facility_type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "district",
+        "state",
+        "country"
+      ]
+    },
+    "facilities": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/facility"
+      }
+    },
+    "protocol_drug": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "protocol_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "rxnorm_code": {
+          "type": "string"
+        },
+        "dosage": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "dosage",
+        "name",
+        "protocol_id"
+      ]
+    },
+    "protocol_drugs": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/protocol_drug"
+      }
+    },
+    "protocol": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "name": {
+          "type": "string"
+        },
+        "follow_up_days": {
+          "type": "integer"
+        },
+        "protocol_drugs": {
+          "$ref": "#/definitions/protocol_drugs"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "protocol_drugs"
+      ]
+    },
+    "protocols": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/protocol"
+      }
+    },
+    "prescription_drug": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "name": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "dosage": {
+          "type": "string"
+        },
+        "rxnorm_code": {
+          "type": "string"
+        },
+        "is_protocol_drug": {
+          "type": "boolean"
+        },
+        "is_deleted": {
+          "type": "boolean"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "facility_id": {
+          "$ref": "#/definitions/uuid"
+        }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "updated_at",
+        "name",
+        "is_protocol_drug",
+        "is_deleted",
+        "patient_id",
+        "facility_id"
+      ]
+    },
+    "prescription_drugs": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/prescription_drug"
+      }
+    },
+    "user": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "full_name": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "phone_number": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "password_digest": {
+          "$ref": "#/definitions/bcrypt_password"
+        },
+        "facility_ids": {
+          "type": [
+            "null",
+            "array"
+          ],
+          "items": {
+            "$ref": "#/definitions/uuid"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "updated_at",
+        "full_name",
+        "phone_number",
+        "password_digest",
+        "facility_ids"
+      ]
+    },
+    "users": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/user"
+      }
+    },
+    "login_user": {
+      "type": "object",
+      "properties": {
+        "phone_number": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "password": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "otp": {
+          "$ref": "#/definitions/non_empty_string"
+        }
+      },
+      "required": [
+        "phone_number",
+        "password",
+        "otp"
+      ]
+    },
+    "communication": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "appointment_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "user_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "communication_type": {
+          "type": "string",
+          "enum": [
+            "manual_call",
+            "voip_call"
+          ]
+        },
+        "communication_result": {
+          "type": "string",
+          "enum": [
+            "unavailable",
+            "unreachable",
+            "successful"
+          ]
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "appointment_id",
+        "user_id",
+        "communication_type",
+        "communication_result",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "communications": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/communication"
+      }
+    },
+    "appointment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "facility_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "scheduled_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "scheduled",
+            "cancelled",
+            "visited"
+          ]
+        },
+        "cancel_reason": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "enum": [
+            "not_responding",
+            "moved",
+            "dead",
+            "other",
+            null
+          ]
+        },
+        "remind_on": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "agreed_to_visit": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "patient_id",
+        "facility_id",
+        "scheduled_date",
+        "status",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "appointments": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/appointment"
+      }
+    },
+    "medical_history": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "prior_heart_attack": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "prior_stroke": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "chronic_kidney_disease": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "receiving_treatment_for_hypertension": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "diabetes": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "diagnosed_with_hypertension": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "patient_id",
+        "prior_heart_attack",
+        "prior_stroke",
+        "chronic_kidney_disease",
+        "receiving_treatment_for_hypertension",
+        "diabetes",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "medical_histories": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/medical_history"
+      }
+    }
+  },
+  "securityDefinitions": {
+    "basic": {
+      "type": "basic"
+    }
+  }
+}
