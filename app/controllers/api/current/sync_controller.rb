@@ -1,6 +1,10 @@
 class Api::Current::SyncController < APIController
   before_action :check_disabled_api
 
+  def model_name
+    controller_name.classify.constantize
+  end
+
   def __sync_from_user__(params)
     errors = params.flat_map do |single_entity_params|
       res = merge_if_valid(single_entity_params)
@@ -23,6 +27,10 @@ class Api::Current::SyncController < APIController
       },
       status: :ok
     )
+  end
+
+  def find_records_to_sync(since, limit)
+    model_name.updated_on_server_since(since, limit)
   end
 
   private

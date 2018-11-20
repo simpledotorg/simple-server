@@ -21,10 +21,6 @@ class Api::Current::BloodPressuresController < Api::Current::SyncController
     end
   end
 
-  def find_records_to_sync(since, limit)
-    BloodPressure.updated_on_server_since(since, limit)
-  end
-
   def transform_to_response(blood_pressure)
     Api::Current::Transformer.to_response(blood_pressure)
   end

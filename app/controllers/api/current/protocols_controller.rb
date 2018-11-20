@@ -6,7 +6,7 @@ class Api::Current::ProtocolsController < Api::Current::SyncController
   private
 
   def find_records_to_sync(since, limit)
-    Protocol.updated_on_server_since(since, limit).includes(:protocol_drugs)
+    super(since, limit).includes(:protocol_drugs)
   end
 
   def transform_to_response(protocol)

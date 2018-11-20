@@ -29,10 +29,6 @@ class Api::Current::PatientsController < Api::Current::SyncController
     end
   end
 
-  def find_records_to_sync(since, limit)
-    Patient.updated_on_server_since(since, limit)
-  end
-
   def transform_to_response(patient)
     Api::Current::PatientTransformer.to_nested_response(patient)
   end

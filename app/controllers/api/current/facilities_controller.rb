@@ -8,10 +8,6 @@ class Api::Current::FacilitiesController < Api::Current::SyncController
 
   private
 
-  def find_records_to_sync(since, limit)
-    Facility.updated_on_server_since(since, limit)
-  end
-
   def transform_to_response(facility)
     facility.as_json
   end
