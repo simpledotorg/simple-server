@@ -1,5 +1,5 @@
 class Api::V1::PatientsController < Api::Current::PatientsController
-  include Api::V1::Overrides
+  include Api::V1::ApiControllerOverrides
 
   def metadata
     { registration_user_id: current_user.id,

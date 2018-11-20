@@ -1,3 +1,3 @@
 class Api::V1::PrescriptionDrugsController < Api::Current::PrescriptionDrugsController
-  include Api::V1::Overrides
+  include Api::V1::ApiControllerOverrides
 end

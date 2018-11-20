@@ -1,4 +1,4 @@
-module Api::V1::Overrides
+module Api::V1::ApiControllerOverrides
   def current_facility
     nil
   end

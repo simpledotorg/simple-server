@@ -1,3 +1,3 @@
 class Api::V1::CommunicationsController < Api::Current::CommunicationsController
-  include Api::V1::Overrides
+  include Api::V1::ApiControllerOverrides
 end
