@@ -25,5 +25,13 @@ module Api::V1::SyncControllerOverrides
     def processed_since
       params[:processed_since].try(:to_time) || Time.new(0)
     end
+
+    def most_recent_record_timestamp(records_to_sync)
+      if records_to_sync.empty?
+        processed_since
+      else
+        records_to_sync.last.updated_at
+      end
+    end
   end
 end

@@ -85,7 +85,7 @@ RSpec.describe Api::V1::MedicalHistoriesController, type: :controller do
   end
 
   describe 'GET sync: send data from server to device;' do
-    it_behaves_like 'a working sync controller sending records'
+    it_behaves_like 'a working V1 sync controller sending records'
 
     context 'medical histories with nil questions' do
       let(:medical_history_questions) { MedicalHistory::MEDICAL_HISTORY_QUESTIONS.map(&:to_s) }

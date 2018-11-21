@@ -104,14 +104,6 @@ class Api::Current::SyncController < APIController
     )
   end
 
-  def most_recent_record_timestamp(records_to_sync)
-    if records_to_sync.empty?
-      processed_since
-    else
-      records_to_sync.last.updated_at
-    end
-  end
-
   def process_token
     @process_token ||=
       if params[:process_token].present?

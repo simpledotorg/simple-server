@@ -27,6 +27,6 @@ RSpec.describe Api::Current::AppointmentsController, type: :controller do
   end
 
   describe 'GET sync: send data from server to device;' do
-    it_behaves_like 'a working sync controller sending records'
+    it_behaves_like 'a working Current sync controller sending records'
   end
 end

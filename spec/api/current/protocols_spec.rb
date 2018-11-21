@@ -26,7 +26,7 @@ describe 'Protocols API', swagger_doc: 'current/swagger.json' do
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
         schema Api::Current::Schema.protocol_sync_to_user_response
-        let(:processed_since) { 10.minutes.ago }
+        let(:process_token) { Base64.encode64({other_facilities_processed_since: 10.minutes.ago}.to_json) }
         let(:limit) { 10 }
 
         before do |example|
