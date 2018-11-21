@@ -25,30 +25,24 @@ class Api::Schema
       } }
     end
 
+    def swagger_doc(version, definitions)
+      {
+        swagger: '2.0',
+        basePath: "/api/#{version}",
+        produces: ['application/json'],
+        consumes: ['application/json'],
+        schemes: ['https'],
+        info: swagger_info(version),
+        paths: {},
+        definitions: definitions,
+        securityDefinitions: security_definitions
+      }
+    end
+
     def swagger_docs
       {
-        'current/swagger.json' => {
-          swagger: '2.0',
-          basePath: '/api/v2',
-          produces: ['application/json'],
-          consumes: ['application/json'],
-          schemes: ['https'],
-          info: swagger_info(:v2),
-          paths: {},
-          definitions: Api::Current::Schema.all_definitions,
-          securityDefinitions: security_definitions
-        },
-        'v1/swagger.json' => {
-          swagger: '2.0',
-          basePath: '/api/v1',
-          produces: ['application/json'],
-          consumes: ['application/json'],
-          schemes: ['https'],
-          info: swagger_info(:v1),
-          paths: {},
-          definitions: Api::V1::Schema.all_definitions,
-          securityDefinitions: security_definitions
-        }
+        'current/swagger.json' => swagger_doc(:v2, Api::Current::Schema.all_definitions),
+        'v1/swagger.json' => swagger_doc(:v1, Api::V1::Schema.all_definitions)
       }
     end
   end

@@ -1,6 +1,6 @@
 require 'swagger_helper'
 
-describe 'Appointment API', swagger_doc: 'v1/swagger.json' do
+describe 'Appointment V1 API', swagger_doc: 'v1/swagger.json' do
   path '/appointments/sync' do
 
     post 'Syncs appointment data from device to server.' do
