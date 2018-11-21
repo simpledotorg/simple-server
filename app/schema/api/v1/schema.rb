@@ -27,6 +27,7 @@ class Api::V1::Schema < Api::Current::Schema
       Api::Current::Schema.definitions
         .merge(Api::V1::Models.definitions)
         .merge({ processed_since: processed_since })
+        .except(:process_token)
     end
   end
 end
