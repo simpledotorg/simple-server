@@ -7,6 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
   <link rel="shortcut icon" type="image/png" href="https://avatars0.githubusercontent.com/u/38174283?s=200&v=4"/>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
   <!--
   ReDoc doesn't change outer page styles
@@ -19,7 +20,50 @@
   </style>
 </head>
 <body>
-<redoc spec-url="<%= url_for(rswag_api: nil) + 'v1/swagger.json' %>"></redoc>
-<script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"> </script>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">Versions</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul id="links_container" class="navbar-nav mr-auto"></ul>
+  </div>
+</nav>
+
+<redoc scroll-y-offset="body > nav" spec-url="<%= url_for(rswag_api: nil) + 'current/swagger.json' %>"></redoc>
+<script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"></script>
+<script>
+    var apis = [
+        {
+            name: 'V2',
+            url: "<%= url_for(rswag_api: nil) + 'current/swagger.json' %>"
+        },
+        {
+            name: 'V1',
+            url: "<%= url_for(rswag_api: nil) + 'v1/swagger.json' %>"
+        }
+    ];
+    // initially render first API
+    Redoc.init(apis[0].url);
+
+    function onClick() {
+        var url = this.getAttribute('data-link');
+        Redoc.init(url);
+    }
+
+    // dynamically building navigation items
+    var $list = document.getElementById('links_container');
+    apis.forEach(function (api) {
+        console.log(api)
+        var $listitem = document.createElement('li');
+        $listitem.setAttribute('class', 'nav-item');
+        $listitem.setAttribute('data-link', api.url)
+        $listitem.innerHTML = "<a class='nav-link' href='#'>" + api.name + "</a>";
+        $listitem.addEventListener('click', onClick);
+        $list.appendChild($listitem);
+    });
+</script>
 </body>
 </html>
