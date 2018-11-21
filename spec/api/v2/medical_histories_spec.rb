@@ -14,7 +14,7 @@ describe 'Medical History V2 API', swagger_doc: 'current/swagger.json' do
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
-        let(:medical_histories) { { medical_histories: (1..10).map { build_medical_history_payload } } }
+        let(:medical_histories) { { medical_histories: (1..10).map { build_medical_history_payload_current } } }
 
         run_test!
       end
@@ -25,7 +25,7 @@ describe 'Medical History V2 API', swagger_doc: 'current/swagger.json' do
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
         schema Api::V1::Schema.sync_from_user_errors
-        let(:medical_histories) { { medical_histories: (1..10).map { build_invalid_medical_history_payload } } }
+        let(:medical_histories) { { medical_histories: (1..10).map { build_invalid_medical_history_payload_current } } }
         run_test!
       end
     end
