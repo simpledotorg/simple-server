@@ -18,22 +18,60 @@ class Api::Current::SyncController < APIController
   end
 
   def __sync_to_user__(response_key)
-    records_to_sync = find_records_to_sync(processed_since, limit)
     records_to_sync.each { |record| AuditLog.fetch_log(current_user, record) }
     render(
-      json:   {
-        response_key      => records_to_sync.map { |record| transform_to_response(record) },
-        'processed_since' => most_recent_record_timestamp(records_to_sync).strftime(TIME_WITHOUT_TIMEZONE_FORMAT)
+      json: {
+        response_key => records_to_sync.map { |record| transform_to_response(record) },
+        'process_token' => encode_process_token(response_process_token)
       },
       status: :ok
     )
   end
 
-  def find_records_to_sync(since, limit)
-    model_name.updated_on_server_since(since, limit)
+  def current_facility_records
+    []
+  end
+
+  def other_facility_records
+    other_facilities_limit = limit - current_facility_records.count
+    @other_facility_records ||=
+      model_name
+        .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
   end
 
   private
+
+  def records_to_sync
+    @records_to_sync ||= current_facility_records + other_facility_records
+  end
+
+  def processed_until(records)
+    records.last.updated_at.strftime(TIME_WITHOUT_TIMEZONE_FORMAT) if records.present?
+  end
+
+  def response_process_token
+    { current_facility_id: current_facility.id,
+      current_facility_processed_since: processed_until(current_facility_records) || current_facility_processed_since,
+      other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since }
+  end
+
+  def encode_process_token(process_token)
+    Base64.encode64(process_token.to_json)
+  end
+
+  def other_facilities_processed_since
+    process_token[:other_facilities_processed_since].try(:to_time) || Time.new(0)
+  end
+
+  def current_facility_processed_since
+    if process_token[:current_facility_processed_since].blank?
+      other_facilities_processed_since
+    elsif process_token[:current_facility_id] != current_facility.id
+      [process_token[:current_facility_processed_since].to_time, other_facilities_processed_since].min
+    else
+      process_token[:current_facility_processed_since].to_time
+    end
+  end
 
   def check_disabled_api
     return if sync_api_toggled_on?
@@ -58,11 +96,11 @@ class Api::Current::SyncController < APIController
     Raven.capture_message(
       'Validation Error',
       logger: 'logger',
-      extra:  {
+      extra: {
         params_with_errors: params_with_errors(params, errors),
-        errors:             errors
+        errors: errors
       },
-      tags:   { type: 'validation' }
+      tags: { type: 'validation' }
     )
   end
 
@@ -74,8 +112,13 @@ class Api::Current::SyncController < APIController
     end
   end
 
-  def processed_since
-    params[:processed_since].try(:to_time) || Time.new(0)
+  def process_token
+    @process_token ||=
+      if params[:process_token].present?
+        JSON.parse(Base64.decode64(params[:process_token])).with_indifferent_access
+      else
+        {}
+      end
   end
 
   def limit
