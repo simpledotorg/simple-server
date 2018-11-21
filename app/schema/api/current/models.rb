@@ -239,7 +239,8 @@ class Api::Current::Models
           :diabetes,
           :created_at,
           :updated_at
-        ] }
+        ]
+      }
     end
 
     def definitions
