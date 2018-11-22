@@ -34,15 +34,14 @@ class Api::Current::SyncController < APIController
 
   def other_facility_records
     other_facilities_limit = limit - current_facility_records.count
-    @other_facility_records ||=
-      model_name
-        .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
+    model_name
+      .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
   end
 
   private
 
   def records_to_sync
-    @records_to_sync ||= current_facility_records + other_facility_records
+    current_facility_records + other_facility_records
   end
 
   def processed_until(records)
@@ -105,12 +104,11 @@ class Api::Current::SyncController < APIController
   end
 
   def process_token
-    @process_token ||=
-      if params[:process_token].present?
-        JSON.parse(Base64.decode64(params[:process_token])).with_indifferent_access
-      else
-        {}
-      end
+    if params[:process_token].present?
+      JSON.parse(Base64.decode64(params[:process_token])).with_indifferent_access
+    else
+      {}
+    end
   end
 
   def limit
