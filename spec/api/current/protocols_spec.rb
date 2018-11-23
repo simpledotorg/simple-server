@@ -1,6 +1,6 @@
 require 'swagger_helper'
 
-describe 'Protocols API', swagger_doc: 'current/swagger.json' do
+describe 'Protocols Current API', swagger_doc: 'current/swagger.json' do
   path '/protocols/sync' do
     get 'Syncs protocols and protocol drugs data from server to device.' do
       tags 'protocol'
