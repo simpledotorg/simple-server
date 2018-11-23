@@ -1,6 +1,6 @@
 require 'swagger_helper'
 
-describe 'Patients API', swagger_doc: 'current/swagger.json' do
+describe 'Patients Current API', swagger_doc: 'current/swagger.json' do
   path '/patients/sync' do
 
     post 'Syncs patient, address and phone number data from device to server.' do
