@@ -1,6 +1,6 @@
 require 'swagger_helper'
 
-describe 'Communication API', swagger_doc: 'current/swagger.json' do
+describe 'Communication Current API', swagger_doc: 'current/swagger.json' do
   path '/communications/sync' do
 
     post 'Syncs communication data from device to server.' do
