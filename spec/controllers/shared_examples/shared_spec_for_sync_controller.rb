@@ -239,7 +239,6 @@ RSpec.shared_examples 'a working Current sync controller sending records' do
       get :sync_to_user
 
       response_body = JSON(response.body)
-      print response_body
       expect(response_body[response_key].count).to eq model.count
       expect(response_body[response_key].map { |record| record['id'] }.to_set)
         .to eq(model.all.pluck(:id).to_set)
