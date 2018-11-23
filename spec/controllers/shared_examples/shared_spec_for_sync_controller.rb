@@ -286,14 +286,12 @@ RSpec.shared_examples 'a working Current sync controller sending records' do
         }
 
         response_1 = JSON(response.body)
-        response_1_process_token = parse_process_token(response_1)
 
         get :sync_to_user, params: {
           process_token: response_1['process_token'],
           limit: 8
         }
         response_2 = JSON(response.body)
-        response_2_process_token = parse_process_token(response_2)
 
         received_records = response_1[response_key].concat(response_2[response_key]).to_set
         expect(received_records.count).to eq model.count

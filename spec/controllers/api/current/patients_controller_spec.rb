@@ -167,5 +167,35 @@ RSpec.describe Api::Current::PatientsController, type: :controller do
 
   describe 'GET sync: send data from server to device;' do
     it_behaves_like 'a working Current sync controller sending records'
+
+    describe 'current facility prioritisation' do
+      let(:request_key) { 'patients' }
+      let(:response_key) { 'patients' }
+
+      it "syncs request facility's records first" do
+        request_2_facility = FactoryBot.create(:facility)
+        FactoryBot.create_list(:patient, 10, registration_facility: request_facility)
+        FactoryBot.create_list(:patient, 10, registration_facility: request_2_facility)
+
+        # GET request 1
+        set_authentication_headers
+        get :sync_to_user, params: { limit: 10 }
+        response_1_body = JSON(response.body)
+
+        record_ids = response_1_body[response_key].map { |r| r['id'] }
+        records = model.where(id: record_ids)
+        expect(records.count).to eq 10
+        expect(records.map(&:registration_facility).to_set).to eq Set[request_facility]
+
+        # GET request 2
+        get :sync_to_user, params: { limit: 10, process_token: response_1_body['process_token'] }
+        response_2_body = JSON(response.body)
+
+        record_ids = response_2_body[response_key].map { |r| r['id'] }
+        records = model.where(id: record_ids)
+        expect(records.count).to eq 10
+        expect(records.map(&:registration_facility).to_set).to eq Set[request_facility, request_2_facility]
+      end
+    end
   end
 end

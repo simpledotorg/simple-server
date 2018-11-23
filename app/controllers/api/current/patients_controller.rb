@@ -13,10 +13,9 @@ class Api::Current::PatientsController < Api::Current::SyncController
   end
 
   def current_facility_records
-    @current_facility_records ||=
-      model_name
-        .where(registration_facility: current_facility)
-        .updated_on_server_since(current_facility_processed_since, limit)
+    model_name
+      .where(registration_facility: current_facility)
+      .updated_on_server_since(current_facility_processed_since, limit)
   end
 
   def other_facility_records
