@@ -43,5 +43,34 @@ RSpec.describe Api::Current::PrescriptionDrugsController, type: :controller do
 
   describe 'GET sync: send data from server to device;' do
     it_behaves_like 'a working Current sync controller sending records'
+
+    describe 'current facility prioritisation' do
+      it "syncs request facility's records first" do
+        request_2_facility = FactoryBot.create(:facility)
+        FactoryBot.create_list(:prescription_drug, 5, facility: request_facility, updated_at: 3.minutes.ago)
+        FactoryBot.create_list(:prescription_drug, 5, facility: request_facility, updated_at: 5.minutes.ago)
+        FactoryBot.create_list(:prescription_drug, 5, facility: request_2_facility, updated_at: 7.minutes.ago)
+        FactoryBot.create_list(:prescription_drug, 5, facility: request_2_facility, updated_at: 10.minutes.ago)
+
+        # GET request 1
+        set_authentication_headers
+        get :sync_to_user, params: { limit: 10 }
+        response_1_body = JSON(response.body)
+
+        record_ids = response_1_body['prescription_drugs'].map { |r| r['id'] }
+        records = model.where(id: record_ids)
+        expect(records.count).to eq 10
+        expect(records.map(&:facility).to_set).to eq Set[request_facility]
+
+        # GET request 2
+        get :sync_to_user, params: { limit: 10, process_token: response_1_body['process_token'] }
+        response_2_body = JSON(response.body)
+
+        record_ids = response_2_body['prescription_drugs'].map { |r| r['id'] }
+        records = model.where(id: record_ids)
+        expect(records.count).to eq 10
+        expect(records.map(&:facility).to_set).to eq Set[request_facility, request_2_facility]
+      end
+    end
   end
 end

@@ -7,6 +7,19 @@ class Api::Current::AppointmentsController < Api::Current::SyncController
     __sync_to_user__('appointments')
   end
 
+  def current_facility_records
+    model_name
+      .where(facility: current_facility)
+      .updated_on_server_since(current_facility_processed_since, limit)
+  end
+
+  def other_facility_records
+    other_facilities_limit = limit - current_facility_records.count
+    model_name
+      .where.not(facility: current_facility)
+      .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
+  end
+
   private
 
   def merge_if_valid(appointment_params)
