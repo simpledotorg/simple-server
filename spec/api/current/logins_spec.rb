@@ -1,6 +1,6 @@
 require 'swagger_helper'
 
-describe 'Login API', swagger_doc: 'current/swagger.json' do
+describe 'Login Current API', swagger_doc: 'current/swagger.json' do
   path '/login' do
     post 'Login in valid user' do
       tags 'User Login'
