@@ -10,6 +10,7 @@ class Api::Current::PatientPayloadValidator < Api::Current::PayloadValidator
     :age_updated_at,
     :created_at,
     :updated_at,
+    :deleted_at,
     :address,
     :phone_numbers
   )
