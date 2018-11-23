@@ -1,6 +1,6 @@
 require 'swagger_helper'
 
-describe 'Users API', swagger_doc: 'v1/swagger.json' do
+describe 'Users V1 API', swagger_doc: 'v1/swagger.json' do
   path '/users/find' do
     get 'Find a existing user' do
       tags 'User'
