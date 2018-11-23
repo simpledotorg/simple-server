@@ -1,23 +1,12 @@
 class Api::Current::BloodPressuresController < Api::Current::SyncController
+  include Api::Current::PrioritisableByFacility
+
   def sync_from_user
     __sync_from_user__(blood_pressures_params)
   end
 
   def sync_to_user
     __sync_to_user__('blood_pressures')
-  end
-
-  def current_facility_records
-    model_name
-      .where(facility: current_facility)
-      .updated_on_server_since(current_facility_processed_since, limit)
-  end
-
-  def other_facility_records
-    other_facilities_limit = limit - current_facility_records.count
-    model_name
-      .where.not(facility: current_facility)
-      .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
   end
 
   private
