@@ -21,7 +21,7 @@ class APIController < ApplicationController
   end
 
   def validate_facility
-    return head :unauthorized unless current_facility.present?
+    return head :bad_request unless current_facility.present?
   end
 
   def authenticate
