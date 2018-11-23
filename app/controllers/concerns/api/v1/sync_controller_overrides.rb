@@ -2,10 +2,6 @@ module Api::V1::SyncControllerOverrides
   extend ActiveSupport::Concern
 
   included do
-    def model_name
-      controller_name.classify.constantize
-    end
-
     def __sync_to_user__(response_key)
       records_to_sync = find_records_to_sync(processed_since, limit)
       records_to_sync.each { |record| AuditLog.fetch_log(current_user, record) }
