@@ -1,6 +1,6 @@
 require 'swagger_helper'
 
-describe 'Medical History API', swagger_doc: 'current/swagger.json' do
+describe 'Medical History Current API', swagger_doc: 'current/swagger.json' do
   path '/medical_histories/sync' do
 
     post 'Syncs medical_history data from device to server.' do
