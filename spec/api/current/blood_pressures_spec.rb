@@ -1,6 +1,6 @@
 require 'swagger_helper'
 
-describe 'BloodPressures API', swagger_doc: 'current/swagger.json' do
+describe 'BloodPressures Current API', swagger_doc: 'current/swagger.json' do
   path '/blood_pressures/sync' do
 
     post 'Syncs blood pressure data from device to server.' do
