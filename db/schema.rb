@@ -176,6 +176,10 @@ ActiveRecord::Schema.define(version: 20181115091323) do
     t.datetime "device_created_at", null: false
     t.datetime "device_updated_at", null: false
     t.boolean "test_data", default: false, null: false
+    t.uuid "registration_facility_id"
+    t.uuid "registration_user_id"
+    t.index ["registration_facility_id"], name: "index_patients_on_registration_facility_id"
+    t.index ["registration_user_id"], name: "index_patients_on_registration_user_id"
   end
 
   create_table "prescription_drugs", id: :uuid, default: nil, force: :cascade do |t|
