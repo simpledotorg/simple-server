@@ -15,6 +15,8 @@ class User < ApplicationRecord
   has_many :patients, -> { distinct }, through: :blood_pressures
   has_many :audit_logs, as: :auditable
 
+  has_many :registered_patients, class_name: "Patient", foreign_key: "registration_user_id"
+
   before_create :set_otp
   before_create :set_access_token
 

@@ -9,6 +9,10 @@ class Patient < ApplicationRecord
   has_many :blood_pressures
   has_many :prescription_drugs
   has_many :facilities, -> { distinct }, through: :blood_pressures
+  has_many :users, -> { distinct }, through: :blood_pressures
+
+  belongs_to :registration_facility, class_name: "Facility", optional: true
+  belongs_to :registration_user, class_name: "User"
 
   has_many :appointments
   has_one :medical_history

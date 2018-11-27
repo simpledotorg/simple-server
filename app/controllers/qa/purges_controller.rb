@@ -1,5 +1,6 @@
 class Qa::PurgesController < APIController
   skip_before_action :authenticate, only: [:purge_patient_data]
+  skip_before_action :validate_facility, only: [:purge_patient_data]
   before_action :validate_access
 
   def purge_patient_data

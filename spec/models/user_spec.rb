@@ -6,6 +6,9 @@ RSpec.describe User, type: :model do
     it { should have_many(:facilities).through(:user_facilities) }
     it { should have_many(:blood_pressures) }
     it { should have_many(:patients).through(:blood_pressures) }
+
+    it { should have_many(:registered_patients).class_name("Patient").with_foreign_key("registration_user_id") }
+
     it 'deletes all dependent user facilities' do
       user = FactoryBot.create(:user)
       FactoryBot.create_list(:user_facility, 5, user: user)

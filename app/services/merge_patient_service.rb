@@ -9,7 +9,7 @@ class MergePatientService
 
     patient_attributes = payload.except(:address, :phone_numbers)
     patient_attributes['address_id'] = merged_address.id if merged_address.present?
-    merged_patient = Patient.merge(patient_attributes)
+    merged_patient = Patient.merge(attributes_with_metadata(patient_attributes))
     merged_patient.address = merged_address
 
     merged_phone_numbers = merge_phone_numbers(payload[:phone_numbers], merged_patient)
@@ -22,6 +22,21 @@ class MergePatientService
   end
 
   private
+
+  def attributes_with_metadata(patient_attributes)
+    with_request_metadata = patient_attributes.merge(patient_attributes[:metadata]).except(:metadata)
+    metadata_keys = patient_attributes[:metadata].keys
+
+    case Patient.compute_merge_status(with_request_metadata)
+    when :new
+      with_request_metadata
+    when Set[:updated, :old]
+      existing_metadata = Patient.find(patient_attributes[:id]).slice(*metadata_keys)
+      patient_attributes.merge(existing_metadata).except(:metadata)
+    else
+      patient_attributes.except(:metadata)
+    end
+  end
 
   attr_reader :payload
 

@@ -1,7 +1,8 @@
 require 'rails_helper'
 
 def set_authentication_headers
-  request.env['HTTP_X_USER_ID']     = request_user.id
+  request.env['HTTP_X_USER_ID'] = request_user.id
+  request.env['HTTP_X_FACILITY_ID'] = request_facility.id if defined? request_facility
   request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
 end
 
@@ -38,7 +39,7 @@ RSpec.shared_examples 'a sync controller that authenticates user requests' do
     end
 
     it 'does not allow sync_from_user requests to the controller with invalid user_id and access_token' do
-      request.env['X_USER_ID']          = 'invalid user id'
+      request.env['X_USER_ID'] = 'invalid user id'
       request.env['HTTP_AUTHORIZATION'] = 'invalid access token'
       post :sync_from_user, params: empty_payload
 
@@ -46,7 +47,7 @@ RSpec.shared_examples 'a sync controller that authenticates user requests' do
     end
 
     it 'does not allow sync_to_user requests to the controller with invalid user_id and access_token' do
-      request.env['X_USER_ID']          = 'invalid user id'
+      request.env['X_USER_ID'] = 'invalid user id'
       request.env['HTTP_AUTHORIZATION'] = 'invalid access token'
       get :sync_to_user, params: empty_payload
 
@@ -181,7 +182,7 @@ RSpec.shared_examples 'a working sync controller sending records' do
       it 'returns the number of records requested with limit' do
         get :sync_to_user, params: {
           processed_since: 20.minutes.ago,
-          limit:           2
+          limit: 2
         }
         response_body = JSON(response.body)
         expect(response_body[response_key].count).to eq 2
@@ -190,13 +191,13 @@ RSpec.shared_examples 'a working sync controller sending records' do
       it 'Returns all the records on server over multiple small batches' do
         get :sync_to_user, params: {
           processed_since: 20.minutes.ago,
-          limit:           7
+          limit: 7
         }
         response_1 = JSON(response.body)
 
         get :sync_to_user, params: {
           processed_since: response_1['processed_since'],
-          limit:           7
+          limit: 7
         }
         response_2 = JSON(response.body)
 
@@ -227,7 +228,7 @@ RSpec.shared_examples 'a sync controller that audits the data access' do
       post :sync_from_user, params: payload, as: :json
 
       audit_logs = AuditLog.where(user_id: request_user.id, auditable_type: auditable_type, auditable_id: record[:id])
-      expect(audit_logs.count).to be 1
+      expect(audit_logs.count).to eq 1
       expect(audit_logs.first.action).to eq('create')
     end
 
@@ -262,8 +263,8 @@ RSpec.shared_examples 'a sync controller that audits the data access' do
     it 'creates an audit log for data fetched by the user' do
       get :sync_to_user, params: {
         processed_since: 20.minutes.ago,
-        limit:           5
-      },  as: :json
+        limit: 5
+      }, as: :json
 
       audit_logs = AuditLog.where(user_id: request_user.id, auditable_type: auditable_type)
       expect(audit_logs.count).to be 5

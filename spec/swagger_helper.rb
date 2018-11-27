@@ -12,5 +12,5 @@ RSpec.configure do |config|
   # By default, the operations defined in spec files are added to the first
   # document below. You can override this behavior by adding a swagger_doc tag to the
   # the root example_group in your specs, e.g. describe '...', swagger_doc: 'v2/swagger.json'
-  config.swagger_docs = Api::V1::Schema.swagger_docs
+  config.swagger_docs = Api::Schema.swagger_docs
 end
