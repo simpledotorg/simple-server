@@ -1,6 +1,6 @@
 require 'swagger_helper'
 
-describe 'Users V2 API', swagger_doc: 'current/swagger.json' do
+describe 'Users Current API', swagger_doc: 'current/swagger.json' do
   path '/users/find' do
     get 'Find a existing user' do
       tags 'User'
@@ -40,7 +40,7 @@ describe 'Users V2 API', swagger_doc: 'current/swagger.json' do
                     .merge(created_at: Time.now, updated_at: Time.now) }
         end
 
-        schema Api::V1::Schema.user_registration_response
+        schema Api::Current::Schema.user_registration_response
         run_test!
       end
 
@@ -100,19 +100,21 @@ describe 'Users V2 API', swagger_doc: 'current/swagger.json' do
 
   path '/users/me/reset_password' do
     parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
+    parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
 
     post 'Request for reset password' do
       tags 'User'
       security [ basic: [] ]
-      parameter name: :password_digest, in: :body, schema: Api::V1::Schema.user_reset_password_request
+      parameter name: :password_digest, in: :body, schema: Api::Current::Schema.user_reset_password_request
       let(:facility) { FactoryBot.create(:facility) }
       let(:user) { FactoryBot.create(:user, facility_ids: [facility.id]) }
       let(:HTTP_X_USER_ID) { user.id }
+      let(:HTTP_X_FACILITY_ID) { facility.id }
       let(:Authorization) { "Bearer #{user.access_token}" }
       let(:password_digest) { { password_digest:  BCrypt::Password.create('1234') } }
 
       response '200', 'user password reset request is received' do
-        schema Api::V1::Schema.user_registration_response
+        schema Api::Current::Schema.user_registration_response
         run_test!
       end
 

@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Api::Current::PrescriptionDrugsController, type: :controller do
   let(:request_user) { FactoryBot.create(:user) }
+  let(:request_facility) { FactoryBot.create(:facility) }
   let(:model) { PrescriptionDrug }
 
   let(:build_payload) { lambda { build_prescription_drug_payload } }
@@ -20,14 +21,15 @@ RSpec.describe Api::Current::PrescriptionDrugsController, type: :controller do
 
     describe 'creates new prescription drugs' do
       it 'creates new prescription drugs with associated patient, and facility' do
-        request.env['HTTP_X_USER_ID']          = request_user.id
+        request.env['HTTP_X_USER_ID'] = request_user.id
+        request.env['HTTP_X_FACILITY_ID'] = request_facility.id
         request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
-        
-        patient            = FactoryBot.create(:patient)
-        facility           = FactoryBot.create(:facility)
+
+        patient = FactoryBot.create(:patient)
+        facility = FactoryBot.create(:facility)
         prescription_drugs = (1..10).map do
           build_prescription_drug_payload(FactoryBot.build(:prescription_drug,
-                                                           patient:  patient,
+                                                           patient: patient,
                                                            facility: facility))
         end
         post(:sync_from_user, params: { prescription_drugs: prescription_drugs }, as: :json)

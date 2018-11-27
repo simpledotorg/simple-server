@@ -7,6 +7,8 @@ class Facility < ApplicationRecord
   has_many :patients, through: :blood_pressures
   has_many :prescription_drugs
 
+  has_many :registered_patients, class_name: "Patient", foreign_key: "registration_facility_id"
+
   has_many :appointments
 
   validates :name, presence: true

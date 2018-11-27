@@ -16,6 +16,8 @@ class Api::Current::PatientTransformer
     def to_nested_response(patient)
       Api::Current::Transformer.to_response(patient)
         .except('address_id')
+        .except('registration_user_id')
+        .except('registration_facility_id')
         .except('test_data')
         .merge(
           'address' => Api::Current::Transformer.to_response(patient.address),

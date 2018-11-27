@@ -9,6 +9,9 @@ describe Patient, type: :model do
     it { should have_many(:facilities).through(:blood_pressures) }
     it { should have_many(:appointments) }
     it { should have_one(:medical_history) }
+
+    it { should belong_to(:registration_facility).class_name("Facility") }
+    it { should belong_to(:registration_user).class_name("User") }
   end
 
   describe 'Validations' do

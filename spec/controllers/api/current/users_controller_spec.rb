@@ -121,9 +121,11 @@ RSpec.describe Api::Current::UsersController, type: :controller do
 
   describe '#reset_password' do
     let(:user) { FactoryBot.create(:user) }
+    let(:facility) { FactoryBot.create(:facility) }
 
     before(:each) do
       request.env['HTTP_X_USER_ID'] = user.id
+      request.env['HTTP_X_FACILITY_ID'] = facility.id
       request.env['HTTP_AUTHORIZATION'] = "Bearer #{user.access_token}"
     end
 

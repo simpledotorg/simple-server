@@ -2,8 +2,10 @@ require 'rails_helper'
 
 RSpec.describe Api::Current::BloodPressuresController, type: :controller do
   let(:request_user) { FactoryBot.create(:user) }
+  let(:request_facility) { FactoryBot.create(:facility) }
   before :each do
     request.env['X_USER_ID'] = request_user.id
+    request.env['X_FACILITY_ID'] = request_facility.id
     request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
   end
 
@@ -26,6 +28,7 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
     describe 'creates new blood pressures' do
       before :each do
         request.env['HTTP_X_USER_ID'] = request_user.id
+        request.env['HTTP_X_FACILITY_ID'] = request_facility.id
         request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
       end
 
