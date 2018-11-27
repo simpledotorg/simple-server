@@ -21,10 +21,6 @@ class Api::Current::MedicalHistoriesController < Api::Current::SyncController
     end
   end
 
-  def find_records_to_sync(since, limit)
-    MedicalHistory.updated_on_server_since(since, limit)
-  end
-
   def transform_to_response(medical_history)
     Api::Current::MedicalHistoryTransformer.to_response(medical_history)
   end

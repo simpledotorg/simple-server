@@ -1,4 +1,6 @@
 class Api::Current::AppointmentsController < Api::Current::SyncController
+  include Api::Current::PrioritisableByFacility
+
   def sync_from_user
     __sync_from_user__(appointments_params)
   end
@@ -19,10 +21,6 @@ class Api::Current::AppointmentsController < Api::Current::SyncController
       appointment = Appointment.merge(Api::Current::Transformer.from_request(appointment_params))
       { record: appointment }
     end
-  end
-
-  def find_records_to_sync(since, limit)
-    Appointment.updated_on_server_since(since, limit)
   end
 
   def transform_to_response(appointment)
