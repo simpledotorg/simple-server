@@ -24,7 +24,7 @@ gem 'twilio-ruby', '~> 5.10', '>= 5.10.3'
 gem 'pundit'
 gem 'bootstrap', '~> 4.1.3'
 gem 'jquery-rails'
-gem "bootstrap_form", ">= 4.0.0.alpha1"
+gem 'bootstrap_form', '>= 4.0.0.alpha1'
 gem 'groupdate'
 
 group :development, :test do
@@ -38,6 +38,7 @@ group :development, :test do
   gem 'capistrano-rbenv'
   gem 'capistrano-passenger'
   gem 'capistrano-rails-console', require: false
+  gem 'parallel_tests', group: [:development, :test]
 end
 
 group :development do

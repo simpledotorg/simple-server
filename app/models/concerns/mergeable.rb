@@ -7,17 +7,33 @@ module Mergeable
   end
 
   class_methods do
-    def merge(attributes)
+    def compute_merge_status(attributes)
       new_record = new(attributes)
       existing_record = find_by(id: attributes['id'])
 
       if new_record.invalid?
-        invalid_record(new_record)
+        :invalid
       elsif existing_record.nil?
-        create_new_record(attributes)
+        :new
       elsif new_record.device_updated_at > existing_record.device_updated_at
-        update_existing_record(existing_record, attributes)
+        :updated
       else
+        :old
+      end
+    end
+
+    def merge(attributes)
+      new_record = new(attributes)
+      existing_record = find_by(id: attributes['id'])
+
+      case compute_merge_status(attributes)
+      when :invalid
+        invalid_record(new_record)
+      when :new
+        create_new_record(attributes)
+      when :updated
+        update_existing_record(existing_record, attributes)
+      when :old
         return_old_record(existing_record)
       end
     end
