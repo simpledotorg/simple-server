@@ -134,7 +134,7 @@ GEM
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
       ruby_dep (~> 1.2)
-    loofah (2.2.2)
+    loofah (2.2.3)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mail (2.7.0)
@@ -150,9 +150,12 @@ GEM
     net-ssh (5.0.1)
     newrelic_rpm (5.1.0.344)
     nio4r (2.3.1)
-    nokogiri (1.8.4)
+    nokogiri (1.8.5)
       mini_portile2 (~> 2.3.0)
     orm_adapter (0.5.0)
+    parallel (1.12.1)
+    parallel_tests (2.27.0)
+      parallel
     passenger (5.3.1)
       rack
       rake (>= 0.8.1)
@@ -166,7 +169,7 @@ GEM
     public_suffix (3.0.2)
     pundit (1.1.0)
       activesupport (>= 3.0.0)
-    rack (2.0.5)
+    rack (2.0.6)
     rack-test (1.0.0)
       rack (>= 1.0, < 3)
     rails (5.1.6)
@@ -312,6 +315,7 @@ DEPENDENCIES
   launchy
   listen (>= 3.0.5, < 3.2)
   newrelic_rpm
+  parallel_tests
   passenger
   pg (>= 0.18, < 2.0)
   pry-rails
