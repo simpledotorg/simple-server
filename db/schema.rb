@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181115091323) do
+ActiveRecord::Schema.define(version: 20181127085041) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -150,6 +150,13 @@ ActiveRecord::Schema.define(version: 20181115091323) do
     t.text "diabetes"
     t.text "diagnosed_with_hypertension"
     t.index ["patient_id"], name: "index_medical_histories_on_patient_id"
+  end
+
+  create_table "organisations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "patient_phone_numbers", id: :uuid, default: nil, force: :cascade do |t|
