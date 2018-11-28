@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181127085041) do
+ActiveRecord::Schema.define(version: 20181128012620) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -219,6 +219,15 @@ ActiveRecord::Schema.define(version: 20181127085041) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "sync_networks", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.uuid "organisation_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["organisation_id"], name: "index_sync_networks_on_organisation_id"
+  end
+
   create_table "user_facilities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id", null: false
     t.uuid "facility_id", null: false
@@ -251,6 +260,7 @@ ActiveRecord::Schema.define(version: 20181127085041) do
   add_foreign_key "patient_phone_numbers", "patients"
   add_foreign_key "patients", "addresses"
   add_foreign_key "protocol_drugs", "protocols"
+  add_foreign_key "sync_networks", "organisations"
   add_foreign_key "user_facilities", "facilities"
   add_foreign_key "user_facilities", "users"
 end

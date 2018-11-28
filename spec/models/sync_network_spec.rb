@@ -1,8 +1,8 @@
 require 'rails_helper'
 
-RSpec.describe Organisation, type: :model do
+RSpec.describe SyncNetwork, type: :model do
   describe 'Associations' do
-    it { should have_many(:sync_networks) }
+    it { should belong_to(:organisation) }
   end
 
   describe 'Validations' do
