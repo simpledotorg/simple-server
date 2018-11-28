@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :organisation do
+  factory :organization do
     id { SecureRandom.uuid }
     name { Faker::Company.name }
     description { Faker::Company.catch_phrase }

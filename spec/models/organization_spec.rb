@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Organisation, type: :model do
+RSpec.describe Organization, type: :model do
   describe 'Associations' do
     it { should have_many(:sync_networks) }
   end

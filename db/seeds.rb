@@ -75,8 +75,8 @@ protocol_drugs_data = [
   }
 ]
 
-organisation = FactoryBot.create(:organisation)
-sync_network = FactoryBot.create(:sync_network, organisation: organisation)
+organization = FactoryBot.create(:organization)
+sync_network = FactoryBot.create(:sync_network, organization: organization)
 
 facilities.each do |facility_data|
   Facility.find_or_create_by(facility_data.merge(sync_network_id: sync_network.id))
