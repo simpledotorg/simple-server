@@ -9,6 +9,6 @@ FactoryBot.define do
     country "India"
     pin "123456"
     facility_type "PHC"
-    sync_network
+    facility_group
   end
 end

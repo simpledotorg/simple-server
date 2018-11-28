@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe SyncNetwork, type: :model do
+RSpec.describe FacilityGroup, type: :model do
   describe 'Associations' do
     it { should belong_to(:organization) }
     it { should have_many(:facilities) }

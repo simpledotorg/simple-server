@@ -11,7 +11,7 @@ class Facility < ApplicationRecord
 
   has_many :appointments
 
-  belongs_to :sync_network
+  belongs_to :facility_group
 
   validates :name, presence: true
   validates :district, presence: true

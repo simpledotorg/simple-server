@@ -1,5 +1,5 @@
 class Organization < ApplicationRecord
-  has_many :sync_networks
+  has_many :facility_groups
 
   validates :name, presence: true
 end
