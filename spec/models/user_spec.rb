@@ -44,4 +44,20 @@ RSpec.describe User, type: :model do
       end
     end
   end
+
+  describe '#has_never_logged_in?' do
+    context 'user has never logged in' do
+      it 'returns true' do
+        user = User.new(logged_in_at: nil)
+        expect(user.has_never_logged_in?).to be true
+      end
+    end
+
+    context 'user has logged in atleast once' do
+      it 'returns false' do
+        user = User.new(logged_in_at: DateTime.yesterday)
+        expect(user.has_never_logged_in?).to be false
+      end
+    end
+  end
 end
