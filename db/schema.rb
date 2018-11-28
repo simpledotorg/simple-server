@@ -129,6 +129,8 @@ ActiveRecord::Schema.define(version: 20181128012620) do
     t.datetime "updated_at", null: false
     t.float "latitude"
     t.float "longitude"
+    t.uuid "sync_network_id"
+    t.index ["sync_network_id"], name: "index_facilities_on_sync_network_id"
   end
 
   create_table "medical_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -219,7 +221,7 @@ ActiveRecord::Schema.define(version: 20181128012620) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "sync_networks", force: :cascade do |t|
+  create_table "sync_networks", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.text "description"
     t.uuid "organisation_id", null: false
@@ -257,6 +259,7 @@ ActiveRecord::Schema.define(version: 20181128012620) do
 
   add_foreign_key "appointments", "facilities"
   add_foreign_key "communications", "users"
+  add_foreign_key "facilities", "sync_networks"
   add_foreign_key "patient_phone_numbers", "patients"
   add_foreign_key "patients", "addresses"
   add_foreign_key "protocol_drugs", "protocols"

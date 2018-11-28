@@ -9,6 +9,6 @@ class Api::Current::FacilitiesController < Api::Current::SyncController
   private
 
   def transform_to_response(facility)
-    facility.as_json
+    Api::Current::FacilityTransformer.to_response(facility)
   end
 end
