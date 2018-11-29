@@ -1,5 +1,10 @@
 class Api::Current::SyncController < APIController
+  include Api::Current::SyncToUser
   before_action :check_disabled_api
+
+  def model_name
+    controller_name.classify.constantize
+  end
 
   def __sync_from_user__(params)
     errors = params.flat_map do |single_entity_params|
@@ -14,12 +19,11 @@ class Api::Current::SyncController < APIController
   end
 
   def __sync_to_user__(response_key)
-    records_to_sync = find_records_to_sync(processed_since, limit)
     records_to_sync.each { |record| AuditLog.fetch_log(current_user, record) }
     render(
-      json:   {
-        response_key      => records_to_sync.map { |record| transform_to_response(record) },
-        'processed_since' => most_recent_record_timestamp(records_to_sync).strftime(TIME_WITHOUT_TIMEZONE_FORMAT)
+      json: {
+        response_key => records_to_sync.map { |record| transform_to_response(record) },
+        'process_token' => encode_process_token(response_process_token)
       },
       status: :ok
     )
@@ -50,24 +54,20 @@ class Api::Current::SyncController < APIController
     Raven.capture_message(
       'Validation Error',
       logger: 'logger',
-      extra:  {
+      extra: {
         params_with_errors: params_with_errors(params, errors),
-        errors:             errors
+        errors: errors
       },
-      tags:   { type: 'validation' }
+      tags: { type: 'validation' }
     )
   end
 
-  def most_recent_record_timestamp(records_to_sync)
-    if records_to_sync.empty?
-      processed_since
+  def process_token
+    if params[:process_token].present?
+      JSON.parse(Base64.decode64(params[:process_token])).with_indifferent_access
     else
-      records_to_sync.last.updated_at
+      {}
     end
-  end
-
-  def processed_since
-    params[:processed_since].try(:to_time) || Time.new(0)
   end
 
   def limit

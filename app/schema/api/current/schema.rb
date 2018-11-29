@@ -1,11 +1,10 @@
 class Api::Current::Schema
   class << self
-    def processed_since
-      Api::Current::Models.timestamp.merge(
-        name: 'processed_since',
-        description: 'The timestamp since which records have been processed by the server.
-                    Use the server returned value in the next request to continue fetching records.'
-      )
+    def process_token
+      { name: 'process_token',
+        type: :string,
+        format: 'byte',
+        description: 'Token containing all the information needed to process batch requests from the user' }
     end
 
     def error
@@ -35,7 +34,7 @@ class Api::Current::Schema
     end
 
     def sync_to_user_request
-      [processed_since.merge(in: :query),
+      [process_token.merge(in: :query),
        { in: :query, name: :limit, type: :integer,
          description: 'Number of record to retrieve (a.k.a batch-size)' }]
     end
@@ -44,8 +43,8 @@ class Api::Current::Schema
       { type: :object,
         properties: {
           response_key => { '$ref' => "#/definitions/#{schema_type}" },
-          :processed_since => { '$ref' => '#/definitions/processed_since' } },
-        required: [response_key, :processed_since] }
+          :process_token => { '$ref' => '#/definitions/process_token' } },
+        required: [response_key, :process_token] }
     end
 
     def patient_sync_from_user_request
@@ -141,7 +140,7 @@ class Api::Current::Schema
     def definitions
       { error: error,
         errors: Api::Current::Models.array_of('error'),
-        processed_since: processed_since }
+        process_token: process_token }
     end
 
     def all_definitions

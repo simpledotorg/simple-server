@@ -21,10 +21,6 @@ class Api::Current::CommunicationsController < Api::Current::SyncController
     end
   end
 
-  def find_records_to_sync(since, limit)
-    Communication.updated_on_server_since(since, limit)
-  end
-
   def transform_to_response(communication)
     Api::Current::Transformer.to_response(communication)
   end

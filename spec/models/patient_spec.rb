@@ -9,6 +9,7 @@ describe Patient, type: :model do
     it { should have_many(:facilities).through(:blood_pressures) }
     it { should have_many(:appointments) }
     it { should have_one(:medical_history) }
+
     it 'has distinct facilities' do
       patient = FactoryBot.create(:patient)
       facility = FactoryBot.create(:facility)
