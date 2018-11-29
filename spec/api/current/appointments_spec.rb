@@ -59,6 +59,7 @@ describe 'Appointment Current API', swagger_doc: 'current/swagger.json' do
         schema Api::Current::Schema.appointment_sync_to_user_response
         let(:process_token) { Base64.encode64({other_facilities_processed_since: 10.minutes.ago}.to_json) }
         let(:limit) { 10 }
+
         before do |example|
           submit_request(example.metadata)
         end

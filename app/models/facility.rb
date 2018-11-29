@@ -4,7 +4,7 @@ class Facility < ApplicationRecord
   has_many :user_facilities, dependent: :delete_all
   has_many :users, through: :user_facilities
   has_many :blood_pressures
-  has_many :patients, through: :blood_pressures
+  has_many :patients, -> { distinct }, through: :blood_pressures
   has_many :prescription_drugs
 
   has_many :registered_patients, class_name: "Patient", foreign_key: "registration_facility_id"
