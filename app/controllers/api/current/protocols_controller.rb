@@ -3,11 +3,11 @@ class Api::Current::ProtocolsController < Api::Current::SyncController
     __sync_to_user__('protocols')
   end
 
-  private
-
   def find_records_to_sync(since, limit)
-    Protocol.updated_on_server_since(since, limit).includes(:protocol_drugs)
+    super(since, limit).includes(:protocol_drugs)
   end
+
+  private
 
   def transform_to_response(protocol)
     protocol.as_json(include: :protocol_drugs)
