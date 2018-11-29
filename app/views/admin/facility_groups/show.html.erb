@@ -1,0 +1,21 @@
+<h1><%= @facility_group.name %></h1>
+
+<div class="row">
+  <div class="col-md-4 col-lg-3">
+    <% if policy(@facility_group).edit? %>
+      <%= link_to 'Edit facility group', edit_admin_organization_facility_group_path(@facility_group), class: "btn btn-sm btn-primary" %>
+    <% end %>
+  </div>
+
+  <div class="col-md-8 col-lg-9">
+    <h3>Facilities</h3>
+
+    <% @facility_group.facilities.each do |facility| %>
+      <div class="row border-bottom mb-4">
+        <div class="col-lg-9">
+          <h6><%= link_to facility.name, admin_facility_path(facility) %></h6>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

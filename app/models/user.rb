@@ -52,7 +52,7 @@ class User < ApplicationRecord
   end
 
   def sync_approval_requested(reason)
-    self.sync_approval_status = :requested
+      self.sync_approval_status = :requested
     self.sync_approval_status_reason = reason
   end
 
