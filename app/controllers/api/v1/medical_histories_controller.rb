@@ -5,7 +5,7 @@ class Api::V1::MedicalHistoriesController < Api::Current::MedicalHistoriesContro
   def sync_from_user
     Raven.capture_message(
       'User is trying to sync medical histories using API V1.',
-      user: current_user.id
+      extra: { user: current_user.id }
     )
     __sync_from_user__(medical_histories_params)
   end
