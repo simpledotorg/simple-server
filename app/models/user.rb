@@ -87,7 +87,7 @@ class User < ApplicationRecord
   end
 
   def has_never_logged_in?
-    !logged_in_at.present?
+    logged_in_at.blank?
   end
 
   def reset_login
