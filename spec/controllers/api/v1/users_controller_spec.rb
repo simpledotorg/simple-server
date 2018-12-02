@@ -3,7 +3,8 @@ require 'rails_helper'
 RSpec.describe Api::V1::UsersController, type: :controller do
   describe '#register' do
     describe 'registration payload is invalid' do
-      let(:request_params) { { user: FactoryBot.attributes_for(:user).slice(:full_name, :phone_number) } }
+      let(:facility) { FactoryBot.create(:facility)}
+      let(:request_params) { { user: FactoryBot.attributes_for(:user).slice(:full_name, :phone_number).merge(facility_ids: [facility.id]) } }
       it 'responds with 400' do
         post :register, params: request_params
 
@@ -18,7 +19,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
           .slice(:full_name, :phone_number)
           .merge(id: SecureRandom.uuid,
                  password_digest: BCrypt::Password.create("1234"),
-                 registration_facility_id: facility.id,
+                 facility_ids: [facility.id],
                  created_at: Time.now.iso8601,
                  updated_at: Time.now.iso8601)
       end

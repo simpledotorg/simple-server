@@ -27,7 +27,6 @@ RSpec.describe Api::Current::UsersController, type: :controller do
         post :register, params: { user: user_params }
 
         created_user = User.find_by(full_name: user_params[:full_name], phone_number: user_params[:phone_number])
-        print response.body
         expect(response.status).to eq(200)
         expect(created_user).to be_present
         expect(JSON(response.body)['user'].except('device_updated_at', 'device_created_at', 'facility_ids').with_int_timestamps)
@@ -80,7 +79,6 @@ RSpec.describe Api::Current::UsersController, type: :controller do
     it 'lists the users with the given phone number' do
       get :find, params: { phone_number: phone_number }
       expect(response.status).to eq(200)
-      print response.body
       expect(JSON(response.body).with_int_timestamps)
         .to eq(Api::Current::UserTransformer.to_response(user).with_int_timestamps)
     end

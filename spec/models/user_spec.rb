@@ -2,18 +2,12 @@ require 'rails_helper'
 
 RSpec.describe User, type: :model do
   describe 'Associations' do
-    it { should have_many(:user_facilities) }
-    it { should have_many(:facilities).through(:user_facilities) }
+    it { should belong_to(:facility) }
     it { should have_many(:blood_pressures) }
     it { should have_many(:patients).through(:blood_pressures) }
 
     it { should have_many(:registered_patients).class_name("Patient").with_foreign_key("registration_user_id") }
 
-    it 'deletes all dependent user facilities' do
-      user = FactoryBot.create(:user)
-      FactoryBot.create_list(:user_facility, 5, user: user)
-      expect { user.destroy }.to change { UserFacility.count }.by(-5)
-    end
     it 'has distinct patients' do
       user = FactoryBot.create(:user)
       patient = FactoryBot.create(:patient)

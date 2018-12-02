@@ -36,8 +36,10 @@ describe 'Users Current API', swagger_doc: 'current/swagger.json' do
 
       response '200', 'user is registered' do
         let(:user) do
-          { user: FactoryBot.attributes_for(:user_created_on_device, facility_id: facility.id)
-                    .merge(created_at: Time.now, updated_at: Time.now) }
+          { user: FactoryBot.attributes_for(
+            :user_created_on_device,
+            registration_facility_id: facility.id).merge(created_at: Time.now, updated_at: Time.now)
+          }
         end
 
         schema Api::Current::Schema.user_registration_response
@@ -47,7 +49,9 @@ describe 'Users Current API', swagger_doc: 'current/swagger.json' do
       response '400', 'returns bad request for invalid params' do
         let(:user) do
           { user: FactoryBot.attributes_for(:user, :created_on_device)
-                    .merge(created_at: Time.now, updated_at: Time.now, facility_id: facility.id, full_name: nil) }
+                    .merge(created_at: Time.now,
+                           updated_at: Time.now,
+                           registration_facility_id: facility.id, full_name: nil) }
         end
         run_test!
       end
@@ -57,7 +61,9 @@ describe 'Users Current API', swagger_doc: 'current/swagger.json' do
         let!(:existing_user) { FactoryBot.create(:user, phone_number: used_phone_number) }
         let(:user) do
           { user: FactoryBot.attributes_for(:user, :created_on_device, phone_number: used_phone_number)
-                    .merge(created_at: Time.now, updated_at: Time.now, facility_id: facility.id) }
+                    .merge(created_at: Time.now,
+                           updated_at: Time.now,
+                           registration_facility_id: facility.id) }
         end
         run_test!
       end
@@ -65,7 +71,7 @@ describe 'Users Current API', swagger_doc: 'current/swagger.json' do
       response '404', 'returns not found if  facility id is not known' do
         let(:user) do
           { user: FactoryBot.attributes_for(:user, :created_on_device, phone_number: phone_number)
-                    .merge(created_at: Time.now, updated_at: Time.now, facility_id: SecureRandom.uuid) }
+                    .merge(created_at: Time.now, updated_at: Time.now, registration_facility_id: SecureRandom.uuid) }
         end
         run_test!
       end
@@ -104,14 +110,14 @@ describe 'Users Current API', swagger_doc: 'current/swagger.json' do
 
     post 'Request for reset password' do
       tags 'User'
-      security [ basic: [] ]
+      security [basic: []]
       parameter name: :password_digest, in: :body, schema: Api::Current::Schema.user_reset_password_request
       let(:facility) { FactoryBot.create(:facility) }
       let(:user) { FactoryBot.create(:user, registration_facility_id: facility.id) }
       let(:HTTP_X_USER_ID) { user.id }
       let(:HTTP_X_FACILITY_ID) { facility.id }
       let(:Authorization) { "Bearer #{user.access_token}" }
-      let(:password_digest) { { password_digest:  BCrypt::Password.create('1234') } }
+      let(:password_digest) { { password_digest: BCrypt::Password.create('1234') } }
 
       response '200', 'user password reset request is received' do
         schema Api::Current::Schema.user_registration_response
