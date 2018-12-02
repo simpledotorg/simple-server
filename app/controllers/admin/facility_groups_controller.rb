@@ -1,5 +1,6 @@
 class Admin::FacilityGroupsController < AdminController
   before_action :set_facility_group, only: [:show, :edit, :update, :destroy]
+  before_action :set_organization, only: [:new, :create, :show, :edit, :update, :destroy]
 
   def index
     authorize FacilityGroup
@@ -18,19 +19,19 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def create
-    @facility_group = @organization.new(facility_params)
+    @facility_group = @organization.facility_groups.new(facility_group_params)
     authorize @facility_group
 
     if @facility_group.save
-      redirect_to [:admin, @facility_group], notice: 'FacilityGroup was successfully created.'
+      redirect_to [:admin, @organization, @facility_group], notice: 'FacilityGroup was successfully created.'
     else
       render :new
     end
   end
 
   def update
-    if @facility_group.update(facility_params)
-      redirect_to [:admin, @facility_group], notice: 'FacilityGroup was successfully updated.'
+    if @facility_group.update(facility_group_params)
+      redirect_to [:admin, @organization, @facility_group], notice: 'FacilityGroup was successfully updated.'
     else
       render :edit
     end
@@ -53,18 +54,11 @@ class Admin::FacilityGroupsController < AdminController
     authorize @organization
   end
 
-  def facility_params
-    params.require(:facility).permit(
+  def facility_group_params
+    params.require(:facility_group).permit(
       :name,
-      :street_address,
-      :village_or_colony,
-      :district,
-      :state,
-      :country,
-      :pin,
-      :facility_type,
-      :latitude,
-      :longitude
+      :description,
+      facility_ids: []
     )
   end
 end

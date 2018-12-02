@@ -1,16 +1,23 @@
 <div class="row">
   <div class="col-md-6">
-    <%= bootstrap_form_with(model: [:admin, facility], local: true, autocomplete: "off", label_errors: true) do |form| %>
+    <%= bootstrap_form_with(model: [:admin, facility_group.organization, facility_group], local: true, autocomplete: "off", label_errors: true) do |form| %>
       <%= form.text_field :name, id: :facility_name, required: true, autocomplete: "off" %>
-      <%= form.text_field :facility_type, id: :facility_type, required: true %>
-      <%= form.text_field :street_address, id: :facility_street_address %>
-      <%= form.text_field :village_or_colony, id: :facility_village_or_colony %>
-      <%= form.text_field :district, id: :facility_district, required: true %>
-      <%= form.text_field :state, id: :facility_state, required: true %>
-      <%= form.text_field :country, id: :facility_country, required: true, value: "India" %>
-      <%= form.text_field :pin, id: :facility_pin %>
-      <%= form.text_field :latitude, id: :facility_latitude %>
-      <%= form.text_field :longitude, id: :facility_longitude %>
+      <%= form.text_field :description, id: :facility_description, required: true, autocomplete: "off" %>
+
+      <% if facility_group.facilities.present? %>
+        <%= form.collection_check_boxes :facility_ids, facility_group.facilities, :id, :name, checked_value: 1 %>
+      <% end %>
+
+      <% if Facility.where(facility_group: nil).present? %>
+        <%= form.collection_check_boxes :facility_ids, Facility.where(facility_group: nil), :id, :name, checked: true %>
+      <% else %>
+        <div class="row">
+          <div class="col-md-9 mb-3 text-warning">All existing facilities belong to a facility group.</div>
+          <div class="col-md-3 mb-3 text-warning">
+            <%= link_to 'New facility', new_admin_facility_path, class: "float-right btn btn-sm btn-primary" %>
+          </div>
+        </div>
+      <% end %>
 
       <%= form.primary %>
     <% end %>

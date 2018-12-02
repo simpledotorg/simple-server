@@ -11,7 +11,7 @@ class Facility < ApplicationRecord
 
   has_many :appointments
 
-  belongs_to :facility_group
+  belongs_to :facility_group, optional: true
 
   validates :name, presence: true
   validates :district, presence: true
