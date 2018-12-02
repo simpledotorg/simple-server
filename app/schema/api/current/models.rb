@@ -171,9 +171,9 @@ class Api::Current::Models
           full_name: { '$ref' => '#/definitions/non_empty_string' },
           phone_number: { '$ref' => '#/definitions/non_empty_string' },
           password_digest: { '$ref' => '#/definitions/bcrypt_password' },
-          facility_id: { '$ref' => '#/definitions/uuid' },
+          registration_facility_id: { '$ref' => '#/definitions/uuid' },
         },
-        required: %w[id created_at updated_at full_name phone_number password_digest facility_id] }
+        required: %w[id created_at updated_at full_name phone_number password_digest registration_facility_id] }
     end
 
     def login_user

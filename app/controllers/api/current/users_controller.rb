@@ -72,7 +72,7 @@ class Api::Current::UsersController < APIController
         :password_digest,
         :updated_at,
         :created_at,
-        facility_ids: [])
+        :registration_facility_id)
   end
 
   def find_params

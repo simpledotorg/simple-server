@@ -5,7 +5,7 @@ class Api::Current::UserRegistrationPayloadValidator < Api::Current::PayloadVali
     :full_name,
     :phone_number,
     :password_digest,
-    :facility_ids,
+    :registration_facility_id,
     :created_at,
     :updated_at
   )
