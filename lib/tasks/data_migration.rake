@@ -49,4 +49,12 @@ namespace :data_migration do
       record.save
     end
   end
+
+  desc 'Create IHMI Organization and facility groups for Punjab facilities'
+  task organize_punjab_facilities: :environment do
+    ihmi = Organization.find_or_create_by(name: 'India Hypertension Management Initiative')
+    facility_group = ihmi.facility_groups.find_or_create_by(name: 'All IHMI Facilities')
+    punjab_facilities = Facility.where(state: 'Punjab')
+    punjab_facilities.update_all(facility_group: facility_group)
+  end
 end
