@@ -23,7 +23,7 @@ class Admin::FacilityGroupsController < AdminController
     authorize @facility_group
 
     if @facility_group.save
-      redirect_to [:admin, @organization, @facility_group], notice: 'FacilityGroup was successfully created.'
+      redirect_to [:admin, @organization], notice: 'FacilityGroup was successfully created.'
     else
       render :new
     end
@@ -31,7 +31,7 @@ class Admin::FacilityGroupsController < AdminController
 
   def update
     if @facility_group.update(facility_group_params)
-      redirect_to [:admin, @organization, @facility_group], notice: 'FacilityGroup was successfully updated.'
+      redirect_to [:admin, @organization], notice: 'FacilityGroup was successfully updated.'
     else
       render :edit
     end
