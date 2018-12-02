@@ -1,5 +1,5 @@
 class Admin::OrganizationsController < AdminController
-  before_action :set_facility, only: [:show, :edit, :update, :destroy]
+  before_action :set_organization, only: [:show, :edit, :update, :destroy]
 
   def index
     authorize Organization
@@ -18,7 +18,7 @@ class Admin::OrganizationsController < AdminController
   end
 
   def create
-    @organization = Organization.new(facility_params)
+    @organization = Organization.new(organization_params)
     authorize @organization
 
     if @organization.save
@@ -29,7 +29,7 @@ class Admin::OrganizationsController < AdminController
   end
 
   def update
-    if @organization.update(facility_params)
+    if @organization.update(organization_params)
       redirect_to [:admin, @organization], notice: 'Organization was successfully updated.'
     else
       render :edit
@@ -43,23 +43,15 @@ class Admin::OrganizationsController < AdminController
 
   private
 
-  def set_facility
+  def set_organization
     @organization = Organization.find(params[:id])
     authorize @organization
   end
 
-  def facility_params
-    params.require(:facility).permit(
+  def organization_params
+    params.require(:organization).permit(
       :name,
-      :street_address,
-      :village_or_colony,
-      :district,
-      :state,
-      :country,
-      :pin,
-      :facility_type,
-      :latitude,
-      :longitude
+      :description
     )
   end
 end
