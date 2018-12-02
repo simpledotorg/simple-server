@@ -11,6 +11,7 @@
       <th>Description</th>
       <th>Facility Groups</th>
       <th>Facilities</th>
+      <th>Users</th>
       <th colspan="2"></th>
     </tr>
   </thead>
@@ -21,7 +22,8 @@
         <td class="nowrap"><%= link_to organization.name, [:admin, organization] %></td>
         <td><%= organization.description %></td>
         <td><%= organization.facility_groups.count %></td>
-        <td><%= organization.facility_groups.flat_map(&:facilities).count %></td>
+        <td><%= organization.facilities.count %></td>
+        <td><%= organization.users.count %></td>
         <% if policy(organization).edit? %>
           <td><%= link_to 'Edit', edit_admin_facility_path(organization) %></td>
         <% end %>
