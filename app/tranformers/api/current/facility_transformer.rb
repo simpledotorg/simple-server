@@ -3,7 +3,7 @@ class Api::Current::FacilityTransformer
     def to_response(facility)
       Api::Current::Transformer
         .to_response(facility)
-        .except('sync_network_id')
+        .except('facility_group_id')
     end
   end
 end
