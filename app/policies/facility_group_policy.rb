@@ -1,6 +1,6 @@
 class FacilityGroupPolicy < ApplicationPolicy
   def index?
-    user.owner? || user.supervisor?
+    user.owner?
   end
 
   def show?
