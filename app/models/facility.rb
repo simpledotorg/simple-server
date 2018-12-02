@@ -1,8 +1,7 @@
 class Facility < ApplicationRecord
   include Mergeable
 
-  has_many :user_facilities, dependent: :delete_all
-  has_many :users, through: :user_facilities
+  has_many :users, foreign_key: 'registration_facility_id'
   has_many :blood_pressures
   has_many :patients, -> { distinct }, through: :blood_pressures
   has_many :prescription_drugs
