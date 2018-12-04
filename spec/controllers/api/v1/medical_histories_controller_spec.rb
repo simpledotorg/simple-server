@@ -15,6 +15,18 @@ RSpec.describe Api::V1::MedicalHistoriesController, type: :controller do
   let(:update_payload) { lambda { |medical_history| updated_medical_history_payload_v1 medical_history } }
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
+  def create_record(options = {})
+    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
+    patient = FactoryBot.create(:patient, registration_facility: facility)
+    FactoryBot.create(:medical_history, options.merge(patient: patient))
+  end
+
+  def create_record_list(n, options = {})
+    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
+    patient = FactoryBot.create(:patient, registration_facility: facility)
+    FactoryBot.create_list(:medical_history, n, options.merge(patient: patient))
+  end
+
   it_behaves_like 'a sync controller that authenticates user requests'
   it_behaves_like 'a sync controller that audits the data access'
   it_behaves_like 'a working sync controller that short circuits disabled apis'

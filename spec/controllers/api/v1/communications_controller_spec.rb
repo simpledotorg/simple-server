@@ -15,6 +15,18 @@ RSpec.describe Api::V1::CommunicationsController, type: :controller do
   let(:update_payload) { lambda { |communication| updated_communication_payload communication } }
   let(:number_of_schema_errors_in_invalid_payload) { 3 }
 
+  def create_record(options = {})
+    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
+    appointment = FactoryBot.create(:appointment, facility: facility)
+    FactoryBot.create(:communication, options.merge(appointment: appointment))
+  end
+
+  def create_record_list(n, options = {})
+    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
+    appointment = FactoryBot.create(:appointment, facility: facility)
+    FactoryBot.create_list(:communication, n, options.merge(appointment: appointment))
+  end
+
   it_behaves_like 'a sync controller that authenticates user requests'
   it_behaves_like 'a sync controller that audits the data access'
   it_behaves_like 'a working sync controller that short circuits disabled apis'

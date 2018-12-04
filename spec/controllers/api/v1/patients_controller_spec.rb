@@ -16,6 +16,16 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
   it_behaves_like 'a sync controller that audits the data access'
   it_behaves_like 'a working sync controller that short circuits disabled apis'
 
+  def create_record(options = {})
+    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
+    FactoryBot.create(:patient, options.merge(registration_facility: facility))
+  end
+
+  def create_record_list(n, options = {})
+    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
+    FactoryBot.create_list(:patient, n, options.merge(registration_facility: facility))
+  end
+
   describe 'POST sync: send data from device to server;' do
     it_behaves_like 'a working sync controller creating records'
 

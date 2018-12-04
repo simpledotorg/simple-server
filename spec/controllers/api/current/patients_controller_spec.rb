@@ -13,6 +13,16 @@ RSpec.describe Api::Current::PatientsController, type: :controller do
 
   let(:number_of_schema_errors_in_invalid_payload) { 2 + invalid_record['phone_numbers'].count }
 
+  def create_record(options = {})
+    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
+    FactoryBot.create(:patient, options.merge(registration_facility: facility))
+  end
+
+  def create_record_list(n, options = {})
+    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
+    FactoryBot.create_list(:patient, n, options.merge(registration_facility: facility))
+  end
+
   it_behaves_like 'a sync controller that authenticates user requests'
   it_behaves_like 'a sync controller that audits the data access'
   it_behaves_like 'a working sync controller that short circuits disabled apis'

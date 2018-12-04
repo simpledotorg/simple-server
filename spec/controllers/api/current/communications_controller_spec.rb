@@ -11,6 +11,18 @@ RSpec.describe Api::Current::CommunicationsController, type: :controller do
 
   let(:model) { Communication }
 
+  def create_record(options = {})
+    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
+    appointment = FactoryBot.create(:appointment, facility: facility)
+    FactoryBot.create(:communication, options.merge(appointment: appointment))
+  end
+
+  def create_record_list(n, options = {})
+    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
+    appointment = FactoryBot.create(:appointment, facility: facility)
+    FactoryBot.create_list(:communication, n, options.merge(appointment: appointment))
+  end
+
   let(:build_payload) { lambda { build_communication_payload } }
   let(:build_invalid_payload) { lambda { build_invalid_communication_payload } }
   let(:invalid_record) { build_invalid_payload.call }
