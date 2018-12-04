@@ -9,6 +9,18 @@ class Api::Current::MedicalHistoriesController < Api::Current::SyncController
 
   private
 
+  def current_facility_records
+    MedicalHistory.where(patient: Patient.where(registration_facility: current_facility))
+      .updated_on_server_since(current_facility_processed_since, limit)
+  end
+
+  def other_facility_records
+    other_facilities_limit = limit - current_facility_records.count
+    MedicalHistory.where(patient: Patient.where(registration_facility: current_user.facilities_in_group_other_than(current_facility)))
+      .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
+  end
+
+
   def merge_if_valid(medical_history_params)
     validator = Api::Current::MedicalHistoryPayloadValidator.new(medical_history_params)
     logger.debug "Follow Up Schedule had errors: #{validator.errors_hash}" if validator.invalid?
