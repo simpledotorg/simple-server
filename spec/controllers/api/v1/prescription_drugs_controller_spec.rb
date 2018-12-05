@@ -52,7 +52,7 @@ RSpec.describe Api::V1::PrescriptionDrugsController, type: :controller do
   describe 'GET sync: send data from server to device;' do
     it_behaves_like 'a working V1 sync controller sending records'
 
-    describe 'syncing within a sync group' do
+    describe 'syncing within a facility group' do
       let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
       let(:facility_in_another_group) { FactoryBot.create(:facility) }
 

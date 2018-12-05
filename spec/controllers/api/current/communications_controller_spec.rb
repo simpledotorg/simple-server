@@ -42,7 +42,7 @@ RSpec.describe Api::Current::CommunicationsController, type: :controller do
     it_behaves_like 'a working Current sync controller sending records'
   end
 
-  describe 'syncing within a sync group' do
+  describe 'syncing within a facility group' do
     let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
     let(:facility_in_another_group) { FactoryBot.create(:facility) }
     let(:appointment_in_request_facility) { FactoryBot.create(:appointment, facility: request_facility) }
