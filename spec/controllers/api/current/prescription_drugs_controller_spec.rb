@@ -93,6 +93,7 @@ RSpec.describe Api::Current::PrescriptionDrugsController, type: :controller do
         FactoryBot.create_list(:prescription_drug, 5, facility: facility_in_same_group, updated_at: 5.minutes.ago)
         FactoryBot.create_list(:prescription_drug, 5, facility: request_facility, updated_at: 7.minutes.ago)
       end
+
       it "only sends data for facilities belonging in the sync group of user's registration facility" do
         get :sync_to_user, params: { limit: 15 }
 

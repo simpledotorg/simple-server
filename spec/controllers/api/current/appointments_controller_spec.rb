@@ -78,6 +78,7 @@ RSpec.describe Api::Current::AppointmentsController, type: :controller do
         FactoryBot.create_list(:appointment, 5, facility: facility_in_same_group, updated_at: 5.minutes.ago)
         FactoryBot.create_list(:appointment, 5, facility: request_facility, updated_at: 7.minutes.ago)
       end
+
       it "only sends data for facilities belonging in the sync group of user's registration facility" do
         get :sync_to_user, params: { limit: 15 }
 
@@ -89,6 +90,5 @@ RSpec.describe Api::Current::AppointmentsController, type: :controller do
         expect(response_facilities).not_to include(facility_in_another_group.id)
       end
     end
-
   end
 end
