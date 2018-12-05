@@ -2,7 +2,9 @@ require 'rails_helper'
 
 RSpec.shared_examples 'sync requests' do
   let(:auth_headers) do
-    {'HTTP_X_USER_ID' => request_user.id, 'HTTP_AUTHORIZATION' => "Bearer #{request_user.access_token}" }
+    {'HTTP_X_USER_ID' => request_user.id,
+     'HTTP_X_FACILITY_ID' => request_user.facility.id,
+     'HTTP_AUTHORIZATION' => "Bearer #{request_user.access_token}" }
   end
   let(:headers) do
     { 'ACCEPT' => 'application/json', 'CONTENT_TYPE' => 'application/json' }.merge(auth_headers)

@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Api::Current::PrescriptionDrugsController, type: :controller do
   let(:request_user) { FactoryBot.create(:user) }
-  let(:request_facility) { FactoryBot.create(:facility) }
+  let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
   let(:model) { PrescriptionDrug }
 
   let(:build_payload) { lambda { build_prescription_drug_payload } }
@@ -100,8 +100,8 @@ RSpec.describe Api::Current::PrescriptionDrugsController, type: :controller do
         response_prescription_drugs = JSON(response.body)['prescription_drugs']
         response_facilities = response_prescription_drugs.map { |prescription_drug| prescription_drug['facility_id']}.to_set
 
-        # expect(response_appointments.count).to eq 10
-        # expect(response_facilities).to match_array([request_facility.id, facility_in_same_group.id])
+        expect(response_prescription_drugs.count).to eq 10
+        expect(response_facilities).to match_array([request_facility.id, facility_in_same_group.id])
         expect(response_facilities).not_to include(facility_in_another_group.id)
       end
     end

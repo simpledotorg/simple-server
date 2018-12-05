@@ -72,8 +72,7 @@ RSpec.describe Api::V1::BloodPressuresController, type: :controller do
       response_blood_pressures = JSON(response.body)['blood_pressures']
       response_facilities = response_blood_pressures.map { |blood_pressure| blood_pressure['facility_id']}.to_set
 
-      # expect(response_appointments.count).to eq 10
-      # expect(response_facilities).to match_array([request_facility.id, facility_in_same_group.id])
+      expect(response_blood_pressures.count).to eq 5
       expect(response_facilities).not_to include(facility_in_another_group.id)
     end
   end

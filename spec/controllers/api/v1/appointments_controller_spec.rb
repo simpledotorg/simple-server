@@ -54,8 +54,7 @@ RSpec.describe Api::V1::AppointmentsController, type: :controller do
       response_appointments = JSON(response.body)['appointments']
       response_facilities = response_appointments.map { |appointment| appointment['facility_id']}.to_set
 
-      # expect(response_appointments.count).to eq 10
-      # expect(response_facilities).to match_array([request_facility.id, facility_in_same_group.id])
+      expect(response_appointments.count).to eq 5
       expect(response_facilities).not_to include(facility_in_another_group.id)
     end
   end

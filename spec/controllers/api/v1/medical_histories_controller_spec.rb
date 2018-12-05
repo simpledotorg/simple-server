@@ -137,11 +137,10 @@ RSpec.describe Api::V1::MedicalHistoriesController, type: :controller do
       get :sync_to_user, params: { limit: 15 }
 
       response_medical_histories = JSON(response.body)['medical_histories']
-      response_facilities = response_medical_histories.map { |medical_history| medical_history['patient_id'] }.to_set
+      response_patients = response_medical_histories.map { |medical_history| medical_history['patient_id'] }.to_set
 
-      # expect(response_communications.count).to eq 10
-      # expect(response_facilities).to match_array([request_facility.id, facility_in_same_group.id])
-      expect(response_facilities).not_to include(patient_in_another_group.id)
+      expect(response_medical_histories.count).to eq 5
+      expect(response_patients).not_to include(patient_in_another_group.id)
     end
   end
 end

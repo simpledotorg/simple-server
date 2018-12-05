@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Api::Current::MedicalHistoriesController, type: :controller do
   let(:request_user) { FactoryBot.create(:user) }
-  let(:request_facility) { FactoryBot.create(:facility) }
+  let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
   before :each do
     request.env['X_USER_ID'] = request_user.id
     request.env['X_FACILITY_ID'] = request_facility.id
@@ -62,11 +62,10 @@ RSpec.describe Api::Current::MedicalHistoriesController, type: :controller do
       get :sync_to_user, params: { limit: 15 }
 
       response_medical_histories = JSON(response.body)['medical_histories']
-      response_facilities = response_medical_histories.map { |medical_history| medical_history['patient_id'] }.to_set
+      response_patients = response_medical_histories.map { |medical_history| medical_history['patient_id'] }.to_set
 
-      # expect(response_communications.count).to eq 10
-      # expect(response_facilities).to match_array([request_facility.id, facility_in_same_group.id])
-      expect(response_facilities).not_to include(patient_in_another_group.id)
+      expect(response_medical_histories.count).to eq 10
+      expect(response_patients).not_to include(patient_in_another_group.id)
     end
   end
 end

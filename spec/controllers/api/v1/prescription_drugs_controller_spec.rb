@@ -68,8 +68,7 @@ RSpec.describe Api::V1::PrescriptionDrugsController, type: :controller do
         response_prescription_drugs = JSON(response.body)['prescription_drugs']
         response_facilities = response_prescription_drugs.map { |prescription_drug| prescription_drug['facility_id']}.to_set
 
-        # expect(response_appointments.count).to eq 10
-        # expect(response_facilities).to match_array([request_facility.id, facility_in_same_group.id])
+        expect(response_prescription_drugs.count).to eq 5
         expect(response_facilities).not_to include(facility_in_another_group.id)
       end
     end
