@@ -21,7 +21,7 @@ class Api::Current::PatientsController < Api::Current::SyncController
   def other_facility_records
     other_facilities_limit = limit - current_facility_records.count
     model_name
-      .where.not(registration_facility: current_facility)
+      .where.not(registration_facility: current_user.facilities_in_group_other_than(current_facility))
       .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
   end
 

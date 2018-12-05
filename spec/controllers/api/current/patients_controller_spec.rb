@@ -206,5 +206,28 @@ RSpec.describe Api::Current::PatientsController, type: :controller do
         expect(records.map(&:registration_facility).to_set).to eq Set[request_facility, request_2_facility]
       end
     end
+
+    describe 'syncing within a facility group' do
+      let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
+      let(:facility_in_another_group) { FactoryBot.create(:facility) }
+
+      before :each do
+        set_authentication_headers
+        FactoryBot.create_list(:patient, 5, registration_facility: request_facility, updated_at: 7.minutes.ago)
+        FactoryBot.create_list(:patient, 5, registration_facility: facility_in_same_group, updated_at: 5.minutes.ago)
+        FactoryBot.create_list(:patient, 5, registration_facility: facility_in_another_group, updated_at: 3.minutes.ago)
+      end
+
+      it "only sends data for facilities belonging in the sync group of user's registration facility" do
+        get :sync_to_user, params: { limit: 15 }
+
+        response_patients = JSON(response.body)['patients']
+        response_ids = response_patients.map { |patient| patient['id']}.to_set
+
+        expect(response_ids.count).to eq 10
+        # expect(response_facilities).to match_array([request_facility.id, facility_in_same_group.id])
+        # expect(response_facilities).not_to include(facility_in_another_group.id)
+      end
+    end
   end
 end
