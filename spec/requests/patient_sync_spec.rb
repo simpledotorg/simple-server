@@ -2,10 +2,11 @@ require 'rails_helper'
 
 RSpec.describe 'Patients sync', type: :request do
   let(:model) { Patient }
+  let(:request_user) { FactoryBot.create(:user) }
 
   let(:sync_route) { '/api/v1/patients/sync' }
 
-  let(:build_payload) { lambda { build_patient_payload } }
+  let(:build_payload) { lambda { build_patient_payload(FactoryBot.build(:patient, registration_facility: request_user.facility)) } }
   let(:build_invalid_payload) { lambda { build_invalid_patient_payload } }
   let(:update_payload) { lambda { |record| updated_patient_payload record } }
 
