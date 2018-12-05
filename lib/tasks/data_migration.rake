@@ -57,4 +57,12 @@ namespace :data_migration do
     punjab_facilities = Facility.where(state: 'Punjab')
     punjab_facilities.update_all(facility_group: facility_group)
   end
+
+  desc 'Add registration facility to existing users from user facility'
+  task populate_registration_facility_for_users: :environment do
+    User.all.each do |user|
+      facility = UserFacility(user: user).limit(1).first
+      user.update(registration_facility: facility)
+    end
+  end
 end

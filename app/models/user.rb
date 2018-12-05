@@ -9,8 +9,7 @@ class User < ApplicationRecord
 
   has_secure_password
 
-  has_many :user_facilities, dependent: :delete_all
-  has_many :facilities, through: :user_facilities
+  belongs_to :facility, foreign_key: 'registration_facility_id'
   has_many :blood_pressures
   has_many :patients, -> { distinct }, through: :blood_pressures
   has_many :audit_logs, as: :auditable
@@ -105,6 +104,6 @@ class User < ApplicationRecord
   end
 
   def registered_at_facility
-    self.facilities.order(:created_at).first
+    self.facility
   end
 end

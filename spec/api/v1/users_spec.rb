@@ -9,7 +9,7 @@ describe 'Users V1 API', swagger_doc: 'v1/swagger.json' do
 
       let(:known_phone_number) { Faker::PhoneNumber.phone_number }
       let(:facility) { FactoryBot.create(:facility) }
-      let!(:user) { FactoryBot.create(:user, phone_number: known_phone_number, facility_ids: [facility.id]) }
+      let!(:user) { FactoryBot.create(:user, phone_number: known_phone_number, registration_facility_id: facility.id) }
       let(:id) { user.id }
 
       response '200', 'user is found' do
@@ -65,7 +65,10 @@ describe 'Users V1 API', swagger_doc: 'v1/swagger.json' do
       response '404', 'returns not found if any of the facility ids are not known' do
         let(:user) do
           { user: FactoryBot.attributes_for(:user, :created_on_device, phone_number: phone_number)
-                    .merge(created_at: Time.now, updated_at: Time.now, facility_ids: [SecureRandom.uuid, facility.id]) }
+                    .merge(created_at: Time.now,
+                           updated_at: Time.now,
+                           facility_ids: [SecureRandom.uuid, facility.id])
+          }
         end
         run_test!
       end
@@ -78,7 +81,7 @@ describe 'Users V1 API', swagger_doc: 'v1/swagger.json' do
       parameter name: :id, in: :path, description: 'User UUID', type: :string
 
       let(:facility) { FactoryBot.create(:facility) }
-      let!(:user) { FactoryBot.create(:user, facility_ids: [facility.id]) }
+      let!(:user) { FactoryBot.create(:user, registration_facility_id: facility.id) }
 
       before :each do
         sms_notification_service = double(SmsNotificationService.new(nil))
@@ -106,7 +109,7 @@ describe 'Users V1 API', swagger_doc: 'v1/swagger.json' do
       security [ basic: [] ]
       parameter name: :password_digest, in: :body, schema: Api::V1::Schema.user_reset_password_request
       let(:facility) { FactoryBot.create(:facility) }
-      let(:user) { FactoryBot.create(:user, facility_ids: [facility.id]) }
+      let(:user) { FactoryBot.create(:user, registration_facility_id: facility.id) }
       let(:HTTP_X_USER_ID) { user.id }
       let(:Authorization) { "Bearer #{user.access_token}" }
       let(:password_digest) { { password_digest:  BCrypt::Password.create('1234') } }

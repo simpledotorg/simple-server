@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181128012620) do
+ActiveRecord::Schema.define(version: 20181202095202) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -254,7 +254,9 @@ ActiveRecord::Schema.define(version: 20181128012620) do
     t.datetime "logged_in_at"
     t.string "sync_approval_status"
     t.text "sync_approval_status_reason"
+    t.uuid "registration_facility_id"
     t.index ["phone_number"], name: "index_users_on_phone_number", unique: true
+    t.index ["registration_facility_id"], name: "index_users_on_registration_facility_id"
   end
 
   add_foreign_key "appointments", "facilities"
