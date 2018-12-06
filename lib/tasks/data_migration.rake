@@ -54,15 +54,20 @@ namespace :data_migration do
   task organize_punjab_facilities: :environment do
     ihmi = Organization.find_or_create_by(name: 'India Hypertension Management Initiative')
     facility_group = ihmi.facility_groups.find_or_create_by(name: 'All IHMI Facilities')
-    punjab_facilities = Facility.where(state: 'Punjab')
+    punjab_facilities = Facility.where(state: 'Punjab', facility_group: nil)
     punjab_facilities.update_all(facility_group_id: facility_group.id)
   end
 
   desc 'Add registration facility to existing users from user facility'
   task populate_registration_facility_for_users: :environment do
-    User.all.each do |user|
-      facility = UserFacility.where(user: user).limit(1).first
-      user.update(registration_facility: facility)
+    User.where(facility: nil).each do |user|
+      user_facility = UserFacility.where(user: user).limit(1).first
+      if user_facility.present?
+        puts "Adding #{user_facility.facility.name} as the registration facility for user #{user.full_name}"
+        user.update(facility: user_facility.facility)
+      else
+        puts "Did not find user facility for user #{user.full_name}"
+      end
     end
   end
 end
