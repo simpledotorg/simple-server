@@ -55,7 +55,7 @@ namespace :data_migration do
     ihmi = Organization.find_or_create_by(name: 'India Hypertension Management Initiative')
     facility_group = ihmi.facility_groups.find_or_create_by(name: 'All IHMI Facilities')
     punjab_facilities = Facility.where(state: 'Punjab')
-    punjab_facilities.update_all(facility_group: facility_group)
+    punjab_facilities.update_all(facility_group_id: facility_group.id)
   end
 
   desc 'Add registration facility to existing users from user facility'
