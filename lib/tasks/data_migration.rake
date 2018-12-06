@@ -61,7 +61,7 @@ namespace :data_migration do
   desc 'Add registration facility to existing users from user facility'
   task populate_registration_facility_for_users: :environment do
     User.all.each do |user|
-      facility = UserFacility(user: user).limit(1).first
+      facility = UserFacility.where(user: user).limit(1).first
       user.update(registration_facility: facility)
     end
   end
