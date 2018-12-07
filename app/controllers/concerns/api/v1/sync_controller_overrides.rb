@@ -15,7 +15,7 @@ module Api::V1::SyncControllerOverrides
     end
 
     def find_records_to_sync(since, limit)
-      model_name.updated_on_server_since(since, limit)
+      facility_group_records.updated_on_server_since(since, limit)
     end
 
     def processed_since

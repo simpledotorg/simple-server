@@ -10,13 +10,13 @@ class Api::Current::CommunicationsController < Api::Current::SyncController
   private
 
   def current_facility_records
-    Communication.where(appointment: Appointment.where(facility: current_facility.appointments))
+    facility_group_records.where('appointments.facility_id = ?', current_facility.id)
       .updated_on_server_since(current_facility_processed_since, limit)
   end
 
   def other_facility_records
     other_facilities_limit = limit - current_facility_records.count
-    Communication.where(appointment: Appointment.where(facility: current_user.facilities_in_group_other_than(current_facility)))
+    facility_group_records.where('appointments.facility_id != ?', current_facility.id)
       .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
   end
 

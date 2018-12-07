@@ -63,7 +63,7 @@ RSpec.describe Api::Current::CommunicationsController, type: :controller do
       response_communications = JSON(response.body)['communications']
       response_appointments = response_communications.map { |communication| communication['appointment_id']}.to_set
 
-      expect(response_communications.count).to eq 5
+      expect(response_communications.count).to eq 10
       expect(response_appointments).not_to include(appointment_in_another_group.id)
     end
   end

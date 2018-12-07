@@ -21,6 +21,10 @@ class APIController < ApplicationController
     @current_facility ||= Facility.find_by(id: request.headers['HTTP_X_FACILITY_ID'])
   end
 
+  def current_facility_group
+    current_user.facility.facility_group
+  end
+
   def validate_facility
     return head :bad_request unless current_facility.present?
   end

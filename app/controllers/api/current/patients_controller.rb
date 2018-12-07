@@ -13,15 +13,15 @@ class Api::Current::PatientsController < Api::Current::SyncController
   end
 
   def current_facility_records
-    Patient
+    facility_group_records
       .where(registration_facility: current_facility)
       .updated_on_server_since(current_facility_processed_since, limit)
   end
 
   def other_facility_records
     other_facilities_limit = limit - current_facility_records.count
-    Patient
-      .where(registration_facility: current_user.facilities_in_group_other_than(current_facility))
+    facility_group_records
+      .where.not(registration_facility: current_facility.id)
       .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
   end
 

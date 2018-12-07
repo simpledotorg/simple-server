@@ -4,6 +4,8 @@ class Appointment < ApplicationRecord
   belongs_to :patient, optional: true
   belongs_to :facility
 
+  has_many :communications
+
   enum status: {
     scheduled: 'scheduled',
     cancelled: 'cancelled',

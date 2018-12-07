@@ -9,11 +9,6 @@ class Api::V1::MedicalHistoriesController < Api::Current::MedicalHistoriesContro
 
   private
 
-  def find_records_to_sync(since, limit)
-    MedicalHistory.where(patient: Patient.where(registration_facility: current_user.facilities_in_group))
-      .updated_on_server_since(since, limit)
-  end
-
   def transform_to_response(medical_history)
     Api::V1::MedicalHistoryTransformer.to_response(medical_history)
   end

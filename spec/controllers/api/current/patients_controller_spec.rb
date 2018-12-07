@@ -217,7 +217,6 @@ RSpec.describe Api::Current::PatientsController, type: :controller do
         set_authentication_headers
         FactoryBot.create_list(:patient, 5, registration_facility: request_facility, updated_at: 7.minutes.ago)
         FactoryBot.create_list(:patient, 5, registration_facility: facility_in_same_group, updated_at: 5.minutes.ago)
-
       end
 
       it "only sends data for facilities belonging in the sync group of user's registration facility" do
