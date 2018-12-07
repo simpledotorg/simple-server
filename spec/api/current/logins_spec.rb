@@ -1,10 +1,10 @@
 require 'swagger_helper'
 
-describe 'Login V2 API', swagger_doc: 'current/swagger.json' do
+describe 'Login Current API', swagger_doc: 'current/swagger.json' do
   path '/login' do
     post 'Login in valid user' do
       tags 'User Login'
-      parameter name: :user, in: :body, schema: Api::V1::Schema.user_login_request
+      parameter name: :user, in: :body, schema: Api::Current::Schema.user_login_request
 
       response '200', 'user is logged in' do
         let(:db_user) { FactoryBot.create(:user, password: '1234') }
@@ -15,7 +15,7 @@ describe 'Login V2 API', swagger_doc: 'current/swagger.json' do
           } }
         end
 
-        schema Api::V1::Schema.user_login_success_response
+        schema Api::Current::Schema.user_login_success_response
         run_test!
       end
 
@@ -30,7 +30,7 @@ describe 'Login V2 API', swagger_doc: 'current/swagger.json' do
           } }
         end
 
-        schema Api::V1::Schema.error
+        schema Api::Current::Schema.error
         run_test!
       end
 
@@ -43,7 +43,7 @@ describe 'Login V2 API', swagger_doc: 'current/swagger.json' do
           } }
         end
 
-        schema Api::V1::Schema.error
+        schema Api::Current::Schema.error
         run_test!
       end
 
@@ -56,7 +56,7 @@ describe 'Login V2 API', swagger_doc: 'current/swagger.json' do
           } }
         end
 
-        schema Api::V1::Schema.error
+        schema Api::Current::Schema.error
         run_test!
       end
     end

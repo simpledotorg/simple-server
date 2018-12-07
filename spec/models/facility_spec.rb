@@ -7,11 +7,16 @@ RSpec.describe Facility, type: :model do
     it { should have_many(:prescription_drugs) }
     it { should have_many(:patients).through(:blood_pressures) }
     it { should have_many(:appointments) }
-    it 'deletes all dependent user facilities' do
+
+    it { should have_many(:registered_patients).class_name("Patient").with_foreign_key("registration_facility_id") }
+
+    it 'has distinct patients' do
       facility = FactoryBot.create(:facility)
-      FactoryBot.create_list(:user_facility, 5, facility: facility)
-      expect { facility.destroy }.to change { UserFacility.count }.by(-5)
+      patient = FactoryBot.create(:patient)
+      FactoryBot.create_list(:blood_pressure, 5, facility: facility, patient: patient)
+      expect(facility.patients.count).to eq(1)
     end
+    it { should belong_to(:facility_group) }
   end
 
   describe 'Validations' do

@@ -1,9 +1,11 @@
 class Api::Current::UsersController < APIController
   skip_before_action :authenticate, only: [:register, :find, :request_otp]
+  skip_before_action :validate_facility, only: [:register, :find, :request_otp]
   before_action :validate_registration_payload, only: %i[register]
 
   def register
     user = User.new(user_from_request)
+    return head :not_found unless user.facility.present?
     return render json: { errors: user.errors }, status: :bad_request if user.invalid?
     if FeatureToggle.auto_approve?
       user.sync_approval_allowed
@@ -71,7 +73,7 @@ class Api::Current::UsersController < APIController
         :password_digest,
         :updated_at,
         :created_at,
-        facility_ids: [])
+        :registration_facility_id)
   end
 
   def find_params

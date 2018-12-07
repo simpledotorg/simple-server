@@ -1,5 +1,6 @@
 class Api::Current::LoginsController < APIController
   skip_before_action :authenticate, only: [:login_user]
+  skip_before_action :validate_facility, only: [:login_user]
   before_action :validate_login_payload, only: %i[create]
 
   def login_user
@@ -14,13 +15,17 @@ class Api::Current::LoginsController < APIController
       user.save
       AuditLog.login_log(user)
       render json: {
-        user: Api::Current::UserTransformer.to_response(user),
+        user: user_to_response(user),
         access_token: user.access_token
       }, status:   :ok
     end
   end
 
   private
+
+  def user_to_response(user)
+    Api::Current::UserTransformer.to_response(user)
+  end
 
   def validate_login_payload
     validator = Api::Current::UserLoginPayloadValidator.new(login_params)

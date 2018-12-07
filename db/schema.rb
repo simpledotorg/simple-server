@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181123071408) do
+ActiveRecord::Schema.define(version: 20181202095202) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -140,7 +140,18 @@ ActiveRecord::Schema.define(version: 20181123071408) do
     t.float "latitude"
     t.float "longitude"
     t.datetime "deleted_at"
+    t.uuid "facility_group_id"
     t.index ["deleted_at"], name: "index_facilities_on_deleted_at"
+    t.index ["facility_group_id"], name: "index_facilities_on_facility_group_id"
+  end
+
+  create_table "facility_groups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.uuid "organization_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["organization_id"], name: "index_facility_groups_on_organization_id"
   end
 
   create_table "medical_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -164,6 +175,13 @@ ActiveRecord::Schema.define(version: 20181123071408) do
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_medical_histories_on_deleted_at"
     t.index ["patient_id"], name: "index_medical_histories_on_patient_id"
+  end
+
+  create_table "organizations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "patient_phone_numbers", id: :uuid, default: nil, force: :cascade do |t|
@@ -192,8 +210,12 @@ ActiveRecord::Schema.define(version: 20181123071408) do
     t.datetime "device_created_at", null: false
     t.datetime "device_updated_at", null: false
     t.boolean "test_data", default: false, null: false
+    t.uuid "registration_facility_id"
+    t.uuid "registration_user_id"
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_patients_on_deleted_at"
+    t.index ["registration_facility_id"], name: "index_patients_on_registration_facility_id"
+    t.index ["registration_user_id"], name: "index_patients_on_registration_user_id"
   end
 
   create_table "prescription_drugs", id: :uuid, default: nil, force: :cascade do |t|
@@ -246,8 +268,8 @@ ActiveRecord::Schema.define(version: 20181123071408) do
     t.string "full_name"
     t.string "phone_number"
     t.string "password_digest"
-    t.datetime "device_created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.datetime "device_updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "device_created_at", default: -> { "now()" }, null: false
+    t.datetime "device_updated_at", default: -> { "now()" }, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "otp", null: false
@@ -257,12 +279,16 @@ ActiveRecord::Schema.define(version: 20181123071408) do
     t.string "sync_approval_status"
     t.text "sync_approval_status_reason"
     t.datetime "deleted_at"
+    t.uuid "registration_facility_id"
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["phone_number"], name: "index_users_on_phone_number", unique: true
+    t.index ["registration_facility_id"], name: "index_users_on_registration_facility_id"
   end
 
   add_foreign_key "appointments", "facilities"
   add_foreign_key "communications", "users"
+  add_foreign_key "facilities", "facility_groups"
+  add_foreign_key "facility_groups", "organizations"
   add_foreign_key "patient_phone_numbers", "patients"
   add_foreign_key "patients", "addresses"
   add_foreign_key "protocol_drugs", "protocols"

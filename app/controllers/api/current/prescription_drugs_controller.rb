@@ -1,4 +1,6 @@
 class Api::Current::PrescriptionDrugsController < Api::Current::SyncController
+  include Api::Current::PrioritisableByFacility
+
   def sync_from_user
     __sync_from_user__(prescription_drugs_params)
   end
@@ -19,10 +21,6 @@ class Api::Current::PrescriptionDrugsController < Api::Current::SyncController
       prescription_drug = PrescriptionDrug.merge(Api::Current::Transformer.from_request(prescription_drug_params))
       { record: prescription_drug }
     end
-  end
-
-  def find_records_to_sync(since, limit)
-    PrescriptionDrug.updated_on_server_since(since, limit)
   end
 
   def transform_to_response(prescription_drug)

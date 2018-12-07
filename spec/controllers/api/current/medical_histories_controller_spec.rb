@@ -2,8 +2,10 @@ require 'rails_helper'
 
 RSpec.describe Api::Current::MedicalHistoriesController, type: :controller do
   let(:request_user) { FactoryBot.create(:user) }
+  let(:request_facility) { FactoryBot.create(:facility) }
   before :each do
     request.env['X_USER_ID'] = request_user.id
+    request.env['X_FACILITY_ID'] = request_facility.id
     request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
   end
 
@@ -25,6 +27,6 @@ RSpec.describe Api::Current::MedicalHistoriesController, type: :controller do
   end
 
   describe 'GET sync: send data from server to device;' do
-    it_behaves_like 'a working sync controller sending records'
+    it_behaves_like 'a working Current sync controller sending records'
   end
 end

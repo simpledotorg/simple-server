@@ -14,11 +14,11 @@ RSpec.describe Admin::UsersController, type: :controller do
 
   let(:facility) { FactoryBot.create(:facility) }
   let(:valid_attributes) {
-    FactoryBot.attributes_for(:user).merge(facility_ids: [facility.id])
+    FactoryBot.attributes_for(:user).merge(registration_facility_id: facility.id)
   }
 
   let(:invalid_attributes) {
-    FactoryBot.attributes_for(:user, facility_ids: [facility.id]).merge(full_name: nil)
+    FactoryBot.attributes_for(:user, facility_id: facility.id).merge(full_name: nil)
   }
   before(:each) do
     login_user
@@ -69,19 +69,19 @@ RSpec.describe Admin::UsersController, type: :controller do
     context 'with valid params' do
       it 'creates a new User' do
         expect {
-          post :create, params: { user: valid_attributes, facility_id: facility.id }
+          post :create, params: { user: valid_attributes }
         }.to change(User, :count).by(1)
       end
 
       it 'redirects to the created user' do
-        post :create, params: { user: valid_attributes, facility_id: facility.id }
+        post :create, params: { user: valid_attributes }
         expect(response).to redirect_to([:admin, User.order(:created_at).last])
       end
 
       it 'adds otp and otp_valid_until to the user' do
         Timecop.freeze do
           timedelta = ENV['USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES'].to_i.minutes
-          post :create, params: { user: valid_attributes, facility_id: facility.id }
+          post :create, params: { user: valid_attributes }
 
           user = User.find_by(phone_number: valid_attributes[:phone_number])
           expect(user.otp).to be_present
@@ -90,7 +90,7 @@ RSpec.describe Admin::UsersController, type: :controller do
       end
 
       it 'adds access_token to the user' do
-        post :create, params: { user: valid_attributes, facility_id: facility.id }
+        post :create, params: { user: valid_attributes }
 
         user = User.find_by(phone_number: valid_attributes[:phone_number])
         expect(user.access_token).to be_present
@@ -109,6 +109,7 @@ RSpec.describe Admin::UsersController, type: :controller do
     context 'with valid params' do
       let(:new_attributes) {
         FactoryBot.attributes_for(:user)
+          .merge(registration_facility_id: facility.id)
           .except(:device_created_at, :device_updated_at, :otp, :otp_valid_until)
       }
 
@@ -124,7 +125,7 @@ RSpec.describe Admin::UsersController, type: :controller do
 
       it 'redirects to the user' do
         user = User.create! valid_attributes
-        put :update, params: { id: user.to_param, user: valid_attributes, facility_id: facility.id }
+        put :update, params: { id: user.to_param, user: valid_attributes }
         expect(response).to redirect_to([:admin, user])
       end
     end
@@ -156,14 +157,14 @@ RSpec.describe Admin::UsersController, type: :controller do
   describe 'PUT #disable_access' do
     it 'disables the access token for the user' do
       user = User.create! valid_attributes
-      put :disable_access, params: { user_id: user.id, facility_id: user.facilities.first.id }
+      put :disable_access, params: { user_id: user.id, facility_id: user.facility.id }
       user.reload
       expect(user.access_token_valid?).to be false
     end
   end
 
   describe 'PUT #enable_access' do
-    let(:user) { FactoryBot.create(:user, facility_ids: [facility.id]) }
+    let(:user) { FactoryBot.create(:user, registration_facility_id: facility.id) }
 
     it 'sets sync_approval_status to allowed' do
       put :enable_access, params: { user_id: user.id, facility_id: facility.id }
@@ -173,7 +174,7 @@ RSpec.describe Admin::UsersController, type: :controller do
   end
 
   describe 'PUT #reset_otp' do
-    let(:user) { FactoryBot.create(:user, facility_ids: [facility.id]) }
+    let(:user) { FactoryBot.create(:user, registration_facility_id: facility.id) }
 
     before :each do
       sms_notification_service = double(SmsNotificationService.new(user))

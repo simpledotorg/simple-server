@@ -75,8 +75,11 @@ protocol_drugs_data = [
   }
 ]
 
+organization = FactoryBot.create(:organization)
+facility_group   = FactoryBot.create(:facility_group, organization: organization)
+
 facilities.each do |facility_data|
-  Facility.find_or_create_by(facility_data)
+  Facility.find_or_create_by(facility_data.merge(facility_group_id: facility_group.id))
 end
 
 protocol = Protocol.find_or_create_by(protocol_data)

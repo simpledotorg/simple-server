@@ -34,6 +34,11 @@
                   <%= link_to "Dashboard", admin_dashboard_path, class: "nav-link #{active_controller?("admin/dashboard")}" %>
                 </li>
               <% end %>
+              <% if policy(Organization).index? %>
+                <li class="nav-item">
+                  <%= link_to "Organizations", admin_organizations_path, class: "nav-link #{active_controller?("admin/organizations")}" %>
+                </li>
+              <% end %>
               <% if policy(Facility).index? %>
                 <li class="nav-item">
                   <%= link_to "Facilities", admin_facilities_path, class: "nav-link #{active_controller?("admin/facilities")}" %>

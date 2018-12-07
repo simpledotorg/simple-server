@@ -46,6 +46,13 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         expect(PatientPhoneNumber.count).to eq 0
         expect(response).to have_http_status(200)
       end
+
+      it 'associates registration user with the patients' do
+        post(:sync_from_user, params: { patients: [build_patient_payload.except('phone_numbers')] }, as: :json)
+        expect(response).to have_http_status(200)
+        expect(Patient.count).to eq 1
+        expect(Patient.first.registration_user).to eq request_user
+      end
     end
 
     describe 'updates patients' do
@@ -63,7 +70,11 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
 
         patients_payload.each do |updated_patient|
           db_patient = Patient.find(updated_patient['id'])
-          expect(db_patient.attributes.with_payload_keys.with_int_timestamps.except('address_id').except('test_data'))
+          expect(db_patient.attributes.with_payload_keys.with_int_timestamps
+                   .except('address_id')
+                   .except('registration_user_id')
+                   .except('registration_facility_id')
+                   .except('test_data'))
             .to eq(updated_patient.with_int_timestamps)
         end
       end
@@ -101,7 +112,11 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         patients_payload.each do |updated_patient|
           updated_patient.with_int_timestamps
           db_patient = Patient.find(updated_patient['id'])
-          expect(db_patient.attributes.with_payload_keys.with_int_timestamps.except('address_id').except('test_data'))
+          expect(db_patient.attributes.with_payload_keys.with_int_timestamps
+                   .except('address_id')
+                   .except('registration_user_id')
+                   .except('registration_facility_id')
+                   .except('test_data'))
             .to eq(updated_patient.except('address', 'phone_numbers'))
           expect(db_patient.address.attributes.with_payload_keys.with_int_timestamps)
             .to eq(updated_patient['address'])
@@ -119,6 +134,6 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
   end
 
   describe 'GET sync: send data from server to device;' do
-    it_behaves_like 'a working sync controller sending records'
+    it_behaves_like 'a working V1 sync controller sending records'
   end
 end

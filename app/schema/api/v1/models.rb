@@ -64,7 +64,17 @@ class Api::V1::Models < Api::Current::Models
     end
 
     def user
-      super.tap { |d| d[:properties].delete(:deleted_at) }
+      { type: :object,
+        properties: {
+          id: { '$ref' => '#/definitions/uuid' },
+          created_at: { '$ref' => '#/definitions/timestamp' },
+          updated_at: { '$ref' => '#/definitions/timestamp' },
+          full_name: { '$ref' => '#/definitions/non_empty_string' },
+          phone_number: { '$ref' => '#/definitions/non_empty_string' },
+          password_digest: { '$ref' => '#/definitions/bcrypt_password' },
+          facility_ids: array_of(:uuid),
+        },
+        required: %w[id created_at updated_at full_name phone_number password_digest facility_ids] }
     end
 
     def appointment
