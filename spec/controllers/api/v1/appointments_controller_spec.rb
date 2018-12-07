@@ -27,4 +27,27 @@ RSpec.describe Api::V1::AppointmentsController, type: :controller do
   describe 'GET sync: send data from server to device;' do
     it_behaves_like 'a working V1 sync controller sending records'
   end
+
+  describe 'New cancel_reasons are compatible with v1' do
+    it 'coerces new reasons into other' do
+      set_authentication_headers
+
+      FactoryBot.create_list(:appointment, 10, cancel_reason: [:invalid_phone_number, :public_hospital_transfer, :moved_to_private].sample)
+
+      get :sync_to_user
+      response_body = JSON(response.body)
+      expect(response_body['appointments'].count).to eq 10
+      expect(response_body['appointments'].map{|a|a['cancel_reason']}.to_set).to eq(Set['other'])
+    end
+
+    it 'does not allow cancelled appointments to be updated' do
+      set_authentication_headers
+      cancelled_appointment = FactoryBot.create(:appointment, status: :cancelled, cancel_reason: [:invalid_phone_number, :public_hospital_transfer, :moved_to_private].sample)
+      post(:sync_from_user, params: {appointments: [build_appointment_payload(cancelled_appointment).merge(updated_at: Time.now)]}, as: :json)
+
+      response_body = JSON(response.body).with_indifferent_access
+      expect(response.status).to eq(200)
+      expect(response_body['errors'].first['updated_at']).to eq('Cancelled appointment cannot be updated')
+    end
+  end
 end
