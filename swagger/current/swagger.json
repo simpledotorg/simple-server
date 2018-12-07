@@ -958,7 +958,7 @@
             "description": "returns bad request if phone number already exists"
           },
           "404": {
-            "description": "returns not found if any of the facility ids are not known"
+            "description": "returns not found if  facility id is not known"
           }
         }
       }
@@ -1595,14 +1595,8 @@
         "password_digest": {
           "$ref": "#/definitions/bcrypt_password"
         },
-        "facility_ids": {
-          "type": [
-            "null",
-            "array"
-          ],
-          "items": {
-            "$ref": "#/definitions/uuid"
-          }
+        "registration_facility_id": {
+          "$ref": "#/definitions/uuid"
         }
       },
       "required": [
@@ -1612,7 +1606,7 @@
         "full_name",
         "phone_number",
         "password_digest",
-        "facility_ids"
+        "registration_facility_id"
       ]
     },
     "users": {

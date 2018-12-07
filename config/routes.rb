@@ -121,6 +121,9 @@ Rails.application.routes.draw do
 
   namespace :admin do
     resources :audit_logs, only: [:index, :show]
+    resources :organizations do
+      resources :facility_groups
+    end
     resources :facilities
 
     resources :protocols do

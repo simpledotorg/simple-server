@@ -31,10 +31,25 @@ class Api::V1::Models < Api::Current::Models
       super.tap { |d| d[:properties][:cancel_reason][:enum] -= %w(invalid_phone_number public_hospital_transfer moved_to_private) }
     end
 
+    def user
+      { type: :object,
+        properties: {
+          id: { '$ref' => '#/definitions/uuid' },
+          created_at: { '$ref' => '#/definitions/timestamp' },
+          updated_at: { '$ref' => '#/definitions/timestamp' },
+          full_name: { '$ref' => '#/definitions/non_empty_string' },
+          phone_number: { '$ref' => '#/definitions/non_empty_string' },
+          password_digest: { '$ref' => '#/definitions/bcrypt_password' },
+          facility_ids: array_of(:uuid),
+        },
+        required: %w[id created_at updated_at full_name phone_number password_digest facility_ids] }
+    end
+
     def definitions
       Api::Current::Models.definitions.merge(
         medical_history: medical_history,
-        appointment: appointment)
+        appointment: appointment,
+        user: user)
     end
   end
 end

@@ -18,7 +18,7 @@ RSpec.describe Api::Current::UsersController, type: :controller do
           .slice(:full_name, :phone_number)
           .merge(id: SecureRandom.uuid,
                  password_digest: BCrypt::Password.create("1234"),
-                 facility_ids: [facility.id],
+                 registration_facility_id: facility.id,
                  created_at: Time.now.iso8601,
                  updated_at: Time.now.iso8601)
       end
@@ -40,7 +40,7 @@ RSpec.describe Api::Current::UsersController, type: :controller do
                      'otp_valid_until')
                    .as_json
                    .with_int_timestamps)
-        expect(JSON(response.body)['user']['facility_ids']).to match_array(created_user.facilities.map(&:id))
+        expect(JSON(response.body)['user']['registration_facility_id']).to eq(created_user.facility.id)
         expect(JSON(response.body)['access_token']).to eq(created_user.access_token)
       end
 
@@ -73,23 +73,21 @@ RSpec.describe Api::Current::UsersController, type: :controller do
   describe '#find' do
     let(:phone_number) { Faker::PhoneNumber.phone_number }
     let(:facility) { FactoryBot.create(:facility) }
-    let!(:db_users) { FactoryBot.create_list(:user, 10, facility_ids: [facility.id]) }
-    let!(:user) { FactoryBot.create(:user, phone_number: phone_number, facility_ids: [facility.id]) }
+    let!(:db_users) { FactoryBot.create_list(:user, 10, registration_facility_id: facility.id) }
+    let!(:user) { FactoryBot.create(:user, phone_number: phone_number, registration_facility_id: facility.id) }
 
     it 'lists the users with the given phone number' do
       get :find, params: { phone_number: phone_number }
       expect(response.status).to eq(200)
-      expect(JSON(response.body).except('facility_ids').with_int_timestamps)
-        .to eq(Api::V1::UserTransformer.to_response(user).except(:facility_ids).with_int_timestamps)
-      expect(JSON(response.body)['facility_ids']).to match_array(user.facility_ids)
+      expect(JSON(response.body).with_int_timestamps)
+        .to eq(Api::Current::UserTransformer.to_response(user).with_int_timestamps)
     end
 
     it 'lists the users with the given id' do
       get :find, params: { id: user.id }
       expect(response.status).to eq(200)
-      expect(JSON(response.body).except('facility_ids').with_int_timestamps)
-        .to eq(Api::V1::UserTransformer.to_response(user).except(:facility_ids).with_int_timestamps)
-      expect(JSON(response.body)['facility_ids']).to match_array(user.facility_ids)
+      expect(JSON(response.body).with_int_timestamps)
+        .to eq(Api::Current::UserTransformer.to_response(user).with_int_timestamps)
     end
 
     it 'returns 404 when user is not found' do

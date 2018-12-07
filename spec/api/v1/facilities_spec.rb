@@ -13,7 +13,7 @@ describe 'Facilities V1 API', swagger_doc: 'v1/swagger.json' do
 
       before :each do
         Timecop.travel(10.minutes.ago) do
-          facility = FactoryBot.create(:facility)
+          FactoryBot.create(:facility)
         end
       end
 

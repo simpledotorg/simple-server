@@ -5,6 +5,7 @@ class Api::Current::UsersController < APIController
 
   def register
     user = User.new(user_from_request)
+    return head :not_found unless user.facility.present?
     return render json: { errors: user.errors }, status: :bad_request if user.invalid?
     if FeatureToggle.auto_approve?
       user.sync_approval_allowed
@@ -72,7 +73,7 @@ class Api::Current::UsersController < APIController
         :password_digest,
         :updated_at,
         :created_at,
-        facility_ids: [])
+        :registration_facility_id)
   end
 
   def find_params
