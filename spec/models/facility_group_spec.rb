@@ -11,6 +11,9 @@ RSpec.describe FacilityGroup, type: :model do
       expect { facility_group.destroy }.not_to change { Facility.count }
       expect(Facility.where(facility_group: facility_group)).to be_empty
     end
+
+    it { should have_many(:admin_access_controls) }
+    it { should have_many(:admins).through(:admin_access_controls) }
   end
 
   describe 'Validations' do
