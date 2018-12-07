@@ -17,8 +17,4 @@ class Facility < ApplicationRecord
   validates :state, presence: true
   validates :country, presence: true
   validates :pin, numericality: true, allow_blank: true
-
-  def other_facilities_in_group
-    facility_group.facilities.where.not(id: self.id)
-  end
 end

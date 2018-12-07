@@ -30,7 +30,7 @@ class APIController < ApplicationController
   end
 
   def validate_current_facility_belongs_to_users_facility_group
-    return head :unauthorized unless current_user.present? && current_user.facilities_in_group.where(id: current_facility.id).present?
+    return head :unauthorized unless current_user.present? && current_facility_group.facilities.where(id: current_facility.id).present?
   end
 
   def authenticate

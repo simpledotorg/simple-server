@@ -10,7 +10,7 @@ module Api::Current::PrioritisableByFacility
     def other_facility_records
       other_facilities_limit = limit - current_facility_records.count
       facility_group_records
-        .where(facility: current_user.facilities_in_group.where.not(id: current_facility.id))
+        .where.not(facility: current_facility.id)
         .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
     end
   end

@@ -106,12 +106,4 @@ class User < ApplicationRecord
   def registered_at_facility
     self.facility
   end
-
-  def facilities_in_group
-    self.facility.facility_group.facilities
-  end
-
-  def facilities_in_group_other_than(facility)
-    facilities_in_group.where.not(id: facility.id)
-  end
 end
