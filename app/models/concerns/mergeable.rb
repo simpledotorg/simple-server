@@ -4,8 +4,6 @@ module Mergeable
   included do
     attr_accessor :merge_status
     has_many :audit_logs, as: :auditable
-    include Discard::Model
-    self.discard_column = :deleted_at
   end
 
   class_methods do

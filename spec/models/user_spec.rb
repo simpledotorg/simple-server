@@ -54,4 +54,8 @@ RSpec.describe User, type: :model do
       end
     end
   end
+
+  describe 'Behavior' do
+    it_behaves_like 'a record that is deletable'
+  end
 end

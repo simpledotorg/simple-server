@@ -10,4 +10,8 @@ RSpec.describe Protocol, type: :model do
     it { should validate_presence_of(:follow_up_days) }
     it { should validate_numericality_of(:follow_up_days) }
   end
+
+  describe 'Behavior' do
+    it_behaves_like 'a record that is deletable'
+  end
 end
