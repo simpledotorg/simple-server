@@ -1,6 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::UsersController, type: :controller do
+  let(:supervisor) { FactoryBot.create(:admin, :supervisor) }
+  let(:owner) { FactoryBot.create(:admin, :owner) }
+  let(:facility) { FactoryBot.create(:facility) }
+
+  before :each do
+    FactoryBot.create(:admin_access_control, admin: supervisor, facility_group: facility.facility_group)
+    FactoryBot.create(:admin_access_control, admin: owner, facility_group: facility.facility_group)
+  end
+
   describe '#register' do
     describe 'registration payload is invalid' do
       let(:facility) { FactoryBot.create(:facility)}
@@ -64,8 +73,8 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       it 'sends an email to a list of owners and supervisors' do
         post :register, params: { user: user_params }
         approval_email = ActionMailer::Base.deliveries.last
-        expect(ENV['SUPERVISOR_EMAILS']).to match(/#{Regexp.quote(approval_email.to.first)}/)
-        expect(ENV['OWNER_EMAILS']).to match(/#{Regexp.quote(approval_email.cc.first)}/)
+        expect(approval_email.to).to include(supervisor.email)
+        expect(approval_email.cc).to include(owner.email)
         expect(approval_email.body.to_s).to match(Regexp.quote(user_params[:phone_number]))
       end
     end
@@ -121,7 +130,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   end
 
   describe '#reset_password' do
-    let(:user) { FactoryBot.create(:user) }
+    let(:user) { FactoryBot.create(:user, facility: facility) }
 
     before(:each) do
       request.env['HTTP_X_USER_ID'] = user.id
@@ -154,8 +163,8 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       post :reset_password, params: { id: user.id, password_digest: BCrypt::Password.create('1234').to_s }
       approval_email = ActionMailer::Base.deliveries.last
       expect(approval_email).to be_present
-      expect(ENV['SUPERVISOR_EMAILS']).to match(/#{Regexp.quote(approval_email.to.first)}/)
-      expect(ENV['OWNER_EMAILS']).to match(/#{Regexp.quote(approval_email.cc.first)}/)
+      expect(approval_email.to).to include(supervisor.email)
+      expect(approval_email.cc).to include(owner.email)
       expect(approval_email.body.to_s).to match(Regexp.quote(user.phone_number))
       expect(approval_email.body.to_s).to match("reset")
     end

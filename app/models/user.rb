@@ -106,4 +106,8 @@ class User < ApplicationRecord
   def registered_at_facility
     self.facility
   end
+
+  def facility_group
+    self.facility.facility_group
+  end
 end

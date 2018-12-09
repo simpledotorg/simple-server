@@ -32,7 +32,7 @@ ActiveRecord::Schema.define(version: 20181207111036) do
   create_table "admin_access_controls", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.bigint "admin_id", null: false
     t.uuid "facility_group_id", null: false
-    t.index ["admin_id", "facility_group_id"], name: "index_admin_access_controls_on_admin_id_and_facility_group_id"
+    t.index ["admin_id", "facility_group_id"], name: "index_admin_access_controls_on_admin_id_and_facility_group_id", unique: true
     t.index ["admin_id"], name: "index_admin_access_controls_on_admin_id"
     t.index ["facility_group_id"], name: "index_admin_access_controls_on_facility_group_id"
   end

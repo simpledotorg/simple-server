@@ -5,6 +5,6 @@ class CreateAdminAccessControls < ActiveRecord::Migration[5.1]
       t.references :facility_group, type: :uuid, null: false
     end
 
-    add_index :admin_access_controls, [:admin_id, :facility_group_id]
+    add_index :admin_access_controls, [:admin_id, :facility_group_id], unique: true
   end
 end
