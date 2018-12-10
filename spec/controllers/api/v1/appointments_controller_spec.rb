@@ -40,6 +40,17 @@ RSpec.describe Api::V1::AppointmentsController, type: :controller do
       expect(response_body['appointments'].map{|a|a['cancel_reason']}.to_set).to eq(Set['other'])
     end
 
+    it 'does not coerce old reasons' do
+      set_authentication_headers
+      v1_cancel_reasons = Appointment.cancel_reasons.keys.map(&:to_sym) - [:invalid_phone_number, :public_hospital_transfer, :moved_to_private]
+      appointments = 10.times.map {|_| FactoryBot.create(:appointment, cancel_reason: v1_cancel_reasons.sample) }
+
+      get :sync_to_user
+      response_body = JSON(response.body)
+      expect(response_body['appointments'].count).to eq 10
+      expect(response_body['appointments'].map{|a|a['cancel_reason']}).to eq(appointments.map(&:cancel_reason))
+    end
+
     it 'does not allow cancelled appointments to be updated' do
       set_authentication_headers
       cancelled_appointment = FactoryBot.create(:appointment, status: :cancelled, cancel_reason: [:invalid_phone_number, :public_hospital_transfer, :moved_to_private].sample)
