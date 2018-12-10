@@ -7,28 +7,28 @@ def new_patient_payload(attrs = {})
 end
 
 describe Api::Current::PatientPayloadValidator, type: :model do
-  describe "Validations" do
-    it "Validates that either age or date of birth is present" do
-      expect(new_patient_payload('address'       => nil,
+  describe 'Validations' do
+    it 'Validates that either age or date of birth is present' do
+      expect(new_patient_payload('address' => nil,
                                  'phone_numbers' => nil,
-                                 'age'           => nil,
+                                 'age' => nil,
                                  'date_of_birth' => Date.today)).to be_valid
 
-      expect(new_patient_payload('address'        => nil,
-                                 'phone_numbers'  => nil,
-                                 'age'            => rand(18..100),
-                                 'age_updated_at' => Time.now,
-                                 'date_of_birth'  => nil).valid?).to be true
-
-      expect(new_patient_payload('address'        => nil,
-                                 'phone_numbers'  => nil,
-                                 'age'            => rand(18..100),
-                                 'age_updated_at' => nil,
-                                 'date_of_birth'  => nil).valid?).to be false
-
-      expect(new_patient_payload('address'       => nil,
+      expect(new_patient_payload('address' => nil,
                                  'phone_numbers' => nil,
-                                 'age'           => nil,
+                                 'age' => rand(18..100),
+                                 'age_updated_at' => Time.now,
+                                 'date_of_birth' => nil).valid?).to be true
+
+      expect(new_patient_payload('address' => nil,
+                                 'phone_numbers' => nil,
+                                 'age' => rand(18..100),
+                                 'age_updated_at' => nil,
+                                 'date_of_birth' => nil).valid?).to be false
+
+      expect(new_patient_payload('address' => nil,
+                                 'phone_numbers' => nil,
+                                 'age' => nil,
                                  'date_of_birth' => nil).valid?).to be false
     end
 
@@ -38,46 +38,64 @@ describe Api::Current::PatientPayloadValidator, type: :model do
       expect(payload.errors[:date_of_birth]).to be_present
     end
 
-    it "Validates json spec for patient sync request" do
-      # required validation
-      payload = new_patient_payload('created_at' => nil)
-      expect(payload.valid?).to be false
-      expect(payload.errors[:schema]).to be_present
+    describe 'Required validations' do
+      it 'Validates json spec for patient sync request' do
+        payload = new_patient_payload('created_at' => nil)
+        expect(payload.valid?).to be false
+        expect(payload.errors[:schema]).to be_present
+      end
+      it 'Validates that full_name is required' do
+        payload = new_patient_payload('full_name' => nil)
+        expect(payload.valid?).to be false
+        expect(payload.errors[:schema]).to be_present
+      end
+      it 'Validates that address is required' do
+        payload = new_patient_payload('address' => { 'created_at' => nil })
+        expect(payload.valid?).to be false
+        expect(payload.errors[:schema]).to be_present
+      end
 
-      payload = new_patient_payload('full_name' => nil)
-      expect(payload.valid?).to be false
-      expect(payload.errors[:schema]).to be_present
+    end
+    describe 'Non empty validations' do
+      it 'Validates that full_name is not empty' do
+        payload = new_patient_payload('full_name' => '')
+        expect(payload.valid?).to be false
+        expect(payload.errors[:schema]).to be_present
+      end
+    end
 
-      payload = new_patient_payload('address' => { 'created_at' => nil })
-      expect(payload.valid?).to be false
-      expect(payload.errors[:schema]).to be_present
+    describe 'type and format validations' do
+      it 'Validates that created_at is of the right type and format' do
+        payload = new_patient_payload('created_at' => 'foo')
+        expect(payload.valid?).to be false
+        expect(payload.errors[:schema]).to be_present
+      end
 
-      # non empty validation
-      payload = new_patient_payload('full_name' => "")
-      expect(payload.valid?).to be false
-      expect(payload.errors[:schema]).to be_present
+      it 'Validates that id is of the right type and format' do
+        payload = new_patient_payload('id' => 'not-a-uuid')
+        expect(payload.valid?).to be false
+        expect(payload.errors[:schema]).to be_present
+      end
 
-      # type and format validation
-      payload = new_patient_payload('created_at' => 'foo')
-      expect(payload.valid?).to be false
-      expect(payload.errors[:schema]).to be_present
+      it 'Validates that age is of the right type and format' do
+        payload = new_patient_payload('age' => 'foo')
+        expect(payload.valid?).to be false
+        expect(payload.errors[:schema]).to be_present
+      end
+    end
 
-      payload = new_patient_payload('id' => 'not-a-uuid')
-      expect(payload.valid?).to be false
-      expect(payload.errors[:schema]).to be_present
+    describe 'Enum validations' do
+      it 'Validates that gender is present in the prescribed enum' do
+        payload = new_patient_payload('gender' => 'foo')
+        expect(payload.valid?).to be false
+        expect(payload.errors[:schema]).to be_present
+      end
 
-      payload = new_patient_payload('age' => 'foo')
-      expect(payload.valid?).to be false
-      expect(payload.errors[:schema]).to be_present
-
-      # enum validation
-      payload = new_patient_payload('gender' => 'foo')
-      expect(payload.valid?).to be false
-      expect(payload.errors[:schema]).to be_present
-
-      payload = new_patient_payload('status' => 'foo')
-      expect(payload.valid?).to be false
-      expect(payload.errors[:schema]).to be_present
+      it 'Validates that status is present in the prescribed enum' do
+        payload = new_patient_payload('status' => 'foo')
+        expect(payload.valid?).to be false
+        expect(payload.errors[:schema]).to be_present
+      end
     end
   end
 end
