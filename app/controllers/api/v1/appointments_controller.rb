@@ -7,7 +7,7 @@ class Api::V1::AppointmentsController < Api::Current::AppointmentsController
   def merge_if_valid(appointment_params)
     validator = Api::V1::AppointmentPayloadValidator.new(appointment_params)
     logger.debug "Follow Up Schedule had errors: #{validator.errors_hash}" if validator.invalid?
-    record_params = Api::Current::Transformer.from_request(appointment_params)
+    record_params = Api::V1::Transformer.from_request(appointment_params)
     if validator.invalid?
       NewRelic::Agent.increment_metric('Merge/Appointment/schema_invalid')
       { errors_hash: validator.errors_hash }
