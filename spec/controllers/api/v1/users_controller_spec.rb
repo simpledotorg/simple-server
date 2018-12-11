@@ -3,7 +3,8 @@ require 'rails_helper'
 RSpec.describe Api::V1::UsersController, type: :controller do
   describe '#register' do
     describe 'registration payload is invalid' do
-      let(:request_params) { { user: FactoryBot.attributes_for(:user).slice(:full_name, :phone_number) } }
+      let(:facility) { FactoryBot.create(:facility)}
+      let(:request_params) { { user: FactoryBot.attributes_for(:user).slice(:full_name, :phone_number).merge(facility_ids: [facility.id]) } }
       it 'responds with 400' do
         post :register, params: request_params
 
@@ -40,7 +41,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
                      'otp_valid_until')
                    .as_json
                    .with_int_timestamps)
-        expect(JSON(response.body)['user']['facility_ids']).to match_array(created_user.facilities.map(&:id))
+        expect(JSON(response.body)['user']['facility_ids']).to match_array([created_user.facility.id])
         expect(JSON(response.body)['access_token']).to eq(created_user.access_token)
       end
 
@@ -73,15 +74,15 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   describe '#find' do
     let(:phone_number) { Faker::PhoneNumber.phone_number }
     let(:facility) { FactoryBot.create(:facility) }
-    let!(:db_users) { FactoryBot.create_list(:user, 10, facility_ids: [facility.id]) }
-    let!(:user) { FactoryBot.create(:user, phone_number: phone_number, facility_ids: [facility.id]) }
+    let!(:db_users) { FactoryBot.create_list(:user, 10, registration_facility_id: facility.id) }
+    let!(:user) { FactoryBot.create(:user, phone_number: phone_number, registration_facility_id: facility.id) }
 
     it 'lists the users with the given phone number' do
       get :find, params: { phone_number: phone_number }
       expect(response.status).to eq(200)
       expect(JSON(response.body).except('facility_ids').with_int_timestamps)
         .to eq(Api::V1::UserTransformer.to_response(user).except(:facility_ids).with_int_timestamps)
-      expect(JSON(response.body)['facility_ids']).to match_array(user.facility_ids)
+      expect(JSON(response.body)['facility_ids']).to match_array([user.facility.id])
     end
 
     it 'lists the users with the given id' do
@@ -89,7 +90,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       expect(response.status).to eq(200)
       expect(JSON(response.body).except('facility_ids').with_int_timestamps)
         .to eq(Api::V1::UserTransformer.to_response(user).except(:facility_ids).with_int_timestamps)
-      expect(JSON(response.body)['facility_ids']).to match_array(user.facility_ids)
+      expect(JSON(response.body)['facility_ids']).to match_array([user.facility.id])
     end
 
     it 'returns 404 when user is not found' do

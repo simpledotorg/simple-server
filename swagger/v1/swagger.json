@@ -1022,12 +1022,6 @@
         "$ref": "#/definitions/error"
       }
     },
-    "processed_since": {
-      "type": "string",
-      "format": "date-time",
-      "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
-      "name": "processed_since"
-    },
     "timestamp": {
       "type": "string",
       "format": "date-time",
@@ -1759,6 +1753,12 @@
       "items": {
         "$ref": "#/definitions/medical_history"
       }
+    },
+    "processed_since": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+      "name": "processed_since"
     }
   },
   "securityDefinitions": {

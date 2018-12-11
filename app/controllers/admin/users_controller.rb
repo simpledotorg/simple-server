@@ -87,7 +87,7 @@ class Admin::UsersController < AdminController
       :password,
       :password_confirmation,
       :sync_approval_status,
-      facility_ids: []
+      :registration_facility_id
     )
   end
 end

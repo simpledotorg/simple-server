@@ -1,5 +1,5 @@
 class APIController < ApplicationController
-  before_action :authenticate, :validate_facility
+  before_action :authenticate, :validate_facility, :set_sentry_context
   TIME_WITHOUT_TIMEZONE_FORMAT = '%FT%T.%3NZ'.freeze
 
   skip_before_action :verify_authenticity_token
@@ -37,5 +37,12 @@ class APIController < ApplicationController
     authenticate_or_request_with_http_token do |token, _options|
       ActiveSupport::SecurityUtils.secure_compare(token, current_user.access_token)
     end
+  end
+
+  def set_sentry_context
+    Raven.user_context(
+      id: request.headers['HTTP_X_USER_ID'],
+      request_facility_id: request.headers['HTTP_X_FACILITY_ID']
+    )
   end
 end

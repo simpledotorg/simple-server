@@ -97,10 +97,10 @@
             "type": "uuid"
           },
           {
+            "name": "process_token",
             "type": "string",
-            "format": "date-time",
-            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
-            "name": "processed_since",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
             "in": "query"
           },
           {
@@ -119,13 +119,13 @@
                 "appointments": {
                   "$ref": "#/definitions/appointments"
                 },
-                "processed_since": {
-                  "$ref": "#/definitions/processed_since"
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
                 }
               },
               "required": [
                 "appointments",
-                "processed_since"
+                "process_token"
               ]
             }
           }
@@ -210,10 +210,10 @@
             "type": "uuid"
           },
           {
+            "name": "process_token",
             "type": "string",
-            "format": "date-time",
-            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
-            "name": "processed_since",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
             "in": "query"
           },
           {
@@ -232,13 +232,13 @@
                 "blood_pressures": {
                   "$ref": "#/definitions/blood_pressures"
                 },
-                "processed_since": {
-                  "$ref": "#/definitions/processed_since"
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
                 }
               },
               "required": [
                 "blood_pressures",
-                "processed_since"
+                "process_token"
               ]
             }
           }
@@ -323,10 +323,10 @@
             "type": "uuid"
           },
           {
+            "name": "process_token",
             "type": "string",
-            "format": "date-time",
-            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
-            "name": "processed_since",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
             "in": "query"
           },
           {
@@ -345,13 +345,13 @@
                 "communications": {
                   "$ref": "#/definitions/communications"
                 },
-                "processed_since": {
-                  "$ref": "#/definitions/processed_since"
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
                 }
               },
               "required": [
                 "communications",
-                "processed_since"
+                "process_token"
               ]
             }
           }
@@ -383,10 +383,10 @@
             "type": "uuid"
           },
           {
+            "name": "process_token",
             "type": "string",
-            "format": "date-time",
-            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
-            "name": "processed_since",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
             "in": "query"
           },
           {
@@ -405,13 +405,13 @@
                 "facilities": {
                   "$ref": "#/definitions/facilities"
                 },
-                "processed_since": {
-                  "$ref": "#/definitions/processed_since"
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
                 }
               },
               "required": [
                 "facilities",
-                "processed_since"
+                "process_token"
               ]
             }
           }
@@ -567,10 +567,10 @@
             "type": "uuid"
           },
           {
+            "name": "process_token",
             "type": "string",
-            "format": "date-time",
-            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
-            "name": "processed_since",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
             "in": "query"
           },
           {
@@ -589,13 +589,13 @@
                 "medical_histories": {
                   "$ref": "#/definitions/medical_histories"
                 },
-                "processed_since": {
-                  "$ref": "#/definitions/processed_since"
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
                 }
               },
               "required": [
                 "medical_histories",
-                "processed_since"
+                "process_token"
               ]
             }
           }
@@ -680,10 +680,10 @@
             "type": "uuid"
           },
           {
+            "name": "process_token",
             "type": "string",
-            "format": "date-time",
-            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
-            "name": "processed_since",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
             "in": "query"
           },
           {
@@ -702,13 +702,13 @@
                 "patients": {
                   "$ref": "#/definitions/nested_patients"
                 },
-                "processed_since": {
-                  "$ref": "#/definitions/processed_since"
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
                 }
               },
               "required": [
                 "patients",
-                "processed_since"
+                "process_token"
               ]
             }
           }
@@ -793,10 +793,10 @@
             "type": "uuid"
           },
           {
+            "name": "process_token",
             "type": "string",
-            "format": "date-time",
-            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
-            "name": "processed_since",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
             "in": "query"
           },
           {
@@ -815,13 +815,13 @@
                 "prescription_drugs": {
                   "$ref": "#/definitions/prescription_drugs"
                 },
-                "processed_since": {
-                  "$ref": "#/definitions/processed_since"
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
                 }
               },
               "required": [
                 "prescription_drugs",
-                "processed_since"
+                "process_token"
               ]
             }
           }
@@ -853,10 +853,10 @@
             "type": "uuid"
           },
           {
+            "name": "process_token",
             "type": "string",
-            "format": "date-time",
-            "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
-            "name": "processed_since",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
             "in": "query"
           },
           {
@@ -875,13 +875,13 @@
                 "protocols": {
                   "$ref": "#/definitions/protocols"
                 },
-                "processed_since": {
-                  "$ref": "#/definitions/processed_since"
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
                 }
               },
               "required": [
                 "protocols",
-                "processed_since"
+                "process_token"
               ]
             }
           }
@@ -958,7 +958,7 @@
             "description": "returns bad request if phone number already exists"
           },
           "404": {
-            "description": "returns not found if any of the facility ids are not known"
+            "description": "returns not found if  facility id is not known"
           }
         }
       }
@@ -1089,11 +1089,11 @@
         "$ref": "#/definitions/error"
       }
     },
-    "processed_since": {
+    "process_token": {
+      "name": "process_token",
       "type": "string",
-      "format": "date-time",
-      "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
-      "name": "processed_since"
+      "format": "byte",
+      "description": "Token containing all the information needed to process batch requests from the user"
     },
     "timestamp": {
       "type": "string",
@@ -1595,14 +1595,8 @@
         "password_digest": {
           "$ref": "#/definitions/bcrypt_password"
         },
-        "facility_ids": {
-          "type": [
-            "null",
-            "array"
-          ],
-          "items": {
-            "$ref": "#/definitions/uuid"
-          }
+        "registration_facility_id": {
+          "$ref": "#/definitions/uuid"
         }
       },
       "required": [
@@ -1612,7 +1606,7 @@
         "full_name",
         "phone_number",
         "password_digest",
-        "facility_ids"
+        "registration_facility_id"
       ]
     },
     "users": {

@@ -2,18 +2,12 @@ require 'rails_helper'
 
 RSpec.describe User, type: :model do
   describe 'Associations' do
-    it { should have_many(:user_facilities) }
-    it { should have_many(:facilities).through(:user_facilities) }
+    it { should belong_to(:facility) }
     it { should have_many(:blood_pressures) }
     it { should have_many(:patients).through(:blood_pressures) }
 
     it { should have_many(:registered_patients).class_name("Patient").with_foreign_key("registration_user_id") }
 
-    it 'deletes all dependent user facilities' do
-      user = FactoryBot.create(:user)
-      FactoryBot.create_list(:user_facility, 5, user: user)
-      expect { user.destroy }.to change { UserFacility.count }.by(-5)
-    end
     it 'has distinct patients' do
       user = FactoryBot.create(:user)
       patient = FactoryBot.create(:patient)
@@ -41,6 +35,22 @@ RSpec.describe User, type: :model do
       it "should not return users already allowed or denied" do
         expect(User.requested_sync_approval).not_to include(allowed_user)
         expect(User.requested_sync_approval).not_to include(denied_user)
+      end
+    end
+  end
+
+  describe '#has_never_logged_in?' do
+    context 'user has never logged in' do
+      it 'returns true' do
+        user = User.new(logged_in_at: nil)
+        expect(user.has_never_logged_in?).to be true
+      end
+    end
+
+    context 'user has logged in atleast once' do
+      it 'returns false' do
+        user = User.new(logged_in_at: DateTime.yesterday)
+        expect(user.has_never_logged_in?).to be false
       end
     end
   end

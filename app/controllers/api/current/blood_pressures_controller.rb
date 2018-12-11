@@ -1,4 +1,6 @@
 class Api::Current::BloodPressuresController < Api::Current::SyncController
+  include Api::Current::PrioritisableByFacility
+
   def sync_from_user
     __sync_from_user__(blood_pressures_params)
   end
@@ -19,10 +21,6 @@ class Api::Current::BloodPressuresController < Api::Current::SyncController
       blood_pressure = BloodPressure.merge(Api::Current::Transformer.from_request(blood_pressure_params))
       { record: blood_pressure }
     end
-  end
-
-  def find_records_to_sync(since, limit)
-    BloodPressure.updated_on_server_since(since, limit)
   end
 
   def transform_to_response(blood_pressure)
