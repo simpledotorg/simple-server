@@ -2,9 +2,13 @@
   <div class="col-md-6">
     <%= bootstrap_form_with(model: admin, local: true, autocomplete: "off", label_errors: true) do |form| %>
       <%= form.text_field :email, id: :admin_email, required: true, autocomplete: "off" %>
-      <%= form.select(:role, Admin.roles.keys.map { |role| [role.titleize, role]} ) %>
+      <%= form.select(:role, Admin.roles.keys.map { |role| [role.titleize, role] }) %>
 
-      <%= form.collection_check_boxes :facility_group_ids, FacilityGroup.all, :id, :name, checked: true %>
+      <% if admin.facility_groups.present? %>
+        <%= form.collection_check_boxes :facility_group_ids, admin.facility_groups, :id, :name, checked_value: 1 %>
+      <% end %>
+
+      <%= form.collection_check_boxes :facility_group_ids, FacilityGroup.where.not(id: admin.facility_groups.map(&:id)), :id, :name, checked: true %>
 
       <%= form.primary %>
     <% end %>
