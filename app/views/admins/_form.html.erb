@@ -4,6 +4,8 @@
       <%= form.text_field :email, id: :admin_email, required: true, autocomplete: "off" %>
       <%= form.select(:role, Admin.roles.keys.map { |role| [role.titleize, role]} ) %>
 
+      <%= form.collection_check_boxes :facility_group_ids, FacilityGroup.all, :id, :name, checked: true %>
+
       <%= form.primary %>
     <% end %>
   </div>

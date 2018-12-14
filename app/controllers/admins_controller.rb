@@ -32,6 +32,6 @@ class AdminsController < AdminController
     end
 
     def admin_params
-      params.require(:admin).permit(:email, :role)
+      params.require(:admin).permit(:email, :role, facility_group_ids: [])
     end
 end
