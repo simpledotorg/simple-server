@@ -6,7 +6,7 @@ class Admin::DashboardController < AdminController
 
     @users_requesting_approval = User.requested_sync_approval
 
-    @facilities = Facility.all.order(:name)
+    @facilities = admin_facilities
 
     @days_previous = 20
     @months_previous = 8
@@ -27,20 +27,24 @@ class Admin::DashboardController < AdminController
 
   private
 
+  def admin_facilities
+    current_admin.facility_groups.flat_map(&:facilities)
+  end
+
   def visits_by_facility
-    BloodPressure.group(:facility_id).count("distinct patient_id")
+    BloodPressure.where(facility: admin_facilities).group(:facility_id).count("distinct patient_id")
   end
 
   def visits_by_facility_user
-    BloodPressure.group(:facility_id, :user_id).count("distinct patient_id")
+    BloodPressure.where(facility: admin_facilities).group(:facility_id, :user_id).count("distinct patient_id")
   end
 
   def visits_by_facility_user_day
-    BloodPressure.group(:facility_id, :user_id).group_by_day(:device_created_at, last: @days_previous + 1).count("distinct patient_id")
+    BloodPressure.where(facility: admin_facilities).group(:facility_id, :user_id).group_by_day(:device_created_at, last: @days_previous + 1).count("distinct patient_id")
   end
 
   def visits_by_facility_month
-    BloodPressure.group(:facility_id).group_by_month(:device_created_at, last: @months_previous + 1).count("distinct patient_id")
+    BloodPressure.where(facility: admin_facilities).group(:facility_id).group_by_month(:device_created_at, last: @months_previous + 1).count("distinct patient_id")
   end
 
   def new_patients_by_facility
