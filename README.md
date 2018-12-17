@@ -41,7 +41,10 @@ Now you should be able to see test emails at http://localhost:1080
 The app can be configured using a .env file. Look at .env.development for sample configuration
 
 ## Running the application locally
-The application will start at http://localhost:3000.
+bundle install
+rake db:migrate
+rails server
+The application will start at http://localhost:3000
 ```bash
 RAILS_ENV=development bundle exec rails server
 ```
