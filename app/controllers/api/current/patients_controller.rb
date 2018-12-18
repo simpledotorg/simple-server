@@ -7,6 +7,24 @@ class Api::Current::PatientsController < Api::Current::SyncController
     __sync_to_user__('patients')
   end
 
+  def metadata
+    { registration_user_id: current_user.id,
+      registration_facility_id: current_facility.id }
+  end
+
+  def current_facility_records
+    model_name
+      .where(registration_facility: current_facility)
+      .updated_on_server_since(current_facility_processed_since, limit)
+  end
+
+  def other_facility_records
+    other_facilities_limit = limit - current_facility_records.count
+    model_name
+      .where.not(registration_facility: current_facility)
+      .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
+  end
+
   private
 
   def merge_if_valid(single_patient_params)
@@ -16,15 +34,12 @@ class Api::Current::PatientsController < Api::Current::SyncController
       NewRelic::Agent.increment_metric('Merge/Patient/schema_invalid')
       { errors_hash: validator.errors_hash }
     else
+      patients_params_with_metadata = single_patient_params.merge(metadata: metadata)
       patient = MergePatientService.new(
-        Api::Current::PatientTransformer.from_nested_request(single_patient_params)
+        Api::Current::PatientTransformer.from_nested_request(patients_params_with_metadata)
       ).merge
       { record: patient }
     end
-  end
-
-  def find_records_to_sync(since, limit)
-    Patient.updated_on_server_since(since, limit)
   end
 
   def transform_to_response(patient)
@@ -32,7 +47,7 @@ class Api::Current::PatientsController < Api::Current::SyncController
   end
 
   def patients_params
-    permitted_address_params      = %i[id street_address village_or_colony district state country pin created_at updated_at]
+    permitted_address_params = %i[id street_address village_or_colony district state country pin created_at updated_at]
     permitted_phone_number_params = %i[id number phone_type active created_at updated_at]
 
     params.require(:patients).map do |single_patient_params|
@@ -47,7 +62,7 @@ class Api::Current::PatientsController < Api::Current::SyncController
         :created_at,
         :updated_at,
         phone_numbers: [permitted_phone_number_params],
-        address:       permitted_address_params
+        address: permitted_address_params
       )
     end
   end

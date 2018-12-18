@@ -43,6 +43,6 @@ RSpec.describe Api::V1::BloodPressuresController, type: :controller do
   end
 
   describe 'GET sync: send data from server to device;' do
-    it_behaves_like 'a working sync controller sending records'
+    it_behaves_like 'a working V1 sync controller sending records'
   end
 end

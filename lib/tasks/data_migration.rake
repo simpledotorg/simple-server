@@ -22,6 +22,22 @@ namespace :data_migration do
     end
   end
 
+  desc "Populate initial registration facility and user for patients"
+  task update_initial_registration_for_patients: :environment do
+    ActiveRecord::Base.transaction do
+      patients = Patient.all
+      puts "Updating initial registration associations for #{patients.count} patients"
+
+      patients.each do |patient|
+        if first_bp = patient.blood_pressures.order(:device_created_at).first
+          patient.update(registration_facility: first_bp.facility, registration_user: first_bp.user)
+        end
+      end
+
+      puts "Updated initial registration associations for #{patients.count} patients"
+    end
+  end
+
   desc 'Populate questions in medical histories from deprecated boolean fields'
   task populate_medical_history_records_from_boolean_fields: :environment do
     MedicalHistory.all.each do |record|
@@ -31,6 +47,27 @@ namespace :data_migration do
         record.write_attribute(question, enum_value)
       end
       record.save
+    end
+  end
+
+  desc 'Create IHMI Organization and facility groups for Punjab facilities'
+  task organize_punjab_facilities: :environment do
+    ihmi = Organization.find_or_create_by(name: 'India Hypertension Management Initiative')
+    facility_group = ihmi.facility_groups.find_or_create_by(name: 'All IHMI Facilities')
+    punjab_facilities = Facility.where(state: 'Punjab', facility_group: nil)
+    punjab_facilities.update_all(facility_group_id: facility_group.id)
+  end
+
+  desc 'Add registration facility to existing users from user facility'
+  task populate_registration_facility_for_users: :environment do
+    User.where(facility: nil).each do |user|
+      user_facility = UserFacility.where(user: user).limit(1).first
+      if user_facility.present?
+        puts "Adding #{user_facility.facility.name} as the registration facility for user #{user.full_name}"
+        user.update(facility: user_facility.facility)
+      else
+        puts "Did not find user facility for user #{user.full_name}"
+      end
     end
   end
 end

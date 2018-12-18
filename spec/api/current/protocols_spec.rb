@@ -1,12 +1,13 @@
 require 'swagger_helper'
 
-describe 'Protocols V2 API', swagger_doc: 'current/swagger.json' do
+describe 'Protocols Current API', swagger_doc: 'current/swagger.json' do
   path '/protocols/sync' do
     get 'Syncs protocols and protocol drugs data from server to device.' do
       tags 'protocol'
       security [ basic: [] ]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
-      Api::V1::Schema.sync_to_user_request.each do |param|
+      parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
+      Api::Current::Schema.sync_to_user_request.each do |param|
         parameter param
       end
 
@@ -19,11 +20,13 @@ describe 'Protocols V2 API', swagger_doc: 'current/swagger.json' do
 
       response '200', 'protocols received' do
         let(:request_user) { FactoryBot.create(:user) }
+        let(:request_facility) { FactoryBot.create(:facility) }
         let(:HTTP_X_USER_ID) { request_user.id }
+        let(:HTTP_X_FACILITY_ID) { request_facility.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
-        schema Api::V1::Schema.protocol_sync_to_user_response
-        let(:processed_since) { 10.minutes.ago }
+        schema Api::Current::Schema.protocol_sync_to_user_response
+        let(:process_token) { Base64.encode64({other_facilities_processed_since: 10.minutes.ago}.to_json) }
         let(:limit) { 10 }
 
         before do |example|

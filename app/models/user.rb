@@ -9,11 +9,12 @@ class User < ApplicationRecord
 
   has_secure_password
 
-  has_many :user_facilities, dependent: :delete_all
-  has_many :facilities, through: :user_facilities
+  belongs_to :facility, foreign_key: 'registration_facility_id'
   has_many :blood_pressures
-  has_many :patients, through: :blood_pressures
+  has_many :patients, -> { distinct }, through: :blood_pressures
   has_many :audit_logs, as: :auditable
+
+  has_many :registered_patients, class_name: "Patient", foreign_key: "registration_user_id"
 
   before_create :set_otp
   before_create :set_access_token
@@ -85,7 +86,7 @@ class User < ApplicationRecord
   end
 
   def has_never_logged_in?
-    !logged_in_at.present?
+    logged_in_at.blank?
   end
 
   def reset_login
@@ -103,6 +104,6 @@ class User < ApplicationRecord
   end
 
   def registered_at_facility
-    self.facilities.order(:created_at).first
+    self.facility
   end
 end

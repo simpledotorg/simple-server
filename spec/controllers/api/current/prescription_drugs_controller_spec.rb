@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Api::Current::PrescriptionDrugsController, type: :controller do
   let(:request_user) { FactoryBot.create(:user) }
+  let(:request_facility) { FactoryBot.create(:facility) }
   let(:model) { PrescriptionDrug }
 
   let(:build_payload) { lambda { build_prescription_drug_payload } }
@@ -20,14 +21,15 @@ RSpec.describe Api::Current::PrescriptionDrugsController, type: :controller do
 
     describe 'creates new prescription drugs' do
       it 'creates new prescription drugs with associated patient, and facility' do
-        request.env['HTTP_X_USER_ID']          = request_user.id
+        request.env['HTTP_X_USER_ID'] = request_user.id
+        request.env['HTTP_X_FACILITY_ID'] = request_facility.id
         request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
-        
-        patient            = FactoryBot.create(:patient)
-        facility           = FactoryBot.create(:facility)
+
+        patient = FactoryBot.create(:patient)
+        facility = FactoryBot.create(:facility)
         prescription_drugs = (1..10).map do
           build_prescription_drug_payload(FactoryBot.build(:prescription_drug,
-                                                           patient:  patient,
+                                                           patient: patient,
                                                            facility: facility))
         end
         post(:sync_from_user, params: { prescription_drugs: prescription_drugs }, as: :json)
@@ -40,6 +42,35 @@ RSpec.describe Api::Current::PrescriptionDrugsController, type: :controller do
   end
 
   describe 'GET sync: send data from server to device;' do
-    it_behaves_like 'a working sync controller sending records'
+    it_behaves_like 'a working Current sync controller sending records'
+
+    describe 'current facility prioritisation' do
+      it "syncs request facility's records first" do
+        request_2_facility = FactoryBot.create(:facility)
+        FactoryBot.create_list(:prescription_drug, 5, facility: request_facility, updated_at: 3.minutes.ago)
+        FactoryBot.create_list(:prescription_drug, 5, facility: request_facility, updated_at: 5.minutes.ago)
+        FactoryBot.create_list(:prescription_drug, 5, facility: request_2_facility, updated_at: 7.minutes.ago)
+        FactoryBot.create_list(:prescription_drug, 5, facility: request_2_facility, updated_at: 10.minutes.ago)
+
+        # GET request 1
+        set_authentication_headers
+        get :sync_to_user, params: { limit: 10 }
+        response_1_body = JSON(response.body)
+
+        record_ids = response_1_body['prescription_drugs'].map { |r| r['id'] }
+        records = model.where(id: record_ids)
+        expect(records.count).to eq 10
+        expect(records.map(&:facility).to_set).to eq Set[request_facility]
+
+        # GET request 2
+        get :sync_to_user, params: { limit: 10, process_token: response_1_body['process_token'] }
+        response_2_body = JSON(response.body)
+
+        record_ids = response_2_body['prescription_drugs'].map { |r| r['id'] }
+        records = model.where(id: record_ids)
+        expect(records.count).to eq 10
+        expect(records.map(&:facility).to_set).to eq Set[request_facility, request_2_facility]
+      end
+    end
   end
 end
