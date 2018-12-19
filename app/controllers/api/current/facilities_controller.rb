@@ -12,4 +12,8 @@ class Api::Current::FacilitiesController < Api::Current::SyncController
   def transform_to_response(facility)
     facility.as_json
   end
+
+  def response_process_token
+    { other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since }
+  end
 end
