@@ -16,6 +16,7 @@ RSpec.describe Facility, type: :model do
       FactoryBot.create_list(:blood_pressure, 5, facility: facility, patient: patient)
       expect(facility.patients.count).to eq(1)
     end
+
     it { should belong_to(:facility_group) }
   end
 

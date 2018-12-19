@@ -121,7 +121,7 @@ end
 
 RSpec.shared_examples 'a working sync controller updating records' do
   let(:request_key) { model.to_s.underscore.pluralize }
-  let(:existing_records) { FactoryBot.create_list(model.to_s.underscore.to_sym, 10) }
+  let(:existing_records) { create_record_list(10) }
   let(:updated_records) { existing_records.map(&update_payload) }
   let(:updated_payload) { Hash[request_key, updated_records] }
 
@@ -145,7 +145,7 @@ end
 RSpec.shared_examples 'a working V1 sync controller sending records' do
   before :each do
     Timecop.travel(15.minutes.ago) do
-      FactoryBot.create_list(model.to_s.underscore, 10)
+      create_record_list(10)
     end
   end
 
@@ -165,7 +165,7 @@ RSpec.shared_examples 'a working V1 sync controller sending records' do
     end
 
     it 'Returns new records added since last sync' do
-      expected_records = FactoryBot.create_list(model.to_s.underscore, 5, updated_at: 5.minutes.ago)
+      expected_records = create_record_list(5, updated_at: 5.minutes.ago)
       get :sync_to_user, params: { processed_since: 10.minutes.ago }
 
       response_body = JSON(response.body)
@@ -222,10 +222,10 @@ end
 RSpec.shared_examples 'a working Current sync controller sending records' do
   before :each do
     Timecop.travel(15.minutes.ago) do
-      FactoryBot.create_list(model.to_s.underscore, 5)
+      create_record_list(5)
     end
     Timecop.travel(14.minutes.ago) do
-      FactoryBot.create_list(model.to_s.underscore, 5)
+      create_record_list(5)
     end
   end
 
@@ -245,7 +245,7 @@ RSpec.shared_examples 'a working Current sync controller sending records' do
     end
 
     it 'Returns new records added since last sync' do
-      expected_records = FactoryBot.create_list(model.to_s.underscore, 5, updated_at: 5.minutes.ago)
+      expected_records = create_record_list(5, updated_at: 5.minutes.ago)
       get :sync_to_user, params: { process_token: make_process_token({ other_facilities_processed_since: 10.minutes.ago }) }
 
       response_body = JSON(response.body)
@@ -323,7 +323,7 @@ RSpec.shared_examples 'a sync controller that audits the data access' do
     end
 
     it 'creates an audit log for data updated by the user' do
-      exiting_record = FactoryBot.create(model_class_sym)
+      exiting_record = create_record
       record[:id] = exiting_record.id
       payload[request_key] = [record]
 
@@ -335,7 +335,7 @@ RSpec.shared_examples 'a sync controller that audits the data access' do
     end
 
     it 'creates an audit log for data touched by the user' do
-      exiting_record = FactoryBot.create(model_class_sym)
+      exiting_record = create_record
       record[:id] = exiting_record.id
       record[:updated_at] = 3.days.ago
       payload[request_key] = [record]
@@ -349,7 +349,7 @@ RSpec.shared_examples 'a sync controller that audits the data access' do
   end
 
   describe 'creates an audit log for data synced to user' do
-    let!(:records) { FactoryBot.create_list(model_class_sym, 5) }
+    let!(:records) { create_record_list(5) }
     it 'creates an audit log for data fetched by the user' do
       get :sync_to_user, params: {
         processed_since: 20.minutes.ago,
