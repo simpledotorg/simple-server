@@ -6,6 +6,41 @@
 ### Removed 
 ### Security 
 
+# 2018-12-18-1
+
+## Portal
+### Added 
+- Add patient visits to dashboard 
+- Added an analyst role for read-only dashboard access 
+### Changed
+- Count unique patients per day instead of BPs 
+- Extended daily stats to 21 days back 
+- Fixed wrapping of text in the Users index
+- UI Improvements
+- Use India timezone in dashboard 
+### Fixed
+- Use AdminController for audit logs
+### Deprecated 
+### Removed 
+### Security 
+- [Security] Bump bootstrap from 4.1.1 to 4.1.3 
+
+## API
+### Added 
+- Add email prefixes to approval request emails
+- Multiple api versions
+### Changed
+- Allow null vaules for medical history questions
+- Respond with false if medical history question is nil
+- Update medical history questions from boolean to enum
+### Fixed
+### Deprecated 
+### Removed 
+### Security 
+- Add EMAIL_SUBJECT_PREFIX to required config
+- [Security] Bump loofah from 2.2.2 to 2.2.3 (#152)
+- [Security] Bump rack from 2.0.5 to 2.0.6 (#158)
+
 # 2018-10-08-3
 ## Portal 
 ### Fixed

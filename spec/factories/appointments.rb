@@ -27,8 +27,9 @@ end
 def updated_appointment_payload(existing_appointment)
   update_time = 10.days.from_now
   updated_status = Appointment.statuses.keys
-                          .reject { |action| action == existing_appointment.status.to_s}
-                          .sample
+                     .reject { |action| action == existing_appointment.status.to_s }
+                     .reject { |action| action == 'cancelled' }
+                     .sample
 
   build_appointment_payload(existing_appointment).merge(
     'updated_at' => update_time,
