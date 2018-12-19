@@ -27,6 +27,10 @@ class Api::V1::Models < Api::Current::Models
       }
     end
 
+    def appointment
+      super.tap { |d| d[:properties][:cancel_reason][:enum] -= %w(invalid_phone_number public_hospital_transfer moved_to_private) }
+    end
+
     def user
       { type: :object,
         properties: {
@@ -44,8 +48,8 @@ class Api::V1::Models < Api::Current::Models
     def definitions
       Api::Current::Models.definitions.merge(
         medical_history: medical_history,
-        user: user
-      )
+        appointment: appointment,
+        user: user)
     end
   end
 end
