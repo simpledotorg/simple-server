@@ -25,7 +25,7 @@
     <% @facility_group.users.each do |user| %>
       <div class="row border-bottom mb-4">
         <div class="col-lg-9">
-          <h6><%= link_to user.name, admin_facility_path(user) %></h6>
+          <h6><%= link_to user.full_name, admin_user_path(user) %></h6>
         </div>
       </div>
     <% end %>
