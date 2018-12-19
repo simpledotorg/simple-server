@@ -21,9 +21,10 @@
 
 ## API
 ### Added
-- Add FACILITY_ID to sync API headers. Make registration_facility_id optional for v1 and required for v2
-- Associate patient with registraiton user and registration facility
-- User has a registration facility
+- Add FACILITY_ID to sync API headers. Make this optional for v1 and required for v2
+- Associate patient with registration user and registration facility
+- User has a registration facility.
+  - `facility_ids` is changed to `registration_facility_id` in v2 of `users/register`, and `users/find`
 - Soft deletes (optional deleted_at field in all entities)
 ### Changed
 - Prioritise current facility sync for Patients, BPs, Drugs, and Appointments
