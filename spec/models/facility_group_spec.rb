@@ -16,4 +16,8 @@ RSpec.describe FacilityGroup, type: :model do
   describe 'Validations' do
     it { should validate_presence_of(:name) }
   end
+
+  describe 'Behavior' do
+    it_behaves_like 'a record that is deletable'
+  end
 end

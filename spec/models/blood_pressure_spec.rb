@@ -11,6 +11,10 @@ RSpec.describe BloodPressure, type: :model do
     it { should belong_to(:user)}
   end
 
+  describe 'Behavior' do
+    it_behaves_like 'a record that is deletable'
+  end
+
   context "utility methods" do
     let(:bp_normal)         { create(:blood_pressure, systolic: 120, diastolic: 80) }
     let(:bp_high_systolic)  { create(:blood_pressure, systolic: 140, diastolic: 80) }
