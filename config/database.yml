@@ -15,7 +15,7 @@ development:
 test:
   <<: *default
   host: localhost
-  database: simple-server_test
+  database: simple-server_test<%= ENV['TEST_ENV_NUMBER'] %>
 
 production:
   <<: *default
