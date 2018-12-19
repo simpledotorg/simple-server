@@ -9,4 +9,8 @@ RSpec.describe PrescriptionDrug, type: :model do
     it { should belong_to(:facility)}
     it { should belong_to(:patient)}
   end
+
+  describe 'Behavior' do
+    it_behaves_like 'a record that is deletable'
+  end
 end

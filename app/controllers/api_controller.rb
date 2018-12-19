@@ -1,5 +1,6 @@
 class APIController < ApplicationController
-  before_action :authenticate, :validate_facility, :set_sentry_context
+  before_action :authenticate, :validate_facility, :validate_current_facility_belongs_to_users_facility_group
+
   TIME_WITHOUT_TIMEZONE_FORMAT = '%FT%T.%3NZ'.freeze
 
   skip_before_action :verify_authenticity_token
@@ -20,8 +21,16 @@ class APIController < ApplicationController
     @current_facility ||= Facility.find_by(id: request.headers['HTTP_X_FACILITY_ID'])
   end
 
+  def current_facility_group
+    current_user.facility.facility_group
+  end
+
   def validate_facility
     return head :bad_request unless current_facility.present?
+  end
+
+  def validate_current_facility_belongs_to_users_facility_group
+    return head :unauthorized unless current_user.present? && current_facility_group.facilities.where(id: current_facility.id).present?
   end
 
   def authenticate

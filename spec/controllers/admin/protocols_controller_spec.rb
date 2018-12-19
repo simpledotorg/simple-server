@@ -79,7 +79,7 @@ RSpec.describe Admin::ProtocolsController, type: :controller do
         put :update, params: {id: protocol.to_param, protocol: new_attributes}
         protocol.reload
         expect(response).to redirect_to([:admin, protocol])
-        expect(protocol.attributes.except('id', 'created_at', 'updated_at'))
+        expect(protocol.attributes.except('id', 'created_at', 'updated_at', 'deleted_at'))
           .to eq new_attributes.with_indifferent_access
       end
 
