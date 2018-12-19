@@ -44,6 +44,7 @@ class Api::Current::Models
           age: { type: [:integer, 'null'],
                  description: 'When age is present, age_updated_at must be present as well.' },
           age_updated_at: { '$ref' => '#/definitions/nullable_timestamp' },
+          deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' } },
         required: %w[id gender full_name created_at updated_at status] }
@@ -59,6 +60,7 @@ class Api::Current::Models
           state: { type: :string },
           country: { type: :string },
           pin: { type: :string },
+          deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' } },
         required: %w[id created_at updated_at] }
@@ -71,6 +73,7 @@ class Api::Current::Models
           number: { '$ref' => '#/definitions/non_empty_string' },
           phone_type: { type: :string, enum: PatientPhoneNumber::PHONE_TYPE },
           active: { type: :boolean },
+          deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' } },
         required: %w[id created_at updated_at number] }
@@ -91,6 +94,7 @@ class Api::Current::Models
           id: { '$ref' => '#/definitions/uuid' },
           systolic: { type: :integer },
           diastolic: { type: :integer },
+          deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' },
           patient_id: { '$ref' => '#/definitions/uuid' },
@@ -105,6 +109,7 @@ class Api::Current::Models
         type: :object,
         properties: {
           id: { '$ref' => '#/definitions/uuid' },
+          deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' },
           name: { '$ref' => '#/definitions/non_empty_string' },
@@ -124,6 +129,7 @@ class Api::Current::Models
       { type: :object,
         properties: {
           id: { '$ref' => '#/definitions/uuid' },
+          deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' },
           protocol_id: { '$ref' => '#/definitions/uuid' },
@@ -137,6 +143,7 @@ class Api::Current::Models
       { type: :object,
         properties: {
           id: { '$ref' => '#/definitions/uuid' },
+          deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' },
           name: { type: :string },
@@ -149,6 +156,7 @@ class Api::Current::Models
       { type: :object,
         properties: {
           id: { '$ref' => '#/definitions/uuid' },
+          deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' },
           name: { '$ref' => '#/definitions/non_empty_string' },
@@ -166,6 +174,7 @@ class Api::Current::Models
       { type: :object,
         properties: {
           id: { '$ref' => '#/definitions/uuid' },
+          deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' },
           full_name: { '$ref' => '#/definitions/non_empty_string' },
@@ -196,6 +205,7 @@ class Api::Current::Models
           cancel_reason: { type: ['null', :string], enum: Appointment.cancel_reasons.keys + [nil] },
           remind_on: { type: [:string, 'null'], format: :date },
           agreed_to_visit: { type: [:boolean, 'null'] },
+          deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' } },
         required: %w[id patient_id facility_id scheduled_date status created_at updated_at]
@@ -210,6 +220,7 @@ class Api::Current::Models
           user_id: { '$ref' => '#/definitions/uuid' },
           communication_type: { type: :string, enum: Communication.communication_types.keys },
           communication_result: { type: :string, enum: Communication.communication_results.keys },
+          deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' } },
         required: %w[id appointment_id user_id communication_type communication_result created_at updated_at]
@@ -227,6 +238,7 @@ class Api::Current::Models
           receiving_treatment_for_hypertension: { type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys },
           diabetes: { type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys },
           diagnosed_with_hypertension: { type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys },
+          deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' } },
         required: [

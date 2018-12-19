@@ -1167,6 +1167,9 @@
         "age_updated_at": {
           "$ref": "#/definitions/nullable_timestamp"
         },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
         "created_at": {
           "$ref": "#/definitions/timestamp"
         },
@@ -1210,6 +1213,9 @@
         "pin": {
           "type": "string"
         },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
         "created_at": {
           "$ref": "#/definitions/timestamp"
         },
@@ -1241,6 +1247,9 @@
         },
         "active": {
           "type": "boolean"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
         },
         "created_at": {
           "$ref": "#/definitions/timestamp"
@@ -1309,6 +1318,9 @@
         "age_updated_at": {
           "$ref": "#/definitions/nullable_timestamp"
         },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
         "created_at": {
           "$ref": "#/definitions/timestamp"
         },
@@ -1353,6 +1365,9 @@
         "diastolic": {
           "type": "integer"
         },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
         "created_at": {
           "$ref": "#/definitions/timestamp"
         },
@@ -1393,6 +1408,9 @@
       "properties": {
         "id": {
           "$ref": "#/definitions/uuid"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
         },
         "created_at": {
           "$ref": "#/definitions/timestamp"
@@ -1448,6 +1466,9 @@
         "id": {
           "$ref": "#/definitions/uuid"
         },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
         "created_at": {
           "$ref": "#/definitions/timestamp"
         },
@@ -1489,6 +1510,9 @@
         "id": {
           "$ref": "#/definitions/uuid"
         },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
         "created_at": {
           "$ref": "#/definitions/timestamp"
         },
@@ -1525,6 +1549,9 @@
       "properties": {
         "id": {
           "$ref": "#/definitions/uuid"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
         },
         "created_at": {
           "$ref": "#/definitions/timestamp"
@@ -1579,6 +1606,9 @@
       "properties": {
         "id": {
           "$ref": "#/definitions/uuid"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
         },
         "created_at": {
           "$ref": "#/definitions/timestamp"
@@ -1664,6 +1694,9 @@
             "successful"
           ]
         },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
         "created_at": {
           "$ref": "#/definitions/timestamp"
         },
@@ -1723,6 +1756,9 @@
             "not_responding",
             "moved",
             "dead",
+            "invalid_phone_number",
+            "public_hospital_transfer",
+            "moved_to_private",
             "other",
             null
           ]
@@ -1739,6 +1775,9 @@
             "boolean",
             "null"
           ]
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
         },
         "created_at": {
           "$ref": "#/definitions/timestamp"
@@ -1822,6 +1861,9 @@
             "no",
             "unknown"
           ]
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
         },
         "created_at": {
           "$ref": "#/definitions/timestamp"

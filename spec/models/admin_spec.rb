@@ -8,4 +8,8 @@ RSpec.describe Admin, type: :model do
 
     it { should define_enum_for(:role).with([:owner, :supervisor, :analyst]) }
   end
+
+  describe 'Behavior' do
+    it_behaves_like 'a record that is deletable'
+  end
 end

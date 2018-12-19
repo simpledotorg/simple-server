@@ -9,4 +9,12 @@ describe MedicalHistory, type: :model do
     it_behaves_like 'a record that validates device timestamps'
     it { should validate_presence_of(:device_updated_at) }
   end
+
+  describe 'Behavior' do
+    it_behaves_like 'a record that is deletable'
+  end
+
+  describe 'Behavior' do
+    it_behaves_like 'a record that is deletable'
+  end
 end
