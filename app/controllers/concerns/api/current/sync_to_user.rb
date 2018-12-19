@@ -1,6 +1,11 @@
 module Api::Current::SyncToUser
   extend ActiveSupport::Concern
   included do
+
+    def facility_group_records
+      current_facility_group.send(model_name.name.underscore.pluralize.to_sym)
+    end
+
     def current_facility_records
       []
     end
