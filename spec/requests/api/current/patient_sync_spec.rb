@@ -11,7 +11,7 @@ RSpec.describe 'Patients sync', type: :request do
   let(:update_payload) { lambda { |record| updated_patient_payload record } }
 
   def to_response(patient)
-    Api::V1::PatientTransformer.to_nested_response(patient)
+    Api::Current::PatientTransformer.to_nested_response(patient)
   end
 
   include_examples 'current API sync requests'
