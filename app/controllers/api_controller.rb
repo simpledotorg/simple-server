@@ -18,11 +18,13 @@ class APIController < ApplicationController
   end
 
   def current_facility
-    @current_facility ||= Facility.find_by(id: request.headers['HTTP_X_FACILITY_ID'])
+    @current_facility = @current_facility ||
+                        Facility.find_by(id: request.headers['HTTP_X_FACILITY_ID']) ||
+                        (@current_user && Facility.find_by(id: @current_user.registration_facility_id))
   end
 
   def current_facility_group
-    current_user.facility.facility_group
+    @current_facility&.facility_group
   end
 
   def validate_facility
