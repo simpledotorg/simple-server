@@ -1,7 +1,6 @@
 class AdminAccessControl < ApplicationRecord
   belongs_to :admin
-  belongs_to :facility_group
+  belongs_to :access_controllable, polymorphic: true
 
   validates :admin, presence: true
-  validates :facility_group, presence: true
 end
