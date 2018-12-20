@@ -4,6 +4,6 @@ class Api::V1::PatientsController < Api::Current::PatientsController
 
   def metadata
     { registration_user_id: current_user.id,
-      registration_facility_id: nil }
+      registration_facility_id: current_user.facility.id }
   end
 end

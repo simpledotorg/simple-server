@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181207111036) do
+ActiveRecord::Schema.define(version: 20181207112413) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,6 +27,8 @@ ActiveRecord::Schema.define(version: 20181207111036) do
     t.datetime "updated_at", null: false
     t.datetime "device_created_at", null: false
     t.datetime "device_updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_addresses_on_deleted_at"
   end
 
   create_table "admin_access_controls", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -62,6 +64,8 @@ ActiveRecord::Schema.define(version: 20181207111036) do
     t.string "invited_by_type"
     t.bigint "invited_by_id"
     t.integer "invitations_count", default: 0
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_admins_on_deleted_at"
     t.index ["email"], name: "index_admins_on_email", unique: true
     t.index ["invitation_token"], name: "index_admins_on_invitation_token", unique: true
     t.index ["invitations_count"], name: "index_admins_on_invitations_count"
@@ -83,6 +87,8 @@ ActiveRecord::Schema.define(version: 20181207111036) do
     t.datetime "updated_at", null: false
     t.date "remind_on"
     t.boolean "agreed_to_visit"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_appointments_on_deleted_at"
     t.index ["facility_id"], name: "index_appointments_on_facility_id"
     t.index ["patient_id"], name: "index_appointments_on_patient_id"
   end
@@ -108,6 +114,8 @@ ActiveRecord::Schema.define(version: 20181207111036) do
     t.datetime "device_updated_at", null: false
     t.uuid "facility_id", null: false
     t.uuid "user_id"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_blood_pressures_on_deleted_at"
     t.index ["user_id"], name: "index_blood_pressures_on_user_id"
   end
 
@@ -120,7 +128,9 @@ ActiveRecord::Schema.define(version: 20181207111036) do
     t.datetime "device_updated_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
     t.index ["appointment_id"], name: "index_communications_on_appointment_id"
+    t.index ["deleted_at"], name: "index_communications_on_deleted_at"
     t.index ["user_id"], name: "index_communications_on_user_id"
   end
 
@@ -137,7 +147,9 @@ ActiveRecord::Schema.define(version: 20181207111036) do
     t.datetime "updated_at", null: false
     t.float "latitude"
     t.float "longitude"
+    t.datetime "deleted_at"
     t.uuid "facility_group_id"
+    t.index ["deleted_at"], name: "index_facilities_on_deleted_at"
     t.index ["facility_group_id"], name: "index_facilities_on_facility_group_id"
   end
 
@@ -147,6 +159,8 @@ ActiveRecord::Schema.define(version: 20181207111036) do
     t.uuid "organization_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_facility_groups_on_deleted_at"
     t.index ["organization_id"], name: "index_facility_groups_on_organization_id"
   end
 
@@ -168,6 +182,8 @@ ActiveRecord::Schema.define(version: 20181207111036) do
     t.text "receiving_treatment_for_hypertension"
     t.text "diabetes"
     t.text "diagnosed_with_hypertension"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_medical_histories_on_deleted_at"
     t.index ["patient_id"], name: "index_medical_histories_on_patient_id"
   end
 
@@ -176,6 +192,8 @@ ActiveRecord::Schema.define(version: 20181207111036) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_organizations_on_deleted_at"
   end
 
   create_table "patient_phone_numbers", id: :uuid, default: nil, force: :cascade do |t|
@@ -187,6 +205,8 @@ ActiveRecord::Schema.define(version: 20181207111036) do
     t.uuid "patient_id"
     t.datetime "device_created_at", null: false
     t.datetime "device_updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_patient_phone_numbers_on_deleted_at"
   end
 
   create_table "patients", id: :uuid, default: nil, force: :cascade do |t|
@@ -204,6 +224,8 @@ ActiveRecord::Schema.define(version: 20181207111036) do
     t.boolean "test_data", default: false, null: false
     t.uuid "registration_facility_id"
     t.uuid "registration_user_id"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_patients_on_deleted_at"
     t.index ["registration_facility_id"], name: "index_patients_on_registration_facility_id"
     t.index ["registration_user_id"], name: "index_patients_on_registration_user_id"
   end
@@ -220,6 +242,8 @@ ActiveRecord::Schema.define(version: 20181207111036) do
     t.uuid "facility_id", null: false
     t.boolean "is_protocol_drug", null: false
     t.boolean "is_deleted", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_prescription_drugs_on_deleted_at"
   end
 
   create_table "protocol_drugs", id: :uuid, default: nil, force: :cascade do |t|
@@ -229,6 +253,8 @@ ActiveRecord::Schema.define(version: 20181207111036) do
     t.uuid "protocol_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_protocol_drugs_on_deleted_at"
   end
 
   create_table "protocols", id: :uuid, default: nil, force: :cascade do |t|
@@ -236,6 +262,8 @@ ActiveRecord::Schema.define(version: 20181207111036) do
     t.integer "follow_up_days"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_protocols_on_deleted_at"
   end
 
   create_table "user_facilities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -262,7 +290,9 @@ ActiveRecord::Schema.define(version: 20181207111036) do
     t.datetime "logged_in_at"
     t.string "sync_approval_status"
     t.text "sync_approval_status_reason"
+    t.datetime "deleted_at"
     t.uuid "registration_facility_id"
+    t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["phone_number"], name: "index_users_on_phone_number", unique: true
     t.index ["registration_facility_id"], name: "index_users_on_registration_facility_id"
   end

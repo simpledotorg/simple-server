@@ -16,6 +16,7 @@ RSpec.describe Facility, type: :model do
       FactoryBot.create_list(:blood_pressure, 5, facility: facility, patient: patient)
       expect(facility.patients.count).to eq(1)
     end
+
     it { should belong_to(:facility_group) }
   end
 
@@ -25,5 +26,9 @@ RSpec.describe Facility, type: :model do
     it { should validate_presence_of(:state)}
     it { should validate_presence_of(:country)}
     it { should validate_numericality_of(:pin)}
+  end
+
+  describe 'Behavior' do
+    it_behaves_like 'a record that is deletable'
   end
 end

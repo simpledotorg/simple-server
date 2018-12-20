@@ -30,4 +30,8 @@ describe Patient, type: :model do
       expect(patient).to be_invalid
     end
   end
+
+  describe 'Behavior' do
+    it_behaves_like 'a record that is deletable'
+  end
 end
