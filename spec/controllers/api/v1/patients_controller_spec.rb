@@ -63,6 +63,22 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         expect(Patient.count).to eq 1
         expect(Patient.first.registration_user).to eq request_user
       end
+
+      it 'sets the registration facility to the facility id in the header, when available' do
+        request_facility = FactoryBot.create(:facility)
+        request.env['HTTP_X_FACILITY_ID'] = request_facility.id
+        post(:sync_from_user, params: { patients: [build_patient_payload] }, as: :json)
+        expect(response).to have_http_status(200)
+        expect(Patient.count).to eq 1
+        expect(Patient.first.registration_facility).to eq request_facility
+      end
+
+      it 'sets the registration facility to the user registration facility when header is not available' do
+        post(:sync_from_user, params: { patients: [build_patient_payload] }, as: :json)
+        expect(response).to have_http_status(200)
+        expect(Patient.count).to eq 1
+        expect(Patient.first.registration_facility).to eq request_user.facility
+      end
     end
 
     describe 'updates patients' do
