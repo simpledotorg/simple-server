@@ -6,6 +6,41 @@
 ### Removed 
 ### Security 
 
+# 2018-12-21-1
+
+## Portal
+### Added
+- Organizations and Facility Groups, ability to create, update and delete them
+- Roles to manage organizations and facilities
+- Organize all punjab facilities under IHMI
+### Changed
+### Fixed
+### Deprecated 
+### Removed 
+### Security
+
+## API
+### Added
+- Add FACILITY_ID to sync API headers. Make this optional for v1 and required for v2
+- Associate patient with registration user and registration facility
+- User has a registration facility.
+  - `facility_ids` is changed to `registration_facility_id` in v2 of `users/register`, and `users/find`
+- Soft deletes (optional deleted_at field in all entities)
+### Changed
+- Restrict sycning of records to a users facility group
+- Prioritise current facility sync for Patients, BPs, Drugs, and Appointments
+- API schema now has process_token instead of processed_since
+- Make diagnosed with hypertension a required field for medical history
+- Update cancel reasons in appointments
+  - Add 3 new reasons to v2, exclude them from v1, and coerce accordingly
+  - Updation of cancelled appointments is disallowed in v1
+### Fixed
+- Report user id with extra args to sentry
+### Deprecated
+### Removed 
+### Security 
+- Upgrade activejob to fix vulnerability issue
+
 # 2018-12-18-1
 
 ## Portal
