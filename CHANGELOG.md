@@ -27,13 +27,13 @@
   - `facility_ids` is changed to `registration_facility_id` in v2 of `users/register`, and `users/find`
 - Soft deletes (optional deleted_at field in all entities)
 ### Changed
+- Restrict sycning of records to a users facility group
 - Prioritise current facility sync for Patients, BPs, Drugs, and Appointments
 - API schema now has process_token instead of processed_since
 - Make diagnosed with hypertension a required field for medical history
 - Update cancel reasons in appointments
   - Add 3 new reasons to v2, exclude them from v1, and coerce accordingly
   - Updation of cancelled appointments is disallowed in v1
-- Restrict sycning of records to a users facility group
 ### Fixed
 - Report user id with extra args to sentry
 ### Deprecated
