@@ -65,7 +65,7 @@ Having the version in the json lets us iterate over the content of the QR, while
 
 
 ### Example simple card
-![simple-card](Example Simple Card../simple-card-example.png "")
+![simple-card](../simple-card-example.png)
 
 ### Simple card ID states
 The state machine for a scanned card from the experiments app
