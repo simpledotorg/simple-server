@@ -1,4 +1,8 @@
 class Api::Current::ProtocolsController < Api::Current::SyncController
+  skip_before_action :authenticate, only: [:sync_to_user]
+  skip_before_action :validate_facility, only: [:sync_to_user]
+  skip_before_action :validate_current_facility_belongs_to_users_facility_group, only: [:sync_to_user]
+  
   def sync_to_user
     __sync_to_user__('protocols')
   end
