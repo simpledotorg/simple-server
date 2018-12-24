@@ -76,3 +76,8 @@ The state machine for a scanned card from the experiments app
 Accepted
 
 ## Consequences
+
+### Constraint on generation?
+Since we need this numeric fallback, this restricts generation of UUIDs to ones that have at least 7 digits. This happens very rarely (once in ~10 billion times). And even when this happens there can be some simple solutions:
+1. Discard such cards
+2. Enforce a constraint on UUID generation that restricts to only those that have at least 7 digits.
