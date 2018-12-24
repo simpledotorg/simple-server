@@ -17,4 +17,6 @@ class Facility < ApplicationRecord
   validates :state, presence: true
   validates :country, presence: true
   validates :pin, numericality: true, allow_blank: true
+
+  delegate :protocol, to: :facility_group
 end

@@ -4,5 +4,6 @@ FactoryBot.define do
     name { Faker::Company.name }
     description { Faker::Company.catch_phrase }
     organization
+    protocol
   end
 end

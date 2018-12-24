@@ -11,6 +11,8 @@ class FacilityGroup < ApplicationRecord
   has_many :medical_histories, through: :patients
   has_many :communications, through: :appointments
 
+  belongs_to :protocol
+
   validates :name, presence: true
   validates :organization, presence: true
 end
