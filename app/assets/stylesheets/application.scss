@@ -361,8 +361,11 @@ Dashboard UI
 }
 
 .snapshot-simple .featured-section {
-    background: #fff 8px 8px url(/assets/icon-happy.png) no-repeat;
+    background: #fff 12px 12px url(/assets/icon-happy.png) no-repeat;
     background-size: 50px;
+    text-align: left;
+    padding: 8px 16px 8px 70px;
+    min-height: 1px;
 }
 
 .snapshot-header {
@@ -422,6 +425,11 @@ Dashboard UI
     margin: 4px 0;
 }
 
+.snapshot-simple .featured-title {
+    font-weight: normal;
+    font-size: 14px;
+}
+
 .featured-graph table {
     font-size: 10px;
     margin-top: 0;
@@ -430,6 +438,13 @@ Dashboard UI
 .featured-number {
     font-size: 22px;
     line-height: 1;
+}
+
+.snapshot-simple .featured-number {
+    font-size: 18px;
+    margin-bottom: 8px;
+    display: block;
+    font-weight: 700;
 }
 
 td.featured-middle {
@@ -523,7 +538,7 @@ td.featured-middle .featured-number {
 }
 
 .table-compact td {
-    padding: 4px 4px;
+    padding: 4px 2px;
     vertical-align: middle;
     border-top: 1px solid $grey-lightest;
     font-size: 13px;
@@ -578,6 +593,8 @@ td.featured-middle .featured-number {
 
 .table-compact .row-rank {
     color: $grey-mid;
+    min-width: 2em;
+    text-align: center;
 }
 
 .table-compact .row-unique-date {
