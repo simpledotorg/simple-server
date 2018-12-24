@@ -42,7 +42,7 @@ We'll use a 6 or 7 digit ID, for when the QR scanning doesn't work. This number 
 #### Collisions
 Unlike the UUID, which is unique, the numeric representation isn't unique. 2 UUIDs can have the same numeric representation. When searching by the digits, the app will show matches in the search results, and the nurse can pick the patient from the results. Since the patients in the search results aren't going to be similar (different names, etc), and there won't be many such collisions, this shouldn't be hard.
 
-The space for this collision is roughly 15^7, or ~170 million (15^6 is ~11 million), which is comfortable for a large clinic in a metropolitan city.
+The space for this collision is roughly 16^7, or ~270 million (16^6 is ~16 million), which is comfortable for a large clinic in a metropolitan city.
 
 #### Associating by the numeric representation
 
