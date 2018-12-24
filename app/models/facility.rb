@@ -18,7 +18,5 @@ class Facility < ApplicationRecord
   validates :country, presence: true
   validates :pin, numericality: true, allow_blank: true
 
-  def protocol
-    facility_group.protocol
-  end
+  delegate :protocol, to: :facility_group
 end
