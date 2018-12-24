@@ -69,7 +69,7 @@ Having the version in the json lets us iterate over the content of the QR, while
 
 ### Simple card ID states
 The state machine for a scanned card from the experiments app
-![simple-state-machine](../simple-card-example.png)
+![simple-state-machine](../simple-card-states.png)
 
 ## Status
 
