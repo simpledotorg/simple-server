@@ -12,6 +12,8 @@ RSpec.describe FacilityGroup, type: :model do
     it { have_many(:medical_histories).through(:patients) }
     it { have_many(:communications).through(:appointments) }
 
+    it { belong_to(:protocol) }
+
     it 'nullifies facility_group_id in facilities' do
       facility_group = FactoryBot.create(:facility_group)
       FactoryBot.create_list(:facility, 5, facility_group: facility_group)

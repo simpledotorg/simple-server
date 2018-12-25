@@ -1350,6 +1350,9 @@
         },
         "facility_type": {
           "type": "string"
+        },
+        "protocol_id": {
+          "$ref": "#/definitions/uuid"
         }
       },
       "required": [
@@ -1357,7 +1360,8 @@
         "name",
         "district",
         "state",
-        "country"
+        "country",
+        "protocol_id"
       ]
     },
     "facilities": {

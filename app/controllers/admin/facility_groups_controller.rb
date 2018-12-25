@@ -1,5 +1,6 @@
 class Admin::FacilityGroupsController < AdminController
   before_action :set_facility_group, only: [:show, :edit, :update, :destroy]
+  before_action :set_protocols, only: [:show, :edit, :update, :destroy, :new, :create]
   before_action :set_organization, only: [:new, :create, :show, :edit, :update, :destroy]
 
   def index
@@ -44,6 +45,10 @@ class Admin::FacilityGroupsController < AdminController
 
   private
 
+  def set_protocols
+    @protocols = Protocol.all
+  end
+
   def set_facility_group
     @facility_group= FacilityGroup.find(params[:id])
     authorize @facility_group
@@ -58,6 +63,7 @@ class Admin::FacilityGroupsController < AdminController
     params.require(:facility_group).permit(
       :name,
       :description,
+      :protocol_id,
       facility_ids: []
     )
   end
