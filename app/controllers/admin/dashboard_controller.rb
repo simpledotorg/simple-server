@@ -25,14 +25,6 @@ class Admin::DashboardController < AdminController
     Groupdate.time_zone = "UTC"
   end
 
-  def days_previous
-    20
-  end
-
-  def months_previous
-    8
-  end
-
   private
 
   def admin_facilities(facility_group)
@@ -40,19 +32,23 @@ class Admin::DashboardController < AdminController
   end
 
   def visits_by_facility(facility_group)
-    BloodPressure.where(facility: admin_facilities(facility_group)).group(:facility_id).count("distinct patient_id")
+    blood_pressures_in_facility_group(facility_group).group(:facility_id).count("distinct patient_id")
+  end
+
+  def blood_pressures_in_facility_group(facility_group)
+    BloodPressure.where(facility: admin_facilities(facility_group))
   end
 
   def visits_by_facility_user(facility_group)
-    BloodPressure.where(facility: admin_facilities(facility_group)).group(:facility_id, :user_id).count("distinct patient_id")
+    blood_pressures_in_facility_group(facility_group).group(:facility_id, :user_id).count("distinct patient_id")
   end
 
   def visits_by_facility_user_day(facility_group)
-    BloodPressure.where(facility: admin_facilities(facility_group)).group(:facility_id, :user_id).group_by_day(:device_created_at, last: @days_previous + 1).count("distinct patient_id")
+    blood_pressures_in_facility_group(facility_group).group(:facility_id, :user_id).group_by_day(:device_created_at, last: @days_previous + 1).count("distinct patient_id")
   end
 
   def visits_by_facility_month(facility_group)
-    BloodPressure.where(facility: admin_facilities(facility_group)).group(:facility_id).group_by_month(:device_created_at, last: @months_previous + 1).count("distinct patient_id")
+    blood_pressures_in_facility_group(facility_group).group(:facility_id).group_by_month(:device_created_at, last: @months_previous + 1).count("distinct patient_id")
   end
 
   def new_patients_by_facility
