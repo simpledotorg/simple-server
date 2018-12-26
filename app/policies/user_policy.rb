@@ -1,6 +1,6 @@
 class UserPolicy < ApplicationPolicy
   def index?
-    user.owner? || user.supervisor?
+    user.owner? || user.supervisor? || user.organization_owner?
   end
 
   def show?
