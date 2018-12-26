@@ -22,19 +22,21 @@ RSpec.feature "Admins", type: :feature do
     end
   end
 
-  describe "sending invitations" do
+  describe "sending invitations to supervisors" do
     let(:email) { "new@example.com" }
     let(:new_supervisor) { Admin.find_by(email: email) }
+    let!(:facility_groups) { FactoryBot.create_list(:facility_group, 2) }
 
     before do
       sign_in(owner)
 
       visit admins_path
 
-      click_link "Invite admin"
+      click_link "Invite Supervisor"
 
       fill_in "Email", with: email
-      select "Supervisor", from: "Role"
+
+      check facility_groups.first.name
 
       click_button "Send an invitation"
     end
@@ -55,6 +57,33 @@ RSpec.feature "Admins", type: :feature do
 
     it "creates the user pending invitation" do
       expect(new_supervisor.invited_to_sign_up?).to eq(true)
+    end
+  end
+
+  describe "association admins with their access control groups" do
+    let(:email) { "new@example.com" }
+    let(:new_supervisor) { Admin.find_by(email: email) }
+
+    before do
+      sign_in(owner)
+      visit admins_path
+      click_link "Invite Supervisor"
+      fill_in "Email", with: email
+    end
+
+    describe "inviting supervisors" do
+      let!(:facility_groups) { FactoryBot.create_list(:facility_group, 2) }
+      before do
+        check facility_groups.first.name
+        click_button "Send an invitation"
+      end
+
+      it "associates new supervisors to facility groups" do
+        expect(new_supervisor.admin_access_controls.count).to eq(1)
+        expect(new_supervisor.admin_access_controls.first.access_controllable_type).to eq('FacilityGroup')
+        expect(new_supervisor.admin_access_controls.first.access_controllable_id).to eq(facility_groups.first.id)
+      end
+
     end
   end
 
