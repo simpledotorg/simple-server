@@ -6,8 +6,8 @@ describe 'Users V1 API', swagger_doc: 'v1/swagger.json' do
   let(:facility) { FactoryBot.create(:facility) }
 
   before :each do
-    FactoryBot.create(:admin_access_control, admin: supervisor, facility_group: facility.facility_group)
-    FactoryBot.create(:admin_access_control, admin: owner, facility_group: facility.facility_group)
+    FactoryBot.create(:admin_access_control, admin: supervisor, access_controllable: facility.facility_group)
+    FactoryBot.create(:admin_access_control, admin: owner, access_controllable: facility.facility_group)
   end
 
   path '/users/find' do

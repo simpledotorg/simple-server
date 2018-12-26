@@ -4,7 +4,8 @@ class Admin::DashboardController < AdminController
 
     Groupdate.time_zone = "New Delhi"
 
-    @users_requesting_approval = User.where(facility: current_admin.facility_groups.flat_map(&:facilities)).requested_sync_approval
+    facilities = current_admin.facility_groups.flat_map(&:facilities)
+    @users_requesting_approval = User.where(facility: facilities).requested_sync_approval
 
     @days_previous = 20
     @months_previous = 8

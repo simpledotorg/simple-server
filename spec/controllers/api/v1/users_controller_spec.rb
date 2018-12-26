@@ -6,8 +6,8 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   let(:facility) { FactoryBot.create(:facility) }
 
   before :each do
-    FactoryBot.create(:admin_access_control, admin: supervisor, facility_group: facility.facility_group)
-    FactoryBot.create(:admin_access_control, admin: owner, facility_group: facility.facility_group)
+    FactoryBot.create(:admin_access_control, admin: supervisor, access_controllable: facility.facility_group)
+    FactoryBot.create(:admin_access_control, admin: owner, access_controllable: facility.facility_group)
   end
 
   describe '#register' do
