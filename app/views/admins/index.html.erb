@@ -1,6 +1,6 @@
 <div class="top-buttons">
     <% if policy(Admin).new? %>
-      <%= link_to 'Invite admin', new_admin_invitation_path, class: "btn btn-sm btn-primary" %>
+      <%= link_to 'Invite Supervisor', new_admin_invitation_path(role: 'supervisor'), class: "btn btn-sm btn-primary" %>
     <% end %>
 </div>
 
