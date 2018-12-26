@@ -2,13 +2,18 @@
   <div class="col-md-6">
     <%= bootstrap_form_with(model: admin, local: true, autocomplete: "off", label_errors: true) do |form| %>
       <%= form.text_field :email, id: :admin_email, required: true, autocomplete: "off" %>
-      <%= form.select(:role, Admin.roles.keys.map { |role| [role.titleize, role] }) %>
+      <%= form.text_field :role, value: admin.role, readonly: true %>
 
-      <% if admin.facility_groups.present? %>
-        <%= form.collection_check_boxes :facility_group_ids, admin.facility_groups, :id, :name, checked_value: 1 %>
+      <% if admin.supervisor? || admin.analyst? %>
+        <h3>Facility groups</h3>
+        <%= form.collection_check_boxes :access_controllable_ids, admin.facility_groups, :id, :name, label: 'Facility Groups', checked_value: 1 %>
+        <%= form.collection_check_boxes :access_controllable_ids, Organization.where.not(id: admin.organizations.pluck(:id)), :id, :name, label: 'Other Facility Groups' %>
       <% end %>
 
-      <%= form.collection_check_boxes :facility_group_ids, FacilityGroup.where.not(id: admin.facility_groups.map(&:id)), :id, :name, checked: true %>
+      <% if admin.organization_owner? %>
+        <%= form.collection_check_boxes :access_controllable_ids, admin.organizations, :id, :name, label: 'Organizations', checked_value: 1 %>
+        <%= form.collection_check_boxes :access_controllable_ids, Organization.where.not(id: admin.organizations.pluck(:id)), :id, :name, label: 'Other Organizations' %>
+      <% end %>
 
       <%= form.primary %>
     <% end %>

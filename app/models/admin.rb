@@ -14,9 +14,14 @@ class Admin < ApplicationRecord
   has_many :admin_access_controls
 
   def facility_groups
-    if supervisor?
-      return admin_access_controls.map(&:access_controllable)
-    end
+    return admin_access_controls.map(&:access_controllable) if (supervisor? || analyst?)
+    return admin_access_controls.map(&:access_controllable).flat_map(:facility_groups) if organization_owner?
+    []
+  end
+
+  def organizations
+    return admin_access_controls.map(&:access_controllable).map(&:organization).uniq if (supervisor? || analyst?)
+    return admin_access_controls.map(&:access_controllable) if organization_owner?
     []
   end
 end

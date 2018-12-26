@@ -125,10 +125,10 @@ RSpec.feature "Admins", type: :feature do
       end
     end
 
-    describe "inviting analysts" do
+    describe "inviting Analyst" do
       let!(:facility_groups) { FactoryBot.create_list(:facility_group, 2) }
       before do
-        click_link "Invite analyst"
+        click_link "Invite Analyst"
         fill_in "Email", with: email
         check facility_groups.first.name
         click_button "Send an invitation"
