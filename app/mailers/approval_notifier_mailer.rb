@@ -11,8 +11,8 @@ class ApprovalNotifierMailer < ApplicationMailer
     admin_emails('supervisor').join(',')
   end
 
-  def owner_emails
-    admin_emails('owner').join(',')
+  def organization_owner_emails
+    admin_emails('organization_owner').join(',')
   end
 
   def registration_approval_email
@@ -20,7 +20,7 @@ class ApprovalNotifierMailer < ApplicationMailer
     subject = I18n.t('registration_approval_email.subject', full_name: @user.full_name)
     mail(subject: subject,
          to: supervisor_emails,
-         cc: owner_emails)
+         cc: organization_owner_emails)
   end
 
   def reset_password_approval_email
@@ -28,6 +28,6 @@ class ApprovalNotifierMailer < ApplicationMailer
     subject = I18n.t('reset_password_approval_email.subject', full_name: @user.full_name)
     mail(subject: subject,
          to: supervisor_emails,
-         cc: owner_emails)
+         cc: organization_owner_emails)
   end
 end
