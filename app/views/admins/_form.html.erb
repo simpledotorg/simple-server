@@ -3,11 +3,12 @@
     <%= bootstrap_form_with(model: admin, local: true, autocomplete: "off", label_errors: true) do |form| %>
       <%= form.text_field :email, id: :admin_email, required: true, autocomplete: "off" %>
       <%= form.text_field :role, value: admin.role, readonly: true %>
+      <%= form.hidden_field :access_controllable_type, value: AdminAccessControl::ACCESS_CONTROLLABLE_TYPE_FOR_ROLE[admin.role.to_sym] %>
 
       <% if admin.supervisor? || admin.analyst? %>
         <h3>Facility groups</h3>
         <%= form.collection_check_boxes :access_controllable_ids, admin.facility_groups, :id, :name, label: 'Facility Groups', checked_value: 1 %>
-        <%= form.collection_check_boxes :access_controllable_ids, Organization.where.not(id: admin.organizations.pluck(:id)), :id, :name, label: 'Other Facility Groups' %>
+        <%= form.collection_check_boxes :access_controllable_ids, FacilityGroup.where.not(id: admin.facility_groups.pluck(:id)), :id, :name, label: 'Other Facility Groups' %>
       <% end %>
 
       <% if admin.organization_owner? %>
