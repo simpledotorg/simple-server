@@ -27,6 +27,15 @@ RSpec.describe Api::V1::FacilitiesController, type: :controller do
           .to eq(model.all.pluck(:id).to_set)
       end
 
+      it 'only sends facilities that belong to a facility group' do
+        facilities_without_group = FactoryBot.create_list(:facility, 5, facility_group: nil)
+        get :sync_to_user
+
+        response_body = JSON(response.body)
+        expect(response_body[response_key].map { |record| record['id'] }.to_set)
+          .not_to include(*facilities_without_group.map(&:id))
+      end
+
       it 'Returns new records added since last sync' do
         expected_records = create_record_list(5, updated_at: 5.minutes.ago)
         get :sync_to_user, params: { processed_since: 10.minutes.ago }
