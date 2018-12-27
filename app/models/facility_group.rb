@@ -3,6 +3,9 @@ class FacilityGroup < ApplicationRecord
   has_many :facilities, dependent: :nullify
   has_many :users, through: :facilities
 
+  has_many :admin_access_controls, as: :access_controllable
+  has_many :admins, through: :admin_access_controls
+
   has_many :patients, through: :facilities, source: :registered_patients
   has_many :blood_pressures, through: :facilities
   has_many :prescription_drugs, through: :facilities

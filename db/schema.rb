@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181224051848) do
+ActiveRecord::Schema.define(version: 20181224051858) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -29,6 +29,16 @@ ActiveRecord::Schema.define(version: 20181224051848) do
     t.datetime "device_updated_at", null: false
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_addresses_on_deleted_at"
+  end
+
+  create_table "admin_access_controls", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.bigint "admin_id", null: false
+    t.uuid "access_controllable_id", null: false
+    t.string "access_controllable_type", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["access_controllable_id", "access_controllable_type"], name: "index_access_controls_on_controllable_id_and_type"
+    t.index ["admin_id"], name: "index_admin_access_controls_on_admin_id"
   end
 
   create_table "admins", force: :cascade do |t|
