@@ -16,4 +16,8 @@ class Api::Current::ProtocolsController < Api::Current::SyncController
   def transform_to_response(protocol)
     protocol.as_json(include: :protocol_drugs)
   end
+
+  def response_process_token
+    { other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since }
+  end
 end

@@ -4,8 +4,6 @@ describe 'Protocols V1 API', swagger_doc: 'v1/swagger.json' do
   path '/protocols/sync' do
     get 'Syncs protocols and protocol drugs data from server to device.' do
       tags 'protocol'
-      security [ basic: [] ]
-      parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       Api::V1::Schema.sync_to_user_request.each do |param|
         parameter param
       end
