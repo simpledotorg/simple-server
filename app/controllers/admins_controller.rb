@@ -15,13 +15,10 @@ class AdminsController < AdminController
   def update
     admin_access_controls = access_controllable_ids.reject(&:empty?).map do |access_controllable_id|
       AdminAccessControl.new(
-        admin_id: @admin.id,
         access_controllable_type: access_controllable_type,
         access_controllable_id: access_controllable_id)
     end
-    @admin.admin_access_controls = admin_access_controls
-    @admin.save
-    if @admin.update(admin_params)
+    if @admin.update(admin_params.merge(admin_access_controls: admin_access_controls))
       redirect_to @admin, notice: 'Admin was successfully updated.'
     else
       render :edit
