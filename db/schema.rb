@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181224051858) do
+ActiveRecord::Schema.define(version: 20181227081322) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,7 +32,7 @@ ActiveRecord::Schema.define(version: 20181224051858) do
   end
 
   create_table "admin_access_controls", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.bigint "admin_id", null: false
+    t.bigint "admin_id"
     t.uuid "access_controllable_id", null: false
     t.string "access_controllable_type", null: false
     t.datetime "created_at", null: false
