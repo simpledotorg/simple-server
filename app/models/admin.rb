@@ -26,4 +26,8 @@ class Admin < ApplicationRecord
     return FacilityGroup.all if owner?
     []
   end
+
+  def users
+    facility_groups.flat_map(&:users)
+  end
 end
