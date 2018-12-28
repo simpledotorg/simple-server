@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181227081322) do
+ActiveRecord::Schema.define(version: 20181228064557) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -269,16 +269,6 @@ ActiveRecord::Schema.define(version: 20181227081322) do
     t.index ["deleted_at"], name: "index_protocols_on_deleted_at"
   end
 
-  create_table "user_facilities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "user_id", null: false
-    t.uuid "facility_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["facility_id"], name: "index_user_facilities_on_facility_id"
-    t.index ["user_id", "facility_id"], name: "index_user_facilities_on_user_id_and_facility_id", unique: true
-    t.index ["user_id"], name: "index_user_facilities_on_user_id"
-  end
-
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "full_name"
     t.string "phone_number"
@@ -307,6 +297,4 @@ ActiveRecord::Schema.define(version: 20181227081322) do
   add_foreign_key "patient_phone_numbers", "patients"
   add_foreign_key "patients", "addresses"
   add_foreign_key "protocol_drugs", "protocols"
-  add_foreign_key "user_facilities", "facilities"
-  add_foreign_key "user_facilities", "users"
 end

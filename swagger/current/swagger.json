@@ -834,24 +834,7 @@
         "tags": [
           "protocol"
         ],
-        "security": [
-          {
-            "basic": [
-
-            ]
-          }
-        ],
         "parameters": [
-          {
-            "name": "HTTP_X_USER_ID",
-            "in": "header",
-            "type": "uuid"
-          },
-          {
-            "name": "HTTP_X_FACILITY_ID",
-            "in": "header",
-            "type": "uuid"
-          },
           {
             "name": "process_token",
             "type": "string",
@@ -1442,6 +1425,9 @@
         "facility_type": {
           "type": "string"
         },
+        "facility_group_id": {
+          "$ref": "#/definitions/uuid"
+        },
         "protocol_id": {
           "$ref": "#/definitions/uuid"
         }
@@ -1452,6 +1438,7 @@
         "district",
         "state",
         "country",
+        "facility_group_id",
         "protocol_id"
       ]
     },
