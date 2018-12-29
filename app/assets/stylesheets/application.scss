@@ -16,6 +16,7 @@ $grey-dark: #6C737A;
 $grey-darkest: #2F363D;
 
 $highlight: #E9F3FF; /* LIGHT BLUE */
+$blue-light: #E9F3FF;
 
 $font-condensed: 'Roboto Condensed';
 /********/
@@ -73,6 +74,7 @@ table {
     width: 100%;
 }
 
+.text-grey { color: $grey-dark; }
 .text-red { color: $red; }
 .text-green { color: $green; }
 .text-yellow { color: $yellow-dark; }
@@ -101,6 +103,11 @@ footer {
     }
     .navbar-nav li a.active {
         color: #000 !important;
+    }
+    .table-compact .row-title a {
+        width: 100% !important;
+        overflow: auto;
+        text-overflow: inherit;
     }
 }
 
@@ -415,7 +422,7 @@ Dashboard UI
     padding: 5px;
     text-align: center;
     margin: 8px 0 0 0;
-    min-height: 140px;
+    min-height: 136px;
     background: #fff;
 }
 
@@ -448,11 +455,8 @@ Dashboard UI
 }
 
 td.featured-middle {
-    padding: 0 4px;
-}
-
-td.featured-middle .featured-number {
-    font-size: 18px;
+    padding-right: 4px;
+    padding-left: 4px;
 }
 
 .featured-td {
@@ -484,13 +488,13 @@ td.featured-middle .featured-number {
 }
 
 .featured-graph-column {
-    background: -moz-linear-gradient(top, rgba(255,51,85,0.2) 0%, rgba(255,51,85,0) 100%);
-    background: -webkit-linear-gradient(top, rgba(255,51,85,0.2) 0%,rgba(255,51,85,0) 100%);
-    background: linear-gradient(to bottom, rgba(255,51,85,0.2) 0%,rgba(255,51,85,0) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4dff3355', endColorstr='#00ff3355',GradientType=0 );
-    border-top: 1px solid $red;
+    background: -moz-linear-gradient(top, rgba(0,117,235,0.2) 0%, rgba(0,117,235,0) 100%);
+    background: -webkit-linear-gradient(top, rgba(0,117,235,0.2) 0%,rgba(0,117,235,0) 100%);
+    background: linear-gradient(to bottom, rgba(0,117,235,0.2) 0%,rgba(0,117,235,0) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#E0F0FF55', endColorstr='#0075EB55',GradientType=0 );
+    border-top: 1px solid $grey-dark;
     font-family: $font-condensed;
-    color: $red;
+    color: $grey-dark;
 }
 
 .snapshot-simple .featured-graph-column {
@@ -548,13 +552,17 @@ td.featured-middle .featured-number {
     border-left: 1px solid $grey-lightest;
 }
 
+.row-spacer {
+    border-right: 1px solid $grey-lightest;
+}
+
 .table-compact .row-title {
     font-family: $font-condensed;
 }
 
 .table-compact .row-title a {
     white-space: nowrap;
-    width: 12em;
+    width: 10em;
     text-overflow: ellipsis;
     overflow: hidden;
     display: block;
@@ -622,4 +630,53 @@ td.featured-middle .featured-number {
 
 .table-compact .row-total {
     background: $grey-lightest;
+}
+
+/******************
+Overdue list
+******************/
+
+.overdue-patient {
+    border-bottom: 1px solid $grey-lightest;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    position: relative;
+}
+
+.overdue-title,
+.overdue-time {
+    font-family: $font-condensed;
+    font-size: 14px;
+}
+
+.overdue-time span {
+    font-size: 11px;
+    color: #fff;
+    background: $red;
+    border-radius: 3px;
+    padding: 2px 5px;
+    display: inline-block;
+}
+
+.overdue-details {
+    font-size: 12px;
+    color: $grey-dark;
+}
+
+.overdue-time {
+    position: absolute;
+    right: 0;
+    top: 0;
+    text-align: right;
+}
+
+/******************
+Breadcrumb nav
+******************/
+
+nav.breadcrumb {
+    background: transparent;
+    padding-left: 0;
+    border-bottom: 1px solid $grey-lightest;
+    margin: 0 0 32px 0;
 }
