@@ -17,7 +17,9 @@ class ApprovalNotifierMailer < ApplicationMailer
 
   def registration_approval_email
     @user = params[:user]
-    subject = I18n.t('registration_approval_email.subject', full_name: @user.full_name)
+    subject = I18n.t('registration_approval_email.subject',
+                     full_name: @user.full_name,
+                     org_name: @user.facility&.facility_group&.organization)
     mail(subject: subject,
          to: supervisor_emails,
          cc: organization_owner_emails)
