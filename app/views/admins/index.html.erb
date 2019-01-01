@@ -1,21 +1,24 @@
 <div class="top-buttons">
-    <% if policy(Admin).new? %>
-      <%= link_to 'Invite admin', new_admin_invitation_path, class: "btn btn-sm btn-primary" %>
-    <% end %>
+  <% if policy(Admin).new? %>
+    <%= link_to 'Invite Organization Owner', new_admin_invitation_path(role: 'organization_owner'), class: "btn btn-sm btn-primary" %>
+    <%= link_to 'Invite Supervisor', new_admin_invitation_path(role: 'supervisor'), class: "btn btn-sm btn-primary" %>
+    <%= link_to 'Invite Analyst', new_admin_invitation_path(role: 'analyst'), class: "btn btn-sm btn-primary" %>
+    <%= link_to 'Invite Owner', new_admin_invitation_path(role: 'owner'), class: "btn btn-sm btn-primary" %>
+  <% end %>
 </div>
 
 <h1>Admins</h1>
 <div class="table-responsive">
-<table class="table">
-  <thead class="thead-light">
+  <table class="table">
+    <thead class="thead-light">
     <tr>
       <th>Email</th>
       <th>Role</th>
       <th colspan="3"></th>
     </tr>
-  </thead>
+    </thead>
 
-  <tbody>
+    <tbody>
     <% @admins.each do |admin| %>
       <tr>
         <td><%= link_to admin.email, admin %></td>
@@ -33,6 +36,6 @@
         <% end %>
       </tr>
     <% end %>
-  </tbody>
-</table>
+    </tbody>
+  </table>
 </div>

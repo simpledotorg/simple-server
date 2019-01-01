@@ -8,7 +8,8 @@ class Api::Current::BloodPressurePayloadValidator < Api::Current::PayloadValidat
     :facility_id,
     :user_id,
     :created_at,
-    :updated_at
+    :updated_at,
+    :deleted_at
   )
 
   validate :validate_schema
