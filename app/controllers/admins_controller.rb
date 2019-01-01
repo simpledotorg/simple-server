@@ -3,7 +3,7 @@ class AdminsController < AdminController
 
   def index
     authorize Admin
-    @admins = Admin.all.order(:email)
+    @admins = policy_scope(Admin).sort_by(&:email)
   end
 
   def show
