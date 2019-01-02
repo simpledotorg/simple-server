@@ -8,7 +8,7 @@ class ProtocolDrugPolicy < ApplicationPolicy
     end
 
     def resolve
-      @user.organizations.flat_map(&:protocols)
+      scope.where(protocol_id: @user.protocols.map(&:id))
     end
   end
 end

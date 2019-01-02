@@ -5,8 +5,8 @@ class Admin::AuditLogsController < AdminController
     authorize AuditLog
     @audit_logs = []
     if params[:user_name].present?
-      users = User.where('full_name ilike ?', "%#{params[:user_name]}%")
-      @audit_logs = AuditLog.where(user_id: users.pluck(:id)).order(created_at: :desc)
+      users = policy_scope(User).where('full_name ilike ?', "%#{params[:user_name]}%")
+      @audit_logs = policy_scope(AuditLog).where(user_id: users.pluck(:id)).order(created_at: :desc)
     end
   end
 

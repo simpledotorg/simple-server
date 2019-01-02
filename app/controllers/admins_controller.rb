@@ -1,5 +1,6 @@
 class AdminsController < AdminController
   before_action :set_admin, only: [:show, :edit, :update, :destroy]
+  after_action :verify_policy_scoped, only: :index
 
   def index
     authorize Admin
