@@ -2,11 +2,13 @@ class Admins::InvitationsController < Devise::InvitationsController
   before_action :configure_permitted_parameters
 
   def new
+    authorize :invitaion, :new?
     @role = params[:role].downcase.to_sym
     super
   end
 
   def create
+    authorize :invitaion, :create?
     @role = params.require(:admin).require(:role).downcase.to_sym
     admin_access_controls = access_controllable_ids.reject(&:empty?).map do |access_controllable_id|
       AdminAccessControl.new(
