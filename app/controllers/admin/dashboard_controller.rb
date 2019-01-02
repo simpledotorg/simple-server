@@ -4,13 +4,12 @@ class Admin::DashboardController < AdminController
 
     Groupdate.time_zone = "New Delhi"
 
-    facilities = current_admin.facility_groups.flat_map(&:facilities)
-    @users_requesting_approval = User.where(facility: facilities).requested_sync_approval
+    @users_requesting_approval = policy_scope(User).requested_sync_approval
 
     @days_previous = 20
     @months_previous = 8
 
-    @stats_grouped_by_facility_group = current_admin.facility_groups.map do |facility_group|
+    @stats_grouped_by_facility_group = policy_scope(FacilityGroup).map do |facility_group|
       [facility_group,
        { facilities: admin_facilities(facility_group),
          visits_by_facility: visits_by_facility(facility_group),
