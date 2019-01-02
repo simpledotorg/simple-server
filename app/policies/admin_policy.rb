@@ -39,9 +39,9 @@ class AdminPolicy < ApplicationPolicy
       if user.owner?
         scope.all
       elsif user.organization_owner?
-        scope.all.select do |admin|
-          !admin.owner? && Admin.have_common_organization(user, admin)
-        end
+        organization_admin_ids = AdminAccessControl.where(access_controllable: user.organizations).pluck(:admin_id)
+        facility_group_admin_ids = AdminAccessControl.where(access_controllable: user.facility_groups).pluck(:admin_id)
+        scope.where(id: [organization_admin_ids + facility_group_admin_ids].uniq)
       else
         scope.none
       end
