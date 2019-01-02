@@ -3,7 +3,7 @@ class Admin::FacilitiesController < AdminController
 
   def index
     authorize Facility
-    @facilities = Facility.all.order(:name)
+    @facilities = policy_scope(Facility).order(:name)
   end
 
   def show
