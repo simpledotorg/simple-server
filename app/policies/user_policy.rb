@@ -22,4 +22,18 @@ class UserPolicy < ApplicationPolicy
   def reset_otp?
     show?
   end
+
+  class Scope
+    attr_reader :user, :scope
+
+    def initialize(user, scope)
+      @user = user
+      @scope = scope
+    end
+
+    def resolve
+      facilities = @user.facility_groups.flat_map(&:facilities)
+      scope.where(facility: facilities)
+    end
+  end
 end

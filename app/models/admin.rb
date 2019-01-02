@@ -21,13 +21,21 @@ class Admin < ApplicationRecord
   end
 
   def organizations
-    return admin_access_controls.map(&:access_controllable).map(&:organization).uniq if (supervisor? || analyst?)
+    return facility_groups.map(&:organization).uniq if (supervisor? || analyst?)
     return admin_access_controls.map(&:access_controllable) if organization_owner?
-    return FacilityGroup.all if owner?
+    return Organization.all if owner?
     []
+  end
+
+  def protocols
+    facility_groups.map(&:protocol).uniq
   end
 
   def users
     facility_groups.flat_map(&:users)
+  end
+
+  def self.have_common_organization(admin1, admin2)
+    (admin1.organizations & admin2.organizations).present?
   end
 end

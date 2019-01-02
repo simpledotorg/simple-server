@@ -35,3 +35,56 @@ RSpec.describe FacilityPolicy do
     end
   end
 end
+
+RSpec.describe FacilityPolicy::Scope do
+  let(:subject) { described_class }
+  let(:organization) { create(:organization) }
+  let(:facility_group) { create(:facility_group, organization: organization) }
+  let!(:facility_1) { create(:facility, facility_group: facility_group) }
+  let!(:facility_2) { create(:facility, facility_group: facility_group) }
+  let!(:facility_3) { create(:facility) }
+
+  describe "owner" do
+    let(:owner) { create(:admin, :owner) }
+    it "resolves all facilities" do
+      resolved_records = subject.new(owner, Facility.all).resolve
+      expect(resolved_records.to_a).to match_array(Facility.all.to_a)
+    end
+  end
+
+  describe "organization owner" do
+    let(:organization_owner) {
+      create(:admin,
+             :organization_owner,
+             admin_access_controls: [AdminAccessControl.new(access_controllable: organization)]
+      ) }
+    it "resolves facility for their organizations" do
+      resolved_records = subject.new(organization_owner, Facility.all).resolve
+      expect(resolved_records).to match_array([facility_1, facility_2])
+    end
+  end
+
+  describe "supervisor" do
+    let(:supervisor) {
+      create(:admin,
+             :supervisor,
+             admin_access_controls: [AdminAccessControl.new(access_controllable: facility_group)])
+    }
+    it "resolves facilities of their facility groups" do
+      resolved_records = subject.new(supervisor, Facility.all).resolve
+      expect(resolved_records).to match_array([facility_1, facility_2])
+    end
+  end
+
+  describe "analyst" do
+    let(:analyst) {
+      create(:admin,
+             :analyst,
+             admin_access_controls: [AdminAccessControl.new(access_controllable: facility_group)])
+    }
+    it "resolves facilities of their facility groups" do
+      resolved_records = subject.new(analyst, Facility.all).resolve
+      expect(resolved_records).to match_array([facility_1, facility_2])
+    end
+  end
+end

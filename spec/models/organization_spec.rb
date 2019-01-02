@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe Organization, type: :model do
   describe 'Associations' do
     it { should have_many(:facility_groups) }
+    it { should have_many(:protocols).through(:facility_groups) }
 
     it 'deletes all dependent facility groups' do
       organization = FactoryBot.create(:organization)
