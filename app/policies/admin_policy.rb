@@ -38,10 +38,12 @@ class AdminPolicy < ApplicationPolicy
     def resolve
       if user.owner?
         scope.all
-      else
+      elsif user.organization_owner?
         scope.all.select do |admin|
           !admin.owner? && Admin.have_common_organization(user, admin)
         end
+      else
+        scope.none
       end
     end
   end

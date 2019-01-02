@@ -80,3 +80,68 @@ RSpec.describe UserPolicy do
     end
   end
 end
+
+RSpec.describe UserPolicy::Scope do
+  let(:subject) { described_class }
+  let(:organization_1) { create(:organization) }
+  let(:organization_2) { create(:organization) }
+
+  let!(:facility_group_1) { create(:facility_group, organization: organization_1, facilities: create_list(:facility, 1)) }
+  let!(:facility_group_2) { create(:facility_group, organization: organization_2, facilities: create_list(:facility, 1)) }
+
+  let!(:_facility_group_1) { create(:facility_group, organization: organization_1, facilities: create_list(:facility, 1)) }
+  let!(:_facility_group_2) { create(:facility_group, organization: organization_2, facilities: create_list(:facility, 1)) }
+
+
+  let!(:user_1) { create(:user, facility: facility_group_1.facilities.first) }
+  let!(:user_2) { create(:user, facility: facility_group_2.facilities.first) }
+  let!(:user_3) { create(:user, facility: _facility_group_1.facilities.first) }
+  let!(:user_4) { create(:user, facility: _facility_group_2.facilities.first) }
+
+  before :each do
+  end
+
+  describe "owner" do
+    let(:owner) { create(:admin, :owner) }
+    it "resolves all users" do
+      resolved_records = subject.new(owner, User.all).resolve
+      expect(resolved_records.to_a).to match_array(User.all.to_a)
+    end
+  end
+
+  describe "organization owner" do
+    let(:organization_owner) {
+      create(:admin,
+             :organization_owner,
+             admin_access_controls: [AdminAccessControl.new(access_controllable: organization_1)]
+      ) }
+    it "resolves all protocol drugs their organizations" do
+      resolved_records = subject.new(organization_owner, User.all).resolve
+      expect(resolved_records).to match_array([user_1, user_3])
+    end
+  end
+
+  describe "supervisor" do
+    let(:supervisor) {
+      create(:admin,
+             :supervisor,
+             admin_access_controls: [AdminAccessControl.new(access_controllable: facility_group_1)])
+    }
+    it "resolves all protocol drugs their facility groups" do
+      resolved_records = subject.new(supervisor, User.all).resolve
+      expect(resolved_records).to match_array([user_1])
+    end
+  end
+
+  describe "analyst" do
+    let(:analyst) {
+      create(:admin,
+             :analyst,
+             admin_access_controls: [AdminAccessControl.new(access_controllable: facility_group_1)])
+    }
+    it "resolves all protocol drugs facility group" do
+      resolved_records = subject.new(analyst, User.all).resolve
+      expect(resolved_records).to match_array([user_1])
+    end
+  end
+end
