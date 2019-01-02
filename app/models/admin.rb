@@ -28,7 +28,7 @@ class Admin < ApplicationRecord
   end
 
   def protocols
-    organizations.flat_map(&:protocols)
+    facility_groups.map(&:protocol).uniq
   end
 
   def users
