@@ -6,6 +6,34 @@
 ### Removed 
 ### Security 
 
+
+# 2019-01-03-1
+
+## Portal
+### Added
+- Add invitation policy
+
+### Changed
+- Scope records seen by an admin to their organizations
+- Redirect and display flash message when Admin is unauthorized to access resource
+
+### Fixed
+- Fix bug in updating user's facility
+- Fix edit organization link on organization index page
+
+### Deprecated 
+### Removed 
+### Security
+
+## API
+### Added
+### Changed
+### Fixed
+### Deprecated
+### Removed 
+### Security 
+
+
 # 2019-01-01-1
 
 ## Portal
