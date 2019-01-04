@@ -4,7 +4,33 @@ class FacilityGroupPolicy < ApplicationPolicy
   end
 
   def show?
-    index?
+    user.owner? || admin_can_access?(:organization_owner)
+  end
+
+  def create?
+    user.owner? || admin_can_access?(:organization_owner)
+  end
+
+  def new?
+    create?
+  end
+
+  def update?
+    user.owner? || admin_can_access?(:organization_owner)
+  end
+
+  def edit?
+    update?
+  end
+
+  def destroy?
+    user.owner? || admin_can_access?(:organization_owner)
+  end
+
+  private
+
+  def admin_can_access?(role)
+    user.role == role.to_s && user.facility_groups.include?(record)
   end
 
   class Scope

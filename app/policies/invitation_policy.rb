@@ -12,7 +12,7 @@ class InvitationPolicy < Struct.new(:user, :invitaion)
   end
 
   def invite_organization_owner?
-    user.owner?
+    user.owner? || user.organization_owner?
   end
 
   def invite_supervisor?

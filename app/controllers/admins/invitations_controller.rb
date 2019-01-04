@@ -10,12 +10,14 @@ class Admins::InvitationsController < Devise::InvitationsController
   def create
     authorize :invitation, :create?
     @role = params.require(:admin).require(:role).downcase.to_sym
-    admin_access_controls = access_controllable_ids.reject(&:empty?).map do |access_controllable_id|
-      AdminAccessControl.new(
-        access_controllable_type: access_controllable_type,
-        access_controllable_id: access_controllable_id)
+    unless @role == :owner
+      admin_access_controls = access_controllable_ids.reject(&:empty?).map do |access_controllable_id|
+        AdminAccessControl.new(
+          access_controllable_type: access_controllable_type,
+          access_controllable_id: access_controllable_id)
+      end
+      invite_resource.admin_access_controls = admin_access_controls
     end
-    invite_resource.admin_access_controls = admin_access_controls
     super
   end
 

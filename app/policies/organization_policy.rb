@@ -4,7 +4,21 @@ class OrganizationPolicy < ApplicationPolicy
   end
 
   def show?
-    index?
+    user.owner? || admin_can_access?(:organization_owner)
+  end
+
+  def update?
+    show?
+  end
+
+  def edit?
+    update?
+  end
+
+  private
+
+  def admin_can_access?(role)
+    user.role == role.to_s && user.organizations.include?(record)
   end
 
   class Scope
