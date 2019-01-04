@@ -18,7 +18,7 @@ class OrganizationPolicy < ApplicationPolicy
   private
 
   def admin_can_access?(role)
-    user.role == role && user.organizations.include?(record)
+    user.role == role.to_s && user.organizations.include?(record)
   end
 
   class Scope

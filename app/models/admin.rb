@@ -15,7 +15,7 @@ class Admin < ApplicationRecord
 
   def facility_groups
     return admin_access_controls.map(&:access_controllable) if (supervisor? || analyst?)
-    return admin_access_controls.map(&:access_controllable).flat_map(&:facility_groups) if organization_owner?
+    return organizations.flat_map(&:facility_groups) if organization_owner?
     return FacilityGroup.all if owner?
     []
   end
