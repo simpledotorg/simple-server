@@ -3,17 +3,39 @@ require "rails_helper"
 RSpec.describe FacilityPolicy do
   subject { described_class }
 
-  let(:owner) { create(:admin, :owner) }
-  let(:supervisor) { create(:admin, :supervisor) }
-  let(:analyst) { create(:admin, :analyst) }
+  let(:organization) { FactoryBot.create(:organization) }
+  let!(:facility_group) { FactoryBot.create(:facility_group, organization: organization) }
+
+  let(:owner) { FactoryBot.create(:admin, :owner) }
+  let(:organization_owner) { FactoryBot.create(:admin, :organization_owner, admin_access_controls: [AdminAccessControl.new(access_controllable: organization)]) }
+  let(:supervisor) { FactoryBot.create(:admin, :supervisor, admin_access_controls: [AdminAccessControl.new(access_controllable: facility_group)]) }
+  let(:analyst) { FactoryBot.create(:admin, :analyst) }
+
+  permissions :show? do
+    it "denies organization owners for facilities outside their organizations" do
+      facility = FactoryBot.create(:facility)
+      expect(subject).not_to permit(organization_owner, facility)
+    end
+
+    it "denies supervisors for facilities outside their facility group" do
+      facility = FactoryBot.create(:facility)
+      expect(subject).not_to permit(supervisor, facility)
+    end
+  end
 
   permissions :index?, :show? do
     it "permits owners" do
       expect(subject).to permit(owner, Facility)
     end
 
-    it "permits supervisors" do
-      expect(subject).to permit(supervisor, Facility)
+    it "permits organization owners for facilities in their organizations" do
+      facility = FactoryBot.create(:facility, facility_group: organization_owner.facility_groups.first)
+      expect(subject).to permit(organization_owner, facility)
+    end
+
+    it "permits supervisors for facilities in their facility group" do
+      facility = FactoryBot.create(:facility, facility_group: supervisor.facility_groups.first)
+      expect(subject).to permit(supervisor, facility)
     end
 
     it "denies analysts" do

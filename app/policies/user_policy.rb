@@ -8,19 +8,27 @@ class UserPolicy < ApplicationPolicy
   end
 
   def show?
-    index? && user_belongs_to_admin?
+    user.owner? || user_belongs_to_admin?
+  end
+
+  def update?
+    show?
+  end
+
+  def edit?
+    update?
   end
 
   def disable_access?
-    show?
+    update?
   end
 
   def enable_access?
-    show?
+    update?
   end
 
   def reset_otp?
-    show?
+    update?
   end
 
   class Scope

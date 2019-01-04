@@ -18,13 +18,26 @@ RSpec.describe InvitationPolicy do
     end
   end
 
-  permissions :invite_owner?, :invite_organization_owner? do
+  permissions :invite_owner? do
     it "permits owners" do
       expect(subject).to permit(owner)
     end
 
     it "doesn't permit any other admin" do
       expect(subject).not_to permit(organization_owner)
+      expect(subject).not_to permit(supervisor)
+      expect(subject).not_to permit(analyst)
+    end
+
+  end
+
+  permissions :invite_organization_owner? do
+    it "permits owners and organization owners" do
+      expect(subject).to permit(owner)
+      expect(subject).to permit(organization_owner)
+    end
+
+    it "doesn't permit other admins" do
       expect(subject).not_to permit(supervisor)
       expect(subject).not_to permit(analyst)
     end

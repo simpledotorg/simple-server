@@ -31,6 +31,10 @@ class Admin < ApplicationRecord
     facility_groups.map(&:protocol).uniq
   end
 
+  def facilities
+    facility_groups.flat_map(&:facilities)
+  end
+
   def users
     facility_groups.flat_map(&:users)
   end
