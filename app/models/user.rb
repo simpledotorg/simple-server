@@ -25,6 +25,7 @@ class User < ApplicationRecord
   validate :presence_of_password
 
   delegate :facility_group, to: :facility
+  delegate :organization, to: :facility_group
 
   def presence_of_password
     unless password_digest.present? || password.present?
