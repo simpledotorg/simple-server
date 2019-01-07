@@ -3,7 +3,9 @@ class Admin::FacilitiesController < AdminController
 
   def index
     authorize Facility
-    @facilities = policy_scope(Facility).order(:name)
+    @facilities = policy_scope(Facility).sort_by do |facility|
+      facility.name.sub /^Dr(.?)(\s*)/, ''
+    end
   end
 
   def show
