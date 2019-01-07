@@ -29,7 +29,7 @@
   <%= @user.logged_in_at.try(:iso8601) || 'Not logged in yet' %>
 </p>
 
-<% if current_admin.owner? %>
+<% if policy(@user).edit? %>
   <%= link_to 'Edit', edit_admin_user_path(@user) %>
 <% end %>
 <% unless @user.sync_approval_status == 'denied' %>

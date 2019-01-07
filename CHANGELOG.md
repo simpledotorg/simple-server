@@ -6,6 +6,115 @@
 ### Removed 
 ### Security 
 
+
+# 2019-01-03-1
+
+## Portal
+### Added
+- Add invitation policy
+
+### Changed
+- Scope records seen by an admin to their organizations
+- Redirect and display flash message when Admin is unauthorized to access resource
+
+### Fixed
+- Fix bug in updating user's facility
+- Fix edit organization link on organization index page
+
+### Deprecated 
+### Removed 
+### Security
+
+## API
+### Added
+### Changed
+### Fixed
+### Deprecated
+### Removed 
+### Security 
+
+
+# 2019-01-01-1
+
+## Portal
+### Added
+- Associate admins to facility groups
+- Add a role for organization owners
+- BCC organization owners in approval emails
+- Associate facility groups with protocols
+
+### Changed
+- Only show users belonging to an admin's facility groups
+- Remove user facilities model
+- Update swagger docs
+- Add deleted at to with_int_timestamps util
+- Send approval emails only to the admins of a user's facility group
+- Only show data facilities in the admins facility group
+- Only show approval requests for users from the facility group
+- Update show and edit views for admins
+- Show separate dashboard to admin per facility group
+- Return protocol id with facility sync api
+
+### Fixed
+- Fix facility group edit view
+
+### Deprecated 
+### Removed 
+### Security
+
+## API
+### Added
+### Changed
+- Add org name to approval mails
+- Approval email lists accessible facilities
+- Add owner emails to bcc lists
+- Sync only facilities with associated facility groups
+- Allow soft deleting blood pressures
+- Disable authentication for protocol syncing
+
+### Fixed
+- Add id to appointments error hash
+- Fix 500 error in v2 protocol sync
+
+### Deprecated
+### Removed 
+### Security 
+
+# 2018-12-21-2
+
+## Portal
+### Added
+- Organizations and Facility Groups, ability to create, update and delete them
+- Roles to manage organizations and facilities
+- Organize all punjab facilities under IHMI
+### Changed
+### Fixed
+### Deprecated 
+### Removed 
+### Security
+
+## API
+### Added
+- Add FACILITY_ID to sync API headers. Make this optional for v1 and required for v2
+- Associate patient with registration user and registration facility
+- User has a registration facility.
+  - `facility_ids` is changed to `registration_facility_id` in v2 of `users/register`, and `users/find`
+- Soft deletes (optional deleted_at field in all entities)
+### Changed
+- Restrict sycning of records to a users facility group
+- Prioritise current facility sync for Patients, BPs, Drugs, and Appointments
+- API schema now has process_token instead of processed_since
+- Make diagnosed with hypertension a required field for medical history
+- Update cancel reasons in appointments
+  - Add 3 new reasons to v2, exclude them from v1, and coerce accordingly
+  - Updation of cancelled appointments is disallowed in v1
+### Fixed
+- Report user id with extra args to sentry
+### Deprecated
+### Removed 
+### Security 
+- Upgrade activejob to fix vulnerability issue
+
 # 2018-12-18-1
 
 ## Portal

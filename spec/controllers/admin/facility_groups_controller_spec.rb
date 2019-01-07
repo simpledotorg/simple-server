@@ -3,12 +3,20 @@ require 'rails_helper'
 RSpec.describe Admin::FacilityGroupsController, type: :controller do
 
   let(:organization) { FactoryBot.create(:organization) }
+  let(:protocol) { FactoryBot.create(:protocol) }
   let(:valid_attributes) {
-    FactoryBot.attributes_for(:facility_group, organization_id: organization.id)
+    FactoryBot.attributes_for(
+      :facility_group,
+      organization_id: organization.id,
+      protocol_id: protocol.id
+    )
   }
 
   let(:invalid_attributes) {
-    FactoryBot.attributes_for(:facility_group, name: nil, organization_id: organization.id)
+    FactoryBot.attributes_for(
+      :facility_group,
+      name: nil,
+      organization_id: organization.id)
   }
 
   before do
@@ -71,7 +79,11 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
   describe 'PUT #update' do
     context 'with valid params' do
       let(:new_attributes) {
-        FactoryBot.attributes_for(:facility_group, organization_id: organization.id).except(:id)
+        FactoryBot.attributes_for(
+          :facility_group,
+          organization_id: organization.id,
+          protocol_id: protocol.id
+        ).except(:id)
       }
 
       it 'updates the requested facility_group' do

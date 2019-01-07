@@ -11,9 +11,15 @@ class Api::Current::FacilitiesController < Api::Current::SyncController
 
   def transform_to_response(facility)
     facility.as_json
+      .merge(protocol_id: facility.protocol.try(:id))
   end
 
   def response_process_token
     { other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since }
+  end
+
+  def records_to_sync
+    Facility.updated_on_server_since(other_facilities_processed_since, limit)
+      .where.not(facility_group: nil)
   end
 end

@@ -13,7 +13,7 @@ class Api::V1::AppointmentsController < Api::Current::AppointmentsController
       { errors_hash: validator.errors_hash }
     elsif record_params[:status] == 'cancelled' and Appointment.compute_merge_status(record_params) == :updated
       NewRelic::Agent.increment_metric('Merge/Appointment/invalid_request')
-      { errors_hash: { updated_at: 'Cancelled appointment cannot be updated' } }
+      { errors_hash: { updated_at: 'Cancelled appointment cannot be updated', id: appointment_params[:id] } }
     else
       appointment = Appointment.merge(record_params)
       { record: appointment }

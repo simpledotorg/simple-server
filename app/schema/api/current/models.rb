@@ -119,9 +119,11 @@ class Api::Current::Models
           state: { '$ref' => '#/definitions/non_empty_string' },
           country: { '$ref' => '#/definitions/non_empty_string' },
           pin: { type: :string },
-          facility_type: { type: :string }
+          facility_type: { type: :string },
+          facility_group_id: { '$ref' => '#/definitions/uuid' },
+          protocol_id: { '$ref' => '#/definitions/uuid' },
         },
-        required: %w[id name district state country]
+        required: %w[id name district state country facility_group_id protocol_id]
       }
     end
 
