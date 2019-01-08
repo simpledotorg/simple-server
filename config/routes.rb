@@ -114,7 +114,7 @@ Rails.application.routes.draw do
     end
   end
 
-  devise_for :admins
+  devise_for :admins, controllers: { invitations: 'admins/invitations' }
   resources :admins
 
   get "admin", to: "admin/dashboard#show", as: :admin_dashboard

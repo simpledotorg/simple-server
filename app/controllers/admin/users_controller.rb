@@ -3,7 +3,7 @@ class Admin::UsersController < AdminController
 
   def index
     authorize User
-    @users = User.all.sort_by do |user|
+    @users = policy_scope(User).sort_by do |user|
       [ordered_sync_approval_statuses[user.sync_approval_status],
        user.updated_at]
     end

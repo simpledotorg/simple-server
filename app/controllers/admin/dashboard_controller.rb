@@ -4,22 +4,22 @@ class Admin::DashboardController < AdminController
 
     Groupdate.time_zone = "New Delhi"
 
-    @users_requesting_approval = User.requested_sync_approval
-
-    @facilities = Facility.all.order(:name)
+    @users_requesting_approval = policy_scope(User).requested_sync_approval
 
     @days_previous = 20
     @months_previous = 8
 
-    @visits_by_facility          = visits_by_facility
-    @visits_by_facility_user     = visits_by_facility_user
-    @visits_by_facility_user_day = visits_by_facility_user_day
-    @visits_by_facility_month    = visits_by_facility_month
-
-    @new_patients_by_facility       = new_patients_by_facility
-    @new_patients_by_facility_month = new_patients_by_facility_month
-
-    @control_rate_by_facility = control_rate_by_facility
+    @stats_grouped_by_facility_group = policy_scope(FacilityGroup).map do |facility_group|
+      [facility_group,
+       { facilities: admin_facilities(facility_group),
+         visits_by_facility: visits_by_facility(facility_group),
+         visits_by_facility_user: visits_by_facility_user(facility_group),
+         visits_by_facility_user_day: visits_by_facility_user_day(facility_group),
+         visits_by_facility_month: visits_by_facility_month(facility_group),
+         new_patients_by_facility: new_patients_by_facility,
+         new_patients_by_facility_month: new_patients_by_facility_month,
+         control_rate_by_facility: control_rate_by_facility }]
+    end.to_h
 
     # Reset when done
     Groupdate.time_zone = "UTC"
@@ -27,20 +27,28 @@ class Admin::DashboardController < AdminController
 
   private
 
-  def visits_by_facility
-    BloodPressure.group(:facility_id).count("distinct patient_id")
+  def admin_facilities(facility_group)
+    facility_group.facilities
   end
 
-  def visits_by_facility_user
-    BloodPressure.group(:facility_id, :user_id).count("distinct patient_id")
+  def visits_by_facility(facility_group)
+    blood_pressures_in_facility_group(facility_group).group(:facility_id).count("distinct patient_id")
   end
 
-  def visits_by_facility_user_day
-    BloodPressure.group(:facility_id, :user_id).group_by_day(:device_created_at, last: @days_previous + 1).count("distinct patient_id")
+  def blood_pressures_in_facility_group(facility_group)
+    BloodPressure.where(facility: admin_facilities(facility_group))
   end
 
-  def visits_by_facility_month
-    BloodPressure.group(:facility_id).group_by_month(:device_created_at, last: @months_previous + 1).count("distinct patient_id")
+  def visits_by_facility_user(facility_group)
+    blood_pressures_in_facility_group(facility_group).group(:facility_id, :user_id).count("distinct patient_id")
+  end
+
+  def visits_by_facility_user_day(facility_group)
+    blood_pressures_in_facility_group(facility_group).group(:facility_id, :user_id).group_by_day(:device_created_at, last: @days_previous + 1).count("distinct patient_id")
+  end
+
+  def visits_by_facility_month(facility_group)
+    blood_pressures_in_facility_group(facility_group).group(:facility_id).group_by_month(:device_created_at, last: @months_previous + 1).count("distinct patient_id")
   end
 
   def new_patients_by_facility

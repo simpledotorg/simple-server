@@ -1,6 +1,15 @@
 require 'swagger_helper'
 
 describe 'Users Current API', swagger_doc: 'current/swagger.json' do
+  let(:supervisor) { FactoryBot.create(:admin, :supervisor) }
+  let(:organization_owner) { FactoryBot.create(:admin, :organization_owner) }
+  let(:facility) { FactoryBot.create(:facility) }
+
+  before :each do
+    FactoryBot.create(:admin_access_control, admin: supervisor)
+    FactoryBot.create(:admin_access_control, admin: organization_owner, access_controllable: facility.facility_group)
+  end
+
   path '/users/find' do
     get 'Find a existing user' do
       tags 'User'
@@ -8,7 +17,6 @@ describe 'Users Current API', swagger_doc: 'current/swagger.json' do
       parameter name: :id, in: :query, type: :string, description: 'User UUID'
 
       let(:known_phone_number) { Faker::PhoneNumber.phone_number }
-      let(:facility) { FactoryBot.create(:facility) }
       let!(:user) { FactoryBot.create(:user, phone_number: known_phone_number, registration_facility_id: facility.id) }
       let(:id) { user.id }
 
@@ -31,7 +39,6 @@ describe 'Users Current API', swagger_doc: 'current/swagger.json' do
       tags 'User'
       parameter name: :user, in: :body, schema: { '$ref' => '#/definitions/user' }
 
-      let!(:facility) { FactoryBot.create(:facility) }
       let(:phone_number) { Faker::PhoneNumber.phone_number }
 
       response '200', 'user is registered' do
@@ -83,7 +90,6 @@ describe 'Users Current API', swagger_doc: 'current/swagger.json' do
       tags 'User'
       parameter name: :id, in: :path, description: 'User UUID', type: :string
 
-      let(:facility) { FactoryBot.create(:facility) }
       let!(:user) { FactoryBot.create(:user, registration_facility_id: facility.id) }
 
       before :each do
@@ -112,7 +118,6 @@ describe 'Users Current API', swagger_doc: 'current/swagger.json' do
       tags 'User'
       security [basic: []]
       parameter name: :password_digest, in: :body, schema: Api::Current::Schema.user_reset_password_request
-      let(:facility) { FactoryBot.create(:facility) }
       let(:user) { FactoryBot.create(:user, registration_facility_id: facility.id) }
       let(:HTTP_X_USER_ID) { user.id }
       let(:HTTP_X_FACILITY_ID) { facility.id }

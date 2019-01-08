@@ -1,6 +1,16 @@
 require 'rails_helper'
 
 RSpec.describe Api::Current::UsersController, type: :controller do
+  let(:supervisor) { FactoryBot.create(:admin, :supervisor) }
+  let(:organization_owner) { FactoryBot.create(:admin, :organization_owner) }
+  let(:facility) { FactoryBot.create(:facility) }
+  let!(:owner) { FactoryBot.create(:admin, :owner) }
+
+  before :each do
+    FactoryBot.create(:admin_access_control, admin: supervisor, access_controllable: facility.facility_group)
+    FactoryBot.create(:admin_access_control, admin: organization_owner, access_controllable: facility.facility_group)
+  end
+
   describe '#register' do
     describe 'registration payload is invalid' do
       let(:request_params) { { user: FactoryBot.attributes_for(:user).slice(:full_name, :phone_number) } }
@@ -12,7 +22,6 @@ RSpec.describe Api::Current::UsersController, type: :controller do
     end
 
     describe 'registration payload is valid' do
-      let(:facility) { FactoryBot.create(:facility) }
       let(:user_params) do
         FactoryBot.attributes_for(:user)
           .slice(:full_name, :phone_number)
@@ -63,9 +72,23 @@ RSpec.describe Api::Current::UsersController, type: :controller do
       it 'sends an email to a list of owners and supervisors' do
         post :register, params: { user: user_params }
         approval_email = ActionMailer::Base.deliveries.last
-        expect(ENV['SUPERVISOR_EMAILS']).to match(/#{Regexp.quote(approval_email.to.first)}/)
-        expect(ENV['OWNER_EMAILS']).to match(/#{Regexp.quote(approval_email.cc.first)}/)
+        expect(approval_email.to).to include(supervisor.email)
+        expect(approval_email.cc).to include(organization_owner.email)
         expect(approval_email.body.to_s).to match(Regexp.quote(user_params[:phone_number]))
+      end
+
+      it 'sends an email with owners in the bcc list' do
+        post :register, params: { user: user_params }
+        approval_email = ActionMailer::Base.deliveries.last
+        expect(approval_email.bcc).to include(owner.email)
+      end
+
+      it 'sends an approval email with list of accessible facilities' do
+        post :register, params: { user: user_params }
+        approval_email = ActionMailer::Base.deliveries.last
+        facility.facility_group.facilities.each do |facility|
+          expect(approval_email.body.to_s).to match(Regexp.quote(facility.name))
+        end
       end
     end
   end
@@ -153,8 +176,8 @@ RSpec.describe Api::Current::UsersController, type: :controller do
       post :reset_password, params: { id: user.id, password_digest: BCrypt::Password.create('1234').to_s }
       approval_email = ActionMailer::Base.deliveries.last
       expect(approval_email).to be_present
-      expect(ENV['SUPERVISOR_EMAILS']).to match(/#{Regexp.quote(approval_email.to.first)}/)
-      expect(ENV['OWNER_EMAILS']).to match(/#{Regexp.quote(approval_email.cc.first)}/)
+      expect(approval_email.to).to include(supervisor.email)
+      expect(approval_email.cc).to include(organization_owner.email)
       expect(approval_email.body.to_s).to match(Regexp.quote(user.phone_number))
       expect(approval_email.body.to_s).to match("reset")
     end
