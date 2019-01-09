@@ -1,9 +1,17 @@
-class Api::Current::AnalyticsController < APIController
-  def index
+class Api::Current::Analytics::UserAnalyticsController < APIController
+  def show
     Groupdate.time_zone = "New Delhi"
 
     @weeks_previous = 4
-    @stats_for_facility = new_patients_by_facility_week
+    @stats_for_nurse = new_patients_by_facility_week
+
+    # Reset when done
+    Groupdate.time_zone = "UTC"
+
+    respond_to do |format|
+      format.html { render :show }
+      format.json { render json: @stats_for_nurse }
+    end
   end
 
   private
