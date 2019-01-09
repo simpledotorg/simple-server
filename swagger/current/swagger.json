@@ -27,7 +27,42 @@
     }
   },
   "paths": {
-    "/analytics": {
+    "/analytics/user_analytics": {
+      "get": {
+        "summary": "Sends JSON containing analytics for User",
+        "tags": [
+          "analytics"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON received"
+          }
+        }
+      }
+    },
+    "/analytics/user_analytics.html": {
       "get": {
         "summary": "Sends a static HTML containing analytics for user",
         "tags": [
