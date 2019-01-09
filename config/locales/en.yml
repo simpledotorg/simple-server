@@ -44,11 +44,13 @@ en:
     request_otp: '<#> %{otp} is your Simple verification code\n%{app_signature}'
   registration_approval_email:
     accessible_facilities: 'User will have access to data from the following facilities'
+    organization: "Organization"
     registration_facility: 'Registration Facility'
     subject: 'New Registration: User %{full_name} is requesting access to %{org_name} facilities.'
     allow_or_deny_access: "Allow or deny access"
   reset_password_approval_email:
     accessible_facilities: 'User will have access to data from the following facilities'
+    organization: "Organization"
     registration_facility: "Registration Facility"
     subject: 'PIN Reset: User %{full_name} is requesting access.'
     allow_or_deny_access: "Allow or deny access"

@@ -4,10 +4,12 @@
       <%= form.text_field :full_name, id: :user_name %>
       <%= form.text_field :phone_number, id: :user_phone_number %>
 
-      <%= form.password_field :password, id: :user_password, pattern: "[0-9]{4}", label: "PIN", help: "4 digits only" %>
-      <%= form.password_field :password_confirmation, id: :user_password_confirmation, pattern: "[0-9]{4}", label: "PIN confirmation" %>
+      <%= form.password_field :password, id: :user_password, pattern: "[0-9]{4}", label: "PIN", help: "4 digits only", optional: true %>
+      <%= form.password_field :password_confirmation, id: :user_password_confirmation, pattern: "[0-9]{4}", label: "PIN confirmation", optional: true %>
       <%= form.collection_radio_buttons :sync_approval_status, User.sync_approval_statuses, :first, :first %>
-      <%= form.collection_check_boxes :facility_ids, Facility.all, :id, :name %>
+      <%= form.select :registration_facility_id, policy_scope(Facility) \
+          .sort_by { |facility| facility.name.sub /^Dr(.?)(\s*)/, '' } \
+          .collect { |facility| [ facility.name, facility.id ] } %>
       <%= form.primary %>
     <% end %>
   </div>

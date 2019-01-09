@@ -5,7 +5,7 @@ class Admin::FacilityGroupsController < AdminController
 
   def index
     authorize FacilityGroup
-    @facility_groups = FacilityGroup.all.order(:name)
+    @facility_groups = policy_scope(FacilityGroup).order(:name)
   end
 
   def show

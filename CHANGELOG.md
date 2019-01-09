@@ -6,6 +6,80 @@
 ### Removed 
 ### Security 
 
+
+# 2019-01-03-1
+
+## Portal
+### Added
+- Add invitation policy
+
+### Changed
+- Scope records seen by an admin to their organizations
+- Redirect and display flash message when Admin is unauthorized to access resource
+
+### Fixed
+- Fix bug in updating user's facility
+- Fix edit organization link on organization index page
+
+### Deprecated 
+### Removed 
+### Security
+
+## API
+### Added
+### Changed
+### Fixed
+### Deprecated
+### Removed 
+### Security 
+
+
+# 2019-01-01-1
+
+## Portal
+### Added
+- Associate admins to facility groups
+- Add a role for organization owners
+- BCC organization owners in approval emails
+- Associate facility groups with protocols
+
+### Changed
+- Only show users belonging to an admin's facility groups
+- Remove user facilities model
+- Update swagger docs
+- Add deleted at to with_int_timestamps util
+- Send approval emails only to the admins of a user's facility group
+- Only show data facilities in the admins facility group
+- Only show approval requests for users from the facility group
+- Update show and edit views for admins
+- Show separate dashboard to admin per facility group
+- Return protocol id with facility sync api
+
+### Fixed
+- Fix facility group edit view
+
+### Deprecated 
+### Removed 
+### Security
+
+## API
+### Added
+### Changed
+- Add org name to approval mails
+- Approval email lists accessible facilities
+- Add owner emails to bcc lists
+- Sync only facilities with associated facility groups
+- Allow soft deleting blood pressures
+- Disable authentication for protocol syncing
+
+### Fixed
+- Add id to appointments error hash
+- Fix 500 error in v2 protocol sync
+
+### Deprecated
+### Removed 
+### Security 
+
 # 2018-12-21-2
 
 ## Portal
