@@ -27,6 +27,41 @@
     }
   },
   "paths": {
+    "/analytics": {
+      "get": {
+        "summary": "Sends a static HTML containing analytics for user",
+        "tags": [
+          "analytics"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "produces": [
+          "text/html"
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "HTML received"
+          }
+        }
+      }
+    },
     "/appointments/sync": {
       "post": {
         "summary": "Syncs appointment data from device to server.",
