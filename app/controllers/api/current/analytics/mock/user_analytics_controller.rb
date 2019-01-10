@@ -1,6 +1,6 @@
 require 'date'
 
-class Api::Current::Analytics::Mock::UserAnalyticsController < ApplicationController
+class Api::Current::Analytics::Mock::UserAnalyticsController < APIController
   layout false
 
   def show
