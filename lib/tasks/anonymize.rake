@@ -130,8 +130,8 @@ namespace :anonymize do
         scramble('users', 'otp_valid_until')
         scramble('users', 'access_token')
         scramble('users', 'logged_in_at')
-        scramble('users', 'registration_facility_id')
-        scramble('users', 'sync_approval_status_reason')
+        whitelist 'registration_facility_id'
+        whitelist 'sync_approval_status_reason'
         whitelist_timestamps
       end
 
@@ -155,8 +155,8 @@ namespace :anonymize do
         scramble('patients', 'address_id')
         scramble('patients', 'date_of_birth')
         scramble('patients', 'age_updated_at')
-        scramble('patients', 'registration_user_id')
         whitelist 'test_data'
+        whitelist 'registration_user_id'
         whitelist 'registration_facility_id'
         whitelist_timestamps
       end
@@ -189,9 +189,9 @@ namespace :anonymize do
         primary_key 'id'
         whitelist 'facility_id'
         whitelist 'patient_id'
-        scramble('appointments', 'cancel_reason')
+        whitelist 'status'
+        whitelist 'cancel_reason'
         scramble('appointments', 'scheduled_date')
-        scramble('appointments', 'status')
         scramble('appointments', 'remind_on')
         scramble('appointments', 'agreed_to_visit')
         whitelist_timestamps
