@@ -1,4 +1,7 @@
 <div class="top-buttons">
+  <% if policy(:invitation).invite_owner? %>
+    <%= link_to 'Invite Owner', new_admin_invitation_path(role: 'owner'), class: "btn btn-sm btn-primary" %>
+  <% end %>
   <% if policy(:invitation).invite_organization_owner? %>
     <%= link_to 'Invite Organization Owner', new_admin_invitation_path(role: 'organization_owner'), class: "btn btn-sm btn-primary" %>
   <% end %>
@@ -7,9 +10,6 @@
   <% end %>
   <% if policy(:invitation).invite_analyst? %>
     <%= link_to 'Invite Analyst', new_admin_invitation_path(role: 'analyst'), class: "btn btn-sm btn-primary" %>
-  <% end %>
-  <% if policy(:invitation).invite_owner? %>
-    <%= link_to 'Invite Owner', new_admin_invitation_path(role: 'owner'), class: "btn btn-sm btn-primary" %>
   <% end %>
 </div>
 
