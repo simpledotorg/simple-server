@@ -114,10 +114,6 @@ Rails.application.routes.draw do
 
       namespace :analytics do
         resource :user_analytics, only: [:show]
-
-        namespace :mock do
-          resource :user_analytics, only: [:show]
-        end
       end
     end
   end
