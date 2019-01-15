@@ -12,6 +12,7 @@
 ### Changed
 ### Fixed
 - Fix organization owners policy to allow creating new records in their organizations
+- Update controller allow creating new facility groups
 ### Deprecated
 ### Removed
 ### Security
