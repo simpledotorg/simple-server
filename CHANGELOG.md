@@ -6,9 +6,18 @@
 ### Removed 
 ### Security 
 
+# 2019-01-15-1
+## Portal
+### Added
+### Changed
+### Fixed
+- Fix organization owners policy to allow creating new records in their organizations
+### Deprecated
+### Removed
+### Security
 
 # 2019-01-14-1
-
+## Portal
 ### Added
 ### Changed
 - Move Invite Owner button before Invite Organization Owner on Admins page
