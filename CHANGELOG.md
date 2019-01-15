@@ -4,6 +4,16 @@
 ### Fixed
 ### Deprecated 
 ### Removed 
+### Security
+
+# 2019-01-15-2
+## Portal
+### Added
+### Changed
+### Fixed
+- Update controller allow creating new facility groups
+### Deprecated
+### Removed
 ### Security 
 
 # 2019-01-15-1
@@ -12,7 +22,6 @@
 ### Changed
 ### Fixed
 - Fix organization owners policy to allow creating new records in their organizations
-- Update controller allow creating new facility groups
 ### Deprecated
 ### Removed
 ### Security
