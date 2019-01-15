@@ -14,8 +14,10 @@ RSpec.describe FacilityGroupPolicy do
 
   permissions :index?, :new?, :create? do
     it "permits owners and organization owners" do
+      new_facility_group = organization.facility_groups.new
       expect(subject).to permit(owner, FacilityGroup)
       expect(subject).to permit(organization_owner, FacilityGroup)
+      expect(subject).to permit(organization_owner, new_facility_group)
     end
 
     it "denies supervisors and analysts" do
