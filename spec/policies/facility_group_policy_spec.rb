@@ -12,7 +12,7 @@ RSpec.describe FacilityGroupPolicy do
   let(:supervisor) { FactoryBot.create(:admin, :supervisor, admin_access_controls: [AdminAccessControl.new(access_controllable: facility_group_in_organization)]) }
   let(:analyst) { FactoryBot.create(:admin, :analyst) }
 
-  permissions :index? do
+  permissions :index?, :new?, :create? do
     it "permits owners and organization owners" do
       expect(subject).to permit(owner, FacilityGroup)
       expect(subject).to permit(organization_owner, FacilityGroup)
@@ -24,7 +24,7 @@ RSpec.describe FacilityGroupPolicy do
     end
   end
 
-  permissions :show?, :new?, :create?, :update?, :edit?, :destroy? do
+  permissions :show?, :update?, :edit?, :destroy? do
     it "permits owners for all facility groups" do
       expect(subject).to permit(owner, facility_group_in_organization)
       expect(subject).to permit(owner, facility_group_outside_organization)
