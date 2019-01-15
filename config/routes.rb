@@ -12,7 +12,7 @@ Rails.application.routes.draw do
   mount Rswag::Ui::Engine => '/api-docs'
   mount Rswag::Api::Engine => '/api-docs'
 
-  namespace :api do
+  namespace :api, defaults: { format: 'json' } do
     namespace :v1 do
       get 'ping', to: 'pings#show'
       post 'login', to: 'logins#login_user'
@@ -110,6 +110,12 @@ Rails.application.routes.draw do
       scope '/medical_histories' do
         get 'sync', to: 'medical_histories#sync_to_user'
         post 'sync', to: 'medical_histories#sync_from_user'
+      end
+
+      if FeatureToggle.enabled?('USER_ANALYTICS')
+        namespace :analytics do
+          resource :user_analytics, only: [:show]
+        end
       end
     end
   end

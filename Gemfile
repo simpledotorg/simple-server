@@ -27,6 +27,7 @@ gem 'jquery-rails'
 gem 'bootstrap_form', '>= 4.0.0.alpha1'
 gem 'groupdate'
 gem 'discard', '~> 1.0'
+gem 'chartkick'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
