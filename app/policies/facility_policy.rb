@@ -8,7 +8,7 @@ class FacilityPolicy < ApplicationPolicy
   end
 
   def create?
-    user.owner? || admin_can_access?(:organization_owner)
+    user.owner? || user.organization_owner?
   end
 
   def new?
