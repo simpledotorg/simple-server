@@ -12,6 +12,10 @@ RSpec.describe ProtocolDrugPolicy do
       expect(subject).to permit(owner, ProtocolDrug)
     end
 
+    it "permits organization owners" do
+      expect(subject).to permit(owner, ProtocolDrug)
+    end
+
     it "denies supervisors" do
       expect(subject).not_to permit(supervisor, ProtocolDrug)
     end
