@@ -4,6 +4,16 @@
 ### Fixed
 ### Deprecated 
 ### Removed 
+### Security
+
+# 2019-01-15-2
+## Portal
+### Added
+### Changed
+### Fixed
+- Update controller allow creating new facility groups
+### Deprecated
+### Removed
 ### Security 
 
 # 2019-01-15-1
