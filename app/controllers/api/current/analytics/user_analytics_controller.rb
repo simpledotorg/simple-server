@@ -1,14 +1,10 @@
-class Api::Current::Analytics::UserAnalyticsController < APIController
+class Api::Current::Analytics::UserAnalyticsController < Api::Current::AnalyticsController
   layout false
 
+  WEEKS_TO_REPORT = 4
+
   def show
-    Groupdate.time_zone = "New Delhi"
-
-    @weeks_previous = 4
     @stats_for_user = mock_new_patients_by_facility_week
-
-    # Reset when done
-    Groupdate.time_zone = "UTC"
 
     respond_to do |format|
       format.html { render :show }
@@ -17,14 +13,6 @@ class Api::Current::Analytics::UserAnalyticsController < APIController
   end
 
   private
-
-  def new_patients_by_facility_week
-    Facility.joins(:patients) \
-      .where("facilities.id = '#{current_facility.id}'") \
-      .distinct('patients.id') \
-      .group_by_week('patients.device_created_at', last: @weeks_previous) \
-      .count
-  end
 
   def mock_new_patients_by_facility_week
     stats = {}
@@ -36,5 +24,9 @@ class Api::Current::Analytics::UserAnalyticsController < APIController
     end
 
     stats
+  end
+
+  def new_patients_by_facility_week
+    FacilitiesQuery.new.patients_registered_per_week(current_facility.id, WEEKS_TO_REPORT)
   end
 end
