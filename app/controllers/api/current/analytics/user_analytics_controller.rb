@@ -1,19 +1,20 @@
-class Api::Current::Analytics::UserAnalyticsController < ApplicationController
+class Api::Current::Analytics::UserAnalyticsController < Api::Current::AnalyticsController
   layout false
 
   WEEKS_TO_REPORT = 4
 
   def show
-    @user_stats = mock_new_patients_by_facility_week
+    @stats_for_user = new_patients_by_facility_week
 
     respond_to do |format|
       format.html { render :show }
-      format.json { render json: @user_stats }
+      format.json { render json: @stats_for_user }
     end
   end
 
   private
 
+  # dev only
   def mock_new_patients_by_facility_week
     stats = {}
 

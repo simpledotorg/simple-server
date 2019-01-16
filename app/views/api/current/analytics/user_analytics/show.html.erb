@@ -5,7 +5,7 @@
 <body>
   <!--  date.strftime('%b %-d') => May 5  -->
   <h3>How many patients are recorded at CHC Bathinda each week?</h3>
-  <%= column_chart @user_stats,
+  <%= column_chart @stats_for_user,
                    id: 'new_patients_per_week',
                    library: {scales: {yAxes: [{display: false}]}}%>
 </body>
