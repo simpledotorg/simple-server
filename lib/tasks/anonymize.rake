@@ -24,10 +24,6 @@ def nullify(column)
   anonymize(column) { |_field| nil }
 end
 
-def whitelist_timestamps
-  whitelist 'device_created_at', 'device_updated_at', 'created_at', 'updated_at'
-end
-
 namespace :anonymize do
   desc 'Anonymize production database into application database;
         Example: rake "anonymize:full_database"'
@@ -75,7 +71,6 @@ namespace :anonymize do
         scramble('addresses', 'state')
         scramble('addresses', 'country')
         scramble('addresses', 'pin')
-        whitelist_timestamps
       end
 
       table 'patients' do
@@ -87,10 +82,6 @@ namespace :anonymize do
         scramble('patients', 'address_id')
         scramble('patients', 'date_of_birth')
         scramble('patients', 'age_updated_at')
-        whitelist 'test_data'
-        whitelist 'registration_user_id'
-        whitelist 'registration_facility_id'
-        whitelist_timestamps
       end
 
       table 'patient_phone_numbers' do
