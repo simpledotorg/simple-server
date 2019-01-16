@@ -48,6 +48,10 @@ RSpec.describe FacilityPolicy do
       expect(subject).to permit(owner, Facility)
     end
 
+    it "permits organization owners" do
+      expect(subject).to permit(owner, Facility)
+    end
+
     it "denies supervisors" do
       expect(subject).not_to permit(supervisor, Facility)
     end
