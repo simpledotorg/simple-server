@@ -26,7 +26,6 @@ gem 'bootstrap', '~> 4.1.3'
 gem 'jquery-rails'
 gem 'bootstrap_form', '>= 4.0.0.alpha1'
 gem 'groupdate'
-gem 'data-anonymization', require: false
 gem 'discard', '~> 1.0'
 gem 'chartkick'
 
