@@ -39,8 +39,4 @@ class Admin < ApplicationRecord
   def users
     facility_groups.flat_map(&:users)
   end
-
-  def self.have_common_organization(admin1, admin2)
-    (admin1.organizations & admin2.organizations).present?
-  end
 end
