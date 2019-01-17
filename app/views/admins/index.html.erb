@@ -11,6 +11,9 @@
   <% if policy(:invitation).invite_analyst? %>
     <%= link_to 'Invite Analyst', new_admin_invitation_path(role: 'analyst'), class: "btn btn-sm btn-primary" %>
   <% end %>
+  <% if policy(:invitation).invite_healthcare_counsellor? %>
+    <%= link_to 'Invite Healthcare Counsellor', new_admin_invitation_path(role: 'healthcare_counsellor'), class: "btn btn-sm btn-primary" %>
+  <% end %>
 </div>
 
 <h1>Admins</h1>
