@@ -5,12 +5,10 @@ class FacilitiesQuery
     @relation = relation
   end
 
-  def patients_registered_per_week(facility_id, weeks)
-    with_patients \
-      .where("facilities.id = '#{facility_id}'") \
-      .distinct('patients.id') \
-      .group_by_week('patients.device_created_at', last: weeks) \
-      .count
+  def distinct_patients(facility_id)
+    with_patients
+      .where("facilities.id = '#{facility_id}'")
+      .distinct('patients.id')
   end
 
   private
