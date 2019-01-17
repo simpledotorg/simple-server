@@ -28,9 +28,10 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
   end
 
   def new_patients_by_facility_week
-    PatientsQuery.new
-      .patients_registered_at(current_facility.id)
-      .group_by_week('patients.device_created_at', last: WEEKS_TO_REPORT)
+    PatientsQuery
+      .new
+      .registered_at(current_facility.id)
+      .group_by_week('device_created_at', last: WEEKS_TO_REPORT)
       .count
   end
 end
