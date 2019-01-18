@@ -14,19 +14,6 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
 
   private
 
-  # dev only
-  def mock_new_patients_by_facility_week
-    stats = {}
-
-    now = Date.today
-    previous_sunday = now - now.wday
-    WEEKS_TO_REPORT.times do |n|
-      stats[previous_sunday - n.weeks] = n * 5 + 3
-    end
-
-    stats
-  end
-
   def new_patients_by_facility_week
     PatientsQuery
       .new
