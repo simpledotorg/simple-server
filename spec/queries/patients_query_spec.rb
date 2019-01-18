@@ -10,11 +10,6 @@ RSpec.describe PatientsQuery, type: :query do
     patients_in_this_facility = PatientsQuery.new.registered_at(this_facility.id)
     expect(patients_in_this_facility.count).to eq(1)
     expect(patients_in_this_facility.first).to eq(patient_in_this_facility)
+    expect(patients_in_this_facility.first).to_not eq(patient_in_other_facility)
   end
-
-  it 'should return only patients registered in other_facility' do
-    patients_in_this_facility = PatientsQuery.new.registered_at(other_facility.id)
-    expect(patients_in_this_facility.count).to eq(1)
-    expect(patients_in_this_facility.first).to eq(patient_in_other_facility)
-  end
-end
+ end
