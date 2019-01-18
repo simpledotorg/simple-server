@@ -67,3 +67,7 @@ Rake tasks can be run on the deployed server using capistrano as well. For examp
 ```bash
 bundle exec cap staging deploy:rake task=db:seed
 ```
+
+## Contributing
+
+The contribution guidelines can be found [here](doc/contributing.md).
