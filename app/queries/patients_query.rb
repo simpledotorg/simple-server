@@ -6,7 +6,6 @@ class PatientsQuery
   end
 
   def registered_at(facility_id)
-    relation
-      .where("registration_facility_id = '#{facility_id}'")
+    relation.where(registration_facility_id: facility_id)
   end
 end
