@@ -4,7 +4,47 @@
 ### Fixed
 ### Deprecated 
 ### Removed 
+### Security
+
+# 2019-01-15-2
+## Portal
+### Added
+### Changed
+### Fixed
+- Update controller allow creating new facility groups
+### Deprecated
+### Removed
 ### Security 
+
+# 2019-01-15-1
+## Portal
+### Added
+### Changed
+### Fixed
+- Fix organization owners policy to allow creating new records in their organizations
+### Deprecated
+### Removed
+### Security
+
+# 2019-01-14-1
+## Portal
+### Added
+### Changed
+- Move Invite Owner button before Invite Organization Owner on Admins page
+- Display logged in admin's email id
+- Admins can edit their users from the User Details page
+- Add organization name to approval email body
+- Dropdown to change user's facility is arranged in alphabetical order
+- Ignore prefix Dr/Dr. when sorting facilities by name
+- Organization Owners can access/edit all entities within their organizations
+- Organization Owners can invite new admins to their organizations
+
+### Fixed
+- Fix inviting owners
+
+### Deprecated
+### Removed
+### Security
 
 
 # 2019-01-03-1
