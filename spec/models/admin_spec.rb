@@ -9,17 +9,7 @@ RSpec.describe Admin, type: :model do
     it { should validate_presence_of(:password) }
     it { should validate_presence_of(:role) }
 
-    it do
-      should define_enum_for(:role).with(
-        %i[
-             owner
-             supervisor
-             analyst
-             organization_owner
-             healthcare_counsellor
-          ]
-      )
-    end
+    it { should define_enum_for(:role).with([:owner, :supervisor, :analyst, :organization_owner]) }
   end
 
   describe 'Behavior' do
