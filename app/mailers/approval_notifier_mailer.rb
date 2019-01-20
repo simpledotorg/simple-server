@@ -1,23 +1,7 @@
 class ApprovalNotifierMailer < ApplicationMailer
   attr_reader :user
 
-  default :from => 'help@simple.org'
-
-  def admin_emails(role)
-    user.facility_group.admins.where(role: role).pluck(:email)
-  end
-
-  def supervisor_emails
-    admin_emails('supervisor').join(',')
-  end
-
-  def organization_owner_emails
-    admin_emails('organization_owner').join(',')
-  end
-
-  def owner_emails
-    Admin.where(role: 'owner').pluck(:email).join(',')
-  end
+  default from: 'help@simple.org'
 
   def registration_approval_email
     @user = params[:user]
@@ -37,5 +21,23 @@ class ApprovalNotifierMailer < ApplicationMailer
          to: supervisor_emails,
          cc: organization_owner_emails,
          bcc: owner_emails)
+  end
+
+  private
+
+  def supervisor_emails
+    admin_emails('supervisor').join(',')
+  end
+
+  def organization_owner_emails
+    admin_emails('organization_owner').join(',')
+  end
+
+  def admin_emails(role)
+    user.facility_group.admins.where(role: role).pluck(:email)
+  end
+
+  def owner_emails
+    Admin.where(role: 'owner').pluck(:email).join(',')
   end
 end
