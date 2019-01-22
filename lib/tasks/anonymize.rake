@@ -24,6 +24,16 @@ def nullify(column)
   anonymize(column) { |_field| nil }
 end
 
+def whitelist_timestamps
+  whitelist 'device_created_at', 'device_updated_at', 'created_at', 'updated_at'
+end
+
+def anonymize_uuid(column)
+  anonymize(column) do |field|
+    UUIDTools::UUID.md5_create(UUIDTools::UUID_DNS_NAMESPACE, { uuid: field.value }.to_s).to_s
+  end
+end
+
 namespace :anonymize do
   desc 'Anonymize production database into application database;
         Example: rake "anonymize:full_database"'
@@ -31,83 +41,182 @@ namespace :anonymize do
 
     database 'SimpleServerDatabase' do
 
-      strategy DataAnon::Strategy::Blacklist
+      strategy DataAnon::Strategy::Whitelist
       source_db source_db_config
       destination_db destination_db_config
 
       table 'organizations' do
         primary_key 'id'
+        whitelist 'name'
+        whitelist 'description'
+        whitelist_timestamps
       end
 
       table 'facility_groups' do
         primary_key 'id'
+        whitelist 'name'
+        whitelist 'description'
+        whitelist 'organization_id'
+        whitelist 'protocol_id'
+        whitelist_timestamps
       end
 
       table 'facilities' do
         primary_key 'id'
+        whitelist 'country', 'facility_type'
+        whitelist 'facility_group_id'
+        whitelist 'name'
+        whitelist 'district'
+        whitelist 'state'
+        whitelist 'street_address'
+        whitelist 'village_or_colony'
+        whitelist 'pin'
+        whitelist 'created_at'
+        whitelist 'updated_at'
+        whitelist 'latitude'
+        whitelist 'longitude'
+        whitelist_timestamps
       end
 
       table 'protocols' do
         primary_key 'id'
+        whitelist 'name'
+        whitelist 'follow_up_days'
+        whitelist_timestamps
       end
 
       table 'protocol_drugs' do
         primary_key 'id'
+        whitelist 'protocol_id'
+        whitelist 'name'
+        whitelist 'dosage'
+        whitelist 'rxnorm_code'
+        whitelist_timestamps
       end
 
       table 'admins' do
         primary_key 'id'
+        whitelist 'email'
+        whitelist 'encrypted_password'
+        whitelist 'role'
+        nullify 'last_sign_in_ip'
+        nullify 'current_sign_in_ip'
+        whitelist 'invitations_count'
+        whitelist 'invited_by_id'
+        whitelist 'invited_by_type'
+        whitelist 'sign_in_count'
+        whitelist 'current_sign_in_at'
+        whitelist 'last_sign_in_at'
+        whitelist 'failed_attempts'
+        whitelist 'invitation_created_at'
+        whitelist 'invitation_sent_at'
+        whitelist 'invitation_accepted_at'
+        whitelist 'invitation_token'
+        whitelist 'remember_created_at'
+        whitelist 'reset_password_token'
+        whitelist 'reset_password_sent_at'
+        whitelist_timestamps
       end
 
       table 'admin_access_controls' do
         primary_key 'id'
+        whitelist 'admin_id'
+        whitelist 'access_controllable_type'
+        whitelist 'access_controllable_id'
+        whitelist_timestamps
       end
 
       table 'addresses' do
-        primary_key 'id'
+        anonymize_uuid 'id'
         scramble('addresses', 'street_address')
         scramble('addresses', 'village_or_colony')
         scramble('addresses', 'district')
         scramble('addresses', 'state')
         scramble('addresses', 'country')
         scramble('addresses', 'pin')
+        whitelist_timestamps
       end
 
       table 'patients' do
-        primary_key 'id'
+        anonymize_uuid 'id'
         scramble('patients', 'full_name')
         scramble('patients', 'age')
         scramble('patients', 'gender')
         scramble('patients', 'status')
-        scramble('patients', 'address_id')
         scramble('patients', 'date_of_birth')
         scramble('patients', 'age_updated_at')
+        whitelist 'registration_user_id'
+        anonymize_uuid 'address_id'
+        whitelist 'test_data'
+        whitelist 'registration_facility_id'
+        whitelist_timestamps
       end
 
       table 'patient_phone_numbers' do
         primary_key 'id'
+        anonymize_uuid 'patient_id'
+        whitelist 'phone_type', 'active'
+        whitelist_timestamps
         anonymize('number').using FieldStrategy::FormattedStringNumber.new
         anonymize('phone_type').using FieldStrategy::SelectFromList.new(%w[mobile landline].freeze)
+        whitelist 'active'
+        whitelist_timestamps
       end
 
       table 'blood_pressures' do
-        primary_key 'id'
+        anonymize_uuid 'id'
+        whitelist 'user_id', 'facility_id'
+        anonymize_uuid 'patient_id'
+        whitelist 'systolic', 'diastolic'
+        whitelist_timestamps
       end
 
       table 'prescription_drugs' do
-        primary_key 'id'
+        anonymize_uuid 'id'
+        whitelist 'facility_id', 'name', 'rxnorm_code', 'dosage'
+        anonymize_uuid 'patient_id'
+        whitelist 'is_protocol_drug', 'is_deleted'
+        whitelist_timestamps
       end
 
       table 'appointments' do
-        primary_key 'id'
+        anonymize_uuid 'id'
+        whitelist 'facility_id'
+        anonymize_uuid 'patient_id'
+        whitelist 'cancel_reason'
+        whitelist 'scheduled_date'
+        whitelist 'status'
+        whitelist 'remind_on'
+        whitelist 'agreed_to_visit'
+        whitelist_timestamps
       end
 
       table 'medical_histories' do
         primary_key 'id'
+        anonymize_uuid 'patient_id'
+        whitelist 'device_created_at'
+        whitelist 'device_updated_at'
+        whitelist 'created_at'
+        whitelist 'updated_at'
+        whitelist 'prior_heart_attack'
+        whitelist 'prior_stroke'
+        whitelist 'chronic_kidney_disease'
+        whitelist 'receiving_treatment_for_hypertension'
+        whitelist 'diabetes'
+        whitelist 'diagnosed_with_hypertension'
+        whitelist 'prior_heart_attack_boolean'
+        whitelist 'prior_stroke_boolean'
+        whitelist 'chronic_kidney_disease_boolean'
+        whitelist 'receiving_treatment_for_hypertension_boolean'
+        whitelist 'diabetes_boolean'
+        whitelist 'diagnosed_with_hypertension_boolean'
+        whitelist_timestamps
       end
 
       table 'communications' do
         primary_key 'id'
+        anonymize_uuid 'appointment_id'
+        whitelist 'user_id'
       end
     end
   end
