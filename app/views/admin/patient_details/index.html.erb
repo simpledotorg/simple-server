@@ -1,0 +1,33 @@
+<h1>Scheduled Appointments</h1>
+
+<% @patient_details_per_facility.each do |facility_name, patient_details| %>
+<section>
+<h2><%= facility_name %></h2>
+<table class="table table-sm">
+  <thead class="thead-light">
+    <tr>
+      <th>Name</th>
+      <th>Phone Number</th>
+      <th>Last Visit Date</th>
+      <th>BP Recorded on Last Visit</th>
+      <th>Appointment Date</th>
+    </tr>
+  </thead>
+
+  <tbody>
+  <% patient_details.each do |patient_detail| %>
+    <tr class="table-light">
+      <td><%= patient_detail.patient.full_name %></td>
+      <td><%= patient_detail.patient.phone_numbers.first&.number %></td>
+      <td><%= patient_detail.latest_blood_pressure&.device_created_at%></td>
+      <td>
+        <%= patient_detail.latest_blood_pressure&.systolic %> /
+        <%= patient_detail.latest_blood_pressure&.diastolic %>
+      </td>
+      <td><%= patient_detail.latest_scheduled_appointment&.scheduled_date %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+</section>
+<% end %>

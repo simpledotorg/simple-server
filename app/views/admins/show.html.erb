@@ -7,7 +7,7 @@
       <%= @admin.role.humanize %>
     </p>
 
-    <% if @admin.supervisor? || @admin.analyst? %>
+    <% if @admin.supervisor? || @admin.analyst? || @admin.healthcare_counsellor? %>
       <p>
         <strong>Facility Groups:</strong>
       </p>

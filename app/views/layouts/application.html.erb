@@ -64,6 +64,11 @@
                   <%= link_to "Audit Logs", admin_audit_logs_path, class: "nav-link #{active_controller?("audit_logs")}" %>
                 </li>
               <% end %>
+              <% if policy(PatientDetail).index? %>
+                <li class="nav-item">
+                  <%= link_to "Scheduled Appointments", admin_patient_details_path, class: "nav-link #{active_controller?("patient_details")}" %>
+                </li>
+              <% end %>
             </ul>
 
             <ul class="navbar-nav ml-auto">

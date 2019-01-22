@@ -30,4 +30,12 @@ class Patient < ApplicationRecord
       errors.add(:date_of_birth, "can't be in the future")
     end
   end
+
+  def latest_scheduled_appointment
+    appointments.where(status: 'scheduled').order(scheduled_date: :desc).first
+  end
+
+  def latest_blood_pressure
+    blood_pressures.order(device_created_at: :desc).first
+  end
 end
