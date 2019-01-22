@@ -19,12 +19,14 @@
     <tr class="table-light">
       <td><%= patient_detail.patient.full_name %></td>
       <td><%= patient_detail.patient.phone_numbers.first&.number %></td>
-      <td><%= patient_detail.latest_blood_pressure&.device_created_at%></td>
+      <td><%= patient_detail.latest_blood_pressure&.device_created_at.strftime('%a, %b %e') %></td>
       <td>
         <%= patient_detail.latest_blood_pressure&.systolic %> /
         <%= patient_detail.latest_blood_pressure&.diastolic %>
       </td>
-      <td><%= patient_detail.latest_scheduled_appointment&.scheduled_date %></td>
+      <td>
+        <%= patient_detail.latest_scheduled_appointment&.scheduled_date.strftime('%a, %b %e') %>
+      </td>
     </tr>
   <% end %>
   </tbody>
