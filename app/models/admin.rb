@@ -36,11 +36,11 @@ class Admin < ApplicationRecord
     facility_groups.flat_map(&:facilities)
   end
 
-  def patients
-    Patient.where(registration_facility: facilities)
-  end
-
   def users
     facility_groups.flat_map(&:users)
+  end
+
+  def patients
+    Patient.where(registration_facility: facilities)
   end
 end

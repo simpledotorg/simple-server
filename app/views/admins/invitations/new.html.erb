@@ -9,7 +9,7 @@
       <% end %>
       <%= f.hidden_field :access_controllable_type, value: AdminAccessControl::ACCESS_CONTROLLABLE_TYPE_FOR_ROLE[@role] %>
 
-      <% if [:supervisor, :analyst].include?(@role) %>
+      <% if [:supervisor, :analyst, :healthcare_counsellor].include?(@role) %>
         <h3>Select facility groups</h3>
         <% policy_scope(FacilityGroup).group_by(&:organization).each do |organization, facility_groups| %>
           <%= f.collection_check_boxes :access_controllable_ids, facility_groups, :id, :name, checked: true, label: "Organization: #{organization.name.titleize}" %>
