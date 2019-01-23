@@ -22,6 +22,10 @@ class OverdueAppointmentPolicy < Struct.new(:user, :patient_detail)
     edit?
   end
 
+  def cancel?
+    edit?
+  end
+
   class Scope
     attr_reader :user, :scope
 

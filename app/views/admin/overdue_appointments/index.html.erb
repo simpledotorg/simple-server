@@ -37,7 +37,8 @@
         <%= overdue_appointment.latest_overdue_appointment&.agreed_to_visit ? '✅' : '❌' %>
       </td>
       <td>
-        <%= link_to 'Edit', edit_admin_overdue_appointment_path(overdue_appointment.patient), method: :get%>
+        <%= link_to 'Edit', edit_admin_overdue_appointment_path(overdue_appointment.patient), method: :get%> |
+        <%= link_to 'Cancel', admin_overdue_appointment_cancel_path(overdue_appointment.patient), method: :get%>
       </td>
     </tr>
   <% end %>

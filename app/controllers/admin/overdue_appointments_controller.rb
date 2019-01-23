@@ -1,5 +1,5 @@
 class Admin::OverdueAppointmentsController < AdminController
-  before_action :set_overdue_appointment, only: [:show, :edit, :update]
+  before_action :set_overdue_appointment, only: [:edit, :update, :cancel]
 
   def index
     authorize :overdue_appointment, :index?
@@ -10,10 +10,10 @@ class Admin::OverdueAppointmentsController < AdminController
     end
   end
 
-  def show
+  def edit
   end
 
-  def edit
+  def cancel
   end
 
   def update
@@ -28,7 +28,7 @@ class Admin::OverdueAppointmentsController < AdminController
   private
 
   def set_overdue_appointment
-    patient = Patient.find(params[:id])
+    patient = Patient.find(params[:id] || params[:overdue_appointment_id])
     @overdue_appointment = OverdueAppointment.for_patient(patient)
     authorize @overdue_appointment
   end
@@ -37,8 +37,8 @@ class Admin::OverdueAppointmentsController < AdminController
     params.require(:appointment).permit(
       :agreed_to_visit,
       :remind_on,
-      :status,
-      :cancel_reason
+      :cancel_reason,
+      :status
     )
   end
 end

@@ -136,7 +136,9 @@ Rails.application.routes.draw do
       resources :protocol_drugs
     end
 
-    resources :overdue_appointments, only: [:index, :show, :edit, :update]
+    resources :overdue_appointments, only: [:index, :edit, :update] do
+      get 'cancel', to: 'overdue_appointments#cancel'
+    end
 
     resources :users do
       put 'reset_otp', to: 'users#reset_otp'
