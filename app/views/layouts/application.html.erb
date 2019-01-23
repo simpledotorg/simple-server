@@ -33,7 +33,7 @@
             <ul class="navbar-nav mr-auto">
               <% if policy(:dashboard).show? %>
                 <li class="nav-item">
-                  <%= link_to "Dashboard", admin_dashboard_path, class: "nav-link #{active_controller?("admin/dashboard")}" %>
+                  <%= link_to "Dashboard", admin_root_path, class: "nav-link #{active_controller?("admin/dashboard")}" %>
                 </li>
               <% end %>
               <% if policy(Organization).index? %>
