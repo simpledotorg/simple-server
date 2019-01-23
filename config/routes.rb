@@ -123,6 +123,13 @@ Rails.application.routes.draw do
   devise_for :admins, controllers: { invitations: 'admins/invitations' }
   resources :admins
 
+  resources :organizations, only: [:index] do
+    resources :facility_groups, only: [:index, :show] do
+      resources :facilities, only: [:index, :show] do
+      end
+    end
+  end
+
   get "admin", to: redirect("/")
 
   namespace :admin do

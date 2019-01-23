@@ -10,7 +10,7 @@
 
         <% organization.facility_groups.sort_by(&:name).each do |facility_group| %>
           <tr>
-            <td class="row-title"><a href="#"><%= facility_group.name %></a></td>
+            <td class="row-title"><%= link_to facility_group.name, [organization, facility_group] %></td>
             <td></td>
             <td></td>
           </tr>
