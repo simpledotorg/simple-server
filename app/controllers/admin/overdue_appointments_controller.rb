@@ -21,7 +21,7 @@ class Admin::OverdueAppointmentsController < AdminController
     if appointment.update(appointment_params)
       redirect_to admin_overdue_appointments_url, notice: 'Appointment was successfully updated.'
     else
-      render :edit
+      redirect_to :back
     end
   end
 
