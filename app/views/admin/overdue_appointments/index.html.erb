@@ -22,19 +22,19 @@
     <tr class="table-light">
       <td><%= overdue_appointment.patient.full_name %></td>
       <td><%= overdue_appointment.patient.phone_numbers.first&.number %></td>
-      <td><%= overdue_appointment.latest_blood_pressure&.device_created_at.strftime('%a, %b %e, %Y') %></td>
+      <td><%= overdue_appointment.latest_blood_pressure.device_created_at.strftime('%a, %b %e, %Y') %></td>
       <td>
-        <%= overdue_appointment.latest_blood_pressure&.systolic %> /
-        <%= overdue_appointment.latest_blood_pressure&.diastolic %>
+        <%= overdue_appointment.latest_blood_pressure.systolic %> /
+        <%= overdue_appointment.latest_blood_pressure.diastolic %>
       </td>
       <td>
-        <%= overdue_appointment.latest_overdue_appointment&.scheduled_date.strftime('%a, %b %e, %Y') %>
+        <%= overdue_appointment.latest_overdue_appointment.scheduled_date.strftime('%a, %b %e, %Y') %>
       </td>
       <td>
-        <%= overdue_appointment.latest_overdue_appointment&.remind_on&.strftime('%a, %b %e, %Y') %>
+        <%= overdue_appointment.latest_overdue_appointment.remind_on&.strftime('%a, %b %e, %Y') %>
       </td>
       <td>
-        <%= overdue_appointment.latest_overdue_appointment&.agreed_to_visit ? '✅' : '❌' %>
+        <%= overdue_appointment.latest_overdue_appointment.agreed_to_visit ? '✅' : '❌' %>
       </td>
       <td>
         <%= link_to 'Edit', edit_admin_overdue_appointment_path(overdue_appointment.patient), method: :get%> |
