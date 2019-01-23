@@ -1,4 +1,4 @@
-<h1>Scheduled Appointments</h1>
+<h1>Overdue Appointments</h1>
 
 <% @patient_details_per_facility.each do |facility_name, patient_details| %>
 <section>
@@ -11,6 +11,9 @@
       <th>Last Visit Date</th>
       <th>BP Recorded on Last Visit</th>
       <th>Appointment Date</th>
+      <th>Remind on Date</th>
+      <th>Agreed to Visit</th>
+      <th colspan="1"></th>
     </tr>
   </thead>
 
@@ -25,7 +28,16 @@
         <%= patient_detail.latest_blood_pressure&.diastolic %>
       </td>
       <td>
-        <%= patient_detail.latest_scheduled_appointment&.scheduled_date.strftime('%a, %b %e, %Y') %>
+        <%= patient_detail.latest_overdue_appointment&.scheduled_date.strftime('%a, %b %e, %Y') %>
+      </td>
+      <td>
+        <%= patient_detail.latest_overdue_appointment&.remind_on&.strftime('%a, %b %e, %Y') %>
+      </td>
+      <td>
+        <%= patient_detail.latest_overdue_appointment&.agreed_to_visit ? '✅' : '❌' %>
+      </td>
+      <td>
+        <%= link_to 'Edit', edit_admin_overdue_appointment_path(patient_detail.patient.id), method: :get%>
       </td>
     </tr>
   <% end %>

@@ -136,7 +136,7 @@ Rails.application.routes.draw do
       resources :protocol_drugs
     end
 
-    resources :patient_details, only: [:index, :show, :edit]
+    resources :overdue_appointments, only: [:index, :show, :edit]
 
     resources :users do
       put 'reset_otp', to: 'users#reset_otp'

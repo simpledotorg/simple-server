@@ -1,4 +1,4 @@
-class PatientDetailPolicy < Struct.new(:user, :patient_detail)
+class OverdueAppointmentPolicy < Struct.new(:user, :patient_detail)
   attr_reader :user, :record
 
   def initialize(user, record)

@@ -31,8 +31,9 @@ class Patient < ApplicationRecord
     end
   end
 
-  def latest_scheduled_appointment
-    appointments.where(status: 'scheduled').order(scheduled_date: :desc).first
+  def latest_overdue_appointment
+    latest_scheduled_appointment = appointments.where(status: 'scheduled').order(scheduled_date: :desc).first
+    latest_scheduled_appointment if latest_scheduled_appointment&.scheduled_date < Date.today
   end
 
   def latest_blood_pressure
