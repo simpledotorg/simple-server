@@ -1,1 +1,13 @@
 <h1>Edit Overdue Appointment</h1>
+
+<%= form_tag('.', method: 'put') do %>
+  Remind on:
+  <%= date_field(:appointment, :remind_on, value: @overdue_appointment.latest_overdue_appointment.remind_on) %>
+  <br>
+  Agreed to visit:
+  <%= check_box(:appointment, :agreed_to_visit,
+                {checked: @overdue_appointment.latest_overdue_appointment.agreed_to_visit},
+                checked_value: true, unchecked_value: false) %>
+  <br>
+  <%= submit_tag('Update') %>
+<% end %>
