@@ -10,10 +10,6 @@ class OverdueAppointmentPolicy < Struct.new(:user, :patient_detail)
     user.healthcare_counsellor?
   end
 
-  def show?
-    index?
-  end
-
   def edit?
     index?
   end
