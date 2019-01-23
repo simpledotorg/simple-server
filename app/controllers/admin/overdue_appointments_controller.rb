@@ -10,8 +10,4 @@ class Admin::OverdueAppointmentsController < AdminController
 
   def show
   end
-
-  def edit
-    @patient_detail = OverdueAppointment.for_patient(Patient.find(params[:id]))
-  end
 end
