@@ -562,11 +562,23 @@ td.featured-middle {
 
 .table-compact .row-title a {
     white-space: nowrap;
-    width: 10em;
     text-overflow: ellipsis;
     overflow: hidden;
     display: block;
     font-weight: normal;
+}
+
+.table-compact .row-title a {
+    width: 10em;
+}
+
+#facility-groups {
+    margin-right: 0;
+}
+
+#facility-groups table .row-title a {
+    width: 100%;
+    padding: 3px 0;
 }
 
 .snapshot .table-compact .row-title a {
