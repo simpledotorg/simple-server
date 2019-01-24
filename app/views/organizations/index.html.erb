@@ -1,46 +1,4 @@
-<% if @users_requesting_approval.any? %>
-  <h3><%= pluralize(@users_requesting_approval.count || 0, "user") %> waiting for access</h3>
-
-  <% @users_requesting_approval.each do |user| %>
-    <% if policy(user).enable_access? %>
-      <div class="card">
-        <div class="card-body">
-          <div class="row">
-            <div class="col-lg-3">
-
-              <strong><%= link_to user.full_name, [:admin, user] %></strong>
-              <% if user.sync_approval_status_reason.present? %>
-                (
-                <small><%= user.sync_approval_status_reason %></small>
-                )
-              <% end %>
-
-            </div>
-            <div class="col">
-              <div class="row tight">
-                <div class="col">
-
-                  <small>Ph: <a href="tel:<%= user.phone_number %>"><%= user.phone_number %></a></small>
-                </div>
-                <div class="col tight">
-                  <small>
-                    <%= user.registered_at_facility.present? ? link_to(user.registered_at_facility.name, [:admin, user.registered_at_facility]) : "N/A" %>
-                  </small>
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-4 text-lg-right">
-              <%= link_to "Allow access", admin_user_enable_access_path(user), method: :put, class: "btn btn-sm btn-success", data: { confirm: I18n.t('admin.enable_access_alert') } %>
-              <%= link_to 'Deny access', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal', class: "btn btn-sm btn-outline-danger" %>
-
-              <%= render partial: "admin/users/deny_access_modal", locals: { user: user } %>
-            </div>
-          </div>
-        </div>
-      </div>
-    <% end %>
-  <% end %>
-<% end %>
+<%= render "shared/user_approvals" %>
 
 <section class="table-compact" id="facility-groups">
   <div class="table-responsive">

@@ -2,6 +2,8 @@ class FacilityGroupsController < AdminController
   def show
     skip_authorization
 
+    @users_requesting_approval = policy_scope(User).requested_sync_approval
+
     @organization = Organization.find(params[:organization_id])
     @facility_group = FacilityGroup.find(params[:id])
 
