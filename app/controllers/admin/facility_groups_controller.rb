@@ -12,7 +12,6 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def new
-    @organization = Organization.find(params[:organization_id])
     @facility_group = @organization.facility_groups.new
     authorize @facility_group
   end
@@ -21,7 +20,6 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def create
-    @organization = Organization.find(params[:organization_id])
     @facility_group = @organization.facility_groups.new(facility_group_params)
     authorize @facility_group
 
