@@ -1,4 +1,4 @@
-class Api::Current::Analytics::UserAnalyticsController < Api::Current::AnalyticsController
+class Analytics::UserAnalyticsController < AnalyticsController
   layout false
 
   WEEKS_TO_REPORT = 4

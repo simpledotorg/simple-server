@@ -125,6 +125,8 @@ Rails.application.routes.draw do
 
   get "admin", to: "admin/dashboard#show", as: :admin_dashboard
 
+  get "facility_group_stats", to: "admin/dashboard#facility_group_stats"
+
   namespace :admin do
     resources :audit_logs, only: [:index, :show]
     resources :organizations do

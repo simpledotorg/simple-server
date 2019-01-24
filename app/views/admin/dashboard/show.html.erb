@@ -43,22 +43,42 @@
 
 <% end %>
 
-<div class="accordion" id="facilityGroupStats">
-  <% @stats_grouped_by_facility_group.each do |facility_group, stats| %>
-    <div class="card">
-      <div class="card-header" id="title-<%= facility_group.id %>">
-        <h5 class="mb-0">
-          <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#stats-<%= facility_group.id %>" aria-expanded="true" aria-controls="stats-<%= facility_group.id %>">
-            <%= facility_group.name %>
-          </button>
-        </h5>
-      </div>
+<br/>
 
-      <div id="stats-<%= facility_group.id %>" class="collapse" aria-labelledby="title-<%= facility_group.id %>" data-parent="#facilityGroupStats">
-        <div class="card-body">
-          <%= render 'facility_group_dashboard', stats.merge(days_previous: @days_previous, months_previous: @months_previous) %>
-        </div>
-      </div>
-    </div>
-  <% end %>
+<h1>Statistics</h1>
+
+<div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <label class="input-group-text" for="organization-select-group">Select Organization</label>
+  </div>
+  <select class="custom-select" id="organization-select-group">
+    <option selected>Choose...</option>
+    <% @organizations.each do |organization| %>
+      <option data-toggle="collapse" href="#organization-facility-groups-<%= organization.id %>">
+        <%= organization.name %>
+      </option>
+    <% end %>
+  </select>
 </div>
+
+<% @organizations.each do |organization| %>
+  <div class="input-group mb-3 collapse" id="organization-facility-groups-<%= organization.id %>">
+    <div class="input-group-prepend">
+      <label class="input-group-text" for="organization-select-group">Select Facility Group</label>
+    </div>
+    <%= select_tag "facility_group_id",
+                   options_from_collection_for_select(organization.facility_groups, "id", "name"),
+                   prompt: 'Choose...',
+                   class: "custom-select organization-facility-groups",
+                   data: { remote: true,
+                           url: facility_group_stats_path } %>
+  </div>
+<% end %>
+
+<div class="facility-group-statistics-spinner invisible d-flex justify-content-center">
+  <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+
+<div id="facility_group_stats"></div>
