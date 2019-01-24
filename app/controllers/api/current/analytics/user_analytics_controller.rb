@@ -5,7 +5,7 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
 
   def show
     @stats_for_user = new_patients_by_facility_week
-    @js = asset_source('application.js')
+    @application_js = asset_source('application.js')
 
     respond_to do |format|
       format.html { render :show }
