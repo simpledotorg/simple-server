@@ -32,7 +32,7 @@ class Patient < ApplicationRecord
   end
 
   def latest_scheduled_appointment
-    return appointments.where(status: 'scheduled').order(scheduled_date: :desc).first
+    appointments.where(status: 'scheduled').order(scheduled_date: :desc).first
   end
 
   def latest_blood_pressure
