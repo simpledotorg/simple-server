@@ -31,7 +31,7 @@ class OverdueAppointmentPolicy < Struct.new(:user, :patient_detail)
     end
 
     def resolve
-      scope.all
+      user.healthcare_counsellor? ? OverdueAppointment.for_admin(user) : []
     end
   end
 end

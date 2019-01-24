@@ -3,10 +3,9 @@ class Admin::OverdueAppointmentsController < AdminController
 
   def index
     authorize :overdue_appointment, :index?
-    facilities = policy_scope(Facility)
-    @overdue_appointments_per_facility = {}
-    facilities.each do |facility|
-      @overdue_appointments_per_facility[facility.name] = OverdueAppointment.for_facility(facility)
+    overdue_appointments = policy_scope(OverdueAppointment)
+    @overdue_appointments_per_facility = overdue_appointments.group_by do |overdue_appointment|
+      overdue_appointment.latest_scheduled_appointment.facility
     end
   end
 

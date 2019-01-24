@@ -1,8 +1,8 @@
 <h1>Overdue Appointments</h1>
 
-<% @overdue_appointments_per_facility.each do |facility_name, overdue_appointments| %>
+<% @overdue_appointments_per_facility.each do |facility, overdue_appointments| %>
 <section>
-<h2><%= facility_name %></h2>
+<h2><%= facility.name %></h2>
 <table class="table table-sm">
   <thead class="thead-light">
     <tr>
