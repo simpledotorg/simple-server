@@ -70,7 +70,7 @@
 
             <ul class="navbar-nav ml-auto">
               <li class="nav-item nav-link" style="pointer-events: none;">
-                <%= @current_admin.email %>
+                <%= current_admin.email %>
               </li>
               <li class="nav-item">
                 <%= link_to('Logout', destroy_admin_session_path, method: :delete, class: "nav-link") %>
