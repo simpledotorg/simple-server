@@ -6,7 +6,7 @@
   <br>
   Agreed to visit:
   <%= check_box(:appointment, :agreed_to_visit,
-                {checked: @overdue_appointment.latest_overdue_appointment.agreed_to_visit},
+                {checked: @overdue_appointment.latest_scheduled_appointment.agreed_to_visit},
                 checked_value: true, unchecked_value: false) %>
   <br>
   <%= submit_tag('Update') %>
