@@ -125,6 +125,8 @@ GEM
     faraday (0.15.1)
       multipart-post (>= 1.2, < 3)
     ffi (1.9.25)
+    friendly_id (5.2.5)
+      activerecord (>= 4.0.0)
     globalid (0.4.1)
       activesupport (>= 4.2.0)
     groupdate (4.0.1)
@@ -333,6 +335,7 @@ DEPENDENCIES
   dotenv-rails
   factory_bot_rails
   faker
+  friendly_id (~> 5.2.4)
   groupdate
   jbuilder (~> 2.5)
   jquery-rails
