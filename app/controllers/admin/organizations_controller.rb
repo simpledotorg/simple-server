@@ -44,7 +44,7 @@ class Admin::OrganizationsController < AdminController
   private
 
   def set_organization
-    @organization = Organization.find(params[:id])
+    @organization = Organization.friendly.find(params[:id])
     authorize @organization
   end
 

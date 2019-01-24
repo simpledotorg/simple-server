@@ -1,7 +1,7 @@
 class Admin::FacilityGroupsController < AdminController
+  before_action :set_organization, only: [:index, :show, :new, :edit, :create, :update, :destroy]
   before_action :set_facility_group, only: [:show, :edit, :update, :destroy]
-  before_action :set_protocols, only: [:show, :edit, :update, :destroy, :new, :create]
-  before_action :set_organization, only: [ :show, :edit, :update, :destroy]
+  before_action :set_protocols, only: [:new, :edit]
 
   def index
     authorize FacilityGroup
@@ -12,7 +12,6 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def new
-    @organization = Organization.find(params[:organization_id])
     @facility_group = @organization.facility_groups.new
     authorize @facility_group
   end
@@ -21,7 +20,6 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def create
-    @organization = Organization.find(params[:organization_id])
     @facility_group = @organization.facility_groups.new(facility_group_params)
     authorize @facility_group
 
@@ -42,7 +40,7 @@ class Admin::FacilityGroupsController < AdminController
 
   def destroy
     @facility_group.destroy
-    redirect_to admin_organization_facility_groups_url, notice: 'FacilityGroup was successfully deleted.'
+    redirect_to admin_organization_facility_groups_url(@organization), notice: 'FacilityGroup was successfully deleted.'
   end
 
   private
@@ -52,12 +50,12 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def set_facility_group
-    @facility_group= FacilityGroup.find(params[:id])
+    @facility_group= FacilityGroup.friendly.find(params[:id])
     authorize @facility_group
   end
 
   def set_organization
-    @organization= Organization.find(params[:organization_id])
+    @organization = Organization.friendly.find(params[:organization_id])
     authorize @organization
   end
 
