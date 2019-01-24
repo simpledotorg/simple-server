@@ -17,7 +17,7 @@ class Admin::OverdueAppointmentsController < AdminController
   end
 
   def update
-    appointment = @overdue_appointment.latest_overdue_appointment
+    appointment = @overdue_appointment.latest_scheduled_appointment
     if appointment.update(appointment_params)
       redirect_to admin_overdue_appointments_url, notice: 'Appointment was successfully updated.'
     else

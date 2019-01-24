@@ -28,13 +28,13 @@
         <%= overdue_appointment.latest_blood_pressure.diastolic %>
       </td>
       <td>
-        <%= overdue_appointment.latest_overdue_appointment.scheduled_date.strftime('%a, %b %e, %Y') %>
+        <%= overdue_appointment.latest_scheduled_appointment.scheduled_date.strftime('%a, %b %e, %Y') %>
       </td>
       <td>
-        <%= overdue_appointment.latest_overdue_appointment.remind_on&.strftime('%a, %b %e, %Y') %>
+        <%= overdue_appointment.latest_scheduled_appointment.remind_on&.strftime('%a, %b %e, %Y') %>
       </td>
       <td>
-        <%= overdue_appointment.latest_overdue_appointment.agreed_to_visit ? '✅' : '❌' %>
+        <%= overdue_appointment.latest_scheduled_appointment.agreed_to_visit ? '✅' : '❌' %>
       </td>
       <td>
         <%= link_to 'Edit', edit_admin_overdue_appointment_path(overdue_appointment.patient), method: :get%> |
