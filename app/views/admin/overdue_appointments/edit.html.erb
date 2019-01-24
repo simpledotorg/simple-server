@@ -2,11 +2,11 @@
 
 <%= form_tag('.', method: 'put') do %>
   Remind on:
-  <%= date_field(:appointment, :remind_on, value: @overdue_appointment.latest_scheduled_appointment.remind_on) %>
+  <%= date_field(:appointment, :remind_on, value: @overdue_appointment.appointment.remind_on) %>
   <br>
   Agreed to visit:
   <%= check_box(:appointment, :agreed_to_visit,
-                {checked: @overdue_appointment.latest_scheduled_appointment.agreed_to_visit},
+                {checked: @overdue_appointment.appointment.agreed_to_visit},
                 checked_value: true, unchecked_value: false) %>
   <br>
   <%= submit_tag('Update') %>

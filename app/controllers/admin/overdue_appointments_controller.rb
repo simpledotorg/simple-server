@@ -5,7 +5,7 @@ class Admin::OverdueAppointmentsController < AdminController
     authorize :overdue_appointment, :index?
     overdue_appointments = policy_scope(OverdueAppointment)
     @overdue_appointments_per_facility = overdue_appointments.group_by do |overdue_appointment|
-      overdue_appointment.latest_scheduled_appointment.facility
+      overdue_appointment.appointment.facility
     end
   end
 
@@ -16,7 +16,7 @@ class Admin::OverdueAppointmentsController < AdminController
   end
 
   def update
-    appointment = @overdue_appointment.latest_scheduled_appointment
+    appointment = @overdue_appointment.appointment
     if appointment.update(appointment_params)
       redirect_to admin_overdue_appointments_url, notice: 'Appointment was successfully updated.'
     else
