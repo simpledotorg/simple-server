@@ -31,11 +31,9 @@
         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
           <% if admin_signed_in? %>
             <ul class="navbar-nav mr-auto">
-              <% if policy(:dashboard).show? %>
-                <li class="nav-item">
-                  <%= link_to "Dashboard", admin_root_path, class: "nav-link #{active_controller?("admin/dashboard")}" %>
-                </li>
-              <% end %>
+              <li class="nav-item">
+                <%= link_to "Dashboard", admin_root_path, class: "nav-link #{active_controller?("organizations")}" %>
+              </li>
               <% if policy(Organization).index? %>
                 <li class="nav-item">
                   <%= link_to "Organizations", admin_organizations_path, class: "nav-link #{active_controller?("admin/organizations")}" %>

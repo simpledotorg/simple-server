@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.feature "Dashboards", type: :feature do
+RSpec.feature "Home page", type: :feature do
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:path) { create(:organization, name: "PATH") }
 
