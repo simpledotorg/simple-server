@@ -4,15 +4,11 @@
       <% @organizations.each do |organization| %>
         <tr>
           <th><h2 style="padding-top: 1em;"><%= organization.name %></h2></th>
-          <th class="row-label">Newly<br>enrolled</th>
-          <th class="row-label">Return<br>patients</th>
         </tr>
 
-        <% organization.facility_groups.sort_by(&:name).each do |facility_group| %>
+        <% policy_scope(organization.facility_groups).order(:name).each do |facility_group| %>
           <tr>
             <td class="row-title"><%= link_to facility_group.name, [organization, facility_group] %></td>
-            <td></td>
-            <td></td>
           </tr>
         <% end %>
       <% end %>

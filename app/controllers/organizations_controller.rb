@@ -1,7 +1,6 @@
 class OrganizationsController < AdminController
   def index
-    authorize(Organization)
-    @organizations = policy_scope(Organization).order(:name).includes(:facility_groups)
+    skip_authorization
+    @organizations = policy_scope(Organization).order(:name)
   end
 end
-

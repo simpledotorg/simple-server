@@ -1,8 +1,9 @@
 class FacilityGroupsController < AdminController
   def show
+    skip_authorization
+
     @organization = Organization.find(params[:organization_id])
     @facility_group = FacilityGroup.find(params[:id])
-    authorize @facility_group
 
     Groupdate.time_zone = "New Delhi"
 
