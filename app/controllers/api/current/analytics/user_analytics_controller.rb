@@ -5,6 +5,7 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
 
   def show
     @stats_for_user = new_patients_by_facility_week
+    @js = asset_source('application.js')
 
     respond_to do |format|
       format.html { render :show }
@@ -20,5 +21,14 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
       .registered_at(current_facility.id)
       .group_by_week('device_created_at', last: WEEKS_TO_REPORT)
       .count
+  end
+
+  def asset_source(asset_path)
+    asset = Rails.application.assets.find_asset(asset_path)
+    if %w(test development).include?(Rails.env.to_s)
+      asset.source
+    else
+      File.read(File.join(Rails.root, 'public', 'assets', asset.digest_path))
+    end
   end
 end
