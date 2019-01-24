@@ -1,5 +1,9 @@
 class FacilityGroup < ApplicationRecord
+  extend FriendlyId
+
   belongs_to :organization
+  belongs_to :protocol
+
   has_many :facilities, dependent: :nullify
   has_many :users, through: :facilities
 
@@ -14,8 +18,8 @@ class FacilityGroup < ApplicationRecord
   has_many :medical_histories, through: :patients
   has_many :communications, through: :appointments
 
-  belongs_to :protocol
-
   validates :name, presence: true
   validates :organization, presence: true
+
+  friendly_id :name, use: :slugged
 end

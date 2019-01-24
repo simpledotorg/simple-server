@@ -4,8 +4,8 @@ class FacilityGroupsController < AdminController
 
     @users_requesting_approval = policy_scope(User).requested_sync_approval
 
-    @organization = Organization.find(params[:organization_id])
-    @facility_group = FacilityGroup.find(params[:id])
+    @organization = Organization.friendly.find(params[:organization_id])
+    @facility_group = FacilityGroup.friendly.find(params[:id])
 
     Groupdate.time_zone = "New Delhi"
 
