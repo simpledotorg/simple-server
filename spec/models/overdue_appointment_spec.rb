@@ -6,12 +6,12 @@ describe OverdueAppointment do
 
   describe 'OverdueAppointment' do
     it 'builds for patient with an overdue scheduled appointment' do
-      patient = FactoryBot.create(:patient)
-      blood_pressure = FactoryBot.create(:blood_pressure, patient: patient)
-      appointment_in_past = FactoryBot.create(:appointment,
-                                              patient: patient,
-                                              status: :scheduled,
-                                              scheduled_date: date_in_past)
+      patient = create(:patient)
+      blood_pressure = create(:blood_pressure, patient: patient)
+      appointment_in_past = create(:appointment,
+                                   patient: patient,
+                                   status: :scheduled,
+                                   scheduled_date: date_in_past)
       overdue_appointment = OverdueAppointment.for_patient(patient)
 
       expect(overdue_appointment.patient).to eq(patient)
@@ -20,12 +20,12 @@ describe OverdueAppointment do
     end
 
     it 'does not build for patient without an overdue scheduled appointment' do
-      patient = FactoryBot.create(:patient)
-      FactoryBot.create(:blood_pressure, patient: patient)
-      FactoryBot.create(:appointment,
-                        patient: patient,
-                        status: :scheduled,
-                        scheduled_date: date_in_future)
+      patient = create(:patient)
+      create(:blood_pressure, patient: patient)
+      create(:appointment,
+             patient: patient,
+             status: :scheduled,
+             scheduled_date: date_in_future)
       overdue_appointment = OverdueAppointment.for_patient(patient)
 
       expect(overdue_appointment).to be_nil
@@ -35,19 +35,19 @@ describe OverdueAppointment do
       healthcare_counsellor = create(:admin, :healthcare_counsellor)
       facility = create(:facility, facility_group: healthcare_counsellor.facility_groups.first)
 
-      patient_in_this_facility = FactoryBot.create(:patient, registration_facility: facility)
-      FactoryBot.create(:blood_pressure, patient: patient_in_this_facility)
-      FactoryBot.create(:appointment,
-                        patient: patient_in_this_facility,
-                        status: :scheduled,
-                        scheduled_date: date_in_past)
+      patient_in_this_facility = create(:patient, registration_facility: facility)
+      create(:blood_pressure, patient: patient_in_this_facility)
+      create(:appointment,
+             patient: patient_in_this_facility,
+             status: :scheduled,
+             scheduled_date: date_in_past)
 
-      patient_in_other_facility = FactoryBot.create(:patient)
-      FactoryBot.create(:blood_pressure, patient: patient_in_other_facility)
-      FactoryBot.create(:appointment,
-                        patient: patient_in_other_facility,
-                        status: :scheduled,
-                        scheduled_date: date_in_future)
+      patient_in_other_facility = create(:patient)
+      create(:blood_pressure, patient: patient_in_other_facility)
+      create(:appointment,
+             patient: patient_in_other_facility,
+             status: :scheduled,
+             scheduled_date: date_in_future)
       overdue_appointments = OverdueAppointment.for_admin(healthcare_counsellor)
 
       expect(overdue_appointments.count).to eq(1)
