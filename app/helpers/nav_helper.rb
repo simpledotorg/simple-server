@@ -1,5 +1,5 @@
 module NavHelper
-  def active_controller?(controller)
-    "active" if params[:controller] == controller
+  def active_controller?(*controllers)
+    "active" if controllers.include?(params[:controller])
   end
 end
