@@ -25,7 +25,7 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
 
   def asset_source(asset_path)
     asset = Rails.application.assets.find_asset(asset_path)
-    if %w(test development).include?(Rails.env.to_s)
+    if Rails.application.config.assets.compile
       asset.source
     else
       File.read(File.join(Rails.root, 'public', 'assets', asset.digest_path))
