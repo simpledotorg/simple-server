@@ -124,8 +124,7 @@ Rails.application.routes.draw do
   resources :admins
 
   get "admin", to: "admin/dashboard#show", as: :admin_dashboard
-
-  get "facility_group_stats", to: "admin/dashboard#facility_group_stats"
+  get "admin/facility_group_analytics", to: "admin/dashboard#facility_group_analytics"
 
   namespace :admin do
     resources :audit_logs, only: [:index, :show]

@@ -8,7 +8,7 @@ class Admin::DashboardController < AdminController
     @months_previous = 8
   end
 
-  def facility_group_stats
+  def facility_group_analytics
     skip_authorization
 
     Groupdate.time_zone = "New Delhi"
@@ -17,7 +17,7 @@ class Admin::DashboardController < AdminController
     @months_previous = 8
 
     facility_group = FacilityGroup.find(params.require(:facility_group_id))
-    @facility_group_stats = {
+    @facility_group_analytics = {
       facilities: admin_facilities(facility_group),
       visits_by_facility: visits_by_facility(facility_group),
       visits_by_facility_user: visits_by_facility_user(facility_group),
