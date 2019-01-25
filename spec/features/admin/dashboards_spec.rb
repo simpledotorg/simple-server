@@ -1,7 +1,9 @@
 require 'rails_helper'
 
 RSpec.feature "Dashboards", type: :feature do
-  let!(:bathinda) { create(:facility, name: "Bathinda") }
+  let!(:organization) { create(:organization, name: 'IHMI') }
+  let!(:facility_group) { create(:facility_group, name: 'Bathinda Facility Group', organization: organization) }
+  let!(:bathinda) { create(:facility, name: "Bathinda", facility_group: facility_group) }
   let!(:supervisor) { create(:admin, :supervisor, email: "supervisor@example.com") }
   let!(:access_controls) { create(:admin_access_control, admin: supervisor, access_controllable: bathinda.facility_group) }
   let!(:new_user) { create(:user, :sync_requested, facility: bathinda) }
@@ -11,10 +13,20 @@ RSpec.feature "Dashboards", type: :feature do
     visit admin_dashboard_path
   end
 
-  it "shows a basic dashboard" do
-    expect(page).to have_content("Daily unique patients")
-    expect(page).to have_content("New patients registered")
-    expect(page).to have_content("Monthly unique patients")
+  context "statistics" do
+    it "shows a drop down to select an organization" do
+      expect(page).to have_content("Select Organization")
+      expect(page).to have_content("Select Facility Group")
+    end
+
+    it "displays a list of of the selected organizations facility group" do
+      find('#organization-select').find('option', text: organization.name).select_option
+
+      expect(page).to have_content("Select Facility Group")
+      expect(page).
+        to have_select('facility_group_id',
+                       with_options: ["Choose #{organization.name} facility group", facility_group.name])
+    end
   end
 
   context "outstanding approval requests" do
