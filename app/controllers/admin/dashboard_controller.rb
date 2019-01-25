@@ -1,29 +1,11 @@
 class Admin::DashboardController < AdminController
   def show
     skip_authorization
-
-    Groupdate.time_zone = "New Delhi"
-
     @organizations = policy_scope(Organization)
     @users_requesting_approval = policy_scope(User).requested_sync_approval
 
     @days_previous = 20
     @months_previous = 8
-
-    # @stats_grouped_by_facility_group = policy_scope(FacilityGroup).map do |facility_group|
-    #   [facility_group,
-    #    { facilities: admin_facilities(facility_group),
-    #      visits_by_facility: visits_by_facility(facility_group),
-    #      visits_by_facility_user: visits_by_facility_user(facility_group),
-    #      visits_by_facility_user_day: visits_by_facility_user_day(facility_group),
-    #      visits_by_facility_month: visits_by_facility_month(facility_group),
-    #      new_patients_by_facility: new_patients_by_facility,
-    #      new_patients_by_facility_month: new_patients_by_facility_month,
-    #      control_rate_by_facility: control_rate_by_facility }]
-    # end.to_h
-
-    # Reset when done
-    Groupdate.time_zone = "UTC"
   end
 
   def facility_group_stats

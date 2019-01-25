@@ -1,7 +1,7 @@
 class Admin::FacilityGroupsController < AdminController
   before_action :set_facility_group, only: [:show, :edit, :update, :destroy]
   before_action :set_protocols, only: [:show, :edit, :update, :destroy, :new, :create]
-  before_action :set_organization, only: [:show, :edit, :update, :destroy]
+  before_action :set_organization, only: [ :show, :edit, :update, :destroy]
 
   def index
     authorize FacilityGroup
