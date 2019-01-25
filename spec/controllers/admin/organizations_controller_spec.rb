@@ -78,7 +78,7 @@ RSpec.describe Admin::OrganizationsController, type: :controller do
         put :update, params: { id: organization.to_param, organization: new_attributes }
         organization.reload
         expect(response).to redirect_to([:admin, organization])
-        expect(organization.attributes.except('id', 'created_at', 'updated_at', 'deleted_at'))
+        expect(organization.attributes.except('id', 'created_at', 'updated_at', 'deleted_at', 'slug'))
           .to eq new_attributes.with_indifferent_access
       end
 

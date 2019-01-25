@@ -1,5 +1,8 @@
 class Facility < ApplicationRecord
   include Mergeable
+  extend FriendlyId
+
+  belongs_to :facility_group, optional: true
 
   has_many :users, foreign_key: 'registration_facility_id'
   has_many :blood_pressures
@@ -10,8 +13,6 @@ class Facility < ApplicationRecord
 
   has_many :appointments
 
-  belongs_to :facility_group, optional: true
-
   validates :name, presence: true
   validates :district, presence: true
   validates :state, presence: true
@@ -19,4 +20,6 @@ class Facility < ApplicationRecord
   validates :pin, numericality: true, allow_blank: true
 
   delegate :protocol, to: :facility_group, allow_nil: true
+
+  friendly_id :name, use: :slugged
 end
