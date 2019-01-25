@@ -1,19 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe Admin::OverdueAppointmentsController, type: :controller do
-  let!(:healthcare_counsellor) { create(:admin, :healthcare_counsellor) }
-  let!(:facility) do
-    facility_group = healthcare_counsellor.facility_groups.first
-    create(:facility, facility_group: facility_group)
-  end
+  let(:healthcare_counsellor) { create(:admin, :healthcare_counsellor) }
+  let(:facility_group) { healthcare_counsellor.facility_groups.first }
+  let(:facility) { create(:facility, facility_group: facility_group) }
 
+  let!(:patient_with_overdue_appointment) { create(:patient, registration_facility: facility) }
   let!(:patient_without_overdue_appointment) { create(:patient, registration_facility: facility) }
-  let!(:patient_with_overdue_appointment) do
-    patient = create(:patient, registration_facility: facility)
-    create(:blood_pressure, patient: patient)
-    create(:appointment, patient: patient, scheduled_date: Date.today - 5.days)
-    patient
-  end
+
+  let!(:overdue_appointment) { build(:overdue_appointment, patient: patient_with_overdue_appointment) }
 
   before do
     sign_in(healthcare_counsellor)

@@ -34,24 +34,15 @@ describe OverdueAppointment do
     it 'builds for patients registered in authorized facilities' do
       healthcare_counsellor = create(:admin, :healthcare_counsellor)
       facility = create(:facility, facility_group: healthcare_counsellor.facility_groups.first)
-
-      patient_in_this_facility = create(:patient, registration_facility: facility)
-      create(:blood_pressure, patient: patient_in_this_facility)
+      patient = create(:patient, registration_facility: facility)
+      create(:blood_pressure, patient: patient)
       create(:appointment,
-             patient: patient_in_this_facility,
+             patient: patient,
              status: :scheduled,
              scheduled_date: date_in_past)
-
-      patient_in_other_facility = create(:patient)
-      create(:blood_pressure, patient: patient_in_other_facility)
-      create(:appointment,
-             patient: patient_in_other_facility,
-             status: :scheduled,
-             scheduled_date: date_in_future)
       overdue_appointments = OverdueAppointment.for_admin(healthcare_counsellor)
 
-      expect(overdue_appointments.count).to eq(1)
-      expect(overdue_appointments).to include(OverdueAppointment.for_patient(patient_in_this_facility))
+      expect(overdue_appointments).to contain_exactly(OverdueAppointment.for_patient(patient))
     end
   end
 end
