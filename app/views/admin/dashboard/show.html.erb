@@ -45,35 +45,43 @@
 
 <br/>
 
-<h1>Statistics</h1>
+<div id="statistics">
+  <h1>Statistics</h1>
 
-<div class="input-group mb-3">
-  <div class="input-group-prepend">
-    <label class="input-group-text" for="organization-select-group">Select Organization</label>
-  </div>
-  <select class="custom-select" id="organization-select-group">
-    <option selected>Choose...</option>
-    <% @organizations.each do |organization| %>
-      <option data-toggle="collapse" href="#organization-facility-groups-<%= organization.id %>">
-        <%= organization.name %>
-      </option>
-    <% end %>
-  </select>
-</div>
-
-<% @organizations.each do |organization| %>
-  <div class="input-group mb-3 collapse" id="organization-facility-groups-<%= organization.id %>">
+  <div class="input-group mb-3">
     <div class="input-group-prepend">
-      <label class="input-group-text" for="organization-select-group">Select Facility Group</label>
+      <label class="input-group-text" for="organization-select">Select Organization</label>
     </div>
-    <%= select_tag "facility_group_id",
-                   options_from_collection_for_select(organization.facility_groups, "id", "name"),
-                   prompt: 'Choose...',
-                   class: "custom-select organization-facility-groups",
-                   data: { remote: true,
-                           url: admin_facility_group_analytics_path } %>
+    <select class="custom-select" id="organization-select">
+      <option selected>Choose...</option>
+      <% @organizations.each do |organization| %>
+        <option data-toggle="collapse"
+                data-target="#organization-facility-groups-<%= organization.id %>">
+          <%= organization.name %>
+        </option>
+      <% end %>
+    </select>
   </div>
-<% end %>
+
+  <div class="accordion-group">
+    <% @organizations.each do |organization| %>
+      <div class="input-group mb-3 collapse"
+           id="organization-facility-groups-<%= organization.id %>"
+           data-parent="#statistics">
+        <div class="input-group-prepend">
+          <label class="input-group-text" for="facility-group-select-<% organization.id %>">Select Facility Group</label>
+        </div>
+        <%= select_tag "facility_group_id",
+                       options_from_collection_for_select(organization.facility_groups, "id", "name"),
+                       prompt: "Choose #{organization.name} facility group",
+                       class: "custom-select organization-facility-groups",
+                       id: "facility-group-select-#{organization.id}",
+                       data: { remote: true,
+                               url: admin_facility_group_analytics_path } %>
+      </div>
+    <% end %>
+  </div>
+</div>
 
 <div class="facility-group-statistics-spinner invisible d-flex justify-content-center">
   <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">

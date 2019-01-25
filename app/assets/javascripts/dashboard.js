@@ -1,7 +1,9 @@
-$(document).on('ajax:before', '.organization-facility-groups', function (event) {
-    $('.facility-group-statistics-spinner').removeClass('invisible');
-})
+$(document).ready(function () {
+    $('.organization-facility-groups').on('ajax:before', function () {
+        $('.facility-group-statistics-spinner').removeClass('invisible');
+    })
 
-$(document).on('ajax:complete', '.organization-facility-groups', function (event) {
-    $('.facility-group-statistics-spinner').addClass('invisible');
-})
+    $('.organization-facility-groups').on('ajax:complete', function () {
+        $('.facility-group-statistics-spinner').addClass('invisible');
+    })
+});
