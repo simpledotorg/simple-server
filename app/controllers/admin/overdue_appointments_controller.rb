@@ -27,9 +27,13 @@ class Admin::OverdueAppointmentsController < AdminController
   private
 
   def set_overdue_appointment
-    patient = Patient.find(params[:id] || params[:overdue_appointment_id])
-    @overdue_appointment = OverdueAppointment.for_patient(patient)
-    authorize @overdue_appointment
+    begin
+      patient = Patient.find(params[:id] || params[:overdue_appointment_id])
+      @overdue_appointment = OverdueAppointment.for_patient(patient)
+      authorize @overdue_appointment
+    rescue
+      render file: "#{Rails.root}/public/404.html", status: 404
+    end
   end
 
   def appointment_params
