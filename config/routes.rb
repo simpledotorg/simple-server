@@ -124,8 +124,12 @@ Rails.application.routes.draw do
   resources :admins
 
   namespace :analytics do
-    resources :facility_groups, only: [:show]
-    resources :facilities, only: [:show]
+    resources :facility_groups, only: [:show] do
+      get :graphics
+    end
+    resources :facilities, only: [:show] do
+      get :graphics
+    end
   end
 
   resources :organizations, only: [:index]

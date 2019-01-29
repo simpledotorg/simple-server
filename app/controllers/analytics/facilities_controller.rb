@@ -5,4 +5,8 @@ class Analytics::FacilitiesController < AnalyticsController
     @facility_group = @facility.facility_group
     @organization = @facility_group.organization
   end
+
+  def graphics
+    skip_authorization
+  end
 end

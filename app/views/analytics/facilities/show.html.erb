@@ -1,7 +1,7 @@
 <div class="dashboard">
   <nav class="breadcrumb"><%= link_to @facility_group.name, analytics_facility_group_path(@facility_group) %></nav>
   <h1><%= @facility.name %></h1>
-  <%#= link_to "Graphics For Nurses", organization_facility_group_facility_graphics_path(@organization, @facility_group, @facility) %>
+  <%= link_to "Graphics For Nurses", analytics_facility_graphics_path(@facility) %>
   <p class="dashboard-description">#8 of 16 reporting PHCs in New York State for BP control %</p>
   <p class="dashboard-description">976 patients enrolled since Feb 2, 2018</p>
 

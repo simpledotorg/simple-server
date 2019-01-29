@@ -7,7 +7,7 @@
 <div class="dashboard">
 
   <h1><%= @facility_group.name %></h1>
-  <%#= link_to "Graphics For Supervisors", organization_facility_group_graphics_path(@organization, @facility_group) %>
+  <%= link_to "Graphics For Supervisors", analytics_facility_group_graphics_path(@facility_group) %>
   <p class="dashboard-description">#2 of 19 reporting districts in New York State. State BP control average is 25% from
     reporting facilities.</p>
 
