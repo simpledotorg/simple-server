@@ -777,19 +777,7 @@
         "tags": [
           "protocol"
         ],
-        "security": [
-          {
-            "basic": [
-
-            ]
-          }
-        ],
         "parameters": [
-          {
-            "name": "HTTP_X_USER_ID",
-            "in": "header",
-            "type": "uuid"
-          },
           {
             "type": "string",
             "format": "date-time",
@@ -1021,12 +1009,6 @@
       "items": {
         "$ref": "#/definitions/error"
       }
-    },
-    "processed_since": {
-      "type": "string",
-      "format": "date-time",
-      "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
-      "name": "processed_since"
     },
     "timestamp": {
       "type": "string",
@@ -1356,6 +1338,12 @@
         },
         "facility_type": {
           "type": "string"
+        },
+        "facility_group_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "protocol_id": {
+          "$ref": "#/definitions/uuid"
         }
       },
       "required": [
@@ -1363,7 +1351,9 @@
         "name",
         "district",
         "state",
-        "country"
+        "country",
+        "facility_group_id",
+        "protocol_id"
       ]
     },
     "facilities": {
@@ -1759,6 +1749,12 @@
       "items": {
         "$ref": "#/definitions/medical_history"
       }
+    },
+    "processed_since": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The timestamp since which records have been processed by the server.\n                    Use the server returned value in the next request to continue fetching records.",
+      "name": "processed_since"
     }
   },
   "securityDefinitions": {

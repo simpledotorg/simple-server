@@ -9,6 +9,16 @@ describe Patient, type: :model do
     it { should have_many(:facilities).through(:blood_pressures) }
     it { should have_many(:appointments) }
     it { should have_one(:medical_history) }
+
+    it 'has distinct facilities' do
+      patient = FactoryBot.create(:patient)
+      facility = FactoryBot.create(:facility)
+      FactoryBot.create_list(:blood_pressure, 5, patient: patient, facility: facility)
+      expect(patient.facilities.count).to eq(1)
+    end
+
+    it { should belong_to(:registration_facility).class_name("Facility") }
+    it { should belong_to(:registration_user).class_name("User") }
   end
 
   describe 'Validations' do
@@ -19,5 +29,9 @@ describe Patient, type: :model do
       patient.date_of_birth = 3.days.from_now
       expect(patient).to be_invalid
     end
+  end
+
+  describe 'Behavior' do
+    it_behaves_like 'a record that is deletable'
   end
 end

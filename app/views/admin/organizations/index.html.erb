@@ -1,0 +1,36 @@
+<div class="top-buttons">
+<% if policy(Organization).new? %>
+  <%= link_to 'New organization', new_admin_organization_path, class: "btn btn-sm btn-primary" %>
+<% end %>
+</div>
+
+<table class="table-responsive table">
+  <thead class="thead-light">
+    <tr>
+      <th><h1>Organizations</h1></th>
+      <th>Description</th>
+      <th>Facility Groups</th>
+      <th>Facilities</th>
+      <th>Users</th>
+      <th colspan="2"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @organizations.each do |organization| %>
+      <tr>
+        <td class="nowrap"><%= link_to organization.name, [:admin, organization] %></td>
+        <td><%= organization.description %></td>
+        <td><%= organization.facility_groups.count %></td>
+        <td><%= organization.facilities.count %></td>
+        <td><%= organization.users.count %></td>
+        <% if policy(organization).edit? %>
+          <td><%= link_to 'Edit', edit_admin_organization_path(organization) %></td>
+        <% end %>
+        <% if policy(organization).destroy? %>
+          <td><%= link_to 'Delete', [:admin, organization], method: :delete, data: { confirm: "Are you sure you want to delete #{organization.name}?" } %></td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

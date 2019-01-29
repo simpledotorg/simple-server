@@ -3,14 +3,13 @@ class Admin::UsersController < AdminController
 
   def index
     authorize User
-    @users = User.all.sort_by do |user|
+    @users = policy_scope(User).sort_by do |user|
       [ordered_sync_approval_statuses[user.sync_approval_status],
        user.updated_at]
     end
   end
 
   def show
-    @current_admin = current_admin
   end
 
   def new
@@ -55,7 +54,7 @@ class Admin::UsersController < AdminController
 
   def disable_access
     reason_for_denial =
-      I18n.t('admin.denied_access_to_user', admin_name: @current_admin.email.split('@').first) + "; " +
+      I18n.t('admin.denied_access_to_user', admin_name: current_admin.email.split('@').first) + "; " +
       params[:reason_for_denial].to_s
 
     @user.sync_approval_denied(reason_for_denial)
@@ -64,7 +63,7 @@ class Admin::UsersController < AdminController
   end
 
   def enable_access
-    @user.sync_approval_allowed(I18n.t('admin.allowed_access_to_user', admin_name: @current_admin.email.split('@').first))
+    @user.sync_approval_allowed(I18n.t('admin.allowed_access_to_user', admin_name: current_admin.email.split('@').first))
     @user.save
     redirect_to request.referer || [:admin, @user], notice: 'User access has been enabled.'
   end
@@ -87,7 +86,7 @@ class Admin::UsersController < AdminController
       :password,
       :password_confirmation,
       :sync_approval_status,
-      facility_ids: []
+      :registration_facility_id
     )
   end
 end

@@ -3,7 +3,7 @@ class Admin::ProtocolsController < AdminController
 
   def index
     authorize Protocol
-    @protocols = Protocol.all
+    @protocols = policy_scope(Protocol)
   end
 
   def show

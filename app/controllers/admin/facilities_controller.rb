@@ -3,7 +3,9 @@ class Admin::FacilitiesController < AdminController
 
   def index
     authorize Facility
-    @facilities = Facility.all.order(:name)
+    @facilities = policy_scope(Facility).sort_by do |facility|
+      facility.name.sub /^Dr(.?)(\s*)/, ''
+    end
   end
 
   def show
@@ -44,7 +46,7 @@ class Admin::FacilitiesController < AdminController
   private
 
   def set_facility
-    @facility = Facility.find(params[:id])
+    @facility = Facility.friendly.find(params[:id])
     authorize @facility
   end
 

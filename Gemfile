@@ -5,10 +5,10 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-gem 'rails', '~> 5.1.6'
+gem 'rails', '~> 5.1.6.1'
 gem 'pg', '>= 0.18', '< 2.0'
 gem 'passenger'
-gem 'sass-rails', '~> 5.0'
+gem 'sassc-rails'
 gem 'uglifier', '>= 1.3.0'
 gem 'jbuilder', '~> 2.5'
 gem 'pry-rails'
@@ -24,8 +24,13 @@ gem 'twilio-ruby', '~> 5.10', '>= 5.10.3'
 gem 'pundit'
 gem 'bootstrap', '~> 4.1.3'
 gem 'jquery-rails'
-gem "bootstrap_form", ">= 4.0.0.alpha1"
+gem 'bootstrap_form', '>= 4.0.0.alpha1'
 gem 'groupdate'
+gem 'data-anonymization', require: false
+gem 'uuidtools', require: false
+gem 'discard', '~> 1.0'
+gem 'chartkick'
+gem 'friendly_id', '~> 5.2.4'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
@@ -38,6 +43,7 @@ group :development, :test do
   gem 'capistrano-rbenv'
   gem 'capistrano-passenger'
   gem 'capistrano-rails-console', require: false
+  gem 'parallel_tests', group: [:development, :test]
 end
 
 group :development do

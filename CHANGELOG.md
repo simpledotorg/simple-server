@@ -4,7 +4,191 @@
 ### Fixed
 ### Deprecated 
 ### Removed 
+### Security
+
+# 2019-01-15-2
+## Portal
+### Added
+### Changed
+### Fixed
+- Update controller allow creating new facility groups
+### Deprecated
+### Removed
 ### Security 
+
+# 2019-01-15-1
+## Portal
+### Added
+### Changed
+### Fixed
+- Fix organization owners policy to allow creating new records in their organizations
+### Deprecated
+### Removed
+### Security
+
+# 2019-01-14-1
+## Portal
+### Added
+### Changed
+- Move Invite Owner button before Invite Organization Owner on Admins page
+- Display logged in admin's email id
+- Admins can edit their users from the User Details page
+- Add organization name to approval email body
+- Dropdown to change user's facility is arranged in alphabetical order
+- Ignore prefix Dr/Dr. when sorting facilities by name
+- Organization Owners can access/edit all entities within their organizations
+- Organization Owners can invite new admins to their organizations
+
+### Fixed
+- Fix inviting owners
+
+### Deprecated
+### Removed
+### Security
+
+
+# 2019-01-03-1
+
+## Portal
+### Added
+- Add invitation policy
+
+### Changed
+- Scope records seen by an admin to their organizations
+- Redirect and display flash message when Admin is unauthorized to access resource
+
+### Fixed
+- Fix bug in updating user's facility
+- Fix edit organization link on organization index page
+
+### Deprecated 
+### Removed 
+### Security
+
+## API
+### Added
+### Changed
+### Fixed
+### Deprecated
+### Removed 
+### Security 
+
+
+# 2019-01-01-1
+
+## Portal
+### Added
+- Associate admins to facility groups
+- Add a role for organization owners
+- BCC organization owners in approval emails
+- Associate facility groups with protocols
+
+### Changed
+- Only show users belonging to an admin's facility groups
+- Remove user facilities model
+- Update swagger docs
+- Add deleted at to with_int_timestamps util
+- Send approval emails only to the admins of a user's facility group
+- Only show data facilities in the admins facility group
+- Only show approval requests for users from the facility group
+- Update show and edit views for admins
+- Show separate dashboard to admin per facility group
+- Return protocol id with facility sync api
+
+### Fixed
+- Fix facility group edit view
+
+### Deprecated 
+### Removed 
+### Security
+
+## API
+### Added
+### Changed
+- Add org name to approval mails
+- Approval email lists accessible facilities
+- Add owner emails to bcc lists
+- Sync only facilities with associated facility groups
+- Allow soft deleting blood pressures
+- Disable authentication for protocol syncing
+
+### Fixed
+- Add id to appointments error hash
+- Fix 500 error in v2 protocol sync
+
+### Deprecated
+### Removed 
+### Security 
+
+# 2018-12-21-2
+
+## Portal
+### Added
+- Organizations and Facility Groups, ability to create, update and delete them
+- Roles to manage organizations and facilities
+- Organize all punjab facilities under IHMI
+### Changed
+### Fixed
+### Deprecated 
+### Removed 
+### Security
+
+## API
+### Added
+- Add FACILITY_ID to sync API headers. Make this optional for v1 and required for v2
+- Associate patient with registration user and registration facility
+- User has a registration facility.
+  - `facility_ids` is changed to `registration_facility_id` in v2 of `users/register`, and `users/find`
+- Soft deletes (optional deleted_at field in all entities)
+### Changed
+- Restrict sycning of records to a users facility group
+- Prioritise current facility sync for Patients, BPs, Drugs, and Appointments
+- API schema now has process_token instead of processed_since
+- Make diagnosed with hypertension a required field for medical history
+- Update cancel reasons in appointments
+  - Add 3 new reasons to v2, exclude them from v1, and coerce accordingly
+  - Updation of cancelled appointments is disallowed in v1
+### Fixed
+- Report user id with extra args to sentry
+### Deprecated
+### Removed 
+### Security 
+- Upgrade activejob to fix vulnerability issue
+
+# 2018-12-18-1
+
+## Portal
+### Added 
+- Add patient visits to dashboard 
+- Added an analyst role for read-only dashboard access 
+### Changed
+- Count unique patients per day instead of BPs 
+- Extended daily stats to 21 days back 
+- Fixed wrapping of text in the Users index
+- UI Improvements
+- Use India timezone in dashboard 
+### Fixed
+- Use AdminController for audit logs
+### Deprecated 
+### Removed 
+### Security 
+- [Security] Bump bootstrap from 4.1.1 to 4.1.3 
+
+## API
+### Added 
+- Add email prefixes to approval request emails
+- Multiple api versions
+### Changed
+- Allow null vaules for medical history questions
+- Respond with false if medical history question is nil
+- Update medical history questions from boolean to enum
+### Fixed
+### Deprecated 
+### Removed 
+### Security 
+- Add EMAIL_SUBJECT_PREFIX to required config
+- [Security] Bump loofah from 2.2.2 to 2.2.3 (#152)
+- [Security] Bump rack from 2.0.5 to 2.0.6 (#158)
 
 # 2018-10-08-3
 ## Portal 
