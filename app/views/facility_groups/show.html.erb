@@ -22,11 +22,11 @@
     </thead>
     <tbody>
       <% @facilities.sort_by(&:name).each do |facility| %>
-        <% next if @visits_by_facility.fetch(facility.id, 0)  == 0 %>
+        <% next if @facility_group_analytics.visits_by_facility.fetch(facility.id, 0)  == 0 %>
 
         <tr class="table-info table-row-small">
           <td class="row-title"><strong><%= facility.name %></strong></td>
-          <td class="text-center"><%= lighten_if_zero(@visits_by_facility[facility.id] || 0) %></td>
+          <td class="text-center"><%= lighten_if_zero(@facility_group_analytics.visits_by_facility[facility.id] || 0) %></td>
           <% @days_previous.downto(0).map { |since| since.days.ago }.each do |day| %>
             <td class="text-center <%= "holiday" if day.sunday? %>"></td>
           <% end %>
@@ -36,11 +36,11 @@
           <tr class="table-row-small">
             <td class="pl-lg-4"><%= user.full_name %></td>
             <td class="text-center">
-              <%= lighten_if_zero(@visits_by_facility_user[[facility.id, user.id]] || 0) %>
+              <%= lighten_if_zero(@facility_group_analytics.visits_by_facility_user[[facility.id, user.id]] || 0) %>
             </td>
             <% @days_previous.downto(0).map { |since| since.days.ago }.each do |day| %>
               <td class="text-center <%= "holiday" if day.sunday? %>">
-                <%= lighten_if_zero(@visits_by_facility_user_day[[facility.id, user.id, day.in_time_zone("New Delhi").to_date]] || 0) %>
+                <%= lighten_if_zero(@facility_group_analytics.visits_by_facility_user_day[[facility.id, user.id, day.in_time_zone("New Delhi").to_date]] || 0) %>
               </td>
             <% end %>
           </tr>
@@ -69,15 +69,15 @@
     </thead>
     <tbody>
       <% @facilities.sort_by(&:name).each do |facility| %>
-        <% next if @visits_by_facility.fetch(facility.id, 0) == 0 %>
+        <% next if @facility_group_analytics.visits_by_facility.fetch(facility.id, 0) == 0 %>
 
         <tr class="table-light">
 
           <td class="row-title"><strong><%= facility.name %></strong></td>
-          <td class="text-center"><%= lighten_if_zero(@new_patients_by_facility[facility.id] || 0) %></td>
+          <td class="text-center"><%= lighten_if_zero(@facility_group_analytics.new_patients_by_facility[facility.id] || 0) %></td>
           <% @months_previous.downto(0).each do |since| %>
             <td class="text-center">
-              <%= lighten_if_zero(@new_patients_by_facility_month[[facility.id, since.months.ago.in_time_zone("New Delhi").beginning_of_month.to_date]] || 0) %>
+              <%= lighten_if_zero(@facility_group_analytics.new_patients_by_facility_month[[facility.id, since.months.ago.in_time_zone("New Delhi").beginning_of_month.to_date]] || 0) %>
             </td>
           <% end %>
         </tr>
@@ -105,7 +105,7 @@
     </thead>
     <tbody>
       <% @facilities.sort_by(&:name).each do |facility| %>
-        <% next if @visits_by_facility.fetch(facility.id, 0) == 0 %>
+        <% next if @facility_group_analytics.visits_by_facility.fetch(facility.id, 0) == 0 %>
 
         <tr class="table-light">
 
@@ -113,7 +113,7 @@
           <td>&nbsp;</td> <!-- Spacer to match next able above -->
           <% @months_previous.downto(0).each do |since| %>
             <td class="text-center">
-              <%= lighten_if_zero(@visits_by_facility_month[[facility.id, since.months.ago.in_time_zone("New Delhi").beginning_of_month.to_date]] || 0) %>
+              <%= lighten_if_zero(@facility_group_analytics.visits_by_facility_month[[facility.id, since.months.ago.in_time_zone("New Delhi").beginning_of_month.to_date]] || 0) %>
             </td>
           <% end %>
         </tr>
