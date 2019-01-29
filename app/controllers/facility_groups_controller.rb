@@ -25,6 +25,13 @@ class FacilityGroupsController < AdminController
     Groupdate.time_zone = "UTC"
   end
 
+  def graphics
+    skip_authorization
+
+    @organization = Organization.friendly.find(params[:organization_id])
+    @facility_group = FacilityGroup.friendly.find(params[:facility_group_id])
+  end
+
   private
 
   def blood_pressures_in_facility_group(facility_group)

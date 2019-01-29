@@ -1,15 +1,9 @@
-<div class="sub-nav">
-  <a href="#" class="sub-nav-link sub-nav-link-active">Last 90 days</a>
-  <a href="#" class="sub-nav-link">Q4 Report</a>
-  <a href="#" class="sub-nav-link">&#8226;&#8226;&#8226;</a>
-</div>
-
 <div class="dashboard">
-
-  <h1><%= @facility_group.name %></h1>
-  <%= link_to "Graphics For Supervisors", organization_facility_group_graphics_path(@organization, @facility_group) %>
-  <p class="dashboard-description">#2 of 19 reporting districts in New York State. State BP control average is 25% from
-    reporting facilities.</p>
+  <nav class="breadcrumb"><%= link_to @facility_group.name, [@organization, @facility_group] %></nav>
+  <h1><%= @facility.name %></h1>
+  <%= link_to "Graphics For Nurses", organization_facility_group_facility_graphics_path(@organization, @facility_group, @facility) %>
+  <p class="dashboard-description">#8 of 16 reporting PHCs in New York State for BP control %</p>
+  <p class="dashboard-description">976 patients enrolled since Feb 2, 2018</p>
 
   <div class="featured">
     <table class="featured-table">
@@ -17,17 +11,17 @@
         <td class="featured-td">
           <div class="featured-section">
             <strong class="featured-title" style="color: #007A31;">Newly enrolled</strong>
-            <span class="featured-number text-green">1,345</span>
+            <span class="featured-number text-green">14</span>
             <span class="featured-label">New patients</span>
 
             <strong class="featured-title" style="color: #007A31;">Return patients</strong>
-            <span class="featured-number  text-green">12,456</span>
+            <span class="featured-number  text-green">845</span>
           </div>
         </td>
         <td class="featured-td featured-middle">
           <div class="featured-section">
             <strong class="featured-title" style="color: #E0B000;">Didn't attend</strong>
-            <span class="featured-number text-yellow">10,321</span>
+            <span class="featured-number text-yellow">1,234</span>
             <span class="featured-label">Patients</span>
 
             <div class="featured-graph">
@@ -35,18 +29,18 @@
                 <tr>
                   <td>
                     <div class="featured-graph-column featured-graph-column-yellow" style="height: 27.5px; margin-top: 22.5px;">55%</div>
-                    <span class="featured-month">Oct</span>
+                    <span class="featured-month">Sep</span>
                   </td>
                   <td>
                     <div class="featured-graph-column featured-graph-column-yellow" style="height: 32.5px; margin-top: 17.5px;">65%</div>
-                    <span class="featured-month">Nov</span>
+                    <span class="featured-month">Oct</span>
                   </td>
                   <td>
                     <div class="featured-graph-column featured-graph-column-yellow" style="height: 25.5px; margin-top: 24.5px;">51%</div>
-                    <span class="featured-month">Dec</span></td>
+                    <span class="featured-month">Nov</span></td>
                   <td>
                     <div class="featured-graph-column featured-graph-column-yellow" style="height: 21px; margin-top: 29px;">42%</div>
-                    <span class="featured-month">Jan</span>
+                    <span class="featured-month">Dec</span>
                   </td>
                 </tr>
               </table>
@@ -56,7 +50,7 @@
         <td class="featured-td">
           <div class="featured-section">
             <strong class="featured-title">BP control</strong>
-            <span class="featured-number">30%</span>
+            <span class="featured-number">24%</span>
             <span class="featured-label">Goal: 45%</span>
 
             <div class="featured-graph">
@@ -64,19 +58,19 @@
                 <tr>
                   <td>
                     <div class="featured-graph-column" style="height: 25px; margin-top: 25px;">25%</div>
-                    <span class="featured-month">Oct</span>
+                    <span class="featured-month">Sep</span>
                   </td>
                   <td>
                     <div class="featured-graph-column" style="height: 26px; margin-top: 24px;">26%</div>
-                    <span class="featured-month">Nov</span>
+                    <span class="featured-month">Oct</span>
                   </td>
                   <td>
                     <div class="featured-graph-column" style="height: 28px; margin-top: 22px;">28%</div>
-                    <span class="featured-month">Dec</span>
+                    <span class="featured-month">Nov</span>
                   </td>
                   <td>
-                    <div class="featured-graph-column" style="height: 30px; margin-top: 20px;">30%</div>
-                    <span class="featured-month">Jan</span>
+                    <div class="featured-graph-column" style="height: 24px; margin-top: 26px;">24%</div>
+                    <span class="featured-month">Dec</span>
                   </td>
                 </tr>
               </table>
@@ -96,12 +90,9 @@
     <table>
       <thead>
       <tr>
-        <th colspan="2"><h4>Hospitals &amp; Clinics</h4></th>
+        <th><h4>Active users</h4></th>
         <th class="row-label">Newly<br>enrolled</th>
-        <th class="row-label">Didn't<br>attend</th>
         <th class="row-label">Calls<br>made</th>
-        <th class="row-label">BP<br>control</th>
-        <th class="row-spacer">&nbsp;</th>
         <th class="row-label">Return and<br>enrolled patients</th>
 
         <th class="row-label row-month">
@@ -151,23 +142,16 @@
           Dec 2
         </th>
         <th class="row-label">This<br>week</th>
-
-        <th>&nbsp;</th>
       </tr>
       </thead>
       <tbody>
-      <% @facility_group.facilities.each_with_index do |facility, index| %>
+      <% @facility.users.each do |user| %>
         <tr>
-          <td class="row-rank"><%= index %></td>
-          <td class="row-title">
-            <%= link_to facility.name, [@organization, @facility_group, facility] %>
-            <span><b>4567</b> enrolled all time</span></td>
-          <td class="row-enrolled text-green">98</td>
-          <td class="row-default text-yellow">1321</td>
+          <td class="row-title"><%= link_to user.full_name, [:admin, user] %></td>
+          <td class="row-default text-green">43</td>
           <td class="row-calls text-yellow">5</td>
-          <td class="row-control">65%</td>
-          <td class="row-spacer">&nbsp;</td>
-          <td class="row-unique-date">241</td>
+
+          <td class="row-unique-date">92</td>
 
           <td class="row-unique-date row-month">12</td>
           <td class="row-unique-date">19</td>
@@ -190,14 +174,11 @@
       </tbody>
       <tfoot>
       <tr class="row-total">
-        <td class="row-rank row-total"></td>
-        <td class="row-title row-total">All facility totals<span><b>24,342</b> enrolled all time</span></td>
-        <td class="row-enrolled text-green row-total">1,345</td>
-        <td class="row-default text-yellow row-total">10,321</td>
-        <td class="row-calls text-yellow">124</td>
-        <td class="row-control row-total">30%</td>
-        <td class="row-spacer">&nbsp;</td>
-        <td class="row-unique-date row-total">13,801</td>
+        <td class="row-title row-total">Totals</td>
+        <td class="row-enrolled text-green row-total">48</td>
+        <td class="row-calls text-yellow">9</td>
+
+        <td class="row-unique-date row-total">176</td>
 
         <td class="row-unique-date row-month"><span class="null">0</span></td>
         <td class="row-unique-date">19</td>
@@ -222,38 +203,75 @@
 </section>
 
 <section>
+
+  <h4>Overdue patients: "Didn't Attend"</h4>
+
+  <div class="overdue-patient">
+    <div class="overdue-time text-red">4 days overdue <br><span>HIGH RISK</span></div>
+    <div class="overdue-title">Anish Acharya, Male, 43</div>
+    <table class="overdue-details">
+      <tr>
+        <td>Last BP:</td>
+        <td>175/86 &nbsp; 5 days ago</td>
+      </tr>
+      <tr>
+        <td>Home:</td>
+        <td>Carroll Gardens, Brooklyn, NY</td>
+      </tr>
+      <tr>
+        <td>Mobile:</td>
+        <td>+91 1234 5678</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="overdue-patient">
+    <div class="overdue-time text-red">4 days overdue <br><span>HIGH RISK</span></div>
+    <div class="overdue-title">Anish Acharya, Male, 43</div>
+    <table class="overdue-details">
+      <tr>
+        <td>Last BP:</td>
+        <td>175/86 &nbsp; 5 days ago</td>
+      </tr>
+      <tr>
+        <td>Home:</td>
+        <td>Carroll Gardens, Brooklyn, NY</td>
+      </tr>
+      <tr>
+        <td>Mobile:</td>
+        <td>+91 1234 5678</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="overdue-patient">
+    <div class="overdue-time text-red">4 days overdue <br><span>HIGH RISK</span></div>
+    <div class="overdue-title">Anish Acharya, Male, 43</div>
+    <table class="overdue-details">
+      <tr>
+        <td>Last BP:</td>
+        <td>175/86 &nbsp; 5 days ago</td>
+      </tr>
+      <tr>
+        <td>Home:</td>
+        <td>Carroll Gardens, Brooklyn, NY</td>
+      </tr>
+      <tr>
+        <td>Mobile:</td>
+        <td>+91 1234 5678</td>
+      </tr>
+    </table>
+  </div>
+
+</section>
+
+<section>
   <h4>Notes</h4>
   <p class="footnote"><strong>Didn't attend</strong> patients are enrolled hypertensives that have not had a BP recorded
     in the past 3 months.</p>
-  <p class="footnote"><strong>BP control</strong> is calculated as a rolling cohort. 12,456 patients enrolled 6-9 months
-    ago / 3,736 of those patients had SBP &lt; 140 and DBP &lt; 90 at last measure in past 3 months = 30% BP control</p>
+  <p class="footnote"><strong>BP control</strong> is calculated as a rolling cohort. 3,214 patients enrolled 6-9 months
+    ago / 1,446 of those patients had SBP &lt; 140 and DBP &lt; 90 at last measure in past 3 months = 45% BP control</p>
   <p class="footnote"><strong>Top performers:</strong> > 100 enrolled patients and highest BP control.</p>
   <p class="footnote"><strong>Unique patients</strong> indicates how many patients had at least one recorded BP during
     the period. The "Week of" numbers are "Unique patients with a BP recorded during that week".</p>
 </section>
-
-
-
-<!--******************************************************************************
-Snapshot for SMO at Facility
-******************************************************************************-->
-
-<div style="padding: 400px 0; color: #eee;">TEMP</div>
-
-
-<!--******************************************************************************
-Snapshot for Nurse/User at Facility Level
-******************************************************************************-->
-
-<div style="margin: 2em 0;">&nbsp;</div>
-
-
-<div style="padding: 400px 0; color: #eee;">TEMP</div>
-
-
-
-<footer class="text-muted">
-  <p>
-    <small>Note: All times are in India Standard Time</small>
-  </p>
-</footer>

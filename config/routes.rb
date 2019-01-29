@@ -125,7 +125,10 @@ Rails.application.routes.draw do
 
   resources :organizations, only: [:index] do
     resources :facility_groups, only: [:index, :show] do
+      get :graphics
+
       resources :facilities, only: [:index, :show] do
+        get :graphics
       end
     end
   end
