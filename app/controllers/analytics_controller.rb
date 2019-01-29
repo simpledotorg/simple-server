@@ -1,0 +1,2 @@
+class AnalyticsController < AdminController
+end

@@ -1,11 +1,9 @@
-class FacilityGroupsController < AdminController
+class Analytics::FacilityGroupsController < AnalyticsController
   def show
     skip_authorization
 
-    @users_requesting_approval = policy_scope(User).requested_sync_approval
-
-    @organization = Organization.friendly.find(params[:organization_id])
     @facility_group = FacilityGroup.friendly.find(params[:id])
+    @organization = @facility_group.organization
 
     Groupdate.time_zone = "New Delhi"
 
@@ -22,7 +20,4 @@ class FacilityGroupsController < AdminController
     # Reset when done
     Groupdate.time_zone = "UTC"
   end
-
-  private
 end
-
