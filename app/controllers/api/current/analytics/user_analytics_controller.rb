@@ -5,7 +5,9 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
 
   def show
     @stats_for_user = new_patients_by_facility_week
-    @application_js = asset_source('application.js')
+
+    @chartkick_js = read_js_lib('chartkick.min.js')
+    @chart_bundle_js = read_js_lib('Chart.bundle.min.js')
 
     respond_to do |format|
       format.html { render :show }
@@ -23,12 +25,7 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
       .count
   end
 
-  def asset_source(asset_path)
-    asset = Rails.application.assets.find_asset(asset_path)
-    if Rails.application.config.assets.compile
-      asset.source
-    else
-      File.read(File.join(Rails.root, 'public', 'assets', asset.digest_path))
-    end
+  def read_js_lib(file_name)
+    File.read(File.join(Rails.root, 'vendor', 'assets', 'javascripts', file_name))
   end
 end
