@@ -28,31 +28,44 @@ class FacilityGroupsController < AdminController
   private
 
   def blood_pressures_in_facility_group(facility_group)
-    BloodPressure.where(facility: @facilities)
+    BloodPressuresQuery.new.for_facility_group(facility_group)
   end
 
   def visits_by_facility(facility_group)
-    blood_pressures_in_facility_group(facility_group).group(:facility_id).count("distinct patient_id")
+    CountQuery.new(blood_pressures_in_facility_group(facility_group))
+      .distinct_count('patient_id', group_by_columns: :facility_id)
   end
 
   def visits_by_facility_user(facility_group)
-    blood_pressures_in_facility_group(facility_group).group(:facility_id, :user_id).count("distinct patient_id")
+    CountQuery.new(blood_pressures_in_facility_group(facility_group))
+      .distinct_count('patient_id', group_by_columns: [:facility_id, :user_id])
   end
 
   def visits_by_facility_user_day(facility_group)
-    blood_pressures_in_facility_group(facility_group).group(:facility_id, :user_id).group_by_day(:device_created_at, last: @days_previous + 1).count("distinct patient_id")
+    CountQuery.new(blood_pressures_in_facility_group(facility_group)).distinct_count(
+      'patient_id',
+      group_by_columns: [:facility_id, :user_id],
+      group_by_period: { period: :day, column: :device_created_at, options: { last: @days_previous + 1 } })
   end
 
   def visits_by_facility_month(facility_group)
-    blood_pressures_in_facility_group(facility_group).group(:facility_id).group_by_month(:device_created_at, last: @months_previous + 1).count("distinct patient_id")
+    CountQuery.new(blood_pressures_in_facility_group(facility_group)).distinct_count(
+      'patient_id',
+      group_by_columns: [:facility_id],
+      group_by_period: { period: :month, column: :device_created_at, options: { last: @days_previous + 1 } })
   end
 
   def new_patients_by_facility
-    Facility.joins(:patients).group("facilities.id").distinct('patients.id').count("patients.id")
+    CountQuery.new(Facility.joins(:patients).distinct('patients.id'))
+      .distinct_count('patients.id', group_by_columns: 'facilities.id')
   end
 
   def new_patients_by_facility_month
-    Facility.joins(:patients).group("facilities.id").distinct('patients.id').group_by_month("patients.device_created_at", last: @months_previous + 1).count("patients.id")
+    CountQuery.new(Facility.joins(:patients).distinct('patients.id'))
+      .distinct_count(
+        'patients.id',
+        group_by_columns: 'facilities.id',
+        group_by_period: { period: :month, column: 'patients.device_created_at', options: { last: @months_previous + 1 } })
   end
 
   def control_rate_by_facility
