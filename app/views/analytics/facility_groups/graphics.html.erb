@@ -1,11 +1,11 @@
 <div class="snapshot">
   <div class="dashboard">
     <div class="snapshot-header">
-      <span>IHCI Hypertension Control Report</span>
-      Nov 2018
+      <span><%= @organization.name %> Hypertension Control Report</span>
+      <%= Date.today.strftime('%B %Y') %>
     </div>
 
-    <h1>Brooklyn District</h1>
+    <h1><%= @facility_group.name %></h1>
     <p class="dashboard-description"><b>#2 of 5</b> reporting districts in New York State.<br>State BP control average
       is 26% from reporting facilities. Albany is the #1 district with BP control of 45%.</p>
 
@@ -14,13 +14,12 @@
         <tr>
           <td class="featured-td">
             <div class="featured-section">
-              <strong class="featured-title" style="color: #007A31;">Newly enrolled</strong>
-              <span class="featured-number text-green">1,345</span>
-              <span class="featured-label">New patients</span>
+              <strong class="featured-title" style="color: #007A31;"><%= I18n.t('analytics.graphics.facility_groups.newly_enrolled') %></strong>
+              <span class="featured-number text-green"><%= @facility_group_graphics.newly_enrolled_patients %></span>
+              <span class="featured-label"><%= I18n.t('analytics.graphics.facility_groups.new_patients') %></span>
 
-              <strong class="featured-title" style="color: #007A31; margin-top: 8px;">Return patients</strong>
-              <span class="featured-number  text-green">12,456</span>
-              <!--span class="featured-label">Return patients</span-->
+              <strong class="featured-title" style="color: #007A31; margin-top: 8px;"><%= I18n.t('analytics.graphics.facility_groups.return_patients') %></strong>
+              <span class="featured-number  text-green"><%= @facility_group_graphics.returning_patients %></span>
             </div>
           </td>
           <td class="featured-td featured-middle">

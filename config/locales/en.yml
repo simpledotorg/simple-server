@@ -86,3 +86,9 @@ en:
         url: 'https://github.com/simpledotorg/simple-server/blob/master/LICENSE'
   registration: 'New registration'
   reset_password: 'Reset PIN'
+  analytics:
+    graphics:
+      facility_groups:
+        newly_enrolled: 'Newly Enrolled'
+        new_patients: 'New Patients'
+        return_patients: 'Return Patients'

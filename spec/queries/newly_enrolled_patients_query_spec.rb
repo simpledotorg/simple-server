@@ -13,19 +13,20 @@ RSpec.describe NewlyEnrolledPatientsQuery, type: :query do
 
   describe 'call' do
     it 'returns the number of newly registered patients for a single facility' do
-      count = NewlyEnrolledPatientsQuery.new(facility_1).call
+      count = NewlyEnrolledPatientsQuery.new(facility_1, from_date: Time.new(0), to_date: Time.now).call
 
-      expect(count).to eq(facility_1.id => 10)
+      expect(count).to eq(facility_1.id => 40)
     end
 
     it 'returns the number of newly registered patients for a list of facilities' do
-      count = NewlyEnrolledPatientsQuery.new(Facility.all).call
+      count = NewlyEnrolledPatientsQuery.new(Facility.all, from_date: Time.new(0), to_date: Time.now).call
 
       expect(count).to eq(facility_1.id => 40, facility_2.id => 40)
     end
 
     it 'returns the number of newly registered patients for a list of facilities grouped by period' do
-      count = NewlyEnrolledPatientsQuery.new(Facility.all).call(group_by_period: { period: :month, column: :device_created_at })
+      count = NewlyEnrolledPatientsQuery.new(Facility.all, from_date: Time.new(0), to_date: Time.now)
+                .call(group_by_period: { period: :month, column: :device_created_at })
 
       4.times do |n|
         expect(count).to include([facility_1.id, n.months.ago.at_beginning_of_month.to_date] => 10)

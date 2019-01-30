@@ -23,5 +23,24 @@ class Analytics::FacilityGroupsController < AnalyticsController
 
   def graphics
     skip_authorization
+
+    @facility_group = FacilityGroup.friendly.find(params[:facility_group_id])
+    @organization = @facility_group.organization
+
+
+    Groupdate.time_zone = "New Delhi"
+
+    @months_previous = 4
+
+    @range = (1.month.ago..Date.today)
+
+    @facilities = @facility_group.facilities
+    @facility_group_graphics = Analytics::FacilityGroupGraphics.new(
+      @facility_group,
+      months_previous: @months_previous
+    )
+
+    # Reset when done
+    Groupdate.time_zone = "UTC"
   end
 end

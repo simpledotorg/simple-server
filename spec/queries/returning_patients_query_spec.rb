@@ -11,20 +11,24 @@ RSpec.describe ReturningPatientsQuery, type: :query do
   let!(:returning_patients_facility_2) { registered_patients_facility_2.take(5) }
 
   before :each do
-    (returning_patients_facility_1 + returning_patients_facility_2).each do |patient|
-      create :blood_pressure, patient: patient, facility: patient.registration_facility
+    returning_patients_facility_1.each do |patient|
+      create :blood_pressure, patient: patient, facility: facility_1
+    end
+
+    returning_patients_facility_2.each do |patient|
+      create :blood_pressure, patient: patient, facility: facility_2
     end
   end
 
   describe 'call' do
     it 'returns the number of returning patients for a single facility' do
-      count = ReturningPatientsQuery.new(facility_1).call
+      count = ReturningPatientsQuery.new(facility_1, from_date: Time.new(0), to_date: Time.now).call
 
       expect(count).to eq(facility_1.id => 5)
     end
 
     it 'returns the number of newly registered patients for a list of facilities' do
-      count = ReturningPatientsQuery.new(Facility.all).call
+      count = ReturningPatientsQuery.new(Facility.all, from_date: Time.new(0), to_date: Time.now).call
 
       expect(count).to eq(facility_1.id => 5, facility_2.id => 5)
     end
