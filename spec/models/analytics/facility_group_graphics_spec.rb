@@ -15,7 +15,7 @@ RSpec.describe Analytics::FacilityGroupGraphics do
     let(:facility_group_graphics) { Analytics::FacilityGroupGraphics.new(facility_group) }
 
     it 'has newly enrolled patients' do
-      expect(facility_group_graphics.newly_enrolled_patients).to eq(20)
+      expect(facility_group_graphics.newly_enrolled_patients_count).to eq(20)
     end
   end
 end

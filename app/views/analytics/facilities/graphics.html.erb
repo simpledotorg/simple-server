@@ -5,7 +5,7 @@
       Dec 2018
     </div>
 
-    <h1>PHC Bedford-Stuyvesant</h1>
+    <h1><%= @facility.name %></h1>
     <p style="line-height: 1.3; margin: 0.5em 0 0.5em 0;">Thank you for your hard work. You are truly saving lives from
       heart attacks and strokes.</p>
 
@@ -15,38 +15,13 @@
           <td class="featured-td">
             <div class="featured-section" style="background-image: url(/assets/icon-bp.png);">
               <strong class="featured-title">Recorded BPs this month for:</strong>
-              <span class="featured-number">142 patients</span>
+              <span class="featured-number"><%= @facility_analytics.unique_patients_recorded_per_month[@current_month] %></span>
 
-              <div class="featured-graph" style="text-align: center;">
-                <table>
-                  <tr>
-                    <td style="opacity: 0.5;">
-                      <div class="featured-graph-column" style="height: 20px; margin-top: 30px;">64</div>
-                      <span class="featured-month">Aug</span>
-                    </td>
-                    <td style="opacity: 0.5;">
-                      <div class="featured-graph-column" style="height: 22px; margin-top: 28px;">74</div>
-                      <span class="featured-month">Sep</span>
-                    </td>
-                    <td style="opacity: 0.5;">
-                      <div class="featured-graph-column" style="height: 23px; margin-top: 27px;">76</div>
-                      <span class="featured-month">Oct</span>
-                    </td>
-                    <td style="opacity: 0.5;">
-                      <div class="featured-graph-column" style="height: 45px; margin-top: 5px;">145</div>
-                      <span class="featured-month">Nov</span>
-                    </td>
-                    <td style="opacity: 0.5;">
-                      <div class="featured-graph-column" style="height: 40px; margin-top: 10px;">110</div>
-                      <span class="featured-month">Dec</span>
-                    </td>
-                    <td>
-                      <div class="featured-graph-column" style="height: 45px; margin-top: 5px; border-width: 2px;">142</div>
-                      <span class="featured-month">Jan</span>
-                    </td>
-                  </tr>
-                </table>
-              </div>
+              <%= render "shared/graph",
+                         column_class: '',
+                         graph_data: @facility_analytics.unique_patients_recorded_per_month
+                             .map { |month, no_of_patients| [month.strftime('%B'), no_of_patients] }.to_h,
+                         max_value: @facility_analytics.unique_patients_recorded_per_month.values.max %>
             </div>
           </td>
         </tr>
@@ -54,38 +29,13 @@
           <td class="featured-td">
             <div class="featured-section">
               <strong class="featured-title">Enrolled this month:</strong>
-              <span class="featured-number text-green">16 new patients</span>
+              <span class="featured-number text-green"><%= @facility_analytics.newly_enrolled_patients_count %> new patients</span>
 
-              <div class="featured-graph" style="text-align: center;">
-                <table>
-                  <tr>
-                    <td style="opacity: 0.5;">
-                      <div class="featured-graph-column featured-graph-column-green" style="height: 20px; margin-top: 30px;">4</div>
-                      <span class="featured-month">Aug</span>
-                    </td>
-                    <td style="opacity: 0.5;">
-                      <div class="featured-graph-column featured-graph-column-green" style="height: 22px; margin-top: 28px;">5</div>
-                      <span class="featured-month">Sep</span>
-                    </td>
-                    <td style="opacity: 0.5;">
-                      <div class="featured-graph-column featured-graph-column-green" style="height: 23px; margin-top: 27px;">6</div>
-                      <span class="featured-month">Oct</span>
-                    </td>
-                    <td style="opacity: 0.5;">
-                      <div class="featured-graph-column featured-graph-column-green" style="height: 45px; margin-top: 5px;">17</div>
-                      <span class="featured-month">Nov</span>
-                    </td>
-                    <td style="opacity: 0.5;">
-                      <div class="featured-graph-column featured-graph-column-green" style="height: 40px; margin-top: 10px;">14</div>
-                      <span class="featured-month">Dec</span>
-                    </td>
-                    <td>
-                      <div class="featured-graph-column featured-graph-column-green" style="height: 45px; margin-top: 5px; border-width: 2px;">16</div>
-                      <span class="featured-month">Jan</span>
-                    </td>
-                  </tr>
-                </table>
-              </div>
+              <%= render "shared/graph",
+                         column_class: 'featured-graph-column-green',
+                         graph_data: @facility_analytics.newly_enrolled_patients_per_month
+                             .map { |month, no_of_patients| [month.strftime('%B'), no_of_patients] }.to_h,
+                         max_value: @facility_analytics.unique_patients_recorded_per_month.values.max %>
             </div>
           </td>
         </tr>
