@@ -10,6 +10,6 @@ module AssetsHelper
   end
 
   def inline_js(path)
-    content_tag(:script, inline_file(path), type: "text/javascript")
+    content_tag(:script, inline_file(path).html_safe, type: "text/javascript")
   end
 end
