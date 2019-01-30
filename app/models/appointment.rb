@@ -33,8 +33,6 @@ class Appointment < ApplicationRecord
   end
 
   def overdue?
-    (status == :scheduled ||
-     status == 'scheduled') &&
-      Date.today > scheduled_date
+    status.to_sym == :scheduled && Date.today > scheduled_date
   end
 end
