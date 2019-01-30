@@ -1,20 +1,21 @@
 <div class="snapshot snapshot-simple">
   <div class="dashboard">
     <div class="snapshot-header">
-      <span>IHCI Hypertension Control Report</span>
-      Dec 2018
+      <span><%= t('analytics.graphics.facility.report_title', organization_name: @organization.name) %></span>
+      <%= @current_month.strftime('%B %Y') %>
     </div>
 
     <h1><%= @facility.name %></h1>
-    <p style="line-height: 1.3; margin: 0.5em 0 0.5em 0;">Thank you for your hard work. You are truly saving lives from
-      heart attacks and strokes.</p>
+    <p style="line-height: 1.3; margin: 0.5em 0 0.5em 0;">
+      <%= t('analytics.graphics.facility.report_message') %>
+    </p>
 
     <div class="featured">
       <table class="featured-table">
         <tr>
           <td class="featured-td">
             <div class="featured-section" style="background-image: url(/assets/icon-bp.png);">
-              <strong class="featured-title">Recorded BPs this month for:</strong>
+              <strong class="featured-title"><%= t('analytics.graphics.facility.blood_pressures_recorded_in_month') %></strong>
               <span class="featured-number"><%= @facility_analytics.unique_patients_recorded_per_month[@current_month] %></span>
 
               <%= render "shared/graph",
@@ -25,11 +26,15 @@
             </div>
           </td>
         </tr>
+
         <tr>
           <td class="featured-td">
             <div class="featured-section">
-              <strong class="featured-title">Enrolled this month:</strong>
-              <span class="featured-number text-green"><%= @facility_analytics.newly_enrolled_patients_count %> new patients</span>
+              <strong class="featured-title"><%= t('analytics.graphics.facility.patients_recorded_this_month') %></strong>
+              <span class="featured-number text-green">
+                <%= t('analytics.graphics.facility.patients_recorded_this_month_count_message',
+                      count: @facility_analytics.newly_enrolled_patients_count) %>
+              </span>
 
               <%= render "shared/graph",
                          column_class: 'featured-graph-column-green',
@@ -39,45 +44,31 @@
             </div>
           </td>
         </tr>
+
         <tr>
           <td class="featured-td">
             <div class="featured-section" style="background-image: url(/assets/icon-sad.png);">
-              <strong class="featured-title">Hypertensives with no BP in &gt; 90 days:</strong>
-              <span class="featured-number text-yellow">94 overdue patients</span>
+              <strong class="featured-title"><%= t('analytics.graphics.facility.overdue_patients_this_month') %></strong>
+              <span class="featured-number text-yellow">
+                <%= t('analytics.graphics.facility.overdue_patients_this_month_count_message',
+                      count: @facility_analytics.overdue_patients_count) %>
+              </span>
 
               <div class="featured-graph" style="text-align: center;">
                 <table>
                   <tr>
-                    <td style="opacity: 0.5;">
-                      <div class="featured-graph-column featured-graph-column-yellow" style="height: 36px; margin-top: 14px;">84</div>
-                      <span class="featured-month">Aug</span>
-                    </td>
-                    <td style="opacity: 0.5;">
-                      <div class="featured-graph-column featured-graph-column-yellow" style="height: 37px; margin-top: 13px;">87</div>
-                      <span class="featured-month">Sep</span>
-                    </td>
-                    <td style="opacity: 0.5;">
-                      <div class="featured-graph-column featured-graph-column-yellow" style="height: 38px; margin-top: 12px;">88</div>
-                      <span class="featured-month">Oct</span>
-                    </td>
-                    <td style="opacity: 0.5;">
-                      <div class="featured-graph-column featured-graph-column-yellow" style="height: 39px; margin-top: 11px;">90</div>
-                      <span class="featured-month">Nov</span>
-                    </td>
-                    <td style="opacity: 0.5;">
-                      <div class="featured-graph-column featured-graph-column-yellow" style="height: 40px; margin-top: 10px;">92</div>
-                      <span class="featured-month">Dec</span>
-                    </td>
-                    <td>
-                      <div class="featured-graph-column featured-graph-column-yellow" style="height: 45px; margin-top: 5px; border-width: 2px;">94</div>
-                      <span class="featured-month">Jan</span>
-                    </td>
+                    <%= render "shared/graph",
+                               column_class: 'featured-graph-column-yellow',
+                               graph_data: @facility_analytics.overdue_patients_count_per_month
+                                   .map { |month, no_of_patients| [month.strftime('%B'), no_of_patients] }.to_h,
+                               max_value: @facility_analytics.overdue_patients_count_per_month.values.max %>
                   </tr>
                 </table>
               </div>
             </div>
-            <p style="margin-bottom: 0; padding: 16px 70px 0 0; text-align: right; background: url(/assets/icon-arrow.png) 90% 30% no-repeat; background-size: 40px; line-height: 1.2;" class="text-yellow">Try
-              calling these patients to ask<br>them to return for treatment?</p>
+            <p style="margin-bottom: 0; padding: 16px 70px 0 0; text-align: right; background: url(/assets/icon-arrow.png) 90% 30% no-repeat; background-size: 40px; line-height: 1.2;" class="text-yellow">
+              Try calling these patients to ask<br>them to return for treatment?
+            </p>
           </td>
         </tr>
       </table>

@@ -20,6 +20,22 @@ class Analytics::FacilityAnalytics
         .call[facility.id] || 0
   end
 
+  def overdue_patients_count
+    @overdue_patients_count ||=
+      CountQuery.new(Appointment
+                       .where(facility: facility, status: :scheduled)
+                       .where('device_created_at >= ?', @from_date)
+                       .where('device_created_at < ?', @to_date))
+        .distinct_count('patient_id')
+  end
+
+  def overdue_patients_count_per_month
+    @overdue_patients_count_per_month ||=
+      CountQuery.new(Appointment.where(facility: facility, status: :scheduled))
+        .distinct_count('patient_id', group_by_period:
+          { period: :month, column: :device_created_at, options: { last: @months_previous } })
+  end
+
   def unique_patients_recorded_per_month
     @unique_patients_recorded_per_month ||=
       CountQuery.new(BloodPressure.where(facility: facility))
@@ -31,7 +47,7 @@ class Analytics::FacilityAnalytics
     @newly_enrolled_patients_per_month ||=
       NewlyEnrolledPatientsQuery.new(facility, from_date: @from_date, to_date: @to_date)
         .call(group_by_period: { period: :month, column: :device_created_at, options: { last: @months_previous } })
-        .map { |key, value| [key.second, value]}
+        .map { |key, value| [key.second, value] }
         .to_h
   end
 end
