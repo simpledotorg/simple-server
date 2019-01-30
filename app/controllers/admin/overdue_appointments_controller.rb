@@ -2,8 +2,9 @@ class Admin::OverdueAppointmentsController < AdminController
   before_action :set_overdue_appointment, only: [:edit, :update, :cancel]
 
   def index
+    skip_policy_scope
     authorize :overdue_appointment, :index?
-    overdue_appointments = policy_scope(OverdueAppointment)
+    overdue_appointments = OverdueAppointment.for_admin(@current_admin)
     @overdue_appointments_per_facility = overdue_appointments.group_by do |overdue_appointment|
       overdue_appointment.appointment.facility
     end
