@@ -1,11 +1,13 @@
+<!DOCTYPE html>
+<html>
 <head>
-  <script type="text/javascript">
-    <%= @chartkick_js.html_safe %>
-  </script>
+  <meta charset="utf-8">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, shrink-to-fit=no"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
 
-  <script type="text/javascript">
-    <%= @chart_bundle_js.html_safe %>
-  </script>
+  <%= inline_js('charts.js') %>
 </head>
 
 <body>
@@ -14,3 +16,4 @@
                    id: 'new_patients_per_week',
                    library: {scales: {yAxes: [{display: false}]}}%>
 </body>
+</html>
