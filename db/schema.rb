@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181228064557) do
+ActiveRecord::Schema.define(version: 20190124181746) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -151,8 +151,10 @@ ActiveRecord::Schema.define(version: 20181228064557) do
     t.float "longitude"
     t.datetime "deleted_at"
     t.uuid "facility_group_id"
+    t.string "slug"
     t.index ["deleted_at"], name: "index_facilities_on_deleted_at"
     t.index ["facility_group_id"], name: "index_facilities_on_facility_group_id"
+    t.index ["slug"], name: "index_facilities_on_slug", unique: true
   end
 
   create_table "facility_groups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -163,8 +165,10 @@ ActiveRecord::Schema.define(version: 20181228064557) do
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
     t.uuid "protocol_id"
+    t.string "slug"
     t.index ["deleted_at"], name: "index_facility_groups_on_deleted_at"
     t.index ["organization_id"], name: "index_facility_groups_on_organization_id"
+    t.index ["slug"], name: "index_facility_groups_on_slug", unique: true
   end
 
   create_table "medical_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -196,7 +200,9 @@ ActiveRecord::Schema.define(version: 20181228064557) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
+    t.string "slug"
     t.index ["deleted_at"], name: "index_organizations_on_deleted_at"
+    t.index ["slug"], name: "index_organizations_on_slug", unique: true
   end
 
   create_table "patient_phone_numbers", id: :uuid, default: nil, force: :cascade do |t|

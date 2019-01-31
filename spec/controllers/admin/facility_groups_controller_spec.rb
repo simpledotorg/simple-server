@@ -90,7 +90,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
         facility_group = FacilityGroup.create! valid_attributes
         put :update, params: { id: facility_group.to_param, facility_group: new_attributes, organization_id: organization.id }
         facility_group.reload
-        expect(facility_group.attributes.except('id', 'created_at', 'updated_at', 'deleted_at'))
+        expect(facility_group.attributes.except('id', 'created_at', 'updated_at', 'deleted_at', 'slug'))
           .to eq new_attributes.with_indifferent_access
       end
 
@@ -121,7 +121,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
     it 'redirects to the facility_groups list for the organization' do
       facility_group = FacilityGroup.create! valid_attributes
       delete :destroy, params: { id: facility_group.to_param, organization_id: organization.id }
-      expect(response).to redirect_to([:admin, organization, :facility_groups])
+      expect(response).to redirect_to(admin_organization_facility_groups_url(organization))
     end
   end
 end

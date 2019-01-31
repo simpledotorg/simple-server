@@ -9,6 +9,8 @@
     <%= stylesheet_link_tag    'application', media: 'all' %>
     <%= javascript_include_tag 'application' %>
 
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700|Roboto:400,700" rel="stylesheet">
+
     <!-- mobile-friendly -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -29,11 +31,9 @@
         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
           <% if admin_signed_in? %>
             <ul class="navbar-nav mr-auto">
-              <% if policy(:dashboard).show? %>
-                <li class="nav-item">
-                  <%= link_to "Dashboard", admin_dashboard_path, class: "nav-link #{active_controller?("admin/dashboard")}" %>
-                </li>
-              <% end %>
+              <li class="nav-item">
+                <%= link_to "Dashboard", admin_root_path, class: "nav-link #{active_controller?("organizations", "facility_groups")}" %>
+              </li>
               <% if policy(Organization).index? %>
                 <li class="nav-item">
                   <%= link_to "Organizations", admin_organizations_path, class: "nav-link #{active_controller?("admin/organizations")}" %>
@@ -73,7 +73,7 @@
 
             <ul class="navbar-nav ml-auto">
               <li class="nav-item nav-link" style="pointer-events: none;">
-                <%= @current_admin.email %>
+                <%= current_admin.email %>
               </li>
               <li class="nav-item">
                 <%= link_to('Logout', destroy_admin_session_path, method: :delete, class: "nav-link") %>
