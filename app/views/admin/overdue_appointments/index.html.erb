@@ -1,48 +1,43 @@
-<h1>Overdue Appointments</h1>
+<h1>Overdue patients: "Didn't Attend"</h1>
 
 <% @overdue_appointments_per_facility.each do |facility, overdue_appointments| %>
 <section>
-<h2><%= facility.name %></h2>
-<table class="table table-sm">
-  <thead class="thead-light">
-    <tr>
-      <th>Name</th>
-      <th>Phone Number</th>
-      <th>Last Visit Date</th>
-      <th>BP Recorded on Last Visit</th>
-      <th>Appointment Date</th>
-      <th>Remind on Date</th>
-      <th>Agreed to Visit</th>
-      <th colspan="1"></th>
-    </tr>
-  </thead>
-
-  <tbody>
-  <% overdue_appointments.each do |overdue_appointment| %>
-    <tr class="table-light">
-      <td><%= overdue_appointment.patient.full_name %></td>
-      <td><%= overdue_appointment.patient.phone_numbers.first&.number %></td>
-      <td><%= overdue_appointment.blood_pressure.device_created_at.strftime('%a, %b %e, %Y') %></td>
-      <td>
-        <%= overdue_appointment.blood_pressure.systolic %> /
-        <%= overdue_appointment.blood_pressure.diastolic %>
-      </td>
-      <td>
-        <%= overdue_appointment.appointment.scheduled_date.strftime('%a, %b %e, %Y') %>
-      </td>
-      <td>
-        <%= overdue_appointment.appointment.remind_on&.strftime('%a, %b %e, %Y') %>
-      </td>
-      <td>
-        <%= overdue_appointment.appointment.agreed_to_visit ? '✅' : '❌' %>
-      </td>
-      <td>
-        <%= link_to 'Edit', edit_admin_overdue_appointment_path(overdue_appointment.patient), method: :get%> |
-        <%= link_to 'Cancel', admin_overdue_appointment_cancel_path(overdue_appointment.patient), method: :get%>
-      </td>
-    </tr>
-  <% end %>
-  </tbody>
-</table>
+  <h2><%= facility.name %></h2>
+    <% overdue_appointments.each do |overdue_appointment| %>
+      <div class="overdue-patient">
+        <div class="overdue-time text-red">
+          <%= (Date.today - overdue_appointment.appointment.scheduled_date).to_i %> days overdue
+        </div>
+        <div class="overdue-title">
+          <%= overdue_appointment.patient.full_name %>,
+          <%= overdue_appointment.patient.gender %>,
+          <%= overdue_appointment.patient.current_age %>
+        </div>
+        <table class="overdue-details">
+          <tr>
+            <td>Last BP:</td>
+            <td>
+              <%= overdue_appointment.blood_pressure.systolic %>/<%= overdue_appointment.blood_pressure.diastolic %>
+              &nbsp;
+              <%= (Date.today - overdue_appointment.blood_pressure.device_created_at.to_date).to_i %> days ago
+            </td>
+          </tr>
+          <tr>
+            <td>Home:</td>
+            <td>
+              <%= overdue_appointment.patient.address.street_address %>,
+              <%= overdue_appointment.patient.address.village_or_colony %>
+            </td>
+          </tr>
+          <tr>
+            <td>Mobile:</td>
+            <td>
+              <%= overdue_appointment.patient.phone_numbers.first&.number %>
+            </td>
+          </tr>
+        </table>
+      </div>
+    <% end %>
+  </table>
 </section>
 <% end %>

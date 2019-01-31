@@ -38,4 +38,15 @@ class Patient < ApplicationRecord
   def latest_blood_pressure
     blood_pressures.order(device_created_at: :desc).first
   end
+
+  def current_age
+    if date_of_birth.present?
+      Date.today.year - date_of_birth.year
+    elsif age.present?
+      years_since_update = Date.today.year - age_updated_at.year
+      age + years_since_update
+    else
+      0
+    end
+  end
 end
