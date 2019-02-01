@@ -1,11 +1,19 @@
+<!DOCTYPE html>
+<html>
 <head>
-  <%= javascript_include_tag 'application' %>
+  <meta charset="utf-8">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, shrink-to-fit=no"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+
+  <%= inline_js('charts.js') %>
 </head>
 
 <body>
-  <!--  date.strftime('%b %-d') => May 5  -->
   <h3>How many patients are recorded at CHC Bathinda each week?</h3>
   <%= column_chart @stats_for_user,
                    id: 'new_patients_per_week',
                    library: {scales: {yAxes: [{display: false}]}}%>
 </body>
+</html>
