@@ -15,6 +15,5 @@ class OverduePatientsQuery
       .where('blood_pressures.systolic > ?', MAX_SYSTOLIC)
       .where('blood_pressures.diastolic > ?', MAX_DIASTOLIC)
       .where('blood_pressures.device_created_at < ?', @overdue_period.ago)
-      .group('patients.id')
   end
 end

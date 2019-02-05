@@ -34,11 +34,10 @@ class Analytics::FacilityAnalytics
   end
 
   def overdue_patients_count_per_month(months_previous)
-    CountQuery.new(OverduePatientsQuery.new(facility).call)
-      .distinct_count('patients.id', group_by_period:
-        { period: :month, column: 'patients.device_created_at', options: { last: months_previous } })
-      .map { |key, value| [key.second, value] }
-      .to_h
+    OverduePatientsQuery.new(facility)
+      .call
+      .group_by_period(:month, 'blood_pressures.device_created_at', last: months_previous)
+      .count
   end
 
   def overdue_patients_count_this_month
