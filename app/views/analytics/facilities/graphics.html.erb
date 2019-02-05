@@ -51,20 +51,16 @@
               <strong class="featured-title"><%= t('analytics.graphics.facility.overdue_patients_this_month') %></strong>
               <span class="featured-number text-yellow">
                 <%= t('analytics.graphics.facility.overdue_patients_this_month_count_message',
-                      count: @facility_analytics.overdue_patients_count) %>
+                      count: @facility_analytics.overdue_patients_count_this_month) %>
               </span>
 
-              <div class="featured-graph" style="text-align: center;">
-                <table>
-                  <tr>
-                    <%= render "shared/graph",
-                               column_class: 'featured-graph-column-yellow',
-                               graph_data: @facility_analytics.overdue_patients_count_per_month
-                                   .map { |month, no_of_patients| [month.strftime('%B'), no_of_patients] }.to_h,
-                               max_value: @facility_analytics.overdue_patients_count_per_month.values.max %>
-                  </tr>
-                </table>
-              </div>
+
+              <%= render "shared/graph",
+                         column_class: 'featured-graph-column-yellow',
+                         graph_data: @facility_analytics.overdue_patients_count_per_month(6)
+                             .map { |month, no_of_patients| [month.strftime('%B'), no_of_patients] }.to_h,
+                         max_value: @facility_analytics.overdue_patients_count_per_month(6).values.max %>
+
             </div>
             <p style="margin-bottom: 0; padding: 16px 70px 0 0; text-align: right; background: url(/assets/icon-arrow.png) 90% 30% no-repeat; background-size: 40px; line-height: 1.2;" class="text-yellow">
               Try calling these patients to ask<br>them to return for treatment?
@@ -77,16 +73,16 @@
   </div>
 </div>
 
-<div style="margin: 2em 0;">&nbsp;</div>
+<div style="margin: 2em 0;"></div>
 
 <div class="snapshot">
   <div class="dashboard">
     <div class="snapshot-header">
-      <span>IHCI Hypertension Control Report</span>
-      Dec 2018
+      <span><%= t('analytics.graphics.facility.report_title', organization_name: @organization.name) %></span>
+      <%= @current_month.strftime('%B %Y') %>
     </div>
 
-    <h1>PHC Bedford-Stuyvesant</h1>
+    <h1><%= @facility.name %></h1>
     <p class="dashboard-description"><b>#5 of 22</b> reporting PHCs in Brooklyn District.</p>
 
     <div class="featured">
@@ -95,11 +91,11 @@
           <td class="featured-middle featured-td">
             <div class="featured-section">
               <strong class="featured-title" style="color: #007A31;">Newly enrolled</strong>
-              <span class="featured-number text-green">98</span>
+              <span class="featured-number text-green"><%= @facility_analytics.newly_enrolled_patients_this_month %></span>
               <span class="featured-label">New patients</span>
 
               <strong class="featured-title" style="color: #007A31; margin-top: 8px;">Return patients</strong>
-              <span class="featured-number  text-green">1,987</span>
+              <span class="featured-number  text-green"><%= @facility_analytics.returning_patients_count_this_month %></span>
               <!--span class="featured-label">Return patients</span-->
             </div>
             <div class="featured-footer">
@@ -113,27 +109,11 @@
               <span class="featured-number text-yellow">1,321</span>
               <span class="featured-label">Patients</span>
 
-              <div class="featured-graph">
-                <table>
-                  <tr>
-                    <td>
-                      <div class="featured-graph-column featured-graph-column-yellow" style="height: 27.5px; margin-top: 22.5px;">55%</div>
-                      <span class="featured-month">Oct</span>
-                    </td>
-                    <td>
-                      <div class="featured-graph-column featured-graph-column-yellow" style="height: 32.5px; margin-top: 17.5px;">65%</div>
-                      <span class="featured-month">Nov</span>
-                    </td>
-                    <td>
-                      <div class="featured-graph-column featured-graph-column-yellow" style="height: 25.5px; margin-top: 24.5px;">51%</div>
-                      <span class="featured-month">Dec</span></td>
-                    <td>
-                      <div class="featured-graph-column featured-graph-column-yellow" style="height: 21px; margin-top: 29px;">42%</div>
-                      <span class="featured-month">Jan</span>
-                    </td>
-                  </tr>
-                </table>
-              </div>
+              <%= render "shared/graph",
+                         column_class: 'featured-graph-column-yellow',
+                         graph_data: @facility_analytics.overdue_patients_count_per_month(4)
+                             .map { |month, no_of_patients| [month.strftime('%B'), no_of_patients] }.to_h,
+                         max_value: @facility_analytics.overdue_patients_count_per_month(4).values.max %>
             </div>
             <div class="featured-footer">
               <strong>Contact attempts:</strong>
