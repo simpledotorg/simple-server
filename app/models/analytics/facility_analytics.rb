@@ -8,25 +8,22 @@ class Analytics::FacilityAnalytics
     @months_previous = months_previous
   end
 
-  def newly_enrolled_patients_count
-    @newly_enrolled_patients ||=
-      NewlyEnrolledPatientsQuery.new(facility, from_date: @from_date, to_date: @to_date)
-        .call[facility.id] || 0
+  def newly_enrolled_patients_per_month
+    @newly_enrolled_patients_per_month ||=
+      NewlyEnrolledPatientsQuery.new(facility)
+        .call(group_by_period: { period: :month, column: :device_created_at, options: { last: @months_previous } })
+        .map { |key, value| [key.second, value] }
+        .to_h
   end
 
-  def returning_patients_count
-    @returning_patients ||=
-      ReturningPatientsQuery.new(facility_group.facilities, from_date: @from_date, to_date: @to_date)
-        .call[facility.id] || 0
+  def newly_enrolled_patients_this_month
+    newly_enrolled_patients_per_month[Date.today.at_beginning_of_month]
   end
 
-  def overdue_patients_count
-    @overdue_patients_count ||=
-      CountQuery.new(Appointment
-                       .where(facility: facility, status: :scheduled)
-                       .where('device_created_at >= ?', @from_date)
-                       .where('device_created_at < ?', @to_date))
-        .distinct_count('patient_id')
+  def returning_patients_count_this_month
+    @returning_patients_count_this_month ||=
+      ReturningPatientsQuery.new(facility, from_date: @from_date, to_date: @to_date)
+        .call[facility.id] || 0
   end
 
   def overdue_patients_count_per_month

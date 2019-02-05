@@ -33,7 +33,7 @@
               <strong class="featured-title"><%= t('analytics.graphics.facility.patients_recorded_this_month') %></strong>
               <span class="featured-number text-green">
                 <%= t('analytics.graphics.facility.patients_recorded_this_month_count_message',
-                      count: @facility_analytics.newly_enrolled_patients_count) %>
+                      count: @facility_analytics.newly_enrolled_patients_this_month) %>
               </span>
 
               <%= render "shared/graph",

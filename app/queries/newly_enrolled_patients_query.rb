@@ -1,7 +1,7 @@
 class NewlyEnrolledPatientsQuery
-  attr_reader :facilities
+  attr_reader :facilities, :from_date, :to_date
 
-  def initialize(facilities = Facility.none, from_date:, to_date:)
+  def initialize(facilities = Facility.none, from_date: Date.new(0), to_date: Date.today)
     @facilities = facilities
     @from_date = from_date
     @to_date = to_date
