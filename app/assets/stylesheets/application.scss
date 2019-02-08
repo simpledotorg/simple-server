@@ -91,7 +91,7 @@ footer {
     .navbar-nav {
         margin-top: 8px;
     }
-    .navbar-nav li a {
+    .navbar-nav li > a {
         padding: 1em 0;
         border-top: 1px solid rgba(0,0,0,0.05);
     }
@@ -101,7 +101,7 @@ footer {
     .navbar {
         border-bottom: 1px solid rgba(0,0,0,0.07);
     }
-    .navbar-nav li a.active {
+    .navbar-nav li > a.active {
         color: #000 !important;
     }
     .table-compact .row-title a {
