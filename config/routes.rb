@@ -130,6 +130,12 @@ Rails.application.routes.draw do
     end
   end
 
+  if FeatureToggle.enabled?('PATIENT_FOLLOWUPS')
+    resources :appointments, only: [:index, :edit, :update] do
+      get 'cancel', to: 'appointments#cancel'
+    end
+  end
+
   get "admin", to: redirect("/")
 
   namespace :admin do
@@ -141,12 +147,6 @@ Rails.application.routes.draw do
 
     resources :protocols do
       resources :protocol_drugs
-    end
-
-    if FeatureToggle.enabled?('PATIENT_FOLLOWUPS')
-      resources :appointments, only: [:index, :edit, :update] do
-        get 'cancel', to: 'appointments#cancel'
-      end
     end
 
     resources :users do

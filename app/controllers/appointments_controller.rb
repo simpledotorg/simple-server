@@ -1,4 +1,4 @@
-class Admin::AppointmentsController < AdminController
+class AppointmentsController < AdminController
   before_action :set_appointment, only: [:edit, :update, :cancel]
 
   def index
@@ -17,7 +17,7 @@ class Admin::AppointmentsController < AdminController
   def update
     appointment = @appointment
     if appointment.update(appointment_params)
-      redirect_to admin_appointments_url, notice: 'Appointment was successfully updated.'
+      redirect_to appointments_url, notice: 'Appointment was successfully updated.'
     else
       redirect_to :back
     end

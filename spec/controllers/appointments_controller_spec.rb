@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Admin::AppointmentsController, type: :controller do
+RSpec.describe AppointmentsController, type: :controller do
   let(:counsellor) { create(:admin, :counsellor) }
   let(:facility_group) { counsellor.facility_groups.first }
   let(:facility) { create(:facility, facility_group: facility_group) }
