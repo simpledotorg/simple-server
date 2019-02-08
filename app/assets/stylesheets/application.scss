@@ -158,8 +158,19 @@ table span.label {
     white-space: nowrap;
 }
 
-.top-buttons {
-    text-align: right;
+.page-header{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+
+  .page-title {
+    flex-grow: 1;
+  }
+
+  .page-nav .btn {
+    margin-bottom: 0.5rem;
+  }
 }
 
 nav.navbar a.navbar-brand img {
