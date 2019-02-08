@@ -17,8 +17,8 @@ FactoryBot.define do
       admin_access_controls { FactoryBot.create_list(:admin_access_control, 1, access_controllable: FactoryBot.create(:facility_group))}
     end
 
-    trait(:healthcare_counsellor) do
-      role :healthcare_counsellor
+    trait(:counsellor) do
+      role :counsellor
       admin_access_controls { FactoryBot.create_list(:admin_access_control, 1, access_controllable: FactoryBot.create(:facility_group))}
     end
 

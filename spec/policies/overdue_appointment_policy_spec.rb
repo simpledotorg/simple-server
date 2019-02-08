@@ -4,11 +4,11 @@ RSpec.describe OverdueAppointmentPolicy do
   subject { described_class }
 
   let(:owner) { create(:admin, :owner) }
-  let(:healthcare_counsellor) { create(:admin, :healthcare_counsellor) }
+  let(:counsellor) { create(:admin, :counsellor) }
 
   permissions :index?, :edit?, :cancel?, :update? do
-    it 'permits healthcare counsellors' do
-      expect(subject).to permit(healthcare_counsellor, OverdueAppointment)
+    it 'permits counsellors' do
+      expect(subject).to permit(counsellor, OverdueAppointment)
     end
 
     it 'denies owners (and other admins)' do

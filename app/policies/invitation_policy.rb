@@ -23,7 +23,7 @@ class InvitationPolicy < Struct.new(:user, :invitaion)
     user.owner? || user.organization_owner?
   end
 
-  def invite_healthcare_counsellor?
+  def invite_counsellor?
     user.owner? || user.organization_owner?
   end
 end

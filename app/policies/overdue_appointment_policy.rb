@@ -7,7 +7,7 @@ class OverdueAppointmentPolicy < Struct.new(:user, :patient_detail)
   end
 
   def index?
-    user.healthcare_counsellor?
+    user.counsellor?
   end
 
   def edit?

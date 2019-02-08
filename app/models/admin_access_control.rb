@@ -5,7 +5,7 @@ class AdminAccessControl < ApplicationRecord
   ACCESS_CONTROLLABLE_TYPE_FOR_ROLE = {
     analyst: 'FacilityGroup',
     supervisor: 'FacilityGroup',
-    healthcare_counsellor: 'FacilityGroup',
+    counsellor: 'FacilityGroup',
     organization_owner: 'Organization'
   }
 

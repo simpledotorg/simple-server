@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Admin::OverdueAppointmentsController, type: :controller do
-  let(:healthcare_counsellor) { create(:admin, :healthcare_counsellor) }
-  let(:facility_group) { healthcare_counsellor.facility_groups.first }
+  let(:counsellor) { create(:admin, :counsellor) }
+  let(:facility_group) { counsellor.facility_groups.first }
   let(:facility) { create(:facility, facility_group: facility_group) }
 
   let!(:patient_with_overdue_appointment) { create(:patient, registration_facility: facility) }
@@ -11,7 +11,7 @@ RSpec.describe Admin::OverdueAppointmentsController, type: :controller do
   let!(:overdue_appointment) { build(:overdue_appointment, patient: patient_with_overdue_appointment) }
 
   before do
-    sign_in(healthcare_counsellor)
+    sign_in(counsellor)
   end
 
   describe 'GET #index' do
