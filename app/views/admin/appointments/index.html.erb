@@ -37,8 +37,8 @@
           </tr>
           <tr>
             <td>
-              <%= link_to 'Edit', edit_admin_appointment_path(appointment.patient), method: :get%> |
-              <%= link_to 'Cancel', admin_appointment_cancel_path(appointment.patient), method: :get%>
+              <%= link_to 'Edit', edit_admin_appointment_path(appointment) %> |
+              <%= link_to 'Cancel', admin_appointment_cancel_path(appointment) %>
             </td>
           </tr>
         </table>
