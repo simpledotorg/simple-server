@@ -145,7 +145,7 @@ Rails.application.routes.draw do
 
     if FeatureToggle.enabled?('PATIENT_FOLLOWUPS')
       resources :appointments, only: [:index, :edit, :update] do
-        get 'cancel', to: 'overdue_appointments#cancel'
+        get 'cancel', to: 'appointments#cancel'
       end
     end
 
