@@ -2,10 +2,8 @@ class AppointmentsController < AdminController
   before_action :set_appointment, only: [:edit, :update, :cancel]
 
   def index
-    skip_policy_scope
     authorize Appointment, :index?
-
-    @appointments_per_facility = policy_scope(Appointment).overdue.group_by { |appointment| appointment.facility }
+    @appointments_per_facility = policy_scope(Appointment).overdue.group_by(&:facility)
   end
 
   def edit
