@@ -21,7 +21,7 @@
               <%= render "shared/graph",
                          column_class: '',
                          graph_data: @facility_analytics.unique_patients_recorded_per_month
-                             .map { |month, no_of_patients| [month.strftime('%B'), no_of_patients] }.to_h,
+                             .map { |month, no_of_patients| [month.strftime('%b'), no_of_patients] }.to_h,
                          max_value: @facility_analytics.unique_patients_recorded_per_month.values.max %>
             </div>
           </td>
@@ -39,7 +39,7 @@
               <%= render "shared/graph",
                          column_class: 'featured-graph-column-green',
                          graph_data: @facility_analytics.newly_enrolled_patients_per_month
-                             .map { |month, no_of_patients| [month.strftime('%B'), no_of_patients] }.to_h,
+                             .map { |month, no_of_patients| [month.strftime('%b'), no_of_patients] }.to_h,
                          max_value: @facility_analytics.unique_patients_recorded_per_month.values.max %>
             </div>
           </td>
@@ -58,7 +58,7 @@
               <%= render "shared/graph",
                          column_class: 'featured-graph-column-yellow',
                          graph_data: @facility_analytics.overdue_patients_count_per_month(6)
-                             .map { |month, no_of_patients| [month.strftime('%B'), no_of_patients] }.to_h,
+                             .map { |month, no_of_patients| [month.strftime('%b'), no_of_patients] }.to_h,
                          max_value: @facility_analytics.overdue_patients_count_per_month(6).values.max %>
 
             </div>
@@ -112,7 +112,7 @@
               <%= render "shared/graph",
                          column_class: 'featured-graph-column-yellow',
                          graph_data: @facility_analytics.overdue_patients_count_per_month(4)
-                             .map { |month, no_of_patients| [month.strftime('%B'), no_of_patients] }.to_h,
+                             .map { |month, no_of_patients| [month.strftime('%b'), no_of_patients] }.to_h,
                          max_value: @facility_analytics.overdue_patients_count_per_month(4).values.max %>
             </div>
             <div class="featured-footer">
@@ -123,7 +123,7 @@
           <td class="featured-td">
             <div class="featured-section">
               <strong class="featured-title">BP control</strong>
-              <span class="featured-number">48%</span>
+              <span class="featured-number"><%= @facility_analytics.control_rate_for_this_month || 'N/A' %></span>
               <span class="featured-label">Goal: 65%</span>
 
               <div class="featured-graph">

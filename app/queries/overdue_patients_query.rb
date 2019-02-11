@@ -10,10 +10,7 @@ class OverduePatientsQuery
   end
 
   def call
-    Patient.where(registration_facility: facilities).joins(:blood_pressures)
-      .where('blood_pressures.device_created_at = (select max(blood_pressures.device_created_at) from blood_pressures where blood_pressures.patient_id = patients.id)')
-      .where('blood_pressures.systolic > ?', MAX_SYSTOLIC)
-      .where('blood_pressures.diastolic > ?', MAX_DIASTOLIC)
+    HypertensivePatientsQuery.new(Patient.where(registration_facility: facilities)).call
       .where('blood_pressures.device_created_at < ?', @overdue_period.ago)
   end
 end

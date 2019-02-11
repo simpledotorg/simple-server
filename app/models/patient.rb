@@ -30,4 +30,8 @@ class Patient < ApplicationRecord
       errors.add(:date_of_birth, "can't be in the future")
     end
   end
+
+  def latest_blood_pressure
+    blood_pressures.order(:device_created_at).first
+  end
 end
