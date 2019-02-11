@@ -33,10 +33,10 @@ class Appointment < ApplicationRecord
   end
 
   def self.overdue
-    where(status: "scheduled").where("scheduled_date <= ?", Date.today)
+    where(status: 'scheduled').where('scheduled_date <= ?', Date.today)
   end
 
   def overdue?
-    status.to_sym == :scheduled && Date.today > scheduled_date
+    status.to_sym == :scheduled && scheduled_date <= Date.today
   end
 end
