@@ -17,6 +17,7 @@ $grey-darkest: #2F363D;
 
 $highlight: #E9F3FF; /* LIGHT BLUE */
 $blue-light: #E9F3FF;
+$green-light: #E0FFED;
 
 $font-condensed: 'Roboto Condensed';
 /********/
@@ -130,15 +131,27 @@ a.btn {
 }
 
 .btn-success {
-    background: #E0FFED;
-    border-color: #E0FFED;
-    color: #007A31;
+  background: $green-light;
+  border-color: $green-light;
+  color: $green-dark;
+
+  &:hover {
+    background: $green;
+    border-color: $green;
+    color: #FFF;
+  }
 }
 
-.btn-success:hover {
-    background: #00B849;
-    border-color: #00B849;
+.btn-info {
+  background: $blue-light;
+  border-color: $blue-light;
+  color: $blue;
+
+  &:hover {
+    background: $blue;
+    border-color: $blue;
     color: #FFF;
+  }
 }
 
 label {
