@@ -9,7 +9,7 @@ RSpec.describe AppointmentPolicy do
   let(:organization_owner) { create(:admin, :organization_owner) }
   let(:counsellor) { create(:admin, :counsellor) }
 
-  permissions :index?, :edit?, :cancel?, :update? do
+  permissions :index?, :edit?, :cancel?, :update?, :cancel_with_reason? do
     it 'permits owners' do
       expect(subject).to permit(owner, Appointment)
     end
@@ -18,7 +18,7 @@ RSpec.describe AppointmentPolicy do
       expect(subject).to permit(counsellor, Appointment)
     end
 
-    it "denies supervisors" do
+    it 'denies supervisors' do
       expect(subject).not_to permit(supervisor, User)
     end
 
@@ -26,7 +26,7 @@ RSpec.describe AppointmentPolicy do
       expect(subject).not_to permit(organization_owner, Appointment)
     end
 
-    it "denies analysts" do
+    it 'denies analysts' do
       expect(subject).not_to permit(analyst, User)
     end
   end

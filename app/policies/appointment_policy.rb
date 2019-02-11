@@ -15,6 +15,10 @@ class AppointmentPolicy < ApplicationPolicy
     edit?
   end
 
+  def cancel_with_reason?
+    cancel?
+  end
+
   class Scope
     attr_reader :user, :scope
 

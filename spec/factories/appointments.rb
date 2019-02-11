@@ -3,7 +3,6 @@ FactoryBot.define do
     id { SecureRandom.uuid }
     facility
     association :patient, strategy: :build
-    blood_pressure { FactoryBot.build(:blood_pressure, patient: patient, facility: facility) }
     scheduled_date { 30.days.from_now }
     status :scheduled
     cancel_reason nil
