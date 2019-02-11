@@ -6,7 +6,7 @@
     <% appointments.each do |appointment| %>
       <div class="overdue-patient">
         <div class="overdue-time text-red">
-          <%= (Date.today - appointment.scheduled_date).to_i %> days overdue
+          <%= appointment.days_overdue %> days overdue
         </div>
         <div class="overdue-title">
           <%= appointment.patient.full_name %>,
