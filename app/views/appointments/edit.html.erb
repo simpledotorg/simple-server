@@ -1,6 +1,6 @@
 <h1>Edit Overdue Appointment</h1>
 
-<%= form_tag('.', method: 'put') do %>
+<%= form_tag(appointment_path, method: 'put') do %>
   Remind on:
   <%= date_field(:appointment, :remind_on, value: @appointment.remind_on) %>
   <br>
