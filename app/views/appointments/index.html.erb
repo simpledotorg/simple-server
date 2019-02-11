@@ -13,35 +13,31 @@
           <%= appointment.patient.gender %>,
           <%= appointment.patient.current_age %>
         </div>
-        <table class="overdue-details">
-          <tr>
-            <td>Last BP:</td>
-            <td>
-              <%= appointment.patient.latest_blood_pressure.systolic %>/<%= appointment.patient.latest_blood_pressure.diastolic %>
-              &nbsp;
-              <%= appointment.patient.latest_blood_pressure.recorded_days_ago %> days ago
-            </td>
-          </tr>
-          <tr>
-            <td>Home:</td>
-            <td>
-              <%= appointment.patient.address.street_address %>,
-              <%= appointment.patient.address.village_or_colony %>
-            </td>
-          </tr>
-          <tr>
-            <td>Mobile:</td>
-            <td>
-              <%= appointment.patient.phone_numbers.first&.number %>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <%= link_to 'Remind Later', edit_appointment_path(appointment) %> |
-              <%= link_to 'Remove from List', appointment_cancel_path(appointment) %>
-            </td>
-          </tr>
-        </table>
+        <div class="overdue-details">
+          <p class="mb-0">
+            Last BP:
+            <%= appointment.patient.latest_blood_pressure.to_s %>,&nbsp;<%= time_ago_in_words(appointment.patient.latest_blood_pressure.device_created_at.to_date) %> ago
+          </p>
+          <p>
+            Home:
+            <%= appointment.patient.address.street_address %>,
+            <%= appointment.patient.address.village_or_colony %>
+          </p>
+          <div class="row">
+            <div class="col-md-6 col-lg-4">
+              <% if phone_number = appointment.patient.phone_numbers.first&.number %>
+                <p>
+                  <%= link_to phone_number, "tel:#{phone_number}", class: "btn btn-info w-100" %>
+                </p>
+              <% end %>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <%= bootstrap_form_with(model: @appointment ) do |form| %>
+                <%= form.select :cancel_reason, Appointment.cancel_reasons.map { |key, value| [key.humanize, value] }, prompt: "Result of call...", hide_label: true %>
+              <% end %>
+            </div>
+          </div>
+        </div>
       </div>
     <% end %>
   </table>
