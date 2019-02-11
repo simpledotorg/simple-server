@@ -17,14 +17,14 @@ class AppointmentsController < AdminController
     if appointment.update(appointment_params)
       redirect_to appointments_url, notice: 'Appointment was successfully updated.'
     else
-      redirect_to :back
+      redirect_back fallback_location: root_path, alert: 'Something went wrong!'
     end
   end
 
   private
 
   def set_appointment
-    @appointment = Appointment.find(params[:id])
+    @appointment = Appointment.find(params[:id] || params[:appointment_id])
     authorize @appointment
   end
 
