@@ -18,4 +18,8 @@ class BloodPressure < ApplicationRecord
   def recorded_days_ago
     (Date.today - device_created_at.to_date).to_i
   end
+
+  def to_s
+    [systolic, diastolic].join("/")
+  end
 end
