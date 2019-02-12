@@ -19,7 +19,7 @@
             <td>
               <%= appointment.patient.latest_blood_pressure.systolic %>/<%= appointment.patient.latest_blood_pressure.diastolic %>
               &nbsp;
-              <%= (Date.today - appointment.patient.latest_blood_pressure.device_created_at.to_date).to_i %> days ago
+              <%= appointment.patient.latest_blood_pressure.last_recorded_days_ago %> days ago
             </td>
           </tr>
           <tr>
