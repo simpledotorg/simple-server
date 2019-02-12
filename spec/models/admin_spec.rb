@@ -33,30 +33,30 @@ RSpec.describe Admin, type: :model do
       end
     end
 
-    describe 'facility groups' do
+    describe 'facilities' do
       before :all do
-        create_list :facility_group, 3
+        create_list :facilities, 3
       end
 
       it 'lists all facility groups for owners' do
         owner = create :admin, :owner
 
-        expect(owner.facility_groups).to eq(FacilityGroup.all)
+        expect(owner.facilities).to eq(Facility.all)
       end
 
       it 'lists admin facility groups for all other admins' do
-        facility_group = FacilityGroup.first
+        facility = Facility.first
 
         admin = create :admin, role: :organization_owner
-        AdminAccessControl.create(admin: admin, access_controllable: facility_group.organization)
+        AdminAccessControl.create(admin: admin, access_controllable: facility.facility_group.organization)
 
-        expect(admin.facility_groups).to eq([facility_group])
+        expect(admin.facilities).to eq([facility])
 
         Admin.roles.except(:owner, :organization_owner).each do |role|
           admin = create :admin, role: role.first
-          AdminAccessControl.create(admin: admin, access_controllable: facility_group)
+          AdminAccessControl.create(admin: admin, access_controllable: facility.facility_group)
 
-          expect(admin.facility_groups).to eq([facility_group])
+          expect(admin.facilities).to eq([facility])
         end
       end
     end
