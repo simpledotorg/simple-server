@@ -74,5 +74,11 @@ RSpec.describe Analytics::FacilityAnalytics do
         expect(facility_analytics.unique_patients_recorded_per_month).to include(expected_patients_count)
       end
     end
+
+    describe '#all_time_patients_count' do
+      it 'has the number of all patients registered at the facility' do
+        expect(facility_analytics.all_time_patients_count).to eq(15)
+      end
+    end
   end
 end

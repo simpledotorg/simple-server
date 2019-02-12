@@ -93,4 +93,6 @@ en:
         new_patients: 'New Patients'
         return_patients: 'Return Patients'
       facilities:
+        footnote:
+          control_rate_explanation: 'is calculated as a rolling cohort. %{hypertensive_patients_in_cohort} patients enrolled 6-9 months ago / %{patients_under_control} of those patients had SBP < 140 and DBP < 90 at last measure in past 3 months = %{control_rate_for_month}% BP control'
 
