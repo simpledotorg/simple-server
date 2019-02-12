@@ -28,7 +28,7 @@ class AppointmentPolicy < ApplicationPolicy
     end
 
     def resolve
-      scope.where(patient: @user.patients, facility: @user.facilities)
+      scope.where(facility: @user.facilities)
     end
   end
 end
