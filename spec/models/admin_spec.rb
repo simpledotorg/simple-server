@@ -35,7 +35,7 @@ RSpec.describe Admin, type: :model do
 
     describe 'facilities' do
       before :all do
-        create_list :facilities, 3
+        create_list :facility, 3
       end
 
       it 'lists all facility groups for owners' do
