@@ -3,7 +3,10 @@ class AppointmentsController < AdminController
 
   def index
     authorize Appointment, :index?
-    @appointments_per_facility = policy_scope(Appointment).overdue.group_by(&:facility)
+    @appointments_per_facility = policy_scope(Appointment)
+                                   .overdue
+                                   .reject(&:postponed?)
+                                   .group_by(&:facility)
   end
 
   def edit
@@ -12,20 +15,11 @@ class AppointmentsController < AdminController
   def cancel
   end
 
-  def cancel_with_reason
-    update_fields = {
-      status: :cancelled,
-      cancel_reason: cancel_params[:cancel_reason]
-    }
-    if @appointment.update(update_fields)
-      redirect_to appointments_url, notice: 'Appointment was successfully canceled.'
-    else
-      redirect_back fallback_location: root_path, alert: 'Something went wrong!'
-    end
-  end
-
   def update
-    if @appointment.update(edit_params)
+    call_result = call_result_params[:call_result]
+    update_fields = parse_call_result(call_result)
+
+    if @appointment.update(update_fields)
       redirect_to appointments_url, notice: 'Appointment was successfully updated.'
     else
       redirect_back fallback_location: root_path, alert: 'Something went wrong!'
@@ -39,16 +33,25 @@ class AppointmentsController < AdminController
     authorize @appointment
   end
 
-  def edit_params
+  def call_result_params
     params.require(:appointment).permit(
-      :agreed_to_visit,
-      :remind_on
+      :call_result
     )
   end
 
-  def cancel_params
-    params.require(:appointment).permit(
-      :cancel_reason
-    )
+  def parse_call_result(call_result)
+    if call_result.nil?
+      {}
+    elsif call_result == 'remind_in_a_week'
+      {
+        agreed_to_visit: true,
+        remind_on: Date.today + 7.days
+      }
+    else
+      {
+        status: :cancelled,
+        cancel_reason: call_result
+      }
+    end
   end
 end
