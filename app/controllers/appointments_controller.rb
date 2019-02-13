@@ -1,5 +1,5 @@
 class AppointmentsController < AdminController
-  before_action :set_appointment, only: [:edit, :update, :cancel, :cancel_with_reason]
+  before_action :set_appointment, only: [:update]
 
   def index
     authorize Appointment, :index?
