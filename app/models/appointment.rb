@@ -36,6 +36,12 @@ class Appointment < ApplicationRecord
     where(status: 'scheduled').where('scheduled_date <= ?', Date.today)
   end
 
+  def postponed?
+    return false if remind_on.nil?
+
+    agreed_to_visit && remind_on > Date.today
+  end
+
   def days_overdue
     (Date.today - scheduled_date).to_i
   end

@@ -32,8 +32,9 @@
               <% end %>
             </div>
             <div class="col-md-6 col-lg-4">
-              <%= bootstrap_form_with(model: @appointment ) do |form| %>
-                <%= form.select :cancel_reason, Appointment.cancel_reasons.map { |key, value| [key.humanize, value] }, prompt: "Result of call...", hide_label: true %>
+              <%= bootstrap_form_with(model: appointment) do |form| %>
+                <%= form.select :call_result, Appointment.cancel_reasons.merge({remind_in_a_week: 'remind_in_a_week'}).map { |key, value| [key.humanize, value] }, prompt: "Result of call...", hide_label: true %>
+                <%= form.primary 'Update' %>
               <% end %>
             </div>
           </div>
