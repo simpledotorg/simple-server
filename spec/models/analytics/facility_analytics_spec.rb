@@ -80,5 +80,107 @@ RSpec.describe Analytics::FacilityAnalytics do
         expect(facility_analytics.all_time_patients_count).to eq(15)
       end
     end
+
+    describe '#hypertensive_patients_in_cohort' do
+      let(:hypertensive_patients_registered_9_months) { create_list :patient, 3, device_created_at: 9.months.ago }
+      let(:non_hypertensive_patients_registered_9_months) { create_list :patient, 3, device_created_at: 9.months.ago }
+      let(:hypertensive_patients_registered_5_months) { create_list :patient, 3, device_created_at: 5.months.ago }
+
+      before :each do
+        hypertensive_patients_registered_9_months.each do |patient|
+          create :blood_pressure, :hypertensive, patient: patient, facility: facility, device_created_at: patient.device_created_at
+        end
+
+        non_hypertensive_patients_registered_9_months.each do |patient|
+          create :blood_pressure, :under_control, patient: patient, facility: facility, device_created_at: patient.device_created_at
+        end
+
+        hypertensive_patients_registered_5_months.each do |patient|
+          create :blood_pressure, :hypertensive, patient: patient, facility: facility, device_created_at: patient.device_created_at
+        end
+      end
+      it 'has the patients that were measured hypertensive n months ago during an equivalent period' do
+        expect(facility_analytics.hypertensive_patients_in_cohort(
+          since: Date.today.at_beginning_of_month,
+          upto: Date.today.at_end_of_month,
+          delta: 9.months).map(&:patient))
+          .to match_array(hypertensive_patients_registered_9_months)
+      end
+    end
+
+    describe '#controlled_patients_for_facility' do
+      let(:hypertensive_patients_registered_9_months) { create_list :patient, 10, device_created_at: 9.months.ago }
+      let(:patients_under_control_currently) { hypertensive_patients_registered_9_months.take(5) }
+
+      before :each do
+        hypertensive_patients_registered_9_months.map do |patient|
+          create :blood_pressure, :hypertensive, patient: patient, facility: facility, device_created_at: 9.months.ago
+        end
+
+        patients_under_control_currently.map do |patient|
+          create :blood_pressure, :under_control, patient: patient, facility: facility, device_created_at: Time.now
+        end
+      end
+
+      it 'should contain the list of patients under control' do
+        expect(facility_analytics.controlled_patients_for_facility(hypertensive_patients_registered_9_months.map(&:id)))
+          .to match_array(patients_under_control_currently)
+      end
+    end
+
+    describe '#control_rate_for_period' do
+      let(:hypertensive_patients_registered_9_months) { create_list :patient, 10, device_created_at: 9.months.ago }
+      let(:patients_under_control_currently) { hypertensive_patients_registered_9_months.take(5) }
+
+      before :each do
+        hypertensive_patients_registered_9_months.map do |patient|
+          create :blood_pressure, :hypertensive, patient: patient, facility: facility, device_created_at: 9.months.ago
+        end
+
+        patients_under_control_currently.map do |patient|
+          create :blood_pressure, :under_control, patient: patient, facility: facility, device_created_at: Time.now
+        end
+      end
+
+      it 'should calculate the control rate for the given period' do
+        expect(facility_analytics.control_rate_for_period(Date.today.at_beginning_of_month, Date.today.at_end_of_month))
+          .to eq(50)
+      end
+    end
+
+    describe '#control_rate_per_month' do
+      let(:hypertensive_patients_registered_9_months) { create_list :patient, 10, device_created_at: 9.months.ago }
+      let(:patients_under_control_currently) { hypertensive_patients_registered_9_months.take(5) }
+
+      before :each do
+        hypertensive_patients_registered_9_months.map do |patient|
+          create :blood_pressure, :hypertensive, patient: patient, facility: facility, device_created_at: 9.months.ago
+        end
+
+        patients_under_control_currently.map do |patient|
+          create :blood_pressure, :under_control, patient: patient, facility: facility, device_created_at: Time.now
+        end
+      end
+
+
+      it 'returns a hash with the control rates for the facility per month' do
+        4.times do |n|
+          hypertensive_patients = create_list :patient, 10, device_created_at: (n + 9).months.ago
+          hypertensive_patients.each do |patient|
+            create :blood_pressure, :hypertensive, patient: patient, facility: facility, device_created_at: patient.device_created_at
+          end
+          patients_under_control_currently = hypertensive_patients.take(n)
+          patients_under_control_currently.each do |patient|
+            create :blood_pressure, :under_control, patient: patient, facility: facility, device_created_at: n.months.ago
+          end
+        end
+
+        expect(facility_analytics.control_rate_per_month(4).map { |k, v| [k, v] }.to_h)
+          .to eq({ 1.month.ago => 10,
+                   2.months.ago => 20,
+                   3.months.ago => 30,
+                   4.months.ago => 0 }.map { |k,v| [k.at_beginning_of_month, v]}.to_h)
+      end
+    end
   end
 end

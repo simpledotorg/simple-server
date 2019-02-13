@@ -48,12 +48,12 @@ class Analytics::FacilityAnalytics
     overdue_patients_count_per_month(@months_previous)[@from_date] || 0
   end
 
-  def hypertensive_patients_in_cohort(since: Time.new(0), upto: Time.now.in_time_zone("New Delhi"))
+  def hypertensive_patients_in_cohort(since:, upto:, delta: 9.months)
     BloodPressure.hypertensive
+      .select('distinct patient_id')
       .where(facility: facility)
-      .where("device_created_at >= ?", since - 9.months)
-      .where("device_created_at <= ?", upto - 9.months)
-
+      .where("device_created_at >= ?", since - delta)
+      .where("device_created_at <= ?", upto - delta)
   end
 
   def controlled_patients_for_facility(patient_ids)
@@ -70,13 +70,14 @@ class Analytics::FacilityAnalytics
   end
 
   def hypertensive_patients_in_cohort_this_month
-    hypertensive_patients_in_cohort(since: @from_date, upto: @to_date)
+    hypertensive_patients_in_cohort(since: @from_date, upto: @to_date, delta: 9.months)
   end
 
   def control_rate_for_period(from_date, to_date)
     hypertensive_patients = hypertensive_patients_in_cohort(
       since: from_date,
-      upto: to_date
+      upto: to_date,
+      delta: 9.months
     )
 
     numerator = controlled_patients_for_facility(hypertensive_patients.pluck(:patient_id)).size
