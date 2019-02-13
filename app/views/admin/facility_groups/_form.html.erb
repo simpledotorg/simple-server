@@ -19,7 +19,7 @@
         </div>
       <% end %>
 
-      <%= form.select(:protocol_id, protocols.map { |protocol| [protocol.name.titleize, protocol.id]} ) %>
+      <%= form.select(:protocol_id, protocols.map { |protocol| [protocol.name, protocol.id]} ) %>
 
       <%= form.primary %>
     <% end %>

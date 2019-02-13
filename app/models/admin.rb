@@ -6,7 +6,8 @@ class Admin < ApplicationRecord
     :owner,
     :supervisor,
     :analyst,
-    :organization_owner
+    :organization_owner,
+    :counsellor
   ]
 
   validates :role, presence: true
@@ -14,14 +15,14 @@ class Admin < ApplicationRecord
   has_many :admin_access_controls
 
   def facility_groups
-    return admin_access_controls.map(&:access_controllable) if (supervisor? || analyst?)
+    return admin_access_controls.map(&:access_controllable) if (supervisor? || analyst? || counsellor?)
     return organizations.flat_map(&:facility_groups) if organization_owner?
     return FacilityGroup.all if owner?
     []
   end
 
   def organizations
-    return facility_groups.map(&:organization).uniq if (supervisor? || analyst?)
+    return facility_groups.map(&:organization).uniq if (supervisor? || analyst? || counsellor?)
     return admin_access_controls.map(&:access_controllable) if organization_owner?
     return Organization.all if owner?
     []
@@ -37,9 +38,5 @@ class Admin < ApplicationRecord
 
   def users
     facility_groups.flat_map(&:users)
-  end
-
-  def self.have_common_organization(admin1, admin2)
-    (admin1.organizations & admin2.organizations).present?
   end
 end

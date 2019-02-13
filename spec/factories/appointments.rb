@@ -4,12 +4,16 @@ FactoryBot.define do
     facility
     association :patient, strategy: :build
     scheduled_date { 30.days.from_now }
-    status { :scheduled }
+    status :scheduled
     cancel_reason nil
     device_created_at { Time.now }
     device_updated_at { Time.now }
     agreed_to_visit nil
     remind_on nil
+    trait :overdue do
+      scheduled_date { 30.days.ago }
+      status :scheduled
+    end
   end
 end
 
