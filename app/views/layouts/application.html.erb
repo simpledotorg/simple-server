@@ -39,6 +39,11 @@
                   <%= link_to "Overdue Appointments", appointments_path, class: "nav-link #{active_controller?("patient_details")}" %>
                 </li>
               <% end %>
+              <% if policy(Patient).index? %>
+                <li class="nav-item">
+                  <%= link_to "48 Hour Followups", patients_path, class: "nav-link #{active_controller?("patients")}" %>
+                </li>
+              <% end %>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle dropdown-more" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   Manage

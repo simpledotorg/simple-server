@@ -1,0 +1,46 @@
+<h1>48 Hour Followups</h1>
+
+<% @patients_per_facility.each do |facility, patients| %>
+<section>
+  <h2><%= facility.name %></h2>
+    <% patients.each do |patient| %>
+      <div class="overdue-patient">
+        <div class="overdue-title">
+          <%= patient.full_name %>,
+          <%= patient.gender %>,
+          <%= patient.current_age %>
+        </div>
+        <table class="overdue-details">
+          <tr>
+            <td>Last BP:</td>
+            <td>
+              <%= patient.latest_blood_pressure.systolic %>/<%= patient.latest_blood_pressure.diastolic %>
+              &nbsp;
+              <%= patient.latest_blood_pressure.recorded_days_ago %> days ago
+            </td>
+          </tr>
+          <tr>
+            <td>Home:</td>
+            <td>
+              <%= patient.address.street_address %>,
+              <%= patient.address.village_or_colony %>
+            </td>
+          </tr>
+          <tr>
+            <td>Mobile:</td>
+            <td>
+              <%= patient.phone_numbers.first&.number %>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <%= link_to 'Contacted', edit_patient_path(patient) %> |
+              <%= link_to 'Remove from List', patient_cancel_path(patient) %>
+            </td>
+          </tr>
+        </table>
+      </div>
+    <% end %>
+  </table>
+</section>
+<% end %>

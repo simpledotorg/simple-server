@@ -135,6 +135,10 @@ Rails.application.routes.draw do
       get 'cancel', to: 'appointments#cancel'
       put 'cancel', to: 'appointments#cancel_with_reason'
     end
+
+    resources :patients, only: [:index, :edit, :update] do
+      get 'cancel', to: 'patients#cancel'
+    end
   end
 
   get "admin", to: redirect("/")

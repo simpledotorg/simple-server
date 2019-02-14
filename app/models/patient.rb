@@ -47,4 +47,8 @@ class Patient < ApplicationRecord
       age + years_since_update
     end
   end
+
+  def self.not_contacted
+    where(contacted_by_counsellor: false).where('could_not_contact_reason is NULL')
+  end
 end
