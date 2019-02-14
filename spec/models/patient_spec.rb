@@ -34,4 +34,22 @@ describe Patient, type: :model do
   describe 'Behavior' do
     it_behaves_like 'a record that is deletable'
   end
+
+  describe '.not_contacted' do
+    let(:patient_to_followup) { create(:patient) }
+    let(:patient_contacted) { create(:patient, contacted_by_counsellor: true) }
+    let(:patient_could_not_be_contacted) { create(:patient, could_not_contact_reason: 'dead') }
+
+    it 'includes uncontacted patients' do
+      expect(Patient.not_contacted).to include(patient_to_followup)
+    end
+
+    it 'excludes already contacted patients' do
+      expect(Patient.not_contacted).not_to include(patient_contacted)
+    end
+
+    it 'excludes patients who could not be contacted' do
+      expect(Patient.not_contacted).not_to include(patient_could_not_be_contacted)
+    end
+  end
 end
