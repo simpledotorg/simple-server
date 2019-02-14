@@ -60,6 +60,12 @@ h4 {
     margin-bottom: 1em;
 }
 
+h5 {
+    font-size: 16px;
+    font-family: $font-condensed;
+    margin: 0;
+}
+
 section {
     margin-top: 1em;
     margin-bottom: 1em;
@@ -632,6 +638,7 @@ td.featured-middle {
     text-align: center;
     line-height: 1.2;
     font-family: $font-condensed;
+    vertical-align: bottom;
 }
 
 .table-compact .row-label div {
@@ -708,6 +715,16 @@ Overdue list
     right: 0;
     top: 0;
     text-align: right;
+    font-size: 12px;
+}
+
+.overdue-result {
+    float: right;
+    margin: 10px 0 0 0;
+}
+
+.overdue-button {
+    margin: 4px 0 10px 0;
 }
 
 /******************
@@ -717,6 +734,16 @@ Breadcrumb nav
 nav.breadcrumb {
     background: transparent;
     padding-left: 0;
-    border-bottom: 1px solid $grey-lightest;
-    margin: 0 0 32px 0;
+    margin: 0;
 }
+
+ nav.breadcrumb .arrow {
+     font-weight: 900;
+     color: $grey-mid;
+ }
+
+ nav.breadcrumb a {
+     margin: 0 0.5em;
+     font-family: $font-condensed;
+
+  }
