@@ -36,6 +36,13 @@ class Appointment < ApplicationRecord
     where(status: 'scheduled').where('scheduled_date <= ?', Date.today)
   end
 
+  def self.appointments_per_facility
+    includes(:facility,
+             :patient => [:address,
+                          :phone_numbers])
+      .group_by(&:facility)
+  end
+
   def days_overdue
     (Date.today - scheduled_date).to_i
   end

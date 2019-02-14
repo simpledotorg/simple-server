@@ -3,7 +3,7 @@ class AppointmentsController < AdminController
 
   def index
     authorize Appointment, :index?
-    @appointments_per_facility = policy_scope(Appointment).overdue.group_by(&:facility)
+    @appointments_per_facility = policy_scope(Appointment).overdue.appointments_per_facility
   end
 
   def edit
