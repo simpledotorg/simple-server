@@ -14,36 +14,34 @@
           <%= appointment.patient.current_age %>
         </div>
         <div class="overdue-details">
-          <p class="mb-0">
-            Last BP:
-            <%= appointment.patient.latest_blood_pressure.to_s %>,&nbsp;<%= time_ago_in_words(appointment.patient.latest_blood_pressure.device_created_at.to_date) %> ago
-          </p>
-          <p>
-            Home:
-            <%= appointment.patient.address.street_address %>,
-            <%= appointment.patient.address.village_or_colony %>
-          </p>
-          <div class="row">
-            <div class="col-md-6 col-lg-4">
-              <% if phone_number = appointment.patient.phone_numbers.first&.number %>
-                <p>
-                  <%= link_to phone_number, "tel:#{phone_number}", class: "btn btn-info w-100" %>
-                </p>
-              <% end %>
-            </div>
-            <div class="col-md-6 col-lg-4">
-              <%= bootstrap_form_with(model: appointment) do |form| %>
-                <%= form.select :call_result,
-                  {
-                    "Patient responded" => [["Agreed to visit", "agreed_to_visit"]],
-                    "No response" => [["Remind to call later", "remind_to_call"]],
-                    "Remove from overdue list" => Appointment.cancel_reasons.map { |key, value| [key.humanize, value] }
-                  },
-                  prompt: "Result of call...",
-                  hide_label: true
-                %>
-              <% end %>
-            </div>
+          Last BP:
+          <%= appointment.patient.latest_blood_pressure.to_s %>,&nbsp;<%= time_ago_in_words(appointment.patient.latest_blood_pressure.device_created_at.to_date) %> ago
+        </div>
+        <div class="overdue-details">
+          Home:
+          <%= appointment.patient.address.street_address %>,
+          <%= appointment.patient.address.village_or_colony %>
+        </div>
+        <div class="row mt-2">
+          <div class="col-md-6 col-lg-4">
+            <% if phone_number = appointment.patient.phone_numbers.first&.number %>
+              <p>
+                <%= link_to phone_number, "tel:#{phone_number}", class: "btn btn-info w-100" %>
+              </p>
+            <% end %>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <%= bootstrap_form_with(model: appointment) do |form| %>
+              <%= form.select :call_result,
+                {
+                  "Patient responded" => [["Agreed to visit", "agreed_to_visit"]],
+                  "No response" => [["Remind to call later", "remind_to_call"]],
+                  "Remove from overdue list" => Appointment.cancel_reasons.map { |key, value| [key.humanize, value] }
+                },
+                prompt: "Result of call...",
+                hide_label: true
+              %>
+            <% end %>
           </div>
         </div>
       </div>
