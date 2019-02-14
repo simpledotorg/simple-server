@@ -39,6 +39,7 @@
                   <%= link_to "Overdue Appointments", appointments_path, class: "nav-link #{active_controller?("patient_details")}" %>
                 </li>
               <% end %>
+              <% unless ['counsellor', 'analyst'].include?(current_admin.role)  %>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle dropdown-more" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   Manage
@@ -64,6 +65,7 @@
                   <% end %>
                 </div>
               </li>
+              <% end %>
             </ul>
 
             <ul class="navbar-nav ml-auto">
