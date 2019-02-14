@@ -1,19 +1,24 @@
-<div class="top-buttons">
-  <% if policy(:invitation).invite_owner? %>
-    <%= link_to 'Invite Owner', new_admin_invitation_path(role: 'owner'), class: "btn btn-sm btn-primary" %>
-  <% end %>
-  <% if policy(:invitation).invite_organization_owner? %>
-    <%= link_to 'Invite Organization Owner', new_admin_invitation_path(role: 'organization_owner'), class: "btn btn-sm btn-primary" %>
-  <% end %>
-  <% if policy(:invitation).invite_supervisor? %>
-    <%= link_to 'Invite Supervisor', new_admin_invitation_path(role: 'supervisor'), class: "btn btn-sm btn-primary" %>
-  <% end %>
-  <% if policy(:invitation).invite_analyst? %>
-    <%= link_to 'Invite Analyst', new_admin_invitation_path(role: 'analyst'), class: "btn btn-sm btn-primary" %>
-  <% end %>
+<div class="page-header">
+  <h1 class="page-title">Admins</h1>
+  <nav class="page-nav">
+    <% if policy(:invitation).invite_owner? %>
+      <%= link_to 'Invite Owner', new_admin_invitation_path(role: 'owner'), class: "btn btn-sm btn-primary" %>
+    <% end %>
+    <% if policy(:invitation).invite_organization_owner? %>
+      <%= link_to 'Invite Organization Owner', new_admin_invitation_path(role: 'organization_owner'), class: "btn btn-sm btn-primary" %>
+    <% end %>
+    <% if policy(:invitation).invite_supervisor? %>
+      <%= link_to 'Invite Supervisor', new_admin_invitation_path(role: 'supervisor'), class: "btn btn-sm btn-primary" %>
+    <% end %>
+    <% if policy(:invitation).invite_analyst? %>
+      <%= link_to 'Invite Analyst', new_admin_invitation_path(role: 'analyst'), class: "btn btn-sm btn-primary" %>
+    <% end %>
+    <% if policy(:invitation).invite_counsellor? %>
+      <%= link_to 'Invite Counsellor', new_admin_invitation_path(role: 'counsellor'), class: "btn btn-sm btn-primary" %>
+    <% end %>
+  </nav>
 </div>
 
-<h1>Admins</h1>
 <div class="table-responsive">
   <table class="table">
     <thead class="thead-light">

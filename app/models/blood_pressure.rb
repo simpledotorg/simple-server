@@ -14,4 +14,8 @@ class BloodPressure < ApplicationRecord
   def under_control?
     systolic < 140 && diastolic < 90
   end
+
+  def recorded_days_ago
+    (Date.today - device_created_at.to_date).to_i
+  end
 end

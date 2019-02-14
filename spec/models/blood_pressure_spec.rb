@@ -52,5 +52,13 @@ RSpec.describe BloodPressure, type: :model do
         expect(bp_high_both.under_control?).to eq(false)
       end
     end
+
+    describe '#recorded_days_ago' do
+      it 'returns 2 days' do
+        bp_recorded_2_days_ago = create(:blood_pressure, device_created_at: 2.days.ago)
+
+        expect(bp_recorded_2_days_ago.recorded_days_ago).to eq(2)
+      end
+    end
   end
 end

@@ -34,36 +34,36 @@
               <li class="nav-item">
                 <%= link_to "Dashboard", admin_root_path, class: "nav-link #{active_controller?("organizations", "facility_groups")}" %>
               </li>
-              <% if policy(Organization).index? %>
+              <% if policy(Appointment).index? %>
                 <li class="nav-item">
-                  <%= link_to "Organizations", admin_organizations_path, class: "nav-link #{active_controller?("admin/organizations")}" %>
+                  <%= link_to "Overdue Appointments", appointments_path, class: "nav-link #{active_controller?("patient_details")}" %>
                 </li>
               <% end %>
-              <% if policy(Facility).index? %>
-                <li class="nav-item">
-                  <%= link_to "Facilities", admin_facilities_path, class: "nav-link #{active_controller?("admin/facilities")}" %>
-                </li>
-              <% end %>
-              <% if policy(Protocol).index? %>
-                <li class="nav-item">
-                  <%= link_to "Protocols", admin_protocols_path, class: "nav-link #{active_controller?("admin/protocols")}" %>
-                </li>
-              <% end %>
-              <% if policy(Admin).index? %>
-                <li class="nav-item">
-                  <%= link_to "Admins", admins_path, class: "nav-link #{active_controller?("admins")}" %>
-                </li>
-              <% end %>
-              <% if policy(User).index? %>
-                <li class="nav-item">
-                  <%= link_to "Users", admin_users_path, class: "nav-link #{active_controller?("users")}" %>
-                </li>
-              <% end %>
-              <% if policy(AuditLog).index? %>
-                <li class="nav-item">
-                  <%= link_to "Audit Logs", admin_audit_logs_path, class: "nav-link #{active_controller?("audit_logs")}" %>
-                </li>
-              <% end %>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle dropdown-more" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Manage
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <% if policy(Organization).index? %>
+                    <%= link_to "Organizations", admin_organizations_path, class: "nav-link #{active_controller?("admin/organizations")}", class: "dropdown-item" %>
+                  <% end %>
+                  <% if policy(Facility).index? %>
+                    <%= link_to "Facilities", admin_facilities_path, class: "nav-link #{active_controller?("admin/facilities")}", class: "dropdown-item" %>
+                  <% end %>
+                  <% if policy(Protocol).index? %>
+                    <%= link_to "Protocols", admin_protocols_path, class: "nav-link #{active_controller?("admin/protocols")}", class: "dropdown-item" %>
+                  <% end %>
+                  <% if policy(Admin).index? %>
+                    <%= link_to "Admins", admins_path, class: "nav-link #{active_controller?("admins")}", class: "dropdown-item" %>
+                  <% end %>
+                  <% if policy(User).index? %>
+                    <%= link_to "Users", admin_users_path, class: "nav-link #{active_controller?("users")}", class: "dropdown-item" %>
+                  <% end %>
+                  <% if policy(AuditLog).index? %>
+                    <%= link_to "Audit Logs", admin_audit_logs_path, class: "nav-link #{active_controller?("audit_logs")}", class: "dropdown-item" %>
+                  <% end %>
+                </div>
+              </li>
             </ul>
 
             <ul class="navbar-nav ml-auto">
