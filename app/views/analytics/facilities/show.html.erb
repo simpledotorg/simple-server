@@ -63,81 +63,26 @@
         <th class="row-label">Newly<br>enrolled</th>
         <th class="row-label">Calls<br>made</th>
         <th class="row-label">Return and<br>enrolled patients</th>
-
-        <th class="row-label row-month">
-          <div>Week of</div>
-          Sep 23
-        </th>
-        <th class="row-label">
-          <div>Week of</div>
-          Sep 30
-        </th>
-        <th class="row-label">
-          <div>Week of</div>
-          Oct 7
-        </th>
-        <th class="row-label">
-          <div>Week of</div>
-          Oct 14
-        </th>
-
-        <th class="row-label row-month">
-          <div>Week of</div>
-          Oct 21
-        </th>
-        <th class="row-label">
-          <div>Week of</div>
-          Oct 28
-        </th>
-        <th class="row-label">
-          <div>Week of</div>
-          Nov 4
-        </th>
-        <th class="row-label">
-          <div>Week of</div>
-          Nov 11
-        </th>
-
-        <th class="row-label row-month">
-          <div>Week of</div>
-          Nov 18
-        </th>
-        <th class="row-label">
-          <div>Week of</div>
-          Nov 25
-        </th>
-        <th class="row-label">
-          <div>Week of</div>
-          Dec 2
-        </th>
-        <th class="row-label">This<br>week</th>
+        <% @user_analytics.values.first.blood_pressures_recorded_per_week.keys.each do |date| %>
+          <th class="row-label">
+            <div>Week of</div>
+            <%= date.strftime('%b %d') %>
+          </th>
+        <% end %>
       </tr>
       </thead>
       <tbody>
-      <% @facility.users.each do |user| %>
+      <% @user_analytics.each do |user, analytics| %>
         <tr>
           <td class="row-title"><%= link_to user.full_name, [:admin, user] %></td>
-          <td class="row-default text-green">43</td>
+          <td class="row-default text-green"><%= analytics.registered_patients_count %></td>
           <td class="row-calls text-yellow">5</td>
 
           <td class="row-unique-date">92</td>
 
-          <td class="row-unique-date row-month">12</td>
-          <td class="row-unique-date">19</td>
-          <td class="row-unique-date">21</td>
-          <td class="row-unique-date">11</td>
-
-          <td class="row-unique-date row-month">12</td>
-          <td class="row-unique-date">19</td>
-          <td class="row-unique-date">21</td>
-          <td class="row-unique-date">11</td>
-
-          <td class="row-unique-date row-month">12</td>
-          <td class="row-unique-date">19</td>
-          <td class="row-unique-date">21</td>
-          <td class="row-unique-date">11</td>
-
-          <td>&nbsp;</td>
+          <% analytics.blood_pressures_recorded_per_week.sort.each do |_key, value| %>
+            <td class="row-unique-date"><%= value != 0 ? value : '-' %></td>
+          <% end %>
         </tr>
       <% end %>
       </tbody>

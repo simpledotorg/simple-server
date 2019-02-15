@@ -6,6 +6,7 @@ class Analytics::FacilitiesController < AnalyticsController
     @organization = @facility_group.organization
 
     @facility_analytics = Analytics::FacilityAnalytics.new(@facility)
+    @user_analytics = @facility.users.map { |user| [user, Analytics::UserAnalytics.new(user)] }.to_h
   end
 
   def graphics
