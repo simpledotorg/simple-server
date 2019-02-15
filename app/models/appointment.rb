@@ -31,4 +31,16 @@ class Appointment < ApplicationRecord
       errors.add(:cancel_reason, "should be present for cancelled appointments")
     end
   end
+
+  def self.overdue
+    where(status: 'scheduled').where('scheduled_date <= ?', Date.today)
+  end
+
+  def days_overdue
+    (Date.today - scheduled_date).to_i
+  end
+
+  def overdue?
+    status.to_sym == :scheduled && scheduled_date <= Date.today
+  end
 end
