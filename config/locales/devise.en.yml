@@ -62,13 +62,3 @@ en:
       not_saved:
         one: "1 error prohibited this %{resource} from being saved:"
         other: "%{count} errors prohibited this %{resource} from being saved:"
-  analytics:
-    graphics:
-      facility:
-        report_title: "%{organization_name} Hypertension Control Report"
-        report_message: "Thank you for your hard work. You are truly saving lives from heart attacks and strokes."
-        blood_pressures_recorded_in_month: "Recorded BPs this month for:"
-        patients_recorded_this_month: "Enrolled this month:"
-        patients_recorded_this_month_count_message: "%{count} new patients"
-        overdue_patients_this_month: "Hypertensives with no BP in > 90 days:"
-        overdue_patients_this_month_count_message: "%{count} overdue patients"

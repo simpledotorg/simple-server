@@ -156,7 +156,7 @@
     <p class="footnote"><strong>Didn't attend</strong> patients are enrolled hypertensives that have not had a BP
       recorded in the past 3 months.</p>
     <p class="footnote"><strong>BP control</strong>
-      <%= t('analytics.graphics.facilities.footnote.control_rate_explanation',
+      <%= t('analytics.graphics.facility.footnote.control_rate_explanation',
             hypertensive_patients_in_cohort: @facility_analytics.hypertensive_patients_in_cohort_this_month.count,
             patients_under_control: @facility_analytics.controlled_patients_for_facility(@facility_analytics.hypertensive_patients_in_cohort_this_month.pluck(:patient_id)).count,
             control_rate_for_month: @facility_analytics.control_rate_for_this_month) %>
