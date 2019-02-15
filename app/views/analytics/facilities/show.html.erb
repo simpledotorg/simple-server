@@ -24,27 +24,12 @@
             <span class="featured-number text-yellow">1,234</span>
             <span class="featured-label">Patients</span>
 
-            <div class="featured-graph">
-              <table>
-                <tr>
-                  <td>
-                    <div class="featured-graph-column featured-graph-column-yellow" style="height: 27.5px; margin-top: 22.5px;">55%</div>
-                    <span class="featured-month">Sep</span>
-                  </td>
-                  <td>
-                    <div class="featured-graph-column featured-graph-column-yellow" style="height: 32.5px; margin-top: 17.5px;">65%</div>
-                    <span class="featured-month">Oct</span>
-                  </td>
-                  <td>
-                    <div class="featured-graph-column featured-graph-column-yellow" style="height: 25.5px; margin-top: 24.5px;">51%</div>
-                    <span class="featured-month">Nov</span></td>
-                  <td>
-                    <div class="featured-graph-column featured-graph-column-yellow" style="height: 21px; margin-top: 29px;">42%</div>
-                    <span class="featured-month">Dec</span>
-                  </td>
-                </tr>
-              </table>
-            </div>
+            <%= render "shared/graph",
+                       column_class: 'featured-graph-column-yellow',
+                       graph_data: @facility_analytics.overdue_patients_count_per_month(4)
+                           .map { |month, no_of_patients| [month.strftime('%b'), no_of_patients] }.to_h,
+                       max_value: @facility_analytics.overdue_patients_count_per_month(4).values.max %>
+
           </div>
         </td>
         <td class="featured-td">
@@ -53,28 +38,12 @@
             <span class="featured-number">24%</span>
             <span class="featured-label">Goal: 45%</span>
 
-            <div class="featured-graph">
-              <table>
-                <tr>
-                  <td>
-                    <div class="featured-graph-column" style="height: 25px; margin-top: 25px;">25%</div>
-                    <span class="featured-month">Sep</span>
-                  </td>
-                  <td>
-                    <div class="featured-graph-column" style="height: 26px; margin-top: 24px;">26%</div>
-                    <span class="featured-month">Oct</span>
-                  </td>
-                  <td>
-                    <div class="featured-graph-column" style="height: 28px; margin-top: 22px;">28%</div>
-                    <span class="featured-month">Nov</span>
-                  </td>
-                  <td>
-                    <div class="featured-graph-column" style="height: 24px; margin-top: 26px;">24%</div>
-                    <span class="featured-month">Dec</span>
-                  </td>
-                </tr>
-              </table>
-            </div>
+            <%= render "shared/graph",
+                       column_class: nil,
+                       graph_data: @facility_analytics.control_rate_per_month(4)
+                           .map { |month, percent| [month.strftime('%b'), percent] }.to_h,
+                       max_value: @facility_analytics.control_rate_per_month(4).values.max %>
+
           </div>
         </td>
       </tr>

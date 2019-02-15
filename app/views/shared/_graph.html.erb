@@ -2,7 +2,7 @@
   <table>
     <tr>
       <% graph_data.each do |key, value| %>
-        <td style="opacity: 0.5;">
+        <td>
           <%= content_tag 'div', value,
           class: "featured-graph-column #{column_class}",
           style: column_height_styles(value, max_value: max_value, max_height: 50) %>

@@ -14,4 +14,8 @@ class BloodPressure < ApplicationRecord
   def under_control?
     systolic < 140 && diastolic < 90
   end
+
+  def hypertensive?
+    !under_control?
+  end
 end
