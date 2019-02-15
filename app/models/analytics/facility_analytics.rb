@@ -96,4 +96,11 @@ class Analytics::FacilityAnalytics
     end
     @control_rate_per_month
   end
+
+  def blood_pressures_recorded_per_week
+    facility.blood_pressures
+      .where.not(user: nil)
+      .group_by_week(:device_created_at, last: 12)
+      .count
+  end
 end

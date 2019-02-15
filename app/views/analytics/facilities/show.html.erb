@@ -63,7 +63,7 @@
         <th class="row-label">Newly<br>enrolled</th>
         <th class="row-label">Calls<br>made</th>
         <th class="row-label">Return and<br>enrolled patients</th>
-        <% @user_analytics.values.first.blood_pressures_recorded_per_week.keys.each do |date| %>
+        <% @user_analytics.values.first.blood_pressures_recorded_per_week_at_facility(@facility).keys.each do |date| %>
           <th class="row-label">
             <div>Week of</div>
             <%= date.strftime('%b %d') %>
@@ -76,11 +76,11 @@
         <tr>
           <td class="row-title"><%= link_to user.full_name, [:admin, user] %></td>
           <td class="row-default text-green"><%= analytics.registered_patients_count %></td>
-          <td class="row-calls text-yellow">5</td>
+          <td class="row-calls text-yellow"><%= analytics.calls_made_by_user_at_facility(@facility) %></td>
 
-          <td class="row-unique-date">92</td>
+          <td class="row-unique-date"><%= analytics.returning_patients_count_at_facility(@facility) %></td>
 
-          <% analytics.blood_pressures_recorded_per_week.sort.each do |_key, value| %>
+          <% analytics.blood_pressures_recorded_per_week_at_facility(@facility).sort.each do |_key, value| %>
             <td class="row-unique-date"><%= value != 0 ? value : '-' %></td>
           <% end %>
         </tr>
@@ -89,33 +89,24 @@
       <tfoot>
       <tr class="row-total">
         <td class="row-title row-total">Totals</td>
-        <td class="row-enrolled text-green row-total">48</td>
-        <td class="row-calls text-yellow">9</td>
+        <td class="row-enrolled text-green row-total"><%= @user_analytics.values.map(&:registered_patients_count).sum %></td>
+        <td class="row-calls text-yellow"><%= @user_analytics.values.map { |analytics| analytics.calls_made_by_user_at_facility(@facility) }.sum %></td>
 
-        <td class="row-unique-date row-total">176</td>
+        <td class="row-unique-date row-total"><%= @user_analytics.values.map { |analytics| analytics.returning_patients_count_at_facility(@facility) }.sum %></td>
+        </td>
 
-        <td class="row-unique-date row-month"><span class="null">0</span></td>
-        <td class="row-unique-date">19</td>
-        <td class="row-unique-date"><span class="null">0</span></td>
-        <td class="row-unique-date">11</td>
 
-        <td class="row-unique-date row-month">12</td>
-        <td class="row-unique-date">19</td>
-        <td class="row-unique-date"><span class="null">0</span></td>
-        <td class="row-unique-date"><span class="null">0</span></td>
+        <% @facility_analytics.blood_pressures_recorded_per_week.sort.each do |_key, value| %>
+          <td class="row-unique-date"><%= value != 0 ? value : '-' %></td>
+        <% end %>
 
-        <td class="row-unique-date row-month">12</td>
-        <td class="row-unique-date"><span class="null">0</span></td>
-        <td class="row-unique-date">21</td>
-        <td class="row-unique-date">11</td>
-
-        <td>&nbsp;</td>
       </tr>
       </tfoot>
     </table>
   </div>
 </section>
 
+<!--
 <section>
 
   <h4>Overdue patients: "Didn't Attend"</h4>
@@ -178,6 +169,7 @@
   </div>
 
 </section>
+-->
 
 <section>
   <h4>Notes</h4>

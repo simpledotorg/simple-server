@@ -17,6 +17,8 @@ class Analytics::FacilityGroupsController < AnalyticsController
       months_previous: @months_previous
     )
 
+    @facility_analytics = @facilities.map { |facility| [facility, Analytics::FacilityAnalytics.new(facility)] }.to_h
+
     # Reset when done
     Groupdate.time_zone = "UTC"
   end
