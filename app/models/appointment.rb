@@ -26,14 +26,24 @@ class Appointment < ApplicationRecord
   validates :device_updated_at, presence: true
   validate :cancel_reason_is_present_if_cancelled
 
-  def cancel_reason_is_present_if_cancelled
-    if status == :cancelled && !cancel_reason.present?
-      errors.add(:cancel_reason, "should be present for cancelled appointments")
-    end
+  def self.overdue_appointments_report
+    overdue
+      .includes(:facility, :patient => [:address,
+                                        :phone_numbers,
+                                        :medical_history,
+                                        :latest_blood_pressures])
+      .select { |a| a.patient.present? }
+      .group_by(&:facility)
   end
 
   def self.overdue
     where(status: 'scheduled').where('scheduled_date <= ?', Date.today)
+  end
+
+  def cancel_reason_is_present_if_cancelled
+    if status == :cancelled && !cancel_reason.present?
+      errors.add(:cancel_reason, "should be present for cancelled appointments")
+    end
   end
 
   def days_overdue
