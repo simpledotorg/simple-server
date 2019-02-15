@@ -1,0 +1,49 @@
+<h1>Overdue Appointments</h1>
+
+<% @appointments_per_facility.each do |facility, appointments| %>
+<section>
+  <h2><%= facility.name %></h2>
+    <% appointments.each do |appointment| %>
+      <div class="overdue-patient">
+        <div class="overdue-time text-red">
+          <%= appointment.days_overdue %> days overdue
+        </div>
+        <div class="overdue-title">
+          <%= appointment.patient.full_name %>,
+          <%= appointment.patient.gender %>,
+          <%= appointment.patient.current_age %>
+        </div>
+        <table class="overdue-details">
+          <tr>
+            <td>Last BP:</td>
+            <td>
+              <%= appointment.patient.latest_blood_pressure.systolic %>/<%= appointment.patient.latest_blood_pressure.diastolic %>
+              &nbsp;
+              <%= appointment.patient.latest_blood_pressure.recorded_days_ago %> days ago
+            </td>
+          </tr>
+          <tr>
+            <td>Home:</td>
+            <td>
+              <%= appointment.patient.address.street_address %>,
+              <%= appointment.patient.address.village_or_colony %>
+            </td>
+          </tr>
+          <tr>
+            <td>Mobile:</td>
+            <td>
+              <%= appointment.patient.phone_numbers.first&.number %>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <%= link_to 'Remind Later', edit_appointment_path(appointment) %> |
+              <%= link_to 'Remove from List', appointment_cancel_path(appointment) %>
+            </td>
+          </tr>
+        </table>
+      </div>
+    <% end %>
+  </table>
+</section>
+<% end %>

@@ -1,13 +1,15 @@
+<h1>Facility Groups</h1>
+
 <div class="top-buttons">
 <% if policy(Organization).new? %>
   <%= link_to 'New organization', new_admin_facility_path, class: "btn btn-sm btn-primary" %>
 <% end %>
 </div>
 
+
 <table class="table-responsive table">
   <thead class="thead-light">
     <tr>
-      <th><h1>Organizations</h1></th>
       <th>Description</th>
       <th>Facility Groups</th>
       <th>Facilities</th>

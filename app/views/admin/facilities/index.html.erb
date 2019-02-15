@@ -1,13 +1,16 @@
-<div class="top-buttons">
-<% if policy(Facility).new? %>
-  <%= link_to 'New facility', new_admin_facility_path, class: "btn btn-sm btn-primary" %>
-<% end %>
+<div class="page-header">
+  <h1 class="page-title">Facilities</h1>
+  <nav class="page-nav">
+    <% if policy(Facility).new? %>
+      <%= link_to 'New facility', new_admin_facility_path, class: "btn btn-sm btn-primary" %>
+    <% end %>
+  </nav>
 </div>
 
 <table class="table-responsive table">
   <thead class="thead-light">
     <tr>
-      <th><h1>Facilities</h1></th>
+      <th>Name</th>
       <th>Address</th>
       <th>Village/colony</th>
       <th>District</th>

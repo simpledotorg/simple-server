@@ -75,7 +75,7 @@ namespace :data_migration do
   task :associate_protocol_to_organization_facility_groups, [:organization_id, :protocol_id] => :environment do |_t, args|
     organization = Organization.find(args.organization_id)
     protocol = Protocol.find(args.protocol_id)
-    puts "Associating organization #{organization.name.titleize} to protocol #{protocol.name.titleize}"
+    puts "Associating organization #{organization.name} to protocol #{protocol.name}"
     puts "Associating protocol for #{organization.facility_groups.count} facility groups"
     organization.facility_groups.update(protocol: protocol)
   end

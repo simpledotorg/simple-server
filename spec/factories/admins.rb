@@ -10,11 +10,15 @@ FactoryBot.define do
 
     trait(:supervisor) do
       role :supervisor
-
     end
 
     trait(:analyst) do
       role :analyst
+      admin_access_controls { FactoryBot.create_list(:admin_access_control, 1, access_controllable: FactoryBot.create(:facility_group))}
+    end
+
+    trait(:counsellor) do
+      role :counsellor
       admin_access_controls { FactoryBot.create_list(:admin_access_control, 1, access_controllable: FactoryBot.create(:facility_group))}
     end
 

@@ -1,24 +1,26 @@
-<div class="top-buttons">
-  <% if policy(@organization).edit? %>
-    <%= link_to "Edit organization", edit_admin_organization_path(@organization), class: "btn btn-sm btn-primary" %>
-  <% end %>
-  <% if policy(FacilityGroup).new? %>
-    <%= link_to 'New facility group', new_admin_organization_facility_group_path(@organization), class: "btn btn-sm btn-primary" %>
-  <% end %>
-</div>
+<div class="page-header">
+  <div class="page-title">
+    <h1><%= @organization.name %></h1>
+    <p>
+      <strong>Description:</strong> <%= @organization.description %>
+    </p>
+  </div>
 
-<h1 style="margin-top: 1em;"><%= @organization.name %></h1>
-<p>
-  <strong>Description:</strong>
-  <%= @organization.description %>
-</p>
+  <nav class="page-nav">
+    <% if policy(@organization).edit? %>
+      <%= link_to "Edit organization", edit_admin_organization_path(@organization), class: "btn btn-sm btn-primary" %>
+    <% end %>
+    <% if policy(FacilityGroup).new? %>
+      <%= link_to 'New facility group', new_admin_organization_facility_group_path(@organization), class: "btn btn-sm btn-primary" %>
+    <% end %>
+  </nav>
+</div>
 
 <div class="table-responsive">
   <table class="table">
     <thead class="thead-light">
     <tr>
-      <th class="nowrap"><h2 class="mt-4">Facility Groups</h2></th>
-      <th>Name</th>
+      <th class="nowrap">Facility Groups</th>
       <th class="nowrap">Description</th>
       <th class="nowrap">Number of facilities</th>
       <th colspan="2"></th>

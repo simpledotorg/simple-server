@@ -1,6 +1,6 @@
 # Simple Server
 
-[![Build Status](https://semaphoreci.com/api/v1/simpledotorg/simple-server/branches/master/badge.svg)](https://semaphoreci.com/simpledotorg/simple-server)
+[![Build Status](https://semaphoreci.com/api/v1/resolvetosavelives/simple-server/branches/master/badge.svg)](https://semaphoreci.com/resolvetosavelives/simple-server)
 
 This is the backend for the Simple app to help track hypertensive patients across a population.
 

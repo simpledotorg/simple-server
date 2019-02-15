@@ -1,13 +1,16 @@
-<div class="top-buttons">
-<% if policy(Protocol).new? %>
-  <%= link_to 'New protocol', new_admin_protocol_path, class: "btn btn-sm btn-primary" %>
-<% end %>
+<div class="page-header">
+  <h1 class="page-title">Protocols</h1>
+  <nav class="page-nav">
+    <% if policy(Protocol).new? %>
+      <%= link_to 'New protocol', new_admin_protocol_path, class: "btn btn-sm btn-primary" %>
+    <% end %>
+  </nav>
 </div>
 
 <table class="table table-responsive">
   <thead class="thead-light">
     <tr>
-      <th><h1>Protocols</h1></th>
+      <th>Name</th>
       <th class="nowrap">Follow up days</th>
       <th colspan="2"></th>
     </tr>
