@@ -34,4 +34,19 @@ describe Patient, type: :model do
   describe 'Behavior' do
     it_behaves_like 'a record that is deletable'
   end
+
+  describe 'Associations' do
+    it { should have_many(:blood_pressures) }
+    it { should have_many(:latest_blood_pressures) }
+
+    it 'should sort blood pressures by the latest one first' do
+      patient = FactoryBot.create(:patient)
+      facility = FactoryBot.create(:facility)
+      blood_pressures = FactoryBot.create_list(:blood_pressure, 5, patient: patient, facility: facility)
+
+      expected_blood_pressures = blood_pressures.sort_by(&:device_created_at).reverse
+
+      expect(patient.latest_blood_pressures).to eq(expected_blood_pressures)
+    end
+  end
 end
