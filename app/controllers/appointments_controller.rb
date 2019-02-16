@@ -33,25 +33,7 @@ class AppointmentsController < AdminController
     authorize @appointment
   end
 
-  def call_result_params
-    params.require(:appointment).permit(
-      :call_result
-    )
-  end
-
-  def parse_call_result(call_result)
-    if call_result.nil?
-      {}
-    elsif call_result == 'remind_in_a_week'
-      {
-        agreed_to_visit: true,
-        remind_on: Date.today + 7.days
-      }
-    else
-      {
-        status: :cancelled,
-        cancel_reason: call_result
-      }
-    end
+  def appointment_params
+    params.require(:appointment).permit(:call_result)
   end
 end

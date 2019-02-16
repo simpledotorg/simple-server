@@ -35,7 +35,7 @@
               <%= form.select :call_result,
                 {
                   "Patient responded" => [["Agreed to visit", "agreed_to_visit"]],
-                  "No response" => [["Remind to call later", "remind_to_call"]],
+                  "No response" => [["Remind to call later", "remind_to_call_later"]],
                   "Remove from overdue list" => Appointment.cancel_reasons.map { |key, value| [key.humanize, value] }
                 },
                 prompt: "Result of call...",
