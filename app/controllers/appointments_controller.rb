@@ -5,6 +5,7 @@ class AppointmentsController < AdminController
     authorize Appointment, :index?
     @appointments_per_facility = policy_scope(Appointment)
                                    .overdue
+                                   .order(scheduled_date: :asc)
                                    .group_by(&:facility)
   end
 
