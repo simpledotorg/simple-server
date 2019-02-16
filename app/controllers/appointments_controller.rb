@@ -16,11 +16,8 @@ class AppointmentsController < AdminController
   end
 
   def update
-    call_result = call_result_params[:call_result]
-    update_fields = parse_call_result(call_result)
-
-    if @appointment.update(update_fields)
-      redirect_to appointments_url, notice: 'Appointment was successfully updated.'
+    if @appointment.update(appointment_params)
+      redirect_to appointments_url, notice: "Appointment was successfully updated: #{appointment_params[:call_result]}"
     else
       redirect_back fallback_location: root_path, alert: 'Something went wrong!'
     end
