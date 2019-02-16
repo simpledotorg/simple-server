@@ -35,15 +35,17 @@ class Appointment < ApplicationRecord
   def call_result=(new_call_result)
     if new_call_result == "agreed_to_visit"
       self.agreed_to_visit = true
-      self.cancel_reason = nil
+      self.remind_on = 30.days.from_now
     elsif new_call_result == "remind_to_call_later"
-      self.agreed_to_visit = nil
       self.remind_on = 7.days.from_now
-      self.cancel_reason = nil
     elsif Appointment.cancel_reasons.values.include?(new_call_result)
       self.agreed_to_visit = false
       self.remind_on = nil
       self.cancel_reason = new_call_result
+    end
+
+    if new_call_result == "dead"
+      self.patient.status = "dead"
     end
 
     super(new_call_result)
