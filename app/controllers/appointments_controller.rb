@@ -16,7 +16,7 @@ class AppointmentsController < AdminController
 
   def update
     if @appointment.update(appointment_params)
-      redirect_to appointments_url, notice: "Appointment was successfully updated: #{appointment_params[:call_result]}"
+      redirect_to appointments_url, notice: "Saved call result. #{@appointment.patient.full_name}: #{@appointment.call_result.humanize}"
     else
       redirect_back fallback_location: root_path, alert: 'Something went wrong!'
     end
