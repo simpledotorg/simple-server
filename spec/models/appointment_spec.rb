@@ -52,6 +52,7 @@ describe Appointment, type: :model do
           appointment.call_result = cancel_reason
 
           expect(appointment.cancel_reason).to eq(cancel_reason)
+          expect(appointment.status).to eq("cancelled")
         end
       end
 

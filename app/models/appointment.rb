@@ -29,7 +29,9 @@ class Appointment < ApplicationRecord
   validate :cancel_reason_is_present_if_cancelled
 
   def self.overdue
-    where(status: 'scheduled').where('scheduled_date <= ?', Date.today)
+    where(status: 'scheduled')
+      .where('scheduled_date <= ?', Date.today)
+      .where('remind_on IS NULL OR remind_on <= ?', Date.today)
   end
 
   def call_result=(new_call_result)
@@ -42,6 +44,7 @@ class Appointment < ApplicationRecord
       self.agreed_to_visit = false
       self.remind_on = nil
       self.cancel_reason = new_call_result
+      self.status = :cancelled
     end
 
     if new_call_result == "dead"
@@ -57,12 +60,6 @@ class Appointment < ApplicationRecord
 
   def overdue?
     status.to_sym == :scheduled && scheduled_date <= Date.today
-  end
-
-  def postponed?
-    return false if remind_on.nil?
-
-    agreed_to_visit && remind_on > Date.today
   end
 
   private

@@ -5,7 +5,6 @@ class AppointmentsController < AdminController
     authorize Appointment, :index?
     @appointments_per_facility = policy_scope(Appointment)
                                    .overdue
-                                   .reject(&:postponed?)
                                    .group_by(&:facility)
   end
 
