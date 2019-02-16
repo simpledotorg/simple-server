@@ -6,7 +6,7 @@ class AppointmentsController < AdminController
     @appointments = policy_scope(Appointment)
                       .overdue
                       .order(scheduled_date: :asc)
-                      .page(params[:page]).per(20)
+                      .page(params[:page]).per(10)
   end
 
   def edit

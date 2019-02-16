@@ -1,8 +1,8 @@
 <h1>Overdue Appointments</h1>
 
 <% @appointments.group_by(&:facility).each do |facility, appointments| %>
-<section>
-  <h2><%= facility.name %></h2>
+<section class="overdue-facility">
+  <h3><%= facility.name %></h3>
     <% appointments.each do |appointment| %>
       <div class="overdue-patient">
         <div class="overdue-time text-red">

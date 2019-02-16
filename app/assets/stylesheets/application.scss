@@ -683,10 +683,14 @@ td.featured-middle {
 Overdue list
 ******************/
 
+.overdue-facility {
+    margin-bottom: 32px;
+}
+
 .overdue-patient {
-    border-bottom: 1px solid $grey-lightest;
-    padding-bottom: 16px;
-    margin-bottom: 16px;
+    border-top: 1px solid $grey-lightest;
+    padding-top: 16px;
+    margin-top: 16px;
     position: relative;
 }
 
@@ -713,7 +717,7 @@ Overdue list
 .overdue-time {
     position: absolute;
     right: 0;
-    top: 0;
+    top: 16px;
     text-align: right;
     font-size: 12px;
 }
