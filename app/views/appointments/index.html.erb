@@ -1,6 +1,6 @@
 <h1>Overdue Appointments</h1>
 
-<% @appointments_per_facility.each do |facility, appointments| %>
+<% @appointments.group_by(&:facility).each do |facility, appointments| %>
 <section>
   <h2><%= facility.name %></h2>
     <% appointments.each do |appointment| %>
@@ -49,6 +49,8 @@
         </div>
       </div>
     <% end %>
-  </table>
+  </div>
 </section>
 <% end %>
+
+<%= paginate @appointments %>

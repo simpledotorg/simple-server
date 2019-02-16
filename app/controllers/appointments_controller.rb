@@ -3,10 +3,10 @@ class AppointmentsController < AdminController
 
   def index
     authorize Appointment, :index?
-    @appointments_per_facility = policy_scope(Appointment)
-                                   .overdue
-                                   .order(scheduled_date: :asc)
-                                   .group_by(&:facility)
+    @appointments = policy_scope(Appointment)
+                      .overdue
+                      .order(scheduled_date: :asc)
+                      .page(params[:page]).per(20)
   end
 
   def edit
