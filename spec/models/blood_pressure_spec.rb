@@ -60,5 +60,11 @@ RSpec.describe BloodPressure, type: :model do
         expect(bp_recorded_2_days_ago.recorded_days_ago).to eq(2)
       end
     end
+
+    describe "#to_s" do
+      it "is systolic/diastolic" do
+        expect(bp_normal.to_s).to eq("120/80")
+      end
+    end
   end
 end

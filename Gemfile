@@ -31,6 +31,7 @@ gem 'uuidtools', require: false
 gem 'discard', '~> 1.0'
 gem 'chartkick'
 gem 'friendly_id', '~> 5.2.4'
+gem 'kaminari'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

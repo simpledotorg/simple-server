@@ -9,7 +9,7 @@ RSpec.describe AppointmentPolicy do
   let(:organization_owner) { create(:admin, :organization_owner) }
   let(:counsellor) { create(:admin, :counsellor) }
 
-  permissions :index?, :edit?, :cancel?, :update?, :cancel_with_reason? do
+  permissions :index?, :edit? do
     it 'permits owners' do
       expect(subject).to permit(owner, Appointment)
     end
