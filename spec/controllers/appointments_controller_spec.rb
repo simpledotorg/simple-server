@@ -34,21 +34,38 @@ RSpec.describe AppointmentsController, type: :controller do
   end
 
   describe 'PUT #update' do
-    it 'remind_in_a_week updates agreed_to_visit and remind_on' do
+    it 'remind_to_call_later updates remind_on' do
       new_remind_date = Date.today + 7.days
 
       put :update, params: {
         id: overdue_appointment.id,
         appointment: {
-          call_result: 'remind_in_a_week'
+          call_result: 'remind_to_call_later'
         }
       }
 
       overdue_appointment.reload
 
       expect(overdue_appointment.remind_on).to eq(new_remind_date)
-      expect(overdue_appointment.agreed_to_visit).to be(true)
       expect(response).to redirect_to(action: 'index')
     end
+
+    it 'agreed_to_visit updates agreed_to_visit and remind_on' do
+      new_remind_date = Date.today + 30.days
+
+      put :update, params: {
+        id: overdue_appointment.id,
+        appointment: {
+          call_result: 'agreed_to_visit'
+        }
+      }
+
+      overdue_appointment.reload
+
+      expect(overdue_appointment.agreed_to_visit).to eq(true)
+      expect(overdue_appointment.remind_on).to eq(new_remind_date)
+      expect(response).to redirect_to(action: 'index')
+    end
+
   end
 end
