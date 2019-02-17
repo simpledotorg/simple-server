@@ -1,9 +1,10 @@
 <h1>Overdue Appointments</h1>
 
 <% @appointments.group_by(&:facility).each do |facility, appointments| %>
-<section class="overdue-facility">
-  <h3><%= facility.name %></h3>
-    <% appointments.each do |appointment| %>
+  <section class="overdue-facility">
+    <h3><%= facility.name %></h3>
+
+    <% appointments.select { |a| a.patient.present? }.each do |appointment| %>
       <div class="overdue-patient">
         <div class="overdue-time text-red">
           <%= appointment.days_overdue %> days overdue
@@ -36,24 +37,24 @@
           <div class="col-md-6 col-lg-4">
             <%= bootstrap_form_with(model: appointment) do |form| %>
               <%= form.select :call_result,
-                {
-                  "Patient responded" => [["Agreed to visit", "agreed_to_visit"]],
-                  "No response" => [["Remind to call later", "remind_to_call_later"]],
-                  "Remove from overdue list" => Appointment.cancel_reasons.map { |key, value| [key.humanize, value] }
-                },
-                {
-                  prompt: "Result of call...",
-                  hide_label: true
-                },
-                onchange: "this.form.submit();"
+                              {
+                                  "Patient responded" => [["Agreed to visit", "agreed_to_visit"]],
+                                  "No response" => [["Remind to call later", "remind_to_call_later"]],
+                                  "Remove from overdue list" => Appointment.cancel_reasons.map { |key, value| [key.humanize, value] }
+                              },
+                              {
+                                  prompt: "Result of call...",
+                                  hide_label: true
+                              },
+                              onchange: "this.form.submit();"
               %>
             <% end %>
           </div>
         </div>
       </div>
     <% end %>
-  </div>
-</section>
+    </div>
+  </section>
 <% end %>
 
 <%= paginate @appointments %>
