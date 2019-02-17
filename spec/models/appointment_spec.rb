@@ -63,4 +63,29 @@ describe Appointment, type: :model do
       end
     end
   end
+
+  describe '.overdue_appointments_report' do
+    let(:facility) { create(:facility) }
+
+    it "should group overdue appointments by facility" do
+      overdue_appointment = create(:appointment, :overdue, facility: facility)
+
+      expected = {}
+      expected[facility] = [overdue_appointment]
+      expect(Appointment.overdue_appointments_report).to eq(expected)
+    end
+
+    it "should exclude overdue appointments that don't have patients" do
+      overdue_appointment = create(:appointment, :overdue, facility: facility)
+      create(:appointment, facility: facility)
+
+      expected = {}
+      expected[facility] = [overdue_appointment]
+      expect(Appointment.overdue_appointments_report).to eq(expected)
+    end
+
+    it "should be empty if there are no overdue appointments" do
+      expect(Appointment.overdue_appointments_report).to eq({})
+    end
+  end
 end
