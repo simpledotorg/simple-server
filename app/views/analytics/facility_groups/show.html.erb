@@ -16,47 +16,39 @@
       <tr>
         <td class="featured-td">
           <div class="featured-section">
-            <strong class="featured-title" style="color: #007A31;">Newly enrolled</strong>
-            <span class="featured-number text-green">1,345</span>
+            <strong class="featured-title" style="color: #007A31;"><%= t('analytics.graphics.facility_groups.newly_enrolled') %></strong>
+            <span id='newly-enrolled-patients-count' class="featured-number text-green">
+              <%= @facility_group_analytics.newly_enrolled_patients.count %>
+            </span>
             <span class="featured-label">New patients</span>
 
-            <strong class="featured-title" style="color: #007A31;">Return patients</strong>
-            <span class="featured-number  text-green">12,456</span>
+            <strong class="featured-title" style="color: #007A31;"><%= t('analytics.graphics.facility_groups.return_patients') %></strong>
+            <span id='returning-patients-count' class="featured-number text-green">
+              <%= @facility_group_analytics.returning_patients.count %>
+            </span>
           </div>
         </td>
         <td class="featured-td featured-middle">
           <div class="featured-section">
-            <strong class="featured-title" style="color: #E0B000;">Didn't attend</strong>
-            <span class="featured-number text-yellow">10,321</span>
+            <strong class="featured-title" style="color: #E0B000;"><%= t('analytics.graphics.facility_groups.non_returning_hypertensive_patients') %></strong>
+            <span id='non-returning-hypertensive-patients-count' class="featured-number text-yellow">
+              <%= @facility_group_analytics.non_returning_hypertensive_patients.count %>
+            </span>
             <span class="featured-label">Patients</span>
 
-            <div class="featured-graph">
-              <table>
-                <tr>
-                  <td>
-                    <div class="featured-graph-column featured-graph-column-yellow" style="height: 27.5px; margin-top: 22.5px;">55%</div>
-                    <span class="featured-month">Oct</span>
-                  </td>
-                  <td>
-                    <div class="featured-graph-column featured-graph-column-yellow" style="height: 32.5px; margin-top: 17.5px;">65%</div>
-                    <span class="featured-month">Nov</span>
-                  </td>
-                  <td>
-                    <div class="featured-graph-column featured-graph-column-yellow" style="height: 25.5px; margin-top: 24.5px;">51%</div>
-                    <span class="featured-month">Dec</span></td>
-                  <td>
-                    <div class="featured-graph-column featured-graph-column-yellow" style="height: 21px; margin-top: 29px;">42%</div>
-                    <span class="featured-month">Jan</span>
-                  </td>
-                </tr>
-              </table>
-            </div>
+            <%= render "shared/graph",
+                       options: { id: 'non-returning-hypertensive-patients-chart' },
+                       column_class: 'featured-graph-column-yellow',
+                       graph_data: @facility_group_analytics.non_returning_hypertensive_patients_per_month(4)
+                           .map { |month, no_of_patients| [month.strftime('%b'), no_of_patients] }.to_h,
+                       max_value: @facility_group_analytics.non_returning_hypertensive_patients_per_month(4).values.max %>
+
           </div>
         </td>
         <td class="featured-td">
           <div class="featured-section">
-            <strong class="featured-title">BP control</strong>
-            <span class="featured-number">30%</span>
+            <strong class="featured-title"><%= t('analytics.graphics.facility_groups.control_rate') %></strong>
+            <span class="featured-number"><%= @facility_group_analytics.control_rate %>%</span>
             <span class="featured-label">Goal: 45%</span>
 
             <div class="featured-graph">

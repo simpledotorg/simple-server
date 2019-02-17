@@ -45,22 +45,22 @@
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                   <% if policy(Organization).index? %>
-                    <%= link_to "Organizations", admin_organizations_path, class: "nav-link #{active_controller?("admin/organizations")}", class: "dropdown-item" %>
+                    <%= link_to "Organizations", admin_organizations_path, class: "nav-link dropdown-item #{active_controller?("admin/organizations")}" %>
                   <% end %>
                   <% if policy(Facility).index? %>
-                    <%= link_to "Facilities", admin_facilities_path, class: "nav-link #{active_controller?("admin/facilities")}", class: "dropdown-item" %>
+                    <%= link_to "Facilities", admin_facilities_path, class: "nav-link dropdown-item #{active_controller?("admin/facilities")}" %>
                   <% end %>
                   <% if policy(Protocol).index? %>
-                    <%= link_to "Protocols", admin_protocols_path, class: "nav-link #{active_controller?("admin/protocols")}", class: "dropdown-item" %>
+                    <%= link_to "Protocols", admin_protocols_path, class: "nav-link dropdown-item #{active_controller?("admin/protocols")}" %>
                   <% end %>
                   <% if policy(Admin).index? %>
-                    <%= link_to "Admins", admins_path, class: "nav-link #{active_controller?("admins")}", class: "dropdown-item" %>
+                    <%= link_to "Admins", admins_path, class: "nav-link dropdown-item #{active_controller?("admins")}" %>
                   <% end %>
                   <% if policy(User).index? %>
-                    <%= link_to "Users", admin_users_path, class: "nav-link #{active_controller?("users")}", class: "dropdown-item" %>
+                    <%= link_to "Users", admin_users_path, class: "nav-link dropdown-item #{active_controller?("users")}" %>
                   <% end %>
                   <% if policy(AuditLog).index? %>
-                    <%= link_to "Audit Logs", admin_audit_logs_path, class: "nav-link #{active_controller?("audit_logs")}", class: "dropdown-item" %>
+                    <%= link_to "Audit Logs", admin_audit_logs_path, class: "nav-link dropdown-item #{active_controller?("audit_logs")}" %>
                   <% end %>
                 </div>
               </li>

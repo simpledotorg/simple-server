@@ -28,12 +28,20 @@ def random_time(from_time, to_time)
   Time.at(from_time.to_time.to_f + rand * (to_time.to_time - from_time.to_time).to_f)
 end
 
-def create_in_period(model_type, from_date, to_date, options)
-  create model_type, options.merge(device_created_at: random_time(from_date, to_date))
+def create_in_period(model_type, trait: nil, from_time:, to_time:, **options)
+  create model_type, trait, options.merge(device_created_at: random_time(from_time, to_time))
 end
 
-def create_list_in_period(model_type, count, from_date, to_date, options)
+def create_list_in_period(model_type, count, trait: nil, from_time:, to_time:, **options)
   created_objects = []
-  count.times { created_objects << create_in_period(model_type, from_date, to_date, options) }
+  count.times do
+    created_objects << create_in_period(
+      model_type,
+      trait: trait,
+      from_time: from_time,
+      to_time: to_time,
+      **options
+    )
+  end
   created_objects
 end

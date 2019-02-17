@@ -11,10 +11,12 @@ class Analytics::FacilityGroupsController < AnalyticsController
     @months_previous = 8
 
     @facilities = @facility_group.facilities
-    @facility_group_analytics = Analytics::FacilityGroupDashboard.new(
+    @facility_group_analytics = Analytics::FacilityGroupAnalytics.new(
       @facility_group,
       days_previous: @days_previous,
-      months_previous: @months_previous
+      months_previous: @months_previous,
+      from_time: 90.days.ago,
+      to_time: Date.today
     )
 
     @facility_analytics = @facilities.map { |facility| [facility, Analytics::FacilityAnalytics.new(facility)] }.to_h
