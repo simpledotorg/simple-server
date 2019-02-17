@@ -17,6 +17,7 @@ $grey-darkest: #2F363D;
 
 $highlight: #E9F3FF; /* LIGHT BLUE */
 $blue-light: #E9F3FF;
+$green-light: #E0FFED;
 
 $font-condensed: 'Roboto Condensed';
 /********/
@@ -57,6 +58,12 @@ h4 {
     border-bottom: 1px solid $grey-light;
     padding-bottom: 4px;
     margin-bottom: 1em;
+}
+
+h5 {
+    font-size: 16px;
+    font-family: $font-condensed;
+    margin: 0;
 }
 
 section {
@@ -130,15 +137,27 @@ a.btn {
 }
 
 .btn-success {
-    background: #E0FFED;
-    border-color: #E0FFED;
-    color: #007A31;
+  background: $green-light;
+  border-color: $green-light;
+  color: $green-dark;
+
+  &:hover {
+    background: $green;
+    border-color: $green;
+    color: #FFF;
+  }
 }
 
-.btn-success:hover {
-    background: #00B849;
-    border-color: #00B849;
+.btn-info {
+  background: $blue-light;
+  border-color: $blue-light;
+  color: $blue;
+
+  &:hover {
+    background: $blue;
+    border-color: $blue;
     color: #FFF;
+  }
 }
 
 label {
@@ -619,6 +638,7 @@ td.featured-middle {
     text-align: center;
     line-height: 1.2;
     font-family: $font-condensed;
+    vertical-align: bottom;
 }
 
 .table-compact .row-label div {
@@ -663,10 +683,14 @@ td.featured-middle {
 Overdue list
 ******************/
 
+.overdue-facility {
+    margin-bottom: 32px;
+}
+
 .overdue-patient {
-    border-bottom: 1px solid $grey-lightest;
-    padding-bottom: 16px;
-    margin-bottom: 16px;
+    border-top: 1px solid $grey-lightest;
+    padding-top: 16px;
+    margin-top: 16px;
     position: relative;
 }
 
@@ -693,8 +717,18 @@ Overdue list
 .overdue-time {
     position: absolute;
     right: 0;
-    top: 0;
+    top: 16px;
     text-align: right;
+    font-size: 12px;
+}
+
+.overdue-result {
+    float: right;
+    margin: 10px 0 0 0;
+}
+
+.overdue-button {
+    margin: 4px 0 10px 0;
 }
 
 /******************
@@ -704,6 +738,16 @@ Breadcrumb nav
 nav.breadcrumb {
     background: transparent;
     padding-left: 0;
-    border-bottom: 1px solid $grey-lightest;
-    margin: 0 0 32px 0;
+    margin: 0;
 }
+
+ nav.breadcrumb .arrow {
+     font-weight: 900;
+     color: $grey-mid;
+ }
+
+ nav.breadcrumb a {
+     margin: 0 0.5em;
+     font-family: $font-condensed;
+
+  }

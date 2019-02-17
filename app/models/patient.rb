@@ -7,6 +7,7 @@ class Patient < ApplicationRecord
   belongs_to :address, optional: true
   has_many :phone_numbers, class_name: 'PatientPhoneNumber'
   has_many :blood_pressures
+  has_many :latest_blood_pressures, -> { order(device_created_at: :desc) }, class_name: 'BloodPressure'
   has_many :prescription_drugs
   has_many :facilities, -> { distinct }, through: :blood_pressures
   has_many :users, -> { distinct }, through: :blood_pressures
@@ -42,7 +43,7 @@ class Patient < ApplicationRecord
   end
 
   def latest_blood_pressure
-    blood_pressures.order(device_created_at: :desc).first
+    latest_blood_pressures.first
   end
 
   def current_age

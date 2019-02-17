@@ -1,8 +1,0 @@
-<h1>Cancel Overdue Appointment</h1>
-
-<%= form_tag(appointment_cancel_path(@appointment), method: 'put') do %>
-  Cancel Reason:
-  <%= select :appointment, :cancel_reason, Appointment.cancel_reasons.keys, selected: 'other' %>
-  <br>
-  <%= submit_tag('Cancel Appointment') %>
-<% end %>
