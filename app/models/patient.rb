@@ -20,7 +20,7 @@ class Patient < ApplicationRecord
 
   attribute :call_result, :string
 
-  enum could_not_contact_reason: {
+  enum could_not_contact_reasons: {
     not_responding: 'not_responding',
     moved: 'moved',
     dead: 'dead',
