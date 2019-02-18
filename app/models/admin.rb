@@ -33,14 +33,17 @@ class Admin < ApplicationRecord
   end
 
   def protocols
+    return Protocol.all if owner?
     facility_groups.map(&:protocol).uniq
   end
 
   def facilities
+    return Facility.all if owner?
     facility_groups.flat_map(&:facilities)
   end
 
   def users
+    return User.all if owner?
     facility_groups.flat_map(&:users)
   end
 end

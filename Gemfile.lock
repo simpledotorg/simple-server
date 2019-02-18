@@ -145,6 +145,18 @@ GEM
     json-schema (2.8.0)
       addressable (>= 2.4)
     jwt (2.1.0)
+    kaminari (1.1.1)
+      activesupport (>= 4.1.0)
+      kaminari-actionview (= 1.1.1)
+      kaminari-activerecord (= 1.1.1)
+      kaminari-core (= 1.1.1)
+    kaminari-actionview (1.1.1)
+      actionview
+      kaminari-core (= 1.1.1)
+    kaminari-activerecord (1.1.1)
+      activerecord
+      kaminari-core (= 1.1.1)
+    kaminari-core (1.1.1)
     launchy (2.4.3)
       addressable (~> 2.3)
     listen (3.1.5)
@@ -342,6 +354,7 @@ DEPENDENCIES
   groupdate
   jbuilder (~> 2.5)
   jquery-rails
+  kaminari
   launchy
   listen (>= 3.0.5, < 3.2)
   newrelic_rpm
