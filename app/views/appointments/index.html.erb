@@ -1,4 +1,5 @@
-<h1>Overdue Appointments</h1>
+<h1>Overdue patients</h1>
+<p>Patients that are overdue for follow-up BP measure.</p>
 
 <% @appointments.group_by(&:facility).each do |facility, appointments| %>
   <section class="overdue-facility">
@@ -27,14 +28,16 @@
           <%= appointment.patient.address.village_or_colony %>
         </div>
         <div class="row mt-2">
-          <div class="col-md-6 col-lg-4">
+          <div class="col-md-6 col-lg-4 overdue-button">
             <% if phone_number = appointment.patient.phone_numbers.first&.number %>
-              <p>
-                <%= link_to phone_number, "tel:#{phone_number}", class: "btn btn-info w-100" %>
-              </p>
+              
+                <a href="tel:<%= phone_number %>" class="btn btn-info btn-phone w-100">&#128222; <%= phone_number %></a>
+              
+            <% else %>
+              <a href="3" class="btn btn-info disabled w-100">&lt; No mobile &gt;</a>
             <% end %>
           </div>
-          <div class="col-md-6 col-lg-4">
+          <div class="col-md-6 col-lg-4 overdue-form">
             <%= bootstrap_form_with(model: appointment) do |form| %>
               <%= form.select :call_result,
                               {
@@ -43,7 +46,7 @@
                                   "Remove from overdue list" => Appointment.cancel_reasons.map { |key, value| [key.humanize, value] }
                               },
                               {
-                                  prompt: "Result of call...",
+                                  prompt: "Result of follow-up...",
                                   hide_label: true
                               },
                               onchange: "this.form.submit();"

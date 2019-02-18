@@ -36,7 +36,7 @@
               </li>
               <% if policy(Appointment).index? && FeatureToggle.enabled?('PATIENT_FOLLOWUPS') %>
                 <li class="nav-item">
-                  <%= link_to "Overdue Appointments", appointments_path, class: "nav-link #{active_controller?("patient_details")}" %>
+                  <%= link_to "Overdue patients", appointments_path, class: "nav-link #{active_controller?("patient_details")}" %>
                 </li>
               <% end %>
               <li class="nav-item dropdown">

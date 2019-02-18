@@ -129,7 +129,17 @@ footer {
 input.btn,
 button.btn,
 a.btn {
-    text-transform: capitalize;
+    //text-transform: capitalize;
+}
+
+.btn.disabled {
+    background: $grey-lightest;
+    border-color: $grey-lightest;
+    color: $grey-mid;
+}
+
+.btn-phone {
+    letter-spacing: 0.2em;
 }
 
 .btn-outline-danger {
@@ -684,24 +694,31 @@ Overdue list
 ******************/
 
 .overdue-facility {
-    margin-bottom: 32px;
+    padding-top: 16px;
 }
 
 .overdue-patient {
     border-top: 1px solid $grey-lightest;
-    padding-top: 16px;
-    margin-top: 16px;
+    padding-top: 8px;
+    padding-left: 16px;
     position: relative;
+}
+
+.overdue-patient .btn,
+.overdue-patient select {
+    font-size: inherit;
+    height: auto;
+    margin-bottom: 8px;
 }
 
 .overdue-title,
 .overdue-time {
     font-family: $font-condensed;
-    font-size: 14px;
+    font-size: 18px;
 }
 
 .overdue-time span {
-    font-size: 11px;
+    font-size: 13px;
     color: #fff;
     background: $red;
     border-radius: 3px;
@@ -720,15 +737,6 @@ Overdue list
     top: 16px;
     text-align: right;
     font-size: 12px;
-}
-
-.overdue-result {
-    float: right;
-    margin: 10px 0 0 0;
-}
-
-.overdue-button {
-    margin: 4px 0 10px 0;
 }
 
 /******************
