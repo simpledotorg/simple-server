@@ -732,11 +732,11 @@ Overdue list
 }
 
 .overdue-time {
-    position: absolute;
-    right: 0;
-    top: 16px;
-    text-align: right;
+    float: right;
+    display: block;
+    padding: 4px 0 0 16px;
     font-size: 12px;
+    color: $grey-mid;
 }
 
 /******************
