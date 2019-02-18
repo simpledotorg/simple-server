@@ -35,13 +35,12 @@ class Analytics::FacilityAnalytics
   end
 
   def non_returning_hypertensive_patients_per_month(number_of_months)
-    return @non_returning_hypertensive_patients_per_month if @non_returning_hypertensive_patients_per_month.present?
-    @non_returning_hypertensive_patients_per_month = {}
+    non_returning_hypertensive_patients_per_month = {}
     number_of_months.times do |n|
       before_time = (to_time - n.months).at_beginning_of_month
-      @non_returning_hypertensive_patients_per_month[before_time] = non_returning_hypertensive_patients_in_period(before_time).size || 0
+      non_returning_hypertensive_patients_per_month[before_time] = non_returning_hypertensive_patients_in_period(before_time).size || 0
     end
-    @non_returning_hypertensive_patients_per_month.sort
+    non_returning_hypertensive_patients_per_month.sort.to_h
   end
 
   def hypertensive_patients_recorded_in_period(from_time, to_time)
