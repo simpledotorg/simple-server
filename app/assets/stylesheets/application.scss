@@ -751,3 +751,17 @@ nav.breadcrumb {
      font-family: $font-condensed;
 
   }
+
+/* Different colours for header as per deploy environment */
+
+.navbar-production {
+  background-color: #e0f0ff !important;
+}
+
+.navbar-staging {
+
+}
+
+.navbar-sandbox {
+  background-color: #00b849 !important;
+}
