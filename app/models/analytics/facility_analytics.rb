@@ -8,11 +8,16 @@ class Analytics::FacilityAnalytics
     @months_previous = months_previous
   end
 
-
   def newly_enrolled_patients
     Patient.where(registration_facility: facility)
       .where(device_created_at: from_time..to_time)
       .distinct
+  end
+
+  def newly_enrolled_patients_per_month
+    Patient.where(registration_facility: facility)
+      .group_by_month(:device_created_at, last: @months_previous)
+      .count(:id)
   end
 
   def returning_patients
@@ -94,6 +99,13 @@ class Analytics::FacilityAnalytics
       .where.not(user: nil)
       .group_by_week(:device_created_at, last: 12)
       .count
+  end
+
+  def unique_patients_recorded_per_month
+    BloodPressure.where(facility: facility)
+      .group_by_month(:device_created_at, last: @months_previous)
+      .distinct
+      .count(:patient_id)
   end
 
   private
