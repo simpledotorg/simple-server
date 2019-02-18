@@ -22,26 +22,12 @@ RSpec.describe PatientsController, type: :controller do
     end
   end
 
-  describe 'GET #edit' do
-    it 'returns a success response' do
-      get :edit, params: { id: patient.id }
-      expect(response).to be_success
-    end
-  end
-
-  describe 'GET #cancel' do
-    it 'returns a success response' do
-      get :cancel, params: { patient_id: patient.id }
-      expect(response).to be_success
-    end
-  end
-
   describe 'PUT #update' do
     it 'marks the patient as contacted' do
       put :update, params: {
         id: patient.id,
         patient: {
-          contacted_by_counsellor: true
+          call_result: 'contacted'
         }
       }
 
@@ -55,13 +41,28 @@ RSpec.describe PatientsController, type: :controller do
       put :update, params: {
         id: patient.id,
         patient: {
-          could_not_contact_reason: 'dead'
+          call_result: 'moved'
+        }
+      }
+
+      patient.reload
+
+      expect(patient.could_not_contact_reason).to eq('moved')
+      expect(response).to redirect_to(action: 'index')
+    end
+
+    it 'updates the status if dead' do
+      put :update, params: {
+        id: patient.id,
+        patient: {
+          call_result: 'dead'
         }
       }
 
       patient.reload
 
       expect(patient.could_not_contact_reason).to eq('dead')
+      expect(patient.status).to eq('dead')
       expect(response).to redirect_to(action: 'index')
     end
   end
