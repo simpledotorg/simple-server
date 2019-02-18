@@ -9,12 +9,6 @@ class PatientsController < AdminController
                                .page(params[:page]).per(10)
   end
 
-  def edit
-  end
-
-  def cancel
-  end
-
   def update
     if @patient.update(patient_params)
       redirect_to patients_url, notice: "Saved call result. #{@patient.full_name}: #{@patient.call_result.humanize}"

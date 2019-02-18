@@ -52,4 +52,19 @@ describe Patient, type: :model do
       expect(Patient.not_contacted).not_to include(patient_could_not_be_contacted)
     end
   end
+
+  describe 'Associations' do
+    it { should have_many(:blood_pressures) }
+    it { should have_many(:latest_blood_pressures) }
+
+    it 'should sort blood pressures by the latest one first' do
+      patient = FactoryBot.create(:patient)
+      facility = FactoryBot.create(:facility)
+      blood_pressures = FactoryBot.create_list(:blood_pressure, 5, patient: patient, facility: facility)
+
+      expected_blood_pressures = blood_pressures.sort_by(&:device_created_at).reverse
+
+      expect(patient.latest_blood_pressures).to eq(expected_blood_pressures)
+    end
+  end
 end

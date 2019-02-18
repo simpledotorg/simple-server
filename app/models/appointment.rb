@@ -6,6 +6,8 @@ class Appointment < ApplicationRecord
 
   has_many :communications
 
+  attribute :call_result, :string
+
   enum status: {
     scheduled: 'scheduled',
     cancelled: 'cancelled',
@@ -26,14 +28,30 @@ class Appointment < ApplicationRecord
   validates :device_updated_at, presence: true
   validate :cancel_reason_is_present_if_cancelled
 
-  def cancel_reason_is_present_if_cancelled
-    if status == :cancelled && !cancel_reason.present?
-      errors.add(:cancel_reason, "should be present for cancelled appointments")
-    end
+  def self.overdue
+    where(status: 'scheduled')
+      .where('scheduled_date <= ?', Date.today)
+      .where('remind_on IS NULL OR remind_on <= ?', Date.today)
   end
 
-  def self.overdue
-    where(status: 'scheduled').where('scheduled_date <= ?', Date.today)
+  def call_result=(new_call_result)
+    if new_call_result == "agreed_to_visit"
+      self.agreed_to_visit = true
+      self.remind_on = 30.days.from_now
+    elsif new_call_result == "remind_to_call_later"
+      self.remind_on = 7.days.from_now
+    elsif Appointment.cancel_reasons.values.include?(new_call_result)
+      self.agreed_to_visit = false
+      self.remind_on = nil
+      self.cancel_reason = new_call_result
+      self.status = :cancelled
+    end
+
+    if new_call_result == "dead"
+      self.patient.status = "dead"
+    end
+
+    super(new_call_result)
   end
 
   def days_overdue
@@ -42,5 +60,13 @@ class Appointment < ApplicationRecord
 
   def overdue?
     status.to_sym == :scheduled && scheduled_date <= Date.today
+  end
+
+  private
+
+  def cancel_reason_is_present_if_cancelled
+    if status == :cancelled && !cancel_reason.present?
+      errors.add(:cancel_reason, "should be present for cancelled appointments")
+    end
   end
 end

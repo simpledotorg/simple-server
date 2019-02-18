@@ -131,14 +131,8 @@ Rails.application.routes.draw do
   end
 
   if FeatureToggle.enabled?('PATIENT_FOLLOWUPS')
-    resources :appointments, only: [:index, :edit, :update] do
-      get 'cancel', to: 'appointments#cancel'
-      put 'cancel', to: 'appointments#cancel_with_reason'
-    end
-
-    resources :patients, only: [:index, :edit, :update] do
-      get 'cancel', to: 'patients#cancel'
-    end
+    resources :appointments, only: [:index, :update]
+    resources :patients, only: [:index, :update]
   end
 
   get "admin", to: redirect("/")
