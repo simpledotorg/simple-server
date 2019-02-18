@@ -3,7 +3,7 @@ class PatientsController < AdminController
 
   def index
     authorize Patient, :index?
-    @patients_per_facility = policy_scope(Patient)
+    @patients = policy_scope(Patient)
                                .not_contacted
                                .order(device_created_at: :asc)
                                .page(params[:page]).per(10)
