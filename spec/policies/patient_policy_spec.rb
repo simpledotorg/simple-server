@@ -9,7 +9,7 @@ RSpec.describe PatientPolicy do
   let(:organization_owner) { create(:admin, :organization_owner) }
   let(:counsellor) { create(:admin, :counsellor) }
 
-  permissions :index?, :edit?, :cancel?, :update? do
+  permissions :index?, :update? do
     it 'permits owners' do
       expect(subject).to permit(owner, Patient)
     end

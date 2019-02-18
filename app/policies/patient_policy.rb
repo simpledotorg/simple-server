@@ -3,20 +3,8 @@ class PatientPolicy < ApplicationPolicy
     user.owner? || user.counsellor?
   end
 
-  def edit?
-    index?
-  end
-
   def update?
-    edit?
-  end
-
-  def cancel?
-    edit?
-  end
-
-  def cancel_with_reason?
-    cancel?
+    index?
   end
 
   class Scope
