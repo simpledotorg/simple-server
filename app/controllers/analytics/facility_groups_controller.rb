@@ -36,11 +36,15 @@ class Analytics::FacilityGroupsController < AnalyticsController
 
     @months_previous = 4
 
-    @range = (1.month.ago..Date.today)
+    @current_month = Date.today.at_beginning_of_month.to_date
+    @from_time = @current_month
+    @to_time = @current_month.at_end_of_month
 
     @facilities = @facility_group.facilities
-    @facility_group_graphics = Analytics::FacilityGroupGraphics.new(
+    @facility_group_analytics = Analytics::FacilityGroupAnalytics.new(
       @facility_group,
+      from_time: @from_time,
+      to_time: @to_time,
       months_previous: @months_previous
     )
 

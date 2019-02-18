@@ -73,6 +73,17 @@ class Analytics::FacilityGroupAnalytics
     control_rate_for_period(from_time, to_time)
   end
 
+  def control_rate_per_month(months_previous)
+    return @control_rate_per_month if @control_rate_per_month.present?
+    @control_rate_per_month = {}
+    months_previous.times do |n|
+      from_date = (months_previous - n).months.ago.at_beginning_of_month
+      to_time = (months_previous - n).months.ago.at_end_of_month
+      @control_rate_per_month[from_date] = control_rate_for_period(from_date, to_time) || 0
+    end
+    @control_rate_per_month
+  end
+
   private
 
   def non_returning_hypertensive_patients_in_period(before_time)

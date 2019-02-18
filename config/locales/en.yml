@@ -93,6 +93,12 @@ en:
         return_patients: 'Return Patients'
         non_returning_hypertensive_patients: "Didn't Return"
         control_rate: 'BP Control'
+      facility_group:
+        newly_enrolled: 'Newly Enrolled'
+        new_patients: 'New Patients'
+        return_patients: 'Return Patients'
+        non_returning_hypertensive_patients: "Didn't Return"
+        control_rate: 'BP Control'
     graphics:
       facility_groups:
         newly_enrolled: 'Newly Enrolled'
