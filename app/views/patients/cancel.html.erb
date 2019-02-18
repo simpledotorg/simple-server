@@ -1,8 +1,0 @@
-<h1>Cancel Followup</h1>
-
-<%= form_tag(patient_path(@patient), method: 'put') do %>
-  Cancel Reason:
-  <%= select :patient, :could_not_contact_reason, Appointment.cancel_reasons.keys, selected: 'other' %>
-  <br>
-  <%= submit_tag('Cancel Followup') %>
-<% end %>

@@ -17,6 +17,18 @@ class Patient < ApplicationRecord
   has_many :appointments
   has_one :medical_history
 
+  attribute :call_result, :string
+
+  enum could_not_contact_reason: {
+    not_responding: 'not_responding',
+    moved: 'moved',
+    dead: 'dead',
+    invalid_phone_number: 'invalid_phone_number',
+    public_hospital_transfer: 'public_hospital_transfer',
+    moved_to_private: 'moved_to_private',
+    other: 'other'
+  }
+
   validate :past_date_of_birth
 
   validates :device_created_at, presence: true
@@ -50,5 +62,20 @@ class Patient < ApplicationRecord
 
   def self.not_contacted
     where(contacted_by_counsellor: false).where('could_not_contact_reason is NULL')
+  end
+
+  def call_result=(new_call_result)
+    if new_call_result == 'contacted'
+      self.contacted_by_counsellor = true
+    elsif Patient.could_not_contact_reason.values.include?(new_call_result)
+      self.contacted_by_counsellor = false
+      self.could_not_contact_reason = new_call_result
+    end
+
+    if new_call_result == 'dead'
+      self.status = 'dead'
+    end
+
+    super(new_call_result)
   end
 end

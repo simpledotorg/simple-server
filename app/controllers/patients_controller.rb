@@ -1,12 +1,12 @@
 class PatientsController < AdminController
-  before_action :set_patient, only: [:edit, :update, :cancel]
+  before_action :set_patient, only: [:update]
 
   def index
     authorize Patient, :index?
     @patients_per_facility = policy_scope(Patient)
                                .not_contacted
-                               .select { |patient| patient.blood_pressures.present? }
-                               .group_by(&:registration_facility)
+                               .order(device_created_at: :asc)
+                               .page(params[:page]).per(10)
   end
 
   def edit
@@ -16,8 +16,8 @@ class PatientsController < AdminController
   end
 
   def update
-    if @patient.update(update_params)
-      redirect_to patients_url, notice: 'Patient was successfully updated.'
+    if @patient.update(patient_params)
+      redirect_to patients_url, notice: "Saved call result. #{@patient.full_name}: #{@patient.call_result.humanize}"
     else
       redirect_back fallback_location: root_path, alert: 'Something went wrong!'
     end
@@ -30,10 +30,7 @@ class PatientsController < AdminController
     authorize @patient
   end
 
-  def update_params
-    params.require(:patient).permit(
-      :contacted_by_counsellor,
-      :could_not_contact_reason
-    )
+  def patient_params
+    params.require(:patient).permit(:call_result)
   end
 end
