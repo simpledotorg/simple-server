@@ -4,7 +4,7 @@
 <% @appointments.group_by(&:facility).each do |facility, appointments| %>
   <section class="overdue-facility">
     <h3><%= facility.name %></h3>
-
+    
     <% appointments.select { |a| a.patient.present? }.each do |appointment| %>
       <div class="overdue-patient">
         <div class="overdue-time">
@@ -56,7 +56,7 @@
         </div>
       </div>
     <% end %>
-    </div>
+    
   </section>
 <% end %>
 
