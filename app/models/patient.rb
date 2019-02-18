@@ -62,7 +62,9 @@ class Patient < ApplicationRecord
   end
 
   def self.not_contacted
-    where(contacted_by_counsellor: false).where('could_not_contact_reason is NULL')
+    where(contacted_by_counsellor: false)
+      .where(could_not_contact_reason: nil)
+      .where('device_created_at <= ?', 2.days.ago)
   end
 
   def call_result=(new_call_result)

@@ -38,12 +38,17 @@ describe Patient, type: :model do
   end
 
   describe '.not_contacted' do
-    let(:patient_to_followup) { create(:patient) }
+    let(:patient_to_followup) { create(:patient, device_created_at: 5.days.ago) }
+    let(:patient_to_not_followup) { create(:patient, device_created_at: 1.day.ago) }
     let(:patient_contacted) { create(:patient, contacted_by_counsellor: true) }
     let(:patient_could_not_be_contacted) { create(:patient, could_not_contact_reason: 'dead') }
 
-    it 'includes uncontacted patients' do
+    it 'includes uncontacted patients registered 2 days ago or earlier' do
       expect(Patient.not_contacted).to include(patient_to_followup)
+    end
+
+    it 'excludes uncontacted patients registered less than 2 days ago' do
+      expect(Patient.not_contacted).not_to include(patient_to_not_followup)
     end
 
     it 'excludes already contacted patients' do
