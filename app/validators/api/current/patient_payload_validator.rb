@@ -14,7 +14,8 @@ class Api::Current::PatientPayloadValidator < Api::Current::PayloadValidator
     :address,
     :phone_numbers,
     :contacted_by_counsellor,
-    :could_not_contact_reason
+    :could_not_contact_reason,
+    :call_result
   )
 
   validate :validate_schema
