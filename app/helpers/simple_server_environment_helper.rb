@@ -14,7 +14,7 @@ module SimpleServerEnvironmentHelper
     end
   end
 
-  def self.img_for_environment
+  def img_for_environment
     if ENV.include? SIMPLE_SERVER_ENV
       case ENV[SIMPLE_SERVER_ENV]
       when 'production'
@@ -23,13 +23,15 @@ module SimpleServerEnvironmentHelper
         'simple_logo_staging.svg'
       when 'sandbox'
         'simple_logo_sandbox.svg'
+      else
+        'simple_logo.svg'
       end
     else
       'simple_logo.svg'
     end
   end
 
-  def self.alt_for_environment
+  def alt_for_environment
     if ENV.include? SIMPLE_SERVER_ENV
       case ENV[SIMPLE_SERVER_ENV]
       when 'production'
