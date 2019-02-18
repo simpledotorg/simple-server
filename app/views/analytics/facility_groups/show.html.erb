@@ -48,7 +48,9 @@
         <td class="featured-td">
           <div class="featured-section">
             <strong class="featured-title"><%= t('analytics.graphics.facility_groups.control_rate') %></strong>
-            <span class="featured-number"><%= @facility_group_analytics.control_rate %>%</span>
+            <span id='control-rate' class="featured-number">
+              <%= @facility_group_analytics.control_rate %>%
+            </span>
             <span class="featured-label">Goal: 45%</span>
 
             <div class="featured-graph">

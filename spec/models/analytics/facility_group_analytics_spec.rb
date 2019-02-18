@@ -42,30 +42,6 @@ RSpec.describe Analytics::FacilityGroupAnalytics do
     end
   end
 
-  let!(:hypertensive_patients_registered_9_months_ago) do
-    facilities.flat_map do |facility|
-      patients = create_list_in_period(:patient, 2, from_time: from_time - 9.months, to_time: to_time - 9.months, registration_facility: facility)
-      patients.each do |patient|
-        create_in_period(
-          :blood_pressure,
-          trait: :hypertensive, from_time: from_time - 9.months, to_time: to_time - 9.months,
-          patient: patient, facility: facility)
-      end
-      patients
-    end
-  end
-
-  let!(:patients_under_control_in_period) do
-    patients_under_control_in_period = hypertensive_patients_registered_9_months_ago.sample(2)
-    patients_under_control_in_period.each do |patient|
-      create_in_period(
-        :blood_pressure,
-        trait: :under_control, from_time: from_time, to_time: to_time,
-        patient: patient, facility: patient.registration_facility)
-    end
-    patients_under_control_in_period
-  end
-
   let(:facility_group_analytics) { Analytics::FacilityGroupAnalytics.new(facility_group, from_time: from_time, to_time: to_time) }
 
   describe '#newly_entrolled_users' do
@@ -99,14 +75,40 @@ RSpec.describe Analytics::FacilityGroupAnalytics do
     end
   end
 
-  describe '#control_rate' do
-    it 'returns the control rate of the period' do
-      expect(facility_group_analytics.control_rate).to eq(50)
+  describe 'control rate calculations' do
+    let!(:hypertensive_patients_registered_9_months_ago) do
+      facilities.flat_map do |facility|
+        patients = create_list_in_period(:patient, 2, from_time: from_time - 9.months, to_time: to_time - 9.months, registration_facility: facility)
+        patients.each do |patient|
+          create_in_period(
+            :blood_pressure,
+            trait: :hypertensive, from_time: from_time - 9.months, to_time: to_time - 9.months,
+            patient: patient, facility: facility)
+        end
+        patients
+      end
     end
-  end
 
-  xdescribe '#control_rate_per_month' do
-    it 'returns the control rate per month' do
+    let!(:patients_under_control_in_period) do
+      patients_under_control_in_period = hypertensive_patients_registered_9_months_ago.sample(2)
+      patients_under_control_in_period.each do |patient|
+        create_in_period(
+          :blood_pressure,
+          trait: :under_control, from_time: from_time, to_time: to_time,
+          patient: patient, facility: patient.registration_facility)
+      end
+      patients_under_control_in_period
+    end
+
+    describe '#control_rate' do
+      it 'returns the control rate of the period' do
+        expect(facility_group_analytics.control_rate).to eq(50)
+      end
+    end
+
+    xdescribe '#control_rate_per_month' do
+      it 'returns the control rate per month' do
+      end
     end
   end
 end

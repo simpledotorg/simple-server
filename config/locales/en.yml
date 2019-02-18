@@ -95,6 +95,10 @@ en:
         non_returning_hypertensive_patients: "Didn't Return"
         control_rate: 'BP Control'
       facility:
+        newly_enrolled: 'Newly Enrolled'
+        return_patients: 'Return Patients'
+        non_returning_hypertensive_patients: "Didn't Return"
+        control_rate: 'BP Control'
         report_title: "%{organization_name} Hypertension Control Report"
         report_message: "Thank you for your hard work. You are truly saving lives from heart attacks and strokes."
         blood_pressures_recorded_in_month: "Recorded BPs this month for:"

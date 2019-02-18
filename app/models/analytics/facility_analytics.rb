@@ -1,89 +1,81 @@
 class Analytics::FacilityAnalytics
-  attr_accessor :facility
+  attr_reader :facility, :from_time, :to_time
 
-  def initialize(facility, months_previous: 12)
+  def initialize(facility, from_time: Time.new(0), to_time: Time.now, months_previous: 12)
     @facility = facility
-    @from_date = Date.today.at_beginning_of_month
-    @to_date = Date.today.at_end_of_month
+    @from_time = from_time
+    @to_time = to_time
     @months_previous = months_previous
   end
 
-  def all_time_patients_count
-    Patient.where(registration_facility: facility).count
-  end
 
-  def newly_enrolled_patients_per_month
+  def newly_enrolled_patients
     Patient.where(registration_facility: facility)
-      .group_by_month(:device_created_at, last: @months_previous)
-      .count(:id)
-  end
-
-  def newly_enrolled_patients_this_month
-    newly_enrolled_patients_per_month[Date.today.at_beginning_of_month]
-  end
-
-  def returning_patients_count_this_month
-    BloodPressure.where(facility: facility)
-      .where('device_created_at > ?', @from_date)
-      .where('device_created_at <= ?', @to_date)
+      .where(device_created_at: from_time..to_time)
       .distinct
-      .count(:patient_id)
   end
 
-  def unique_patients_recorded_per_month
-    BloodPressure.where(facility: facility)
-      .group_by_month(:device_created_at, last: @months_previous)
-      .distinct
-      .count(:patient_id)
+  def returning_patients
+    Patient.where(registration_facility: facility)
+      .where('device_created_at <= ?', from_time)
+      .includes(:latest_blood_pressures)
+      .select do |patient|
+      latest_blood_pressure = patient.latest_blood_pressure
+      (latest_blood_pressure.present? && latest_blood_pressure.device_created_at >= from_time && latest_blood_pressure.device_created_at < to_time)
+    end
   end
 
-  def overdue_patients_count_per_month(months_previous)
-    OverduePatientsQuery.new(facility)
-      .call
-      .group_by_period(:month, 'blood_pressures.device_created_at', last: months_previous)
-      .count
+  def non_returning_hypertensive_patients
+    non_returning_hypertensive_patients_in_period(from_time)
   end
 
-  def overdue_patients_count_this_month
-    overdue_patients_count_per_month(@months_previous)[@from_date] || 0
+  def non_returning_hypertensive_patients_per_month(number_of_months)
+    return @non_returning_hypertensive_patients_per_month if @non_returning_hypertensive_patients_per_month.present?
+    @non_returning_hypertensive_patients_per_month = {}
+    number_of_months.times do |n|
+      before_time = (to_time - n.months).at_beginning_of_month
+      @non_returning_hypertensive_patients_per_month[before_time] = non_returning_hypertensive_patients_in_period(before_time).size || 0
+    end
+    @non_returning_hypertensive_patients_per_month.sort
   end
 
-  def hypertensive_patients_in_cohort(since:, upto:, delta: 9.months)
+  def hypertensive_patients_recorded_in_period(from_time, to_time)
     BloodPressure.hypertensive
-      .select('distinct patient_id')
       .where(facility: facility)
-      .where("device_created_at >= ?", since - delta)
-      .where("device_created_at <= ?", upto - delta)
+      .where("device_created_at >= ?", from_time)
+      .where("device_created_at <= ?", to_time)
+      .pluck(:patient_id)
+      .uniq
   end
 
-  def controlled_patients_for_facility(patient_ids)
-    BloodPressure.select('distinct on (patient_id) *')
-      .where(facility: facility)
-      .where(patient: patient_ids)
-      .order(:patient_id, created_at: :desc)
-      .select { |blood_pressure| blood_pressure.under_control? }
-      .map(&:patient)
+  def patients_under_control_in_period(patient_ids, from_time, to_time)
+    Patient.where(id: patient_ids)
+      .includes(:latest_blood_pressures)
+      .select do |patient|
+      latest_blood_pressure = patient.latest_blood_pressure
+      (latest_blood_pressure.present? &&
+        latest_blood_pressure.under_control? &&
+        latest_blood_pressure.device_created_at >= from_time &&
+        latest_blood_pressure.device_created_at < to_time)
+    end
   end
 
-  def control_rate_for_this_month
-    control_rate_for_period(@from_date, @to_date)
-  end
+  def control_rate_for_period(from_time, to_time)
+    hypertensive_patients_ids = hypertensive_patients_recorded_in_period(from_time - 9.months, to_time - 9.months)
 
-  def hypertensive_patients_in_cohort_this_month
-    hypertensive_patients_in_cohort(since: @from_date, upto: @to_date, delta: 9.months)
-  end
-
-  def control_rate_for_period(from_date, to_date)
-    hypertensive_patients = hypertensive_patients_in_cohort(
-      since: from_date,
-      upto: to_date,
-      delta: 9.months
-    )
-
-    numerator = controlled_patients_for_facility(hypertensive_patients.pluck(:patient_id)).size
-    denominator = hypertensive_patients.count
+    numerator = patients_under_control_in_period(hypertensive_patients_ids, from_time, to_time).size
+    denominator = hypertensive_patients_ids.count
 
     (numerator * 100.0 / denominator).round unless denominator == 0
+  end
+
+  def control_rate
+    control_rate_for_period(from_time, to_time)
+  end
+
+
+  def all_time_patients_count
+    Patient.where(registration_facility: facility).count
   end
 
   def control_rate_per_month(months_previous)
@@ -91,8 +83,8 @@ class Analytics::FacilityAnalytics
     @control_rate_per_month = {}
     months_previous.times do |n|
       from_date = (months_previous - n).months.ago.at_beginning_of_month
-      to_date = (months_previous - n).months.ago.at_end_of_month
-      @control_rate_per_month[from_date] = control_rate_for_period(from_date, to_date) || 0
+      to_time = (months_previous - n).months.ago.at_end_of_month
+      @control_rate_per_month[from_date] = control_rate_for_period(from_date, to_time) || 0
     end
     @control_rate_per_month
   end
@@ -102,5 +94,16 @@ class Analytics::FacilityAnalytics
       .where.not(user: nil)
       .group_by_week(:device_created_at, last: 12)
       .count
+  end
+
+  private
+
+  def non_returning_hypertensive_patients_in_period(before_time)
+    Patient.where(registration_facility: facility)
+      .includes(:latest_blood_pressures)
+      .select do |patient|
+      latest_blood_pressure = patient.latest_blood_pressure
+      latest_blood_pressure.present? && latest_blood_pressure.hypertensive? && patient.latest_blood_pressure.device_created_at < before_time
+    end
   end
 end

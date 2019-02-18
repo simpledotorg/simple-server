@@ -98,7 +98,7 @@ RSpec.feature 'Facility Group Analytics', type: :feature do
 
     it 'contains the control rate for the last 90 days' do
       expect(page).to have_content(I18n.t('analytics.graphics.facility_groups.control_rate'))
-      expect(page.find('#non-returning-hypertensive-patients-count')).to have_content(50)
+      expect(page.find('#control-rate')).to have_content(50)
     end
 
     it 'contains links to analytics for all facilities in the facility group' do

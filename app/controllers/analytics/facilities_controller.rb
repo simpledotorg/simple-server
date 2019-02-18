@@ -5,7 +5,7 @@ class Analytics::FacilitiesController < AnalyticsController
     @facility_group = @facility.facility_group
     @organization = @facility_group.organization
 
-    @facility_analytics = Analytics::FacilityAnalytics.new(@facility)
+    @facility_analytics = Analytics::FacilityAnalytics.new(@facility, from_time: 90.days.ago, to_time: Date.today)
     @user_analytics = @facility.users.map { |user| [user, Analytics::UserAnalytics.new(user)] }.to_h
   end
 
