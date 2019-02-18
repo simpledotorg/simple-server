@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 describe Patient, type: :model do
+  subject(:patient) { build(:patient) }
+
   describe 'Associations' do
     it { should belong_to(:address) }
     it { should have_many(:phone_numbers) }
@@ -65,6 +67,30 @@ describe Patient, type: :model do
       expected_blood_pressures = blood_pressures.sort_by(&:device_created_at).reverse
 
       expect(patient.latest_blood_pressures).to eq(expected_blood_pressures)
+    end
+  end
+
+  context 'Virtual params' do
+    describe '.call_result' do
+      it 'correctly records successful contact' do
+        patient.call_result = 'contacted'
+
+        expect(patient.contacted_by_counsellor).to eq(true)
+      end
+
+      Patient.could_not_contact_reasons.values.each do |reason|
+        it "correctly records could not contact reason: '#{reason}'" do
+          patient.call_result = reason
+
+          expect(patient.could_not_contact_reason).to eq(reason)
+        end
+      end
+
+      it 'sets patient status if call indicated they died' do
+        patient.call_result = 'dead'
+
+        expect(patient.status).to eq('dead')
+      end
     end
   end
 end
