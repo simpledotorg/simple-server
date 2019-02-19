@@ -6,6 +6,16 @@
 ### Removed 
 ### Security
 
+# 2019-02-19-1
+## Portal
+### Added
+### Changed
+### Fixed
+-  Bug fix: Invitation emails were being sent twice
+### Deprecated
+### Removed
+### Security
+
 # 2019-02-18-1
 ## Portal
 ### Added
