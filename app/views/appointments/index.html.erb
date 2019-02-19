@@ -9,8 +9,7 @@
       appointments_with_patients = appointments.select { |a| a.patient.present? }
       if appointments_with_patients.present?
     %>
-    
-    <% appointments.select { |a| a.patient.present? }.each do |appointment| %>
+      <% appointments_with_patients.each do |appointment| %>
         <div class="overdue-patient">
             <div class="overdue-time">
               <%= appointment.days_overdue %> days overdue
@@ -61,7 +60,6 @@
             </div>
           </div>
         <% end %>
-      
     <% else %>
       <div class="overdue-patient">
         <p class="overdue-title" style="color: #999;">&lt; No overdue patients &gt;</p>
