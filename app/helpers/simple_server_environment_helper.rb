@@ -1,49 +1,27 @@
 module SimpleServerEnvironmentHelper
   SIMPLE_SERVER_ENV = "SIMPLE_SERVER_ENV".freeze
 
+  CUSTOMIZED_ENVS = ['qa', 'staging', 'sandbox', 'production'].freeze
+
   def style_class_for_environment
-    if ENV.include? SIMPLE_SERVER_ENV then
-      case ENV[SIMPLE_SERVER_ENV]
-      when 'production'
-        'navbar-production'
-      when 'staging'
-        'navbar-staging'
-      when 'sandbox'
-        'navbar-sandbox'
-      end
-    end
+    env = ENV.fetch(SIMPLE_SERVER_ENV)
+
+    CUSTOMIZED_ENVS.include?(env) ? ".navbar-#{env}" : ""
   end
 
-  def img_for_environment
-    if ENV.include? SIMPLE_SERVER_ENV
-      case ENV[SIMPLE_SERVER_ENV]
-      when 'production'
-        'simple_logo.svg'
-      when 'staging'
-        'simple_logo_staging.svg'
-      when 'sandbox'
-        'simple_logo_sandbox.svg'
-      else
-        'simple_logo.svg'
-      end
-    else
-      'simple_logo.svg'
-    end
+  def logo_for_environment
+    env = ENV.fetch(SIMPLE_SERVER_ENV)
+
+    image_name = CUSTOMIZED_ENVS.include?(env) ? "simple_logo_#{env}.svg" : "simple_logo.svg"
+
+    image_tag image_name, width: 30, height: 30, class: "d-inline-block mr-2 align-top", alt: alt_for_environment
+
   end
 
   def alt_for_environment
-    if ENV.include? SIMPLE_SERVER_ENV
-      case ENV[SIMPLE_SERVER_ENV]
-      when 'production'
-        'Simple Server Logo'
-      when 'staging'
-        'Simple Server Staging Logo'
-      when 'sandbox'
-        'Simple Server Sandbox Logo'
-      end
-    else
-      'Simple Server Logo'
-    end
+    env = ENV.fetch(SIMPLE_SERVER_ENV)
+
+    CUSTOMIZED_ENVS.include?(env) ? "Simple Server #{env.capitalize} Logo" : "Simple Server Logo"
   end
 end
 

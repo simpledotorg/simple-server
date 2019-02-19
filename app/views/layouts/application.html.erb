@@ -22,8 +22,7 @@
     <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top <%= style_class_for_environment %>">
       <div class="container">
         <%= link_to root_path, class: "navbar-brand" do %>
-          <% img_name = img_for_environment; img_alt = alt_for_environment %>
-          <%= image_tag "#{img_name}", width: 30, height: 30, class: "d-inline-block mr-2 align-top", alt: "#{img_alt}" %>
+          <%= logo_for_environment %>
       <% end %>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
