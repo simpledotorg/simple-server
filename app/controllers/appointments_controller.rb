@@ -4,12 +4,14 @@ class AppointmentsController < AdminController
   def index
     authorize Appointment, :index?
 
+    @facility_slug = params[:facility]
+    @per_page = params[:per_page] || 10
+
     @appointments = policy_scope(Appointment)
                       .overdue
                       .order(scheduled_date: :asc)
-                      .page(params[:page]).per(10)
-
-    @facility_slug = params[:facility]
+                      .page(params[:page])
+                      .per(@per_page == "All" ? Appointment.count : @per_page.to_i)
 
     if @facility_slug.present?
       @appointments = @appointments.where(facility: Facility.friendly.find(@facility_slug))

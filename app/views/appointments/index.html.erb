@@ -2,16 +2,32 @@
 
 <div class="row">
   <div class="col-md-6">
-    <%= bootstrap_form_with(url: appointments_path, method: :get) do |form| %>
-      <%= form.select :facility,
-                      current_admin.facilities.map { |facility| [facility.name, facility.slug] },
-                      {
-                        hide_label: true,
-                        include_blank: "All facilities",
-                        selected: @facility_slug
-                      },
-                      onchange: "this.form.submit();"
-      %>
+    <%= bootstrap_form_with(url: appointments_path, method: :get, layout: :horizontal, class: "mt-4") do |form| %>
+      <div class="form-row">
+        <div class="form-group col-9">
+          <%= form.select :facility,
+                          current_admin.facilities.map { |facility| [facility.name, facility.slug] },
+                          {
+                            hide_label: true,
+                            include_blank: "All facilities",
+                            selected: @facility_slug,
+                            wrapper: false
+                          },
+                          onchange: "this.form.submit();"
+          %>
+        </div>
+        <div class="form-group col-3">
+          <%= form.select :per_page,
+                          [20, 50, "All"],
+                          {
+                            help: "Per page",
+                            hide_label: true,
+                            selected: @per_page,
+                          },
+                          onchange: "this.form.submit();"
+          %>
+        </div>
+      </div>
     <% end %>
   </div>
 </div>
