@@ -23,13 +23,11 @@ class Analytics::FacilityAnalytics
   end
 
   def returning_patients
-    Patient.where(registration_facility: facility)
-      .where('device_created_at <= ?', from_time)
-      .includes(:latest_blood_pressures)
-      .select do |patient|
-      latest_blood_pressure = patient.latest_blood_pressure
-      (latest_blood_pressure.present? && latest_blood_pressure.device_created_at >= from_time && latest_blood_pressure.device_created_at < to_time)
-    end
+    PatientsReturningDuringPeriodQuery.new(
+      facilities: facility,
+      from_time: from_time,
+      to_time: to_time
+    ).call
   end
 
   def non_returning_hypertensive_patients
