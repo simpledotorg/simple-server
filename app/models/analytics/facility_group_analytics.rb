@@ -45,43 +45,17 @@ class Analytics::FacilityGroupAnalytics
         NonReturningHypertensivePatientsDuringPeriodQuery.new(
           facilities: facility_group.facilities,
           before_time: before_time
-        ).call || 0
+        ).call.count || 0
     end
     @non_returning_hypertensive_patients_per_month.sort
   end
 
-  def hypertensive_patients_recorded_in_period(from_time, to_time)
-    BloodPressure.hypertensive
-      .where(facility: facility_group.facilities)
-      .where("device_created_at >= ?", from_time)
-      .where("device_created_at <= ?", to_time)
-      .pluck(:patient_id)
-      .uniq
-  end
-
-  def patients_under_control_in_period(patient_ids, from_time, to_time)
-    Patient.where(id: patient_ids)
-      .includes(:latest_blood_pressures)
-      .select do |patient|
-      latest_blood_pressure = patient.latest_blood_pressure
-      (latest_blood_pressure.present? &&
-        latest_blood_pressure.under_control? &&
-        latest_blood_pressure.device_created_at >= from_time &&
-        latest_blood_pressure.device_created_at < to_time)
-    end
-  end
-
-  def control_rate_for_period(from_time, to_time)
-    hypertensive_patients_ids = hypertensive_patients_recorded_in_period(from_time - 9.months, to_time - 9.months)
-
-    numerator = patients_under_control_in_period(hypertensive_patients_ids, from_time, to_time).size
-    denominator = hypertensive_patients_ids.count
-
-    (numerator * 100.0 / denominator).round unless denominator == 0
-  end
-
   def control_rate
-    control_rate_for_period(from_time, to_time)
+    ControlRateQuery.new(
+      facilities: facility_group.facilities,
+      from_time: from_time,
+      to_time: to_time
+    ).call
   end
 
   def control_rate_per_month(months_previous)
@@ -90,14 +64,13 @@ class Analytics::FacilityGroupAnalytics
     months_previous.times do |n|
       from_date = (months_previous - n).months.ago.at_beginning_of_month
       to_time = (months_previous - n).months.ago.at_end_of_month
-      @control_rate_per_month[from_date] = control_rate_for_period(from_date, to_time) || 0
+      @control_rate_per_month[from_date] =
+        ControlRateQuery.new(
+          facilities: facility_group.facilities,
+          from_time: from_time,
+          to_time: to_time
+        ).call || 0
     end
     @control_rate_per_month
-  end
-
-  private
-
-  def blood_pressures_in_facility_group(facility_group)
-    BloodPressure.where(facility: facility_group.facilities)
   end
 end
