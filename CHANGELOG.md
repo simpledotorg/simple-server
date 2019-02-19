@@ -6,6 +6,52 @@
 ### Removed 
 ### Security
 
+# 2019-02-19-1
+## Portal
+### Added
+### Changed
+### Fixed
+-  Bug fix: Invitation emails were being sent twice
+### Deprecated
+### Removed
+### Security
+
+# 2019-02-18-1
+## Portal
+### Added
+- Add counsellor admin role
+- Add Overdue Appointments dashboard page for counsellors
+    - View patients with overdue appointments
+    - Update appointments from dashboard similarly to android app
+### Changed
+- Updated routing to new simplified home page
+- Added organization show and index controllers for analytics
+- Move dashboard to facility group show controller for analytics 
+- Skip authorization in facility group show for analytics
+- Update navigation to better accommodate management menu items
+- User approval is now shown in organization list views
+- Human-friendly slugs in URLs for orgs, groups, and facilities
+- Migrate from sass-rails to sassc-rails
+- Make facility group description optional in form
+- Display all facilities, users and protocols to owners
+- Added pagination with kaminari in overdue appointments dashboard page
+### Fixed
+### Deprecated
+### Removed
+- Old admin dashboard view
+### Security
+
+## API
+### Added
+- Added API for Nurse Reports with inline JS and CSS
+- Script to create anonymized data in sandbox environment
+### Changed
+- Protocol drugs are always ordered by updated_at when accessing from protocol association
+### Fixed
+### Deprecated
+### Removed
+### Security
+
 # 2019-01-15-2
 ## Portal
 ### Added
