@@ -3,10 +3,17 @@ class AppointmentsController < AdminController
 
   def index
     authorize Appointment, :index?
+
     @appointments = policy_scope(Appointment)
                       .overdue
                       .order(scheduled_date: :asc)
                       .page(params[:page]).per(10)
+
+    @facility_slug = params[:facility]
+
+    if @facility_slug.present?
+      @appointments = @appointments.where(facility: Facility.friendly.find(@facility_slug))
+    end
   end
 
   def edit
