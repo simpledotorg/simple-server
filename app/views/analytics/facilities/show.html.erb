@@ -9,54 +9,23 @@
     <table class="featured-table">
       <tr>
         <td class="featured-td">
-          <div class="featured-section">
-            <strong class="featured-title" style="color: #007A31;"><%= t('analytics.dashboard.facility.newly_enrolled') %></strong>
-            <span id='newly-enrolled-patients-count' class="featured-number text-green">
-              <%= @facility_analytics.newly_enrolled_patients.size %>
-            </span>
-            <span class="featured-label">New patients</span>
-
-            <strong class="featured-title" style="color: #007A31;"><%= t('analytics.dashboard.facility.return_patients') %></strong>
-            <span id='returning-patients-count' class="featured-number  text-green">
-              <%= @facility_analytics.returning_patients.size %>
-            </span>
-          </div>
+          <%= render "shared/analytics/patients_count_panel",
+                     newly_enrolled_patients_count: @facility_analytics.newly_enrolled_patients.count,
+                     returning_patients_count: @facility_analytics.returning_patients.count %>
         </td>
 
         <td class="featured-td featured-middle">
-          <div class="featured-section">
-            <strong class="featured-title" style="color: #E0B000;"><%= t('analytics.dashboard.facility.non_returning_hypertensive_patients') %></strong>
-            <span id='non-returning-hypertensive-patients-count' class="featured-number text-yellow">
-              <%= @facility_analytics.non_returning_hypertensive_patients.size %>
-            </span>
-            <span class="featured-label">Patients</span>
+          <%= render "shared/analytics/non_returning_hypertensive_patients_panel",
+                     non_returning_hypertensive_patients_count: @facility_analytics.non_returning_hypertensive_patients.count,
+                     non_returning_hypertensive_patients_per_month:  @facility_analytics.non_returning_hypertensive_patients_per_month(4) %>
 
-            <%= render "shared/graph",
-                       options: { id: 'non-returning-hypertensive-patients-graph' },
-                       column_class: 'featured-graph-column-yellow',
-                       graph_data: @facility_analytics.non_returning_hypertensive_patients_per_month(4)
-                           .map { |month, no_of_patients| [month.strftime('%b'), no_of_patients] }.to_h,
-                       max_value: @facility_analytics.non_returning_hypertensive_patients_per_month(4).values.max %>
-
-          </div>
         </td>
 
         <td class="featured-td">
-          <div class="featured-section">
-            <strong class="featured-title"><%= t('analytics.dashboard.facility.control_rate') %></strong>
-            <span id='control-rate' class="featured-number">
-              <%= @facility_analytics.control_rate %>%
-            </span>
-            <span class="featured-label">Goal: 45%</span>
-
-            <%= render "shared/graph",
-                       options: { id: 'control-rate-per-month-graph' },
-                       column_class: nil,
-                       graph_data: @facility_analytics.control_rate_per_month(4)
-                           .map { |month, percent| [month.strftime('%b'), percent] }.to_h,
-                       max_value: @facility_analytics.control_rate_per_month(4).values.max %>
-
-          </div>
+          <%= render "shared/analytics/control_rate_panel",
+                     goal: 45,
+                     control_rate: @facility_analytics.control_rate,
+                     control_rate_per_month: @facility_analytics.control_rate_per_month(4) %>
         </td>
       </tr>
     </table>

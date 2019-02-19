@@ -24,7 +24,7 @@ RSpec.feature 'Facility Group Graphics', type: :feature do
     end
 
     it 'contains the number of newly enrolled patients' do
-      expect(page).to have_content(I18n.t('analytics.graphics.facility_groups.newly_enrolled'))
+      expect(page).to have_content(I18n.t('analytics.newly_enrolled'))
     end
   end
 end

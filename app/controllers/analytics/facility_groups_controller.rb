@@ -56,4 +56,5 @@ class Analytics::FacilityGroupsController < AnalyticsController
     # Reset when done
     Groupdate.time_zone = "UTC"
   end
+
 end

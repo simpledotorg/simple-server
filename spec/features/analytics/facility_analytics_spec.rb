@@ -69,17 +69,17 @@ RSpec.feature 'Facility Analytics', type: :feature do
     end
 
     it 'contains the number of newly enrolled patients in the last 90 days' do
-      expect(page).to have_content(I18n.t('analytics.graphics.facility_groups.newly_enrolled'))
+      expect(page).to have_content(I18n.t('analytics.newly_enrolled'))
       expect(page.find('#newly-enrolled-patients-count')).to have_content(newly_enrolled_patients.size)
     end
 
     it 'contains the number of returning patients in the last 90 days' do
-      expect(page).to have_content(I18n.t('analytics.graphics.facility.return_patients'))
+      expect(page).to have_content(I18n.t('analytics.return_patients'))
       expect(page.find('#returning-patients-count')).to have_content(returning_patients.size)
     end
 
     it 'contains the number of non returning hypertensive patients in the last 90 days' do
-      expect(page).to have_content(I18n.t('analytics.graphics.facility.non_returning_hypertensive_patients'))
+      expect(page).to have_content(I18n.t('analytics.non_returning_hypertensive_patients'))
       expect(page.find('#non-returning-hypertensive-patients-count')).to have_content(non_returning_hypertensive_patients.size)
     end
 
@@ -88,7 +88,7 @@ RSpec.feature 'Facility Analytics', type: :feature do
     end
 
     it 'contains the control rate for the last 90 days' do
-      expect(page).to have_content(I18n.t('analytics.graphics.facility_groups.control_rate'))
+      expect(page).to have_content(I18n.t('analytics.control_rate'))
       expect(page.find('#control-rate')).to have_content(70)
     end
   end
