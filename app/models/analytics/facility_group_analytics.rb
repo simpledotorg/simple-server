@@ -9,6 +9,10 @@ class Analytics::FacilityGroupAnalytics
     @to_time = to_time
   end
 
+  def unique_patients_enrolled
+    UniquePatientsEnrolledQuery.new(facilities: facility).call
+  end
+
   def newly_enrolled_patients
     Patient.where(registration_facility: facility_group.facilities)
       .where(device_created_at: from_time..to_time)

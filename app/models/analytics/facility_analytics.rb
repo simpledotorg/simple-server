@@ -9,8 +9,7 @@ class Analytics::FacilityAnalytics
   end
 
   def unique_patients_enrolled
-    Patient.where(registration_facility: facility)
-      .distinct
+    UniquePatientsEnrolledQuery.new(facilities: facility).call
   end
 
   def newly_enrolled_patients
