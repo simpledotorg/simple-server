@@ -10,16 +10,21 @@ class Analytics::FacilityGroupsController < AnalyticsController
     @days_previous = 20
     @months_previous = 8
 
+    @from_time = 90.days.ago
+    @to_time = Date.today
+
     @facilities = @facility_group.facilities
     @facility_group_analytics = Analytics::FacilityGroupAnalytics.new(
       @facility_group,
       days_previous: @days_previous,
       months_previous: @months_previous,
-      from_time: 90.days.ago,
-      to_time: Date.today
+      from_time: @from_time,
+      to_time: @to_time
     )
 
-    @facility_analytics = @facilities.map { |facility| [facility, Analytics::FacilityAnalytics.new(facility)] }.to_h
+    @facility_analytics = @facilities.map do |facility|
+      [facility, Analytics::FacilityAnalytics.new(facility, from_time: @from_time, to_time: @to_time)]
+    end.to_h
 
     # Reset when done
     Groupdate.time_zone = "UTC"
