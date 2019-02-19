@@ -14,9 +14,11 @@ class Analytics::FacilityGroupAnalytics
   end
 
   def newly_enrolled_patients
-    Patient.where(registration_facility: facility_group.facilities)
-      .where(device_created_at: from_time..to_time)
-      .distinct
+    NewlyEnrolledPatientsQuery.new(
+      facilities: facility_group.facilities,
+      from_time: from_time,
+      to_time: to_time
+    ).call
   end
 
   def returning_patients
