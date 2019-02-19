@@ -37,7 +37,7 @@
             <span class="featured-label">Patients</span>
 
             <%= render "shared/graph",
-                       options: { id: 'non-returning-hypertensive-patients-chart' },
+                       options: { id: 'non-returning-hypertensive-patients-graph' },
                        column_class: 'featured-graph-column-yellow',
                        graph_data: @facility_group_analytics.non_returning_hypertensive_patients_per_month(4)
                            .map { |month, no_of_patients| [month.strftime('%b'), no_of_patients] }.to_h,
@@ -53,28 +53,12 @@
             </span>
             <span class="featured-label">Goal: 45%</span>
 
-            <div class="featured-graph">
-              <table>
-                <tr>
-                  <td>
-                    <div class="featured-graph-column" style="height: 25px; margin-top: 25px;">25%</div>
-                    <span class="featured-month">Oct</span>
-                  </td>
-                  <td>
-                    <div class="featured-graph-column" style="height: 26px; margin-top: 24px;">26%</div>
-                    <span class="featured-month">Nov</span>
-                  </td>
-                  <td>
-                    <div class="featured-graph-column" style="height: 28px; margin-top: 22px;">28%</div>
-                    <span class="featured-month">Dec</span>
-                  </td>
-                  <td>
-                    <div class="featured-graph-column" style="height: 30px; margin-top: 20px;">30%</div>
-                    <span class="featured-month">Jan</span>
-                  </td>
-                </tr>
-              </table>
-            </div>
+            <%= render "shared/graph",
+                       options: { id: 'control-rate-graph' },
+                       column_class: 'featured-graph-column',
+                       graph_data: @facility_group_analytics.control_rate_per_month(4)
+                           .map { |month, no_of_patients| [month.strftime('%b'), no_of_patients] }.to_h,
+                       max_value: @facility_group_analytics.control_rate_per_month(4).values.max %>
           </div>
         </td>
       </tr>
@@ -93,7 +77,10 @@
         <th colspan="2"><h4>Hospitals &amp; Clinics</h4></th>
         <th class="row-label">Newly<br>enrolled</th>
         <th class="row-label">Didn't<br>attend</th>
-        <th class="row-label">Calls<br>made</th>
+
+        <!-- We currently do not record any communications. This column will be zero for all facilities -->
+        <!-- <th class="row-label">Calls<br>made</th>-->
+
         <th class="row-label">BP<br>control</th>
         <th class="row-spacer">&nbsp;</th>
         <th class="row-label">Return and<br>enrolled patients</th>
@@ -114,10 +101,13 @@
           <td class="row-title">
             <%= link_to facility.name, analytics_facility_path(facility) %>
             <span><b>4567</b> enrolled all time</span></td>
-          <td class="row-enrolled text-green">98</td>
-          <td class="row-default text-yellow">1321</td>
-          <td class="row-calls text-yellow">5</td>
-          <td class="row-control">65%</td>
+          <td class="row-enrolled text-green"><%= analytics.newly_enrolled_patients.count %></td>
+          <td class="row-default text-yellow"><%= analytics.non_returning_hypertensive_patients.count %></td>
+
+          <!-- We currently do not record any communications. This column will be zero for all facilities -->
+          <!-- <td class="row-calls text-yellow">5</td> -->
+
+          <td class="row-control"><%= analytics.control_rate %></td>
           <td class="row-spacer">&nbsp;</td>
           <td class="row-unique-date">241</td>
 
