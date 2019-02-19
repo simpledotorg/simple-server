@@ -40,31 +40,16 @@
           <td class="featured-td">
             <div class="featured-section">
               <strong class="featured-title">BP control</strong>
-              <span class="featured-number">30%</span>
+              <span class="featured-number"><%= @facility_group_analytics.control_rate %>%</span>
               <span class="featured-label">Goal: 45%</span>
 
-              <div class="featured-graph">
-                <table>
-                  <tr>
-                    <td>
-                      <div class="featured-graph-column" style="height: 25px; margin-top: 25px;">25%</div>
-                      <span class="featured-month">Oct</span>
-                    </td>
-                    <td>
-                      <div class="featured-graph-column" style="height: 26px; margin-top: 24px;">26%</div>
-                      <span class="featured-month">Nov</span>
-                    </td>
-                    <td>
-                      <div class="featured-graph-column" style="height: 28px; margin-top: 22px;">28%</div>
-                      <span class="featured-month">Dec</span>
-                    </td>
-                    <td>
-                      <div class="featured-graph-column" style="height: 30px; margin-top: 20px;">30%</div>
-                      <span class="featured-month">Jan</span>
-                    </td>
-                  </tr>
-                </table>
-              </div>
+              <%= render "shared/graph",
+                         options: { id: 'control-rate-graph' },
+                         column_class: 'featured-graph-column',
+                         graph_data: @facility_group_analytics.control_rate_per_month(4)
+                             .map { |month, no_of_patients| [month.strftime('%b'), no_of_patients] }.to_h,
+                         max_value: @facility_group_analytics.control_rate_per_month(4).values.max %>
+
             </div>
           </td>
         </tr>
@@ -74,6 +59,7 @@
   </div>
 
 
+  <!--
   <section class="table-compact" style="margin-right: 16px !important; width: auto !important;">
     <div>
       <table>
@@ -147,6 +133,10 @@
     </div>
 
   </section>
+
+  -->
+
+  <div style="margin-bottom: 26px"></div>
 
   <div style="margin-top: -26px; padding-top: 6px; color: #999; margin-right: 0; border-top: 1px solid #F0F2F5;">
     <p class="footnote"><strong>Didn't attend</strong> patients are enrolled hypertensives that have not had a BP

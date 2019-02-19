@@ -109,7 +109,7 @@
 
           <td class="row-control"><%= analytics.control_rate %></td>
           <td class="row-spacer">&nbsp;</td>
-          <td class="row-unique-date">241</td>
+          <td class="row-unique-date"><%= analytics.unique_patients_enrolled.count %></td>
 
           <% analytics.blood_pressures_recorded_per_week.sort.each do |_key, value| %>
             <td class="row-unique-date"><%= value != 0 ? value : '-' %></td>

@@ -8,6 +8,11 @@ class Analytics::FacilityAnalytics
     @months_previous = months_previous
   end
 
+  def unique_patients_enrolled
+    Patient.where(registration_facility: facility)
+      .distinct
+  end
+
   def newly_enrolled_patients
     Patient.where(registration_facility: facility)
       .where(device_created_at: from_time..to_time)
