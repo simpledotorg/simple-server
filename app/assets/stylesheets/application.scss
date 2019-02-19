@@ -751,3 +751,75 @@ nav.breadcrumb {
      font-family: $font-condensed;
 
   }
+
+/*****************************
+production environment styles
+******************************/
+
+.navbar-production {
+  background-color: #0c3966 !important;
+}
+
+.navbar-production li {
+  color: white !important;
+}
+
+.navbar-production li > a {
+  color: white !important;
+}
+
+.navbar-production li > a.active {
+  color: white !important;
+  font-weight: bold;
+}
+
+/*****************************
+staging environment styles
+******************************/
+
+.navbar-staging {
+  background-color: #f8f9fa !important;
+}
+
+
+/*****************************
+sandbox environment styles
+******************************/
+
+.navbar-sandbox {
+  background-color: #00b849 !important;
+}
+
+.navbar-sandbox li {
+  color: white !important;
+}
+
+.navbar-sandbox li > a {
+  color: white !important;
+}
+
+.navbar-sandbox li > a.active {
+  color: white !important;
+  font-weight: bold;
+}
+
+/*****************************
+qa environment styles
+******************************/
+
+.navbar-qa {
+  background-color: #0c3966 !important;
+}
+
+.navbar-qa li {
+  color: white !important;
+}
+
+.navbar-qa li > a {
+  color: white !important;
+}
+
+.navbar-qa li > a.active {
+  color: white !important;
+  font-weight: bold;
+}
