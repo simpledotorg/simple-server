@@ -31,14 +31,21 @@ class Analytics::FacilityAnalytics
   end
 
   def non_returning_hypertensive_patients
-    non_returning_hypertensive_patients_in_period(from_time)
+    NonReturningHypertensivePatientsDuringPeriodQuery.new(
+      facilities: facility,
+      before_time: from_time
+    ).call
   end
 
   def non_returning_hypertensive_patients_per_month(number_of_months)
     non_returning_hypertensive_patients_per_month = {}
     number_of_months.times do |n|
       before_time = (to_time - n.months).at_beginning_of_month
-      non_returning_hypertensive_patients_per_month[before_time] = non_returning_hypertensive_patients_in_period(before_time).size || 0
+      non_returning_hypertensive_patients_per_month[before_time] =
+        NonReturningHypertensivePatientsDuringPeriodQuery.new(
+          facilities: facility,
+          before_time: before_time
+        ).call|| 0
     end
     non_returning_hypertensive_patients_per_month.sort.to_h
   end
@@ -105,16 +112,5 @@ class Analytics::FacilityAnalytics
       .group_by_month(:device_created_at, last: @months_previous)
       .distinct
       .count(:patient_id)
-  end
-
-  private
-
-  def non_returning_hypertensive_patients_in_period(before_time)
-    Patient.where(registration_facility: facility)
-      .includes(:latest_blood_pressures)
-      .select do |patient|
-      latest_blood_pressure = patient.latest_blood_pressure
-      latest_blood_pressure.present? && latest_blood_pressure.hypertensive? && patient.latest_blood_pressure.device_created_at < before_time
-    end
   end
 end

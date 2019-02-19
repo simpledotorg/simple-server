@@ -10,7 +10,7 @@ class Analytics::FacilityGroupAnalytics
   end
 
   def unique_patients_enrolled
-    UniquePatientsEnrolledQuery.new(facilities: facility).call
+    UniquePatientsEnrolledQuery.new(facilities: facility_group.facilities).call
   end
 
   def newly_enrolled_patients
@@ -30,7 +30,10 @@ class Analytics::FacilityGroupAnalytics
   end
 
   def non_returning_hypertensive_patients
-    non_returning_hypertensive_patients_in_period(from_time)
+    NonReturningHypertensivePatientsDuringPeriodQuery.new(
+      facilities: facility_group.facilities,
+      before_time: from_time
+    ).call
   end
 
   def non_returning_hypertensive_patients_per_month(number_of_months)
@@ -38,7 +41,11 @@ class Analytics::FacilityGroupAnalytics
     @non_returning_hypertensive_patients_per_month = {}
     number_of_months.times do |n|
       before_time = (to_time - n.months).at_beginning_of_month
-      @non_returning_hypertensive_patients_per_month[before_time] = non_returning_hypertensive_patients_in_period(before_time).size || 0
+      @non_returning_hypertensive_patients_per_month[before_time] =
+        NonReturningHypertensivePatientsDuringPeriodQuery.new(
+          facilities: facility_group.facilities,
+          before_time: before_time
+        ).call || 0
     end
     @non_returning_hypertensive_patients_per_month.sort
   end
@@ -89,15 +96,6 @@ class Analytics::FacilityGroupAnalytics
   end
 
   private
-
-  def non_returning_hypertensive_patients_in_period(before_time)
-    Patient.where(registration_facility: facility_group.facilities)
-      .includes(:latest_blood_pressures)
-      .select do |patient|
-      latest_blood_pressure = patient.latest_blood_pressure
-      latest_blood_pressure.present? && latest_blood_pressure.hypertensive? && patient.latest_blood_pressure.device_created_at < before_time
-    end
-  end
 
   def blood_pressures_in_facility_group(facility_group)
     BloodPressure.where(facility: facility_group.facilities)
