@@ -64,18 +64,27 @@ class Appointment < ApplicationRecord
   end
 
   def patient_risk_priority
-    return RISK_LEVELS[:NONE] if days_overdue < 30 || low_risk_priority_patient?
-    patient_risk_level
+    return RISK_LEVELS[:NONE] if days_overdue < 30
+
+    latest_blood_pressure = patient&.latest_blood_pressure
+
+    if latest_blood_pressure&.critically_hypertensive?
+      RISK_LEVELS[:HIGHEST]
+    elsif patient&.medical_history&.risk_history?
+      RISK_LEVELS[:VERY_HIGH]
+    elsif latest_blood_pressure&.severely_hypertensive?
+      RISK_LEVELS[:HIGH]
+    elsif latest_blood_pressure&.hypertensive?
+      RISK_LEVELS[:REGULAR]
+    elsif days_overdue > 365 && latest_blood_pressure&.under_control?
+      RISK_LEVELS[:LOW]
+    else
+      RISK_LEVELS[:NONE]
+    end
   end
 
   def high_risk_priority_patient?
-    [RISK_LEVELS[:HIGHEST],
-     RISK_LEVELS[:VERY_HIGH],
-     RISK_LEVELS[:HIGH]].include?(patient_risk_priority)
-  end
-
-  def low_risk_priority_patient?
-    patient_risk_level == RISK_LEVELS[:NONE] && days_overdue < 365
+    patient_risk_priority < 3
   end
 
   def days_overdue
@@ -89,29 +98,6 @@ class Appointment < ApplicationRecord
   def cancel_reason_is_present_if_cancelled
     if status == :cancelled && !cancel_reason.present?
       errors.add(:cancel_reason, "should be present for cancelled appointments")
-    end
-  end
-
-  def patient_risk_level
-    latest_blood_pressure = patient.latest_blood_pressure
-
-    if latest_blood_pressure&.critically_hypertensive?
-      RISK_LEVELS[:HIGHEST]
-
-    elsif patient&.medical_history&.risk_history?
-      RISK_LEVELS[:VERY_HIGH]
-
-    elsif latest_blood_pressure&.severely_hypertensive?
-      RISK_LEVELS[:HIGH]
-
-    elsif latest_blood_pressure&.hypertensive?
-      RISK_LEVELS[:REGULAR]
-
-    elsif latest_blood_pressure&.under_control?
-      RISK_LEVELS[:LOW]
-
-    else
-      RISK_LEVELS[:NONE]
     end
   end
 end
