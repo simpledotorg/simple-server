@@ -7,7 +7,7 @@ module AppointmentsHelper
     elsif date <= 1.year.ago
       date.strftime("%d/%m/%Y")
     else
-      "#{(Date.today - date).to_i} days ago".html_safe
+      "#{time_ago_in_words(date)} ago".html_safe
     end
   end
 end

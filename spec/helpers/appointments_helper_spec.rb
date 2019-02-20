@@ -17,8 +17,10 @@ describe AppointmentsHelper do
       expect(blood_pressure_recorded_date(date)).to eq("31/12/2016")
     end
 
-    it 'should return date in number of days ago if date is less than a year ago' do
-      expect(blood_pressure_recorded_date(3.days.ago.to_date)).to eq("3 days ago")
+    it 'should return date in number of ago if date is less than a year ago' do
+      expect(blood_pressure_recorded_date(31.days.ago.to_date)).to eq("about 1 month ago")
+      expect(blood_pressure_recorded_date(2.months.ago.to_date)).to eq("2 months ago")
+      expect(blood_pressure_recorded_date(11.months.ago.to_date)).to eq("11 months ago")
     end
   end
 end
