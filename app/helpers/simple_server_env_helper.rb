@@ -6,7 +6,7 @@ module SimpleServerEnvHelper
   def style_class_for_environment
     env = ENV.fetch(SIMPLE_SERVER_ENV)
 
-    CUSTOMIZED_ENVS.include?(env) ? "navbar-#{env}" : ""
+    CUSTOMIZED_ENVS.include?(env) ? "navbar-#{env}" : "navbar-light bg-light"
   end
 
   def logo_for_environment
