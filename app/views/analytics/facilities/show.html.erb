@@ -2,8 +2,8 @@
   <nav class="breadcrumb"><%= link_to @facility_group.name, analytics_facility_group_path(@facility_group) %></nav>
   <h1><%= @facility.name %></h1>
   <%= link_to "Graphics For Nurses", analytics_facility_graphics_path(@facility) %>
-  <p class="dashboard-description">#8 of 16 reporting PHCs in New York State for BP control %</p>
-  <p class="dashboard-description">976 patients enrolled since Feb 2, 2018</p>
+  <!-- <p class="dashboard-description">#8 of 16 reporting PHCs in New York State for BP control %</p> -->
+  <!-- <p class="dashboard-description">976 patients enrolled since Feb 2, 2018</p> -->
 
   <div class="featured">
     <table class="featured-table">
@@ -24,7 +24,7 @@
         <td class="featured-td">
           <%= render "shared/analytics/control_rate_panel",
                      goal: 45,
-                     control_rate: @facility_analytics.control_rate,
+                     control_rate: @facility_analytics.control_rate[:control_rate],
                      control_rate_per_month: @facility_analytics.control_rate_per_month(4) %>
         </td>
       </tr>
@@ -156,8 +156,14 @@
   <h4>Notes</h4>
   <p class="footnote"><strong>Didn't attend</strong> patients are enrolled hypertensives that have not had a BP recorded
     in the past 3 months.</p>
-  <p class="footnote"><strong>BP control</strong> is calculated as a rolling cohort. 3,214 patients enrolled 6-9 months
-    ago / 1,446 of those patients had SBP &lt; 140 and DBP &lt; 90 at last measure in past 3 months = 45% BP control</p>
+  <p class="footnote">
+    <strong><%= t('analytics.control_rate') %></strong>
+    <%= t('analytics.control_rate_explanation',
+          hypertensive_patients_in_cohort: @facility_analytics.control_rate[:hypertensive_patients_in_cohort],
+          patients_under_control: @facility_analytics.control_rate[:patients_under_control_in_period],
+          control_rate_for_month: @facility_analytics.control_rate[:control_rate],
+          number_of_months: pluralize(3, 'month')) %>
+  </p>
   <p class="footnote"><strong>Top performers:</strong> > 100 enrolled patients and highest BP control.</p>
   <p class="footnote"><strong>Unique patients</strong> indicates how many patients had at least one recorded BP during
     the period. The "Week of" numbers are "Unique patients with a BP recorded during that week".</p>

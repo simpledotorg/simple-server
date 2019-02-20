@@ -16,7 +16,7 @@ class ControlRateQuery
     number_of_months.times do |n|
       from_time = (number_of_months - n).months.ago.at_beginning_of_month
       to_time = (number_of_months - n).months.ago.at_end_of_month
-      control_rate_per_month[from_time] = for_period(from_time: from_time, to_time: to_time) || 0
+      control_rate_per_month[from_time] = for_period(from_time: from_time, to_time: to_time)[:control_rate] || 0
     end
     control_rate_per_month
   end
@@ -31,8 +31,11 @@ class ControlRateQuery
 
     numerator = patients_under_control_in_period(hypertensive_patients_ids, from_time, to_time).size
     denominator = hypertensive_patients_ids.count
+    control_rate = (numerator * 100.0 / denominator).round unless denominator == 0
 
-    (numerator * 100.0 / denominator).round unless denominator == 0
+    { control_rate: control_rate,
+      hypertensive_patients_in_cohort: denominator,
+      patients_under_control_in_period: numerator }
   end
 
   def hypertensive_patients_recorded_in_period(from_time, to_time)

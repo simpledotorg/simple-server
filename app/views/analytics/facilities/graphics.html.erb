@@ -117,7 +117,7 @@
           <td class="featured-td">
             <%= render "shared/analytics/control_rate_panel",
                        goal: 45,
-                       control_rate: @facility_analytics.control_rate,
+                       control_rate: @facility_analytics.control_rate[:control_rate],
                        control_rate_per_month: @facility_analytics.control_rate_per_month(4) %>
 
             <!--
@@ -143,8 +143,13 @@
   <div style="margin-top: 8px; padding-top: 6px; color: #999; margin-right: 0; border-top: 1px solid #F0F2F5;">
     <p class="footnote"><strong>Didn't attend</strong> patients are enrolled hypertensives that have not had a BP
       recorded in the past 3 months.</p>
-    <p class="footnote"><strong>BP control</strong>
-
+    <p class="footnote">
+      <strong><%= t('analytics.control_rate') %></strong>
+      <%= t('analytics.control_rate_explanation',
+            hypertensive_patients_in_cohort: @facility_analytics.control_rate[:hypertensive_patients_in_cohort],
+            patients_under_control: @facility_analytics.control_rate[:patients_under_control_in_period],
+            control_rate_for_month: @facility_analytics.control_rate[:control_rate],
+            number_of_months: pluralize(1, 'month')) %>
     </p>
     <p class="footnote"><strong>District average</strong> is calculated for all PHCs with > 100 enrolled patients.</p>
   </div>

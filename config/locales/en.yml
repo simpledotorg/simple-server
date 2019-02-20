@@ -91,6 +91,7 @@ en:
     return_patients: 'Return Patients'
     non_returning_hypertensive_patients: "Didn't Return"
     control_rate: 'BP Control'
+    control_rate_explanation: 'is calculated as a rolling cohort. %{hypertensive_patients_in_cohort} patients enrolled 6-9 months ago / %{patients_under_control} of those patients had SBP < 140 and DBP < 90 at last measure in past %{number_of_months} = %{control_rate_for_month}% BP control'
     graphics:
       facility:
         report_title: "%{organization_name} Hypertension Control Report"
