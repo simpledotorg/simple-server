@@ -1,0 +1,58 @@
+<h1>Overdue Appointments</h1>
+
+<% @patients.group_by(&:registration_facility).each do |facility, patients| %>
+  <%
+    patients_with_bp = patients.select { |p| p.latest_blood_pressure.present? }
+    if patients_with_bp.present?
+  %>
+    <section class="overdue-facility">
+      <h3><%= facility.name %></h3>
+
+      <% patients_with_bp.each do |patient| %>
+        <div class="overdue-patient">
+          <div class="overdue-title">
+            <%= patient.full_name %>,
+            <%= patient.gender.capitalize %>,
+            <%= patient.current_age %>
+          </div>
+          <div class="overdue-details">
+            Last BP: <%= patient.latest_blood_pressure.to_s %>,
+            &nbsp<%= time_ago_in_words(patient.latest_blood_pressure.device_created_at.to_date) %> ago
+          </div>
+          <div class="overdue-details">
+            Home:
+            <%= patient.address.street_address %>,
+            <%= patient.address.village_or_colony %>
+          </div>
+          <div class="row mt-2">
+            <div class="col-md-6 col-lg-4">
+              <% if phone_number = patient.phone_numbers.first&.number %>
+                <p>
+                  <%= link_to phone_number, "tel:#{phone_number}", class: "btn btn-info w-100" %>
+                </p>
+              <% end %>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <%= bootstrap_form_with(model: patient) do |form| %>
+                <%= form.select :call_result,
+                                {
+                                    'Patient contacted' => [['Contacted', 'contacted']],
+                                    'Remove from list' => Patient.could_not_contact_reasons.map { |key, value| [key.humanize, value] }
+                                },
+                                {
+                                    prompt: 'Result of call...',
+                                    hide_label: true
+                                },
+                                onchange: 'this.form.submit();'
+                %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+      </div>
+    </section>
+  <% end %>
+<% end %>
+
+<%= paginate @patients %>
