@@ -6,7 +6,7 @@ class Analytics::FacilitiesController < AnalyticsController
     @organization = @facility_group.organization
 
     @facility_analytics = Analytics::FacilityAnalytics.new(@facility, from_time: 90.days.ago, to_time: Date.today)
-    @user_analytics = @facility.users.map { |user| [user, Analytics::UserAnalytics.new(user)] }.to_h
+    @user_analytics = users_for_facility.map { |user| [user, Analytics::UserAnalytics.new(user, @facility)] }.to_h
   end
 
   def graphics
@@ -23,5 +23,11 @@ class Analytics::FacilitiesController < AnalyticsController
     @facility_analytics = Analytics::FacilityAnalytics.new(
       @facility,
       from_time: @from_time, to_time: @to_time, months_previous: 6)
+  end
+
+  private
+
+  def users_for_facility
+    User.joins(:blood_pressures).where('blood_pressures.facility_id = ?', @facility.id).distinct
   end
 end
