@@ -4,13 +4,17 @@
   <section class="overdue-facility">
     <h3><%= facility.name %></h3>
 
-    <% appointments.select { |a| a.patient.present? }.sort_by(&:patient_risk_priority).each do |appointment| %>
+    <% appointments
+           .select  { |a| a.patient.present? }
+           .sort_by { |a| a.patient.risk_priority }
+           .each do |appointment| %>
+
       <div class="overdue-patient">
         <div class="overdue-time text-red">
           <%= appointment.days_overdue %> days overdue
         </div>
 
-        <% if appointment.high_risk_priority_patient? %>
+        <% if appointment.patient.high_risk? %>
           <div class="overdue-risk text-offwhite">high risk</div>
         <% end %>
 

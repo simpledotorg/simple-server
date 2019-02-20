@@ -1,15 +1,6 @@
 class Appointment < ApplicationRecord
   include Mergeable
 
-  RISK_LEVELS = {
-    HIGHEST: 0,
-    VERY_HIGH: 1,
-    HIGH: 2,
-    REGULAR: 3,
-    LOW: 4,
-    NONE: 5
-  }.freeze
-
   belongs_to :patient, optional: true
   belongs_to :facility
 
@@ -61,30 +52,6 @@ class Appointment < ApplicationRecord
     end
 
     super(new_call_result)
-  end
-
-  def patient_risk_priority
-    return RISK_LEVELS[:NONE] if days_overdue < 30
-
-    latest_blood_pressure = patient&.latest_blood_pressure
-
-    if latest_blood_pressure&.critically_hypertensive?
-      RISK_LEVELS[:HIGHEST]
-    elsif patient&.medical_history&.risk_history?
-      RISK_LEVELS[:VERY_HIGH]
-    elsif latest_blood_pressure&.severely_hypertensive?
-      RISK_LEVELS[:HIGH]
-    elsif latest_blood_pressure&.hypertensive?
-      RISK_LEVELS[:REGULAR]
-    elsif days_overdue > 365 && latest_blood_pressure&.under_control?
-      RISK_LEVELS[:LOW]
-    else
-      RISK_LEVELS[:NONE]
-    end
-  end
-
-  def high_risk_priority_patient?
-    patient_risk_priority < 3
   end
 
   def days_overdue

@@ -3,6 +3,14 @@ class Patient < ApplicationRecord
 
   GENDERS = %w[male female transgender].freeze
   STATUSES = %w[active dead migrated unresponsive inactive].freeze
+  RISK_PRIORITIES = {
+    HIGHEST: 0,
+    VERY_HIGH: 1,
+    HIGH: 2,
+    REGULAR: 3,
+    LOW: 4,
+    NONE: 5
+  }.freeze
 
   belongs_to :address, optional: true
   has_many :phone_numbers, class_name: 'PatientPhoneNumber'
@@ -37,6 +45,28 @@ class Patient < ApplicationRecord
 
   def latest_blood_pressure
     blood_pressures.order(device_created_at: :desc).first
+  end
+
+  def risk_priority
+    return RISK_PRIORITIES[:NONE] if latest_scheduled_appointment.days_overdue < 30
+
+    if latest_blood_pressure&.critical?
+      RISK_PRIORITIES[:HIGHEST]
+    elsif medical_history&.risk_history?
+      RISK_PRIORITIES[:VERY_HIGH]
+    elsif latest_blood_pressure&.very_high?
+      RISK_PRIORITIES[:HIGH]
+    elsif latest_blood_pressure&.high?
+      RISK_PRIORITIES[:REGULAR]
+    elsif latest_scheduled_appointment.days_overdue > 365 && latest_blood_pressure&.under_control?
+      RISK_PRIORITIES[:LOW]
+    else
+      RISK_PRIORITIES[:NONE]
+    end
+  end
+
+  def high_risk?
+    risk_priority < 3
   end
 
   def current_age
