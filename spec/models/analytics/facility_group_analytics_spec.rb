@@ -21,7 +21,7 @@ RSpec.describe Analytics::FacilityGroupAnalytics do
 
   let!(:non_returning_hypertensive_patients) do
     facilities.flat_map do |facility|
-      patients = create_list_in_period(:patient, 2, from_time: Time.new(0), to_time: from_time, registration_facility: facility)
+      patients = create_list_in_period(:patient, 2, from_time: Time.new(0), to_time: from_time - 1.day, registration_facility: facility)
       patients.each do |patient|
         create_in_period(
           :blood_pressure,
@@ -34,9 +34,12 @@ RSpec.describe Analytics::FacilityGroupAnalytics do
 
   let!(:returning_patients) do
     facilities.flat_map do |facility|
-      patients = create_list_in_period(:patient, 2, from_time: Time.new(0), to_time: from_time, registration_facility: facility)
+      patients = create_list_in_period(:patient, 2, from_time: Time.new(0), to_time: from_time - 1.day, registration_facility: facility)
       patients.each do |patient|
-        create_in_period(:blood_pressure, from_time: from_time, to_time: to_time, patient: patient, facility: facility)
+        create_in_period(
+          :blood_pressure,
+          trait: :under_control, from_time: from_time, to_time: to_time,
+          patient: patient, facility: facility)
       end
       patients
     end
@@ -67,11 +70,12 @@ RSpec.describe Analytics::FacilityGroupAnalytics do
   describe '#non_returning_hypertensive_patients_per_month' do
     it 'returns the number of non returning hypertensive patients per month' do
       expected_counts = {
-        to_time - 1.month => 6,
-        to_time - 2.month => 6,
-        to_time - 3.month => 6
+        to_time - 1.month => 4,
+        to_time - 2.month => 4,
+        to_time - 3.month => 4
       }.map { |k, v| [k.at_beginning_of_month, v] }
-      expect(facility_group_analytics.non_returning_hypertensive_patients_per_month(4)).to include(*expected_counts)
+      expect(facility_group_analytics.non_returning_hypertensive_patients_per_month(4).map { |k, v| [k.to_date, v] })
+        .to include(*expected_counts)
     end
   end
 
@@ -103,11 +107,6 @@ RSpec.describe Analytics::FacilityGroupAnalytics do
     describe '#control_rate' do
       it 'returns the control rate of the period' do
         expect(facility_group_analytics.control_rate).to eq(50)
-      end
-    end
-
-    xdescribe '#control_rate_per_month' do
-      it 'returns the control rate per month' do
       end
     end
   end

@@ -16,9 +16,9 @@ class NonReturningHypertensivePatientsDuringPeriodQuery
 
     non_returning_hypertensive_patients_per_month = []
     number_of_months.times do |n|
-      before_time = (before_time - n.months).at_beginning_of_month
-      count = patients.select { |patient| non_returning_patient?(patient, before_time) }.size
-      non_returning_hypertensive_patients_per_month << [before_time, count]
+      time = (before_time - n.months).at_beginning_of_month
+      count = patients.select { |patient| non_returning_patient?(patient, time) }.size
+      non_returning_hypertensive_patients_per_month << [time, count]
     end
     non_returning_hypertensive_patients_per_month.sort.to_h
   end

@@ -15,15 +15,15 @@ RSpec.feature 'Facility Analytics', type: :feature do
     end
 
     let!(:non_returning_patients) do
-      create_list_in_period(:patient, 2, from_time: Time.new(0), to_time: from_time, registration_facility: facility)
+      create_list_in_period(:patient, 2, from_time: Time.new(0), to_time: from_time - 1.day, registration_facility: facility)
     end
 
     let!(:hypertensive_patients_registered_9_months_ago) do
-      patients = create_list_in_period(:patient, 10, from_time: from_time - 9.months, to_time: to_time - 9.months, registration_facility: facility)
+      patients = create_list_in_period(:patient, 10, from_time: from_time - 9.months, to_time: to_time - 9.months - 1.day, registration_facility: facility)
       patients.each do |patient|
         create_in_period(
           :blood_pressure,
-          trait: :hypertensive, from_time: from_time - 9.months, to_time: to_time - 9.months,
+          trait: :hypertensive, from_time: from_time - 9.months, to_time: to_time - 9.months - 1.day,
           patient: patient, facility: facility)
       end
       patients
@@ -41,7 +41,7 @@ RSpec.feature 'Facility Analytics', type: :feature do
     end
 
     let!(:returning_patients) do
-      patients = create_list_in_period(:patient, 5, from_time: Time.new(0), to_time: from_time, registration_facility: facility)
+      patients = create_list_in_period(:patient, 5, from_time: Time.new(0), to_time: from_time - 1.day, registration_facility: facility)
       patients.each do |patient|
         create_in_period(:blood_pressure, from_time: from_time, to_time: to_time, patient: patient, facility: facility)
       end
@@ -49,14 +49,14 @@ RSpec.feature 'Facility Analytics', type: :feature do
     end
 
     let!(:non_returning_hypertensive_patients) do
-      patients = create_list_in_period(:patient, 10, from_time: Time.new(0), to_time: from_time, registration_facility: facility)
+      patients = create_list_in_period(:patient, 10, from_time: Time.new(0), to_time: from_time - 1.day, registration_facility: facility)
       patients.each do |patient|
         create_in_period(
           :blood_pressure,
-          trait: :hypertensive, from_time: patient.device_created_at, to_time: from_time,
+          trait: :hypertensive, from_time: patient.device_created_at, to_time: from_time - 1.day,
           patient: patient, facility: facility)
       end
-      patients + (hypertensive_patients_registered_9_months_ago - patients_under_control_in_period)
+      patients
     end
 
     before :each do
@@ -80,7 +80,7 @@ RSpec.feature 'Facility Analytics', type: :feature do
 
     it 'contains the number of non returning hypertensive patients in the last 90 days' do
       expect(page).to have_content(I18n.t('analytics.non_returning_hypertensive_patients'))
-      expect(page.find('#non-returning-hypertensive-patients-count')).to have_content(non_returning_hypertensive_patients.size)
+      expect(page.find('#non-returning-hypertensive-patients-count')).to have_content(18)
     end
 
     it 'contains a graph with number of non returning hypertensive patients per month' do

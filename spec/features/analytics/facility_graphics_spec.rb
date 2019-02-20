@@ -11,12 +11,8 @@ RSpec.feature 'Facility Group Graphics', type: :feature do
 
   before :each do
     create_list_in_period(
-      :blood_pressure,
-      blood_pressures_recorded_this_month,
-      Date.today.at_beginning_of_month,
-      Date.today.at_end_of_month,
-      facility: facility
-    )
+      :blood_pressure, blood_pressures_recorded_this_month,
+      from_time: Date.today.at_beginning_of_month, to_time: Date.today.at_end_of_month, facility: facility)
   end
 
   before :each do

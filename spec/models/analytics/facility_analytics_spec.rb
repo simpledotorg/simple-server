@@ -29,7 +29,10 @@ RSpec.describe Analytics::FacilityAnalytics do
   let!(:returning_patients) do
     patients = create_list_in_period(:patient, 1, from_time: Time.new(0), to_time: from_time, registration_facility: facility)
     patients.each do |patient|
-      create_in_period(:blood_pressure, from_time: from_time, to_time: to_time, patient: patient, facility: facility)
+      create_in_period(
+        :blood_pressure,
+        trait: :under_control, from_time: from_time, to_time: to_time,
+        patient: patient, facility: facility)
     end
     patients
   end
@@ -62,8 +65,8 @@ RSpec.describe Analytics::FacilityAnalytics do
         to_time - 1.month => 10,
         to_time - 2.month => 10,
         to_time - 3.month => 10
-      }.map { |k, v| [k.at_beginning_of_month, v] }
-      expect(facility_analytics.non_returning_hypertensive_patients_per_month(4)).to include(*expected_counts)
+      }.map { |k, v| [k.at_beginning_of_month, v] }.to_h
+      expect(facility_analytics.non_returning_hypertensive_patients_per_month(4)).to include(expected_counts)
     end
   end
 

@@ -8,7 +8,7 @@ class Analytics::FacilityGroupAnalytics
     @from_time = from_time
     @to_time = to_time
   end
-  
+
   def blood_pressures_recorded_per_week
     BloodPressure.where(facility: facility_group.facilities)
       .group_by_week(:device_created_at, last: 12)
@@ -44,7 +44,7 @@ class Analytics::FacilityGroupAnalytics
   def non_returning_hypertensive_patients_per_month(number_of_months)
     NonReturningHypertensivePatientsDuringPeriodQuery.new(
       facilities: facility_group.facilities
-    ).count_per_month(number_of_months, before_time: from_time)
+    ).count_per_month(number_of_months, before_time: to_time)
   end
 
   def control_rate

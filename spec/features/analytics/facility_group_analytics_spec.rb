@@ -17,17 +17,17 @@ RSpec.feature 'Facility Group Analytics', type: :feature do
 
     let!(:non_returning_patients) do
       facilities.flat_map do |facility|
-        create_list_in_period(:patient, 2, from_time: Time.new(0), to_time: from_time, registration_facility: facility)
+        create_list_in_period(:patient, 2, from_time: Time.new(0), to_time: from_time - 1.day, registration_facility: facility)
       end
     end
 
     let!(:non_returning_hypertensive_patients) do
       facilities.flat_map do |facility|
-        patients = create_list_in_period(:patient, 2, from_time: Time.new(0), to_time: from_time, registration_facility: facility)
+        patients = create_list_in_period(:patient, 2, from_time: Time.new(0), to_time: from_time - 1.day, registration_facility: facility)
         patients.each do |patient|
           create_in_period(
             :blood_pressure,
-            trait: :hypertensive, from_time: patient.device_created_at, to_time: from_time,
+            trait: :hypertensive, from_time: patient.device_created_at, to_time: from_time - 1.day,
             patient: patient, facility: facility)
         end
         patients
@@ -36,7 +36,7 @@ RSpec.feature 'Facility Group Analytics', type: :feature do
 
     let!(:returning_patients) do
       facilities.flat_map do |facility|
-        patients = create_list_in_period(:patient, 2, from_time: Time.new(0), to_time: from_time, registration_facility: facility)
+        patients = create_list_in_period(:patient, 2, from_time: Time.new(0), to_time: from_time - 1.day, registration_facility: facility)
         patients.each do |patient|
           create_in_period(:blood_pressure, from_time: from_time, to_time: to_time, patient: patient, facility: facility)
         end
@@ -84,16 +84,18 @@ RSpec.feature 'Facility Group Analytics', type: :feature do
 
     it 'contains the number of returning patients in the last 90 days' do
       expect(page).to have_content(I18n.t('analytics.return_patients'))
-      expect(page.find('#returning-patients-count')).to have_content(returning_patients.size)
+      expect(page.find('#returning-patients-count'))
+        .to have_content((returning_patients + patients_under_control_in_period).size)
     end
 
     it 'contains the number of non returning hypertensive patients in the last 90 days' do
       expect(page).to have_content(I18n.t('analytics.non_returning_hypertensive_patients'))
-      expect(page.find('#non-returning-hypertensive-patients-count')).to have_content(non_returning_hypertensive_patients.size)
+      expect(page.find('#non-returning-hypertensive-patients-count'))
+        .to have_content(6)
     end
 
     it 'contains a graph with number of non returning hypertensive patients per month' do
-      expect(page).to have_css('#non-returning-hypertensive-patients-chart')
+      expect(page).to have_css('#non-returning-hypertensive-patients-graph')
     end
 
     it 'contains the control rate for the last 90 days' do
