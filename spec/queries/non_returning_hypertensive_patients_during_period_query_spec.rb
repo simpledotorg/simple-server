@@ -30,7 +30,7 @@ RSpec.describe NonReturningHypertensivePatientsDuringPeriodQuery do
           patient: patient, facility: patient.registration_facility)
       end
 
-      results = NonReturningHypertensivePatientsDuringPeriodQuery.new(facilities: facilities, before_time: from_time).call
+      results = NonReturningHypertensivePatientsDuringPeriodQuery.new(facilities: facilities).non_returning_since(from_time)
 
       expect(results).to match_array(hypertensive_patients - returning_patients)
       expect(results).not_to include(returning_patients)
