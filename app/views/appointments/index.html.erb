@@ -18,7 +18,7 @@
           <div class="overdue-details">
             Last BP:
             <%= bp.to_s %>,
-            &nbsp<%= time_ago_in_words(bp.device_created_at.to_date) %> ago
+            &nbsp<%= blood_pressure_recorded_date(bp.device_created_at.to_date) %>
           </div>
         <% end %>
         <div class="overdue-details">
