@@ -33,54 +33,39 @@ RSpec.describe AppointmentsController, type: :controller do
     end
   end
 
-  describe 'GET #edit' do
-    it 'returns a success response' do
-      get :edit, params: { id: overdue_appointment.id }
-      expect(response).to be_success
-    end
-  end
-
   describe 'PUT #update' do
-    it 'edits the overdue appointment' do
-      new_remind_date = Date.today + 1.month
+    it 'remind_to_call_later updates remind_on' do
+      new_remind_date = Date.today + 7.days
 
       put :update, params: {
         id: overdue_appointment.id,
         appointment: {
-          remind_on: new_remind_date,
-          agreed_to_visit: true
+          call_result: 'remind_to_call_later'
         }
       }
 
       overdue_appointment.reload
 
       expect(overdue_appointment.remind_on).to eq(new_remind_date)
-      expect(overdue_appointment.agreed_to_visit).to be(true)
       expect(response).to redirect_to(action: 'index')
     end
-  end
 
-  describe 'GET #cancel' do
-    it 'returns a success response' do
-      get :cancel, params: { appointment_id: overdue_appointment.id }
-      expect(response).to be_success
-    end
-  end
+    it 'agreed_to_visit updates agreed_to_visit and remind_on' do
+      new_remind_date = Date.today + 30.days
 
-  describe 'PUT #cancel_with_reason' do
-    it 'cancels the overdue appointment' do
-      put :cancel_with_reason, params: {
-        appointment_id: overdue_appointment.id,
+      put :update, params: {
+        id: overdue_appointment.id,
         appointment: {
-          cancel_reason: 'moved'
+          call_result: 'agreed_to_visit'
         }
       }
 
       overdue_appointment.reload
 
-      expect(overdue_appointment.status).to eq('cancelled')
-      expect(overdue_appointment.cancel_reason).to eq('moved')
+      expect(overdue_appointment.agreed_to_visit).to eq(true)
+      expect(overdue_appointment.remind_on).to eq(new_remind_date)
       expect(response).to redirect_to(action: 'index')
     end
+
   end
 end
