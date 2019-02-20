@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190124181746) do
+ActiveRecord::Schema.define(version: 20190220085744) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -291,8 +291,8 @@ ActiveRecord::Schema.define(version: 20190124181746) do
     t.text "sync_approval_status_reason"
     t.datetime "deleted_at"
     t.uuid "registration_facility_id"
+    t.index "lower((phone_number)::text)", name: "unique_index_users_on_lowercase_phone_numbers", unique: true
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
-    t.index ["phone_number"], name: "index_users_on_phone_number", unique: true
     t.index ["registration_facility_id"], name: "index_users_on_registration_facility_id"
   end
 
