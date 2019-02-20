@@ -90,27 +90,15 @@
       <tr class="row-total">
         <td class="row-rank row-total"></td>
         <td class="row-title row-total">All facility totals<span><b>24,342</b> enrolled all time</span></td>
-        <td class="row-enrolled text-green row-total">1,345</td>
-        <td class="row-default text-yellow row-total">10,321</td>
-        <td class="row-calls text-yellow">124</td>
-        <td class="row-control row-total">30%</td>
-        <td class="row-spacer">&nbsp;</td>
-        <td class="row-unique-date row-total">13,801</td>
+        <td class="row-enrolled text-green row-total"><%= @facility_group_analytics.newly_enrolled_patients.count %></td>
+        <td class="row-default text-yellow row-total"><%= @facility_group_analytics.non_returning_hypertensive_patients.count %></td>
 
-        <td class="row-unique-date row-month"><span class="null">0</span></td>
-        <td class="row-unique-date">19</td>
-        <td class="row-unique-date"><span class="null">0</span></td>
-        <td class="row-unique-date">11</td>
+        <!-- <td class="row-calls text-yellow">124</td>-->
 
-        <td class="row-unique-date row-month">12</td>
-        <td class="row-unique-date">19</td>
-        <td class="row-unique-date"><span class="null">0</span></td>
-        <td class="row-unique-date"><span class="null">0</span></td>
+        <% @facility_group_analytics.blood_pressures_recorded_per_week.sort.each do |_key, value| %>
+          <td class="row-unique-date"><%= value != 0 ? value : '-' %></td>
+        <% end %>
 
-        <td class="row-unique-date row-month">12</td>
-        <td class="row-unique-date"><span class="null">0</span></td>
-        <td class="row-unique-date">21</td>
-        <td class="row-unique-date">11</td>
 
         <td>&nbsp;</td>
       </tr>

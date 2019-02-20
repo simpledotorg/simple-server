@@ -8,6 +8,12 @@ class Analytics::FacilityGroupAnalytics
     @from_time = from_time
     @to_time = to_time
   end
+  
+  def blood_pressures_recorded_per_week
+    BloodPressure.where(facility: facility_group.facilities)
+      .group_by_week(:device_created_at, last: 12)
+      .count
+  end
 
   def unique_patients_enrolled
     UniquePatientsEnrolledQuery.new(facilities: facility_group.facilities).call
