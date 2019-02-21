@@ -4,24 +4,17 @@ class AppointmentsController < AdminController
   def index
     authorize Appointment, :index?
 
-    @facility_slug = params[:facility]
+    @facility_id = params[:facility_id].present? ? params[:facility_id] : 'All'
     @per_page = params[:per_page] || 10
 
-    @appointments = policy_scope(Appointment)
-                      .overdue
+    appointments_to_show = policy_scope(Appointment)
+                             .overdue
+                             .where_or_all(:facility_id, @facility_id)
+
+    @appointments = appointments_to_show
                       .order(scheduled_date: :asc)
                       .page(params[:page])
-                      .per(@per_page == "All" ? Appointment.count : @per_page.to_i)
-
-    if @facility_slug.present?
-      @appointments = @appointments.where(facility: Facility.friendly.find(@facility_slug))
-    end
-  end
-
-  def edit
-  end
-
-  def cancel
+                      .per(@per_page == 'All' ? appointments_to_show.count : @per_page.to_i)
   end
 
   def update

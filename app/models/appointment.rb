@@ -34,6 +34,14 @@ class Appointment < ApplicationRecord
       .where('remind_on IS NULL OR remind_on <= ?', Date.today)
   end
 
+  def self.where_or_all(field, value)
+    if value == 'All'
+      all
+    else
+      where(field => value)
+    end
+  end
+
   def call_result=(new_call_result)
     if new_call_result == "agreed_to_visit"
       self.agreed_to_visit = true

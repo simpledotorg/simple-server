@@ -67,6 +67,14 @@ class Patient < ApplicationRecord
       .where('device_created_at <= ?', 2.days.ago)
   end
 
+  def self.where_or_all(field, value)
+    if value == 'All'
+      all
+    else
+      where(field => value)
+    end
+  end
+
   def call_result=(new_call_result)
     if new_call_result == 'contacted'
       self.contacted_by_counsellor = true

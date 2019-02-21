@@ -4,18 +4,17 @@ class PatientsController < AdminController
   def index
     authorize Patient, :index?
 
-    @facility_slug = params[:facility]
+    @facility_id = params[:facility_id].present? ? params[:facility_id] : 'All'
     @per_page = params[:per_page] || 10
 
-    @patients = policy_scope(Patient)
-                  .not_contacted
+    patients_to_show = policy_scope(Patient)
+                         .not_contacted
+                         .where_or_all(:registration_facility_id, @facility_id)
+
+    @patients = patients_to_show
                   .order(device_created_at: :asc)
                   .page(params[:page])
-                  .per(@per_page == 'All' ? Patient.count : @per_page.to_i)
-
-    if @facility_slug.present?
-      @patients = @patients.where(registration_facility: Facility.friendly.find(@facility_slug))
-    end
+                  .per(@per_page == 'All' ? patients_to_show.count : @per_page.to_i)
   end
 
   def update
