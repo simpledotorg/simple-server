@@ -37,16 +37,55 @@ describe Patient, type: :model do
 
   describe 'Associations' do
     it { should have_many(:blood_pressures) }
-    it { should have_many(:latest_blood_pressures) }
+  end
 
-    it 'should sort blood pressures by the latest one first' do
-      patient = FactoryBot.create(:patient)
-      facility = FactoryBot.create(:facility)
-      blood_pressures = FactoryBot.create_list(:blood_pressure, 5, patient: patient, facility: facility)
+  describe '#risk_priority' do
+    it 'should return no priority for patients recently overdue' do
+      patient = create(:patient)
+      create(:appointment, scheduled_date: 29.days.ago, status: :scheduled, patient: patient)
 
-      expected_blood_pressures = blood_pressures.sort_by(&:device_created_at).reverse
+      expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:NONE])
+    end
 
-      expect(patient.latest_blood_pressures).to eq(expected_blood_pressures)
+    it 'should return highest priority for patients overdue with critical bp' do
+      patient = create(:patient)
+      create(:blood_pressure, :critical, patient: patient)
+      create(:appointment, :overdue, patient: patient)
+
+      expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:HIGHEST])
+    end
+
+    it 'should return very high priority for patients overdue with medical risk history' do
+      patient = create(:patient)
+      create(:medical_history, :prior_risk_history, patient: patient)
+      create(:appointment, :overdue, patient: patient)
+
+      expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:VERY_HIGH])
+    end
+
+    it 'should return high priority for patients overdue with very high bp' do
+      patient = create(:patient)
+      create(:blood_pressure, :very_high, patient: patient)
+      create(:appointment, :overdue, patient: patient)
+
+      expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:HIGH])
+    end
+
+    it 'should return regular priority for patients overdue with high bp' do
+      patient = create(:patient)
+      create(:blood_pressure, :high, patient: patient)
+      create(:appointment, :overdue, patient: patient)
+
+      expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:REGULAR])
+    end
+
+    it 'should return low priority for patients overdue with low risk' do
+      patient = create(:patient)
+      create(:blood_pressure, :under_control, patient: patient)
+      create(:appointment, scheduled_date: 2.years.ago, status: :scheduled, patient: patient)
+
+      expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:LOW])
     end
   end
 end
+

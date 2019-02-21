@@ -9,6 +9,26 @@ FactoryBot.define do
     association :facility, strategy: :build
     association :patient, strategy: :build
     user
+
+    trait :critical do
+      systolic { rand(180..240) }
+      diastolic { rand(110..140) }
+    end
+
+    trait :very_high do
+      systolic { rand(160..179) }
+      diastolic { rand(100..109) }
+    end
+
+    trait :high do
+      systolic { rand(140..159) }
+      diastolic { rand(90..99) }
+    end
+
+    trait :under_control do
+      systolic { rand(80..140) }
+      diastolic { rand(60..90) }
+    end
   end
 end
 
@@ -19,8 +39,8 @@ end
 def build_invalid_blood_pressure_payload
   build_blood_pressure_payload.merge(
     'created_at' => nil,
-    'systolic'   => nil,
-    'diastolic'  => 'foo'
+    'systolic' => nil,
+    'diastolic' => 'foo'
   )
 end
 

@@ -48,7 +48,7 @@ class Patient < ApplicationRecord
   end
 
   def risk_priority
-    return RISK_PRIORITIES[:NONE] if latest_scheduled_appointment.days_overdue < 30
+    return RISK_PRIORITIES[:NONE] if latest_scheduled_appointment.overdue_for_under_a_month?
 
     if latest_blood_pressure&.critical?
       RISK_PRIORITIES[:HIGHEST]
@@ -58,7 +58,7 @@ class Patient < ApplicationRecord
       RISK_PRIORITIES[:HIGH]
     elsif latest_blood_pressure&.high?
       RISK_PRIORITIES[:REGULAR]
-    elsif latest_scheduled_appointment.days_overdue > 365 && latest_blood_pressure&.under_control?
+    elsif low_risk?
       RISK_PRIORITIES[:LOW]
     else
       RISK_PRIORITIES[:NONE]
@@ -66,7 +66,9 @@ class Patient < ApplicationRecord
   end
 
   def high_risk?
-    risk_priority < 3
+    [RISK_PRIORITIES[:HIGHEST],
+     RISK_PRIORITIES[:VERY_HIGH],
+     RISK_PRIORITIES[:HIGH]].include?(risk_priority)
   end
 
   def current_age
@@ -76,5 +78,12 @@ class Patient < ApplicationRecord
       years_since_update = Date.today.year - age_updated_at.year
       age + years_since_update
     end
+  end
+
+  private
+
+  def low_risk?
+    latest_scheduled_appointment.overdue_for_over_a_year? &&
+      latest_blood_pressure&.under_control?
   end
 end
