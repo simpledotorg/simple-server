@@ -106,7 +106,10 @@ RSpec.describe Analytics::FacilityGroupAnalytics do
 
     describe '#control_rate' do
       it 'returns the control rate of the period' do
-        expect(facility_group_analytics.control_rate).to eq(50)
+        expect(facility_group_analytics.control_rate).
+          to eq(control_rate: 50,
+                hypertensive_patients_in_cohort: 4,
+                patients_under_control_in_period: 2)
       end
     end
   end
