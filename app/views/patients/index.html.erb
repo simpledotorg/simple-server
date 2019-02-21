@@ -27,9 +27,11 @@
           <div class="row mt-2">
             <div class="col-md-6 col-lg-4">
               <% if phone_number = patient.phone_numbers.first&.number %>
-                <p>
-                  <%= link_to phone_number, "tel:#{phone_number}", class: "btn btn-info w-100" %>
-                </p>
+
+                <a href="tel:<%= phone_number %>" class="btn btn-info btn-phone w-100">&#128222; <%= phone_number %></a>
+
+              <% else %>
+                <a href="3" class="btn btn-info disabled w-100">&lt; No mobile &gt;</a>
               <% end %>
             </div>
             <div class="col-md-6 col-lg-4">
