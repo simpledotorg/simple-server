@@ -137,6 +137,7 @@ Rails.application.routes.draw do
 
   if FeatureToggle.enabled?('PATIENT_FOLLOWUPS')
     resources :appointments, only: [:index, :update]
+    resources :patients, only: [:index, :update]
   end
 
 
