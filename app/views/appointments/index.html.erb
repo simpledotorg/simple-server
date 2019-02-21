@@ -7,7 +7,7 @@
       <div class="form-row">
         <div class="form-group col-9">
           <%= form.select :facility,
-                          current_admin.facilities.order(:name).map { |facility| [facility.name, facility.slug] },
+                          current_admin.facilities.sort_by(&:name).map { |facility| [facility.name, facility.slug] },
                           {
                             hide_label: true,
                             include_blank: "All facilities",
