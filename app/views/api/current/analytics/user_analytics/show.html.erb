@@ -10,10 +10,20 @@
   <%= inline_js('charts.js') %>
 </head>
 
-<body>
-  <h3>How many patients are recorded at CHC Bathinda each week?</h3>
-  <%= column_chart @stats_for_user,
-                   id: 'new_patients_per_week',
-                   library: {scales: {yAxes: [{display: false}]}}%>
+<body style="background: #f0f2f5">
+<div class="row" style="background: #ffffff; margin: 8px; padding: 16px; max-height: 300px;">
+  <div class="col-md-12">
+    <h3>How many patients are recorded at CHC Bathinda each week?</h3>
+    <% max_key = @stats_for_user.keys.max %>
+    <% colors = @stats_for_user.keys.map { |k| k == max_key ? '#0075eb' : '#e0f0ff' } %>
+    <% labels = @stats_for_user.keys.map { |k| k == max_key ? 'This Week' : "#{k.strftime('%B')}" } %>
+    <%= column_chart @stats_for_user,
+                     id: 'new_patients_per_week',
+                     height: '200px',
+                     library: { scales: { yAxes: [{ display: false }] } },
+                     legend: { position: 'top' },
+                     dataset: { backgroundColor: colors, borderWidth: 0, cornerRadius: '4px' } %>
+  </div>
+</div>
 </body>
 </html>
