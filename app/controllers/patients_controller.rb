@@ -1,20 +1,23 @@
 class PatientsController < AdminController
   before_action :set_patient, only: [:update]
 
+  DEFAULT_PAGE_SIZE = 20
+
   def index
     authorize Patient, :index?
 
     @facility_id = params[:facility_id].present? ? params[:facility_id] : 'All'
-    @per_page = params[:per_page] || 10
-
+    selected_facilities = @facility_id == 'All' ? policy_scope(Facility.all) : policy_scope(Facility.where(id: @facility_id))
     patients_to_show = policy_scope(Patient)
                          .not_contacted
-                         .where_or_all(:registration_facility_id, @facility_id)
+                         .where(registration_facility: selected_facilities)
 
+    @per_page = params[:per_page].present? ? params[:per_page] : DEFAULT_PAGE_SIZE
+    per_page_count = @per_page == 'All' ? patients_to_show.size : @per_page.to_i
     @patients = patients_to_show
                   .order(device_created_at: :asc)
                   .page(params[:page])
-                  .per(@per_page == 'All' ? patients_to_show.count : @per_page.to_i)
+                  .per(per_page_count)
   end
 
   def update

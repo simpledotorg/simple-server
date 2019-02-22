@@ -1,20 +1,23 @@
 class AppointmentsController < AdminController
   before_action :set_appointment, only: [:update]
 
+  DEFAULT_PAGE_SIZE = 20
+
   def index
     authorize Appointment, :index?
 
     @facility_id = params[:facility_id].present? ? params[:facility_id] : 'All'
-    @per_page = params[:per_page] || 10
-
+    selected_facilities = @facility_id == 'All' ? policy_scope(Facility.all) : policy_scope(Facility.where(id: @facility_id))
     appointments_to_show = policy_scope(Appointment)
                              .overdue
-                             .where_or_all(:facility_id, @facility_id)
+                             .where(facility: selected_facilities)
 
+    @per_page = params[:per_page].present? ? params[:per_page] : DEFAULT_PAGE_SIZE
+    per_page_count = @per_page == 'All' ? appointments_to_show.size : @per_page.to_i
     @appointments = appointments_to_show
                       .order(scheduled_date: :asc)
                       .page(params[:page])
-                      .per(@per_page == 'All' ? appointments_to_show.count : @per_page.to_i)
+                      .per(per_page_count)
   end
 
   def update
