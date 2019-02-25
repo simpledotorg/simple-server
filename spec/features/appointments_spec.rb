@@ -13,23 +13,23 @@ RSpec.feature 'Overdue Appointments', type: :feature do
     end
 
     describe 'Overdue Appointments tab' do
-      let!(:facility_1) { create(:facility, facility_group: counsellor.facility_groups.first) }
+      let!(:authorized_facility_group) { counsellor.facility_groups.first }
+
+      let!(:facility_1) { create(:facility, facility_group: authorized_facility_group) }
 
       let!(:overdue_patient_in_facility_1) do
         patient = create(:patient, registration_facility: facility_1)
-        create(:appointment, :overdue, facility: facility_1, patient: patient)
+        create(:appointment, :overdue, facility: facility_1, patient: patient, scheduled_date: 10.days.ago)
         patient
       end
 
-      let!(:non_overdue_patient_in_facility_1) do
-        create(:patient, registration_facility: facility_1)
-      end
+      let!(:non_overdue_patient_in_facility_1) { create(:patient, registration_facility: facility_1) }
 
-      let!(:facility_2) { create(:facility, facility_group: counsellor.facility_groups.first) }
+      let!(:facility_2) { create(:facility, facility_group: authorized_facility_group) }
 
       let!(:overdue_patient_in_facility_2) do
         patient = create(:patient, registration_facility: facility_2)
-        create(:appointment, :overdue, facility: facility_2, patient: patient)
+        create(:appointment, :overdue, facility: facility_2, patient: patient, scheduled_date: 5.days.ago)
         patient
       end
 
@@ -58,6 +58,26 @@ RSpec.feature 'Overdue Appointments', type: :feature do
 
       it 'does not show overdue patients in unauthorized facilities' do
         expect(page).not_to have_content(overdue_patient_in_unauthorized_facility.full_name)
+      end
+
+      it 'shows overdue patients ordered by how overdue they are' do
+        within('#overdue-patients') do
+          first_item = find(:css, 'section:nth-of-type(1)')
+          second_item = find(:css, 'section:nth-of-type(2)')
+
+          expect(first_item).to have_content(overdue_patient_in_facility_1.full_name)
+          expect(second_item).to have_content(overdue_patient_in_facility_2.full_name)
+        end
+      end
+
+      it 'sets a call_result, and removes patient from the overdue list' do
+        within('#overdue-patients > section:first-of-type') do
+          find(:option, 'Dead').click
+        end
+
+        page.reset!
+        visit appointments_path
+        expect(page).not_to have_content(overdue_patient_in_facility_1.full_name)
       end
     end
   end
