@@ -72,7 +72,7 @@ RSpec.feature '48 Hour Followups', type: :feature do
         end
 
         page.reset!
-        visit appointments_path
+        visit patients_path
         expect(page).not_to have_content(patient_to_followup_in_facility_1.full_name)
       end
     end
