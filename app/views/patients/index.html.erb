@@ -37,49 +37,47 @@
     if @patients.present?
       @patients.each do |patient|
   %>
-      <section>
-        <div class="overdue-patient">
-          <div class="overdue-title">
-            <%= patient.full_name %>,
-            <%= patient.gender.capitalize %>,
-            <%= patient.current_age %>
-          </div>
-          <% if bp = patient.latest_blood_pressure %>
-            <div class="overdue-details">
-              Last BP:
-              <%= bp.to_s %>&nbsp
-              recorded at <%= bp.facility.name %>
-              <%= time_ago_in_words(bp.device_created_at.to_date) %> ago
-            </div>
-          <% end %>
+      <section class="overdue-patient">
+        <div class="overdue-title">
+          <%= patient.full_name %>,
+          <%= patient.gender.capitalize %>,
+          <%= patient.current_age %>
+        </div>
+        <% if bp = patient.latest_blood_pressure %>
           <div class="overdue-details">
-            Home:
-            <%= patient.address.street_address %>,
-            <%= patient.address.village_or_colony %>
+            Last BP:
+            <%= bp.to_s %>&nbsp
+            recorded at <%= bp.facility.name %>
+            <%= time_ago_in_words(bp.device_created_at.to_date) %> ago
           </div>
-          <div class="row mt-2">
-            <div class="col-md-6 col-lg-4">
-              <% if phone_number = patient.phone_numbers.first&.number %>
-                <p>
-                  <%= link_to phone_number, "tel:#{phone_number}", class: "btn btn-info w-100" %>
-                </p>
-              <% end %>
-            </div>
-            <div class="col-md-6 col-lg-4">
-              <%= bootstrap_form_with(model: patient) do |form| %>
-                <%= form.select :call_result,
-                                {
-                                    'Patient contacted' => [['Contacted', 'contacted']],
-                                    'Remove from list' => Patient.could_not_contact_reasons.map { |key, value| [key.humanize, value] }
-                                },
-                                {
-                                    prompt: 'Result of call...',
-                                    hide_label: true
-                                },
-                                onchange: 'this.form.submit();'
-                %>
-              <% end %>
-            </div>
+        <% end %>
+        <div class="overdue-details">
+          Home:
+          <%= patient.address.street_address %>,
+          <%= patient.address.village_or_colony %>
+        </div>
+        <div class="row mt-2">
+          <div class="col-md-6 col-lg-4">
+            <% if phone_number = patient.phone_numbers.first&.number %>
+              <p>
+                <%= link_to phone_number, "tel:#{phone_number}", class: "btn btn-info w-100" %>
+              </p>
+            <% end %>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <%= bootstrap_form_with(model: patient) do |form| %>
+              <%= form.select :call_result,
+                              {
+                                  'Patient contacted' => [['Contacted', 'contacted']],
+                                  'Remove from list' => Patient.could_not_contact_reasons.map { |key, value| [key.humanize, value] }
+                              },
+                              {
+                                  prompt: 'Result of call...',
+                                  hide_label: true
+                              },
+                              onchange: 'this.form.submit();'
+              %>
+            <% end %>
           </div>
         </div>
       </section>
