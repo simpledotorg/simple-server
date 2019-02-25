@@ -1,5 +1,5 @@
 class Admin::FacilityGroupsController < AdminController
-  before_action :set_organization, only: [:index, :show, :new, :edit, :create, :update, :destroy]
+  before_action :set_organization, only: [:index, :show, :edit, :create, :update, :destroy]
   before_action :set_facility_group, only: [:show, :edit, :update, :destroy]
   before_action :set_protocols, only: [:new, :edit]
 
@@ -12,6 +12,7 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def new
+    @organization = Organization.friendly.find(params[:organization_id])
     @facility_group = @organization.facility_groups.new
     authorize @facility_group
   end
