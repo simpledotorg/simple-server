@@ -1,8 +1,6 @@
 class AppointmentsController < CounsellorController
   before_action :set_appointment, only: [:update]
 
-  DEFAULT_PAGE_SIZE = 20
-
   def index
     authorize Appointment, :index?
 

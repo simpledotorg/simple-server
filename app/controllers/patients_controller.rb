@@ -1,8 +1,6 @@
 class PatientsController < CounsellorController
   before_action :set_patient, only: [:update]
 
-  DEFAULT_PAGE_SIZE = 20
-
   def index
     authorize Patient, :index?
 
