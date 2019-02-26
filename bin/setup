@@ -4,9 +4,10 @@
   RUBY_VERSION=$(cat .ruby-version)
 } > /dev/null 2>&1
 
-init(){
+init (){
   verify_ruby_version && verify_bundled_gems
   verify_postgres && verify_database_migrations
+  configure_parallel_testing
 }
 
 ## utility functions for dependencies
@@ -149,6 +150,11 @@ verify_database_migrations (){
     bundle exec rake db:migrate db:test:prepare
     bundle exec rake db:seed
   fi
+}
+
+configure_parallel_testing (){
+  echo 'Configuring parallel testing...'
+  rake parallel:setup
 }
 
 init
