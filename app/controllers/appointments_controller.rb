@@ -1,4 +1,4 @@
-class AppointmentsController < AdminController
+class AppointmentsController < CounsellorController
   before_action :set_appointment, only: [:update]
 
   DEFAULT_PAGE_SIZE = 20
@@ -25,24 +25,6 @@ class AppointmentsController < AdminController
   end
 
   private
-
-  def selected_facilities
-    @facility_id = params[:facility_id].present? ? params[:facility_id] : 'All'
-    if @facility_id == 'All'
-      policy_scope(Facility.all)
-    else
-      policy_scope(Facility.where(id: @facility_id))
-    end
-  end
-
-  def per_page_count(appointments_to_show)
-    @per_page = params[:per_page] || DEFAULT_PAGE_SIZE
-    if @per_page == 'All'
-      appointments_to_show.size
-    else
-      @per_page.to_i
-    end
-  end
 
   def set_appointment
     @appointment = Appointment.find(params[:id] || params[:appointment_id])
