@@ -32,4 +32,4 @@
   <% end %>
 </div>
 
-<%= paginate @appointments %>
+<%= paginate @appointments if @appointments.present? %>
