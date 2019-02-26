@@ -16,7 +16,7 @@ class PatientsController < CounsellorController
 
   def update
     if @patient.update(patient_params)
-      redirect_to patients_url, notice: "Saved call result. #{@patient.full_name}: #{@patient.call_result.humanize}"
+      redirect_to patients_url, notice: "Saved. #{@patient.full_name} marked as \"#{@patient.call_result.humanize}\""
     else
       redirect_back fallback_location: root_path, alert: 'Something went wrong!'
     end
