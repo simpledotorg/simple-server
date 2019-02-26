@@ -1,0 +1,27 @@
+<%= bootstrap_form_with(url: appointments_path, method: :get, layout: :horizontal, class: "mt-4") do |form| %>
+  <div class="form-row">
+    <div id="facility-selector" class="form-group col-9">
+      <%= form.select :facility_id,
+                      current_admin.facilities.sort_by(&:name).map { |facility| [facility.name, facility.id] },
+                      {
+                          hide_label: true,
+                          include_blank: "All facilities",
+                          selected: facility_id,
+                          wrapper: false
+                      },
+                      onchange: "this.form.submit();"
+      %>
+    </div>
+    <div id="limit-selector" class="form-group col-3">
+      <%= form.select :per_page,
+                      [20, 50, "All"],
+                      {
+                          help: "Per page",
+                          hide_label: true,
+                          selected: per_page,
+                      },
+                      onchange: "this.form.submit();"
+      %>
+    </div>
+  </div>
+<% end %>

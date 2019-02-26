@@ -6,7 +6,7 @@ class PatientsController < AdminController
   def index
     authorize Patient, :index?
 
-    @facility_id = params[:facility_id] || 'All'
+    @facility_id = params[:facility_id].present? ? params[:facility_id] : 'All'
     selected_facilities = @facility_id == 'All' ? policy_scope(Facility.all) : policy_scope(Facility.where(id: @facility_id))
     patients_to_show = policy_scope(Patient)
                          .not_contacted

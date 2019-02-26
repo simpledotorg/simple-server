@@ -6,7 +6,7 @@ class AppointmentsController < AdminController
   def index
     authorize Appointment, :index?
 
-    @facility_id = params[:facility_id] || 'All'
+    @facility_id = params[:facility_id].present? ? params[:facility_id] : 'All'
     selected_facilities = @facility_id == 'All' ? policy_scope(Facility.all) : policy_scope(Facility.where(id: @facility_id))
     appointments_to_show = policy_scope(Appointment)
                              .overdue
