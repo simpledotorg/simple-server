@@ -11,7 +11,7 @@ class PatientsController < CounsellorController
     @patients = patients_to_show
                   .order(device_created_at: :asc)
                   .page(params[:page])
-                  .per(per_page_count(patients_to_show))
+                  .per(paginate(patients_to_show))
   end
 
   def update

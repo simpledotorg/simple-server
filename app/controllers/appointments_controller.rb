@@ -11,7 +11,7 @@ class AppointmentsController < CounsellorController
     @appointments = appointments_to_show
                       .order(scheduled_date: :asc)
                       .page(params[:page])
-                      .per(per_page_count(appointments_to_show))
+                      .per(paginate(appointments_to_show))
   end
 
   def update

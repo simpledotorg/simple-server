@@ -10,7 +10,7 @@ class CounsellorController < AdminController
     end
   end
 
-  def per_page_count(records_to_show)
+  def paginate(records_to_show)
     @per_page = params[:per_page] || DEFAULT_PAGE_SIZE
     if @per_page == 'All'
       records_to_show.size
