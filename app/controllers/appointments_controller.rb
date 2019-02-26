@@ -1,4 +1,5 @@
-class AppointmentsController < CounsellorController
+class AppointmentsController < AdminController
+  include Admin::FacilityFilteringAndPagination
   before_action :set_appointment, only: [:update]
 
   def index

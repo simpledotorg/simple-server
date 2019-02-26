@@ -1,4 +1,5 @@
-class PatientsController < CounsellorController
+class PatientsController < AdminController
+  include Admin::FacilityFilteringAndPagination
   before_action :set_patient, only: [:update]
 
   def index
