@@ -12,7 +12,7 @@ class AppointmentsController < AdminController
                              .overdue
                              .where(facility: selected_facilities)
 
-    @per_page = params[:per_page].present? || DEFAULT_PAGE_SIZE
+    @per_page = params[:per_page] || DEFAULT_PAGE_SIZE
     per_page_count = @per_page == 'All' ? appointments_to_show.size : @per_page.to_i
     @appointments = appointments_to_show
                       .order(scheduled_date: :asc)
