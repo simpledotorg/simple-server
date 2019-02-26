@@ -3,8 +3,10 @@ module Admin::FacilityFilteringAndPagination
 
   extend ActiveSupport::Concern
   included do
+    before_action :set_facility_id, only: [:index]
+    before_action :set_per_page, only: [:index]
+
     def selected_facilities
-      @facility_id = params[:facility_id].present? ? params[:facility_id] : 'All'
       if @facility_id == 'All'
         policy_scope(Facility.all)
       else
@@ -13,12 +15,21 @@ module Admin::FacilityFilteringAndPagination
     end
 
     def paginate(records_to_show)
-      @per_page = params[:per_page] || DEFAULT_PAGE_SIZE
       if @per_page == 'All'
         records_to_show.size
       else
         @per_page.to_i
       end
+    end
+
+    private
+
+    def set_facility_id
+      @facility_id = params[:facility_id].present? ? params[:facility_id] : 'All'
+    end
+
+    def set_per_page
+      @per_page = params[:per_page] || DEFAULT_PAGE_SIZE
     end
   end
 end
