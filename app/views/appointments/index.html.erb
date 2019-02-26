@@ -11,61 +11,18 @@
 </div>
 
 <div id="overdue-patients">
-  <%
-    appointments_with_patients = @appointments.select { |a| a.patient.present? }
-    if appointments_with_patients.present?
-  %>
+  <% appointments_with_patients = @appointments.select { |a| a.patient.present? } %>
+  <% if appointments_with_patients.present? %>
+    <% call_result_options = {
+        'Patient responded' => [['Agreed to visit', 'agreed_to_visit']],
+        'No response' => [['Remind to call later', 'remind_to_call_later']],
+        'Remove from overdue list' => Appointment.cancel_reasons.map { |key, value| [key.humanize, value] } } %>
     <% appointments_with_patients.each do |appointment| %>
-      <section class="overdue-patient">
-        <div class="overdue-time">
-          <%= appointment.days_overdue %> days overdue
-        </div>
-        <div class="overdue-title">
-          <%= appointment.patient.full_name %>,
-          <%= appointment.patient.gender.capitalize %>,
-          <%= appointment.patient.current_age %>
-        </div>
-        <% if bp = appointment.patient.latest_blood_pressure %>
-          <div class="overdue-details">
-            Last BP:
-            <%= bp.to_s %>&nbsp
-            recorded at <%= bp.facility.name %>
-            <%= time_ago_in_words(bp.device_created_at.to_date) %> ago
-          </div>
-        <% end %>
-        <div class="overdue-details">
-          Home:
-          <%= appointment.patient.address.street_address %>,
-          <%= appointment.patient.address.village_or_colony %>
-        </div>
-        <div class="row mt-2">
-          <div class="col-md-6 col-lg-4 overdue-button">
-            <% if phone_number = appointment.patient.phone_numbers.first&.number %>
-
-              <a href="tel:<%= phone_number %>" class="btn btn-info btn-phone w-100">&#128222; <%= phone_number %></a>
-
-            <% else %>
-              <a href="3" class="btn btn-info disabled w-100">&lt; No mobile &gt;</a>
-            <% end %>
-          </div>
-          <div class="col-md-6 col-lg-4 overdue-form">
-            <%= bootstrap_form_with(model: appointment) do |form| %>
-              <%= form.select :call_result,
-                              {
-                                  "Patient responded" => [["Agreed to visit", "agreed_to_visit"]],
-                                  "No response" => [["Remind to call later", "remind_to_call_later"]],
-                                  "Remove from overdue list" => Appointment.cancel_reasons.map { |key, value| [key.humanize, value] }
-                              },
-                              {
-                                  prompt: "Result of follow-up...",
-                                  hide_label: true
-                              },
-                              onchange: "this.form.submit();"
-              %>
-            <% end %>
-          </div>
-        </div>
-      </section>
+      <%= render 'shared/followup_patient_card',
+                 patient: appointment.patient,
+                 call_result_options: call_result_options,
+                 days_overdue: appointment.days_overdue,
+                 form_model: appointment %>
     <% end %>
   <% else %>
     <div class="overdue-patient">
