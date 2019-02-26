@@ -37,14 +37,17 @@ RSpec.describe AppointmentsController, type: :controller do
 
     describe 'filtering by facility' do
       it 'displays appointments for all facilities if none is selected' do
-        get :index, params: {}
+        get :index, params: { per_page: 'All' }
 
         expect(response.body).to include("recorded at #{facility_1.name}")
         expect(response.body).to include("recorded at #{facility_2.name}")
       end
 
       it 'displays appointments for only the selected facility' do
-        get :index, params: { facility_id: facility_1.id }
+        get :index, params: {
+          facility_id: facility_1.id,
+          per_page: 'All'
+        }
 
         expect(response.body).to include("recorded at #{facility_1.name}")
         expect(response.body).not_to include("recorded at #{facility_2.name}")
