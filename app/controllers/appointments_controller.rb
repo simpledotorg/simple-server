@@ -6,13 +6,13 @@ class AppointmentsController < AdminController
   def index
     authorize Appointment, :index?
 
-    @facility_id = params[:facility_id].present? ? params[:facility_id] : 'All'
+    @facility_id = params[:facility_id] || 'All'
     selected_facilities = @facility_id == 'All' ? policy_scope(Facility.all) : policy_scope(Facility.where(id: @facility_id))
     appointments_to_show = policy_scope(Appointment)
                              .overdue
                              .where(facility: selected_facilities)
 
-    @per_page = params[:per_page].present? ? params[:per_page] : DEFAULT_PAGE_SIZE
+    @per_page = params[:per_page].present? || DEFAULT_PAGE_SIZE
     per_page_count = @per_page == 'All' ? appointments_to_show.size : @per_page.to_i
     @appointments = appointments_to_show
                       .order(scheduled_date: :asc)
