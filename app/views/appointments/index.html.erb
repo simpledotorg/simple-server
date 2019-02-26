@@ -4,6 +4,7 @@
 <div class="row">
   <div class="col-md-6">
     <%= render 'shared/paginate_and_filter_by_facility',
+               form_url: appointments_path,
                current_admin: current_admin,
                facility_id: @facility_id,
                per_page: @per_page %>
