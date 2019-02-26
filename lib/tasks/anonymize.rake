@@ -218,6 +218,25 @@ namespace :anonymize do
         anonymize_uuid 'appointment_id'
         whitelist 'user_id'
       end
+
+      table 'users' do
+        primary_key 'id'
+        anonymize('full_name').using FieldStrategy::RandomFullName.new
+        anonymize('phone_number').using FieldStrategy::FormattedStringNumber.new
+        anonymize('password_digest').using FieldStrategy::RandomString.new
+        whitelist 'device_created_at'
+        whitelist 'device_updated_at'
+        whitelist 'created_at'
+        whitelist 'updated_at'
+        whitelist 'otp'
+        whitelist 'otp_valid_until'
+        anonymize('access_token').using FieldStrategy::RandomString.new
+        whitelist 'logged_in_at'
+        whitelist 'sync_approval_status'
+        whitelist 'sync_approval_status_reason'
+        whitelist 'deleted_at'
+        whitelist 'registration_facility_id'
+      end
     end
   end
 end
