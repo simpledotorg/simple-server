@@ -159,6 +159,32 @@ RSpec.feature "Admins", type: :feature do
     end
   end
 
+  describe 'inviting Counsellors' do
+    let!(:organization_owner) { create(:admin, :organization_owner) }
+    let!(:organization) { organization_owner.organizations.first }
+    let!(:facility_group) { create(:facility_group, organization: organization) }
+    let!(:email) { 'new_counsellor@example.com' }
+
+
+    before do
+      sign_in(organization_owner)
+      visit admins_path
+
+      click_link 'Invite Counsellor'
+      fill_in 'Email', with: email
+      check facility_group.name
+      click_button 'Send an invitation'
+    end
+
+    it 'associates new counsellor to facility group' do
+      new_counsellor = Admin.find_by(email: email)
+
+      expect(new_counsellor.admin_access_controls.count).to eq(1)
+      expect(new_counsellor.admin_access_controls.first.access_controllable_type).to eq('FacilityGroup')
+      expect(new_counsellor.admin_access_controls.first.access_controllable_id).to eq(facility_group.id)
+    end
+  end
+
   describe "accepting invitations" do
     let(:email) { "new@example.com" }
     let(:new_supervisor) { Admin.invite!(email: email, role: :supervisor) }

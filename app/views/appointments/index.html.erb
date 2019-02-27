@@ -1,73 +1,41 @@
-<h1>Overdue Appointments</h1>
+<h1>Overdue patients</h1>
+<p>Patients that are overdue for follow-up BP measure.</p>
 
-<% @appointments.group_by(&:facility).each do |facility, appointments| %>
-  <section class="overdue-facility">
-    <h3><%= facility.name %></h3>
+<div class="row">
+  <div class="col-md-6">
+    <%= render(
+      'shared/paginate_and_filter_by_facility',
+      form_url: appointments_path,
+      current_admin: current_admin,
+      facility_id: @facility_id,
+      per_page: @per_page
+    ) %>
+  </div>
+</div>
 
-    <% appointments
-           .select  { |a| a.patient.present? }
-           .sort_by { |a| a.patient.risk_priority }
-           .each do |appointment| %>
+<div id="overdue-patients">
+  <% if @appointments.present? %>
+    <% call_result_options = {
+        'Patient responded' => [['Agreed to visit', 'agreed_to_visit']],
+        'No response' => [['Remind to call later', 'remind_to_call_later']],
+        'Remove from overdue list' => Appointment.cancel_reasons.map { |key, value| [key.humanize, value] }
+    } %>
 
-      <div class="overdue-patient">
-        <div class="overdue-time text-red">
-          <%= appointment.days_overdue %> days overdue
-        </div>
-
-        <% if appointment.patient.high_risk? %>
-          <div class="overdue-risk text-offwhite">high risk</div>
-        <% end %>
-
-        <div class="overdue-title">
-          <%= appointment.patient.full_name %>,
-          <%= appointment.patient.gender.capitalize %>,
-          <%= appointment.patient.current_age %>
-        </div>
-
-        <% if bp = appointment.patient.latest_blood_pressure %>
-          <div class="overdue-details">
-            Last BP:
-            <%= bp.to_s %>,
-            &nbsp<%= time_ago_in_words(bp.device_created_at.to_date) %> ago
-          </div>
-        <% end %>
-
-        <div class="overdue-details">
-          Home:
-          <%= appointment.patient.address.street_address %>,
-          <%= appointment.patient.address.village_or_colony %>
-        </div>
-
-        <div class="row mt-2">
-          <div class="col-md-6 col-lg-4">
-            <% if phone_number = appointment.patient.phone_numbers.first&.number %>
-              <p>
-                <%= link_to phone_number, "tel:#{phone_number}", class: "btn btn-info w-100" %>
-              </p>
-            <% end %>
-          </div>
-
-          <div class="col-md-6 col-lg-4">
-            <%= bootstrap_form_with(model: appointment) do |form| %>
-              <%= form.select :call_result,
-                              {
-                                  "Patient responded" => [["Agreed to visit", "agreed_to_visit"]],
-                                  "No response" => [["Remind to call later", "remind_to_call_later"]],
-                                  "Remove from overdue list" => Appointment.cancel_reasons.map { |key, value| [key.humanize, value] }
-                              },
-                              {
-                                  prompt: "Result of call...",
-                                  hide_label: true
-                              },
-                              onchange: "this.form.submit();"
-              %>
-            <% end %>
-          </div>
-        </div>
-      </div>
+    <% @appointments.sort_by { |a| a.patient.risk_priority }.each do |appointment| %>
+      <%= render(
+        'shared/followup_patient_card',
+        patient: appointment.patient,
+        high_risk: appointment.patient.high_risk?,
+        call_result_options: call_result_options,
+        days_overdue: appointment.days_overdue,
+        form_model: appointment
+      ) %>
     <% end %>
+  <% else %>
+    <div class="overdue-patient">
+      <p class="overdue-title" style="color: #999;">No overdue patients found</p>
     </div>
-  </section>
-<% end %>
+  <% end %>
+</div>
 
 <%= paginate @appointments %>

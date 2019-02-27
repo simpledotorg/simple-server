@@ -1,23 +1,24 @@
 class AppointmentsController < AdminController
+  include FacilityFiltering
+  include Pagination
+
   before_action :set_appointment, only: [:update]
 
   def index
     authorize Appointment, :index?
+
     @appointments = policy_scope(Appointment)
+                      .joins(:patient)
                       .overdue
+                      .where(facility: selected_facilities)
                       .order(scheduled_date: :asc)
-                      .page(params[:page]).per(10)
-  end
 
-  def edit
-  end
-
-  def cancel
+    @appointments = paginate(@appointments)
   end
 
   def update
     if @appointment.update(appointment_params)
-      redirect_to appointments_url, notice: "Saved call result. #{@appointment.patient.full_name}: #{@appointment.call_result.humanize}"
+      redirect_to appointments_url, notice: "Saved. #{@appointment.patient.full_name} marked as \"#{@appointment.call_result.humanize}\""
     else
       redirect_back fallback_location: root_path, alert: 'Something went wrong!'
     end
