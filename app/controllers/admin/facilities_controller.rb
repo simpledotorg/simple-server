@@ -24,7 +24,7 @@ class Admin::FacilitiesController < AdminController
     authorize @facility
 
     if @facility.save
-      redirect_to [:admin, @facility], notice: 'Facility was successfully created.'
+      redirect_to admin_facilities_path, notice: 'Facility was successfully created.'
     else
       render :new
     end

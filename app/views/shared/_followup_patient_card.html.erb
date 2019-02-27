@@ -1,0 +1,46 @@
+<section class="overdue-patient">
+  <% if days_overdue.present? %>
+    <div class="overdue-time">
+      <%= days_overdue %> days overdue
+    </div>
+  <% end %>
+  <div class="overdue-title">
+    <%= patient.full_name %>,
+    <%= patient.gender.capitalize %>,
+    <%= patient.current_age %>
+  </div>
+  <% if bp = patient.latest_blood_pressure %>
+    <div class="overdue-details">
+      Last BP:
+      <%= bp.to_s %>&nbsp
+      recorded at <%= bp.facility.name %>
+      <%= time_ago_in_words(bp.device_created_at.to_date) %> ago
+    </div>
+  <% end %>
+  <div class="overdue-details">
+    Home:
+    <%= patient.address.street_address %>,
+    <%= patient.address.village_or_colony %>
+  </div>
+  <div class="row mt-2">
+    <div class="col-md-6 col-lg-4 overdue-button">
+      <% if phone_number = patient.phone_numbers.first&.number %>
+        <a href="tel:<%= phone_number %>" class="btn btn-info btn-phone w-100">&#128222; <%= phone_number %></a>
+      <% else %>
+        <a href="3" class="btn btn-info disabled w-100">&lt; No mobile &gt;</a>
+      <% end %>
+    </div>
+    <div class="col-md-6 col-lg-4 overdue-form">
+      <%= bootstrap_form_with(model: form_model) do |form| %>
+        <%= form.select :call_result,
+                        call_result_options,
+                        {
+                            prompt: "Result of follow-up...",
+                            hide_label: true
+                        },
+                        onchange: "this.form.submit();"
+        %>
+      <% end %>
+    </div>
+  </div>
+</section>
