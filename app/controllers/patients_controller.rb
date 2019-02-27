@@ -1,18 +1,18 @@
 class PatientsController < AdminController
-  include Admin::FacilityFilteringAndPagination
+  include FacilityFiltering
+  include Pagination
+
   before_action :set_patient, only: [:update]
 
   def index
     authorize Patient, :index?
 
-    patients_to_show = policy_scope(Patient)
-                         .not_contacted
-                         .where(registration_facility: selected_facilities)
-
-    @patients = patients_to_show
+    @patients = policy_scope(Patient)
+                  .not_contacted
+                  .where(registration_facility: selected_facilities)
                   .order(device_created_at: :asc)
-                  .page(params[:page])
-                  .per(paginate(patients_to_show))
+
+    @patients = paginate(@patients)
   end
 
   def update

@@ -1,18 +1,18 @@
 class AppointmentsController < AdminController
-  include Admin::FacilityFilteringAndPagination
+  include FacilityFiltering
+  include Pagination
+
   before_action :set_appointment, only: [:update]
 
   def index
     authorize Appointment, :index?
 
-    appointments_to_show = policy_scope(Appointment)
-                             .overdue
-                             .where(facility: selected_facilities)
-
-    @appointments = appointments_to_show
+    @appointments = policy_scope(Appointment)
+                      .overdue
+                      .where(facility: selected_facilities)
                       .order(scheduled_date: :asc)
-                      .page(params[:page])
-                      .per(paginate(appointments_to_show))
+
+    @appointments = paginate(@appointments)
   end
 
   def update
