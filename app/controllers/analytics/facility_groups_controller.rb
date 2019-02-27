@@ -14,19 +14,13 @@ class Analytics::FacilityGroupsController < AnalyticsController
     @to_time = Date.today
 
     @facilities = @facility_group.facilities
-    @facility_group_analytics = Analytics::FacilityGroupAnalytics.new(
-      @facility_group,
-      days_previous: @days_previous,
-      months_previous: @months_previous,
-      from_time: @from_time,
-      to_time: @to_time
-    ).fetch_from_cache
+    @facility_group_analytics = @facility_group.patient_set_analytics(
+      @from_time,
+      @to_time
+    )
 
     @facility_analytics = @facilities.map do |facility|
-      [facility,
-       Analytics::FacilityAnalytics.new(
-         facility, from_time: @from_time, to_time: @to_time
-       ).fetch_from_cache]
+      [facility, facility.patient_set_analytics(@from_time, @to_time)]
     end.to_h
 
     # Reset when done
@@ -49,11 +43,9 @@ class Analytics::FacilityGroupsController < AnalyticsController
     @to_time = @current_month.at_end_of_month
 
     @facilities = @facility_group.facilities
-    @facility_group_analytics = Analytics::FacilityGroupAnalytics.new(
-      @facility_group,
+    @facility_group_analytics = @facility_group.patient_set_analytics(
       from_time: @from_time,
-      to_time: @to_time,
-      months_previous: @months_previous
+      to_time: @to_time
     )
 
     # Reset when done

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Analytics::FacilityAnalytics do
+RSpec.describe Analytics::UserAnalytics do
   let(:facility) { create :facility }
   let(:user) { create :user }
   let(:user_analytics) { Analytics::UserAnalytics.new(user, facility) }

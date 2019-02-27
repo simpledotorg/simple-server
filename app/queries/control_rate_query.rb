@@ -1,10 +1,10 @@
 class ControlRateQuery
-  attr_reader :facilities
+  attr_reader :patients
 
   COHORT_DELTA = 9.months
 
-  def initialize(facilities:)
-    @facilities = facilities
+  def initialize(patients:)
+    @patients = patients
   end
 
   def for_period(from_time:, to_time:)
@@ -40,7 +40,7 @@ class ControlRateQuery
 
   def hypertensive_patients_recorded_in_period(from_time, to_time)
     BloodPressure.hypertensive
-      .where(facility: facilities)
+      .where(patient: patients)
       .where("device_created_at >= ?", from_time)
       .where("device_created_at <= ?", to_time)
       .pluck(:patient_id)

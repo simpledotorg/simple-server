@@ -5,7 +5,7 @@ class Analytics::FacilitiesController < AnalyticsController
     @facility_group = @facility.facility_group
     @organization = @facility_group.organization
 
-    @facility_analytics = Analytics::FacilityAnalytics.new(@facility, from_time: 90.days.ago, to_time: Date.today).fetch_from_cache
+    @facility_analytics = @facility.patient_set_analytics(90.days.ago, Date.today)
     @user_analytics = users_for_facility.map { |user| [user, Analytics::UserAnalytics.new(user, @facility)] }.to_h
   end
 
@@ -20,9 +20,7 @@ class Analytics::FacilitiesController < AnalyticsController
     @from_time = @current_month
     @to_time = @current_month.at_end_of_month
 
-    @facility_analytics = Analytics::FacilityAnalytics.new(
-      @facility,
-      from_time: @from_time, to_time: @to_time, months_previous: 6)
+    @facility_analytics = @facility.patient_set_analytics(@from_time, @to_time)
   end
 
   private
