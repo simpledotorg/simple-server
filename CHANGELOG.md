@@ -6,6 +6,22 @@
 ### Removed 
 ### Security
 
+# 2019-02-20-1
+## Portal
+### Added
+- 48 hour patient followup list for counsellors
+### Changed
+- Made formatting improvements to the Overdue list.
+- Renamed it to Overdue for Follow-up, improved legibility, improved on mobile.
+- Updated the confirmation dialog message after submitting the Overdue form.
+- Show "No patients" if no patients are overdue at a clinic.
+- Make User phone number comparision case insensitive for checking uniqueness
+### Fixed
+- Fixed overdue time so it never overlaps the patient name
+### Deprecated
+### Removed
+### Security
+
 # 2019-02-19-1
 ## Portal
 ### Added
