@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.feature '48 Hour Followups', type: :feature do
+RSpec.feature 'Adherance follow-ups', type: :feature do
   let!(:counsellor) { create(:admin, :counsellor) }
 
   describe 'index' do
@@ -9,10 +9,10 @@ RSpec.feature '48 Hour Followups', type: :feature do
     it 'shows Overdue tab' do
       visit root_path
 
-      expect(page).to have_content('48 Hour Followups')
+      expect(page).to have_content('Adherance follow-ups')
     end
 
-    describe '48 Hour Followups tab' do
+    describe 'Adherance follow-ups tab' do
       let!(:authorized_facility_group) { counsellor.facility_groups.first }
 
       let!(:facility_1) { create(:facility, facility_group: authorized_facility_group) }
