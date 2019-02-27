@@ -38,12 +38,12 @@
               <% if FeatureToggle.enabled?('PATIENT_FOLLOWUPS') %>
                 <% if policy(Appointment).index? %>
                   <li class="nav-item">
-                    <%= link_to "Overdue Appointments", appointments_path, class: "nav-link #{active_controller?("appointments")}" %>
+                    <%= link_to "Overdue patients", appointments_path, class: "nav-link #{active_controller?("appointments")}" %>
                   </li>
                 <% end %>
                 <% if policy(Patient).index? %>
                   <li class="nav-item">
-                    <%= link_to "48 Hour Followups", patients_path, class: "nav-link #{active_controller?("patients")}" %>
+                    <%= link_to "Adherance follow-ups", patients_path, class: "nav-link #{active_controller?("patients")}" %>
                   </li>
                 <% end %>
 

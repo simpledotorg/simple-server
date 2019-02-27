@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.feature 'Overdue Appointments', type: :feature do
+RSpec.feature 'Overdue appointments', type: :feature do
   let!(:counsellor) { create(:admin, :counsellor) }
 
   describe 'index' do
@@ -9,10 +9,10 @@ RSpec.feature 'Overdue Appointments', type: :feature do
     it 'shows Overdue tab' do
       visit root_path
 
-      expect(page).to have_content('Overdue Appointments')
+      expect(page).to have_content('Overdue patients')
     end
 
-    describe 'Overdue Appointments tab' do
+    describe 'Overdue patients tab' do
       let!(:authorized_facility_group) { counsellor.facility_groups.first }
 
       let!(:facility_1) { create(:facility, facility_group: authorized_facility_group) }
