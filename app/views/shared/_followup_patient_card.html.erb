@@ -2,10 +2,10 @@
   <% if days_overdue.present? %>
     <div class="overdue-time">
       <%= days_overdue %> days overdue
+      <% if high_risk %>
+        <br><span>HIGH RISK</span>
+      <% end %>
     </div>
-  <% end %>
-  <% if high_risk %>
-    <div class="overdue-risk text-offwhite">high risk</div>
   <% end %>
   <div class="overdue-title">
     <%= patient.full_name %>,

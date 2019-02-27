@@ -85,7 +85,6 @@ table {
 .text-red { color: $red; }
 .text-green { color: $green; }
 .text-yellow { color: $yellow-dark; }
-.text-offwhite { color: $offwhite; }
 
 footer {
     padding: 2em 0 1em 0;
@@ -720,7 +719,7 @@ Overdue list
 
 .overdue-time span {
     font-size: 13px;
-    color: #fff;
+    color: $offwhite;
     background: $red;
     border-radius: 3px;
     padding: 2px 5px;
@@ -738,25 +737,6 @@ Overdue list
     padding: 4px 0 0 16px;
     font-size: 12px;
     color: $grey-mid;
-}
-
-.overdue-risk {
-  float: right;
-  margin-top: 25px;
-  display: inline-block;
-  padding: .25em .4em;
-  padding-right: 0.4em;
-  padding-left: 0.4em;
-  font-size: 75%;
-  font-weight: 700;
-  line-height: 1;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: baseline;
-  border-radius: 10rem;
-  color: #fff;
-  background-color: #dc3545;
-  text-transform: capitalize;
 }
 
 /******************
