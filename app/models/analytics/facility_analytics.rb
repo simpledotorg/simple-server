@@ -8,6 +8,23 @@ class Analytics::FacilityAnalytics
     @months_previous = months_previous
   end
 
+  def fetch_from_cache
+    Rails.cache.fetch(cache_key) do
+      { blood_pressures_recorded_per_week: blood_pressures_recorded_per_week,
+        unique_patients_enrolled: unique_patients_enrolled.count,
+        newly_enrolled_patients: newly_enrolled_patients.count,
+        newly_enrolled_patients_per_month: newly_enrolled_patients_per_month,
+        returning_patients: returning_patients.count,
+        non_returning_hypertensive_patients: non_returning_hypertensive_patients.count,
+        non_returning_hypertensive_patients_per_month: non_returning_hypertensive_patients_per_month(4),
+        control_rate: control_rate,
+        control_rate_per_month: control_rate_per_month(4),
+        all_time_patients_count: all_time_patients_count,
+        unique_patients_recorded_per_month: unique_patients_recorded_per_month
+      }
+    end
+  end
+
   def unique_patients_enrolled
     UniquePatientsEnrolledQuery.new(facilities: facility).call
   end
@@ -67,5 +84,15 @@ class Analytics::FacilityAnalytics
       .group_by_month(:device_created_at, last: @months_previous)
       .distinct
       .count(:patient_id)
+  end
+
+  private
+
+  def cache_key
+    "analytics/#{time_cache_key(from_time)}/#{time_cache_key(to_time)}/#{facility.cache_key}"
+  end
+
+  def time_cache_key(time)
+    time.strftime('%Y-%m-%d')
   end
 end

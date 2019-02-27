@@ -9,6 +9,21 @@ class Analytics::FacilityGroupAnalytics
     @to_time = to_time
   end
 
+  def fetch_from_cache
+    Rails.cache.fetch(cache_key) do
+      binding.pry
+      { blood_pressures_recorded_per_week: blood_pressures_recorded_per_week,
+        unique_patients_enrolled: unique_patients_enrolled.count,
+        newly_enrolled_patients: newly_enrolled_patients.count,
+        returning_patients: returning_patients.count,
+        non_returning_hypertensive_patients: non_returning_hypertensive_patients.count,
+        non_returning_hypertensive_patients_per_month: non_returning_hypertensive_patients_per_month(4),
+        control_rate: control_rate,
+        control_rate_per_month: control_rate_per_month(4)
+      }
+    end
+  end
+
   def blood_pressures_recorded_per_week
     BloodPressure.where(facility: facility_group.facilities)
       .group_by_week(:device_created_at, last: 12)
@@ -55,5 +70,15 @@ class Analytics::FacilityGroupAnalytics
   def control_rate_per_month(number_of_months)
     ControlRateQuery.new(facilities: facility_group.facilities)
       .rate_per_month(number_of_months)
+  end
+
+  private
+
+  def cache_key
+    "analytics/#{time_cache_key(from_time)}/#{time_cache_key(to_time)}/#{facility_group.cache_key}"
+  end
+
+  def time_cache_key(time)
+    time.strftime('%Y-%m-%d')
   end
 end
