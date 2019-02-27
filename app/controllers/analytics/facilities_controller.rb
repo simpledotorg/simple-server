@@ -5,7 +5,7 @@ class Analytics::FacilitiesController < AnalyticsController
     @facility_group = @facility.facility_group
     @organization = @facility_group.organization
 
-    @facility_analytics = Analytics::FacilityAnalytics.new(@facility, from_time: 90.days.ago, to_time: Date.today)
+    @facility_analytics = Analytics::FacilityAnalytics.new(@facility, from_time: 90.days.ago, to_time: Date.today).fetch_from_cache
     @user_analytics = users_for_facility.map { |user| [user, Analytics::UserAnalytics.new(user, @facility)] }.to_h
   end
 

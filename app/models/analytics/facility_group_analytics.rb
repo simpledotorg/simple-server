@@ -11,7 +11,6 @@ class Analytics::FacilityGroupAnalytics
 
   def fetch_from_cache
     Rails.cache.fetch(cache_key) do
-      binding.pry
       { blood_pressures_recorded_per_week: blood_pressures_recorded_per_week,
         unique_patients_enrolled: unique_patients_enrolled.count,
         newly_enrolled_patients: newly_enrolled_patients.count,
