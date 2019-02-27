@@ -8,6 +8,7 @@ class AppointmentsController < AdminController
     authorize Appointment, :index?
 
     @appointments = policy_scope(Appointment)
+                      .joins(:patient)
                       .overdue
                       .where(facility: selected_facilities)
                       .order(scheduled_date: :asc)

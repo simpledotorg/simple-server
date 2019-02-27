@@ -3,11 +3,13 @@
 
 <div class="row">
   <div class="col-md-6">
-    <%= render 'shared/paginate_and_filter_by_facility',
-               form_url: patients_path,
-               current_admin: current_admin,
-               facility_id: @facility_id,
-               per_page: @per_page %>
+    <%= render(
+      'shared/paginate_and_filter_by_facility',
+      form_url: patients_path,
+      current_admin: current_admin,
+      facility_id: @facility_id,
+      per_page: @per_page
+    ) %>
   </div>
 </div>
 
@@ -16,18 +18,22 @@
     <% @patients.each do |patient| %>
       <% call_result_options = {
           'Patient contacted' => [['Contacted', 'contacted']],
-          'Remove from list' => Patient.could_not_contact_reasons.map { |key, value| [key.humanize, value] } } %>
-      <%= render 'shared/followup_patient_card',
-                 patient: patient,
-                 call_result_options: call_result_options,
-                 days_overdue: nil,
-                 form_model: patient %>
+          'Remove from list' => Patient.could_not_contact_reasons.map { |key, value| [key.humanize, value] }
+      } %>
+
+      <%= render(
+        'shared/followup_patient_card',
+        patient: patient,
+        call_result_options: call_result_options,
+        days_overdue: nil,
+        form_model: patient
+      ) %>
     <% end %>
   <% else %>
     <div class="overdue-patient">
-      <p class="overdue-title" style="color: #999;">&lt; No patients to followup &gt;</p>
+      <p class="overdue-title" style="color: #999;">&lt; No patients to follow up &gt;</p>
     </div>
   <% end %>
 </div>
 
-<%= paginate @patients if @patients.present? %>
+<%= paginate @patients %>
