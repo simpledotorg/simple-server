@@ -14,7 +14,7 @@
       Last BP:
       <%= bp.to_s %>&nbsp
       recorded at <%= bp.facility.name %>
-      <%= time_ago_in_words(bp.device_created_at.to_date) %> ago
+      <%= rounded_time_ago_in_words(bp.device_created_at.to_date) %>
     </div>
   <% end %>
   <div class="overdue-details">
