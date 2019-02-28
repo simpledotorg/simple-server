@@ -13,4 +13,16 @@ module ApplicationHelper
       flash_type.to_s
     end
   end
+
+  def rounded_time_ago_in_words(date)
+    if date == Date.today
+      "Today"
+    elsif date == Date.yesterday
+      "Yesterday"
+    elsif date <= 1.year.ago
+      date.strftime("%d/%m/%Y")
+    else
+      "#{time_ago_in_words(date)} ago".html_safe
+    end
+  end
 end
