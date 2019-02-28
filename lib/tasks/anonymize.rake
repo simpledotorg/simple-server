@@ -218,6 +218,16 @@ namespace :anonymize do
         anonymize_uuid 'appointment_id'
         whitelist 'user_id'
       end
+    end
+  end
+
+  desc 'Anonymize production users into application database'
+  task :users do
+    database 'SimpleServerDatabase' do
+      
+      strategy DataAnon::Strategy::Whitelist
+      source_db source_db_config
+      destination_db destination_db_config
 
       table 'users' do
         primary_key 'id'
