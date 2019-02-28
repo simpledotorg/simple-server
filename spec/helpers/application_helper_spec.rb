@@ -14,7 +14,7 @@ describe ApplicationHelper do
 
     it 'should return date in dd/mm/yyyy format if date is more than a year' do
       date = Date.parse('31-12-2016')
-      expect(rounded_time_ago_in_words(date)).to eq("31/12/2016")
+      expect(rounded_time_ago_in_words(date)).to eq("on 31/12/2016")
     end
 
     it 'should return date in number of ago if date is less than a year ago' do
