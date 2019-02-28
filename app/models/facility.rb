@@ -20,6 +20,7 @@ class Facility < ApplicationRecord
   validates :pin, numericality: true, allow_blank: true
 
   delegate :protocol, to: :facility_group, allow_nil: true
+  delegate :organization, to: :facility_group, allow_nil: true
 
   friendly_id :name, use: :slugged
 end
