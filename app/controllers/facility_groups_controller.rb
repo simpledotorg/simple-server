@@ -13,6 +13,7 @@ class FacilityGroupsController < AdminController
     @months_previous = 8
 
     @facilities = @facility_group.facilities
+    @users_by_facility = users_by_facility(@facility_group)
     @visits_by_facility = visits_by_facility(@facility_group)
     @visits_by_facility_user = visits_by_facility_user(@facility_group)
     @visits_by_facility_user_day = visits_by_facility_user_day(@facility_group)
@@ -29,6 +30,16 @@ class FacilityGroupsController < AdminController
 
   def blood_pressures_in_facility_group(facility_group)
     BloodPressure.where(facility: @facilities)
+  end
+
+  def users_by_facility(facility_group)
+    facility_users = Hash.new { |hash, key| hash[key] = Array.new }
+
+    blood_pressures_in_facility_group(facility_group).select(:facility_id, :user_id).distinct.each do |bp|
+      facility_users[bp.facility] << bp.user
+    end
+
+    facility_users
   end
 
   def visits_by_facility(facility_group)
