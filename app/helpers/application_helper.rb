@@ -20,7 +20,7 @@ module ApplicationHelper
     elsif date == Date.yesterday
       "Yesterday"
     elsif date <= 1.year.ago
-      date.strftime("%d/%m/%Y")
+      "on #{date.strftime("%d/%m/%Y")}".html_safe
     else
       "#{time_ago_in_words(date)} ago".html_safe
     end
