@@ -12,7 +12,10 @@ class Api::Current::PatientPayloadValidator < Api::Current::PayloadValidator
     :updated_at,
     :deleted_at,
     :address,
-    :phone_numbers
+    :phone_numbers,
+    :contacted_by_counsellor,
+    :could_not_contact_reason,
+    :call_result
   )
 
   validate :validate_schema
