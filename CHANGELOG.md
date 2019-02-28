@@ -6,6 +6,33 @@
 ### Removed 
 ### Security
 
+# 2019-02-28-1
+## API
+### Added
+### Changed
+### Fixed
+- Fix list of organization owner emails while sending approval notifications
+### Deprecated
+### Removed
+### Security
+
+## Portal
+### Added
+- Allow filtering by facility in overdue patients and 48 hour follow up lists
+- Allow patients per page selection in overdue patients and 48 hour follow up lists
+### Changed
+- Format the way we display when last BP was recorded
+- Overdue patients and 48 hour follow up lists
+  - Sort facilities by alphanumeric name
+  - Made page titles and descriptions more concise
+  - Copy fixes
+### Fixed
+- Fix errors in organization owner flows for creating facilties and faciltiy groups
+- Anonymize users on sandbox
+### Deprecated
+### Removed
+### Security
+
 # 2019-02-20-1
 ## Portal
 ### Added
