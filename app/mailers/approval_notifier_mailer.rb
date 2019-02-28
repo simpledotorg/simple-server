@@ -26,15 +26,11 @@ class ApprovalNotifierMailer < ApplicationMailer
   private
 
   def supervisor_emails
-    admin_emails('supervisor').join(',')
+    user.facility_group.admins.where(role: 'supervisor').pluck(:email).join(',')
   end
 
   def organization_owner_emails
-    admin_emails('organization_owner').join(',')
-  end
-
-  def admin_emails(role)
-    user.facility_group.admins.where(role: role).pluck(:email)
+    user.organization.admins.where(role: 'organization_owner').pluck(:email).join(',')
   end
 
   def owner_emails
