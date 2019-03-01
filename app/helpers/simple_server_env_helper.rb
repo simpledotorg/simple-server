@@ -21,4 +21,14 @@ module SimpleServerEnvHelper
 
     CUSTOMIZED_ENVS.include?(env) ? "Simple Server #{env.capitalize} Logo" : "Simple Server Logo"
   end
+
+  def get_title_for_environment
+    title = I18n.t('admin.dashboard_title')
+    env = ENV.fetch("SIMPLE_SERVER_ENV")
+
+    return title if env.downcase == "production"
+
+    prefix = CUSTOMIZED_ENVS.include?(env) ? "[#{env.humanize}] " : ""
+    prefix + title
+  end
 end
