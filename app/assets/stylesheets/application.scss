@@ -789,6 +789,20 @@ staging environment styles
   background-color: #f8f9fa;
 }
 
+.navbar-staging li {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.navbar-staging li > a {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.navbar-staging li > a.active {
+  color: rgba(0, 0, 0, 0.5);
+  font-weight: bold;
+}
+
+
 
 /*****************************
 sandbox environment styles
@@ -816,18 +830,41 @@ qa environment styles
 ******************************/
 
 .navbar-qa {
-  background-color: #0c3966;
+  background-color: #f8f9fa;
 }
 
 .navbar-qa li {
-  color: white;
+  color: rgba(0, 0, 0, 0.5);
 }
 
 .navbar-qa li > a {
-  color: white;
+  color: rgba(0, 0, 0, 0.5);
 }
 
 .navbar-qa li > a.active {
-  color: white;
+  color: rgba(0, 0, 0, 0.5);
   font-weight: bold;
 }
+
+
+/*****************************
+qa development styles
+******************************/
+
+.navbar-development {
+  background-color: #f8f9fa;
+}
+
+.navbar-development li {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.navbar-development li > a {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.navbar-development li > a.active {
+  color: rgba(0, 0, 0, 0.5);
+  font-weight: bold;
+}
+

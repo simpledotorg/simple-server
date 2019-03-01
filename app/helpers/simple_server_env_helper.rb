@@ -1,16 +1,14 @@
 module SimpleServerEnvHelper
-  SIMPLE_SERVER_ENV = "SIMPLE_SERVER_ENV".freeze
-
-  CUSTOMIZED_ENVS = %w[qa staging sandbox production].freeze
+  CUSTOMIZED_ENVS = %w[development qa staging sandbox production].freeze
 
   def style_class_for_environment
-    env = ENV.fetch(SIMPLE_SERVER_ENV)
+    env = ENV.fetch("SIMPLE_SERVER_ENV")
 
     CUSTOMIZED_ENVS.include?(env) ? "navbar-#{env}" : "navbar-light bg-light"
   end
 
   def logo_for_environment
-    env = ENV.fetch(SIMPLE_SERVER_ENV)
+    env = ENV.fetch("SIMPLE_SERVER_ENV")
 
     image_name = CUSTOMIZED_ENVS.include?(env) ? "simple_logo_#{env}.svg" : "simple_logo.svg"
 
@@ -19,7 +17,7 @@ module SimpleServerEnvHelper
   end
 
   def alt_for_environment
-    env = ENV.fetch(SIMPLE_SERVER_ENV)
+    env = ENV.fetch("SIMPLE_SERVER_ENV")
 
     CUSTOMIZED_ENVS.include?(env) ? "Simple Server #{env.capitalize} Logo" : "Simple Server Logo"
   end
