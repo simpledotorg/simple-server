@@ -18,11 +18,11 @@ RSpec.feature 'Adherance follow-ups', type: :feature do
       let!(:facility_1) { create(:facility, facility_group: authorized_facility_group) }
 
       let!(:patient_to_followup_in_facility_1) do
-        create(:patient, registration_facility: facility_1, device_created_at: 10.days.ago)
+        create(:patient, full_name: 'patient_1', registration_facility: facility_1, device_created_at: 10.days.ago)
       end
 
       let!(:patient_to_not_followup_in_facility_1) do
-        create(:patient, registration_facility: facility_1, device_created_at: 1.day.ago)
+        create(:patient, full_name: 'patient_2', registration_facility: facility_1, device_created_at: 1.day.ago)
       end
 
       let!(:facility_2) { create(:facility, facility_group: authorized_facility_group) }
@@ -36,7 +36,7 @@ RSpec.feature 'Adherance follow-ups', type: :feature do
       let!(:unauthorized_facility) { create(:facility, facility_group: unauthorized_facility_group) }
 
       let!(:patient_to_followup_in_unauthorized_facility) do
-        create(:patient, registration_facility: unauthorized_facility, device_created_at: 3.days.ago)
+        create(:patient, full_name: 'patient_3', registration_facility: unauthorized_facility, device_created_at: 3.days.ago)
       end
 
       before do
