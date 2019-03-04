@@ -22,7 +22,7 @@
     </thead>
     <tbody>
       <% @facilities.sort_by(&:name).each do |facility| %>
-        <% next if @visits_by_facility.fetch(facility.id, 0)  == 0 %>
+        <% next if @visits_by_facility.fetch(facility.id, 0) == 0 %>
 
         <tr class="table-info table-row-small">
           <td class="row-title"><strong><%= facility.name %></strong></td>
@@ -32,7 +32,7 @@
           <% end %>
         </tr>
 
-        <% facility.users.sort_by(&:full_name).each do |user| %>
+        <% @users_by_facility[facility].sort_by(&:full_name).each do |user| %>
           <tr class="table-row-small">
             <td class="pl-lg-4"><%= user.full_name %></td>
             <td class="text-center">
