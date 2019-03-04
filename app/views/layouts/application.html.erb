@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Simple Server</title>
+    <title><%= get_title_for_environment %></title>
     <%= csrf_meta_tags %>
 
     <meta charset="utf-8">
@@ -19,10 +19,10 @@
   </head>
 
   <body>
-    <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top">
+    <nav class="navbar navbar-expand-md fixed-top <%= style_class_for_environment %>">
       <div class="container">
         <%= link_to root_path, class: "navbar-brand" do %>
-          <%= image_tag "simple_logo.svg", width: 30, height: 30, class: "d-inline-block mr-2 align-top", alt: "Simple Server Logo" %>
+          <%= logo_for_environment %>
         <% end %>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
