@@ -75,7 +75,7 @@ describe Patient, type: :model do
     it 'should return highest priority for patients overdue with critical bp' do
       patient = create(:patient)
       create(:blood_pressure, :critical, patient: patient)
-      create(:appointment, :overdue, patient: patient)
+      create(:appointment, scheduled_date: 31.days.ago, status: :scheduled, patient: patient)
 
       expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:HIGHEST])
     end

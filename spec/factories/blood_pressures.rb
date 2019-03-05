@@ -11,8 +11,8 @@ FactoryBot.define do
     user
 
     trait :critical do
-      systolic 180
-      diastolic 110
+      systolic 181
+      diastolic 111
     end
 
     trait :very_high do
