@@ -64,7 +64,7 @@ class Patient < ApplicationRecord
 
     if latest_blood_pressure&.critical?
       RISK_PRIORITIES[:HIGHEST]
-    elsif medical_history&.risk_history?
+    elsif medical_history&.indicates_risk?
       RISK_PRIORITIES[:VERY_HIGH]
     elsif latest_blood_pressure&.very_high?
       RISK_PRIORITIES[:HIGH]
@@ -92,19 +92,6 @@ class Patient < ApplicationRecord
     end
   end
 
-  private
-
-  def low_risk?
-    latest_scheduled_appointment.overdue_for_over_a_year? &&
-      latest_blood_pressure&.under_control?
-  end
-
-  def self.not_contacted
-    where(contacted_by_counsellor: false)
-      .where(could_not_contact_reason: nil)
-      .where('device_created_at <= ?', 2.days.ago)
-  end
-
   def call_result=(new_call_result)
     if new_call_result == 'contacted'
       self.contacted_by_counsellor = true
@@ -118,5 +105,18 @@ class Patient < ApplicationRecord
     end
 
     super(new_call_result)
+  end
+
+  def self.not_contacted
+    where(contacted_by_counsellor: false)
+      .where(could_not_contact_reason: nil)
+      .where('device_created_at <= ?', 2.days.ago)
+  end
+
+  private
+
+  def low_risk?
+    latest_scheduled_appointment.overdue_for_over_a_year? &&
+      latest_blood_pressure&.under_control?
   end
 end

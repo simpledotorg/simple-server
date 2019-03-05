@@ -56,8 +56,7 @@ RSpec.describe BloodPressure, type: :model do
     describe "#critical?" do
       [{ systolic: 181, diastolic: 111 },
        { systolic: 181, diastolic: 109 },
-       { systolic: 179, diastolic: 111 }]
-        .each do |row|
+       { systolic: 179, diastolic: 111 }].each do |row|
         it "returns true if bp is in a critical state" do
           bp = create(:blood_pressure, systolic: row[:systolic], diastolic: row[:diastolic])
           expect(bp.critical?).to eq(true)

@@ -27,7 +27,7 @@ class MedicalHistory < ApplicationRecord
   enum diabetes: MEDICAL_HISTORY_ANSWERS, _prefix: true
   enum diagnosed_with_hypertension: MEDICAL_HISTORY_ANSWERS, _prefix: true
 
-  def risk_history?
+  def indicates_risk?
     prior_heart_attack_boolean ||
       prior_stroke_boolean ||
       diabetes_boolean ||

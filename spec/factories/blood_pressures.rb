@@ -11,23 +11,23 @@ FactoryBot.define do
     user
 
     trait :critical do
-      systolic { rand(180..240) }
-      diastolic { rand(110..140) }
+      systolic 180
+      diastolic 110
     end
 
     trait :very_high do
-      systolic { rand(160..179) }
-      diastolic { rand(100..109) }
+      systolic 160
+      diastolic 100
     end
 
     trait :high do
-      systolic { rand(140..159) }
-      diastolic { rand(90..99) }
+      systolic 140
+      diastolic 90
     end
 
     trait :under_control do
-      systolic { rand(80..140) }
-      diastolic { rand(60..90) }
+      systolic 80
+      diastolic 60
     end
   end
 end

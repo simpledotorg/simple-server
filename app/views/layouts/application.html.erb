@@ -48,7 +48,7 @@
                 <% end %>
 
               <% end %>
-              <% unless ['counsellor', 'analyst'].include?(current_admin.role)  %>
+              <% unless current_admin.has_role?(:counsellor, :analyst) %>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle dropdown-more" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   Manage
