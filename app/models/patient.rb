@@ -70,7 +70,7 @@ class Patient < ApplicationRecord
       RISK_PRIORITIES[:HIGH]
     elsif latest_blood_pressure&.high?
       RISK_PRIORITIES[:REGULAR]
-    elsif low_risk?
+    elsif low_priority?
       RISK_PRIORITIES[:LOW]
     else
       RISK_PRIORITIES[:NONE]
@@ -115,7 +115,7 @@ class Patient < ApplicationRecord
 
   private
 
-  def low_risk?
+  def low_priority?
     latest_scheduled_appointment.overdue_for_over_a_year? &&
       latest_blood_pressure&.under_control?
   end
