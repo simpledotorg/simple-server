@@ -33,6 +33,26 @@
 ### Removed
 ### Security
 
+# 2019-03-05-1
+## Portal
+### Added
+- Added a setup script
+### Changed
+- Show logo and header colour as per current deployment env config
+  - Change logo and banner (header) colour of simple server as per SIMPLE_SERVER_ENV
+  - Added deployment env string to page title
+### Fixed
+- Correctly display BP counts for users who switch facilities
+- Hide BPs with orphaned User associations
+- List all users who have ever recorded a BP in each facility
+### Deprecated
+### Removed
+### Security
+- Upgrade bootstrap
+  - In Bootstrap 4 before 4.3.1 and Bootstrap 3 before 3.4.1, XSS is possible in the tooltip or popover data-template attribute.
+  - For more information, see: https://blog.getbootstrap.com/2019/02/13/bootstrap-4-3-1-and-3-4-1/
+
+
 # 2019-02-20-1
 ## Portal
 ### Added
