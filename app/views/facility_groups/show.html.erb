@@ -32,7 +32,7 @@
           <% end %>
         </tr>
 
-        <% @users_by_facility[facility].sort_by(&:full_name).each do |user| %>
+        <% @users_by_facility[facility].compact.sort_by(&:full_name).each do |user| %>
           <tr class="table-row-small">
             <td class="pl-lg-4"><%= user.full_name %></td>
             <td class="text-center">
