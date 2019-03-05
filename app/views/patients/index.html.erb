@@ -36,4 +36,4 @@
   <% end %>
 </div>
 
-<%= paginate @patients %>
+<%= paginate @patients if @patients.present? %>
