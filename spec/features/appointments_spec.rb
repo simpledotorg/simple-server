@@ -18,17 +18,17 @@ RSpec.feature 'Overdue appointments', type: :feature do
       let!(:facility_1) { create(:facility, facility_group: authorized_facility_group) }
 
       let!(:overdue_patient_in_facility_1) do
-        patient = create(:patient, registration_facility: facility_1)
+        patient = create(:patient, full_name: 'patient_1', registration_facility: facility_1)
         create(:appointment, :overdue, facility: facility_1, patient: patient, scheduled_date: 10.days.ago)
         patient
       end
 
-      let!(:non_overdue_patient_in_facility_1) { create(:patient, registration_facility: facility_1) }
+      let!(:non_overdue_patient_in_facility_1) { create(:patient, full_name: 'patient_2', registration_facility: facility_1) }
 
       let!(:facility_2) { create(:facility, facility_group: authorized_facility_group) }
 
       let!(:overdue_patient_in_facility_2) do
-        patient = create(:patient, registration_facility: facility_2)
+        patient = create(:patient, full_name: 'patient_3', registration_facility: facility_2)
         create(:appointment, :overdue, facility: facility_2, patient: patient, scheduled_date: 5.days.ago)
         patient
       end
@@ -38,7 +38,7 @@ RSpec.feature 'Overdue appointments', type: :feature do
       let!(:unauthorized_facility) { create(:facility, facility_group: unauthorized_facility_group) }
 
       let!(:overdue_patient_in_unauthorized_facility) do
-        patient = create(:patient, registration_facility: unauthorized_facility)
+        patient = create(:patient, full_name: 'patient_4', registration_facility: unauthorized_facility)
         create(:appointment, :overdue, facility: unauthorized_facility, patient: patient)
         patient
       end
