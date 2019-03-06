@@ -26,7 +26,7 @@ RSpec.describe Analytics::PatientSetAnalytics do
     end
   end
 
-  describe '#newly_enrolled_patients_count_per_month' do
+  xdescribe '#newly_enrolled_patients_count_per_month' do
     it 'returns the number of patients newly enrolled per month' do
       expected_counts = {}
       5.times do
@@ -77,7 +77,7 @@ RSpec.describe Analytics::PatientSetAnalytics do
     end
   end
 
-  describe '#non_returning_hypertensive_patients_count_per_month' do
+  xdescribe '#non_returning_hypertensive_patients_count_per_month' do
     it 'return the number of patients enrolled as hypertensives that have not had a BP recorded per month' do
       expected_counts = {}
       4.times do |n|
@@ -128,7 +128,7 @@ RSpec.describe Analytics::PatientSetAnalytics do
     end
   end
 
-  describe '#blood_pressure_recored_per_week' do
+  xdescribe '#blood_pressure_recored_per_week' do
     it 'returns the number of blood pressures recorded per week for a group of patients' do
       patients = create_list_in_period :patient, 5, from_time: 1.year.ago, to_time: to_time
 

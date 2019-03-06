@@ -23,7 +23,7 @@ RSpec.describe PatientsReturningDuringPeriodQuery do
           patient: patient, facility: patient.registration_facility)
       end
 
-      results = PatientsReturningDuringPeriodQuery.new(facilities: facilities, from_time: from_time, to_time: to_time).call
+      results = PatientsReturningDuringPeriodQuery.new(patients: Patient.all, from_time: from_time, to_time: to_time).call
 
       expect(results).to match_array(returning_patients)
       expect(results).not_to include(old_patients - returning_patients)

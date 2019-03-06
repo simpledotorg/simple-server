@@ -32,7 +32,7 @@ RSpec.describe PatientsReturningDuringPeriodQuery do
 
   describe '#call' do
     it 'returns the number of unique patients registerted at a list of facilities' do
-      results = ControlRateQuery.new(facilities: facilities).for_period(from_time: from_time, to_time: to_time)
+      results = ControlRateQuery.new(patients: Patient.all).for_period(from_time: from_time, to_time: to_time)
 
       expect(results)
         .to eq(control_rate: 40,
