@@ -9,6 +9,16 @@ FactoryBot.define do
     association :facility, strategy: :build
     association :patient, strategy: :build
     user
+
+    trait :hypertensive do
+      systolic { rand(140..240) }
+      diastolic { rand(90..140) }
+    end
+
+    trait :under_control do
+      systolic { rand(80..140) }
+      diastolic { rand(60..90) }
+    end
   end
 end
 
