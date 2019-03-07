@@ -8,7 +8,6 @@
       @facility,
       month: analytics_date_format(Time.now.at_beginning_of_month)) %>
 
-
   <div class="featured">
     <table class="featured-table">
       <tr>
@@ -33,7 +32,6 @@
         </td>
       </tr>
     </table>
-
   </div>
 </div>
 
@@ -79,7 +77,6 @@
           <td class="row-unique-date row-total"><%= @user_analytics.values.map(&:returning_patients_count_at_facility).sum %></td>
           </td>
 
-
           <% @facility_analytics[:blood_pressures_recorded_per_week].sort.each do |_key, value| %>
             <td class="row-unique-date"><%= value != 0 ? value : '-' %></td>
           <% end %>
@@ -92,71 +89,6 @@
 <% else %>
   <section class="table-compact">No Users Analytics For Facility</section>
 <% end %>
-
-<!--
-<section>
-
-  <h4>Overdue patients: "Didn't Attend"</h4>
-
-  <div class="overdue-patient">
-    <div class="overdue-time text-red">4 days overdue <br><span>HIGH RISK</span></div>
-    <div class="overdue-title">Anish Acharya, Male, 43</div>
-    <table class="overdue-details">
-      <tr>
-        <td>Last BP:</td>
-        <td>175/86 &nbsp; 5 days ago</td>
-      </tr>
-      <tr>
-        <td>Home:</td>
-        <td>Carroll Gardens, Brooklyn, NY</td>
-      </tr>
-      <tr>
-        <td>Mobile:</td>
-        <td>+91 1234 5678</td>
-      </tr>
-    </table>
-  </div>
-
-  <div class="overdue-patient">
-    <div class="overdue-time text-red">4 days overdue <br><span>HIGH RISK</span></div>
-    <div class="overdue-title">Anish Acharya, Male, 43</div>
-    <table class="overdue-details">
-      <tr>
-        <td>Last BP:</td>
-        <td>175/86 &nbsp; 5 days ago</td>
-      </tr>
-      <tr>
-        <td>Home:</td>
-        <td>Carroll Gardens, Brooklyn, NY</td>
-      </tr>
-      <tr>
-        <td>Mobile:</td>
-        <td>+91 1234 5678</td>
-      </tr>
-    </table>
-  </div>
-
-  <div class="overdue-patient">
-    <div class="overdue-time text-red">4 days overdue <br><span>HIGH RISK</span></div>
-    <div class="overdue-title">Anish Acharya, Male, 43</div>
-    <table class="overdue-details">
-      <tr>
-        <td>Last BP:</td>
-        <td>175/86 &nbsp; 5 days ago</td>
-      </tr>
-      <tr>
-        <td>Home:</td>
-        <td>Carroll Gardens, Brooklyn, NY</td>
-      </tr>
-      <tr>
-        <td>Mobile:</td>
-        <td>+91 1234 5678</td>
-      </tr>
-    </table>
-  </div>
-
-</section>
--->
 
 <section>
   <h4>Notes</h4>

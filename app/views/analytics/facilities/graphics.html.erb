@@ -105,40 +105,17 @@
             <%= render "shared/analytics/non_returning_hypertensive_patients_panel",
                        non_returning_hypertensive_patients_count: @facility_analytics.non_returning_hypertensive_patients.count,
                        non_returning_hypertensive_patients_per_month:  @facility_analytics.non_returning_hypertensive_patients_per_month(4) %>
-
-            <!-- We do not record any communications yet. This number will be zero for all facilities
-             <div class="featured-footer">
-              <strong>Contact attempts:</strong>
-              <span>401 calls</span>
-            </div>
-            -->
-
           </td>
           <td class="featured-td">
             <%= render "shared/analytics/control_rate_panel",
                        goal: 45,
                        control_rate: @facility_analytics.control_rate[:control_rate],
                        control_rate_per_month: @facility_analytics.control_rate_per_month(4) %>
-
-            <!--
-            <div class="featured-footer">
-              <strong>District average:</strong>
-              <span>42% control</span>
-            </div>
-            -->
-
           </td>
         </tr>
       </table>
-
     </div>
   </div>
-
-  <!--
-  <div class="snapshot-goal">
-    <b>Goal: 65% BP control.</b> To achieve the goal, 776 more hypertensive patients need to get their BP &lt; 140/90
-  </div>
-  -->
 
   <div style="margin-top: 8px; padding-top: 6px; color: #999; margin-right: 0; border-top: 1px solid #F0F2F5;">
     <p class="footnote"><strong>Didn't attend</strong> patients are enrolled hypertensives that have not had a BP
