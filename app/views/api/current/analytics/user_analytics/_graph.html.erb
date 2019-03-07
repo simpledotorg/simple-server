@@ -1,0 +1,14 @@
+<div>
+  <table>
+    <tr>
+      <% graph_data.each do |key, value| %>
+        <td>
+          <%= content_tag 'div', value,
+                          options.merge(class: "featured-graph-column #{column_class}",
+                                        style: column_height_styles(value, max_value: max_value, max_height: 50)) %>
+          <span class="featured-month"><%= key %></span>
+        </td>
+      <% end %>
+    </tr>
+  </table>
+</div>

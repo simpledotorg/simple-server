@@ -4,11 +4,13 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
   WEEKS_TO_REPORT = 4
 
   def show
-    @stats_for_user = new_patients_by_facility_week
+    Timecop.travel(3.months.ago) do
+      @stats_for_user = new_patients_by_facility_week
 
-    respond_to do |format|
-      format.html { render :show }
-      format.json { render json: @stats_for_user }
+      respond_to do |format|
+        format.html { render :show }
+        format.json { render json: @stats_for_user }
+      end
     end
   end
 
