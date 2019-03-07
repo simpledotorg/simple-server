@@ -19,7 +19,7 @@ describe ApplicationHelper do
 
     it 'should return date in number of ago if date is less than a year ago' do
       expect(rounded_time_ago_in_words(31.days.ago.to_date)).to eq("about 1 month ago")
-      expect(rounded_time_ago_in_words(2.months.ago.to_date)).to eq("2 months ago")
+      expect(rounded_time_ago_in_words(2.months.ago.to_date)).to eq("about 2 months ago")
       expect(rounded_time_ago_in_words(11.months.ago.to_date)).to eq("11 months ago")
     end
   end

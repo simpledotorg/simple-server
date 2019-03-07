@@ -28,9 +28,13 @@ def whitelist_timestamps
   whitelist 'device_created_at', 'device_updated_at', 'created_at', 'updated_at'
 end
 
+def hashed_uuid(uuid)
+  UUIDTools::UUID.md5_create(UUIDTools::UUID_DNS_NAMESPACE, { uuid: uuid }.to_s).to_s
+end
+
 def anonymize_uuid(column)
   anonymize(column) do |field|
-    UUIDTools::UUID.md5_create(UUIDTools::UUID_DNS_NAMESPACE, { uuid: field.value }.to_s).to_s
+    hashed_uuid(field.value)
   end
 end
 
@@ -224,7 +228,7 @@ namespace :anonymize do
   desc 'Anonymize production users into application database'
   task :users do
     database 'SimpleServerDatabase' do
-      
+
       strategy DataAnon::Strategy::Whitelist
       source_db source_db_config
       destination_db destination_db_config
@@ -246,6 +250,43 @@ namespace :anonymize do
         whitelist 'sync_approval_status_reason'
         whitelist 'deleted_at'
         whitelist 'registration_facility_id'
+      end
+    end
+  end
+
+  desc 'Anonymize audit logs into application database'
+  task :audit_logs do
+    database 'SimpleServerDatabase' do
+
+      strategy DataAnon::Strategy::Whitelist
+      source_db source_db_config
+      destination_db destination_db_config
+
+      MODELS_WITH_ANONYMIZED_PRIMARY_KEYS = %w[
+        Patient
+        Address
+        BloodPressure
+        PrescriptionDrug
+        Appointment
+      ]
+
+      table 'audit_logs' do
+        skip { |_idx, audit_log| audit_log.action == 'fetch' }
+        batch_size 10000
+
+        primary_key 'id'
+        whitelist 'action'
+        whitelist 'auditable_type'
+        anonymize('auditable_id') do |field|
+          if (MODELS_WITH_ANONYMIZED_PRIMARY_KEYS.include?(field.ar_record.auditable_type))
+            hashed_uuid(field.value)
+          else
+            field.value
+          end
+        end
+        whitelist 'updated_at'
+        whitelist 'created_at'
+        whitelist 'user_id'
       end
     end
   end
