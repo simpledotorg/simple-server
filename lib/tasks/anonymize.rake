@@ -271,6 +271,9 @@ namespace :anonymize do
       ]
 
       table 'audit_logs' do
+        skip { |_idx, audit_log| audit_log.action == 'fetch' }
+        batch_size 10000
+
         primary_key 'id'
         whitelist 'action'
         whitelist 'auditable_type'
