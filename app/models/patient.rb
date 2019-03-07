@@ -3,7 +3,7 @@ class Patient < ApplicationRecord
 
   GENDERS = %w[male female transgender].freeze
   STATUSES = %w[active dead migrated unresponsive inactive].freeze
-  RISK_PRIORITIES = {
+  SORTED_RISK_PRIORITIES = {
     HIGHEST: 0,
     VERY_HIGH: 1,
     HIGH: 2,
@@ -60,27 +60,27 @@ class Patient < ApplicationRecord
   end
 
   def risk_priority
-    return RISK_PRIORITIES[:NONE] if latest_scheduled_appointment.overdue_for_under_a_month?
+    return SORTED_RISK_PRIORITIES[:NONE] if latest_scheduled_appointment.overdue_for_under_a_month?
 
     if latest_blood_pressure&.critical?
-      RISK_PRIORITIES[:HIGHEST]
+      SORTED_RISK_PRIORITIES[:HIGHEST]
     elsif medical_history&.indicates_risk?
-      RISK_PRIORITIES[:VERY_HIGH]
+      SORTED_RISK_PRIORITIES[:VERY_HIGH]
     elsif latest_blood_pressure&.very_high?
-      RISK_PRIORITIES[:HIGH]
+      SORTED_RISK_PRIORITIES[:HIGH]
     elsif latest_blood_pressure&.high?
-      RISK_PRIORITIES[:REGULAR]
+      SORTED_RISK_PRIORITIES[:REGULAR]
     elsif low_priority?
-      RISK_PRIORITIES[:LOW]
+      SORTED_RISK_PRIORITIES[:LOW]
     else
-      RISK_PRIORITIES[:NONE]
+      SORTED_RISK_PRIORITIES[:NONE]
     end
   end
 
   def high_risk?
-    [RISK_PRIORITIES[:HIGHEST],
-     RISK_PRIORITIES[:VERY_HIGH],
-     RISK_PRIORITIES[:HIGH]].include?(risk_priority)
+    [SORTED_RISK_PRIORITIES[:HIGHEST],
+     SORTED_RISK_PRIORITIES[:VERY_HIGH],
+     SORTED_RISK_PRIORITIES[:HIGH]].include?(risk_priority)
   end
 
   def current_age

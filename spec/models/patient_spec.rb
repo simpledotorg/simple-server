@@ -69,7 +69,7 @@ describe Patient, type: :model do
       patient = create(:patient)
       create(:appointment, scheduled_date: 29.days.ago, status: :scheduled, patient: patient)
 
-      expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:NONE])
+      expect(patient.risk_priority).to eq(Patient::SORTED_RISK_PRIORITIES[:NONE])
     end
 
     it 'should return highest priority for patients overdue with critical bp' do
@@ -77,7 +77,7 @@ describe Patient, type: :model do
       create(:blood_pressure, :critical, patient: patient)
       create(:appointment, scheduled_date: 31.days.ago, status: :scheduled, patient: patient)
 
-      expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:HIGHEST])
+      expect(patient.risk_priority).to eq(Patient::SORTED_RISK_PRIORITIES[:HIGHEST])
     end
 
     it 'should return very high priority for patients overdue with medical risk history' do
@@ -85,7 +85,7 @@ describe Patient, type: :model do
       create(:medical_history, :prior_risk_history, patient: patient)
       create(:appointment, :overdue, patient: patient)
 
-      expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:VERY_HIGH])
+      expect(patient.risk_priority).to eq(Patient::SORTED_RISK_PRIORITIES[:VERY_HIGH])
     end
 
     it 'should return high priority for patients overdue with very high bp' do
@@ -93,7 +93,7 @@ describe Patient, type: :model do
       create(:blood_pressure, :very_high, patient: patient)
       create(:appointment, :overdue, patient: patient)
 
-      expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:HIGH])
+      expect(patient.risk_priority).to eq(Patient::SORTED_RISK_PRIORITIES[:HIGH])
     end
 
     it 'should return regular priority for patients overdue with high bp' do
@@ -101,7 +101,7 @@ describe Patient, type: :model do
       create(:blood_pressure, :high, patient: patient)
       create(:appointment, :overdue, patient: patient)
 
-      expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:REGULAR])
+      expect(patient.risk_priority).to eq(Patient::SORTED_RISK_PRIORITIES[:REGULAR])
     end
 
     it 'should return low priority for patients overdue with low risk' do
@@ -109,7 +109,7 @@ describe Patient, type: :model do
       create(:blood_pressure, :under_control, patient: patient)
       create(:appointment, scheduled_date: 2.years.ago, status: :scheduled, patient: patient)
 
-      expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:LOW])
+      expect(patient.risk_priority).to eq(Patient::SORTED_RISK_PRIORITIES[:LOW])
     end
   end
 
