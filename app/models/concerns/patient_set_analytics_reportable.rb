@@ -14,8 +14,7 @@ module PatientSetAnalyticsReportable
         newly_enrolled_patients_per_month: analytics.newly_enrolled_patients_count_per_month(@months_previous),
         non_returning_hypertensive_patients_per_month: analytics.non_returning_hypertensive_patients_count_per_month(4),
         control_rate_per_month: analytics.control_rate_per_month(4),
-        unique_patients_recorded_per_month: analytics.unique_patients_count_per_month(4)
-      }
+        unique_patients_recorded_per_month: analytics.unique_patients_count_per_month(4) }
     end
   end
 
