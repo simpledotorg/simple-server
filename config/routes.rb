@@ -130,17 +130,23 @@ Rails.application.routes.draw do
   devise_for :admins, controllers: { invitations: 'admins/invitations' }
   resources :admins
 
-  resources :organizations, only: [:index] do
-    resources :facility_groups, only: [:index, :show] do
-      resources :facilities, only: [:index, :show] do
-      end
+  namespace :analytics do
+    resources :facility_groups, only: [:show] do
+      get :graphics
+    end
+
+    resources :facilities, only: [:show] do
+      get :graphics
     end
   end
+
+  resources :organizations, only: [:index]
 
   if FeatureToggle.enabled?('PATIENT_FOLLOWUPS')
     resources :appointments, only: [:index, :update]
     resources :patients, only: [:index, :update]
   end
+
 
   get "admin", to: redirect("/")
 
