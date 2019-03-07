@@ -34,7 +34,7 @@ RSpec.feature "Home page", type: :feature do
 
     it "links to the facility group" do
       click_link "Bathinda"
-      expect(current_path).to eq organization_facility_group_path(ihmi, ihmi_group_bathinda)
+      expect(current_path).to eq analytics_facility_group_path(ihmi_group_bathinda)
     end
   end
 
