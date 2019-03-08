@@ -29,7 +29,6 @@ gem 'groupdate'
 gem 'data-anonymization', require: false
 gem 'uuidtools', require: false
 gem 'discard', '~> 1.0'
-gem 'chartkick'
 gem 'friendly_id', '~> 5.2.4'
 gem 'kaminari'
 

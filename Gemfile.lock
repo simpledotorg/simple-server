@@ -81,7 +81,6 @@ GEM
       rack (>= 1.6.0)
       rack-test (>= 0.6.3)
       xpath (~> 3.0)
-    chartkick (3.0.2)
     coderay (1.1.2)
     composite_primary_keys (10.0.5)
       activerecord (~> 5.1.0, >= 5.1.6)
@@ -337,7 +336,6 @@ DEPENDENCIES
   capistrano-rails-console
   capistrano-rbenv
   capybara
-  chartkick
   data-anonymization
   devise (~> 4.4.3)
   devise_invitable (~> 1.7.0)
