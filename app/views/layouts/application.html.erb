@@ -48,6 +48,7 @@
                 <% end %>
 
               <% end %>
+              <% unless current_admin.has_role?(:counsellor, :analyst) %>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle dropdown-more" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   Manage
@@ -73,6 +74,7 @@
                   <% end %>
                 </div>
               </li>
+              <% end %>
             </ul>
 
             <ul class="navbar-nav ml-auto">

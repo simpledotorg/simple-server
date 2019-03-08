@@ -2,6 +2,9 @@
   <% if days_overdue.present? %>
     <div class="overdue-time">
       <%= days_overdue %> days overdue
+      <% if high_risk %>
+        <br><span>HIGH RISK</span>
+      <% end %>
     </div>
   <% end %>
   <div class="overdue-title">
@@ -12,7 +15,7 @@
   <% if bp = patient.latest_blood_pressure %>
     <div class="overdue-details">
       Last BP:
-      <%= bp.to_s %>&nbsp
+      <%= bp.to_s %>&nbsp;
       recorded at <%= bp.facility.name %>
       <%= rounded_time_ago_in_words(bp.device_created_at.to_date) %>
     </div>

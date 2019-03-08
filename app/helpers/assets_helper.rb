@@ -11,4 +11,8 @@ module AssetsHelper
   def inline_js(asset_name)
     content_tag(:script, inline_file(asset_name), type: "text/javascript")
   end
+
+  def inline_stylesheet(asset_name)
+    content_tag(:style, inline_file(asset_name), type: "text/css")
+  end
 end

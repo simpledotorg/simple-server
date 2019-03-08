@@ -21,10 +21,11 @@
         'Remove from overdue list' => Appointment.cancel_reasons.map { |key, value| [key.humanize, value] }
     } %>
 
-    <% @appointments.each do |appointment| %>
+    <% @appointments.sort_by { |a| a.patient.risk_priority }.each do |appointment| %>
       <%= render(
         'shared/followup_patient_card',
         patient: appointment.patient,
+        high_risk: appointment.patient.high_risk?,
         call_result_options: call_result_options,
         days_overdue: appointment.days_overdue,
         form_model: appointment
