@@ -22,6 +22,15 @@ $font-medium: 'Roboto Medium';
 
 $blue-dark: #0075eb;
 $blue-light: #e0f0ff;
+
+.analytics-container {
+  background: #ffffff;
+  margin: 8px;
+  padding: 16px;
+  max-height: 450px;
+  border-radius: 4px;
+}
+
 .featured-graph table {
   font-size: 14px;
   margin-top: 0;

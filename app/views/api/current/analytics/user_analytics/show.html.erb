@@ -12,7 +12,7 @@
 </head>
 
 <body style="background: #f0f2f5">
-<div class="row" style="background: #ffffff; margin: 8px; padding: 16px; max-height: 300px;">
+<div class="row analytics-container">
   <div class="col-md-12">
     <h3>How many patients are recorded at CHC Bathinda each week?</h3>
     <div class="featured-graph">
@@ -25,7 +25,7 @@
                               style: column_height_styles(
                                   labelled_value[:value],
                                   max_value: @max_value,
-                                  max_height: 50) %>
+                                  max_height: 200) %>
               <span><%= labelled_value[:label] %></span>
             </td>
           <% end %>
