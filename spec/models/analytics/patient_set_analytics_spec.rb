@@ -28,19 +28,8 @@ RSpec.describe Analytics::PatientSetAnalytics do
 
   describe '#newly_enrolled_patients_count_per_month' do
     it 'returns the number of patients newly enrolled per month' do
-      expected_counts = {}
-      5.times do
-        n = rand(4)
-        start_of_month = (Date.today - n.months).at_beginning_of_month
-        create_in_period :patient, from_time: start_of_month, to_time: start_of_month.at_end_of_month
-
-        date_key = start_of_month.to_date
-        if expected_counts[date_key].present?
-          expected_counts[date_key] += 1
-        else
-          expected_counts[date_key] = 1
-        end
-      end
+      patients = create_list_in_period :patient, 15, from_time: 3.months.ago, to_time: Time.now
+      expected_counts = patients.group_by { |patient| patient.device_created_at.at_beginning_of_month.to_date }.map { |k, v| [k, v.count] }.to_h
 
       analytics = Analytics::PatientSetAnalytics.new(Patient.all, from_time, to_time)
       expect(analytics.newly_enrolled_patients_count_per_month(4)).to include(expected_counts)
@@ -79,16 +68,11 @@ RSpec.describe Analytics::PatientSetAnalytics do
 
   describe '#non_returning_hypertensive_patients_count_per_month' do
     it 'return the number of patients enrolled as hypertensives that have not had a BP recorded per month' do
-      expected_counts = {}
-      4.times do |n|
-        start_of_month = (Date.today - n.months).at_beginning_of_month
-
-        patient = create_in_period :patient, from_time: start_of_month - 9.month, to_time: start_of_month.at_end_of_month - 9.months
-        create :blood_pressure, patient: patient, device_created_at: patient.device_created_at
-
-        date_key = start_of_month.to_date
-        expected_counts[date_key] = 4
-      end
+      count = 15
+      patients = create_list_in_period :patient, count, from_time: 3.months.ago - 9.months, to_time: Time.now - 9.months
+      patients.each { |patient| create :blood_pressure, :hypertensive, patient: patient, device_created_at: patient.device_created_at }
+      expected_counts = patients.group_by { |patient| (patient.device_created_at + 9.months).at_beginning_of_month.to_date }
+                          .map { |k, v| [k, count] }.to_h
 
       analytics = Analytics::PatientSetAnalytics.new(Patient.all, from_time, to_time)
       expect(analytics.non_returning_hypertensive_patients_count_per_month(4)).to include(expected_counts)
