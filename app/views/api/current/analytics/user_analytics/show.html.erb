@@ -7,6 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, shrink-to-fit=no"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
 
+  <%= inline_stylesheet('user_analytics.scss') %>
   <%= inline_js('charts.js') %>
 </head>
 
@@ -14,22 +15,23 @@
 <div class="row" style="background: #ffffff; margin: 8px; padding: 16px; max-height: 300px;">
   <div class="col-md-12">
     <h3>How many patients are recorded at CHC Bathinda each week?</h3>
-    <% max_key = @stats_for_user.keys.max %>
-    <% colors = @stats_for_user.keys.map { |k| k == max_key ? '#0075eb' : '#e0f0ff' } %>
-    <% labels = @stats_for_user.keys.map { |k| k == max_key ? 'This Week' : "#{k.strftime('%B')}" } %>
-    <%= render "graph",
-               options: { id: 'newly-enrolled-patients-per-month-graph' },
-               column_class: 'featured-graph-column-green',
-               graph_data: @stats_for_user
-                   .map { |month, no_of_patients| [month.strftime('%b'), no_of_patients] }.to_h,
-               max_value: @stats_for_user.values.max %>
-
-    <%= column_chart @stats_for_user,
-                     id: 'new_patients_per_week',
-                     height: '200px',
-                     library: { scales: { yAxes: [{ display: false }] } },
-                     legend: { position: 'top' },
-                     dataset: { backgroundColor: colors, borderWidth: 0, cornerRadius: '4px' } %>
+    <div class="featured-graph">
+      <table>
+        <tr>
+          <% @formated_stats.each do |key, labelled_value| %>
+            <td>
+              <%= content_tag 'div', nil,
+                              class: "featured-graph-column #{'active-column' if key == @max_key}",
+                              style: column_height_styles(
+                                  labelled_value[:value],
+                                  max_value: @max_value,
+                                  max_height: 50) %>
+              <span><%= labelled_value[:label] %></span>
+            </td>
+          <% end %>
+        </tr>
+      </table>
+    </div>
   </div>
 </div>
 </body>

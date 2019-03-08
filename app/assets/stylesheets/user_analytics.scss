@@ -1,0 +1,97 @@
+$accent-color: #FF3355; /* PINK */
+
+$red-dark: #B81631;
+$red: #FF3355;
+$green-dark: #007A31;
+$green: #00B849;
+$yellow-dark: #E0B000;
+$yellow: #FFC800;
+
+$offwhite: #f8f9fa;
+
+$grey-lightest: #F0F2F5;
+$grey-light: #DADDE0;
+$grey-mid: #ADB2B8;
+$grey-dark: #6C737A;
+$grey-darkest: #2F363D;
+
+$highlight: #E9F3FF; /* LIGHT BLUE */
+
+$font-medium: 'Roboto Condensed';
+$font-medium: 'Roboto Medium';
+
+$blue-dark: #0075eb;
+$blue-light: #e0f0ff;
+.featured-graph table {
+  font-size: 14px;
+  margin-top: 0;
+  width: 100%;
+}
+
+.featured-label {
+  font-size: 14px;
+  color: $grey-mid;
+  display: block;
+  font-family: $font-medium;
+  font-family: $font-medium;
+}
+
+.featured-graph table td {
+  vertical-align: bottom;
+}
+
+.featured-graph-column {
+  background: $blue-light;
+  font-family: $font-medium;
+  color: $grey-dark;
+  text-align: center;
+  border-radius: 4px 4px 0 0;
+}
+
+.active-column {
+  background: $blue-dark !important;
+}
+
+.featured-td {
+  vertical-align: top;
+  width: 33.3333%;
+}
+
+.snapshot-simple .featured-graph-column {
+  font-size: 14px;
+}
+
+.featured-number {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.snapshot-simple .featured-number {
+  font-size: 18px;
+  margin-bottom: 8px;
+  display: block;
+  font-weight: 700;
+}
+
+.graph-label {
+  display: block;
+  font-family: $font-medium;
+  text-align: center;
+  margin-top: 8px;
+
+  p {
+    margin: 1px;
+  }
+
+  p:nth-child(1) {
+    color: $blue-dark;
+  }
+
+  p:nth-child(2) {
+    color: $grey-darkest;
+  }
+
+  p:nth-child(3) {
+    color: $grey-mid;
+  }
+}
