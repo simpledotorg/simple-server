@@ -67,6 +67,11 @@ Rails.application.routes.draw do
       get 'ping', to: 'pings#show'
       post 'login', to: 'logins#login_user'
 
+      scope :exotel_sessions do
+        get 'connect', to: 'exotel_sessions#connect'
+        get 'passthru', to: 'exotel_sessions#passthru'
+      end
+
       scope :users do
         get 'find', to: 'users#find'
         post 'register', to: 'users#register'
