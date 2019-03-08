@@ -1,30 +1,24 @@
 class ExotelSession
   KEY = 'EXOTEL-SESSION'
 
-  attr_accessor :patient_phone_number
-
   def initialize(user_phone_number, patient_phone_number)
     @user_phone_number = user_phone_number
     @patient_phone_number = patient_phone_number
   end
 
-  def self.find(call_id)
-    record = Rails.cache.fetch(KEY + call_id)
+  def save(call_id)
+    if passthru?
+      record = { patient_phone_number: @patient_phone_number,
+                 user_phone_number: @user_phone_number }
 
-    if record.present?
-      ExotelSession.new(record[:user_phone_number], record[:patient_phone_number])
+      Rails.cache.write(KEY + call_id, record)
     end
   end
 
-  def pass_thru_available?
+  private
+
+  def passthru?
     User.find_by_phone_number(@user_phone_number).present? &&
       PatientPhoneNumber.find_by_number(@patient_phone_number).present?
-  end
-
-  def save(call_id)
-    record = { patient_phone_number: @patient_phone_number,
-               user_phone_number: @user_phone_number }
-
-    Rails.cache.write(KEY + call_id, record)
   end
 end

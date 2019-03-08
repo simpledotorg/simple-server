@@ -68,7 +68,6 @@ Rails.application.routes.draw do
       post 'login', to: 'logins#login_user'
 
       scope :exotel_sessions do
-        get 'connect', to: 'exotel_sessions#connect'
         get 'passthru', to: 'exotel_sessions#passthru'
       end
 

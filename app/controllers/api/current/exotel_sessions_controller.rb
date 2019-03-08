@@ -1,28 +1,15 @@
 class Api::Current::ExotelSessionsController < ApplicationController
   def passthru
-    session = ExotelSession.new(params[:From], params[:digits])
+    session = ExotelSession.new(params[:From], parse_digits)
 
-    if session.pass_thru_available?
-      session.save(params[:CallSid])
-      respond_to do |format|
-        format.text { session.patient_phone_number.to_s }
-      end
+    if session.save(params[:CallSid])
+      render plain: "OK", status: 200
     else
-      respond_to do |format|
-        format.text { '403' }
-      end
+      render plain: "NOT OK", status: 403
     end
   end
 
-  def connect
-    session = ExotelSession.find(params[:CallSid])
-
-    if session.present?
-      respond_to do |format|
-        format.text { session.patient_phone_number.to_s }
-      end
-    else
-      render status: 403
-    end
+  def parse_digits
+    params[:digits].tr('"', '')
   end
 end
