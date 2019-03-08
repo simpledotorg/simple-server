@@ -24,7 +24,8 @@ RSpec.describe Api::Current::Analytics::UserAnalyticsController, type: :controll
       get :show, format: :html
 
       expect(response.status).to eq(200)
-      expect(response.body).to match(/div id=\"new_patients_per_week\"/)
+      expect(response.body).to match(/analytics-container/)
+      expect(response.body).to match(/featured-graph/)
     end
   end
 end
