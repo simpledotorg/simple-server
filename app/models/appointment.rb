@@ -58,11 +58,21 @@ class Appointment < ApplicationRecord
     (Date.today - scheduled_date).to_i
   end
 
-  def overdue?
-    status.to_sym == :scheduled && scheduled_date <= Date.today
+  def scheduled?
+    status.to_sym == :scheduled
   end
 
-  private
+  def overdue?
+     scheduled? && scheduled_date <= Date.today
+  end
+
+  def overdue_for_over_a_year?
+    scheduled? && scheduled_date < 365.days.ago
+  end
+
+  def overdue_for_under_a_month?
+    scheduled? && scheduled_date > 30.days.ago
+  end
 
   def cancel_reason_is_present_if_cancelled
     if status == :cancelled && !cancel_reason.present?

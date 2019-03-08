@@ -14,6 +14,10 @@ class Admin < ApplicationRecord
 
   has_many :admin_access_controls
 
+  def has_role?(*roles)
+    roles.map(&:to_sym).include?(self.role.to_sym)
+  end
+
   def facility_groups
     return admin_access_controls.map(&:access_controllable) if (supervisor? || analyst? || counsellor?)
     return organizations.flat_map(&:facility_groups) if organization_owner?
