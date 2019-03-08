@@ -12,7 +12,7 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
 
     respond_to do |format|
       format.html { render :show }
-      format.json { render json: @stats_for_user }
+      format.json { render json: stats_for_user }
     end
   end
 
