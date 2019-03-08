@@ -13,7 +13,7 @@ namespace :impossible_overdue_appointments do
 
       if latest_scheduled_appointment.blank? ||
         latest_blood_pressure.blank? ||
-        latest_scheduled_appointment.audit_logs.blank? then
+        latest_scheduled_appointment.audit_logs.blank?
         puts "No scheduled appointment(s) or blood pressure or audit log found - skipping patient #{patient.id}"
         puts
         next
@@ -21,13 +21,13 @@ namespace :impossible_overdue_appointments do
 
       create_audit_log = latest_scheduled_appointment.audit_logs.where(action: 'create').first
 
-      if create_audit_log.blank? then
+      if create_audit_log.blank?
         puts "No audit log found for the latest scheduled appointment - skipping patient #{patient.id}"
         puts
         next
       end
 
-      if create_audit_log.user == card_reader_bot && latest_scheduled_appointment.scheduled_date < latest_blood_pressure.device_created_at then
+      if latest_scheduled_appointment.scheduled_date < latest_blood_pressure.device_created_at
         all_appointments =
           patient.appointments.where(status: 'scheduled')
             .select { |app| app.audit_logs.where(action: 'create').first.user == card_reader_bot }
