@@ -5,6 +5,7 @@ namespace :impossible_overdue_appointments do
     patients_created_by_bot = Patient.where(registration_user_id: card_reader_bot.id)
 
     updated_appointments = 0
+    appointments_with_no_create_log = 0
     patients_created_by_bot.each do |patient|
       puts "Processing patient #{patient.id}"
 
@@ -18,7 +19,16 @@ namespace :impossible_overdue_appointments do
 
       all_appointments =
         patient.appointments.where(status: 'scheduled')
-          .select { |app| app.audit_logs.find_by(action: 'create')&.user == card_reader_bot }
+          .select do |app|
+          create_audit_log = app.audit_logs.find_by(action: 'create');
+          if create_audit_log.blank?
+            puts "Appointment #{app.id} is missing `create` audit logs - filtering out"
+            appointments_with_no_create_log += 1
+            false
+          else
+            app.audit_logs.find_by(action: 'create').user == card_reader_bot
+          end
+        end
 
       all_appointments.each do |app|
         if app.scheduled_date < latest_blood_pressure.device_created_at
@@ -32,5 +42,6 @@ namespace :impossible_overdue_appointments do
       puts
     end
     puts "Total number of updated appointments = #{updated_appointments}"
+    puts "Total number of appointments missing `create` audit logs = #{appointments_with_no_create_log}"
   end
 end
