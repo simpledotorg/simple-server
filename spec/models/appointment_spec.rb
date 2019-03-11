@@ -63,4 +63,34 @@ describe Appointment, type: :model do
       end
     end
   end
+
+  context 'Overdue' do
+    describe '#overdue_for_over_a_year?' do
+      it 'should return true if appointment is overdue for over a year' do
+        appointment = create(:appointment, scheduled_date: 2.years.ago, status: :scheduled)
+
+        expect(appointment.overdue_for_over_a_year?).to eq(true)
+      end
+
+      it 'should return false if appointment is overdue for less than a year' do
+        appointment = create(:appointment, scheduled_date: 364.days.ago, status: :scheduled)
+
+        expect(appointment.overdue_for_over_a_year?).to eq(false)
+      end
+    end
+
+    describe '#overdue_for_under_a_month?' do
+      it 'should return true if appointment is overdue for less than a month' do
+        appointment = create(:appointment, scheduled_date: 29.days.ago, status: :scheduled)
+
+        expect(appointment.overdue_for_under_a_month?).to eq(true)
+      end
+
+      it 'should return false if appointment is overdue for more than a month' do
+        appointment = create(:appointment, scheduled_date: 31.days.ago, status: :scheduled)
+
+        expect(appointment.overdue_for_under_a_month?).to eq(false)
+      end
+    end
+  end
 end

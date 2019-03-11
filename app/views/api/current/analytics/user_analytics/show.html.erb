@@ -7,13 +7,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, shrink-to-fit=no"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
 
-  <%= inline_js('charts.js') %>
+  <%= inline_stylesheet('user_analytics.scss') %>
 </head>
 
-<body>
-  <h3>How many patients are recorded at CHC Bathinda each week?</h3>
-  <%= column_chart @stats_for_user,
-                   id: 'new_patients_per_week',
-                   library: {scales: {yAxes: [{display: false}]}}%>
+<body style="background: #f0f2f5">
+<div class="row analytics-container">
+  <div class="col-md-12">
+    <h3>How many patients are recorded at CHC Bathinda each week?</h3>
+    <div class="featured-graph">
+      <table>
+        <tr>
+          <% @formated_stats.each do |key, labelled_value| %>
+            <td>
+              <%= content_tag 'div', nil,
+                              class: "featured-graph-column #{'active-column' if key == @max_key}",
+                              style: column_height_styles(
+                                  labelled_value[:value],
+                                  max_value: @max_value,
+                                  max_height: 200) %>
+              <span><%= labelled_value[:label] %></span>
+            </td>
+          <% end %>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
 </body>
 </html>
