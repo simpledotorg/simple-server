@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.describe Api::Current::ExotelSessionsController, type: :controller do
   describe '#create' do
     let!(:user) { create(:user) }
-    let!(:patient) { create(:patient) }
-    let!(:unknown_phone_number) { Faker::PhoneNumber.phone_number }
+    let!(:patient) { create(:patient, :with_sanitized_phone_number) }
+    let!(:unknown_phone_number) { '1234567890' }
     let!(:invalid_patient_phone_number) { '1800-SIMPLE' }
 
     context ':ok' do
@@ -67,7 +67,7 @@ RSpec.describe Api::Current::ExotelSessionsController, type: :controller do
       end
     end
 
-    pending ':bad_request' do
+    context ':bad_request' do
       it 'should allow only numeric strings as patient phone numbers' do
         get :create, params: { From: user.phone_number,
                                digits: invalid_patient_phone_number,

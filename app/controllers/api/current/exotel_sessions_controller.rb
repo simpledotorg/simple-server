@@ -1,5 +1,9 @@
 class Api::Current::ExotelSessionsController < ApplicationController
   def create
+    unless valid_patient_phone_number?
+      respond_in_plain_text(:create, :bad_request) and return
+    end
+
     session = ExotelSession.new(params[:From], parse_patient_phone_number)
     if session.authorized?
       session.save(params[:CallSid])
