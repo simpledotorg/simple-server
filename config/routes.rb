@@ -67,8 +67,10 @@ Rails.application.routes.draw do
       get 'ping', to: 'pings#show'
       post 'login', to: 'logins#login_user'
 
-      scope :exotel_sessions do
-        get 'passthru', to: 'exotel_sessions#passthru'
+      if FeatureToggle.enabled?('PHONE_NUMBER_MASKING')
+        scope :exotel_sessions do
+          get 'create', to: 'exotel_sessions#create'
+        end
       end
 
       scope :users do
