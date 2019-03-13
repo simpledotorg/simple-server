@@ -25,12 +25,7 @@ RSpec.feature "Admins", type: :feature do
   describe "editing admins" do
     let!(:facility_group) { create(:facility_group, name: "CHC Buccho") }
     let!(:other_facility_group) { create(:facility_group, name: "PHC Ubha") }
-    let!(:counsellor) {
-      create(
-        :admin,
-        :counsellor,
-      )
-    }
+    let!(:counsellor) { create( :admin, :counsellor) }
 
     before do
       sign_in(owner)
@@ -42,6 +37,7 @@ RSpec.feature "Admins", type: :feature do
       click_button "Update Admin"
 
       expect(counsellor.reload.facility_groups).to include(facility_group)
+      expect(counsellor.facility_groups).not_to include(other_facility_group)
     end
   end
 
