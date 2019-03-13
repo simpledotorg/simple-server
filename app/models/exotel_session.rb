@@ -8,7 +8,7 @@ class ExotelSession
   end
 
   def save(call_id)
-    Rails.cache.write(session_key(call_id), record, expires_in: EXPIRE_EXOTEL_SESSION_IN)
+    Rails.cache.write(session_key(call_id), session_data, expires_in: EXPIRE_EXOTEL_SESSION_IN)
   end
 
   def authorized?
@@ -23,7 +23,7 @@ class ExotelSession
     KEY + '-' + call_id
   end
 
-  def record
+  def session_data
     { patient_phone_number: @patient_phone_number.number,
       user_phone_number: @user.phone_number }
   end
