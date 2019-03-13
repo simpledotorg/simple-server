@@ -118,19 +118,28 @@ describe Patient, type: :model do
 
     describe "#current_age" do
       it "returns age based on date of birth year if present" do
+        patient = create(:patient)
+
         patient.date_of_birth = Date.parse("1980-01-01")
+
         expect(patient.current_age).to eq(Date.today.year - 1980)
       end
 
       it "returns age based on age_updated_at if date of birth is not present" do
+        patient = create(:patient, has_date_of_birth?: false)
+
         patient.age = 30
         patient.age_updated_at = 2.years.ago
+
         expect(patient.current_age).to eq(32)
       end
 
       it "returns 0 if age is 0" do
+        patient = create(:patient)
+
         patient.age = 0
         patient.age_updated_at = 2.years.ago
+
         expect(patient.current_age).to eq(0)
       end
     end
