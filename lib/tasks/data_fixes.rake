@@ -1,19 +1,16 @@
-namespace :impossible_overdue_appointments do
+namespace :data_fixes do
   desc 'Set all appointments with a newer blood pressure reading than the created_at date to "visited"'
   task :fix_impossible_overdue_appointments, [:user_id] => :environment do |_t, args|
-    card_reader_bot = User.find(args.user_id)
-    patients_created_by_bot = Patient.where(registration_user_id: card_reader_bot.id)
+    user = User.find(args.user_id)
+    patients_created_by_user = Patient.where(registration_user_id: user.id)
 
     updated_appointments = 0
     appointments_with_no_create_log = 0
-    patients_created_by_bot.each do |patient|
-      puts "Processing patient #{patient.id}"
-
+    patients_created_by_user.each do |patient|
       latest_blood_pressure = patient.blood_pressures.order(device_created_at: :desc).first
 
       if latest_blood_pressure.blank?
         puts "No blood pressure found - skipping patient #{patient.id}"
-        puts
         next
       end
 
@@ -26,20 +23,17 @@ namespace :impossible_overdue_appointments do
             appointments_with_no_create_log += 1
             false
           else
-            app.audit_logs.find_by(action: 'create').user == card_reader_bot
+            create_audit_log.user == user
           end
         end
 
       all_appointments.each do |app|
         if app.scheduled_date < latest_blood_pressure.device_created_at
           puts "Marking status for appointment #{app.id} as visited\n"
-          app.status = 'visited'
-          app.save
+          app.update(status: 'visited')
           updated_appointments += 1
         end
       end
-      puts "Finished processing patient #{patient.id}"
-      puts
     end
     puts "Total number of updated appointments = #{updated_appointments}"
     puts "Total number of appointments missing `create` audit logs = #{appointments_with_no_create_log}"
