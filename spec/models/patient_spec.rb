@@ -120,8 +120,6 @@ describe Patient, type: :model do
       end
 
       it "returns age based on age_updated_at if date of birth is not present" do
-        patient = create(:patient, has_date_of_birth?: false)
-
         patient.age = 30
         patient.age_updated_at = 2.years.ago
 
