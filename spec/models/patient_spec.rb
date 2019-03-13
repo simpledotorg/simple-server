@@ -67,7 +67,7 @@ describe Patient, type: :model do
   end
 
   context "Utility methods" do
-    let(:patient) { create(:patient, has_date_of_birth?: false) }
+    let(:patient) { create(:patient) }
 
     describe '#risk_priority' do
       it 'should return no priority for patients recently overdue' do
@@ -120,8 +120,7 @@ describe Patient, type: :model do
       end
 
       it "returns age based on age_updated_at if date of birth is not present" do
-        patient.age = 30
-        patient.age_updated_at = 2.years.ago
+        patient = create(:patient, age: 30, age_updated_at: 2.years.ago, date_of_birth: nil)
 
         expect(patient.current_age).to eq(32)
       end
