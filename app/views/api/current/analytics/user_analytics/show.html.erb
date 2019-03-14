@@ -145,7 +145,7 @@
 
     <% @patients_enrolled_per_month.each do |month, enrolled_count| %>
       <div class="row-data">
-        <div class="row-value"><%= pluralize(enrolled_count, patients) %></div>
+        <div class="row-value"><%= pluralize(enrolled_count, 'patient') %></div>
         <h4><%= month.strftime('%B %Y')%></h4>
       </div>
     <% end %>
