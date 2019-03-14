@@ -1,10 +1,10 @@
 require 'rails_helper'
 
 describe CallSession, type: :model do
-  describe '#authorized?' do
-    let!(:user) { create(:user) }
-    let!(:patient) { create(:patient) }
+  let!(:user) { create(:user) }
+  let!(:patient) { create(:patient) }
 
+  describe '#authorized?' do
     it 'should return true if patient and user are both registered' do
       session = CallSession.new(user.phone_number, patient.phone_numbers.first.number)
 
@@ -31,6 +31,29 @@ describe CallSession, type: :model do
       session = CallSession.new(user.phone_number, user.phone_number)
 
       expect(session.authorized?).to be(false)
+    end
+  end
+
+  describe '.fetch' do
+    it 'should fetch an existing call session stored against the call id' do
+      call_id = SecureRandom.uuid
+      expected_session = CallSession.new(user.phone_number, patient.phone_numbers.first.number)
+      expected_session.save(call_id)
+
+      fetched_session = CallSession.fetch(call_id)
+
+      expect(fetched_session.patient_phone_number).to eq(patient.phone_numbers.first)
+      expect(fetched_session.user).to eq(user)
+    end
+
+    it 'should return nil if a call session is not found' do
+      call_id = SecureRandom.uuid
+      expected_session = CallSession.new(user.phone_number, patient.phone_numbers.first.number)
+      expected_session.save(call_id)
+
+      fetched_session = CallSession.fetch(SecureRandom.uuid)
+
+      expect(fetched_session).to be_nil
     end
   end
 end

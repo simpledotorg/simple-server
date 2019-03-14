@@ -16,7 +16,7 @@ class Api::Current::ExotelCallSessionsController < ApplicationController
   end
 
   def fetch
-    session = CallSession.find(params[:CallSid])
+    session = CallSession.fetch(params[:CallSid])
 
     if session.present?
       respond_in_plain_text(:ok, session.patient_phone_number.number)
