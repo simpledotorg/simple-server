@@ -9,7 +9,7 @@ class Api::Current::ExotelCallSessionsController < ApplicationController
     session = CallSession.new(params[:From], parse_patient_phone_number)
     if session.authorized?
       session.save(params[:CallSid])
-      respond_in_plain_text( :ok)
+      respond_in_plain_text(:ok)
     else
       respond_in_plain_text(:forbidden)
     end

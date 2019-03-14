@@ -2,8 +2,8 @@ require 'rails_helper'
 
 describe CallSession, type: :model do
   describe '#authorized?' do
-    let!(:patient) { create(:patient) }
     let!(:user) { create(:user) }
+    let!(:patient) { create(:patient) }
 
     it 'should return true if patient and user are both registered' do
       session = CallSession.new(user.phone_number, patient.phone_numbers.first.number)
