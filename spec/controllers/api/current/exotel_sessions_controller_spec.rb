@@ -25,7 +25,7 @@ RSpec.describe Api::Current::ExotelSessionsController, type: :controller do
       end
 
       it 'should report metrics to new relic' do
-        expect(NewRelic::Agent).to receive(:increment_metric).with("ExotelSessions/create/ok")
+        expect(NewRelic::Agent).to receive(:increment_metric).with("ExotelSessions/create/200")
 
         get :create, params: { From: user.phone_number,
                                digits: patient.phone_numbers.first.number,
@@ -59,7 +59,7 @@ RSpec.describe Api::Current::ExotelSessionsController, type: :controller do
       end
 
       it 'should report metrics to new relic' do
-        expect(NewRelic::Agent).to receive(:increment_metric).with("ExotelSessions/create/forbidden")
+        expect(NewRelic::Agent).to receive(:increment_metric).with("ExotelSessions/create/403")
 
         get :create, params: { From: unknown_phone_number,
                                digits: patient.phone_numbers.first.number,
@@ -77,7 +77,7 @@ RSpec.describe Api::Current::ExotelSessionsController, type: :controller do
       end
 
       it 'should report metrics to new relic' do
-        expect(NewRelic::Agent).to receive(:increment_metric).with("ExotelSessions/create/bad_request")
+        expect(NewRelic::Agent).to receive(:increment_metric).with("ExotelSessions/create/400")
 
         get :create, params: { From: user.phone_number,
                                digits: invalid_patient_phone_number,

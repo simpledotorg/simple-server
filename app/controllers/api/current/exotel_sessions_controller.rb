@@ -1,15 +1,17 @@
 class Api::Current::ExotelSessionsController < ApplicationController
+  after_action :report_http_status
+
   def create
     unless valid_patient_phone_number?
-      respond_in_plain_text(:create, :bad_request) and return
+      respond_in_plain_text(:bad_request) and return
     end
 
     session = ExotelSession.new(params[:From], parse_patient_phone_number)
     if session.authorized?
       session.save(params[:CallSid])
-      respond_in_plain_text(:create, :ok)
+      respond_in_plain_text( :ok)
     else
-      respond_in_plain_text(:create, :forbidden)
+      respond_in_plain_text(:forbidden)
     end
   end
 
@@ -23,12 +25,11 @@ class Api::Current::ExotelSessionsController < ApplicationController
     parse_patient_phone_number.scan(/\D/).empty?
   end
 
-  def report_http_status(api_name, status)
-    NewRelic::Agent.increment_metric("ExotelSessions/#{api_name}/#{status.to_s}")
+  def respond_in_plain_text(status)
+    head status, content_type: 'text/plain'
   end
 
-  def respond_in_plain_text(api_name, status)
-    report_http_status(api_name, status)
-    head status, content_type: 'text/plain'
+  def report_http_status
+    NewRelic::Agent.increment_metric("ExotelSessions/#{action_name}/#{response.status}")
   end
 end
