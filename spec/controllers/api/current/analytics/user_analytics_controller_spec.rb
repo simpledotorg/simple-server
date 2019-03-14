@@ -27,5 +27,11 @@ RSpec.describe Api::Current::Analytics::UserAnalyticsController, type: :controll
       expect(response.body).to match(/analytics-container/)
       expect(response.body).to match(/featured-graph/)
     end
+
+    it 'has the facility name' do
+      get :show, format: :html
+
+      expect(response.body).to match(Regexp.new(request_facility.name))
+    end
   end
 end
