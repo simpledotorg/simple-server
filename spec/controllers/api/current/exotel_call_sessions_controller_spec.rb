@@ -24,13 +24,7 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
         expect(response).to have_http_status(200)
       end
 
-      it 'should report metrics to new relic' do
-        expect(NewRelic::Agent).to receive(:increment_metric).with('exotel_call_sessions/create/200')
-
-        get :create, params: { From: user.phone_number,
-                               digits: patient.phone_numbers.first.number,
-                               CallSid: SecureRandom.uuid }
-      end
+      it { should use_after_action(:report_http_status) }
     end
 
     context ':forbidden' do
@@ -58,13 +52,7 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
         expect(response).to have_http_status(403)
       end
 
-      it 'should report metrics to new relic' do
-        expect(NewRelic::Agent).to receive(:increment_metric).with('exotel_call_sessions/create/403')
-
-        get :create, params: { From: unknown_phone_number,
-                               digits: patient.phone_numbers.first.number,
-                               CallSid: SecureRandom.uuid }
-      end
+      it { should use_after_action(:report_http_status) }
     end
 
     context ':bad_request' do
@@ -76,13 +64,7 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
         expect(response).to have_http_status(400)
       end
 
-      it 'should report metrics to new relic' do
-        expect(NewRelic::Agent).to receive(:increment_metric).with('exotel_call_sessions/create/400')
-
-        get :create, params: { From: user.phone_number,
-                               digits: invalid_patient_phone_number,
-                               CallSid: SecureRandom.uuid }
-      end
+      it { should use_after_action(:report_http_status) }
     end
   end
 
@@ -110,6 +92,16 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
                             CallSid: SecureRandom.uuid }
 
       expect(response).to have_http_status(404)
+    end
+  end
+
+  describe 'callbacks' do
+    it 'should report metrics to new relic' do
+      expect(NewRelic::Agent).to receive(:increment_metric).with('exotel_call_sessions/create/200')
+
+      get :create, params: { From: user.phone_number,
+                             digits: patient.phone_numbers.first.number,
+                             CallSid: SecureRandom.uuid }
     end
   end
 end
