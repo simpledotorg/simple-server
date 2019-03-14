@@ -46,4 +46,8 @@ class Admin < ApplicationRecord
     return User.all if owner?
     facility_groups.flat_map(&:users)
   end
+
+  def access_controllable_ids
+    admin_access_controls.map(&:access_controllable_id)
+  end
 end

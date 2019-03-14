@@ -12,13 +12,13 @@
       <% if [:supervisor, :analyst, :counsellor].include?(@role) %>
         <h3>Select facility groups</h3>
         <% policy_scope(FacilityGroup).group_by(&:organization).each do |organization, facility_groups| %>
-          <%= f.collection_check_boxes :access_controllable_ids, facility_groups, :id, :name, checked: true, label: "Organization: #{organization.name}" %>
+          <%= f.collection_check_boxes :access_controllable_ids, facility_groups, :id, :name, label: "Organization: #{organization.name}" %>
         <% end %>
       <% end %>
 
       <% if @role == :organization_owner %>
         <h3>Select Organizations</h3>
-        <%= f.collection_check_boxes :access_controllable_ids, policy_scope(Organization), :id, :name, checked: true, label: 'Organizations', size: 1 %>
+        <%= f.collection_check_boxes :access_controllable_ids, policy_scope(Organization), :id, :name, label: 'Organizations', size: 1 %>
       <% end %>
 
       <%= f.primary t("devise.invitations.new.submit_button") %>
