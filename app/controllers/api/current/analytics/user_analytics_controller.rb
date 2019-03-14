@@ -1,21 +1,18 @@
 class Api::Current::Analytics::UserAnalyticsController < Api::Current::AnalyticsController
-  skip_before_action :authenticate
   layout false
 
   WEEKS_TO_REPORT = 4
 
   def show
-    Timecop.travel(3.months.ago) do
-        stats_for_user = new_patients_by_facility_week
+    stats_for_user = new_patients_by_facility_week
 
-        @max_key = stats_for_user.keys.max
-        @max_value = stats_for_user.values.max
-        @formated_stats = format_stats_for_view(stats_for_user)
+    @max_key = stats_for_user.keys.max
+    @max_value = stats_for_user.values.max
+    @formated_stats = format_stats_for_view(stats_for_user)
 
-        respond_to do |format|
-          format.html { render :show }
-          format.json { render json: stats_for_user }
-        end        
+    respond_to do |format|
+      format.html { render :show }
+      format.json { render json: stats_for_user }
     end
   end
 
