@@ -8,7 +8,8 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
 
     @max_key = stats_for_user.keys.max
     @max_value = stats_for_user.values.max
-    @formated_stats = format_stats_for_view(stats_for_user)
+    @formatted_stats = format_stats_for_view(stats_for_user)
+    @total_patients_count = total_patients_count
 
     respond_to do |format|
       format.html { render :show }
@@ -23,6 +24,12 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
       .new
       .registered_at(current_facility.id)
       .group_by_week('device_created_at', last: WEEKS_TO_REPORT)
+      .count
+  end
+
+  def total_patients_count
+    PatientsQuery.new
+      .registered_at(current_facility.id)
       .count
   end
 

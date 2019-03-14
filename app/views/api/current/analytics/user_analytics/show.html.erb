@@ -108,7 +108,7 @@
     <div class="featured-graph">
       <table>
         <tr>
-          <% @formated_stats.each do |key, labelled_value| %>
+          <% @formatted_stats.each do |key, labelled_value| %>
             <td>
                 <div class="column-value"><%= labelled_value[:value] %></div>
                 <%= content_tag 'div', nil,
@@ -127,7 +127,7 @@
 </div>
 
 <div class="row analytics-container">
-  <div class="row-value">3212 patients</div>
+  <div class="row-value"><%= @total_patients_count %></div>
   <h3>Total registered</h3>
 </div>
 
