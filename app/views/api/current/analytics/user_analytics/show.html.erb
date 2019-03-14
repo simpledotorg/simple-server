@@ -138,17 +138,19 @@
   </div>
 </div>
 
-<div class="row analytics-container">
-  <div class="row-value"><%= @total_patients_count %> patients</div>
-  <h3>Enrolled patients</h3>
+<% if @total_patients_count > 0 %>
+  <div class="row analytics-container">
+    <div class="row-value"><%= pluralize(@total_patients_count, 'patient') %></div>
+    <h3>Enrolled patients</h3>
 
-  <% @patients_enrolled_per_month.each do |month, enrolled_count| %>
-    <div class="row-data">
-      <div class="row-value"><%= enrolled_count %> patients</div>
-      <h4><%= month.strftime('%B %Y')%></h4>
-    </div>
-  <% end %>
-</div>
+    <% @patients_enrolled_per_month.each do |month, enrolled_count| %>
+      <div class="row-data">
+        <div class="row-value"><%= pluralize(enrolled_count, patients) %></div>
+        <h4><%= month.strftime('%B %Y')%></h4>
+      </div>
+    <% end %>
+  </div>
+<% end %>
 
 </body>
 </html>
