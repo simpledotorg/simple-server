@@ -141,7 +141,7 @@
 <% if @total_patients_count > 0 %>
   <div class="row analytics-container">
     <div class="row-value"><%= pluralize(@total_patients_count, 'patient') %></div>
-    <h3>Enrolled patients</h3>
+    <h3>All enrolled patients</h3>
 
     <% @patients_enrolled_per_month.each do |month, enrolled_count| %>
       <div class="row-data">
