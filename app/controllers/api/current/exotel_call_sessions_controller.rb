@@ -1,4 +1,4 @@
-class Api::Current::ExotelSessionsController < ApplicationController
+class Api::Current::ExotelCallSessionsController < ApplicationController
   after_action :report_http_status
 
   def create
@@ -6,7 +6,7 @@ class Api::Current::ExotelSessionsController < ApplicationController
       respond_in_plain_text(:bad_request) and return
     end
 
-    session = ExotelSession.new(params[:From], parse_patient_phone_number)
+    session = CallSession.new(params[:From], parse_patient_phone_number)
     if session.authorized?
       session.save(params[:CallSid])
       respond_in_plain_text( :ok)
@@ -30,6 +30,6 @@ class Api::Current::ExotelSessionsController < ApplicationController
   end
 
   def report_http_status
-    NewRelic::Agent.increment_metric("ExotelSessions/#{action_name}/#{response.status}")
+    NewRelic::Agent.increment_metric("#{controller_name}/#{action_name}/#{response.status}")
   end
 end

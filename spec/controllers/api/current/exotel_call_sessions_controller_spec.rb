@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::Current::ExotelSessionsController, type: :controller do
+RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
   describe '#create' do
     let!(:user) { create(:user) }
     let!(:patient) { create(:patient, :with_sanitized_phone_number) }
@@ -25,7 +25,7 @@ RSpec.describe Api::Current::ExotelSessionsController, type: :controller do
       end
 
       it 'should report metrics to new relic' do
-        expect(NewRelic::Agent).to receive(:increment_metric).with("ExotelSessions/create/200")
+        expect(NewRelic::Agent).to receive(:increment_metric).with("exotel_call_sessions/create/200")
 
         get :create, params: { From: user.phone_number,
                                digits: patient.phone_numbers.first.number,
@@ -59,7 +59,7 @@ RSpec.describe Api::Current::ExotelSessionsController, type: :controller do
       end
 
       it 'should report metrics to new relic' do
-        expect(NewRelic::Agent).to receive(:increment_metric).with("ExotelSessions/create/403")
+        expect(NewRelic::Agent).to receive(:increment_metric).with("exotel_call_sessions/create/403")
 
         get :create, params: { From: unknown_phone_number,
                                digits: patient.phone_numbers.first.number,
@@ -77,7 +77,7 @@ RSpec.describe Api::Current::ExotelSessionsController, type: :controller do
       end
 
       it 'should report metrics to new relic' do
-        expect(NewRelic::Agent).to receive(:increment_metric).with("ExotelSessions/create/400")
+        expect(NewRelic::Agent).to receive(:increment_metric).with("exotel_call_sessions/create/400")
 
         get :create, params: { From: user.phone_number,
                                digits: invalid_patient_phone_number,

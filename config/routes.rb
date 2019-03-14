@@ -69,8 +69,8 @@ Rails.application.routes.draw do
 
       if FeatureToggle.enabled?('PHONE_NUMBER_MASKING')
         # Exotel requires all endpoints to be GET
-        scope :exotel_sessions do
-          get 'create', to: 'exotel_sessions#create'
+        scope :exotel_call_sessions do
+          get 'create', to: 'exotel_call_sessions#create'
         end
       end
 
