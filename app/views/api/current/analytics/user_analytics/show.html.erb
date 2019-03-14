@@ -140,49 +140,15 @@
 </div>
 
 <div class="row analytics-container">
-  <div class="row-value">3212 patients</div>
+  <div class="row-value"><%= @total_patients_count %> patients</div>
   <h3>Enrolled patients</h3>
-  
-  <div class="row-data">
-    <div class="row-value">12 patients</div>
-    <h4>Mar 2019</h4>
-  </div>
-    
-  <div class="row-data">
-    <div class="row-value">98 patients</div>
-    <h4>Feb 2019</h4>
-  </div>
-    
-  <div class="row-data">
-    <div class="row-value">104 patients</div>
-    <h4>Jan 2019</h4>
-  </div>
-    
-  <div class="row-data">
-    <div class="row-value">11 patients</div>
-    <h4>Dec 2018</h4>
-  </div>
-    
-  <div class="row-data">
-    <div class="row-value">6 patients</div>
-    <h4>Nov 2019</h4>
-  </div>
-    
-  <div class="row-data">
-    <div class="row-value">54 patients</div>
-    <h4>Oct 2019</h4>
-  </div>
-    
-  <div class="row-data">
-    <div class="row-value">404 patients</div>
-    <h4>Sept 2019</h4>
-  </div>
-    
-  <div class="row-data">
-    <div class="row-value">1345 patients</div>
-    <h4>Aug 2018</h4>
-  </div>
-    
+
+  <% @patients_enrolled_per_month.each do |month, enrolled_count| %>
+    <div class="row-data">
+      <div class="row-value"><%= enrolled_count %> patients</div>
+      <h4><%= month.strftime('%B %Y')%></h4>
+    </div>
+  <% end %>
 </div>
 
 </body>
