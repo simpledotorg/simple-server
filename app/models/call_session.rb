@@ -38,4 +38,3 @@ class CallSession
       user_phone_number: @user.phone_number }
   end
 end
-

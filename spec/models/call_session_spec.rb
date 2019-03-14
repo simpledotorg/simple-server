@@ -34,6 +34,19 @@ describe CallSession, type: :model do
     end
   end
 
+  describe '#save' do
+    it 'should save a call session against the call id' do
+      call_id = SecureRandom.uuid
+      expected_session = CallSession.new(user.phone_number, patient.phone_numbers.first.number)
+      expected_session.save(call_id)
+
+      fetched_session = Rails.cache.fetch(CallSession.session_key(call_id))
+
+      expect(fetched_session[:user_phone_number]).to eq(expected_session.user.phone_number)
+      expect(fetched_session[:patient_phone_number]).to eq(expected_session.patient_phone_number.number)
+    end
+  end
+
   describe '.fetch' do
     it 'should fetch an existing call session stored against the call id' do
       call_id = SecureRandom.uuid
