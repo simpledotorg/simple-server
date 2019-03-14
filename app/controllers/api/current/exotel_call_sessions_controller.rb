@@ -15,6 +15,16 @@ class Api::Current::ExotelCallSessionsController < ApplicationController
     end
   end
 
+  def fetch
+    session = CallSession.find(params[:CallSid])
+
+    if session.present?
+      respond_in_plain_text(:ok, session.patient_phone_number.number)
+    else
+      respond_in_plain_text(:not_found)
+    end
+  end
+
   private
 
   def parse_patient_phone_number
@@ -25,8 +35,8 @@ class Api::Current::ExotelCallSessionsController < ApplicationController
     parse_patient_phone_number.scan(/\D/).empty?
   end
 
-  def respond_in_plain_text(status)
-    head status, content_type: 'text/plain'
+  def respond_in_plain_text(status, text = '')
+    render plain: text, status: status
   end
 
   def report_http_status
