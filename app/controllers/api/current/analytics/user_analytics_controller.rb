@@ -8,7 +8,9 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
 
     @max_key = stats_for_user.keys.max
     @max_value = stats_for_user.values.max
-    @formated_stats = format_stats_for_view(stats_for_user)
+    @formatted_stats = format_stats_for_view(stats_for_user)
+    @total_patients_count = total_patients_count
+    @patients_enrolled_per_month = patients_enrolled_per_month
 
     respond_to do |format|
       format.html { render :show }
@@ -26,6 +28,19 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
       .count
   end
 
+  def total_patients_count
+    PatientsQuery.new
+      .registered_at(current_facility.id)
+      .count
+  end
+
+  def patients_enrolled_per_month
+    PatientsQuery.new
+      .registered_at(current_facility.id)
+      .group_by_month(:device_created_at)
+      .count
+  end
+
   def format_stats_for_view(stats)
     stats.map { |k, v| [k, { label: label_for_week(k, v), value: v }] }.to_h
   end
@@ -38,6 +53,6 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
   end
 
   def graph_label(value, from_date_string, to_date_string)
-    "<div class='graph-label'><p>#{value}</p><p>#{from_date_string}</p><p>#{to_date_string}</p>".html_safe
+    "<div class='graph-label'><p>#{from_date_string}</p><p>#{to_date_string}</p>".html_safe
   end
 end
