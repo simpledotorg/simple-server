@@ -67,6 +67,13 @@ Rails.application.routes.draw do
       get 'ping', to: 'pings#show'
       post 'login', to: 'logins#login_user'
 
+      if FeatureToggle.enabled?('PHONE_NUMBER_MASKING')
+        # Exotel requires all endpoints to be GET
+        scope :exotel_call_sessions do
+          get 'create', to: 'exotel_call_sessions#create'
+        end
+      end
+
       scope :users do
         get 'find', to: 'users#find'
         post 'register', to: 'users#register'
