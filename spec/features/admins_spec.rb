@@ -22,6 +22,25 @@ RSpec.feature "Admins", type: :feature do
     end
   end
 
+  describe "editing admins" do
+    let!(:facility_group) { create(:facility_group, name: "CHC Buccho") }
+    let!(:other_facility_group) { create(:facility_group, name: "PHC Ubha") }
+    let!(:counsellor) { create( :admin, :counsellor) }
+
+    before do
+      sign_in(owner)
+      visit edit_admin_path(counsellor)
+    end
+
+    it "should allow changing facility groups" do
+      check "CHC Buccho"
+      click_button "Update Admin"
+
+      expect(counsellor.reload.facility_groups).to include(facility_group)
+      expect(counsellor.facility_groups).not_to include(other_facility_group)
+    end
+  end
+
   describe "sending invitations to supervisors" do
     let(:email) { "new@example.com" }
     let(:new_supervisor) { Admin.find_by(email: email) }
