@@ -1,3 +1,5 @@
+require 'csv'
+
 class AppointmentsController < AdminController
   include FacilityFiltering
   include Pagination
@@ -13,7 +15,10 @@ class AppointmentsController < AdminController
                       .where(facility: selected_facilities)
                       .order(scheduled_date: :asc)
 
-    @appointments = paginate(@appointments)
+    respond_to do |format|
+      format.html { @appointments = paginate(@appointments) }
+      format.csv
+    end
   end
 
   def update
