@@ -47,6 +47,6 @@ class CallSession
 
   def session_data
     { patient_phone_number: patient_phone_number.number,
-      user_phone_number: @user.phone_number }
+      user_phone_number: user.phone_number }
   end
 end
