@@ -17,7 +17,7 @@ class AppointmentsController < AdminController
 
     respond_to do |format|
       format.html { @appointments = paginate(@appointments) }
-      format.csv
+      format.csv { render stream: true }
     end
   end
 
