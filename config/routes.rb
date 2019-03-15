@@ -72,6 +72,7 @@ Rails.application.routes.draw do
         scope :exotel_call_sessions do
           get 'fetch', to: 'exotel_call_sessions#fetch'
           get 'create', to: 'exotel_call_sessions#create'
+          get 'terminate', to: 'exotel_call_sessions#terminate'
         end
       end
 

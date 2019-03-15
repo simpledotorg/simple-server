@@ -76,27 +76,85 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
       expect(response.headers['Content-Type']).to eq('text/plain; charset=utf-8')
     end
 
-    it 'should return the phone number of the Patient' do
-      call_id = SecureRandom.uuid
-      session = CallSession.new(user.phone_number, patient.phone_numbers.first.number)
-      session.save(call_id)
+    context ':ok' do
+      it 'should return the phone number of the Patient' do
+        call_id = SecureRandom.uuid
+        session = CallSession.new(call_id, user.phone_number, patient.phone_numbers.first.number)
+        session.save
 
-      get :fetch, params: { From: user.phone_number,
-                            CallSid: call_id }
+        get :fetch, params: { From: user.phone_number,
+                              CallSid: call_id }
 
-      expect(response.body).to eq(patient.phone_numbers.first.number)
+        expect(response.body).to eq(patient.phone_numbers.first.number)
+      end
+
+      it { should use_after_action(:report_http_status) }
     end
 
-    it 'should return 404 if the session does not exist' do
-      get :fetch, params: { From: user.phone_number,
-                            CallSid: SecureRandom.uuid }
+    context ':not_found' do
+      it 'should return 404 if the session does not exist' do
+        get :fetch, params: { From: user.phone_number,
+                              CallSid: SecureRandom.uuid }
 
-      expect(response).to have_http_status(404)
+        expect(response).to have_http_status(404)
+      end
+
+      it { should use_after_action(:report_http_status) }
+    end
+  end
+
+  describe '#terminate' do
+    context ':ok' do
+      let!(:call_id) { SecureRandom.uuid }
+
+      before :each do
+        session = CallSession.new(call_id, user.phone_number, patient.phone_numbers.first.number)
+        session.save
+      end
+
+      it 'should delete the session and return 200 if the session exists' do
+        get :terminate, params: { From: user.phone_number,
+                                  CallSid: call_id,
+                                  DialCallDuration: '10',
+                                  CallType: 'completed' }
+
+        fetched_session = CallSession.fetch(call_id)
+
+        expect(fetched_session).to be_nil
+        expect(response).to have_http_status(200)
+      end
+
+      it 'should report metrics to new relic' do
+        expect(NewRelic::Agent).to receive(:increment_metric).with('exotel_call_sessions/terminate/200')
+        expect(NewRelic::Agent).to receive(:increment_metric).with('exotel_call_sessions/call_type/completed')
+        expect(NewRelic::Agent).to receive(:record_metric).with('exotel_call_sessions/call_duration', 10)
+
+        get :terminate, params: { From: user.phone_number,
+                                  digits: patient.phone_numbers.first.number,
+                                  CallSid: call_id,
+                                  DialCallDuration: '10',
+                                  CallType: 'completed' }
+      end
+
+      it { should use_after_action(:report_http_status) }
+    end
+
+    context ':not_found' do
+      it 'should return 404 if the session does not exist' do
+        get :terminate, params: { From: user.phone_number,
+                                  CallSid: SecureRandom.uuid,
+                                  DialCallDuration: '10',
+                                  CallType: 'completed' }
+
+        expect(response).to have_http_status(404)
+      end
+
+      it { should use_after_action(:report_http_status) }
     end
   end
 
   describe 'callbacks' do
-    it 'should report metrics to new relic' do
+    it 'should report http response codes to new relic' do
       expect(NewRelic::Agent).to receive(:increment_metric).with('exotel_call_sessions/create/200')
 
       get :create, params: { From: user.phone_number,
