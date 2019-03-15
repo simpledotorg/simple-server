@@ -35,10 +35,12 @@ class Appointment < ApplicationRecord
   end
 
   def call_result=(new_call_result)
-    if new_call_result == "agreed_to_visit"
+    if new_call_result == 'agreed_to_visit'
       self.agreed_to_visit = true
       self.remind_on = 30.days.from_now
-    elsif new_call_result == "remind_to_call_later"
+    elsif new_call_result == 'patient_has_already_visited'
+      self.status = 'visited'
+    elsif new_call_result == 'remind_to_call_later'
       self.remind_on = 7.days.from_now
     elsif Appointment.cancel_reasons.values.include?(new_call_result)
       self.agreed_to_visit = false
@@ -47,8 +49,8 @@ class Appointment < ApplicationRecord
       self.status = :cancelled
     end
 
-    if new_call_result == "dead"
-      self.patient.status = "dead"
+    if new_call_result == 'dead'
+      self.patient.status = 'dead'
     end
 
     super(new_call_result)
@@ -63,7 +65,7 @@ class Appointment < ApplicationRecord
   end
 
   def overdue?
-     scheduled? && scheduled_date <= Date.today
+    scheduled? && scheduled_date <= Date.today
   end
 
   def overdue_for_over_a_year?
@@ -76,7 +78,7 @@ class Appointment < ApplicationRecord
 
   def cancel_reason_is_present_if_cancelled
     if status == :cancelled && !cancel_reason.present?
-      errors.add(:cancel_reason, "should be present for cancelled appointments")
+      errors.add(:cancel_reason, 'should be present for cancelled appointments')
     end
   end
 end
