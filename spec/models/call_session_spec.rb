@@ -1,8 +1,18 @@
 require 'rails_helper'
 
 describe CallSession, type: :model do
-  let!(:user) { create(:user) }
-  let!(:patient) { create(:patient) }
+  let!(:user) { create(:user, :with_sanitized_phone_number) }
+  let!(:patient) { create(:patient, :with_sanitized_phone_number) }
+
+  describe '#initialize' do
+    it 'should strip leading 0 when looking up users by phone number' do
+      user = create(:user, phone_number: '9876543210')
+
+      session = CallSession.new('09876543210', patient.phone_numbers.first.number)
+
+      expect(session.user).to eq(user)
+    end
+  end
 
   describe '#authorized?' do
     it 'should return true if patient and user are both registered' do

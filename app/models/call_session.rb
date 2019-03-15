@@ -4,7 +4,7 @@ class CallSession
   attr_reader :patient_phone_number, :user
 
   def initialize(user_phone_number, patient_phone_number)
-    @user = User.find_by_phone_number(user_phone_number)
+    @user = User.find_by_phone_number(sanitized_phone_number(user_phone_number))
     @patient_phone_number = PatientPhoneNumber.find_by_number(patient_phone_number)
   end
 
@@ -32,6 +32,10 @@ class CallSession
   end
 
   private
+
+  def sanitized_phone_number(phone_number)
+    Phonelib.parse(phone_number, 'IN').raw_national
+  end
 
   def session_data
     { patient_phone_number: patient_phone_number.number,
