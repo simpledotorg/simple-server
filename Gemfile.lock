@@ -85,6 +85,9 @@ GEM
     composite_primary_keys (10.0.5)
       activerecord (~> 5.1.0, >= 5.1.6)
     concurrent-ruby (1.1.4)
+    connection_pool (2.2.2)
+    crack (0.4.3)
+      safe_yaml (~> 1.0.0)
     crass (1.0.4)
     data-anonymization (0.8.2)
       activerecord (~> 5.1)
@@ -108,6 +111,8 @@ GEM
     discard (1.0.0)
       activerecord (>= 4.2, < 6)
     docile (1.3.0)
+    domain_name (0.5.20180417)
+      unf (>= 0.0.5, < 1.0.0)
     dotenv (2.4.0)
     dotenv-rails (2.4.0)
       dotenv (= 2.4.0)
@@ -130,7 +135,17 @@ GEM
       activesupport (>= 4.2.0)
     groupdate (4.0.1)
       activesupport (>= 4.2)
+    hashdiff (0.3.8)
     hashie (3.6.0)
+    http (4.1.1)
+      addressable (~> 2.3)
+      http-cookie (~> 1.0)
+      http-form_data (~> 2.0)
+      http_parser.rb (~> 0.6.0)
+    http-cookie (1.0.3)
+      domain_name (~> 0.5)
+    http-form_data (2.1.1)
+    http_parser.rb (0.6.0)
     i18n (1.5.3)
       concurrent-ruby (~> 1.0)
     jbuilder (2.7.0)
@@ -201,6 +216,8 @@ GEM
     pundit (1.1.0)
       activesupport (>= 3.0.0)
     rack (2.0.6)
+    rack-protection (2.0.5)
+      rack
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
     rails (5.1.6.1)
@@ -230,6 +247,7 @@ GEM
     rb-fsevent (0.10.3)
     rb-inotify (0.9.10)
       ffi (>= 0.5.0, < 2)
+    redis (4.1.0)
     responders (2.4.0)
       actionpack (>= 4.2.0, < 5.3)
       railties (>= 4.2.0, < 5.3)
@@ -267,6 +285,7 @@ GEM
       actionpack (>= 3.1, < 6.0)
       railties (>= 3.1, < 6.0)
     ruby_dep (1.5.0)
+    safe_yaml (1.0.5)
     sassc (2.0.0)
       ffi (~> 1.9.6)
       rake
@@ -280,6 +299,11 @@ GEM
       faraday (>= 0.7.6, < 1.0)
     shoulda-matchers (3.1.2)
       activesupport (>= 4.0.0)
+    sidekiq (5.2.5)
+      connection_pool (~> 2.2, >= 2.2.2)
+      rack (>= 1.5.0)
+      rack-protection (>= 1.5.0)
+      redis (>= 3.3.5, < 5)
     simplecov (0.16.1)
       docile (~> 1.1)
       json (>= 1.8, < 3)
@@ -309,7 +333,11 @@ GEM
       thread_safe (~> 0.1)
     uglifier (4.1.10)
       execjs (>= 0.3.0, < 3)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.7.5)
     uuidtools (2.1.5)
+    vcr (4.0.0)
     warden (1.2.7)
       rack (>= 1.0)
     web-console (3.6.2)
@@ -317,6 +345,10 @@ GEM
       activemodel (>= 5.0)
       bindex (>= 0.4.0)
       railties (>= 5.0)
+    webmock (3.5.1)
+      addressable (>= 2.3.6)
+      crack (>= 0.3.2)
+      hashdiff
     websocket-driver (0.6.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.3)
@@ -346,6 +378,7 @@ DEPENDENCIES
   faker
   friendly_id (~> 5.2.4)
   groupdate
+  http
   jbuilder (~> 2.5)
   jquery-rails
   kaminari
@@ -364,13 +397,16 @@ DEPENDENCIES
   sassc-rails
   sentry-raven
   shoulda-matchers (~> 3.1)
+  sidekiq
   simplecov
   timecop (~> 0.9.0)
   twilio-ruby (~> 5.10, >= 5.10.3)
   tzinfo-data
   uglifier (>= 1.3.0)
   uuidtools
+  vcr
   web-console (>= 3.3.0)
+  webmock
 
 BUNDLED WITH
    1.17.1
