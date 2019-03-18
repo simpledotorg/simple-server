@@ -6,6 +6,32 @@
 ### Removed 
 ### Security
 
+# 2019-03-18-1
+## Portal
+### Added
+- Added risk levels to the overdue list for patients with very high and high priority
+### Changed
+- Follow-up patients pages don't increment current_age when it is 0
+- Allow editing counsellor facilities groups
+### Fixed
+- Fix typo with ‘Adherence’
+- Handle pagination when 'All' is selected, but records.size is 0
+### Deprecated
+### Removed
+### Security
+
+## Api
+### Added
+- Added rake task for anonymizing audit logs
+- Added Rake task to fix scheduled appointments which are older than the latest BP reading
+- API to create Exotel sessions for phone number masking (Feature toggle turned off)
+### Changed
+- Updated styles for Nurse reports (Feature toggle turned off )
+### Fixed
+### Deprecated
+### Removed
+### Security
+
 # 2019-03-05-1
 ## Portal
 ### Added
