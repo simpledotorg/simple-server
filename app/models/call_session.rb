@@ -1,5 +1,6 @@
 class CallSession
   EXPIRE_CALL_SESSION_IN = 24.hours
+  COUNTRY = 'IN'
 
   attr_reader :patient_phone_number, :user
 
@@ -42,7 +43,7 @@ class CallSession
   private
 
   def sanitized_phone_number(phone_number)
-    Phonelib.parse(phone_number, 'IN').raw_national
+    Phonelib.parse(phone_number, COUNTRY).raw_national
   end
 
   def session_data
