@@ -19,7 +19,7 @@ RSpec.describe PatientsReturningDuringPeriodQuery do
       returning_patients.each do |patient|
         create_in_period(
           :blood_pressure,
-          trait: :hypertensive, from_time: from_time, to_time: to_time,
+          trait: :high, from_time: from_time, to_time: to_time,
           patient: patient, facility: patient.registration_facility)
       end
 

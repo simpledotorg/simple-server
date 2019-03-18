@@ -54,7 +54,7 @@ RSpec.describe Analytics::PatientSetAnalytics do
     it 'return the number of patients enrolled as hypertensives that have not had a BP recorded in the period' do
       hypertensive_patients = create_list_in_period(:patient, 5, past_options)
       hypertensive_patients.each do |patient|
-        create(:blood_pressure, :hypertensive, patient: patient, device_created_at: patient.device_created_at)
+        create(:blood_pressure, :high, patient: patient, device_created_at: patient.device_created_at)
       end
 
       _returning_patients = hypertensive_patients.sample(2).each do |patient|
@@ -90,7 +90,7 @@ RSpec.describe Analytics::PatientSetAnalytics do
         hypertensive_patients_registered_9_months_ago.each do |patient|
           create_in_period(
             :blood_pressure,
-            trait: :hypertensive, from_time: from_time - 9.months, to_time: to_time - 9.months,
+            trait: :high, from_time: from_time - 9.months, to_time: to_time - 9.months,
             patient: patient)
         end
 

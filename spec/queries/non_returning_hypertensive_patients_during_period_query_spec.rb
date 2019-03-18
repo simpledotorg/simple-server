@@ -18,7 +18,7 @@ RSpec.describe NonReturningHypertensivePatientsDuringPeriodQuery do
       hypertensive_patients.each do |patient|
         create_in_period(
           :blood_pressure,
-          trait: :hypertensive, from_time: 1.year.ago, to_time: from_time - 1.day,
+          trait: :high, from_time: 1.year.ago, to_time: from_time - 1.day,
           patient: patient, facility: patient.registration_facility)
       end
 
