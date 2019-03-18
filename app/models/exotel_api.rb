@@ -8,15 +8,16 @@ class ExotelAPI
   end
 
   def call_details(call_sid)
-    url = call_details_url(call_sid)
-    http = Net::HTTP.new(url.host, url.port)
-    http.use_ssl = true
-    req = Net::HTTP::Get.new(url)
-    req.basic_auth(@sid, @token)
-    response = http.request(req)
-    JSON.parse(response.body)
+    response = execute(call_details_url(call_sid))
+    JSON.parse(response.body[:Call], symbolize_names: true) if response.status.ok?
   rescue HTTP::Error => e
     report_error(:call_details, e)
+  end
+
+  def execute(url)
+    HTTP
+      .basic_auth(user: @sid, pass: @token)
+      .get(url)
   end
 
   private
