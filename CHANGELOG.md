@@ -12,7 +12,7 @@
 - Added risk levels to the overdue list for patients with very high and high priority
 ### Changed
 - Follow-up patients pages don't increment current_age when it is 0
-- Allow editing counsellor facilities groups
+- Allow editing a counsellor's facility groups
 ### Fixed
 - Fix typo with ‘Adherence’
 - Handle pagination when 'All' is selected, but records.size is 0
