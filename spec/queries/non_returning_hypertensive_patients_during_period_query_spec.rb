@@ -1,35 +1,26 @@
 require 'rails_helper'
 
 RSpec.describe NonReturningHypertensivePatientsDuringPeriodQuery do
-  let(:from_time) { 1.month.ago }
-  let(:to_time) { Date.today }
+  let(:from_time) { Date.new(2019, 1, 1) }
+  let(:to_time) { Date.new(2019, 3, 31) }
+  let(:one_year_ago) { Date.new(2018, 1, 1) }
 
-  let(:facilities) { create_list :facility, 2 }
-
-  describe '#call' do
-    it 'returns the number of unique patients registerted at a list of facilities' do
-      hypertensive_patients = facilities.flat_map do |facility|
-        create_list_in_period(
-          :patient, 5,
-          from_time: 1.year.ago, to_time: from_time - 1.day,
-          registration_facility: facility)
+  describe '#non_returning_since' do
+    let!(:hypertensive_patients) do
+      Timecop.travel(one_year_ago) do
+        patients = create_list(:patient, 5)
+        patients.each { |patient| create(:blood_pressure, :high, patient: patient) }
+        patients
       end
+    end
 
-      hypertensive_patients.each do |patient|
-        create_in_period(
-          :blood_pressure,
-          trait: :high, from_time: 1.year.ago, to_time: from_time - 1.day,
-          patient: patient, facility: patient.registration_facility)
+    let!(:returning_patients) do
+      Timecop.travel(from_time) do
+        hypertensive_patients.take(2).each { |patient| create(:blood_pressure, patient: patient) }
       end
+    end
 
-      returning_patients = hypertensive_patients.sample(3)
-      returning_patients.each do |patient|
-        create_in_period(
-          :blood_pressure,
-          trait: :under_control, from_time: from_time, to_time: to_time,
-          patient: patient, facility: patient.registration_facility)
-      end
-
+    it 'returns number of patients who are hypertensive and have not returned since the given time ' do
       results = NonReturningHypertensivePatientsDuringPeriodQuery.new(patients: Patient.all).non_returning_since(from_time)
 
       expect(results).to match_array(hypertensive_patients - returning_patients)
