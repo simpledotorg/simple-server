@@ -21,6 +21,10 @@ FactoryBot.define do
     phone_numbers { build_list(:patient_phone_number, rand(1..3), patient_id: id) }
     association :registration_facility, factory: :facility
     association :registration_user, factory: :user_created_on_device
+
+    trait(:with_sanitized_phone_number) do
+      phone_numbers { build_list(:patient_phone_number, 1, patient_id: id, number: '9876543210') }
+    end
   end
 end
 

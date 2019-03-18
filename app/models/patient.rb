@@ -88,6 +88,8 @@ class Patient < ApplicationRecord
     if date_of_birth.present?
       Date.today.year - date_of_birth.year
     elsif age.present?
+      return 0 if age == 0
+
       years_since_update = Date.today.year - age_updated_at.year
       age + years_since_update
     end
