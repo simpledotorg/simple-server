@@ -41,6 +41,14 @@ describe Appointment, type: :model do
         expect(appointment.remind_on).to eq(30.days.from_now.to_date)
       end
 
+      it "correctly records that the patient has already visited" do
+        appointment.call_result = "patient_has_already_visited"
+
+        expect(appointment.status).to eq('visited')
+        expect(appointment.agreed_to_visit).to be nil
+        expect(appointment.remind_on).to be nil
+      end
+
       it "correctly records remind to call" do
         appointment.call_result = "remind_to_call_later"
 
