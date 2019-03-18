@@ -23,25 +23,3 @@ class Hash
       self, Api::V1::Transformer.inverted_key_mapping)
   end
 end
-
-def random_time(from_time, to_time)
-  Time.at(from_time.to_time.to_f + rand * (to_time.to_time - from_time.to_time).to_f)
-end
-
-def create_in_period(model_type, trait: nil, from_time:, to_time:, **options)
-  create model_type, trait, options.merge(device_created_at: random_time(from_time, to_time))
-end
-
-def create_list_in_period(model_type, count, trait: nil, from_time:, to_time:, **options)
-  created_objects = []
-  count.times do
-    created_objects << create_in_period(
-      model_type,
-      trait: trait,
-      from_time: from_time,
-      to_time: to_time,
-      **options
-    )
-  end
-  created_objects
-end
