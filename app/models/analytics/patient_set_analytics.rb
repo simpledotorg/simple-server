@@ -45,7 +45,7 @@ class Analytics::PatientSetAnalytics
   def non_returning_hypertensive_patients_count_per_month(months_previous)
     NonReturningHypertensivePatientsDuringPeriodQuery.new(
       patients: patients
-    ).count_per_month(months_previous, before_time: from_time)
+    ).count_per_month(months_previous, before_time: to_time)
   end
 
   def control_rate
