@@ -1,7 +1,7 @@
 class Api::Current::Analytics::UserAnalyticsController < Api::Current::AnalyticsController
   layout false
 
-  WEEKS_TO_REPORT = 4
+  WEEKS_TO_REPORT = 52
 
   def show
     stats_for_user = new_patients_by_facility_week
@@ -21,11 +21,11 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
   private
 
   def new_patients_by_facility_week
-    PatientsQuery
-      .new
-      .registered_at(current_facility.id)
+    first_patient_at_facility = current_facility.patients.order(:device_created_at).first
+    Patient.where(registration_facility_id: current_facility.id)
       .group_by_week('device_created_at', last: WEEKS_TO_REPORT)
       .count
+      .select { |k, v| k >= first_patient_at_facility.device_created_at.at_beginning_of_week(start_day = :sunday) }
   end
 
   def total_patients_count
