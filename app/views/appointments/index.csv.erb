@@ -1,4 +1,5 @@
 <%= [
+  "Facility"
   "Patient name",
   "Gender",
   "Age",
@@ -11,8 +12,9 @@
   "Patient village or colony",
   "Patient phone"
 ].to_csv -%>
-<%- @appointments.sort_by { |a| a.patient.risk_priority }.each do |appointment| %>
+<%- @appointments.sort_by { |a| a.patient.risk_priority }.group_by(:facility).each do |facility, appointment| %>
 <%= [
+  facility.name,
   appointment.patient.full_name,
   appointment.patient.gender.capitalize,
   appointment.patient.current_age,
