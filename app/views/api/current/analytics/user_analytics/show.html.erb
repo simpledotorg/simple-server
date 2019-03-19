@@ -1,156 +1,69 @@
 <!DOCTYPE html>
 <html>
 <head>
+
   <meta charset="utf-8">
   <meta name="HandheldFriendly" content="True">
   <meta name="MobileOptimized" content="320">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, shrink-to-fit=no"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
 
-  <style>
-    .analytics-container {
-      background: #fff;
-      margin: 8px 0;
-      padding: 16px;
-      border-radius: 4px;
-      box-shadow:
-        0 1px 2px rgba(0,0,0,0.04),
-        0 2px 4px rgba(0,0,0,0.08);
-      font-family: Roboto, sans-serif;
-    }
-    .analytics-container h3,
-    .analytics-container h4 {
-      margin: 0;
-      font-size: 16px;
-      line-height: 1.3;
-      color: #2F363D;
-      font-weight: 500;
-    }
-    .analytics-container h4 {
-      font-weight: 300;
-      font-size: 15px;
-    }
-    .featured-graph table {
-      font-size: 14px;
-      margin-top: 8px;
-      width: 100%;
-      text-align: center;
-      border-collapse: collapse;
-    }
-    .featured-label {
-      font-size: 14px;
-      display: block;
-    }
-    .featured-graph table td {
-      vertical-align: bottom;
-      padding: 0;
-      margin: 0;
-      height: 270px;
-    }
-    .featured-graph-column {
-      background: #e0f0ff;
-      font-family: 'Roboto Medium';
-      color: #6c737a;
-      text-align: center;
-      border-radius: 4px 4px 0 0;
-      margin: 0 4px;
-      min-height: 8px;
-    }
-    .active-column {
-      background: #0075eb !important;
-    }
-    .featured-td {
-      vertical-align: top;
-      width: 33.3333%;
-    }
-    .snapshot-simple .featured-graph-column {
-      font-size: 14px;
-    }
-    .featured-number {
-      font-size: 22px;
-      line-height: 1;
-    }
-    .graph-label {
-      display: block;
-      font-size: 14px;
-      font-weight: 200;
-      margin-top: 8px;
-      line-height: 1.3;
-    }
-    .graph-label p {
-      margin: 1px;
-    }
-    .graph-label p:nth-child(1) {
-      color: #2F363D;
-    }
-    .active-column .graph-label p:nth-child(1) {
-      font-weight: 700;
-    }
-    .graph-label p:nth-child(2) {
-      color: #ADB2B8;
-      font-size: 12px;
-    }
-    .featured-date {
-      display: block;
-      border-top: 1px solid #ADB2B8;
-    }
-    .column-value {
-      font-weight: 300;
-      font-size: 16px;
-      margin-bottom: 4px;
-    }
-    .row-data {
-        padding-top: 8px;
-        margin-top: 8px;
-        border-top: 1px solid #eee;
-    }
-    .row-value {
-      float: right;
-      font-weight: 300;
-      font-size: 15px;
-      padding-top: 2px;
-    }
-  </style>
+  <%= inline_stylesheet('common_webview.css') %>
+  <%= inline_stylesheet('user_analytics.css') %>
 </head>
 
-<body style="background: #f0f2f5; margin: 0;">
-<div class="row analytics-container">
-  <div class="col-md-12">
-    <h3>How many patients have BP measured at <%= @current_facility.name %> each week?</h3>
-    <div class="featured-graph">
-      <table>
-        <tr>
-          <% @formatted_stats.each do |key, labelled_value| %>
-            <td>
-                <div class="column-value"><%= labelled_value[:value] %></div>
-                <%= content_tag 'div', nil,
-                              class: "featured-graph-column #{'active-column' if key == @max_key}",
-                              style: column_height_styles(
-                                  labelled_value[:value],
-                                  max_value: @max_value,
-                                  max_height: 200) %>
-              <span class="featured-date"><%= labelled_value[:label] %></span>
-            </td>
-          <% end %>
-        </tr>
-      </table>
-    </div>
+<body>
+
+<div class="card">
+
+  <%= inline_svg('icon_new_bp.svg', classname: 'icon-float') %>
+
+  <h3>How many patients have a BP recorded each week?</h3>
+  <h5><%= @current_facility.name %></h5>
+  <div class="bar-chart">
+    <table>
+      <tr>
+        <% @formatted_stats.reverse_each do |key, labelled_value| %>
+          <td class="bars">
+            <div class="column-value"><%= labelled_value[:value] %></div>
+            <%= content_tag 'div', nil,
+                            class: "bar-chart-column #{'active-column' if key == @max_key}",
+                            style: column_height_styles(
+                                labelled_value[:value],
+                                max_value: @max_value,
+                                max_height: 180) %>
+          </td>
+        <% end %>
+      </tr>
+      <tr>
+        <% @formatted_stats.reverse_each do |key, labelled_value| %>
+          <td class="bar-labels">
+            <span class="label-date"><%= labelled_value[:label] %></span>
+          </td>
+        <% end %>
+        </table>
   </div>
 </div>
 
 <% if @total_patients_count > 0 %>
-  <div class="row analytics-container">
-    <div class="row-value"><%= pluralize(@total_patients_count, 'patient') %></div>
-    <h3>All enrolled patients</h3>
+  <div class="card">
 
+    <%= inline_svg('icon_enroll.svg', classname: 'icon-float') %>
+
+    <h3>How many patients did your team enroll each month?</h3>
+    <h5><%= @current_facility.name %></h5>
+    <div class="row-data row-head">
+      <div class="row-value" style="font-weight: 500;"><%= pluralize(@total_patients_count, 'patient') %></div>
+      <h4 style="font-weight: 500;">Total enrolled</h4>
+    </div>
     <% @patients_enrolled_per_month.each do |month, enrolled_count| %>
       <div class="row-data">
         <div class="row-value"><%= pluralize(enrolled_count, 'patient') %></div>
-        <h4><%= month.strftime('%B %Y')%></h4>
+        <h4><%= month.strftime('%B %Y') %></h4>
       </div>
     <% end %>
   </div>
 <% end %>
-
+<footer></footer>
 </body>
 </html>
