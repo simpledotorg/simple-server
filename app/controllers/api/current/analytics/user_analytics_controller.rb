@@ -37,7 +37,7 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
   def patients_enrolled_per_month
     PatientsQuery.new
       .registered_at(current_facility.id)
-      .group_by_month(:device_created_at)
+      .group_by_month(:device_created_at, reverse: true)
       .count
   end
 
