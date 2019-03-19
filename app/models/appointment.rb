@@ -36,19 +36,13 @@ class Appointment < ApplicationRecord
 
   def call_result=(new_call_result)
     if new_call_result == 'agreed_to_visit'
-      self.agreed_to_visit = true
-      self.remind_on = 30.days.from_now
+      mark_patient_agreed_to_visit
     elsif new_call_result == 'patient_has_already_visited'
-      self.status = :visited
-      self.agreed_to_visit = nil
-      self.remind_on = nil
+      mark_patient_already_visited
     elsif new_call_result == 'remind_to_call_later'
-      self.remind_on = 7.days.from_now
+      mark_remind_to_call_later
     elsif Appointment.cancel_reasons.values.include?(new_call_result)
-      self.agreed_to_visit = false
-      self.remind_on = nil
-      self.cancel_reason = new_call_result
-      self.status = :cancelled
+      mark_appointment_cancelled(new_call_result)
     end
 
     if new_call_result == 'dead'
@@ -82,5 +76,29 @@ class Appointment < ApplicationRecord
     if status == :cancelled && !cancel_reason.present?
       errors.add(:cancel_reason, 'should be present for cancelled appointments')
     end
+  end
+
+  private
+
+  def mark_remind_to_call_later
+    self.remind_on = 7.days.from_now
+  end
+
+  def mark_patient_agreed_to_visit
+    self.agreed_to_visit = true
+    self.remind_on = 30.days.from_now
+  end
+
+  def mark_appointment_cancelled(new_call_result)
+    self.agreed_to_visit = false
+    self.remind_on = nil
+    self.cancel_reason = new_call_result
+    self.status = :cancelled
+  end
+
+  def mark_patient_already_visited
+    self.status = :visited
+    self.agreed_to_visit = nil
+    self.remind_on = nil
   end
 end
