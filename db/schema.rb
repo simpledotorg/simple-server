@@ -126,13 +126,12 @@ ActiveRecord::Schema.define(version: 20190315160807) do
     t.string "result"
     t.string "action"
     t.integer "duration"
+    t.string "callee_phone_number", null: false
     t.datetime "start_time"
     t.datetime "end_time"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
-    t.uuid "patient_phone_number_id", null: false
-    t.index ["patient_phone_number_id"], name: "index_call_logs_on_patient_phone_number_id"
     t.index ["user_id"], name: "index_call_logs_on_user_id"
   end
 

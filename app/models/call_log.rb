@@ -1,11 +1,10 @@
 class CallLog < ApplicationRecord
-  belongs_to :user
-  belongs_to :patient_phone_number
+  belongs_to :user, optional: true
 
   enum result: {
     queued: 'queued',
-    ringing: 'cancelled',
-    in_progress: 'visited',
+    ringing: 'ringing',
+    in_progress: 'in_progress',
     completed: 'completed',
     failed: 'failed',
     busy: 'busy',
