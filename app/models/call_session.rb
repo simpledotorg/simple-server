@@ -44,7 +44,7 @@ class CallSession
   private
 
   def sanitized_phone_number(phone_number)
-    Phonelib.parse(phone_number, COUNTRY).raw_national
+    Phonelib.parse(phone_number).raw_national
   end
 
   def session_data
