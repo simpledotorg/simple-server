@@ -64,18 +64,23 @@
 .column-value {
   font-size: 22px;
   margin-bottom: 4px;
+  color: #007A31;
 }
 
 .row-data {
-  padding: 8px;
-  border-top: 1px solid #eee;
+  padding: 12px 4px;
+  border-top: 1px solid #F0F2F5;
   clear: both;
+}
+
+.row-data h4 {
+    font-size: 16px;
+    font-weight: 400;
 }
 
 .row-value {
   float: right;
-  font-size: 15px;
-  padding-top: 2px;
+  font-size: 16px;
 }
 
 .row-head {
