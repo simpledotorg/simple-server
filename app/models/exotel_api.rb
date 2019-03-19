@@ -9,7 +9,7 @@ class ExotelAPI
 
   def call_details(call_sid)
     response = execute(call_details_url(call_sid))
-    JSON.parse(response.body[:Call], symbolize_names: true) if response.status.ok?
+    OpenStruct.new(JSON.parse(response.body[:Call], symbolize_names: true)) if response.status.ok?
   rescue HTTP::Error => e
     report_error(:call_details, e)
   end
