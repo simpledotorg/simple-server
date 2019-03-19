@@ -46,13 +46,13 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
   end
 
   def label_for_week(week, value)
-    return graph_label(value, 'This week', '') if week == @max_value
-    start_date = week.at_beginning_of_week
-    end_date = week.at_end_of_week
-    graph_label(value, start_date.strftime('%b %d'), 'to ' + end_date.strftime('%b %d'))
+    return graph_label(value, 'This week', '') if week == Date.today.at_beginning_of_week(start_day = :sunday)
+    start_date = week.at_beginning_of_week(start_day = :sunday)
+    end_date = start_date.at_end_of_week(start_day = :sunday)
+    graph_label(value, start_date.strftime('%b %e'), 'to ' + end_date.strftime('%b %e'))
   end
 
   def graph_label(value, from_date_string, to_date_string)
-    "<div class='graph-label'><p>#{from_date_string}</p><p>#{to_date_string}</p>".html_safe
+    "<div class='graph-label'><div class='label-1'>#{from_date_string}</div><div class='label-2'>#{to_date_string}</div>".html_safe
   end
 end
