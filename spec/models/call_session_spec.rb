@@ -43,6 +43,13 @@ describe CallSession, type: :model do
 
       expect(session.authorized?).to be(false)
     end
+
+    it 'should return false if the user is not approved for syncing' do
+      user_without_sync_access = create(:user, :with_sanitized_phone_number, sync_approval_status: :requested)
+      session = CallSession.new(call_id, user_without_sync_access.phone_number, patient.phone_numbers.first.number)
+
+      expect(session.authorized?).to be(false)
+    end
   end
 
   describe '#save' do

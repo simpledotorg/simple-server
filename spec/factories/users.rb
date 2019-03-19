@@ -30,7 +30,7 @@ FactoryBot.define do
     end
 
     trait(:with_sanitized_phone_number) do
-      phone_number { '9876543211' }
+      phone_number { rand(1e9...1e10).to_i.to_s }
     end
 
     factory :user_created_on_device, traits: [:created_on_device]

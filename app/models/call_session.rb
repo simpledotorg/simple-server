@@ -2,7 +2,7 @@ class CallSession
   EXPIRE_CALL_SESSION_IN = 24.hours
   COUNTRY = 'IN'
 
-  attr_reader :patient_phone_number, :user
+  attr_reader :user, :patient_phone_number
 
   def initialize(call_id, user_phone_number, patient_phone_number)
     @call_id = call_id
@@ -11,9 +11,10 @@ class CallSession
   end
 
   def authorized?
-    @user.present? &&
+    user.present? &&
+      user.sync_approval_status_allowed? &&
       patient_phone_number.present? &&
-      @user.phone_number != patient_phone_number.number
+      user.phone_number != patient_phone_number.number
   end
 
   def save
@@ -36,7 +37,7 @@ class CallSession
     end
 
     def session_key(call_id)
-      [name, call_id].join('/')
+      [self.name, call_id].join('/')
     end
   end
 
