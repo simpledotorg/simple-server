@@ -3,10 +3,7 @@ class Admin::OrganizationsController < AdminController
 
   def index
     authorize Organization
-    @organizations = policy_scope(Organization).order(:name)
-  end
-
-  def show
+    @organizations = policy_scope(Organization)
   end
 
   def new

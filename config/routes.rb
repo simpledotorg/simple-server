@@ -146,10 +146,14 @@ Rails.application.routes.draw do
 
   namespace :admin do
     resources :audit_logs, only: [:index, :show]
+
+    resources :facilities, only: [:index]
+
     resources :organizations do
-      resources :facility_groups
+      resources :facility_groups, shallow: true do
+        resources :facilities, shallow: true
+      end
     end
-    resources :facilities
 
     resources :protocols do
       resources :protocol_drugs

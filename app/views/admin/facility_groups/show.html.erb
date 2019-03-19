@@ -1,9 +1,8 @@
-<div class="mb-3">
-  <%= link_to "&larr;".html_safe + " Go back to #{@organization.name}", admin_organization_path(@organization) %>
-</div>
-
 <div class="page-header">
-  <h1 class="page-title"><%= @facility_group.name %></h1>
+  <h1 class="page-title">
+    <small><%= @facility_group.organization.name %></small><br>
+    <%= @facility_group.name %>
+  </h1>
   <nav class="page-nav">
     <% if policy(@facility_group).edit? %>
       <%= link_to 'Edit facility group', edit_admin_organization_facility_group_path(@organization, @facility_group), class: "btn btn-sm btn-primary" %>
@@ -11,28 +10,45 @@
   </nav>
 </div>
 
-<div class="row">
-  <div class="col-md-6">
-    <h3>Protocol</h3>
+<h2>Protocol</h2>
+<p><%= link_to @facility_group.protocol.name, admin_protocol_path(@facility_group.protocol) %></p>
 
-    <p><%= link_to @facility_group.protocol.name, admin_protocol_path(@facility_group.protocol) %></p>
+<h2>Facilities</h2>
+<div class="table-responsive">
+  <table class="table">
+    <thead class="thead-light">
+      <tr>
+        <th>Name</th>
+        <th>Address</th>
+        <th>Village/colony</th>
+        <th>District</th>
+        <th>State</th>
+        <th>Country</th>
+        <th>Pin</th>
+        <th>Facility&nbsp;type</th>
+        <th colspan="2"></th>
+      </tr>
+    </thead>
 
-    <h3>Facilities</h3>
-
-    <ul class="list-unstyled">
-      <% @facility_group.facilities.each do |facility| %>
-        <li><%= link_to facility.name, admin_facility_path(facility) %></li>
+    <tbody>
+      <% @facility_group.facilities.order(:name).each do |facility| %>
+        <tr>
+          <td class="nowrap"><%= link_to facility.name, [:admin, @organization, @facility_group, facility] %></td>
+          <td><%= facility.street_address %></td>
+          <td><%= facility.village_or_colony %></td>
+          <td><%= facility.district %></td>
+          <td><%= facility.state %></td>
+          <td><%= facility.country %></td>
+          <td><%= facility.pin %></td>
+          <td><%= facility.facility_type %></td>
+          <% if policy(facility).edit? %>
+            <td><%= link_to 'Edit', edit_admin_organization_facility_group_facility_path(@organization, @facility_group, facility) %></td>
+          <% end %>
+          <% if policy(facility).destroy? %>
+            <td><%= link_to 'Delete', [:admin, @organization, @facility_group, facility], method: :delete, data: { confirm: "Are you sure you want to delete #{facility.name}?" } %></td>
+          <% end %>
+        </tr>
       <% end %>
-    </ul>
-  </div>
-
-  <div class="col-md-6">
-    <h3>Users</h3>
-
-    <ul class="list-unstyled">
-      <% @facility_group.users.each do |user| %>
-        <li><%= link_to user.full_name, admin_user_path(user) %></li>
-      <% end %>
-    </ul>
-  </div>
+    </tbody>
+  </table>
 </div>

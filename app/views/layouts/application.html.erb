@@ -54,11 +54,8 @@
                   Manage
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <% if policy(Organization).index? %>
-                    <%= link_to "Organizations", admin_organizations_path, class: "dropdown-item #{active_controller?("admin/organizations")}" %>
-                  <% end %>
                   <% if policy(Facility).index? %>
-                    <%= link_to "Facilities", admin_facilities_path, class: "dropdown-item #{active_controller?("admin/facilities")}" %>
+                    <%= link_to "Facilities", admin_facilities_path, class: "dropdown-item #{active_controller?("admin/organizations")}" %>
                   <% end %>
                   <% if policy(Protocol).index? %>
                     <%= link_to "Protocols", admin_protocols_path, class: "dropdown-item #{active_controller?("admin/protocols")}" %>

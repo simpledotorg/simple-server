@@ -1,3 +1,10 @@
-<h1>Edit facility</h1>
+<div class="page-header">
+  <h1 class="page-title">Edit facility</h1>
+  <nav class="page-nav">
+    <% if policy(@facility).destroy? %>
+      <%= link_to 'Delete facility', [:admin, @facility], method: :delete, data: { confirm: "Are you sure you want to delete #{@facility.name}?" }, class: "btn btn-outline-danger ml-4" %>
+    <% end %>
+  </nav>
+</div>
 
 <%= render 'form', facility: @facility %>

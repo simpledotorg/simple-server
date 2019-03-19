@@ -1,11 +1,10 @@
 class Admin::FacilitiesController < AdminController
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
+  before_action :set_facility_group, only: [:new, :create]
 
   def index
     authorize Facility
-    @facilities = policy_scope(Facility).sort_by do |facility|
-      facility.name.sub /^Dr(.?)(\s*)/, ''
-    end
+    @organizations = policy_scope(Organization)
   end
 
   def show
@@ -48,6 +47,11 @@ class Admin::FacilitiesController < AdminController
   def set_facility
     @facility = Facility.friendly.find(params[:id])
     authorize @facility
+  end
+
+  def set_facility_group
+    @facility_group = FacilityGroup.friendly.find(params[:facility_group_id])
+    authorize @facility_group
   end
 
   def facility_params
