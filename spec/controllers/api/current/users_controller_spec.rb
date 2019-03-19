@@ -34,23 +34,30 @@ RSpec.describe Api::Current::UsersController, type: :controller do
 
       it 'creates a user, and responds with the created user object and their access token' do
         post :register, params: { user: user_params }
+        parsed_response = JSON(response.body)
 
         created_user = User.find_by(full_name: user_params[:full_name], phone_number: user_params[:phone_number])
         expect(response.status).to eq(200)
         expect(created_user).to be_present
-        expect(JSON(response.body)['user'].except('device_updated_at', 'device_created_at', 'facility_ids').with_int_timestamps)
+
+        expect(parsed_response['user'].except('created_at',
+                                              'updated_at',
+                                              'facility_ids').with_int_timestamps)
           .to eq(created_user.attributes
                    .except(
                      'device_updated_at',
                      'device_created_at',
+                     'created_at',
+                     'updated_at',
                      'access_token',
                      'logged_in_at',
                      'otp',
                      'otp_valid_until')
                    .as_json
                    .with_int_timestamps)
-        expect(JSON(response.body)['user']['registration_facility_id']).to eq(created_user.facility.id)
-        expect(JSON(response.body)['access_token']).to eq(created_user.access_token)
+
+        expect(parsed_response['user']['registration_facility_id']).to eq(created_user.facility.id)
+        expect(parsed_response['access_token']).to eq(created_user.access_token)
       end
 
       it 'sets the user status to requested' do
