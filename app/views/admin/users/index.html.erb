@@ -37,7 +37,7 @@
                 <% facility = user.registered_at_facility %>
 
                 <% if policy(facility).show? %>
-                  <%= link_to facility.name, [:admin, facility.organization, facility.facility_group, facility] %>
+                  <%= link_to facility.name, [:admin, facility] %>
                 <% else %>
                   <%= user.registered_at_facility.name %>
                 <% end %>
