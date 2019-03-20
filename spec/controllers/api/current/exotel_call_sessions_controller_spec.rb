@@ -6,6 +6,10 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
   let!(:unknown_phone_number) { '1234567890' }
   let!(:invalid_patient_phone_number) { '1800-SIMPLE' }
 
+  before(:each) do
+    Rails.cache.clear
+  end
+
   describe '#create' do
     context ':ok' do
       it 'should have a content-type set as text/plain' do

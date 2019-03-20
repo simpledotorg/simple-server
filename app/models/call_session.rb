@@ -43,7 +43,7 @@ class CallSession
   private
 
   def sanitized_phone_number(phone_number)
-    Phonelib.parse(phone_number).raw_national
+    Phonelib.parse(phone_number, ENV['DEFAULT_COUNTRY'] || 'IN').raw_national
   end
 
   def session_data

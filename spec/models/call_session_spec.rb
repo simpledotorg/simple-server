@@ -5,6 +5,10 @@ describe CallSession, type: :model do
   let!(:patient) { create(:patient, :with_sanitized_phone_number) }
   let!(:call_id) { SecureRandom.uuid }
 
+  before(:each) do
+    Rails.cache.clear
+  end
+
   describe '#initialize' do
     it 'should strip leading 0 when looking up users by phone number' do
       user = create(:user, phone_number: '9876543210')
