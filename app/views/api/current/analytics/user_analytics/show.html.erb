@@ -24,7 +24,7 @@
     <table>
       <tr>
         <% @formatted_stats.reverse_each do |key, labelled_value| %>
-          <td class="bars">
+          <td class="bars value-<%= labelled_value[:value] %>">
             <div class="column-value"><%= labelled_value[:value] %></div>
             <%= content_tag 'div', nil,
                             class: "bar-chart-column #{'active-column' if key == @max_key}",
@@ -64,6 +64,7 @@
     <% end %>
   </div>
 <% end %>
+
 <footer></footer>
 </body>
 </html>
