@@ -42,6 +42,12 @@ body {
   letter-spacing: 0.1em;
 }
 
+.big {
+    font-size: 80px;
+    text-align: center;
+    margin: 32px 0;
+}
+
 svg {
   width: 100%;
 }
@@ -50,6 +56,13 @@ p, ul.big-list li {
   margin-top: 0.2em;
   line-height: 1.4;
   font-size: 18px;
+}
+
+p.footnote {
+    font-size: 14px;
+    border-top: 1px solid #eee;
+    padding-top: 16px;
+    margin-top: 32px;
 }
 
 a:link,

@@ -1,7 +1,7 @@
 class Api::Current::Analytics::UserAnalyticsController < Api::Current::AnalyticsController
   layout false
 
-  WEEKS_TO_REPORT = 52
+  WEEKS_TO_REPORT = 4
 
   def show
     stats_for_user = new_patients_by_facility_week
