@@ -6,7 +6,7 @@ RSpec.describe Api::Current::Analytics::UserAnalyticsController, type: :controll
   let!(:request_user) { create(:user) }
   let!(:request_facility) { create(:facility, facility_group: request_user.facility.facility_group) }
 
-  let!(:patients) { create_list :patient, 10, registration_facility: request_facility, registration_user: request_user }
+  let!(:patients) { create_list(:patient, 10, registration_facility: request_facility) }
 
   before :each do
     request.env['HTTP_X_USER_ID'] = request_user.id
