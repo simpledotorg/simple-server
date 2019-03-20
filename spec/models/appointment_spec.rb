@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Appointment, type: :model do
-  subject(:appointment) { build(:appointment) }
+  subject(:appointment) { create(:appointment) }
 
   describe 'Associations' do
     it { should belong_to(:patient) }
@@ -32,17 +32,17 @@ describe Appointment, type: :model do
     end
   end
 
-  context "Virtual params" do
-    describe ".call_result" do
+  context "Result of follow-up" do
+    describe "For each category in the follow-up options" do
       it "correctly records agreed to visit" do
-        appointment.call_result = "agreed_to_visit"
+        appointment.mark_patient_agreed_to_visit
 
         expect(appointment.agreed_to_visit).to eq(true)
         expect(appointment.remind_on).to eq(30.days.from_now.to_date)
       end
 
       it "correctly records that the patient has already visited" do
-        appointment.call_result = "patient_has_already_visited"
+        appointment.mark_patient_already_visited
 
         expect(appointment.status).to eq('visited')
         expect(appointment.agreed_to_visit).to be nil
@@ -50,14 +50,14 @@ describe Appointment, type: :model do
       end
 
       it "correctly records remind to call" do
-        appointment.call_result = "remind_to_call_later"
+        appointment.mark_remind_to_call_later
 
         expect(appointment.remind_on).to eq(7.days.from_now.to_date)
       end
 
       Appointment.cancel_reasons.values.each do |cancel_reason|
         it "correctly records cancel reason: '#{cancel_reason}'" do
-          appointment.call_result = cancel_reason
+          appointment.mark_appointment_cancelled(cancel_reason)
 
           expect(appointment.cancel_reason).to eq(cancel_reason)
           expect(appointment.status).to eq("cancelled")
@@ -65,7 +65,7 @@ describe Appointment, type: :model do
       end
 
       it "sets patient status if call indicated they died" do
-        appointment.call_result = "dead"
+        appointment.mark_patient_as_dead
 
         expect(appointment.patient.status).to eq("dead")
       end

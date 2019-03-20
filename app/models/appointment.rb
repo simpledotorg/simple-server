@@ -6,8 +6,6 @@ class Appointment < ApplicationRecord
 
   has_many :communications
 
-  attribute :call_result, :string
-
   enum status: {
     scheduled: 'scheduled',
     cancelled: 'cancelled',
@@ -32,24 +30,6 @@ class Appointment < ApplicationRecord
     where(status: 'scheduled')
       .where('scheduled_date <= ?', Date.today)
       .where('remind_on IS NULL OR remind_on <= ?', Date.today)
-  end
-
-  def call_result=(new_call_result)
-    if new_call_result == 'agreed_to_visit'
-      mark_patient_agreed_to_visit
-    elsif new_call_result == 'patient_has_already_visited'
-      mark_patient_already_visited
-    elsif new_call_result == 'remind_to_call_later'
-      mark_remind_to_call_later
-    elsif Appointment.cancel_reasons.values.include?(new_call_result)
-      mark_appointment_cancelled(new_call_result)
-    end
-
-    if new_call_result == 'dead'
-      self.patient.status = 'dead'
-    end
-
-    super(new_call_result)
   end
 
   def days_overdue
@@ -78,8 +58,6 @@ class Appointment < ApplicationRecord
     end
   end
 
-  private
-
   def mark_remind_to_call_later
     self.remind_on = 7.days.from_now
   end
@@ -89,10 +67,10 @@ class Appointment < ApplicationRecord
     self.remind_on = 30.days.from_now
   end
 
-  def mark_appointment_cancelled(new_call_result)
+  def mark_appointment_cancelled(cancel_reason)
     self.agreed_to_visit = false
     self.remind_on = nil
-    self.cancel_reason = new_call_result
+    self.cancel_reason = cancel_reason
     self.status = :cancelled
   end
 
@@ -100,5 +78,10 @@ class Appointment < ApplicationRecord
     self.status = :visited
     self.agreed_to_visit = nil
     self.remind_on = nil
+  end
+
+  def mark_patient_as_dead
+    self.patient.status = :dead
+    self.patient.save
   end
 end

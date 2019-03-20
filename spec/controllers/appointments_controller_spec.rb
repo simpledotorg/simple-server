@@ -130,5 +130,53 @@ RSpec.describe AppointmentsController, type: :controller do
       expect(response).to redirect_to(action: 'index')
     end
 
+    it 'patient_has_already_visited updates appointment status to visited' do
+      put :update, params: {
+        id: overdue_appointment.id,
+        appointment: {
+          call_result: 'patient_has_already_visited'
+        }
+      }
+
+      overdue_appointment.reload
+
+      expect(overdue_appointment.status).to eq 'visited'
+      expect(response).to redirect_to(action: 'index')
+    end
+
+    it 'patient_has_already_visited updates agreed_to_visit and remind_on to nil' do
+      put :update, params: {
+        id: overdue_appointment.id,
+        appointment: {
+          call_result: 'patient_has_already_visited'
+        }
+      }
+
+      overdue_appointment.reload
+
+      expect(overdue_appointment.agreed_to_visit).to be nil
+      expect(overdue_appointment.remind_on).to be nil
+      expect(response).to redirect_to(action: 'index')
+    end
+
+    it 'marking the appointment as cancelled updates the relevant fields' do
+      Appointment.cancel_reasons.values.each do |cancel_reason|
+        put :update, params: {
+          id: overdue_appointment.id,
+          appointment: {
+            call_result: cancel_reason
+          }
+        }
+
+        overdue_appointment.reload
+
+        expect(overdue_appointment.agreed_to_visit).to be false
+        expect(overdue_appointment.remind_on).to be nil
+        expect(overdue_appointment.cancel_reason).to eq cancel_reason
+        expect(overdue_appointment.status).to eq :cancelled
+        expect(response).to redirect_to(action: 'index')
+      end
+    end
+
   end
 end
