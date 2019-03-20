@@ -124,6 +124,8 @@ Rails.application.routes.draw do
           resource :user_analytics, only: [:show]
         end
       end
+
+      resource :help, only: [:show], controller: "help"
     end
   end
 

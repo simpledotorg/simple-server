@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+   <meta charset="utf-8">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, shrink-to-fit=no"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+
+   <%= inline_stylesheet('common_webview.scss') %>
+<style>
+    
+    ol {
+        list-style: none;
+        counter-reset: custom-counter;
+        padding-left: 0;
+    }
+    
+    ol li {
+        counter-increment: custom-counter;
+        margin: 8px 0 8px 24px;
+    }
+    
+    ol li::before {
+        content: counter(custom-counter) " ";
+        color: #FF3355;
+        font-weight: bold;
+        margin-right: 8px;
+        margin-left: -20px;
+    }
+    
+    .anchors {
+        margin: -8px 0 16px 0;
+    }
+    
+    .anchors a {
+        display: block;
+        padding: 16px 8px;
+        border-top: 1px solid #ddd;
+        text-decoration: none;
+        font-weight: 400;
+        color: #0075EB;
+        font-size: 14px;
+        letter-spacing: 0.1em;
+    }
+    
+    h6 {
+        font-size: 16px;
+        color: #FF3355;
+        margin: 1em 0 0 0;
+        font-weight: 400;
+    }
+    
+    ul, li {
+        margin: 0;
+        padding-left: 0;
+        list-style: none;
+    }
+    
+    ul li {
+        padding: 2px 0 0 30px;
+        margin: 16px 0;
+        position: relative;
+    }
+    
+    ul li:before {
+        content: ".";
+        color: rgba(255,255,255,0);
+        width: 18px;
+        height: 18px;
+        background: #fff;
+        border: 1px solid #DADDE0;
+        border-radius: 3px;
+        position: absolute;
+        left: 0;
+        top: 4px;
+    }
+    
+    .note {
+        font-size: 14px;
+        margin-top: 0.2em;
+    }
+    
+    a.whatsapp-button {
+        display: block;
+        margin: 1em 0 0 0;
+        padding: 12px 0;
+        text-align: center;
+        background: #dfffec;
+        color: #007A31;
+        text-decoration: none;
+        border-radius: 3px;
+        font-size: 18px;
+        letter-spacing: 0.10em;
+        box-shadow:
+            0 2px 3px rgba(0,0,0,0.2),
+            0 3px 0 #C4EDD4;
+    }
+    
+    .whatsapp-button svg {
+        vertical-align: middle;
+        height: 30px;
+        margin: -1px 8px 0 0;
+        width: auto;
+    }
+    
+    caption {
+        font-size: 13px;
+    }
+    
+    span.code {
+        color: #000;
+        font-weight: 500;
+    }
+</style>  
+
+ </head>
+
+ <body>
+
+ <div class="anchors">
+    <a href="#watch" style="border-top: none;">WATCH A TUTORIAL</a>
+    <a href="#howto">HOW TO USE THIS APP?</a>
+    <a href="#bp">TIPS FOR TAKING ACCURATE BPs</a>
+    <a href="#support">ASK FOR HELP</a>
+</div>
+
+ <div id="watch"></div>
+<div class="card">
+    <h3>Watch a 5 min tutorial</h3>
+    <a href="https://www.youtube.com/watch?v=R8Y24Vz-tVg" class="video" style="display: block; margin: 8px 0;">
+        <%= render "shared/thumb_demo" %>
+    </a>
+    <caption>Learn how to use Simple in an easy video</caption>
+    <div id="howto"></div>
+</div>
+
+ <div class="card">
+    <h3>How to use the Simple app?</h3>
+
+     <h6>Getting started</h6>
+    <p>Each person in your facility who will be recording patient’s BPs should install the Simple app on their own Android phone.</p>
+
+     <h6>Which patients should you record?</h6>
+    <p>Use the app to record every patient who has hypertension or who is taking medicines for high BP. The next time that the patient comes back to your facility, search for that patient and enter a new BP.</p>
+
+     <h6>Searching for a patient</h6>
+    <p>It is really important to do your best to find the right patient when entering a BP.</p>
+
+     <div style="margin: 1em 0;">
+        <%= render "shared/icon_search" %>
+    </div>
+
+     <p>Type <span class="code">first name</span> and <span class="code">last name</span> into the search. Tap <span class="code">NEXT</span> and the phone will check to see if that patient might have been entered into the system already by someone.</p>
+
+     <h6>Does your patient match a search result?</h6>
+    <p>After searching, look carefully at the list of patients. Does one have the same <span class="code">address</span>, <span class="code">birthday</span>, or <span class="code">phone number</span> as your patient? Tap on a matching patient.</p>
+    <p>To be sure, ask the patient about their:</p>
+    <ul class="big-list">
+        <li>Name and gender</li>
+        <li>Home address</li>
+        <li>Last BP date and clinic<div class="note">If they have never visited the clinic where last BP was taken, this patient is not a match</div></li>
+        <li>Phone number<div class="note">Ask if last 3 digits match</div></li>
+        <li>Age or date of birth<div class="note">For older patients, the age may only be a guess, so it’s okay if the age is not precise</div></li>
+    </ul>
+    <p>If you’re confident that your patient is a match, tap on the patient card and do not register as a new patient.</p>
+    <div id="bp"></div>
+</div>
+
+ <div class="card">
+    <h3>Tips for taking accurate BPs</h3>
+    <p>Failure to follow these instructions will cause the BP reading to be off by several millimeters of mercury.</p>
+
+     <div style="margin: 2em 0;">
+        <%= render "shared/thumb_bp_measure" %>
+    </div>
+
+     <h6>Measure BP of all adults ≥ 18 years</h6>
+    <ol>
+        <li>No talking during and between measurements</li>
+        <li>Use correct cuff size and positioning. Cuff is on bare arm or over thin layer of clothing. Avoid bunching of clothes under cuff.</li>
+        <li>Back supported</li>
+        <li>Arm supported, so that cuff is at heart level</li>
+        <li>Record exact BP reading. Don’t round.</li>
+        <li>Legs uncrossed, feet supported</li>
+    </ol>
+    <p>Ensure patient avoids exercise, tea, coffee, and smoking in the last 30 min. Patient should rest comfortably and quietly for 5 min before the reading.</p>
+    <h6>Cuff sizing and use for accurate readings</h6>
+    <ul>
+        <li>Ideal cuff bladder length is at least 80% of the patient's arm circumference.</li>
+        <li>Cuff width should cover at least 40% of the patient’s upper arm.</li>
+        <li>Ensure cuff is on bare arm or over thin layer of clothing. Avoid bunching of clothes under cuff.</li>
+        <li>Empty bladder before each reading.</li>
+    </ul>
+    <div id="support"></div>
+</div>
+
+ <div class="card">
+    <div style="width: 120px; height: 120px; margin: -8px -16px 0 0; float: right;"> 
+        <%= render "shared/icon_whatsapp_image" %>
+    </div>
+
+     <h3>Ask for help</h3>
+    <p>We want to help you to be successful. If you run into problems or you just want to ask questions, please ask in the WhatsApp support group where our team can help you.</p>
+    <p>We welcome your suggestions on how we can make the app more useful for you.</p>
+    <p>WhatsApp message support at:</p>
+    <a href="https://wa.me/915555555555/?text=I%20would%20like%20to%20ask%20a%20question%20about%20Simple.%20" class="whatsapp-button"><%= render "shared/icon_whatsapp_icon" %> +91 0009 111234</a>
+</div>
+<footer></footer>
+</body>
+</html>
