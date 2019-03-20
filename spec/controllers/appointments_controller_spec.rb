@@ -173,7 +173,7 @@ RSpec.describe AppointmentsController, type: :controller do
         expect(overdue_appointment.agreed_to_visit).to be false
         expect(overdue_appointment.remind_on).to be nil
         expect(overdue_appointment.cancel_reason).to eq cancel_reason
-        expect(overdue_appointment.status).to eq :cancelled
+        expect(overdue_appointment.status).to eq 'cancelled'
         expect(response).to redirect_to(action: 'index')
       end
     end
