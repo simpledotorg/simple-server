@@ -1,6 +1,5 @@
 class CallSession
   EXPIRE_CALL_SESSION_IN = 24.hours
-  COUNTRY = 'IN'
 
   attr_reader :user, :patient_phone_number
 
