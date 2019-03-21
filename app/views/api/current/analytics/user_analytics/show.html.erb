@@ -13,14 +13,24 @@
 </head>
 
 <body>
-
 <div class="card">
-
   <%= inline_svg('icon_new_bp.svg', classname: 'icon-float') %>
-
-  <h3>How many return patients have a BP recorded?</h3>
+  <h3>How many patients have a BP recorded each week?</h3>
   <h5><%= @current_facility.name %></h5>
   <div class="bar-chart" id="return-patients">
+    <% if @stats_for_user.empty? %>
+      <%= render 'empty_reports' %>>
+    <% else %>
+      <%= render 'weekly_graph', formatted_stats: format_statistics_for_view(@stats_for_user, @start_of_current_week) %>
+    <% end %>
+  </div>
+</div>
+
+<div class="card">
+  <%= inline_svg('icon_enroll.svg', classname: 'icon-float') %>
+  <h3>How many new patients are enrolled?</h3>
+  <h5>Total enrolled: XXX</h5>
+  <div class="bar-chart">
     <table>
       <tr>
         <% @formatted_stats.reverse_each do |key, labelled_value| %>
@@ -46,43 +56,6 @@
   </div>
 </div>
 
-<% if @total_patients_count > 0 %>
-  <div class="card">
-
-    <%= inline_svg('icon_enroll.svg', classname: 'icon-float') %>
-
-    <h3>How many new patients are enrolled?</h3>
-    <h5>Total enrolled: XXX</h5>
-    
-      
-    <div class="bar-chart">
-        <table>
-          <tr>
-            <% @formatted_stats.reverse_each do |key, labelled_value| %>
-              <td class="bars value-<%= labelled_value[:value] %>">
-                <div class="column-value"><%= labelled_value[:value] %></div>
-                <%= content_tag 'div', nil,
-                                class: "bar-chart-column #{'active-column' if key == @max_key}",
-                                style: column_height_styles(
-                                    labelled_value[:value],
-                                    max_value: @max_value,
-                                    max_height: 120) %>
-              </td>
-            <% end %>
-          </tr>
-          <tr>
-            <% @formatted_stats.reverse_each do |key, labelled_value| %>
-              <td class="bar-labels">
-                <span class="label-date"><%= labelled_value[:label] %></span>
-              </td>
-            <% end %>
-          </tr>
-        </table>
-      </div>
-      
-  </div>
-<% end %>
-    
 <footer></footer>
 </body>
 </html>

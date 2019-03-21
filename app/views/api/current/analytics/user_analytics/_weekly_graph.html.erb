@@ -1,0 +1,23 @@
+<table>
+  <tr>
+    <% formatted_stats = format_statistics_for_view(@stats_for_user, @start_of_current_week) %>
+    <% formatted_stats.reverse_each do |key, labelled_value| %>
+      <td class="bars value-<%= labelled_value[:value] %>">
+        <div class="column-value"><%= labelled_value[:value] %></div>
+        <%= content_tag 'div', nil,
+                        class: "bar-chart-column #{'active-column' if key == @start_of_current_week}",
+                        style: column_height_styles(
+                            labelled_value[:value],
+                            max_value: @max_value,
+                            max_height: 180) %>
+      </td>
+    <% end %>
+  </tr>
+  <tr>
+    <% formatted_stats.reverse_each do |key, labelled_value| %>
+      <td class="bar-labels">
+        <span class="label-date"><%= labelled_value[:label] %></span>
+      </td>
+    <% end %>
+  </tr>
+</table>

@@ -4,11 +4,11 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
   MONTHS_TO_REPORT = 6
 
   def show
-    stats_for_user = new_patients_by_facility_month
+    @stats_for_user = new_patients_by_facility_month
 
-    @max_key = stats_for_user.keys.max
-    @max_value = stats_for_user.values.max
-    @formatted_stats = format_stats_for_view(stats_for_user)
+    @start_of_current_week = helpers.start_of_week(Date.today)
+    @max_value = @stats_for_user.present? ? @stats_for_user.values.max : nil
+    @formatted_stats = format_stats_for_view(@stats_for_user)
     @total_patients_count = total_patients_count
     @patients_enrolled_per_month = patients_enrolled_per_month
 
@@ -22,6 +22,7 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
 
   def new_patients_by_facility_month
     first_patient_at_facility = current_facility.patients.order(:device_created_at).first
+    return unless first_patient_at_facility.present?
     Patient.where(registration_facility_id: current_facility.id)
       .group_by_month('device_created_at', last: MONTHS_TO_REPORT)
       .count
@@ -42,17 +43,6 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
   end
 
   def format_stats_for_view(stats)
-    stats.map { |k, v| [k, { label: label_for_month(k, v), value: v }] }.to_h
-  end
-
-  def label_for_month(week, value)
-    return graph_label(value, 'This month', '') if week == Date.today.at_beginning_of_week(start_day = :sunday)
-    start_date = week.at_beginning_of_week(start_day = :sunday)
-    end_date = start_date.at_end_of_week(start_day = :sunday)
-    graph_label(value, start_date.strftime('%b'), 'to ' + end_date.strftime('%b %e'))
-  end
-
-  def graph_label(value, from_date_string, to_date_string)
-    "<div class='graph-label'><div class='label-1'>#{from_date_string}</div>".html_safe
+    stats.map { |k, v| [k, { label: helpers.label_for_week(k, v), value: v }] }.to_h
   end
 end

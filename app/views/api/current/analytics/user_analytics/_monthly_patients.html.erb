@@ -1,0 +1,15 @@
+<div class="card">
+  <%= inline_svg('icon_enroll.svg', classname: 'icon-float') %>
+  <h3>How many patients did your team enroll each month?</h3>
+  <h5><%= facility.name %></h5>
+  <div class="row-data row-head">
+    <div class="row-value" style="font-weight: 500;"><%= pluralize(total_patients_count, 'patient') %></div>
+    <h4 style="font-weight: 500;">Total enrolled</h4>
+  </div>
+  <% patients_enrolled_per_month.each do |month, enrolled_count| %>
+    <div class="row-data">
+      <div class="row-value"><%= pluralize(enrolled_count, 'patient') %></div>
+      <h4><%= month.strftime('%B %Y') %></h4>
+    </div>
+  <% end %>
+</div>
