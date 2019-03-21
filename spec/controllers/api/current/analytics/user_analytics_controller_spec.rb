@@ -11,21 +11,50 @@ RSpec.describe Api::Current::Analytics::UserAnalyticsController, type: :controll
   end
 
   describe '#show' do
+    context 'json_api' do
+      describe 'facility has no patients registered' do
+        it 'gets data for as a hashmap' do
+          get :show, format: :json
+
+          response_body = JSON(response.body)
+          expect(response_body).to be_nil
+        end
+      end
+
+      describe 'facility has patients registered' do
+        let!(:patients) { create_list(:patient, 2, registration_facility: request_facility) }
+
+        it 'returns the statistics for the facility as json' do
+          get :show, format: :json
+
+          response_body = JSON(response.body)
+          expect(response_body.keys.map(&:to_sym))
+            .to include(:first_of_current_month,
+                        :total_patients_count,
+                        :unique_patients_per_month,
+                        :patients_enrolled_per_month)
+        end
+      end
+    end
+
     context 'html api' do
       render_views
 
       describe 'facility has no patients registered' do
         it 'returns an empty graph' do
+          get :show, format: :html
 
+          expect(response.status).to eq(200)
+          expect(response.body).to match(/Record your first patient/)
         end
       end
 
       describe 'facility has patients registered' do
-        let(:weeks) { (Date.new(2018, 1, 1)..Date.new(2019, 1, 1)).select(&:sunday?) }
+        let(:months) { (1..6).map { |month| Date.new(2019, month, 1)} }
         let!(:patients) do
           patients = []
-          weeks.each do |week|
-            Timecop.scale(1.day, week) { patients << create_list(:patient, 2, registration_facility: request_facility)}
+          months.each do |week|
+            Timecop.scale(1.day, week) { patients << create_list(:patient, 2, registration_facility: request_facility) }
           end
           patients.flatten
         end
@@ -48,18 +77,9 @@ RSpec.describe Api::Current::Analytics::UserAnalyticsController, type: :controll
           get :show, format: :html
 
           expect(response.body).to match(/Total enrolled/)
-          expect(response.body).to match(Regexp.new("#{patients.count} patients"))
+          expect(response.body).to match(Regexp.new("#{patients.count}"))
         end
       end
-    end
-  end
-
-  describe 'GET: send data from server to device;' do
-    it 'gets data for 4 weeks as a hashmap' do
-      get :show, format: :json
-
-      response_body = JSON(response.body)
-      expect(response_body).to be_instance_of(Hash)
     end
   end
 end
