@@ -4,45 +4,55 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
   MONTHS_TO_REPORT = 6
 
   def show
-    @stats_for_user = new_patients_by_facility_month
+    Timecop.travel(2.months.ago) do
+      @statistics = nil
 
-    @start_of_current_week = helpers.start_of_week(Date.today)
-    @max_value = @stats_for_user.present? ? @stats_for_user.values.max : nil
-    @formatted_stats = format_stats_for_view(@stats_for_user)
-    @total_patients_count = total_patients_count
-    @patients_enrolled_per_month = patients_enrolled_per_month
+      unless first_patient_at_facility.present?
+        return respond_to_html_or_json(nil)
+      end
 
-    respond_to do |format|
-      format.html { render :show }
-      format.json { render json: stats_for_user }
+      @statistics = {
+        first_of_current_month: first_of_current_month,
+        total_patients_count: total_patients_count,
+        unique_patients_per_month: unique_patients_recorded_per_month,
+        patients_enrolled_per_month: patients_enrolled_per_month
+      }
+
+      respond_to_html_or_json(@statistics)
     end
   end
 
   private
 
-  def new_patients_by_facility_month
-    first_patient_at_facility = current_facility.patients.order(:device_created_at).first
-    return unless first_patient_at_facility.present?
-    Patient.where(registration_facility_id: current_facility.id)
-      .group_by_month('device_created_at', last: MONTHS_TO_REPORT)
-      .count
-      .select { |k, v| k >= first_patient_at_facility.device_created_at.at_beginning_of_month }
+  def respond_to_html_or_json(stats)
+    respond_to do |format|
+      format.html { render :show }
+      format.json { render json: stats }
+    end
+  end
+
+  def first_of_current_month
+    Date.today.at_beginning_of_month
+  end
+
+  def first_patient_at_facility
+    current_facility.registered_patients.order(:device_created_at).first
   end
 
   def total_patients_count
-    PatientsQuery.new
-      .registered_at(current_facility.id)
-      .count
+    Patient.where(registration_facility_id: current_facility.id).count
+  end
+
+  def unique_patients_recorded_per_month
+    BloodPressure.where(facility: current_facility)
+      .group_by_month(:device_created_at, last: MONTHS_TO_REPORT, reverse: true)
+      .count('distinct patient_id')
+      .select { |k, v| k >= first_patient_at_facility.device_created_at.at_beginning_of_month }
   end
 
   def patients_enrolled_per_month
-    PatientsQuery.new
-      .registered_at(current_facility.id)
+    Patient.where(registration_facility_id: current_facility.id)
       .group_by_month(:device_created_at, reverse: true, last: MONTHS_TO_REPORT)
       .count
-  end
-
-  def format_stats_for_view(stats)
-    stats.map { |k, v| [k, { label: helpers.label_for_week(k, v), value: v }] }.to_h
   end
 end
