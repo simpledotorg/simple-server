@@ -24,6 +24,11 @@ class Appointment < ApplicationRecord
     other: 'other'
   }
 
+  enum appointment_type: {
+    manual: 'manual',
+    automatic: 'automatic'
+  }
+
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
   validate :cancel_reason_is_present_if_cancelled
@@ -63,7 +68,7 @@ class Appointment < ApplicationRecord
   end
 
   def overdue?
-     scheduled? && scheduled_date <= Date.today
+    scheduled? && scheduled_date <= Date.today
   end
 
   def overdue_for_over_a_year?

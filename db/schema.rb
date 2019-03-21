@@ -90,10 +90,10 @@ ActiveRecord::Schema.define(version: 20190321052026) do
     t.date "remind_on"
     t.boolean "agreed_to_visit"
     t.datetime "deleted_at"
-    t.boolean "is_automatic", default: false
+    t.string "appointment_type", default: "manual", null: false
+    t.index ["appointment_type"], name: "index_appointments_on_appointment_type"
     t.index ["deleted_at"], name: "index_appointments_on_deleted_at"
     t.index ["facility_id"], name: "index_appointments_on_facility_id"
-    t.index ["is_automatic"], name: "index_appointments_on_is_automatic"
     t.index ["patient_id"], name: "index_appointments_on_patient_id"
   end
 
