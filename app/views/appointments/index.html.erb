@@ -16,7 +16,7 @@
 <div id="overdue-patients">
   <% if @appointments.present? %>
     <% call_result_options = {
-        'Patient responded' => [['Agreed to visit', 'agreed_to_visit']],
+        'Patient responded' => [['Agreed to visit', 'agreed_to_visit'], ['Patient has already visited', 'patient_has_already_visited']],
         'No response' => [['Remind to call later', 'remind_to_call_later']],
         'Remove from overdue list' => Appointment.cancel_reasons.map { |key, value| [key.humanize, value] }
     } %>
