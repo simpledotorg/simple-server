@@ -4,22 +4,20 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
   MONTHS_TO_REPORT = 6
 
   def show
-    Timecop.travel(2.months.ago) do
-      @statistics = nil
+    @statistics = nil
 
-      unless first_patient_at_facility.present?
-        return respond_to_html_or_json(nil)
-      end
-
-      @statistics = {
-        first_of_current_month: first_of_current_month,
-        total_patients_count: total_patients_count,
-        unique_patients_per_month: unique_patients_recorded_per_month,
-        patients_enrolled_per_month: patients_enrolled_per_month
-      }
-
-      respond_to_html_or_json(@statistics)
+    unless first_patient_at_facility.present?
+      return respond_to_html_or_json(nil)
     end
+
+    @statistics = {
+      first_of_current_month: first_of_current_month,
+      total_patients_count: total_patients_count,
+      unique_patients_per_month: unique_patients_recorded_per_month,
+      patients_enrolled_per_month: patients_enrolled_per_month
+    }
+
+    respond_to_html_or_json(@statistics)
   end
 
   private

@@ -37,20 +37,38 @@
   min-height: 6px;
 }
 
-.bar-chart-column { background: #C4F0D5; color: #6c737a; }
-.bar-chart .active-column { background: #00B849; }
-.column-value { color: #007A31; }
+.bar-chart-column {
+  background: #C4F0D5;
+  color: #6c737a;
+}
 
-#return-patients .bar-chart-column { background: #E0F0FF; color: #6C737A; }
-#return-patients .bar-chart .active-column { background: #0075EB; }
-#return-patients .column-value { color: #6C737A; }
+.bar-chart .active-column {
+  background: #00B849;
+}
+
+.column-value {
+  color: #007A31;
+}
+
+#return-patients .bar-chart-column {
+  background: #E0F0FF;
+  color: #6C737A;
+}
+
+#return-patients .bar-chart .active-column {
+  background: #0075EB;
+}
+
+#return-patients .column-value {
+  color: #6C737A;
+}
 
 .value-0 .bar-chart-column {
-    background: #DADDE0 !important;
+  background: #DADDE0 !important;
 }
 
 .value-0 .column-value {
-    color: #ADB2B8 !important;
+  color: #ADB2B8 !important;
 }
 
 .graph-label {
@@ -81,8 +99,8 @@
 }
 
 .row-data h4 {
-    font-size: 16px;
-    font-weight: 400;
+  font-size: 16px;
+  font-weight: 400;
 }
 
 .row-value {
@@ -99,4 +117,24 @@
   background: #FFFCF0;
   position: relative;
   clear: both;
+}
+
+.empty-reports {
+  min-width: 100%;
+  height: 100%;
+  background: #F0F2F5;
+  margin: -8px;
+  text-align: center;
+}
+
+.empty-reports .svg-container {
+  margin-top: 60px;
+}
+
+.empty-reports h1 {
+  color: #6c737a;
+}
+
+.empty-reports h3 {
+  color: #6c737a;
 }

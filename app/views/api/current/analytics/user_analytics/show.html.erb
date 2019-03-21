@@ -12,8 +12,8 @@
 </head>
 
 <body>
-<% if @statistics.empty? %>
-  <%= render 'empty_reports' %>>
+<% if @statistics.blank? %>
+  <%= render 'empty_reports' %>
 <% else %>
   <div class="card">
     <%= inline_svg('icon_new_bp.svg', classname: 'icon-float') %>
@@ -29,7 +29,7 @@
   <div class="card">
     <%= inline_svg('icon_enroll.svg', classname: 'icon-float') %>
     <h3>How many new patients are enrolled?</h3>
-    <h5>Total enrolled: <%= @statistics[:total_patients_count ]%></h5>
+    <h5>Total enrolled: <%= @statistics[:total_patients_count] %></h5>
     <div class="bar-chart">
       <%= render 'graph',
                  id: '',
@@ -38,7 +38,8 @@
                  max_value: @statistics[:patients_enrolled_per_month].values.max %>
     </div>
   </div>
+
+  <footer></footer>
 <% end %>
-<footer></footer>
 </body>
 </html>
