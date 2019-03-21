@@ -52,5 +52,6 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
     Patient.where(registration_facility_id: current_facility.id)
       .group_by_month(:device_created_at, reverse: true, last: MONTHS_TO_REPORT)
       .count
+      .select { |k, v| k >= first_patient_at_facility.device_created_at.at_beginning_of_month }
   end
 end
