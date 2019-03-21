@@ -1,5 +1,6 @@
 class Facility < ApplicationRecord
   include Mergeable
+  include PatientSetAnalyticsReportable
   extend FriendlyId
 
   belongs_to :facility_group, optional: true
@@ -23,4 +24,8 @@ class Facility < ApplicationRecord
   delegate :organization, to: :facility_group, allow_nil: true
 
   friendly_id :name, use: :slugged
+
+  def report_on_patients
+    registered_patients.includes(:latest_blood_pressures)
+  end
 end

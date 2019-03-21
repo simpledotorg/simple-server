@@ -1,4 +1,5 @@
 class FacilityGroup < ApplicationRecord
+  include PatientSetAnalyticsReportable
   extend FriendlyId
 
   belongs_to :organization
@@ -22,4 +23,8 @@ class FacilityGroup < ApplicationRecord
   validates :organization, presence: true
 
   friendly_id :name, use: :slugged
+
+  def report_on_patients
+    Patient.where(registration_facility: facilities)
+  end
 end
