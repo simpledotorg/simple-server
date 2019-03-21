@@ -1,0 +1,23 @@
+
+
+<div class="bar-chart" id="<%= id %>">
+  <table>
+    <tr>
+      <% statistics.each do |key, value| %>
+        <td class="bars value-<%= value %>">
+          <div class="column-value"><%= value %></div>
+          <%= content_tag 'div', nil,
+                          class: "bar-chart-column #{'active-column' if key == first_of_current_month}",
+                          style: column_height_styles(value, max_value: max_value, max_height: 180) %>
+        </td>
+      <% end %>
+    </tr>
+    <tr>
+      <% statistics.each do |key, _value| %>
+        <td class="bar-labels">
+          <span class="label-date"><%= key.strftime('%b') %></span>
+        </td>
+      <% end %>
+    </tr>
+  </table>
+</div>
