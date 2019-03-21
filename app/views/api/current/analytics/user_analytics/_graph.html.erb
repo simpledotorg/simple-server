@@ -6,7 +6,7 @@
           <div class="column-value"><%= value %></div>
           <%= content_tag 'div', nil,
                           class: "bar-chart-column #{'active-column' if key == first_of_current_month}",
-                          style: column_height_styles(value, max_value: max_value, max_height: 180) %>
+                          style: column_height_styles(value, max_value: max_value, max_height: max_height) %>
         </td>
       <% end %>
     </tr>
