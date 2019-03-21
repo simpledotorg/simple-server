@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190220085744) do
+ActiveRecord::Schema.define(version: 20190321052026) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -90,8 +90,10 @@ ActiveRecord::Schema.define(version: 20190220085744) do
     t.date "remind_on"
     t.boolean "agreed_to_visit"
     t.datetime "deleted_at"
+    t.boolean "is_automatic", default: false
     t.index ["deleted_at"], name: "index_appointments_on_deleted_at"
     t.index ["facility_id"], name: "index_appointments_on_facility_id"
+    t.index ["is_automatic"], name: "index_appointments_on_is_automatic"
     t.index ["patient_id"], name: "index_appointments_on_patient_id"
   end
 
