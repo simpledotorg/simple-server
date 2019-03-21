@@ -45,6 +45,7 @@ group :development, :test do
   gem 'capistrano-passenger'
   gem 'capistrano-rails-console', require: false
   gem 'parallel_tests', group: [:development, :test]
+  gem 'rails-controller-testing'
 end
 
 group :development do
