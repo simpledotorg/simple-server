@@ -46,6 +46,7 @@ body {
     font-size: 80px;
     text-align: center;
     margin: 32px 0;
+    letter-spacing: -0.05em;
 }
 
 svg {
@@ -60,9 +61,7 @@ p, ul.big-list li {
 
 p.footnote {
     font-size: 14px;
-    border-top: 1px solid #eee;
-    padding-top: 16px;
-    margin-top: 32px;
+    padding: 16px;
 }
 
 a:link,
