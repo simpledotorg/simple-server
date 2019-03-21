@@ -13,7 +13,7 @@ RSpec.describe Api::Current::Analytics::UserAnalyticsController, type: :controll
   describe '#show' do
     context 'json_api' do
       describe 'facility has no patients registered' do
-        it 'gets data for as a hashmap' do
+        it 'returns nil as the response' do
           get :show, format: :json
 
           response_body = JSON(response.body)
@@ -45,12 +45,12 @@ RSpec.describe Api::Current::Analytics::UserAnalyticsController, type: :controll
           get :show, format: :html
 
           expect(response.status).to eq(200)
-          expect(response.body).to match(/Record your first patient/)
+          expect(response).to render_template(partial: '_empty_reports')
         end
       end
 
       describe 'facility has patients registered' do
-        let(:months) { (1..6).map { |month| Date.new(2019, month, 1)} }
+        let(:months) { (1..6).map { |month| Date.new(2019, month, 1) } }
         let!(:patients) do
           patients = []
           months.each do |week|
@@ -63,8 +63,7 @@ RSpec.describe Api::Current::Analytics::UserAnalyticsController, type: :controll
           get :show, format: :html
 
           expect(response.status).to eq(200)
-          expect(response.body).to match(/card/)
-          expect(response.body).to match(/bar-chart/)
+          expect(response.content_type).to eq('text/html')
         end
 
         it 'has the name of the current facility' do
