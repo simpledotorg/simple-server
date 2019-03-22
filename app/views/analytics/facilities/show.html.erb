@@ -1,0 +1,105 @@
+<div class="dashboard">
+  <nav class="breadcrumb">
+    <%= link_to @facility_group.name, analytics_facility_group_path(
+        @facility_group, from_time: @from_time, to_time: @to_time) %>
+  </nav>
+  <h1><%= @facility.name %></h1>
+
+  <div class="featured">
+    <table class="featured-table">
+      <tr>
+        <td class="featured-td">
+          <%= render "shared/analytics/patients_count_panel",
+                     newly_enrolled_patients_count: @facility_analytics[:newly_enrolled_patients],
+                     returning_patients_count: @facility_analytics[:returning_patients] %>
+        </td>
+
+        <td class="featured-td featured-middle">
+          <%= render "shared/analytics/non_returning_hypertensive_patients_panel",
+                     non_returning_hypertensive_patients_count: @facility_analytics[:non_returning_hypertensive_patients],
+                     non_returning_hypertensive_patients_per_month: @facility_analytics[:non_returning_hypertensive_patients_per_month] %>
+
+        </td>
+
+        <td class="featured-td">
+          <%= render "shared/analytics/control_rate_panel",
+                     goal: 45,
+                     control_rate: @facility_analytics[:control_rate][:control_rate],
+                     control_rate_per_month: @facility_analytics[:control_rate_per_month] %>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<% if @user_analytics.values.present? %>
+  <section class="table-compact">
+    <div class="table-responsive">
+      <table>
+        <thead>
+        <tr>
+          <th><h4>Active users</h4></th>
+          <th class="row-label">Newly<br>enrolled</th>
+          <th class="row-label">Calls<br>made</th>
+          <th class="row-label">Return and<br>enrolled patients</th>
+          <% @user_analytics.values.first.blood_pressures_recorded_per_week_at_facility.keys.each do |date| %>
+            <th class="row-label">
+              <div>Week of</div>
+              <%= date.strftime('%b %d') %>
+            </th>
+          <% end %>
+        </tr>
+        </thead>
+        <tbody>
+        <% @user_analytics.each do |user, analytics| %>
+          <tr>
+            <td class="row-title"><%= link_to user.full_name, [:admin, user] %></td>
+            <td class="row-default text-green"><%= analytics.registered_patients_count %></td>
+            <td class="row-calls text-yellow"><%= analytics.calls_made_by_user_at_facility %></td>
+
+            <td class="row-unique-date"><%= analytics.returning_patients_count_at_facility %></td>
+
+            <% analytics.blood_pressures_recorded_per_week_at_facility.sort.each do |_key, value| %>
+              <td class="row-unique-date"><%= value != 0 ? value : '-' %></td>
+            <% end %>
+          </tr>
+        <% end %>
+        </tbody>
+        <tfoot>
+        <tr class="row-total">
+          <td class="row-title row-total">Totals</td>
+          <td class="row-enrolled text-green row-total"><%= @user_analytics.values.map(&:registered_patients_count).sum %></td>
+          <td class="row-calls text-yellow"><%= @user_analytics.values.map(&:calls_made_by_user_at_facility).sum %></td>
+
+          <td class="row-unique-date row-total"><%= @user_analytics.values.map(&:returning_patients_count_at_facility).sum %></td>
+          </td>
+
+          <% @facility_analytics[:blood_pressures_recorded_per_week].sort.each do |_key, value| %>
+            <td class="row-unique-date"><%= value != 0 ? value : '-' %></td>
+          <% end %>
+
+        </tr>
+        </tfoot>
+      </table>
+    </div>
+  </section>
+<% else %>
+  <section class="table-compact">No Users Analytics For Facility</section>
+<% end %>
+
+<section>
+  <h4>Notes</h4>
+  <p class="footnote"><strong>Didn't attend</strong> patients are enrolled hypertensives that have not had a BP recorded
+    in the past 3 months.</p>
+  <p class="footnote">
+    <strong><%= t('analytics.control_rate') %></strong>
+    <%= t('analytics.control_rate_explanation',
+          hypertensive_patients_in_cohort: @facility_analytics[:control_rate][:hypertensive_patients_in_cohort],
+          patients_under_control: @facility_analytics[:control_rate][:patients_under_control_in_period],
+          control_rate_for_month: @facility_analytics[:control_rate][:control_rate],
+          number_of_months: pluralize(3, 'month')) %>
+  </p>
+  <p class="footnote"><strong>Top performers:</strong> > 100 enrolled patients and highest BP control.</p>
+  <p class="footnote"><strong>Unique patients</strong> indicates how many patients had at least one recorded BP during
+    the period. The "Week of" numbers are "Unique patients with a BP recorded during that week".</p>
+</section>
