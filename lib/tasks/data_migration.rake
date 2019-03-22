@@ -137,7 +137,7 @@ namespace :data_migration do
         automatic_appointment =
           Appointment.create(patient_id: defaulter.id, facility_id: latest_bp_facility_id,
                              device_created_at: app_creation_time, device_updated_at: app_creation_time, created_at: app_creation_time, updated_at: app_creation_time,
-                             scheduled_date: app_scheduled_date, appointment_type: Appointment.appointment_types[:automatic])
+                             status: 'scheduled', scheduled_date: app_scheduled_date, appointment_type: Appointment.appointment_types[:automatic])
 
         automatic_appointment.save
         processed_defaulters_count += 1
