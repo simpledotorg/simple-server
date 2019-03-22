@@ -90,7 +90,7 @@ ActiveRecord::Schema.define(version: 20190321052026) do
     t.date "remind_on"
     t.boolean "agreed_to_visit"
     t.datetime "deleted_at"
-    t.string "appointment_type", default: "manual", null: false
+    t.string "appointment_type"
     t.index ["appointment_type"], name: "index_appointments_on_appointment_type"
     t.index ["deleted_at"], name: "index_appointments_on_deleted_at"
     t.index ["facility_id"], name: "index_appointments_on_facility_id"
@@ -297,6 +297,7 @@ ActiveRecord::Schema.define(version: 20190321052026) do
     t.uuid "registration_facility_id"
     t.index "lower((phone_number)::text)", name: "unique_index_users_on_lowercase_phone_numbers", unique: true
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
+    t.index ["phone_number"], name: "index_users_on_phone_number", unique: true
     t.index ["registration_facility_id"], name: "index_users_on_registration_facility_id"
   end
 
