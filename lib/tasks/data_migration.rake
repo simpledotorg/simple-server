@@ -79,4 +79,19 @@ namespace :data_migration do
     puts "Associating protocol for #{organization.facility_groups.count} facility groups"
     organization.facility_groups.update(protocol: protocol)
   end
+
+  desc "Update 'appointment_type' for existing appointments to 'manual'"
+  task :set_appointment_type_to_manual_for_existing_appointments do
+    all_appointments = Appointment.all.select { |app| app.appointment_type.blank? }
+
+    number_of_appointments_marked_manual = 0
+    all_appointments.each do |app|
+      puts "Marking appointment #{app.id} as 'manual'"
+      app.appointment_type = Appointment.appointment_type.manual
+      app.save
+      number_of_appointments_marked_manual += 0
+    end
+
+    puts "Total number of appointments marked as 'manual' = #{number_of_appointments_marked_manual}"
+  end
 end
