@@ -139,8 +139,10 @@ namespace :data_migration do
                              device_created_at: app_creation_time, device_updated_at: app_creation_time, created_at: app_creation_time, updated_at: app_creation_time,
                              scheduled_date: app_scheduled_date, appointment_type: Appointment.appointment_types[:automatic])
 
-        puts "Created automatic appointment #{automatic_appointment.id} for defaulter #{defaulter.id}"
+        automatic_appointment.save
         processed_defaulters_count += 1
+
+        puts "Created automatic appointment #{automatic_appointment.id} for defaulter #{defaulter.id}"
       rescue StandardError => err
         puts "Failed to create automatic appointment for defaulter #{defaulter.id}. Reason: #{err}"
         unprocessed_or_errored_defaulters_count += 1
