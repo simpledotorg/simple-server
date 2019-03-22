@@ -11,12 +11,6 @@ class Analytics::FacilityGroupsController < AnalyticsController
     @facility_analytics = facility_analytics(@from_time, @to_time)
   end
 
-  def graphics
-    @months_previous = 4
-
-    @facility_group_analytics = facility_group_analytics(@from_time, @to_time)
-  end
-
   private
 
   def set_facility_group
