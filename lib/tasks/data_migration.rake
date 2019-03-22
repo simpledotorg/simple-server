@@ -131,7 +131,7 @@ namespace :data_migration do
 
       latest_bp_facility_id = defaulter.latest_blood_pressure.facility_id
       app_creation_time = Time.now
-      app_scheduled_date = 1.month.ago # to trigger overdue-ness
+      app_scheduled_date = 32.days.ago # to trigger overdue-ness
 
       begin
         automatic_appointment =
