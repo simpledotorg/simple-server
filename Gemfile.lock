@@ -86,6 +86,8 @@ GEM
       activerecord (~> 5.1.0, >= 5.1.6)
     concurrent-ruby (1.1.4)
     connection_pool (2.2.2)
+    crack (0.4.3)
+      safe_yaml (~> 1.0.0)
     crass (1.0.4)
     data-anonymization (0.8.2)
       activerecord (~> 5.1)
@@ -133,6 +135,7 @@ GEM
       activesupport (>= 4.2.0)
     groupdate (4.0.1)
       activesupport (>= 4.2)
+    hashdiff (0.3.8)
     hashie (3.6.0)
     http (4.1.1)
       addressable (~> 2.3)
@@ -282,6 +285,7 @@ GEM
       actionpack (>= 3.1, < 6.0)
       railties (>= 3.1, < 6.0)
     ruby_dep (1.5.0)
+    safe_yaml (1.0.5)
     sassc (2.0.0)
       ffi (~> 1.9.6)
       rake
@@ -340,6 +344,10 @@ GEM
       activemodel (>= 5.0)
       bindex (>= 0.4.0)
       railties (>= 5.0)
+    webmock (3.5.1)
+      addressable (>= 2.3.6)
+      crack (>= 0.3.2)
+      hashdiff
     websocket-driver (0.6.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.3)
@@ -396,6 +404,7 @@ DEPENDENCIES
   uglifier (>= 1.3.0)
   uuidtools
   web-console (>= 3.3.0)
+  webmock
 
 BUNDLED WITH
    1.17.1

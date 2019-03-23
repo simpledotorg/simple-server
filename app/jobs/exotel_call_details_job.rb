@@ -2,8 +2,12 @@ class ExotelCallDetailsJob < ApplicationJob
   queue_as :default
 
   def perform(call_id, user_id, callee_phone_number)
-    call_details = ExotelAPI.new(ENV['EXOTEL_SID'], ENV['EXOTEL_TOKEN']).call_details(call_id)
-    CallLog.create!(call_log_params(call_details, user_id, callee_phone_number)) if call_details.present?
+    call_details = ExotelAPI.new(ENV['EXOTEL_SID'],
+                                 ENV['EXOTEL_TOKEN']).call_details(call_id)
+
+    CallLog.create!(call_log_params(call_details,
+                                    user_id,
+                                    callee_phone_number)) if call_details.present?
   end
 
   def participant_details(user_id, callee_phone_number)
