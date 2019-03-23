@@ -1,6 +1,9 @@
 class ExotelCallDetailsJob < ApplicationJob
   queue_as :default
 
+  retry_on ExotelAPI::HTTPError,
+           wait: 5.seconds, attempts: 5
+
   def perform(call_id, user_id, callee_phone_number)
     call_details = ExotelAPI.new(ENV['EXOTEL_SID'],
                                  ENV['EXOTEL_TOKEN']).call_details(call_id)
@@ -17,9 +20,9 @@ class ExotelCallDetailsJob < ApplicationJob
 
   def parse_call_details(call_details)
     { session_id: call_details.Sid,
-      result: call_details.Status,
-      start_time: call_details.StartTime,
       end_time: call_details.EndTime,
+      start_time: call_details.StartTime,
+      result: call_details.Status,
       duration: call_details.Duration }
   end
 

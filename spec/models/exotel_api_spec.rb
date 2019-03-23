@@ -23,7 +23,7 @@ describe ExotelAPI, type: :model do
                                                                                body: call_details_200,
                                                                                headers: {})
 
-      expected_call_details_response = ExotelAPI.new(sid, token).call_details(call_sid)
+      expected_call_details_response = described_class.new(sid, token).call_details(call_sid)
 
       expect(expected_call_details_response.Call.to_h.keys).to eq([:Sid,
                                                                    :ParentCallSid,
@@ -51,7 +51,7 @@ describe ExotelAPI, type: :model do
                                                                                body: call_details_400,
                                                                                headers: {})
 
-      expected_call_details_response = ExotelAPI.new(sid, token).call_details(call_sid)
+      expected_call_details_response = described_class.new(sid, token).call_details(call_sid)
 
       expect(expected_call_details_response).to eq(nil)
     end
@@ -60,7 +60,7 @@ describe ExotelAPI, type: :model do
       stub_request(:get, request_url).with(headers: request_headers).to_return(status: 500,
                                                                                headers: {})
 
-      expected_call_details_response = ExotelAPI.new(sid, token).call_details(call_sid)
+      expected_call_details_response = described_class.new(sid, token).call_details(call_sid)
 
       expect(expected_call_details_response).to eq(nil)
     end
@@ -70,7 +70,9 @@ describe ExotelAPI, type: :model do
 
       expect(Raven).to receive(:capture_message).and_return(true)
 
-      ExotelAPI.new(sid, token).call_details(call_sid)
+      expect {
+        described_class.new(sid, token).call_details(call_sid)
+      }.to raise_error(ExotelAPI::HTTPError)
     end
   end
 end
