@@ -34,6 +34,8 @@ gem 'kaminari'
 gem 'phonelib'
 gem 'http'
 gem 'sidekiq'
+gem 'connection_pool'
+gem 'redis'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
@@ -59,6 +61,7 @@ group :test do
   gem 'simplecov', require: false
   gem 'launchy'
   gem 'webmock'
+  gem 'fakeredis'
 end
 
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]

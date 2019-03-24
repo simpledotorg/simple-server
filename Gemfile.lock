@@ -126,6 +126,8 @@ GEM
       railties (>= 3.0.0)
     faker (1.8.7)
       i18n (>= 0.7)
+    fakeredis (0.7.0)
+      redis (>= 3.2, < 5.0)
     faraday (0.15.1)
       multipart-post (>= 1.2, < 3)
     ffi (1.9.25)
@@ -368,6 +370,7 @@ DEPENDENCIES
   capistrano-rails-console
   capistrano-rbenv
   capybara
+  connection_pool
   data-anonymization
   devise (~> 4.4.3)
   devise_invitable (~> 1.7.0)
@@ -375,6 +378,7 @@ DEPENDENCIES
   dotenv-rails
   factory_bot_rails
   faker
+  fakeredis
   friendly_id (~> 5.2.4)
   groupdate
   http
@@ -391,6 +395,7 @@ DEPENDENCIES
   pry-rails
   pundit
   rails (~> 5.1.6.1)
+  redis
   rspec-rails (~> 3.7)
   rswag (~> 1.6.0)
   sassc-rails
