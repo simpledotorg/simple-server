@@ -11,6 +11,11 @@ class Analytics::FacilityGroupsController < AnalyticsController
     @facility_analytics = facility_analytics(@from_time, @to_time)
   end
 
+  def graphics
+    @current_month = Date.today.at_beginning_of_month.to_date
+    @facility_group_analytics = @facility_group.patient_set_analytics(@from_time, @to_time)
+  end
+
   private
 
   def set_facility_group

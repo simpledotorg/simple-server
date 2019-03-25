@@ -3,6 +3,9 @@
 <div class="dashboard">
 
   <h1><%= @facility_group.name %></h1>
+  <%= link_to 'Graphics For Supervisors', analytics_facility_group_graphics_path(
+      @facility_group,
+      month: analytics_date_format(Time.now.at_beginning_of_month)) %>
 
   <div class="featured">
     <table class="featured-table">

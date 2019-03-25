@@ -134,7 +134,9 @@ Rails.application.routes.draw do
 
   if FeatureToggle.enabled?('UPDATED_ANALYTICS_VIEWS')
     namespace :analytics do
-      resources :facility_groups, only: [:show]
+      resources :facility_groups, only: [:show] do
+        get :graphics
+      end
       resources :facilities, only: [:show]
     end
   else
