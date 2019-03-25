@@ -121,7 +121,7 @@ Rails.application.routes.draw do
         post 'sync', to: 'medical_histories#sync_from_user'
       end
 
-      get "/help", to: redirect("/help")
+      resource :help, only: [:show], controller: "help"
 
       if FeatureToggle.enabled?('USER_ANALYTICS')
         namespace :analytics do
@@ -130,8 +130,6 @@ Rails.application.routes.draw do
       end
     end
   end
-
-  resource :help, only: [:show], controller: "help"
 
   devise_for :admins, controllers: { invitations: 'admins/invitations' }
   resources :admins
