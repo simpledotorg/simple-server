@@ -9,10 +9,14 @@ module AssetsHelper
   end
 
   def inline_js(asset_name)
-    content_tag(:script, inline_file(asset_name), type: "text/javascript")
+    content_tag(:script, inline_file(asset_name), type: 'text/javascript')
   end
 
   def inline_stylesheet(asset_name)
-    content_tag(:style, inline_file(asset_name), type: "text/css")
+    content_tag(:style, inline_file(asset_name), type: 'text/css')
+  end
+
+  def inline_svg(asset_name, classname: 'svg-container')
+    content_tag(:div, inline_file(asset_name), class: classname)
   end
 end

@@ -1,58 +1,57 @@
 class Api::Current::Analytics::UserAnalyticsController < Api::Current::AnalyticsController
   layout false
 
-  WEEKS_TO_REPORT = 4
+  MONTHS_TO_REPORT = 6
 
   def show
-    stats_for_user = new_patients_by_facility_week
+    @statistics = nil
 
-    @max_key = stats_for_user.keys.max
-    @max_value = stats_for_user.values.max
-    @formatted_stats = format_stats_for_view(stats_for_user)
-    @total_patients_count = total_patients_count
-    @patients_enrolled_per_month = patients_enrolled_per_month
-
-    respond_to do |format|
-      format.html { render :show }
-      format.json { render json: stats_for_user }
+    unless first_patient_at_facility.present?
+      return respond_to_html_or_json(nil)
     end
+
+    @statistics = {
+      first_of_current_month: first_of_current_month,
+      total_patients_count: total_patients_count,
+      unique_patients_per_month: unique_patients_recorded_per_month,
+      patients_enrolled_per_month: patients_enrolled_per_month
+    }
+
+    respond_to_html_or_json(@statistics)
   end
 
   private
 
-  def new_patients_by_facility_week
-    PatientsQuery
-      .new
-      .registered_at(current_facility.id)
-      .group_by_week('device_created_at', last: WEEKS_TO_REPORT)
-      .count
+  def respond_to_html_or_json(stats)
+    respond_to do |format|
+      format.html { render :show }
+      format.json { render json: stats }
+    end
+  end
+
+  def first_of_current_month
+    Date.today.at_beginning_of_month
+  end
+
+  def first_patient_at_facility
+    current_facility.registered_patients.order(:device_created_at).first
   end
 
   def total_patients_count
-    PatientsQuery.new
-      .registered_at(current_facility.id)
-      .count
+    Patient.where(registration_facility_id: current_facility.id).count
+  end
+
+  def unique_patients_recorded_per_month
+    BloodPressure.where(facility: current_facility)
+      .group_by_month(:device_created_at, last: MONTHS_TO_REPORT, reverse: true)
+      .count('distinct patient_id')
+      .select { |k, v| k >= first_patient_at_facility.device_created_at.at_beginning_of_month }
   end
 
   def patients_enrolled_per_month
-    PatientsQuery.new
-      .registered_at(current_facility.id)
-      .group_by_month(:device_created_at)
+    Patient.where(registration_facility_id: current_facility.id)
+      .group_by_month(:device_created_at, reverse: true, last: MONTHS_TO_REPORT)
       .count
-  end
-
-  def format_stats_for_view(stats)
-    stats.map { |k, v| [k, { label: label_for_week(k, v), value: v }] }.to_h
-  end
-
-  def label_for_week(week, value)
-    return graph_label(value, 'This week', '') if week == @max_value
-    start_date = week.at_beginning_of_week
-    end_date = week.at_end_of_week
-    graph_label(value, start_date.strftime('%b %d'), 'to ' + end_date.strftime('%b %d'))
-  end
-
-  def graph_label(value, from_date_string, to_date_string)
-    "<div class='graph-label'><p>#{from_date_string}</p><p>#{to_date_string}</p>".html_safe
+      .select { |k, v| k >= first_patient_at_facility.device_created_at.at_beginning_of_month }
   end
 end
