@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe ExotelAPI, type: :model do
+describe ExotelAPIService, type: :model do
   describe '#call_details' do
     let!(:call_details_200) { File.read('spec/support/fixtures/call_details_200.json') }
     let!(:call_details_400) { File.read('spec/support/fixtures/call_details_400.json') }
@@ -72,7 +72,7 @@ describe ExotelAPI, type: :model do
 
       expect {
         described_class.new(sid, token).call_details(call_sid)
-      }.to raise_error(ExotelAPI::HTTPError)
+      }.to raise_error(ExotelAPIService::HTTPError)
     end
   end
 end

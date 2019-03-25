@@ -1,8 +1,8 @@
-class ExotelAPI
+class ExotelAPIService
   BASE_PATH = 'https://api.exotel.com/v1/Accounts/'
   RESPONSE_FORMAT = '.json'
 
-  class ExotelAPI::HTTPError < HTTP::Error; end
+  class ExotelAPIService::HTTPError < HTTP::Error; end
 
   def initialize(account_sid, token)
     @account_sid = account_sid
@@ -22,7 +22,7 @@ class ExotelAPI
       .get(url)
   rescue HTTP::Error => e
     report_error(url, e)
-    raise ExotelAPI::HTTPError
+    raise ExotelAPIService::HTTPError
   end
 
   def parse_response(response)

@@ -1,12 +1,12 @@
 class ExotelCallDetailsJob < ApplicationJob
   queue_as :default
 
-  retry_on ExotelAPI::HTTPError,
+  retry_on ExotelAPIService::HTTPError,
            wait: 5.seconds, attempts: 5
 
   def perform(call_id, user_id, callee_phone_number)
-    call_details = ExotelAPI.new(ENV['EXOTEL_SID'],
-                                 ENV['EXOTEL_TOKEN']).call_details(call_id)
+    call_details = ExotelAPIService.new(ENV['EXOTEL_SID'],
+                                        ENV['EXOTEL_TOKEN']).call_details(call_id)
 
     CallLog.create!(call_log_params(call_details,
                                     user_id,
