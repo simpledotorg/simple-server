@@ -107,7 +107,6 @@ RSpec.describe Analytics::PatientSetAnalytics do
   describe '#blood_pressure_recored_per_week' do
     it 'returns the number of blood pressures recorded per week for a group of patients' do
       expected_counts = {
-        Date.new(2018, 12, 30) => 7,
         Date.new(2019, 1, 06) => 0,
         Date.new(2019, 1, 13) => 0,
         Date.new(2019, 1, 20) => 0,
@@ -119,6 +118,7 @@ RSpec.describe Analytics::PatientSetAnalytics do
         Date.new(2019, 3, 03) => 0,
         Date.new(2019, 3, 10) => 0,
         Date.new(2019, 3, 17) => 0,
+        Date.new(2019, 3, 24) => 0,
       }
       expect(analytics.blood_pressures_recorded_per_week(12)).to eq(expected_counts)
     end
