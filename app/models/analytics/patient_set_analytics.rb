@@ -68,7 +68,7 @@ class Analytics::PatientSetAnalytics
     (time - weeks_previous.weeks)..time
   end
 
-  def range_for_previous_months(weeks_previous, time)
-    (time - weeks_previous.months)..time
+  def range_for_previous_months(months_previous, time)
+    (time - months_previous.months)..time
   end
 end
