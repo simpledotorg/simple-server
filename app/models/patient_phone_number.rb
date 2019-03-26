@@ -8,11 +8,5 @@ class PatientPhoneNumber < ApplicationRecord
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
-  def self.first
-    order(device_created_at: :asc).first
-  end
-
-  def self.last
-    order(device_created_at: :asc).last
-  end
+  default_scope -> { order("device_created_at ASC") }
 end

@@ -13,9 +13,10 @@ RSpec.describe PatientPhoneNumber, type: :model do
     it_behaves_like 'a record that is deletable'
   end
 
-  describe 'Utility methods' do
+  describe 'Default scope' do
     let!(:patient) { create(:patient, phone_numbers: []) }
     let!(:first_phone) { create(:patient_phone_number, patient: patient, device_created_at: 5.days.ago) }
+    let!(:middle_phone) { create(:patient_phone_number, patient: patient, device_created_at: 2.days.ago) }
     let!(:last_phone) { create(:patient_phone_number, patient: patient, device_created_at: 1.day.ago) }
 
     describe '.first' do
