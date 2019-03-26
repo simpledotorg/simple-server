@@ -1,5 +1,3 @@
-require 'csv'
-
 class AppointmentsController < AdminController
   include FacilityFiltering
   include Pagination
@@ -17,7 +15,10 @@ class AppointmentsController < AdminController
 
     respond_to do |format|
       format.html { @appointments = paginate(@appointments) }
-      format.csv { render stream: true }
+      format.csv do
+        facility_name = selected_facilities.size > 1 ? "all" : selected_facilities.first.name.parameterize
+        send_data @appointments.to_csv, filename: "overdue-patients_#{facility_name}_#{Date.today}.csv"
+      end
     end
   end
 
