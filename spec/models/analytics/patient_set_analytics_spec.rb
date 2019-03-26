@@ -104,8 +104,9 @@ RSpec.describe Analytics::PatientSetAnalytics do
     end
   end
 
-  describe '#blood_pressure_recored_per_week' do
+  describe '#blood_pressure_recorded_per_week' do
     it 'returns the number of blood pressures recorded per week for a group of patients' do
+      Timecop.travel(Date.new(2019, 3, 21))
       expected_counts = {
         Date.new(2018, 12, 30) => 7,
         Date.new(2019, 1, 06) => 0,
