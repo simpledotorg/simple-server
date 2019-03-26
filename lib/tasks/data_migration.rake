@@ -80,6 +80,20 @@ namespace :data_migration do
     organization.facility_groups.update(protocol: protocol)
   end
 
+  desc "Update 'appointment_type' for existing appointments to 'manual'"
+  task set_appointment_type_to_manual_for_existing_appointments: :environment do
+    appointments = Appointment.where(appointment_type: nil)
+
+    number_of_appointments_marked_manual = 0
+    appointments.each do |app|
+      puts "Marking appointment #{app.id} as 'manual'"
+      app.update_column(:appointment_type, Appointment.appointment_types[:manual])
+      number_of_appointments_marked_manual += 1
+    end
+
+    puts "Total number of appointments marked as 'manual' = #{number_of_appointments_marked_manual}"
+  end
+
   desc "Create automatic appointment for defaulters so that they show up in the Overdue List"
   task create_automatic_appointment_for_defaulters: :environment do
     last_bp_older_than_one_month = ->(p) { p.latest_blood_pressure.blank? || p.latest_blood_pressure.device_created_at < 1.month.ago }
