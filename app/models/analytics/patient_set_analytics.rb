@@ -58,7 +58,7 @@ class Analytics::PatientSetAnalytics
 
   def blood_pressures_recorded_per_week(weeks_previous)
     BloodPressure.where(patient: patients)
-      .group_by_week(:device_created_at, last: weeks_previous)
+      .group_by_week(:device_created_at, range: (to_time - weeks_previous.weeks)..to_time)
       .count
   end
 end

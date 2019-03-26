@@ -57,7 +57,7 @@ class Patient < ApplicationRecord
   end
 
   def latest_blood_pressure
-    blood_pressures.order(device_created_at: :desc).first
+    latest_blood_pressures.first
   end
 
   def risk_priority

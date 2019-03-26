@@ -1,0 +1,16 @@
+<div class="featured-section">
+  <strong class="featured-title">
+    <%= t('analytics.control_rate') %>
+  </strong>
+  <span id='control-rate' class="featured-number">
+    <%= control_rate %>%
+  </span>
+  <span class="featured-label">Goal: <%= goal %>%</span>
+
+  <%= render "shared/graph",
+             options: { id: 'control-rate-graph' },
+             column_class: 'featured-graph-column',
+             graph_data: control_rate_per_month
+                 .map { |month, no_of_patients| [month.strftime('%b'), no_of_patients] }.to_h,
+             max_value: control_rate_per_month.values.max %>
+</div>
