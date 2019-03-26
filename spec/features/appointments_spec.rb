@@ -93,37 +93,10 @@ RSpec.feature 'Overdue appointments', type: :feature do
       it 'allows you to download the overdue list CSV' do
         click_link "Download Overdue List"
 
-        headers = [
-          "Patient name",
-          "Gender",
-          "Age",
-          "Days overdue",
-          "Last BP",
-          "Last BP taken at",
-          "Last BP date",
-          "Risk level",
-          "Patient address",
-          "Patient village or colony",
-          "Patient phone"
-        ]
-        expect(page).to have_content(headers.to_csv.strip)
+        expect(page).to have_content(Appointment.csv_headers.to_csv.strip)
 
         appointment = overdue_patient_in_facility_1.appointments.first
-
-        appointment_line = [
-          appointment.patient.full_name,
-          appointment.patient.gender.capitalize,
-          appointment.patient.current_age,
-          appointment.days_overdue,
-          appointment.patient.latest_blood_pressure.to_s,
-          appointment.patient.latest_blood_pressure.facility.name,
-          appointment.patient.latest_blood_pressure.device_created_at.to_date,
-          appointment.patient.risk_priority_label,
-          appointment.patient.address.street_address,
-          appointment.patient.address.village_or_colony,
-          appointment.patient.phone_numbers.first&.number
-        ]
-        expect(page).to have_content(appointment_line.to_csv.strip)
+        expect(page).to have_content(appointment.csv_fields.to_csv.strip)
       end
     end
   end
