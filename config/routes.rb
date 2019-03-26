@@ -70,7 +70,9 @@ Rails.application.routes.draw do
       if FeatureToggle.enabled?('PHONE_NUMBER_MASKING')
         # Exotel requires all endpoints to be GET
         scope :exotel_call_sessions do
+          get 'fetch', to: 'exotel_call_sessions#fetch'
           get 'create', to: 'exotel_call_sessions#create'
+          get 'terminate', to: 'exotel_call_sessions#terminate'
         end
       end
 
@@ -130,9 +132,15 @@ Rails.application.routes.draw do
   devise_for :admins, controllers: { invitations: 'admins/invitations' }
   resources :admins
 
-  resources :organizations, only: [:index] do
-    resources :facility_groups, only: [:index, :show] do
-      resources :facilities, only: [:index, :show] do
+  if FeatureToggle.enabled?('UPDATED_ANALYTICS_VIEWS')
+    namespace :analytics do
+      resources :facility_groups, only: [:show]
+      resources :facilities, only: [:show]
+    end
+  else
+    resources :organizations, only: [:index] do
+      resources :facility_groups, only: [:index, :show] do
+        resources :facilities, only: [:index, :show]
       end
     end
   end

@@ -18,7 +18,7 @@ gem 'rswag', '~> 1.6.0'
 gem 'rspec-rails', '~> 3.7'
 gem 'newrelic_rpm'
 gem 'bcrypt', '~> 3.1', '>= 3.1.11'
-gem 'devise', '~> 4.4.3'
+gem 'devise', '~> 4.6.0'
 gem 'devise_invitable', '~> 1.7.0'
 gem 'twilio-ruby', '~> 5.10', '>= 5.10.3'
 gem 'pundit'
@@ -31,6 +31,7 @@ gem 'uuidtools', require: false
 gem 'discard', '~> 1.0'
 gem 'friendly_id', '~> 5.2.4'
 gem 'kaminari'
+gem 'phonelib'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
@@ -44,6 +45,7 @@ group :development, :test do
   gem 'capistrano-passenger'
   gem 'capistrano-rails-console', require: false
   gem 'parallel_tests', group: [:development, :test]
+  gem 'rails-controller-testing'
 end
 
 group :development do

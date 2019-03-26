@@ -6,8 +6,6 @@ class Appointment < ApplicationRecord
 
   has_many :communications
 
-  attribute :call_result, :string
-
   enum status: {
     scheduled: 'scheduled',
     cancelled: 'cancelled',
@@ -24,6 +22,11 @@ class Appointment < ApplicationRecord
     other: 'other'
   }
 
+  enum appointment_type: {
+    manual: 'manual',
+    automatic: 'automatic'
+  }, _prefix: true
+
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
   validate :cancel_reason_is_present_if_cancelled
@@ -32,26 +35,6 @@ class Appointment < ApplicationRecord
     where(status: 'scheduled')
       .where('scheduled_date <= ?', Date.today)
       .where('remind_on IS NULL OR remind_on <= ?', Date.today)
-  end
-
-  def call_result=(new_call_result)
-    if new_call_result == "agreed_to_visit"
-      self.agreed_to_visit = true
-      self.remind_on = 30.days.from_now
-    elsif new_call_result == "remind_to_call_later"
-      self.remind_on = 7.days.from_now
-    elsif Appointment.cancel_reasons.values.include?(new_call_result)
-      self.agreed_to_visit = false
-      self.remind_on = nil
-      self.cancel_reason = new_call_result
-      self.status = :cancelled
-    end
-
-    if new_call_result == "dead"
-      self.patient.status = "dead"
-    end
-
-    super(new_call_result)
   end
 
   def days_overdue
@@ -63,7 +46,7 @@ class Appointment < ApplicationRecord
   end
 
   def overdue?
-     scheduled? && scheduled_date <= Date.today
+    scheduled? && scheduled_date <= Date.today
   end
 
   def overdue_for_over_a_year?
@@ -76,7 +59,34 @@ class Appointment < ApplicationRecord
 
   def cancel_reason_is_present_if_cancelled
     if status == :cancelled && !cancel_reason.present?
-      errors.add(:cancel_reason, "should be present for cancelled appointments")
+      errors.add(:cancel_reason, 'should be present for cancelled appointments')
     end
+  end
+
+  def mark_remind_to_call_later
+    self.remind_on = 7.days.from_now
+  end
+
+  def mark_patient_agreed_to_visit
+    self.agreed_to_visit = true
+    self.remind_on = 30.days.from_now
+  end
+
+  def mark_appointment_cancelled(cancel_reason)
+    self.agreed_to_visit = false
+    self.remind_on = nil
+    self.cancel_reason = cancel_reason
+    self.status = :cancelled
+  end
+
+  def mark_patient_already_visited
+    self.status = :visited
+    self.agreed_to_visit = nil
+    self.remind_on = nil
+  end
+
+  def mark_patient_as_dead
+    self.patient.status = :dead
+    self.patient.save
   end
 end

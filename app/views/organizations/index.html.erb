@@ -10,7 +10,16 @@
 
         <% policy_scope(organization.facility_groups).order(:name).each do |facility_group| %>
           <tr>
-            <td class="row-title"><%= link_to facility_group.name, [organization, facility_group] %></td>
+            <td class="row-title">
+              <% if FeatureToggle.enabled?('UPDATED_ANALYTICS_VIEWS') %>
+                <%= link_to facility_group.name,
+                            analytics_facility_group_path(facility_group,
+                                                          from_time: analytics_date_format(90.days.ago),
+                                                          to_time: analytics_date_format(Time.now)) %>
+              <% else %>
+                <%= link_to facility_group.name, [organization, facility_group] %>
+              <% end %>
+            </td>
           </tr>
         <% end %>
       <% end %>
