@@ -91,7 +91,6 @@ RSpec.feature 'Overdue appointments', type: :feature do
       end
 
       it 'allows you to download the overdue list CSV' do
-        binding.pry
         click_link "Download Overdue List"
 
         headers = [
@@ -107,7 +106,7 @@ RSpec.feature 'Overdue appointments', type: :feature do
           "Patient village or colony",
           "Patient phone"
         ]
-        expect(page).to have_content(headers.to_csv)
+        expect(page).to have_content(headers.to_csv.strip)
 
         appointment = overdue_patient_in_facility_1.appointments.first
 
@@ -124,7 +123,7 @@ RSpec.feature 'Overdue appointments', type: :feature do
           appointment.patient.address.village_or_colony,
           appointment.patient.phone_numbers.first&.number
         ]
-        expect(page).to have_content(appointment_line.to_csv)
+        expect(page).to have_content(appointment_line.to_csv.strip)
       end
     end
   end
