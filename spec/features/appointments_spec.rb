@@ -118,7 +118,7 @@ RSpec.feature 'Overdue appointments', type: :feature do
           appointment.patient.latest_blood_pressure.to_s,
           appointment.patient.latest_blood_pressure.facility.name,
           appointment.patient.latest_blood_pressure.device_created_at.to_date,
-          appointment.patient.high_risk? ? "High risk" : nil,
+          appointment.patient.risk_priority_label,
           appointment.patient.address.street_address,
           appointment.patient.address.village_or_colony,
           appointment.patient.phone_numbers.first&.number
