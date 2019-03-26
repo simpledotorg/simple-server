@@ -84,15 +84,14 @@ namespace :data_migration do
   task create_automatic_appointment_for_defaulters: :environment do
     last_bp_older_than_one_month = ->(p) { p.latest_blood_pressure.blank? || p.latest_blood_pressure.device_created_at < 1.month.ago }
 
-    patient_is_hypertensive = ->(p) { p.latest_blood_pressure.present? && (p.latest_blood_pressure.systolic > 140 || p.latest_blood_pressure.diastolic < 90) }
+    patient_is_hypertensive = ->(p) { p.latest_blood_pressure.present? && p.latest_blood_pressure.hypertensive? }
 
-    patient_has_medical_history = ->(p) { (p.medical_history.present? && (p.medical_history.prior_stroke == "yes" || p.medical_history.prior_heart_attack == "yes" || p.medical_history.chronic_kidney_disease == "yes" ||
-      p.medical_history.diabetes == "yes")) }
+    patient_has_cardio_vascular_history = ->(p) { p.medical_history.present? && p.medical_history.indicates_risk? }
 
     defaulters = Patient.select do |p|
       p.appointments.count == 0 &&
         last_bp_older_than_one_month.call(p) &&
-        (patient_is_hypertensive.call(p) || patient_has_medical_history.call(p) || p.prescription_drugs.present?)
+        (patient_is_hypertensive.call(p) || patient_has_cardio_vascular_history.call(p) || p.prescription_drugs.present?)
     end
 
     puts "Found #{defaulters.count} defaulters"
@@ -116,7 +115,7 @@ namespace :data_migration do
 
       latest_bp_facility_id = defaulter.latest_blood_pressure.facility_id
       app_creation_time = Time.now
-      app_scheduled_date = 32.days.ago # to trigger overdue-ness
+      app_scheduled_date = 40.days.ago # to trigger overdue-ness
 
       begin
         automatic_appointment =
@@ -124,7 +123,12 @@ namespace :data_migration do
                              device_created_at: app_creation_time, device_updated_at: app_creation_time, created_at: app_creation_time, updated_at: app_creation_time,
                              status: 'scheduled', scheduled_date: app_scheduled_date, appointment_type: Appointment.appointment_types[:automatic])
 
-        automatic_appointment.save
+        if automatic_appointment.errors.present?
+          puts "Error(s) while creating automatic appointment for patient #{defaulter.id}: #{automatic_appointment.errors.messages}"
+          unprocessed_or_errored_defaulters_count += 1
+          next
+        end
+
         processed_defaulters_count += 1
 
         puts "Created automatic appointment #{automatic_appointment.id} for defaulter #{defaulter.id}"
