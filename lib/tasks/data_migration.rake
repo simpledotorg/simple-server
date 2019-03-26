@@ -82,13 +82,12 @@ namespace :data_migration do
 
   desc "Update 'appointment_type' for existing appointments to 'manual'"
   task set_appointment_type_to_manual_for_existing_appointments: :environment do
-    appointments = Appointment.all.select { |app| app.appointment_type.blank? }
+    appointments = Appointment.where(appointment_type: nil)
 
     number_of_appointments_marked_manual = 0
     appointments.each do |app|
       puts "Marking appointment #{app.id} as 'manual'"
-      app.appointment_type = Appointment.appointment_types[:manual]
-      app.save
+      app.update_column(:appointment_type, Appointment.appointment_types[:manual])
       number_of_appointments_marked_manual += 1
     end
 
