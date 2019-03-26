@@ -62,7 +62,7 @@ en:
     allowed_access_to_user: '%{admin_name} allowed access'
     denied_access_to_user: '%{admin_name} denied access'
     dashboard_title: "Simple Server"
-    phi_access_alert: "You are about to download confidental patient data. Are you sure you want to proceed?"
+    phi_download_alert: "You are about to download confidental patient data. Are you sure you want to proceed?"
   api:
     documentation:
       description: |
