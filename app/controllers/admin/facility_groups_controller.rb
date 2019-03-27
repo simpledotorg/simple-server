@@ -1,6 +1,6 @@
 class Admin::FacilityGroupsController < AdminController
-  before_action :set_organization, only: [:index, :new, :create]
   before_action :set_facility_group, only: [:show, :edit, :update, :destroy]
+  before_action :set_organizations, only: [:new, :edit]
   before_action :set_protocols, only: [:new, :edit]
 
   def index
@@ -9,8 +9,7 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def new
-    @organization = Organization.friendly.find(params[:organization_id])
-    @facility_group = @organization.facility_groups.new
+    @facility_group = FacilityGroup.new
     authorize @facility_group
   end
 
@@ -18,8 +17,7 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def create
-    @organization = Organization.friendly.find(params[:organization_id])
-    @facility_group = @organization.facility_groups.new(facility_group_params)
+    @facility_group = FacilityGroup.new(facility_group_params)
     authorize @facility_group
 
     if @facility_group.save
@@ -44,6 +42,10 @@ class Admin::FacilityGroupsController < AdminController
 
   private
 
+  def set_organizations
+    @organizations = policy_scope(Organization)
+  end
+
   def set_protocols
     @protocols = Protocol.all
   end
@@ -53,13 +55,9 @@ class Admin::FacilityGroupsController < AdminController
     authorize @facility_group
   end
 
-  def set_organization
-    @organization = Organization.friendly.find(params[:organization_id])
-    authorize @organization
-  end
-
   def facility_group_params
     params.require(:facility_group).permit(
+      :organization_id,
       :name,
       :description,
       :protocol_id,

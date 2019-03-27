@@ -1,9 +1,9 @@
 <% if policy(Organization).new? %>
-  <%= link_to '+ Organization', new_admin_organization_path, class: "btn btn-sm btn-primary float-right" %>
+  <%= link_to '+ Facility group', new_admin_facility_group_path, class: "btn btn-sm btn-primary float-right" %>
 <% end %>
 
 <% if policy(Organization).new? %>
-  <%= link_to '+ Facility group', new_admin_organization_path, class: "btn btn-sm btn-primary float-right mr-2" %>
+  <%= link_to '+ Organization', new_admin_organization_path, class: "btn btn-sm btn-primary float-right mr-2" %>
 <% end %>
 
 <h1 style="margin-bottom: 32px;">All facilities</h1>
@@ -38,9 +38,9 @@
                   <% if policy(facility).edit? %>
                     <%= link_to 'Edit', edit_admin_facility_path(facility), class: "btn btn-default float-right" %>
                   <% end %>
-                   
+
                   <h5><%= link_to facility.name, [:admin, facility] %> <!-- <%= facility.facility_type %> --></h5>
-                     
+
                       <div class="card-details">
                       <%= facility.street_address %>
                       <%= facility.village_or_colony %>
