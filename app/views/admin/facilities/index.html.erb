@@ -24,8 +24,10 @@
 
   <tbody>
     <% @facilities.each do |facility| %>
+      <% facility_group = facility.facility_group %>
       <tr>
         <td class="nowrap"><%= link_to facility.name, [:admin, facility] %></td>
+        <td><%= link_to facility_group.name, admin_organization_facility_group_path(facility_group.organization, facility_group) if facility_group.present? %></td>
         <td><%= facility.street_address %></td>
         <td><%= facility.village_or_colony %></td>
         <td><%= facility.district %></td>

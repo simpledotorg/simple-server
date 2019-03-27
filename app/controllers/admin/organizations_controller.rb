@@ -7,6 +7,7 @@ class Admin::OrganizationsController < AdminController
   end
 
   def show
+    @facility_groups = @organization.facility_groups
   end
 
   def new
