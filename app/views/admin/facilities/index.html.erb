@@ -2,10 +2,6 @@
   <%= link_to '+ Facility group', new_admin_facility_group_path, class: "btn btn-sm btn-primary float-right" %>
 <% end %>
 
-<% if policy(Organization).new? %>
-  <%= link_to '+ Organization', new_admin_organization_path, class: "btn btn-sm btn-primary float-right mr-2" %>
-<% end %>
-
 <h1 style="margin-bottom: 32px;">All facilities</h1>
 
 <% @organizations.order(:name).each do |organization| %>

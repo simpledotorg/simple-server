@@ -9,7 +9,7 @@ RSpec.feature 'Organization management', type: :feature do
 
   describe 'new' do
     it "allows owners to create organizations" do
-      visit admin_facilities_path
+      visit admin_organizations_path
       click_link "+ Organization"
 
       fill_in "Name", with: "Test organization"
@@ -18,6 +18,24 @@ RSpec.feature 'Organization management', type: :feature do
       click_button "Create Organization"
 
       expect(page).to have_content("Test organization")
+    end
+  end
+
+  describe 'edit' do
+    let!(:organization) { create(:organization, name: "Existing Org") }
+
+    it "allows owners to create organizations" do
+      visit admin_organizations_path
+
+      within find("tr", text: "Existing Org") do
+        click_link "Edit"
+      end
+
+      fill_in "Name", with: "Edited Org"
+
+      click_button "Update Organization"
+
+      expect(page).to have_content("Edited Org")
     end
   end
 end
