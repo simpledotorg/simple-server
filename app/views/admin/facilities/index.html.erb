@@ -35,7 +35,7 @@
                     <%= link_to 'Edit', edit_admin_facility_group_facility_path(facility_group, facility), class: "btn btn-default float-right" %>
                   <% end %>
 
-                  <h5><%= link_to facility.name, [:admin, facility] %> <!-- <%= facility.facility_type %> --></h5>
+                  <h5><%= link_to facility.name, [:admin, facility_group, facility] %> <!-- <%= facility.facility_type %> --></h5>
 
                       <div class="card-details">
                       <%= facility.street_address %>

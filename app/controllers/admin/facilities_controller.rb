@@ -1,6 +1,6 @@
 class Admin::FacilitiesController < AdminController
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
-  before_action :set_facility_group, only: [:new, :create, :edit, :update, :destroy]
+  before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy]
 
   def index
     authorize Facility
@@ -23,7 +23,7 @@ class Admin::FacilitiesController < AdminController
     authorize @facility
 
     if @facility.save
-      redirect_to admin_facilities_path, notice: 'Facility was successfully created.'
+      redirect_to [:admin, @facility_group, @facility], notice: 'Facility was successfully created.'
     else
       render :new
     end
@@ -31,7 +31,7 @@ class Admin::FacilitiesController < AdminController
 
   def update
     if @facility.update(facility_params)
-      redirect_to [:admin, @facility], notice: 'Facility was successfully updated.'
+      redirect_to [:admin, @facility_group, @facility], notice: 'Facility was successfully updated.'
     else
       render :edit
     end
