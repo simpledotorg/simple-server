@@ -1,6 +1,6 @@
 class Admin::FacilitiesController < AdminController
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
-  before_action :set_facility_group, only: [:new, :create]
+  before_action :set_facility_group, only: [:new, :create, :edit, :update, :destroy]
 
   def index
     authorize Facility
@@ -19,7 +19,7 @@ class Admin::FacilitiesController < AdminController
   end
 
   def create
-    @facility = Facility.new(facility_params)
+    @facility = @facility_group.facilities.new(facility_params)
     authorize @facility
 
     if @facility.save
@@ -51,7 +51,6 @@ class Admin::FacilitiesController < AdminController
 
   def set_facility_group
     @facility_group = FacilityGroup.friendly.find(params[:facility_group_id])
-    authorize @facility_group
   end
 
   def facility_params

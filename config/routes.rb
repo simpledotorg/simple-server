@@ -156,7 +156,9 @@ Rails.application.routes.draw do
     resources :audit_logs, only: [:index, :show]
 
     resources :facilities, only: [:index]
-    resources :facility_groups
+    resources :facility_groups do
+      resources :facilities
+    end
 
     resources :organizations do
       resources :facility_groups, shallow: true do

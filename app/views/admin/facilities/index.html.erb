@@ -36,7 +36,7 @@
               <div class="card">
                   <div class="card-body">
                   <% if policy(facility).edit? %>
-                    <%= link_to 'Edit', edit_admin_facility_path(facility), class: "btn btn-default float-right" %>
+                    <%= link_to 'Edit', edit_admin_facility_group_facility_path(facility_group, facility), class: "btn btn-default float-right" %>
                   <% end %>
 
                   <h5><%= link_to facility.name, [:admin, facility] %> <!-- <%= facility.facility_type %> --></h5>
