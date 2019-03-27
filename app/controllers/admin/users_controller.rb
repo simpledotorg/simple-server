@@ -6,7 +6,7 @@ class Admin::UsersController < AdminController
     @facility_groups = policy_scope(FacilityGroup)
     @users = policy_scope(User).sort_by do |user|
       [ordered_sync_approval_statuses[user.sync_approval_status],
-       user.updated_at]
+       user.full_name]
     end
   end
 
