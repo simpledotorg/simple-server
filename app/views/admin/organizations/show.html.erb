@@ -28,7 +28,7 @@
     </thead>
 
     <tbody>
-    <% @organization.facility_groups.each do |facility_group| %>
+    <% @facility_groups.each do |facility_group| %>
       <tr>
         <td class="nowrap"><%= link_to facility_group.name, admin_organization_facility_group_path(@organization, facility_group) %></td>
         <td class="nowrap"><%= facility_group.description %></td>

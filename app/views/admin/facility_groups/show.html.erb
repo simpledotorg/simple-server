@@ -20,7 +20,7 @@
     <h3>Facilities</h3>
 
     <ul class="list-unstyled">
-      <% @facility_group.facilities.each do |facility| %>
+      <% @facilities.each do |facility| %>
         <li><%= link_to facility.name, admin_facility_path(facility) %></li>
       <% end %>
     </ul>
@@ -30,7 +30,7 @@
     <h3>Users</h3>
 
     <ul class="list-unstyled">
-      <% @facility_group.users.each do |user| %>
+      <% @users.each do |user| %>
         <li><%= link_to user.full_name, admin_user_path(user) %></li>
       <% end %>
     </ul>
