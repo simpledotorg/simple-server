@@ -12,7 +12,7 @@ RSpec.describe ExotelCallDetailsJob, type: :job do
     allow_any_instance_of(ExotelAPIService).to receive(:call_details).with(call_id).and_return(allowed_call_result)
 
     assert_performed_jobs 1 do
-      described_class.perform_later(call_id, user.id, callee_phone_number)
+      described_class.perform_later(call_id, user.id, callee_phone_number, 'completed')
     end
 
     expect(CallLog.count).to eq(1)
@@ -22,18 +22,18 @@ RSpec.describe ExotelCallDetailsJob, type: :job do
     allow_any_instance_of(ExotelAPIService).to receive(:call_details).with(call_id).and_return(nil)
 
     assert_performed_jobs 1 do
-      described_class.perform_later(call_id, user.id, callee_phone_number)
+      described_class.perform_later(call_id, user.id, callee_phone_number, 'failed')
     end
 
     expect(CallLog.count).to eq(0)
   end
 
-  it 'should create a call log even the user does not exist' do
+  it 'should create a call log even if the user does not exist' do
     allowed_call_result = { Call: { Sid: call_id } }
     allow_any_instance_of(ExotelAPIService).to receive(:call_details).with(call_id).and_return(allowed_call_result)
 
     assert_performed_jobs 1 do
-      described_class.perform_later(call_id, SecureRandom.uuid, callee_phone_number)
+      described_class.perform_later(call_id, SecureRandom.uuid, callee_phone_number, 'completed')
     end
 
     expect(CallLog.count).to eq(1)
@@ -44,8 +44,7 @@ RSpec.describe ExotelCallDetailsJob, type: :job do
     expect_any_instance_of(described_class).to receive(:retry_job)
 
     assert_performed_jobs 1 do
-      described_class.perform_later(call_id, user.id, callee_phone_number)
+      described_class.perform_later(call_id, user.id, callee_phone_number, 'completed')
     end
   end
 end
-
