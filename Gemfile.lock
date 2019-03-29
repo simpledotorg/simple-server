@@ -372,6 +372,7 @@ DEPENDENCIES
   capistrano-rails-console
   capistrano-rbenv
   capybara
+  connection_pool
   data-anonymization
   devise (~> 4.6.0)
   devise_invitable (~> 1.7.0)

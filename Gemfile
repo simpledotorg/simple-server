@@ -34,6 +34,7 @@ gem 'kaminari'
 gem 'phonelib'
 gem 'http'
 gem 'sidekiq'
+gem 'connection_pool'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

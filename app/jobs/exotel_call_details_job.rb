@@ -8,9 +8,14 @@ class ExotelCallDetailsJob < ApplicationJob
     call_details = ExotelAPIService.new(ENV['EXOTEL_SID'],
                                         ENV['EXOTEL_TOKEN']).call_details(call_id)
 
-    CallLog.create!(call_log_params(call_details,
+    CallLog.create!(call_log_params(call_details[:Call],
                                     user_id,
                                     callee_phone_number)) if call_details.present?
+  end
+
+  def call_log_params(call_details, user_id, callee_phone_number)
+    parse_call_details(call_details)
+      .merge(participant_details(user_id, callee_phone_number))
   end
 
   def participant_details(user_id, callee_phone_number)
@@ -19,15 +24,10 @@ class ExotelCallDetailsJob < ApplicationJob
   end
 
   def parse_call_details(call_details)
-    { session_id: call_details.Sid,
-      end_time: call_details.EndTime,
-      start_time: call_details.StartTime,
-      result: call_details.Status,
-      duration: call_details.Duration }
-  end
-
-  def call_log_params(call_details, user_id, callee_phone_number)
-    parse_call_details(call_details)
-      .merge(participant_details(user_id, callee_phone_number))
+    { session_id: call_details[:Sid],
+      end_time: call_details[:EndTime],
+      start_time: call_details[:StartTime],
+      result: call_details[:Status],
+      duration: call_details[:Duration] }
   end
 end

@@ -8,7 +8,7 @@ RSpec.describe ExotelCallDetailsJob, type: :job do
   let!(:call_id) { SecureRandom.uuid }
 
   it 'should populate a call log' do
-    allowed_call_result = OpenStruct.new({ Sid: call_id })
+    allowed_call_result = { Call: { Sid: call_id } }
     allow_any_instance_of(ExotelAPIService).to receive(:call_details).with(call_id).and_return(allowed_call_result)
 
     assert_performed_jobs 1 do
@@ -29,7 +29,7 @@ RSpec.describe ExotelCallDetailsJob, type: :job do
   end
 
   it 'should create a call log even the user does not exist' do
-    allowed_call_result = OpenStruct.new({ Sid: call_id })
+    allowed_call_result = { Call: { Sid: call_id } }
     allow_any_instance_of(ExotelAPIService).to receive(:call_details).with(call_id).and_return(allowed_call_result)
 
     assert_performed_jobs 1 do

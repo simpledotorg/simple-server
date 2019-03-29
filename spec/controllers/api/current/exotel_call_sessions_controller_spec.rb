@@ -108,10 +108,15 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
   end
 
   describe '#terminate' do
-    context ':ok' do
-      let!(:call_id) { SecureRandom.uuid }
+    let!(:call_id) { SecureRandom.uuid }
 
-      before :each do
+    before(:each) do
+      allowed_call_result = { Call: { Sid: call_id } }
+      allow_any_instance_of(ExotelAPIService).to receive(:call_details).with(call_id).and_return(allowed_call_result)
+    end
+
+    context ':ok' do
+      before(:each) do
         session = CallSession.new(call_id, user.phone_number, patient.phone_numbers.first.number)
         session.save
       end

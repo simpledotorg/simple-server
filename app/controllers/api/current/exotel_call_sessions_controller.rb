@@ -64,8 +64,6 @@ class Api::Current::ExotelCallSessionsController < ApplicationController
   end
 
   def schedule_call_log_job(user_id, callee_phone_number)
-    ExotelCallDetailsJob
-      .set(wait_until: 30.minutes)
-      .perform_later(params[:CallSid], user_id, callee_phone_number)
+    ExotelCallDetailsJob.perform_later(params[:CallSid], user_id, callee_phone_number)
   end
 end
