@@ -25,25 +25,25 @@ describe ExotelAPIService, type: :model do
 
       expected_call_details_response = described_class.new(sid, token).call_details(call_sid)
 
-      expect(expected_call_details_response.Call.to_h.keys).to eq([:Sid,
-                                                                   :ParentCallSid,
-                                                                   :DateCreated,
-                                                                   :DateUpdated,
-                                                                   :AccountSid,
-                                                                   :To,
-                                                                   :From,
-                                                                   :PhoneNumberSid,
-                                                                   :Status,
-                                                                   :StartTime,
-                                                                   :EndTime,
-                                                                   :Duration,
-                                                                   :Price,
-                                                                   :Direction,
-                                                                   :AnsweredBy,
-                                                                   :ForwardedFrom,
-                                                                   :CallerName,
-                                                                   :Uri,
-                                                                   :RecordingUrl])
+      expect(expected_call_details_response[:Call].keys).to eq([:Sid,
+                                                                :ParentCallSid,
+                                                                :DateCreated,
+                                                                :DateUpdated,
+                                                                :AccountSid,
+                                                                :To,
+                                                                :From,
+                                                                :PhoneNumberSid,
+                                                                :Status,
+                                                                :StartTime,
+                                                                :EndTime,
+                                                                :Duration,
+                                                                :Price,
+                                                                :Direction,
+                                                                :AnsweredBy,
+                                                                :ForwardedFrom,
+                                                                :CallerName,
+                                                                :Uri,
+                                                                :RecordingUrl])
     end
 
     it 'should not return a response for a session that does not exist' do
