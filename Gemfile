@@ -32,6 +32,8 @@ gem 'discard', '~> 1.0'
 gem 'friendly_id', '~> 5.2.4'
 gem 'kaminari'
 gem 'phonelib'
+gem 'sidekiq'
+gem 'whenever', require: false
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

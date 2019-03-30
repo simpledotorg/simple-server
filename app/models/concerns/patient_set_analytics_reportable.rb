@@ -19,11 +19,11 @@ module PatientSetAnalyticsReportable
     end
   end
 
-  private
-
   def analytics_cache_key(from_time, to_time)
     "analytics/#{time_cache_key(from_time)}/#{time_cache_key(to_time)}/#{cache_key}"
   end
+
+  private
 
   def time_cache_key(time)
     time.strftime('%Y-%m-%d')
