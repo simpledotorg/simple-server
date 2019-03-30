@@ -3,10 +3,11 @@ class Admin::ProtocolsController < AdminController
 
   def index
     authorize Protocol
-    @protocols = policy_scope(Protocol)
+    @protocols = policy_scope(Protocol).order(:name)
   end
 
   def show
+    @protocol_drugs = @protocol.protocol_drugs.order(:name)
   end
 
   def new
