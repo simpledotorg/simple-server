@@ -19,6 +19,6 @@ set :output, "/tmp/cron_log.log"
 
 # Learn more: http://github.com/javan/whenever
 
-every 1.minute do
+every :day, at: ['1:00 am'] do
   runner "WarmUpAnalyticsCacheJob.perform_later"
 end
