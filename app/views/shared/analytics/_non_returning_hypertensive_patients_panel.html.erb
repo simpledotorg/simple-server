@@ -12,7 +12,7 @@
              options: { id: 'non-returning-hypertensive-patients-graph' },
              column_class: 'featured-graph-column-yellow',
              graph_data: non_returning_hypertensive_patients_per_month
-                 .select { |month, _| month >= number_of_months.months.ago.at_beginning_of_month }
+                 .select { |month, _| month >= (@to_time - number_of_months.months).at_beginning_of_month }
                  .map { |month, no_of_patients| [month.strftime('%b'), no_of_patients] }.to_h,
              max_value: non_returning_hypertensive_patients_per_month.map(&:second).max %>
 
