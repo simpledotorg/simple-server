@@ -1,4 +1,4 @@
-class Api::Current::HelpController < ApiController
+class Api::Current::HelpController < APIController
   layout false
 
   skip_before_action :authenticate, only: [:show]
