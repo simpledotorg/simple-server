@@ -3,11 +3,14 @@
               url_for(from_time: analytics_date_format(90.days.ago), to_time: analytics_date_format(Time.now)),
               class: 'sub-nav-link sub-nav-link-active' %>
 
-  <%= date = Time.new(2018, 10, 1)
-    link_to 'Q4 Report',
-              url_for(from_time: analytics_date_format(date.at_beginning_of_quarter),
-                      to_time: analytics_date_format(date.at_end_of_quarter)),
-              class: 'sub-nav-link' %>
+
+  <% 4.times do |n| %>
+    <%= range = range_for_quarter(-1 * (n + 1))
+        link_to label_for_quarter(range),
+                 url_for(range),
+                 class: 'sub-nav-link' %>
+  <% end %>
+
 
   <a href="#" class="sub-nav-link">&#8226;&#8226;&#8226;</a>
 </div>
