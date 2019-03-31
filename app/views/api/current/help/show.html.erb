@@ -25,7 +25,7 @@
 <div id="watch"></div>
 <div class="card">
   <h3>Watch a short tutorial</h3>
-  <a href="https://youtu.be/c_IZHuXllE4" class="video" style="display: block; margin: 8px 0;">
+  <a href="<%= ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL'] %>" class="video" style="display: block; margin: 8px 0;">
     <%= inline_svg('thumb_demo.svg') %>
   </a>
   <caption>Learn how to use Simple in less than 5 minutes with this easy video.</caption>
@@ -117,7 +117,7 @@
     WhatsApp support group where our team can help you.</p>
   <p>We welcome your suggestions on how we can make the app more useful for you.</p>
   <p>WhatsApp message support at:</p>
-  <a href="https://wa.me/915555555555/?text=I%20would%20like%20to%20ask%20a%20question%20about%20Simple.%20" class="whatsapp-button">
+  <a href="<%= ENV['HELP_SCREEN_WHATSAPP_SUPPORT_GROUP_URL'] %>" class="whatsapp-button">
     <%= inline_svg('icon_whatsapp_icon.svg') %> +91 0009 111234
   </a>
 </div>
