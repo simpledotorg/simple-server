@@ -101,6 +101,7 @@
           </td>
           <td class="featured-td">
             <%= render "shared/analytics/non_returning_hypertensive_patients_panel",
+                       number_of_months: 4,
                        non_returning_hypertensive_patients_count: @facility_analytics[:non_returning_hypertensive_patients],
                        non_returning_hypertensive_patients_per_month:  @facility_analytics[:non_returning_hypertensive_patients_per_month] %>
           </td>
