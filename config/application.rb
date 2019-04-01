@@ -30,7 +30,5 @@ module SimpleServer
       g.system_tests false
       g.helper false
     end
-
-    config.active_job.queue_adapter = :sidekiq
   end
 end
