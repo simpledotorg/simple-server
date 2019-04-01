@@ -133,8 +133,7 @@ namespace :data_migration do
       begin
         automatic_appointment =
           Appointment.create(patient_id: defaulter.id, facility_id: latest_bp_facility_id,
-                             device_created_at: appointment_creation_time, device_updated_at: appointment_creation_time, created_at: appointment_creation_time, updated_at: appointment_creation_time,
-                             status: 'scheduled', scheduled_date: appointment_scheduled_date, appointment_type: Appointment.appointment_types[:automatic])
+                             device_created_at: appointment_creation_time, device_updated_at: appointment_creation_time, status: 'scheduled', scheduled_date: appointment_scheduled_date, appointment_type: Appointment.appointment_types[:automatic])
 
         if automatic_appointment.errors.present?
           puts "Error(s) while creating automatic appointment for patient #{defaulter.id}: #{automatic_appointment.errors.messages}"
