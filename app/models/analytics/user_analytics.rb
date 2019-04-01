@@ -1,9 +1,11 @@
 class Analytics::UserAnalytics
-  attr_reader :user, :facility
+  attr_reader :user, :facility, :from_time, :to_time
 
-  def initialize(user, facility)
+  def initialize(user, facility, from_time: 12.weeks.ago, to_time: Time.now)
     @user = user
     @facility = facility
+    @from_time = from_time.at_beginning_of_week
+    @to_time = to_time.at_beginning_of_week
   end
 
   def registered_patients_count
@@ -13,14 +15,14 @@ class Analytics::UserAnalytics
   def blood_pressures_recorded_per_week
     user.blood_pressures
       .where(facility: facility)
-      .group_by_week(:device_created_at, last: 12)
+      .group_by_week(:device_created_at, range: from_time..to_time)
       .count
   end
 
   def blood_pressures_recorded_per_week_at_facility
     user.blood_pressures
       .where(facility: facility)
-      .group_by_week(:device_created_at, last: 12)
+      .group_by_week(:device_created_at, range: from_time..to_time)
       .count
   end
 
