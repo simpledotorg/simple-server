@@ -14,6 +14,8 @@
   </div>
   <% if bp = patient.latest_blood_pressure %>
     <div class="overdue-details">
+      Enrolled on:
+      <%= patient.device_created_at.strftime("%d-%B-%Y") %><br>
       Last BP:
       <%= bp.to_s %>&nbsp;
       recorded at <%= bp.facility.name %>
