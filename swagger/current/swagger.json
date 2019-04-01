@@ -488,6 +488,22 @@
         }
       }
     },
+    "/help.html": {
+      "get": {
+        "summary": "Sends a static HTML containing help documentation",
+        "tags": [
+          "help"
+        ],
+        "produces": [
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "HTML received"
+          }
+        }
+      }
+    },
     "/login": {
       "post": {
         "summary": "Login in valid user",
