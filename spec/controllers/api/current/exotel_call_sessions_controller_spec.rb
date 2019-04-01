@@ -108,6 +108,8 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
   end
 
   describe '#terminate' do
+    include ActiveJob::TestHelper
+
     let!(:call_id) { SecureRandom.uuid }
 
     before(:each) do
@@ -125,7 +127,7 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
         get :terminate, params: { From: user.phone_number,
                                   CallSid: call_id,
                                   DialCallDuration: '10',
-                                  CallType: 'completed' }
+                                  CallStatus: 'completed' }
 
         fetched_session = CallSession.fetch(call_id)
 
@@ -142,10 +144,23 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
                                   digits: patient.phone_numbers.first.number,
                                   CallSid: call_id,
                                   DialCallDuration: '10',
-                                  CallType: 'completed' }
+                                  CallStatus: 'completed' }
       end
 
       it { should use_after_action(:report_http_status) }
+
+      it 'should schedule a job to log the call details' do
+        assert_enqueued_with(job: ExotelCallDetailsJob, args: [call_id,
+                                                               user.id,
+                                                               patient.phone_numbers.first.number,
+                                                               'completed']) do
+          get :terminate, params: { From: user.phone_number,
+                                    digits: patient.phone_numbers.first.number,
+                                    CallSid: call_id,
+                                    DialCallDuration: '10',
+                                    CallStatus: 'completed' }
+        end
+      end
     end
 
     context ':not_found' do
@@ -153,7 +168,7 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
         get :terminate, params: { From: user.phone_number,
                                   CallSid: SecureRandom.uuid,
                                   DialCallDuration: '10',
-                                  CallType: 'completed' }
+                                  CallStatus: 'completed' }
 
         expect(response).to have_http_status(404)
       end

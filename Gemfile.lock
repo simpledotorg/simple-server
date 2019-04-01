@@ -126,6 +126,8 @@ GEM
       railties (>= 3.0.0)
     faker (1.8.7)
       i18n (>= 0.7)
+    fakeredis (0.7.0)
+      redis (>= 3.2, < 5.0)
     faraday (0.15.1)
       multipart-post (>= 1.2, < 3)
     ffi (1.9.25)
@@ -380,6 +382,7 @@ DEPENDENCIES
   dotenv-rails
   factory_bot_rails
   faker
+  fakeredis
   friendly_id (~> 5.2.4)
   groupdate
   http
