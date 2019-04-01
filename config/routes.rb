@@ -121,6 +121,8 @@ Rails.application.routes.draw do
         post 'sync', to: 'medical_histories#sync_from_user'
       end
 
+      resource :help, only: [:show], controller: "help"
+
       if FeatureToggle.enabled?('USER_ANALYTICS')
         namespace :analytics do
           resource :user_analytics, only: [:show]
