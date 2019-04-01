@@ -144,11 +144,11 @@ namespace :anonymize do
       table 'patients' do
         anonymize_uuid 'id'
         scramble('patients', 'full_name')
-        scramble('patients', 'age')
-        scramble('patients', 'gender')
-        scramble('patients', 'status')
-        scramble('patients', 'date_of_birth')
-        scramble('patients', 'age_updated_at')
+        whitelist 'age'
+        whitelist 'gender'
+        whitelist 'status'
+        whitelist 'date_of_birth'
+        whitelist 'age_updated_at'
         whitelist 'registration_user_id'
         anonymize_uuid 'address_id'
         whitelist 'test_data'
