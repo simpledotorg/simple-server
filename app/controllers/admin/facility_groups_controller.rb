@@ -9,6 +9,8 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def show
+    @facilities = @facility_group.facilities.order(:name)
+    @users = @facility_group.users.order(:full_name)
   end
 
   def new

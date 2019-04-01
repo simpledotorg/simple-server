@@ -5,7 +5,7 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-gem 'rails', '~> 5.1.6.1'
+gem 'rails', '~> 5.1.6.2'
 gem 'pg', '>= 0.18', '< 2.0'
 gem 'passenger'
 gem 'sassc-rails'
@@ -18,7 +18,7 @@ gem 'rswag', '~> 1.6.0'
 gem 'rspec-rails', '~> 3.7'
 gem 'newrelic_rpm'
 gem 'bcrypt', '~> 3.1', '>= 3.1.11'
-gem 'devise', '~> 4.4.3'
+gem 'devise', '~> 4.6.0'
 gem 'devise_invitable', '~> 1.7.0'
 gem 'twilio-ruby', '~> 5.10', '>= 5.10.3'
 gem 'pundit'
@@ -49,6 +49,7 @@ group :development, :test do
   gem 'capistrano-passenger'
   gem 'capistrano-rails-console', require: false
   gem 'parallel_tests', group: [:development, :test]
+  gem 'rails-controller-testing'
 end
 
 group :development do
