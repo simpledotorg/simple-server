@@ -532,9 +532,11 @@ td.featured-middle {
     background: -webkit-linear-gradient(top, rgba(0,117,235,0.2) 0%,rgba(0,117,235,0) 100%);
     background: linear-gradient(to bottom, rgba(0,117,235,0.2) 0%,rgba(0,117,235,0) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#E0F0FF55', endColorstr='#0075EB55',GradientType=0 );
-    border-top: 1px solid $grey-dark;
     font-family: $font-condensed;
     color: $grey-dark;
+    border-radius: 3px 3px 0 0;
+    padding-top: 4px;
+    min-height: 24px;
 }
 
 .snapshot-simple .featured-graph-column {
@@ -546,7 +548,6 @@ td.featured-middle {
     background: -webkit-linear-gradient(top, rgba(255,207,0,0.2) 0%,rgba(255,207,0,0) 100%);
     background: linear-gradient(to bottom, rgba(255,207,0,0.2) 0%,rgba(255,207,0,0) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FFCF0055', endColorstr='#FFCF0055',GradientType=0 );
-    border-top: 1px solid $yellow;
     color: $yellow-dark;
 }
 
@@ -555,7 +556,6 @@ td.featured-middle {
     background: -webkit-linear-gradient(top, rgba(0,184,73,0.2) 0%,rgba(0,184,73,0) 100%);
     background: linear-gradient(to bottom, rgba(0,184,73,0.2) 0%,rgba(0,184,73,0) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00B849', endColorstr='#00B849',GradientType=0 );
-    border-top: 1px solid $green;
     color: $green-dark;
 }
 
