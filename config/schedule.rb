@@ -5,7 +5,7 @@
 
 # Example:
 #
-set :output, "/tmp/cron_log.log"
+set :output, "/home/deploy/simple-server/shared/logs/cron.log"
 #
 # every 2.hours do
 #   command "/usr/bin/some_great_command"
@@ -21,4 +21,8 @@ set :output, "/tmp/cron_log.log"
 
 every :day, at: ['1:00 am'] do
   runner "WarmUpAnalyticsCacheJob.perform_later"
+end
+
+every :month, at: ['1:00 am'] do
+  runner "WarmUpQuarterlyAnalyticsCacheJob.perform_later"
 end
