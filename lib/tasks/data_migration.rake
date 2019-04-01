@@ -111,8 +111,7 @@ namespace :data_migration do
     puts "Found #{defaulters.count} defaulters"
 
     if defaulters.blank? || defaulters.empty?
-      puts "No defaulters found. Aborting task."
-      return
+      abort("No defaulters found. Aborting task.")
     end
 
     puts "Processing #{defaulters.count} defaulters..."
@@ -128,14 +127,14 @@ namespace :data_migration do
       end
 
       latest_bp_facility_id = defaulter.latest_blood_pressure.facility_id
-      app_creation_time = Time.now
-      app_scheduled_date = 40.days.ago # to trigger overdue-ness
+      appointment_creation_time = defaulter.latest_blood_pressure.device_created_at
+      appointment_scheduled_date = appointment_creation_time + 1.month
 
       begin
         automatic_appointment =
           Appointment.create(patient_id: defaulter.id, facility_id: latest_bp_facility_id,
-                             device_created_at: app_creation_time, device_updated_at: app_creation_time, created_at: app_creation_time, updated_at: app_creation_time,
-                             status: 'scheduled', scheduled_date: app_scheduled_date, appointment_type: Appointment.appointment_types[:automatic])
+                             device_created_at: appointment_creation_time, device_updated_at: appointment_creation_time, created_at: appointment_creation_time, updated_at: appointment_creation_time,
+                             status: 'scheduled', scheduled_date: appointment_scheduled_date, appointment_type: Appointment.appointment_types[:automatic])
 
         if automatic_appointment.errors.present?
           puts "Error(s) while creating automatic appointment for patient #{defaulter.id}: #{automatic_appointment.errors.messages}"
