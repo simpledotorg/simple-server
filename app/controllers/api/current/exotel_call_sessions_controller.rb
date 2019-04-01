@@ -1,6 +1,7 @@
 class Api::Current::ExotelCallSessionsController < ApplicationController
-  after_action :report_http_status
   SCHEDULE_CALL_LOG_JOB_AFTER = 30.minutes
+
+  after_action :report_http_status
 
   def create
     unless valid_patient_phone_number?
@@ -43,6 +44,10 @@ class Api::Current::ExotelCallSessionsController < ApplicationController
 
   private
 
+  def call_status
+    params[:CallStatus].underscore
+  end
+
   def parse_patient_phone_number
     params[:digits].tr('"', '')
   end
@@ -61,7 +66,7 @@ class Api::Current::ExotelCallSessionsController < ApplicationController
 
   def report_call_info
     NewRelic::Agent.record_metric("#{controller_name}/call_duration", params[:DialCallDuration].to_i)
-    NewRelic::Agent.increment_metric("#{controller_name}/call_type/#{params[:CallStatus]}")
+    NewRelic::Agent.increment_metric("#{controller_name}/call_type/#{call_status}")
   end
 
   def schedule_call_log_job(user_id, callee_phone_number)
@@ -70,6 +75,6 @@ class Api::Current::ExotelCallSessionsController < ApplicationController
       .perform_later(params[:CallSid],
                      user_id,
                      callee_phone_number,
-                     params[:CallStatus])
+                     call_status)
   end
 end
