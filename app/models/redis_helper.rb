@@ -21,6 +21,8 @@ class RedisHelper
     execute { @connection.del(key) }
   end
 
+  private
+
   def execute
     yield
   rescue => exception
@@ -31,5 +33,7 @@ class RedisHelper
         exception: exception.to_s
       },
       tags: { type: 'redis-store' })
+
+    nil
   end
 end

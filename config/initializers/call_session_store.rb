@@ -1,11 +1,13 @@
 require 'connection_pool'
 
+DEFAULT_CALL_SESSION_REDIS_POOL_SIZE = 12
+DEFAULT_CALL_SESSION_REDIS_TIMEOUT_MS = 1000
+
 connection_parameters = {
-  size: 5,
-  timeout: 1000.to_i / 1000
+  size: ENV['CALL_SESSION_REDIS_POOL_SIZE'].to_i || DEFAULT_CALL_SESSION_REDIS_POOL_SIZE,
+  timeout: (ENV['CALL_SESSION_REDIS_TIMEOUT_MS'].to_i || DEFAULT_CALL_SESSION_REDIS_TIMEOUT_MS) / 1000
 }
 
 CALL_SESSION_STORE_POOL = ConnectionPool.new(connection_parameters) do
-  Redis.new(host: 'localhost',
-            port: 6379)
+  Redis.new(host: ENV['CALL_SESSION_REDIS_HOST'])
 end

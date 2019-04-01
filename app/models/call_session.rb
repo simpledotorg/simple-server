@@ -27,13 +27,11 @@ class CallSession
   end
 
   def kill
-    result = CALL_SESSION_STORE_POOL.with do |connection|
+    CALL_SESSION_STORE_POOL.with do |connection|
       RedisHelper
         .new(connection)
         .del(CallSession.session_key(@call_id))
     end
-
-    result > 0
   end
 
   class << self
