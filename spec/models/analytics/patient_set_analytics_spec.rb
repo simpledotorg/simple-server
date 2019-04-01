@@ -64,10 +64,10 @@ RSpec.describe Analytics::PatientSetAnalytics do
   describe '#newly_enrolled_patients_count_per_month' do
     it 'returns the number of patients newly enrolled per month' do
       expect(analytics.newly_enrolled_patients_count_per_month(4))
-        .to eq(first_dec_prev_year => 0,
-               first_jan => 5,
-               first_feb => 5,
-               first_mar => 5)
+        .to include(first_dec_prev_year => 0,
+                    first_jan => 5,
+                    first_feb => 5,
+                    first_mar => 5)
     end
   end
 
