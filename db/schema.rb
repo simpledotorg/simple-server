@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-
-ActiveRecord::Schema.define(version: 20190322071636) do
+ActiveRecord::Schema.define(version: 20190401101313) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -127,7 +126,6 @@ ActiveRecord::Schema.define(version: 20190322071636) do
   create_table "call_logs", force: :cascade do |t|
     t.string "session_id"
     t.string "result"
-    t.string "action"
     t.integer "duration"
     t.string "callee_phone_number", null: false
     t.datetime "start_time"
