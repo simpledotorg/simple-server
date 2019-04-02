@@ -17,8 +17,7 @@
 <% else %>
   <div class="card">
     <%= inline_svg('icon_new_bp.svg', classname: 'icon-float') %>
-    <h3>How many patients have a BP recorded each month?</h3>
-    <h5><%= @current_facility.name %></h5>
+    <h3>How many patients have a BP recorded at <%= @current_facility.name %>?</h3>
     <%= render 'graph',
                id: 'return-patients',
                statistics: @statistics[:unique_patients_per_month],
@@ -29,8 +28,8 @@
 
   <div class="card">
     <%= inline_svg('icon_enroll.svg', classname: 'icon-float') %>
-    <h3>How many new patients are enrolled?</h3>
-    <h5>Total enrolled: <%= @statistics[:total_patients_count] %></h5>
+    <h3>How many new patients are enrolled at <%= @current_facility.name %>?</h3>
+    <h5>All time: <%= @statistics[:total_patients_count] %> patients</h5>
     <div class="bar-chart">
       <%= render 'graph',
                  id: '',
