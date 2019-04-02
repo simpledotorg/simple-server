@@ -10,6 +10,7 @@ FactoryBot.define do
     device_updated_at { Time.now }
     agreed_to_visit nil
     remind_on nil
+    appointment_type { Appointment.appointment_types[:manual] }
     trait :overdue do
       scheduled_date { 30.days.ago }
       status :scheduled
