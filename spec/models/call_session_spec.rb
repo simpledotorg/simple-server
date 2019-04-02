@@ -71,15 +71,15 @@ describe CallSession, type: :model do
       expected_session = CallSession.new(call_id, user.phone_number, patient.phone_numbers.first.number)
       expected_session.save
 
-      expect(expected_session.kill).to be(true)
+      expect(expected_session.kill).to be(1)
       expect(CallSession.fetch(call_id)).to be_nil
     end
 
-    it 'should return a falsey value if a session does not exist against the call id' do
+    it 'should return 0 if a session does not exist against the call id' do
       call_id = SecureRandom.uuid
       expected_session = CallSession.new(call_id, user.phone_number, patient.phone_numbers.first.number)
 
-      expect(expected_session.kill).to be_falsey
+      expect(expected_session.kill).to eq(0)
     end
   end
 

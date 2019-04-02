@@ -1,10 +1,10 @@
 require 'rails_helper'
 
-RSpec.describe RedisHelper, type: :model do
+RSpec.describe RedisService do
   include ActiveSupport::Testing::TimeHelpers
 
   let!(:key) { SecureRandom.base64 }
-  let!(:expire_key_in_one_day) { 24 * 60 * 60 }
+  let!(:expire_key_in_one_day) { 1.day.seconds.to_i }
   let!(:connection) { Redis.new(host: 'localhost') }
 
   context '#hmset_with_expiry' do
@@ -57,32 +57,6 @@ RSpec.describe RedisHelper, type: :model do
       expect(connection).to receive(:hgetall).and_raise(expected_exception)
 
       result = described_class.new(connection).hgetall(key)
-
-      expect(result).to be_nil
-    end
-  end
-
-  context '#del' do
-    it 'should delete the provided key' do
-      connection.set(key, 'bob')
-
-      result = described_class.new(connection).del(key)
-
-      expect(result).to eq(1)
-    end
-
-    it 'should return 0 if there were no keys deleted' do
-      result = described_class.new(connection).del(key)
-
-      expect(result).to eq(0)
-    end
-
-
-    it 'should return nil if there is a connection error' do
-      expected_exception = Redis::CannotConnectError.new
-      expect(connection).to receive(:del).and_raise(expected_exception)
-
-      result = described_class.new(connection).del(key)
 
       expect(result).to be_nil
     end
