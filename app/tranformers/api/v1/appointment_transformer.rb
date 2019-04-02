@@ -7,7 +7,7 @@ class Api::V1::AppointmentTransformer < Api::Current::AppointmentTransformer
     end
 
     def to_response(model)
-      h =  Api::V1::Transformer.rename_attributes(model.attributes, Api::V1::Transformer.inverted_key_mapping)
+      h =  super(model).with_indifferent_access
       h[:cancel_reason] = new_keys_mapping[h[:cancel_reason]] || h[:cancel_reason]
       h
     end
