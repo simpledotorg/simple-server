@@ -4,11 +4,14 @@
 
 <div class="dashboard">
 
-  <h1><%= @facility_group.name %></h1>
-  <%= link_to 'Graphics For Supervisors', analytics_facility_group_graphics_path(
+  <div class="graphics">
+    <%= link_to 'WhatsApp', analytics_facility_group_graphics_path(
       @facility_group,
       month: analytics_date_format(Time.now.at_beginning_of_month)) %>
-
+  </div>
+    
+  <h1><%= @facility_group.name %></h1>
+  
   <div class="featured">
     <table class="featured-table">
       <tr>
@@ -26,7 +29,7 @@
         </td>
         <td class="featured-td">
           <%= render "shared/analytics/control_rate_panel",
-                     goal: 45,
+                     goal: 30,
                      number_of_months: 4,
                      control_rate: @facility_group_analytics[:control_rate][:control_rate],
                      control_rate_per_month: @facility_group_analytics[:control_rate_per_month].drop(2).to_h %>

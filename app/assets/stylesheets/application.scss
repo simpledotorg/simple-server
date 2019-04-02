@@ -66,6 +66,13 @@ h5 {
     margin: 0;
 }
 
+.user {
+    width: 32px;
+    height: 32px;
+    background: $blue-light;
+    border-radius: 100px;
+}
+
 section {
     margin-top: 1em;
     margin-bottom: 1em;
@@ -461,7 +468,7 @@ Dashboard UI
     border: 1px solid $highlight;
     padding: 8px;
     text-align: center;
-    margin: 8px 0 0 0;
+    margin: 16px 0 0 0;
     min-height: 136px;
     background: #fff;
 }
@@ -470,6 +477,17 @@ Dashboard UI
     display: block;
     font-size: 11px;
     margin: 4px 0;
+}
+
+.graphics a {
+    text-indent: -1000em;
+    width: 42px;
+    height: 42px;
+    background: url(/assets/whatsapp-dashboard.svg);
+    background-size: cover;
+    display: block;
+    float: right;
+    margin-right: -4px;
 }
 
 .snapshot-simple .featured-title {
@@ -520,6 +538,7 @@ td.featured-middle {
     font-size: 11px;
     color: $grey-mid;
     display: block;
+    margin-bottom: 8px;
     font-family: $font-condensed;
 }
 
@@ -755,9 +774,8 @@ nav.breadcrumb {
  }
 
  nav.breadcrumb a {
-     margin: 0 0.5em;
+     margin: 0 0.5em 0 0;
      font-family: $font-condensed;
-
   }
 
 /*****************************
