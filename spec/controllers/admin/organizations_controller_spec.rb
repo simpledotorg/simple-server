@@ -21,14 +21,6 @@ RSpec.describe Admin::OrganizationsController, type: :controller do
     end
   end
 
-  describe 'GET #show' do
-    it 'returns a success response' do
-      organization = Organization.create! valid_attributes
-      get :show, params: { id: organization.to_param }
-      expect(response).to be_success
-    end
-  end
-
   describe 'GET #new' do
     it 'returns a success response' do
       get :new, params: {}
