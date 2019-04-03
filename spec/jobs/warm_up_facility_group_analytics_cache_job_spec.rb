@@ -13,7 +13,9 @@ RSpec.describe WarmUpFacilityGroupAnalyticsCacheJob, type: :job do
     let(:job) { WarmUpFacilityGroupAnalyticsCacheJob.perform_later(facility_group, from_time, to_time) }
 
     it 'queues the job' do
-      assert_enqueued_jobs 1 { job }
+      assert_enqueued_jobs 1 do
+        job
+      end
     end
 
     it 'queues the job on the default queue' do
