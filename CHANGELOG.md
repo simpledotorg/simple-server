@@ -6,6 +6,39 @@
 ### Removed 
 ### Security
 
+# 2019-04-02-1
+## Portal
+### Added
+- Add Patient Set Analytics for facilities and facility groups (Feature toggled off)
+### Changed
+- Improve entity ordering on dashboard
+    - Organizations: order facility groups by name
+    - Facility Groups: order facilities and users by name
+    - Protocols: order protocols and protocol drugs by name
+    - Users: order user by approval status + name
+- Add patient already visited option to overdue list
+- Updated UI for Facility Group and Facility Analytics (Feature toggled off)
+### Fixed
+- Fixed bug where marking patient as dead did not update the patient
+### Deprecated
+### Removed
+### Security
+- Upgrade to Rails 5.1.6.2
+- Upgrade to devise 4.6.1
+
+## Api
+### Added
+- Adding Rake task for creating automatic appointments for defaulters
+- Added help docs and API endpoint
+- API to serve nurse reports in progress tab on the app
+- Phone number masking connect and terminate endpoints (Feature toggled off)
+### Changed
+- Whitelist age, date of birth, gender and status while anonymizing
+### Fixed
+### Deprecated
+### Removed
+### Security
+
 # 2019-03-18-1
 ## Portal
 ### Added

@@ -32,7 +32,9 @@ gem 'discard', '~> 1.0'
 gem 'friendly_id', '~> 5.2.4'
 gem 'kaminari'
 gem 'phonelib'
+gem 'http'
 gem 'sidekiq'
+gem 'connection_pool'
 gem 'whenever', require: false
 
 group :development, :test do
@@ -59,6 +61,8 @@ group :test do
   gem 'capybara'
   gem 'simplecov', require: false
   gem 'launchy'
+  gem 'webmock'
+  gem 'fakeredis', require:  "fakeredis/rspec"
 end
 
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
