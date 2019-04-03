@@ -17,7 +17,7 @@ class CallSession
   end
 
   def save
-    CallSessionStore.CONNECTION_POOL.with do |connection|
+    CallSessionStore::CONNECTION_POOL.with do |connection|
       RedisService
         .new(connection)
         .hmset_with_expiry(CallSession.session_key(@call_id),
@@ -27,7 +27,7 @@ class CallSession
   end
 
   def kill
-    CallSessionStore.CONNECTION_POOL.with do |connection|
+    CallSessionStore::CONNECTION_POOL.with do |connection|
       RedisService
         .new(connection)
         .del(CallSession.session_key(@call_id))
@@ -36,7 +36,7 @@ class CallSession
 
   class << self
     def fetch(call_id)
-      data = CallSessionStore.CONNECTION_POOL.with do |connection|
+      data = CallSessionStore::CONNECTION_POOL.with do |connection|
         RedisService
           .new(connection)
           .hgetall(session_key(call_id))
