@@ -45,7 +45,11 @@ class Api::Current::ExotelCallSessionsController < ApplicationController
   private
 
   def call_status
-    params[:CallStatus].underscore
+    (params[:CallStatus] || params[:DialCallStatus]).underscore
+  end
+
+  def call_type
+    params[:CallType].underscore
   end
 
   def parse_patient_phone_number
@@ -65,8 +69,8 @@ class Api::Current::ExotelCallSessionsController < ApplicationController
   end
 
   def report_call_info
-    NewRelic::Agent.record_metric("#{controller_name}/call_duration", params[:DialCallDuration].to_i)
-    NewRelic::Agent.increment_metric("#{controller_name}/call_type/#{call_status}")
+    NewRelic::Agent.increment_metric("#{controller_name}/call_type/#{call_type}")
+    NewRelic::Agent.increment_metric("#{controller_name}/call_status/#{call_status}")
   end
 
   def schedule_call_log_job(user_id, callee_phone_number)
