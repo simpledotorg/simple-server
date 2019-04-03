@@ -9,12 +9,8 @@ module CallSessionStore
     timeout: Config.get_int('CALL_SESSION_REDIS_TIMEOUT_SEC', DEFAULT_REDIS_TIMEOUT_SEC)
   }
 
-  CONNECTION_POOL = CallSessionStore.connection_pool
-
-  def self.connection_pool
-    ConnectionPool.new(CONNECTION_PARAMETERS) do
-      Redis.new(host: ENV['CALL_SESSION_REDIS_HOST'])
-    end
+  CONNECTION_POOL = ConnectionPool.new(CONNECTION_PARAMETERS) do
+    Redis.new(host: ENV['CALL_SESSION_REDIS_HOST'])
   end
 end
 

@@ -1,5 +1,6 @@
 class ExotelCallDetailsJob < ApplicationJob
   queue_as :default
+  self.queue_adapter = :sidekiq
 
   retry_on ExotelAPIService::HTTPError,
            wait: 5.seconds, attempts: 5
