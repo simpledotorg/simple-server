@@ -27,9 +27,7 @@ RSpec.feature 'Organization management', type: :feature do
     it "allows owners to create organizations" do
       visit admin_organizations_path
 
-      within find("tr", text: "Existing Org") do
-        click_link "Edit"
-      end
+      click_link "Existing Org"
 
       fill_in "Name", with: "Edited Org"
 
