@@ -11,7 +11,7 @@
 
 <p>
   <strong>Registration Facility:</strong>
-  <%= link_to @user.facility.name, [:admin, @user.facility] %>
+  <%= link_to @user.facility.name, [:admin, @user.facility.facility_group, @user.facility] %>
 </p>
 
 <p>
