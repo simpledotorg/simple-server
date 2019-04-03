@@ -1,13 +1,20 @@
 require 'connection_pool'
 
-DEFAULT_CALL_SESSION_REDIS_POOL_SIZE = 12
-DEFAULT_CALL_SESSION_REDIS_TIMEOUT_MS = 1000
+module CallSessionStore
+  DEFAULT_REDIS_POOL_SIZE = 12
+  DEFAULT_REDIS_TIMEOUT_SEC = 1
 
-connection_parameters = {
-  size: ENV['CALL_SESSION_REDIS_POOL_SIZE'].to_i || DEFAULT_CALL_SESSION_REDIS_POOL_SIZE,
-  timeout: (ENV['CALL_SESSION_REDIS_TIMEOUT_MS'].to_i || DEFAULT_CALL_SESSION_REDIS_TIMEOUT_MS) / 1000
-}
+  CONNECTION_PARAMETERS = {
+    size: Config.get_int('CALL_SESSION_REDIS_POOL_SIZE', DEFAULT_REDIS_POOL_SIZE),
+    timeout: Config.get_int('CALL_SESSION_REDIS_TIMEOUT_SEC', DEFAULT_REDIS_TIMEOUT_SEC)
+  }
 
-CALL_SESSION_STORE_POOL = ConnectionPool.new(connection_parameters) do
-  Redis.new(host: ENV['CALL_SESSION_REDIS_HOST'])
+  CONNECTION_POOL = CallSessionStore.connection_pool
+
+  def self.connection_pool
+    ConnectionPool.new(CONNECTION_PARAMETERS) do
+      Redis.new(host: ENV['CALL_SESSION_REDIS_HOST'])
+    end
+  end
 end
+

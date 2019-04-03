@@ -14,4 +14,8 @@ class RedisService
     data = @connection.hgetall(key)
     data.symbolize_keys if data.present?
   end
+
+  def del(key)
+    @connection.del(key)
+  end
 end
