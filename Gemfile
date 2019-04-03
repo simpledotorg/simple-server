@@ -62,7 +62,7 @@ group :test do
   gem 'simplecov', require: false
   gem 'launchy'
   gem 'webmock'
-  gem 'fakeredis', require:  "fakeredis/rspec"
+  gem 'fakeredis', require:  false
 end
 
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
