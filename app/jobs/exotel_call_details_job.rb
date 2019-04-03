@@ -6,8 +6,8 @@ class ExotelCallDetailsJob < ApplicationJob
   DEFAULT_RETRY_SECONDS = 10.minutes.seconds.to_i
 
   retry_on ExotelAPIService::HTTPError,
-           wait: (ENV['EXOTEL_CALL_DETAILS_JOB_RETRY_SECONDS'] || DEFAULT_RETRY_SECONDS).to_i,
-           attempts: (ENV['EXOTEL_CALL_DETAILS_JOB_RETRY_TIMES'] || DEFAULT_RETRY_TIMES).to_i
+           wait: Config.get_int('EXOTEL_CALL_DETAILS_JOB_RETRY_SECONDS', DEFAULT_RETRY_SECONDS),
+           attempts: Config.get_int('EXOTEL_CALL_DETAILS_JOB_RETRY_TIMES', DEFAULT_RETRY_TIMES)
 
   def perform(call_id, user_id, callee_phone_number, call_status)
     call_details = ExotelAPIService.new(ENV['EXOTEL_SID'],
