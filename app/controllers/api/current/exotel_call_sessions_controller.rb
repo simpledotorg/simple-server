@@ -1,4 +1,6 @@
 class Api::Current::ExotelCallSessionsController < ApplicationController
+  SCHEDULE_CALL_LOG_JOB_AFTER = 30.minutes
+
   after_action :report_http_status
 
   def create
@@ -30,7 +32,10 @@ class Api::Current::ExotelCallSessionsController < ApplicationController
 
     if session.present?
       session.kill
+
       report_call_info
+      schedule_call_log_job(session.user.id, session.patient_phone_number.number)
+
       respond_in_plain_text(:ok)
     else
       respond_in_plain_text(:not_found)
@@ -38,6 +43,10 @@ class Api::Current::ExotelCallSessionsController < ApplicationController
   end
 
   private
+
+  def call_status
+    params[:CallStatus].underscore
+  end
 
   def parse_patient_phone_number
     params[:digits].tr('"', '')
@@ -57,6 +66,15 @@ class Api::Current::ExotelCallSessionsController < ApplicationController
 
   def report_call_info
     NewRelic::Agent.record_metric("#{controller_name}/call_duration", params[:DialCallDuration].to_i)
-    NewRelic::Agent.increment_metric("#{controller_name}/call_type/#{params[:CallType]}")
+    NewRelic::Agent.increment_metric("#{controller_name}/call_type/#{call_status}")
+  end
+
+  def schedule_call_log_job(user_id, callee_phone_number)
+    ExotelCallDetailsJob
+      .set(wait: SCHEDULE_CALL_LOG_JOB_AFTER)
+      .perform_later(params[:CallSid],
+                     user_id,
+                     callee_phone_number,
+                     call_status)
   end
 end
