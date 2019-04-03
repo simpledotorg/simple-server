@@ -181,4 +181,9 @@ Rails.application.routes.draw do
       delete 'purge', to: 'purges#purge_patient_data'
     end
   end
+
+  authenticate :admin, lambda(&:owner?) do
+    require 'sidekiq/web'
+    mount Sidekiq::Web => '/sidekiq'
+  end
 end
