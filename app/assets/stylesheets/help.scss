@@ -1,0 +1,102 @@
+ol {
+    list-style: none;
+    counter-reset: custom-counter;
+    padding-left: 0;
+}
+
+ol li {
+    counter-increment: custom-counter;
+    margin: 8px 0 8px 24px;
+}
+
+ol li::before {
+    content: counter(custom-counter) " ";
+    color: #FF3355;
+    font-weight: bold;
+    margin-right: 8px;
+    margin-left: -20px;
+}
+
+.anchors {
+    margin: -8px 0 16px 0;
+}
+
+.anchors a {
+    display: block;
+    padding: 16px 8px;
+    border-top: 1px solid #ddd;
+    text-decoration: none;
+    font-weight: 400;
+    color: #0075EB;
+    font-size: 14px;
+    letter-spacing: 0.1em;
+}
+
+h6 {
+    font-size: 16px;
+    color: #FF3355;
+    margin: 1em 0 0 0;
+    font-weight: 400;
+}
+
+ul, li {
+    margin: 0;
+    padding-left: 0;
+    list-style: none;
+}
+
+ul li {
+    padding: 2px 0 0 30px;
+    margin: 16px 0;
+    position: relative;
+}
+
+ul li:before {
+    content: ".";
+    color: rgba(255,255,255,0);
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border: 1px solid #DADDE0;
+    border-radius: 3px;
+    position: absolute;
+    left: 0;
+    top: 4px;
+}
+
+.note {
+    font-size: 14px;
+    margin-top: 0.2em;
+}
+
+a.whatsapp-button {
+    display: block;
+    margin: 1em 0 0 0;
+    padding: 12px 0;
+    text-align: center;
+    background: #dfffec;
+    color: #007A31;
+    text-decoration: none;
+    border-radius: 3px;
+    font-size: 18px;
+    letter-spacing: 0.10em;
+    box-shadow:
+        0 2px 3px rgba(0,0,0,0.2),
+        0 3px 0 #C4EDD4;
+}
+
+.whatsapp-button svg {
+    vertical-align: middle;
+    height: 30px;
+    margin: -1px 8px 0 0;
+    width: auto;
+}
+
+caption {
+    font-size: 13px;
+}
+
+span.code {
+    color: #000;
+    font-weight: 500;
+}
