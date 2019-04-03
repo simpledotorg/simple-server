@@ -5,7 +5,7 @@
       <%= @current_month.strftime('%B %Y') %>
     </div>
     <h1><%= @facility.name %></h1>
-    <p style="line-height: 1.3; margin: 0.5em 0 0.5em 0;">
+    <p class="facility-graphics-message">
       <%= t('analytics.graphics.facility.report_message') %>
     </p>
 
@@ -58,7 +58,7 @@
                          graph_data: latest_months(@facility_analytics[:non_returning_hypertensive_patients_per_month], 6) %>
 
             </div>
-            <p style="margin-bottom: 0; padding: 16px 70px 0 0; text-align: right; background: url(/assets/icon-arrow.png) 90% 30% no-repeat; background-size: 40px; line-height: 1.2;" class="text-yellow">
+            <p class="text-yellow call-hypertensive-patients-text">
               Try calling these patients to ask<br>them to return for treatment?
             </p>
           </td>
@@ -68,7 +68,7 @@
   </div>
 </div>
 
-<div style="margin: 2em 0;"></div>
+<div class="snapshot-padding"></div>
 
 <div class="snapshot">
   <div class="dashboard">
@@ -78,7 +78,6 @@
     </div>
 
     <h1><%= @facility.name %></h1>
-    <p class="dashboard-description"><b>#5 of 22</b> reporting PHCs in Brooklyn District.</p>
 
     <div class="featured">
       <table class="featured-table">
@@ -111,7 +110,7 @@
     </div>
   </div>
 
-  <div style="margin-top: 8px; padding-top: 6px; color: #999; margin-right: 0; border-top: 1px solid #F0F2F5;">
+  <div class="facility-snapshot-footer">
     <p class="footnote"><strong>Didn't attend</strong> patients are enrolled hypertensives that have not had a BP
       recorded in the past 3 months.</p>
     <p class="footnote">
@@ -126,4 +125,4 @@
   </div>
 </div>
 
-<div style="margin: 2em 0;"></div>
+<div class="snapshot-padding"></div>
