@@ -108,10 +108,17 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
   end
 
   describe '#terminate' do
-    context ':ok' do
-      let!(:call_id) { SecureRandom.uuid }
+    include ActiveJob::TestHelper
 
-      before :each do
+    let!(:call_id) { SecureRandom.uuid }
+
+    before(:each) do
+      allowed_call_result = { Call: { Sid: call_id } }
+      allow_any_instance_of(ExotelAPIService).to receive(:call_details).with(call_id).and_return(allowed_call_result)
+    end
+
+    context ':ok' do
+      before(:each) do
         session = CallSession.new(call_id, user.phone_number, patient.phone_numbers.first.number)
         session.save
       end
@@ -120,7 +127,7 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
         get :terminate, params: { From: user.phone_number,
                                   CallSid: call_id,
                                   DialCallDuration: '10',
-                                  CallType: 'completed' }
+                                  CallStatus: 'completed' }
 
         fetched_session = CallSession.fetch(call_id)
 
@@ -137,10 +144,23 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
                                   digits: patient.phone_numbers.first.number,
                                   CallSid: call_id,
                                   DialCallDuration: '10',
-                                  CallType: 'completed' }
+                                  CallStatus: 'completed' }
       end
 
       it { should use_after_action(:report_http_status) }
+
+      it 'should schedule a job to log the call details' do
+        assert_enqueued_with(job: ExotelCallDetailsJob, args: [call_id,
+                                                               user.id,
+                                                               patient.phone_numbers.first.number,
+                                                               'completed']) do
+          get :terminate, params: { From: user.phone_number,
+                                    digits: patient.phone_numbers.first.number,
+                                    CallSid: call_id,
+                                    DialCallDuration: '10',
+                                    CallStatus: 'completed' }
+        end
+      end
     end
 
     context ':not_found' do
@@ -148,7 +168,7 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
         get :terminate, params: { From: user.phone_number,
                                   CallSid: SecureRandom.uuid,
                                   DialCallDuration: '10',
-                                  CallType: 'completed' }
+                                  CallStatus: 'completed' }
 
         expect(response).to have_http_status(404)
       end
