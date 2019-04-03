@@ -1,5 +1,5 @@
 class Admin::OrganizationsController < AdminController
-  before_action :set_organization, only: [:show, :edit, :update, :destroy]
+  before_action :set_organization, only: [:edit, :update, :destroy]
 
   def index
     authorize Organization
