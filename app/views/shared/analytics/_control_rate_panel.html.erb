@@ -10,9 +10,6 @@
   <%= render "shared/graph",
              options: { id: 'control-rate-graph' },
              column_class: 'featured-graph-column',
-             graph_data: control_rate_per_month
-                 .select { |month, _| month >= number_of_months.months.ago.at_beginning_of_month }
-                 .map { |month, no_of_patients| [month.strftime('%b'), no_of_patients] }
-                 .to_h,
+             graph_data: latest_months(control_rate_per_month, number_of_months),
              max_value: control_rate_per_month.values.max %>
 </div>

@@ -20,9 +20,7 @@
               <%= render "shared/graph",
                          options: { id: 'unique-patients-recorded-per-month-graph' },
                          column_class: '',
-                         graph_data: @facility_analytics[:unique_patients_recorded_per_month]
-                             .map { |month, no_of_patients| [month.strftime('%b'), no_of_patients] }.to_h,
-                         max_value: @facility_analytics[:unique_patients_recorded_per_month].values.max %>
+                         graph_data: latest_months(@facility_analytics[:unique_patients_recorded_per_month], 6) %>
             </div>
           </td>
         </tr>
@@ -39,9 +37,7 @@
               <%= render "shared/graph",
                          options: { id: 'newly-enrolled-patients-per-month-graph' },
                          column_class: 'featured-graph-column-green',
-                         graph_data: @facility_analytics[:newly_enrolled_patients_per_month]
-                             .map { |month, no_of_patients| [month.strftime('%b'), no_of_patients] }.to_h,
-                         max_value: @facility_analytics[:unique_patients_recorded_per_month].values.max %>
+                         graph_data: latest_months(@facility_analytics[:newly_enrolled_patients_per_month], 6) %>
             </div>
           </td>
         </tr>
@@ -59,9 +55,7 @@
               <%= render "shared/graph",
                          options: { id: 'non-returning-hypertensive-patients-month-graph' },
                          column_class: 'featured-graph-column-yellow',
-                         graph_data: @facility_analytics[:non_returning_hypertensive_patients_per_month]
-                             .map { |month, no_of_patients| [month.strftime('%b'), no_of_patients] }.to_h,
-                         max_value: @facility_analytics[:non_returning_hypertensive_patients_per_month].values.max %>
+                         graph_data: latest_months(@facility_analytics[:non_returning_hypertensive_patients_per_month], 6) %>
 
             </div>
             <p style="margin-bottom: 0; padding: 16px 70px 0 0; text-align: right; background: url(/assets/icon-arrow.png) 90% 30% no-repeat; background-size: 40px; line-height: 1.2;" class="text-yellow">
@@ -101,8 +95,9 @@
           </td>
           <td class="featured-td">
             <%= render "shared/analytics/non_returning_hypertensive_patients_panel",
+                       number_of_months: 4,
                        non_returning_hypertensive_patients_count: @facility_analytics[:non_returning_hypertensive_patients],
-                       non_returning_hypertensive_patients_per_month:  @facility_analytics[:non_returning_hypertensive_patients_per_month] %>
+                       non_returning_hypertensive_patients_per_month: @facility_analytics[:non_returning_hypertensive_patients_per_month] %>
           </td>
           <td class="featured-td">
             <%= render "shared/analytics/control_rate_panel",
