@@ -11,7 +11,7 @@ RSpec.describe WarmUpAnalyticsCacheJob, type: :job do
     let(:job) { WarmUpAnalyticsCacheJob.perform_later }
 
     it 'queues the job' do
-      expect { job }.to change(ActiveJob::Base.queue_adapter.enqueued_jobs, :size).by(1)
+      assert_enqueued_jobs 1 { job }
     end
 
     it 'queues the job on the default queue' do
