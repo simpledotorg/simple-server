@@ -1,5 +1,6 @@
 require 'simplecov'
 require 'utils'
+require 'webmock/rspec'
 
 RSpec.configure do |config|
 
