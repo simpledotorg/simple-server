@@ -10,6 +10,7 @@ class CallLog < ApplicationRecord
     completed: 'completed',
     failed: 'failed',
     busy: 'busy',
-    no_answer: 'no_answer'
+    no_answer: 'no_answer',
+    canceled: 'canceled',
   }, _prefix: true
 end
