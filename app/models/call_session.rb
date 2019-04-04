@@ -1,5 +1,5 @@
 class CallSession
-  EXPIRE_CALL_SESSION_IN = 24.hours
+  EXPIRE_CALL_SESSION_IN_SECONDS = 1.day.seconds.to_i
 
   attr_reader :user, :patient_phone_number
 
@@ -17,18 +17,30 @@ class CallSession
   end
 
   def save
-    Rails.cache.write(CallSession.session_key(@call_id),
-                      session_data,
-                      expires_in: EXPIRE_CALL_SESSION_IN)
+    CallSessionStore::CONNECTION_POOL.with do |connection|
+      RedisService
+        .new(connection)
+        .hmset_with_expiry(CallSession.session_key(@call_id),
+                           session_data,
+                           EXPIRE_CALL_SESSION_IN_SECONDS)
+    end
   end
 
   def kill
-    Rails.cache.delete(CallSession.session_key(@call_id))
+    CallSessionStore::CONNECTION_POOL.with do |connection|
+      RedisService
+        .new(connection)
+        .del(CallSession.session_key(@call_id))
+    end
   end
 
   class << self
     def fetch(call_id)
-      data = Rails.cache.fetch(session_key(call_id))
+      data = CallSessionStore::CONNECTION_POOL.with do |connection|
+        RedisService
+          .new(connection)
+          .hgetall(session_key(call_id))
+      end
 
       CallSession.new(call_id,
                       data[:user_phone_number],

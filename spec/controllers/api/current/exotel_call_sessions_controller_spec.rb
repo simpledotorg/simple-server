@@ -15,6 +15,7 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
       it 'should have a content-type set as text/plain' do
         get :create, params: { From: user.phone_number,
                                digits: patient.phone_numbers.first.number,
+                               CallType: 'call-attempt',
                                CallSid: SecureRandom.uuid }
 
         expect(response.headers['Content-Type']).to eq('text/plain; charset=utf-8')
@@ -23,6 +24,7 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
       it 'should create an Exotel session if both the user and patient are registered' do
         get :create, params: { From: user.phone_number,
                                digits: patient.phone_numbers.first.number,
+                               CallType: 'call-attempt',
                                CallSid: SecureRandom.uuid }
 
         expect(response).to have_http_status(200)
@@ -35,6 +37,7 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
       it 'should have a content-type set as text/plain' do
         get :create, params: { From: unknown_phone_number,
                                digits: patient.phone_numbers.first.number,
+                               CallType: 'call-attempt',
                                CallSid: SecureRandom.uuid }
 
         expect(response.headers['Content-Type']).to eq('text/plain; charset=utf-8')
@@ -43,6 +46,7 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
       it 'should not create an Exotel session if user is not registered' do
         get :create, params: { From: unknown_phone_number,
                                digits: patient.phone_numbers.first.number,
+                               CallType: 'call-attempt',
                                CallSid: SecureRandom.uuid }
 
         expect(response).to have_http_status(403)
@@ -51,6 +55,7 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
       it 'should not create an Exotel session if the patient is not registered' do
         get :create, params: { From: user.phone_number,
                                digits: unknown_phone_number,
+                               CallType: 'call-attempt',
                                CallSid: SecureRandom.uuid }
 
         expect(response).to have_http_status(403)
@@ -63,6 +68,7 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
       it 'should allow only numeric strings as patient phone numbers' do
         get :create, params: { From: user.phone_number,
                                digits: invalid_patient_phone_number,
+                               CallType: 'call-attempt',
                                CallSid: SecureRandom.uuid }
 
         expect(response).to have_http_status(400)
@@ -127,6 +133,7 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
         get :terminate, params: { From: user.phone_number,
                                   CallSid: call_id,
                                   DialCallDuration: '10',
+                                  CallType: 'call-attempt',
                                   CallStatus: 'completed' }
 
         fetched_session = CallSession.fetch(call_id)
@@ -136,12 +143,13 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
       end
 
       it 'should report metrics to new relic' do
+        expect(NewRelic::Agent).to receive(:increment_metric).with('exotel_call_sessions/call_type/call_attempt')
+        expect(NewRelic::Agent).to receive(:increment_metric).with('exotel_call_sessions/call_status/completed')
         expect(NewRelic::Agent).to receive(:increment_metric).with('exotel_call_sessions/terminate/200')
-        expect(NewRelic::Agent).to receive(:increment_metric).with('exotel_call_sessions/call_type/completed')
-        expect(NewRelic::Agent).to receive(:record_metric).with('exotel_call_sessions/call_duration', 10)
 
         get :terminate, params: { From: user.phone_number,
                                   digits: patient.phone_numbers.first.number,
+                                  CallType: 'call-attempt',
                                   CallSid: call_id,
                                   DialCallDuration: '10',
                                   CallStatus: 'completed' }
@@ -156,6 +164,7 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
                                                                'completed']) do
           get :terminate, params: { From: user.phone_number,
                                     digits: patient.phone_numbers.first.number,
+                                    CallType: 'call-attempt',
                                     CallSid: call_id,
                                     DialCallDuration: '10',
                                     CallStatus: 'completed' }
@@ -183,6 +192,7 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
 
       get :create, params: { From: user.phone_number,
                              digits: patient.phone_numbers.first.number,
+                             CallType: 'call-attempt',
                              CallSid: SecureRandom.uuid }
     end
   end
