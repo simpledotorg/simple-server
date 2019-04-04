@@ -57,7 +57,6 @@ h4 {
     letter-spacing: 0.1em;
     font-size: 13px;
     margin: 0;
-    border-bottom: 1px solid $grey-light;
     padding-bottom: 4px;
     margin-bottom: 1em;
 }
@@ -81,6 +80,7 @@ section {
 
 table {
     width: 100%;
+    line-height: 1.2;
 }
 
 .text-grey { color: $grey-dark; }
@@ -144,8 +144,12 @@ a.btn {
     letter-spacing: 0.2em;
 }
 
+.btn-outline-primary {
+    border-color: #E0F0FF;
+}
+
 .btn-outline-danger {
-    border-color: rgba(255,0,0,0.15);
+    border-color: #FFD6DD;
 }
 
 .btn-success {

@@ -10,14 +10,10 @@
 <table class="table-responsive table">
   <thead class="thead-light">
     <tr>
-      <th>Name</th>
-      <th>Address</th>
-      <th>Village/colony</th>
-      <th>District</th>
-      <th>State</th>
-      <th>Country</th>
-      <th>Pin</th>
-      <th>Facility&nbsp;type</th>
+      <th>Facility</th>
+      <th>Organization</th>
+      <!--th>Address</th-->
+      <!--th>Type</th-->
       <th colspan="2"></th>
     </tr>
   </thead>
@@ -26,20 +22,24 @@
     <% @facilities.each do |facility| %>
       <% facility_group = facility.facility_group %>
       <tr>
-        <td class="nowrap"><%= link_to facility.name, [:admin, facility] %></td>
-        <td><%= link_to facility_group.name, admin_organization_facility_group_path(facility_group.organization, facility_group) if facility_group.present? %></td>
-        <td><%= facility.street_address %></td>
-        <td><%= facility.village_or_colony %></td>
-        <td><%= facility.district %></td>
-        <td><%= facility.state %></td>
-        <td><%= facility.country %></td>
-        <td><%= facility.pin %></td>
-        <td><%= facility.facility_type %></td>
+        <td>
+            <%= link_to facility.name, [:admin, facility] %>
+        </td>
+        <td><small><%= link_to facility_group.name, admin_organization_facility_group_path(facility_group.organization, facility_group) if facility_group.present? %></small></td>
+        <!--td><small><%= facility.street_address %>, 
+            <%= facility.village_or_colony %>, 
+            <%= facility.district %>, 
+            <%= facility.state %>, 
+            <%= facility.country %>, 
+            <%= facility.pin %>
+            </small>
+        </td-->
+        <!--td><small><%= facility.facility_type %></small></td-->
         <% if policy(facility).edit? %>
-          <td><%= link_to 'Edit', edit_admin_facility_path(facility) %></td>
+          <td><%= link_to 'Edit', edit_admin_facility_path(facility), class: "btn btn-sm btn-outline-primary" %></td>
         <% end %>
         <% if policy(facility).destroy? %>
-          <td><%= link_to 'Delete', [:admin, facility], method: :delete, data: { confirm: "Are you sure you want to delete #{facility.name}?" } %></td>
+          <td><%= link_to 'Delete', [:admin, facility], method: :delete, class: "btn btn-sm btn-outline-danger", data: { confirm: "Are you sure you want to delete #{facility.name}?" } %></td>
         <% end %>
       </tr>
     <% end %>
