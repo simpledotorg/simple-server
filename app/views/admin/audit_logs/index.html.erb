@@ -41,3 +41,5 @@
     <p>No audit logs found for "<%= params[:user_name] %>"</p>
   <% end %>
 <% end %>
+
+<%= paginate @audit_logs %>
