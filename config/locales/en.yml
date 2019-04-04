@@ -87,10 +87,11 @@ en:
   registration: 'New registration'
   reset_password: 'Reset PIN'
   analytics:
-    newly_enrolled: 'Newly Enrolled'
-    return_patients: 'Return Patients'
-    non_returning_hypertensive_patients: "Didn't Return"
-    control_rate: 'BP Control'
+    newly_enrolled: 'new patients enrolled'
+    return_patients: 'enrolled patients returned for a BP'
+    non_returning_hypertensive_patients: "How many expected patients didn't get a BP?"
+    control_rate: 'BP control rate'
+    control_rate_title: 'What was the BP control in a rolling 3-month cohort?'
     control_rate_explanation: 'is calculated as a rolling cohort. %{hypertensive_patients_in_cohort} patients enrolled 6-9 months ago / %{patients_under_control} of those patients had SBP < 140 and DBP < 90 at last measure in past %{number_of_months} = %{control_rate_for_month}% BP control'
     graphics:
       facility:

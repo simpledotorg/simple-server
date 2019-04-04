@@ -1,19 +1,18 @@
 <div class="featured-section">
-  <strong class="featured-title" style="color: #E0B000;">
-    <%= t('analytics.non_returning_hypertensive_patients') %>
-  </strong>
-  <span id='non-returning-hypertensive-patients-count' class="featured-number text-yellow">
-    <%= non_returning_hypertensive_patients_count %>
-  </span>
+    <div class="featured-section-contents">
+      <strong class="featured-title">
+        <%= t('analytics.non_returning_hypertensive_patients') %>
+      </strong>
+      <span id='non-returning-hypertensive-patients-count' class="featured-number text-yellow">
+        <%= non_returning_hypertensive_patients_count %>
+      </span>
 
-  <span class="featured-label">Patients</span>
-
-  <%= render "shared/graph",
-             options: { id: 'non-returning-hypertensive-patients-graph' },
-             column_class: 'featured-graph-column-yellow',
-             graph_data: non_returning_hypertensive_patients_per_month
-                 .select { |month, _| month >= (@to_time - number_of_months.months).at_beginning_of_month }
-                 .map { |month, no_of_patients| [month.strftime('%b'), no_of_patients] }.to_h,
-             max_value: non_returning_hypertensive_patients_per_month.map(&:second).max %>
-
+      <%= render "shared/graph",
+                 options: { id: 'non-returning-hypertensive-patients-graph' },
+                 column_class: 'featured-graph-column-yellow',
+                 graph_data: non_returning_hypertensive_patients_per_month
+                     .select { |month, _| month >= (@to_time - number_of_months.months).at_beginning_of_month }
+                     .map { |month, no_of_patients| [month.strftime('%b'), no_of_patients] }.to_h,
+                 max_value: non_returning_hypertensive_patients_per_month.map(&:second).max %>
+    </div>
 </div>

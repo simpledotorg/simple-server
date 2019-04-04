@@ -8,30 +8,21 @@
     <h1><%= @facility_group.name %></h1>
 
     <div class="featured">
-      <table class="featured-table">
-        <tr>
-          <td class="featured-td">
-            <%= render "shared/analytics/patients_count_panel",
+          <%= render "shared/analytics/patients_count_panel",
                        newly_enrolled_patients_count: @facility_group_analytics[:newly_enrolled_patients],
                        returning_patients_count: @facility_group_analytics[:returning_patients] %>
 
-          </td>
-          <td class="featured-td featured-middle">
-            <%= render "shared/analytics/non_returning_hypertensive_patients_panel",
-                       number_of_months: 4,
+          <%= render "shared/analytics/non_returning_hypertensive_patients_panel",
+                       number_of_months: 3,
                        non_returning_hypertensive_patients_count: @facility_group_analytics[:newly_enrolled_patients],
                        non_returning_hypertensive_patients_per_month: @facility_group_analytics[:non_returning_hypertensive_patients_per_month] %>
-          </td>
-          <td class="featured-td">
-            <%= render "shared/analytics/control_rate_panel",
+        
+          <%= render "shared/analytics/control_rate_panel",
                        goal: 45,
-                       number_of_months: 4,
+                       number_of_months: 3,
                        control_rate: @facility_group_analytics[:control_rate][:control_rate],
                        control_rate_per_month: @facility_group_analytics[:control_rate_per_month] %>
-          </td>
-        </tr>
-      </table>
-
+          
     </div>
   </div>
 
