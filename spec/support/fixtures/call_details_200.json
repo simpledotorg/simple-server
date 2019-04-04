@@ -1,0 +1,23 @@
+{
+  "Call": {
+    "Sid": "463e258802a42da0175ad4f0cb8507b9",
+    "ParentCallSid": "",
+    "DateCreated": "2019-03-21 18:15:05",
+    "DateUpdated": "2019-03-21 18:15:57",
+    "AccountSid": "sid",
+    "To": "01930483621",
+    "From": "09663127355",
+    "PhoneNumberSid": "01930483621",
+    "Status": "completed",
+    "StartTime": "2019-03-21 18:15:05",
+    "EndTime": "2019-03-21 18:15:22",
+    "Duration": 17,
+    "Price": 0,
+    "Direction": "inbound",
+    "AnsweredBy": "human",
+    "ForwardedFrom": "",
+    "CallerName": "",
+    "Uri": "/v1/Accounts/sid/Calls/463e258802a42da0175ad4f0cb8507b9",
+    "RecordingUrl": ""
+  }
+}

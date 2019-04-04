@@ -75,7 +75,7 @@ RSpec.describe Api::Current::Analytics::UserAnalyticsController, type: :controll
         it 'has the total patient counts for the facility' do
           get :show, format: :html
 
-          expect(response.body).to match(/Total enrolled/)
+          expect(response.body).to match(/All time/)
           expect(response.body).to match(Regexp.new("#{patients.count}"))
         end
       end

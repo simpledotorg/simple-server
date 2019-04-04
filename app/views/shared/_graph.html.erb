@@ -1,6 +1,7 @@
 <div class="featured-graph" style="text-align: center;">
   <table>
     <tr>
+      <% max_value = graph_data.values.max %>
       <% graph_data.each do |key, value| %>
         <td>
           <%= content_tag 'div', value,
