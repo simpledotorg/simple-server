@@ -1,0 +1,6 @@
+{
+  "RestException": {
+    "Status": 404,
+    "Message": "No matching results"
+  }
+}

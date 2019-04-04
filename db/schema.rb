@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190322071636) do
+ActiveRecord::Schema.define(version: 20190401101313) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -121,6 +121,19 @@ ActiveRecord::Schema.define(version: 20190322071636) do
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_blood_pressures_on_deleted_at"
     t.index ["user_id"], name: "index_blood_pressures_on_user_id"
+  end
+
+  create_table "call_logs", force: :cascade do |t|
+    t.string "session_id"
+    t.string "result"
+    t.integer "duration"
+    t.string "callee_phone_number", null: false
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["user_id"], name: "index_call_logs_on_user_id"
   end
 
   create_table "communications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
