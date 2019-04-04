@@ -4,7 +4,7 @@
         <%= t('analytics.control_rate_title') %>
       </strong>
       <span id='control-rate' class="featured-number">
-        <%= control_rate %>%
+        <%= control_rate || 0 %>%
       </span>
 
       <%= render "shared/graph",
