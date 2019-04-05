@@ -10,7 +10,6 @@
       <%= render "shared/graph",
                  options: { id: 'control-rate-graph' },
                  column_class: 'featured-graph-column',
-                 graph_data: latest_months(control_rate_per_month, number_of_months),
-                 max_value: control_rate_per_month.values.max %>
+                 graph_data: latest_months(control_rate_per_month, number_of_months) %>
     </div>
 </div>
