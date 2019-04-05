@@ -20,9 +20,9 @@ module DashboardHelper
     "Q#{quarter} #{year}"
   end
 
-  def link_for_range(range, label:)
+  def link_for_range(range, from_time, to_time, label)
     is_active = from_time.to_date == range[:from_time] && to_time.to_date == range[:to_time]
-    link_to label || label_for_quarter(range),
+    link_to label,
             url_for(range),
             class: is_active ? 'sub-nav-link  sub-nav-link-active' : 'sub-nav-link'
   end
