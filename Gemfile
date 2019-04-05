@@ -36,6 +36,8 @@ gem 'http'
 gem 'sidekiq'
 gem 'connection_pool'
 gem 'whenever', require: false
+gem 'redis'
+gem 'redis-rails'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
@@ -62,7 +64,7 @@ group :test do
   gem 'simplecov', require: false
   gem 'launchy'
   gem 'webmock'
-  gem 'fakeredis', require:  "fakeredis/rspec"
+  gem 'fakeredis', require:  false
 end
 
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]

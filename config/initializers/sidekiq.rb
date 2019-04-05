@@ -1,13 +1,18 @@
-DEFAULT_SIDEKIQ_REDIS_POOL_SIZE = 12
+module SidekiqConfig
+  DEFAULT_REDIS_POOL_SIZE = 12
 
-Sidekiq.configure_client do |config|
-  config.redis = ConnectionPool.new(size: ENV['SIDEKIQ_REDIS_POOL_SIZE'].to_i || DEFAULT_SIDEKIQ_REDIS_POOL_SIZE) do
-    Redis.new(host: ENV['SIDEKIQ_REDIS_CLIENT_HOST'])
+  def self.connection_pool
+    ConnectionPool.new(size: Config.get_int('SIDEKIQ_REDIS_POOL_SIZE',
+                                            DEFAULT_REDIS_POOL_SIZE)) do
+      Redis.new(host: ENV['SIDEKIQ_REDIS_HOST'])
+    end
   end
 end
 
+Sidekiq.configure_client do |config|
+  config.redis = SidekiqConfig.connection_pool
+end
+
 Sidekiq.configure_server do |config|
-  config.redis = ConnectionPool.new(size: ENV['SIDEKIQ_REDIS_POOL_SIZE'].to_i || DEFAULT_SIDEKIQ_REDIS_POOL_SIZE) do
-    Redis.new(host: ENV['SIDEKIQ_REDIS_SERVER_HOST'])
-  end
+  config.redis = SidekiqConfig.connection_pool
 end

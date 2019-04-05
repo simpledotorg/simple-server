@@ -66,6 +66,13 @@ h5 {
     margin: 0;
 }
 
+.user {
+    width: 32px;
+    height: 32px;
+    background: $blue-light;
+    border-radius: 100px;
+}
+
 section {
     margin-top: 1em;
     margin-bottom: 1em;
@@ -456,20 +463,43 @@ Dashboard UI
     line-height: 1.3;
 }
 
+.featured {
+    clear: both;
+    position: relative;
+    display: table;
+    width: 100%;
+    border-spacing: 4px;
+    margin: 16px -4px;
+}
+
 .featured-section {
+    display: table-cell;
+    width: 33%;
     border-radius: 3px;
     border: 1px solid $highlight;
-    padding: 5px;
-    text-align: center;
-    margin: 8px 0 0 0;
-    min-height: 136px;
+    padding: 8px;
     background: #fff;
+    position: relative;
 }
 
 .featured-title {
     display: block;
-    font-size: 11px;
-    margin: 4px 0;
+    font-size: 14px;
+    margin: 0 0 4px 0;
+    font-weight: normal;
+    font-family: $font-condensed;
+    line-height: 1.3;
+}
+
+.graphics a {
+    text-indent: -1000em;
+    width: 42px;
+    height: 42px;
+    background: url(/assets/whatsapp-dashboard.svg);
+    background-size: cover;
+    display: block;
+    float: right;
+    margin: -10px -4px 0 0;
 }
 
 .snapshot-simple .featured-title {
@@ -477,14 +507,24 @@ Dashboard UI
     font-size: 14px;
 }
 
+.featured-graph {
+    height: 60px;
+}
+
 .featured-graph table {
     font-size: 10px;
     margin-top: 0;
+    position: absolute;
+    left: 4px;
+    width: 94%;
+    bottom: 8px;
 }
 
 .featured-number {
     font-size: 22px;
     line-height: 1;
+    margin: 8px 0 16px 0;
+    display: block;
 }
 
 .snapshot-simple .featured-number {
@@ -520,6 +560,7 @@ td.featured-middle {
     font-size: 11px;
     color: $grey-mid;
     display: block;
+    margin-bottom: 8px;
     font-family: $font-condensed;
 }
 
@@ -532,9 +573,11 @@ td.featured-middle {
     background: -webkit-linear-gradient(top, rgba(0,117,235,0.2) 0%,rgba(0,117,235,0) 100%);
     background: linear-gradient(to bottom, rgba(0,117,235,0.2) 0%,rgba(0,117,235,0) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#E0F0FF55', endColorstr='#0075EB55',GradientType=0 );
-    border-top: 1px solid $grey-dark;
     font-family: $font-condensed;
     color: $grey-dark;
+    border-radius: 3px 3px 0 0;
+    padding-top: 4px;
+    min-height: 24px;
 }
 
 .snapshot-simple .featured-graph-column {
@@ -546,7 +589,6 @@ td.featured-middle {
     background: -webkit-linear-gradient(top, rgba(255,207,0,0.2) 0%,rgba(255,207,0,0) 100%);
     background: linear-gradient(to bottom, rgba(255,207,0,0.2) 0%,rgba(255,207,0,0) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FFCF0055', endColorstr='#FFCF0055',GradientType=0 );
-    border-top: 1px solid $yellow;
     color: $yellow-dark;
 }
 
@@ -555,7 +597,6 @@ td.featured-middle {
     background: -webkit-linear-gradient(top, rgba(0,184,73,0.2) 0%,rgba(0,184,73,0) 100%);
     background: linear-gradient(to bottom, rgba(0,184,73,0.2) 0%,rgba(0,184,73,0) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00B849', endColorstr='#00B849',GradientType=0 );
-    border-top: 1px solid $green;
     color: $green-dark;
 }
 
@@ -568,6 +609,8 @@ td.featured-middle {
 
 .table-compact {
     margin-bottom: 32px;
+    clear: both;
+    padding-top: 16px;
 }
 
 .table-compact h4 {
@@ -755,9 +798,8 @@ nav.breadcrumb {
  }
 
  nav.breadcrumb a {
-     margin: 0 0.5em;
+     margin: 0 0.5em 0 0;
      font-family: $font-condensed;
-
   }
 
 /*****************************
@@ -868,3 +910,36 @@ qa development styles
   font-weight: bold;
 }
 
+.snapshot-padding {
+  margin-bottom: 26px;
+}
+
+.snapshot-footer {
+  margin-top: -26px;
+  padding-top: 6px;
+  color: #999;
+  margin-right: 0;
+  border-top: 1px solid #F0F2F5;
+}
+
+.facility-graphics-message {
+  line-height: 1.3;
+  margin: 0.5em 0 0.5em 0;
+}
+
+.call-hypertensive-patients-text {
+  margin-bottom: 0;
+  padding: 16px 70px 0 0;
+  text-align: right;
+  background: url(/assets/icon-arrow.png) 90% 30% no-repeat;
+  background-size: 40px;
+  line-height: 1.2;
+}
+
+.facility-snapshot-footer {
+  margin-top: 8px;
+  padding-top: 6px;
+  color: #999;
+  margin-right: 0;
+  border-top: 1px solid #F0F2F5;
+}
