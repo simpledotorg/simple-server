@@ -1,5 +1,6 @@
 class WarmUpFacilityGroupAnalyticsCacheJob < ApplicationJob
   queue_as :default
+  self.queue_adapter = :sidekiq
 
   def perform(facility_group, from_time_string, to_time_string)
     from_time = from_time_string.to_time

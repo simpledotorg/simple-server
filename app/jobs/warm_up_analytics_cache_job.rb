@@ -1,5 +1,6 @@
 class WarmUpAnalyticsCacheJob < ApplicationJob
   queue_as :default
+  self.queue_adapter = :sidekiq
 
   def perform
     to_time = Time.now

@@ -1,5 +1,6 @@
 class WarmUpQuarterlyAnalyticsCacheJob < ApplicationJob
   queue_as :default
+  self.queue_adapter = :sidekiq
 
   def perform
     (1..4).each do |n|
