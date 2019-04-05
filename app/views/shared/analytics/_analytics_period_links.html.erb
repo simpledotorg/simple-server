@@ -1,18 +1,10 @@
 <div class="sub-nav">
   <%= range = { from_time: analytics_date_format(90.days.ago), to_time: analytics_date_format(Time.now) }
-      is_active = from_time.to_date == range[:from_time].to_date && to_time.to_date == range[:to_time].to_date
-      link_to 'Last 90 days',
-              url_for(range),
-              class: is_active ? 'sub-nav-link  sub-nav-link-active' : 'sub-nav-link' %>
+      link_for_range(range, label: 'Last 90 days') %>
 
   <% (1..4).each do |n| %>
-    <%= range = range_for_quarter(-1 * n )
-        is_active = from_time.to_date == range[:from_time] && to_time.to_date == range[:to_time]
-        link_to label_for_quarter(range),
-                 url_for(range),
-                 class: is_active ? 'sub-nav-link  sub-nav-link-active' : 'sub-nav-link' %>
+    <%= link_for_range(range_for_quarter(-1 * n )) %>
   <% end %>
-
 
   <a href="#" class="sub-nav-link">&#8226;&#8226;&#8226;</a>
 </div>
