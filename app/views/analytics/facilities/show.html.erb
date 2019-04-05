@@ -1,39 +1,40 @@
+<%= render 'shared/analytics/analytics_period_links',
+           from_time: @from_time,
+           to_time: @to_time %>
+
 <div class="dashboard">
   <nav class="breadcrumb">
     <%= link_to @facility_group.name, analytics_facility_group_path(
         @facility_group, from_time: @from_time, to_time: @to_time) %>
   </nav>
+    
+  <div class="graphics">
+    <%= link_to "Graphics For Nurses", analytics_facility_graphics_path(
+      @facility,
+      month: analytics_date_format(Time.now.at_beginning_of_month)) %>
+  </div>
+    
   <h1><%= @facility.name %></h1>
   <%= link_to "Graphics For Nurses", analytics_facility_graphics_path(
       @facility,
       month: analytics_date_format(Time.now.at_beginning_of_month)) %>
 
   <div class="featured">
-    <table class="featured-table">
-      <tr>
-        <td class="featured-td">
+
           <%= render "shared/analytics/patients_count_panel",
                      newly_enrolled_patients_count: @facility_analytics[:newly_enrolled_patients],
                      returning_patients_count: @facility_analytics[:returning_patients] %>
-        </td>
-
-        <td class="featured-td featured-middle">
+          
           <%= render "shared/analytics/non_returning_hypertensive_patients_panel",
-                     number_of_months: 4,
+                     number_of_months: 3,
                      non_returning_hypertensive_patients_count: @facility_analytics[:non_returning_hypertensive_patients],
-                     non_returning_hypertensive_patients_per_month: @facility_analytics[:non_returning_hypertensive_patients_per_month].drop(2).to_h %>
+                     non_returning_hypertensive_patients_per_month: @facility_analytics[:non_returning_hypertensive_patients_per_month] %>
 
-        </td>
-
-        <td class="featured-td">
           <%= render "shared/analytics/control_rate_panel",
-                     goal: 45,
-                     number_of_months: 4,
+                     goal: 30,
+                     number_of_months: 3,
                      control_rate: @facility_analytics[:control_rate][:control_rate],
-                     control_rate_per_month: @facility_analytics[:control_rate_per_month].drop(2).to_h %>
-        </td>
-      </tr>
-    </table>
+                     control_rate_per_month: @facility_analytics[:control_rate_per_month] %>
   </div>
 </div>
 
@@ -43,7 +44,7 @@
       <table>
         <thead>
         <tr>
-          <th><h4>Active users</h4></th>
+          <th colspan="2"><h4>Active users</h4></th>
           <th class="row-label">Newly<br>enrolled</th>
           <th class="row-label">Calls<br>made</th>
           <th class="row-label">Return and<br>enrolled patients</th>
@@ -58,6 +59,7 @@
         <tbody>
         <% @user_analytics.each do |user, analytics| %>
           <tr>
+            <td><div class="user"></div></td>
             <td class="row-title"><%= link_to user.full_name, [:admin, user] %></td>
             <td class="row-default text-green"><%= analytics.registered_patients_count %></td>
             <td class="row-calls text-yellow"><%= analytics.calls_made_by_user_at_facility %></td>
@@ -72,6 +74,7 @@
         </tbody>
         <tfoot>
         <tr class="row-total">
+          <td></td>
           <td class="row-title row-total">Totals</td>
           <td class="row-enrolled text-green row-total"><%= @user_analytics.values.map(&:registered_patients_count).sum %></td>
           <td class="row-calls text-yellow"><%= @user_analytics.values.map(&:calls_made_by_user_at_facility).sum %></td>

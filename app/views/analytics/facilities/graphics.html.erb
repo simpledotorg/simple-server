@@ -80,34 +80,23 @@
     <h1><%= @facility.name %></h1>
 
     <div class="featured">
-      <table class="featured-table">
-        <tr>
-          <td class="featured-middle featured-td">
             <%= render "shared/analytics/patients_count_panel",
                        newly_enrolled_patients_count: @facility_analytics[:newly_enrolled_patients],
                        returning_patients_count: @facility_analytics[:returning_patients] %>
-
-            <div class="featured-footer">
-              <strong>All time:</strong>
-              <span><%= @facility_analytics[:all_time_patients_count] %> enrolled</span>
-            </div>
-          </td>
-          <td class="featured-td">
+      
             <%= render "shared/analytics/non_returning_hypertensive_patients_panel",
                        number_of_months: 4,
                        non_returning_hypertensive_patients_count: @facility_analytics[:non_returning_hypertensive_patients],
-                       non_returning_hypertensive_patients_per_month: @facility_analytics[:non_returning_hypertensive_patients_per_month] %>
-          </td>
-          <td class="featured-td">
+                       non_returning_hypertensive_patients_per_month:  @facility_analytics[:non_returning_hypertensive_patients_per_month] %>
+
             <%= render "shared/analytics/control_rate_panel",
                        goal: 45,
                        number_of_months: 4,
                        control_rate: @facility_analytics[:control_rate][:control_rate],
                        control_rate_per_month: @facility_analytics[:control_rate_per_month] %>
-          </td>
-        </tr>
-      </table>
     </div>
+    <p class="dashboard-description">All time enrolled: <span><%= @facility_analytics[:unique_patients_enrolled] %></span> patients</p>
+
   </div>
 
   <div class="facility-snapshot-footer">

@@ -11,14 +11,14 @@ class ControlRateQuery
     control_rate_in_period(from_time, to_time)
   end
 
-  def rate_per_month(number_of_months)
-    control_rate_per_month = {}
+  def rate_per_month(number_of_months, before_time: Date.today)
+    control_rate_per_month = []
     number_of_months.times do |n|
-      from_time = (number_of_months - n).months.ago.at_beginning_of_month
-      to_time = (number_of_months - n).months.ago.at_end_of_month
-      control_rate_per_month[from_time] = for_period(from_time: from_time, to_time: to_time)[:control_rate] || 0
+      to_time = (before_time - n.months).at_end_of_month
+      from_time = to_time.at_beginning_of_month
+      control_rate_per_month << [from_time.to_date, for_period(from_time: from_time, to_time: to_time)[:control_rate] || 0]
     end
-    control_rate_per_month
+    control_rate_per_month.sort.to_h
   end
 
   private
