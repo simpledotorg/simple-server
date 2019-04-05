@@ -53,7 +53,7 @@ class Analytics::PatientSetAnalytics
   end
 
   def control_rate_per_month(months_previous)
-    ControlRateQuery.new(patients: patients).rate_per_month(months_previous)
+    ControlRateQuery.new(patients: patients).rate_per_month(months_previous, before_time: to_time)
   end
 
   def blood_pressures_recorded_per_week(weeks_previous)

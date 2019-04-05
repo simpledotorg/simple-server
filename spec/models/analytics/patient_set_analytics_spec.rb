@@ -125,4 +125,19 @@ RSpec.describe Analytics::PatientSetAnalytics do
       expect(analytics.blood_pressures_recorded_per_week(12)).to eq(expected_counts)
     end
   end
+
+  describe '#control_rate_per_month' do
+    it 'returns the number of blood pressures recorded per week for a group of patients' do
+      expected_counts = {
+        Date.new(2018, 10, 1) => 0,
+        Date.new(2018, 11, 1) => 0,
+        Date.new(2018, 12, 1) => 0,
+        Date.new(2019, 1, 1) => 20,
+        Date.new(2019, 2, 1) => 0,
+        Date.new(2019, 3, 1) => 0,
+      }
+
+      expect(analytics.control_rate_per_month(6)).to eq(expected_counts)
+    end
+  end
 end
