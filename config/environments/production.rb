@@ -57,7 +57,7 @@ Rails.application.configure do
   # Use a different cache store in production.
   config.cache_store = :redis_store,
     { host: ENV['RAILS_CACHE_REDIS_URL'],
-      password: ENV['RAILS_CACHE_REDIS_PASSWORd'] }
+      password: ENV['RAILS_CACHE_REDIS_PASSWORD'] }
 
   # Use a real queuing backend for Active Job (and separate queues per environment)
   config.active_job.queue_adapter      = :sidekiq

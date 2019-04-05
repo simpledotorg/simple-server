@@ -13,8 +13,7 @@ Rails.application.configure do
   config.consider_all_requests_local = true
 
   config.cache_store = :redis_store,
-    { host: ENV['RAILS_CACHE_REDIS_URL'],
-      password: ENV['RAILS_CACHE_REDIS_PASSWORd'] }
+    { host: ENV['RAILS_CACHE_REDIS_URL'] }
 
   # Enable/disable caching. By default caching is disabled.
   if Rails.root.join('tmp/caching-dev.txt').exist?

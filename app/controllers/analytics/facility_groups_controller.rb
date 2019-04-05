@@ -29,7 +29,7 @@ class Analytics::FacilityGroupsController < AnalyticsController
   end
 
   def set_facilities
-    @facilities = policy_scope(@facility_group.facilities)
+    @facilities = policy_scope(@facility_group.facilities).order(:name)
   end
 
   def facility_group_analytics(from_time, to_time)
@@ -37,8 +37,8 @@ class Analytics::FacilityGroupsController < AnalyticsController
   end
 
   def facility_analytics(from_time, to_time)
-    @facilities.map do |facility|
-      [facility, facility.patient_set_analytics(from_time, to_time)]
-    end.to_h
+    @facilities
+      .map { |facility| [facility, facility.patient_set_analytics(from_time, to_time)] }
+      .to_h
   end
 end
