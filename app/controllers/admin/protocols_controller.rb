@@ -7,7 +7,7 @@ class Admin::ProtocolsController < AdminController
   end
 
   def show
-    @protocol_drugs = @protocol.protocol_drugs.order(:name)
+    @protocol_drugs = @protocol.protocol_drugs
   end
 
   def new
