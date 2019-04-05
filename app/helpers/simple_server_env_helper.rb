@@ -4,7 +4,11 @@ module SimpleServerEnvHelper
   def style_class_for_environment
     env = ENV.fetch("SIMPLE_SERVER_ENV")
 
-    CUSTOMIZED_ENVS.include?(env) ? "navbar-#{env}" : "navbar-light bg-light"
+    styles = %w[navbar navbar-expand-md fixed-top]
+    styles += bootstrap_navbar_classes_for_environment(env)
+    styles << "navbar-#{env}" if CUSTOMIZED_ENVS.include?(env)
+
+    styles.join(' ')
   end
 
   def logo_for_environment
@@ -30,5 +34,19 @@ module SimpleServerEnvHelper
 
     prefix = CUSTOMIZED_ENVS.include?(env) ? "[#{env.humanize}] " : ""
     prefix + title
+  end
+
+  private
+
+  def bootstrap_navbar_classes_for_environment(env)
+    navbar_classes = {
+      'development' => ['navbar-light', 'bg-light'],
+      'staging' => ['navbar-light', 'bg-light'],
+      'qa' => ['navbar-light', 'bg-light'],
+      'sandbox' => ['navbar-dark'],
+      'production' => ['navbar-dark'],
+    }
+
+    navbar_classes[env] || ['navbar-light', 'bg-light']
   end
 end
