@@ -25,5 +25,7 @@ Config.ensure_required_keys_are_present(required_keys: [
   'HELP_SCREEN_WHATSAPP_SUPPORT_GROUP_URL',
   'SIDEKIQ_REDIS_HOST',
   'EXOTEL_SID',
-  'EXOTEL_TOKEN'
+  'EXOTEL_TOKEN',
+  'RAILS_CACHE_REDIS_URL',
+  'RAILS_CACHE_REDIS_PASSWORD'
 ])

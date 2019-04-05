@@ -30,10 +30,11 @@ class Analytics::FacilitiesController < AnalyticsController
   end
 
   def users_for_facility
-    User.joins(:blood_pressures).where('blood_pressures.facility_id = ?', @facility.id).distinct
+    User.joins(:blood_pressures).where('blood_pressures.facility_id = ?', @facility.id).order(:full_name).distinct
   end
 
   def user_analytics
     users_for_facility.map { |user| [user, Analytics::UserAnalytics.new(user, @facility)] }.to_h
   end
 end
+

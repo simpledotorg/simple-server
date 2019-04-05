@@ -27,6 +27,9 @@ class FacilityGroupPolicy < ApplicationPolicy
     user.owner? || admin_can_access?(:organization_owner)
   end
 
+  def graphics?
+    show?
+  end
   private
 
   def admin_can_access?(role)
