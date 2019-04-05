@@ -11,8 +11,6 @@
   <%= render "shared/graph",
              options: { id: 'non-returning-hypertensive-patients-graph' },
              column_class: 'featured-graph-column-yellow',
-             graph_data: non_returning_hypertensive_patients_per_month
-                 .map { |month, no_of_patients| [month.strftime('%b'), no_of_patients] }.to_h,
-             max_value: non_returning_hypertensive_patients_per_month.map(&:second).max %>
+             graph_data: latest_months(non_returning_hypertensive_patients_per_month, number_of_months) %>
 
 </div>

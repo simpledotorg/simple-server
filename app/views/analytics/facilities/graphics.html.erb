@@ -1,0 +1,128 @@
+<div class="snapshot snapshot-simple">
+  <div class="dashboard">
+    <div class="snapshot-header">
+      <span><%= t('analytics.graphics.facility.report_title', organization_name: @organization.name) %></span>
+      <%= @current_month.strftime('%B %Y') %>
+    </div>
+    <h1><%= @facility.name %></h1>
+    <p class="facility-graphics-message">
+      <%= t('analytics.graphics.facility.report_message') %>
+    </p>
+
+    <div class="featured">
+      <table class="featured-table">
+        <tr>
+          <td class="featured-td">
+            <div class="featured-section" style="background-image: url(/assets/icon-bp.png);">
+              <strong class="featured-title"><%= t('analytics.graphics.facility.blood_pressures_recorded_in_month') %></strong>
+              <span class="featured-number"><%= @facility_analytics[:unique_patients_recorded_per_month][@current_month] %></span>
+
+              <%= render "shared/graph",
+                         options: { id: 'unique-patients-recorded-per-month-graph' },
+                         column_class: '',
+                         graph_data: latest_months(@facility_analytics[:unique_patients_recorded_per_month], 6) %>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="featured-td">
+            <div class="featured-section">
+              <strong class="featured-title"><%= t('analytics.graphics.facility.patients_recorded_this_month') %></strong>
+              <span class="featured-number text-green">
+                <%= t('analytics.graphics.facility.patients_recorded_this_month_count_message',
+                      count: @facility_analytics[:newly_enrolled_patients].size) %>
+              </span>
+
+              <%= render "shared/graph",
+                         options: { id: 'newly-enrolled-patients-per-month-graph' },
+                         column_class: 'featured-graph-column-green',
+                         graph_data: latest_months(@facility_analytics[:newly_enrolled_patients_per_month], 6) %>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="featured-td">
+            <div class="featured-section" style="background-image: url(/assets/icon-sad.png);">
+              <strong class="featured-title"><%= t('analytics.graphics.facility.overdue_patients_this_month') %></strong>
+              <span class="featured-number text-yellow">
+                <%= t('analytics.graphics.facility.overdue_patients_this_month_count_message',
+                      count: @facility_analytics[:non_returning_hypertensive_patients].size) %>
+              </span>
+
+
+              <%= render "shared/graph",
+                         options: { id: 'non-returning-hypertensive-patients-month-graph' },
+                         column_class: 'featured-graph-column-yellow',
+                         graph_data: latest_months(@facility_analytics[:non_returning_hypertensive_patients_per_month], 6) %>
+
+            </div>
+            <p class="text-yellow call-hypertensive-patients-text">
+              Try calling these patients to ask<br>them to return for treatment?
+            </p>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="snapshot-padding"></div>
+
+<div class="snapshot">
+  <div class="dashboard">
+    <div class="snapshot-header">
+      <span><%= t('analytics.graphics.facility.report_title', organization_name: @organization.name) %></span>
+      <%= @current_month.strftime('%B %Y') %>
+    </div>
+
+    <h1><%= @facility.name %></h1>
+
+    <div class="featured">
+      <table class="featured-table">
+        <tr>
+          <td class="featured-middle featured-td">
+            <%= render "shared/analytics/patients_count_panel",
+                       newly_enrolled_patients_count: @facility_analytics[:newly_enrolled_patients],
+                       returning_patients_count: @facility_analytics[:returning_patients] %>
+
+            <div class="featured-footer">
+              <strong>All time:</strong>
+              <span><%= @facility_analytics[:all_time_patients_count] %> enrolled</span>
+            </div>
+          </td>
+          <td class="featured-td">
+            <%= render "shared/analytics/non_returning_hypertensive_patients_panel",
+                       number_of_months: 4,
+                       non_returning_hypertensive_patients_count: @facility_analytics[:non_returning_hypertensive_patients],
+                       non_returning_hypertensive_patients_per_month: @facility_analytics[:non_returning_hypertensive_patients_per_month] %>
+          </td>
+          <td class="featured-td">
+            <%= render "shared/analytics/control_rate_panel",
+                       goal: 45,
+                       number_of_months: 4,
+                       control_rate: @facility_analytics[:control_rate][:control_rate],
+                       control_rate_per_month: @facility_analytics[:control_rate_per_month] %>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="facility-snapshot-footer">
+    <p class="footnote"><strong>Didn't attend</strong> patients are enrolled hypertensives that have not had a BP
+      recorded in the past 3 months.</p>
+    <p class="footnote">
+      <strong><%= t('analytics.control_rate') %></strong>
+      <%= t('analytics.control_rate_explanation',
+            hypertensive_patients_in_cohort: @facility_analytics[:control_rate][:hypertensive_patients_in_cohort],
+            patients_under_control: @facility_analytics[:control_rate][:patients_under_control_in_period],
+            control_rate_for_month: @facility_analytics[:control_rate][:control_rate],
+            number_of_months: pluralize(1, 'month')) %>
+    </p>
+    <p class="footnote"><strong>District average</strong> is calculated for all PHCs with > 100 enrolled patients.</p>
+  </div>
+</div>
+
+<div class="snapshot-padding"></div>

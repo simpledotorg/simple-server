@@ -37,3 +37,4 @@ class Analytics::FacilitiesController < AnalyticsController
     users_for_facility.map { |user| [user, Analytics::UserAnalytics.new(user, @facility)] }.to_h
   end
 end
+
