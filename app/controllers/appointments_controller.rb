@@ -49,7 +49,7 @@ class AppointmentsController < AdminController
     end
 
     if call_result == :dead
-      appointment.patient.status = appointment.mark_patient_as_dead
+      appointment.mark_patient_as_dead
     end
 
     appointment.save
