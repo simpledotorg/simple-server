@@ -4,4 +4,8 @@ module Config
       ENV.fetch(key)
     end
   end
+
+  def self.get_int(config_key_name, default_value)
+    (ENV[config_key_name] || default_value).to_i
+  end
 end
