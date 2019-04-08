@@ -26,4 +26,12 @@ module DashboardHelper
             url_for(range),
             class: is_active ? 'sub-nav-link  sub-nav-link-active' : 'sub-nav-link'
   end
+
+  def string_for_range(from_time, to_time)
+    if from_time.to_date == 90.days.ago.to_date
+      t('analytics.last_90_days')
+    else
+      label_for_quarter({ from_time: from_time, to_time: to_time })
+    end
+  end
 end
