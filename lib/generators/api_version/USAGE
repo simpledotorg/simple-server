@@ -1,0 +1,8 @@
+Description:
+    Generates scaffold required to create a new api version
+
+Example:
+    rails generate api_version --from-version v1 --to-version v2
+
+    This will create:
+        what/will/it/create
