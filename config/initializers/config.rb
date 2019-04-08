@@ -27,5 +27,6 @@ Config.ensure_required_keys_are_present(required_keys: [
   'EXOTEL_SID',
   'EXOTEL_TOKEN',
   'RAILS_CACHE_REDIS_URL',
-  'RAILS_CACHE_REDIS_PASSWORD'
+  'RAILS_CACHE_REDIS_PASSWORD',
+  'SIDEKIQ_CONCURRENCY'
 ])
