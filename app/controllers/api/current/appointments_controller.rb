@@ -24,8 +24,9 @@ class Api::Current::AppointmentsController < Api::Current::SyncController
       NewRelic::Agent.increment_metric('Merge/Appointment/schema_invalid')
       { errors_hash: validator.errors_hash }
     else
-      set_default_appointment_type(appointment_params)
-      appointment = Appointment.merge(Api::Current::Transformer.from_request(appointment_params))
+      record_params = Api::Current::Transformer.from_request(appointment_params)
+      set_default_appointment_type(record_params)
+      appointment = Appointment.merge(record_params)
       { record: appointment }
     end
   end
