@@ -9,7 +9,10 @@ class Analytics::UserAnalytics
   end
 
   def registered_patients_count
-    user.registered_patients.where(registration_facility: facility).count
+    user.registered_patients
+      .where(registration_facility: facility)
+      .where(device_created_at: from_time..to_time)
+      .count
   end
 
   def blood_pressures_recorded_per_week
@@ -27,12 +30,16 @@ class Analytics::UserAnalytics
   end
 
   def calls_made_by_user_at_facility
-    Communication.where(user: user, appointment: facility.appointments).count
+    Communication
+      .where(user: user, appointment: facility.appointments)
+      .where(device_created_at: from_time..to_time)
+      .count
   end
 
   def returning_patients_count_at_facility
     BloodPressure.where(user: user)
       .where(facility: facility)
+      .where(device_created_at: from_time..to_time)
       .distinct
       .count(:patient_id)
   end
