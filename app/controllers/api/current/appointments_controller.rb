@@ -10,7 +10,7 @@ class Api::Current::AppointmentsController < Api::Current::SyncController
   end
 
   def set_default_appointment_type(appointment_params)
-    if !appointment_params.key?('appointment_type')
+    if !appointment_params.key?('appointment_type') && Appointment.compute_merge_status(appointment_params) == :new
       appointment_params['appointment_type'] = Appointment.appointment_types[:manual]
     end
   end
