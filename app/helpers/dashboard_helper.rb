@@ -3,6 +3,10 @@ module DashboardHelper
     value&.positive? ? value : content_tag(:span, value, class: "zero")
   end
 
+  def dash_if_zero(value)
+    (value == nil || value == 0) ? "-" : value
+  end
+
   def analytics_date_format(time)
     time.strftime('%Y-%m-%d')
   end

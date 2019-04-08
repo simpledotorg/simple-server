@@ -59,29 +59,30 @@
           <tr>
             <td><div class="user"></div></td>
             <td class="row-title"><%= link_to user.full_name, [:admin, user] %></td>
-            <td class="row-default text-green"><%= analytics.registered_patients_count %></td>
-            <td class="row-calls text-yellow"><%= analytics.calls_made_by_user_at_facility %></td>
+            <td class="row-default text-green"><%= dash_if_zero(analytics.registered_patients_count) %></td>
+            <td class="row-calls text-yellow"><%= dash_if_zero(analytics.calls_made_by_user_at_facility) %></td>
 
-            <td class="row-unique-date"><%= analytics.returning_patients_count_at_facility %></td>
+            <td class="row-unique-date"><%= dash_if_zero(analytics.returning_patients_count_at_facility) %></td>
 
             <% analytics.blood_pressures_recorded_per_week_at_facility.sort.each do |_key, value| %>
-              <td class="row-unique-date"><%= value != 0 ? value : '-' %></td>
+              <td class="row-unique-date"><%= dash_if_zero(value) %></td>
             <% end %>
           </tr>
         <% end %>
         </tbody>
         <tfoot>
         <tr class="row-total">
+          <%= console %>
           <td></td>
           <td class="row-title row-total">Totals</td>
-          <td class="row-enrolled text-green row-total"><%= @user_analytics.values.map(&:registered_patients_count).sum %></td>
-          <td class="row-calls text-yellow"><%= @user_analytics.values.map(&:calls_made_by_user_at_facility).sum %></td>
+          <td class="row-enrolled text-green row-total"><%= dash_if_zero(@user_analytics.values.map(&:registered_patients_count).sum) %></td>
+          <td class="row-calls text-yellow"><%= dash_if_zero(@user_analytics.values.map(&:calls_made_by_user_at_facility).sum) %></td>
 
-          <td class="row-unique-date row-total"><%= @user_analytics.values.map(&:returning_patients_count_at_facility).sum %></td>
+          <td class="row-unique-date row-total"><%= dash_if_zero(@user_analytics.values.map(&:returning_patients_count_at_facility).sum) %></td>
           </td>
 
           <% @facility_analytics[:blood_pressures_recorded_per_week].sort.each do |_key, value| %>
-            <td class="row-unique-date"><%= value != 0 ? value : '-' %></td>
+            <td class="row-unique-date"><%= dash_if_zero(value) %></td>
           <% end %>
 
         </tr>
