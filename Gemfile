@@ -35,6 +35,7 @@ gem 'phonelib'
 gem 'http'
 gem 'sidekiq'
 gem 'connection_pool'
+gem 'whenever', require: false
 gem 'redis'
 gem 'redis-rails'
 
