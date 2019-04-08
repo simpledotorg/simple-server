@@ -1,5 +1,10 @@
 class FacilityGroup < ApplicationRecord
   include PatientSetAnalyticsReportable
+
+  include Discard::Model
+  self.discard_column = :deleted_at
+  default_scope -> { kept }
+
   extend FriendlyId
 
   belongs_to :organization

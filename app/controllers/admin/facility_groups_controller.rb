@@ -41,7 +41,7 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def destroy
-    @facility_group.destroy
+    @facility_group.discard
     redirect_to admin_facilities_url, notice: 'FacilityGroup was successfully deleted.'
   end
 
