@@ -1,11 +1,10 @@
 class Admin::FacilitiesController < AdminController
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
+  before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy]
 
   def index
     authorize Facility
-    @facilities = policy_scope(Facility).sort_by do |facility|
-      facility.name.sub /^Dr(.?)(\s*)/, ''
-    end
+    @organizations = policy_scope(Organization)
   end
 
   def show
@@ -20,11 +19,11 @@ class Admin::FacilitiesController < AdminController
   end
 
   def create
-    @facility = Facility.new(facility_params)
+    @facility = @facility_group.facilities.new(facility_params)
     authorize @facility
 
     if @facility.save
-      redirect_to admin_facilities_path, notice: 'Facility was successfully created.'
+      redirect_to [:admin, @facility_group, @facility], notice: 'Facility was successfully created.'
     else
       render :new
     end
@@ -32,7 +31,7 @@ class Admin::FacilitiesController < AdminController
 
   def update
     if @facility.update(facility_params)
-      redirect_to [:admin, @facility], notice: 'Facility was successfully updated.'
+      redirect_to [:admin, @facility_group, @facility], notice: 'Facility was successfully updated.'
     else
       render :edit
     end
@@ -48,6 +47,10 @@ class Admin::FacilitiesController < AdminController
   def set_facility
     @facility = Facility.friendly.find(params[:id])
     authorize @facility
+  end
+
+  def set_facility_group
+    @facility_group = FacilityGroup.friendly.find(params[:facility_group_id])
   end
 
   def facility_params

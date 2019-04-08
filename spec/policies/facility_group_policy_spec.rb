@@ -26,7 +26,7 @@ RSpec.describe FacilityGroupPolicy do
     end
   end
 
-  permissions :show?, :update?, :edit?, :destroy? do
+  permissions :show?, :update?, :edit? do
     it "permits owners for all facility groups" do
       expect(subject).to permit(owner, facility_group_in_organization)
       expect(subject).to permit(owner, facility_group_outside_organization)
@@ -38,8 +38,60 @@ RSpec.describe FacilityGroupPolicy do
     end
 
     it "denies supervisors and analysts" do
-      expect(subject).not_to permit(supervisor, FacilityGroup)
-      expect(subject).not_to permit(analyst, FacilityGroup)
+      expect(subject).not_to permit(supervisor, facility_group_in_organization)
+      expect(subject).not_to permit(analyst, facility_group_in_organization)
+    end
+  end
+
+  permissions :destroy? do
+    it "permits owners for all facility groups" do
+      expect(subject).to permit(owner, facility_group_in_organization)
+      expect(subject).to permit(owner, facility_group_outside_organization)
+    end
+
+    it "permits organization owners only for facility groups in their organizations" do
+      expect(subject).to permit(organization_owner, facility_group_in_organization)
+      expect(subject).not_to permit(organization_owner, facility_group_outside_organization)
+    end
+
+    it "denies supervisors and analysts" do
+      expect(subject).not_to permit(supervisor, facility_group_in_organization)
+      expect(subject).not_to permit(analyst, facility_group_in_organization)
+    end
+
+    context "with associated facilities" do
+      before do
+        create(:facility, facility_group: facility_group_in_organization)
+      end
+
+      it "denies everyone" do
+        expect(subject).not_to permit(owner, facility_group_in_organization)
+        expect(subject).not_to permit(organization_owner, facility_group_in_organization)
+      end
+    end
+
+    context "with associated patients" do
+      before do
+        facility = create(:facility, facility_group: facility_group_in_organization)
+        create(:patient, registration_facility: facility)
+      end
+
+      it "denies everyone" do
+        expect(subject).not_to permit(owner, facility_group_in_organization)
+        expect(subject).not_to permit(organization_owner, facility_group_in_organization)
+      end
+    end
+
+    context "with associated blood pressures" do
+      before do
+        facility = create(:facility, facility_group: facility_group_in_organization)
+        create(:blood_pressure, facility: facility)
+      end
+
+      it "denies everyone" do
+        expect(subject).not_to permit(owner, facility_group_in_organization)
+        expect(subject).not_to permit(organization_owner, facility_group_in_organization)
+      end
     end
   end
 end

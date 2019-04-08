@@ -21,14 +21,6 @@ RSpec.describe Admin::OrganizationsController, type: :controller do
     end
   end
 
-  describe 'GET #show' do
-    it 'returns a success response' do
-      organization = Organization.create! valid_attributes
-      get :show, params: { id: organization.to_param }
-      expect(response).to be_success
-    end
-  end
-
   describe 'GET #new' do
     it 'returns a success response' do
       get :new, params: {}
@@ -54,7 +46,7 @@ RSpec.describe Admin::OrganizationsController, type: :controller do
 
       it 'redirects to the created organization' do
         post :create, params: { organization: valid_attributes }
-        expect(response).to redirect_to([:admin, Organization.last])
+        expect(response).to redirect_to(admin_organizations_url)
       end
     end
 
@@ -77,7 +69,6 @@ RSpec.describe Admin::OrganizationsController, type: :controller do
         organization = Organization.create! valid_attributes
         put :update, params: { id: organization.to_param, organization: new_attributes }
         organization.reload
-        expect(response).to redirect_to([:admin, organization])
         expect(organization.attributes.except('id', 'created_at', 'updated_at', 'deleted_at', 'slug'))
           .to eq new_attributes.with_indifferent_access
       end
@@ -85,7 +76,7 @@ RSpec.describe Admin::OrganizationsController, type: :controller do
       it 'redirects to the organization' do
         organization = Organization.create! valid_attributes
         put :update, params: { id: organization.to_param, organization: valid_attributes }
-        expect(response).to redirect_to([:admin, organization])
+        expect(response).to redirect_to(admin_organizations_url)
       end
     end
 

@@ -1,6 +1,6 @@
 class Admin::FacilityGroupsController < AdminController
-  before_action :set_organization, only: [:index, :show, :edit, :update, :destroy]
   before_action :set_facility_group, only: [:show, :edit, :update, :destroy]
+  before_action :set_organizations, only: [:new, :edit]
   before_action :set_protocols, only: [:new, :edit]
 
   def index
@@ -14,8 +14,7 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def new
-    @organization = Organization.friendly.find(params[:organization_id])
-    @facility_group = @organization.facility_groups.new
+    @facility_group = FacilityGroup.new
     authorize @facility_group
   end
 
@@ -23,12 +22,11 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def create
-    @organization = Organization.friendly.find(params[:organization_id])
-    @facility_group = @organization.facility_groups.new(facility_group_params)
+    @facility_group = FacilityGroup.new(facility_group_params)
     authorize @facility_group
 
     if @facility_group.save
-      redirect_to [:admin, @organization], notice: 'FacilityGroup was successfully created.'
+      redirect_to admin_facilities_url, notice: 'FacilityGroup was successfully created.'
     else
       render :new
     end
@@ -36,7 +34,7 @@ class Admin::FacilityGroupsController < AdminController
 
   def update
     if @facility_group.update(facility_group_params)
-      redirect_to [:admin, @organization], notice: 'FacilityGroup was successfully updated.'
+      redirect_to admin_facilities_url, notice: 'FacilityGroup was successfully updated.'
     else
       render :edit
     end
@@ -44,27 +42,27 @@ class Admin::FacilityGroupsController < AdminController
 
   def destroy
     @facility_group.destroy
-    redirect_to admin_organization_facility_groups_url(@organization), notice: 'FacilityGroup was successfully deleted.'
+    redirect_to admin_facilities_url, notice: 'FacilityGroup was successfully deleted.'
   end
 
   private
+
+  def set_organizations
+    @organizations = policy_scope(Organization)
+  end
 
   def set_protocols
     @protocols = Protocol.all
   end
 
   def set_facility_group
-    @facility_group= FacilityGroup.friendly.find(params[:id])
+    @facility_group = FacilityGroup.friendly.find(params[:id])
     authorize @facility_group
-  end
-
-  def set_organization
-    @organization = Organization.friendly.find(params[:organization_id])
-    authorize @organization
   end
 
   def facility_group_params
     params.require(:facility_group).permit(
+      :organization_id,
       :name,
       :description,
       :protocol_id,

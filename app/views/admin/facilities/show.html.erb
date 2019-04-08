@@ -1,96 +1,79 @@
-<h1><%= @facility.name %></h1>
-
-<div class="row">
-  <div class="col-md-4 col-lg-3">
-    <p>
-      <strong>Street address:</strong>
-      <%= @facility.street_address %>
-    </p>
-
-    <p>
-      <strong>Village or colony:</strong>
-      <%= @facility.village_or_colony %>
-    </p>
-
-    <p>
-      <strong>District:</strong>
-      <%= @facility.district %>
-    </p>
-
-    <p>
-      <strong>State:</strong>
-      <%= @facility.state %>
-    </p>
-
-    <p>
-      <strong>Country:</strong>
-      <%= @facility.country %>
-    </p>
-
-    <p>
-      <strong>Pin:</strong>
-      <%= @facility.pin %>
-    </p>
-
-    <p>
-      <strong>Facility type:</strong>
-      <%= @facility.facility_type %>
-    </p>
-
-    <p>
-      <strong>Latitude:</strong>
-      <%= @facility.latitude %>
-    </p>
-
-    <p>
-      <strong>Longitude:</strong>
-      <%= @facility.longitude %>
-    </p>
-
+<div class="page-header">
+  <h1 class="page-title">
+    <small><%= link_to @facility.facility_group.name, admin_facilities_path %></small><br>
+    <%= @facility.name %>
+  </h1>
+  <nav class="page-nav">
     <% if policy(@facility).edit? %>
-      <%= link_to 'Edit facility', edit_admin_facility_path(@facility), class: "btn btn-sm btn-primary" %>
+      <%= link_to 'Edit facility', edit_admin_facility_group_facility_path(@facility_group, @facility), class: "btn btn-sm btn-primary" %>
     <% end %>
-  </div>
+  </nav>
+</div>
 
-  <div class="col-md-8 col-lg-9">
-    <h3>Facility users</h3>
+<h2>Address</h2>
+<p>
+  <%= @facility.street_address %><br>
+  <%= @facility.village_or_colony %><br>
+  <%= @facility.district %>, <%= @facility.state %><br>
+  <%= @facility.pin %><br>
+  <%= @facility.country %>
+</p>
 
-    <% @facility.users.each do |user| %>
-      <div class="row border-bottom mb-4">
-        <div class="col-lg-3">
-          <%= user.full_name %>
-          <br>
-          <%= user.phone_number %>
-        </div>
+<% if @facility.latitude.present? && @facility.longitude.present? %>
+  <h3>Latitude/Longitude</h3>
+  <p><%= @facility.latitude %>, <%= @facility.longitude %></p>
+<% end %>
 
-        <div class="col-lg-9">
-          <ul>
-            <li>
-              <%=
-                if (user.logged_in_at.present?)
-                  'Logged in at:' + user.logged_in_at.to_s
-                else
-                  'Has not logged in yet'
-                end
-              %>
-            </li>
-            <li>
-              Is access token valid?: <%= user.access_token_valid? %>
-            </li>
-            <li>
-              <%= link_to 'Edit', edit_admin_user_path(user) %> |
-              <%= link_to 'Delete', [:admin, user], method: :delete, data: { confirm: 'Are you sure?' } %> |
-              <% if user.access_token_valid? %>
-                <%= link_to 'Deny access', admin_user_disable_access_path(user), method: :put, data: { confirm: I18n.t('admin.disable_access_alert') } %>
-              <% else %>
-                <%= link_to 'Allow access', admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
-              <% end %>
-            </li>
-          </ul>
-        </div>
-      </div>
+<h2>Users</h2>
+<div class="table-responsive">
+  <table class="table">
+    <thead class="thead-light">
+    <tr>
+      <th>Name</th>
+      <th>Sync status</th>
+      <th>Status reason</th>
+      <th>Phone number</th>
+      <th>Last login</th>
+      <th colspan="2"></th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <% @facility.users.order(:full_name).each do |user| %>
+      <tr>
+        <td class="nowrap"><%= link_to user.full_name, [:admin, user] %></td>
+        <td class="sync_approval_status nowrap">
+          <span class="label <%= user.sync_approval_status %>"><%= user.sync_approval_status&.capitalize %></span>
+        </td>
+        <td class="sync_approval_status_reason"><%= user.sync_approval_status_reason %></td>
+        <td class="nowrap"><a href="tel:<%= user.phone_number %>"><%= user.phone_number %></a></td>
+        <td class="nowrap">
+          <%=
+            if (user.logged_in_at.present?)
+              'Logged in at:' + user.logged_in_at.to_s
+            else
+              'Has not logged in yet'
+            end
+          %>
+        </td>
+        <td class="nowrap">
+          <% if policy(user).edit? %>
+            <%= link_to 'Edit', edit_admin_user_path(user) %>
+          <% end %>
+          <% if policy(user).destroy? %>
+            <span class="light divider">|</span> <%= link_to 'Delete', [:admin, user], method: :delete, data: { confirm: "Are you sure you want to delete #{user.full_name}?" } %>
+          <% end %>
+          <% unless user.sync_approval_status == 'denied' %>
+            <span class="light divider">|</span> <%= link_to 'Deny access', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal' %>
+          <% end %>
+          <% unless user.sync_approval_status == 'allowed' %>
+            <span class="light divider">|</span> <%= link_to 'Allow access', admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
+          <% end %>
+
+          <%= render partial: "admin/users/deny_access_modal", locals: { user: user } %>
+        </td>
+      </tr>
     <% end %>
-
-    <%= link_to 'New user', new_admin_user_path, class: "btn btn-sm btn-primary" %>
-  </div>
+    </tbody>
+  </table>
 </div>

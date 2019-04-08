@@ -45,63 +45,11 @@ RSpec.describe Admin::UsersController, type: :controller do
     end
   end
 
-  describe 'GET #new' do
-    it 'returns a success response' do
-      get :new, params: { facility_id: facility.id }
-      expect(response).to be_success
-    end
-  end
-
   describe 'GET #edit' do
     it 'returns a success response' do
       user = User.create! valid_attributes
       get :edit, params: { id: user.to_param, facility_id: facility.id }
       expect(response).to be_success
-    end
-  end
-
-  describe 'POST #create' do
-    before :each do
-      sms_nofication_service = double(SmsNotificationService.new(nil))
-      allow(SmsNotificationService).to receive(:new).and_return(sms_nofication_service)
-      allow(sms_nofication_service).to receive(:notify).and_return(true)
-    end
-    context 'with valid params' do
-      it 'creates a new User' do
-        expect {
-          post :create, params: { user: valid_attributes }
-        }.to change(User, :count).by(1)
-      end
-
-      it 'redirects to the created user' do
-        post :create, params: { user: valid_attributes }
-        expect(response).to redirect_to([:admin, User.order(:created_at).last])
-      end
-
-      it 'adds otp and otp_valid_until to the user' do
-        Timecop.freeze do
-          timedelta = ENV['USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES'].to_i.minutes
-          post :create, params: { user: valid_attributes }
-
-          user = User.find_by(phone_number: valid_attributes[:phone_number])
-          expect(user.otp).to be_present
-          expect(user.otp_valid_until.to_i).to eq((Time.now + timedelta).to_i)
-        end
-      end
-
-      it 'adds access_token to the user' do
-        post :create, params: { user: valid_attributes }
-
-        user = User.find_by(phone_number: valid_attributes[:phone_number])
-        expect(user.access_token).to be_present
-      end
-    end
-
-    context 'with invalid params' do
-      it "returns a success response (i.e. to display the 'new' template)" do
-        post :create, params: { user: invalid_attributes, facility_id: facility.id }
-        expect(response).to be_success
-      end
     end
   end
 
@@ -136,21 +84,6 @@ RSpec.describe Admin::UsersController, type: :controller do
         put :update, params: { id: user.to_param, user: invalid_attributes, facility_id: facility.id }
         expect(response).to be_success
       end
-    end
-  end
-
-  describe 'DELETE #destroy' do
-    it 'destroys the requested user' do
-      user = User.create! valid_attributes
-      expect {
-        delete :destroy, params: { id: user.to_param, facility_id: facility.id }
-      }.to change(User, :count).by(-1)
-    end
-
-    it 'redirects to the users list' do
-      user = User.create! valid_attributes
-      delete :destroy, params: { id: user.to_param, facility_id: facility.id }
-      expect(response).to redirect_to([:admin, :users])
     end
   end
 
