@@ -8,6 +8,17 @@ set :rbenv_ruby, '2.5.1'
 set :rails_env, 'production'
 set :branch, ENV["BRANCH"] || "master"
 
+# sidekiq configuration
+set :sidekiq_roles, :sidekiq
+set :sidekiq_processes, 1
+set :sidekiq_cmd, "#{fetch(:bundle_cmd, "bundle")} exec sidekiq"
+set :init_system, :systemd
+set :pty,  false
+set :sidekiq_log, File.join(shared_path, 'log', 'sidekiq.log')
+
+SSHKit.config.command_map[:sidekiq] = "bundle exec sidekiq"
+SSHKit.config.command_map[:sidekiqctl] = "bundle exec sidekiqctl"
+
 append :linked_files, ".env.production"
 append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
 
