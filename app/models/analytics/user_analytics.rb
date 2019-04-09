@@ -22,13 +22,6 @@ class Analytics::UserAnalytics
       .count
   end
 
-  def blood_pressures_recorded_per_week_at_facility
-    user.blood_pressures
-      .where(facility: facility)
-      .group_by_week(:device_created_at, range: from_time..to_time)
-      .count
-  end
-
   def calls_made_by_user_at_facility
     Communication
       .where(user: user, appointment: facility.appointments)
