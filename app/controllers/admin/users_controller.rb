@@ -3,10 +3,12 @@ class Admin::UsersController < AdminController
 
   def index
     authorize User
-    @facility_groups = policy_scope(FacilityGroup)
-    @users = policy_scope(User).sort_by do |user|
-      [ordered_sync_approval_statuses[user.sync_approval_status],
-       user.full_name]
+    @users_by_district = {}
+    policy_scope(Facility).group_by(&:district).each do |district, facilities|
+      @users_by_district[district] = facilities.map(&:users).flatten.sort_by do |user|
+        [ordered_sync_approval_statuses[user.sync_approval_status],
+         user.full_name]
+      end
     end
   end
 
