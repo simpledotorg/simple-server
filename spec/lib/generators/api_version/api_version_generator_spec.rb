@@ -47,4 +47,22 @@ RSpec.describe ApiVersionGenerator, "using custom matcher", type: :generator do
       assert_file(destination_root.to_s + new_file_path, Regexp.new("Api::#{CURRENT_VERSION.capitalize}"))
     end
   end
+
+  it 'creates a copy of the current api payload specs for the given current_version' do
+    current_spec_files = files_in_directory(spec_root.join('payloads', 'api', 'current'))
+
+    current_spec_files.each do |path|
+      new_file_path = path.sub('current', CURRENT_VERSION)
+      assert_file(destination_root.to_s + new_file_path, Regexp.new("Api::#{CURRENT_VERSION.capitalize}"))
+    end
+  end
+
+  it 'creates a copy of the current api request specs for the given current_version' do
+    current_spec_files = files_in_directory(spec_root.join('requests', 'api', 'current'))
+
+    current_spec_files.each do |path|
+      new_file_path = path.sub('current', CURRENT_VERSION)
+      assert_file(destination_root.to_s + new_file_path, Regexp.new("Api::#{CURRENT_VERSION.capitalize}"))
+    end
+  end
 end

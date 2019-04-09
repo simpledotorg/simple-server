@@ -11,8 +11,10 @@ class ApiVersionGenerator < Rails::Generators::Base
   end
 
   def create_specs_for_version
-    create_api_specs_for_current_version
-    create_controller_specs_for_current_version
+    create_copy_of_spec_directory('spec/api')
+    create_copy_of_spec_directory('spec/controllers/api')
+    create_copy_of_spec_directory('spec/payloads/api')
+    create_copy_of_spec_directory('spec/requests/api')
   end
 
   # def create_schema_for_version
@@ -21,19 +23,10 @@ class ApiVersionGenerator < Rails::Generators::Base
 
   private
 
-  def create_api_specs_for_current_version
-    current_version_path = "spec/api/#{current_version}"
-    directory('spec/api/current', current_version_path)
-    Dir["#{destination_root}/#{current_version_path}/**/*_spec.rb"].each do |path|
-      gsub_file(path, 'current/swagger.json', "#{current_version}/swagger.json")
-      gsub_file(path, 'Current', current_version.capitalize)
-    end
-  end
-
-  def create_controller_specs_for_current_version
-    current_version_path = "spec/controllers/api/#{current_version}"
-    directory('spec/controllers/api/current', current_version_path)
-    Dir["#{destination_root}/#{current_version_path}/**/*_spec.rb"].each do |path|
+  def create_copy_of_spec_directory(directory_path)
+    current_version_path = "#{directory_path}/#{current_version}"
+    directory("#{directory_path}/current", current_version_path)
+    Dir["#{destination_root}/#{current_version_path}/**/*.rb"].each do |path|
       gsub_file(path, 'current', current_version)
       gsub_file(path, 'Current', current_version.capitalize)
     end
