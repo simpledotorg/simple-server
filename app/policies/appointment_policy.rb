@@ -8,7 +8,7 @@ class AppointmentPolicy < ApplicationPolicy
   end
 
   def download?
-    user.owner? || user.supervisor? && user.organizations.include?("IHMI")
+    user.owner? || user.supervisor? && user.organizations.include?(Organization.find_by(name: "IHMI"))
   end
 
   class Scope

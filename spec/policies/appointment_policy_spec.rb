@@ -43,7 +43,7 @@ RSpec.describe AppointmentPolicy do
 
       it 'permits supervisors in IHMI' do
         supervisor.admin_access_controls = [AdminAccessControl.new(access_controllable: ihmi_group)]
-        expect(subject).not_to permit(supervisor, User)
+        expect(subject).to permit(supervisor, User)
       end
 
       it 'denies supervisors not in IHMI' do
