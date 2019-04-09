@@ -21,37 +21,30 @@ RSpec.describe ApiVersionGenerator, "using custom matcher", type: :generator do
     prepare_destination
   end
 
+  def files_in_directory(directory)
+    Dir[directory.join('**', '*.rb')]
+      .map { |file| file.to_s.remove(Rails.root.to_s) }
+  end
+
   describe 'generates the scaffold required to migrate to a new API version' do
     it 'creates a copy of the current api specs for the given current_version' do
-      current_spec_files = Dir[spec_root.join('api', 'current', '**', '*')].map do |path|
-        path.split('/').last
-      end
+      current_spec_files = files_in_directory(spec_root.join('api', 'current'))
 
-      expect(destination_root).to have_structure {
-        directory 'spec' do
-          directory 'api' do
-            directory CURRENT_VERSION do
-              current_spec_files.each do |file_name|
-                file file_name do
-                  contains "#{CURRENT_VERSION}/swagger.json"
-                end
-              end
-            end
-          end
-        end
-      }
-    end
 
-    it 'renames current to the new current_version in the copied api specs, if existing file contains it' do
-      current_spec_paths = Dir[spec_root.join('api', 'current', '**', '*')]
-
-      current_spec_paths.each do |path|
-        current_file_contents = File.readlines(path)
+      current_spec_files.each do |path|
         new_file_path = path.sub('current', CURRENT_VERSION)
-
-        assert_file(new_file_path, CURRENT_VERSION.capitalize) if current_file_contents.include?('Current')
-        assert_file(new_file_path, CURRENT_VERSION) if current_file_contents.include?('current')
+        assert_file(destination_root.to_s + new_file_path, Regexp.new("#{CURRENT_VERSION}/swagger.json"))
+        assert_file(destination_root.to_s + new_file_path, Regexp.new(CURRENT_VERSION.capitalize))
       end
+    end
+  end
+
+  it 'creates a copy of the current api controller specs for the given current_version' do
+    current_spec_files = files_in_directory(spec_root.join('controllers', 'api', 'current'))
+
+    current_spec_files.each do |path|
+      new_file_path = path.sub('current', CURRENT_VERSION)
+      assert_file(destination_root.to_s + new_file_path, Regexp.new("Api::#{CURRENT_VERSION.capitalize}"))
     end
   end
 end
