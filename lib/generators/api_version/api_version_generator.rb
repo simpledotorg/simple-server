@@ -17,9 +17,9 @@ class ApiVersionGenerator < Rails::Generators::Base
     create_copy_of_spec_directory('spec/requests/api')
   end
 
-  # def create_schema_for_version
-  #   directory('app/schema/api/current', "app/schema/api/#{current_version}")
-  # end
+  def create_schema_for_version
+    directory('app/schema/api/current', "app/schema/api/#{current_version}")
+  end
 
   private
 

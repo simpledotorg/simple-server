@@ -27,42 +27,56 @@ RSpec.describe ApiVersionGenerator, "using custom matcher", type: :generator do
   end
 
   describe 'generates the scaffold required to migrate to a new API version' do
-    it 'creates a copy of the current api specs for the given current_version' do
-      current_spec_files = files_in_directory(spec_root.join('api', 'current'))
+    describe 'copy current specs for the give current version' do
+      it 'api specs' do
+        current_spec_files = files_in_directory(spec_root.join('api', 'current'))
 
 
-      current_spec_files.each do |path|
-        new_file_path = path.sub('current', CURRENT_VERSION)
-        assert_file(destination_root.to_s + new_file_path, Regexp.new("#{CURRENT_VERSION}/swagger.json"))
-        assert_file(destination_root.to_s + new_file_path, Regexp.new(CURRENT_VERSION.capitalize))
+        current_spec_files.each do |path|
+          new_file_path = path.sub('current', CURRENT_VERSION)
+          assert_file(destination_root.to_s + new_file_path, Regexp.new("#{CURRENT_VERSION}/swagger.json"))
+          assert_file(destination_root.to_s + new_file_path, Regexp.new(CURRENT_VERSION.capitalize))
+        end
+      end
+
+
+      it 'controller specs' do
+        current_spec_files = files_in_directory(spec_root.join('controllers', 'api', 'current'))
+
+        current_spec_files.each do |path|
+          new_file_path = path.sub('current', CURRENT_VERSION)
+          assert_file(destination_root.to_s + new_file_path, Regexp.new("Api::#{CURRENT_VERSION.capitalize}"))
+        end
+      end
+
+      it 'payload specs ' do
+        current_spec_files = files_in_directory(spec_root.join('payloads', 'api', 'current'))
+
+        current_spec_files.each do |path|
+          new_file_path = path.sub('current', CURRENT_VERSION)
+          assert_file(destination_root.to_s + new_file_path, Regexp.new("Api::#{CURRENT_VERSION.capitalize}"))
+        end
+      end
+
+      it 'request specs' do
+        current_spec_files = files_in_directory(spec_root.join('requests', 'api', 'current'))
+
+        current_spec_files.each do |path|
+          new_file_path = path.sub('current', CURRENT_VERSION)
+          assert_file(destination_root.to_s + new_file_path, Regexp.new("Api::#{CURRENT_VERSION.capitalize}"))
+        end
       end
     end
-  end
 
-  it 'creates a copy of the current api controller specs for the given current_version' do
-    current_spec_files = files_in_directory(spec_root.join('controllers', 'api', 'current'))
-
-    current_spec_files.each do |path|
-      new_file_path = path.sub('current', CURRENT_VERSION)
-      assert_file(destination_root.to_s + new_file_path, Regexp.new("Api::#{CURRENT_VERSION.capitalize}"))
-    end
-  end
-
-  it 'creates a copy of the current api payload specs for the given current_version' do
-    current_spec_files = files_in_directory(spec_root.join('payloads', 'api', 'current'))
-
-    current_spec_files.each do |path|
-      new_file_path = path.sub('current', CURRENT_VERSION)
-      assert_file(destination_root.to_s + new_file_path, Regexp.new("Api::#{CURRENT_VERSION.capitalize}"))
-    end
-  end
-
-  it 'creates a copy of the current api request specs for the given current_version' do
-    current_spec_files = files_in_directory(spec_root.join('requests', 'api', 'current'))
-
-    current_spec_files.each do |path|
-      new_file_path = path.sub('current', CURRENT_VERSION)
-      assert_file(destination_root.to_s + new_file_path, Regexp.new("Api::#{CURRENT_VERSION.capitalize}"))
+    describe 'creates schema for the given current version' do
+      it 'copies the schema files' do
+        expect(destination_root.to_s + '/app/schema/api').to have_structure {
+          directory CURRENT_VERSION do
+            file 'models.rb'
+            file 'schema.rb'
+          end
+        }
+      end
     end
   end
 end
