@@ -1,10 +1,18 @@
 require 'rails_helper'
 
 RSpec.feature 'Overdue appointments', type: :feature do
-  let!(:counsellor) { create(:admin, :counsellor) }
+  let!(:ihmi) { create(:organization, name: "IHMI") }
+  let!(:ihmi_group) { create(:facility_group, organization: ihmi) }
+  let!(:supervisor) {
+    create(
+      :admin,
+      :supervisor,
+      admin_access_controls: [AdminAccessControl.new(access_controllable: ihmi_group)]
+    )
+  }
 
   describe 'index' do
-    before { sign_in(counsellor) }
+    before { sign_in(supervisor) }
 
     it 'shows Overdue tab' do
       visit root_path
@@ -13,13 +21,14 @@ RSpec.feature 'Overdue appointments', type: :feature do
     end
 
     describe 'Overdue patients tab' do
-      let!(:authorized_facility_group) { counsellor.facility_groups.first }
+      let!(:authorized_facility_group) { ihmi_group }
 
       let!(:facility_1) { create(:facility, facility_group: authorized_facility_group) }
 
       let!(:overdue_patient_in_facility_1) do
         patient = create(:patient, full_name: 'patient_1', registration_facility: facility_1)
         create(:appointment, :overdue, facility: facility_1, patient: patient, scheduled_date: 10.days.ago)
+        create(:blood_pressure, :critical, facility: facility_1, patient: patient)
         patient
       end
 
@@ -30,6 +39,7 @@ RSpec.feature 'Overdue appointments', type: :feature do
       let!(:overdue_patient_in_facility_2) do
         patient = create(:patient, full_name: 'patient_3', registration_facility: facility_2)
         create(:appointment, :overdue, facility: facility_2, patient: patient, scheduled_date: 5.days.ago)
+        create(:blood_pressure, :high, facility: facility_2, patient: patient)
         patient
       end
 
@@ -78,6 +88,31 @@ RSpec.feature 'Overdue appointments', type: :feature do
         page.reset!
         visit appointments_path
         expect(page).not_to have_content(overdue_patient_in_facility_1.full_name)
+      end
+
+      it 'allows you to filter by facility' do
+        select facility_1.name, from: "facility_id"
+        click_button "Filter"
+
+        expect(page).to have_content(overdue_patient_in_facility_1.full_name)
+        expect(page).not_to have_content(overdue_patient_in_facility_2.full_name)
+      end
+
+      it 'allows you to download the overdue list CSV for a facility' do
+        select facility_1.name, from: "facility_id"
+        click_button "Filter"
+
+        click_link "Download Overdue List"
+
+        expect(page).to have_content(Appointment.csv_headers.to_csv.strip)
+
+        appointment = overdue_patient_in_facility_1.appointments.first
+        expect(page).to have_content(appointment.csv_fields.to_csv.strip)
+      end
+
+      it 'does not allow you to download the overdue list for all facilities' do
+        expect(page).to have_content("Select a facility to download")
+        expect(page).to have_selector("button:disabled", text: "Download Overdue List")
       end
     end
   end

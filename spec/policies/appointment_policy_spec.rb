@@ -18,11 +18,45 @@ RSpec.describe AppointmentPolicy do
       expect(subject).to permit(counsellor, Appointment)
     end
 
-    it 'denies supervisors' do
-      expect(subject).not_to permit(supervisor, User)
+    it 'permits supervisors' do
+      expect(subject).to permit(supervisor, Appointment)
     end
 
-    it 'denies organization_owner' do
+    it 'denies organization_owners' do
+      expect(subject).not_to permit(organization_owner, Appointment)
+    end
+
+    it 'denies analysts' do
+      expect(subject).not_to permit(analyst, User)
+    end
+  end
+
+  permissions :download? do
+    it 'permits owners' do
+      expect(subject).to permit(owner, Appointment)
+    end
+
+    context "supervisors" do
+      let(:ihmi) { create(:organization, name: "IHMI") }
+      let(:ihmi_group) { create(:facility_group, organization: ihmi) }
+      let(:non_ihmi_group) { create(:facility_group) }
+
+      it 'permits supervisors in IHMI' do
+        supervisor.admin_access_controls = [AdminAccessControl.new(access_controllable: ihmi_group)]
+        expect(subject).to permit(supervisor, User)
+      end
+
+      it 'denies supervisors not in IHMI' do
+        supervisor.admin_access_controls = [AdminAccessControl.new(access_controllable: non_ihmi_group)]
+        expect(subject).not_to permit(supervisor, User)
+      end
+    end
+
+    it 'denies counsellors' do
+      expect(subject).not_to permit(counsellor, Appointment)
+    end
+
+    it 'denies organization_owners' do
       expect(subject).not_to permit(organization_owner, Appointment)
     end
 

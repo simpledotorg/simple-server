@@ -1,3 +1,5 @@
+require 'csv'
+
 class Appointment < ApplicationRecord
   include Mergeable
 
@@ -88,5 +90,53 @@ class Appointment < ApplicationRecord
   def mark_patient_as_dead
     self.patient.status = :dead
     self.patient.save
+  end
+
+  # CSV export
+  def self.to_csv
+    appointments = all.joins(patient: { latest_blood_pressures: :facility })
+                      .includes(patient: [:address, :phone_numbers, :medical_history, { latest_blood_pressures: :facility }])
+
+    CSV.generate(headers: true) do |csv|
+      csv << csv_headers
+
+      appointments.group_by { |a| a.patient.latest_blood_pressure.facility }.each do |facility, facility_appointments|
+        facility_appointments.sort_by { |a| a.patient.risk_priority }.each do |appointment|
+          csv << appointment.csv_fields
+        end
+      end
+    end
+  end
+
+  def self.csv_headers
+    [
+      "Patient name",
+      "Gender",
+      "Age",
+      "Days overdue",
+      "Last BP",
+      "Last BP taken at",
+      "Last BP date",
+      "Risk level",
+      "Patient address",
+      "Patient village or colony",
+      "Patient phone"
+    ].freeze
+  end
+
+  def csv_fields
+    [
+      patient.full_name,
+      patient.gender.capitalize,
+      patient.current_age,
+      days_overdue,
+      patient.latest_blood_pressure.to_s,
+      patient.latest_blood_pressure.facility.name,
+      patient.latest_blood_pressure.device_created_at.to_date,
+      patient.risk_priority_label,
+      patient.address.street_address,
+      patient.address.village_or_colony,
+      patient.phone_numbers.first&.number
+    ]
   end
 end
