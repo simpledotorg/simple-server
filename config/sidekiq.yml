@@ -1,4 +1,4 @@
-:concurrency: <%= ENV['SIDEKIQ_CONCURRENCY'] %>
+:concurrency: <%= ENV.fetch('SIDEKIQ_CONCURRENCY').to_i %>
 :pidfile: ./tmp/pids/sidekiq.pid
 :logfile: ./log/sidekiq.log
 
