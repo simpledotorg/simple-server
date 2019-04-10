@@ -68,6 +68,12 @@ RSpec.describe ApiVersionGenerator, "using custom matcher", type: :generator do
       end
     end
 
+    describe 'creates controllers for the given current version' do
+      it 'creates controller files using template' do
+        assert_directory("#{destination_root}/app/controllers/api/#{CURRENT_VERSION}")
+      end
+    end
+
     describe 'creates schema for the given current version' do
       it 'copies the schema files' do
         expect(destination_root.to_s + '/app/schema/api').to have_structure {

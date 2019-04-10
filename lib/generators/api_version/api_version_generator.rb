@@ -17,6 +17,23 @@ class ApiVersionGenerator < Rails::Generators::Base
     create_copy_of_spec_directory('spec/requests/api')
   end
 
+  def create_controllers_for_version
+    api_root = 'app/controllers/api'
+    destination_dir = "#{destination_root}/#{api_root}/#{current_version}"
+
+    empty_directory(destination_dir)
+
+    existing_controller_files = Dir["#{Rails.root.to_s}/#{api_root}/current/**/*.rb"]
+
+    existing_controller_files.each do |path|
+      @controller_file_name = path.split('/').last
+      @controller_class_name = @controller_file_name.split('.').first.camelcase
+
+      template("lib/generators/api_version/templates/controller.rb.erb",
+               "#{destination_dir}/#{@controller_file_name}")
+    end
+  end
+
   def create_schema_for_version
     directory('app/schema/api/current', "app/schema/api/#{current_version}")
   end
