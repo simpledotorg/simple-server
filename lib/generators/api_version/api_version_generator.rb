@@ -29,7 +29,7 @@ class ApiVersionGenerator < Rails::Generators::Base
       @controller_file_name = path.split('/').last
       @controller_class_name = @controller_file_name.split('.').first.camelcase
 
-      template("lib/generators/api_version/templates/controller.rb.erb",
+      template('lib/generators/api_version/templates/controller.rb.erb',
                "#{destination_dir}/#{@controller_file_name}")
     end
   end
