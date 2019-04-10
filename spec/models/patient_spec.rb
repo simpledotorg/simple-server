@@ -112,6 +112,13 @@ describe Patient, type: :model do
       end
     end
 
+    describe "#risk_priority_label" do
+      it "returns critical for HIGHEST risk" do
+        allow(patient).to receive(:risk_priority).and_return(Patient::RISK_PRIORITIES[:HIGHEST])
+        expect(patient.risk_priority_label).to eq("Critical")
+      end
+    end
+
     describe "#current_age" do
       it "returns age based on date of birth year if present" do
         patient.date_of_birth = Date.parse("1980-01-01")

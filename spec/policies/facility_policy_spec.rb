@@ -43,7 +43,7 @@ RSpec.describe FacilityPolicy do
     end
   end
 
-  permissions :new?, :create?, :update?, :edit?, :destroy? do
+  permissions :new?, :create?, :update?, :edit? do
     it "permits owners" do
       expect(subject).to permit(owner, Facility)
     end
@@ -58,6 +58,49 @@ RSpec.describe FacilityPolicy do
 
     it "denies analysts" do
       expect(subject).not_to permit(analyst, Facility)
+    end
+  end
+
+  permissions :destroy? do
+    let!(:facility_group) { create(:facility_group, organization: organization) }
+    let!(:facility) { create(:facility, facility_group: facility_group) }
+
+    it "permits owners" do
+      expect(subject).to permit(owner, facility)
+    end
+
+    it "permits organization owners" do
+      expect(subject).to permit(owner, facility)
+    end
+
+    it "denies supervisors" do
+      expect(subject).not_to permit(supervisor, facility)
+    end
+
+    it "denies analysts" do
+      expect(subject).not_to permit(analyst, facility)
+    end
+
+    context "with associated patients" do
+      before do
+        facility.registered_patients << create(:patient)
+      end
+
+      it "denies everyone" do
+        expect(subject).not_to permit(owner, facility)
+        expect(subject).not_to permit(organization_owner, facility)
+      end
+    end
+
+    context "with associated blood pressures" do
+      before do
+        create(:blood_pressure, facility: facility)
+      end
+
+      it "denies everyone" do
+        expect(subject).not_to permit(owner, facility)
+        expect(subject).not_to permit(organization_owner, facility)
+      end
     end
   end
 end
