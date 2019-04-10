@@ -6,6 +6,34 @@
 ### Removed 
 ### Security
 
+# 2019-04-10-1
+## Portal
+### Added
+- Adding patient record creation date as enrolment date for adherence tab
+- Add pagination to the AuditLogs index view
+- Add views for whatsapp graphics for facility and facility groups
+### Changed
+### Fixed
+- Fix missing hamburger icon in web view on dashboard
+- Fix FacilityGroup and Organization ordering on dashboard
+- Fix misplaced assignment while setting patients status to dead
+### Deprecated
+### Removed
+### Security
+
+## Api
+### Added
+- ExotelAPI to fetch call_details
+- Populate the CallLog result from the terminate response
+- Adding the sidekiq monitoring route for owners only
+- Add connection pooling and redis store for CallSession
+### Changed
+- Enabled User Analytics API
+### Fixed
+### Deprecated
+### Removed
+### Security
+
 # 2019-04-02-1
 ## Portal
 ### Added
