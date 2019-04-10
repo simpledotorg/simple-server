@@ -1,2 +1,0 @@
-class <%= @controller_class_name %> < <%= @inheriting_controller_class_name %>
-end

@@ -18,22 +18,17 @@ class ApiVersionGenerator < Rails::Generators::Base
   end
 
   def create_controllers_for_version
-    controller_root = 'app/controllers'
-    destination_dir = "#{controller_root}/api/#{current_version}"
+    create_template_for_directory(
+      'app/controllers',
+      'lib/generators/api_version/templates/empty_inheriting_class.rb.tt'
+    )
+  end
 
-    empty_directory(destination_dir)
-
-    existing_controller_files = Dir[Rails.root.join(controller_root, 'api', 'current/**/*.rb')]
-
-    existing_controller_files.each do |path|
-      relative_path = path.remove(Rails.root.join(controller_root).to_s)
-      new_relative_path = relative_path.sub('current', current_version)
-
-      @inheriting_controller_class_name = class_name_for_path(relative_path)
-      @controller_class_name = class_name_for_path(new_relative_path)
-
-      template('lib/generators/api_version/templates/controller.rb.tt', controller_root + new_relative_path)
-    end
+  def create_transformers_for_version
+    create_template_for_directory(
+      'app/transformers',
+      'lib/generators/api_version/templates/empty_inheriting_class.rb.tt'
+    )
   end
 
   def create_schema_for_version
@@ -49,6 +44,26 @@ class ApiVersionGenerator < Rails::Generators::Base
       gsub_file(path, 'current', current_version)
       gsub_file(path, 'Current', current_version.capitalize)
     end
+  end
+
+  def create_template_for_directory(base_path, template_file)
+    destination_dir = "#{base_path}/api/#{current_version}"
+    empty_directory(destination_dir)
+    existing_files = Dir[Rails.root.join(base_path, 'api', 'current/**/*.rb')]
+
+    existing_files.each do |path|
+      relative_path = path.remove(Rails.root.join(base_path).to_s)
+      create_template_for_file(relative_path, base_path, template_file)
+    end
+  end
+
+  def create_template_for_file(relative_path, base_path, template_file)
+    new_relative_path = relative_path.sub('current', current_version)
+
+    @inheriting_class_name = class_name_for_path(relative_path)
+    @new_class_name = class_name_for_path(new_relative_path)
+
+    template(template_file, base_path + new_relative_path)
   end
 
   def class_name_for_path(path)

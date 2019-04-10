@@ -69,7 +69,7 @@ RSpec.describe ApiVersionGenerator, type: :generator do
     end
 
     describe 'creates controllers for the given current version' do
-      it 'creates controller files using template' do
+      it 'creates controller files' do
         assert_directory("#{destination_root}/app/controllers/api/#{CURRENT_VERSION}")
       end
 
@@ -85,7 +85,29 @@ RSpec.describe ApiVersionGenerator, type: :generator do
         expected_controllers.each do |file, controller_name|
           inheriting_controller_name = controller_name.sub(CURRENT_VERSION.capitalize, 'Current')
           expected_file_path = destination_root.to_s + '/app/controllers' + file
-          assert_file(expected_file_path, "class #{controller_name} < #{inheriting_controller_name}\nend")
+          assert_file(expected_file_path, Regexp.new("class #{controller_name} < #{inheriting_controller_name}"))
+        end
+      end
+    end
+
+    describe 'creates transformers for the given current version' do
+      it 'creates transformers directory for the new version' do
+        assert_directory("#{destination_root}/app/transformers/api/#{CURRENT_VERSION}")
+      end
+
+      it 'creates template transformers for the given current version' do
+        transformers_root = Rails.root.join('app', 'transformers')
+        expected_relative_paths = Dir[transformers_root.join('api', 'current', '**', '*.rb')]
+                                    .map { |path| path.remove(transformers_root.to_s).sub('current', CURRENT_VERSION) }
+
+        expected_transformers = expected_relative_paths.map do |relative_path|
+          [relative_path, relative_path.sub('.rb', '').split('/').reject(&:empty?).map { |name| name.camelcase }.join('::')]
+        end.to_h
+
+        expected_transformers.each do |file, transformer_name|
+          inheriting_transformer_name = transformer_name.sub(CURRENT_VERSION.capitalize, 'Current')
+          expected_file_path = destination_root.to_s + '/app/transformers' + file
+          assert_file(expected_file_path, "class #{transformer_name} < #{inheriting_transformer_name}\nend")
         end
       end
     end
