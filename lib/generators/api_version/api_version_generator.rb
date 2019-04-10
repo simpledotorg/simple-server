@@ -18,19 +18,21 @@ class ApiVersionGenerator < Rails::Generators::Base
   end
 
   def create_controllers_for_version
-    api_root = 'app/controllers/api'
-    destination_dir = "#{destination_root}/#{api_root}/#{current_version}"
+    controller_root = 'app/controllers'
+    destination_dir = "#{controller_root}/api/#{current_version}"
 
     empty_directory(destination_dir)
 
-    existing_controller_files = Dir["#{Rails.root.to_s}/#{api_root}/current/**/*.rb"]
+    existing_controller_files = Dir[Rails.root.join(controller_root, 'api', 'current/**/*.rb')]
 
     existing_controller_files.each do |path|
-      @controller_file_name = path.split('/').last
-      @controller_class_name = @controller_file_name.split('.').first.camelcase
+      relative_path = path.remove(Rails.root.join(controller_root).to_s)
+      new_relative_path = relative_path.sub('current', current_version)
 
-      template('lib/generators/api_version/templates/controller.rb.erb',
-               "#{destination_dir}/#{@controller_file_name}")
+      @inheriting_controller_class_name = class_name_for_path(relative_path)
+      @controller_class_name = class_name_for_path(new_relative_path)
+
+      template('lib/generators/api_version/templates/controller.rb.tt', controller_root + new_relative_path)
     end
   end
 
@@ -47,5 +49,13 @@ class ApiVersionGenerator < Rails::Generators::Base
       gsub_file(path, 'current', current_version)
       gsub_file(path, 'Current', current_version.capitalize)
     end
+  end
+
+  def class_name_for_path(path)
+    path.remove('.rb')
+      .split('/')
+      .reject(&:empty?)
+      .map(&:camelcase)
+      .join('::')
   end
 end

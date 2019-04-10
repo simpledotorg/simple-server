@@ -3,7 +3,7 @@ require 'generator_spec'
 
 require 'generators/api_version/api_version_generator'
 
-RSpec.describe ApiVersionGenerator, "using custom matcher", type: :generator do
+RSpec.describe ApiVersionGenerator, type: :generator do
   CURRENT_VERSION = 'v2'
   NEW_VERSION = 'v3'
 
@@ -71,6 +71,22 @@ RSpec.describe ApiVersionGenerator, "using custom matcher", type: :generator do
     describe 'creates controllers for the given current version' do
       it 'creates controller files using template' do
         assert_directory("#{destination_root}/app/controllers/api/#{CURRENT_VERSION}")
+      end
+
+      it 'creates template controllers for the given current version' do
+        controllers_root = Rails.root.join('app', 'controllers')
+        expected_relative_paths = Dir[controllers_root.join('api', 'current', '**', '*.rb')]
+                                  .map { |path| path.remove(controllers_root.to_s).sub('current', CURRENT_VERSION) }
+
+        expected_controllers = expected_relative_paths.map do |relative_path|
+          [relative_path, relative_path.sub('.rb', '').split('/').reject(&:empty?).map { |name| name.camelcase }.join('::')]
+        end.to_h
+
+        expected_controllers.each do |file, controller_name|
+          inheriting_controller_name = controller_name.sub(CURRENT_VERSION.capitalize, 'Current')
+          expected_file_path = destination_root.to_s + '/app/controllers' + file
+          assert_file(expected_file_path, "class #{controller_name} < #{inheriting_controller_name}\nend")
+        end
       end
     end
 
