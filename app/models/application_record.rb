@@ -3,6 +3,7 @@ class ApplicationRecord < ActiveRecord::Base
 
   self.discard_column = :deleted_at
   self.abstract_class = true
+  default_scope -> { kept }
 
   def self.updated_on_server_since(timestamp, number_of_records = nil)
     where("#{self.table_name}.updated_at >= ?", timestamp)
