@@ -40,10 +40,10 @@ RSpec.shared_examples 'v2 API sync requests' do
 
     expect(response.status).to eq 200
     expect(received_records.count)
-      .to eq model.updated_on_server_since(request_process_token[:v2_facility_processed_since].to_time).count
+      .to eq model.updated_on_server_since(request_process_token[:current_facility_processed_since].to_time).count
 
     expect(received_records.to_set)
-      .to eq model.updated_on_server_since(request_process_token[:v2_facility_processed_since].to_time)
+      .to eq model.updated_on_server_since(request_process_token[:current_facility_processed_since].to_time)
                .map { |record| to_response(record) }
                .to_set
   end
@@ -58,7 +58,7 @@ RSpec.shared_examples 'v2 API sync requests' do
     response_process_token = parse_process_token(response_body)
     expect(response.status).to eq 200
     expect(response_body[response_key]).to eq([])
-    expect(response_process_token[:v2_facility_processed_since].to_time).to eq(Time.new(0))
+    expect(response_process_token[:current_facility_processed_since].to_time).to eq(Time.new(0))
   end
 
   it 'pushes a new valid record and pull first time' do
@@ -74,7 +74,7 @@ RSpec.shared_examples 'v2 API sync requests' do
     expect(response.status).to eq 200
     expect(response_body[response_key].map(&:with_int_timestamps))
       .to eq(expected_response)
-    expect(response_process_token[:v2_facility_processed_since].to_time.to_i).to eq(model.first.updated_at.to_i)
+    expect(response_process_token[:current_facility_processed_since].to_time.to_i).to eq(model.first.updated_at.to_i)
   end
 
   it 'pushes 10 new blood_pressures, updates 5, and pulls only updated ones' do
