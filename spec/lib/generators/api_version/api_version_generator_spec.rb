@@ -21,8 +21,8 @@ RSpec.describe ApiVersionGenerator, type: :generator do
     prepare_destination
   end
 
-  def files_in_directory(directory)
-    Dir[directory.join('**', '*.rb')]
+  def files_in_directory(directory, extension: '*.rb')
+    Dir[directory.join('**', extension)]
       .map { |file| file.to_s.remove(Rails.root.to_s) }
   end
 
@@ -130,6 +130,21 @@ RSpec.describe ApiVersionGenerator, type: :generator do
           inheriting_validator_name = validator_name.sub(CURRENT_VERSION.capitalize, 'Current')
           expected_file_path = destination_root.to_s + '/app/validators' + file
           assert_file(expected_file_path, Regexp.new("^class #{validator_name} < #{inheriting_validator_name}\nend"))
+        end
+      end
+    end
+
+    describe 'creates views for the given current version' do
+      it 'creates views directory for the new version' do
+        assert_directory("#{destination_root}/app/views/api/#{CURRENT_VERSION}")
+      end
+
+      it 'creates template views for the given current version' do
+        current_view_files = files_in_directory(Rails.root.join('app', 'views', 'api', 'current'), extension: '*.erb')
+
+        current_view_files.each do |path|
+          new_file_path = path.sub('current', CURRENT_VERSION)
+          assert_file(destination_root.to_s + new_file_path)
         end
       end
     end

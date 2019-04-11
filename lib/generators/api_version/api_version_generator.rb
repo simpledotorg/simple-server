@@ -38,8 +38,20 @@ class ApiVersionGenerator < Rails::Generators::Base
     )
   end
 
+  def create_views_for_version
+    directory('app/views/api/current', "app/views/api/#{current_version}")
+  end
+
   def create_schema_for_version
     directory('app/schema/api/current', "app/schema/api/#{current_version}")
+  end
+
+  def create_routes_for_version
+    say 'API version generator does not generate routes. Please update config/routes.rb'
+  end
+
+  def ensure_backwards_compatibility
+    say "API version generator only generates scaffolds. Please ensure that #{current_version} is compatible with existing behaviour."
   end
 
   private
