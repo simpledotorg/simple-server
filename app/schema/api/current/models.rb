@@ -79,6 +79,20 @@ class Api::Current::Models
         required: %w[id created_at updated_at number] }
     end
 
+    def patient_business_identifier
+      { type: :object,
+        properties: {
+          id: { '$ref' => '#/definitions/uuid' },
+          identifier: { '$ref' => '#/definitions/non_empty_string' },
+          identifier_type: { type: :string, enum: PatientBusinessIdentifier.identifier_types.keys },
+          metadata_version: { type: :string },
+          metadata: { type: :object },
+          deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
+          created_at: { '$ref' => '#/definitions/timestamp' },
+          updated_at: { '$ref' => '#/definitions/timestamp' } },
+        required: %w[id created_at updated_at identifier identifier_type] }
+    end
+
     def nested_patient
       patient.deep_merge(
         properties: {
