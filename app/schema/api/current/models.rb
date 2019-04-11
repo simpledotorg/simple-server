@@ -97,8 +97,9 @@ class Api::Current::Models
       patient.deep_merge(
         properties: {
           address: { '$ref' => '#/definitions/address' },
-          phone_numbers: { '$ref' => '#/definitions/phone_numbers' }, },
-        description: 'Patient with address and phone numbers nested.',
+          phone_numbers: { '$ref' => '#/definitions/phone_numbers' },
+          business_identifiers: { '$ref' => '#/definitions/patient_business_identifiers' },},
+        description: 'Patient with address, phone numbers and business identifiers nested.',
       )
     end
 
@@ -302,7 +303,9 @@ class Api::Current::Models
         appointment: appointment,
         appointments: array_of('appointment'),
         medical_history: medical_history,
-        medical_histories: array_of('medical_history')
+        medical_histories: array_of('medical_history'),
+        patient_business_identifier: patient_business_identifier,
+        patient_business_identifiers: array_of('patient_business_identifier'),
       }
     end
   end
