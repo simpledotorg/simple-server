@@ -85,7 +85,7 @@ RSpec.describe ApiVersionGenerator, type: :generator do
         expected_controllers.each do |file, controller_name|
           inheriting_controller_name = controller_name.sub(CURRENT_VERSION.capitalize, 'Current')
           expected_file_path = destination_root.to_s + '/app/controllers' + file
-          assert_file(expected_file_path, Regexp.new("class #{controller_name} < #{inheriting_controller_name}"))
+          assert_file(expected_file_path, Regexp.new("^class #{controller_name} < #{inheriting_controller_name}\nend"))
         end
       end
     end
@@ -107,7 +107,7 @@ RSpec.describe ApiVersionGenerator, type: :generator do
         expected_transformers.each do |file, transformer_name|
           inheriting_transformer_name = transformer_name.sub(CURRENT_VERSION.capitalize, 'Current')
           expected_file_path = destination_root.to_s + '/app/transformers' + file
-          assert_file(expected_file_path, "class #{transformer_name} < #{inheriting_transformer_name}\nend")
+          assert_file(expected_file_path, Regexp.new("^class #{transformer_name} < #{inheriting_transformer_name}\nend"))
         end
       end
     end
