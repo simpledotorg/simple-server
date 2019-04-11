@@ -75,6 +75,15 @@ RSpec.describe ApiVersionGenerator, type: :generator do
           assert_file(destination_root.to_s + new_file_path)
         end
       end
+
+      it 'transformer specs' do
+        current_spec_files = files_in_directory(spec_root.join('transformers', 'api', 'current'))
+
+        current_spec_files.each do |path|
+          new_file_path = path.sub('current', CURRENT_VERSION)
+          assert_file(destination_root.to_s + new_file_path, Regexp.new("Api::#{CURRENT_VERSION.capitalize}"))
+        end
+      end
     end
 
     describe 'creates controllers for the given current version' do

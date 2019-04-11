@@ -16,6 +16,7 @@ class ApiVersionGenerator < Rails::Generators::Base
     create_copy_of_spec_directory('spec/payloads/api')
     create_copy_of_spec_directory('spec/requests/api')
     create_copy_of_spec_directory('spec/requests/shared_examples/api')
+    create_copy_of_spec_directory('spec/transformers/api')
   end
 
   def create_controllers_for_version
