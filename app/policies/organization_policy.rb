@@ -15,7 +15,15 @@ class OrganizationPolicy < ApplicationPolicy
     update?
   end
 
+  def destroy?
+    destroyable? && user.owner?
+  end
+
   private
+
+  def destroyable?
+    record.facility_groups.none?
+  end
 
   def admin_can_access?(role)
     user.role == role.to_s && user.organizations.include?(record)

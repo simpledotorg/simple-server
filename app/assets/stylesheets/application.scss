@@ -31,15 +31,14 @@ body {
 }
 
 h1 {
-    font-size: 24px;
+    font-size: 28px;
     //color: $accent-color;
     font-weight: bold;
 }
 
 h2 {
     font-size: 18px;
-    //color: $accent-color;
-    font-weight: 500;
+    font-weight: bold;
 }
 
 h3 {
@@ -163,6 +162,15 @@ a.btn {
     border-color: $green;
     color: #FFF;
   }
+}
+
+.btn-default {
+    text-transform: uppercase;
+    color: $blue;
+    letter-spacing: 0.05em;
+    font-size: 90%;
+    padding-right: 8px;
+    padding-left: 8px;
 }
 
 .btn-info {
@@ -372,6 +380,10 @@ span.inactive {
 
 .card .card-body {
     padding: 8px 16px 8px 16px;
+}
+
+.card-details {
+    margin: 4px 0 0 0;
 }
 
 /*****************
