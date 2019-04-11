@@ -29,7 +29,7 @@ RSpec.describe Api::V2::Analytics::UserAnalyticsController, type: :controller do
 
           response_body = JSON(response.body)
           expect(response_body.keys.map(&:to_sym))
-            .to include(:first_of_v2_month,
+            .to include(:first_of_current_month,
                         :total_patients_count,
                         :unique_patients_per_month,
                         :patients_enrolled_per_month)
