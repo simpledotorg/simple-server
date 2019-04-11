@@ -31,6 +31,13 @@ class ApiVersionGenerator < Rails::Generators::Base
     )
   end
 
+  def create_validators_for_version
+    create_template_for_directory(
+      'app/validators',
+      'lib/generators/api_version/templates/empty_inheriting_class.rb.tt'
+    )
+  end
+
   def create_schema_for_version
     directory('app/schema/api/current', "app/schema/api/#{current_version}")
   end

@@ -112,6 +112,28 @@ RSpec.describe ApiVersionGenerator, type: :generator do
       end
     end
 
+    describe 'creates validators for the given current version' do
+      it 'creates validators directory for the new version' do
+        assert_directory("#{destination_root}/app/validators/api/#{CURRENT_VERSION}")
+      end
+
+      it 'creates template validators for the given current version' do
+        validators_root = Rails.root.join('app', 'validators')
+        expected_relative_paths = Dir[validators_root.join('api', 'current', '**', '*.rb')]
+                                    .map { |path| path.remove(validators_root.to_s).sub('current', CURRENT_VERSION) }
+
+        expected_validators = expected_relative_paths.map do |relative_path|
+          [relative_path, relative_path.sub('.rb', '').split('/').reject(&:empty?).map { |name| name.camelcase }.join('::')]
+        end.to_h
+
+        expected_validators.each do |file, validator_name|
+          inheriting_validator_name = validator_name.sub(CURRENT_VERSION.capitalize, 'Current')
+          expected_file_path = destination_root.to_s + '/app/validators' + file
+          assert_file(expected_file_path, Regexp.new("^class #{validator_name} < #{inheriting_validator_name}\nend"))
+        end
+      end
+    end
+
     describe 'creates schema for the given current version' do
       it 'copies the schema files' do
         expect(destination_root.to_s + '/app/schema/api').to have_structure {
