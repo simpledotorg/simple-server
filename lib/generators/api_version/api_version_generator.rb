@@ -43,7 +43,11 @@ class ApiVersionGenerator < Rails::Generators::Base
   end
 
   def create_schema_for_version
-    directory('app/schema/api/current', "app/schema/api/#{current_version}")
+    create_template_for_directory(
+      'app/schema',
+      'lib/generators/api_version/templates/empty_inheriting_class.rb.tt'
+    )
+    say 'API version generator only generates scaffolds for schema.'
   end
 
   def create_routes_for_version
@@ -61,7 +65,7 @@ class ApiVersionGenerator < Rails::Generators::Base
     directory("#{directory_path}/current", current_version_path)
     Dir["#{destination_root}/#{current_version_path}/**/*.rb"].each do |path|
       gsub_file(path, 'current', current_version)
-      gsub_file(path, 'Current', current_version.capitalize)
+      gsub_file(path, 'Current', current_version.camelcase)
     end
   end
 

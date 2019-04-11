@@ -150,13 +150,16 @@ RSpec.describe ApiVersionGenerator, type: :generator do
     end
 
     describe 'creates schema for the given current version' do
-      it 'copies the schema files' do
-        expect(destination_root.to_s + '/app/schema/api').to have_structure {
-          directory CURRENT_VERSION do
-            file 'models.rb'
-            file 'schema.rb'
-          end
-        }
+      it 'creates schema directory for the new version' do
+        assert_directory("#{destination_root}/app/schema/api/#{CURRENT_VERSION}")
+      end
+
+      it 'creates template schema for the given current version' do
+        assert_file(destination_root.to_s + "/app/schema/api/#{CURRENT_VERSION}/models.rb",
+                    Regexp.new("^class Api::#{CURRENT_VERSION.camelcase}::Models < Api::Current::Models\nend"))
+
+        assert_file(destination_root.to_s + "/app/schema/api/#{CURRENT_VERSION}/schema.rb",
+                    Regexp.new("^class Api::#{CURRENT_VERSION.camelcase}::Schema < Api::Current::Schema\nend"))
       end
     end
   end
