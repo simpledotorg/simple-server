@@ -1,8 +1,9 @@
 class SmsNotificationService
+  DEFAULT_LOCALE = :en
 
-  def initialize(user)
+  def initialize(user, client = Twilio::REST::Client.new)
     @user = user
-    @client = Twilio::REST::Client.new
+    @client = client
   end
 
   def notify
@@ -14,20 +15,21 @@ class SmsNotificationService
     send_sms(I18n.t('sms.request_otp', otp: user.otp, app_signature: app_signature))
   end
 
+  def send_reminder_sms(facility, appointment, locale = DEFAULT_LOCALE)
+    send_sms(I18n.t('sms.overdue_appointment_reminder',
+                    facility_name: facility.name,
+                    appointment_date: appointment.scheduled_date_for_locale(locale),
+                    locale: locale))
+  end
+
   private
 
   attr_reader :user, :client
 
   def send_sms(body)
-    unless FeatureToggle.enabled?('SMS_NOTIFICATION_FOR_OTP')
-      Rails.logger.info "SMS_NOTIFICATION_FOR_OTP Feature is disabled. Skipping SMS notification to user #{user.id}"
-      return
-    end
-
     client.messages.create(
       from: ENV['TWILIO_PHONE_NUMBER'],
       to: user.phone_number.prepend(I18n.t('sms.country_code')),
-      body: body
-    )
+      body: body)
   end
 end
