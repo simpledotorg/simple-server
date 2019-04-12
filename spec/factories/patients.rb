@@ -21,6 +21,7 @@ FactoryBot.define do
     phone_numbers { build_list(:patient_phone_number, rand(1..3), patient_id: id) }
     association :registration_facility, factory: :facility
     association :registration_user, factory: :user_created_on_device
+    business_identifiers { build_list(:patient_business_identifier, rand(1..3), :with_metadata, patient_id: id) }
 
     trait(:with_sanitized_phone_number) do
       phone_numbers { build_list(:patient_phone_number, 1, patient_id: id, number: '9876543210') }
@@ -36,7 +37,8 @@ def build_patient_payload(patient = FactoryBot.build(:patient))
     .except('test_data')
     .merge(
       'address'       => patient.address.attributes.with_payload_keys,
-      'phone_numbers' => patient.phone_numbers.map { |phno| phno.attributes.with_payload_keys.except('patient_id') }
+      'phone_numbers' => patient.phone_numbers.map { |phno| phno.attributes.with_payload_keys.except('patient_id') },
+      'business_identifiers' => patient.business_identifiers.map { |bid| bid.attributes.with_payload_keys.except('patient_id') }
     )
 end
 

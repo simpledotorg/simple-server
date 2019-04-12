@@ -1,4 +1,6 @@
 class PatientBusinessIdentifier < ApplicationRecord
+  include Mergeable
+
   belongs_to :patient
 
   enum identifier_type: {

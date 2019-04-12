@@ -14,6 +14,7 @@ class Patient < ApplicationRecord
 
   belongs_to :address, optional: true
   has_many :phone_numbers, class_name: 'PatientPhoneNumber'
+  has_many :business_identifiers, class_name: 'PatientBusinessIdentifier'
   has_many :blood_pressures, inverse_of: :patient
   has_many :latest_blood_pressures, -> { order(device_created_at: :desc) }, class_name: 'BloodPressure'
   has_many :prescription_drugs
