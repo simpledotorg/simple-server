@@ -25,4 +25,12 @@ module ApplicationHelper
       "#{time_ago_in_words(date)} ago".html_safe
     end
   end
+
+  def handle_impossible_registration_date(date, format: "%d-%b-%Y")
+    if date < Time.new(2018, 01, 01) # Date of inception of program
+      'unclear'
+    else
+      date.strftime(format)
+    end
+  end
 end

@@ -16,7 +16,7 @@
     <div class="overdue-details">
       <% if show_enrolment_date %>
         Enrolled on:
-        <%= patient.device_created_at.strftime("%d-%B-%Y") %><br>
+        <%= patient.device_created_at.strftime("%d-%b-%Y") %><br>
       <% end %>
       Last BP:
       <%= bp.to_s %>&nbsp;
