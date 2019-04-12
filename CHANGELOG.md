@@ -6,7 +6,46 @@
 ### Removed 
 ### Security
 
-# 2019-04-10-1
+# 2019-04-12-1
+## Portal
+### Added
+- Adding patient record creation date as enrolment date for adherence tab
+- Add pagination to the AuditLogs index view
+- Add views for whatsapp graphics for facility and facility groups
+- Add a job to warmup analytics cache
+### Changed
+- Cleaned up and simplified managing organizations, facility groups and facilities.
+- Don't allow facilities with associated records to be deleted
+- Don't allow orgs with facility groups to be deleted
+- Separated org management for owners
+- Improve user and facility lists
+### Fixed
+- Fix missing hamburger icon in web view on dashboard
+- Fix FacilityGroup and Organization ordering on dashboard
+- Fix misplaced assignment while setting patients status to dead
+- Fixed facility link paths
+- Fix recorded patients count on the dashboard
+### Deprecated
+### Removed
+### Security
+
+## Api
+### Added
+- ExotelAPI to fetch the details of a call for the created call sessions
+- Populate a CallLog at the end of a phone number masked session
+- Adding the sidekiq monitoring route for owners only
+- Add connection pooling and redis store for CallSession
+- Add support to run sidekiq as a systemctl service
+### Changed
+- Enabled User Analytics API
+- Grammar fixes in Help section
+- Update Whatsapp support instructions
+### Fixed
+### Deprecated
+### Removed
+### Security
+
+# 2019-04-10-1 [[CANCELLED] Impossible dates on Adherence followup screen]
 ## Portal
 ### Added
 - Adding patient record creation date as enrolment date for adherence tab
