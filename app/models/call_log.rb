@@ -12,5 +12,6 @@ class CallLog < ApplicationRecord
     busy: 'busy',
     no_answer: 'no_answer',
     canceled: 'canceled',
+    unknown: 'unknown'
   }, _prefix: true
 end
