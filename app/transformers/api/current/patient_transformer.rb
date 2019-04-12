@@ -4,12 +4,15 @@ class Api::Current::PatientTransformer
       payload_attributes = payload_attributes.to_hash.with_indifferent_access
       address = payload_attributes[:address]
       phone_numbers = payload_attributes[:phone_numbers]
+      business_identifiers = payload_attributes[:business_identifiers]
       address_attributes = Api::Current::Transformer.from_request(address) if address.present?
       phone_numbers_attributes = phone_numbers.map { |phone_number| Api::Current::Transformer.from_request(phone_number) } if phone_numbers.present?
+      business_identifiers_attributes = business_identifiers.map { |phone_number| Api::Current::Transformer.from_request(phone_number) } if business_identifiers.present?
       patient_attributes = Api::Current::Transformer.from_request(payload_attributes)
       patient_attributes.merge(
         address: address_attributes,
-        phone_numbers: phone_numbers_attributes
+        phone_numbers: phone_numbers_attributes,
+        business_identifiers: business_identifiers_attributes
       ).with_indifferent_access
     end
 
