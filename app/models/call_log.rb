@@ -3,8 +3,6 @@ class CallLog < ApplicationRecord
 
   validates :callee_phone_number, presence: true
 
-  UNKNOWN_RESULT = 'unknown'
-
   enum result: {
     queued: 'queued',
     ringing: 'ringing',
@@ -14,6 +12,6 @@ class CallLog < ApplicationRecord
     busy: 'busy',
     no_answer: 'no_answer',
     canceled: 'canceled',
-    unknown: UNKNOWN_RESULT
+    unknown: 'unknown'
   }, _prefix: true
 end

@@ -48,7 +48,7 @@ class Api::Current::ExotelCallSessionsController < ApplicationController
     status = params[:CallStatus] || params[:DialCallStatus]
 
     if status.blank? || status == 'null'
-      CallLog::UNKNOWN_RESULT
+      CallLog.results[:unknown]
     else
       status.underscore
     end
