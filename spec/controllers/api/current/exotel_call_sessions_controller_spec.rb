@@ -6,10 +6,6 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
   let!(:unknown_phone_number) { '1234567890' }
   let!(:invalid_patient_phone_number) { '1800-SIMPLE' }
 
-  before(:each) do
-    Rails.cache.clear
-  end
-
   describe '#create' do
     context ':ok' do
       it 'should have a content-type set as text/plain' do
@@ -157,17 +153,33 @@ RSpec.describe Api::Current::ExotelCallSessionsController, type: :controller do
 
       it { should use_after_action(:report_http_status) }
 
-      it 'should schedule a job to log the call details' do
-        assert_enqueued_with(job: ExotelCallDetailsJob, args: [call_id,
-                                                               user.id,
-                                                               patient.phone_numbers.first.number,
-                                                               'completed']) do
-          get :terminate, params: { From: user.phone_number,
-                                    digits: patient.phone_numbers.first.number,
-                                    CallType: 'call-attempt',
-                                    CallSid: call_id,
-                                    DialCallDuration: '10',
-                                    CallStatus: 'completed' }
+      context 'call details job' do
+        it 'should schedule a job to log the call details' do
+          assert_enqueued_with(job: ExotelCallDetailsJob, args: [call_id,
+                                                                 user.id,
+                                                                 patient.phone_numbers.first.number,
+                                                                 'completed']) do
+            get :terminate, params: { From: user.phone_number,
+                                      digits: patient.phone_numbers.first.number,
+                                      CallType: 'call-attempt',
+                                      CallSid: call_id,
+                                      DialCallDuration: '10',
+                                      CallStatus: 'completed' }
+          end
+        end
+
+        it 'assigns call details with status as unknown if CallStatus was null' do
+          assert_enqueued_with(job: ExotelCallDetailsJob, args: [call_id,
+                                                                 user.id,
+                                                                 patient.phone_numbers.first.number,
+                                                                 'unknown']) do
+            get :terminate, params: { From: user.phone_number,
+                                      digits: patient.phone_numbers.first.number,
+                                      CallType: 'call-attempt',
+                                      CallSid: call_id,
+                                      DialCallDuration: '10',
+                                      CallStatus: 'null' }
+          end
         end
       end
     end
