@@ -6,6 +6,25 @@
 ### Removed 
 ### Security
 
+# 2019-04-12-2
+## Portal
+### Added
+### Changed
+### Fixed
+### Deprecated
+### Removed
+### Security
+
+## Api
+### Added
+### Changed
+- Mark `appointment_type` column of appointments as non-null.
+### Fixed
+### Deprecated
+### Removed
+### Security
+
+
 # 2019-04-12-1
 ## Portal
 ### Added
