@@ -31,8 +31,8 @@
 
 ## Api
 ### Added
-- ExotelAPI to fetch call_details
-- Populate the CallLog result from the terminate response
+- ExotelAPI to fetch the details of a call for the created call sessions
+- Populate a CallLog at the end of a phone number masked session
 - Adding the sidekiq monitoring route for owners only
 - Add connection pooling and redis store for CallSession
 - Add support to run sidekiq as a systemctl service
