@@ -21,7 +21,7 @@ FactoryBot.define do
     phone_numbers { build_list(:patient_phone_number, rand(1..3), patient_id: id) }
     association :registration_facility, factory: :facility
     association :registration_user, factory: :user_created_on_device
-    business_identifiers { build_list(:patient_business_identifier, rand(1..3), :with_metadata, patient_id: id) }
+    business_identifiers { build_list(:patient_business_identifier, rand(1..3), patient_id: id) }
 
     trait(:with_sanitized_phone_number) do
       phone_numbers { build_list(:patient_phone_number, 1, patient_id: id, number: '9876543210') }
@@ -54,6 +54,7 @@ end
 
 def updated_patient_payload(existing_patient)
   phone_number = existing_patient.phone_numbers.sample || FactoryBot.build(:patient_phone_number, patient: existing_patient)
+  business_identifier = existing_patient.business_identifiers.sample || FactoryBot.build(:patient_business_identifier, patient: existing_patient)
   update_time  = 10.days.from_now
   build_patient_payload(existing_patient).deep_merge(
     'full_name'     => Faker::Name.name,
@@ -62,6 +63,9 @@ def updated_patient_payload(existing_patient)
                          'street_address' => Faker::Address.street_address },
     'phone_numbers' => [phone_number.attributes.with_payload_keys.merge(
       'updated_at' => update_time,
-      'number'     => Faker::PhoneNumber.phone_number)]
+      'number'     => Faker::PhoneNumber.phone_number)],
+    'business_identifiers' => [business_identifier.attributes.with_payload_keys.merge(
+      'updated_at' => update_time,
+      'identifier' => SecureRandom.uuid)]
   )
 end

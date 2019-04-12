@@ -5,13 +5,15 @@ FactoryBot.define do
     identifier_type { 'simple_bp_passport' }
     device_created_at { Time.now }
     device_updated_at { Time.now }
+    metadata_version { 'org.simple.bppassport.meta.v1' }
+    metadata do
+      { assigning_user_id: SecureRandom.uuid,
+        assigning_facility_id: SecureRandom.uuid }
+    end
 
-    trait(:with_metadata) do
-      metadata_version { 'org.simple.bppassport.meta.v1' }
-      metadata do
-        { assigning_user_id: SecureRandom.uuid,
-          assigning_facility_id: SecureRandom.uuid }
-      end
+    trait(:without_metadata) do
+      metadata_version { nil }
+      metadata { nil }
     end
   end
 end
