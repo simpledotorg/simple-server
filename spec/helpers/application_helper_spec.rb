@@ -34,7 +34,7 @@ describe ApplicationHelper, type: :helper do
     end
 
     it "returns 'unclear' if the date is lesser than the program inception date" do
-      expect(helper.handle_impossible_registration_date(Date.new(2017, 01, 01))).to eq('unclear')
+      expect(helper.handle_impossible_registration_date(Date.new(2017, 01, 01))).to eq('Unclear')
     end
   end
 end
