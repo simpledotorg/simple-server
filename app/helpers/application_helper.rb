@@ -1,4 +1,7 @@
 module ApplicationHelper
+
+  DEFAULT_PROGRAM_INCEPTION_DATE = Time.new(2018, 01, 01)
+
   def bootstrap_class_for_flash(flash_type)
     case flash_type
     when 'success'
@@ -27,7 +30,8 @@ module ApplicationHelper
   end
 
   def handle_impossible_registration_date(date, format: "%d-%b-%Y")
-    if date < Time.new(2018, 01, 01) # Date of inception of program
+    program_inception_date = ENV['PROGRAM_INCEPTION_DATE'] ? ENV['PROGRAM_INCEPTION_DATE'].to_time : DEFAULT_PROGRAM_INCEPTION_DATE
+    if date < program_inception_date # Date of inception of program
       'unclear'
     else
       date.strftime(format)

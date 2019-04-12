@@ -25,12 +25,16 @@ describe ApplicationHelper, type: :helper do
   end
 
   describe '#handle_impossible_registration_date' do
-    it 'returns the formatted registraion data if it is greater than 2018-01-01' do
-      expect(helper.handle_impossible_registration_date(Date.new(2019,01,01))).to eq('01-Jan-2019')
+    before :each do
+      allow(ENV).to receive(:[]).with("PROGRAM_INCEPTION_DATE").and_return("2018-01-01")
     end
 
-    it "returns 'unclear' if the date is lesser than 2018-01-01" do
-      expect(helper.handle_impossible_registration_date(Date.new(2017,01,01))).to eq('unclear')
+    it 'returns the formatted registraion data if it is greater than the program inception date' do
+      expect(helper.handle_impossible_registration_date(Date.new(2019, 01, 01))).to eq('01-Jan-2019')
+    end
+
+    it "returns 'unclear' if the date is lesser than the program inception date" do
+      expect(helper.handle_impossible_registration_date(Date.new(2017, 01, 01))).to eq('unclear')
     end
   end
 end
