@@ -3,16 +3,16 @@ namespace :exotel_tasks do
   task whitelist_patient_phone_numbers: :environment do
     require 'exotel_tasks/whitelist_phone_numbers'
 
-    if ENV['FILE_PATH'].blank? || ENV['ACCOUNT_SID'].blank? || ENV['TOKEN'].blank?
-      puts 'Please specify all of: FILE_PATH, ACCOUNT_SID and TOKEN as env vars to continue'
-      abort 'Exiting...'
-    end
-
     data_file = ENV['JSON_FILE_PATH']
-    batch_size = (ENV['BATCH_SIZE'] || 1000).to_i
     account_sid = ENV['ACCOUNT_SID']
     token = ENV['TOKEN']
     virtual_number = ENV['VIRTUAL_NUMBER']
+    batch_size = (ENV['BATCH_SIZE'] || 1000).to_i
+
+    if data_file.blank? || account_sid.blank? || token.blank?
+      puts 'Please specify all of: FILE_PATH, ACCOUNT_SID and TOKEN as env vars to continue'
+      abort 'Exiting...'
+    end
 
     task = ExotelTasks::WhitelistPhoneNumbers.new(account_sid,
                                                   token,
