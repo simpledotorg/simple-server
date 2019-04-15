@@ -17,28 +17,40 @@ module ExotelTasks
                  'Failed' => 0 }
     end
 
-    def rearrange_in_batches(batch_size)
-      comma_separate_each_batch(extract_phone_nums_in_batches(parse_json_file, batch_size))
+    def update_stats!(new_stats)
+      stats.merge!(new_stats.slice('Total',
+                                   'Duplicate',
+                                   'Processed',
+                                   'Succeeded',
+                                   'Redundant',
+                                   'Failed')) { |_, v1, v2| v1 + v2 }
     end
 
-    def update_stats(new_stats)
-      @stats.merge!(new_stats.slice('Total',
-                                    'Duplicate',
-                                    'Processed',
-                                    'Succeeded',
-                                    'Redundant',
-                                    'Failed')) { |_, v1, v2| v1 + v2 }
+    def process(batch_size, virtual_number)
+      logger.debug("Chunking phone numbers into comma-separated batches...")
+
+      records = comma_separate_each_batch(extract_phone_nums_in_batches(parse_json_file, batch_size))
+      records.each_with_index do |batch, idx|
+        logger.debug("Starting to process batch \##{idx}")
+
+        data = { :Language => 'en',
+                 :VirtualNumber => virtual_number,
+                 :Number => batch }
+        process_batch(data)
+
+        sleep 1
+      end
     end
 
-    def process(body_params)
-      logger.tagged('ExotelTasks::WhitelistPhoneNumbers#process') do
+    def process_batch(body_params)
+      logger.tagged('Process Batch') do
         begin
           response = HTTP
                        .basic_auth(user: @account_sid, pass: @token)
                        .post(CUSTOMER_WHITELIST_API, :params => body_params)
 
           if response.status.ok?
-            update_stats(JSON.parse(response)['Result'])
+            update_stats!(JSON.parse(response)['Result'])
             logger.debug("Response was successful. Current Current processing status: #{stats}")
           else
             logger.debug("Response was #{response.status}. Current processing status: #{stats}")
