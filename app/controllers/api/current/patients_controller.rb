@@ -49,9 +49,10 @@ class Api::Current::PatientsController < Api::Current::SyncController
   def patients_params
     permitted_address_params = %i[id street_address village_or_colony district state country pin created_at updated_at]
     permitted_phone_number_params = %i[id number phone_type active created_at updated_at]
-    permitted_business_identifier_params = %i[id identifier identifier_type metadata_version metadata created_at updated_at]
+    permitted_business_identifier_params = [:id, :identifier, :identifier_type, :metadata_version, :created_at, :updated_at, metadata: {}]
 
-    params.require(:patients).map do |single_patient_params|
+    patient_attributes = params.require(:patients)
+    patient_attributes.map do |single_patient_params|
       single_patient_params.permit(
         :id,
         :full_name,
