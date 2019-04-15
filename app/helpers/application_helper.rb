@@ -45,15 +45,12 @@ module ApplicationHelper
     last_appointment_date = last_appointment.created_at.strftime("%d-%b-%Y")
 
     interaction_result = last_appointment_date
-    interaction_result += " - "
-    interaction_result +=
-      if last_appointment.agreed_to_visit.present?
-        interaction_result = "Agreed to visit"
-      elsif last_appointment.remind_on.present?
-        interaction_result = "Remind to call later"
-      else
-        "N/A"
-      end
+    if last_appointment.agreed_to_visit.present?
+      interaction_result += ' - Agreed to visit'
+    elsif last_appointment.remind_on.present?
+      interaction_result += ' - Remind to call later'
+    end
+
     interaction_result
   end
 
