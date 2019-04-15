@@ -62,9 +62,9 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
         }.to change(FacilityGroup, :count).by(1)
       end
 
-      it 'redirects to the organizations' do
+      it 'redirects to the facilities' do
         post :create, params: { facility_group: valid_attributes, organization_id: organization.id }
-        expect(response).to redirect_to([:admin, organization])
+        expect(response).to redirect_to(admin_facilities_url)
       end
     end
 
@@ -94,10 +94,10 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
           .to eq new_attributes.with_indifferent_access
       end
 
-      it 'redirects to the organizations' do
+      it 'redirects to the facilities' do
         facility_group = FacilityGroup.create! valid_attributes
         put :update, params: { id: facility_group.to_param, facility_group: valid_attributes, organization_id: organization.id }
-        expect(response).to redirect_to([:admin, organization])
+        expect(response).to redirect_to(admin_facilities_url)
       end
     end
 
@@ -118,10 +118,10 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       }.to change(FacilityGroup, :count).by(-1)
     end
 
-    it 'redirects to the facility_groups list for the organization' do
+    it 'redirects to the facilities list' do
       facility_group = FacilityGroup.create! valid_attributes
       delete :destroy, params: { id: facility_group.to_param, organization_id: organization.id }
-      expect(response).to redirect_to(admin_organization_facility_groups_url(organization))
+      expect(response).to redirect_to(admin_facilities_url)
     end
   end
 end

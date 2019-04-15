@@ -24,7 +24,7 @@
                 </div>
                 <div class="col tight">
                   <small>
-                    <%= user.registered_at_facility.present? ? link_to(user.registered_at_facility.name, [:admin, user.registered_at_facility]) : "N/A" %>
+                    <%= user.registered_at_facility.present? ? link_to(user.registered_at_facility.name, [:admin, user.registered_at_facility.facility_group, user.registered_at_facility]) : "N/A" %>
                   </small>
                 </div>
               </div>
