@@ -18,6 +18,7 @@
         Enrolled on:
         <%= handle_impossible_registration_date(patient.device_created_at, format: "%d-%b-%Y") %><br>
       <% end %>
+      Last interaction: <%= show_last_interaction_date_and_result(patient) %><br>
       Last BP:
       <%= bp.to_s %>&nbsp;
       recorded at <%= bp.facility.name %>
