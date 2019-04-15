@@ -356,6 +356,7 @@ RSpec.shared_examples 'a sync controller that audits the data access' do
         limit: 5
       }, as: :json
 
+      perform_enqueued_jobs
       audit_logs = AuditLog.where(user_id: request_user.id, auditable_type: auditable_type)
       expect(audit_logs.count).to be 5
       expect(audit_logs.map(&:auditable_id).to_set).to eq(records.map(&:id).to_set)
