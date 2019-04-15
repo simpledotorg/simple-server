@@ -7,7 +7,6 @@ class AuditLog < ApplicationRecord
     old:     'touch'
   }.freeze
 
-
   belongs_to :user
   belongs_to :auditable, polymorphic: true
 
@@ -42,12 +41,12 @@ class AuditLog < ApplicationRecord
       action:         'login')
   end
 
+  # ActiveRecord callbacks will not be run (if any)
   def self.create_logs_async(user, records, action)
     records_by_class = records.group_by { |record| record.class.to_s }
 
     records_by_class.each do |record_class, records_for_class|
       CreateAuditLogsJob.perform_later(user.id, record_class, records_for_class.map(&:id), action)
     end
-
   end
 end
