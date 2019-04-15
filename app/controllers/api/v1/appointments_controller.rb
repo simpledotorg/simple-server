@@ -15,6 +15,7 @@ class Api::V1::AppointmentsController < Api::Current::AppointmentsController
       NewRelic::Agent.increment_metric('Merge/Appointment/invalid_request')
       { errors_hash: { updated_at: 'Cancelled appointment cannot be updated', id: appointment_params[:id] } }
     else
+      set_default_appointment_type(record_params)
       appointment = Appointment.merge(record_params)
       { record: appointment }
     end
