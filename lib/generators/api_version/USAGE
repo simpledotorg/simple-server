@@ -1,0 +1,13 @@
+Description:
+    Generates scaffold required to create a new api version
+
+Example:
+    rails generate api_version --current-version v1 --new-version v2
+
+    This will:
+        * templatize controllers
+        * templatize transformers
+        * templatize validators
+        * templatize views
+        * templatize schema
+        * copy specs

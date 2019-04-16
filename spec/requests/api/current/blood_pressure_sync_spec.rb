@@ -11,7 +11,7 @@ RSpec.describe 'BloodPressures sync', type: :request do
   let(:update_payload) { lambda { |blood_pressure| updated_blood_pressure_payload blood_pressure } }
 
   def to_response(blood_pressure)
-    Api::V1::Transformer.to_response(blood_pressure)
+    Api::Current::Transformer.to_response(blood_pressure)
   end
 
   include_examples 'current API sync requests'

@@ -67,6 +67,7 @@ group :test do
   gem 'launchy'
   gem 'webmock'
   gem 'fakeredis', require:  false
+  gem 'generator_spec'
 end
 
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
