@@ -3,10 +3,10 @@ namespace :exotel_tasks do
   task whitelist_patient_phone_numbers: :environment do
     require 'exotel_tasks/whitelist_phone_numbers'
 
-    data_file = ENV['JSON_FILE_PATH']
-    account_sid = ENV['ACCOUNT_SID']
-    token = ENV['TOKEN']
-    virtual_number = ENV['VIRTUAL_NUMBER']
+    data_file = ENV.fetch('JSON_FILE_PATH')
+    account_sid = ENV.fetch('ACCOUNT_SID')
+    token = ENV.fetch('TOKEN')
+    virtual_number = ENV.fetch('VIRTUAL_NUMBER')
     batch_size = (ENV['BATCH_SIZE'] || 1000).to_i
 
     if data_file.blank? || account_sid.blank? || token.blank?
