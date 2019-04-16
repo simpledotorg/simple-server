@@ -4,7 +4,7 @@ class FacilityGroupPolicy < ApplicationPolicy
   end
 
   def show?
-    user.owner? || admin_can_access?(:organization_owner)
+    user.owner? || [:organization_owner, :supervisor, :analyst].map { |role| admin_can_access?(role) }.any?
   end
 
   def create?
@@ -30,6 +30,7 @@ class FacilityGroupPolicy < ApplicationPolicy
   def graphics?
     show?
   end
+
   private
 
   def destroyable?

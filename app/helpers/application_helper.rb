@@ -1,4 +1,7 @@
 module ApplicationHelper
+
+  DEFAULT_PROGRAM_INCEPTION_DATE = Time.new(2018, 01, 01)
+
   def bootstrap_class_for_flash(flash_type)
     case flash_type
     when 'success'
@@ -23,6 +26,15 @@ module ApplicationHelper
       "on #{date.strftime("%d/%m/%Y")}".html_safe
     else
       "#{time_ago_in_words(date)} ago".html_safe
+    end
+  end
+
+  def handle_impossible_registration_date(date, format: "%d-%b-%Y")
+    program_inception_date = ENV['PROGRAM_INCEPTION_DATE'] ? ENV['PROGRAM_INCEPTION_DATE'].to_time : DEFAULT_PROGRAM_INCEPTION_DATE
+    if date < program_inception_date # Date of inception of program
+      'Unclear'
+    else
+      date.strftime(format)
     end
   end
 end

@@ -19,7 +19,7 @@ class Api::Current::SyncController < APIController
   end
 
   def __sync_to_user__(response_key)
-    records_to_sync.each { |record| AuditLog.fetch_log(current_user, record) }
+    AuditLog.create_logs_async(current_user, records_to_sync, 'fetch') unless disable_audit_logs?
     render(
       json: {
         response_key => records_to_sync.map { |record| transform_to_response(record) },
@@ -30,6 +30,10 @@ class Api::Current::SyncController < APIController
   end
 
   private
+
+  def disable_audit_logs?
+    false
+  end
 
   def check_disabled_api
     return if sync_api_toggled_on?
