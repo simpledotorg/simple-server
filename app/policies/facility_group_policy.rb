@@ -4,7 +4,7 @@ class FacilityGroupPolicy < ApplicationPolicy
   end
 
   def show?
-    user.owner? || admin_can_access?(:organization_owner)
+    user.owner? || admin_can_access?(:organization_owner) || admin_can_access?(:supervisor)
   end
 
   def create?
@@ -30,6 +30,7 @@ class FacilityGroupPolicy < ApplicationPolicy
   def graphics?
     show?
   end
+
   private
 
   def destroyable?
