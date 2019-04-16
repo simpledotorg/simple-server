@@ -39,7 +39,7 @@ module ApplicationHelper
   end
 
   def show_last_interaction_date_and_result(patient)
-    return "No previous appointment" unless has_last_interaction_data?(patient)
+    return 'No previous appointment' unless has_last_interaction_data?(patient)
 
     last_appointment = patient.appointments.order(scheduled_date: :desc).second
     last_appointment_date = last_appointment.created_at.strftime("%d-%b-%Y")
