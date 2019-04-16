@@ -24,6 +24,28 @@
 ### Removed
 ### Security
 
+# 2019-04-16-1
+## Portal
+### Added
+### Changed
+### Fixed
+### Deprecated
+### Removed
+### Security
+
+## Api
+### Added
+### Changed
+- Eager load patient address and phone number for syncing to user
+- Make sync_to_user audit log creation async
+- Disable audit log creation for facility sync
+- Disable audit log creation for protocol sync
+- Making the AuditLog insert bulk inserts for fetch
+### Fixed
+### Deprecated
+### Removed
+### Security
+
 
 # 2019-04-12-1
 ## Portal
