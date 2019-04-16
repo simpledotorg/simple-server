@@ -33,6 +33,8 @@ GEM
       activemodel (= 5.1.6.2)
       activesupport (= 5.1.6.2)
       arel (~> 8.0)
+    activerecord-import (1.0.1)
+      activerecord (>= 3.2)
     activesupport (5.1.6.2)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 0.7, < 2)
@@ -74,6 +76,9 @@ GEM
     capistrano-rbenv (2.1.3)
       capistrano (~> 3.1)
       sshkit (~> 1.3)
+    capistrano-sidekiq (1.0.2)
+      capistrano (>= 3.9.0)
+      sidekiq (>= 3.4)
     capybara (3.1.0)
       addressable
       mini_mime (>= 0.1.3)
@@ -81,6 +86,7 @@ GEM
       rack (>= 1.6.0)
       rack-test (>= 0.6.3)
       xpath (~> 3.0)
+    chronic (0.10.2)
     coderay (1.1.2)
     composite_primary_keys (10.0.5)
       activerecord (~> 5.1.0, >= 5.1.6)
@@ -133,6 +139,9 @@ GEM
     ffi (1.9.25)
     friendly_id (5.2.5)
       activerecord (>= 4.0.0)
+    generator_spec (0.9.4)
+      activesupport (>= 3.0.0)
+      railties (>= 3.0.0)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
     groupdate (4.0.1)
@@ -254,6 +263,22 @@ GEM
     rb-inotify (0.9.10)
       ffi (>= 0.5.0, < 2)
     redis (4.1.0)
+    redis-actionpack (5.0.2)
+      actionpack (>= 4.0, < 6)
+      redis-rack (>= 1, < 3)
+      redis-store (>= 1.1.0, < 2)
+    redis-activesupport (5.0.7)
+      activesupport (>= 3, < 6)
+      redis-store (>= 1.3, < 2)
+    redis-rack (2.0.5)
+      rack (>= 1.5, < 3)
+      redis-store (>= 1.2, < 2)
+    redis-rails (5.0.2)
+      redis-actionpack (>= 5.0, < 6)
+      redis-activesupport (>= 5.0, < 6)
+      redis-store (>= 1.2, < 2)
+    redis-store (1.6.0)
+      redis (>= 2.2, < 5)
     responders (2.4.1)
       actionpack (>= 4.2.0, < 6.0)
       railties (>= 4.2.0, < 6.0)
@@ -357,6 +382,8 @@ GEM
     websocket-driver (0.6.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.3)
+    whenever (0.10.0)
+      chronic (>= 0.6.3)
     xpath (3.0.0)
       nokogiri (~> 1.8)
 
@@ -364,6 +391,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activerecord-import
   bcrypt (~> 3.1, >= 3.1.11)
   bootstrap (~> 4.3.1)
   bootstrap_form (>= 4.1.0)
@@ -373,6 +401,7 @@ DEPENDENCIES
   capistrano-rails
   capistrano-rails-console
   capistrano-rbenv
+  capistrano-sidekiq
   capybara
   connection_pool
   data-anonymization
@@ -384,6 +413,7 @@ DEPENDENCIES
   faker
   fakeredis
   friendly_id (~> 5.2.4)
+  generator_spec
   groupdate
   http
   jbuilder (~> 2.5)
@@ -401,6 +431,7 @@ DEPENDENCIES
   rails (~> 5.1.6.2)
   rails-controller-testing
   redis
+  redis-rails
   rspec-rails (~> 3.7)
   rswag (~> 1.6.0)
   sassc-rails
@@ -415,6 +446,7 @@ DEPENDENCIES
   uuidtools
   web-console (>= 3.3.0)
   webmock
+  whenever
 
 BUNDLED WITH
    1.17.1

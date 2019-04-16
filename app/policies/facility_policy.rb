@@ -24,10 +24,18 @@ class FacilityPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.owner? || admin_can_access?(:organization_owner)
+    destroyable? && (user.owner? || admin_can_access?(:organization_owner))
+  end
+
+  def graphics?
+    show?
   end
 
   private
+
+  def destroyable?
+    record.registered_patients.none? && record.blood_pressures.none?
+  end
 
   def admin_can_access?(role)
     user.role == role.to_s && user.facilities.include?(record)

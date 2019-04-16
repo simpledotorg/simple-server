@@ -3,7 +3,7 @@
     <table>
       <thead>
       <tr>
-        <th colspan="2"><h4>Hospitals &amp; Clinics</h4></th>
+        <th colspan="2"></th>
         <th class="row-label">Newly<br>enrolled</th>
         <th class="row-label">Didn't<br>attend</th>
 
@@ -34,7 +34,9 @@
 
           <td class="row-control"><%= analytics[:control_rate][:control_rate] %></td>
           <td class="row-spacer">&nbsp;</td>
-          <td class="row-unique-date"><%= analytics[:unique_patients_enrolled] %></td>
+          <td class="row-unique-date">
+            <%= analytics[:returning_patients] + analytics[:newly_enrolled_patients] %>
+          </td>
 
           <% analytics[:blood_pressures_recorded_per_week].sort.each do |_key, value| %>
             <td class="row-unique-date"><%= value != 0 ? value : '-' %></td>
@@ -45,13 +47,15 @@
       <tfoot>
       <tr class="row-total">
         <td class="row-rank row-total"></td>
-        <td class="row-title row-total">All facility totals<span><b>24,342</b> enrolled all time</span></td>
+        <td class="row-title row-total">All facility totals<span><b><%= @facility_group_analytics[:unique_patients_enrolled] %></b> enrolled all time</span></td>
         <td class="row-enrolled text-green row-total"><%= @facility_group_analytics[:newly_enrolled_patients] %></td>
         <td class="row-default text-yellow row-total"><%= @facility_group_analytics[:non_returning_hypertensive_patients] %></td>
 
         <td class="row-control"><%= @facility_group_analytics[:control_rate][:control_rate] %></td>
         <td class="row-spacer">&nbsp;</td>
-        <td class="row-unique-date"><%= @facility_group_analytics[:unique_patients_enrolled] %></td>
+        <td class="row-unique-date">
+          <%= @facility_group_analytics[:returning_patients] + @facility_group_analytics[:newly_enrolled_patients] %>
+        </td>
 
         <% @facility_group_analytics[:blood_pressures_recorded_per_week].sort.each do |_key, value| %>
           <td class="row-unique-date"><%= value != 0 ? value : '-' %></td>

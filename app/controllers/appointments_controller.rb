@@ -8,12 +8,19 @@ class AppointmentsController < AdminController
     authorize Appointment, :index?
 
     @appointments = policy_scope(Appointment)
-                      .joins(:patient)
+                      .joins(patient: { latest_blood_pressures: :facility })
+                      .includes(patient: [:address, :phone_numbers, :medical_history, { latest_blood_pressures: :facility }])
                       .overdue
                       .where(facility: selected_facilities)
                       .order(scheduled_date: :asc)
 
-    @appointments = paginate(@appointments)
+    respond_to do |format|
+      format.html { @appointments = paginate(@appointments) }
+      format.csv do
+        facility_name = selected_facilities.size > 1 ? "all" : selected_facilities.first.name.parameterize
+        send_data @appointments.to_csv, filename: "overdue-patients_#{facility_name}_#{Date.today}.csv"
+      end
+    end
   end
 
   def update
@@ -49,7 +56,7 @@ class AppointmentsController < AdminController
     end
 
     if call_result == :dead
-      appointment.patient.status = appointment.mark_patient_as_dead
+      appointment.mark_patient_as_dead
     end
 
     appointment.save
