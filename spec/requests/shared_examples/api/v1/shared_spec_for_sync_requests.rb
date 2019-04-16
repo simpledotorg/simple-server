@@ -41,7 +41,7 @@ RSpec.shared_examples 'sync requests' do
       .to eq model.updated_on_server_since(processed_since.to_time).count
 
     expect(received_records.to_set)
-      .to eq model.updated_on_server_since(processed_since.to_time)
+      .to include model.updated_on_server_since(processed_since.to_time)
                .map { |record| to_response(record) }
                .to_set
   end
