@@ -61,7 +61,7 @@ def cohort_stats(facility, cohort_start, cohort_end, quarter_start, quarter_end)
   }
 end
 
-facilities = Facility.where(district: "Bathinda")
+facilities = Facility.where(state: "Punjab")
 
 quarter_start = Date.new(2019, 1, 1).beginning_of_day
 quarter_end = Date.new(2019, 3, 31).end_of_day
