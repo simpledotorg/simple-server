@@ -3,33 +3,18 @@ class Admin::UsersController < AdminController
 
   def index
     authorize User
-    @users = policy_scope(User).sort_by do |user|
-      [ordered_sync_approval_statuses[user.sync_approval_status],
-       user.full_name]
+    @users_by_district = {}
+    policy_scope(Facility).group_by(&:district).each do |district, facilities|
+      @users_by_district[district] = facilities.map(&:users).flatten.sort_by do |user|
+        [ordered_sync_approval_statuses[user.sync_approval_status], user.full_name]
+      end
     end
   end
 
   def show
   end
 
-  def new
-    @user = User.new
-    authorize @user
-  end
-
   def edit
-  end
-
-  def create
-    @user = User.new(user_params)
-    authorize @user
-
-    if @user.save
-      SmsNotificationService.new(@user).notify
-      redirect_to [:admin, @user], notice: 'User was successfully created.'
-    else
-      render :new
-    end
   end
 
   def update
@@ -38,11 +23,6 @@ class Admin::UsersController < AdminController
     else
       render :edit
     end
-  end
-
-  def destroy
-    @user.destroy
-    redirect_to [:admin, :users], notice: 'User was successfully deleted.'
   end
 
   def reset_otp

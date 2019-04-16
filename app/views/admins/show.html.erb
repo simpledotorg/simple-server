@@ -13,7 +13,7 @@
       </p>
       <ul>
         <% @admin.facility_groups.each do |facility_group| %>
-          <li><%= link_to facility_group.name, admin_organization_facility_group_path(facility_group) %></li>
+          <li><%= link_to facility_group.name, admin_facility_group_path(facility_group) %></li>
         <% end %>
       </ul>
     <% elsif @admin.organization_owner? %>

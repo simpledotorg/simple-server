@@ -1,47 +1,52 @@
-<div class="page-header">
-  <h1 class="page-title">Facilities</h1>
-  <nav class="page-nav">
-    <% if policy(Facility).new? %>
-      <%= link_to 'New facility', new_admin_facility_path, class: "btn btn-sm btn-primary" %>
-    <% end %>
-  </nav>
-</div>
+<% if policy(Organization).new? %>
+  <%= link_to '+ Facility group', new_admin_facility_group_path, class: "btn btn-sm btn-primary float-right" %>
+<% end %>
 
-<table class="table-responsive table">
-  <thead class="thead-light">
-    <tr>
-      <th>Name</th>
-      <th>Address</th>
-      <th>Village/colony</th>
-      <th>District</th>
-      <th>State</th>
-      <th>Country</th>
-      <th>Pin</th>
-      <th>Facility&nbsp;type</th>
-      <th colspan="2"></th>
-    </tr>
-  </thead>
+<h1 style="margin-bottom: 32px;">All facilities</h1>
 
-  <tbody>
-    <% @facilities.each do |facility| %>
-      <% facility_group = facility.facility_group %>
-      <tr>
-        <td class="nowrap"><%= link_to facility.name, [:admin, facility] %></td>
-        <td><%= link_to facility_group.name, admin_organization_facility_group_path(facility_group.organization, facility_group) if facility_group.present? %></td>
-        <td><%= facility.street_address %></td>
-        <td><%= facility.village_or_colony %></td>
-        <td><%= facility.district %></td>
-        <td><%= facility.state %></td>
-        <td><%= facility.country %></td>
-        <td><%= facility.pin %></td>
-        <td><%= facility.facility_type %></td>
-        <% if policy(facility).edit? %>
-          <td><%= link_to 'Edit', edit_admin_facility_path(facility) %></td>
+<% @organizations.order(:name).each do |organization| %>
+  <% if @organizations.size > 1 %><h1><%= organization.name %></h1><% end %>
+
+  <% policy_scope(organization.facility_groups).order(:name).each do |facility_group| %>
+
+    <h2>
+      <%= facility_group.name %>
+      <% if policy(facility_group).edit? %>
+        <small style="margin-left: 8px;"><%= link_to 'EDIT', edit_admin_facility_group_path(facility_group) %></small>
+      <% end %>
+    </h2>
+
+    <div>
+        <% if policy(facility_group).edit? %>
+          <%= link_to "+ New Facility", new_admin_facility_group_facility_path(facility_group), class: "btn btn-default float-right" %>
         <% end %>
-        <% if policy(facility).destroy? %>
-          <td><%= link_to 'Delete', [:admin, facility], method: :delete, data: { confirm: "Are you sure you want to delete #{facility.name}?" } %></td>
-        <% end %>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+    </div>
+
+    <p>
+        Protocol: <%= facility_group.protocol.name %>
+    </p>
+
+    <div style="padding-bottom: 32px; clear: both;">
+          <% policy_scope(facility_group.facilities).order(:name).each do |facility| %>
+              <div class="card">
+                  <div class="card-body">
+                  <% if policy(facility).edit? %>
+                    <%= link_to 'Edit', edit_admin_facility_group_facility_path(facility_group, facility), class: "btn btn-default float-right" %>
+                  <% end %>
+
+                  <h5><%= link_to facility.name, [:admin, facility_group, facility] %> <!-- <%= facility.facility_type %> --></h5>
+
+                      <div class="card-details">
+                      <%= facility.street_address %>
+                      <%= facility.village_or_colony %>
+                      <%= facility.district %>
+                      <%= facility.state %>
+                      <!-- <%= facility.country %></td-->
+                      <%= facility.pin %>
+                     </div>
+                  </div>
+              </div>
+          <% end %>
+    </div>
+  <% end %>
+<% end %>

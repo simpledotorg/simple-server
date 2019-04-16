@@ -28,7 +28,7 @@ RSpec.describe OrganizationPolicy do
     end
   end
 
-  permissions :show?, :new?, :create?, :update?, :edit?, :destroy? do
+  permissions :show?, :new?, :create?, :update?, :edit? do
     it "permits owners" do
       expect(subject).to permit(owner, Organization)
     end
@@ -47,6 +47,34 @@ RSpec.describe OrganizationPolicy do
       other_organization = FactoryBot.create(:organization)
       expect(subject).to permit(organization_owner, organization)
       expect(subject).not_to permit(organization_owner, other_organization)
+    end
+  end
+
+  permissions :destroy? do
+    it "permits owners" do
+      expect(subject).to permit(owner, organization)
+    end
+
+    it "denies organization owners" do
+      expect(subject).not_to permit(organization_owner, organization)
+    end
+
+    it "denies supervisors" do
+      expect(subject).not_to permit(supervisor, organization)
+    end
+
+    it "denies analysts" do
+      expect(subject).not_to permit(analyst, organization)
+    end
+
+    context "with associated facility_groups" do
+      before do
+        create(:facility_group, organization: organization)
+      end
+
+      it "denies everyone" do
+        expect(subject).not_to permit(owner, organization)
+      end
     end
   end
 end

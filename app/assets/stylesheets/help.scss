@@ -69,6 +69,12 @@ ul li:before {
     margin-top: 0.2em;
 }
 
+
+a.whatsapp-button div {
+    display: inline-block;
+    vertical-align: middle;
+}
+
 a.whatsapp-button {
     display: block;
     margin: 1em 0 0 0;
@@ -88,8 +94,9 @@ a.whatsapp-button {
 .whatsapp-button svg {
     vertical-align: middle;
     height: 30px;
-    margin: -1px 8px 0 0;
+    margin: -1px 4px 0 0;
     width: auto;
+    display: inline-block;
 }
 
 caption {

@@ -1,6 +1,6 @@
 {
   "swagger": "2.0",
-  "basePath": "/api/v2",
+  "basePath": "/api/v3",
   "produces": [
     "application/json"
   ],
@@ -12,7 +12,7 @@
   ],
   "info": {
     "description": "# API specification for Simple Server\n## Sync APIs\nThis API spec documents the endpoints that the devices (that are offline to varying levels) will use to sync data. The sync end points will send and receive bulk (a list of) entities. Both sending and receiving can be batched with configurable batch-sizes to accommodate low network bandwidth situations.\n## Nesting resources\nThe APIs have been designed to provide an optimal balance between accuracy and simplicity. Some of the APIs (patients) will be nested, and some other (blood pressures) will be flat.\n## Authentication\nTODO\n\n## Sync Mechanism\nRefer to the [related ADR](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/001-synchronization.md).\n",
-    "version": "v2",
+    "version": "v3",
     "title": "Simple Server",
     "x-logo": {
       "url": "/assets/rtsl_logo-d7e4808e72f6d12641fd4a4f64669ed76d32170cd7a1e7fb9206ef7d1ba413c9.png",
