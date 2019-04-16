@@ -302,6 +302,8 @@ RSpec.shared_examples 'a working Current sync controller sending records' do
   end
 end
 RSpec.shared_examples 'a sync controller that audits the data access' do
+  include ActiveJob::TestHelper
+
   before :each do
     set_authentication_headers
   end
@@ -351,10 +353,12 @@ RSpec.shared_examples 'a sync controller that audits the data access' do
   describe 'creates an audit log for data synced to user' do
     let!(:records) { create_record_list(5) }
     it 'creates an audit log for data fetched by the user' do
-      get :sync_to_user, params: {
-        processed_since: 20.minutes.ago,
-        limit: 5
-      }, as: :json
+      perform_enqueued_jobs do
+        get :sync_to_user, params: {
+          processed_since: 20.minutes.ago,
+          limit: 5
+        }, as: :json
+      end
 
       audit_logs = AuditLog.where(user_id: request_user.id, auditable_type: auditable_type)
       expect(audit_logs.count).to be 5
