@@ -4,17 +4,17 @@ RSpec.describe 'Patients sync', type: :request do
   let(:model) { Patient }
   let(:request_user) { FactoryBot.create(:user) }
 
-  let(:sync_route) { '/api/v3/patients/sync' }
+  let(:sync_route) { '/api/v2/patients/sync' }
 
   let(:build_payload) { lambda { build_patient_payload(FactoryBot.build(:patient, registration_facility: request_user.facility)) } }
   let(:build_invalid_payload) { lambda { build_invalid_patient_payload } }
   let(:update_payload) { lambda { |record| updated_patient_payload record } }
 
   def to_response(patient)
-    Api::Current::PatientTransformer.to_nested_response(patient)
+    Api::V2::PatientTransformer.to_nested_response(patient)
   end
 
-  include_examples 'current API sync requests'
+  include_examples 'v2 API sync requests'
 
   it 'pushes 10 new patients, updates only address or phone numbers, and pulls updated ones' do
     first_patients_payload = (1..10).map { build_payload.call }
