@@ -1,4 +1,4 @@
-class Api::V1::UserTransformer < Api::Current::UserTransformer
+class Api::V1::UserTransformer < Api::V2::UserTransformer
   class << self
     def to_response(user)
       Api::Current::Transformer.to_response(user)

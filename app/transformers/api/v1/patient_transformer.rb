@@ -1,2 +1,2 @@
-class Api::V1::PatientTransformer < Api::Current::PatientTransformer
+class Api::V1::PatientTransformer < Api::V2::PatientTransformer
 end
