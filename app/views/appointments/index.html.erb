@@ -1,4 +1,4 @@
-<% if policy(Appointment).download? %>
+<% if policy(Appointment).download? && @appointments.present? %>
   <% if @facility_id == "All" %>
     <div class="float-right text-right">
       <button class="btn btn-sm btn-secondary" disabled>Download Overdue List</button><br>

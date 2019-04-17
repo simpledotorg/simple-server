@@ -4,7 +4,7 @@ module Api::V1::SyncControllerOverrides
   included do
     def __sync_to_user__(response_key)
       records_to_sync = find_records_to_sync(processed_since, limit)
-      records_to_sync.each { |record| AuditLog.fetch_log(current_user, record) }
+      AuditLog.create_logs_async(current_user, records_to_sync, 'fetch') unless disable_audit_logs?
       render(
         json: {
           response_key => records_to_sync.map { |record| transform_to_response(record) },

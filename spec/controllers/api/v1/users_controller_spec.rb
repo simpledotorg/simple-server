@@ -41,7 +41,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         expect(response.status).to eq(200)
         expect(created_user).to be_present
         expect(JSON(response.body)['user'].except('device_updated_at', 'device_created_at', 'facility_ids').with_int_timestamps)
-          .to eq(created_user.attributes
+          .to eq( Api::Current::Transformer.to_response(created_user)
                    .except(
                      'device_updated_at',
                      'device_created_at',
