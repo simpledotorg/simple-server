@@ -11,27 +11,53 @@
   </div>
 
   <h1><%= @facility_group.name %></h1>
-  <%= link_to 'Graphics For Supervisors', analytics_facility_group_graphics_path(
-      @facility_group,
-      month: analytics_date_format(Time.now.at_beginning_of_month)) %>
 
   <div class="featured">
-
+      <div class="featured-section featured-1">
+          <h4>Enrolled (796 of 5,554 patients returned for a BP)</h4>
+          <table class="bars">
+                <tr>
+                    <td class="bar bar-1" style="width: 73%;">73% <span>A</span></td>
+                    <td class="bar bar-2" style="width: 16%;">16% <span>B</span></td>
+                    <td class="bar bar-3" style="width: 10%;">10% <span>C</span></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="bar-label"><div>Uncontrolled</div><em></em></td>
+                    <td></td>
+                </tr>
+          </table>
+          <table class="bars-secondary">
+            <tr>
+                <td class="light">A</td>
+                <td class="bar-desc bar-1-desc">Did not return for BP measure in Q1 2019</td>
+                <td class="bar-count">4758 <span>patients</span></td>
+                <td>73%</td>
+                <td class="light">3% UP</td>
+            </tr>
+            <tr>    
+                <td class="light">B</td>
+                <td class="bar-desc bar-2-desc">Visited with uncontrolled BP</td>
+                <td class="bar-count">384 <span>patients</span></td>
+                <td>16%</td>
+                <td class="light">2% DOWN</td>
+            </tr>
+            <tr>
+                <td class="light">C</td>
+                <td class="bar-desc bar-3-desc">Visited with controlled BP</td>
+                <td class="bar-count">412 <span>patients</span></td>
+                <td>10%</td>
+                <td class="light">2% UP</td>
+            </tr>
+          </table>
+      </div>
+      <div class="featured-section featured-2">
+          <h4>New patients</h4>
           <%= render "shared/analytics/patients_count_panel",
-                     newly_enrolled_patients_count: @facility_group_analytics[:newly_enrolled_patients],
-                     returning_patients_count: @facility_group_analytics[:returning_patients] %>
-
-          <%= render "shared/analytics/non_returning_hypertensive_patients_panel",
-                     number_of_months: 3,
-                     non_returning_hypertensive_patients_count: @facility_group_analytics[:non_returning_hypertensive_patients],
-                     non_returning_hypertensive_patients_per_month: @facility_group_analytics[:non_returning_hypertensive_patients_per_month] %>
-
-          <%= render "shared/analytics/control_rate_panel",
-                     goal: 30,
-                     number_of_months: 3,
-                     control_rate: @facility_group_analytics[:control_rate][:control_rate],
-                     control_rate_per_month: @facility_group_analytics[:control_rate_per_month] %>
+                         newly_enrolled_patients_count: @facility_analytics[:newly_enrolled_patients],
+                         returning_patients_count: @facility_analytics[:returning_patients] %>
+      </div>
   </div>
+
 </div>
 
 

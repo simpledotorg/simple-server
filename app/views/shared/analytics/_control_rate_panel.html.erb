@@ -1,15 +1,3 @@
-<div class="featured-section">
-    <div class="featured-section-contents">
-      <strong class="featured-title">
-        <%= t('analytics.control_rate_title') %>
-      </strong>
-      <span id='control-rate' class="featured-number">
-        <%= control_rate || 0 %>%
-      </span>
-
-      <%= render "shared/graph",
-                 options: { id: 'control-rate-graph' },
-                 column_class: 'featured-graph-column',
-                 graph_data: latest_months(control_rate_per_month, number_of_months) %>
-    </div>
+<div id="control-rate">
+    <%= control_rate || 0 %>% <%= t('analytics.control_rate_title') %>
 </div>
