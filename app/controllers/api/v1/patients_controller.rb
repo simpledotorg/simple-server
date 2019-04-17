@@ -32,4 +32,8 @@ class Api::V1::PatientsController < Api::Current::PatientsController
       )
     end
   end
+
+  def find_records_to_sync(since, limit)
+    facility_group_records.updated_on_server_since(since, limit).includes(:address, :phone_numbers)
+  end
 end

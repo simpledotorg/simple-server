@@ -90,7 +90,7 @@ ActiveRecord::Schema.define(version: 20190411101836) do
     t.date "remind_on"
     t.boolean "agreed_to_visit"
     t.datetime "deleted_at"
-    t.string "appointment_type"
+    t.string "appointment_type", null: false
     t.index ["appointment_type"], name: "index_appointments_on_appointment_type"
     t.index ["deleted_at"], name: "index_appointments_on_deleted_at"
     t.index ["facility_id"], name: "index_appointments_on_facility_id"
@@ -120,6 +120,9 @@ ActiveRecord::Schema.define(version: 20190411101836) do
     t.uuid "user_id"
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_blood_pressures_on_deleted_at"
+    t.index ["device_created_at"], name: "index_blood_pressures_on_device_created_at"
+    t.index ["patient_id", "device_created_at"], name: "index_blood_pressures_on_patient_id_and_device_created_at"
+    t.index ["patient_id"], name: "index_blood_pressures_on_patient_id"
     t.index ["user_id"], name: "index_blood_pressures_on_user_id"
   end
 

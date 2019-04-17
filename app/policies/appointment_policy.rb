@@ -1,10 +1,14 @@
 class AppointmentPolicy < ApplicationPolicy
   def index?
-    user.owner? || user.counsellor?
+    user.owner? || user.supervisor? || user.counsellor?
   end
 
   def update?
     index?
+  end
+
+  def download?
+    user.owner? || user.supervisor? && user.organizations.include?(Organization.find_by(name: "IHMI"))
   end
 
   class Scope
