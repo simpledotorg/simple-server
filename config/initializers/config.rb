@@ -1,5 +1,6 @@
 Config.ensure_required_keys_are_present(required_keys: [
   'DEFAULT_NUMBER_OF_RECORDS',
+  'DEFAULT_COUNTRY',
   'SIMPLE_APP_SIGNATURE',
   'ENABLE_SMS_NOTIFICATION_FOR_OTP',
   'ENABLE_REGEX_MATCHING_SYNC_APIS',

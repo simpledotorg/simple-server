@@ -2,7 +2,7 @@ class SmsNotificationService
   DEFAULT_LOCALE = :en
 
   def initialize(recipient_number, client = Twilio::REST::Client.new)
-    @recipient_number = recipient_number
+    @recipient_number = Phonelib.parse(recipient_number, ENV.fetch(['DEFAULT_COUNTRY'])).raw_national
     @client = client
   end
 
