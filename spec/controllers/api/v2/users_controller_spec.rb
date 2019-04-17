@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::V1::UsersController, type: :controller do
+RSpec.describe Api::V2::UsersController, type: :controller do
   let(:supervisor) { FactoryBot.create(:admin, :supervisor) }
   let(:organization_owner) { FactoryBot.create(:admin, :organization_owner) }
   let(:facility) { FactoryBot.create(:facility) }
@@ -13,8 +13,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
   describe '#register' do
     describe 'registration payload is invalid' do
-      let(:facility) { FactoryBot.create(:facility)}
-      let(:request_params) { { user: FactoryBot.attributes_for(:user).slice(:full_name, :phone_number).merge(facility_ids: [facility.id]) } }
+      let(:request_params) { { user: FactoryBot.attributes_for(:user).slice(:full_name, :phone_number) } }
       it 'responds with 400' do
         post :register, params: request_params
 
@@ -23,36 +22,42 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     end
 
     describe 'registration payload is valid' do
-      let(:facility) { FactoryBot.create(:facility) }
       let(:user_params) do
         FactoryBot.attributes_for(:user)
           .slice(:full_name, :phone_number)
           .merge(id: SecureRandom.uuid,
                  password_digest: BCrypt::Password.create("1234"),
-                 facility_ids: [facility.id],
+                 registration_facility_id: facility.id,
                  created_at: Time.now.iso8601,
                  updated_at: Time.now.iso8601)
       end
 
       it 'creates a user, and responds with the created user object and their access token' do
         post :register, params: { user: user_params }
+        parsed_response = JSON(response.body)
 
         created_user = User.find_by(full_name: user_params[:full_name], phone_number: user_params[:phone_number])
         expect(response.status).to eq(200)
         expect(created_user).to be_present
-        expect(JSON(response.body)['user'].except('device_updated_at', 'device_created_at', 'facility_ids').with_int_timestamps)
-          .to eq( Api::Current::Transformer.to_response(created_user)
+
+        expect(parsed_response['user'].except('created_at',
+                                              'updated_at',
+                                              'facility_ids').with_int_timestamps)
+          .to eq(created_user.attributes
                    .except(
                      'device_updated_at',
                      'device_created_at',
+                     'created_at',
+                     'updated_at',
                      'access_token',
                      'logged_in_at',
                      'otp',
                      'otp_valid_until')
                    .as_json
                    .with_int_timestamps)
-        expect(JSON(response.body)['user']['facility_ids']).to match_array([created_user.facility.id])
-        expect(JSON(response.body)['access_token']).to eq(created_user.access_token)
+
+        expect(parsed_response['user']['registration_facility_id']).to eq(created_user.facility.id)
+        expect(parsed_response['access_token']).to eq(created_user.access_token)
       end
 
       it 'sets the user status to requested' do
@@ -71,7 +76,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         expect(created_user.sync_approval_status).to eq(User.sync_approval_statuses[:allowed])
       end
 
-      it 'sends an email to a list of organization_owners and supervisors' do
+      it 'sends an email to a list of owners and supervisors' do
         post :register, params: { user: user_params }
         approval_email = ActionMailer::Base.deliveries.last
         expect(approval_email.to).to include(supervisor.email)
@@ -104,17 +109,15 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     it 'lists the users with the given phone number' do
       get :find, params: { phone_number: phone_number }
       expect(response.status).to eq(200)
-      expect(JSON(response.body).except('facility_ids').with_int_timestamps)
-        .to eq(Api::V1::UserTransformer.to_response(user).except(:facility_ids).with_int_timestamps)
-      expect(JSON(response.body)['facility_ids']).to match_array([user.facility.id])
+      expect(JSON(response.body).with_int_timestamps)
+        .to eq(Api::V2::UserTransformer.to_response(user).with_int_timestamps)
     end
 
     it 'lists the users with the given id' do
       get :find, params: { id: user.id }
       expect(response.status).to eq(200)
-      expect(JSON(response.body).except('facility_ids').with_int_timestamps)
-        .to eq(Api::V1::UserTransformer.to_response(user).except(:facility_ids).with_int_timestamps)
-      expect(JSON(response.body)['facility_ids']).to match_array([user.facility.id])
+      expect(JSON(response.body).with_int_timestamps)
+        .to eq(Api::V2::UserTransformer.to_response(user).with_int_timestamps)
     end
 
     it 'returns 404 when user is not found' do
@@ -145,10 +148,12 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   end
 
   describe '#reset_password' do
-    let(:user) { FactoryBot.create(:user, facility: facility) }
+    let(:user) { FactoryBot.create(:user) }
+    let(:facility) { FactoryBot.create(:facility, facility_group: user.facility.facility_group) }
 
     before(:each) do
       request.env['HTTP_X_USER_ID'] = user.id
+      request.env['HTTP_X_FACILITY_ID'] = facility.id
       request.env['HTTP_AUTHORIZATION'] = "Bearer #{user.access_token}"
     end
 
@@ -174,7 +179,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       expect(response.status).to eq(401)
     end
 
-    it 'Sends an email to a list of organization_owners and supervisors' do
+    it 'Sends an email to a list of owners and supervisors' do
       post :reset_password, params: { id: user.id, password_digest: BCrypt::Password.create('1234').to_s }
       approval_email = ActionMailer::Base.deliveries.last
       expect(approval_email).to be_present

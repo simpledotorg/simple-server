@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'PrescriptionDrugs sync', type: :request do
-  let(:sync_route) { '/api/v3/prescription_drugs/sync' }
+  let(:sync_route) { '/api/v2/prescription_drugs/sync' }
   let(:request_user) { FactoryBot.create(:user) }
 
   let(:model) { PrescriptionDrug }
@@ -11,8 +11,8 @@ RSpec.describe 'PrescriptionDrugs sync', type: :request do
   let(:update_payload) { lambda { |prescription_drug| updated_prescription_drug_payload prescription_drug } }
 
   def to_response(prescription_drug)
-    Api::Current::Transformer.to_response(prescription_drug)
+    Api::V2::Transformer.to_response(prescription_drug)
   end
 
-  include_examples 'current API sync requests'
+  include_examples 'v2 API sync requests'
 end
