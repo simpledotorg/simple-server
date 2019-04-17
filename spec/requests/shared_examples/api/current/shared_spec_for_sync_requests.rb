@@ -43,7 +43,7 @@ RSpec.shared_examples 'current API sync requests' do
       .to eq model.updated_on_server_since(request_process_token[:current_facility_processed_since].to_time).count
 
     expect(received_records.to_set)
-      .to eq model.updated_on_server_since(request_process_token[:current_facility_processed_since].to_time)
+      .to include model.updated_on_server_since(request_process_token[:current_facility_processed_since].to_time)
                .map { |record| to_response(record) }
                .to_set
   end

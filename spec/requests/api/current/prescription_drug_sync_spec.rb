@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'PrescriptionDrugs sync', type: :request do
-  let(:sync_route) { '/api/v2/prescription_drugs/sync' }
+  let(:sync_route) { '/api/v3/prescription_drugs/sync' }
   let(:request_user) { FactoryBot.create(:user) }
 
   let(:model) { PrescriptionDrug }

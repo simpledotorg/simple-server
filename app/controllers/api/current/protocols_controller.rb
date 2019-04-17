@@ -13,6 +13,10 @@ class Api::Current::ProtocolsController < Api::Current::SyncController
 
   private
 
+  def disable_audit_logs?
+    true
+  end
+
   def transform_to_response(protocol)
     protocol.as_json(include: :protocol_drugs)
   end
