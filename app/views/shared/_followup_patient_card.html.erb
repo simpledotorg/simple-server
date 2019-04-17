@@ -13,10 +13,10 @@
     <%= patient.current_age %>
   </div>
   <% if show_enrolment_date %>
-   <div class="overdue-details">
+    <div class="overdue-details">
       Enrolled on:
       <%= handle_impossible_registration_date(patient.device_created_at, format: "%d-%b-%Y") %><br>
-   </div>
+    </div>
   <% end %>
   <% if bp = patient.latest_blood_pressure %>
     <div class="overdue-details">
