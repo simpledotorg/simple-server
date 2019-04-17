@@ -20,6 +20,9 @@ set :sidekiq_config, -> { File.join(shared_path, 'config', 'sidekiq.yml') }
 append :linked_files, ".env.production"
 append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
 
+set :whenever_command, "dotenv bundle exec whenever"
+require "whenever/capistrano"
+
 namespace :deploy do
   desc 'Runs any rake task, example: cap deploy:rake task=db:seed'
   task rake: [:set_rails_env] do
