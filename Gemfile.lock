@@ -139,6 +139,9 @@ GEM
     ffi (1.9.25)
     friendly_id (5.2.5)
       activerecord (>= 4.0.0)
+    generator_spec (0.9.4)
+      activesupport (>= 3.0.0)
+      railties (>= 3.0.0)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
     groupdate (4.0.1)
@@ -410,6 +413,7 @@ DEPENDENCIES
   faker
   fakeredis
   friendly_id (~> 5.2.4)
+  generator_spec
   groupdate
   http
   jbuilder (~> 2.5)
