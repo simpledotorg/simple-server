@@ -10,4 +10,6 @@ require "capistrano/rails"
 require "capistrano/passenger"
 require "capistrano/sidekiq"
 
+require "whenever/capistrano"
+
 Dir.glob("lib/capistrano/tasks/*.rake").each { |r| import r }
