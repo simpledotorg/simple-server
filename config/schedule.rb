@@ -1,28 +1,15 @@
-# Use this file to easily define all of your cron jobs.
-#
-# It's helpful, but not entirely necessary to understand cron before proceeding.
-# http://en.wikipedia.org/wiki/Cron
+require 'tzinfo'
 
-# Example:
-#
-set :output, "/home/deploy/simple-server/shared/logs/cron.log"
-#
-# every 2.hours do
-#   command "/usr/bin/some_great_command"
-#   runner "MyModel.some_method"
-#   rake "some:great:rake:task"
-# end
-#
-# every 4.days do
-#   runner "AnotherModel.prune_old_records"
-# end
+set :output, "/home/deploy/apps/simple-server/shared/log/cron.log"
 
-# Learn more: http://github.com/javan/whenever
+def local(time)
+  TZInfo::Timezone.get(ENV.fetch('CRON_TIME_ZONE')).local_to_utc(Time.parse(time))
+end
 
-every :day, at: ['1:00 am'] do
+every :day, at: local('1:00 am').utc do
   runner "WarmUpAnalyticsCacheJob.perform_later"
 end
 
-every :month, at: ['1:00 am'] do
+every :month, at: local('1:00 am').utc do
   runner "WarmUpQuarterlyAnalyticsCacheJob.perform_later"
 end

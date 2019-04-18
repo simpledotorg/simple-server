@@ -9,6 +9,10 @@ class Api::Current::FacilitiesController < Api::Current::SyncController
 
   private
 
+  def disable_audit_logs?
+    true
+  end
+
   def transform_to_response(facility)
     facility.as_json
       .merge(protocol_id: facility.protocol.try(:id))

@@ -1,3 +1,14 @@
+<% if policy(Appointment).download? && @appointments.present? %>
+  <% if @facility_id == "All" %>
+    <div class="float-right text-right">
+      <button class="btn btn-sm btn-secondary" disabled>Download Overdue List</button><br>
+      <small>Select a facility to download</small>
+    </div>
+  <% else %>
+    <%= link_to "Download Overdue List", appointments_path(facility_id: @facility_id, format: "csv"), class: "btn btn-primary btn-sm float-right", data: { confirm: I18n.t('admin.phi_download_alert') } %>
+  <% end %>
+<% end %>
+
 <h1>Overdue patients</h1>
 <p>Patients that are overdue for follow-up BP measure.</p>
 

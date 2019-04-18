@@ -9,6 +9,12 @@ class Api::Current::AppointmentsController < Api::Current::SyncController
     __sync_to_user__('appointments')
   end
 
+  def set_default_appointment_type(appointment_params)
+    if !appointment_params.key?('appointment_type') && Appointment.compute_merge_status(appointment_params) == :new
+      appointment_params['appointment_type'] = Appointment.appointment_types[:manual]
+    end
+  end
+
   private
 
   def merge_if_valid(appointment_params)
@@ -18,7 +24,9 @@ class Api::Current::AppointmentsController < Api::Current::SyncController
       NewRelic::Agent.increment_metric('Merge/Appointment/schema_invalid')
       { errors_hash: validator.errors_hash }
     else
-      appointment = Appointment.merge(Api::Current::Transformer.from_request(appointment_params))
+      record_params = Api::Current::Transformer.from_request(appointment_params)
+      set_default_appointment_type(record_params)
+      appointment = Appointment.merge(record_params)
       { record: appointment }
     end
   end

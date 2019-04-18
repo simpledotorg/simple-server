@@ -2,8 +2,8 @@
   <h1 class="page-title">Users</h1>
 </div>
 
-<% @facility_groups.order(:name).each do |facility_group| %>
-  <h2><%= facility_group.name %></h2>
+<% @users_by_district.sort.each do |district, users| %>
+  <h2><%= district %></h2>
 
   <div class="table-responsive">
     <table class="table">
@@ -19,7 +19,7 @@
       </thead>
 
       <tbody>
-        <% facility_group.users.order(:full_name).each do |user| %>
+        <% users.sort_by(&:full_name).each do |user| %>
           <tr>
             <td class="nowrap"><%= link_to user.full_name, [:admin, user] %></td>
             <td class="sync_approval_status nowrap">

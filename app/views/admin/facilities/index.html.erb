@@ -5,7 +5,7 @@
 <h1 style="margin-bottom: 32px;">All facilities</h1>
 
 <% @organizations.order(:name).each do |organization| %>
-  <!--h1><%= organization.name %></h1-->
+  <% if @organizations.size > 1 %><h1><%= organization.name %></h1><% end %>
 
   <% policy_scope(organization.facility_groups).order(:name).each do |facility_group| %>
 
@@ -23,7 +23,6 @@
     </div>
 
     <p>
-        Organization: <%= organization.name %><br>
         Protocol: <%= facility_group.protocol.name %>
     </p>
 
