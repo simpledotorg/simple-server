@@ -45,4 +45,32 @@ RSpec.describe Analytics::UserAnalytics do
       expect(user_analytics.blood_pressures_recorded_per_week).to eq(expected_counts)
     end
   end
+
+  describe 'calls_made_by_user_at_facility' do
+    before :each do
+      Timecop.travel(from_time) do
+        appointments = create_list(:appointment, 2, facility: facility)
+        appointments.each do |appointment|
+          create_list(:communication, 2, user: user, appointment: appointment)
+        end
+      end
+    end
+    it 'returns the number of calls made by the user at a facility during the time period' do
+      expect(user_analytics.calls_made_by_user_at_facility).to eq(4)
+    end
+  end
+
+  describe 'returning_patients_count_at_facility' do
+    before :each do
+      Timecop.travel(from_time) do
+        patients = create_list(:patient, 2)
+        patients.each do |patient|
+          create_list(:blood_pressure, 2, patient: patient, user: user, facility: facility)
+        end
+      end
+    end
+    it 'returns the number of calls made by the user at a facility during the time period' do
+      expect(user_analytics.returning_patients_count_at_facility).to eq(2)
+    end
+  end
 end
