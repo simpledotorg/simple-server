@@ -14,8 +14,8 @@
               <% if FeatureToggle.enabled?('UPDATED_ANALYTICS_VIEWS') %>
                 <%= link_to facility_group.name,
                             analytics_facility_group_path(facility_group,
-                                                          from_time: analytics_date_format(90.days.ago),
-                                                          to_time: analytics_date_format(Time.now)) %>
+                                                          from_time: analytics_date_format(90.days.ago.yesterday),
+                                                          to_time: analytics_date_format(Time.now.yesterday)) %>
               <% else %>
                 <%= link_to facility_group.name, [organization, facility_group] %>
               <% end %>
