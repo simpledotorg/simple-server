@@ -38,6 +38,7 @@ gem 'connection_pool'
 gem 'whenever', require: false
 gem 'redis'
 gem 'redis-rails'
+gem 'activerecord-import'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
@@ -66,6 +67,7 @@ group :test do
   gem 'launchy'
   gem 'webmock'
   gem 'fakeredis', require:  false
+  gem 'generator_spec'
 end
 
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
