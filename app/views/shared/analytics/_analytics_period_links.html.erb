@@ -1,8 +1,6 @@
 <div class="sub-nav">
-  <%=
-    range = { from_time: analytics_date_format(90.days.ago), to_time: analytics_date_format(Time.now) }
-    link_for_range(range, from_time, to_time, t('analytics.last_90_days'))
-  %>
+  <%= range = { from_time: 90.days.ago.yesterday, to_time: Time.now.yesterday }
+      link_for_range(range, from_time, to_time, t('analytics.last_90_days')) %>
 
   <% (1..4).each do |n| %>
     <%=

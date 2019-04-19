@@ -34,7 +34,9 @@
 
           <td class="row-control"><%= dash_if_zero(analytics[:control_rate][:control_rate]) %></td>
           <td class="row-spacer">&nbsp;</td>
-          <td class="row-unique-date"><%= dash_if_zero(analytics[:unique_patients_enrolled]) %></td>
+          <td class="row-unique-date">
+            <%= dash_if_zero(analytics[:returning_patients] + analytics[:newly_enrolled_patients]) %>
+          </td>
 
           <% analytics[:blood_pressures_recorded_per_week].sort.each do |_key, value| %>
             <td class="row-unique-date"><%= dash_if_zero(value) %></td>
@@ -51,7 +53,13 @@
 
         <td class="row-control"><%= dash_if_zero(@facility_group_analytics[:control_rate][:control_rate]) %></td>
         <td class="row-spacer">&nbsp;</td>
+<<<<<<< HEAD
         <td class="row-unique-date"><%= dash_if_zero(@facility_group_analytics[:unique_patients_enrolled]) %></td>
+=======
+        <td class="row-unique-date">
+          <%= @facility_group_analytics[:returning_patients] + @facility_group_analytics[:newly_enrolled_patients] %>
+        </td>
+>>>>>>> master
 
         <% @facility_group_analytics[:blood_pressures_recorded_per_week].sort.each do |_key, value| %>
           <td class="row-unique-date"><%= dash_if_zero(value) %></td>

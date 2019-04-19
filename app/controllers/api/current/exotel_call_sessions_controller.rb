@@ -45,7 +45,13 @@ class Api::Current::ExotelCallSessionsController < ApplicationController
   private
 
   def call_status
-    (params[:CallStatus] || params[:DialCallStatus]).underscore
+    status = params[:CallStatus] || params[:DialCallStatus]
+
+    if status.blank? || status == 'null'
+      CallLog.results[:unknown]
+    else
+      status.underscore
+    end
   end
 
   def call_type

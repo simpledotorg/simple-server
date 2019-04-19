@@ -4,7 +4,7 @@
 
 <div class="dashboard">
 
-  <div class="graphics">
+  <div class="graphics d-none">
     <%= link_to 'WhatsApp', analytics_facility_group_graphics_path(
       @facility_group,
       month: analytics_date_format(Time.now.at_beginning_of_month)) %>
@@ -13,7 +13,7 @@
   <h1><%= @facility_group.name %></h1>
   <%= string_for_range(@from_time, @to_time) %>
 
-  <div class="featured">
+  <div class="featured d-none">
 
           <%= render "shared/analytics/patients_count_panel",
                      newly_enrolled_patients_count: @facility_group_analytics[:newly_enrolled_patients],
