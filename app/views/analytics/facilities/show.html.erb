@@ -71,7 +71,6 @@
         </tbody>
         <tfoot>
         <tr class="row-total">
-          <%= console %>
           <td></td>
           <td class="row-title row-total">Totals</td>
           <td class="row-enrolled text-green row-total"><%= dash_if_zero(@user_analytics.values.map(&:registered_patients_count).sum) %></td>
