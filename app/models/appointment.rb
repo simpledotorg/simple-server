@@ -95,7 +95,7 @@ class Appointment < ApplicationRecord
   # CSV export
   def self.to_csv
     appointments = all.joins(patient: { latest_blood_pressures: :facility })
-                      .includes(patient: [:address, :phone_numbers, :medical_history, { latest_blood_pressures: :facility }])
+                     .includes(patient: [:address, :phone_numbers, :medical_history, { latest_blood_pressures: :facility }])
 
     CSV.generate(headers: true) do |csv|
       csv << csv_headers
@@ -143,5 +143,11 @@ class Appointment < ApplicationRecord
   def scheduled_date_for_locale(locale)
     month_in_locale = I18n.t("months.#{scheduled_date.month}", locale: locale)
     "#{scheduled_date.day} #{month_in_locale}, #{scheduled_date.year}"
+  end
+
+  def reminder_messages_around(days)
+    communications
+      .where(communication_type: :reminder_sms)
+      .select { |reminder| reminder.days_away_from_appointment?(days) }
   end
 end

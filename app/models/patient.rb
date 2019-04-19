@@ -125,6 +125,10 @@ class Patient < ApplicationRecord
       .where('device_created_at <= ?', 2.days.ago)
   end
 
+  def latest_phone_number
+    phone_numbers.last.number
+  end
+
   private
 
   def low_priority?

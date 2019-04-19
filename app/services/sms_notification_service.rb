@@ -13,21 +13,24 @@ class SmsNotificationService
                     app_signature: app_signature))
   end
 
-  def send_reminder_sms(facility, appointment, locale = DEFAULT_LOCALE)
-    send_sms(I18n.t('sms.overdue_appointment_reminder',
-                    facility_name: facility.name,
-                    appointment_date: appointment.scheduled_date_for_locale(locale),
-                    locale: locale))
+  def send_reminder_sms(reminder_name, appointment, callback_url, locale = DEFAULT_LOCALE)
+    body = I18n.t("sms.appointment_reminders.#{reminder_name}",
+                  facility_name: appointment.facility.name,
+                  appointment_date: appointment.scheduled_date_for_locale(locale),
+                  locale: locale)
+
+    send_sms(body, callback_url)
   end
 
   private
 
   attr_reader :recipient_number, :client
 
-  def send_sms(body)
+  def send_sms(body, callback_url = '')
     client.messages.create(
       from: ENV['TWILIO_PHONE_NUMBER'],
-      to: recipient_number.prepend(I18n.t('sms.country_code')),
+      to: recipient_number.insert(0, I18n.t('sms.country_code')),
+      status_callback: callback_url,
       body: body)
   end
 end

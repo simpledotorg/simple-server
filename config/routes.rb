@@ -112,6 +112,10 @@ Rails.application.routes.draw do
           end
         end
 
+        if FeatureToggle.enabled?('SMS_REMINDERS')
+          resource :twilio_sms_delivery, only: [:create], controller: :twilio_sms_delivery
+        end
+
         scope :users do
           get 'find', to: 'users#find'
           post 'register', to: 'users#register'
