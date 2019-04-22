@@ -134,39 +134,62 @@ RSpec.describe Api::Current::PatientsController, type: :controller do
         end
       end
 
-      it 'with all attributes and associations updated' do
-        patients_payload = updated_patients_payload
-        sync_time = Time.now
-        post :sync_from_user, params: { patients: patients_payload }, as: :json
+      describe 'with all attributes and associations updated' do
+        let!(:patients_payload) { updated_patients_payload }
+        let!(:sync_time) { Time.now }
 
-        patients_payload.each do |updated_patient|
-          updated_patient.with_int_timestamps
-          db_patient = Patient.find(updated_patient['id'])
-          expect(db_patient.attributes.with_payload_keys.with_int_timestamps
-                   .except('address_id')
-                   .except('registration_user_id')
-                   .except('registration_facility_id')
-                   .except('test_data'))
-            .to eq(updated_patient.except('address', 'phone_numbers', 'business_identifiers'))
-          expect(db_patient.address.attributes.with_payload_keys.with_int_timestamps)
-            .to eq(updated_patient['address'])
+        before do
+          post :sync_from_user, params: { patients: patients_payload }, as: :json
         end
 
-        expect(PatientPhoneNumber.updated_on_server_since(sync_time).count).to eq 10
-        patients_payload.each do |updated_patient|
-          updated_phone_number = updated_patient['phone_numbers'].first
-          db_phone_number = PatientPhoneNumber.find(updated_phone_number['id'])
-          expect(db_phone_number.attributes.with_payload_keys.with_int_timestamps)
-            .to eq(updated_phone_number)
+        it 'updates non-nested fields' do
+          patients_payload.each do |updated_patient|
+            updated_patient.with_int_timestamps
+            db_patient = Patient.find(updated_patient['id'])
+            expect(db_patient.attributes.with_payload_keys.with_int_timestamps
+                     .except('address_id')
+                     .except('registration_user_id')
+                     .except('registration_facility_id')
+                     .except('test_data'))
+              .to eq(updated_patient.except('address', 'phone_numbers', 'business_identifiers'))
+          end
         end
 
-        expect(PatientBusinessIdentifier.updated_on_server_since(sync_time).count).to eq 10
-        patients_payload.each do |updated_patient|
-          updated_business_identifier = updated_patient['business_identifiers'].first
-          updated_business_identifier_metadata = JSON.parse(updated_business_identifier[:metadata]) if updated_business_identifier[:metadata].present?
+        it 'updates address' do
+          patients_payload.each do |updated_patient|
+            updated_patient.with_int_timestamps
+            db_patient = Patient.find(updated_patient['id'])
+
+            expect(db_patient.address.attributes.with_payload_keys.with_int_timestamps)
+              .to eq(updated_patient['address'])
+          end
+        end
+
+        it 'updates phone numbers' do
+          expect(PatientPhoneNumber.updated_on_server_since(sync_time).count).to eq 10
+
+          patients_payload.each do |updated_patient|
+            updated_patient.with_int_timestamps
+            updated_phone_number = updated_patient['phone_numbers'].first
+            db_phone_number = PatientPhoneNumber.find(updated_phone_number['id'])
+
+            expect(db_phone_number.attributes.with_payload_keys.with_int_timestamps)
+              .to eq(updated_phone_number)
+          end
+        end
+
+        it 'updates business identifiers' do
+          expect(PatientBusinessIdentifier.updated_on_server_since(sync_time).count).to eq 10
+
+          patients_payload.each do |updated_patient|
+            updated_patient.with_int_timestamps
+            updated_business_identifier = updated_patient['business_identifiers'].first
+            updated_business_identifier_metadata = JSON.parse(updated_business_identifier[:metadata]) if updated_business_identifier[:metadata].present?
             db_business_identifier = PatientBusinessIdentifier.find(updated_business_identifier['id'])
-          expect(db_business_identifier.attributes.with_payload_keys.with_int_timestamps)
-            .to eq(updated_business_identifier.merge('metadata' => updated_business_identifier_metadata))
+
+            expect(db_business_identifier.attributes.with_payload_keys.with_int_timestamps)
+              .to eq(updated_business_identifier.merge('metadata' => updated_business_identifier_metadata))
+          end
         end
       end
 
