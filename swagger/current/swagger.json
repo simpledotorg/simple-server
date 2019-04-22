@@ -1853,6 +1853,17 @@
             "null"
           ]
         },
+        "appointment_type": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "enum": [
+            "manual",
+            "automatic",
+            null
+          ]
+        },
         "deleted_at": {
           "$ref": "#/definitions/nullable_timestamp"
         },

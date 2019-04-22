@@ -207,6 +207,7 @@ class Api::Current::Models
           cancel_reason: { type: ['null', :string], enum: Appointment.cancel_reasons.keys + [nil] },
           remind_on: { type: [:string, 'null'], format: :date },
           agreed_to_visit: { type: [:boolean, 'null'] },
+          appointment_type: { type: ['null', :string], enum: Appointment.appointment_types.keys + [nil] },
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' } },

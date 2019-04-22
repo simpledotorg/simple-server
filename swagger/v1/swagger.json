@@ -1669,6 +1669,17 @@
             "null"
           ]
         },
+        "appointment_type": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "enum": [
+            "manual",
+            "automatic",
+            null
+          ]
+        },
         "created_at": {
           "$ref": "#/definitions/timestamp"
         },
