@@ -1993,7 +1993,7 @@
           "type": "string"
         },
         "metadata": {
-          "type": "object"
+          "type": "string"
         },
         "deleted_at": {
           "$ref": "#/definitions/nullable_timestamp"
