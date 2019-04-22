@@ -39,7 +39,7 @@ class Api::Current::PatientTransformer
               .except('patient_id')
               .merge('metadata' => business_identifier.metadata&.to_json)
           end
-        ).as_json
+        )
     end
   end
 end
