@@ -163,9 +163,10 @@ RSpec.describe Api::Current::PatientsController, type: :controller do
         expect(PatientBusinessIdentifier.updated_on_server_since(sync_time).count).to eq 10
         patients_payload.each do |updated_patient|
           updated_business_identifier = updated_patient['business_identifiers'].first
-          db_business_identifier = PatientBusinessIdentifier.find(updated_business_identifier['id'])
+          updated_business_identifier_metadata = JSON.parse(updated_business_identifier[:metadata]) if updated_business_identifier[:metadata].present?
+            db_business_identifier = PatientBusinessIdentifier.find(updated_business_identifier['id'])
           expect(db_business_identifier.attributes.with_payload_keys.with_int_timestamps)
-            .to eq(updated_business_identifier)
+            .to eq(updated_business_identifier.merge('metadata' => updated_business_identifier_metadata))
         end
       end
 

@@ -86,7 +86,7 @@ class Api::Current::Models
           identifier: { '$ref' => '#/definitions/non_empty_string' },
           identifier_type: { type: :string, enum: PatientBusinessIdentifier.identifier_types.keys },
           metadata_version: { type: :string },
-          metadata: { type: :object },
+          metadata: { type: :string },
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' } },

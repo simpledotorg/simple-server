@@ -7,7 +7,13 @@ class Api::Current::PatientTransformer
       business_identifiers = payload_attributes[:business_identifiers]
       address_attributes = Api::Current::Transformer.from_request(address) if address.present?
       phone_numbers_attributes = phone_numbers.map { |phone_number| Api::Current::Transformer.from_request(phone_number) } if phone_numbers.present?
-      business_identifiers_attributes = business_identifiers.map { |business_identifier| Api::Current::Transformer.from_request(business_identifier) } if business_identifiers.present?
+      if business_identifiers.present?
+        business_identifiers_attributes = business_identifiers.map do |business_identifier|
+          business_identifier_metadata = JSON.parse(business_identifier[:metadata]) if business_identifier[:metadata].present?
+          Api::Current::Transformer.from_request(business_identifier
+                                                   .merge(metadata: business_identifier_metadata))
+        end
+      end
       patient_attributes = Api::Current::Transformer.from_request(payload_attributes)
       patient_attributes.merge(
         address: address_attributes,
@@ -28,7 +34,10 @@ class Api::Current::PatientTransformer
             Api::Current::Transformer.to_response(phone_number).except('patient_id')
           end,
           'business_identifiers' => patient.business_identifiers.map do |business_identifier|
-            Api::Current::Transformer.to_response(business_identifier).except('patient_id')
+            Api::Current::Transformer
+              .to_response(business_identifier)
+              .except('patient_id')
+              .merge('metadata' => business_identifier.metadata&.to_json)
           end
         ).as_json
     end

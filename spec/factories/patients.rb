@@ -66,6 +66,7 @@ def updated_patient_payload(existing_patient)
       'number'     => Faker::PhoneNumber.phone_number)],
     'business_identifiers' => [business_identifier.attributes.with_payload_keys.merge(
       'updated_at' => update_time,
-      'identifier' => SecureRandom.uuid)]
+      'identifier' => SecureRandom.uuid,
+      'metadata' => business_identifier.metadata&.to_json)]
   )
 end
