@@ -38,7 +38,11 @@ def build_patient_payload(patient = FactoryBot.build(:patient))
     .merge(
       'address'       => patient.address.attributes.with_payload_keys,
       'phone_numbers' => patient.phone_numbers.map { |phno| phno.attributes.with_payload_keys.except('patient_id') },
-      'business_identifiers' => patient.business_identifiers.map { |bid| bid.attributes.with_payload_keys.except('patient_id') }
+      'business_identifiers' => patient.business_identifiers.map do |bid|
+        bid.attributes.with_payload_keys
+          .except('patient_id')
+          .merge('metadata' => bid.metadata&.to_json)
+      end
     )
 end
 
