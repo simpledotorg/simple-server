@@ -15,66 +15,82 @@
   </div>
     
   <h1><%= @facility.name %></h1>
-
+  <p>Data updated: April 22, 2019</p>
   <div class="featured">
       <div class="featured-section featured-1">
-          <h4>Follow-up visits: Last 90 days</h4>
+          <h4>Follow-up visits: Q2 2019</h4>
           
-          <table class="split-bars-secondary">
+          <table class="split-bars-secondary" style="font-size: 13px; font-family: 'Roboto Condensed';">
             <tr>
-                <td class="bar-desc bar-1-desc">74% didn't attend for a follow-up visit</td>
-                <td class="bar-count">475 <span>patients</span></td>
-                <td><span class="down-green">3%</span></td>
-            </tr>
-            <tr>    
-                <td class="bar-desc bar-2-desc">16% had uncontrolled BP at follow-up visit</td>
-                <td class="bar-count">41 <span>patients</span></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td class="bar-desc bar-3-desc">10% had BP controlled at follow-up visit</td>
-                <td class="bar-count">38 <span>patients</span></td>
-                <td><span class="up-green">2%</span></td>
+                <td valign="bottom" class="bar-desc bar-1-desc" style="line-height: 1.2; width: 45%; position: relative; text-align: right; padding-right: 16px;">
+                    475 of 554 patients<br>didn't attend for a follow-up visit
+                    <div style="width: 1px; height: 50px; background: #ddd; position: absolute; right: 8px; top: 10px;"></div>
+                </td>   
+                <td valign="bottom" class="bar-desc bar-3-desc" style="line-height: 1.2; width: 27.5%; color: #B81631; position: relative; text-align: right; padding-right: 16px;">
+                    41 patients had uncontrolled BP at follow-up visit
+                    <div style="width: 1px; height: 50px; background: #ddd; position: absolute; right: 8px; top: 10px;"></div>
+                </td>
+                <td valign="bottom" class="bar-desc bar-3-desc" style="line-height: 1.2; width: 27.5%; position: relative; text-align: right; padding-right: 16px;">
+                    38 patients had BP controlled at follow-up visit
+                    <div style="width: 1px; height: 50px; background: #ddd; position: absolute; right: 8px; top: 10px;"></div>
+                </td>
             </tr>
           </table>
           
-          <table class="split-bars">
-                <tr>
-                    <td class="bar bar-1" style="width: 74%;">74%<div>Didn't attend</div></td>
-                    <td class="bar bar-2" style="width: 16%;">16%<div>Uncontrolled</div></td>
-                    <td class="bar bar-3" style="width: 10%;">10%<div>Controlled</div></td>
+          
+          <table class="split-bars" style="margin-bottom: 5px;"> 
+              <tr>
+                    <td style="font-weight: bold; white-space: nowrap; font-size: 12px; border-radius: 2px; padding: 0 12px; min-width: 100px;">Q2 2019</td>
+                    <td class="bar bar-1" style="width: 65%;">65%</td>
+                    <td class="bar bar-2" style="width: 18%;">18%</td>
+                    <td class="bar bar-3" style="width: 17%;">17%</td>
+                </tr>
+          </table>
+          
+          <table class="split-bars" style="margin-bottom: 5px;"> 
+              <tr>
+                    <td style="white-space: nowrap; font-size: 12px; color: #666; border-radius: 2px; padding: 0 12px; min-width: 100px;">Q1 2019</td>
+                    <td class="bar bar-1" style="width: 68%;">68%</td>
+                    <td class="bar bar-2" style="width: 18%;">18%</td>
+                    <td class="bar bar-3" style="width: 14%;">14%</td>
+                </tr>
+          </table>
+          
+          <table class="split-bars">  
+              <tr>
+                    <td style="white-space: nowrap; font-size: 12px; color: #666; border-radius: 2px; padding: 0 12px; min-width: 100px;">Q4 2018</td>
+                    <td class="bar bar-1" style="width: 75%;">75%</td>
+                    <td class="bar bar-2" style="width: 13%;">13%</td>
+                    <td class="bar bar-3" style="width: 12%;">12%</td>
                 </tr>
                 
                 <tr>
+                    <td></td>
                     <td colspan="2" class="bar-label"><div>Uncontrolled BP</div><em></em></td>
                     <td></td>
                 </tr>
           </table>
       </div>
       <div class="featured-section featured-2">
-          <h4>Enrolled: Last 90 days</h4>
+          <h4>Enrolled: Q2 2019</h4>
           <div class="featured-count">
             <div class="featured-count-number">45</div>
-            New patients enrolled
+            New patients enrolled since April 1, 2019
             <div class="light" style="font-size: 85%;">There are now 599 patients enrolled</div>
           </div>
           <div>
             <table class="bars">
                 <tr>
-                    <td valign="bottom"><div style="height: 8px;"></div> Oct</td>
                     <td valign="bottom"><div style="height: 18px;"></div> Nov</td>
                     <td valign="bottom"><div style="height: 22px;"></div> Dec</td>
                     <td valign="bottom"><div style="height: 23px;"></div> Jan</td>
                     <td valign="bottom"><div style="height: 24px;"></div> Feb</td>
                     <td valign="bottom"><div style="height: 25px;"></div> Mar</td>
+                    <td valign="bottom"><div style="height: 27px;"></div> Apr</td>
                 </tr>  
             </table>
           </div>
       </div>
-      <!--div class="featured-section featured-3">
-          <h4>Activity Level</h4>
-          <div style="margin-top: 16px; text-align: center;"><div style="font-size: 48px; color: orange; font-weight: 100;"><img src="data:image/png;base64,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" style="width: 160px;"></div> Activity score<div class="light" style="font-size: 12px; max-width: 16em; margin: 0 auto;">Good performance enrolling patients and recording BPs</div></div>
-      </div-->
   </div>
     
 </div>

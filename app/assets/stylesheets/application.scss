@@ -17,6 +17,7 @@ $grey-dark: #6C737A;
 $grey-darkest: #2F363D;
 
 $highlight: #E9F3FF; /* LIGHT BLUE */
+$blue: #007bff;
 $blue-light: #E9F3FF;
 $green-light: #E0FFED;
 $green-mid: #5CFF9D;
@@ -61,6 +62,11 @@ h4 {
     border-bottom: 1px solid $grey-light;
     padding-bottom: 4px;
     margin-bottom: 1em;
+}
+
+h4 span {
+    color: $grey-mid;
+    font-weight: normal;
 }
 
 h5 {
@@ -187,6 +193,23 @@ a.btn {
     border-color: $blue;
     color: #FFF;
   }
+}
+
+.btn-group-toggle {
+    min-width: 10em;
+}
+
+.btn-group-toggle label {
+    font-size: 100%;
+    background: #fff;
+    color: $blue;
+    border-color: $grey-light;
+}
+
+.btn-group-toggle label.active {
+    background: $grey-light !important;
+    border-color: $grey-light !important;
+    color: $grey-dark !important;
 }
 
 label {
@@ -491,10 +514,11 @@ Dashboard UI
 .featured-section {
     display: table-cell;
     border-radius: 3px;
-    border: 1px solid $highlight;
+    border-bottom: 1px solid $grey-light;
     padding: 16px;
     background: #fff;
     position: relative;
+    background: $offwhite;
 }
 
 .featured-section h4 {
@@ -527,7 +551,7 @@ Dashboard UI
     padding: 4px 8px;
     font-weight: 500;
     position: relative;
-    font-size: 120%;
+    font-size: 110%;
 }
 
 .split-bars .bar div {
@@ -554,7 +578,7 @@ Dashboard UI
     text-transform: uppercase;
     font-size: 11px;
     padding: 4px 8px;
-    background: #fff;
+    background: $offwhite;
     display: inline-block;
     position: relative;
     z-index: 300;
@@ -590,40 +614,6 @@ Dashboard UI
     border-top: 0;
 }
 
-@include media-breakpoint-down(sm) {
-    .featured {
-        margin: 0;
-        border-spacing: 0;
-        display: block;
-    }
-    .featured-section {
-        display: block;
-        margin: 8px -10px;
-        padding: 10px;
-    }
-    .split-bars-secondary td {
-        font-family: $font-condensed;
-        padding-left: 0;
-    }
-    .split-bars-secondary td.bar-count {
-        text-align: center;
-    }
-    .split-bars-secondary td.bar-count span {
-        display: block;
-        font-size: 85%;
-        color: $grey-mid;
-        display: none;
-    }
-    .featured-count {
-        text-align: left;
-    }
-    .featured-count-number {
-        display: inline;
-        font-size: 100%;
-        font-weight: normal;
-    }
-}
-
 .bars {
     text-align: center;
     font-size: 11px;
@@ -646,14 +636,16 @@ Dashboard UI
 .up-green,
 .down-red,
 .down-green {
-    background: url(/assets/arrow-up-green.png) 0 0 no-repeat;
+    background: url(/assets/arrow-up-green.png) 0 2px no-repeat;
     background-size: 16px;
-    padding-left: 24px;
-    color: $green;
+    display: inline-block;
+    padding: 2px 0 2px 24px;
+    color: $grey-mid;
+    font-size: 12px;
 }
 
-.up-red { background-image: url(/assets/arrow-up-red.png); color: $red; }
-.down-red { background-image: url(/assets/arrow-down-red.png); color: $red; }
+.up-red { background-image: url(/assets/arrow-up-red.png); }
+.down-red { background-image: url(/assets/arrow-down-red.png); }
 .down-green { background-image: url(/assets/arrow-down-green.png); }
 
 .graphics a {
@@ -804,6 +796,50 @@ Dashboard UI
     background: $grey-lightest;
 }
 
+@include media-breakpoint-down(sm) {
+    .featured {
+        margin: 0;
+        border-spacing: 0;
+        display: block;
+    }
+    .featured-section {
+        display: block;
+        margin: 8px -10px;
+        padding: 10px;
+    }
+    .split-bars-secondary td {
+        font-family: $font-condensed;
+        padding-left: 0;
+    }
+    .split-bars-secondary td.bar-count {
+        text-align: center;
+    }
+    .split-bars-secondary td.bar-count span {
+        display: block;
+        font-size: 85%;
+        color: $grey-mid;
+        display: none;
+    }
+    .featured-count {
+        text-align: left;
+    }
+    .featured-count-number {
+        display: inline;
+        font-size: 100%;
+        font-weight: normal;
+    }
+    .featured .bar-label div,
+    .featured .bar-label em {
+        display: none;
+    }
+    .up-red,
+    .up-green,
+    .down-red,
+    .down-green {
+        display: none;
+    }
+}
+
 /******************
 Overdue list
 ******************/
@@ -872,6 +908,15 @@ nav.breadcrumb {
  nav.breadcrumb a {
     margin: 0 0.5em 0 0;
     font-family: $font-condensed;
+}
+
+@include media-breakpoint-down(sm) {
+    nav.breadcrumb {
+        margin-top: 0;
+    }
+    .sub-nav {
+        margin-bottom: 16px;
+    }
 }
 
 /*****************************
