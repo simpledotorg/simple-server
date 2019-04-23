@@ -2,8 +2,10 @@ require 'tzinfo'
 
 set :output, "/home/deploy/apps/simple-server/shared/log/cron.log"
 
+DEFAULT_CRON_TIME_ZONE='Asia/Kolkata'
+
 def local(time)
-  TZInfo::Timezone.get(ENV.fetch('CRON_TIME_ZONE')).local_to_utc(Time.parse(time))
+  TZInfo::Timezone.get(DEFAULT_CRON_TIME_ZONE).local_to_utc(Time.parse(time))
 end
 
 every :day, at: local('1:00 am').utc do
