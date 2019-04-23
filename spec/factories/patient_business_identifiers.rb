@@ -17,3 +17,7 @@ FactoryBot.define do
     end
   end
 end
+
+def build_business_identifier_payload(business_identifier = FactoryBot.build(:patient_business_identifier))
+  Api::Current::PatientBusinessIdentifierTransformer.to_response(business_identifier)
+end
