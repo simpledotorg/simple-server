@@ -1,4 +1,4 @@
-class Api::V1::FacilitiesController < Api::Current::FacilitiesController
+class Api::V1::FacilitiesController < Api::V2::FacilitiesController
   include Api::V1::ApiControllerOverrides
   include Api::V1::SyncControllerOverrides
 

@@ -1,4 +1,4 @@
-class Api::V1::AppointmentTransformer < Api::Current::AppointmentTransformer
+class Api::V1::AppointmentTransformer < Api::V2::AppointmentTransformer
   class << self
     def new_keys_mapping
       { invalid_phone_number: :other,

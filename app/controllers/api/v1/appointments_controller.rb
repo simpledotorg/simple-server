@@ -1,4 +1,4 @@
-class Api::V1::AppointmentsController < Api::Current::AppointmentsController
+class Api::V1::AppointmentsController < Api::V2::AppointmentsController
   include Api::V1::ApiControllerOverrides
   include Api::V1::SyncControllerOverrides
 
