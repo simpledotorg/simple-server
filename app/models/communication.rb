@@ -3,7 +3,7 @@ class Communication < ApplicationRecord
 
   belongs_to :appointment, optional: true
   belongs_to :user, optional: true
-  belongs_to :detailable, polymorphic: true
+  belongs_to :detailable, polymorphic: true, optional: true
 
   enum communication_type: {
     manual_call: 'manual_call',
