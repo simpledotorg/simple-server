@@ -9,6 +9,7 @@ RSpec.describe 'Patients sync', type: :request do
   let(:build_payload) { lambda { build_patient_payload(FactoryBot.build(:patient, registration_facility: request_user.facility)) } }
   let(:build_invalid_payload) { lambda { build_invalid_patient_payload } }
   let(:update_payload) { lambda { |record| updated_patient_payload record } }
+  let(:keys_not_expected_in_response) {['business_identifiers']}
 
   def to_response(patient)
     Api::V1::PatientTransformer.to_nested_response(patient)

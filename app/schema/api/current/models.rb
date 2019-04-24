@@ -79,12 +79,27 @@ class Api::Current::Models
         required: %w[id created_at updated_at number] }
     end
 
+    def patient_business_identifier
+      { type: :object,
+        properties: {
+          id: { '$ref' => '#/definitions/uuid' },
+          identifier: { '$ref' => '#/definitions/non_empty_string' },
+          identifier_type: { type: :string, enum: PatientBusinessIdentifier.identifier_types.keys },
+          metadata_version: { type: :string },
+          metadata: { type: :string },
+          deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
+          created_at: { '$ref' => '#/definitions/timestamp' },
+          updated_at: { '$ref' => '#/definitions/timestamp' } },
+        required: %w[id created_at updated_at identifier identifier_type] }
+    end
+
     def nested_patient
       patient.deep_merge(
         properties: {
           address: { '$ref' => '#/definitions/address' },
-          phone_numbers: { '$ref' => '#/definitions/phone_numbers' }, },
-        description: 'Patient with address and phone numbers nested.',
+          phone_numbers: { '$ref' => '#/definitions/phone_numbers' },
+          business_identifiers: { '$ref' => '#/definitions/patient_business_identifiers' },},
+        description: 'Patient with address, phone numbers and business identifiers nested.',
       )
     end
 
@@ -288,7 +303,9 @@ class Api::Current::Models
         appointment: appointment,
         appointments: array_of('appointment'),
         medical_history: medical_history,
-        medical_histories: array_of('medical_history')
+        medical_histories: array_of('medical_history'),
+        patient_business_identifier: patient_business_identifier,
+        patient_business_identifiers: array_of('patient_business_identifier'),
       }
     end
   end

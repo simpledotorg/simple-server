@@ -8,7 +8,7 @@ class Api::Current::UsersController < APIController
     user = User.new(user_from_request)
     return head :not_found unless user.facility.present?
     return render json: { errors: user.errors }, status: :bad_request if user.invalid?
-    if FeatureToggle.auto_approve?
+    if FeatureToggle.auto_approve_for_qa?
       user.sync_approval_allowed
       user.save
     else
@@ -33,7 +33,11 @@ class Api::Current::UsersController < APIController
     user = User.find(request_user_id)
     user.set_otp
     user.save
-    SmsNotificationService.new(user).send_request_otp_sms
+
+    SmsNotificationService
+      .new(user.phone_number)
+      .send_request_otp_sms(user.otp) unless FeatureToggle.auto_approve_for_qa?
+
     head :ok
   end
 

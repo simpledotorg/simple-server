@@ -111,7 +111,7 @@ RSpec.describe Admin::UsersController, type: :controller do
 
     before :each do
       sms_notification_service = double(SmsNotificationService.new(user))
-      allow(SmsNotificationService).to receive(:new).with(user).and_return(sms_notification_service)
+      allow(SmsNotificationService).to receive(:new).with(user.phone_number).and_return(sms_notification_service)
       expect(sms_notification_service).to receive(:send_request_otp_sms)
     end
 

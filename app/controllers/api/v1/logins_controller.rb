@@ -1,4 +1,4 @@
-class Api::V1::LoginsController < Api::Current::LoginsController
+class Api::V1::LoginsController < Api::V2::LoginsController
   include Api::V1::ApiControllerOverrides
 
   def user_to_response(user)
