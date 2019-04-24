@@ -1854,14 +1854,10 @@
           ]
         },
         "appointment_type": {
-          "type": [
-            "null",
-            "string"
-          ],
+          "type": "string",
           "enum": [
             "manual",
-            "automatic",
-            null
+            "automatic"
           ]
         },
         "deleted_at": {
@@ -1881,7 +1877,8 @@
         "scheduled_date",
         "status",
         "created_at",
-        "updated_at"
+        "updated_at",
+        "appointment_type"
       ]
     },
     "appointments": {
