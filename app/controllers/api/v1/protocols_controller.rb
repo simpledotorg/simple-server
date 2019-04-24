@@ -1,4 +1,4 @@
-class Api::V1::ProtocolsController < Api::Current::ProtocolsController
+class Api::V1::ProtocolsController < Api::V2::ProtocolsController
   include Api::V1::ApiControllerOverrides
   include Api::V1::SyncControllerOverrides
 
