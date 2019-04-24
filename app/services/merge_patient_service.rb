@@ -7,14 +7,16 @@ class MergePatientService
   def merge
     merged_address = Address.merge(payload[:address]) if payload[:address].present?
 
-    patient_attributes = payload.except(:address, :phone_numbers)
+    patient_attributes = payload.except(:address, :phone_numbers, :business_identifiers)
+
     patient_attributes['address_id'] = merged_address.id if merged_address.present?
     merged_patient = Patient.merge(attributes_with_metadata(patient_attributes))
     merged_patient.address = merged_address
 
     merged_phone_numbers = merge_phone_numbers(payload[:phone_numbers], merged_patient)
+    merged_business_identifiers = merge_business_identifiers(payload[:business_identifiers], merged_patient)
 
-    if (merged_address.present? && merged_address.merged?) || merged_phone_numbers.any?(&:merged?)
+    if (merged_address.present? && merged_address.merged?) || merged_phone_numbers.any?(&:merged?) || merged_business_identifiers.any?(&:merged?)
       merged_patient.touch
     end
 
@@ -44,6 +46,13 @@ class MergePatientService
     return [] unless phone_number_params.present?
     phone_number_params.map do |single_phone_number_params|
       PatientPhoneNumber.merge(single_phone_number_params.merge(patient: patient))
+    end
+  end
+
+  def merge_business_identifiers(business_identifier_params, patient)
+    return [] unless business_identifier_params.present?
+    business_identifier_params.map do |single_business_identifier_params|
+      PatientBusinessIdentifier.merge(single_business_identifier_params.merge(patient: patient))
     end
   end
 end

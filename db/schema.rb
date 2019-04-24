@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190402050907) do
+ActiveRecord::Schema.define(version: 20190411101836) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -120,6 +120,9 @@ ActiveRecord::Schema.define(version: 20190402050907) do
     t.uuid "user_id"
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_blood_pressures_on_deleted_at"
+    t.index ["device_created_at"], name: "index_blood_pressures_on_device_created_at"
+    t.index ["patient_id", "device_created_at"], name: "index_blood_pressures_on_patient_id_and_device_created_at"
+    t.index ["patient_id"], name: "index_blood_pressures_on_patient_id"
     t.index ["user_id"], name: "index_blood_pressures_on_user_id"
   end
 
@@ -218,6 +221,21 @@ ActiveRecord::Schema.define(version: 20190402050907) do
     t.string "slug"
     t.index ["deleted_at"], name: "index_organizations_on_deleted_at"
     t.index ["slug"], name: "index_organizations_on_slug", unique: true
+  end
+
+  create_table "patient_business_identifiers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "identifier", null: false
+    t.string "identifier_type", null: false
+    t.uuid "patient_id", null: false
+    t.string "metadata_version"
+    t.json "metadata"
+    t.datetime "device_created_at", null: false
+    t.datetime "device_updated_at", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deleted_at"], name: "index_patient_business_identifiers_on_deleted_at"
+    t.index ["patient_id"], name: "index_patient_business_identifiers_on_patient_id"
   end
 
   create_table "patient_phone_numbers", id: :uuid, default: nil, force: :cascade do |t|
