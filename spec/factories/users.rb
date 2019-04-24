@@ -8,6 +8,7 @@ FactoryBot.define do
     device_created_at { Time.now }
     sync_approval_status { User.sync_approval_statuses[:allowed] }
     sync_approval_status_reason nil
+    facility
 
     trait :created_on_device do
       id { SecureRandom.uuid }
@@ -26,6 +27,10 @@ FactoryBot.define do
 
     trait :sync_requested do
       sync_approval_status { User.sync_approval_statuses[:requested] }
+    end
+
+    trait(:with_sanitized_phone_number) do
+      phone_number { rand(1e9...1e10).to_i.to_s }
     end
 
     factory :user_created_on_device, traits: [:created_on_device]

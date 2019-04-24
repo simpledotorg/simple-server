@@ -4,7 +4,7 @@ class Admin::ProtocolDrugsController < AdminController
 
   def index
     authorize ProtocolDrug
-    @protocol_drugs = @protocol.protocol_drugs
+    @protocol_drugs = policy_scope(ProtocolDrug)
   end
 
   def show

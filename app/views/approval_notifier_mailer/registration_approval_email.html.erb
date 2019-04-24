@@ -18,11 +18,24 @@
 </p>
 
 <p>
-  <strong><%= t('facilities') %>:</strong>
-  <% @user.facilities.each do |facility| %>
-    <%= facility.name %>
-  <% end %>
+  <strong><%= t('registration_approval_email.organization') %>:</strong>
+  <%= @user.organization.name %>
 </p>
+
+<p>
+  <strong><%= t('registration_approval_email.registration_facility') %>:</strong>
+  <%= @user.facility.name %>
+</p>
+
+<p>
+  <strong><%= t('registration_approval_email.accessible_facilities') %>:</strong>
+  <ul>
+    <% @user.facility_group.facilities.each do |facility| %>
+      <li><%= facility.name %></li>
+    <% end %>
+  </ul>
+</p>
+
 <%= link_to t('registration_approval_email.allow_or_deny_access'), admin_user_url(@user) %>
 </body>
 </html>

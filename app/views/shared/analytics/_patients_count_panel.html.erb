@@ -1,0 +1,25 @@
+<div class="featured-section featured-primary">
+    <div class="featured-section-contents">
+        <strong class="featured-title">How many patients had BPs measured?</strong>
+        <div style="margin: 0.5em 0;">
+          <span id='newly-enrolled-patients-count' class="text-green" style="font-size: 18px;">
+              <%= newly_enrolled_patients_count %>
+          </span>
+
+          <span class="text-green" style="font-size: 12px; display: block; margin-top: -2px; line-height: 1.2;">
+            <%= t('analytics.newly_enrolled') %>
+          </span>
+
+        </div>
+        <div>
+
+          <span id='returning-patients-count' class="text-green" style="font-size: 18px;">
+              <%= returning_patients_count %>
+          </span>
+
+          <span class="text-green" style="font-size: 12px; display: block; margin-top: -2px; line-height: 1.2;">
+            <%= t('analytics.return_patients') %>
+          </span>
+        </div>
+    </div>
+</div>

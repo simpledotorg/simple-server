@@ -1,23 +1,25 @@
-<div class="top-buttons">
+<div class="page-header">
+  <div class="page-title">
+    <h1 class="page-title"><%= @protocol.name %></h1>
+    <p>
+      <strong>Follow up days:</strong> <%= @protocol.follow_up_days %>
+    </p>
+  </div>
+  <nav class="page-nav">
     <% if policy(@protocol).edit? %>
       <%= link_to "Edit protocol", edit_admin_protocol_path(@protocol), class: "btn btn-sm btn-primary" %>
     <% end %>
     <% if policy(ProtocolDrug).new? %>
       <%= link_to 'New protocol drug', new_admin_protocol_protocol_drug_path(@protocol), class: "btn btn-sm btn-primary" %>
     <% end %>
+  </nav>
 </div>
-
-<h1 style="margin-top: 1em;"><%= @protocol.name %></h1>
-<p>
-  <strong>Follow up days:</strong>
-  <%= @protocol.follow_up_days %>
-</p>
 
 <div class="table-responsive">
 <table class="table">
   <thead class="thead-light">
     <tr>
-      <th class="nowrap"><h2 class="mt-4">Protocol drugs</h2></th>
+      <th class="nowrap">Protocol drugs</th>
       <th>Dosage</th>
       <th class="nowrap">RxNorm code</th>
       <th colspan="2"></th>
@@ -25,7 +27,7 @@
   </thead>
 
   <tbody>
-    <% @protocol.protocol_drugs.each do |protocol_drug| %>
+    <% @protocol_drugs.each do |protocol_drug| %>
       <tr>
         <td class="nowrap"><%= protocol_drug.name %></td>
         <td class="nowrap"><%= protocol_drug.dosage %></td>

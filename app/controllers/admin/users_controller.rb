@@ -3,34 +3,18 @@ class Admin::UsersController < AdminController
 
   def index
     authorize User
-    @users = User.all.sort_by do |user|
-      [ordered_sync_approval_statuses[user.sync_approval_status],
-       user.updated_at]
+    @users_by_district = {}
+    policy_scope(Facility).group_by(&:district).each do |district, facilities|
+      @users_by_district[district] = facilities.map(&:users).flatten.sort_by do |user|
+        [ordered_sync_approval_statuses[user.sync_approval_status], user.full_name]
+      end
     end
   end
 
   def show
-    @current_admin = current_admin
-  end
-
-  def new
-    @user = User.new
-    authorize @user
   end
 
   def edit
-  end
-
-  def create
-    @user = User.new(user_params)
-    authorize @user
-
-    if @user.save
-      SmsNotificationService.new(@user).notify
-      redirect_to [:admin, @user], notice: 'User was successfully created.'
-    else
-      render :new
-    end
   end
 
   def update
@@ -41,21 +25,16 @@ class Admin::UsersController < AdminController
     end
   end
 
-  def destroy
-    @user.destroy
-    redirect_to [:admin, :users], notice: 'User was successfully deleted.'
-  end
-
   def reset_otp
     @user.set_otp
     @user.save
-    SmsNotificationService.new(@user).send_request_otp_sms
+    SmsNotificationService.new(@user.phone_number).send_request_otp_sms(@user.otp)
     redirect_to [:admin, @user], notice: 'User OTP has been reset.'
   end
 
   def disable_access
     reason_for_denial =
-      I18n.t('admin.denied_access_to_user', admin_name: @current_admin.email.split('@').first) + "; " +
+      I18n.t('admin.denied_access_to_user', admin_name: current_admin.email.split('@').first) + "; " +
       params[:reason_for_denial].to_s
 
     @user.sync_approval_denied(reason_for_denial)
@@ -64,7 +43,7 @@ class Admin::UsersController < AdminController
   end
 
   def enable_access
-    @user.sync_approval_allowed(I18n.t('admin.allowed_access_to_user', admin_name: @current_admin.email.split('@').first))
+    @user.sync_approval_allowed(I18n.t('admin.allowed_access_to_user', admin_name: current_admin.email.split('@').first))
     @user.save
     redirect_to request.referer || [:admin, @user], notice: 'User access has been enabled.'
   end
@@ -87,7 +66,7 @@ class Admin::UsersController < AdminController
       :password,
       :password_confirmation,
       :sync_approval_status,
-      facility_ids: []
+      :registration_facility_id
     )
   end
 end

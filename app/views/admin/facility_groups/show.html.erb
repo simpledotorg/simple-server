@@ -1,0 +1,54 @@
+<div class="page-header">
+  <h1 class="page-title">
+    <small><%= @facility_group.organization.name %></small><br>
+    <%= @facility_group.name %>
+  </h1>
+  <nav class="page-nav">
+    <% if policy(@facility_group).edit? %>
+      <%= link_to 'Edit facility group', edit_admin_facility_group_path(@facility_group), class: "btn btn-sm btn-primary" %>
+    <% end %>
+  </nav>
+</div>
+
+<h2>Protocol</h2>
+<p><%= link_to @facility_group.protocol.name, admin_protocol_path(@facility_group.protocol) %></p>
+
+<h2>Facilities</h2>
+<div class="table-responsive">
+  <table class="table">
+    <thead class="thead-light">
+      <tr>
+        <th>Name</th>
+        <th>Address</th>
+        <th>Village/colony</th>
+        <th>District</th>
+        <th>State</th>
+        <th>Country</th>
+        <th>Pin</th>
+        <th>Facility&nbsp;type</th>
+        <th colspan="2"></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @facility_group.facilities.order(:name).each do |facility| %>
+        <tr>
+          <td class="nowrap"><%= link_to facility.name, [:admin, @facility_group, facility] %></td>
+          <td><%= facility.street_address %></td>
+          <td><%= facility.village_or_colony %></td>
+          <td><%= facility.district %></td>
+          <td><%= facility.state %></td>
+          <td><%= facility.country %></td>
+          <td><%= facility.pin %></td>
+          <td><%= facility.facility_type %></td>
+          <% if policy(facility).edit? %>
+            <td><%= link_to 'Edit', edit_admin_facility_group_facility_path(@facility_group, facility) %></td>
+          <% end %>
+          <% if policy(facility).destroy? %>
+            <td><%= link_to 'Delete', [:admin, @facility_group, facility], method: :delete, data: { confirm: "Are you sure you want to delete #{facility.name}?" } %></td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

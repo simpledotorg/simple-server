@@ -1,0 +1,15 @@
+<div class="featured-section">
+    <div class="featured-section-contents">
+      <strong class="featured-title">
+        <%= t('analytics.non_returning_hypertensive_patients') %>
+      </strong>
+      <span id='non-returning-hypertensive-patients-count' class="featured-number text-yellow">
+        <%= non_returning_hypertensive_patients_count %>
+      </span>
+
+      <%= render "shared/graph",
+                 options: { id: 'non-returning-hypertensive-patients-graph' },
+                 column_class: 'featured-graph-column-yellow',
+                 graph_data: latest_months(non_returning_hypertensive_patients_per_month, number_of_months) %>
+    </div>
+</div>

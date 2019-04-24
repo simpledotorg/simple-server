@@ -1,5 +1,8 @@
 class Protocol < ApplicationRecord
-  has_many :protocol_drugs
+  has_many :protocol_drugs, -> { order(:updated_at) }
+
+  has_many :facility_groups
+
   before_create :assign_id
 
   validates :name, presence: true

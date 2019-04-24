@@ -4,12 +4,17 @@ FactoryBot.define do
     facility
     association :patient, strategy: :build
     scheduled_date { 30.days.from_now }
-    status { :scheduled }
+    status :scheduled
     cancel_reason nil
     device_created_at { Time.now }
     device_updated_at { Time.now }
     agreed_to_visit nil
     remind_on nil
+    appointment_type { Appointment.appointment_types[:manual] }
+    trait :overdue do
+      scheduled_date { 30.days.ago }
+      status :scheduled
+    end
   end
 end
 
@@ -27,8 +32,9 @@ end
 def updated_appointment_payload(existing_appointment)
   update_time = 10.days.from_now
   updated_status = Appointment.statuses.keys
-                          .reject { |action| action == existing_appointment.status.to_s}
-                          .sample
+                     .reject { |action| action == existing_appointment.status.to_s }
+                     .reject { |action| action == 'cancelled' }
+                     .sample
 
   build_appointment_payload(existing_appointment).merge(
     'updated_at' => update_time,

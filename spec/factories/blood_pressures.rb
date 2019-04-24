@@ -5,9 +5,30 @@ FactoryBot.define do
     diastolic { rand(60..140) }
     device_created_at { Time.now }
     device_updated_at { Time.now }
+    deleted_at { [nil, Time.now].sample }
     association :facility, strategy: :build
     association :patient, strategy: :build
     user
+
+    trait :critical do
+      systolic 181
+      diastolic 111
+    end
+
+    trait :very_high do
+      systolic 160
+      diastolic 100
+    end
+
+    trait :high do
+      systolic 140
+      diastolic 90
+    end
+
+    trait :under_control do
+      systolic 80
+      diastolic 60
+    end
   end
 end
 
@@ -18,8 +39,8 @@ end
 def build_invalid_blood_pressure_payload
   build_blood_pressure_payload.merge(
     'created_at' => nil,
-    'systolic'   => nil,
-    'diastolic'  => 'foo'
+    'systolic' => nil,
+    'diastolic' => 'foo'
   )
 end
 

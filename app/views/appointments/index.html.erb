@@ -1,0 +1,53 @@
+<% if policy(Appointment).download? && @appointments.present? %>
+  <% if @facility_id == "All" %>
+    <div class="float-right text-right">
+      <button class="btn btn-sm btn-secondary" disabled>Download Overdue List</button><br>
+      <small>Select a facility to download</small>
+    </div>
+  <% else %>
+    <%= link_to "Download Overdue List", appointments_path(facility_id: @facility_id, format: "csv"), class: "btn btn-primary btn-sm float-right", data: { confirm: I18n.t('admin.phi_download_alert') } %>
+  <% end %>
+<% end %>
+
+<h1>Overdue patients</h1>
+<p>Patients that are overdue for follow-up BP measure.</p>
+
+<div class="row">
+  <div class="col-md-6">
+    <%= render(
+      'shared/paginate_and_filter_by_facility',
+      form_url: appointments_path,
+      current_admin: current_admin,
+      facility_id: @facility_id,
+      per_page: @per_page
+    ) %>
+  </div>
+</div>
+
+<div id="overdue-patients">
+  <% if @appointments.present? %>
+    <% call_result_options = {
+        'Patient responded' => [['Agreed to visit', 'agreed_to_visit'], ['Patient has already visited', 'patient_has_already_visited']],
+        'No response' => [['Remind to call later', 'remind_to_call_later']],
+        'Remove from overdue list' => Appointment.cancel_reasons.map { |key, value| [key.humanize, value] }
+    } %>
+
+    <% @appointments.sort_by { |a| a.patient.risk_priority }.each do |appointment| %>
+      <%= render(
+        'shared/followup_patient_card',
+        patient: appointment.patient,
+        high_risk: appointment.patient.high_risk?,
+        call_result_options: call_result_options,
+        days_overdue: appointment.days_overdue,
+        show_enrolment_date: false,
+        form_model: appointment
+      ) %>
+    <% end %>
+  <% else %>
+    <div class="overdue-patient">
+      <p class="overdue-title" style="color: #999;">No overdue patients found</p>
+    </div>
+  <% end %>
+</div>
+
+<%= paginate @appointments %>

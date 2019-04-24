@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.feature 'Admin::AuditLogs', type: :feature do
   let(:admin_email) { 'user@test.com' }
   let(:admin_password) { 'password' }
-  let(:admin) { create(:admin, email: admin_email, password: admin_password) }
+  let(:admin) { create(:admin, email: admin_email, password: admin_password, role: :owner) }
 
   it 'Display Empty table when user name is empty' do
     login_as admin, :scope => :admin

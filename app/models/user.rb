@@ -9,19 +9,23 @@ class User < ApplicationRecord
 
   has_secure_password
 
-  has_many :user_facilities, dependent: :delete_all
-  has_many :facilities, through: :user_facilities
+  belongs_to :facility, foreign_key: 'registration_facility_id'
   has_many :blood_pressures
-  has_many :patients, through: :blood_pressures
+  has_many :patients, -> { distinct }, through: :blood_pressures
   has_many :audit_logs, as: :auditable
+
+  has_many :registered_patients, class_name: "Patient", foreign_key: "registration_user_id"
 
   before_create :set_otp
   before_create :set_access_token
 
   validates :full_name, presence: true
-  validates :phone_number, presence: true, uniqueness: true
+  validates :phone_number, presence: true, uniqueness: true, case_sensitive: false
   validates :password, allow_blank: true, length: { is: 4 }, format: { with: /[0-9]/, message: 'only allows numbers' }
   validate :presence_of_password
+
+  delegate :facility_group, to: :facility
+  delegate :organization, to: :facility_group
 
   def presence_of_password
     unless password_digest.present? || password.present?
@@ -85,7 +89,7 @@ class User < ApplicationRecord
   end
 
   def has_never_logged_in?
-    !logged_in_at.present?
+    logged_in_at.blank?
   end
 
   def reset_login
@@ -103,6 +107,6 @@ class User < ApplicationRecord
   end
 
   def registered_at_facility
-    self.facilities.order(:created_at).first
+    self.facility
   end
 end

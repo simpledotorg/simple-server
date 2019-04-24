@@ -13,7 +13,7 @@ RSpec.feature 'Admin::Login', type: :feature do
 
     click_button 'Login'
 
-    expect(current_path).to eq(admin_dashboard_path)
+    expect(current_path).to eq(admin_root_path)
   end
 
   it 'Log out and go back to login screen' do

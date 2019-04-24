@@ -7,6 +7,26 @@
       <%= @admin.role.humanize %>
     </p>
 
+    <% if @admin.supervisor? || @admin.analyst? || @admin.counsellor? %>
+      <p>
+        <strong>Facility Groups:</strong>
+      </p>
+      <ul>
+        <% @admin.facility_groups.each do |facility_group| %>
+          <li><%= link_to facility_group.name, admin_facility_group_path(facility_group) %></li>
+        <% end %>
+      </ul>
+    <% elsif @admin.organization_owner? %>
+      <p>
+        <strong>Organizations:</strong>
+      </p>
+      <ul>
+        <% @admin.organizations.each do |organization| %>
+          <li><%= link_to organization.name, admin_organization_path(organization) %></li>
+        <% end %>
+      </ul>
+    <% end %>
+
     <% if policy(@admin).edit? %>
       <%= link_to 'Edit admin', edit_admin_path(@admin), class: "btn btn-sm btn-primary" %>
     <% end %>

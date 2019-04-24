@@ -1,0 +1,11 @@
+<div class="sub-nav">
+  <%= range = { from_time: 90.days.ago.to_date, to_time: Time.now.to_date }
+      link_for_range(range, from_time, to_time, t('analytics.last_90_days')) %>
+
+  <% (1..4).each do |n| %>
+    <%= range = range_for_quarter(-1 * n )
+      link_for_range(range, from_time, to_time, label_for_quarter(range)) %>
+  <% end %>
+
+  <a href="#" class="sub-nav-link">&#8226;&#8226;&#8226;</a>
+</div>

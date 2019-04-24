@@ -8,8 +8,20 @@ set :rbenv_ruby, '2.5.1'
 set :rails_env, 'production'
 set :branch, ENV["BRANCH"] || "master"
 
+# sidekiq configuration
+set :sidekiq_role, :sidekiq
+set :sidekiq_processes, 1
+set :bundler_path, "/home/deploy/.rbenv/shims/bundle"
+set :init_system, :systemd
+set :pty,  false
+
+set :sidekiq_config, -> { File.join(shared_path, 'config', 'sidekiq.yml') }
+
 append :linked_files, ".env.production"
 append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
+
+
+set :whenever_path, -> { release_path }
 
 namespace :deploy do
   desc 'Runs any rake task, example: cap deploy:rake task=db:seed'
