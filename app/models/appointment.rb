@@ -139,4 +139,9 @@ class Appointment < ApplicationRecord
       patient.phone_numbers.first&.number
     ]
   end
+
+  def scheduled_date_for_locale(locale)
+    month_in_locale = I18n.t("months.#{scheduled_date.month}", locale: locale)
+    "#{scheduled_date.day} #{month_in_locale}, #{scheduled_date.year}"
+  end
 end

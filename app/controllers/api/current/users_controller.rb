@@ -33,7 +33,7 @@ class Api::Current::UsersController < APIController
     user = User.find(request_user_id)
     user.set_otp
     user.save
-    SmsNotificationService.new(user).send_request_otp_sms
+    SmsNotificationService.new(user.phone_number).send_request_otp_sms(user.otp)
     head :ok
   end
 
