@@ -4,7 +4,7 @@ class Api::Current::TwilioSmsDeliveryController < ApplicationController
 
   def create
     if valid_request?
-      TwilioSMSDeliveryDetail.where(session_id: params['SmsSid']).update(update_params)
+      TwilioSmsDeliveryDetail.where(session_id: params['SmsSid']).update(update_params)
       head :ok
     else
       head :forbidden
@@ -15,13 +15,13 @@ class Api::Current::TwilioSmsDeliveryController < ApplicationController
 
   def update_params
     details = { result: delivery_status }
-    details.merge(delivered_on: DateTime.now) if delivery_status == TwilioSMSDeliveryDetail.results[:delivered]
+    details.merge!(delivered_on: DateTime.now) if delivery_status == TwilioSmsDeliveryDetail.results[:delivered]
 
     details
   end
 
   def delivery_status
-    params['SmsStatus'] || params['MessageStatus'] || TwilioSMSDeliveryDetail.results[:unknown]
+    params['SmsStatus'] || params['MessageStatus'] || TwilioSmsDeliveryDetail.results[:unknown]
   end
 
   def set_request_validator

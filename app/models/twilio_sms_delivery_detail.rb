@@ -1,4 +1,4 @@
-class TwilioSMSDeliveryDetail < ApplicationRecord
+class TwilioSmsDeliveryDetail < ApplicationRecord
   has_one :communication, as: :detailable
 
   enum result: {

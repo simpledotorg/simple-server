@@ -60,6 +60,10 @@ class Patient < ApplicationRecord
     latest_blood_pressures.first
   end
 
+  def latest_phone_number
+    phone_numbers.last.number
+  end
+
   def risk_priority
     return RISK_PRIORITIES[:NONE] if latest_scheduled_appointment.overdue_for_under_a_month?
 
@@ -123,10 +127,6 @@ class Patient < ApplicationRecord
     where(contacted_by_counsellor: false)
       .where(could_not_contact_reason: nil)
       .where('device_created_at <= ?', 2.days.ago)
-  end
-
-  def latest_phone_number
-    phone_numbers.last.number
   end
 
   private

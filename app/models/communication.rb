@@ -23,7 +23,7 @@ class Communication < ApplicationRecord
   def self.create_with_twilio_details!(appointment:, twilio_session_id:, twilio_msg_status:)
     transaction do
       sms_delivery_details =
-        TwilioSMSDeliveryDetail.create!(session_id: twilio_session_id,
+        TwilioSmsDeliveryDetail.create!(session_id: twilio_session_id,
                                         result: twilio_msg_status,
                                         callee_phone_number: appointment.patient.latest_phone_number)
 
