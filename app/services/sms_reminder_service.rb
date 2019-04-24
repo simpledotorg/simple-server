@@ -1,9 +1,6 @@
 class SMSReminderService
   include Rails.application.routes.url_helpers
 
-  class SMSReminderService::ReminderNotFound < StandardError;
-  end
-
   def three_days_after_missed_visit
     days_overdue = 3
 
