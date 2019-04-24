@@ -139,6 +139,17 @@ describe Patient, type: :model do
         expect(patient.current_age).to eq(0)
       end
     end
+
+    describe "#latest_phone_number" do
+      it 'returns the last phone number for the patient' do
+        patient = create(:patient)
+        _number_1 = create(:patient_phone_number, patient: patient)
+        _number_2 = create(:patient_phone_number, patient: patient)
+        number_3 = create(:patient_phone_number, patient: patient)
+
+        expect(patient.reload.latest_phone_number).to eq(number_3.number)
+      end
+    end
   end
 
   context 'Virtual params' do

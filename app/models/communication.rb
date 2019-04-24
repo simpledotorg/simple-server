@@ -29,10 +29,10 @@ class Communication < ApplicationRecord
 
       Communication.create!(communication_type: :reminder_sms,
                             communication_result: :successful,
-                            appointment: appointment,
-
-                            user: user,
                             detailable: sms_delivery_details,
+
+                            appointment: appointment,
+                            user: user,
 
                             device_created_at: DateTime.now,
                             device_updated_at: DateTime.now)
