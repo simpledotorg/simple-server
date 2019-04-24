@@ -20,7 +20,7 @@ class Communication < ApplicationRecord
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
-  def self.create_with_twilio_details!(appointment:, twilio_session_id:, twilio_msg_status:)
+  def self.create_with_twilio_details!(user:, appointment:, twilio_session_id:, twilio_msg_status:)
     transaction do
       sms_delivery_details =
         TwilioSmsDeliveryDetail.create!(session_id: twilio_session_id,
@@ -31,7 +31,7 @@ class Communication < ApplicationRecord
                             communication_result: :successful,
                             appointment: appointment,
 
-                            user: User.first,
+                            user: user,
                             detailable: sms_delivery_details,
 
                             device_created_at: DateTime.now,

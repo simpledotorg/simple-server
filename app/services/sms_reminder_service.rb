@@ -10,7 +10,8 @@ class SMSReminderService
     Appointment.overdue.select { |a| a.days_overdue > days_overdue }.each do |appointment|
       unless appointment.reminder_messages_around(days_overdue).present?
         sms_response = send_sms(appointment, '3_days_after_missed_visit')
-        Communication.create_with_twilio_details!(appointment: appointment,
+        Communication.create_with_twilio_details!(user: BOT_USER,
+                                                  appointment: appointment,
                                                   twilio_session_id: sms_response.sid,
                                                   twilio_msg_status: sms_response.status)
       end
