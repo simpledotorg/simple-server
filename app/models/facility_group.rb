@@ -1,6 +1,7 @@
 class FacilityGroup < ApplicationRecord
   include PatientSetAnalyticsReportable
   extend FriendlyId
+  default_scope -> { kept }
 
   belongs_to :organization
   belongs_to :protocol
