@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190411101836) do
+ActiveRecord::Schema.define(version: 20190425084108) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -120,9 +120,6 @@ ActiveRecord::Schema.define(version: 20190411101836) do
     t.uuid "user_id"
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_blood_pressures_on_deleted_at"
-    t.index ["device_created_at"], name: "index_blood_pressures_on_device_created_at"
-    t.index ["patient_id", "device_created_at"], name: "index_blood_pressures_on_patient_id_and_device_created_at"
-    t.index ["patient_id"], name: "index_blood_pressures_on_patient_id"
     t.index ["user_id"], name: "index_blood_pressures_on_user_id"
   end
 
@@ -187,6 +184,28 @@ ActiveRecord::Schema.define(version: 20190411101836) do
     t.index ["deleted_at"], name: "index_facility_groups_on_deleted_at"
     t.index ["organization_id"], name: "index_facility_groups_on_organization_id"
     t.index ["slug"], name: "index_facility_groups_on_slug", unique: true
+  end
+
+  create_table "master_user_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.bigint "master_user_id"
+    t.string "authenticatable_type"
+    t.uuid "authenticatable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["master_user_id", "authenticatable_type", "authenticatable_id"], name: "master_users_authenticatable_uniq_index", unique: true
+    t.index ["master_user_id"], name: "index_master_user_authentications_on_master_user_id"
+  end
+
+  create_table "master_users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "full_name"
+    t.string "sync_approval_status", null: false
+    t.string "sync_approval_status_reason", null: false
+    t.datetime "device_updated_at", null: false
+    t.datetime "device_created_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
   end
 
   create_table "medical_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -272,6 +291,17 @@ ActiveRecord::Schema.define(version: 20190411101836) do
     t.index ["deleted_at"], name: "index_patients_on_deleted_at"
     t.index ["registration_facility_id"], name: "index_patients_on_registration_facility_id"
     t.index ["registration_user_id"], name: "index_patients_on_registration_user_id"
+  end
+
+  create_table "phone_number_authentications", force: :cascade do |t|
+    t.string "phone_number", null: false
+    t.string "password_digest", null: false
+    t.string "otp", null: false
+    t.datetime "otp_valid_until", null: false
+    t.string "access_token", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
   end
 
   create_table "prescription_drugs", id: :uuid, default: nil, force: :cascade do |t|
