@@ -68,6 +68,7 @@ group :test do
   gem 'webmock'
   gem 'fakeredis', require:  false
   gem 'generator_spec'
+  gem 'webdriver'
 end
 
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
