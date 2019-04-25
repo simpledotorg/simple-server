@@ -1,19 +1,19 @@
 class SMSReminderJob < ApplicationJob
   include Rails.application.routes.url_helpers
+  include SmsHelper
 
   queue_as :default
   self.queue_adapter = :sidekiq
 
-  DEFAULT_RETRY_TIMES = 5
-  DEFAULT_RETRY_SECONDS = 10.minutes.seconds.to_i
-
-  def perform(appointment_id, type)
-    appointment = Appointment.find(appointment_id)
-    sms_response = send_sms(appointment, type)
-    Communication.create_with_twilio_details!(user: BOT_USER,
-                                              appointment: appointment,
-                                              twilio_session_id: sms_response.sid,
-                                              twilio_msg_status: sms_response.status)
+  def perform(appointment_ids, type)
+    appointments = Appointment.where(id: appointment_ids)
+    appointments.each do |appointment|
+      sms_response = send_sms(appointment, type)
+      Communication.create_with_twilio_details!(user: BOT_USER,
+                                                appointment: appointment,
+                                                twilio_session_id: sms_response.sid,
+                                                twilio_msg_status: sms_response.status)
+    end
   end
 
   private
@@ -24,7 +24,7 @@ class SMSReminderJob < ApplicationJob
       .send_reminder_sms(type,
                          appointment,
                          twilio_sms_delivery_url,
-                         SmsHelper::sms_locale(appointment.patient.address))
+                         sms_locale(appointment.patient.address))
   end
 
   def twilio_sms_delivery_url

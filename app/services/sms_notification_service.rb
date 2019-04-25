@@ -1,4 +1,5 @@
 class SmsNotificationService
+  include SmsHelper
   DEFAULT_LOCALE = :en
 
   def initialize(recipient_number, client = Twilio::REST::Client.new)
@@ -16,7 +17,7 @@ class SmsNotificationService
   def send_reminder_sms(reminder_name, appointment, callback_url, locale = DEFAULT_LOCALE)
     body = I18n.t("sms.appointment_reminders.#{reminder_name}",
                   facility_name: appointment.facility.name,
-                  appointment_date: appointment.scheduled_date_for_locale(locale),
+                  appointment_date: date_in_locale(appointment.scheduled_date, locale),
                   locale: locale)
 
     send_sms(body, callback_url)

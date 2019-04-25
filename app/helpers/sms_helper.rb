@@ -1,5 +1,5 @@
 module SmsHelper
-  def self.sms_locale(address)
+  def sms_locale(address)
     case
     when address.in_maharashtra? then
       :mh_IN
@@ -8,5 +8,10 @@ module SmsHelper
     else
       :en
     end
+  end
+
+  def date_in_locale(date, locale)
+    month_in_locale = I18n.t("months.#{date.month}", locale: locale)
+    "#{date.day} #{month_in_locale}, #{date.year}"
   end
 end
