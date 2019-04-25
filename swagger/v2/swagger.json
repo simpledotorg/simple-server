@@ -1853,13 +1853,6 @@
             "null"
           ]
         },
-        "appointment_type": {
-          "type": "string",
-          "enum": [
-            "manual",
-            "automatic"
-          ]
-        },
         "deleted_at": {
           "$ref": "#/definitions/nullable_timestamp"
         },
@@ -1877,8 +1870,7 @@
         "scheduled_date",
         "status",
         "created_at",
-        "updated_at",
-        "appointment_type"
+        "updated_at"
       ]
     },
     "appointments": {
