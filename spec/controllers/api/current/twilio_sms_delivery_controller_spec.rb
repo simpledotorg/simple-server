@@ -21,8 +21,13 @@ RSpec.describe Api::Current::TwilioSmsDeliveryController, type: :controller do
 
     context ':ok' do
       it 'returns success when twilio signature is valid' do
-        set_twilio_signature_header(callback_url, base_callback_params)
-        post :create, params: base_callback_params
+        session_id = SecureRandom.uuid
+        create(:twilio_sms_delivery_detail,
+               session_id: session_id,
+               result: 'queued')
+        params = base_callback_params.merge('SmsSid' => session_id)
+        set_twilio_signature_header(callback_url, params)
+        post :create, params: params
 
         expect(response).to have_http_status(200)
       end

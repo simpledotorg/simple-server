@@ -4,7 +4,7 @@ class Api::Current::TwilioSmsDeliveryController < ApplicationController
 
   def create
     if valid_request?
-      TwilioSmsDeliveryDetail.where(session_id: params['SmsSid']).update(update_params)
+      TwilioSmsDeliveryDetail.where(session_id: params['SmsSid']).first.update(update_params)
       head :ok
     else
       head :forbidden

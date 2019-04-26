@@ -100,7 +100,7 @@ class Appointment < ApplicationRecord
     CSV.generate(headers: true) do |csv|
       csv << csv_headers
 
-      appointments.group_by { |a| a.patient.latest_blood_pressure.facility }.each do |facility, facility_appointments|
+      appointments.group_by { |a| a.patient.latest_blood_pressure.facility }.each do |_, facility_appointments|
         facility_appointments.sort_by { |a| a.patient.risk_priority }.each do |appointment|
           csv << appointment.csv_fields
         end
@@ -140,14 +140,13 @@ class Appointment < ApplicationRecord
     ]
   end
 
-  def scheduled_date_for_locale(locale)
-    month_in_locale = I18n.t("months.#{scheduled_date.month}", locale: locale)
-    "#{scheduled_date.day} #{month_in_locale}, #{scheduled_date.year}"
-  end
-
-  def reminder_messages_around(days)
+  def undelivered_reminder_messages(days_since_scheduled_visit:)
     communications
-      .where(communication_type: :reminder_sms)
-      .select { |reminder| reminder.days_away_from_appointment?(days) }
+      .reminder_sms
+      .select do |reminder|
+
+      reminder.days_since_scheduled_visit == days_since_scheduled_visit &&
+        reminder.communication_result.unsuccessful?
+    end
   end
 end

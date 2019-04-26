@@ -4,5 +4,6 @@ FactoryBot.define do
     result { 'sent' }
     callee_phone_number { Faker::PhoneNumber.phone_number }
     delivered_on nil
+    association :communication
   end
 end
