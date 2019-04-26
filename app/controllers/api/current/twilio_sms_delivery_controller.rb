@@ -1,14 +1,10 @@
 class Api::Current::TwilioSmsDeliveryController < ApplicationController
-  before_action :set_request_validator
+  before_action :validate_request
   skip_before_action :verify_authenticity_token
 
   def create
-    if valid_request?
-      TwilioSmsDeliveryDetail.where(session_id: params['SmsSid']).first.update(update_params)
-      head :ok
-    else
-      head :forbidden
-    end
+    TwilioSmsDeliveryDetail.where(session_id: params['SmsSid']).first.update(update_params)
+    head :ok
   end
 
   private
@@ -24,13 +20,12 @@ class Api::Current::TwilioSmsDeliveryController < ApplicationController
     params['SmsStatus'] || params['MessageStatus'] || TwilioSmsDeliveryDetail.results[:unknown]
   end
 
-  def set_request_validator
-    @validator = Twilio::Security::RequestValidator.new(ENV.fetch('TWILIO_AUTH_TOKEN'))
-  end
-
-  def valid_request?
-    @validator.validate(request.original_url,
-                        request.request_parameters,
-                        request.headers['X-Twilio-Signature'])
+  def validate_request
+    validator = Twilio::Security::RequestValidator.new(ENV.fetch('TWILIO_AUTH_TOKEN'))
+    unless validator.validate(request.original_url,
+                              request.request_parameters,
+                              request.headers['X-Twilio-Signature'])
+      head :forbidden
+    end
   end
 end
