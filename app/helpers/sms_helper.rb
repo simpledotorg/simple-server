@@ -1,13 +1,9 @@
 module SmsHelper
-  def sms_locale(address)
-    case
-    when address.in_maharashtra? then
-      :mh_IN
-    when address.in_punjab? then
-      :pa_Guru_IN
-    else
-      :en
-    end
+  def sms_locale(state)
+    {
+      punjab: :pa_Guru_IN,
+      maharashtra: :mh_IN,
+    }.fetch(state, :en)
   end
 
   def date_in_locale(date, locale)

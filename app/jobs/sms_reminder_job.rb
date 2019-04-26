@@ -24,7 +24,7 @@ class SMSReminderJob < ApplicationJob
       .send_reminder_sms(type,
                          appointment,
                          twilio_sms_delivery_url,
-                         sms_locale(appointment.patient.address))
+                         sms_locale(appointment.patient.address.state_to_sym))
   end
 
   def twilio_sms_delivery_url
