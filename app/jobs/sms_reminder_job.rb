@@ -5,11 +5,11 @@ class SMSReminderJob < ApplicationJob
   queue_as :default
   self.queue_adapter = :sidekiq
 
-  def perform(appointment_ids, type)
+  def perform(appointment_ids, type, user)
     appointments = Appointment.where(id: appointment_ids)
     appointments.each do |appointment|
       sms_response = send_sms(appointment, type)
-      Communication.create_with_twilio_details!(user: BOT_USER,
+      Communication.create_with_twilio_details!(user: user,
                                                 appointment: appointment,
                                                 twilio_session_id: sms_response.sid,
                                                 twilio_msg_status: sms_response.status)

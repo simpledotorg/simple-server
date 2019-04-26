@@ -1,21 +1,33 @@
 class SMSReminderService
-  def three_days_after_missed_visit
-    Appointment
-      .overdue
-      .select { |a| a.days_overdue > 3 }
-      .group_by(&:facility_id)
-      .slice(*ENV.fetch('SMS_REMINDER_ROLLOUT_FACILITY_IDS').split(','))
-      .flat_map { |_, appointments| appointments.sample(rollout_percentage(appointments.size)) }
-      .in_groups_of(1000) do |appointments|
+  def initialize(user)
+    @user = user
+  end
 
-      eligible_appointments = appointments.select { |a| a.reminder_messages_around(3).present? }
-      SMSReminderJob.perform_later(eligible_appointments)
-    end
+  def three_days_after_missed_visit
+    eligible_appointments = Appointment
+                              .overdue
+                              .select { |a|
+                                a.days_overdue > 3 &&
+                                  a.undelivered_reminder_messages(days_since_scheduled_visit: 3).present? }
+
+    fan_out_reminders_by_facility(eligible_appointments, '3_days_after_missed_visit')
   end
 
   private
 
-  def rollout_percentage(total)
-    (ENV.fetch('SMS_REMINDER_ROLLOUT_PER_FACILITY') / 100.0) * total
+  attr_reader :user
+
+  FAN_OUT_BATCH_SIZE = 250
+
+  def fan_out_reminders_by_facility(appointments, type)
+    appointments
+      .group_by(&:facility_id)
+      .map do |_, grouped_appointments|
+      grouped_appointments.in_groups_of(FAN_OUT_BATCH_SIZE)
+        .flatten
+        .each do |appointments_batch|
+        SMSReminderJob.perform_later(appointments_batch.map(&:id), type, user)
+      end
+    end
   end
 end
