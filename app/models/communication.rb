@@ -8,21 +8,22 @@ class Communication < ApplicationRecord
   enum communication_type: {
     manual_call: 'manual_call',
     voip_call: 'voip_call',
-    reminder_sms: 'reminder_sms'
-  }, _prefix: true
+    follow_up_reminder_sms: 'follow_up_reminder_sms'
+  }
 
-  enum communication_result: {
+  COMMUNICATION_RESULTS = {
     unavailable: 'unavailable',
     unreachable: 'unreachable',
     successful: 'successful',
     unsuccessful: 'unsuccessful',
     in_progress: 'in_progress',
+    unknown: 'unknown'
   }
 
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
-  scope :reminder_sms, -> { where(communication_type: :reminder_sms) }
+  scope :follow_up_reminder_sms, -> { where(communication_type: :follow_up_reminder_sms) }
 
   def self.create_with_twilio_details!(user:, appointment:, twilio_session_id:, twilio_msg_status:)
     transaction do
@@ -39,6 +40,19 @@ class Communication < ApplicationRecord
 
                             device_created_at: DateTime.now,
                             device_updated_at: DateTime.now)
+    end
+  end
+
+  def communication_result
+    case
+    when detailable.successful? then
+      COMMUNICATION_RESULTS[:successful]
+    when detailable.unsuccessful? then
+      COMMUNICATION_RESULTS[:unsuccessful]
+    when detailable.in_progress? then
+      COMMUNICATION_RESULTS[:in_progress]
+    else
+      COMMUNICATION_RESULTS[:unknown]
     end
   end
 

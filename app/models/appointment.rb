@@ -142,7 +142,7 @@ class Appointment < ApplicationRecord
 
   def undelivered_reminder_messages(days_since_scheduled_visit:)
     communications
-      .reminder_sms
+      .follow_up_reminder_sms
       .select do |reminder|
 
       reminder.days_since_scheduled_visit == days_since_scheduled_visit &&

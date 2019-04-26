@@ -10,13 +10,6 @@ class TwilioSmsDeliveryDetail < ApplicationRecord
     unknown: 'unknown'
   }
 
-  after_commit do
-    communication.communication_result = :unsuccessful if unsuccessful?
-    communication.communication_result = :successful if successful?
-    communication.communication_result = :in_progress if in_progress?
-    communication.save!
-  end
-
   def unsuccessful?
     failed? || undelivered? || unknown?
   end

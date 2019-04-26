@@ -88,6 +88,7 @@ RSpec.describe Api::Current::TwilioSmsDeliveryController, type: :controller do
         post :create, params: base_callback_params
 
         expect(response).to have_http_status(403)
+        expect(TwilioSmsDeliveryDetail.count).to be(0)
       end
     end
   end
