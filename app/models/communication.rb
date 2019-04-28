@@ -31,7 +31,7 @@ class Communication < ApplicationRecord
         TwilioSmsDeliveryDetail.create!(session_id: twilio_session_id,
                                         result: twilio_msg_status,
                                         callee_phone_number: appointment.patient.latest_phone_number)
-      Communication.create!(communication_type: :reminder_sms,
+      Communication.create!(communication_type: :follow_up_reminder_sms,
                             communication_result: :in_progress,
                             detailable: sms_delivery_details,
 

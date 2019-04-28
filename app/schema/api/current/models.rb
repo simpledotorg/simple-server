@@ -221,7 +221,7 @@ class Api::Current::Models
           appointment_id: { '$ref' => '#/definitions/uuid' },
           user_id: { '$ref' => '#/definitions/uuid' },
           communication_type: { type: :string, enum: Communication.communication_types.keys },
-          communication_result: { type: :string, enum: Communication.communication_results.keys },
+          communication_result: { type: :string, enum: Communication::COMMUNICATION_RESULTS.keys },
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' } },
