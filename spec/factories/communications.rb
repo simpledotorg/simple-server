@@ -23,7 +23,7 @@ end
 
 def updated_communication_payload(existing_communication)
   update_time = 10.days.from_now
-  updated_result = Communication.communication_results.keys
+  updated_result = Communication::COMMUNICATION_RESULTS.keys
                           .reject { |result| result == existing_communication.communication_result.to_s }
                           .sample
 

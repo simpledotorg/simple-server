@@ -1,8 +1,4 @@
-class SMSReminderService
-  def initialize(user)
-    @user = user
-  end
-
+class SMSReminderService < Struct.new(:user)
   def three_days_after_missed_visit
     eligible_appointments = Appointment
                               .overdue
@@ -14,8 +10,6 @@ class SMSReminderService
   end
 
   private
-
-  attr_reader :user
 
   FAN_OUT_BATCH_SIZE = 250
 
