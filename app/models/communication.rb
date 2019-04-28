@@ -45,11 +45,11 @@ class Communication < ApplicationRecord
 
   def communication_result
     case
-    when detailable.successful? then
+    when detailable&.successful? then
       COMMUNICATION_RESULTS[:successful]
-    when detailable.unsuccessful? then
+    when detailable&.unsuccessful? then
       COMMUNICATION_RESULTS[:unsuccessful]
-    when detailable.in_progress? then
+    when detailable&.in_progress? then
       COMMUNICATION_RESULTS[:in_progress]
     else
       COMMUNICATION_RESULTS[:unknown]
