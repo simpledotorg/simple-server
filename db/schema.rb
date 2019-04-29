@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190424075016) do
+ActiveRecord::Schema.define(version: 20190419110744) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -151,7 +151,6 @@ ActiveRecord::Schema.define(version: 20190424075016) do
     t.index ["appointment_id"], name: "index_communications_on_appointment_id"
     t.index ["deleted_at"], name: "index_communications_on_deleted_at"
     t.index ["detailable_type", "detailable_id"], name: "index_communications_on_detailable_type_and_detailable_id"
-    t.index ["id", "detailable_id", "detailable_type"], name: "unique_index_communications_on_detailable", unique: true
     t.index ["user_id"], name: "index_communications_on_user_id"
   end
 
