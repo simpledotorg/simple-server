@@ -6,6 +6,40 @@
 ### Removed 
 ### Security
 
+# 2019-04-29-1
+## Portal
+### Added
+- Added a favicon
+### Changed
+- Dashboard graphs improvements
+- Soft delete for facility groups (if empty)
+- Show stats for the previous day on the dashboard
+- Improved the formatting of the approval list on the home screen
+- Hide download button if no appointments present
+### Fixed
+- Use time range when showing user analytics on facilities dashboard
+- Adherence tab: show enrolment date for patients without BP
+### Deprecated
+### Removed
+### Security
+
+## Api
+### Added
+- Add support for V3 api (Feature toggled off)
+- Add API support for Patient Business Identifiers (Feature toggled off)
+- Allow sending SMS reminders in the specified locale
+- Rake task to whitelist patient phone numbers on Exotel
+- Add a script to generate WHO cohort reports
+- Add generator for migrating to newer API version
+### Changed
+- Update links for the API docs to include v3
+- Schedule cronjobs in Asia/Kolkata Timezone
+### Fixed
+### Deprecated
+- Removed outdated rake tasks
+### Removed
+### Security
+
 # 2019-04-16-2
 ## Portal
 ### Added
