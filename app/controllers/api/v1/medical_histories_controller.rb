@@ -1,4 +1,4 @@
-class Api::V1::MedicalHistoriesController < Api::Current::MedicalHistoriesController
+class Api::V1::MedicalHistoriesController < Api::V2::MedicalHistoriesController
   include Api::V1::ApiControllerOverrides
   include Api::V1::SyncControllerOverrides
 

@@ -13,6 +13,7 @@ class Api::Current::PatientPayloadValidator < Api::Current::PayloadValidator
     :deleted_at,
     :address,
     :phone_numbers,
+    :business_identifiers,
     :contacted_by_counsellor,
     :could_not_contact_reason,
     :call_result
