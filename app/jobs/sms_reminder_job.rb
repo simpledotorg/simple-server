@@ -28,7 +28,7 @@ class SMSReminderJob < ApplicationJob
   end
 
   def twilio_sms_delivery_url
-    api_current_twilio_sms_delivery_url(host: ENV.fetch('SIMPLE_SERVER_HOSTNAME'),
+    api_current_twilio_sms_delivery_url(host: ENV.fetch('SIMPLE_SERVER_HOST'),
                                         protocol: ENV.fetch('SIMPLE_SERVER_HOST_PROTOCOL'))
   end
 end
