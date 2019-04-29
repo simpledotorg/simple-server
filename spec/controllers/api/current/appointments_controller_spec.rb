@@ -42,7 +42,7 @@ RSpec.describe Api::Current::AppointmentsController, type: :controller do
 
       describe 'stores appointment_type correctly' do
         let(:request_key) { model.to_s.underscore.pluralize }
-        let(:new_records) { 5.times { build_payload.call } }
+        let(:new_records) { (1..5).map { build_payload.call } }
         let(:new_records_payload) { Hash[request_key, new_records] }
 
         it 'creates new records with appointment_type' do
