@@ -200,7 +200,7 @@ ActiveRecord::Schema.define(version: 20190425084108) do
   create_table "master_users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "full_name"
     t.string "sync_approval_status", null: false
-    t.string "sync_approval_status_reason", null: false
+    t.string "sync_approval_status_reason"
     t.datetime "device_updated_at", null: false
     t.datetime "device_created_at", null: false
     t.datetime "created_at", null: false

@@ -81,4 +81,37 @@ namespace :data_migration do
     puts "Number of defaulters processed (automatic appointment created) = #{processed_defaulters_count}"
     puts "Number of unprocessed/errored defaulters = #{unprocessed_or_errored_defaulters_count}"
   end
+
+  desc "Create master users for users"
+  task create_master_users_for_users: :environment do
+    User.all.each do |user|
+      next if MasterUser.find_by(id: user.id).present?
+      user.transaction do
+        user_attributes = user.attributes.with_indifferent_access
+        master_user = MasterUser.create(user_attributes.slice(
+          :id,
+          :full_name,
+          :sync_approval_status,
+          :sync_approval_status_reason,
+          :device_created_at,
+          :device_updated_at,
+          :created_at,
+          :updated_at,
+          :deleted_at
+        ))
+
+        phone_number_authentication = PhoneNumberAuthentication.create(user_attributes.slice(
+          :phone_number,
+          :password_digest,
+          :otp,
+          :otp_valid_until,
+          :access_token
+        ))
+
+        master_user.master_user_authentications.create(
+          authenticatable: phone_number_authentication
+        )
+      end
+    end
+  end
 end
