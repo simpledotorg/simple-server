@@ -1,4 +1,4 @@
-class Api::V1::UsersController < Api::Current::UsersController
+class Api::V1::UsersController < Api::V2::UsersController
   include Api::V1::ApiControllerOverrides
 
   def user_from_request

@@ -85,7 +85,8 @@ RSpec.describe Api::V2::PatientsController, type: :controller do
       let(:updated_patients_payload) { existing_patients.map { |patient| updated_patient_payload patient } }
 
       it 'with only updated patient attributes' do
-        patients_payload = updated_patients_payload.map { |patient| patient.except('address', 'phone_numbers') }
+        patients_payload = updated_patients_payload.map { |patient| patient.except('address', 'phone_numbers', 'business_identifiers') }
+
         post :sync_from_user, params: { patients: patients_payload }, as: :json
 
         patients_payload.each do |updated_patient|
@@ -137,7 +138,8 @@ RSpec.describe Api::V2::PatientsController, type: :controller do
                    .except('registration_user_id')
                    .except('registration_facility_id')
                    .except('test_data'))
-            .to eq(updated_patient.except('address', 'phone_numbers'))
+            .to eq(updated_patient.except('address', 'phone_numbers', 'business_identifiers'))
+
           expect(db_patient.address.attributes.with_payload_keys.with_int_timestamps)
             .to eq(updated_patient['address'])
         end

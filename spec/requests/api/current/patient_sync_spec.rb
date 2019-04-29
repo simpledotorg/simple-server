@@ -25,7 +25,7 @@ RSpec.describe 'Patients sync', type: :request do
     created_patients         = Patient.find(first_patients_payload.map { |patient| patient['id'] })
     updated_patients_payload = created_patients.map do |patient|
       updated_patient_payload(patient)
-        .except(%w(address phone_numbers).sample)
+        .except(%w(address phone_numbers business_identifiers).sample)
     end
 
     post sync_route, params: { patients: updated_patients_payload }.to_json, headers: headers

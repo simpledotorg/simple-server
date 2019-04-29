@@ -73,7 +73,7 @@ RSpec.shared_examples 'current API sync requests' do
 
     expect(response.status).to eq 200
     expect(response_body[response_key].map(&:with_int_timestamps))
-      .to eq(expected_response)
+      .to match_array(expected_response)
     expect(response_process_token[:current_facility_processed_since].to_time.to_i).to eq(model.first.updated_at.to_i)
   end
 

@@ -1401,6 +1401,9 @@
         },
         "phone_numbers": {
           "$ref": "#/definitions/phone_numbers"
+        },
+        "business_identifiers": {
+          "$ref": "#/definitions/patient_business_identifiers"
         }
       },
       "required": [
@@ -1411,7 +1414,7 @@
         "updated_at",
         "status"
       ],
-      "description": "Patient with address and phone numbers nested."
+      "description": "Patient with address, phone numbers and business identifiers nested."
     },
     "nested_patients": {
       "type": [
@@ -1969,6 +1972,54 @@
       ],
       "items": {
         "$ref": "#/definitions/medical_history"
+      }
+    },
+    "patient_business_identifier": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "identifier": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "identifier_type": {
+          "type": "string",
+          "enum": [
+            "simple_bp_passport"
+          ]
+        },
+        "metadata_version": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "string"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "updated_at",
+        "identifier",
+        "identifier_type"
+      ]
+    },
+    "patient_business_identifiers": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/patient_business_identifier"
       }
     }
   },

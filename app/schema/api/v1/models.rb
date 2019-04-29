@@ -1,4 +1,4 @@
-class Api::V1::Models < Api::Current::Models
+class Api::V1::Models < Api::V2::Models
   class << self
     def medical_history
       { type: :object,
@@ -88,7 +88,7 @@ class Api::V1::Models < Api::Current::Models
     end
 
     def definitions
-      Api::Current::Models.definitions.merge(
+      super.merge(
         medical_history: medical_history,
         patient: patient,
         nested_patient: nested_patient,
