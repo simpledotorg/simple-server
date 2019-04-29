@@ -3,6 +3,10 @@ module DashboardHelper
     value&.positive? ? value : content_tag(:span, value, class: "zero")
   end
 
+  def dash_if_zero(value)
+    (value == nil || value == 0) ? "-" : value
+  end
+
   def analytics_date_format(time)
     time.strftime('%Y-%m-%d')
   end
@@ -21,9 +25,17 @@ module DashboardHelper
   end
 
   def link_for_range(range, from_time, to_time, label)
-    is_active = from_time.to_date == range[:from_time] && to_time.to_date == range[:to_time]
+    is_active = from_time.to_date == range[:from_time].to_date && to_time.to_date == range[:to_time].to_date
     link_to label,
             url_for(range),
             class: is_active ? 'sub-nav-link  sub-nav-link-active' : 'sub-nav-link'
+  end
+
+  def string_for_range(from_time, to_time)
+    if from_time.to_date == 90.days.ago.to_date
+      t('analytics.last_90_days')
+    else
+      label_for_quarter({ from_time: from_time, to_time: to_time })
+    end
   end
 end
