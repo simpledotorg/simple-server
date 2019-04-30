@@ -9,6 +9,7 @@ class Api::Current::AppointmentPayloadValidator < Api::Current::PayloadValidator
     :cancel_reason,
     :remind_on,
     :agreed_to_visit,
+    :appointment_type,
     :created_at,
     :updated_at
   )

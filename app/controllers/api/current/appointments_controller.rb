@@ -46,6 +46,7 @@ class Api::Current::AppointmentsController < Api::Current::SyncController
         :cancel_reason,
         :remind_on,
         :agreed_to_visit,
+        :appointment_type,
         :created_at,
         :updated_at)
     end
