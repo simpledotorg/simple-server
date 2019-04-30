@@ -58,6 +58,35 @@ RSpec.describe Api::Current::AppointmentsController, type: :controller do
             expect(Appointment.appointment_types.include? record[:appointment_type]).to be true
           end
         end
+
+        it 'returns an error for new records without appointment_type' do
+          records_with_no_appointment_type = (1..5).map { build_payload.call.except(:appointment_type) }
+          records_payload_with_no_appointment_type = Hash[request_key, records_with_no_appointment_type]
+
+          post(:sync_from_user, params: records_payload_with_no_appointment_type, as: :json)
+
+          expect(response).to have_http_status(200)
+          errors = JSON(response.body)['errors']
+          errors.each do |error|
+            expect(error['schema'].first).to match(/did not contain a required property of 'appointment_type' in schema/)
+          end
+        end
+
+        it 'returns an error for new records with invalid appointment type' do
+          records_with_invalid_appointment_type = (1..5).map { build_payload.call }
+          records_with_invalid_appointment_type.each do |record|
+            record[:appointment_type] = ['manuall', 'automat', 'foo'].sample
+          end
+
+          records_payload_with_bad_appointment_type = Hash[request_key, records_with_invalid_appointment_type]
+
+          post(:sync_from_user, params: records_payload_with_bad_appointment_type, as: :json)
+
+          errors = JSON(response.body)['errors']
+          errors.each do |error|
+            expect(error['schema'].first).to match(/did not match one of the following values: manual, automatic in schema/)
+          end
+        end
       end
     end
   end
