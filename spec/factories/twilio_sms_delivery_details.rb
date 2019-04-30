@@ -5,5 +5,10 @@ FactoryBot.define do
     callee_phone_number { Faker::PhoneNumber.phone_number }
     delivered_on nil
     association :communication
+
+    trait(:failed) { result { 'failed' } }
+    trait(:queued) { result { 'queued' } }
+    trait(:delivered) { result { 'delivered' } }
+    trait(:undelivered) { result { 'undelivered' } }
   end
 end

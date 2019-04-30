@@ -4,9 +4,10 @@ FactoryBot.define do
     appointment
     user
     communication_type { :manual_call }
-    communication_result { :successful }
     device_created_at { Time.now }
     device_updated_at { Time.now }
+
+    trait(:follow_up_reminder) { communication_type { :follow_up_reminder } }
   end
 end
 
@@ -24,8 +25,8 @@ end
 def updated_communication_payload(existing_communication)
   update_time = 10.days.from_now
   updated_result = Communication::COMMUNICATION_RESULTS.keys
-                          .reject { |result| result == existing_communication.communication_result.to_s }
-                          .sample
+                     .reject { |result| result == existing_communication.communication_result.to_s }
+                     .sample
 
   build_communication_payload(existing_communication).merge(
     'updated_at' => update_time,

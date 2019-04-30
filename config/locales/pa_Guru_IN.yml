@@ -1,7 +1,7 @@
 pa_Guru_IN:
   sms:
     appointment_reminders:
-      3_days_after_missed_visit: 'ਅਸੀ ਤੁਹਾਨੂੰ %{appointment_date} ਨੂੰ ਸਰਕਾਰੀ ਹਸਪਤਾਲ %{facility_name} ਵਿਚ ਤੁਹਾਡੇ ਨਿਰਧਾਰਿਤ ਬੀਪੀ ਚੈਕ-ਅਪ ਲਈ ਬੁਲਾਇਆ ਸੀ। ਤੁਸੀ 9.30 ਵਜੇ ਤੋਂ 2 ਵਜੇ ਦੇ ਵਿਚ ਆਓ।'
+      follow_up_reminder: 'ਅਸੀ ਤੁਹਾਨੂੰ %{appointment_date} ਨੂੰ ਸਰਕਾਰੀ ਹਸਪਤਾਲ %{facility_name} ਵਿਚ ਤੁਹਾਡੇ ਨਿਰਧਾਰਿਤ ਬੀਪੀ ਚੈਕ-ਅਪ ਲਈ ਬੁਲਾਇਆ ਸੀ। ਤੁਸੀ 9.30 ਵਜੇ ਤੋਂ 2 ਵਜੇ ਦੇ ਵਿਚ ਆਓ।'
   months:
     1: 'ਜਨਵਰੀ'
     2: 'ਫਰਵਰੀ'

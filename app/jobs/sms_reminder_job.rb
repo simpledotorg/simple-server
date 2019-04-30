@@ -11,8 +11,9 @@ class SMSReminderJob < ApplicationJob
       sms_response = send_sms(appointment, type)
       Communication.create_with_twilio_details!(user: user,
                                                 appointment: appointment,
-                                                twilio_session_id: sms_response.sid,
-                                                twilio_msg_status: sms_response.status)
+                                                twilio_sid: sms_response.sid,
+                                                twilio_msg_status: sms_response.status,
+                                                communication_type: type)
     end
   end
 

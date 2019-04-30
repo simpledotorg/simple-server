@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-
-ActiveRecord::Schema.define(version: 20190419110744) do
+ActiveRecord::Schema.define(version: 20190430140043) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -121,9 +120,6 @@ ActiveRecord::Schema.define(version: 20190419110744) do
     t.uuid "user_id"
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_blood_pressures_on_deleted_at"
-    t.index ["device_created_at"], name: "index_blood_pressures_on_device_created_at"
-    t.index ["patient_id", "device_created_at"], name: "index_blood_pressures_on_patient_id_and_device_created_at"
-    t.index ["patient_id"], name: "index_blood_pressures_on_patient_id"
     t.index ["user_id"], name: "index_blood_pressures_on_user_id"
   end
 
@@ -143,8 +139,6 @@ ActiveRecord::Schema.define(version: 20190419110744) do
   create_table "communications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "appointment_id", null: false
     t.uuid "user_id", null: false
-    t.string "communication_type"
-    t.string "communication_result"
     t.datetime "device_created_at", null: false
     t.datetime "device_updated_at", null: false
     t.datetime "created_at", null: false
@@ -152,6 +146,7 @@ ActiveRecord::Schema.define(version: 20190419110744) do
     t.datetime "deleted_at"
     t.string "detailable_type"
     t.bigint "detailable_id"
+    t.string "communication_type"
     t.index ["appointment_id"], name: "index_communications_on_appointment_id"
     t.index ["deleted_at"], name: "index_communications_on_deleted_at"
     t.index ["detailable_type", "detailable_id"], name: "index_communications_on_detailable_type_and_detailable_id"
