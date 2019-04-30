@@ -9,6 +9,12 @@ class Api::V2::Models < Api::Current::Models
       )
     end
 
+    def appointment
+      super
+        .tap { |d| d[:properties].delete(:appointment_type) }
+        .tap { |d| d[:required] -= %w(appointment_type) }
+    end
+
     def definitions
       super.except(
         :patient_business_identifier,
