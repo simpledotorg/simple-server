@@ -148,6 +148,12 @@ a.btn {
     //text-transform: capitalize;
 }
 
+input.btn-sm,
+button.btn-sm,
+a.btn-sm {
+    font-size: 12px;
+}
+
 .btn.disabled {
     background: $grey-lightest;
     border-color: $grey-lightest;
@@ -160,6 +166,10 @@ a.btn {
 
 .btn-outline-danger {
     border-color: rgba(255,0,0,0.15);
+}
+
+.btn-outline-primary {
+    background: #fff;
 }
 
 .btn-success {
@@ -537,6 +547,7 @@ Dashboard UI
 
 .split-bars {
     margin: 0;
+    font-family: $font-condensed;
 }
 
 .split-bars td {
@@ -564,6 +575,33 @@ Dashboard UI
 .split-bars .bar-1 { background: $red; border-radius: 3px 0 0 3px; }
 .split-bars .bar-2 { background: $red-dark; }
 .split-bars .bar-3 { background: $green-mid; border-radius: 0 3px 3px 0; color: $green; }
+
+.table-bullets div {
+    position: relative;
+    padding: 4px 0 4px 24px;
+    font-size: 13px;
+    font-family: $font-condensed;
+}
+
+.table-bullets div:after {
+    content: ".";
+    background: $red;
+    width: 14px;
+    height: 14px;
+    position: absolute;
+    left: 3px;
+    top: 6px;
+    border-radius: 10px;
+    text-indent: -1000em;
+}
+
+.table-bullets div.uncontrolled:after {
+    background: $red-dark;
+}
+
+.table-bullets div.controlled:after {
+    background: $green-mid;
+}
 
 .bar-count {
     text-align: right;
@@ -796,7 +834,17 @@ Dashboard UI
     background: $grey-lightest;
 }
 
+.mobile {
+    display: none;
+}
+
 @include media-breakpoint-down(sm) {
+    .desktop {
+        display: none;
+    }
+    .mobile {
+        display: block;
+    }
     .featured {
         margin: 0;
         border-spacing: 0;
@@ -804,7 +852,7 @@ Dashboard UI
     }
     .featured-section {
         display: block;
-        margin: 8px -10px;
+        margin: 8px 0;
         padding: 10px;
     }
     .split-bars-secondary td {

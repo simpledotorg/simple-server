@@ -4,18 +4,21 @@
       <thead>
       <tr>
         <th colspan="2">
-            <form>
-                <select>
-                    <option>Sort by: Highest BP control</option>
-                    <option>Sort by: Alphabetical</option>
-                </select>
-            </form>  
+            <div class="dropdown">
+              <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Sort by BP control
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="#">Sort alphabetical</a>
+              </div>
+            </div>  
         </th>
         <th class="row-label"></th>
         <th class="row-label"></th>
         <th class="row-label"></th>
         <th class="row-label">Enrolled<br>all time</th>
         <th class="row-label">Enrolled<br>Q2 2019</th>
+        <th class="row-label">Calls made to<br>overdue patients</th>
         <th class="row-spacer">&nbsp;</th>
         <th class="row-label">Patient<br>visits</th>
 
@@ -28,6 +31,23 @@
       </tr>
       </thead>
       <tbody>
+      <tr class="row-total">
+        <td class="row-rank row-total"></td>
+        <td class="row-title row-total">All facilities</td>
+        <td colspan="3"></td>
+        <td class="row-enrolled row-total"><%= @facility_group_analytics[:unique_patients_enrolled] %></td>
+        <td class="row-enrolled row-total"><%= @facility_group_analytics[:newly_enrolled_patients] %></td>
+        <td class="row-default text-yellow row-total">4521</td>
+        <td class="row-spacer">&nbsp;</td>
+        <td class="row-unique-date">
+          <%= @facility_group_analytics[:returning_patients] + @facility_group_analytics[:newly_enrolled_patients] %>
+        </td>
+
+        <% @facility_group_analytics[:blood_pressures_recorded_per_week].sort.each do |_key, value| %>
+          <td class="row-unique-date"><%= value != 0 ? value : '-' %></td>
+        <% end %>
+        <td></td>
+      </tr>
       <% @facility_analytics.each do |facility, analytics| %>
         <tr>
           <td class="row-rank">#1</td>
@@ -36,7 +56,7 @@
           </td>
           <!--td class="row-default text-yellow"><%= analytics[:non_returning_hypertensive_patients] %></td-->
           <td colspan="3">
-            <table class="split-bars" style="min-width: 200px; margin: 4px 0;">  
+            <table class="split-bars" style="min-width: 160px; margin: 4px 0;">  
               <tr>
                     <td class="bar bar-1" style="width: 74%; font-size: 10px; padding: 2px 4px;">74%</td>
                     <td class="bar bar-2" style="width: 16%; font-size: 10px; padding: 2px 4px;">16%</td>
@@ -45,11 +65,13 @@
             </table>
           </td>
           <td class="row-enrolled"><%= analytics[:unique_patients_enrolled] %></td>
-          <td class="row-enrolled text-green"><%= analytics[:newly_enrolled_patients] %></td>
+          <td class="row-enrolled"><%= analytics[:newly_enrolled_patients] %></td>
+          <td class="row-enrolled text-yellow">2</td>
+          
           <!--td class="row-enrolled text-green"><%= analytics[:newly_enrolled_patients] %></td>
           <td class="row-default text-yellow"><%= analytics[:non_returning_hypertensive_patients] %></td>
-
           <td class="row-control"><%= analytics[:control_rate][:control_rate] %></td-->
+
           <td class="row-spacer">&nbsp;</td>
           <td class="row-unique-date">
             <!--<%= analytics[:returning_patients] + analytics[:newly_enrolled_patients] %>-->
@@ -61,25 +83,6 @@
         </tr>
       <% end %>
       </tbody>
-      <tfoot>
-      <tr class="row-total">
-        <td class="row-rank row-total"></td>
-        <td class="row-title row-total">All facility totals<span><b><%= @facility_group_analytics[:unique_patients_enrolled] %></b> enrolled all time</span></td>
-        <td class="row-enrolled text-green row-total"><%= @facility_group_analytics[:newly_enrolled_patients] %></td>
-        <td class="row-default text-yellow row-total"><%= @facility_group_analytics[:non_returning_hypertensive_patients] %></td>
-
-        <td class="row-control"><%= @facility_group_analytics[:control_rate][:control_rate] %></td>
-        <td class="row-spacer">&nbsp;</td>
-        <td class="row-unique-date">
-          <%= @facility_group_analytics[:returning_patients] + @facility_group_analytics[:newly_enrolled_patients] %>
-        </td>
-
-        <% @facility_group_analytics[:blood_pressures_recorded_per_week].sort.each do |_key, value| %>
-          <td class="row-unique-date"><%= value != 0 ? value : '-' %></td>
-        <% end %>
-        <td></td>
-      </tr>
-      </tfoot>
     </table>
   </div>
 </section>

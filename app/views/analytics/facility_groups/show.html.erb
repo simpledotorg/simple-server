@@ -13,79 +13,60 @@
   <h1><%= @facility_group.name %></h1>
   <p>Data updated: April 22, 2019</p>
   <div class="featured">
-      <div class="featured-section featured-1">
-          <h4>Follow-up visits: Q2 2019</h4>
+      <div class="featured-section featured-1"> 
           
-          <table class="split-bars-secondary" style="font-size: 13px; font-family: 'Roboto Condensed';">
-            <tr>
-                <td valign="bottom" class="bar-desc bar-1-desc" style="line-height: 1.2; width: 45%; position: relative; text-align: right; padding-right: 16px;">
-                    475 of 554 patients<br>didn't attend for a follow-up visit
-                    <div style="width: 1px; height: 50px; background: #ddd; position: absolute; right: 8px; top: 10px;"></div>
-                </td>   
-                <td valign="bottom" class="bar-desc bar-3-desc" style="line-height: 1.2; width: 27.5%; color: #B81631; position: relative; text-align: right; padding-right: 16px;">
-                    41 patients had uncontrolled BP at follow-up visit
-                    <div style="width: 1px; height: 50px; background: #ddd; position: absolute; right: 8px; top: 10px;"></div>
-                </td>
-                <td valign="bottom" class="bar-desc bar-3-desc" style="line-height: 1.2; width: 27.5%; position: relative; text-align: right; padding-right: 16px;">
-                    38 patients had BP controlled at follow-up visit
-                    <div style="width: 1px; height: 50px; background: #ddd; position: absolute; right: 8px; top: 10px;"></div>
-                </td>
-            </tr>
-          </table>
+            <div class="dropdown" style="float: right;">
+              <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton2" data-toggle="dr`opdown" aria-haspopup="true" aria-expanded="false">
+                6-9 month cohort
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="#">All patients</a>
+              </div>
+            </div>  
           
+          <h4>Q2 Progress</h4>
           
-          <table class="split-bars" style="margin-bottom: 5px;"> 
+          <div style="margin-bottom: 1em;" class="table-bullets">
+            <div class="didntattend">Didn't attend for follow-up visit: <b>104 of 160 patients*</b></div>
+            <div class="uncontrolled">Visited and BP &ge; 140/90: <b>41 patients*</b></div>
+            <div class="controlled">Visited and BP &lt; 140/90: <b>38 patients*</b></div>
+          </div>
+          
+          <div class="small" style="float: left; font-weight: bold; position: absolute;">Q2 2019</div>
+          <table class="split-bars" style="margin-bottom: 5px; clear: none;"> 
               <tr>
-                    <td style="font-weight: bold; white-space: nowrap; font-size: 12px; border-radius: 2px; padding: 0 12px; min-width: 100px;">Q2 2019</td>
+                  <td class="small">Didn't attend</td>
+                  <td class="small"><span class="desktop">Visited and BP </span>&ge; 140/90</td>
+                  <td class="small"><span class="desktop">Visited and BP </span>&lt; 140/90</td>
+              </tr>
+              <tr>
                     <td class="bar bar-1" style="width: 65%;">65%</td>
                     <td class="bar bar-2" style="width: 18%;">18%</td>
                     <td class="bar bar-3" style="width: 17%;">17%</td>
                 </tr>
           </table>
-          
+          <div class="small">Q1 2019</div>
           <table class="split-bars" style="margin-bottom: 5px;"> 
               <tr>
-                    <td style="white-space: nowrap; font-size: 12px; color: #666; border-radius: 2px; padding: 0 12px; min-width: 100px;">Q1 2019</td>
                     <td class="bar bar-1" style="width: 68%;">68%</td>
                     <td class="bar bar-2" style="width: 18%;">18%</td>
                     <td class="bar bar-3" style="width: 14%;">14%</td>
                 </tr>
           </table>
-          
+          <div class="small">Q4 2018</div>
           <table class="split-bars">  
               <tr>
-                    <td style="white-space: nowrap; font-size: 12px; color: #666; border-radius: 2px; padding: 0 12px; min-width: 100px;">Q4 2018</td>
                     <td class="bar bar-1" style="width: 75%;">75%</td>
                     <td class="bar bar-2" style="width: 13%;">13%</td>
                     <td class="bar bar-3" style="width: 12%;">12%</td>
                 </tr>
                 
                 <tr>
-                    <td></td>
                     <td colspan="2" class="bar-label"><div>Uncontrolled BP</div><em></em></td>
                     <td></td>
                 </tr>
           </table>
-      </div>
-      <div class="featured-section featured-2">
-          <h4>Enrolled: Q2 2019</h4>
-          <div class="featured-count">
-            <div class="featured-count-number">45</div>
-            New patients enrolled since 1 Apr 2019
-            <div class="light" style="font-size: 85%;">There are now 599 patients enrolled</div>
-          </div>
-          <div>
-            <table class="bars">
-                <tr>
-                    <td valign="bottom"><div style="height: 18px;"></div> Nov</td>
-                    <td valign="bottom"><div style="height: 22px;"></div> Dec</td>
-                    <td valign="bottom"><div style="height: 23px;"></div> Jan</td>
-                    <td valign="bottom"><div style="height: 24px;"></div> Feb</td>
-                    <td valign="bottom"><div style="height: 25px;"></div> Mar</td>
-                    <td valign="bottom"><div style="height: 27px;"></div> Apr</td>
-                </tr>  
-            </table>
-          </div>
+          <div class="small" style="margin-top: 4px;">* Patients who were enrolled 6-9 months ago</div>
       </div>
   </div>
 
