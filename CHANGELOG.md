@@ -6,6 +6,24 @@
 ### Removed 
 ### Security
 
+# 2019-04-30-1
+## Portal
+### Added
+### Changed
+### Fixed
+### Deprecated
+### Removed
+### Security
+
+## Api
+### Added
+- Adding appointment type as part of the API sync payload
+### Changed
+### Fixed
+### Deprecated
+### Removed
+### Security
+
 # 2019-04-29-1
 ## Portal
 ### Added
