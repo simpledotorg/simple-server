@@ -17,7 +17,7 @@
 
 ## Api
 ### Added
-- Adding appointment type as part of the API sync payload
+- Appointment type as part of the API sync payload
 ### Changed
 ### Fixed
 ### Deprecated
