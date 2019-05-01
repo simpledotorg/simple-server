@@ -19,9 +19,9 @@ class SMSReminderService
   def fan_out_reminders_by_facility(appointments, type)
     appointments
       .group_by(&:facility_id)
-      .slice(*@targeted_release.eligible_facilities)
+      .select { |facility_id, _| @targeted_release.facility_eligible?(facility_id) }
       .map do |_, grouped_appointments|
-      grouped_appointments.in_groups_of(@reminders_batch_size, false) do |appointments_batch|
+      grouped_appointments.each_slice(@reminders_batch_size) do |appointments_batch|
         appointment_ids = appointments_batch.map(&:id)
         SMSReminderJob.perform_later(appointment_ids, type, @user)
       end

@@ -29,9 +29,8 @@ RSpec.describe SMSReminderService do
 
     it 'should spawn sms reminder jobs' do
       reminder_batch_size = 2
-      number_of_jobs = overdue_appointments.count / reminder_batch_size
 
-      assert_enqueued_jobs number_of_jobs do
+      assert_enqueued_jobs 10 do
         SMSReminderService.new(user, reminder_batch_size).three_days_after_missed_visit
       end
     end
@@ -62,7 +61,7 @@ RSpec.describe SMSReminderService do
     end
 
     it 'should send reminders for appointments for which previous reminders failed' do
-      reminder_batch_size = 2
+      reminder_batch_size = 3
 
       allow(@sms_response_double).to receive(:status).and_return('failed')
       perform_enqueued_jobs { SMSReminderService.new(user, reminder_batch_size).three_days_after_missed_visit }
@@ -70,7 +69,7 @@ RSpec.describe SMSReminderService do
       eligible_appointments = overdue_appointments.select { |a| a.communications.present? }
       expect(eligible_appointments).to_not be_empty
 
-      assert_performed_jobs(overdue_appointments.count / reminder_batch_size) do
+      assert_performed_jobs 8 do
         SMSReminderService.new(user, reminder_batch_size).three_days_after_missed_visit
       end
     end
