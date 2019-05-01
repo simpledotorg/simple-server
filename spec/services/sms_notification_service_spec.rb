@@ -18,7 +18,9 @@ RSpec.describe SmsNotificationService do
       it 'should have the SMS body in the default locale' do
         sms = SmsNotificationService.new(recipient_phone_number, twilio_client)
 
-        expected_msg_default = "We missed you for your scheduled BP check-up at Simple Facility on 1 January, 2018. Please come between 9.30 AM and 2 PM."
+        expected_msg_default = 'We missed you for your scheduled BP check-up at Simple Facility on 1 January, 2018.'\
+        ' Please come between 9.30 AM and 2 PM.'
+
         expect(twilio_client).to receive_message_chain('messages.create').with(from: '+15005550006',
                                                                                to: expected_sms_recipient_phone_number,
                                                                                status_callback: '',
@@ -30,7 +32,8 @@ RSpec.describe SmsNotificationService do
       it 'should have the SMS body in Marathi' do
         sms = SmsNotificationService.new(recipient_phone_number, twilio_client)
 
-        expected_msg_marathi = "दि. 1 जानेवारी, 2018 रोजी या दवाखान्यात Simple Facility ठरल्यानुसार बी. पी. चेक अप करून एक महिन्याचे औषध नेल्याचे दिसत नाही. कृपया सकाळी 9 ते दुपारी 12 या वेळेत येऊन बी. पी. चे औषध घेऊन जावे."
+        expected_msg_marathi = 'दि. 1 जानेवारी, 2018 रोजी या दवाखान्यात Simple Facility ठरल्यानुसार बी. पी. चेक अप करून एक महिन्याचे औषध'\
+        ' नेल्याचे दिसत नाही. कृपया सकाळी 9 ते दुपारी 12 या वेळेत येऊन बी. पी. चे औषध घेऊन जावे.'
         expect(twilio_client).to receive_message_chain('messages.create').with(from: '+15005550006',
                                                                                to: expected_sms_recipient_phone_number,
                                                                                status_callback: '',
@@ -42,7 +45,8 @@ RSpec.describe SmsNotificationService do
       it 'should have the SMS body in Punjabi' do
         sms = SmsNotificationService.new(recipient_phone_number, twilio_client)
 
-        expected_msg_punjabi = "ਅਸੀ ਤੁਹਾਨੂੰ 1 ਜਨਵਰੀ, 2018 ਨੂੰ ਸਰਕਾਰੀ ਹਸਪਤਾਲ Simple Facility ਵਿਚ ਤੁਹਾਡੇ ਨਿਰਧਾਰਿਤ ਬੀਪੀ ਚੈਕ-ਅਪ ਲਈ ਬੁਲਾਇਆ ਸੀ। ਤੁਸੀ 9.30 ਵਜੇ ਤੋਂ 2 ਵਜੇ ਦੇ ਵਿਚ ਆਓ।"
+        expected_msg_punjabi = 'ਅਸੀ ਤੁਹਾਨੂੰ 1 ਜਨਵਰੀ, 2018 ਨੂੰ ਸਰਕਾਰੀ ਹਸਪਤਾਲ Simple Facility ਵਿਚ ਤੁਹਾਡੇ ਨਿਰਧਾਰਿਤ ਬੀਪੀ ਚੈਕ-ਅਪ'\
+        ' ਲਈ ਬੁਲਾਇਆ ਸੀ। ਤੁਸੀ 9.30 ਵਜੇ ਤੋਂ 2 ਵਜੇ ਦੇ ਵਿਚ ਆਓ।'
         expect(twilio_client).to receive_message_chain('messages.create').with(from: '+15005550006',
                                                                                to: expected_sms_recipient_phone_number,
                                                                                status_callback: '',
@@ -55,7 +59,8 @@ RSpec.describe SmsNotificationService do
         sms = SmsNotificationService.new(recipient_phone_number, twilio_client)
 
         expect {
-          sms.send_reminder_sms('follow_up_reminder', appointment, '', :gu_IN)
+          sms.send_reminder_sms('
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    follow_up_reminder ', appointment, ' ', :gu_IN)
         }.to raise_error(StandardError)
       end
     end
