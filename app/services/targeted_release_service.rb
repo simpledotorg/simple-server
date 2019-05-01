@@ -1,9 +1,7 @@
 class TargetedReleaseService
-  def initialize
-    @facilities = ENV.fetch('TARGETED_RELEASE_FACILITY_IDS').split(',')
-  end
+  attr_reader :eligible_facilities
 
-  def facility_eligible?(facility_id)
-    @facilities.include?(facility_id)
+  def initialize
+    @eligible_facilities = ENV.fetch('TARGETED_RELEASE_FACILITY_IDS').split(',')
   end
 end

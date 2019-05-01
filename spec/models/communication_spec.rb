@@ -1,17 +1,17 @@
 require 'rails_helper'
 
 describe Communication, type: :model do
-  describe 'Associations' do
+  context 'Associations' do
     it { should belong_to(:user) }
     it { should belong_to(:appointment) }
     it { should belong_to(:detailable) }
   end
 
-  describe 'Validations' do
+  context 'Validations' do
     it_behaves_like 'a record that validates device timestamps'
   end
 
-  describe 'Behavior' do
+  context 'Behavior' do
     it_behaves_like 'a record that is deletable'
   end
 
@@ -46,7 +46,7 @@ describe Communication, type: :model do
   end
 
   describe '.communication_result' do
-    it 'returns successful is detailable is successful' do
+    it 'is successful is detailable is successful' do
       communication = create(:communication,
                              :follow_up_reminder,
                              detailable: create(:twilio_sms_delivery_detail, :delivered))
@@ -54,7 +54,7 @@ describe Communication, type: :model do
       expect(communication.communication_result).to eq('successful')
     end
 
-    it 'returns successful is detailable is unsuccessful' do
+    it 'is successful if detailable is unsuccessful' do
       communication = create(:communication,
                              :follow_up_reminder,
                              detailable: create(:twilio_sms_delivery_detail, :failed))
@@ -63,13 +63,16 @@ describe Communication, type: :model do
 
     end
 
-    it 'returns in_progress is detailable is in_progress' do
-      communication = create(:communication,
-                             :follow_up_reminder,
-                             detailable: create(:twilio_sms_delivery_detail, :queued))
+    it 'is in_progress if detailable is in_progress' do
+      communication_1 = create(:communication,
+                               :follow_up_reminder,
+                               detailable: create(:twilio_sms_delivery_detail, :queued))
+      communication_2 = create(:communication,
+                               :follow_up_reminder,
+                               detailable: create(:twilio_sms_delivery_detail, :sent))
 
-      expect(communication.communication_result).to eq('in_progress')
-
+      expect(communication_1.communication_result).to eq('in_progress')
+      expect(communication_2.communication_result).to eq('in_progress')
     end
   end
 end
