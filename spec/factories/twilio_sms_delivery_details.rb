@@ -6,6 +6,7 @@ FactoryBot.define do
     delivered_on nil
     association :communication
 
+    trait(:sent) { result { 'sent' } }
     trait(:failed) { result { 'failed' } }
     trait(:queued) { result { 'queued' } }
     trait(:delivered) { result { 'delivered' } }
