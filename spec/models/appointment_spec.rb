@@ -167,6 +167,18 @@ describe Appointment, type: :model do
                                        scheduled_date: 31.days.ago,
                                        status: :scheduled) }
 
+    it 'returns true if there are no communications for the appointment' do
+      expect(overdue_appointment.undelivered_followup_messages?).to eq(true)
+    end
+
+    it 'returns true if there are non follow_up_reminder communications for the appointment' do
+      create(:communication,
+             communication_type: :voip_call,
+             appointment: overdue_appointment)
+
+      expect(overdue_appointment.undelivered_followup_messages?).to eq(true)
+    end
+
     it 'returns true if followup reminder SMS for the appointment was unsuccessful' do
       create(:communication,
              :follow_up_reminder,

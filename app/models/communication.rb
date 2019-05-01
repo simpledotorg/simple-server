@@ -23,11 +23,6 @@ class Communication < ApplicationRecord
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
-  def self.follow_up_reminder_messages
-    where(communications: { detailable_type: 'TwilioSmsDeliveryDetail' })
-      .where(communication_type: :follow_up_reminder)
-  end
-
   def self.create_with_twilio_details!(user:, appointment:, twilio_sid:, twilio_msg_status:, communication_type:)
     transaction do
       sms_delivery_details =
