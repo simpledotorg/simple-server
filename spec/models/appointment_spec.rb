@@ -30,6 +30,21 @@ describe Appointment, type: :model do
         expect(Appointment.overdue).not_to include(upcoming_appointment)
       end
     end
+
+    describe '.overdue_by' do
+      let(:recently_overdue_appointment) { create(:appointment, scheduled_date: 2.days.ago, status: :scheduled) }
+      let(:overdue_appointment) { create(:appointment, :overdue) }
+      let(:upcoming_appointment) { create(:appointment) }
+
+      it "includes overdue appointments that are overdue by 3 or more days" do
+        expect(Appointment.overdue_by(3)).to_not include(recently_overdue_appointment)
+        expect(Appointment.overdue_by(3)).to include(overdue_appointment)
+      end
+
+      it "excludes non-overdue appointments" do
+        expect(Appointment.overdue).not_to include(upcoming_appointment)
+      end
+    end
   end
 
   context "Result of follow-up" do
@@ -144,6 +159,30 @@ describe Appointment, type: :model do
 
         expect(appointment.csv_fields).to eq(csv_fields)
       end
+    end
+  end
+
+  describe '#undelivered_followup_messages' do
+    let(:overdue_appointment) { create(:appointment,
+                                       scheduled_date: 31.days.ago,
+                                       status: :scheduled) }
+
+    it 'returns true if followup reminder SMS for the appointment was unsuccessful' do
+      create(:communication,
+             :follow_up_reminder,
+             appointment: overdue_appointment,
+             detailable: create(:twilio_sms_delivery_detail, :undelivered))
+
+      expect(overdue_appointment.undelivered_followup_messages?).to eq(true)
+    end
+
+    it 'returns false if followup reminder SMS for the appointment were successful' do
+      create(:communication,
+             :follow_up_reminder,
+             appointment: overdue_appointment,
+             detailable: create(:twilio_sms_delivery_detail, :delivered))
+
+      expect(overdue_appointment.undelivered_followup_messages?).to eq(false)
     end
   end
 end

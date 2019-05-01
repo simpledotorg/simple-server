@@ -39,6 +39,10 @@ class Appointment < ApplicationRecord
       .where('remind_on IS NULL OR remind_on <= ?', Date.today)
   end
 
+  def self.overdue_by(number_of_days)
+    overdue.where('scheduled_date <= ?', Date.today - number_of_days.days)
+  end
+
   def days_overdue
     (Date.today - scheduled_date).to_i
   end
@@ -140,13 +144,10 @@ class Appointment < ApplicationRecord
     ]
   end
 
-  def undelivered_reminder_messages(days_since_scheduled_visit:)
-    communications
-      .follow_up_reminder_sms
-      .select do |reminder|
+  def undelivered_followup_messages?
+    reminder_messages = communications.follow_up_reminder_messages
+    return true if reminder_messages.blank?
 
-      reminder.days_since_scheduled_visit == days_since_scheduled_visit &&
-        reminder.communication_result.unsuccessful?
-    end
+    reminder_messages.any?(&:unsuccessful?)
   end
 end
