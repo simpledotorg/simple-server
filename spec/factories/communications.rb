@@ -18,18 +18,12 @@ end
 def build_invalid_communication_payload
   build_communication_payload.merge(
     'communication_type' => nil,
-    'communication_result' => 'foo'
   )
 end
 
 def updated_communication_payload(existing_communication)
   update_time = 10.days.from_now
-  updated_result = Communication::COMMUNICATION_RESULTS.keys
-                     .reject { |result| result == existing_communication.communication_result.to_s }
-                     .sample
-
   build_communication_payload(existing_communication).merge(
     'updated_at' => update_time,
-    'communication_result' => updated_result
   )
 end

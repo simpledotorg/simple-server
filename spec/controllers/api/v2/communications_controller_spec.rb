@@ -27,7 +27,7 @@ RSpec.describe Api::V2::CommunicationsController, type: :controller do
   let(:build_invalid_payload) { lambda { build_invalid_communication_payload } }
   let(:invalid_record) { build_invalid_payload.call }
   let(:update_payload) { lambda { |communication| updated_communication_payload communication } }
-  let(:number_of_schema_errors_in_invalid_payload) { 3 }
+  let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
   it_behaves_like 'a sync controller that authenticates user requests'
   it_behaves_like 'a sync controller that audits the data access'

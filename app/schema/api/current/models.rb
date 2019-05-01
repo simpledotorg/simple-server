@@ -240,7 +240,7 @@ class Api::Current::Models
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' } },
-        required: %w[id appointment_id user_id communication_type communication_result created_at updated_at]
+        required: %w[id appointment_id user_id communication_type created_at updated_at]
       }
     end
 
