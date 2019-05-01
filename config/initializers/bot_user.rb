@@ -1,6 +1,6 @@
 module BotUser
   def find_bot_user
-    User.where(id: ENV.fetch('SMS_REMINDER_BOT_USER_UUID'))
+    User.where(id: ENV.fetch('SMS_REMINDER_BOT_USER_UUID')).first
   end
 
   def find_or_create_bot_user
