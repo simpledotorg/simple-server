@@ -46,7 +46,9 @@ class AuditLog < ApplicationRecord
     records_by_class = records.group_by { |record| record.class.to_s }
 
     records_by_class.each do |record_class, records_for_class|
-      CreateAuditLogsJob.perform_later(user.id, record_class, records_for_class.map(&:id), action)
+      if records_by_class.present?
+        CreateAuditLogsJob.perform_later(user.id, record_class, records_for_class.map(&:id), action)
+      end
     end
   end
 end
