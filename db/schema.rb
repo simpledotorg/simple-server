@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190425084108) do
+ActiveRecord::Schema.define(version: 20190429085949) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -151,6 +151,41 @@ ActiveRecord::Schema.define(version: 20190425084108) do
     t.index ["user_id"], name: "index_communications_on_user_id"
   end
 
+  create_table "email_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer "sign_in_count", default: 0, null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.inet "current_sign_in_ip"
+    t.inet "last_sign_in_ip"
+    t.integer "failed_attempts", default: 0, null: false
+    t.string "unlock_token"
+    t.datetime "locked_at"
+    t.string "invitation_token"
+    t.datetime "invitation_created_at"
+    t.datetime "invitation_sent_at"
+    t.datetime "invitation_accepted_at"
+    t.integer "invitation_limit"
+    t.uuid "invited_by_id"
+    t.string "invited_by_type"
+    t.integer "invitations_count", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_email_authentications_on_deleted_at"
+    t.index ["email"], name: "index_email_authentications_on_email", unique: true
+    t.index ["invitation_token"], name: "index_email_authentications_on_invitation_token", unique: true
+    t.index ["invitations_count"], name: "index_email_authentications_on_invitations_count"
+    t.index ["invited_by_id"], name: "index_email_authentications_on_invited_by_id"
+    t.index ["invited_by_type", "invited_by_id"], name: "index_email_authentications_invited_by"
+    t.index ["reset_password_token"], name: "index_email_authentications_on_reset_password_token", unique: true
+    t.index ["unlock_token"], name: "index_email_authentications_on_unlock_token", unique: true
+  end
+
   create_table "facilities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.string "street_address"
@@ -187,7 +222,7 @@ ActiveRecord::Schema.define(version: 20190425084108) do
   end
 
   create_table "master_user_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.bigint "master_user_id"
+    t.uuid "master_user_id"
     t.string "authenticatable_type"
     t.uuid "authenticatable_id"
     t.datetime "created_at", null: false
