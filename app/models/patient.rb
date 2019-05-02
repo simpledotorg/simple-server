@@ -62,7 +62,7 @@ class Patient < ApplicationRecord
   end
 
   def latest_phone_number
-    phone_numbers.last.number
+    phone_numbers.last&.number
   end
 
   def risk_priority

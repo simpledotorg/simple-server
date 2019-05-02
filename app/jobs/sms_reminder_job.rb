@@ -8,12 +8,14 @@ class SMSReminderJob < ApplicationJob
   def perform(appointment_ids, type, user)
     appointments = Appointment.where(id: appointment_ids)
     appointments.each do |appointment|
-      sms_response = send_sms(appointment, type)
-      Communication.create_with_twilio_details!(user: user,
-                                                appointment: appointment,
-                                                twilio_sid: sms_response.sid,
-                                                twilio_msg_status: sms_response.status,
-                                                communication_type: type)
+      if appointment.patient.latest_phone_number.present? && appointment.undelivered_followup_messages?
+        sms_response = send_sms(appointment, type)
+        Communication.create_with_twilio_details!(user: user,
+                                                  appointment: appointment,
+                                                  twilio_sid: sms_response.sid,
+                                                  twilio_msg_status: sms_response.status,
+                                                  communication_type: type)
+      end
     end
   end
 

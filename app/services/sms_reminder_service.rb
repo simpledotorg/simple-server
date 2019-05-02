@@ -23,6 +23,7 @@ class SMSReminderService
       .map do |_, grouped_appointments|
       grouped_appointments.each_slice(@reminders_batch_size) do |appointments_batch|
         appointment_ids = appointments_batch.map(&:id)
+
         SMSReminderJob.perform_later(appointment_ids, type, @user)
       end
     end

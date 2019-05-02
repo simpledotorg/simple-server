@@ -3,7 +3,9 @@ class Communication < ApplicationRecord
 
   belongs_to :appointment
   belongs_to :user
-  belongs_to :detailable, polymorphic: true, optional: true
+  belongs_to :detailable, polymorphic: true
+
+  delegate :unsuccessful?, :successful?, :in_progress?, to: detailable
 
   enum communication_type: {
     voip_call: 'voip_call',
@@ -40,18 +42,14 @@ class Communication < ApplicationRecord
 
   def communication_result
     case
-    when detailable&.successful? then
+    when successful? then
       COMMUNICATION_RESULTS[:successful]
-    when detailable&.unsuccessful? then
+    when unsuccessful? then
       COMMUNICATION_RESULTS[:unsuccessful]
-    when detailable&.in_progress? then
+    when in_progress? then
       COMMUNICATION_RESULTS[:in_progress]
     else
       COMMUNICATION_RESULTS[:unknown]
     end
-  end
-
-  def unsuccessful?
-    detailable.unsuccessful?
   end
 end
