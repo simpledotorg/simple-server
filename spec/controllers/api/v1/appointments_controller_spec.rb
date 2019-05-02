@@ -32,6 +32,54 @@ RSpec.describe Api::V1::AppointmentsController, type: :controller do
   describe 'POST sync: send data from device to server;' do
     it_behaves_like 'a working sync controller creating records'
     it_behaves_like 'a working sync controller updating records'
+
+    context 'appointment_type' do
+      before :each do
+        set_authentication_headers
+      end
+
+      describe 'Appointments without appointment_type are compatible with v1' do
+        let(:request_key) { model.to_s.underscore.pluralize }
+
+        it 'sets appointment_type to manual if field is not set in the sync payload' do
+          new_records = (1..5).map { build_payload.call.except(:appointment_type) }
+          new_records_payload = Hash[request_key, new_records]
+
+          post(:sync_from_user, params: new_records_payload, as: :json)
+
+          expect(response).to have_http_status(200)
+          after_post_appointments = Appointment.all
+          after_post_appointments_ids = after_post_appointments.map(&:id)
+
+          new_records.each do |record|
+            expect(after_post_appointments_ids.include? record[:id]).to be true
+          end
+
+          after_post_appointments.each do |appointment|
+            expect(appointment.appointment_type).to eq Appointment.appointment_types[:manual]
+          end
+        end
+
+        it 'sets appointment_type to manual even if appointment_type explicitly provided' do
+          new_records = (1..5).map { build_payload.call }
+          new_records_payload = Hash[request_key, new_records]
+
+          post(:sync_from_user, params: new_records_payload, as: :json)
+
+          expect(response).to have_http_status(200)
+          after_post_appointments = Appointment.all
+          after_post_appointments_ids = after_post_appointments.map(&:id)
+
+          new_records.each do |record|
+            expect(after_post_appointments_ids.include? record[:id]).to be true
+          end
+
+          after_post_appointments.each do |appointment|
+            expect(appointment.appointment_type).to eq Appointment.appointment_types[:manual]
+          end
+        end
+      end
+    end
   end
 
   describe 'GET sync: send data from server to device;' do
