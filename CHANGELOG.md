@@ -6,6 +6,18 @@
 ### Removed 
 ### Security
 
+# 2019-05-03-1
+### Added 
+### Changed
+### Fixed
+- Fix `appointment type` syncing issues with API v1 and v2. 
+- Allow Org Owners to create Facility Groups
+- Fix the duplication of appointments in the Overdue tab
+### Deprecated 
+### Removed 
+### Security
+
+
 # 2019-04-30-1
 ## Portal
 ### Added
