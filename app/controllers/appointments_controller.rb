@@ -12,6 +12,7 @@ class AppointmentsController < AdminController
                       .includes(patient: [:address, :phone_numbers, :medical_history, { latest_blood_pressures: :facility }])
                       .overdue
                       .where(facility: selected_facilities)
+                      .distinct
                       .order(scheduled_date: :asc)
 
     respond_to do |format|
