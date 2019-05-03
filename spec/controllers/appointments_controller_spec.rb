@@ -13,8 +13,10 @@ RSpec.describe AppointmentsController, type: :controller do
 
     let!(:facility_1) { create(:facility, facility_group: facility_group) }
     let!(:overdue_appointments_in_facility_1) do
-      appointments = create_list(:appointment, 50, :overdue, facility: facility_1)
+      appointments = create_list(:appointment, 10, :overdue, facility: facility_1)
       appointments.each do |appointment|
+        create(:blood_pressure, patient: appointment.patient, facility: facility_1)
+        create(:blood_pressure, patient: appointment.patient, facility: facility_1)
         create(:blood_pressure, patient: appointment.patient, facility: facility_1)
       end
       appointments
@@ -22,17 +24,25 @@ RSpec.describe AppointmentsController, type: :controller do
 
     let!(:facility_2) { create(:facility, facility_group: facility_group) }
     let!(:overdue_appointments_in_facility_2) do
-      appointments = create_list(:appointment, 50, :overdue, facility: facility_2)
+      appointments = create_list(:appointment, 10, :overdue, facility: facility_2)
       appointments.each do |appointment|
         create(:blood_pressure, patient: appointment.patient, facility: facility_2)
+        create(:blood_pressure, patient: appointment.patient, facility: facility_2)
+        create(:blood_pressure, patient: appointment.patient, facility: facility_1)
       end
       appointments
     end
 
     it 'returns a success response' do
       get :index, params: {}
-
       expect(response).to be_success
+    end
+
+    it 'populates a list of overdue appointments' do
+      get :index, params: {}
+      expected_ids = (overdue_appointments_in_facility_1 + overdue_appointments_in_facility_2).map(&:id)
+
+      expect(assigns(:appointments).map(&:id)).to match_array(expected_ids)
     end
 
     describe 'filtering by facility' do
