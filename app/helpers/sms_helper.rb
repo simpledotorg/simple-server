@@ -1,9 +1,11 @@
 module SmsHelper
+  SMS_LOCALES = {
+    punjab: :pa_Guru_IN,
+    maharashtra: :mr_IN,
+  }
+
   def sms_locale(state)
-    {
-      punjab: :pa_Guru_IN,
-      maharashtra: :mr_IN,
-    }.fetch(state, :en)
+    SMS_LOCALES.fetch(state, :en)
   end
 
   def date_in_locale(date, locale)
