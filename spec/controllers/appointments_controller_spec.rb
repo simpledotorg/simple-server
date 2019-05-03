@@ -17,7 +17,6 @@ RSpec.describe AppointmentsController, type: :controller do
       appointments.each do |appointment|
         create(:blood_pressure, patient: appointment.patient, facility: facility_1)
         create(:blood_pressure, patient: appointment.patient, facility: facility_1)
-        create(:blood_pressure, patient: appointment.patient, facility: facility_1)
       end
       appointments
     end
@@ -28,7 +27,6 @@ RSpec.describe AppointmentsController, type: :controller do
       appointments.each do |appointment|
         create(:blood_pressure, patient: appointment.patient, facility: facility_2)
         create(:blood_pressure, patient: appointment.patient, facility: facility_2)
-        create(:blood_pressure, patient: appointment.patient, facility: facility_1)
       end
       appointments
     end
@@ -74,7 +72,7 @@ RSpec.describe AppointmentsController, type: :controller do
       it 'shows the selected number of records per page' do
         get :index, params: { per_page: 50 }
 
-        expect(response.body.scan(/recorded at/).length).to be(50)
+        expect(response.body.scan(/recorded at/).length).to be(20)
       end
 
       it 'shows all records if All is selected' do
