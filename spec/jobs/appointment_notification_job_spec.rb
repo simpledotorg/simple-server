@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe SMSReminderJob, type: :job do
+RSpec.describe AppointmentNotificationJob, type: :job do
   include ActiveJob::TestHelper
 
   before do

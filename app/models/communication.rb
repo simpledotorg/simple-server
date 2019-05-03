@@ -5,12 +5,12 @@ class Communication < ApplicationRecord
   belongs_to :user
   belongs_to :detailable, polymorphic: true
 
-  delegate :unsuccessful?, :successful?, :in_progress?, to: detailable
+  delegate :unsuccessful?, :successful?, :in_progress?, to: :detailable
 
   enum communication_type: {
     voip_call: 'voip_call',
     manual_call: 'manual_call',
-    follow_up_reminder: 'follow_up_reminder'
+    missed_visit_sms_reminder: 'missed_visit_sms_reminder'
   }
 
   COMMUNICATION_RESULTS = {
@@ -24,6 +24,10 @@ class Communication < ApplicationRecord
 
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
+
+  def self.latest_by_type(communication_type)
+    communication_type.order(device_created_at: desc).first
+  end
 
   def self.create_with_twilio_details!(user:, appointment:, twilio_sid:, twilio_msg_status:, communication_type:)
     transaction do
@@ -51,5 +55,9 @@ class Communication < ApplicationRecord
     else
       COMMUNICATION_RESULTS[:unknown]
     end
+  end
+
+  def attempted?
+    successful? || in_progress?
   end
 end

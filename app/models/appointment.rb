@@ -144,10 +144,7 @@ class Appointment < ApplicationRecord
     ]
   end
 
-  def undelivered_followup_messages?
-    reminder_messages = communications.select(&:follow_up_reminder?)
-    return true if reminder_messages.blank?
-
-    reminder_messages.any?(&:unsuccessful?)
+  def previously_communicated_via?(communication_type)
+    communications.latest_by_type(communication_type)&.attempted?
   end
 end

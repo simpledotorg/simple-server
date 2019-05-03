@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe SMSReminderService do
+RSpec.describe AppointmentNotificationService do
   include ActiveJob::TestHelper
 
   context '#three_days_after_missed_visit' do
@@ -31,32 +31,32 @@ RSpec.describe SMSReminderService do
       reminder_batch_size = 2
 
       assert_enqueued_jobs 10 do
-        SMSReminderService.new(user, reminder_batch_size).three_days_after_missed_visit
+        AppointmentNotificationService.new(user, reminder_batch_size).send_after_missed_visit
       end
     end
 
     it 'should send sms reminders to eligible overdue appointments' do
-      perform_enqueued_jobs { SMSReminderService.new(user, 2).three_days_after_missed_visit }
+      perform_enqueued_jobs { AppointmentNotificationService.new(user, 2).send_after_missed_visit }
 
       eligible_appointments = overdue_appointments.select { |a| a.communications.present? }
       expect(eligible_appointments).to_not be_empty
     end
 
     it 'should ignore appointments which are recently overdue (< 3 days)' do
-      perform_enqueued_jobs { SMSReminderService.new(user, 2).three_days_after_missed_visit }
+      perform_enqueued_jobs { AppointmentNotificationService.new(user, 2).send_after_missed_visit }
 
       ineligible_appointments = recently_overdue_appointments.select { |a| a.communications.present? }
       expect(ineligible_appointments).to be_empty
     end
 
     it 'should skip sending reminders for appointments for which reminders are already sent' do
-      perform_enqueued_jobs { SMSReminderService.new(user, 2).three_days_after_missed_visit }
+      perform_enqueued_jobs { AppointmentNotificationService.new(user, 2).send_after_missed_visit }
 
       eligible_appointments = overdue_appointments.select { |a| a.communications.present? }
       expect(eligible_appointments).to_not be_empty
 
       assert_performed_jobs 0 do
-        SMSReminderService.new(user, 2).three_days_after_missed_visit
+        AppointmentNotificationService.new(user, 2).send_after_missed_visit
       end
     end
 
@@ -64,13 +64,13 @@ RSpec.describe SMSReminderService do
       reminder_batch_size = 3
 
       allow(@sms_response_double).to receive(:status).and_return('failed')
-      perform_enqueued_jobs { SMSReminderService.new(user, reminder_batch_size).three_days_after_missed_visit }
+      perform_enqueued_jobs { AppointmentNotificationService.new(user, reminder_batch_size).send_after_missed_visit }
 
       eligible_appointments = overdue_appointments.select { |a| a.communications.present? }
       expect(eligible_appointments).to_not be_empty
 
       assert_performed_jobs 8 do
-        SMSReminderService.new(user, reminder_batch_size).three_days_after_missed_visit
+        AppointmentNotificationService.new(user, reminder_batch_size).send_after_missed_visit
       end
     end
 
@@ -78,7 +78,7 @@ RSpec.describe SMSReminderService do
       allow(ENV).to receive(:fetch).with('TARGETED_RELEASE_FACILITY_IDS').and_return(facility_1.id)
 
       assert_performed_jobs 5 do
-        SMSReminderService.new(user, 2).three_days_after_missed_visit
+        AppointmentNotificationService.new(user, 2).send_after_missed_visit
       end
     end
   end

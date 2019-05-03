@@ -65,6 +65,10 @@ class Patient < ApplicationRecord
     phone_numbers.last&.number
   end
 
+  def phone_number?
+    latest_phone_number.present?
+  end
+
   def risk_priority
     return RISK_PRIORITIES[:NONE] if latest_scheduled_appointment.overdue_for_under_a_month?
 

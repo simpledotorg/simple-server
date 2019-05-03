@@ -1,20 +1,26 @@
-class SMSReminderJob < ApplicationJob
+class AppointmentNotificationJob < ApplicationJob
   include Rails.application.routes.url_helpers
   include SmsHelper
 
   queue_as :default
   self.queue_adapter = :sidekiq
 
-  def perform(appointment_ids, type, user)
-    appointments = Appointment.where(id: appointment_ids)
-    appointments.each do |appointment|
-      if appointment.patient.latest_phone_number.present? && appointment.undelivered_followup_messages?
+  # disable retries
+  sidekiq_options retry: 0
+
+  def perform(appointment_ids, communication_type, user)
+    Appointment.where(id: appointment_ids).each do |appointment|
+      next if appointment.previously_communicated_via?(communication_type)
+
+      begin
         sms_response = send_sms(appointment, type)
         Communication.create_with_twilio_details!(user: user,
                                                   appointment: appointment,
                                                   twilio_sid: sms_response.sid,
                                                   twilio_msg_status: sms_response.status,
-                                                  communication_type: type)
+                                                  communication_type: communication_type)
+      rescue StandardError
+        next
       end
     end
   end
