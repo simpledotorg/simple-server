@@ -13,7 +13,7 @@ every :day, at: local('1:00 am').utc do
 end
 
 every '*/10 * * * *' do
-  rake 'sms_reminder:three_days_after_missed_visit'
+  rake 'appointment_notification:three_days_after_missed_visit'
 end
 
 every :month, at: local('1:00 am').utc do

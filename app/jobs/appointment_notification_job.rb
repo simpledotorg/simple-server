@@ -5,9 +5,6 @@ class AppointmentNotificationJob < ApplicationJob
   queue_as :default
   self.queue_adapter = :sidekiq
 
-  # disable retries
-  sidekiq_options retry: 0
-
   def perform(appointment_ids, communication_type, user)
     Appointment.where(id: appointment_ids).each do |appointment|
       next if appointment.previously_communicated_via?(communication_type)

@@ -3,7 +3,7 @@ class Communication < ApplicationRecord
 
   belongs_to :appointment
   belongs_to :user
-  belongs_to :detailable, polymorphic: true
+  belongs_to :detailable, polymorphic: true, optional: true
 
   delegate :unsuccessful?, :successful?, :in_progress?, to: :detailable
 
