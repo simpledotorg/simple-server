@@ -10,7 +10,7 @@ class AppointmentNotificationJob < ApplicationJob
 
   def perform(appointments, communication_type, user)
     Appointment.where(id: appointments).each do |appointment|
-      next if appointment.previously_communicated_via?(communication_type)
+      next if !within_time_window? || appointment.previously_communicated_via?(communication_type)
 
       sms_response = send_sms(appointment, communication_type)
       Communication.create_with_twilio_details!(user: user,
@@ -28,12 +28,17 @@ class AppointmentNotificationJob < ApplicationJob
       .new(appointment.patient.latest_phone_number)
       .send_reminder_sms(type,
                          appointment,
-                         twilio_sms_delivery_url,
+                         sms_delivery_callback_url,
                          sms_locale(appointment.patient.address.state_to_sym))
   end
 
-  def twilio_sms_delivery_url
+  def sms_delivery_callback_url
     api_current_twilio_sms_delivery_url(host: ENV.fetch('SIMPLE_SERVER_HOST'),
                                         protocol: ENV.fetch('SIMPLE_SERVER_HOST_PROTOCOL'))
+  end
+
+  def within_time_window?
+    DateTime.now.hour.between?(Config.get_int('SMS_REMINDER_WINDOW_HOUR_OF_DAY_START', 14),
+                               Config.get_int('SMS_REMINDER_WINDOW_HOUR_OF_DAY_END', 16))
   end
 end

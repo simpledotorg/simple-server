@@ -33,11 +33,15 @@ class Appointment < ApplicationRecord
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
-  scope :overdue, -> { where(status: 'scheduled')
-                         .where('scheduled_date <= ?', Date.today)
-                         .where('remind_on IS NULL OR remind_on <= ?', Date.today) }
+  def self.overdue
+    where(status: 'scheduled')
+      .where('scheduled_date <= ?', Date.today)
+      .where('remind_on IS NULL OR remind_on <= ?', Date.today)
+  end
 
-  scope :overdue_by, -> (number_of_days) { overdue.where('scheduled_date <= ?', Date.today - number_of_days.days) }
+  def self.overdue_by(number_of_days)
+    overdue.where('scheduled_date <= ?', Date.today - number_of_days.days)
+  end
 
   def days_overdue
     (Date.today - scheduled_date).to_i

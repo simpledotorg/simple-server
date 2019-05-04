@@ -15,6 +15,8 @@ class AppointmentNotificationService
 
   private
 
+  attr_reader :user, :reminders_batch_size
+
   def eligible_for_sending_sms?(appointment, communication_type)
     !appointment.previously_communicated_via?(communication_type) &&
       appointment.patient.phone_number?
@@ -25,10 +27,19 @@ class AppointmentNotificationService
       .group_by(&:facility_id)
       .select { |facility_id, _| @targeted_release.facility_eligible?(facility_id) }
       .map do |_, grouped_appointments|
-      grouped_appointments.each_slice(@reminders_batch_size) do |appointments_batch|
-        appointment_ids = appointments_batch.map(&:id)
-        AppointmentNotificationJob.perform_later(appointment_ids, communication_type, @user)
+      grouped_appointments.each_slice(reminders_batch_size) do |appointments_batch|
+        AppointmentNotificationJob
+          .set(wait_until: schedule_at(Config.get_int('SMS_REMINDER_WINDOW_HOUR_OF_DAY_START',
+                                                      14)))
+          .perform_later(appointments_batch, communication_type, @user)
       end
     end
+  end
+
+  def schedule_at(hour_of_day)
+    now = DateTime.now
+
+    return now.change(hour: hour_of_day) if now.hour < hour_of_day
+    now.change(hour: hour_of_day) + 1.day
   end
 end
