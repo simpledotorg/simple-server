@@ -25,7 +25,7 @@ describe Communication, type: :model do
                                                   appointment: appointment,
                                                   twilio_sid: SecureRandom.uuid,
                                                   twilio_msg_status: 'sent',
-                                                  communication_type: :follow_up_reminder)
+                                                  communication_type: :missed_visit_sms_reminder)
       }.to change { Communication.count }.by(1)
              .and change { TwilioSmsDeliveryDetail.count }.by(1)
     end
@@ -38,7 +38,7 @@ describe Communication, type: :model do
                                                   appointment: appointment,
                                                   twilio_sid: SecureRandom.uuid,
                                                   twilio_msg_status: 'sent',
-                                                  communication_type: :follow_up_reminder)
+                                                  communication_type: :missed_visit_sms_reminder)
       }.to raise_error(StandardError)
              .and change { Communication.count }.by(0)
                     .and change { TwilioSmsDeliveryDetail.count }.by(0)
@@ -48,7 +48,7 @@ describe Communication, type: :model do
   describe '.communication_result' do
     it 'is successful is detailable is successful' do
       communication = create(:communication,
-                             :follow_up_reminder,
+                             :missed_visit_sms_reminder,
                              detailable: create(:twilio_sms_delivery_detail, :delivered))
 
       expect(communication.communication_result).to eq('successful')
@@ -56,7 +56,7 @@ describe Communication, type: :model do
 
     it 'is successful if detailable is unsuccessful' do
       communication = create(:communication,
-                             :follow_up_reminder,
+                             :missed_visit_sms_reminder,
                              detailable: create(:twilio_sms_delivery_detail, :failed))
 
       expect(communication.communication_result).to eq('unsuccessful')
@@ -65,10 +65,10 @@ describe Communication, type: :model do
 
     it 'is in_progress if detailable is in_progress' do
       communication_1 = create(:communication,
-                               :follow_up_reminder,
+                               :missed_visit_sms_reminder,
                                detailable: create(:twilio_sms_delivery_detail, :queued))
       communication_2 = create(:communication,
-                               :follow_up_reminder,
+                               :missed_visit_sms_reminder,
                                detailable: create(:twilio_sms_delivery_detail, :sent))
 
       expect(communication_1.communication_result).to eq('in_progress')

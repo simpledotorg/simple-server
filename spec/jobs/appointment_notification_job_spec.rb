@@ -11,14 +11,14 @@ RSpec.describe AppointmentNotificationJob, type: :job do
   end
 
   it 'sends reminder SMSes for all appointments and creates communication entries for them' do
-    appointment_ids = create_list(:appointment, 3, :overdue).map(&:id)
-
     assert_performed_jobs 1 do
-      described_class.perform_later(appointment_ids, 'follow_up_reminder', create(:user))
+      described_class.perform_later(create_list(:appointment, 3, :overdue),
+                                    'missed_visit_sms_reminder',
+                                    create(:user))
     end
 
     expect(Communication.count).to eq(3)
   end
 
-  pending 'should continue processing reminder SMSes even if some throw exceptions'
+  pending 'should discard the job if there are any exceptions during the job'
 end

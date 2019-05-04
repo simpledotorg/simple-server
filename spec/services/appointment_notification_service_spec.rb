@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe AppointmentNotificationService do
   include ActiveJob::TestHelper
 
-  context '#three_days_after_missed_visit' do
+  context '#send_after_missed_visit' do
     let!(:user) { create(:user) }
     let!(:facility_1) { create(:facility) }
     let!(:facility_2) { create(:facility) }

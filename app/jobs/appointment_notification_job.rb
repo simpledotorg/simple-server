@@ -5,20 +5,19 @@ class AppointmentNotificationJob < ApplicationJob
   queue_as :default
   self.queue_adapter = :sidekiq
 
-  def perform(appointment_ids, communication_type, user)
-    Appointment.where(id: appointment_ids).each do |appointment|
+  # essentially, disable retries on exceptions
+  discard_on StandardError
+
+  def perform(appointments, communication_type, user)
+    Appointment.where(id: appointments).each do |appointment|
       next if appointment.previously_communicated_via?(communication_type)
 
-      begin
-        sms_response = send_sms(appointment, type)
-        Communication.create_with_twilio_details!(user: user,
-                                                  appointment: appointment,
-                                                  twilio_sid: sms_response.sid,
-                                                  twilio_msg_status: sms_response.status,
-                                                  communication_type: communication_type)
-      rescue StandardError
-        next
-      end
+      sms_response = send_sms(appointment, communication_type)
+      Communication.create_with_twilio_details!(user: user,
+                                                appointment: appointment,
+                                                twilio_sid: sms_response.sid,
+                                                twilio_msg_status: sms_response.status,
+                                                communication_type: communication_type)
     end
   end
 

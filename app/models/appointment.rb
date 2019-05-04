@@ -29,19 +29,15 @@ class Appointment < ApplicationRecord
     automatic: 'automatic'
   }, _prefix: true
 
+  validate :cancel_reason_is_present_if_cancelled
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
-  validate :cancel_reason_is_present_if_cancelled
 
-  def self.overdue
-    where(status: 'scheduled')
-      .where('scheduled_date <= ?', Date.today)
-      .where('remind_on IS NULL OR remind_on <= ?', Date.today)
-  end
+  scope :overdue, -> { where(status: 'scheduled')
+                         .where('scheduled_date <= ?', Date.today)
+                         .where('remind_on IS NULL OR remind_on <= ?', Date.today) }
 
-  def self.overdue_by(number_of_days)
-    overdue.where('scheduled_date <= ?', Date.today - number_of_days.days)
-  end
+  scope :overdue_by, -> (number_of_days) { overdue.where('scheduled_date <= ?', Date.today - number_of_days.days) }
 
   def days_overdue
     (Date.today - scheduled_date).to_i
@@ -99,7 +95,8 @@ class Appointment < ApplicationRecord
   # CSV export
   def self.to_csv
     appointments = all.joins(patient: { latest_blood_pressures: :facility })
-                     .includes(patient: [:address, :phone_numbers, :medical_history, { latest_blood_pressures: :facility }])
+                     .includes(patient: [:address, :phone_numbers, :medical_history,
+                                         { latest_blood_pressures: :facility }])
 
     CSV.generate(headers: true) do |csv|
       csv << csv_headers

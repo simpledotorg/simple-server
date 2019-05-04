@@ -26,7 +26,7 @@ class Communication < ApplicationRecord
   validates :device_updated_at, presence: true
 
   def self.latest_by_type(communication_type)
-    communication_type.order(device_created_at: desc).first
+    send(communication_type).order(device_created_at: :desc).first
   end
 
   def self.create_with_twilio_details!(user:, appointment:, twilio_sid:, twilio_msg_status:, communication_type:)
@@ -46,14 +46,10 @@ class Communication < ApplicationRecord
 
   def communication_result
     case
-    when successful? then
-      COMMUNICATION_RESULTS[:successful]
-    when unsuccessful? then
-      COMMUNICATION_RESULTS[:unsuccessful]
-    when in_progress? then
-      COMMUNICATION_RESULTS[:in_progress]
-    else
-      COMMUNICATION_RESULTS[:unknown]
+    when successful?   then COMMUNICATION_RESULTS[:successful]
+    when unsuccessful? then COMMUNICATION_RESULTS[:unsuccessful]
+    when in_progress?  then COMMUNICATION_RESULTS[:in_progress]
+    else                    COMMUNICATION_RESULTS[:unknown]
     end
   end
 

@@ -7,7 +7,7 @@ FactoryBot.define do
     device_created_at { Time.now }
     device_updated_at { Time.now }
 
-    trait(:follow_up_reminder) { communication_type { :follow_up_reminder } }
+    trait(:missed_visit_sms_reminder) { communication_type { :missed_visit_sms_reminder } }
   end
 end
 

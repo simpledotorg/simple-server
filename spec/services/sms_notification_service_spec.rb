@@ -26,7 +26,7 @@ RSpec.describe SmsNotificationService do
                                                                                status_callback: '',
                                                                                body: expected_msg_default)
 
-        sms.send_reminder_sms('follow_up_reminder', appointment, '')
+        sms.send_reminder_sms('missed_visit_sms_reminder', appointment, '')
       end
 
       it 'should have the SMS body in Marathi' do
@@ -39,7 +39,7 @@ RSpec.describe SmsNotificationService do
                                                                                status_callback: '',
                                                                                body: expected_msg_marathi)
 
-        sms.send_reminder_sms('follow_up_reminder', appointment, '', :mr_IN)
+        sms.send_reminder_sms('missed_visit_sms_reminder', appointment, '', :mr_IN)
       end
 
       it 'should have the SMS body in Punjabi' do
@@ -52,15 +52,14 @@ RSpec.describe SmsNotificationService do
                                                                                status_callback: '',
                                                                                body: expected_msg_punjabi)
 
-        sms.send_reminder_sms('follow_up_reminder', appointment, '', :pa_Guru_IN)
+        sms.send_reminder_sms('missed_visit_sms_reminder', appointment, '', :pa_Guru_IN)
       end
 
       it 'should raise an error if the locale for the SMS body is unsupported' do
         sms = SmsNotificationService.new(recipient_phone_number, twilio_client)
 
         expect {
-          sms.send_reminder_sms('
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    follow_up_reminder ', appointment, ' ', :gu_IN)
+          sms.send_reminder_sms('missed_visit_sms_reminder', appointment, ' ', :gu_IN)
         }.to raise_error(StandardError)
       end
     end
