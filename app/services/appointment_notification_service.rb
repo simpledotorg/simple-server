@@ -11,7 +11,9 @@ class AppointmentNotificationService
   def send_after_missed_visit(days_overdue: 3)
     communication_type = Communication.communication_types[:missed_visit_sms_reminder]
 
-    eligible_appointments = Appointment.overdue_by(days_overdue)
+    eligible_appointments = Appointment
+                              .overdue_by(days_overdue)
+                              .includes(patient: [:phone_numbers])
                               .select { |appointment| eligible_for_sending_sms?(appointment, communication_type) }
     fan_out_reminders_by_facility(eligible_appointments, communication_type)
   end
@@ -40,9 +42,7 @@ class AppointmentNotificationService
   end
 
   def schedule_at(hour_of_day)
-    now = DateTime.now
-
-    return now.change(hour: hour_of_day) if now.hour < hour_of_day
-    now.change(hour: hour_of_day) + 1.day
+    now = DateTime.now.in_time_zone(ENV.fetch('DEFAULT_TIME_ZONE'))
+    now.hour < hour_of_day ? now.change(hour: hour_of_day) : now.change(hour: hour_of_day) + 1.day
   end
 end

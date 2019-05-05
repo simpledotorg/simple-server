@@ -38,9 +38,13 @@ class AppointmentNotificationJob < ApplicationJob
   end
 
   def within_time_window?
-    DateTime.now.hour.between?(Config.get_int('APPOINTMENT_NOTIFICATION_WINDOW_HOUR_OF_DAY_START',
-                                              AppointmentNotificationService::DEFAULT_TIME_WINDOW_START),
-                               Config.get_int('APPOINTMENT_NOTIFICATION_WINDOW_HOUR_OF_DAY_END',
-                                              AppointmentNotificationService::DEFAULT_TIME_WINDOW_END))
+    DateTime
+      .now
+      .in_time_zone(ENV.fetch('DEFAULT_TIME_ZONE'))
+      .hour
+      .between?(Config.get_int('APPOINTMENT_NOTIFICATION_WINDOW_HOUR_OF_DAY_START',
+                               AppointmentNotificationService::DEFAULT_TIME_WINDOW_START),
+                Config.get_int('APPOINTMENT_NOTIFICATION_WINDOW_HOUR_OF_DAY_END',
+                               AppointmentNotificationService::DEFAULT_TIME_WINDOW_END))
   end
 end
