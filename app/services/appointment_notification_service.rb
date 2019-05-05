@@ -1,4 +1,7 @@
 class AppointmentNotificationService
+  DEFAULT_TIME_WINDOW_START = 14
+  DEFAULT_TIME_WINDOW_END = 16
+
   def initialize(user, reminders_batch_size)
     @user = user
     @reminders_batch_size = reminders_batch_size
@@ -29,8 +32,8 @@ class AppointmentNotificationService
       .map do |_, grouped_appointments|
       grouped_appointments.each_slice(reminders_batch_size) do |appointments_batch|
         AppointmentNotificationJob
-          .set(wait_until: schedule_at(Config.get_int('SMS_REMINDER_WINDOW_HOUR_OF_DAY_START',
-                                                      14)))
+          .set(wait_until: schedule_at(Config.get_int('APPOINTMENT_NOTIFICATION_WINDOW_HOUR_OF_DAY_START',
+                                                      DEFAULT_TIME_WINDOW_START)))
           .perform_later(appointments_batch, communication_type, @user)
       end
     end
