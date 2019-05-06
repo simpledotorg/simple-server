@@ -94,6 +94,8 @@ namespace :data_migration do
       puts "Total number of #{model.name} records updated = #{records.size}"
     end
 
+    # For all relevant models except Patient,
+    # we default to the device_created_at
     [
       Address,
       Appointment,
@@ -106,5 +108,17 @@ namespace :data_migration do
     ].each do |model|
       set_recorded_at_to_device_created_at(model)
     end
+
+    # Patients' recorded_at is set to their earliest
+    # BP's device_created_at if older than theirs
+    patients = Patient.where(recorded_at: nil)
+
+    patients.each do |patient|
+      earliest_blood_pressure = patient.blood_pressures.order(device_created_at: :asc).first
+      earlier_date = [earliest_blood_pressure.device_created_at, patient.device_created_at].min
+      patient.update_column(:recorded_at, earlier_date)
+    end
+
+    puts "Total number of Patient records updated = #{patients.size}"
   end
 end
