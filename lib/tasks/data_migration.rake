@@ -81,4 +81,30 @@ namespace :data_migration do
     puts "Number of defaulters processed (automatic appointment created) = #{processed_defaulters_count}"
     puts "Number of unprocessed/errored defaulters = #{unprocessed_or_errored_defaulters_count}"
   end
+
+  desc "Set default 'recorded_at' for existing records"
+  task set_default_recorded_at_for_existing_records: :environment do
+    def set_recorded_at_to_device_created_at(model)
+      records = model.where(recorded_at: nil)
+
+      records.each do |record|
+        record.update_column(:recorded_at, record.device_created_at)
+      end
+
+      puts "Total number of #{model.name} records updated = #{records.size}"
+    end
+
+    [
+      Address,
+      Appointment,
+      BloodPressure,
+      Communication,
+      MedicalHistory,
+      PatientBusinessIdentifier,
+      PatientPhoneNumber,
+      PrescriptionDrug
+    ].each do |model|
+      set_recorded_at_to_device_created_at(model)
+    end
+  end
 end
