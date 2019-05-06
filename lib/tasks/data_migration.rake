@@ -81,4 +81,15 @@ namespace :data_migration do
     puts "Number of defaulters processed (automatic appointment created) = #{processed_defaulters_count}"
     puts "Number of unprocessed/errored defaulters = #{unprocessed_or_errored_defaulters_count}"
   end
+
+  desc "Set default 'recorded_at' for existing records"
+  task set_default_recorded_at_for_existing_records: :environment do
+    bps_without_recorded_at = BloodPressure.where(recorded_at: nil)
+
+    bps_without_recorded_at.each do |record|
+      record.update_column(:recorded_at, record.device_created_at)
+    end
+
+    puts "Total number of BloodPressure records updated = #{bps_without_recorded_at.size}"
+  end
 end
