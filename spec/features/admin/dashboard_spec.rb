@@ -1,103 +1,58 @@
 require 'rails_helper'
 require 'Pages/dashboard_page'
-require 'Pages/logIn_page'
+require 'Pages/log_in_page'
 require 'Pages/home_page'
 require 'Pages/organizations_page'
+require 'Pages/base'
 
-describe 'test dashboard' do
-
-
-  let(:owner) {create(:admin, role: :owner)}
+RSpec.feature 'Verify Dashboard', type: :feature do
+  let(:owner) {create(:admin)}
   let!(:ihmi) {create(:organization, name: "IHMI")}
   let!(:path) {create(:organization, name: "PATH")}
 
+  loginpage = LoginPage.new
   dashboard = DashboardPage.new
-  login = LoginPage.new
   homepage = HomePage.new
 
-  describe 'organisation Names' do
-
-    it 'Verify organisation is displayed in dashboard' do
-      visit root_path
-      login.doLogin(owner.email, owner.password)
-
-      #asssertion
-      expect(dashboard.getOrganisaitonCount).to eq(2)
-      expect(page).to have_content("IHMI")
-      expect(page).to have_content("PATH")
-    end
-
-
-    it 'Verify organisation is displayed in ManageOrganisation' do
-      visit root_path
-      login.doLogin(owner.email, owner.password)
-
-      homepage.selectMainMenuTab("Manage")
-      expect(page).to have_content("Organizations")
-      expect(page).to have_content("Protocols")
-
-      homepage.selectManageOption('Organizations')
-      expect(page).to have_content("IHMI")
-      expect(page).to have_content("PATH")
-
-    end
-
-    it 'Verify organisation name/count get updated in dashboard when new org is added via manage section' do
-
-      visit root_path
-
-      login.doLogin(owner.email, owner.password)
-      #total number of organizaiton present in dashborad
-      organisaiton_count = dashboard.getOrganisaitonCount
-
-
-      homepage.selectManageOption("Organizations")
-      organization = OrganisaitonsPage.new
-      organization.createNewOrganisation
-
-      #assertion at organization screen
-      expect(page).to have_content('Organization was successfully created.')
-      organization.verifyOrganisationInfo
-
-      homepage.selectMainMenuTab("Dashboard")
-      #assertion at dashboard screen
-      expect(page).to have_content("test")
-      expect(dashboard.getOrganisaitonCount).to eq(organisaiton_count + 1)
-
-    end
+  it 'Verify organization is displayed in dashboard' do
+    visit root_path
+    loginpage.do_login(owner.email, owner.password)
+    #asssertion
+    expect(dashboard.get_organization_count).to eq(2)
+    expect(page).to have_content("IHMI")
+    expect(page).to have_content("PATH")
   end
 
-  describe "Create a User and then  Sign in and  verify approval request " do
-    #creating a user
-
-    it 'SignIn as Owner and verify approval request in dashboard' do
-      user = create(:user, sync_approval_status: :requested)
-      visit root_path
-      login.doLogin(owner.email, owner.password)
-
-      expect(page).to have_content("Allow access")
-      expect(page).to have_content("Deny access")
-      #check for user info
-      expect(page).to have_content(user.full_name)
-      expect(page).to have_content(user.phone_number)
-    end
-  end
-
-  it 'Verify owner should be ab le to delete organisation ' do
-
+  it 'Verify organisation name/count get updated in dashboard when new org is added via manage section' do
 
     visit root_path
+    loginpage.do_login(owner.email, owner.password)
+    #total number of organizaiton present in dashborad
+    organization_count = dashboard.get_organization_count
 
-    login.doLogin(owner.email, owner.password)
+    homepage.select_manage_option("Organizations")
+    organization = OrganizationsPage.new
+    organization.create_new_organization("test", "testDescription")
 
-    homepage.selectManageOption("Organizations")
-    organization = OrganisaitonsPage.new
-    organization.createNewOrganisation
+    #assertion at organization screen
+    expect(page).to have_content('Organization was successfully created.')
+    organization.verify_organization_info
 
+    homepage.select_main_menu_tab("Dashboard")
+    #assertion at dashboard screen
+    expect(page).to have_content("test")
+    expect(dashboard.get_organization_count).to eq(organization_count + 1)
+  end
 
-    find(:xpath, "//td/a[text() ='test']/../..//td[6]/a").click
-    # page.accept_alert
-    # expect(page).to have_content("Organization was successfully deleted.")
+  it 'SignIn as Owner and verify approval request in dashboard' do
+    user = create(:user, sync_approval_status: :requested)
+    visit root_path
+    loginpage.do_login(owner.email, owner.password)
 
+    expect(page).to have_content("Allow access")
+    expect(page).to have_content("Deny access")
+    #check for user info
+    expect(page).to have_content(user.full_name)
+    expect(page).to have_content(user.phone_number)
   end
 end

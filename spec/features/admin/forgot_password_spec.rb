@@ -1,12 +1,8 @@
 require 'rails_helper'
-require 'Pages/logIn_page'
+require 'Pages/log_in_page'
 require 'Pages/forgot_password_page'
 
-
-
 RSpec.feature 'To test Forgot password functionality', type: :feature do
-
-
   def assert_forgot_password_landing_page(page)
     expect(page).to have_content('Email')
     expect(page).to have_field('admin_email')
@@ -20,45 +16,36 @@ RSpec.feature 'To test Forgot password functionality', type: :feature do
 
   it 'Owner should be able to click on Forgot password Link' do
     visit root_path
-
-    loginpage.forgotPasswordLink.click
+    loginpage.click_forgot_password_link
     assert_forgot_password_landing_page(page)
   end
-
-
 
   describe 'Owner Provides valid login data and click on forgot password link' do
 
     it 'Verify Owner should be able to click on Forgot password Link ' do
 
       visit root_path
-      loginpage.emailTextBox.set(owner.email)
-      loginpage.passwordTextBox.set(owner.password)
+      loginpage.set_email_text_box(owner.email)
+      loginpage.set_password_text_box(owner.password)
 
-      loginpage.forgotPasswordLink.click
+      loginpage.click_forgot_password_link
       assert_forgot_password_landing_page(page)
 
-      forgotpassword.doResetPassword(owner.email)
-      expect(page).to have_no_content(forgotpassword.message)
-
+      forgotpassword.do_reset_password(owner.email)
     end
   end
 
-
     it 'verify Login link in Forgot password  Page' do
-
       visit root_path
-      loginpage.forgotPasswordLink.click
-      forgotpassword.login.click
-      expect(page).to have_no_content(loginpage.loginButton)
+      loginpage.click_forgot_password_link
+      forgotpassword.click_login_link
+      expect(page).to have_content("Login")
     end
-
 
     it 'verify unlock instruction link in Forgot Password Page' do
       visit root_path
-      loginpage.forgotPasswordLink.click
-      forgotpassword.resendUnlockInstruction(owner.email)
+      loginpage.click_forgot_password_link
+      forgotpassword.resend_unlock_instruction(owner.email)
     end
-
 end
 

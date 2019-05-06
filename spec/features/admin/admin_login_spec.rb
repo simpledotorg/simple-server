@@ -1,55 +1,33 @@
 require 'rails_helper'
-require 'Pages/logIn_page'
-require 'Pages/common_page'
+require 'Pages/log_in_page'
 require 'Pages/home_page'
-
+require 'Pages/base'
 
 RSpec.feature 'Owner Login as Admin', type: :feature do
   let(:owner) {create(:admin)}
   loginpage = LoginPage.new
   homepage = HomePage.new
-  commonpage = CommonPage.new
 
-
-  describe 'Verify Owners login for valid  and invalid data' do
-
-    it 'Verify Owner logs in successfully and View HomePage ' do
-      visit root_path
-      loginpage.doLogin(owner.email, owner.password)
-      homepage.validateOwnersHomePage
-      expect(page).to have_content(owner.email)
-    end
-
-
-    it 'Verify Login for invalid data' do
-      visit root_path
-      loginpage.doLogin(owner.email, "password")
-
-      commonpage.verifyText(loginpage.errorMessage, "Invalid Email or password. ×")
-      loginpage.messageCrossBtn
-      expect(page).to have_no_content(loginpage.errorMessage)
-
-    end
-
-  end
-
-  it ' Owner logs out' do
-
+  before(:each) do
     visit root_path
-    loginpage.doLogin(owner.email, owner.password)
-    homepage.clickLogoutButton
-
-    commonpage.verifyText(loginpage.succefulLogoutMessage, 'Signed out successfully.')
-    expect(page).to have_content('Login')
-
-    loginpage.messageCrossBtn.click
-    expect(page).to have_no_content(loginpage.succefulLogoutMessage)
+    loginpage.do_login(owner.email, owner.password)
   end
 
+  it 'Valid data ' do
+    homepage.validate_owners_home_page
+    expect(page).to have_content(owner.email)
+  end
 
+  it 'Invalid data' do
+    loginpage.is_errormessage_present
+    loginpage.click_errormessage_cross_button
+  end
 
-
-
+  it 'log Out' do
+    homepage.click_logout_button
+    loginpage.is_successful_logout_message_present
+    loginpage.click_successful_message_cross_button
+  end
 end
 
 
