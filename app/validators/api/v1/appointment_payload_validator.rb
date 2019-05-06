@@ -1,2 +1,2 @@
-class Api::V1::AppointmentPayloadValidator < Api::Current::AppointmentPayloadValidator
+class Api::V1::AppointmentPayloadValidator < Api::V2::AppointmentPayloadValidator
 end
