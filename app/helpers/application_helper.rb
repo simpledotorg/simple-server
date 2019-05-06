@@ -38,12 +38,13 @@ module ApplicationHelper
   end
 
   def show_last_interaction_date_and_result(patient)
-    return 'No previous appointment' unless has_last_interaction_data?(patient)
+    return unless has_last_interaction_data?(patient)
 
     last_appointment = patient.appointments.order(scheduled_date: :desc).second
     last_appointment_date = last_appointment.created_at.strftime("%d-%b-%Y")
 
-    interaction_result = last_appointment_date
+    interaction_result = "Last interaction: " + last_appointment_date
+
     if last_appointment.agreed_to_visit.present?
       interaction_result += ' - Agreed to visit'
     elsif last_appointment.remind_on.present?
