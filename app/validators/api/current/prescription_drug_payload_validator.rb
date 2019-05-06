@@ -10,7 +10,8 @@ class Api::Current::PrescriptionDrugPayloadValidator < Api::Current::PayloadVali
     :patient_id,
     :facility_id,
     :created_at,
-    :updated_at
+    :updated_at,
+    :recorded_at
   )
 
   validate :validate_schema

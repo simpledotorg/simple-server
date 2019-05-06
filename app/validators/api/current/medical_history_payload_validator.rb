@@ -10,7 +10,8 @@ class Api::Current::MedicalHistoryPayloadValidator < Api::Current::PayloadValida
     :diabetes,
     :diagnosed_with_hypertension,
     :created_at,
-    :updated_at
+    :updated_at,
+    :recorded_at
   )
 
   validate :validate_schema

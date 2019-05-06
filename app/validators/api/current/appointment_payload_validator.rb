@@ -11,7 +11,8 @@ class Api::Current::AppointmentPayloadValidator < Api::Current::PayloadValidator
     :agreed_to_visit,
     :appointment_type,
     :created_at,
-    :updated_at
+    :updated_at,
+    :recorded_at
   )
 
   validate :validate_schema

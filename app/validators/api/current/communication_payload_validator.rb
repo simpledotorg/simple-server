@@ -7,7 +7,8 @@ class Api::Current::CommunicationPayloadValidator < Api::Current::PayloadValidat
     :communication_type,
     :communication_result,
     :created_at,
-    :updated_at
+    :updated_at,
+    :recorded_at
   )
 
   validate :validate_schema

@@ -11,6 +11,7 @@ class Api::Current::PatientPayloadValidator < Api::Current::PayloadValidator
     :created_at,
     :updated_at,
     :deleted_at,
+    :recorded_at,
     :address,
     :phone_numbers,
     :business_identifiers,
