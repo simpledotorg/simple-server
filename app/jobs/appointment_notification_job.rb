@@ -48,9 +48,9 @@ class AppointmentNotificationJob < ApplicationJob
       .now
       .in_time_zone(ENV.fetch('DEFAULT_TIME_ZONE'))
       .hour
-      .between?(Config.get_int('APPOINTMENT_NOTIFICATION_WINDOW_HOUR_OF_DAY_START',
+      .between?(Config.get_int('APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_START',
                                AppointmentNotificationService::DEFAULT_TIME_WINDOW_START),
-                Config.get_int('APPOINTMENT_NOTIFICATION_WINDOW_HOUR_OF_DAY_END',
+                Config.get_int('APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_END',
                                AppointmentNotificationService::DEFAULT_TIME_WINDOW_END))
   end
 

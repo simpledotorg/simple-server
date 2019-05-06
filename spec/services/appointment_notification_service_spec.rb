@@ -39,7 +39,7 @@ RSpec.describe AppointmentNotificationService do
       perform_enqueued_jobs { AppointmentNotificationService.new(user, 2).send_after_missed_visit }
 
       eligible_appointments = overdue_appointments.select { |a| a.communications.present? }
-      expect(eligible_appointments).to_not be_empty
+      expect(eligible_appointments.count).to eq(20)
     end
 
     it 'should ignore appointments which are recently overdue (< 3 days)' do
@@ -75,11 +75,22 @@ RSpec.describe AppointmentNotificationService do
     end
 
     it 'should only send reminders for appointments under whitelisted facilities' do
-      allow(ENV).to receive(:fetch).with('TARGETED_RELEASE_FACILITY_IDS').and_return(facility_1.id)
+      allow(ENV).to receive(:fetch).with('APPOINTMENT_NOTIFICATION_FACILITY_IDS').and_return(facility_1.id)
 
       assert_performed_jobs 5 do
         AppointmentNotificationService.new(user, 2).send_after_missed_visit
       end
+    end
+
+    it 'should only spawn half the jobs if the rollout percentage is 50%' do
+      allow(ENV).to receive(:fetch).with('APPOINTMENT_NOTIFICATION_ROLLOUT_PERCENTAGE').and_return('50')
+
+      assert_performed_jobs 6 do
+        AppointmentNotificationService.new(user, 2).send_after_missed_visit
+      end
+
+      eligible_appointments = overdue_appointments.select { |a| a.communications.present? }
+      expect(eligible_appointments.count).to eq(10)
     end
   end
 end
