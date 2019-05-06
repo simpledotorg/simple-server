@@ -1,39 +1,40 @@
 require 'rails_helper'
+require 'Pages/log_in_page'
+require 'Pages/home_page'
+require 'Pages/organizations_page'
 
 RSpec.feature 'Organization management', type: :feature do
   let!(:owner) { create(:admin, :owner) }
+  let!(:ihmi) {create(:organization, name: "IHMI")}
+  let!(:path) {create(:organization, name: "PATH")}
+  login = LoginPage.new
+  homepage = HomePage.new
 
-  before do
-    sign_in(owner)
+  describe "test organization screen" do
+
+  it 'Verify organisation is displayed in ManageOrganisation' do
+    visit root_path
+    login.do_login(owner.email, owner.password)
+
+    homepage.select_main_menu_tab("Manage")
+    expect(page).to have_content("Organizations")
+    expect(page).to have_content("Protocols")
+
+    homepage.select_manage_option('Organizations')
+    expect(page).to have_content("IHMI")
+    expect(page).to have_content("PATH")
   end
 
-  describe 'new' do
-    it "allows owners to create organizations" do
-      visit admin_organizations_path
-      click_link "+ Organization"
+  it 'Verify owner should be able to delete organisation ' do
+    visit root_path
+    login.do_login(owner.email, owner.password)
 
-      fill_in "Name", with: "Test organization"
-      fill_in "Description", with: "Test description"
+    homepage.select_manage_option("Organizations")
+    organization = OrganizationsPage.new
+    organization.create_new_organization("test","testDescription")
 
-      click_button "Create Organization"
-
-      expect(page).to have_content("Test organization")
-    end
+    find(:xpath, "//td/a[text() ='test']/../..//td[6]/a").click
+    # click_button 'OK'
   end
-
-  describe 'edit' do
-    let!(:organization) { create(:organization, name: "Existing Org") }
-
-    it "allows owners to create organizations" do
-      visit admin_organizations_path
-
-      click_link "Existing Org"
-
-      fill_in "Name", with: "Edited Org"
-
-      click_button "Update Organization"
-
-      expect(page).to have_content("Edited Org")
-    end
   end
 end
