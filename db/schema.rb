@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190411101836) do
+ActiveRecord::Schema.define(version: 20190506075749) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -119,6 +119,7 @@ ActiveRecord::Schema.define(version: 20190411101836) do
     t.uuid "facility_id", null: false
     t.uuid "user_id"
     t.datetime "deleted_at"
+    t.datetime "recorded_at"
     t.index ["deleted_at"], name: "index_blood_pressures_on_deleted_at"
     t.index ["device_created_at"], name: "index_blood_pressures_on_device_created_at"
     t.index ["patient_id", "device_created_at"], name: "index_blood_pressures_on_patient_id_and_device_created_at"
@@ -269,6 +270,7 @@ ActiveRecord::Schema.define(version: 20190411101836) do
     t.datetime "deleted_at"
     t.boolean "contacted_by_counsellor", default: false
     t.string "could_not_contact_reason"
+    t.datetime "recorded_at"
     t.index ["deleted_at"], name: "index_patients_on_deleted_at"
     t.index ["registration_facility_id"], name: "index_patients_on_registration_facility_id"
     t.index ["registration_user_id"], name: "index_patients_on_registration_user_id"
