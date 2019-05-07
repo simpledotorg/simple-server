@@ -136,13 +136,14 @@ Rails.application.routes.draw do
   resources :admins
 
   if FeatureToggle.enabled?('DASHBOARD_VIEW_BY_DISTRICT')
-    resources :facilities, only: [:show] do
-      get :graphics
-    end
-
-    resources :organizations do
-      resources :districts, only: [:show] do
+    namespace :analytics do
+      resources :facilities, only: [:show] do
         get :graphics
+      end
+      resources :organizations do
+        resources :districts, only: [:show] do
+          get :graphics
+        end
       end
     end
   else
