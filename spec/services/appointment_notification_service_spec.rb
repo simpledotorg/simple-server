@@ -69,7 +69,7 @@ RSpec.describe AppointmentNotificationService do
       eligible_appointments = overdue_appointments.select { |a| a.communications.present? }
       expect(eligible_appointments).to_not be_empty
 
-      assert_performed_jobs 8 do
+      assert_performed_jobs 7 do
         AppointmentNotificationService.new(user, reminder_batch_size).send_after_missed_visit
       end
     end
@@ -85,7 +85,7 @@ RSpec.describe AppointmentNotificationService do
     it 'should only spawn half the jobs if the rollout percentage is 50%' do
       allow(ENV).to receive(:fetch).with('APPOINTMENT_NOTIFICATION_ROLLOUT_PERCENTAGE').and_return('50')
 
-      assert_performed_jobs 6 do
+      assert_performed_jobs 5 do
         AppointmentNotificationService.new(user, 2).send_after_missed_visit
       end
 

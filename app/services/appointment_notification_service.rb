@@ -7,6 +7,8 @@ class AppointmentNotificationService
   def initialize(user, reminders_batch_size)
     @user = user
     @reminders_batch_size = reminders_batch_size
+    @schedule_at_hour_of_day = Config.get_int('APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_START',
+                                              DEFAULT_TIME_WINDOW_START)
   end
 
   def send_after_missed_visit(days_overdue: 3)
@@ -16,39 +18,33 @@ class AppointmentNotificationService
                               .overdue_by(days_overdue)
                               .includes(patient: [:phone_numbers])
                               .select { |appointment| eligible_for_sending_sms?(appointment, communication_type) }
-    fan_out_reminders_by_facility(eligible_appointments, communication_type)
+    fan_out_reminders(eligible_appointments, communication_type)
   end
 
   private
 
-  attr_reader :user, :reminders_batch_size
+  attr_reader :user, :reminders_batch_size, :schedule_at_hour_of_day
 
   def eligible_for_sending_sms?(appointment, communication_type)
-    !appointment.previously_communicated_via?(communication_type) && appointment.patient.phone_number?
+    facility_eligible?(appointment.facility_id, 'APPOINTMENT_NOTIFICATION_FACILITY_IDS') &&
+      (not appointment.previously_communicated_via?(communication_type)) &&
+      appointment.patient.phone_number?
   end
 
-  def fan_out_reminders_by_facility(appointments, communication_type)
+  def fan_out_reminders(appointments, communication_type)
     appointments
-      .group_by(&:facility_id)
-      .select { |facility_id, _| facility_eligible?(facility_id,
-                                                    'APPOINTMENT_NOTIFICATION_FACILITY_IDS') }
-      .map do |_, grouped_appointments|
-      grouped_appointments
-        .sample(roll_out_batch(grouped_appointments.size,
-                               'APPOINTMENT_NOTIFICATION_ROLLOUT_PERCENTAGE'))
-        .each_slice(reminders_batch_size) do |appointments_batch|
-        AppointmentNotificationJob
-          .set(wait_until: schedule_at)
-          .perform_later(appointments_batch, communication_type, @user)
-      end
+      .sample(roll_out_batch(appointments.size, 'APPOINTMENT_NOTIFICATION_ROLLOUT_PERCENTAGE'))
+      .each_slice(reminders_batch_size) do |appointments_batch|
+      AppointmentNotificationJob
+        .set(wait_until: schedule_at)
+        .perform_later(appointments_batch, communication_type, @user)
     end
   end
 
   def schedule_at
-    hour_of_day = Config.get_int('APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_START',
-                                 DEFAULT_TIME_WINDOW_START)
-
     now = DateTime.now.in_time_zone(ENV.fetch('DEFAULT_TIME_ZONE'))
-    now.hour < hour_of_day ? now.change(hour: hour_of_day) : now.change(hour: hour_of_day) + 1.day
+    now.hour < @schedule_at_hour_of_day ?
+      now.change(hour: @schedule_at_hour_of_day) :
+      now.change(hour: @schedule_at_hour_of_day) + 1.day
   end
 end
