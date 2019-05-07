@@ -8,6 +8,15 @@
           <th><h2 style="padding-top: 1em;"><%= organization.name %></h2></th>
         </tr>
 
+        <% get_districts_to_facilities_map_for_organization(organization).each do |district, facilities| %>
+          <tr>
+            <td class="row-title">
+              <%= link_to district, analytics_organization_district_path(organization.id, district, from_time: analytics_date_format(90.days.ago.yesterday),
+                                                            to_time: analytics_date_format(Time.now.yesterday)) %>
+            </td>
+          </tr>
+        <% end %>
+
         <% policy_scope(organization.facility_groups).order(:name).each do |facility_group| %>
           <tr>
             <td class="row-title">

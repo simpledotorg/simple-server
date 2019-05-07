@@ -38,4 +38,10 @@ module DashboardHelper
       label_for_quarter({ from_time: from_time, to_time: to_time })
     end
   end
+
+  ## districts view helpers
+
+  def get_districts_to_facilities_map_for_organization(organization)
+    policy_scope(organization.facility_groups).flat_map(&:facilities).group_by(&:district).sort.to_h
+  end
 end
