@@ -10,6 +10,8 @@ class FacilityGroupForm < Base
   UNASSOCIATED_FACILITY_CHECKBOX={xpath: "//input[@type='checkbox']"}.freeze
   SUCCESSFUL_MESSAGE={xpath:"//div[@class='alert alert-primary alert-dismissable fade show']"}.freeze
   MESSAGE_CROSS_BUTTON = {xpath: "//button[@type='button']/span"}.freeze
+  UPDATE_FACILITY_GROUP_BUTTON = {xpath: "//input[@class='btn btn-primary']"}.freeze
+
 
   def select_organisation_name_dropdown(value)
     find(:xpath, "//select[@name='facility_group[organization_id]']").find(:option, value).select_option
@@ -52,5 +54,9 @@ class FacilityGroupForm < Base
   def select_unassociated_facility(facility_name)
     find(:xpath,"//div[@class='form-check']/label[text()='#{facility_name}']").text.include?'testfacility'
     find(:xpath,"//div[@class='form-check']/label[text()='#{facility_name}']/../input").click
+  end
+
+  def click_on_update_facility_group_button
+    click(UPDATE_FACILITY_GROUP_BUTTON)
   end
 end

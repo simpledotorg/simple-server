@@ -62,4 +62,12 @@
         all(element.keys[0], element[key])
       end
     end
+
+    def verifyText(element,value, scope = { Capybara.default_selector => 'html' })
+      scope_key = scope.keys[0]
+      within(scope_key, scope[scope_key]) do
+        key = element.keys[0]
+        find(key, element[key]).text.include?(value)
+      end
+    end
   end
