@@ -17,8 +17,7 @@ class District
   end
 
   def cache_key
-    facilities_ids_string = ""
-    @facilities_ids.each { |facility_id| facilities_ids_string.concat(facility_id) }
+    facilities_ids_string = @facilities_ids.sort.join
     Digest::SHA512.base64digest(facilities_ids_string)
   end
 

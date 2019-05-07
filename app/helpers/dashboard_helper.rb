@@ -42,6 +42,6 @@ module DashboardHelper
   ## districts view helpers
 
   def get_districts_to_facilities_map_for_organization(organization)
-    policy_scope(organization.facility_groups).flat_map(&:facilities).group_by(&:district).sort.to_h
+    policy_scope(organization.facility_groups).flat_map(&:facilities).group_by(&:district).keys.sort
   end
 end
