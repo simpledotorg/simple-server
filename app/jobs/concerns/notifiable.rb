@@ -3,7 +3,6 @@ module Notifiable
     now = DateTime
             .now
             .in_time_zone(ENV.fetch('DEFAULT_TIME_ZONE'))
-            .utc
 
     now_within_time_window?(now, start, finish) ?
       now :
