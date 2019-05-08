@@ -26,8 +26,9 @@ RSpec.describe AppointmentNotificationService do
     end
 
     it 'should spawn sms reminder jobs' do
-      AppointmentNotificationService.new(user).send_after_missed_visit(schedule_at: Time.now)
-      assert_equal 1, AppointmentNotification::Worker.jobs.size
+      expect {
+        AppointmentNotificationService.new(user).send_after_missed_visit(schedule_at: Time.now)
+      }.to change(AppointmentNotification::Worker.jobs, :size).by(1)
     end
 
     it 'should send sms reminders to eligible overdue appointments' do

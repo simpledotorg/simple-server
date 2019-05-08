@@ -4,7 +4,7 @@ class AppointmentNotification::Worker
 
   sidekiq_options unique_across_workers: true,
                   queue: 'default',
-                  lock_expiration: 1.day.to_i
+                  lock_expiration: 6.hours.to_i
 
   def perform(user_id, appointments, communication_type)
     Appointment.where(id: appointments).each do |appointment|
