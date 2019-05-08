@@ -7,18 +7,28 @@
     <%= link_to @facility_group.name, analytics_facility_group_path(
         @facility_group, from_time: @from_time, to_time: @to_time) %>
   </nav>
-    
+
   <div class="graphics">
     <%= link_to "Graphics For Nurses", analytics_facility_graphics_path(
       @facility,
       month: analytics_date_format(Time.now.at_beginning_of_month)) %>
   </div>
-    
+
   <h1><%= @facility.name %></h1>
   <p>Data updated: April 22, 2019</p>
+
+ <ul>
+    <li>Cohort start: <%= @from_time - 6.months %></li>
+    <li>Cohort end: <%= @to_time - 6.months %></li>
+    <li>Registered: <%= @registered.size %></li>
+    <li>Visited: <%= @visited.size %></li>
+    <li>Controlled: <%= @controlled.size %></li>
+    <li>Uncontrolled: <%= @uncontrolled.size %></li>
+ </ul>
+
   <div class="featured">
-      <div class="featured-section featured-1"> 
-          
+      <div class="featured-section featured-1">
+
             <div class="dropdown" style="float: right;">
               <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton2" data-toggle="dr`opdown" aria-haspopup="true" aria-expanded="false">
                 6-9 month cohort
@@ -26,31 +36,31 @@
               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                 <a class="dropdown-item" href="#">All patients</a>
               </div>
-            </div>  
-          
+            </div>
+
           <h4>Q2 Progress</h4>
-          
+
           <div style="margin-bottom: 1em;" class="table-bullets">
-            <div class="didntattend">Didn't attend for follow-up visit: <b>104 of 160 patients*</b></div>
-            <div class="uncontrolled">Visited and BP &ge; 140/90: <b>41 patients*</b></div>
-            <div class="controlled">Visited and BP &lt; 140/90: <b>38 patients*</b></div>
+            <div class="didntattend">Didn't attend for follow-up visit: <b><%= @num_defaulted %> of <%= pluralize(@num_registered, "patient") %>*</b></div>
+            <div class="uncontrolled">Visited and BP &ge; 140/90: <b><%= pluralize(@num_uncontrolled, "patient") %>*</b></div>
+            <div class="controlled">Visited and BP &lt; 140/90: <b><%= pluralize(@num_controlled, "patient") %>*</b></div>
           </div>
-          
+
           <div class="small" style="float: left; font-weight: bold; position: absolute;">Q2 2019</div>
-          <table class="split-bars" style="margin-bottom: 5px; clear: none;"> 
+          <table class="split-bars" style="margin-bottom: 5px; clear: none;">
               <tr>
                   <td class="small">Didn't attend</td>
                   <td class="small"><span class="desktop">Visited and BP </span>&ge; 140/90</td>
                   <td class="small"><span class="desktop">Visited and BP </span>&lt; 140/90</td>
               </tr>
               <tr>
-                    <td class="bar bar-1" style="width: 65%;">65%</td>
-                    <td class="bar bar-2" style="width: 18%;">18%</td>
-                    <td class="bar bar-3" style="width: 17%;">17%</td>
+                    <td class="bar bar-1" style="width: <%= @default_percent %>%;"><%= @default_percent %>%</td>
+                    <td class="bar bar-2" style="width: <%= @uncontrolled_percent %>%;"><%= @uncontrolled_percent %>%</td>
+                    <td class="bar bar-3" style="width: <%= @controlled_percent %>%;"><%= @controlled_percent %>%</td>
                 </tr>
           </table>
           <div class="small">Q1 2019</div>
-          <table class="split-bars" style="margin-bottom: 5px;"> 
+          <table class="split-bars" style="margin-bottom: 5px;">
               <tr>
                     <td class="bar bar-1" style="width: 68%;">68%</td>
                     <td class="bar bar-2" style="width: 18%;">18%</td>
@@ -58,13 +68,13 @@
                 </tr>
           </table>
           <div class="small">Q4 2018</div>
-          <table class="split-bars">  
+          <table class="split-bars">
               <tr>
                     <td class="bar bar-1" style="width: 75%;">75%</td>
                     <td class="bar bar-2" style="width: 13%;">13%</td>
                     <td class="bar bar-3" style="width: 12%;">12%</td>
                 </tr>
-                
+
                 <tr>
                     <td colspan="2" class="bar-label"><div>Uncontrolled BP</div><em></em></td>
                     <td></td>
@@ -73,7 +83,7 @@
           <div class="small" style="margin-top: 4px;">* Patients who were enrolled 6-9 months ago</div>
       </div>
   </div>
-    
+
 </div>
 
 <% if @user_analytics.values.present? %>
