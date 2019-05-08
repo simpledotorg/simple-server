@@ -1,26 +1,24 @@
-class AppointmentNotificationJob < ApplicationJob
+class AppointmentNotification::Worker
   include Rails.application.routes.url_helpers
-  include SmsHelper
+  include Sidekiq::Worker
 
-  queue_as :default
-  self.queue_adapter = :sidekiq
+  sidekiq_options unique_across_workers: true,
+                  queue: 'default',
+                  lock_expiration: 1.day.to_i
 
-  # essentially, disable retries on exceptions
-  retry_on StandardError, attempts: 0
-
-  def perform(appointments, communication_type, user)
+  def perform(user_id, appointments, communication_type)
     Appointment.where(id: appointments).each do |appointment|
-      next if !within_time_window? || appointment.previously_communicated_via?(communication_type)
+      next if appointment.previously_communicated_via?(communication_type)
 
       begin
         sms_response = send_sms(appointment, communication_type)
-        Communication.create_with_twilio_details!(user: user,
+        Communication.create_with_twilio_details!(user: User.find(user_id),
                                                   appointment: appointment,
                                                   twilio_sid: sms_response.sid,
                                                   twilio_msg_status: sms_response.status,
                                                   communication_type: communication_type)
 
-      rescue StandardError => e
+      rescue Twilio::REST::TwilioError => e
         report_error(e)
         next
       end
@@ -35,7 +33,7 @@ class AppointmentNotificationJob < ApplicationJob
       .send_reminder_sms(type,
                          appointment,
                          sms_delivery_callback_url,
-                         sms_locale(appointment.patient.address.state_to_sym))
+                         appointment.patient.address.locale)
   end
 
   def sms_delivery_callback_url
@@ -43,16 +41,6 @@ class AppointmentNotificationJob < ApplicationJob
                                         protocol: ENV.fetch('SIMPLE_SERVER_HOST_PROTOCOL'))
   end
 
-  def within_time_window?
-    DateTime
-      .now
-      .in_time_zone(ENV.fetch('DEFAULT_TIME_ZONE'))
-      .hour
-      .between?(Config.get_int('APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_START',
-                               AppointmentNotificationService::DEFAULT_TIME_WINDOW_START),
-                Config.get_int('APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_END',
-                               AppointmentNotificationService::DEFAULT_TIME_WINDOW_END))
-  end
 
   def report_error(e)
     Raven.capture_message(

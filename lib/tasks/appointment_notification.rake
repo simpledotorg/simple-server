@@ -1,8 +1,14 @@
 namespace :appointment_notification do
+  DEFAULT_TIME_WINDOW_START = 14
+  DEFAULT_TIME_WINDOW_FINISH = 16
+
   desc 'Send automatic SMS reminder to patients who missed their scheduled visit by three days'
   task three_days_after_missed_visit: :environment do
-    AppointmentNotificationService
-      .new(SMS_REMINDER_BOT_USER, 250)
-      .send_after_missed_visit(days_overdue: 3)
+    AppointmentNotification::MissedVisitJob
+      .perform(SMS_REMINDER_BOT_USER,
+               Config.get_int(
+                 'APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_START', DEFAULT_TIME_WINDOW_START),
+               Config.get_int(
+                 'APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_FINISH', DEFAULT_TIME_WINDOW_FINISH))
   end
 end
