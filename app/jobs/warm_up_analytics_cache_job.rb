@@ -32,7 +32,6 @@ class WarmUpAnalyticsCacheJob < ApplicationJob
         district = District.new(id)
         district.organization_id = organization.id
         district.facilities = facilities
-        district.facilities_ids = facilities.map(&:id)
 
         WarmUpDistrictAnalyticsCacheJob.perform_now(
           district,
