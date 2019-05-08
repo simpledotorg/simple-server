@@ -3,13 +3,43 @@ class WarmUpAnalyticsCacheJob < ApplicationJob
   self.queue_adapter = :sidekiq
 
   def perform
-    to_time = Time.now
+    to_time = Time.now - 1.day
     from_time = to_time - 90.days
+
+    perform_facility_group_caching(from_time, to_time)
+    perform_districts_caching(from_time, to_time)
+  end
+
+  private
+
+  def perform_facility_group_caching(from_time, to_time)
     FacilityGroup.all.each do |facility_group|
-      WarmUpFacilityGroupAnalyticsCacheJob.perform_later(
+      WarmUpFacilityGroupAnalyticsCacheJob.perform_now(
         facility_group,
         from_time.strftime('%Y-%m-%d'),
         to_time.strftime('%Y-%m-%d'))
+    end
+  end
+
+  def perform_districts_caching(from_time, to_time)
+    organizations = Organization.all
+
+    organizations.each do |organization|
+      puts "Processing organization #{organization.name}"
+      district_facilities_map = organization.facility_groups.flat_map(&:facilities).group_by(&:district)
+
+      district_facilities_map.each do |id, facilities|
+        district = District.new(id)
+        district.organization_id = organization.id
+        district.facilities = facilities
+        district.facilities_ids = facilities.map(&:id)
+
+        WarmUpDistrictAnalyticsCacheJob.perform_now(
+          district,
+          from_time.strftime('%Y-%m-%d'),
+          to_time.strftime('%Y-%m-%d'))
+      end
+      puts "Finished processing organization #{organization.name}"
     end
   end
 end

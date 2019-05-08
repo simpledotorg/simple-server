@@ -3,7 +3,7 @@ class District
   include PatientSetAnalyticsReportable
 
   attr_reader :id
-  attr_accessor :facilities_ids, :organization_id, :state
+  attr_accessor :facilities, :organization_id, :state
 
   def initialize(id)
     @id = id
@@ -17,12 +17,13 @@ class District
   end
 
   def cache_key
-    facilities_ids_string = @facilities_ids.sort.join
+    facilities_ids_string = @facilities.map(&:id).sort.join
     Digest::SHA512.base64digest(facilities_ids_string)
   end
 
   def report_on_patients
-    Patient.where(registration_facility: @facilities_ids)
+    facilities_ids = @facilities.map(&:id)
+    Patient.where(registration_facility: facilities_ids)
   end
 
   def analytics_cache_key(from_time, to_time)

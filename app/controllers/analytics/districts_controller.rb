@@ -32,12 +32,11 @@ class Analytics::DistrictsController < AnalyticsController
   def set_facilities
     organization = Organization.find(@district.organization_id)
     facilities_by_district = policy_scope(organization.facility_groups).flat_map(&:facilities).group_by(&:district).sort.to_h
-    @facilities = facilities_by_district[@district.id].sort_by(&:name)
-    @district.facilities_ids = @facilities&.map(&:id)
+    @district.facilities = facilities_by_district[@district.id].sort_by(&:name)
   end
 
   def set_state
-    state = @facilities.first.state.capitalize
+    state = @district.facilities.first.state.capitalize
     @district.state = state
   end
 
@@ -46,7 +45,7 @@ class Analytics::DistrictsController < AnalyticsController
   end
 
   def facility_analytics(from_time, to_time)
-    @facilities
+    @district.facilities
       .map { |facility| [facility, facility.patient_set_analytics(from_time, to_time)] }
       .to_h
   end
