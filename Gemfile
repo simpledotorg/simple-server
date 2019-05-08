@@ -53,6 +53,7 @@ group :development, :test do
   gem 'capistrano-passenger'
   gem 'capistrano-rails-console', require: false
   gem 'capistrano-sidekiq', require: false
+  gem 'capistrano-db-tasks', require: false
   gem 'parallel_tests', group: [:development, :test]
   gem 'rails-controller-testing'
 end
