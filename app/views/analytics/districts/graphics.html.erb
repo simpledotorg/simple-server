@@ -1,11 +1,11 @@
 <div class="snapshot">
   <div class="dashboard">
     <div class="snapshot-header">
-      <span><%= @organization.name %> Hypertension Control Report</span>
+      <span><%= get_organization_name_by_id(@district.organization_id) %> Hypertension Control Report</span>
       <%= Date.today.strftime('%B %Y') %>
     </div>
 
-    <h1><%= @district.name %></h1>
+    <h1><%= @district.id %></h1>
 
     <div class="featured">
           <%= render "shared/analytics/patients_count_panel",

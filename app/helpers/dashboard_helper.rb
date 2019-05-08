@@ -38,4 +38,8 @@ module DashboardHelper
       label_for_quarter({ from_time: from_time, to_time: to_time })
     end
   end
+
+  def get_organization_name_by_id(organization_id)
+    Organization.find(organization_id).name
+  end
 end

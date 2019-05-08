@@ -33,10 +33,6 @@ class DistrictPolicy < ApplicationPolicy
 
   private
 
-  def destroyable?
-    record.facilities.none? && record.patients.none? && record.blood_pressures.none?
-  end
-
   def admin_can_access?(role)
     user.role == role.to_s && user.facility_groups.include?(record)
   end
