@@ -9,12 +9,6 @@ class Api::Current::AppointmentsController < Api::Current::SyncController
     __sync_to_user__('appointments')
   end
 
-  def set_default_appointment_type(appointment_params)
-    if !appointment_params.key?('appointment_type') && Appointment.compute_merge_status(appointment_params) == :new
-      appointment_params['appointment_type'] = Appointment.appointment_types[:manual]
-    end
-  end
-
   private
 
   def merge_if_valid(appointment_params)
@@ -25,7 +19,6 @@ class Api::Current::AppointmentsController < Api::Current::SyncController
       { errors_hash: validator.errors_hash }
     else
       record_params = Api::Current::Transformer.from_request(appointment_params)
-      set_default_appointment_type(record_params)
       appointment = Appointment.merge(record_params)
       { record: appointment }
     end
@@ -46,6 +39,7 @@ class Api::Current::AppointmentsController < Api::Current::SyncController
         :cancel_reason,
         :remind_on,
         :agreed_to_visit,
+        :appointment_type,
         :created_at,
         :updated_at)
     end
