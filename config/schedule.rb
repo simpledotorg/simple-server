@@ -12,7 +12,7 @@ every :day, at: local('1:00 am').utc do
   runner "WarmUpAnalyticsCacheJob.perform_later"
 end
 
-every '*/10 * * * *' do
+every :day, at: local('2:00 am').utc do
   rake 'appointment_notification:three_days_after_missed_visit'
 end
 
