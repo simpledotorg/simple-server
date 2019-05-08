@@ -22,7 +22,11 @@ class Analytics::FacilitiesController < AnalyticsController
   end
 
   def set_facility_group
-    @facility_group = @facility.facility_group
+    if FeatureToggle.enabled?('DASHBOARD_VIEW_BY_DISTRICT')
+      @district = District.new(@facility.district)
+    else
+      @facility_group = @facility.facility_group
+    end
   end
 
   def set_organization
