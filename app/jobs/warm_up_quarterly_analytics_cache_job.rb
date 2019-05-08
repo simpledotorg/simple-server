@@ -3,13 +3,13 @@ class WarmUpQuarterlyAnalyticsCacheJob < ApplicationJob
   self.queue_adapter = :sidekiq
 
   def perform
-    perform_caching_for_facility_group(n)
-    perform_caching_for_districts(n)
+    perform_caching_for_facility_group
+    perform_caching_for_districts
   end
 
   private
 
-  def perform_caching_for_facility_group(n)
+  def perform_caching_for_facility_group
     (1..4).each do |n|
       range = ApplicationController.helpers.range_for_quarter(-1 * n)
       FacilityGroup.all.each do |facility_group|
@@ -21,7 +21,7 @@ class WarmUpQuarterlyAnalyticsCacheJob < ApplicationJob
     end
   end
 
-  def perform_caching_for_districts(n)
+  def perform_caching_for_districts
     (1..4).each do |n|
       range = ApplicationController.helpers.range_for_quarter(-1 * n)
 
