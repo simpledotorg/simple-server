@@ -20,7 +20,6 @@ class AppointmentNotification::Worker
 
       rescue Twilio::REST::TwilioError => e
         report_error(e)
-        next
       end
     end
   end

@@ -4,7 +4,7 @@ module Notifiable
 
     now_within_time_window?(now, start, finish) ?
       now :
-      now.change(hour: @schedule_at_hour_of_day) + 1.day
+      now.change(hour: start) + 1.day
   end
 
   def now_within_time_window?(now, start, finish)
