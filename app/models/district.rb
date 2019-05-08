@@ -3,7 +3,7 @@ class District
   include PatientSetAnalyticsReportable
 
   attr_reader :id
-  attr_accessor :facilities_ids, :organization_id
+  attr_accessor :facilities_ids, :organization_id, :state
 
   def initialize(id)
     @id = id

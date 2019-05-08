@@ -2,6 +2,7 @@ class Analytics::DistrictsController < AnalyticsController
   before_action :set_district
   before_action :set_organization
   before_action :set_facilities
+  before_action :set_state
 
   def show
     @days_previous = 20
@@ -33,6 +34,11 @@ class Analytics::DistrictsController < AnalyticsController
     facilities_by_district = policy_scope(organization.facility_groups).flat_map(&:facilities).group_by(&:district).sort.to_h
     @facilities = facilities_by_district[@district.id].sort_by(&:name)
     @district.facilities_ids = @facilities&.map(&:id)
+  end
+
+  def set_state
+    state = @facilities.first.state.capitalize
+    @district.state = state
   end
 
   def district_analytics(from_time, to_time)
