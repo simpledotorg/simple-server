@@ -20,7 +20,6 @@ class WarmUpQuarterlyAnalyticsCacheJob < ApplicationJob
     organizations = Organization.all
 
     organizations.each do |organization|
-      puts "Processing organization #{organization.name}"
       district_facilities_map = organization.facility_groups.flat_map(&:facilities).group_by(&:district)
 
       district_facilities_map.each do |id, facilities|
@@ -33,7 +32,6 @@ class WarmUpQuarterlyAnalyticsCacheJob < ApplicationJob
           from_time.strftime('%Y-%m-%d'),
           to_time.strftime('%Y-%m-%d'))
       end
-      puts "Finished processing organization #{organization.name}"
     end
   end
 end
