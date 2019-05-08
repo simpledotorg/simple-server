@@ -7,7 +7,7 @@ class WarmUpFacilityGroupAnalyticsCacheJob < ApplicationJob
     to_time = to_time_string.to_time
     facility_group.patient_set_analytics(from_time, to_time)
     facility_group.facilities.each do |facility|
-      WarmUpFacilityAnalyticsCacheJob.perform_now(
+      WarmUpFacilityAnalyticsCacheJob.perform_later(
         facility, from_time, to_time)
     end
   end

@@ -27,7 +27,7 @@ class WarmUpQuarterlyAnalyticsCacheJob < ApplicationJob
         district.organization_id = organization.id
         district.facilities = facilities
 
-        WarmUpDistrictAnalyticsCacheJob.perform_now(
+        WarmUpDistrictAnalyticsCacheJob.perform_later(
           district,
           from_time.strftime('%Y-%m-%d'),
           to_time.strftime('%Y-%m-%d'))

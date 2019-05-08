@@ -14,7 +14,7 @@ class WarmUpAnalyticsCacheJob < ApplicationJob
 
   def perform_facility_group_caching(from_time, to_time)
     FacilityGroup.all.each do |facility_group|
-      WarmUpFacilityGroupAnalyticsCacheJob.perform_now(
+      WarmUpFacilityGroupAnalyticsCacheJob.perform_later(
         facility_group,
         from_time.strftime('%Y-%m-%d'),
         to_time.strftime('%Y-%m-%d'))
@@ -32,7 +32,7 @@ class WarmUpAnalyticsCacheJob < ApplicationJob
         district.organization_id = organization.id
         district.facilities = facilities
 
-        WarmUpDistrictAnalyticsCacheJob.perform_now(
+        WarmUpDistrictAnalyticsCacheJob.perform_later(
           district,
           from_time.strftime('%Y-%m-%d'),
           to_time.strftime('%Y-%m-%d'))
