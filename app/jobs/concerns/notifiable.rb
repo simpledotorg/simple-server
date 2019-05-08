@@ -1,5 +1,5 @@
 module Notifiable
-  def schedule_now_or_later(start, finish)
+  def schedule_now_or_tomorrow(start, finish)
     now = DateTime
             .now
             .in_time_zone(ENV.fetch('DEFAULT_TIME_ZONE'))

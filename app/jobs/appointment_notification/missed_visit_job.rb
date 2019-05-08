@@ -12,6 +12,6 @@ class AppointmentNotification::MissedVisitJob
     AppointmentNotificationService
       .new(User.find(user_id))
       .send_after_missed_visit(schedule_at:
-                                 schedule_now_or_later(schedule_hour_start, schedule_hour_finish))
+                                 schedule_now_or_tomorrow(schedule_hour_start, schedule_hour_finish))
   end
 end
