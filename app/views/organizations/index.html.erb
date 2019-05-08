@@ -9,7 +9,7 @@
         </tr>
 
         <% if FeatureToggle.enabled?('DASHBOARD_VIEW_BY_DISTRICT') %>
-          <% get_districts_to_facilities_map_for_organization(organization).each do |district| %>
+          <% policy_scope(organization.facility_groups).flat_map(&:facilities).group_by(&:district).keys.sort.each do |district| %>
             <tr>
               <td class="row-title">
                 <%= link_to district, analytics_organization_district_path(organization.id, district, from_time: analytics_date_format(90.days.ago.yesterday),

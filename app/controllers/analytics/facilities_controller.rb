@@ -24,6 +24,13 @@ class Analytics::FacilitiesController < AnalyticsController
   def set_facility_group
     if FeatureToggle.enabled?('DASHBOARD_VIEW_BY_DISTRICT')
       @district = District.new(@facility.district)
+
+      organization = Organization.find(FacilityGroup.find(@facility.facility_group_id).organization_id)
+      @district.organization_id = organization.id
+
+      facilities_map = policy_scope(organization.facility_groups).flat_map(&:facilities).group_by(&:district)
+      facilities = facilities_map[@district.id]
+      @district.facilities_ids = facilities.map(&:id).sort
     else
       @facility_group = @facility.facility_group
     end
