@@ -17,7 +17,7 @@ RSpec.describe AppointmentNotificationService do
     end
 
     before do
-      allow(ENV).to receive(:fetch).and_call_original
+      allow(ENV).to receive(:[]).and_call_original
 
       @sms_response_double = double('SmsNotificationServiceResponse')
       allow_any_instance_of(SmsNotificationService).to receive(:send_reminder_sms).and_return(@sms_response_double)
@@ -74,24 +74,24 @@ RSpec.describe AppointmentNotificationService do
     end
 
     it 'should only send reminders for appointments under whitelisted facilities' do
-      allow(ENV).to receive(:fetch).with('APPOINTMENT_NOTIFICATION_FACILITY_IDS').and_return(facility_1.id)
+      allow(ENV).to receive(:[]).with('APPOINTMENT_NOTIFICATION_FACILITY_IDS').and_return(facility_1.id)
 
-      expect {
-        AppointmentNotificationService.new(user).send_after_missed_visit(schedule_at: Time.now)
-      }.to change(AppointmentNotification::Worker.jobs, :size).by(1)
-    end
-
-    it 'should only spawn half the jobs if the rollout percentage is 50%' do
-      allow(ENV).to receive(:fetch).with('APPOINTMENT_NOTIFICATION_ROLLOUT_PERCENTAGE').and_return('50')
-
-      expect {
-        AppointmentNotificationService.new(user).send_after_missed_visit(schedule_at: Time.now)
-      }.to change(AppointmentNotification::Worker.jobs, :size).by(1)
-
+      AppointmentNotificationService.new(user).send_after_missed_visit(schedule_at: Time.now)
       AppointmentNotification::Worker.drain
 
       eligible_appointments = overdue_appointments.select { |a| a.communications.present? }
       expect(eligible_appointments.count).to eq(10)
+    end
+
+    it 'should only send reminder of half the appointments if the rollout percentage is 50%' do
+      allow(ENV).to receive(:[]).with('APPOINTMENT_NOTIFICATION_FACILITY_IDS').and_return(facility_1.id)
+      allow(ENV).to receive(:[]).with('APPOINTMENT_NOTIFICATION_ROLLOUT_PERCENTAGE').and_return('50')
+
+      AppointmentNotificationService.new(user).send_after_missed_visit(schedule_at: Time.now)
+      AppointmentNotification::Worker.drain
+
+      eligible_appointments = overdue_appointments.select { |a| a.communications.present? }
+      expect(eligible_appointments.count).to eq(5)
     end
   end
 end

@@ -11,13 +11,20 @@ class AppointmentNotificationService < Struct.new(:user)
 
   private
 
-  attr_reader :user, :schedule_at, :appointments
+  attr_reader :appointments, :schedule_at
 
   def fan_out_reminders(appointments, communication_type, schedule_at)
-    appointments
-      .select { |appointment| eligible_for_sending_sms?(appointment, communication_type) }
-      .sample(roll_out_for(appointments.size, 'APPOINTMENT_NOTIFICATION_ROLLOUT_PERCENTAGE'))
-      .each_slice(FAN_OUT_BATCH_SIZE) do |appointments_batch|
+    eligible_appointments = appointments.select do |appointment|
+      eligible_for_sending_sms?(appointment,
+                                communication_type)
+    end
+
+    sampled_appointments = eligible_appointments.group_by(&:facility_id).flat_map do |_, facility_appointments|
+      facility_appointments.sample(roll_out_for(facility_appointments.size,
+                                                'APPOINTMENT_NOTIFICATION_ROLLOUT_PERCENTAGE'))
+    end
+
+    sampled_appointments.each_slice(FAN_OUT_BATCH_SIZE) do |appointments_batch|
       AppointmentNotification::Worker.perform_at(schedule_at,
                                                  user.id,
                                                  appointments_batch.map(&:id),
