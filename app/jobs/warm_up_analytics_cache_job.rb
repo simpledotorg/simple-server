@@ -3,7 +3,7 @@ class WarmUpAnalyticsCacheJob < ApplicationJob
   self.queue_adapter = :sidekiq
 
   def perform
-    to_time = Time.now - 1.day
+    to_time = Time.now
     from_time = to_time - 90.days
 
     perform_facility_group_caching(from_time, to_time)
@@ -20,6 +20,7 @@ class WarmUpAnalyticsCacheJob < ApplicationJob
         to_time.strftime('%Y-%m-%d'))
     end
   end
+
 
   def perform_districts_caching(from_time, to_time)
     organizations = Organization.all
