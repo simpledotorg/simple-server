@@ -7,7 +7,7 @@
     <%= link_to @facility_group.name, analytics_facility_group_path(
         @facility_group, from_time: @from_time, to_time: @to_time) %>
   </nav>
-    
+
   <div class="graphics d-none">
     <%= link_to "Graphics For Nurses", analytics_facility_graphics_path(
       @facility,
@@ -32,6 +32,25 @@
                      number_of_months: 3,
                      control_rate: @facility_analytics[:control_rate][:control_rate],
                      control_rate_per_month: @facility_analytics[:control_rate_per_month] %>
+  </div>
+
+  <ul>
+    <li>Cohort start: <%= @from_time - 6.months %></li>
+    <li>Cohort end: <%= @to_time - 6.months %></li>
+    <li>Registered: <%= @registered.size %></li>
+    <li>Visited: <%= @visited.size %></li>
+    <li>Controlled: <%= @controlled.size %></li>
+    <li>Uncontrolled: <%= @uncontrolled.size %></li>
+
+    <% controlled_percent = (@controlled.size.to_f / @registered.size * 100).round %>
+    <% uncontrolled_percent = (@uncontrolled.size.to_f / @registered.size * 100).round %>
+    <% default_percent = ((@registered.size - @visited.size).to_f / @registered.size * 100).round %>
+  </ul>
+
+  <div class="control-bar-chart" style="height: 30px;">
+    <div style="background: red; float: left; height: 30px; width: <%= controlled_percent %>%"><%= controlled_percent %>%</div>
+    <div style="background: orange; float: left; height: 30px; width: <%= uncontrolled_percent %>%"><%= uncontrolled_percent %>%</div>
+    <div style="background: gray; float: left; height: 30px; width: <%= default_percent %>%"><%= default_percent %>%</div>
   </div>
 </div>
 
