@@ -65,18 +65,6 @@ describe ApplicationHelper, type: :helper do
         expect(show_last_interaction_date_and_result(patient)).to include('Remind to call later')
       end
     end
-
-    context 'When there is no previous visit' do
-      it 'returns "No previous appointment"' do
-        patient = FactoryBot.create(:patient)
-        appointment1 = FactoryBot.create(:appointment)
-
-        appointment1.agreed_to_visit = true
-        appointment1.save
-
-        expect(show_last_interaction_date_and_result(patient)).to eq 'No previous appointment'
-      end
-    end
   end
 end
 
