@@ -98,6 +98,7 @@ RSpec.shared_examples 'a working sync controller creating records' do
       post(:sync_from_user, params: invalid_payload, as: :json)
 
       response_errors = JSON(response.body)['errors'].first
+
       expect(response_errors).to be_present
       expect(response_errors['schema']).to be_present
       expect(response_errors['id']).to be_present
@@ -384,6 +385,7 @@ RSpec.shared_examples 'a working Current sync controller sending records' do
     end
   end
 end
+
 RSpec.shared_examples 'a sync controller that audits the data access' do
   include ActiveJob::TestHelper
 
@@ -403,6 +405,7 @@ RSpec.shared_examples 'a sync controller that audits the data access' do
       post :sync_from_user, params: payload, as: :json
 
       audit_logs = AuditLog.where(user_id: request_user.id, auditable_type: auditable_type, auditable_id: record[:id])
+
       expect(audit_logs.count).to eq 1
       expect(audit_logs.first.action).to eq('create')
     end
