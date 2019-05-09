@@ -1,5 +1,4 @@
 module ApplicationHelper
-
   DEFAULT_PROGRAM_INCEPTION_DATE = Time.new(2018, 01, 01)
 
   def bootstrap_class_for_flash(flash_type)
