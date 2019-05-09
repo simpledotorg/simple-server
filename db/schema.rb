@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190411101836) do
+ActiveRecord::Schema.define(version: 20190430140043) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -120,9 +120,6 @@ ActiveRecord::Schema.define(version: 20190411101836) do
     t.uuid "user_id"
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_blood_pressures_on_deleted_at"
-    t.index ["device_created_at"], name: "index_blood_pressures_on_device_created_at"
-    t.index ["patient_id", "device_created_at"], name: "index_blood_pressures_on_patient_id_and_device_created_at"
-    t.index ["patient_id"], name: "index_blood_pressures_on_patient_id"
     t.index ["user_id"], name: "index_blood_pressures_on_user_id"
   end
 
@@ -143,14 +140,16 @@ ActiveRecord::Schema.define(version: 20190411101836) do
     t.uuid "appointment_id", null: false
     t.uuid "user_id", null: false
     t.string "communication_type"
-    t.string "communication_result"
     t.datetime "device_created_at", null: false
     t.datetime "device_updated_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
+    t.string "detailable_type"
+    t.bigint "detailable_id"
     t.index ["appointment_id"], name: "index_communications_on_appointment_id"
     t.index ["deleted_at"], name: "index_communications_on_deleted_at"
+    t.index ["detailable_type", "detailable_id"], name: "index_communications_on_detailable_type_and_detailable_id"
     t.index ["user_id"], name: "index_communications_on_user_id"
   end
 
@@ -308,6 +307,15 @@ ActiveRecord::Schema.define(version: 20190411101836) do
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_protocols_on_deleted_at"
+  end
+
+  create_table "twilio_sms_delivery_details", force: :cascade do |t|
+    t.string "session_id"
+    t.string "result"
+    t.string "callee_phone_number", null: false
+    t.datetime "delivered_on"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
