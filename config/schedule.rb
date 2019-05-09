@@ -2,6 +2,8 @@ require 'tzinfo'
 
 set :output, "/home/deploy/apps/simple-server/shared/log/cron.log"
 
+env :PATH, ENV['PATH']
+
 DEFAULT_CRON_TIME_ZONE='Asia/Kolkata'
 
 def local(time)
