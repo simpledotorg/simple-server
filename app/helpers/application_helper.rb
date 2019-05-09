@@ -43,17 +43,19 @@ module ApplicationHelper
     last_appointment = patient.appointments.order(scheduled_date: :desc).second
     last_appointment_date = last_appointment.created_at.strftime("%d-%b-%Y")
 
-    interaction_result = "Last interaction: " + last_appointment_date
+    interaction_status = ''
 
     if last_appointment.agreed_to_visit.present?
-      interaction_result += ' - Agreed to visit'
+      interaction_status += ' - Agreed to visit'
     elsif last_appointment.remind_on.present?
-      interaction_result += ' - Remind to call later'
+      interaction_status += ' - Remind to call later'
     elsif last_appointment.status == Appointment.statuses[:visited]
-      interaction_result += " - Visited"
+      interaction_status += " - Visited"
+    else
+      return
     end
 
-    interaction_result
+    "Last interaction: " + last_appointment_date + interaction_status
   end
 
   private
