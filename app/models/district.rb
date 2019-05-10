@@ -2,11 +2,12 @@ class District
   extend ActiveModel::Naming
   include PatientSetAnalyticsReportable
 
-  attr_reader :id
-  attr_accessor :facilities_ids, :organization_id
+  attr_reader :id, :organization
+  attr_accessor :facilities_ids
 
-  def initialize(id)
+  def initialize(id, organization)
     @id = id
+    @organization = organization
   end
 
   def to_model
@@ -26,7 +27,6 @@ class District
   end
 
   def analytics_cache_key(from_time, to_time)
-    organization = Organization.find(@organization_id)
-    "analytics/organization/#{organization.name}/district/#{@id}/#{time_cache_key(from_time)}/#{time_cache_key(to_time)}/#{cache_key}"
+    "analytics/organization/#{@organization.id}/district/#{@id}/#{time_cache_key(from_time)}/#{time_cache_key(to_time)}/#{cache_key}"
   end
 end

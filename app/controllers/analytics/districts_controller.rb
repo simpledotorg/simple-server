@@ -1,6 +1,6 @@
 class Analytics::DistrictsController < AnalyticsController
-  before_action :set_district
   before_action :set_organization
+  before_action :set_district
   before_action :set_facilities
 
   def show
@@ -20,17 +20,16 @@ class Analytics::DistrictsController < AnalyticsController
 
   def set_district
     district_id = params[:id] || params[:district_id]
-    @district = District.new(district_id)
+    @district = District.new(district_id, @organization)
     authorize(@district)
   end
 
   def set_organization
-    @district.organization_id = params[:organization_id]
+    @organization = Organization.find(params[:organization_id])
   end
 
   def set_facilities
-    organization = Organization.find(@district.organization_id)
-    facilities_by_district = policy_scope(organization.facility_groups).flat_map(&:facilities).group_by(&:district).sort.to_h
+    facilities_by_district = policy_scope(@organization.facilities).group_by(&:district).sort.to_h
     @facilities = facilities_by_district[@district.id].sort_by(&:name)
     @district.facilities_ids = @facilities&.map(&:id)
   end

@@ -6,7 +6,7 @@
 
   <div class="graphics d-none">
     <%= link_to 'WhatsApp', analytics_organization_district_graphics_path(
-      @district.organization_id,
+      @district.organization.id,
       @district.id,
       month: analytics_date_format(Time.now.at_beginning_of_month)) %>
   </div>
