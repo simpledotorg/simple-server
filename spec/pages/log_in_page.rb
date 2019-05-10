@@ -17,14 +17,6 @@ class LoginPage < ApplicationPage
     click(LOGIN_BUTTON)
   end
 
-  def set_email_text_box(emailId)
-    type(EMAIL_TEXT_BOX, emailId)
-  end
-
-  def set_password_text_box(password)
-    type(PASSWORD_TEXT_BOX, password)
-  end
-
   def click_forgot_password_link
     click(FORGOT_PASSWORD_LINK)
   end

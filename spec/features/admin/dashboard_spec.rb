@@ -1,27 +1,48 @@
 require 'rails_helper'
 
 RSpec.feature 'Verify Dashboard', type: :feature do
-  let(:owner) { create(:admin) }
-  let!(:ihmi) { create(:organization, name: "IHMI") }
-  let!(:path) { create(:organization, name: "PATH") }
+
+  let(:owner) {create(:admin)}
+  #created organizaiton
+  let!(:ihmi) {create(:organization, name: "IHMI")}
+  let!(:path) {create(:organization, name: "PATH")}
+
+  #create facility group
+  let!(:ihmi_group_bathinda) {create(:facility_group, organization: ihmi, name: "Bathinda")}
+  let!(:ihmi_group_mansa) {create(:facility_group, organization: ihmi, name: "Mansa")}
+  let!(:path_group) {create(:facility_group, organization: path, name: "Test Facility Group")}
+
+  #assigned 3 clinic to path group
+  let!(:path_clinic1) {create(:facility, facility_group: path_group, name: "Dr. Test_01")}
+  let!(:path_clinic2) {create(:facility, facility_group: path_group, name: "Dr. Test_02")}
+  let!(:path_clinic3) {create(:facility, facility_group: path_group, name: "Dr. Test_03")}
 
   login_page = LoginPage.new
   dashboard = DashboardPage.new
   home_page = HomePage.new
 
-  it 'Verify organization is displayed in dashboard' do
-    visit root_path
-    login_page.do_login(owner.email, owner.password)
+  context "Verify Dashboard" do
+    before(:each) do
+      visit root_path
+      login_page.do_login(owner.email, owner.password)
+    end
+
+  it 'Verify all organization' do
     #asssertion
     expect(dashboard.get_organization_count).to eq(2)
     expect(page).to have_content("IHMI")
     expect(page).to have_content("PATH")
   end
 
-  it 'Verify organisation name/count get updated in dashboard when new org is added via manage section' do
+  it 'Verify all facilities' do
+    #asssertion
+    expect(dashboard.get_facility_count).to eq(3)
+    expect(page).to have_content("Bathinda")
+    expect(page).to have_content("Mansa")
+    expect(page).to have_content("Test Facility Group")
+  end
 
-    visit root_path
-    login_page.do_login(owner.email, owner.password)
+  it 'Verify organisation name/count get updated in dashboard when new org is added via manage section' do
     #total number of organizaiton present in dashborad
     organization_count = dashboard.get_organization_count
 
@@ -39,11 +60,24 @@ RSpec.feature 'Verify Dashboard', type: :feature do
     expect(dashboard.get_organization_count).to eq(organization_count + 1)
   end
 
+  it 'click facility group link and verify facility group analytics page' do
+    dashboard.click_facility_group_link(path_group.name)
+    expect(current_path).to eq analytics_facility_group_path(path_group)
+
+    #assertion at detail page
+    expect(dashboard.get_facility_count_at_in_detail_page).to eq(3)
+    expect(page).to have_content(path_clinic1.name)
+    expect(page).to have_content(path_clinic2.name)
+    expect(page).to have_content(path_clinic3.name)
+  end
+  end
+
+
   it 'SignIn as Owner and verify approval request in dashboard' do
     user = create(:user, sync_approval_status: :requested)
+
     visit root_path
     login_page.do_login(owner.email, owner.password)
-
     expect(page).to have_content("Allow access")
     expect(page).to have_content("Deny access")
     #check for user info
