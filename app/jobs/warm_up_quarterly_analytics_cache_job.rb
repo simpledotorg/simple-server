@@ -16,13 +16,13 @@ class WarmUpQuarterlyAnalyticsCacheJob < ApplicationJob
     (1..4).each do |n|
       range = ApplicationController.helpers.range_for_quarter(-1 * n)
       FacilityGroup.all.each do |facility_group|
-        WarmUpFacilityGroupAnalyticsCacheJob.perform_now(
+        WarmUpFacilityGroupAnalyticsCacheJob.perform_later(
           facility_group,
           from_time_string,
           to_time_string)
 
         facility_group.facilities.each do |facility|
-          WarmUpFacilityAnalyticsCacheJob.perform_now(
+          WarmUpFacilityAnalyticsCacheJob.perform_later(
             facility, from_time_string, to_time_string)
         end
       end
@@ -33,22 +33,20 @@ class WarmUpQuarterlyAnalyticsCacheJob < ApplicationJob
     (1..4).each do |n|
       range = ApplicationController.helpers.range_for_quarter(-1 * n)
 
-      organizations = Organization.all
-
-      organizations.each do |organization|
+      Organization.all.each do |organization|
         district_facilities_map = organization.facilities.group_by(&:district)
 
         district_facilities_map.each do |name, facilities|
           district = OrganizationDistrict.new(name, organization, facilities)
 
-          WarmUpDistrictAnalyticsCacheJob.perform_now(
+          WarmUpDistrictAnalyticsCacheJob.perform_later(
             district,
             from_time_string,
             to_time_string)
 
           district.facilities.each do |facility|
-            WarmUpFacilityAnalyticsCacheJob.perform_now(
-              facility, from_time, to_time)
+            WarmUpFacilityAnalyticsCacheJob.perform_later(
+              facility, from_time_string, to_time_string)
           end
         end
       end
