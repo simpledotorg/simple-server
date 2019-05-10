@@ -1,2 +1,15 @@
-class Api::V2::CommunicationsController < Api::Current::CommunicationsController
+class Api::V2::CommunicationsController < Api::Current::SyncController
+  def sync_from_user
+    render json: { errors: nil }, status: :ok
+  end
+
+  def sync_to_user
+    render(
+      json: {
+        'communications' => [],
+        'process_token' => encode_process_token({})
+      },
+      status: :ok
+    )
+  end
 end
