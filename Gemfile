@@ -34,6 +34,7 @@ gem 'kaminari'
 gem 'phonelib'
 gem 'http'
 gem 'sidekiq'
+gem 'sidekiq-unique-jobs'
 gem 'connection_pool'
 gem 'whenever', require: false
 gem 'redis'
@@ -69,6 +70,7 @@ group :test do
   gem 'fakeredis', require:  false
   gem 'generator_spec'
   gem 'webdriver'
+  # gem 'rspec-sidekiq'
 end
 
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
