@@ -2,7 +2,6 @@ class Analytics::DistrictsController < AnalyticsController
   before_action :set_district
   before_action :set_organization
   before_action :set_facilities
-  before_action :set_state
 
   def show
     @days_previous = 20
