@@ -40,6 +40,7 @@ class Api::Current::AppointmentsController < Api::Current::SyncController
         :remind_on,
         :agreed_to_visit,
         :appointment_type,
+        :recorded_at,
         :created_at,
         :updated_at)
     end

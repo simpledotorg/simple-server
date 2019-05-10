@@ -38,6 +38,7 @@ class Api::Current::PrescriptionDrugsController < Api::Current::SyncController
         :is_deleted,
         :patient_id,
         :facility_id,
+        :recorded_at,
         :created_at,
         :updated_at
       )

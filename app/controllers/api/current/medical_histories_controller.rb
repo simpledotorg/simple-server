@@ -48,6 +48,7 @@ class Api::Current::MedicalHistoriesController < Api::Current::SyncController
         :receiving_treatment_for_hypertension,
         :diabetes,
         :diagnosed_with_hypertension,
+        :recorded_at,
         :created_at,
         :updated_at)
     end

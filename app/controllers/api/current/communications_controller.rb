@@ -44,6 +44,7 @@ class Api::Current::CommunicationsController < Api::Current::SyncController
         :user_id,
         :communication_type,
         :communication_result,
+        :recorded_at,
         :created_at,
         :updated_at)
     end

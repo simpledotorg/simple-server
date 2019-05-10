@@ -36,6 +36,7 @@ class Api::Current::BloodPressuresController < Api::Current::SyncController
         :patient_id,
         :facility_id,
         :user_id,
+        :recorded_at,
         :created_at,
         :updated_at,
         :deleted_at
