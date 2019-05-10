@@ -26,12 +26,5 @@ RSpec.describe WarmUpFacilityGroupAnalyticsCacheJob, type: :job do
       perform_enqueued_jobs { job }
       expect(Rails.cache.exist?(facility_group.analytics_cache_key(from_time.to_time, to_time.to_time))).to be_truthy
     end
-
-    it 'updates the cache for the facilities in the facility group with analytics for the given time' do
-      perform_enqueued_jobs { job }
-      facilities.each do |facility|
-        expect(Rails.cache.exist?(facility.analytics_cache_key(from_time.to_time, to_time.to_time))).to be_truthy
-      end
-    end
   end
 end
