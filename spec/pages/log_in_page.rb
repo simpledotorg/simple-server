@@ -12,21 +12,13 @@ class LoginPage < Base
   UNLOCK_INSTRUCTION_LINK = {xpath: "//a[contains(text(),'receive unlock instructions')]"}.freeze
   LOGIN_LINK = {xpath: "//a[@class='nav-link']"}.freeze
   ERROR_MESSAGE = {xpath: "//div[contains(@class,'alert-warning')]"}.freeze
-  MESSAGE_CROSS_BUTTON = {xpath: "//button[@type='button']/span"}.freeze
+  MESSAGE_CROSS_BUTTON = {xpath: "//div[contains(@class,'alert')]//span"}.freeze
   SUCCESSFUL_LOGOUT_MESSAGE = {xpath: "//div[@class='alert alert-primary alert-dismissable fade show']"}.freeze
 
   def do_login(emailID, password)
     type(EMAIL_TEXT_BOX, emailID)
     type(PASSWORD_TEXT_BOX, password)
     click(LOGIN_BUTTON)
-  end
-
-  def set_email_text_box(emailId)
-    type(EMAIL_TEXT_BOX, emailId)
-  end
-
-  def set_password_text_box(password)
-    type(PASSWORD_TEXT_BOX, password)
   end
 
   def click_forgot_password_link
