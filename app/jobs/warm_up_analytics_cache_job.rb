@@ -3,40 +3,51 @@ class WarmUpAnalyticsCacheJob < ApplicationJob
   self.queue_adapter = :sidekiq
 
   def perform
-    to_time = Time.now
+    to_time = Time.now - 1.day
     from_time = to_time - 90.days
 
-    perform_facility_group_caching(from_time, to_time)
-    perform_districts_caching(from_time, to_time)
+    from_time_string = from_time.strftime('%Y-%m-%d')
+    to_time_string = to_time.strftime('%Y-%m-%d')
+
+    perform_facility_group_caching(from_time_string, to_time_string)
+    perform_districts_caching(from_time_string, to_time_string)
   end
 
   private
 
-  def perform_facility_group_caching(from_time, to_time)
+  def perform_facility_group_caching(from_time_string, to_time_string)
     FacilityGroup.all.each do |facility_group|
-      WarmUpFacilityGroupAnalyticsCacheJob.perform_later(
+      WarmUpFacilityGroupAnalyticsCacheJob.perform_now(
         facility_group,
-        from_time.strftime('%Y-%m-%d'),
-        to_time.strftime('%Y-%m-%d'))
+        from_time_string,
+        to_time_string)
+
+      facility_group.facilities.each do |facility|
+        WarmUpFacilityAnalyticsCacheJob.perform_now(
+          facility, from_time_string, to_time_string)
+      end
     end
   end
 
 
-  def perform_districts_caching(from_time, to_time)
+  def perform_districts_caching(from_time_string, to_time_string)
     organizations = Organization.all
 
     organizations.each do |organization|
-      district_facilities_map = organization.facility_groups.flat_map(&:facilities).group_by(&:district)
+      district_facilities_map = organization.facilities.group_by(&:district)
 
-      district_facilities_map.each do |id, facilities|
-        district = District.new(id)
-        district.organization_id = organization.id
-        district.facilities = facilities
+      district_facilities_map.each do |name, facilities|
+        district = OrganizationDistrict.new(name, organization, facilities)
 
-        WarmUpDistrictAnalyticsCacheJob.perform_later(
+        WarmUpDistrictAnalyticsCacheJob.perform_now(
           district,
-          from_time.strftime('%Y-%m-%d'),
-          to_time.strftime('%Y-%m-%d'))
+          from_time_string,
+          to_time_string)
+
+        district.facilities.each do |facility|
+          WarmUpFacilityAnalyticsCacheJob.perform_now(
+            facility, from_time, to_time)
+        end
       end
     end
   end

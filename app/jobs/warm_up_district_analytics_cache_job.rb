@@ -6,9 +6,5 @@ class WarmUpDistrictAnalyticsCacheJob < ApplicationJob
     from_time = from_time_string.to_time
     to_time = to_time_string.to_time
     district.patient_set_analytics(from_time, to_time)
-    district.facilities.each do |facility|
-      WarmUpFacilityAnalyticsCacheJob.perform_later(
-        facility, from_time, to_time)
-    end
   end
 end
