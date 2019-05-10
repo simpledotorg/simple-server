@@ -1861,6 +1861,9 @@
         },
         "updated_at": {
           "$ref": "#/definitions/timestamp"
+        },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
         }
       },
       "required": [
@@ -1959,7 +1962,8 @@
         "diabetes",
         "diagnosed_with_hypertension",
         "created_at",
-        "updated_at"
+        "updated_at",
+        "recorded_at"
       ]
     },
     "medical_histories": {

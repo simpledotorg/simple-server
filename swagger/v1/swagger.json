@@ -1674,6 +1674,9 @@
         },
         "updated_at": {
           "$ref": "#/definitions/timestamp"
+        },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
         }
       },
       "required": [

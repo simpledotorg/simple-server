@@ -1244,6 +1244,9 @@
         },
         "updated_at": {
           "$ref": "#/definitions/timestamp"
+        },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
         }
       },
       "required": [
@@ -1252,6 +1255,7 @@
         "full_name",
         "created_at",
         "updated_at",
+        "recorded_at",
         "status"
       ]
     },
@@ -1282,6 +1286,9 @@
         "pin": {
           "type": "string"
         },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
+        },
         "deleted_at": {
           "$ref": "#/definitions/nullable_timestamp"
         },
@@ -1295,7 +1302,8 @@
       "required": [
         "id",
         "created_at",
-        "updated_at"
+        "updated_at",
+        "recorded_at"
       ]
     },
     "phone_number": {
@@ -1325,12 +1333,16 @@
         },
         "updated_at": {
           "$ref": "#/definitions/timestamp"
+        },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
         }
       },
       "required": [
         "id",
         "created_at",
         "updated_at",
+        "recorded_at",
         "number"
       ]
     },
@@ -1396,6 +1408,9 @@
         "updated_at": {
           "$ref": "#/definitions/timestamp"
         },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
+        },
         "address": {
           "$ref": "#/definitions/address"
         },
@@ -1412,6 +1427,7 @@
         "full_name",
         "created_at",
         "updated_at",
+        "recorded_at",
         "status"
       ],
       "description": "Patient with address, phone numbers and business identifiers nested."
@@ -1446,6 +1462,9 @@
         "updated_at": {
           "$ref": "#/definitions/timestamp"
         },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
+        },
         "patient_id": {
           "$ref": "#/definitions/uuid"
         },
@@ -1461,6 +1480,7 @@
         "diastolic",
         "created_at",
         "updated_at",
+        "recorded_at",
         "patient_id",
         "facility_id",
         "user_id"
@@ -1639,6 +1659,9 @@
         "updated_at": {
           "$ref": "#/definitions/timestamp"
         },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
+        },
         "name": {
           "$ref": "#/definitions/non_empty_string"
         },
@@ -1665,6 +1688,7 @@
         "id",
         "created_at",
         "updated_at",
+        "recorded_at",
         "name",
         "is_protocol_drug",
         "is_deleted",
@@ -1782,6 +1806,9 @@
         },
         "updated_at": {
           "$ref": "#/definitions/timestamp"
+        },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
         }
       },
       "required": [
@@ -1791,7 +1818,8 @@
         "communication_type",
         "communication_result",
         "created_at",
-        "updated_at"
+        "updated_at",
+        "recorded_at"
       ]
     },
     "communications": {
@@ -1871,6 +1899,9 @@
         },
         "updated_at": {
           "$ref": "#/definitions/timestamp"
+        },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
         }
       },
       "required": [
@@ -1881,6 +1912,7 @@
         "status",
         "created_at",
         "updated_at",
+        "recorded_at",
         "appointment_type"
       ]
     },
@@ -1958,6 +1990,9 @@
         },
         "updated_at": {
           "$ref": "#/definitions/timestamp"
+        },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
         }
       },
       "required": [
@@ -1970,7 +2005,8 @@
         "diabetes",
         "diagnosed_with_hypertension",
         "created_at",
-        "updated_at"
+        "updated_at",
+        "recorded_at"
       ]
     },
     "medical_histories": {
@@ -2011,12 +2047,16 @@
         },
         "updated_at": {
           "$ref": "#/definitions/timestamp"
+        },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
         }
       },
       "required": [
         "id",
         "created_at",
         "updated_at",
+        "recorded_at",
         "identifier",
         "identifier_type"
       ]
