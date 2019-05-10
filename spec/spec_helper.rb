@@ -2,6 +2,7 @@ require 'simplecov'
 require 'utils'
 require 'webmock/rspec'
 require 'fakeredis/rspec'
+require 'sidekiq/testing'
 
 RSpec.configure do |config|
   SimpleCov.start
