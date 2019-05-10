@@ -3,7 +3,7 @@ class WarmUpAnalyticsCacheJob < ApplicationJob
   self.queue_adapter = :sidekiq
 
   def perform
-    to_time = Time.now - 1.day
+    to_time = Time.now
     from_time = to_time - 90.days
 
     from_time_string = from_time.strftime('%Y-%m-%d')
