@@ -26,7 +26,7 @@ class Analytics::FacilitiesController < AnalyticsController
       organization = Organization.find(FacilityGroup.find(@facility.facility_group_id).organization_id)
       @district = District.new(@facility.district, organization)
 
-      facilities_map = policy_scope(organization.facility_groups).flat_map(&:facilities).group_by(&:district)
+      facilities_map = policy_scope(@district.organization.facility_groups).flat_map(&:facilities).group_by(&:district)
       facilities = facilities_map[@district.id]
       @district.state = facilities.first.state.capitalize
     else

@@ -7,26 +7,6 @@ class DistrictPolicy < ApplicationPolicy
     user.owner? || [:organization_owner, :supervisor, :analyst].map { |role| admin_can_access?(role) }.any?
   end
 
-  def create?
-    user.owner? || user.organization_owner?
-  end
-
-  def new?
-    create?
-  end
-
-  def update?
-    user.owner? || admin_can_access?(:organization_owner)
-  end
-
-  def edit?
-    update?
-  end
-
-  def destroy?
-    destroyable? && (user.owner? || admin_can_access?(:organization_owner))
-  end
-
   def graphics?
     show?
   end

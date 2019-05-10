@@ -26,11 +26,11 @@ class Analytics::DistrictsController < AnalyticsController
   end
 
   def set_organization
-    @district.organization = Organization.find(params[:organization_id])
+    @organization = Organization.find(params[:organization_id])
   end
 
   def set_facilities
-    facilities_by_district = policy_scope(@organization.facility_groups).flat_map(&:facilities).group_by(&:district).sort.to_h
+    facilities_by_district = policy_scope(@organization.facilities).group_by(&:district).sort.to_h
     @district.facilities = facilities_by_district[@district.id].sort_by(&:name)
   end
 
