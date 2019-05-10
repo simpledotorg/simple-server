@@ -1,6 +1,6 @@
 class Analytics::DistrictsController < AnalyticsController
-  before_action :set_organization
   before_action :set_district
+  before_action :set_organization
   before_action :set_facilities
   before_action :set_state
 
@@ -20,31 +20,26 @@ class Analytics::DistrictsController < AnalyticsController
   private
 
   def set_district
-    district_id = params[:id] || params[:district_id]
-    @district = District.new(district_id, @organization)
-    authorize(@district)
+    district_name = params[:id] || params[:district_id]
+    @organization_district = OrganizationDistrict.new(district_name)
+    authorize(@organization_district)
   end
 
   def set_organization
-    @organization = Organization.find(params[:organization_id])
+    @organization_district.organization = Organization.find(params[:organization_id])
   end
 
   def set_facilities
-    facilities_by_district = policy_scope(@organization.facilities).group_by(&:district).sort.to_h
-    @district.facilities = facilities_by_district[@district.id].sort_by(&:name)
-  end
-
-  def set_state
-    state = @district.facilities.first.state.capitalize
-    @district.state = state
+    facilities_by_district = policy_scope(@organization_district.organization.facilities).group_by(&:district).sort.to_h
+    @organization_district.facilities = facilities_by_district[@organization_district.district_name].sort_by(&:name)
   end
 
   def district_analytics(from_time, to_time)
-    @district.patient_set_analytics(from_time, to_time)
+    @organization_district.patient_set_analytics(from_time, to_time)
   end
 
   def facility_analytics(from_time, to_time)
-    @district.facilities
+    @organization_district.facilities
       .map { |facility| [facility, facility.patient_set_analytics(from_time, to_time)] }
       .to_h
   end

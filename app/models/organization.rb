@@ -12,4 +12,8 @@ class Organization < ApplicationRecord
   validates :name, presence: true
 
   friendly_id :name, use: :slugged
+
+  def get_districts
+    facilities.map(&:district).uniq
+  end
 end

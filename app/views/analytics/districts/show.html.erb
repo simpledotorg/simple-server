@@ -6,13 +6,12 @@
 
   <div class="graphics d-none">
     <%= link_to 'WhatsApp', analytics_organization_district_graphics_path(
-      @district.organization.id,
-      @district.id,
+      @organization_district.organization.id,
+      @organization_district.district_name,
       month: analytics_date_format(Time.now.at_beginning_of_month)) %>
   </div>
 
-  <h1><%= @district.id %></h1>
-  <h2><%= @district.state %></h2>
+  <h1><%= @organization_district.district_name %></h1>
   <%= string_for_range(@from_time, @to_time) %>
 
   <div class="featured d-none">
