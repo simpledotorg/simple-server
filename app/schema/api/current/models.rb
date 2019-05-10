@@ -46,8 +46,9 @@ class Api::Current::Models
           age_updated_at: { '$ref' => '#/definitions/nullable_timestamp' },
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
-          updated_at: { '$ref' => '#/definitions/timestamp' } },
-        required: %w[id gender full_name created_at updated_at status] }
+          updated_at: { '$ref' => '#/definitions/timestamp' },
+          recorded_at: { '$ref' => '#/definitions/timestamp' } },
+        required: %w[id gender full_name created_at updated_at recorded_at status] }
     end
 
     def address
@@ -60,10 +61,11 @@ class Api::Current::Models
           state: { type: :string },
           country: { type: :string },
           pin: { type: :string },
+          recorded_at: { '$ref' => '#/definitions/timestamp' },
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' } },
-        required: %w[id created_at updated_at] }
+        required: %w[id created_at updated_at recorded_at] }
     end
 
     def phone_number
@@ -75,8 +77,9 @@ class Api::Current::Models
           active: { type: :boolean },
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
-          updated_at: { '$ref' => '#/definitions/timestamp' } },
-        required: %w[id created_at updated_at number] }
+          updated_at: { '$ref' => '#/definitions/timestamp' },
+          recorded_at: { '$ref' => '#/definitions/timestamp' } },
+        required: %w[id created_at updated_at recorded_at number] }
     end
 
     def patient_business_identifier
@@ -89,8 +92,9 @@ class Api::Current::Models
           metadata: { type: :string },
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
-          updated_at: { '$ref' => '#/definitions/timestamp' } },
-        required: %w[id created_at updated_at identifier identifier_type] }
+          updated_at: { '$ref' => '#/definitions/timestamp' },
+          recorded_at: { '$ref' => '#/definitions/timestamp' } },
+        required: %w[id created_at updated_at recorded_at identifier identifier_type] }
     end
 
     def nested_patient
@@ -112,10 +116,11 @@ class Api::Current::Models
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' },
+          recorded_at: { '$ref' => '#/definitions/timestamp' },
           patient_id: { '$ref' => '#/definitions/uuid' },
           facility_id: { '$ref' => '#/definitions/uuid' },
           user_id: { '$ref' => '#/definitions/uuid' } },
-        required: %w[systolic diastolic created_at updated_at patient_id facility_id user_id]
+        required: %w[systolic diastolic created_at updated_at recorded_at patient_id facility_id user_id]
       }
     end
 
@@ -176,6 +181,7 @@ class Api::Current::Models
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' },
+          recorded_at: { '$ref' => '#/definitions/timestamp' },
           name: { '$ref' => '#/definitions/non_empty_string' },
           dosage: { type: :string },
           rxnorm_code: { type: :string },
@@ -184,7 +190,7 @@ class Api::Current::Models
           patient_id: { '$ref' => '#/definitions/uuid' },
           facility_id: { '$ref' => '#/definitions/uuid' }
         },
-        required: %w[id created_at updated_at name is_protocol_drug is_deleted patient_id facility_id] }
+        required: %w[id created_at updated_at recorded_at name is_protocol_drug is_deleted patient_id facility_id] }
     end
 
     def user
@@ -225,8 +231,9 @@ class Api::Current::Models
           appointment_type: { type: :string, enum: Appointment.appointment_types.keys },
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
-          updated_at: { '$ref' => '#/definitions/timestamp' } },
-        required: %w[id patient_id facility_id scheduled_date status created_at updated_at appointment_type]
+          updated_at: { '$ref' => '#/definitions/timestamp' },
+          recorded_at: { '$ref' => '#/definitions/timestamp' } },
+        required: %w[id patient_id facility_id scheduled_date status created_at updated_at recorded_at appointment_type]
       }
     end
 
@@ -240,8 +247,9 @@ class Api::Current::Models
           communication_result: { type: :string, enum: Communication.communication_results.keys },
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
-          updated_at: { '$ref' => '#/definitions/timestamp' } },
-        required: %w[id appointment_id user_id communication_type communication_result created_at updated_at]
+          updated_at: { '$ref' => '#/definitions/timestamp' },
+          recorded_at: { '$ref' => '#/definitions/timestamp' } },
+        required: %w[id appointment_id user_id communication_type communication_result created_at updated_at recorded_at]
       }
     end
 
@@ -258,7 +266,8 @@ class Api::Current::Models
           diagnosed_with_hypertension: { type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys },
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
-          updated_at: { '$ref' => '#/definitions/timestamp' } },
+          updated_at: { '$ref' => '#/definitions/timestamp' },
+          recorded_at: { '$ref' => '#/definitions/timestamp' } },
         required: [
           :id,
           :patient_id,
@@ -269,7 +278,8 @@ class Api::Current::Models
           :diabetes,
           :diagnosed_with_hypertension,
           :created_at,
-          :updated_at
+          :updated_at,
+          :recorded_at
         ]
       }
     end
