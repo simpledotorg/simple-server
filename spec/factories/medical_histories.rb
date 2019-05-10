@@ -10,6 +10,7 @@ FactoryBot.define do
     diagnosed_with_hypertension { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:no] }
     device_created_at { Time.now }
     device_updated_at { Time.now }
+    recorded_at { device_created_at }
 
     trait :unknown do
       prior_heart_attack { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unknown] }

@@ -8,6 +8,7 @@ FactoryBot.define do
     cancel_reason nil
     device_created_at { Time.now }
     device_updated_at { Time.now }
+    recorded_at { device_created_at }
     agreed_to_visit nil
     remind_on nil
     appointment_type { Appointment.appointment_types.keys.sample }

@@ -5,6 +5,7 @@ FactoryBot.define do
     identifier_type { 'simple_bp_passport' }
     device_created_at { Time.now }
     device_updated_at { Time.now }
+    recorded_at { device_created_at }
     metadata_version { 'org.simple.bppassport.meta.v1' }
     metadata do
       { assigning_user_id: SecureRandom.uuid,

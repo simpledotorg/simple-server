@@ -9,6 +9,7 @@ FactoryBot.define do
     rxnorm_code { Faker::Code.npi }
     device_created_at { Time.now }
     device_updated_at { Time.now }
+    recorded_at { device_created_at }
     association :facility, strategy: :build
     association :patient, strategy: :build
   end

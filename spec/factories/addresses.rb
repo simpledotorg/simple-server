@@ -9,5 +9,6 @@ FactoryBot.define do
     pin { Faker::Address.zip }
     device_created_at { Time.now }
     device_updated_at { Time.now }
+    recorded_at { device_created_at }
   end
 end

@@ -17,6 +17,7 @@ FactoryBot.define do
     age_updated_at { Time.now - rand(10).days if age.present? }
     device_created_at { Time.now }
     device_updated_at { Time.now }
+    recorded_at { device_created_at }
     association :address, strategy: :build
     phone_numbers { build_list(:patient_phone_number, rand(1..3), patient_id: id) }
     association :registration_facility, factory: :facility
