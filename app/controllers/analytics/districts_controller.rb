@@ -29,8 +29,10 @@ class Analytics::DistrictsController < AnalyticsController
   end
 
   def set_facilities
-    facilities_by_district = policy_scope(@organization_district.organization.facilities).group_by(&:district).sort.to_h
-    @organization_district.facilities = facilities_by_district[@organization_district.district_name].sort_by(&:name)
+    @organization_district.facilities =
+      policy_scope(@organization_district.organization.facilities)
+        .where(district: @organization_district.district_name)
+        .sort_by(&:name)
   end
 
   def district_analytics(from_time, to_time)
