@@ -50,8 +50,6 @@ module ApplicationHelper
       interaction_result += ' - Agreed to visit'
     elsif last_appointment.remind_on.present?
       interaction_result += ' - Remind to call later'
-    elsif last_appointment.status == Appointment.statuses[:visited]
-      interaction_result += " - Visited"
     end
 
     interaction_result

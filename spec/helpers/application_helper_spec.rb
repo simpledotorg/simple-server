@@ -42,11 +42,14 @@ describe ApplicationHelper, type: :helper do
     context 'When at least one previous visit exists' do
       it 'returns "Agreed to visit" if the last visit exists and has agreed_to_visit set' do
         patient = FactoryBot.create(:patient)
-        _appointment1 = FactoryBot.create(:appointment, :overdue, patient_id: patient.id)
-        appointment2 = FactoryBot.create(:appointment, :overdue, patient_id: patient.id)
+        appointment1 = FactoryBot.create(:appointment, :overdue, patient_id: patient.id)
+        appointment1.status = 'visited'
+        appointment1.agreed_to_visit = true
+        appointment1.remind_on = nil
+        appointment1.save
 
-        appointment2.agreed_to_visit = true
-        appointment2.remind_on = nil
+        appointment2 = FactoryBot.create(:appointment, :overdue, patient_id: patient.id)
+        appointment2.scheduled_date = 60.days.from_now
         appointment2.save
 
         expect(show_last_interaction_date_and_result(patient)).to include('Agreed to visit')
@@ -55,11 +58,14 @@ describe ApplicationHelper, type: :helper do
       it 'returns "Remind to call later" if the last visit exists and remind_on is not nil' do
         patient = FactoryBot.create(:patient)
 
-        _appointment1 = FactoryBot.create(:appointment, :overdue, patient_id: patient.id)
-        appointment2 = FactoryBot.create(:appointment, :overdue, patient_id: patient.id)
+        appointment1 = FactoryBot.create(:appointment, :overdue, patient_id: patient.id)
+        appointment1.status = 'visited'
+        appointment1.agreed_to_visit = false
+        appointment1.remind_on = Date.today
+        appointment1.save
 
-        appointment2.agreed_to_visit = false
-        appointment2.remind_on = Date.today
+        appointment2 = FactoryBot.create(:appointment, :overdue, patient_id: patient.id)
+        appointment2.scheduled_date = 60.days.from_now
         appointment2.save
 
         expect(show_last_interaction_date_and_result(patient)).to include('Remind to call later')
