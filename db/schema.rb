@@ -221,17 +221,6 @@ ActiveRecord::Schema.define(version: 20190429085949) do
     t.index ["slug"], name: "index_facility_groups_on_slug", unique: true
   end
 
-  create_table "master_user_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "master_user_id"
-    t.string "authenticatable_type"
-    t.uuid "authenticatable_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "deleted_at"
-    t.index ["master_user_id", "authenticatable_type", "authenticatable_id"], name: "master_users_authenticatable_uniq_index", unique: true
-    t.index ["master_user_id"], name: "index_master_user_authentications_on_master_user_id"
-  end
-
   create_table "master_users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "full_name"
     t.string "sync_approval_status", null: false
@@ -373,6 +362,17 @@ ActiveRecord::Schema.define(version: 20190429085949) do
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_protocols_on_deleted_at"
+  end
+
+  create_table "user_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "master_user_id"
+    t.string "authenticatable_type"
+    t.uuid "authenticatable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["master_user_id", "authenticatable_type", "authenticatable_id"], name: "user_authentications_master_users_authenticatable_uniq_index", unique: true
+    t.index ["master_user_id"], name: "index_user_authentications_on_master_user_id"
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

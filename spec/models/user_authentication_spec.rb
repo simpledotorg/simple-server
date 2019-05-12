@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe MasterUserAuthentication, type: :model do
+RSpec.describe UserAuthentication, type: :model do
   describe 'Associations' do
     it { should belong_to(:master_user) }
     it { should belong_to(:authenticatable) }

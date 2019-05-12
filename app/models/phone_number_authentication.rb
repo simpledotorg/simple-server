@@ -1,9 +1,10 @@
 class PhoneNumberAuthentication < ApplicationRecord
   has_secure_password
 
-  has_one :master_user_authentication, as: :authenticatable
-  has_one :master_user, through: :master_user_authentication
+  has_one :user_authentication, as: :authenticatable
+  has_one :master_user, through: :user_authentication
 
+  validates :master_user, presence: true
   validates :phone_number, presence: true, uniqueness: true, case_sensitive: false
   validates :password, allow_blank: true, length: { is: 4 }, format: { with: /[0-9]/, message: 'only allows numbers' }
   validate :presence_of_password

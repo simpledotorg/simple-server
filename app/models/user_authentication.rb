@@ -1,4 +1,4 @@
-class MasterUserAuthentication < ApplicationRecord
+class UserAuthentication < ApplicationRecord
   belongs_to :master_user
   belongs_to :authenticatable, polymorphic: true
 
