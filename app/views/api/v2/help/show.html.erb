@@ -5,8 +5,8 @@
   <meta charset="utf-8">
   <meta name="HandheldFriendly" content="True">
   <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, shrink-to-fit=no"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, shrink-to-fit=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
 
   <%= inline_stylesheet('common_webview.css') %>
   <%= inline_stylesheet('help.css') %>
@@ -16,19 +16,27 @@
 <body>
 
 <div class="anchors">
-  <a href="#watch" style="border-top: none;">WATCH A TUTORIAL</a>
-  <a href="#howto">HOW TO USE THIS APP?</a>
-  <a href="#bp">TIPS FOR TAKING ACCURATE BPs</a>
+  <a href="#watch" style="border-top: none;">VIDEO: How to use Simple</a>
+  <a href="#passport">VIDEO: How to use BP Passports</a>
+  <a href="#howto">HOW TO USE THE APP?</a>
+  <a href="#bp">TIPS TO TAKE ACCURATE BPs</a>
   <a href="#support">ASK FOR HELP</a>
 </div>
 
 <div id="watch"></div>
 <div class="card">
-  <h3>Watch a short tutorial</h3>
+  <h3>Video: How to use Simple</h3>
   <a href="<%= ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL'] %>" class="video" style="display: block; margin: 8px 0;">
     <%= inline_svg('thumb_demo.svg') %>
   </a>
-  <caption>Learn how to use Simple in less than 5 minutes with this easy video.</caption>
+  <div id="passport"></div>
+</div>
+    
+<div class="card">
+  <h3>Video: How to use BP Passports</h3>
+  <a href="<%= ENV['HELP_SCREEN_YOUTUBE_PASSPORT_URL'] %>" class="video" style="display: block; margin: 8px 0;">
+    <%= inline_svg('thumb_passport.svg') %>
+  </a>
   <div id="howto"></div>
 </div>
 
