@@ -9,26 +9,27 @@ class ExotelCallDetailsJob < ApplicationJob
            wait: Config.get_int('EXOTEL_CALL_DETAILS_JOB_RETRY_SECONDS', DEFAULT_RETRY_SECONDS),
            attempts: Config.get_int('EXOTEL_CALL_DETAILS_JOB_RETRY_TIMES', DEFAULT_RETRY_TIMES)
 
-  def perform(call_id, user_id, callee_phone_number, call_status)
+  def perform(call_id, user_phone_number, callee_phone_number, call_status)
     call_details = ExotelAPIService.new(ENV['EXOTEL_SID'],
                                         ENV['EXOTEL_TOKEN']).call_details(call_id)
 
     CallLog.create!(call_log_params(call_details[:Call],
-                                    user_id,
+                                    user_phone_number,
                                     callee_phone_number,
                                     call_status)) if call_details.present?
   end
 
-  def call_log_params(call_details, user_id, callee_phone_number, call_status)
+  def call_log_params(call_details, user_phone_number, callee_phone_number, call_status)
     parse_call_details(call_details)
-      .merge(participant_details(user_id, callee_phone_number))
+      .merge(participant_details(user_phone_number, callee_phone_number))
       .merge(result: call_status)
   end
 
-  def participant_details(user_id, callee_phone_number)
-    { user_id: user_id,
+  def participant_details(user_phone_number, callee_phone_number)
+    { caller_phone_number: user_phone_number,
       callee_phone_number: callee_phone_number }
   end
+
 
   def parse_call_details(call_details)
     { session_id: call_details[:Sid],

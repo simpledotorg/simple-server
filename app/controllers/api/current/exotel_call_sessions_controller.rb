@@ -34,7 +34,7 @@ class Api::Current::ExotelCallSessionsController < ApplicationController
       session.kill
 
       report_call_info
-      schedule_call_log_job(session.user.id, session.patient_phone_number.number)
+      schedule_call_log_job(session.user_phone_number, session.patient_phone_number.number)
 
       respond_in_plain_text(:ok)
     else
@@ -79,11 +79,11 @@ class Api::Current::ExotelCallSessionsController < ApplicationController
     NewRelic::Agent.increment_metric("#{controller_name}/call_status/#{call_status}")
   end
 
-  def schedule_call_log_job(user_id, callee_phone_number)
+  def schedule_call_log_job(user_phone_number, callee_phone_number)
     ExotelCallDetailsJob
       .set(wait: SCHEDULE_CALL_LOG_JOB_AFTER)
       .perform_later(params[:CallSid],
-                     user_id,
+                     user_phone_number,
                      callee_phone_number,
                      call_status)
   end
