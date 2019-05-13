@@ -45,8 +45,8 @@ RSpec.describe SmsNotificationService do
       it 'should have the SMS body in Punjabi' do
         sms = SmsNotificationService.new(recipient_phone_number, twilio_client)
 
-        expected_msg_punjabi = 'ਅਸੀ ਤੁਹਾਨੂੰ 1 ਜਨਵਰੀ, 2018 ਨੂੰ ਸਰਕਾਰੀ ਹਸਪਤਾਲ Simple Facility ਵਿਚ ਤੁਹਾਡੇ ਨਿਰਧਾਰਿਤ ਬੀਪੀ ਚੈਕ-ਅਪ'\
-        ' ਲਈ ਬੁਲਾਇਆ ਸੀ। ਤੁਸੀ 9.30 ਵਜੇ ਤੋਂ 2 ਵਜੇ ਦੇ ਵਿਚ ਆਓ।'
+        expected_msg_punjabi = 'ਸਰਕਾਰੀ ਹਸਪਤਾਲ Simple Facility ਵਿੱਚ 1 ਜਨਵਰੀ, 2018 ਨੂੰ  ਤੁਹਾਡੇ ਬੀ.ਪੀ ਦੀ ਜਾਂਚ ਹੋਣੀ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ'\
+        ' 9:30 ਤੋਂ 2 ਵਜੇ ਦੇ ਵਿੱਚ ਆਉ।'
         expect(twilio_client).to receive_message_chain('messages.create').with(from: '+15005550006',
                                                                                to: expected_sms_recipient_phone_number,
                                                                                status_callback: '',
