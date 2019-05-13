@@ -8,15 +8,17 @@ class PatientsReturningDuringPeriodQuery
   end
 
   def call
-    patients.joins(%Q(
-      INNER JOIN (
-        SELECT DISTINCT ON (patient_id) *
-        FROM blood_pressures
-        WHERE device_created_at >= '#{from_time}'
-        AND device_created_at <= '#{to_time}'
-        ORDER BY patient_id, device_created_at DESC
-      ) as newest_bps
-      ON newest_bps.patient_id = patients.id
-    ))
+    patients
+      .where('patients.device_created_at <= ?', from_time)
+      .joins(%Q(
+        INNER JOIN (
+          SELECT DISTINCT ON (patient_id) *
+          FROM blood_pressures
+          WHERE device_created_at >= '#{from_time}'
+          AND device_created_at <= '#{to_time}'
+          ORDER BY patient_id, device_created_at DESC
+        ) as newest_bps
+        ON newest_bps.patient_id = patients.id
+      ))
   end
 end
