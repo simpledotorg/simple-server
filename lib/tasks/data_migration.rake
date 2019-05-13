@@ -81,4 +81,12 @@ namespace :data_migration do
     puts "Number of defaulters processed (automatic appointment created) = #{processed_defaulters_count}"
     puts "Number of unprocessed/errored defaulters = #{unprocessed_or_errored_defaulters_count}"
   end
+
+  desc 'Move all the user phone numbers from the call logs to a de-normalized caller_phone_number field'
+  task de_normalize_user_phone_numbers_in_call_logs: :environment  do
+    CallLog.all.each do |call_log|
+      call_log.caller_phone_number = call_log.user.phone_number
+      call_log.save!
+    end
+  end
 end
