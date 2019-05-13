@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190430140043) do
+ActiveRecord::Schema.define(version: 20190510131035) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -132,7 +132,8 @@ ActiveRecord::Schema.define(version: 20190430140043) do
     t.datetime "end_time"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.uuid "user_id", null: false
+    t.uuid "user_id"
+    t.string "caller_phone_number"
     t.index ["user_id"], name: "index_call_logs_on_user_id"
   end
 

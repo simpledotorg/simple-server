@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe ExotelCallDetailsJob, type: :job do
   include ActiveJob::TestHelper
 
-  let!(:user) { create(:user) }
+  let!(:user_phone_number) { Faker::PhoneNumber.phone_number }
   let!(:callee_phone_number) { Faker::PhoneNumber.phone_number }
   let!(:call_id) { SecureRandom.uuid }
 
@@ -22,7 +22,7 @@ RSpec.describe ExotelCallDetailsJob, type: :job do
     allow_any_instance_of(ExotelAPIService).to receive(:call_details).with(call_id).and_return(stubbed_call_details)
 
     assert_performed_jobs 1 do
-      described_class.perform_later(call_id, user.id, callee_phone_number, 'completed')
+      described_class.perform_later(call_id, user_phone_number, callee_phone_number, 'completed')
     end
 
     expect(CallLog.count).to eq(1)
@@ -32,16 +32,18 @@ RSpec.describe ExotelCallDetailsJob, type: :job do
     allow_any_instance_of(ExotelAPIService).to receive(:call_details).with(call_id).and_return(stubbed_call_details)
 
     perform_enqueued_jobs do
-      described_class.perform_later(call_id, user.id, callee_phone_number, 'completed')
+      described_class.perform_later(call_id, user_phone_number, callee_phone_number, 'completed')
     end
 
     expect(CallLog.last.as_json.slice('result',
                                       'duration',
                                       'callee_phone_number',
+                                      'caller_phone_number',
                                       'start_time',
                                       'end_time')).to eq({ 'result' => stubbed_call_result,
                                                            'duration' => stubbed_call_duration,
                                                            'callee_phone_number' => callee_phone_number,
+                                                           'caller_phone_number' => user_phone_number,
                                                            'start_time' => DateTime.parse(stubbed_call_start_time),
                                                            'end_time' => DateTime.parse(stubbed_call_end_time) })
   end
@@ -50,21 +52,10 @@ RSpec.describe ExotelCallDetailsJob, type: :job do
     allow_any_instance_of(ExotelAPIService).to receive(:call_details).with(call_id).and_return(nil)
 
     assert_performed_jobs 1 do
-      described_class.perform_later(call_id, user.id, callee_phone_number, 'failed')
+      described_class.perform_later(call_id, user_phone_number, callee_phone_number, 'failed')
     end
 
     expect(CallLog.count).to eq(0)
-  end
-
-  it 'should create a call log even if the user does not exist' do
-    allow_any_instance_of(ExotelAPIService).to receive(:call_details).with(call_id).and_return(stubbed_call_details)
-    unknown_user_uuid = SecureRandom.uuid
-
-    assert_performed_jobs 1 do
-      described_class.perform_later(call_id, unknown_user_uuid, callee_phone_number, 'completed')
-    end
-
-    expect(CallLog.count).to eq(1)
   end
 
   it 'makes attempts to retry when Exotel::HTTPError is raised' do
@@ -72,7 +63,7 @@ RSpec.describe ExotelCallDetailsJob, type: :job do
     expect_any_instance_of(described_class).to receive(:retry_job)
 
     assert_performed_jobs 1 do
-      described_class.perform_later(call_id, user.id, callee_phone_number, 'completed')
+      described_class.perform_later(call_id, user_phone_number, callee_phone_number, 'completed')
     end
   end
 end

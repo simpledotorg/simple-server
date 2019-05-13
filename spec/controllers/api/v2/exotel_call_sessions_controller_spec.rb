@@ -21,7 +21,7 @@ RSpec.describe Api::V2::ExotelCallSessionsController, type: :controller do
         expect(response.headers['Content-Type']).to eq('text/plain; charset=utf-8')
       end
 
-      it 'should create an Exotel session if both the user and patient are registered' do
+      it 'should create an Exotel session if the patient is registered' do
         get :create, params: { From: user.phone_number,
                                digits: patient.phone_numbers.first.number,
                                CallType: 'call-attempt',
@@ -41,15 +41,6 @@ RSpec.describe Api::V2::ExotelCallSessionsController, type: :controller do
                                CallSid: SecureRandom.uuid }
 
         expect(response.headers['Content-Type']).to eq('text/plain; charset=utf-8')
-      end
-
-      it 'should not create an Exotel session if user is not registered' do
-        get :create, params: { From: unknown_phone_number,
-                               digits: patient.phone_numbers.first.number,
-                               CallType: 'call-attempt',
-                               CallSid: SecureRandom.uuid }
-
-        expect(response).to have_http_status(403)
       end
 
       it 'should not create an Exotel session if the patient is not registered' do
@@ -159,7 +150,7 @@ RSpec.describe Api::V2::ExotelCallSessionsController, type: :controller do
 
       it 'should schedule a job to log the call details' do
         assert_enqueued_with(job: ExotelCallDetailsJob, args: [call_id,
-                                                               user.id,
+                                                               user.phone_number,
                                                                patient.phone_numbers.first.number,
                                                                'completed']) do
           get :terminate, params: { From: user.phone_number,
