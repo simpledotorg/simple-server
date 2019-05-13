@@ -8,12 +8,15 @@ class PatientsReturningDuringPeriodQuery
   end
 
   def call
-    patients
-      .where('device_created_at <= ?', from_time)
-      .includes(:latest_blood_pressures)
-      .select do |patient|
-      latest_blood_pressure = patient.latest_blood_pressure
-      (latest_blood_pressure.present? && latest_blood_pressure.device_created_at >= from_time && latest_blood_pressure.device_created_at < to_time)
-    end
+    patients.joins(%Q(
+      INNER JOIN (
+        SELECT DISTINCT ON (patient_id) *
+        FROM blood_pressures
+        WHERE device_created_at >= '#{from_time}'
+        AND device_created_at <= '#{to_time}'
+        ORDER BY patient_id, device_created_at DESC
+      ) as newest_bps
+      ON newest_bps.patient_id = patients.id
+    ))
   end
 end

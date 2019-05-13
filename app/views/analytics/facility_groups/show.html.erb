@@ -21,7 +21,7 @@
           hypertensive_patients_in_cohort: @facility_group_analytics[:control_rate][:hypertensive_patients_in_cohort],
           patients_under_control: @facility_group_analytics[:control_rate][:patients_under_control_in_period],
           control_rate_for_month: @facility_group_analytics[:control_rate][:control_rate],
-          number_of_months: pluralize(1, 'month')) %>
+          number_of_months: pluralize(3, 'month')) %>
   </p>
   <p class="footnote"><strong>Unique patients</strong> indicates how many patients had at least one recorded BP during
     the period. The "Week of" numbers are "Unique patients with a BP recorded during that week".</p>
