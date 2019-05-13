@@ -323,9 +323,11 @@ ActiveRecord::Schema.define(version: 20190429085949) do
     t.string "otp", null: false
     t.datetime "otp_valid_until", null: false
     t.string "access_token", null: false
+    t.uuid "facility_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
+    t.index ["facility_id"], name: "index_phone_number_authentications_on_facility_id"
   end
 
   create_table "prescription_drugs", id: :uuid, default: nil, force: :cascade do |t|
@@ -402,5 +404,6 @@ ActiveRecord::Schema.define(version: 20190429085949) do
   add_foreign_key "facility_groups", "organizations"
   add_foreign_key "patient_phone_numbers", "patients"
   add_foreign_key "patients", "addresses"
+  add_foreign_key "phone_number_authentications", "facilities"
   add_foreign_key "protocol_drugs", "protocols"
 end

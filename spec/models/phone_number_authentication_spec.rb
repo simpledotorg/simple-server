@@ -2,8 +2,9 @@ require 'rails_helper'
 
 RSpec.describe PhoneNumberAuthentication, type: :model do
   describe 'Associations' do
-    it { should have_one(:master_user_authentication) }
-    it { should have_one(:master_user).through(:master_user_authentication) }
+    it { should have_one(:user_authentication) }
+    it { should have_one(:master_user).through(:user_authentication) }
+    it { should belong_to(:facility).with_foreign_key('registration_facility_id') }
   end
 
   describe 'Validations' do
