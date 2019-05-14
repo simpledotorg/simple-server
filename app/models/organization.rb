@@ -14,6 +14,6 @@ class Organization < ApplicationRecord
   friendly_id :name, use: :slugged
 
   def get_districts
-    facilities.map(&:district).uniq
+    facilities.select(:district).distinct.pluck(:district)
   end
 end
