@@ -3,33 +3,9 @@
            to_time: @to_time %>
 
 <div class="dashboard">
-
-  <div class="graphics d-none">
-    <%= link_to 'WhatsApp', analytics_facility_group_graphics_path(
-      @facility_group,
-      month: analytics_date_format(Time.now.at_beginning_of_month)) %>
-  </div>
-
   <h1><%= @facility_group.name %></h1>
   <%= string_for_range(@from_time, @to_time) %>
-
-  <div class="featured d-none">
-
-          <%= render "shared/analytics/patients_count_panel",
-                     newly_enrolled_patients_count: @facility_group_analytics[:newly_enrolled_patients],
-                     returning_patients_count: @facility_group_analytics[:returning_patients] %>
-
-          <%= render "shared/analytics/non_returning_hypertensive_patients_panel",
-                     number_of_months: 3,
-                     non_returning_hypertensive_patients_count: @facility_group_analytics[:non_returning_hypertensive_patients],
-                     non_returning_hypertensive_patients_per_month: @facility_group_analytics[:non_returning_hypertensive_patients_per_month] %>
-
-          <%= render "shared/analytics/control_rate_panel",
-                     goal: 30,
-                     number_of_months: 3,
-                     control_rate: @facility_group_analytics[:control_rate][:control_rate],
-                     control_rate_per_month: @facility_group_analytics[:control_rate_per_month] %>
-  </div>
+  <p class="text-muted"><small>Last updated: <%= Time.now.strftime("%B %d, %Y") %></small></p>
 </div>
 
 
@@ -45,7 +21,7 @@
           hypertensive_patients_in_cohort: @facility_group_analytics[:control_rate][:hypertensive_patients_in_cohort],
           patients_under_control: @facility_group_analytics[:control_rate][:patients_under_control_in_period],
           control_rate_for_month: @facility_group_analytics[:control_rate][:control_rate],
-          number_of_months: pluralize(1, 'month')) %>
+          number_of_months: pluralize(3, 'month')) %>
   </p>
   <p class="footnote"><strong>Unique patients</strong> indicates how many patients had at least one recorded BP during
     the period. The "Week of" numbers are "Unique patients with a BP recorded during that week".</p>
