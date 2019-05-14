@@ -2,7 +2,7 @@ class Analytics::PatientSetAnalytics
   attr_reader :patients, :from_time, :to_time
 
   def initialize(patients, from_time, to_time)
-    @patients = patients.includes(:latest_blood_pressures)
+    @patients = patients
     @from_time = from_time
     @to_time = to_time
   end
@@ -13,18 +13,18 @@ class Analytics::PatientSetAnalytics
 
   def unique_patients_count_per_month(months_previous)
     patients
-      .group_by_month(:device_created_at, range: range_for_previous_months(months_previous, to_time))
+      .group_by_month('patients.device_created_at', range: range_for_previous_months(months_previous, to_time))
       .distinct
       .count
   end
 
   def newly_enrolled_patients_count
-    patients.where(device_created_at: from_time..to_time).count
+    patients.where(patients: { device_created_at: from_time..to_time }).count
   end
 
   def newly_enrolled_patients_count_per_month(months_previous)
     patients
-      .group_by_month(:device_created_at, range: range_for_previous_months(months_previous, to_time))
+      .group_by_month('patients.device_created_at', range: range_for_previous_months(months_previous, to_time))
       .count
   end
 

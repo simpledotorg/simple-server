@@ -17,6 +17,7 @@ class Patient < ApplicationRecord
   has_many :business_identifiers, class_name: 'PatientBusinessIdentifier'
   has_many :blood_pressures, inverse_of: :patient
   has_many :latest_blood_pressures, -> { order(device_created_at: :desc) }, class_name: 'BloodPressure'
+  has_one :latest_blood_pressure
   has_many :prescription_drugs
   has_many :facilities, -> { distinct }, through: :blood_pressures
   has_many :users, -> { distinct }, through: :blood_pressures
@@ -55,10 +56,6 @@ class Patient < ApplicationRecord
 
   def latest_scheduled_appointment
     appointments.where(status: 'scheduled').order(scheduled_date: :desc).first
-  end
-
-  def latest_blood_pressure
-    latest_blood_pressures.first
   end
 
   def latest_phone_number

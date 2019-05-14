@@ -49,15 +49,9 @@ class ControlRateQuery
 
   def patients_under_control_in_period(patient_ids, from_time, to_time)
     Patient.where(id: patient_ids)
-      .includes(:latest_blood_pressures)
-      .select { |patient| patient_under_control_in_period?(patient, from_time, to_time) }
-  end
-
-  def patient_under_control_in_period?(patient, from_time, to_time)
-    latest_blood_pressure = patient.latest_blood_pressure
-    (latest_blood_pressure.present? &&
-      latest_blood_pressure.under_control? &&
-      latest_blood_pressure.device_created_at >= from_time &&
-      latest_blood_pressure.device_created_at < to_time)
+      .joins(:latest_blood_pressure)
+      .where('latest_blood_pressures.systolic <= ?', 140)
+      .where('latest_blood_pressures.diastolic <= ?', 90)
+      .where(latest_blood_pressures: { device_created_at: from_time..to_time })
   end
 end
