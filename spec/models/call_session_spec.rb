@@ -11,7 +11,7 @@ describe CallSession, type: :model do
 
       session = CallSession.new(call_id, '09876543210', patient.phone_numbers.first.number)
 
-      expect(session.user).to eq(user)
+      expect(session.user_phone_number).to eq(user.phone_number)
     end
   end
 
@@ -20,14 +20,6 @@ describe CallSession, type: :model do
       session = CallSession.new(call_id, user.phone_number, patient.phone_numbers.first.number)
 
       expect(session.authorized?).to be(true)
-    end
-
-    it 'should return false if user is not registered' do
-      unknown_phone_number = Faker::PhoneNumber.phone_number
-
-      session = CallSession.new(call_id, unknown_phone_number, patient.phone_numbers.first.number)
-
-      expect(session.authorized?).to be(false)
     end
 
     it 'should return false if patient is not registered' do
@@ -43,13 +35,6 @@ describe CallSession, type: :model do
 
       expect(session.authorized?).to be(false)
     end
-
-    it 'should return false if the user is not approved for syncing' do
-      user_without_sync_access = create(:user, :with_sanitized_phone_number, sync_approval_status: :requested)
-      session = CallSession.new(call_id, user_without_sync_access.phone_number, patient.phone_numbers.first.number)
-
-      expect(session.authorized?).to be(false)
-    end
   end
 
   describe '#save' do
@@ -60,7 +45,7 @@ describe CallSession, type: :model do
 
       fetched_session = CallSession.fetch(call_id)
 
-      expect(fetched_session.user.phone_number).to eq(expected_session.user.phone_number)
+      expect(fetched_session.user_phone_number).to eq(expected_session.user_phone_number)
       expect(fetched_session.patient_phone_number.number).to eq(expected_session.patient_phone_number.number)
     end
   end
@@ -92,7 +77,7 @@ describe CallSession, type: :model do
       fetched_session = CallSession.fetch(call_id)
 
       expect(fetched_session.patient_phone_number).to eq(patient.phone_numbers.first)
-      expect(fetched_session.user).to eq(user)
+      expect(fetched_session.user_phone_number).to eq(user.phone_number)
     end
 
     it 'should return nil if a call session is not found' do

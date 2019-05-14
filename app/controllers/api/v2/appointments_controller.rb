@@ -14,11 +14,15 @@ class Api::V2::AppointmentsController < Api::Current::AppointmentsController
       NewRelic::Agent.increment_metric('Merge/Appointment/schema_invalid')
       { errors_hash: validator.errors_hash }
     else
-      record_params = Api::Current::Transformer.from_request(appointment_params)
+      record_params = Api::V2::AppointmentTransformer.from_request(appointment_params)
       set_default_appointment_type(record_params)
       appointment = Appointment.merge(record_params)
       { record: appointment }
     end
+  end
+
+  def transform_to_response(appointment)
+    Api::V2::AppointmentTransformer.to_response(appointment)
   end
 
   def appointments_params
