@@ -73,7 +73,9 @@ RAILS_ENV=test bundle exec rspec
 - Architecture decisions are captured in ADR format and are available in /doc/arch
 
 ## Deployment
-simple-server is deployed to the enviroment using capistrano.
+* `simple-server` is deployed to the environment using capistrano.
+* Make sure you add your SSH keys as single sign-on so that `cap` doesn't get confused when there's more than 1 instance to deal with. You can do this simply by running `ssh-add -K ~/.ssh/id_rsa`. 
+
 ```bash
 bundle exec cap <enviroment> deploy
 # eg: bundle exec cap staging deploy
