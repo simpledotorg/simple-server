@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/rails/actionpack-action_caching.git
+  revision: 4c3cdbe714d567558126bff02b5148740709e581
+  branch: master
+  specs:
+    actionpack-action_caching (1.2.0)
+      actionpack (>= 4.0.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -395,6 +403,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  actionpack-action_caching!
   activerecord-import
   bcrypt (~> 3.1, >= 3.1.11)
   bootstrap (~> 4.3.1)

@@ -3,6 +3,8 @@ class Analytics::FacilityGroupsController < AnalyticsController
   before_action :set_organization
   before_action :set_facilities
 
+  caches_action :show, layout: false
+
   def show
     @days_previous = 20
     @months_previous = 8
