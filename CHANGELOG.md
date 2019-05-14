@@ -13,6 +13,7 @@
 - Display last interaction result (if present)
 - Add caller_phone_number to `CallLog`
 - Data migration to move User phone numbers to caller_phone_numbers in `CallLogs`
+- BP passport video to help api html
 ### Changed
 - Stub V1 & V2 Communications API to return empty responses
 - Remove User authorization during an exotel session for phone masking
