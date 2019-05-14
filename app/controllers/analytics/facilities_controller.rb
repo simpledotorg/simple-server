@@ -1,7 +1,7 @@
 class Analytics::FacilitiesController < AnalyticsController
   before_action :set_facility
-  before_action :set_facility_group
   before_action :set_organization
+  before_action :set_facility_group_or_organization_district
 
   def show
     @facility_analytics = @facility.patient_set_analytics(@from_time, @to_time)
@@ -21,14 +21,17 @@ class Analytics::FacilitiesController < AnalyticsController
     authorize(@facility)
   end
 
-  def set_facility_group
+  def set_facility_group_or_organization_district
     if FeatureToggle.enabled?('DASHBOARD_VIEW_BY_DISTRICT')
-      organization = Organization.find(FacilityGroup.find(@facility.facility_group_id).organization_id)
-      @organization_district = OrganizationDistrict.new(@facility.district, organization)
-      @organization_district.facilities = @organization_district.organization.facilities.sort
+      set_organization_district
     else
       @facility_group = @facility.facility_group
     end
+  end
+
+  def set_organization_district
+    @organization_district = OrganizationDistrict.new(@facility.district, @organization)
+    @organization_district.facilities = @organization_district.organization.facilities.sort
   end
 
   def set_organization
