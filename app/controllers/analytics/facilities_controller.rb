@@ -2,8 +2,7 @@ class Analytics::FacilitiesController < AnalyticsController
   before_action :set_facility
   before_action :set_facility_group
   before_action :set_organization
-
-  caches_action :show, layout: false, cache_path: Proc.new { |c| c.request.url }
+  before_action :set_cache_key
 
   def show
     @facility_analytics = @facility.patient_set_analytics(@from_time, @to_time)
@@ -29,6 +28,15 @@ class Analytics::FacilitiesController < AnalyticsController
 
   def set_organization
     @organization = @facility.organization
+  end
+
+  def set_cache_key
+    @cache_key = [
+      "analytics/facilities",
+      @facility.slug,
+      @from_time.strftime("%Y-%m-%d"),
+      @to_time.strftime("%Y-%m-%d")
+    ]
   end
 
   def users_for_facility

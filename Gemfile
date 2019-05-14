@@ -40,7 +40,6 @@ gem 'whenever', require: false
 gem 'redis'
 gem 'redis-rails'
 gem 'activerecord-import'
-gem 'actionpack-action_caching', git: "https://github.com/rails/actionpack-action_caching.git", branch: "master"
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
