@@ -40,6 +40,7 @@ gem 'whenever', require: false
 gem 'redis'
 gem 'redis-rails'
 gem 'activerecord-import'
+gem 'scenic'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

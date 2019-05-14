@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190510131035) do
+ActiveRecord::Schema.define(version: 20190514132656) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -347,4 +347,14 @@ ActiveRecord::Schema.define(version: 20190510131035) do
   add_foreign_key "patient_phone_numbers", "patients"
   add_foreign_key "patients", "addresses"
   add_foreign_key "protocol_drugs", "protocols"
+
+  create_view "latest_blood_pressures", materialized: true, sql_definition: <<-SQL
+      SELECT DISTINCT ON (blood_pressures.patient_id) blood_pressures.id,
+      blood_pressures.patient_id,
+      blood_pressures.systolic,
+      blood_pressures.diastolic,
+      blood_pressures.device_created_at
+     FROM blood_pressures
+    ORDER BY blood_pressures.patient_id, blood_pressures.device_created_at DESC;
+  SQL
 end
