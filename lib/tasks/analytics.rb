@@ -1,10 +1,12 @@
 def enqueue_cache_warmup(record, from_time, to_time)
+  record_class = record.class.to_s
   WarmUpAnalyticsCacheJob.perform_later(
-    record.class.to_s,
+    record_class,
     record.id,
     from_time,
     to_time
   )
+  Rails.logger.info("Enqueued job to warm up for #{record_class} - #{record.id}")
 end
 
 
@@ -20,6 +22,8 @@ end
 namespace :analytics do
   desc 'Warm up analytics for last 90 days'
   task warm_up_last_ninety_days: :environment do
+    Rails.logger = Logger.new(STDOUT)
+
     to_time = Time.now
     from_time = to_time - 90.days
 
@@ -29,6 +33,8 @@ namespace :analytics do
   end
 
   task warm_up_last_four_quarters: :environment do
+    Rails.logger = Logger.new(STDOUT)
+
     LatestBloodPressure.refresh # This refreshes the materialized view
 
     (1..4).each do |n|
