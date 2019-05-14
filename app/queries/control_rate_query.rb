@@ -40,13 +40,7 @@ class ControlRateQuery
     cohort_start = from_time - COHORT_DELTA
     cohort_end = to_time - COHORT_DELTA
 
-    patients.select(%Q(
-      patients.*,
-      oldest_bps.device_created_at as bp_device_created_at,
-      oldest_bps.facility_id as bp_facility_id,
-      oldest_bps.systolic as bp_systolic,
-      oldest_bps.diastolic as bp_diastolic
-    )).joins(%Q(
+    patients.select(:id).joins(%Q(
       INNER JOIN (
         SELECT DISTINCT ON (patient_id) *
         FROM blood_pressures
@@ -60,7 +54,7 @@ class ControlRateQuery
 
   def visited(registered_patients, from_time, to_time)
     registered_patients.select(%Q(
-      patients.*,
+      patients.id,
       newest_bps.device_created_at as bp_device_created_at,
       newest_bps.systolic as bp_systolic,
       newest_bps.diastolic as bp_diastolic
