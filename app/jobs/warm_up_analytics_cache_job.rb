@@ -2,14 +2,8 @@ class WarmUpAnalyticsCacheJob < ApplicationJob
   queue_as :default
   self.queue_adapter = :sidekiq
 
-  def perform
-    to_time = Time.now
-    from_time = to_time - 90.days
-    FacilityGroup.all.each do |facility_group|
-      WarmUpFacilityGroupAnalyticsCacheJob.perform_later(
-        facility_group,
-        from_time.strftime('%Y-%m-%d'),
-        to_time.strftime('%Y-%m-%d'))
-    end
+  def perform(record_type, record_id, from_time_string, to_time_string)
+    record = record_type.constantize.find(record_id)
+    record.patient_set_analytics(from_time, to_time)
   end
 end
