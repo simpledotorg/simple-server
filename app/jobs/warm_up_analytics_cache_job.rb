@@ -1,5 +1,5 @@
 class WarmUpAnalyticsCacheJob < ApplicationJob
-  include Cacheable
+  include AnalyticsCacheable
   queue_as :default
   self.queue_adapter = :sidekiq
 

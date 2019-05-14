@@ -1,4 +1,4 @@
-module Cacheable
+module AnalyticsCacheable
   def perform_facility_group_caching(from_time_string, to_time_string)
     FacilityGroup.all.each do |facility_group|
       WarmUpFacilityGroupAnalyticsCacheJob.perform_later(
