@@ -3,7 +3,7 @@ class Analytics::FacilityGroupsController < AnalyticsController
   before_action :set_organization
   before_action :set_facilities
 
-  caches_action :show, layout: false
+  caches_action :show, layout: false, cache_path: Proc.new { |c| c.request.url }
 
   def show
     @days_previous = 20
