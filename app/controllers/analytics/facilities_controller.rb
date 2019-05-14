@@ -3,7 +3,7 @@ class Analytics::FacilitiesController < AnalyticsController
   before_action :set_facility_group
   before_action :set_organization
 
-  caches_action :show, layout: false
+  caches_action :show, layout: false, cache_path: Proc.new { |c| c.request.url }
 
   def show
     @facility_analytics = @facility.patient_set_analytics(@from_time, @to_time)

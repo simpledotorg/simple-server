@@ -10,6 +10,7 @@
 
   <h1><%= @facility.name %></h1>
   <%= string_for_range(@from_time, @to_time) %>
+  <p class="text-muted"><small>Last updated: <%= Time.now.strftime("%B %d, %Y") %></small></p>
 </div>
 
 <% if @user_analytics.values.present? %>
