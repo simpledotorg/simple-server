@@ -27,7 +27,7 @@ namespace :analytics do
     to_time = Time.now
     from_time = to_time - 90.days
 
-    LatestBloodPressure.refresh # This refreshes the materialized view
+    CachedLatestBloodPressure.refresh # This refreshes the materialized view
 
     fan_out_cache_warmup(from_time, to_time)
   end
@@ -35,7 +35,7 @@ namespace :analytics do
   task warm_up_last_four_quarters: :environment do
     Rails.logger = Logger.new(STDOUT)
 
-    LatestBloodPressure.refresh # This refreshes the materialized view
+    CachedLatestBloodPressure.refresh # This refreshes the materialized view
 
     (1..4).each do |n|
       range = ApplicationController.helpers.range_for_quarter(-1 * n)

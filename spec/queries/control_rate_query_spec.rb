@@ -16,6 +16,7 @@ RSpec.describe ControlRateQuery do
           create(:blood_pressure, :under_control, patient: patient)
         end
       end
+      CachedLatestBloodPressure.refresh
     end
 
     it 'returns the control rate for the set of patients' do

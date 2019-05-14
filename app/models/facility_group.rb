@@ -26,6 +26,6 @@ class FacilityGroup < ApplicationRecord
   friendly_id :name, use: :slugged
 
   def report_on_patients
-    Patient.joins(:facilities).joins(:latest_blood_pressure).where(facilities: { facility_group_id: id })
+    Patient.where(registration_facility: facilities)
   end
 end

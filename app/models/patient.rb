@@ -15,10 +15,13 @@ class Patient < ApplicationRecord
   belongs_to :address, optional: true
   has_many :phone_numbers, class_name: 'PatientPhoneNumber'
   has_many :business_identifiers, class_name: 'PatientBusinessIdentifier'
+
   has_many :blood_pressures, inverse_of: :patient
   has_many :latest_blood_pressures, -> { order(device_created_at: :desc) }, class_name: 'BloodPressure'
-  has_one :latest_blood_pressure
+  has_one :cached_latest_blood_pressure
+
   has_many :prescription_drugs
+
   has_many :facilities, -> { distinct }, through: :blood_pressures
   has_many :users, -> { distinct }, through: :blood_pressures
 
@@ -60,6 +63,10 @@ class Patient < ApplicationRecord
 
   def latest_phone_number
     phone_numbers.last&.number
+  end
+
+  def latest_blood_pressure
+    latest_blood_pressures.first
   end
 
   def phone_number?

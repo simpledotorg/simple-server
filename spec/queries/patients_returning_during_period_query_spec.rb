@@ -16,6 +16,7 @@ RSpec.describe PatientsReturningDuringPeriodQuery do
       Timecop.travel(from_time) do
         returning_patients.each { |patient| create(:blood_pressure, patient: patient) }
       end
+      CachedLatestBloodPressure.refresh
     end
 
     it 'returns the list of the patients that have returned in the period' do

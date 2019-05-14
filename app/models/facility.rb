@@ -26,6 +26,6 @@ class Facility < ApplicationRecord
   friendly_id :name, use: :slugged
 
   def report_on_patients
-    registered_patients.joins(:latest_blood_pressure)
+    registered_patients
   end
 end

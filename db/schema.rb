@@ -348,7 +348,7 @@ ActiveRecord::Schema.define(version: 20190514132656) do
   add_foreign_key "patients", "addresses"
   add_foreign_key "protocol_drugs", "protocols"
 
-  create_view "latest_blood_pressures", materialized: true, sql_definition: <<-SQL
+  create_view "cached_latest_blood_pressures", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (blood_pressures.patient_id) blood_pressures.id,
       blood_pressures.patient_id,
       blood_pressures.systolic,

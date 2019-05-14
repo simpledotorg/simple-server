@@ -49,9 +49,9 @@ class ControlRateQuery
 
   def patients_under_control_in_period(patient_ids, from_time, to_time)
     Patient.where(id: patient_ids)
-      .joins(:latest_blood_pressure)
-      .where('latest_blood_pressures.systolic <= ?', 140)
-      .where('latest_blood_pressures.diastolic <= ?', 90)
-      .where(latest_blood_pressures: { device_created_at: from_time..to_time })
+      .joins(:cached_latest_blood_pressure)
+      .where('cached_latest_blood_pressures.systolic < ?', 140)
+      .where('cached_latest_blood_pressures.diastolic < ?', 90)
+      .where(cached_latest_blood_pressures: { device_created_at: from_time..to_time })
   end
 end

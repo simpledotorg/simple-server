@@ -8,6 +8,9 @@ class PatientsReturningDuringPeriodQuery
   end
 
   def call
-    patients.where(latest_blood_pressures: { device_created_at: from_time..to_time })
+    patients
+      .joins(:cached_latest_blood_pressure)
+      .where('patients.device_created_at <= ?', from_time)
+      .where(cached_latest_blood_pressures: { device_created_at: from_time..to_time })
   end
 end

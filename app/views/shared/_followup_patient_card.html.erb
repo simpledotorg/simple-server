@@ -18,7 +18,7 @@
       <%= handle_impossible_registration_date(patient.device_created_at, format: "%d-%b-%Y") %><br>
     </div>
   <% end %>
-  <% if bp = patient.latest_blood_pressure %>
+  <% if bp = patient.latest_blood_pressures.first %>
     <div class="overdue-details">
       Last BP:
       <%= bp.to_s %>&nbsp;

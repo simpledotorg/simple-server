@@ -1,5 +1,5 @@
-class LatestBloodPressure < BloodPressure
-  self.table_name =  'latest_blood_pressures'
+class CachedLatestBloodPressure < BloodPressure
+  self.table_name =  'cached_latest_blood_pressures'
 
   belongs_to :patient
 

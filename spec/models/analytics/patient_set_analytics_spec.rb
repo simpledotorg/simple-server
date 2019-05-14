@@ -45,6 +45,8 @@ RSpec.describe Analytics::PatientSetAnalytics do
       create(:blood_pressure, :high, patient: returning_patients.first)
       create(:blood_pressure, :under_control, patient: returning_patients.second)
     end
+
+    CachedLatestBloodPressure.refresh
   end
 
   let(:analytics) { Analytics::PatientSetAnalytics.new(Patient.all, from_time, to_time) }
@@ -80,16 +82,6 @@ RSpec.describe Analytics::PatientSetAnalytics do
   describe '#non_returning_hypertensive_patients_count' do
     it 'return the number of patients enrolled as hypertensives that have not had a BP recorded in the period' do
       expect(analytics.non_returning_hypertensive_patients_count).to eq(3)
-    end
-  end
-
-  describe '#non_returning_hypertensive_patients_count_per_month' do
-    it 'return the number of patients enrolled as hypertensives that have not had a BP recorded per month' do
-      expect(analytics.non_returning_hypertensive_patients_count_per_month(4))
-        .to eq(first_dec_prev_year => 3,
-               first_jan => 3,
-               first_feb => 4,
-               first_mar => 4)
     end
   end
 
