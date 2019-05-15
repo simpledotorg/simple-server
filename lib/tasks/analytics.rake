@@ -27,7 +27,10 @@ namespace :analytics do
     to_time = Time.now
     from_time = to_time - 90.days
 
-    fan_out_cache_warmup(from_time, to_time)
+    fan_out_cache_warmup(
+      from_time.strftime('%Y-%m-%d'),
+      to_time.strftime('%Y-%m-%d')
+    )
   end
 
   desc 'Warm up analytics for last four quarters'
@@ -36,7 +39,10 @@ namespace :analytics do
 
     (1..4).each do |n|
       range = ApplicationController.helpers.range_for_quarter(-1 * n)
-      fan_out_cache_warmup(range.begin, range.end)
+      fan_out_cache_warmup(
+        range[:from_time].strftime('%Y-%m-%d'),
+        range[:to_time].strftime('%Y-%m-%d')
+      )
     end
   end
 end
