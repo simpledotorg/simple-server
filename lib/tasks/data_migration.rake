@@ -86,13 +86,13 @@ namespace :data_migration do
   task set_default_recorded_at_for_existing_records: :environment do
     # For BloodPressure records,
     # we default to the device_created_at
-    bps_without_recorded_at = BloodPressure.where(recorded_at: nil)
+    blood_pressures = BloodPressure.where(recorded_at: nil)
 
-    bps_without_recorded_at.each do |record|
-        record.update_column(:recorded_at, record.device_created_at)
+    blood_pressures.each do |record|
+      record.update_column(:recorded_at, record.device_created_at)
     end
 
-    puts "Total number of BloodPressure records updated = #{bps_without_recorded_at.size}"
+    puts "Total number of BloodPressure records updated = #{blood_pressures.size}"
 
     # Patients' recorded_at is set to their earliest
     # BP's device_created_at if older than theirs
