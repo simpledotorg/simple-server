@@ -5,8 +5,8 @@
   <meta charset="utf-8">
   <meta name="HandheldFriendly" content="True">
   <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, shrink-to-fit=no"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, shrink-to-fit=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
 
   <%= inline_stylesheet('common_webview.css') %>
   <%= inline_stylesheet('help.css') %>
@@ -16,24 +16,29 @@
 <body>
 
 <div class="anchors">
-  <a href="#watch" style="border-top: none;">WATCH A TUTORIAL</a>
-  <a href="#howto">HOW TO USE THIS APP?</a>
-  <a href="#bp">TIPS FOR TAKING ACCURATE BPs</a>
+  <a href="#watch" style="border-top: none;">VIDEOS</a>
+  <a href="#howto">INSTRUCTIONS</a>
+  <a href="#bp">HOW TO MEASURE BPs</a>
   <a href="#support">ASK FOR HELP</a>
 </div>
 
 <div id="watch"></div>
 <div class="card">
-  <h3>Watch a short tutorial</h3>
-  <a href="<%= ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL'] %>" class="video" style="display: block; margin: 8px 0;">
+  <h3>Videos</h3>
+  <a href="<%= ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL'] %>" class="video" style="display: block; margin: 8px 0 4px 0;">
     <%= inline_svg('thumb_demo.svg') %>
   </a>
-  <caption>Learn how to use Simple in less than 5 minutes with this easy video.</caption>
+  <div><a href="<%= ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL'] %>" style="text-align: center; display: block; font-weight: bold;">How to use the Simple app</a></div>
+    
+  <a href="<%= ENV['HELP_SCREEN_YOUTUBE_PASSPORT_URL'] %>" class="video" style="display: block; margin: 32px 0 4px 0;">
+    <%= inline_svg('thumb_passport.svg') %>
+  </a>
+    <div><a href="<%= ENV['HELP_SCREEN_YOUTUBE_PASSPORT_URL'] %>" style="text-align: center; display: block; font-weight: bold;">How to use BP Passports</a></div>
   <div id="howto"></div>
 </div>
 
 <div class="card">
-  <h3>How to use the Simple app?</h3>
+  <h3>Instructions</h3>
 
   <h6>Getting started</h6>
   <p>Each person in your facility who will be recording patient’s BPs should install the Simple app on their own Android
@@ -108,8 +113,8 @@
 </div>
 
 <div class="card">
-  <div style="width: 120px; height: 120px; margin: -8px -16px 0 0; float: right;">
-    <%= inline_svg('icon_whatsapp_image.svg') %>
+  <div style="width: 100px; height: 100px; margin: -8px -8px 16px 16px; float: right;">
+    <%= inline_svg('icon_whatsapp_icon.svg') %>
   </div>
 
   <h3>Ask for help</h3>
@@ -118,7 +123,7 @@
   <p>We welcome your suggestions on how we can make the app more useful for you.</p>
   <p>WhatsApp message support at:</p>
   <a href="<%= ENV['HELP_SCREEN_WHATSAPP_SUPPORT_GROUP_URL'] %>" class="whatsapp-button">
-    <%= inline_svg('icon_whatsapp_icon.svg') %> +91 0009 111234
+    <%= inline_svg('icon_whatsapp_icon.svg') %> <%= ENV['HELP_SCREEN_WHATSAPP_SUPPORT_NUMBER'] %>
   </a>
 </div>
 <footer></footer>
