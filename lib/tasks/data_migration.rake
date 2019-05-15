@@ -105,6 +105,7 @@ namespace :data_migration do
     end
 
     puts "Total number of Patient records updated = #{patients.size}"
+  end
 
   desc 'Move all the user phone numbers from the call logs to a de-normalized caller_phone_number field'
   task de_normalize_user_phone_numbers_in_call_logs: :environment  do
