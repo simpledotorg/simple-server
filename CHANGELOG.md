@@ -6,6 +6,15 @@
 ### Removed 
 ### Security
 
+# 2019-05-15-1
+### Added
+### Changed
+### Fixed
+- Fix dashboard caching
+### Deprecated
+### Removed
+### Security
+
 # 2019-05-14-1
 ### Added
 - Schedule automatic SMS reminders (Feature toggled off)
