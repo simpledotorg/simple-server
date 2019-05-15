@@ -11,11 +11,13 @@ RSpec.describe ControlRateQuery do
         patients.each { |patient| create(:blood_pressure, :high, patient: patient) }
         patients
       end
+
       Timecop.travel(from_time) do
         hypertensive_patients_registered_in_cohort.take(2).each do |patient|
           create(:blood_pressure, :under_control, patient: patient)
         end
       end
+
       CachedLatestBloodPressure.refresh
     end
 

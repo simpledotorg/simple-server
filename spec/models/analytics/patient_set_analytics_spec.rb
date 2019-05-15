@@ -13,7 +13,7 @@ RSpec.describe Analytics::PatientSetAnalytics do
   let(:past_options) { { from_time: 1.year.ago, to_time: from_time.prev_day } }
   let(:current_options) { { from_time: from_time, to_time: to_time } }
 
-  before :each do
+  before do
     # old patients recorded as hypertensive
     old_patients = Timecop.travel(one_year_ago) do
       old_patients = create_list(:patient, 5)
@@ -21,8 +21,8 @@ RSpec.describe Analytics::PatientSetAnalytics do
       old_patients
     end
 
-    # old patients recorded as hypertensive in chort
     Timecop.travel(from_time - ControlRateQuery::COHORT_DELTA) do
+      # old patients recorded as hypertensive in cohort
       old_patients.each { |patient| create(:blood_pressure, :high, patient: patient) }
     end
 
@@ -96,6 +96,16 @@ RSpec.describe Analytics::PatientSetAnalytics do
     end
   end
 
+  describe '#non_returning_hypertensive_patients_count_per_month' do
+    it 'return the number of patients enrolled as hypertensives that have not had a BP recorded per month' do
+      expect(analytics.non_returning_hypertensive_patients_count_per_month(4))
+        .to eq(first_dec_prev_year => 3,
+               first_jan => 3,
+               first_feb => 4,
+               first_mar => 4)
+    end
+  end
+
   describe '#blood_pressure_recored_per_week' do
     it 'returns the number of blood pressures recorded per week for a group of patients' do
       expected_counts = {
@@ -118,18 +128,47 @@ RSpec.describe Analytics::PatientSetAnalytics do
     end
   end
 
-  describe '#control_rate_per_month' do
-    it 'returns the number of blood pressures recorded per week for a group of patients' do
-      expected_counts = {
-        Date.new(2018, 10, 1) => 0,
-        Date.new(2018, 11, 1) => 0,
-        Date.new(2018, 12, 1) => 0,
-        Date.new(2019, 1, 1) => 20,
-        Date.new(2019, 2, 1) => 0,
-        Date.new(2019, 3, 1) => 0,
-      }
+  context "control rate queries" do
+    before do
+      cohort_patients = []
 
-      expect(analytics.control_rate_per_month(6)).to eq(expected_counts)
+      Timecop.travel(from_time - ControlRateQuery::COHORT_DELTA) do
+        # newly enrolled patients in the cohort
+        cohort_patients = create_list(:patient, 5)
+        cohort_patients.each { |patient| create(:blood_pressure, :high, patient: patient) }
+      end
+
+      Timecop.travel(from_time) do
+        # returning patients from the earlier cohort
+        create(:blood_pressure, :high, patient: cohort_patients.first)
+        create(:blood_pressure, :under_control, patient: cohort_patients.second)
+      end
+    end
+
+    describe '#control_rate' do
+      context 'number of patients now under control / number of hypertensives patients recorded in cohort' do
+        it 'returns the control rate for the set of patients in the period' do
+          expect(analytics.control_rate)
+            .to eq(control_rate: 10,
+                   hypertensive_patients_in_cohort: 10,
+                   patients_under_control_in_period: 1)
+        end
+      end
+    end
+
+    describe '#control_rate_per_month' do
+      it 'returns the number of blood pressures recorded per week for a group of patients' do
+        expected_counts = {
+          Date.new(2018, 10, 1) => 0,
+          Date.new(2018, 11, 1) => 0,
+          Date.new(2018, 12, 1) => 0,
+          Date.new(2019, 1, 1) => 10,
+          Date.new(2019, 2, 1) => 0,
+          Date.new(2019, 3, 1) => 0,
+        }
+
+        expect(analytics.control_rate_per_month(6)).to eq(expected_counts)
+      end
     end
   end
 end

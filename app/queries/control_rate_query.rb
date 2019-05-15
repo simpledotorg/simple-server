@@ -1,7 +1,7 @@
 class ControlRateQuery
   attr_reader :patients
 
-  COHORT_DELTA = 9.months
+  COHORT_DELTA = 6.months
 
   def initialize(patients:)
     @patients = patients
@@ -28,11 +28,9 @@ class ControlRateQuery
       from_time - COHORT_DELTA,
       to_time - COHORT_DELTA
     )
-
     numerator = patients_under_control_in_period(hypertensive_patients_ids, from_time, to_time).size
     denominator = hypertensive_patients_ids.count
     control_rate = (numerator * 100.0 / denominator).round unless denominator == 0
-
     { control_rate: control_rate,
       hypertensive_patients_in_cohort: denominator,
       patients_under_control_in_period: numerator }
