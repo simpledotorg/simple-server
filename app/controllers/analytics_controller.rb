@@ -5,10 +5,10 @@ class AnalyticsController < AdminController
   before_action :set_time_period, only: [:show]
   before_action :set_month, only: [:graphics]
 
-  DEFAULT_ANALYTICS_TIMEZONE = 'New Delhi'
+  DEFAULT_ANALYTICS_TIME_ZONE = 'New Delhi'
 
   def set_analytics_timezone
-    Groupdate.time_zone = ENV['ANALYTICS_TIMEZONE'].present? ? ENV['ANALYTICS_TIMEZONE'] : DEFAULT_ANALYTICS_TIMEZONE
+    Groupdate.time_zone = ENV['ANALYTICS_TIME_ZONE'] || DEFAULT_ANALYTICS_TIME_ZONE
   end
 
   def reset_analytics_timezone

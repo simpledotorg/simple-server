@@ -23,9 +23,10 @@ namespace :analytics do
   desc 'Warm up analytics for last 90 days'
   task warm_up_last_ninety_days: :environment do
     Rails.logger = Logger.new(STDOUT)
+    timezone = ENV.fetch('ANALYTICS_TIME_ZONE')
 
-    to_time = Time.now
-    from_time = to_time - 90.days
+    to_time = Time.now.in_time_zone(timezone)
+    from_time = to_time - 90.days.in_time_zone(timezone)
 
     fan_out_cache_warmup(
       from_time.strftime('%Y-%m-%d'),
@@ -36,12 +37,13 @@ namespace :analytics do
   desc 'Warm up analytics for last four quarters'
   task warm_up_last_four_quarters: :environment do
     Rails.logger = Logger.new(STDOUT)
+    timezone = ENV.fetch('ANALYTICS_TIME_ZONE')
 
     (1..4).each do |n|
       range = ApplicationController.helpers.range_for_quarter(-1 * n)
       fan_out_cache_warmup(
-        range[:from_time].strftime('%Y-%m-%d'),
-        range[:to_time].strftime('%Y-%m-%d')
+        range[:from_time].in_time_zone(timezone).strftime('%Y-%m-%d'),
+        range[:to_time].in_time_zone(timezone).strftime('%Y-%m-%d')
       )
     end
   end
