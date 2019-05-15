@@ -46,8 +46,9 @@ class Api::Current::Models
           age_updated_at: { '$ref' => '#/definitions/nullable_timestamp' },
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
-          updated_at: { '$ref' => '#/definitions/timestamp' } },
-        required: %w[id gender full_name created_at updated_at status] }
+          updated_at: { '$ref' => '#/definitions/timestamp' },
+          recorded_at: { '$ref' => '#/definitions/timestamp' } },
+        required: %w[id gender full_name created_at updated_at recorded_at status] }
     end
 
     def address
@@ -112,10 +113,11 @@ class Api::Current::Models
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' },
+          recorded_at: { '$ref' => '#/definitions/timestamp' },
           patient_id: { '$ref' => '#/definitions/uuid' },
           facility_id: { '$ref' => '#/definitions/uuid' },
           user_id: { '$ref' => '#/definitions/uuid' } },
-        required: %w[systolic diastolic created_at updated_at patient_id facility_id user_id]
+        required: %w[systolic diastolic created_at updated_at recorded_at patient_id facility_id user_id]
       }
     end
 

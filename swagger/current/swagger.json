@@ -315,119 +315,6 @@
         }
       }
     },
-    "/communications/sync": {
-      "post": {
-        "summary": "Syncs communication data from device to server.",
-        "tags": [
-          "Communications"
-        ],
-        "security": [
-          {
-            "basic": [
-
-            ]
-          }
-        ],
-        "parameters": [
-          {
-            "name": "HTTP_X_USER_ID",
-            "in": "header",
-            "type": "uuid"
-          },
-          {
-            "name": "HTTP_X_FACILITY_ID",
-            "in": "header",
-            "type": "uuid"
-          },
-          {
-            "name": "communications",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "communication": {
-                  "$ref": "#/definitions/communication"
-                }
-              },
-              "required": [
-                "communication"
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "some, or no errors were found",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "errors": {
-                  "$ref": "#/definitions/errors"
-                }
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "summary": "Syncs communication data from server to device.",
-        "tags": [
-          "Communications"
-        ],
-        "security": [
-          {
-            "basic": [
-
-            ]
-          }
-        ],
-        "parameters": [
-          {
-            "name": "HTTP_X_USER_ID",
-            "in": "header",
-            "type": "uuid"
-          },
-          {
-            "name": "HTTP_X_FACILITY_ID",
-            "in": "header",
-            "type": "uuid"
-          },
-          {
-            "name": "process_token",
-            "type": "string",
-            "format": "byte",
-            "description": "Token containing all the information needed to process batch requests from the user",
-            "in": "query"
-          },
-          {
-            "in": "query",
-            "name": "limit",
-            "type": "integer",
-            "description": "Number of record to retrieve (a.k.a batch-size)"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "communications received",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "communications": {
-                  "$ref": "#/definitions/communications"
-                },
-                "process_token": {
-                  "$ref": "#/definitions/process_token"
-                }
-              },
-              "required": [
-                "communications",
-                "process_token"
-              ]
-            }
-          }
-        }
-      }
-    },
     "/facilities/sync": {
       "get": {
         "summary": "Syncs facilities data from server to device.",
@@ -1244,6 +1131,9 @@
         },
         "updated_at": {
           "$ref": "#/definitions/timestamp"
+        },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
         }
       },
       "required": [
@@ -1252,6 +1142,7 @@
         "full_name",
         "created_at",
         "updated_at",
+        "recorded_at",
         "status"
       ]
     },
@@ -1396,6 +1287,9 @@
         "updated_at": {
           "$ref": "#/definitions/timestamp"
         },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
+        },
         "address": {
           "$ref": "#/definitions/address"
         },
@@ -1412,6 +1306,7 @@
         "full_name",
         "created_at",
         "updated_at",
+        "recorded_at",
         "status"
       ],
       "description": "Patient with address, phone numbers and business identifiers nested."
@@ -1446,6 +1341,9 @@
         "updated_at": {
           "$ref": "#/definitions/timestamp"
         },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
+        },
         "patient_id": {
           "$ref": "#/definitions/uuid"
         },
@@ -1461,6 +1359,7 @@
         "diastolic",
         "created_at",
         "updated_at",
+        "recorded_at",
         "patient_id",
         "facility_id",
         "user_id"
@@ -1762,8 +1661,9 @@
         "communication_type": {
           "type": "string",
           "enum": [
+            "voip_call",
             "manual_call",
-            "voip_call"
+            "missed_visit_sms_reminder"
           ]
         },
         "communication_result": {
@@ -1771,7 +1671,10 @@
           "enum": [
             "unavailable",
             "unreachable",
-            "successful"
+            "successful",
+            "unsuccessful",
+            "in_progress",
+            "unknown"
           ]
         },
         "deleted_at": {
