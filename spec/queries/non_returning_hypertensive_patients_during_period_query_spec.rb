@@ -20,6 +20,10 @@ RSpec.describe NonReturningHypertensivePatientsDuringPeriodQuery do
       end
     end
 
+    before :each do
+      CachedLatestBloodPressure.refresh
+    end
+
     it 'returns number of patients who are hypertensive and have not returned since the given time ' do
       results = NonReturningHypertensivePatientsDuringPeriodQuery.new(patients: Patient.all).non_returning_since(from_time)
 
