@@ -38,6 +38,7 @@ class Api::Current::BloodPressuresController < Api::Current::SyncController
         :user_id,
         :created_at,
         :updated_at,
+        :recorded_at,
         :deleted_at
       )
     end
