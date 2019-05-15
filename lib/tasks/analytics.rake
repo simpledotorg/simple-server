@@ -30,6 +30,7 @@ namespace :analytics do
     fan_out_cache_warmup(from_time, to_time)
   end
 
+  desc 'Warm up analytics for last four quarters'
   task warm_up_last_four_quarters: :environment do
     Rails.logger = Logger.new(STDOUT)
 
