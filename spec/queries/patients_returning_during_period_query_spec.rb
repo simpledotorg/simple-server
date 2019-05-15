@@ -10,11 +10,16 @@ RSpec.describe PatientsReturningDuringPeriodQuery do
       Timecop.travel(one_year_ago) { create_list(:patient, 5) }
     end
 
+    let!(:new_patients) do
+      Timecop.travel(from_time) { create_list(:patient, 3) }
+    end
+
     let!(:returning_patients) { old_patients.take(3) }
 
     before :each do
       Timecop.travel(from_time) do
         returning_patients.each { |patient| create(:blood_pressure, patient: patient) }
+        new_patients.each { |patient| create(:blood_pressure, patient: patient) }
       end
     end
 
@@ -23,6 +28,7 @@ RSpec.describe PatientsReturningDuringPeriodQuery do
 
       expect(results).to match_array(returning_patients)
       expect(results).not_to include(old_patients - returning_patients)
+      expect(results).not_to include(new_patients)
     end
   end
 end

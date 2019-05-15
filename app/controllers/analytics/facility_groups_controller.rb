@@ -2,6 +2,7 @@ class Analytics::FacilityGroupsController < AnalyticsController
   before_action :set_facility_group
   before_action :set_organization
   before_action :set_facilities
+  before_action :set_cache_key
 
   def show
     @days_previous = 20
@@ -30,6 +31,15 @@ class Analytics::FacilityGroupsController < AnalyticsController
 
   def set_facilities
     @facilities = policy_scope(@facility_group.facilities).order(:name)
+  end
+
+  def set_cache_key
+    @cache_key = [
+      "analytics/facility_groups",
+      @facility_group.slug,
+      @from_time.strftime("%Y-%m-%d"),
+      @to_time.strftime("%Y-%m-%d")
+    ]
   end
 
   def facility_group_analytics(from_time, to_time)
