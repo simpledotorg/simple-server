@@ -61,12 +61,12 @@ class Patient < ApplicationRecord
     appointments.where(status: 'scheduled').order(scheduled_date: :desc).first
   end
 
-  def latest_phone_number
-    phone_numbers.last&.number
-  end
-
   def latest_blood_pressure
     latest_blood_pressures.first
+  end
+
+  def latest_phone_number
+    phone_numbers.last&.number
   end
 
   def phone_number?
