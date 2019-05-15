@@ -41,11 +41,6 @@ Rails.application.routes.draw do
       post 'sync', to: 'appointments#sync_from_user'
     end
 
-    scope '/communications' do
-      get 'sync', to: 'communications#sync_to_user'
-      post 'sync', to: 'communications#sync_from_user'
-    end
-
     scope '/medical_histories' do
       get 'sync', to: 'medical_histories#sync_to_user'
       post 'sync', to: 'medical_histories#sync_from_user'
@@ -62,6 +57,11 @@ Rails.application.routes.draw do
         post 'register', to: 'users#register'
         post '/:id/request_otp', to: 'users#request_otp'
         post '/me/reset_password', to: 'users#reset_password'
+      end
+
+      scope '/communications' do
+        get 'sync', to: 'communications#sync_to_user'
+        post 'sync', to: 'communications#sync_from_user'
       end
 
       concerns :sync_routes
@@ -87,6 +87,11 @@ Rails.application.routes.draw do
         post '/me/reset_password', to: 'users#reset_password'
       end
 
+      scope '/communications' do
+        get 'sync', to: 'communications#sync_to_user'
+        post 'sync', to: 'communications#sync_from_user'
+      end
+
       concerns :sync_routes
 
       resource :help, only: [:show], controller: "help"
@@ -110,6 +115,10 @@ Rails.application.routes.draw do
             get 'create', to: 'exotel_call_sessions#create'
             get 'terminate', to: 'exotel_call_sessions#terminate'
           end
+        end
+
+        if FeatureToggle.enabled?('SMS_REMINDERS')
+          resource :twilio_sms_delivery, only: [:create], controller: :twilio_sms_delivery
         end
 
         scope :users do

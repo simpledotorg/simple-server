@@ -4,14 +4,15 @@ FactoryBot.define do
     appointment
     user
     communication_type { :manual_call }
-    communication_result { :successful }
     device_created_at { Time.now }
     device_updated_at { Time.now }
+
+    trait(:missed_visit_sms_reminder) { communication_type { :missed_visit_sms_reminder } }
   end
 end
 
 def build_communication_payload(communication = FactoryBot.build(:communication))
-  communication.attributes.with_payload_keys
+  communication.attributes.merge(communication_result: 'successful').with_payload_keys
 end
 
 def build_invalid_communication_payload
@@ -23,10 +24,9 @@ end
 
 def updated_communication_payload(existing_communication)
   update_time = 10.days.from_now
-  updated_result = Communication.communication_results.keys
-                          .reject { |result| result == existing_communication.communication_result.to_s }
-                          .sample
-
+  updated_result = Communication::COMMUNICATION_RESULTS.keys
+                     .reject { |result| result == existing_communication.communication_result.to_s }
+                     .sample
   build_communication_payload(existing_communication).merge(
     'updated_at' => update_time,
     'communication_result' => updated_result

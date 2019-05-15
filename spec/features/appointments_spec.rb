@@ -62,6 +62,10 @@ RSpec.feature 'Overdue appointments', type: :feature do
         expect(page).to have_content(overdue_patient_in_facility_2.full_name)
       end
 
+      it 'shows enrollment date for overdue patients' do
+        expect(page).to have_content('Enrolled on')
+      end
+
       it 'does not show non-overdue patients' do
         expect(page).not_to have_content(non_overdue_patient_in_facility_1.full_name)
       end

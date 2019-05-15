@@ -1,5 +1,4 @@
 module ApplicationHelper
-
   DEFAULT_PROGRAM_INCEPTION_DATE = Time.new(2018, 01, 01)
 
   def bootstrap_class_for_flash(flash_type)
@@ -37,4 +36,23 @@ module ApplicationHelper
       date.strftime(format)
     end
   end
+
+  def show_last_interaction_date_and_result(patient)
+    return if patient.appointments.count < 2
+
+    last_interaction = patient.appointments.order(scheduled_date: :desc).second
+    last_interaction_date = last_interaction.created_at.strftime("%d-%b-%Y")
+    interaction_result = "Last interaction: " + last_interaction_date
+
+    if last_interaction.agreed_to_visit.present?
+      interaction_result += ' - Agreed to visit'
+    elsif last_interaction.remind_on.present?
+      interaction_result += ' - Remind to call later'
+    elsif last_interaction.status_visited?
+      interaction_result += " - Visited"
+    end
+
+    interaction_result
+  end
 end
+

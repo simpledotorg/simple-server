@@ -1,6 +1,7 @@
 pa_Guru_IN:
   sms:
-    overdue_appointment_reminder: 'ਅਸੀ ਤੁਹਾਨੂੰ %{appointment_date} ਨੂੰ ਸਰਕਾਰੀ ਹਸਪਤਾਲ %{facility_name} ਵਿਚ ਤੁਹਾਡੇ ਨਿਰਧਾਰਿਤ ਬੀਪੀ ਚੈਕ-ਅਪ ਲਈ ਬੁਲਾਇਆ ਸੀ। ਤੁਸੀ 9.30 ਵਜੇ ਤੋਂ 2 ਵਜੇ ਦੇ ਵਿਚ ਆਓ।'
+    appointment_reminders:
+      missed_visit_sms_reminder: 'ਸਰਕਾਰੀ ਹਸਪਤਾਲ %{facility_name} ਵਿੱਚ %{appointment_date} ਨੂੰ  ਤੁਹਾਡੇ ਬੀ.ਪੀ ਦੀ ਜਾਂਚ ਹੋਣੀ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ 9:30 ਤੋਂ 2 ਵਜੇ ਦੇ ਵਿੱਚ ਆਉ।'
   months:
     1: 'ਜਨਵਰੀ'
     2: 'ਫਰਵਰੀ'
