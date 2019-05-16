@@ -18,7 +18,7 @@ class Api::V2::BloodPressuresController < Api::Current::BloodPressuresController
   private
 
   def merge_if_valid(blood_pressure_params)
-    validator = Api::Current::BloodPressurePayloadValidator.new(blood_pressure_params)
+    validator = Api::V2::BloodPressurePayloadValidator.new(blood_pressure_params)
     logger.debug "Blood Pressure had errors: #{validator.errors_hash}" if validator.invalid?
     if validator.invalid?
       NewRelic::Agent.increment_metric('Merge/BloodPressure/schema_invalid')

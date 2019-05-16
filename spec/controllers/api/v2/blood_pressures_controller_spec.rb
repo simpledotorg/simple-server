@@ -11,7 +11,7 @@ RSpec.describe Api::V2::BloodPressuresController, type: :controller do
 
   let(:model) { BloodPressure }
 
-  let(:build_payload) { lambda { build_blood_pressure_payload } }
+  let(:build_payload) { lambda { build_blood_pressure_payload_v2 } }
   let(:build_invalid_payload) { lambda { build_invalid_blood_pressure_payload } }
   let(:invalid_record) { build_invalid_payload.call }
   let(:update_payload) { lambda { |blood_pressure| updated_blood_pressure_payload blood_pressure } }
@@ -45,7 +45,7 @@ RSpec.describe Api::V2::BloodPressuresController, type: :controller do
       it 'creates new blood pressures with associated patient' do
         patient = FactoryBot.create(:patient)
         blood_pressures = (1..10).map do
-          build_blood_pressure_payload(FactoryBot.build(:blood_pressure, patient: patient))
+          build_blood_pressure_payload_v2(FactoryBot.build(:blood_pressure, patient: patient))
         end
         post(:sync_from_user, params: { blood_pressures: blood_pressures }, as: :json)
         expect(BloodPressure.count).to eq 10
