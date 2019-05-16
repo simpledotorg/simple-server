@@ -25,7 +25,19 @@ class Api::V2::BloodPressuresController < Api::Current::BloodPressuresController
       { errors_hash: validator.errors_hash }
     else
       blood_pressure = BloodPressure.merge(Api::V2::BloodPressureTransformer.from_request(blood_pressure_params))
+      retroactively_set_recorded_at(blood_pressure)
       { record: blood_pressure }
+    end
+  end
+
+  def retroactively_set_recorded_at(blood_pressure)
+    # older versions set device_created_at in the past
+    blood_pressure.recorded_at = blood_pressure.device_created_at
+
+    # if patient's device_created_at is older than
+    # the bp's we modify it to be the earlier date
+    if blood_pressure.patient && blood_pressure.device_created_at < blood_pressure.patient.device_created_at
+      blood_pressure.patient.recorded_at = blood_pressure.device_created_at
     end
   end
 
