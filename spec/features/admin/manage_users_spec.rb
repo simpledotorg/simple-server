@@ -10,13 +10,11 @@ RSpec.feature 'Users Management ', type: :feature do
   login_page = LoginPage.new
   users_page = UsersPage.new
   edit_user_page = EditUserPage.new
-  registered_faciltiy_page = UsersRegisteredFacilityPage.new
+  registered_facility_page = UsersRegisteredFacilityPage.new
 
   describe "owner-Manage Users Section" do
-
-
     context "edit info for single user" do
-      @user = create(:user, sync_approval_status: :requested)
+      let!(:user){create(:user, sync_approval_status: :requested)}
 
       before(:each) do
         visit root_path
@@ -26,9 +24,9 @@ RSpec.feature 'Users Management ', type: :feature do
 
       it 'verify Users landing page' do
         users_page.verify_users_landing_page
-        expect(users_page.all_district.size).to eq(1)
-        expect(page).to have_content(@user.full_name)
-        expect(page).to have_content(@user.phone_number)
+        expect(users_page.get_district_count).to eq(1)
+        expect(page).to have_content(user.full_name)
+        expect(page).to have_content(user.phone_number)
         expect(page).to have_content("Requested")
       end
 
@@ -38,14 +36,15 @@ RSpec.feature 'Users Management ', type: :feature do
         edit_user_page.set_phone_number("01234567876")
         edit_user_page.set_pin("2019")
         edit_user_page.set_confirm_pin("2019")
+        edit_user_page.click_Update_user_button
 
         #assertion at user detail page
-        expect(page).to have_content("012345678877")
+        expect(page).to have_content("01234567876")
         expect(page).to have_no_content("2019")
 
         #assertion at Users landing page
         visit admin_users_path
-        expect(page).to have_content("012345678877")
+        expect(page).to have_content("01234567876")
         expect(page).to have_no_content("2019")
       end
 
@@ -59,7 +58,6 @@ RSpec.feature 'Users Management ', type: :feature do
         visit admin_users_path
         users_page.click_edit_link(user.full_name)
         edit_user_page.edit_status("allowed")
-        print page.html
 
         #assertion at user detail page
         expect(page).to have_content("allowed")
@@ -71,7 +69,7 @@ RSpec.feature 'Users Management ', type: :feature do
 
       it "verify registered facility link" do
         users_page.click_registered_facility_link(user.full_name)
-        registered_faciltiy_page.verify_registered_facility_landing_page
+        registered_facility_page.verify_registered_facility_landing_page
       end
     end
 
@@ -80,9 +78,8 @@ RSpec.feature 'Users Management ', type: :feature do
       visit root_path
       login_page.do_login(owner.email, owner.password)
       visit admin_users_path
-      print page.html
-      expect(users_page.all_district.size).to eq(1)
-      expect(users_page.all_user.size).to eq(5)
+      expect(users_page.get_district_count).to eq(1)
+      expect(users_page.get_users_count).to eq(5)
     end
   end
 end

@@ -43,4 +43,12 @@ class LoginPage < Base
     click(MESSAGE_CROSS_BUTTON)
     not_present?(SUCCESSFUL_LOGOUT_MESSAGE)
   end
+
+  def set_email_text_box(email)
+    type(EMAIL_TEXT_BOX,email)
+  end
+
+  def set_password_text_box(pwd)
+    type(PASSWORD_TEXT_BOX, pwd)
+  end
 end

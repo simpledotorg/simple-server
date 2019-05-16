@@ -3,15 +3,15 @@ require 'Pages/log_in_page'
 require 'Pages/home_page'
 require 'Pages/base'
 
-RSpec.feature 'Owner Login as Admin', type: :feature do
-  let(:owner) {create(:admin)}
+RSpec.feature 'Admin login as organization owner', type: :feature do
+  let(:org_owner) {create(:admin, :organization_owner)}
   login_page = LoginPage.new
   home_page = HomePage.new
 
   context "owners login and logout" do
     before(:each) do
       visit root_path
-      login_page.do_login(owner.email, owner.password)
+      login_page.do_login(org_owner.email, org_owner.password)
     end
 
     it 'Logs in ' do
@@ -28,7 +28,7 @@ RSpec.feature 'Owner Login as Admin', type: :feature do
 
   it 'login with Invalid data' do
     visit root_path
-    login_page.do_login(owner.email, "")
+    login_page.do_login(org_owner.email, "")
     login_page.is_errormessage_present
     login_page.click_errormessage_cross_button
   end

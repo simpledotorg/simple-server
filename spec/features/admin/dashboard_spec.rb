@@ -1,4 +1,5 @@
 require 'rails_helper'
+
 require 'Pages/dashboard_page'
 require 'Pages/log_in_page'
 require 'Pages/home_page'
@@ -39,7 +40,7 @@ RSpec.feature 'Verify Dashboard', type: :feature do
   end
 
   it 'Verify all facilities' do
-    #asssertion
+checkout    #asssertion
     expect(dashboard.get_facility_count).to eq(3)
     expect(page).to have_content("Bathinda")
     expect(page).to have_content("Mansa")
@@ -56,7 +57,8 @@ RSpec.feature 'Verify Dashboard', type: :feature do
 
     #assertion at organization screen
     expect(page).to have_content('Organization was successfully created.')
-    organization.verify_organization_info
+    org_info =["test", "testDescription"]
+    organization.verify_organization_info(org_info)
 
     home_page.select_main_menu_tab("Dashboard")
     #assertion at dashboard screen
@@ -68,14 +70,13 @@ RSpec.feature 'Verify Dashboard', type: :feature do
     dashboard.click_facility_group_link(path_group.name)
     expect(current_path).to eq analytics_facility_group_path(path_group)
 
-    #assertion at detail page
-    expect(dashboard.get_facility_count_at_in_detail_page).to eq(3)
+   # assertion at detail page
+    expect(dashboard.get_facility_count_at_in_analytics_page).to eq(3)
     expect(page).to have_content(path_clinic1.name)
     expect(page).to have_content(path_clinic2.name)
     expect(page).to have_content(path_clinic3.name)
   end
   end
-
 
   it 'SignIn as Owner and verify approval request in dashboard' do
     user = create(:user, sync_approval_status: :requested)

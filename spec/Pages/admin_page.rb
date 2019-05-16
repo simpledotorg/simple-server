@@ -8,9 +8,11 @@ class AdminPage < Base
   SUCCESSFUL_MESSAGE = {xpath: "//div[@class='alert alert-primary alert-dismissable fade show']"}
   CROSS_BUTTON = {xpath: "//button[@class='close']/span"}
 
-  def verify_admin_landing_page
+  def verify_admin_landing_page(permission)
     present? PAGE_HEADING
-    all_elements(ALL_INVITE_TABS).size.equal?(5)
+    all_elements(ALL_INVITE_TABS).size.equal?(permission.size)
+    invite = all_elements(ALL_INVITE_TABS)
+    invite.each { |name|  permission.each {|col_name| name.text.include? col_name}}
   end
 
   def send_invite(name)
@@ -30,4 +32,6 @@ class AdminPage < Base
     click(CROSS_BUTTON)
     not_present?(SUCCESSFUL_MESSAGE)
   end
+
+
 end

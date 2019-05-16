@@ -43,18 +43,14 @@ class InvitationPage < Base
   def select_invite_multiple_organization(email, org_name)
     present?(PAGE_HEADING)
     type(EMAIL, email)
-    org_name.each do |org|
-      find(:xpath, "//label[text()='#{org}']/../input").click
-    end
+    org_name.each { |org| find(:xpath, "//label[text()='#{org}']/../input").click}
     click(SEND_INVITATION_BUTTON)
   end
 
   def send_multiple_invitation_others(email, facility)
     present?(PAGE_HEADING)
     type(EMAIL, email)
-    facility.each do |name|
-      find(:xpath, "//label[text()='#{name}']/../input").click
-    end
+    facility.each { |name| find(:xpath, "//label[text()='#{name}']/../input").click}
     click(SEND_INVITATION_BUTTON)
   end
 end

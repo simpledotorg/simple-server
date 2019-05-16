@@ -13,7 +13,7 @@ RSpec.feature 'test protocol detail page functionality', type: :feature do
   protocol_page = ProtocolLandingPage.new
   protocol_form = ProtocolFormPage.new
   protocol_detail = ProtocolDetailPage.new
-  protocol_drug=ProtocolDrugPage.new
+  protocol_drug = ProtocolDrugPage.new
 
   before(:each) do
     visit root_path
@@ -24,7 +24,7 @@ RSpec.feature 'test protocol detail page functionality', type: :feature do
   end
 
   context "protocol detail page" do
-    it " edit prototcol" do
+    it " edit protocol" do
       protocol_detail.click_edit_protocol_button
       protocol_form.update_protocol_followup_days("10")
       #assertion
@@ -37,7 +37,8 @@ RSpec.feature 'test protocol detail page functionality', type: :feature do
       protocol_drug.add_new_protocol_drug("test_drug", "10mg", "AXDSC")
       #assertion
       protocol_detail.verify_successful_message("Protocol drug was successfully created.")
-      protocol_detail.verify_protocol_drug_name_list("test_drug")
+      drug_info = ["test_drug", "10mg","AXDSC"]
+      protocol_detail.verify_protocol_drug_info(drug_info)
     end
     it 'should edit protocol drug' do
       protocol_detail.click_new_protocol_drug_button
