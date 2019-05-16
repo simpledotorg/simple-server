@@ -11,7 +11,12 @@ RSpec.describe Api::V2::BloodPressuresController, type: :controller do
 
   let(:model) { BloodPressure }
 
-  let(:build_payload) { lambda { build_blood_pressure_payload_v2 } }
+  let(:build_payload) do
+    lambda do
+      build_blood_pressure_payload_v2(
+        FactoryBot.build(:blood_pressure, user: request_user))
+    end
+  end
   let(:build_invalid_payload) { lambda { build_invalid_blood_pressure_payload } }
   let(:invalid_record) { build_invalid_payload.call }
   let(:update_payload) { lambda { |blood_pressure| updated_blood_pressure_payload blood_pressure } }

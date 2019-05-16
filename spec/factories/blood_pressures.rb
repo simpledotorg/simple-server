@@ -34,11 +34,11 @@ FactoryBot.define do
 end
 
 def build_blood_pressure_payload(blood_pressure = FactoryBot.build(:blood_pressure))
-  Api::Current::Transformer.to_response(blood_pressure)
+  Api::Current::Transformer.to_response(blood_pressure).with_indifferent_access
 end
 
 def build_blood_pressure_payload_v2(blood_pressure = FactoryBot.build(:blood_pressure))
-  Api::V2::BloodPressureTransformer.to_response(blood_pressure)
+  Api::V2::BloodPressureTransformer.to_response(blood_pressure).with_indifferent_access
 end
 
 def build_invalid_blood_pressure_payload
