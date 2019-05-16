@@ -21,30 +21,6 @@ RSpec.describe Analytics::FacilityGroupsController, type: :controller do
     context 'from_time and to_time are set' do
       render_views
 
-      it 'renders links change the analytics period for a facility group' do
-        get :show, params: { id: facility_group.id, from_time: from_time, to_time: to_time }
-
-        expect(response).to render_template(partial: 'shared/analytics/_patients_count_panel')
-      end
-
-      it 'renders the patient count panel for the facility group' do
-        get :show, params: { id: facility_group.id, from_time: from_time, to_time: to_time }
-
-        expect(response).to render_template(partial: 'shared/analytics/_patients_count_panel')
-      end
-
-      it 'renders the non returning hypertensive patients panel for the facility group' do
-        get :show, params: { id: facility_group.id, from_time: from_time, to_time: to_time }
-
-        expect(response).to render_template(partial: 'shared/analytics/_non_returning_hypertensive_patients_panel')
-      end
-
-      it 'renders the control rate panel for the facility group' do
-        get :show, params: { id: facility_group.id, from_time: from_time, to_time: to_time }
-
-        expect(response).to render_template(partial: 'shared/analytics/_control_rate_panel')
-      end
-
       it 'render the facility analytics table for the facilities in the group' do
         get :show, params: { id: facility_group.id, from_time: from_time, to_time: to_time }
 

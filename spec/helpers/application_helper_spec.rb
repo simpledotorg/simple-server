@@ -37,4 +37,40 @@ describe ApplicationHelper, type: :helper do
       expect(helper.handle_impossible_registration_date(Date.new(2017, 01, 01))).to eq('Unclear')
     end
   end
+
+  describe '#show_last_interaction_date_and_result' do
+    context 'When at least one previous visit exists' do
+      it 'returns "Agreed to visit" if the last visit exists and has agreed_to_visit set' do
+        patient = FactoryBot.create(:patient)
+        appointment1 = FactoryBot.create(:appointment, :overdue, patient_id: patient.id)
+        appointment1.status = 'visited'
+        appointment1.agreed_to_visit = true
+        appointment1.remind_on = nil
+        appointment1.save
+
+        appointment2 = FactoryBot.create(:appointment, :overdue, patient_id: patient.id)
+        appointment2.scheduled_date = 60.days.from_now
+        appointment2.save
+
+        expect(show_last_interaction_date_and_result(patient)).to include('Agreed to visit')
+      end
+
+      it 'returns "Remind to call later" if the last visit exists and remind_on is not nil' do
+        patient = FactoryBot.create(:patient)
+
+        appointment1 = FactoryBot.create(:appointment, :overdue, patient_id: patient.id)
+        appointment1.status = 'visited'
+        appointment1.agreed_to_visit = false
+        appointment1.remind_on = Date.today
+        appointment1.save
+
+        appointment2 = FactoryBot.create(:appointment, :overdue, patient_id: patient.id)
+        appointment2.scheduled_date = 60.days.from_now
+        appointment2.save
+
+        expect(show_last_interaction_date_and_result(patient)).to include('Remind to call later')
+      end
+    end
+  end
 end
+

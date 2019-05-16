@@ -6,7 +6,7 @@ ol {
 
 ol li {
     counter-increment: custom-counter;
-    margin: 8px 0 8px 24px;
+    margin: 8px 0 8px 28px;
 }
 
 ol li::before {
@@ -52,16 +52,17 @@ ul li {
 }
 
 ul li:before {
-    content: ".";
-    color: rgba(255,255,255,0);
-    width: 18px;
-    height: 18px;
+    content: "✓";
+    font-size: 14px;
+    text-align: center;
+    color: #6C737A;
+    padding: 0 4px;
     background: #fff;
     border: 1px solid #DADDE0;
     border-radius: 3px;
     position: absolute;
     left: 0;
-    top: 4px;
+    top: 2px;
 }
 
 .note {
