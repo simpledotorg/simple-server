@@ -1,5 +1,4 @@
-require 'Pages/base'
-class InvitationPage < Base
+class InvitationPage < ApplicationPage
 
   PAGE_HEADING = {xpath: "//h1"}
   EMAIL = {id: "admin_email"}
@@ -43,14 +42,18 @@ class InvitationPage < Base
   def select_invite_multiple_organization(email, org_name)
     present?(PAGE_HEADING)
     type(EMAIL, email)
-    org_name.each { |org| find(:xpath, "//label[text()='#{org}']/../input").click}
+    org_name.each do |org|
+      find(:xpath, "//label[text()='#{org}']/../input").click
+    end
     click(SEND_INVITATION_BUTTON)
   end
 
   def send_multiple_invitation_others(email, facility)
     present?(PAGE_HEADING)
     type(EMAIL, email)
-    facility.each { |name| find(:xpath, "//label[text()='#{name}']/../input").click}
+    facility.each do |name|
+      find(:xpath, "//label[text()='#{name}']/../input").click
+    end
     click(SEND_INVITATION_BUTTON)
   end
 end

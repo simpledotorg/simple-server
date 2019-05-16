@@ -1,5 +1,4 @@
-require 'Pages/base'
-class AdminPage < Base
+class AdminPage < ApplicaitonPage
   include Capybara::DSL
 
   PAGE_HEADING = {xpath: "//h1[text()='Admins']"}
@@ -12,7 +11,7 @@ class AdminPage < Base
     present? PAGE_HEADING
     all_elements(ALL_INVITE_TABS).size.equal?(permission.size)
     invite = all_elements(ALL_INVITE_TABS)
-    invite.each { |name|  permission.each {|col_name| name.text.include? col_name}}
+    invite.each {|name| permission.each {|col_name| name.text.include? col_name}}
   end
 
   def send_invite(name)
@@ -32,6 +31,5 @@ class AdminPage < Base
     click(CROSS_BUTTON)
     not_present?(SUCCESSFUL_MESSAGE)
   end
-
 
 end

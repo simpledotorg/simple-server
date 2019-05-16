@@ -1,7 +1,4 @@
-require 'Pages/Base'
-class OrganizationsPage < Base
-
-  include Capybara::DSL
+class OrganizationsPage < ApplicationPage
 
   ADD_NEW_ORGANIZATION_BUTTON = {xpath: "//a[@class='btn btn-sm btn-primary']"}.freeze
   ORGANIZATION_NAME_TEXT_FIELD = {id: 'organization_name'}.freeze

@@ -1,8 +1,4 @@
 require 'rails_helper'
-require 'Pages/log_in_page'
-require 'Pages/admin_page'
-require 'Pages/invitaiton_page'
-require 'Pages/set_password'
 
 RSpec.feature 'Admin Management', type: :feature do
   let(:owner) {create(:admin, :owner)}

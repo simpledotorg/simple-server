@@ -2,7 +2,7 @@ class AppointmentNotification::MissedVisitJob
   include Notifiable
   include Sidekiq::Worker
 
-  sidekiq_options unique_across_workers: true,
+  sidekiq_options unique_across_queues: true,
                   queue: 'default',
                   lock_expiration: 6.hours.to_i
 

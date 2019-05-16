@@ -1,14 +1,8 @@
 require 'rails_helper'
-require 'Pages/log_in_page'
-require 'Pages/protocol_landing_page'
-require 'Pages/protocol_form'
-require 'Pages/base'
-require 'Pages/protocol_detail_page'
-require 'Pages/protocol_drug_page'
 
 RSpec.feature 'test protocol detail page functionality', type: :feature do
 
-  let(:owner) {create(:admin)}
+  let(:owner) { create(:admin) }
   login_page = LoginPage.new
   protocol_page = ProtocolLandingPage.new
   protocol_form = ProtocolFormPage.new

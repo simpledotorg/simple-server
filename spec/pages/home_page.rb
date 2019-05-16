@@ -1,9 +1,8 @@
-class HomePage < Base
-  include Capybara::DSL
+class HomePage < ApplicationPage
 
-  LOGOUT_BUTTON = {xpath: "//a[@class='nav-link']"}
-  MANAGE_OPTION = {xpath: "//li/div/a"}
-  MAIN_MENU_TABS = {xpath: '//ul/li/a'}
+  LOGOUT_BUTTON = { xpath: "//a[@class='nav-link']" }
+  MANAGE_OPTION = { xpath: "//li/div/a" }
+  MAIN_MENU_TABS = { xpath: '//ul/li/a' }
 
   def select_main_menu_tab(option)
     mainMenuTabs = all_elements(MAIN_MENU_TABS)

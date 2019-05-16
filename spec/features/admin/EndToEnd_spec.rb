@@ -1,17 +1,11 @@
 require 'rails_helper'
-require 'Pages/log_in_page'
-require 'Pages/protocol_landing_page'
-require 'Pages/protocol_form'
-require 'Pages/base'
-require 'Pages/protocol_detail_page'
-require 'Pages/protocol_drug_page'
 
 RSpec.feature 'End to end test', type: :feature do
 
-  let(:owner) {create(:admin)}
-  let!(:ihmi) {create(:organization, name: "IHMI")}
-  let!(:protocol) {create(:protocol, name: "PunjabTestProtocol", follow_up_days: "20")}
-  let!(:ihmi_group_bathinda) {create(:facility_group, organization: ihmi, name: "Bathinda",protocol:protocol)}
+  let(:owner) { create(:admin) }
+  let!(:ihmi) { create(:organization, name: "IHMI") }
+  let!(:protocol) { create(:protocol, name: "PunjabTestProtocol", follow_up_days: "20") }
+  let!(:ihmi_group_bathinda) { create(:facility_group, organization: ihmi, name: "Bathinda", protocol: protocol) }
   protocol_page = ProtocolLandingPage.new
   protocol_form = ProtocolFormPage.new
   protocol_detail = ProtocolDetailPage.new

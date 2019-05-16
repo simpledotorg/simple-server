@@ -1,6 +1,4 @@
-require 'Pages/base'
-class DashboardPage < Base
-  include Capybara::DSL
+class DashboardPage < ApplicationPage
 
   ORGANIZATION_NAME = {xpath: "//th/h2"}.freeze
   FACILITY_GROUP_LIST = {xpath: "//td/a"}.freeze
@@ -24,5 +22,9 @@ class DashboardPage < Base
 
   def get_facility_count
     all_elements(FACILITY_GROUP_LIST).size
+  end
+
+  def get_organization_count
+    all_elements(ORGANIZATION_NAME).size
   end
 end

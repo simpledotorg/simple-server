@@ -1,7 +1,4 @@
-require 'Pages/base'
-class EditUserPage < Base
-
-  include Capybara::DSL
+class EditUserPage < ApplicationPage
 
   PAGE_HEADING = {xpath: "//h1"}
   FULL_NAME_LABEL = {xpath: "//label[@for='user_name']"}
@@ -15,7 +12,7 @@ class EditUserPage < Base
   STATUS_LABEL = {xpath: "//label[@for='user_sync_approval_status']"}
   STATUS_RADIO_BUTTON_LIST = {xpath: "//input[@type='radio']"}
   REGISTRATION_FACILITY_LABEL = {xpath: "//label[@for='user_registration_facility_id']"}
-  FACILITY_DROPDOWN = {xpath: "//select[@class='form-control']"}
+  # FACILITY_DROPDOWN={xpath: "//select[@class='form-control']"}
   UPDATE_USER_BUTTON = {xpath: "//input[@class='btn btn-primary']"}
 
   def verify_Edit_user_landing_page

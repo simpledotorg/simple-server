@@ -1,5 +1,4 @@
-class FacilityPage < Base
-  include Capybara::DSL
+class FacilityPage < ApplicationPage
 
   FACILITY_PAGE_HEADING = {xpath: "//h1[text()='All facilities']"}.freeze
   ADD_FACILITY_GROUP_BUTTON = {xpath: "//a[@class='btn btn-sm btn-primary float-right']"}.freeze

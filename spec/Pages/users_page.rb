@@ -1,11 +1,8 @@
-require 'Pages/base'
-class UsersPage < Base
-  include Capybara::DSL
+class UsersPage < ApplicationPage
 
   PAGE_HEADING = {xpath: "//h1"}
   DISTRICT_LIST = {xpath: "//h2"}
   Users_LIST = {xpath: "//tbody/tr"}
-  COLUMN_HEADING = {xpath: "//tr/th"}
 
   def all_district
     all_elements(DISTRICT_LIST)
@@ -34,10 +31,6 @@ class UsersPage < Base
   def click_registered_facility_link(user_name)
     find(:xpath, "//td/a[text()='#{user_name}']/../../td[5]/a").click
   end
-
-  # def get_total_users_district_wise(district_name)
-  #
-  # end
 
   def get_district_count
     all_district.size

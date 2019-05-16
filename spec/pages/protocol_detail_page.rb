@@ -1,6 +1,4 @@
-require 'Pages/Base'
-class ProtocolDetailPage < Base
-  include Capybara::DSL
+class ProtocolDetailPage < ApplicationPage
 
   SUCCESSFUL_MESSAGE = {xpath: "//div[@class='alert alert-primary alert-dismissable fade show']"}.freeze
   MESSAGE_CROSS_BUTTON = {xpath: "//div[contains(@class,'alert')]//span"}.freeze
@@ -44,6 +42,7 @@ class ProtocolDetailPage < Base
     columns = ["Protocol drugs", "Dosage", "RxNorm code"]
     all_elements(COLUMN_NAME).each {|element| columns.each {|name| element.text.include? name}}
   end
+
   private :column_name
 
   def verify_protocol_detail_page(name, days)
@@ -54,15 +53,6 @@ class ProtocolDetailPage < Base
   end
 
   def verify_protocol_drug_info(drug_info)
-    all_elements(PROTOCOL_DRUG_INFO).each {|element| drug_info.each {|info| element.text.include?info}}
+    all_elements(PROTOCOL_DRUG_INFO).each {|element| drug_info.each {|info| element.text.include? info}}
   end
 end
-
-
-
-
-
-
-
-
-

@@ -2,7 +2,7 @@ class Analytics::PatientSetAnalytics
   attr_reader :patients, :from_time, :to_time
 
   def initialize(patients, from_time, to_time)
-    @patients = patients.includes(:latest_blood_pressures)
+    @patients = patients
     @from_time = from_time
     @to_time = to_time
   end

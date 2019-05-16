@@ -1,6 +1,4 @@
-require 'Pages/Base'
-
-class ProtocolFormPage < Base
+class ProtocolFormPage < ApplicationPage
 
   #this screen is used for creation and updation of protocol
   PROTOCOL_NAME = {id: "protocol_name"}.freeze
@@ -32,7 +30,3 @@ class ProtocolFormPage < Base
     find(WARNING_MESSAGE)
   end
 end
-
-
-
-

@@ -1,9 +1,4 @@
 require 'rails_helper'
-require 'Pages/log_in_page'
-require 'Pages/users_page'
-require 'Pages/edit_users'
-require 'Pages/users_registered_facility_detail_page'
-
 RSpec.feature 'Users Management ', type: :feature do
 
   let(:owner) {create(:admin, :owner)}
@@ -44,7 +39,7 @@ RSpec.feature 'Users Management ', type: :feature do
 
         #assertion at Users landing page
         visit admin_users_path
-        expect(page).to have_content("01234567876")
+        expect(page).to have_content("012345678877")
         expect(page).to have_no_content("2019")
       end
 
@@ -53,7 +48,6 @@ RSpec.feature 'Users Management ', type: :feature do
         #assertion at dashboard
         expect(page).to have_content("Allow access")
         expect(page).to have_content("Deny access")
-
 
         visit admin_users_path
         users_page.click_edit_link(user.full_name)
@@ -80,6 +74,8 @@ RSpec.feature 'Users Management ', type: :feature do
       visit admin_users_path
       expect(users_page.get_district_count).to eq(1)
       expect(users_page.get_users_count).to eq(5)
+      expect(users_page.all_district.size).to eq(1)
+      expect(users_page.all_user.size).to eq(5)
     end
   end
 end
