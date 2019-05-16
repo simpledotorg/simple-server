@@ -47,6 +47,11 @@ def build_patient_payload(patient = FactoryBot.build(:patient))
     )
 end
 
+def build_patient_payload_v2(patient = FactoryBot.build(:patient))
+  build_patient_payload(patient)
+    .except('recorded_at')
+end
+
 def build_invalid_patient_payload
   patient                          = build_patient_payload
   patient['created_at']            = nil
@@ -74,4 +79,9 @@ def updated_patient_payload(existing_patient)
       'identifier' => SecureRandom.uuid,
       'metadata' => business_identifier.metadata&.to_json)]
   )
+end
+
+def updated_patient_payload_v2(existing_patient)
+  updated_patient_payload(existing_patient)
+    .except('recorded_at')
 end

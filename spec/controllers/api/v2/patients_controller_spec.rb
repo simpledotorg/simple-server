@@ -6,9 +6,9 @@ RSpec.describe Api::V2::PatientsController, type: :controller do
 
   let(:model) { Patient }
 
-  let(:build_payload) { lambda { build_patient_payload } }
+  let(:build_payload) { lambda { build_patient_payload_v2 } }
   let(:build_invalid_payload) { lambda { build_invalid_patient_payload } }
-  let(:update_payload) { lamda { |record| updated_patient_payload record } }
+  let(:update_payload) { lambda { |record| updated_patient_payload_v2 record } }
   let(:invalid_record) { build_invalid_payload.call }
 
   let(:number_of_schema_errors_in_invalid_payload) { 2 + invalid_record['phone_numbers'].count }
@@ -38,7 +38,7 @@ RSpec.describe Api::V2::PatientsController, type: :controller do
       end
 
       it 'creates new patients' do
-        patients = (1..10).map { build_patient_payload }
+        patients = (1..10).map { build_patient_payload_v2 }
         post(:sync_from_user, params: { patients: patients }, as: :json)
         expect(Patient.count).to eq 10
         expect(Address.count).to eq 10
@@ -46,28 +46,28 @@ RSpec.describe Api::V2::PatientsController, type: :controller do
         expect(response).to have_http_status(200)
       end
       it 'creates new patients without address' do
-        post(:sync_from_user, params: { patients: [build_patient_payload.except('address')] }, as: :json)
+        post(:sync_from_user, params: { patients: [build_patient_payload_v2.except('address')] }, as: :json)
         expect(Patient.count).to eq 1
         expect(Address.count).to eq 0
         expect(response).to have_http_status(200)
       end
 
       it 'creates new patients without phone numbers' do
-        post(:sync_from_user, params: { patients: [build_patient_payload.except('phone_numbers')] }, as: :json)
+        post(:sync_from_user, params: { patients: [build_patient_payload_v2.except('phone_numbers')] }, as: :json)
         expect(Patient.count).to eq 1
         expect(PatientPhoneNumber.count).to eq 0
         expect(response).to have_http_status(200)
       end
 
       it 'associates registration user with the patients' do
-        post(:sync_from_user, params: { patients: [build_patient_payload.except('phone_numbers')] }, as: :json)
+        post(:sync_from_user, params: { patients: [build_patient_payload_v2.except('phone_numbers')] }, as: :json)
         expect(response).to have_http_status(200)
         expect(Patient.count).to eq 1
         expect(Patient.first.registration_user).to eq request_user
       end
 
       it 'associates registration facility with the patients' do
-        post(:sync_from_user, params: { patients: [build_patient_payload.except('phone_numbers')] }, as: :json)
+        post(:sync_from_user, params: { patients: [build_patient_payload_v2.except('phone_numbers')] }, as: :json)
         expect(response).to have_http_status(200)
         expect(Patient.count).to eq 1
         expect(Patient.first.registration_facility).to eq request_facility
@@ -82,7 +82,7 @@ RSpec.describe Api::V2::PatientsController, type: :controller do
       end
 
       let(:existing_patients) { FactoryBot.create_list(:patient, 10) }
-      let(:updated_patients_payload) { existing_patients.map { |patient| updated_patient_payload patient } }
+      let(:updated_patients_payload) { existing_patients.map { |patient| updated_patient_payload_v2 patient } }
 
       it 'with only updated patient attributes' do
         patients_payload = updated_patients_payload.map { |patient| patient.except('address', 'phone_numbers', 'business_identifiers') }
