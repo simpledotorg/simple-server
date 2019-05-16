@@ -3,6 +3,8 @@ require 'rails_helper'
 RSpec.feature 'Facility page functionality', type: :feature do
   let(:owner) { create(:admin) }
   let!(:ihmi) { create(:organization, name: "IHMI") }
+  let!(:another_organization) { create(:organization) }
+
   let!(:ihmi_group_bathinda) { create(:facility_group, organization: ihmi, name: "Bathinda") }
   let!(:unassociated_facility) { create(:facility, facility_group: nil, name: "testfacility") }
   let!(:unassociated_facility02) { create(:facility, facility_group: nil, name: "testfacility_02") }
@@ -79,6 +81,4 @@ RSpec.feature 'Facility page functionality', type: :feature do
 
     expect(page).to have_content(unassociated_facility02.name)
   end
-
-
 end

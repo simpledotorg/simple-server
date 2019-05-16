@@ -78,6 +78,7 @@ RSpec.feature 'Verify Dashboard', type: :feature do
 
     visit root_path
     login_page.do_login(owner.email, owner.password)
+
     expect(page).to have_content("Allow access")
     expect(page).to have_content("Deny access")
     #check for user info

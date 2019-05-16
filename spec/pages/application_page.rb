@@ -27,7 +27,7 @@ class ApplicationPage
     scope_key = scope.keys[0]
     within(scope_key, scope[scope_key]) do
       key = element.keys[0]
-      find(element.keys[0], element[key]).click
+      first(element.keys[0], element[key]).click
     end
   end
 
