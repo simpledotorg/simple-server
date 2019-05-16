@@ -1,6 +1,4 @@
 require 'rails_helper'
-require 'Pages/log_in_page'
-require 'Pages/forgot_password_page'
 
 RSpec.feature 'To test Forgot password functionality', type: :feature do
   def assert_forgot_password_landing_page(page)
@@ -10,9 +8,9 @@ RSpec.feature 'To test Forgot password functionality', type: :feature do
     expect(page).to have_content('Login')
   end
 
-  let(:owner) {create(:admin)}
+  let(:owner) { create(:admin) }
   login_page = LoginPage.new
-  forgot_password =ForgotPassword.new
+  forgot_password = ForgotPassword.new
 
   it 'Owner should be able to click on Forgot password Link' do
     visit root_path
@@ -35,17 +33,17 @@ RSpec.feature 'To test Forgot password functionality', type: :feature do
     end
   end
 
-    it 'verify Login link in Forgot password  Page' do
-      visit root_path
-      login_page.click_forgot_password_link
-      forgot_password.click_login_link
-      expect(page).to have_content("Login")
-    end
+  it 'verify Login link in Forgot password  Page' do
+    visit root_path
+    login_page.click_forgot_password_link
+    forgot_password.click_login_link
+    expect(page).to have_content("Login")
+  end
 
-    it 'verify unlock instruction link in Forgot Password Page' do
-      visit root_path
-      login_page.click_forgot_password_link
-      forgot_password.resend_unlock_instruction(owner.email)
-    end
+  it 'verify unlock instruction link in Forgot Password Page' do
+    visit root_path
+    login_page.click_forgot_password_link
+    forgot_password.resend_unlock_instruction(owner.email)
+  end
 end
 

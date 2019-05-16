@@ -1,14 +1,9 @@
 require 'rails_helper'
-require 'Pages/dashboard_page'
-require 'Pages/log_in_page'
-require 'Pages/home_page'
-require 'Pages/organizations_page'
-require 'Pages/base'
 
 RSpec.feature 'Verify Dashboard', type: :feature do
-  let(:owner) {create(:admin)}
-  let!(:ihmi) {create(:organization, name: "IHMI")}
-  let!(:path) {create(:organization, name: "PATH")}
+  let(:owner) { create(:admin) }
+  let!(:ihmi) { create(:organization, name: "IHMI") }
+  let!(:path) { create(:organization, name: "PATH") }
 
   login_page = LoginPage.new
   dashboard = DashboardPage.new

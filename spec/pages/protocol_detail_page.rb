@@ -1,23 +1,21 @@
-require 'Pages/Base'
-class ProtocolDetailPage < Base
-  include Capybara::DSL
+class ProtocolDetailPage < ApplicationPage
 
-  SUCCESSFUL_MESSAGE = {xpath: "//div[@class='alert alert-primary alert-dismissable fade show']"}.freeze
-  MESSAGE_CROSS_BUTTON = {xpath: "//div[contains(@class,'alert')]//span"}.freeze
-  FOLLOW_UP_DAYS = {xpath: "//div[@class='page-title']/p"}.freeze
-  EDIT_PROTOCOL_BUTTON = {xpath: "//a[text()='Edit protocol']"}.freeze
-  NEW_PROTOCOL_DRUG_BUTTON = {xpath: "//a[text()='New protocol drug']"}.freeze
-  PROTOCOL_DRUG_NAME = {xpath: "//tr/td[1]"}.freeze
+  SUCCESSFUL_MESSAGE = { xpath: "//div[@class='alert alert-primary alert-dismissable fade show']" }.freeze
+  MESSAGE_CROSS_BUTTON = { xpath: "//div[contains(@class,'alert')]//span" }.freeze
+  FOLLOW_UP_DAYS = { xpath: "//div[@class='page-title']/p" }.freeze
+  EDIT_PROTOCOL_BUTTON = { xpath: "//a[text()='Edit protocol']" }.freeze
+  NEW_PROTOCOL_DRUG_BUTTON = { xpath: "//a[text()='New protocol drug']" }.freeze
+  PROTOCOL_DRUG_NAME = { xpath: "//tr/td[1]" }.freeze
 
   def verify_successful_message(message)
-    verifyText(SUCCESSFUL_MESSAGE,message)
+    verifyText(SUCCESSFUL_MESSAGE, message)
     present?(EDIT_PROTOCOL_BUTTON)
     present?(NEW_PROTOCOL_DRUG_BUTTON)
     present?(FOLLOW_UP_DAYS)
   end
 
   def verify_updated_followup_days(days)
-    verifyText(FOLLOW_UP_DAYS,days)
+    verifyText(FOLLOW_UP_DAYS, days)
 
   end
 
@@ -45,15 +43,6 @@ class ProtocolDetailPage < Base
   end
 
   def click_edit_protocol_drug_button(drug_name)
-    find(:xpath , "//td[text()='#{drug_name}']/../td/a[text()='Edit']").click
+    find(:xpath, "//td[text()='#{drug_name}']/../td/a[text()='Edit']").click
   end
 end
-
-
-
-
-
-
-
-
-
