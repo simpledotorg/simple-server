@@ -1,7 +1,4 @@
 require 'rails_helper'
-require 'Pages/log_in_page'
-require 'Pages/home_page'
-require 'Pages/base'
 
 RSpec.feature 'Owner Login as Admin', type: :feature do
   let(:owner) {create(:admin)}
@@ -15,7 +12,7 @@ RSpec.feature 'Owner Login as Admin', type: :feature do
     end
 
     it 'Logs in ' do
-      home_page.validate_home_page
+      home_page.validate_owners_home_page
       expect(page).to have_content(owner.email)
     end
 
