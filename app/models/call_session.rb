@@ -1,19 +1,18 @@
 class CallSession
   EXPIRE_CALL_SESSION_IN_SECONDS = 1.day.seconds.to_i
 
-  attr_reader :user, :patient_phone_number
+  attr_reader :user_phone_number, :patient_phone_number
 
   def initialize(call_id, user_phone_number, patient_phone_number)
     @call_id = call_id
-    @user = User.find_by_phone_number(sanitized_phone_number(user_phone_number))
+    @user_phone_number = sanitized_phone_number(user_phone_number)
     @patient_phone_number = PatientPhoneNumber.find_by_number(patient_phone_number)
   end
 
   def authorized?
-    user.present? &&
-      user.sync_approval_status_allowed? &&
+    user_phone_number.present? &&
       patient_phone_number.present? &&
-      user.phone_number != patient_phone_number.number
+      user_phone_number != patient_phone_number.number
   end
 
   def save
@@ -60,6 +59,6 @@ class CallSession
 
   def session_data
     { patient_phone_number: patient_phone_number.number,
-      user_phone_number: user.phone_number }
+      user_phone_number: user_phone_number }
   end
 end

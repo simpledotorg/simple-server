@@ -34,6 +34,61 @@ RSpec.describe Api::Current::AppointmentsController, type: :controller do
   describe 'POST sync: send data from device to server;' do
     it_behaves_like 'a working sync controller creating records'
     it_behaves_like 'a working sync controller updating records'
+
+    context 'handles appointment_type correctly' do
+      before :each do
+        set_authentication_headers
+      end
+
+      describe 'stores appointment_type correctly' do
+        let(:request_key) { model.to_s.underscore.pluralize }
+        let(:new_records) { (1..5).map { build_payload.call } }
+        let(:new_records_payload) { Hash[request_key, new_records] }
+
+        it 'creates new records with appointment_type' do
+          post(:sync_from_user, params: new_records_payload, as: :json)
+
+          expect(response).to have_http_status(200)
+
+          after_post_appointments = Appointment.all
+          after_post_appointments_ids = after_post_appointments.map(&:id)
+
+          new_records.each do |record|
+            expect(after_post_appointments_ids.include? record[:id]).to be true
+            expect(Appointment.appointment_types.include? record[:appointment_type]).to be true
+          end
+        end
+
+        it 'returns an error for new records without appointment_type' do
+          records_with_no_appointment_type = (1..5).map { build_payload.call.except(:appointment_type) }
+          records_payload_with_no_appointment_type = Hash[request_key, records_with_no_appointment_type]
+
+          post(:sync_from_user, params: records_payload_with_no_appointment_type, as: :json)
+
+          expect(response).to have_http_status(200)
+          errors = JSON(response.body)['errors']
+          errors.each do |error|
+            expect(error['schema'].first).to match(/did not contain a required property of 'appointment_type' in schema/)
+          end
+        end
+
+        it 'returns an error for new records with invalid appointment type' do
+          records_with_invalid_appointment_type = (1..5).map { build_payload.call }
+          records_with_invalid_appointment_type.each do |record|
+            record[:appointment_type] = ['manuall', 'automat', 'foo'].sample
+          end
+
+          records_payload_with_bad_appointment_type = Hash[request_key, records_with_invalid_appointment_type]
+
+          post(:sync_from_user, params: records_payload_with_bad_appointment_type, as: :json)
+
+          errors = JSON(response.body)['errors']
+          errors.each do |error|
+            expect(error['schema'].first).to match(/did not match one of the following values: manual, automatic in schema/)
+          end
+        end
+      end
+    end
   end
 
   describe 'GET sync: send data from server to device;' do
@@ -85,9 +140,27 @@ RSpec.describe Api::Current::AppointmentsController, type: :controller do
         response_appointments = JSON(response.body)['appointments']
         response_facilities = response_appointments.map { |appointment| appointment['facility_id']}.to_set
 
-        expect(response_appointments.count).to eq 10
         expect(response_facilities).to match_array([request_facility.id, facility_in_same_group.id])
         expect(response_facilities).not_to include(facility_in_another_group.id)
+      end
+    end
+
+    context 'handles appointment_type correctly' do
+      before :each do
+        set_authentication_headers
+        FactoryBot.create_list(:appointment, 5, facility: request_facility)
+      end
+
+      describe 'retrieves appointment_type correctly' do
+        it 'retrieves new records with appointment_type' do
+          get :sync_to_user, params: { limit: 15 }
+
+          response_appointments = JSON(response.body)['appointments']
+
+          response_appointments.each do |appointment|
+            expect(Appointment.appointment_types.include? appointment['appointment_type']).to be true
+          end
+        end
       end
     end
   end

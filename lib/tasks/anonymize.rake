@@ -192,6 +192,7 @@ namespace :anonymize do
         whitelist 'status'
         whitelist 'remind_on'
         whitelist 'agreed_to_visit'
+        whitelist 'appointment_type'
         whitelist_timestamps
       end
 

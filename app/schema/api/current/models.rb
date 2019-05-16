@@ -222,10 +222,11 @@ class Api::Current::Models
           cancel_reason: { type: ['null', :string], enum: Appointment.cancel_reasons.keys + [nil] },
           remind_on: { type: [:string, 'null'], format: :date },
           agreed_to_visit: { type: [:boolean, 'null'] },
+          appointment_type: { type: :string, enum: Appointment.appointment_types.keys },
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' } },
-        required: %w[id patient_id facility_id scheduled_date status created_at updated_at]
+        required: %w[id patient_id facility_id scheduled_date status created_at updated_at appointment_type]
       }
     end
 
@@ -236,7 +237,7 @@ class Api::Current::Models
           appointment_id: { '$ref' => '#/definitions/uuid' },
           user_id: { '$ref' => '#/definitions/uuid' },
           communication_type: { type: :string, enum: Communication.communication_types.keys },
-          communication_result: { type: :string, enum: Communication.communication_results.keys },
+          communication_result: { type: :string, enum: Communication::COMMUNICATION_RESULTS.keys },
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' } },

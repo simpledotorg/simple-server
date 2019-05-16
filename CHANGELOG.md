@@ -6,6 +6,64 @@
 ### Removed 
 ### Security
 
+# 2019-05-15-1
+### Added
+### Changed
+### Fixed
+- Fix dashboard caching
+### Deprecated
+### Removed
+### Security
+
+# 2019-05-14-1
+### Added
+- Schedule automatic SMS reminders (Feature toggled off)
+- Show enrolment date for overdue patients
+- Display last interaction result (if present)
+- Add caller_phone_number to `CallLog`
+- Data migration to move User phone numbers to caller_phone_numbers in `CallLogs`
+- BP passport video to help api html
+### Changed
+- Stub V1 & V2 Communications API to return empty responses
+- Remove User authorization during an exotel session for phone masking
+- Make user_id optional in `CallLog`
+### Fixed
+- Set the ENV path for the `whenever` gem so it can pick up the rbenv ruby shim
+### Deprecated
+- Deprecate the unused `Communication` V3 API
+### Removed
+- Remove `communication_result` from `Communication` resource
+### Security
+
+# 2019-05-03-1
+### Added 
+### Changed
+### Fixed
+- Fix `appointment type` syncing issues with API v1 and v2. 
+- Allow Org Owners to create Facility Groups
+- Fix the duplication of appointments in the Overdue tab
+### Deprecated 
+### Removed 
+### Security
+
+# 2019-04-30-1
+## Portal
+### Added
+### Changed
+### Fixed
+### Deprecated
+### Removed
+### Security
+
+## Api
+### Added
+- Appointment type as part of the API sync payload
+### Changed
+### Fixed
+### Deprecated
+### Removed
+### Security
+
 # 2019-04-29-1
 ## Portal
 ### Added

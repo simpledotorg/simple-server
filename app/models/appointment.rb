@@ -29,14 +29,18 @@ class Appointment < ApplicationRecord
     automatic: 'automatic'
   }, _prefix: true
 
+  validate :cancel_reason_is_present_if_cancelled
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
-  validate :cancel_reason_is_present_if_cancelled
 
   def self.overdue
     where(status: 'scheduled')
       .where('scheduled_date <= ?', Date.today)
       .where('remind_on IS NULL OR remind_on <= ?', Date.today)
+  end
+
+  def self.overdue_by(number_of_days)
+    overdue.where('scheduled_date <= ?', Date.today - number_of_days.days)
   end
 
   def days_overdue
@@ -95,12 +99,13 @@ class Appointment < ApplicationRecord
   # CSV export
   def self.to_csv
     appointments = all.joins(patient: { latest_blood_pressures: :facility })
-                      .includes(patient: [:address, :phone_numbers, :medical_history, { latest_blood_pressures: :facility }])
+                     .includes(patient: [:address, :phone_numbers, :medical_history,
+                                         { latest_blood_pressures: :facility }])
 
     CSV.generate(headers: true) do |csv|
       csv << csv_headers
 
-      appointments.group_by { |a| a.patient.latest_blood_pressure.facility }.each do |facility, facility_appointments|
+      appointments.group_by { |a| a.patient.latest_blood_pressure.facility }.each do |_, facility_appointments|
         facility_appointments.sort_by { |a| a.patient.risk_priority }.each do |appointment|
           csv << appointment.csv_fields
         end
@@ -140,8 +145,7 @@ class Appointment < ApplicationRecord
     ]
   end
 
-  def scheduled_date_for_locale(locale)
-    month_in_locale = I18n.t("months.#{scheduled_date.month}", locale: locale)
-    "#{scheduled_date.day} #{month_in_locale}, #{scheduled_date.year}"
+  def previously_communicated_via?(communication_type)
+    communications.latest_by_type(communication_type)&.attempted?
   end
 end

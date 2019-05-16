@@ -14,10 +14,10 @@ module PatientSetAnalyticsReportable
         control_rate: analytics.control_rate,
         unique_patients_enrolled: analytics.unique_patients_count,
         blood_pressures_recorded_per_week: analytics.blood_pressures_recorded_per_week(WEEKS_PREVIOUS),
-        newly_enrolled_patients_per_month: analytics.newly_enrolled_patients_count_per_month(MONTHS_PREVIOUS),
-        non_returning_hypertensive_patients_per_month: analytics.non_returning_hypertensive_patients_count_per_month(MONTHS_PREVIOUS),
-        control_rate_per_month: analytics.control_rate_per_month(MONTHS_PREVIOUS),
-        unique_patients_recorded_per_month: analytics.unique_patients_count_per_month(MONTHS_PREVIOUS)
+        #newly_enrolled_patients_per_month: analytics.newly_enrolled_patients_count_per_month(MONTHS_PREVIOUS),
+        #non_returning_hypertensive_patients_per_month: analytics.non_returning_hypertensive_patients_count_per_month(MONTHS_PREVIOUS),
+        #control_rate_per_month: analytics.control_rate_per_month(MONTHS_PREVIOUS),
+        #unique_patients_recorded_per_month: analytics.unique_patients_count_per_month(MONTHS_PREVIOUS)
       }
     end
   end

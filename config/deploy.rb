@@ -9,7 +9,7 @@ set :rails_env, 'production'
 set :branch, ENV["BRANCH"] || "master"
 
 # sidekiq configuration
-set :sidekiq_role, :sidekiq
+set :sidekiq_roles, :sidekiq
 set :sidekiq_processes, 1
 set :bundler_path, "/home/deploy/.rbenv/shims/bundle"
 set :init_system, :systemd
