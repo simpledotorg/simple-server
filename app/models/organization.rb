@@ -12,4 +12,8 @@ class Organization < ApplicationRecord
   validates :name, presence: true
 
   friendly_id :name, use: :slugged
+
+  def districts
+    facilities.select(:district).distinct.pluck(:district)
+  end
 end

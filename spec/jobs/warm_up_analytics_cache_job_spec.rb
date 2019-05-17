@@ -11,7 +11,7 @@ RSpec.describe WarmUpAnalyticsCacheJob, type: :job do
     let(:job) { WarmUpAnalyticsCacheJob.perform_later('FacilityGroup', facility_groups.first.id, from_time, to_time) }
 
     it 'queues the job on the default queue' do
-      expect(job.queue_name).to eq('default')
+      expect(job.queue_name).to eq('analytics_warmup')
     end
 
     it 'queues the job' do

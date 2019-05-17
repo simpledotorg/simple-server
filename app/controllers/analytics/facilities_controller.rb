@@ -1,7 +1,8 @@
 class Analytics::FacilitiesController < AnalyticsController
   before_action :set_facility
-  before_action :set_facility_group
   before_action :set_organization
+  before_action :set_facility_group
+  before_action :set_organization_district
   before_action :set_cache_key
 
   def show
@@ -24,6 +25,10 @@ class Analytics::FacilitiesController < AnalyticsController
 
   def set_facility_group
     @facility_group = @facility.facility_group
+  end
+
+  def set_organization_district
+    @organization_district = OrganizationDistrict.new(@facility.district, @organization)
   end
 
   def set_organization
