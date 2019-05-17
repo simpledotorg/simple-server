@@ -52,6 +52,8 @@ def build_patient_payload_v2(patient = FactoryBot.build(:patient))
     .except('recorded_at')
 end
 
+alias build_patient_payload_v1 build_patient_payload_v2
+
 def build_invalid_patient_payload
   patient                          = build_patient_payload
   patient['created_at']            = nil
