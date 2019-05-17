@@ -13,7 +13,7 @@ class Organization < ApplicationRecord
 
   friendly_id :name, use: :slugged
 
-  def get_districts
+  def districts
     facilities.select(:district).distinct.pluck(:district)
   end
 end
