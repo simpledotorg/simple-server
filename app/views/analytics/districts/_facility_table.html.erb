@@ -11,7 +11,7 @@
         <th class="row-spacer">&nbsp;</th>
         <th class="row-label">Return and<br>enrolled patients</th>
 
-        <% @district_analytics[:blood_pressures_recorded_per_week].keys.each do |date| %>
+        <% group_analytics[:blood_pressures_recorded_per_week].keys.each do |date| %>
           <th class="row-label">
             <div>Week of</div>
             <%= date.strftime('%b %d') %>
@@ -20,11 +20,11 @@
       </tr>
       </thead>
       <tbody>
-      <% @facility_analytics.each do |facility, analytics| %>
+      <% facility_analytics.each do |facility, analytics| %>
         <tr>
           <td class="row-rank"></td>
           <td class="row-title">
-            <%= link_to facility.name, analytics_facility_path(facility, from_time: @from_time, to_time: @to_time) %>
+            <%= link_to facility.name, analytics_facility_path(facility, from_time: from_time, to_time: to_time) %>
             <span>
               <b><%= analytics[:unique_patients_enrolled] %></b> enrolled all time
             </span>
@@ -47,18 +47,18 @@
       <tfoot>
       <tr class="row-total">
         <td class="row-rank row-total"></td>
-        <td class="row-title row-total">All facility totals<span><b><%= @district_analytics[:unique_patients_enrolled] %></b> enrolled all time</span></td>
-        <td class="row-enrolled text-green row-total"><%= dash_if_zero(@district_analytics[:newly_enrolled_patients]) %></td>
-        <td class="row-default text-yellow row-total"><%= dash_if_zero(@district_analytics[:non_returning_hypertensive_patients]) %></td>
+        <td class="row-title row-total">All facility totals<span><b><%= group_analytics[:unique_patients_enrolled] %></b> enrolled all time</span></td>
+        <td class="row-enrolled text-green row-total"><%= dash_if_zero(group_analytics[:newly_enrolled_patients]) %></td>
+        <td class="row-default text-yellow row-total"><%= dash_if_zero(group_analytics[:non_returning_hypertensive_patients]) %></td>
 
-        <td class="row-control"><%= dash_if_zero(@district_analytics[:control_rate][:control_rate]) %></td>
+        <td class="row-control"><%= dash_if_zero(group_analytics[:control_rate][:control_rate]) %></td>
         <td class="row-spacer">&nbsp;</td>
 
         <td class="row-unique-date">
-          <%= @district_analytics[:returning_patients] + @district_analytics[:newly_enrolled_patients] %>
+          <%= group_analytics[:returning_patients] + group_analytics[:newly_enrolled_patients] %>
         </td>
 
-        <% @district_analytics[:blood_pressures_recorded_per_week].sort.each do |_key, value| %>
+        <% group_analytics[:blood_pressures_recorded_per_week].sort.each do |_key, value| %>
           <td class="row-unique-date"><%= dash_if_zero(value) %></td>
         <% end %>
         <td></td>

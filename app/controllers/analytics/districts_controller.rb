@@ -1,6 +1,6 @@
 class Analytics::DistrictsController < AnalyticsController
-  before_action :set_district
   before_action :set_organization
+  before_action :set_district
   before_action :set_facilities
 
   def show
@@ -18,19 +18,18 @@ class Analytics::DistrictsController < AnalyticsController
 
   private
 
+  def set_organization
+    @organization = Organization.find_by(id: params[:organization_id])
+  end
+
   def set_district
     district_name = params[:id] || params[:district_id]
-    @organization_district = OrganizationDistrict.new(district_name)
+    @organization_district = OrganizationDistrict.new(district_name, @organization)
     authorize(@organization_district)
   end
 
-  def set_organization
-    @organization_district.organization = Organization.find(params[:organization_id])
-  end
-
   def set_facilities
-    facilities_by_district = policy_scope(@organization_district.organization.facilities).group_by(&:district).sort.to_h
-    @organization_district.facilities = facilities_by_district[@organization_district.district_name].sort_by(&:name)
+    @facilities = policy_scope(@organization_district.facilities).order(:name)
   end
 
   def district_analytics(from_time, to_time)
@@ -38,7 +37,7 @@ class Analytics::DistrictsController < AnalyticsController
   end
 
   def facility_analytics(from_time, to_time)
-    @organization_district.facilities
+    @facilities
       .map { |facility| [facility, facility.patient_set_analytics(from_time, to_time)] }
       .to_h
   end

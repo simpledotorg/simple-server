@@ -32,7 +32,6 @@ class Analytics::FacilitiesController < AnalyticsController
 
   def set_organization_district
     @organization_district = OrganizationDistrict.new(@facility.district, @organization)
-    @organization_district.facilities = @organization_district.organization.facilities.sort
   end
 
   def set_organization
