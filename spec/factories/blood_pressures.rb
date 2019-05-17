@@ -41,6 +41,8 @@ def build_blood_pressure_payload_v2(blood_pressure = FactoryBot.build(:blood_pre
   Api::V2::BloodPressureTransformer.to_response(blood_pressure).with_indifferent_access
 end
 
+alias build_blood_pressure_payload_v1 build_blood_pressure_payload_v2
+
 def build_invalid_blood_pressure_payload
   build_blood_pressure_payload.merge(
     'created_at' => nil,
