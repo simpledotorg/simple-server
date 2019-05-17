@@ -81,6 +81,25 @@ RSpec.describe Api::V2::BloodPressuresController, type: :controller do
         blood_pressure_in_db = patient.blood_pressures.first
         expect(patient.recorded_at).to eq(blood_pressure_in_db.device_created_at)
       end
+
+      it "sets patient's recorded_at to their oldest bp's device_created_at" do
+        patient = FactoryBot.create(:patient)
+        one_month_ago = patient.device_created_at - 1.months
+        two_months_ago = patient.device_created_at - 2.months
+        blood_pressure_recorded_one_month_ago = build_blood_pressure_payload_v2(
+          FactoryBot.build(:blood_pressure,
+                           patient: patient,
+                           device_created_at: one_month_ago))
+        blood_pressure_recorded_two_months_ago = build_blood_pressure_payload_v2(
+          FactoryBot.build(:blood_pressure,
+                           patient: patient,
+                           device_created_at: two_months_ago))
+        post(:sync_from_user, params: { blood_pressures: [blood_pressure_recorded_two_months_ago] }, as: :json)
+        post(:sync_from_user, params: { blood_pressures: [blood_pressure_recorded_one_month_ago] }, as: :json)
+
+        patient.reload
+        expect(patient.recorded_at).to eq(two_months_ago)
+      end
     end
   end
 
