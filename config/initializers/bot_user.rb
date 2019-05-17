@@ -17,9 +17,10 @@ end
 
 ActiveSupport.on_load(:after_initialize, :yield => true) do
   include BotUser
-
-  unless Rails.env.test?
-    SMS_REMINDER_BOT_USER = find_or_create_bot_user(ENV.fetch('APPOINTMENT_NOTIFICATION_BOT_USER_UUID'),
-                                                    ENV.fetch('APPOINTMENT_NOTIFICATION_BOT_USER_NAME'))
+  unless defined?(is_running_migration?) && is_running_migration?
+    unless Rails.env.test?
+      SMS_REMINDER_BOT_USER = find_or_create_bot_user(ENV.fetch('APPOINTMENT_NOTIFICATION_BOT_USER_UUID'),
+                                                      ENV.fetch('APPOINTMENT_NOTIFICATION_BOT_USER_NAME'))
+    end
   end
 end
