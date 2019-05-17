@@ -23,7 +23,6 @@ RSpec.feature 'Manage Section: Protocol Management', type: :feature do
 
   # let!(:protocol_02_drug){ create(:ProtocolDrug, name: "amlodipine",dosage: "10mg")
 
-  login_page = LoginPage.new
   protocol_page = ProtocolLandingPage.new
   protocol_detail = ProtocolDetailPage.new
   protocol_form = ProtocolFormPage.new
@@ -39,7 +38,7 @@ RSpec.feature 'Manage Section: Protocol Management', type: :feature do
 
     it 'Protocol landing page' do
       visit root_path
-      login_page.do_login(org_owner.email, org_owner.password)
+      signin(org_owner)
       visit admin_protocols_path
       arr = [protocol_01.name, protocol_01.follow_up_days.to_s]
       protocol_page.verify_protocol_landing_page(arr)
@@ -54,18 +53,18 @@ RSpec.feature 'Manage Section: Protocol Management', type: :feature do
           admin_access_controls: [AdminAccessControl.new(access_controllable: test_org)])
     }
 
-    it 'Protocol landing page' do
+    before(:each) do
       visit root_path
-      login_page.do_login(org_owner.email, org_owner.password)
+      signin(org_owner)
       visit admin_protocols_path
+
+    end
+    it 'Protocol landing page' do
       arr = [protocol_01.name, protocol_01.follow_up_days.to_s, protocol_02.name, protocol_02.follow_up_days.to_s, protocol_03.name, protocol_03.follow_up_days.to_s]
       protocol_page.verify_protocol_landing_page(arr)
     end
 
     it "verify protocol detail page" do
-      visit root_path
-      login_page.do_login(org_owner.email, org_owner.password)
-      visit admin_protocols_path
       protocol_page.select_protocol(protocol_02.name)
       protocol_detail.verify_protocol_detail_page(protocol_02.name, protocol_02.follow_up_days.to_s)
       #need to verify protocol drug
@@ -80,10 +79,12 @@ RSpec.feature 'Manage Section: Protocol Management', type: :feature do
           admin_access_controls: [AdminAccessControl.new(access_controllable: ihmi)])
     }
 
-    it "Add new protocol drug" do
+    before(:each) do
       visit root_path
-      login_page.do_login(org_owner.email, org_owner.password)
+      sigin(org_owner)
       visit admin_protocols_path
+    end
+    it "Add new protocol drug" do
       protocol_page.select_protocol(protocol_01.name)
       protocol_detail.click_new_protocol_drug_button
       protocol_drug.add_new_protocol_drug("test_drug", "10mg", "AXDSC")
@@ -94,9 +95,6 @@ RSpec.feature 'Manage Section: Protocol Management', type: :feature do
     end
 
     it "Edit protocol drug" do
-      visit root_path
-      login_page.do_login(org_owner.email, org_owner.password)
-      visit admin_protocols_path
       protocol_page.select_protocol(protocol_01.name)
       protocol_detail.click_new_protocol_drug_button
       protocol_drug.add_new_protocol_drug("test_drug", "10mg", "AXDSC")

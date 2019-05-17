@@ -9,7 +9,6 @@ RSpec.feature 'Manage Section: Admin Management', type: :feature do
   let!(:ihmi) {create(:organization, name: "IHMI")}
   let!(:facility_group) {FactoryBot.create_list(:facility_group, 5,organization: ihmi)}
 
-
   let!(:org_owner) {
     create(
         :admin,
@@ -17,7 +16,6 @@ RSpec.feature 'Manage Section: Admin Management', type: :feature do
         admin_access_controls: [AdminAccessControl.new(access_controllable: ihmi)])
   }
 
-  login_page = LoginPage.new
   admin_page = AdminPage.new
   invitation_page = InvitationPage.new
   set_pwd_page = SetPassword.new
@@ -25,7 +23,7 @@ RSpec.feature 'Manage Section: Admin Management', type: :feature do
   describe "Manage Admin Section" do
     before(:each) do
       visit root_path
-      login_page.do_login(org_owner.email, org_owner.password)
+      signin(org_owner)
       visit admins_path
     end
 

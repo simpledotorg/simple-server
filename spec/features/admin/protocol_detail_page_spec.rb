@@ -3,7 +3,6 @@ require 'rails_helper'
 RSpec.feature 'test protocol detail page functionality', type: :feature do
 
   let(:owner) { create(:admin) }
-  login_page = LoginPage.new
   protocol_page = ProtocolLandingPage.new
   protocol_form = ProtocolFormPage.new
   protocol_detail = ProtocolDetailPage.new
@@ -11,7 +10,7 @@ RSpec.feature 'test protocol detail page functionality', type: :feature do
 
   before(:each) do
     visit root_path
-    login_page.do_login(owner.email, owner.password)
+    signin(owner)
     visit admin_protocols_path
     protocol_page.click_add_new_protocol
     protocol_form.create_new_protocol("testProtocol", "40")

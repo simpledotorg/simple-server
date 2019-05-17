@@ -17,14 +17,13 @@ RSpec.feature 'Verify Dashboard', type: :feature do
   let!(:path_clinic2) {create(:facility, facility_group: path_group, name: "Dr. Test_02")}
   let!(:path_clinic3) {create(:facility, facility_group: path_group, name: "Dr. Test_03")}
 
-  login_page = LoginPage.new
   dashboard = DashboardPage.new
   home_page = HomePage.new
 
   context "Verify Dashboard" do
     before(:each) do
       visit root_path
-      login_page.do_login(owner.email, owner.password)
+      signin(owner)
     end
 
     it 'Verify all organization' do

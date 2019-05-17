@@ -30,13 +30,12 @@ RSpec.feature 'Manage -facility group management', type: :feature do
         :organization_owner,
         admin_access_controls: [AdminAccessControl.new(access_controllable: ihmi)])
   }
-  login_page = LoginPage.new
   facility_page = FacilityPage.new
   facility_group = FacilityGroupForm.new
 
   before(:each) do
     visit root_path
-    login_page.do_login(org_owner.email, org_owner.password)
+    signin(org_owner)
     visit admin_facilities_path
   end
 

@@ -2,7 +2,6 @@ require 'rails_helper'
 RSpec.feature 'Users Management ', type: :feature do
 
   let(:owner) {create(:admin, :owner)}
-  login_page = LoginPage.new
   users_page = UsersPage.new
   edit_user_page = EditUserPage.new
   registered_facility_page = UsersRegisteredFacilityPage.new
@@ -13,7 +12,7 @@ RSpec.feature 'Users Management ', type: :feature do
 
       before(:each) do
         visit root_path
-        login_page.do_login(owner.email, owner.password)
+        signin(owner)
         visit admin_users_path
       end
 

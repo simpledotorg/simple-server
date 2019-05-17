@@ -1,5 +1,4 @@
-require 'Pages/base'
-class UsersRegisteredFacilityPage < Base
+class UsersRegisteredFacilityPage < ApplicationPage
   include Capybara::DSL
 
   FACILITY_NAME = {xpath: "//small/a"}

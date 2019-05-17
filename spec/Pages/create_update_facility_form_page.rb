@@ -1,6 +1,4 @@
-require 'Pages/base'
-
-class FacilityFormPage < Base
+class FacilityFormPage < ApplicationPage
   include Capybara::DSL
 
   PAGE_HEADING = {xpath: "//h1[text()='New facility']"}.freeze

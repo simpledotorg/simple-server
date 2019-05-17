@@ -1,5 +1,4 @@
-require 'Pages/base'
-class UserDetailsPage < Base
+class UserDetailsPage < ApplicationPage
 
   include Capybara::DSL
 

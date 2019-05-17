@@ -8,8 +8,6 @@ RSpec.feature 'Manage Section: Organizaiton Management', type: :feature do
   let!(:ihmi) {create(:organization, name: "IHMI")}
   let!(:ihmi_group) {create(:facility_group, organization: ihmi, name: "Bathinda")}
 
-
-  login_page = LoginPage.new
   home_page = HomePage.new
   org_page = OrganizationsPage.new
 
@@ -23,7 +21,7 @@ RSpec.feature 'Manage Section: Organizaiton Management', type: :feature do
     }
     it "single organization" do
       visit root_path
-      login_page.do_login(org_owner.email, org_owner.password)
+      signin(org_owner)
       home_page.select_main_menu_tab("Manage")
       home_page.select_manage_option('Organizations')
       org_info = [ihmi.name, ihmi.description]
@@ -43,7 +41,7 @@ RSpec.feature 'Manage Section: Organizaiton Management', type: :feature do
 
     it "Verify Multiple Organizaitons" do
       visit root_path
-      login_page.do_login(org_owner1.email, org_owner1.password)
+      signin(org_owner1)
       home_page.select_main_menu_tab("Manage")
       home_page.select_manage_option('Organizations')
       expect(page).to have_content(orgs.first.name)

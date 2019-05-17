@@ -16,7 +16,7 @@ RSpec.feature 'Facility page functionality', type: :feature do
 
   before(:each) do
     visit root_path
-    login_page.do_login(owner.email, owner.password)
+    signin(owner)
     visit admin_facilities_path
   end
 

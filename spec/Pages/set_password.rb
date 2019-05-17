@@ -1,5 +1,4 @@
-require 'Pages/base'
-class SetPassword <Base
+class SetPassword < ApplicationPage
   include Capybara::DSL
 
   PASSWORD={id: "admin_password"}

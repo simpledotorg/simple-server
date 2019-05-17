@@ -5,17 +5,15 @@ RSpec.feature 'Admin Management', type: :feature do
   let!(:organizations) {FactoryBot.create_list(:organization, 2)}
   let!(:facility_group) {FactoryBot.create_list(:facility_group, 5)}
 
-  login_page = LoginPage.new
   admin_page = AdminPage.new
   invitation_page = InvitationPage.new
   set_pwd_page = SetPassword.new
-
 
   describe "Manage Admin Section" do
 
     before(:each) do
       visit root_path
-      login_page.do_login(owner.email, owner.password)
+      signin(owner)
       visit admins_path
     end
 

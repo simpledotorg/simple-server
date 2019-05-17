@@ -1,5 +1,4 @@
-class FacilityGroupForm < Base
-
+class FacilityGroupForm < ApplicationPage
   #this page is use for creating new facility group and edit facility group
   include Capybara::DSL
 

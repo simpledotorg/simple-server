@@ -4,15 +4,15 @@ RSpec.feature 'Organization management', type: :feature do
   let!(:owner) {create(:admin, :owner)}
   let!(:ihmi) {create(:organization, name: "IHMI")}
   let!(:path) {create(:organization, name: "PATH")}
-  login = LoginPage.new
   home_page = HomePage.new
 
   describe "test organization screen" do
 
-    it 'Verify organisation is displayed in ManageOrganisation' do
+    before(:each) do
       visit root_path
-      login.do_login(owner.email, owner.password)
-
+      signin(owner)
+    end
+    it 'Verify organisation is displayed in ManageOrganisation' do
       home_page.select_main_menu_tab("Manage")
       expect(page).to have_content("Organizations")
       expect(page).to have_content("Protocols")
@@ -23,18 +23,12 @@ RSpec.feature 'Organization management', type: :feature do
     end
 
     it 'create organisation ' do
-      visit root_path
-      login.do_login(owner.email, owner.password)
-
       home_page.select_manage_option("Organizations")
       organization = OrganizationsPage.new
       organization.create_new_organization("test", "testDescription")
     end
 
     it 'delete organisation ' do
-      visit root_path
-      login.do_login(owner.email, owner.password)
-
       home_page.select_manage_option("Organizations")
       organization = OrganizationsPage.new
       organization.create_new_organization("test", "testDescription")
@@ -46,8 +40,7 @@ RSpec.feature 'Organization management', type: :feature do
 
   it 'Verify owner should be able to delete organisation ' do
     visit root_path
-    login.do_login(owner.email, owner.password)
-
+    signin(owner)
     homepage.select_manage_option("Organizations")
     organization = OrganizationsPage.new
     organization.create_new_organization("test", "testDescription")

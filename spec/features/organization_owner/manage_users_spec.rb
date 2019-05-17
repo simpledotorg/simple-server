@@ -15,7 +15,6 @@ RSpec.feature 'Manage Section: User Management', type: :feature do
         :organization_owner,
         admin_access_controls: [AdminAccessControl.new(access_controllable: ihmi)])
   }
-  login_page = LoginPage.new
   users_page = UsersPage.new
   edit_user_page = EditUserPage.new
   user_detail_page = UserDetailsPage.new
@@ -35,7 +34,7 @@ RSpec.feature 'Manage Section: User Management', type: :feature do
 
     it "should be able to view all users" do
       visit root_path
-      login_page.do_login(org_owner.email, org_owner.password)
+      signin(org_owner)
       visit admin_users_path
       expect(users_page.get_district_count).to eq(2)
       expect(users_page.get_users_count).to eq(4)
@@ -45,7 +44,7 @@ RSpec.feature 'Manage Section: User Management', type: :feature do
 
       before(:each) do
         visit root_path
-        LoginPage.new.do_login(org_owner.email, org_owner.password)
+        signin(org_owner)
         visit admin_users_path
       end
 

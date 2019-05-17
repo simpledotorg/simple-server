@@ -14,15 +14,12 @@ RSpec.feature 'Login as organization owner', type: :feature do
         :organization_owner,
         admin_access_controls: [AdminAccessControl.new(access_controllable: ihmi)])
   }
-
-
-  login_page = LoginPage.new
   dashboard = DashboardPage.new
 
   context "create organization with one facility group" do
     before(:each) do
       visit root_path
-      login_page.do_login(org_owner.email, org_owner.password)
+      signin(org_owner)
     end
     it 'Verify Dashboard' do
       #assertion
@@ -42,7 +39,7 @@ RSpec.feature 'Login as organization owner', type: :feature do
     user = create(:user, sync_approval_status: :requested, facility: facility_01)
 
     visit root_path
-    login_page.do_login(org_owner.email, org_owner.password)
+    signin(org_owner)
     expect(page).to have_content("1 user waiting for access")
     expect(page).to have_content("Allow access")
     expect(page).to have_content("Deny access")

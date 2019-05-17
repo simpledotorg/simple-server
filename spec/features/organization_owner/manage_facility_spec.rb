@@ -26,7 +26,7 @@ RSpec.feature 'MANAGE -Facility Management', type: :feature do
   context "Add and edit facility for any facility group" do
     before(:each) do
       visit root_path
-      LoginPage.new.do_login(org_owner.email, org_owner.password)
+      signin(org_owner)
       visit admin_facilities_path
     end
 
@@ -50,7 +50,7 @@ RSpec.feature 'MANAGE -Facility Management', type: :feature do
   context "Edit facility at facility detail page" do
     before(:each) do
       visit root_path
-      LoginPage.new.do_login(org_owner.email, org_owner.password)
+      signin(org_owner)
       visit admin_facilities_path
       facility_page.click_add_new_facility
 
