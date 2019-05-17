@@ -82,7 +82,7 @@ namespace :data_migration do
     puts "Number of unprocessed/errored defaulters = #{unprocessed_or_errored_defaulters_count}"
   end
 
-  desc "Set default 'recorded_at' for existing blood pressure records"
+  desc "Set default 'recorded_at' for existing blood pressure and patient records"
   task set_default_recorded_at_for_existing_blood_pressures: :environment do
     # For BloodPressure records,
     # we default to the device_created_at
@@ -93,10 +93,7 @@ namespace :data_migration do
     end
 
     puts "Total number of BloodPressure records updated = #{blood_pressures.size}"
-  end
 
-  desc "Set default 'recorded_at' for existing patient records"
-  task set_default_recorded_at_for_existing_patients: :environment do
     # Patients' recorded_at is set to their earliest
     # BP's device_created_at if older than theirs
     patients = Patient.where(recorded_at: nil)

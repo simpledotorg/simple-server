@@ -17,10 +17,6 @@ every :day, at: local('2:00 am').utc do
   rake 'appointment_notification:three_days_after_missed_visit'
 end
 
-every :day, at: local('3:00 am').utc do
-  rake 'data_migration:set_default_recorded_at_for_existing_patients'
-end
-
 every :month, at: local('1:00 am').utc do
   runner "WarmUpQuarterlyAnalyticsCacheJob.perform_later"
 end

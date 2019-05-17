@@ -46,6 +46,13 @@ RSpec.describe Api::V2::PatientsController, type: :controller do
         expect(response).to have_http_status(200)
       end
 
+      it 'defaults recorded_at to device_created_at' do
+        patient = FactoryBot.build(:patient)
+        patient_payload = build_patient_payload_v2(patient)
+        post(:sync_from_user, params: { patients: [patient_payload] }, as: :json)
+        expect(patient.recorded_at).to eq(patient.device_created_at)
+      end
+
       it 'creates new patients without address' do
         post(:sync_from_user, params: { patients: [build_patient_payload_v2.except('address')] }, as: :json)
         expect(Patient.count).to eq 1
