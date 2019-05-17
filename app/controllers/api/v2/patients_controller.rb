@@ -1,4 +1,25 @@
 class Api::V2::PatientsController < Api::Current::PatientsController
+  private
+
+  def merge_if_valid(single_patient_params)
+    validator = Api::V2::PatientPayloadValidator.new(single_patient_params)
+    logger.debug "Patient had errors: #{validator.errors_hash}" if validator.invalid?
+    if validator.invalid?
+      NewRelic::Agent.increment_metric('Merge/Patient/schema_invalid')
+      { errors_hash: validator.errors_hash }
+    else
+      patients_params_with_metadata = single_patient_params.merge(metadata: metadata)
+      patient = MergePatientService.new(
+        Api::V2::PatientTransformer.from_nested_request(patients_params_with_metadata)
+      ).merge
+      set_default_recorded_at(patient)
+      { record: patient }
+    end
+  end
+
+  def set_default_recorded_at(patient)
+    patient.recorded_at = patient.device_created_at
+  end
 
   def transform_to_response(patient)
     Api::V2::PatientTransformer.to_nested_response(patient)

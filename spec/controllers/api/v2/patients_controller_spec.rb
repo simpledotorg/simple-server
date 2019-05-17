@@ -45,6 +45,7 @@ RSpec.describe Api::V2::PatientsController, type: :controller do
         expect(PatientPhoneNumber.count).to eq(patients.sum { |patient| patient['phone_numbers'].count })
         expect(response).to have_http_status(200)
       end
+
       it 'creates new patients without address' do
         post(:sync_from_user, params: { patients: [build_patient_payload_v2.except('address')] }, as: :json)
         expect(Patient.count).to eq 1
@@ -95,6 +96,7 @@ RSpec.describe Api::V2::PatientsController, type: :controller do
                    .except('address_id')
                    .except('registration_user_id')
                    .except('registration_facility_id')
+                   .except('recorded_at')
                    .except('test_data'))
             .to eq(updated_patient.with_int_timestamps)
         end
@@ -137,6 +139,7 @@ RSpec.describe Api::V2::PatientsController, type: :controller do
                    .except('address_id')
                    .except('registration_user_id')
                    .except('registration_facility_id')
+                   .except('recorded_at')
                    .except('test_data'))
             .to eq(updated_patient.except('address', 'phone_numbers', 'business_identifiers'))
 
