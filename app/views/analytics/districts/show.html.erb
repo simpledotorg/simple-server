@@ -7,23 +7,6 @@
   <h1><%= @organization_district.district_name %></h1>
   <%= string_for_range(@from_time, @to_time) %>
 
-  <div class="featured d-none">
-
-    <%= render "shared/analytics/patients_count_panel",
-               newly_enrolled_patients_count: @district_analytics[:newly_enrolled_patients],
-               returning_patients_count: @district_analytics[:returning_patients] %>
-
-    <%= render "shared/analytics/non_returning_hypertensive_patients_panel",
-               number_of_months: 3,
-               non_returning_hypertensive_patients_count: @district_analytics[:non_returning_hypertensive_patients],
-               non_returning_hypertensive_patients_per_month: @district_analytics[:non_returning_hypertensive_patients_per_month] %>
-
-    <%= render "shared/analytics/control_rate_panel",
-               goal: 30,
-               number_of_months: 3,
-               control_rate: @district_analytics[:control_rate][:control_rate],
-               control_rate_per_month: @district_analytics[:control_rate_per_month] %>
-  </div>
 </div>
 
 <%= render 'facility_table',
