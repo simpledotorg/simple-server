@@ -1,5 +1,5 @@
 class WarmUpAnalyticsCacheJob < ApplicationJob
-  queue_as :default
+  queue_as :analytics_warmup
   self.queue_adapter = :sidekiq
 
   def perform(record_type, record_id, from_time_string, to_time_string)

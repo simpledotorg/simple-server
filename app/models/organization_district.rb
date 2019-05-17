@@ -1,6 +1,6 @@
 class OrganizationDistrict < Struct.new(:district_name, :organization)
   include PatientSetAnalyticsReportable
-  
+
   def report_on_patients
     Patient.where(registration_facility: facilities)
   end
