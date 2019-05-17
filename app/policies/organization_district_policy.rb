@@ -7,10 +7,6 @@ class OrganizationDistrictPolicy < ApplicationPolicy
     user.owner? || [:organization_owner, :supervisor, :analyst].map { |role| admin_can_access?(role) }.any?
   end
 
-  def graphics?
-    show?
-  end
-
   private
 
   def admin_can_access?(role)

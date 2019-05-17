@@ -18,18 +18,18 @@ class Analytics::DistrictsController < AnalyticsController
 
   private
 
+  def set_organization
+    @organization = Organization.find_by(id: params[:organization_id])
+  end
+
   def set_district
     district_name = params[:id] || params[:district_id]
     @organization_district = OrganizationDistrict.new(district_name, @organization)
     authorize(@organization_district)
   end
 
-  def set_organization
-    @organization = Organization.find_by(id: params[:organization_id])
-  end
-
   def set_facilities
-    @facilities = policy_scope(@organization_district.facilities)
+    @facilities = policy_scope(@organization_district.facilities).order(:name)
   end
 
   def district_analytics(from_time, to_time)
