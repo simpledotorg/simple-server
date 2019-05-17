@@ -150,9 +150,7 @@ Rails.application.routes.draw do
         get :graphics
       end
       resources :organizations do
-        resources :districts, only: [:show] do
-          get :graphics
-        end
+        resources :districts, only: [:show]
       end
     end
   else

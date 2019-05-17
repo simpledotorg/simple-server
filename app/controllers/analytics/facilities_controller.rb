@@ -1,7 +1,8 @@
 class Analytics::FacilitiesController < AnalyticsController
   before_action :set_facility
   before_action :set_organization
-  before_action :set_facility_group_or_organization_district
+  before_action :set_facility_group
+  before_action :set_organization_district
   before_action :set_cache_key
 
   def show
@@ -22,12 +23,8 @@ class Analytics::FacilitiesController < AnalyticsController
     authorize(@facility)
   end
 
-  def set_facility_group_or_organization_district
-    if FeatureToggle.enabled?('DASHBOARD_VIEW_BY_DISTRICT')
-      set_organization_district
-    else
-      @facility_group = @facility.facility_group
-    end
+  def set_facility_group
+    @facility_group = @facility.facility_group
   end
 
   def set_organization_district
