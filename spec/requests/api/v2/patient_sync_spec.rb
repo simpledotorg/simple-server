@@ -51,6 +51,6 @@ RSpec.describe 'Patients sync', type: :request do
     post sync_route, params: { patients: [patient_payload] }.to_json, headers: headers
 
     patient_in_db = Patient.find(patient.id)
-    expect(patient_in_db.recorded_at).to eq(blood_pressure_recorded_at)
+    expect(patient_in_db.recorded_at.to_i).to eq(blood_pressure_recorded_at.to_i)
   end
 end

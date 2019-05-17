@@ -98,7 +98,7 @@ RSpec.describe Api::V2::BloodPressuresController, type: :controller do
         post(:sync_from_user, params: { blood_pressures: [blood_pressure_recorded_one_month_ago] }, as: :json)
 
         patient.reload
-        expect(patient.recorded_at).to eq(two_months_ago)
+        expect(patient.recorded_at.to_i).to eq(two_months_ago.to_i)
       end
     end
   end
