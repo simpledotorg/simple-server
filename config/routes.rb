@@ -144,19 +144,20 @@ Rails.application.routes.draw do
   devise_for :admins, controllers: { invitations: 'admins/invitations' }
   resources :admins
 
-  if FeatureToggle.enabled?('UPDATED_ANALYTICS_VIEWS')
-    namespace :analytics do
+  namespace :analytics do
+    if FeatureToggle.enabled?('DASHBOARD_VIEW_BY_DISTRICT')
+      resources :facilities, only: [:show] do
+        get :graphics
+      end
+      resources :organizations do
+        resources :districts, only: [:show]
+      end
+    else
       resources :facility_groups, only: [:show] do
         get :graphics
       end
       resources :facilities, only: [:show] do
         get :graphics
-      end
-    end
-  else
-    resources :organizations, only: [:index] do
-      resources :facility_groups, only: [:index, :show] do
-        resources :facilities, only: [:index, :show]
       end
     end
   end
