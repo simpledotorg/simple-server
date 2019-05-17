@@ -57,6 +57,16 @@ RSpec.describe Api::V2::BloodPressuresController, type: :controller do
         expect(patient.blood_pressures.count).to eq 10
         expect(response).to have_http_status(200)
       end
+
+      it 'defaults recorded_at to device_created_at' do
+        patient = FactoryBot.create(:patient)
+        blood_pressure = build_blood_pressure_payload_v2(FactoryBot.build(:blood_pressure, patient: patient))
+        post(:sync_from_user, params: { blood_pressures: [blood_pressure] }, as: :json)
+
+        patient.reload
+        blood_pressure_in_db = patient.blood_pressures.first
+        expect(blood_pressure_in_db.recorded_at).to eq(blood_pressure_in_db.device_created_at)
+      end
     end
   end
 

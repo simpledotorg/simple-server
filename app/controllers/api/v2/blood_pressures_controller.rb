@@ -33,6 +33,8 @@ class Api::V2::BloodPressuresController < Api::Current::BloodPressuresController
   def retroactively_set_recorded_at(blood_pressure)
     # older versions set device_created_at in the past
     blood_pressure.recorded_at = blood_pressure.device_created_at
+    blood_pressure.save
+
     patient = blood_pressure.patient
 
     # blood pressures for a new patient might be
@@ -44,6 +46,7 @@ class Api::V2::BloodPressuresController < Api::Current::BloodPressuresController
     if blood_pressure.device_created_at < patient.device_created_at
       earliest_blood_pressure = patient.blood_pressures.order(device_created_at: :asc).first
       patient.recorded_at = earliest_blood_pressure.device_created_at
+      patient.save
     end
   end
 
