@@ -26,6 +26,6 @@ class Facility < ApplicationRecord
   friendly_id :name, use: :slugged
 
   def report_on_patients
-    registered_patients.includes(:latest_blood_pressures)
+    registered_patients
   end
 end

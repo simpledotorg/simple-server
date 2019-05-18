@@ -1,5 +1,5 @@
 <div class="sub-nav">
-  <%= range = { from_time: 90.days.ago.yesterday, to_time: Time.now.yesterday }
+  <%= range = { from_time: 90.days.ago.yesterday.to_date, to_time: Time.now.yesterday.to_date }
       link_for_range(range, from_time, to_time, t('analytics.last_90_days')) %>
 
   <% (1..4).each do |n| %>
