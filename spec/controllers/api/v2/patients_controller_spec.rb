@@ -50,7 +50,9 @@ RSpec.describe Api::V2::PatientsController, type: :controller do
         patient = FactoryBot.build(:patient)
         patient_payload = build_patient_payload_v2(patient)
         post(:sync_from_user, params: { patients: [patient_payload] }, as: :json)
-        expect(patient.recorded_at).to eq(patient.device_created_at)
+
+        patient_in_db = Patient.find(patient.id)
+        expect(patient_in_db.recorded_at.to_i).to eq(patient_in_db.device_created_at.to_i)
       end
 
       it 'creates new patients without address' do

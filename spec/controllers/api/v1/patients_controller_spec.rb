@@ -43,6 +43,16 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         expect(PatientPhoneNumber.count).to eq(patients.sum { |patient| patient['phone_numbers'].count })
         expect(response).to have_http_status(200)
       end
+
+      it 'defaults recorded_at to device_created_at' do
+        patient = FactoryBot.build(:patient)
+        patient_payload = build_patient_payload_v1(patient)
+        post(:sync_from_user, params: { patients: [patient_payload] }, as: :json)
+
+        patient_in_db = Patient.find(patient.id)
+        expect(patient_in_db.recorded_at.to_i).to eq(patient_in_db.device_created_at.to_i)
+      end
+
       it 'creates new patients without address' do
         post(:sync_from_user, params: { patients: [build_patient_payload.except('address')] }, as: :json)
         expect(Patient.count).to eq 1
