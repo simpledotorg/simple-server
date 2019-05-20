@@ -4,3 +4,4 @@
 
 :queues:
   - default
+  - [analytics_warmup, 2]

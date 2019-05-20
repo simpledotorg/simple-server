@@ -69,6 +69,7 @@ group :test do
   gem 'webmock'
   gem 'fakeredis', require:  false
   gem 'generator_spec'
+  gem 'webdriver'
   # gem 'rspec-sidekiq'
 end
 

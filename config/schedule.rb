@@ -10,7 +10,7 @@ def local(time)
 end
 
 every :day, at: local('1:00 am').utc do
-  runner "WarmUpAnalyticsCacheJob.perform_later"
+  rake 'analytics:warm_up_last_ninety_days'
 end
 
 every :day, at: local('2:00 am').utc do
@@ -18,5 +18,5 @@ every :day, at: local('2:00 am').utc do
 end
 
 every :month, at: local('1:00 am').utc do
-  runner "WarmUpQuarterlyAnalyticsCacheJob.perform_later"
+  rake 'analytics:warm_up_last_four_quarters'
 end
