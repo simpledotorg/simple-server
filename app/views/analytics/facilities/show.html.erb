@@ -23,7 +23,7 @@
     <h1><%= @facility.name %></h1>
     <%= string_for_range(@from_time, @to_time) %>
     <p class="text-muted">
-      <% if @facility_analyics[:cache_updated_at].present? %>
+      <% if @facility_analytics[:cache_updated_at].present? %>
         <small>Last updated: <%= @facility_analytics[:cache_updated_at].strftime("%B %d, %Y") %></small>
       <% end %>
     </p>
