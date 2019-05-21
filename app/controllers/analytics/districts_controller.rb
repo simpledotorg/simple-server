@@ -2,6 +2,7 @@ class Analytics::DistrictsController < AnalyticsController
   before_action :set_organization
   before_action :set_district
   before_action :set_facilities
+  before_action set_cache_key
 
   def show
     @days_previous = 20
@@ -30,6 +31,10 @@ class Analytics::DistrictsController < AnalyticsController
 
   def set_facilities
     @facilities = policy_scope(@organization_district.facilities).order(:name)
+  end
+
+  def set_cache_key
+    @organization_district.analytics_cache_key(@from_time, @to_time)
   end
 
   def district_analytics(from_time, to_time)
