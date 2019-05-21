@@ -6,14 +6,17 @@
   <div class="dashboard">
     <h1><%= @facility_group.name %></h1>
     <%= string_for_range(@from_time, @to_time) %>
-    <small>Last updated: <%= @facility_group_analytics[:cache_updated_at].strftime("%B %d, %Y") %></small>
+    <% if @facility_group_analytics[:cached_updated_at].present? %>
+      <small>Last updated: <%= @facility_group_analytics[:cache_updated_at].strftime("%B %d, %Y") %></small>
+    <% end %>
   </div>
 
   <%= render 'facility_table' %>
 
   <section>
     <h4>Notes</h4>
-    <p class="footnote"><strong>Didn't attend</strong> patients are enrolled hypertensives that have not had a BP recorded
+    <p class="footnote"><strong>Didn't attend</strong> patients are enrolled hypertensives that have not had a BP
+      recorded
       in the past 3 months.</p>
     <p class="footnote">
       <strong><%= t('analytics.control_rate') %></strong>
