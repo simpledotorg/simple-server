@@ -20,11 +20,10 @@ class Api::V2::PatientsController < Api::Current::PatientsController
   def set_default_recorded_at(patient)
     earliest_blood_pressure = patient.blood_pressures.order(device_created_at: :asc).first
     if earliest_blood_pressure.present?
-      patient.recorded_at = [patient.device_created_at, earliest_blood_pressure.device_created_at].min
+      patient.update_column(:recorded_at, [patient.device_created_at, earliest_blood_pressure.device_created_at].min)
     else
-      patient.recorded_at = patient.device_created_at
+      patient.update_column(:recorded_at, patient.device_created_at)
     end
-    patient.save
   end
 
   def transform_to_response(patient)
