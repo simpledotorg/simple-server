@@ -25,7 +25,7 @@ RSpec.describe 'Patients sync', type: :request do
 
     created_patients         = Patient.find(first_patients_payload.map { |patient| patient['id'] })
     updated_patients_payload = created_patients.map do |patient|
-      updated_patient_payload(patient)
+      updated_patient_payload_v1(patient)
         .except(%w(address phone_numbers).sample)
     end
 

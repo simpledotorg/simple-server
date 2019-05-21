@@ -87,3 +87,5 @@ def updated_patient_payload_v2(existing_patient)
   updated_patient_payload(existing_patient)
     .except('recorded_at')
 end
+
+alias updated_patient_payload_v1 updated_patient_payload_v2
