@@ -36,12 +36,7 @@ class Analytics::FacilitiesController < AnalyticsController
   end
 
   def set_cache_key
-    @cache_key = [
-      "analytics/facilities",
-      @facility.slug,
-      @from_time.strftime("%Y-%m-%d"),
-      @to_time.strftime("%Y-%m-%d")
-    ]
+    @cache_key = ["view", @facility.analytics_cache_key(@from_time, @to_time)]
   end
 
   def users_for_facility
