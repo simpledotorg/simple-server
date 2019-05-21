@@ -34,7 +34,7 @@ class Analytics::DistrictsController < AnalyticsController
   end
 
   def set_cache_key
-    @cache_key = ["view", @organization_district.analytics_cache_key(@from_time, @to_time)]
+    @cache_key = @organization_district.analytics_cache_key(@from_time, @to_time)
   end
 
   def district_analytics(from_time, to_time)
