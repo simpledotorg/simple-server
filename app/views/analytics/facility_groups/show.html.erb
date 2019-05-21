@@ -6,9 +6,8 @@
   <div class="dashboard">
     <h1><%= @facility_group.name %></h1>
     <%= string_for_range(@from_time, @to_time) %>
-    <p class="text-muted"><small>Last updated: <%= Time.now.strftime("%B %d, %Y") %></small></p>
+    <small>Last updated: <%= @facility_group_analytics[:cache_updated_at].strftime("%B %d, %Y") %></small>
   </div>
-
 
   <%= render 'facility_table' %>
 
