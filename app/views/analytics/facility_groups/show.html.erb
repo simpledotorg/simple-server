@@ -6,7 +6,7 @@
   <div class="dashboard">
     <h1><%= @facility_group.name %></h1>
     <%= string_for_range(@from_time, @to_time) %>
-    <% if @facility_group_analytics[:cached_updated_at].present? %>
+    <% if @facility_group_analytics[:cache_updated_at].present? %>
       <small>Last updated: <%= @facility_group_analytics[:cache_updated_at].strftime("%B %d, %Y") %></small>
     <% end %>
   </div>
