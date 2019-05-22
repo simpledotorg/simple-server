@@ -4,7 +4,11 @@ module DashboardHelper
   end
 
   def dash_if_zero(value)
-    (value == nil || value == 0) ? "-" : value
+    is_zero(value) ? "-" : value
+  end
+
+  def is_zero(value)
+    value == nil || value == 0
   end
 
   def analytics_date_format(time)

@@ -7,7 +7,7 @@
         <th class="row-label">Newly<br>enrolled</th>
         <th class="row-label">Didn't<br>attend</th>
 
-        <th class="row-label">BP<br>control</th>
+        <th class="row-label">BP<br>control %</th>
         <th class="row-spacer">&nbsp;</th>
         <th class="row-label">Return and<br>enrolled patients</th>
 
@@ -32,7 +32,8 @@
           <td class="row-enrolled text-green"><%= dash_if_zero(analytics[:newly_enrolled_patients]) %></td>
           <td class="row-default text-yellow"><%= dash_if_zero(analytics[:non_returning_hypertensive_patients]) %></td>
 
-          <td class="row-control"><%= dash_if_zero(analytics[:control_rate][:control_rate]) %></td>
+          <td class="row-control"><%= dash_if_zero(analytics[:control_rate][:control_rate]) %>
+            <% unless is_zero(analytics[:control_rate][:control_rate])%>%<% end %></td>
           <td class="row-spacer">&nbsp;</td>
           <td class="row-unique-date">
             <%= dash_if_zero(analytics[:returning_patients] + analytics[:newly_enrolled_patients]) %>
@@ -51,7 +52,8 @@
         <td class="row-enrolled text-green row-total"><%= dash_if_zero(group_analytics[:newly_enrolled_patients]) %></td>
         <td class="row-default text-yellow row-total"><%= dash_if_zero(group_analytics[:non_returning_hypertensive_patients]) %></td>
 
-        <td class="row-control"><%= dash_if_zero(group_analytics[:control_rate][:control_rate]) %></td>
+        <td class="row-control"><%= dash_if_zero(group_analytics[:control_rate][:control_rate]) %>
+        <% unless is_zero(group_analytics[:control_rate][:control_rate]) %>%<% end %></td>
         <td class="row-spacer">&nbsp;</td>
 
         <td class="row-unique-date">
