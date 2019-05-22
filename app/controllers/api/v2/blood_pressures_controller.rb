@@ -28,7 +28,7 @@ class Api::V2::BloodPressuresController < Api::Current::BloodPressuresController
         transformed_params =
           set_default_recorded_at(Api::V2::BloodPressureTransformer.from_request(blood_pressure_params))
 
-        set_patient_recorded_at_retroactively(transformed_params)
+        set_patient_recorded_at(transformed_params)
         BloodPressure.merge(transformed_params)
       end
 
@@ -36,24 +36,19 @@ class Api::V2::BloodPressuresController < Api::Current::BloodPressuresController
     end
   end
 
-  def set_default_recorded_at(blood_pressure_params)
-    # older versions set device_created_at in the past
-    blood_pressure_params.merge('recorded_at' => blood_pressure_params['device_created_at'])
+  def set_default_recorded_at(bp_params)
+    bp_params.merge('recorded_at' => bp_params['device_created_at'])
   end
 
-  def set_patient_recorded_at_retroactively(blood_pressure_params)
-    # blood pressures for a new patient might be
-    # synced before the patient themselves
-    patient = Patient.find_by(id: blood_pressure_params['patient_id'])
+  def set_patient_recorded_at(bp_params)
+    patient = Patient.find_by(id: bp_params['patient_id'])
     return if patient.blank?
 
-    patient.update_column(:recorded_at, patient_recorded_at(patient, blood_pressure_params))
+    patient.update_column(:recorded_at, patient_recorded_at(patient, bp_params))
   end
 
-  def patient_recorded_at(patient, blood_pressure_params)
-    blood_pressure_params['recorded_at'] < patient.recorded_at ?
-      blood_pressure_params['recorded_at'] :
-      patient.recorded_at
+  def patient_recorded_at(patient, bp_params)
+    bp_params['recorded_at'] < patient.recorded_at ? bp_params['recorded_at'] : patient.recorded_at
   end
 
   def transform_to_response(blood_pressure)
