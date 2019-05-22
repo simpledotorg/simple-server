@@ -78,8 +78,7 @@ RSpec.describe Api::V2::BloodPressuresController, type: :controller do
         post(:sync_from_user, params: { blood_pressures: [blood_pressure] }, as: :json)
 
         patient.reload
-        blood_pressure_in_db = patient.blood_pressures.first
-        expect(patient.recorded_at).to eq(blood_pressure_in_db.device_created_at)
+        expect(patient.recorded_at.to_i).to eq(older_blood_pressure_recording_date.to_i)
       end
 
       it "sets patient's recorded_at to their oldest bp's device_created_at" do

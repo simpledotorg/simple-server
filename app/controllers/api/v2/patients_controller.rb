@@ -8,30 +8,27 @@ class Api::V2::PatientsController < Api::Current::PatientsController
       NewRelic::Agent.increment_metric('Merge/Patient/schema_invalid')
       { errors_hash: validator.errors_hash }
     else
-      single_patient_params_with_recorded_at = set_default_recorded_at(single_patient_params)
-      patients_params_with_metadata = single_patient_params_with_recorded_at.merge(metadata: metadata)
+      patients_params_with_metadata = single_patient_params.merge(metadata: metadata)
       patient = MergePatientService.new(
-        Api::V2::PatientTransformer.from_nested_request(patients_params_with_metadata)
+        set_default_recorded_at(Api::V2::PatientTransformer.from_nested_request(patients_params_with_metadata))
       ).merge
       { record: patient }
     end
   end
 
   def set_default_recorded_at(patient_params)
-    patient = Patient.find_by(id: patient_params['id'])
+    patient_params.merge('recorded_at' => default_recorded_at(patient_params))
+  end
 
-    if patient.present?
-      earliest_blood_pressure = patient.blood_pressures.order(device_created_at: :asc).first
-      if earliest_blood_pressure.present?
-        patient_params['recorded_at'] = [patient.device_created_at, earliest_blood_pressure.device_created_at].min
-      else
-        patient_params['recorded_at'] = patient.device_created_at
-      end
-    else
-      patient_params['recorded_at'] = patient_params['created_at']
-    end
+  def default_recorded_at(patient_params)
+    patient_recorded_at = patient_params['device_created_at']
+    earliest_blood_pressure = BloodPressure
+                                .where(patient_id: patient_params['id'])
+                                .order(recorded_at: :asc)
+                                .first
 
-    patient_params
+    earliest_blood_pressure.blank? ?
+      patient_recorded_at : [patient_recorded_at, earliest_blood_pressure.recorded_at].min
   end
 
   def transform_to_response(patient)
