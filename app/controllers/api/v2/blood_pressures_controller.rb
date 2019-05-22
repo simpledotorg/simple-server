@@ -31,7 +31,6 @@ class Api::V2::BloodPressuresController < Api::Current::BloodPressuresController
         set_patient_recorded_at(transformed_params)
         BloodPressure.merge(transformed_params)
       end
-
       { record: blood_pressure }
     end
   end
@@ -44,11 +43,11 @@ class Api::V2::BloodPressuresController < Api::Current::BloodPressuresController
     patient = Patient.find_by(id: bp_params['patient_id'])
     return if patient.blank?
 
-    patient.update_column(:recorded_at, patient_recorded_at(patient, bp_params))
+    patient.update_column(:recorded_at, patient_recorded_at(bp_params, patient))
   end
 
-  def patient_recorded_at(patient, bp_params)
-    bp_params['recorded_at'] < patient.recorded_at ? bp_params['recorded_at'] : patient.recorded_at
+  def patient_recorded_at(bp_params, patient)
+    [bp_params['recorded_at'], patient.recorded_at].min
   end
 
   def transform_to_response(blood_pressure)
