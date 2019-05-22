@@ -2,7 +2,6 @@ class Analytics::FacilitiesController < AnalyticsController
   before_action :set_facility
   before_action :set_organization
   before_action :set_organization_district
-  before_action :set_cache_key
 
   def show
     @facility_analytics = @facility.patient_set_analytics(@from_time, @to_time)

@@ -1,6 +1,4 @@
 class CallLog < ApplicationRecord
-  belongs_to :user, optional: true
-
   validates :caller_phone_number, presence: true
   validates :callee_phone_number, presence: true
 
