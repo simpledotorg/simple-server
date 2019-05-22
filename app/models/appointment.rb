@@ -48,15 +48,7 @@ class Appointment < ApplicationRecord
   end
 
   def enrolment_date
-    date = device_created_at
-    format = "%d-%b-%Y"
-    program_inception_date = ENV['PROGRAM_INCEPTION_DATE'] ? ENV['PROGRAM_INCEPTION_DATE'].to_time : DEFAULT_PROGRAM_INCEPTION_DATE
-
-    if date < program_inception_date
-      'Unclear'
-    else
-      date.strftime(format)
-    end
+    ApplicationController.helpers.handle_impossible_registration_date(device_created_at)
   end
 
   def scheduled?
