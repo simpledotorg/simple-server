@@ -24,17 +24,19 @@ class Api::V2::BloodPressuresController < Api::Current::BloodPressuresController
       NewRelic::Agent.increment_metric('Merge/BloodPressure/schema_invalid')
       { errors_hash: validator.errors_hash }
     else
-      blood_pressure = BloodPressure.merge(Api::V2::BloodPressureTransformer.from_request(blood_pressure_params))
-      retroactively_set_recorded_at(blood_pressure)
-      { record: blood_pressure }
+      ActiveRecord::Base.transaction do
+        transformed_blood_pressure_params = retroactively_set_recorded_at(Api::V2::BloodPressureTransformer.from_request(blood_pressure_params))
+        blood_pressure = BloodPressure.merge(transformed_blood_pressure_params)
+        { record: blood_pressure }
+      end
     end
   end
 
-  def retroactively_set_recorded_at(blood_pressure)
+  def retroactively_set_recorded_at(blood_pressure_params)
     # older versions set device_created_at in the past
-    blood_pressure.update_column(:recorded_at, blood_pressure.device_created_at)
+    blood_pressure_params['recorded_at'] = blood_pressure_params['device_created_at']
 
-    patient = blood_pressure.patient
+    patient = Patient.find_by(id: blood_pressure_params['patient_id'])
 
     # blood pressures for a new patient might be
     # synced before the patient themselves
@@ -42,10 +44,17 @@ class Api::V2::BloodPressuresController < Api::Current::BloodPressuresController
 
     # if patient's device_created_at is older than
     # the BP's we modify it to be the earliest BP's date
-    if blood_pressure.device_created_at < patient.device_created_at
-      earliest_blood_pressure = patient.blood_pressures.order(device_created_at: :asc).first
-      patient.update_column(:recorded_at, earliest_blood_pressure.device_created_at)
+    if blood_pressure_params['recorded_at'] < patient.recorded_at
+      earliest_blood_pressure_in_db = patient.blood_pressures.order(recorded_at: :asc).first
+      earliest_blood_pressure_recorded_at = if blood_pressure_params['recorded_at'] < earliest_blood_pressure_in_db.recorded_at
+                                              blood_pressure_params['recorded_at']
+                                            else
+                                              earliest_blood_pressure_in_db.recorded_at
+                                            end
+      patient.update_column(:recorded_at, earliest_blood_pressure_recorded_at)
     end
+
+    blood_pressure_params
   end
 
   def transform_to_response(blood_pressure)
