@@ -3,13 +3,11 @@ class Api::V2::Models < Api::Current::Models
     def patient
       super
         .tap { |d| d[:properties].delete(:recorded_at) }
-        .tap { |d| d[:required] -= %w(recorded_at) }
     end
 
     def blood_pressure
       super
         .tap { |d| d[:properties].delete(:recorded_at) }
-        .tap { |d| d[:required] -= %w(recorded_at) }
     end
 
     def nested_patient

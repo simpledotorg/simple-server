@@ -25,29 +25,12 @@ class Api::V2::BloodPressuresController < Api::Current::BloodPressuresController
       { errors_hash: validator.errors_hash }
     else
       blood_pressure = ActiveRecord::Base.transaction do
-        transformed_params =
-          set_default_recorded_at(Api::V2::BloodPressureTransformer.from_request(blood_pressure_params))
-
+        transformed_params = Api::V2::BloodPressureTransformer.from_request(blood_pressure_params)
         set_patient_recorded_at(transformed_params)
         BloodPressure.merge(transformed_params)
       end
       { record: blood_pressure }
     end
-  end
-
-  def set_default_recorded_at(bp_params)
-    bp_params.merge('recorded_at' => bp_params['device_created_at'])
-  end
-
-  def set_patient_recorded_at(bp_params)
-    patient = Patient.find_by(id: bp_params['patient_id'])
-    return if patient.blank?
-
-    patient.update_column(:recorded_at, patient_recorded_at(bp_params, patient))
-  end
-
-  def patient_recorded_at(bp_params, patient)
-    [bp_params['recorded_at'], patient.recorded_at].min
   end
 
   def transform_to_response(blood_pressure)

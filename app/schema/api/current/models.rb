@@ -117,7 +117,7 @@ class Api::Current::Models
           patient_id: { '$ref' => '#/definitions/uuid' },
           facility_id: { '$ref' => '#/definitions/uuid' },
           user_id: { '$ref' => '#/definitions/uuid' } },
-        required: %w[systolic diastolic created_at updated_at recorded_at patient_id facility_id user_id]
+        required: %w[systolic diastolic created_at updated_at patient_id facility_id user_id]
       }
     end
 
