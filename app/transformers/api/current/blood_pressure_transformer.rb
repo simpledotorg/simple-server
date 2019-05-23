@@ -5,8 +5,8 @@ class Api::Current::BloodPressureTransformer < Api::Current::Transformer
     end
 
     def from_request(blood_pressure_payload)
-      super(blood_pressure_payload)
-        .merge('recorded_at' => recorded_at(blood_pressure_payload))
+      attributes = super(blood_pressure_payload)
+      attributes.merge('recorded_at' => recorded_at(attributes))
     end
   end
 end
