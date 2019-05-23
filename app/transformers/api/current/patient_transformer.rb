@@ -3,14 +3,14 @@ class Api::Current::PatientTransformer
     def recorded_at(patient_params)
       return patient_params['recorded_at'] if patient_params['recorded_at'].present?
 
-      patient_recorded_at = patient_params['device_created_at']
+      patient_created_at = patient_params['created_at']
       earliest_blood_pressure = BloodPressure
                                   .where(patient_id: patient_params['id'])
                                   .order(recorded_at: :asc)
                                   .first
 
       earliest_blood_pressure.blank? ?
-        patient_recorded_at : [patient_recorded_at, earliest_blood_pressure.recorded_at].min
+        patient_created_at : [patient_created_at, earliest_blood_pressure.recorded_at].min
     end
 
     def from_nested_request(payload_attributes)
