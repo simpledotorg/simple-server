@@ -7,6 +7,8 @@ FactoryBot.define do
     otp_valid_until { 3.minutes.from_now }
     access_token { SecureRandom.hex(32) }
 
+    facility
+
     association :master_user, :with_phone_authentication
 
     trait :with_password_digest do

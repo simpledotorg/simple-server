@@ -7,7 +7,7 @@ class CreatePhoneNumberAuthentications < ActiveRecord::Migration[5.1]
       t.datetime :otp_valid_until, null: false
       t.string :access_token, null: false
 
-      t.belongs_to :facility, foreign_key: 'registration_facility_id', type: :uuid
+      t.uuid :registration_facility_id
 
       t.timestamps
 

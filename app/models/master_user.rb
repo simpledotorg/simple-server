@@ -11,9 +11,12 @@ class MasterUser < ApplicationRecord
     denied: 'denied'
   }, _prefix: true
 
-  has_many :master_user_authentications
+  has_many :user_authentications
 
   validates :full_name, presence: true
+
+  validates :device_created_at, presence: true
+  validates :device_updated_at, presence: true
 
   def phone_number_authentication
     user_authentication_of_type(AUTHENTICATION_TYPES[:phone_number_authentication])
