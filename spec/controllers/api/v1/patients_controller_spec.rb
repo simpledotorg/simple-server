@@ -53,6 +53,20 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         expect(patient_in_db.recorded_at.to_i).to eq(patient_in_db.device_created_at.to_i)
       end
 
+      it "sets recorded_at to the earliest bp's recorded_at in case patient is synced later" do
+        patient = FactoryBot.build(:patient)
+        blood_pressure_recorded_at = 1.month.ago
+        FactoryBot.create(:blood_pressure,
+                          patient_id: patient.id,
+                          device_created_at: blood_pressure_recorded_at)
+
+        patient_payload = build_patient_payload_v1(patient)
+        post :sync_from_user, params: { patients: [patient_payload] }, as: :json
+
+        patient_in_db = Patient.find(patient.id)
+        expect(patient_in_db.recorded_at).to eq(blood_pressure_recorded_at)
+      end
+
       it 'creates new patients without address' do
         post(:sync_from_user, params: { patients: [build_patient_payload.except('address')] }, as: :json)
         expect(Patient.count).to eq 1

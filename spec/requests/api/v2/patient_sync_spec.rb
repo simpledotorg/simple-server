@@ -11,7 +11,7 @@ RSpec.describe 'Patients sync', type: :request do
   let(:build_invalid_payload) { lambda { build_invalid_patient_payload } }
   let(:update_payload) { lambda { |record| updated_patient_payload record } }
 
-  let(:keys_not_expected_in_response) {['business_identifiers']}
+  let(:keys_not_expected_in_response) { ['business_identifiers'] }
 
   def to_response(patient)
     Api::V2::PatientTransformer.to_nested_response(patient)
@@ -25,7 +25,7 @@ RSpec.describe 'Patients sync', type: :request do
     get sync_route, params: {}, headers: headers
     process_token = JSON(response.body)['process_token']
 
-    created_patients         = Patient.find(first_patients_payload.map { |patient| patient['id'] })
+    created_patients = Patient.find(first_patients_payload.map { |patient| patient['id'] })
     updated_patients_payload = created_patients.map do |patient|
       updated_patient_payload_v2(patient)
         .except(%w(address phone_numbers).sample)
@@ -35,22 +35,5 @@ RSpec.describe 'Patients sync', type: :request do
     get sync_route, params: { process_token: process_token }, headers: headers
 
     assert_sync_success(response, process_token)
-  end
-
-  it "sets recorded_at to the earliest bp's recorded_at in case patient is synced later" do
-    patient = FactoryBot.build(:patient)
-
-    blood_pressure_recorded_at = 1.month.ago
-    blood_pressure = FactoryBot.build(:blood_pressure,
-                                      patient: patient,
-                                      device_created_at: blood_pressure_recorded_at)
-    blood_pressure_payload = build_blood_pressure_payload_v2(blood_pressure)
-    post blood_pressure_sync_route, params: { blood_pressures: [blood_pressure_payload] }.to_json, headers: headers
-
-    patient_payload = build_patient_payload_v2(patient)
-    post sync_route, params: { patients: [patient_payload] }.to_json, headers: headers
-
-    patient_in_db = Patient.find(patient.id)
-    expect(patient_in_db.recorded_at.to_i).to eq(blood_pressure_recorded_at.to_i)
   end
 end

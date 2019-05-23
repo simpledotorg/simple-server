@@ -48,7 +48,7 @@ class Api::Current::Models
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' },
           recorded_at: { '$ref' => '#/definitions/timestamp' } },
-        required: %w[id gender full_name created_at updated_at recorded_at status] }
+        required: %w[id gender full_name created_at updated_at status] }
     end
 
     def address
