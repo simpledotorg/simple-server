@@ -7,9 +7,6 @@ RSpec.describe UserAuthentication, type: :model do
   end
 
   describe 'Validations' do
-    it { should validate_uniqueness_of(:authenticatable_id).scoped_to(:master_user_id, :authenticatable_type)}
-  end
-
-  describe 'Behavior' do
+    it { should validate_uniqueness_of(:authenticatable_id).scoped_to(:master_user_id, :authenticatable_type) }
   end
 end
