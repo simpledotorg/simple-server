@@ -3,7 +3,7 @@ class Api::Current::PatientTransformer
     def recorded_at(patient_params)
       return patient_params['recorded_at'] if patient_params['recorded_at'].present?
 
-      patient_created_at = patient_params['created_at']
+      patient_created_at = patient_params['device_created_at']
       earliest_blood_pressure = BloodPressure
                                   .where(patient_id: patient_params['id'])
                                   .order(recorded_at: :asc)
@@ -33,7 +33,7 @@ class Api::Current::PatientTransformer
         address: address_attributes,
         phone_numbers: phone_numbers_attributes,
         business_identifiers: business_identifiers_attributes,
-        recorded_at: recorded_at(payload_attributes)
+        recorded_at: recorded_at(patient_attributes)
       ).with_indifferent_access
     end
 
