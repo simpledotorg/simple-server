@@ -9,9 +9,8 @@ class Api::V2::PatientsController < Api::Current::PatientsController
       { errors_hash: validator.errors_hash }
     else
       patients_params_with_metadata = single_patient_params.merge(metadata: metadata)
-      patient = MergePatientService.new(
-        set_default_recorded_at(Api::V2::PatientTransformer.from_nested_request(patients_params_with_metadata))
-      ).merge
+      transformed_params = Api::V2::PatientTransformer.from_nested_request(patients_params_with_metadata)
+      patient = MergePatientService.new(transformed_params).merge
       { record: patient }
     end
   end
