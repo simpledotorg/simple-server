@@ -2,8 +2,9 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::BloodPressuresController, type: :controller do
   let(:request_user) { FactoryBot.create(:user) }
+
   before :each do
-    request.env['X_USER_ID'] = request_user.id
+    request.env['HTTP_X_USER_ID'] = request_user.id
     request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
   end
 
@@ -12,7 +13,7 @@ RSpec.describe Api::V1::BloodPressuresController, type: :controller do
   let(:build_payload) { lambda { build_blood_pressure_payload_v1 } }
   let(:build_invalid_payload) { lambda { build_invalid_blood_pressure_payload } }
   let(:invalid_record) { build_invalid_payload.call }
-  let(:update_payload) { lambda { |blood_pressure| updated_blood_pressure_payload blood_pressure } }
+  let(:update_payload) { lambda { |blood_pressure| updated_blood_pressure_payload_v1 blood_pressure } }
   let(:number_of_schema_errors_in_invalid_payload) { 3 }
 
   def create_record(options = {})
@@ -31,14 +32,22 @@ RSpec.describe Api::V1::BloodPressuresController, type: :controller do
 
   describe 'POST sync: send data from device to server;' do
     it_behaves_like 'a working sync controller creating records'
-    it_behaves_like 'a working sync controller updating records'
+
+    describe 'updates records' do
+      it 'with updated record attributes' do
+        updated_records = create_record_list(1).map(&update_payload)
+        updated_payload = Hash['blood_pressures', updated_records]
+        post :sync_from_user, params: updated_payload, as: :json
+
+        updated_records.each do |record|
+          db_record = BloodPressure.find(record['id'])
+          expect(build_blood_pressure_payload_v2(db_record).with_int_timestamps)
+            .to eq(record.to_json_and_back.with_int_timestamps)
+        end
+      end
+    end
 
     describe 'creates new blood pressures' do
-      before :each do
-        request.env['HTTP_X_USER_ID'] = request_user.id
-        request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
-      end
-
       it 'creates new blood pressures with associated patient' do
         patient = FactoryBot.create(:patient)
         blood_pressures = (1..10).map do

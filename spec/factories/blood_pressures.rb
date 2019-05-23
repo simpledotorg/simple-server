@@ -58,3 +58,10 @@ def updated_blood_pressure_payload(existing_blood_pressure)
     'systolic' => rand(80..240)
   )
 end
+
+def updated_blood_pressure_payload_v2(existing_blood_pressure)
+  updated_blood_pressure_payload(existing_blood_pressure)
+    .except('recorded_at')
+end
+
+alias updated_blood_pressure_payload_v1 updated_blood_pressure_payload_v2
