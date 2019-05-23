@@ -77,7 +77,7 @@ RSpec.describe Api::Current::PatientsController, type: :controller do
           post :sync_from_user, params: { patients: [patient_payload] }, as: :json
 
           patient_in_db = Patient.find(patient.id)
-          expect(patient_in_db.recorded_at).to eq(blood_pressure_recorded_at)
+          expect(patient_in_db.recorded_at.to_i).to eq(blood_pressure_recorded_at.to_i)
         end
       end
 
