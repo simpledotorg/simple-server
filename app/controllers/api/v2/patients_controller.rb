@@ -16,21 +16,6 @@ class Api::V2::PatientsController < Api::Current::PatientsController
     end
   end
 
-  def set_default_recorded_at(patient_params)
-    patient_params.merge('recorded_at' => default_recorded_at(patient_params))
-  end
-
-  def default_recorded_at(patient_params)
-    patient_recorded_at = patient_params['device_created_at']
-    earliest_blood_pressure = BloodPressure
-                                .where(patient_id: patient_params['id'])
-                                .order(recorded_at: :asc)
-                                .first
-
-    earliest_blood_pressure.blank? ?
-      patient_recorded_at : [patient_recorded_at, earliest_blood_pressure.recorded_at].min
-  end
-
   def transform_to_response(patient)
     Api::V2::PatientTransformer.to_nested_response(patient)
   end

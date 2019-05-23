@@ -38,10 +38,27 @@ class Api::Current::PatientsController < Api::Current::SyncController
     else
       patients_params_with_metadata = single_patient_params.merge(metadata: metadata)
       patient = MergePatientService.new(
-        Api::Current::PatientTransformer.from_nested_request(patients_params_with_metadata)
+        set_default_recorded_at(Api::Current::PatientTransformer.from_nested_request(patients_params_with_metadata))
       ).merge
       { record: patient }
     end
+  end
+
+  def set_default_recorded_at(patient_params)
+    patient_params.merge('recorded_at' => default_recorded_at(patient_params))
+  end
+
+  def default_recorded_at(patient_params)
+    return patient_params['recorded_at'] if patient_params['recorded_at'].present?
+
+    patient_recorded_at = patient_params['device_created_at']
+    earliest_blood_pressure = BloodPressure
+                                .where(patient_id: patient_params['id'])
+                                .order(recorded_at: :asc)
+                                .first
+
+    earliest_blood_pressure.blank? ?
+      patient_recorded_at : [patient_recorded_at, earliest_blood_pressure.recorded_at].min
   end
 
   def transform_to_response(patient)
