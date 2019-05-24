@@ -94,8 +94,7 @@ namespace :data_migration do
 
     puts "Total number of BloodPressure records updated = #{blood_pressures.size}"
 
-    # Patients' recorded_at is set to their earliest
-    # BP's device_created_at if older than theirs
+    # Patients' recorded_at is set to their earliest BP's device_created_at if older
     patients = Patient.where(recorded_at: nil)
 
     patients.each do |patient|
