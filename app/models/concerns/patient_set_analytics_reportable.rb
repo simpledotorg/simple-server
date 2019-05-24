@@ -13,7 +13,8 @@ module PatientSetAnalyticsReportable
         non_returning_hypertensive_patients: analytics.non_returning_hypertensive_patients_count,
         control_rate: analytics.control_rate,
         unique_patients_enrolled: analytics.unique_patients_count,
-        blood_pressures_recorded_per_week: analytics.blood_pressures_recorded_per_week(WEEKS_PREVIOUS)
+        blood_pressures_recorded_per_week: analytics.blood_pressures_recorded_per_week(WEEKS_PREVIOUS),
+        cache_updated_at: Time.now
       }
     end
   end
