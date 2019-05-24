@@ -6,6 +6,23 @@
 ### Removed 
 ### Security
 
+# 2019-05-24-1
+### Added
+- Display facilities by district instead of by facility group
+- View Caching for Districts
+### Changed
+- Update the demo DNS for capistrano
+- Split analytics cache warmup jobs for facilities
+### Fixed
+- Cache facilities and facility_groups view cache by ID rather than slug
+- Fix warmup for quarterly analytics
+- Prevent BotUser initialization when migrations are running
+### Deprecated
+### Removed
+- Delete key before running district analytics warmup
+- Remove User association from CallLogs in favour of caller_phone_number
+### Security
+
 # 2019-05-15-1
 ### Added
 ### Changed
