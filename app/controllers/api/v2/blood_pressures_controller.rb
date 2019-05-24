@@ -1,4 +1,10 @@
 class Api::V2::BloodPressuresController < Api::Current::BloodPressuresController
+  private
+
+  def transform_to_response(blood_pressure)
+    Api::V2::BloodPressureTransformer.to_response(blood_pressure)
+  end
+
   def blood_pressures_params
     params.require(:blood_pressures).map do |blood_pressure_params|
       blood_pressure_params.permit(
@@ -13,27 +19,5 @@ class Api::V2::BloodPressuresController < Api::Current::BloodPressuresController
         :deleted_at
       )
     end
-  end
-
-  private
-
-  def merge_if_valid(blood_pressure_params)
-    validator = Api::V2::BloodPressurePayloadValidator.new(blood_pressure_params)
-    logger.debug "Blood Pressure had errors: #{validator.errors_hash}" if validator.invalid?
-    if validator.invalid?
-      NewRelic::Agent.increment_metric('Merge/BloodPressure/schema_invalid')
-      { errors_hash: validator.errors_hash }
-    else
-      blood_pressure = ActiveRecord::Base.transaction do
-        transformed_params = Api::V2::BloodPressureTransformer.from_request(blood_pressure_params)
-        set_patient_recorded_at(transformed_params)
-        BloodPressure.merge(transformed_params)
-      end
-      { record: blood_pressure }
-    end
-  end
-
-  def transform_to_response(blood_pressure)
-    Api::V2::BloodPressureTransformer.to_response(blood_pressure)
   end
 end

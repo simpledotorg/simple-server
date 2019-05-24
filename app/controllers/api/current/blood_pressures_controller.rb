@@ -19,8 +19,8 @@ class Api::Current::BloodPressuresController < Api::Current::SyncController
       { errors_hash: validator.errors_hash }
     else
       blood_pressure = ActiveRecord::Base.transaction do
+        set_patient_recorded_at(blood_pressure_params)
         transformed_params = Api::Current::BloodPressureTransformer.from_request(blood_pressure_params)
-        set_patient_recorded_at(transformed_params)
         BloodPressure.merge(transformed_params)
       end
       { record: blood_pressure }
@@ -28,6 +28,8 @@ class Api::Current::BloodPressuresController < Api::Current::SyncController
   end
 
   def set_patient_recorded_at(bp_params)
+    return if bp_params['recorded_at'].present?
+
     patient = Patient.find_by(id: bp_params['patient_id'])
     return if patient.blank?
 
@@ -36,7 +38,7 @@ class Api::Current::BloodPressuresController < Api::Current::SyncController
   end
 
   def patient_recorded_at(bp_params, patient)
-    [bp_params['device_created_at'], patient.recorded_at].min
+    [bp_params['created_at'], patient.recorded_at].min
   end
 
   def transform_to_response(blood_pressure)
