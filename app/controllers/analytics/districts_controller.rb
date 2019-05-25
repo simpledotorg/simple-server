@@ -25,7 +25,7 @@ class Analytics::DistrictsController < AnalyticsController
   def set_district
     district_name = params[:id] || params[:district_id]
     @organization_district = OrganizationDistrict.new(district_name, @organization)
-    authorize(@organization_district, policy_class: OrganizationDistrictPolicy)
+    authorize(@organization_district)
   end
 
   def set_facilities
