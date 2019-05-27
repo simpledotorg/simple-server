@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Api::Current::BloodPressuresController, type: :controller do
-  let(:request_user) { FactoryBot.create(:user) }
-  let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
+  let(:request_user) { create(:master_user, :with_phone_number_authentication) }
+  let(:request_facility) { request_user.registration_facility }
   before :each do
     request.env['X_USER_ID'] = request_user.id
     request.env['X_FACILITY_ID'] = request_facility.id
@@ -18,12 +18,12 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
   let(:number_of_schema_errors_in_invalid_payload) { 3 }
 
   def create_record(options = {})
-    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
+    facility = FactoryBot.create(:facility, facility_group: request_user.registration_facility.facility_group)
     FactoryBot.create(:blood_pressure, options.merge(facility: facility))
   end
 
   def create_record_list(n, options = {})
-    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
+    facility = FactoryBot.create(:facility, facility_group: request_user.registration_facility.facility_group)
     FactoryBot.create_list(:blood_pressure, n, options.merge(facility: facility))
   end
 

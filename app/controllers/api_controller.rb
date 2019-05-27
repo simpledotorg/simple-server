@@ -14,7 +14,11 @@ class APIController < ApplicationController
   end
 
   def current_user
-    @current_user ||= User.find_by(id: request.headers['HTTP_X_USER_ID'])
+    if FeatureToggle.enabled?('MASTER_USER_AUTHENTICATION')
+      @current_user ||= MasterUser.find_by(id: request.headers['HTTP_X_USER_ID'])
+    else
+      @current_user ||= User.find_by(id: request.headers['HTTP_X_USER_ID'])
+    end
   end
 
   def current_facility
@@ -22,7 +26,7 @@ class APIController < ApplicationController
   end
 
   def current_facility_group
-    current_user.facility.facility_group
+    current_user.registration_facility.facility_group
   end
 
   def validate_facility

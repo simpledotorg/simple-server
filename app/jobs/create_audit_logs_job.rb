@@ -3,7 +3,7 @@ class CreateAuditLogsJob < ApplicationJob
   self.queue_adapter = :sidekiq
 
   def perform(user_id, record_class, record_ids, action)
-    user = User.find(user_id)
+    user = MasterUser.find(user_id)
     audit_logs = record_ids.map do |record_id|
       AuditLog.new({ user: user,
                      auditable_type: record_class,

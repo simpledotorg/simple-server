@@ -5,9 +5,20 @@ FactoryBot.define do
     device_created_at { Time.now }
     device_updated_at { Time.now }
 
-    trait :with_phone_authentication do
-      sync_approval_status { MasterUser.sync_approval_statuses[:allowed] }
-      sync_approval_status_reason { 'User is allowed' }
+    sync_approval_status { MasterUser.sync_approval_statuses[:requested] }
+
+    trait :with_phone_number_authentication do
+      after :create do |master_user|
+        master_user.sync_approval_status = MasterUser.sync_approval_statuses[:allowed]
+        master_user.sync_approval_status_reason = 'User is allowed'
+
+        phone_number_authentication = create(:phone_number_authentication)
+        master_user.user_authentications = [
+          UserAuthentication.new(authenticatable: phone_number_authentication)
+        ]
+
+        master_user.save
+      end
     end
   end
 end

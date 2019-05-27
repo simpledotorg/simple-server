@@ -15,4 +15,15 @@ class PhoneNumberAuthentication < ApplicationRecord
       errors.add(:password, 'Either password_digest or password should be present')
     end
   end
+
+  def has_never_logged_in?
+    logged_in_at.blank?
+  end
+
+  def mark_as_logged_in
+    now = Time.now
+    self.otp_valid_until = now
+    self.logged_in_at = now
+    save
+  end
 end
