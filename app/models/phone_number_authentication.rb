@@ -26,4 +26,27 @@ class PhoneNumberAuthentication < ApplicationRecord
     self.logged_in_at = now
     save
   end
+
+  def otp_valid?
+    otp_valid_until >= Time.now
+  end
+
+  def set_access_token
+    self.access_token = self.class.generate_access_token
+  end
+
+  def self.generate_otp
+    digits = FeatureToggle.enabled?('FIXED_OTP_ON_REQUEST_FOR_QA') ? [0] : (0..9).to_a
+    otp = ''
+    6.times do
+      otp += digits.sample.to_s
+    end
+    otp_valid_until = Time.now + ENV['USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES'].to_i.minutes
+
+    { otp: otp, otp_valid_until: otp_valid_until }
+  end
+
+  def self.generate_access_token
+    SecureRandom.hex(32)
+  end
 end

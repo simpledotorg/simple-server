@@ -1,7 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::AppointmentsController, type: :controller do
-  let(:request_user) { FactoryBot.create(:user) }
+  let(:request_user) { create(:master_user, :with_phone_number_authentication) }
+
   before :each do
     request.env['X_USER_ID'] = request_user.id
     request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
@@ -16,12 +17,12 @@ RSpec.describe Api::V1::AppointmentsController, type: :controller do
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
   def create_record(options = {})
-    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
+    facility = FactoryBot.create(:facility, facility_group: request_user.registration_facility.facility_group)
     FactoryBot.create(:appointment, options.merge(facility: facility))
   end
 
   def create_record_list(n, options = {})
-    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
+    facility = FactoryBot.create(:facility, facility_group: request_user.registration_facility.facility_group)
     FactoryBot.create_list(:appointment, n, options.merge(facility: facility))
   end
 
@@ -87,7 +88,7 @@ RSpec.describe Api::V1::AppointmentsController, type: :controller do
   end
 
   describe 'syncing within a facility group' do
-    let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
+    let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_user.registration_facility.facility_group) }
     let(:facility_in_another_group) { FactoryBot.create(:facility) }
 
     before :each do
@@ -112,7 +113,7 @@ RSpec.describe Api::V1::AppointmentsController, type: :controller do
     it 'coerces new reasons into other' do
       set_authentication_headers
 
-      FactoryBot.create_list(:appointment, 10, facility_id: request_user.registration_facility_id, cancel_reason: [:invalid_phone_number, :public_hospital_transfer, :moved_to_private].sample)
+      FactoryBot.create_list(:appointment, 10, facility_id: request_user.registration_facility.id, cancel_reason: [:invalid_phone_number, :public_hospital_transfer, :moved_to_private].sample)
 
       get :sync_to_user
       response_body = JSON(response.body)
@@ -123,7 +124,7 @@ RSpec.describe Api::V1::AppointmentsController, type: :controller do
     it 'does not coerce old reasons' do
       set_authentication_headers
       v1_cancel_reasons = Appointment.cancel_reasons.keys.map(&:to_sym) - [:invalid_phone_number, :public_hospital_transfer, :moved_to_private]
-      appointments = 10.times.map {|_| FactoryBot.create(:appointment, facility_id: request_user.registration_facility_id, cancel_reason: v1_cancel_reasons.sample) }
+      appointments = 10.times.map {|_| FactoryBot.create(:appointment, facility_id: request_user.registration_facility.id, cancel_reason: v1_cancel_reasons.sample) }
 
       get :sync_to_user
       response_body = JSON(response.body)

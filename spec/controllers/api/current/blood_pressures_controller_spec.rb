@@ -60,7 +60,7 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
 
     describe 'current facility prioritisation' do
       it "syncs request facility's records first" do
-        request_2_facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
+        request_2_facility = FactoryBot.create(:facility, facility_group: request_user.registration_facility.facility_group)
         FactoryBot.create_list(:blood_pressure, 5, facility: request_facility, updated_at: 3.minutes.ago)
         FactoryBot.create_list(:blood_pressure, 5, facility: request_facility, updated_at: 5.minutes.ago)
         FactoryBot.create_list(:blood_pressure, 5, facility: request_2_facility, updated_at: 7.minutes.ago)
@@ -88,7 +88,7 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
     end
 
     describe 'syncing within a facility group' do
-      let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
+      let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_user.registration_facility.facility_group) }
       let(:facility_in_another_group) { FactoryBot.create(:facility) }
 
       before :each do
@@ -102,7 +102,7 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
         get :sync_to_user, params: { limit: 15 }
 
         response_blood_pressures = JSON(response.body)['blood_pressures']
-        response_facilities = response_blood_pressures.map { |blood_pressure| blood_pressure['facility_id']}.to_set
+        response_facilities = response_blood_pressures.map { |blood_pressure| blood_pressure['facility_id'] }.to_set
 
         expect(response_blood_pressures.count).to eq 10
         expect(response_facilities).to match_array([request_facility.id, facility_in_same_group.id])

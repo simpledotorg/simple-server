@@ -1,11 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::CommunicationsController, type: :controller do
-  let(:request_user) { FactoryBot.create(:user) }
-  let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
+  let(:request_user) { create(:master_user, :with_phone_number_authentication) }
+
   before :each do
     request.env['X_USER_ID'] = request_user.id
-    request.env['X_FACILITY_ID'] = request_facility.id
     request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
   end
 
