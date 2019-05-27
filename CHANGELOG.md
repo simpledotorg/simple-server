@@ -6,6 +6,15 @@
 ### Removed 
 ### Security
 
+# 2019-05-25-1
+### Added
+### Changed
+### Fixed
+- HOTFIX: Authorization policy for district analytics dashboard
+### Deprecated
+### Removed
+### Security
+
 # 2019-05-24-1
 ### Added
 - Display facilities by district instead of by facility group
