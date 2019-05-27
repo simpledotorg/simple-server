@@ -318,11 +318,12 @@ ActiveRecord::Schema.define(version: 20190510143922) do
     t.index ["registration_user_id"], name: "index_patients_on_registration_user_id"
   end
 
-  create_table "phone_number_authentications", force: :cascade do |t|
+  create_table "phone_number_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "phone_number", null: false
     t.string "password_digest", null: false
     t.string "otp", null: false
     t.datetime "otp_valid_until", null: false
+    t.datetime "logged_in_at"
     t.string "access_token", null: false
     t.uuid "registration_facility_id"
     t.datetime "created_at", null: false
