@@ -20,5 +20,7 @@ FactoryBot.define do
         master_user.save
       end
     end
+
+    factory :master_user_with_phone_number_authentication, traits: [:with_phone_number_authentication]
   end
 end

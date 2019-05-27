@@ -11,7 +11,7 @@ describe 'BloodPressures Current API', swagger_doc: 'current/swagger.json' do
       parameter name: :blood_pressures, in: :body, schema: Api::Current::Schema.blood_pressure_sync_from_user_request
 
       response '200', 'blood pressures created' do
-        let(:request_user) { FactoryBot.create(:user) }
+        let(:request_user) { FactoryBot.create(:master_user, :with_phone_number_authentication) }
         let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.registration_facility.facility_group) }
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:HTTP_X_FACILITY_ID) { request_facility.id }
@@ -23,7 +23,7 @@ describe 'BloodPressures Current API', swagger_doc: 'current/swagger.json' do
       end
 
       response '200', 'some, or no errors were found' do
-        let(:request_user) { FactoryBot.create(:user) }
+        let(:request_user) { FactoryBot.create(:master_user, :with_phone_number_authentication) }
         let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.registration_facility.facility_group) }
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:HTTP_X_FACILITY_ID) { request_facility.id }
@@ -51,7 +51,7 @@ describe 'BloodPressures Current API', swagger_doc: 'current/swagger.json' do
       end
 
       response '200', 'blood pressures received' do
-        let(:request_user) { FactoryBot.create(:user) }
+        let(:request_user) { FactoryBot.create(:master_user, :with_phone_number_authentication) }
         let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.registration_facility.facility_group) }
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:HTTP_X_FACILITY_ID) { request_facility.id }

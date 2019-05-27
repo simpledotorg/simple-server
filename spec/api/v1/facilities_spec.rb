@@ -18,7 +18,7 @@ describe 'Facilities V1 API', swagger_doc: 'v1/swagger.json' do
       end
 
       response '200', 'facilities received' do
-        let(:request_user) { FactoryBot.create(:user) }
+        let(:request_user) { FactoryBot.create(:master_user, :with_phone_number_authentication) }
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
         schema Api::V1::Schema.facility_sync_to_user_response

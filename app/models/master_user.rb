@@ -46,6 +46,18 @@ class MasterUser < ApplicationRecord
     delegate_to_phone_number_authentication(:mark_as_logged_in)
   end
 
+  def phone_number
+    delegate_to_phone_number_authentication(:phone_number)
+  end
+
+  def otp
+    delegate_to_phone_number_authentication(:otp)
+  end
+
+  def otp_valid?
+    delegate_to_phone_number_authentication(:otp_valid?)
+  end
+
   private
 
   def delegate_to_phone_number_authentication(method)
