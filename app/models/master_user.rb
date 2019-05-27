@@ -58,6 +58,48 @@ class MasterUser < ApplicationRecord
     delegate_to_phone_number_authentication(:otp_valid?)
   end
 
+  def self.build_with_phone_number_authentication(params)
+    phone_number_authentication = PhoneNumberAuthentication.new(
+      phone_number: params[:phone_number],
+      password_digest: params[:password_digest],
+      registration_facility_id: params[:registration_facility_id]
+    )
+    phone_number_authentication.set_otp
+    phone_number_authentication.set_access_token
+
+    master_user = new(
+      id: params[:id],
+      full_name: params[:full_name],
+      device_created_at: params[:created_at],
+      device_updated_at: params[:updated_at]
+    )
+    master_user.sync_approval_requested(I18n.t('registration'))
+
+    master_user.user_authentications = [
+      UserAuthentication.new(
+        master_user: master_user,
+        authenticatable: phone_number_authentication
+      )
+    ]
+
+    master_user
+  end
+
+  def sync_approval_denied(reason = "")
+    self.sync_approval_status = :denied
+    self.sync_approval_status_reason = reason
+  end
+
+  def sync_approval_allowed(reason = "")
+    self.sync_approval_status = :allowed
+    self.sync_approval_status_reason = reason
+  end
+
+  def sync_approval_requested(reason)
+    self.sync_approval_status = :requested
+    self.sync_approval_status_reason = reason
+  end
+
   private
 
   def delegate_to_phone_number_authentication(method)
