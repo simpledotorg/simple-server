@@ -54,9 +54,5 @@ module ApplicationHelper
 
     interaction_result
   end
-
-  def patient_has_street_address?(patient_address)
-    patient_address.street_address.present?
-  end
 end
 
