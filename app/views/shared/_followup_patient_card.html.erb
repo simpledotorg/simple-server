@@ -26,14 +26,13 @@
   <% if bp = patient.latest_blood_pressure %>
     <div class="overdue-details">
       Last BP:
-      <%= bp.to_s %>&nbsp;
-      recorded at <%= bp.facility.name %>
+      <%= bp.to_s %> recorded at <%= bp.facility.name %>
       <%= rounded_time_ago_in_words(bp.device_created_at.to_date) %>
     </div>
   <% end %>
   <div class="overdue-details">
     Home:
-    <%= patient.address.street_address %>,
+    <% if patient_has_street_address(patient.address) %><%= patient.address.street_address %>,<% end %>
     <%= patient.address.village_or_colony %>
   </div>
   <div class="row mt-2">
