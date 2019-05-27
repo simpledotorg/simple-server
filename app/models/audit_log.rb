@@ -36,7 +36,7 @@ class AuditLog < ApplicationRecord
     return unless user.present?
     create(
       user:           user,
-      auditable_type: 'User',
+      auditable_type: user.class.to_s,
       auditable_id:   user.id,
       action:         'login')
   end

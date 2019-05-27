@@ -3,13 +3,13 @@ require 'rails_helper'
 RSpec.describe Api::V1::LoginsController, type: :controller do
   describe '#login_user' do
     let(:password) { '1234' }
-    let(:db_user) { FactoryBot.create(:user, password: password) }
+    let!(:db_user) { create(:master_user, :with_phone_number_authentication, password: password) }
     describe 'request with valid phone number, password and otp' do
       let(:request_params) do
         { user:
             { phone_number: db_user.phone_number,
-              password:     password,
-              otp:          db_user.otp
+              password: password,
+              otp: db_user.otp
             }
         }
       end
@@ -34,24 +34,23 @@ RSpec.describe Api::V1::LoginsController, type: :controller do
     end
 
     describe 'request with valid phone number, password and otp, but otp is expired' do
-      let(:db_user) do
-        Timecop.freeze(Date.today - 3) { FactoryBot.create(:user, password: password) }
-      end
       let(:request_params) do
         { user:
             { phone_number: db_user.phone_number,
-              password:     password,
-              otp:          db_user.otp
+              password: password,
+              otp: db_user.otp
             }
         }
       end
       it 'should respond with http status 401' do
-        post :login_user, params: request_params
-        expect(response.status).to eq(401)
-        expect(JSON(response.body))
-          .to eq('errors' => {
-            'user' => [I18n.t('login.error_messages.expired_otp')]
-          })
+        Timecop.travel(Date.today + 3.days) do
+          post :login_user, params: request_params
+          expect(response.status).to eq(401)
+          expect(JSON(response.body))
+            .to eq('errors' => {
+              'user' => [I18n.t('login.error_messages.expired_otp')]
+            })
+        end
       end
     end
 
@@ -59,8 +58,8 @@ RSpec.describe Api::V1::LoginsController, type: :controller do
       let(:request_params) do
         { user:
             { phone_number: db_user.phone_number,
-              password:     '1234',
-              otp:          'wrong otp'
+              password: '1234',
+              otp: 'wrong otp'
             }
         }
       end
@@ -78,8 +77,8 @@ RSpec.describe Api::V1::LoginsController, type: :controller do
       let(:request_params) do
         { user:
             { phone_number: db_user.phone_number,
-              password:     'wrong password',
-              otp:          db_user.otp
+              password: 'wrong password',
+              otp: db_user.otp
             }
         }
       end
@@ -97,8 +96,8 @@ RSpec.describe Api::V1::LoginsController, type: :controller do
       let(:request_params) do
         { user:
             { phone_number: 'wrong phone number',
-              password:     '1234',
-              otp:          db_user.otp
+              password: '1234',
+              otp: db_user.otp
             }
         }
       end
@@ -113,14 +112,11 @@ RSpec.describe Api::V1::LoginsController, type: :controller do
     end
 
     describe 'audit logs for login' do
-      let(:password) { '1234' }
-      let(:db_user) { FactoryBot.create(:user, password: password) }
-
       let(:request_params) do
         { user:
             { phone_number: db_user.phone_number,
-              password:     password,
-              otp:          db_user.otp
+              password: password,
+              otp: db_user.otp
             }
         }
       end
@@ -130,7 +126,7 @@ RSpec.describe Api::V1::LoginsController, type: :controller do
         audit_log = AuditLog.where(user_id: db_user.id).first
 
         expect(audit_log.action).to eq('login')
-        expect(audit_log.auditable_type).to eq('User')
+        expect(audit_log.auditable_type).to eq('MasterUser')
         expect(audit_log.auditable_id).to eq(db_user.id)
       end
     end
