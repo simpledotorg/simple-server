@@ -29,7 +29,9 @@ module Api::Current::SyncToUser
     def response_process_token
       { current_facility_id: current_facility.id,
         current_facility_processed_since: processed_until(current_facility_records) || current_facility_processed_since,
-        other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since }
+        other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
+        resync_token: resync_token
+      }
     end
 
     def encode_process_token(process_token)
@@ -37,10 +39,13 @@ module Api::Current::SyncToUser
     end
 
     def other_facilities_processed_since
+      return Time.new(0) if sync_from_beginning?
       process_token[:other_facilities_processed_since].try(:to_time) || Time.new(0)
     end
 
     def current_facility_processed_since
+      return Time.new(0) if sync_from_beginning?
+
       if process_token[:current_facility_processed_since].blank?
         other_facilities_processed_since
       elsif process_token[:current_facility_id] != current_facility.id
@@ -48,6 +53,14 @@ module Api::Current::SyncToUser
       else
         process_token[:current_facility_processed_since].to_time
       end
+    end
+
+    def sync_from_beginning?
+      process_token[:resync_token] != resync_token
+    end
+
+    def resync_token
+      request.headers['HTTP_X_RESYNC_TOKEN']
     end
   end
 end
