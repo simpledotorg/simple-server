@@ -11,7 +11,7 @@ RSpec.describe SmsNotificationService do
 
   context '#send_reminder_sms' do
     let(:twilio_client) { double('TwilioClientDouble') }
-    let(:caller__phone_number) { ENV['TWILIO_PHONE_NUMBER'] }
+    let(:caller_phone_number) { ENV['TWILIO_PHONE_NUMBER'] }
     let(:recipient_phone_number) { '8585858585' }
     let(:expected_sms_recipient_phone_number) { '+918585858585' }
 
