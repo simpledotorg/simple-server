@@ -87,4 +87,52 @@ RSpec.shared_examples 'v2 API sync requests' do
 
     assert_sync_success(response, process_token)
   end
+
+  context 'resync_token in request headers is present' do
+    let(:resync_token) { "1" }
+    let(:headers_with_resync_token) { headers.merge('HTTP_X_RESYNC_TOKEN' => resync_token) }
+    let(:process_token_without_resync) { make_process_token(current_facility_processed_since: Time.now,
+                                                            other_facilities_processed_since: Time.now) }
+
+    before do
+      post sync_route, params: many_valid_records.to_json, headers: headers
+    end
+
+    it 'syncs all records from beginning if resync_token in headers is different from the one in process_token' do
+      get sync_route, params: { process_token: process_token_without_resync }, headers: headers_with_resync_token
+      response_body = JSON(response.body)
+
+      expect(response_body[response_key].count).to eq(10)
+      expect(parse_process_token(response_body)[:resync_token]).to eq(resync_token)
+    end
+
+    it 'syncs normally if resync_token in headers is the same as the one in process_token' do
+      get sync_route, params: { process_token: process_token_without_resync }, headers: headers_with_resync_token
+      process_token_with_resync = JSON(response.body)['process_token']
+
+      get sync_route, params: { process_token: process_token_with_resync }, headers: headers_with_resync_token
+      response_body = JSON(response.body)
+      expect(response_body[response_key].count).to eq(1)
+    end
+  end
+
+  context 'resync_token in request headers is not present' do
+    let(:process_token_without_resync) { make_process_token(current_facility_processed_since: 1.year.ago,
+                                                            other_facilities_processed_since: 1.year.ago) }
+
+    before do
+      post sync_route, params: many_valid_records.to_json, headers: headers
+    end
+
+    it 'syncs normally' do
+      get sync_route, params: { process_token: process_token_without_resync }, headers: headers
+      response_body = JSON(response.body)
+
+      expect(response_body[response_key].count).to eq(10)
+      expect(parse_process_token(response_body)[:resync_token]).to eq(nil)
+
+      get sync_route, params: { process_token: JSON(response.body)['process_token'] }, headers: headers
+      expect(JSON(response.body)[response_key].count).to eq(1)
+    end
+  end
 end
