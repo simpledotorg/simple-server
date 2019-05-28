@@ -28,7 +28,7 @@ class Admin::UsersController < AdminController
   def reset_otp
     @user.set_otp
     @user.save
-    SmsNotificationService.new(@user.phone_number).send_request_otp_sms(@user.otp)
+    SmsNotificationService.new(@user.phone_number, ENV['TWILIO_PHONE_NUMBER']).send_request_otp_sms(@user.otp)
     redirect_to [:admin, @user], notice: 'User OTP has been reset.'
   end
 

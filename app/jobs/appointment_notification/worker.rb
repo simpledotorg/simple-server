@@ -26,9 +26,14 @@ class AppointmentNotification::Worker
 
   private
 
+  SMS_CLIENT = Twilio::REST::Client.new(ENV.fetch('TWILIO_REMINDERS_ACCOUNT_SID'),
+                                        ENV.fetch('TWILIO_REMINDERS_ACCOUNT_AUTH_TOKEN'))
+
   def send_sms(appointment, type)
     SmsNotificationService
-      .new(appointment.patient.latest_phone_number)
+      .new(appointment.patient.latest_phone_number,
+           ENV.fetch('TWILIO_REMINDERS_ACCOUNT_SID'),
+           SMS_CLIENT)
       .send_reminder_sms(type,
                          appointment,
                          sms_delivery_callback_url,
