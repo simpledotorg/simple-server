@@ -13,18 +13,18 @@ class Analytics::PatientSetAnalytics
 
   def unique_patients_count_per_month(months_previous)
     patients
-      .group_by_month(:device_created_at, range: range_for_previous_months(months_previous, to_time))
+      .group_by_month(:recorded_at, range: range_for_previous_months(months_previous, to_time))
       .distinct
       .count
   end
 
   def newly_enrolled_patients_count
-    patients.where(device_created_at: from_time..to_time).count
+    patients.where(recorded_at: from_time..to_time).count
   end
 
   def newly_enrolled_patients_count_per_month(months_previous)
     patients
-      .group_by_month(:device_created_at, range: range_for_previous_months(months_previous, to_time))
+      .group_by_month(:recorded_at, range: range_for_previous_months(months_previous, to_time))
       .count
   end
 
@@ -58,7 +58,7 @@ class Analytics::PatientSetAnalytics
 
   def blood_pressures_recorded_per_week(weeks_previous)
     BloodPressure.where(patient: patients)
-      .group_by_week(:device_created_at, range: range_for_previous_weeks(weeks_previous, to_time))
+      .group_by_week(:recorded_at, range: range_for_previous_weeks(weeks_previous, to_time))
       .count
   end
 
