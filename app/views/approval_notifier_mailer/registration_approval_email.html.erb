@@ -24,7 +24,7 @@
 
 <p>
   <strong><%= t('registration_approval_email.registration_facility') %>:</strong>
-  <% if FeatureToggle.is_enabled?('MASTER_USER_AUTHENTICATION') %>
+  <% if FeatureToggle.enabled?('MASTER_USER_AUTHENTICATION') %>
     <%= @user.registration_facility.name %>
   <% else %>
     <%= @user.facility.name %>

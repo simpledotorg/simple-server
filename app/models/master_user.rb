@@ -108,6 +108,17 @@ class MasterUser < ApplicationRecord
     self.sync_approval_status_reason = reason
   end
 
+  def reset_phone_number_authentication_password!(password_digest)
+    transaction do
+      authentication = phone_number_authentication
+      authentication.password_digest = password_digest
+      authentication.set_access_token
+      self.sync_approval_requested(I18n.t('reset_password'))
+      authentication.save
+      self.save
+    end
+  end
+
   private
 
   def delegate_to_phone_number_authentication(method)

@@ -1,19 +1,19 @@
 require 'rails_helper'
 
 RSpec.describe Api::Current::UsersController, type: :controller do
-  let(:supervisor) { FactoryBot.create(:admin, :supervisor) }
-  let(:organization_owner) { FactoryBot.create(:admin, :organization_owner) }
-  let(:facility) { FactoryBot.create(:facility) }
-  let!(:owner) { FactoryBot.create(:admin, :owner) }
+  let(:supervisor) { create(:admin, :supervisor) }
+  let(:organization_owner) { create(:admin, :organization_owner) }
+  let(:facility) { create(:facility) }
+  let!(:owner) { create(:admin, :owner) }
 
   before :each do
-    FactoryBot.create(:admin_access_control, admin: supervisor, access_controllable: facility.facility_group)
-    FactoryBot.create(:admin_access_control, admin: organization_owner, access_controllable: facility.organization)
+    create(:admin_access_control, admin: supervisor, access_controllable: facility.facility_group)
+    create(:admin_access_control, admin: organization_owner, access_controllable: facility.organization)
   end
 
   describe '#register' do
     describe 'registration payload is invalid' do
-      let(:request_params) { { user: FactoryBot.attributes_for(:user).slice(:full_name, :phone_number) } }
+      let(:request_params) { { user: attributes_for(:user).slice(:full_name, :phone_number) } }
       it 'responds with 400' do
         post :register, params: request_params
 
@@ -23,7 +23,7 @@ RSpec.describe Api::Current::UsersController, type: :controller do
 
     describe 'registration payload is valid' do
       let(:user_params) do
-        FactoryBot.attributes_for(:user)
+        attributes_for(:user)
           .slice(:full_name, :phone_number)
           .merge(id: SecureRandom.uuid,
                  password_digest: BCrypt::Password.create("1234"),
@@ -106,9 +106,16 @@ RSpec.describe Api::Current::UsersController, type: :controller do
 
   describe '#find' do
     let(:phone_number) { Faker::PhoneNumber.phone_number }
-    let(:facility) { FactoryBot.create(:facility) }
-    let!(:db_users) { FactoryBot.create_list(:user, 10, registration_facility_id: facility.id) }
-    let!(:user) { FactoryBot.create(:user, phone_number: phone_number, registration_facility_id: facility.id) }
+    let(:facility) { create(:facility) }
+    let!(:db_users) do
+      create_list(:master_user, 10,
+                  :with_phone_number_authentication,
+                  registration_facility: facility)
+    end
+    let!(:user) { create(:master_user,
+                         :with_phone_number_authentication,
+                         phone_number: phone_number,
+                         registration_facility: facility) }
 
     it 'lists the users with the given phone number' do
       get :find, params: { phone_number: phone_number }
@@ -131,7 +138,7 @@ RSpec.describe Api::Current::UsersController, type: :controller do
   end
 
   describe '#request_otp' do
-    let(:user) { FactoryBot.create(:user) }
+    let(:user) { FactoryBot.create(:master_user, :with_phone_number_authentication) }
 
     it "returns 404 if the user with id doesn't exist" do
       post :request_otp, params: { id: SecureRandom.uuid }
@@ -152,8 +159,8 @@ RSpec.describe Api::Current::UsersController, type: :controller do
   end
 
   describe '#reset_password' do
-    let(:user) { FactoryBot.create(:user) }
-    let(:facility) { FactoryBot.create(:facility, facility_group: user.facility.facility_group) }
+    let(:user) { FactoryBot.create(:master_user, :with_phone_number_authentication) }
+    let(:facility) { FactoryBot.create(:facility, facility_group: user.facility_group) }
 
     before(:each) do
       request.env['HTTP_X_USER_ID'] = user.id
@@ -166,7 +173,7 @@ RSpec.describe Api::Current::UsersController, type: :controller do
       post :reset_password, params: { id: user.id, password_digest: new_password_digest }
       user.reload
       expect(response.status).to eq(200)
-      expect(user.password_digest).to eq(new_password_digest)
+      expect(user.phone_number_authentication.password_digest).to eq(new_password_digest)
       expect(user.sync_approval_status).to eq('requested')
       expect(user.sync_approval_status_reason).to eq(I18n.t('reset_password'))
     end

@@ -2,6 +2,8 @@ FactoryBot.define do
   factory :master_user do
     transient do
       password { '1234' }
+      registration_facility { create(:facility) }
+      phone_number { Faker::PhoneNumber.phone_number }
     end
 
     full_name { Faker::Name.name }
@@ -16,7 +18,12 @@ FactoryBot.define do
         master_user.sync_approval_status = MasterUser.sync_approval_statuses[:allowed]
         master_user.sync_approval_status_reason = 'User is allowed'
 
-        phone_number_authentication = create(:phone_number_authentication, password: options.password)
+        phone_number_authentication = create(
+          :phone_number_authentication,
+          phone_number: options.phone_number,
+          password: options.password,
+          facility: options.registration_facility,
+        )
         master_user.user_authentications = [
           UserAuthentication.new(authenticatable: phone_number_authentication)
         ]

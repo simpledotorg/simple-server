@@ -108,8 +108,8 @@ RSpec.describe Api::V2::UsersController, type: :controller do
   describe '#find' do
     let(:phone_number) { Faker::PhoneNumber.phone_number }
     let(:facility) { FactoryBot.create(:facility) }
-    let!(:db_users) { FactoryBot.create_list(:user, 10, registration_facility_id: facility.id) }
-    let!(:user) { FactoryBot.create(:user, phone_number: phone_number, registration_facility_id: facility.id) }
+    let!(:db_users) { FactoryBot.create_list(:master_user, 10, :with_phone_number_authentication, registration_facility: facility) }
+    let!(:user) { FactoryBot.create(:master_user, :with_phone_number_authentication, phone_number: phone_number, registration_facility: facility) }
 
     it 'lists the users with the given phone number' do
       get :find, params: { phone_number: phone_number }
@@ -132,7 +132,7 @@ RSpec.describe Api::V2::UsersController, type: :controller do
   end
 
   describe '#request_otp' do
-    let(:user) { FactoryBot.create(:user) }
+    let(:user) { FactoryBot.create(:master_user, :with_phone_number_authentication) }
 
     it "returns 404 if the user with id doesn't exist" do
       post :request_otp, params: { id: SecureRandom.uuid }
@@ -153,8 +153,8 @@ RSpec.describe Api::V2::UsersController, type: :controller do
   end
 
   describe '#reset_password' do
-    let(:user) { FactoryBot.create(:user) }
-    let(:facility) { FactoryBot.create(:facility, facility_group: user.facility.facility_group) }
+    let(:user) { FactoryBot.create(:master_user, :with_phone_number_authentication) }
+    let(:facility) { FactoryBot.create(:facility, facility_group: user.facility_group) }
 
     before(:each) do
       request.env['HTTP_X_USER_ID'] = user.id
@@ -167,7 +167,7 @@ RSpec.describe Api::V2::UsersController, type: :controller do
       post :reset_password, params: { id: user.id, password_digest: new_password_digest }
       user.reload
       expect(response.status).to eq(200)
-      expect(user.password_digest).to eq(new_password_digest)
+      expect(user.phone_number_authentication.password_digest).to eq(new_password_digest)
       expect(user.sync_approval_status).to eq('requested')
       expect(user.sync_approval_status_reason).to eq(I18n.t('reset_password'))
     end
