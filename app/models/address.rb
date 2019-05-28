@@ -13,6 +13,10 @@ class Address < ApplicationRecord
     STATE_TO_LOCALE.fetch(state_to_sym, :en)
   end
 
+  def has_street_address?
+    street_address.present?
+  end
+
   private
 
   def state_to_sym
