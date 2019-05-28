@@ -2,9 +2,9 @@ require 'rails_helper'
 
 RSpec.shared_examples 'sync requests' do
   let(:auth_headers) do
-    {'HTTP_X_USER_ID' => request_user.id,
-     'HTTP_X_FACILITY_ID' => request_user.facility.id,
-     'HTTP_AUTHORIZATION' => "Bearer #{request_user.access_token}" }
+    { 'HTTP_X_USER_ID' => request_user.id,
+      'HTTP_X_FACILITY_ID' => request_user.facility.id,
+      'HTTP_AUTHORIZATION' => "Bearer #{request_user.access_token}" }
   end
   let(:headers) do
     { 'ACCEPT' => 'application/json', 'CONTENT_TYPE' => 'application/json' }.merge(auth_headers)
@@ -12,7 +12,7 @@ RSpec.shared_examples 'sync requests' do
 
   let(:response_key) { model.to_s.underscore.pluralize }
   let(:empty_payload) { Hash[response_key.to_sym, []] }
-  let(:valid_payload) { Hash[response_key.to_sym, [build_payload.call]]}
+  let(:valid_payload) { Hash[response_key.to_sym, [build_payload.call]] }
   let(:created_records) { (1..10).map { build_payload.call } }
   let(:many_valid_records) { Hash[response_key.to_sym, created_records] }
   let(:expected_response) do
@@ -42,8 +42,8 @@ RSpec.shared_examples 'sync requests' do
 
     expect(received_records.to_set)
       .to include model.updated_on_server_since(processed_since.to_time)
-               .map { |record| to_response(record) }
-               .to_set
+                    .map { |record| to_response(record) }
+                    .to_set
   end
 
   it 'pushes nothing, pulls nothing' do
@@ -81,53 +81,5 @@ RSpec.shared_examples 'sync requests' do
     get sync_route, params: { processed_since: processed_since }, headers: headers
 
     assert_sync_success(response, processed_since)
-  end
-
-  context 'resync_token in request headers is present' do
-    let(:resync_token) { "1" }
-    let(:headers_with_resync_token) { headers.merge('HTTP_X_RESYNC_TOKEN' => resync_token) }
-    let(:process_token_without_resync) { make_process_token(current_facility_processed_since: Time.now,
-                                                            other_facilities_processed_since: Time.now) }
-
-    before do
-      post sync_route, params: many_valid_records.to_json, headers: headers
-    end
-
-    it 'syncs all records from beginning if resync_token in headers is different from the one in process_token' do
-      get sync_route, params: { process_token: process_token_without_resync }, headers: headers_with_resync_token
-      response_body = JSON(response.body)
-
-      expect(response_body[response_key].count).to eq(10)
-      expect(parse_process_token(response_body)[:resync_token]).to eq(resync_token)
-    end
-
-    it 'syncs normally if resync_token in headers is the same as the one in process_token' do
-      get sync_route, params: { process_token: process_token_without_resync }, headers: headers_with_resync_token
-      process_token_with_resync = JSON(response.body)['process_token']
-
-      get sync_route, params: { process_token: process_token_with_resync }, headers: headers_with_resync_token
-      response_body = JSON(response.body)
-      expect(response_body[response_key].count).to eq(1)
-    end
-  end
-
-  context 'resync_token in request headers is not present' do
-    let(:process_token_without_resync) { make_process_token(current_facility_processed_since: 1.year.ago,
-                                                            other_facilities_processed_since: 1.year.ago) }
-
-    before do
-      post sync_route, params: many_valid_records.to_json, headers: headers
-    end
-
-    it 'syncs normally' do
-      get sync_route, params: { process_token: process_token_without_resync }, headers: headers
-      response_body = JSON(response.body)
-
-      expect(response_body[response_key].count).to eq(10)
-      expect(parse_process_token(response_body)[:resync_token]).to eq(nil)
-
-      get sync_route, params: { process_token: JSON(response.body)['process_token'] }, headers: headers
-      expect(JSON(response.body)[response_key].count).to eq(1)
-    end
   end
 end
