@@ -4,12 +4,6 @@ class OrganizationDistrictPolicy < ApplicationPolicy
   end
 
   def show?
-    user.owner? || [:organization_owner, :supervisor, :analyst].map { |role| admin_can_access?(role) }.any?
-  end
-
-  private
-
-  def admin_can_access?(role)
-    user.role == role.to_s && user.facility_groups.include?(record)
+    [:owner, :organization_owner, :supervisor, :analyst].include?(user.role.to_sym)
   end
 end

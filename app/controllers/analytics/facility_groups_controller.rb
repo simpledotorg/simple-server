@@ -36,7 +36,7 @@ class Analytics::FacilityGroupsController < AnalyticsController
   def set_cache_key
     @cache_key = [
       "analytics/facility_groups",
-      @facility_group.slug,
+      @facility_group.id,
       @from_time.strftime("%Y-%m-%d"),
       @to_time.strftime("%Y-%m-%d")
     ]
