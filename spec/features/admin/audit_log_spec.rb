@@ -15,9 +15,9 @@ RSpec.feature 'Admin::AuditLogs', type: :feature do
   end
 
   describe 'User name is entered' do
-    let(:priyanka) { FactoryBot.create(:user, full_name: 'Dr. Priyanka Sodhi') }
-    let(:yash) { FactoryBot.create(:user, full_name: 'Yash Bahl') }
-    let(:rohit) { FactoryBot.create(:user, full_name: 'Rohit Mehra') }
+    let(:priyanka) { create(:master_user, full_name: 'Dr. Priyanka Sodhi') }
+    let(:yash) { create(:master_user, full_name: 'Yash Bahl') }
+    let(:rohit) { create(:master_user, full_name: 'Rohit Mehra') }
 
     it 'Display audit logs for all the users containing the entered user name as a substring' do
       FactoryBot.create_list(:audit_log, 5, user: priyanka)

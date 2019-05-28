@@ -3,11 +3,11 @@ require 'rails_helper'
 describe AuditLog, type: :model do
   include ActiveJob::TestHelper
 
-  let(:user) { create :user }
+  let(:user) { create :master_user }
   let(:record) { create :patient }
 
   describe 'Associations' do
-    it { should belong_to(:user) }
+    it { should belong_to(:user).class_name('MasterUser') }
     it { should belong_to(:auditable) }
   end
 
