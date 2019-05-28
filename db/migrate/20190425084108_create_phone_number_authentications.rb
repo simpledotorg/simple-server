@@ -8,7 +8,6 @@ class CreatePhoneNumberAuthentications < ActiveRecord::Migration[5.1]
       t.datetime :logged_in_at
       t.string :access_token, null: false
 
-
       t.uuid :registration_facility_id
 
       t.timestamps

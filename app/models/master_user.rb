@@ -1,8 +1,8 @@
 class MasterUser < ApplicationRecord
 
   AUTHENTICATION_TYPES = {
-    emailauthentication: 'EmailAuthentication',
-    phone_number_authentication: 'PhoneAuthentication'
+    email_authentication: 'EmailAuthentication',
+    phone_number_authentication: 'PhoneNumberAuthentication'
   }
 
   enum sync_approval_status: {
