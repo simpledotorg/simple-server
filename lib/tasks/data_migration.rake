@@ -105,7 +105,7 @@ namespace :data_migration do
           :password_digest,
           :otp,
           :otp_valid_until,
-          :logged_in_at
+          :logged_in_at,
           :access_token,
           :created_at,
           :updated_at,
