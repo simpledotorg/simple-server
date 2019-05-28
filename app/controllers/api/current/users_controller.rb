@@ -5,9 +5,26 @@ class Api::Current::UsersController < APIController
   before_action :validate_registration_payload, only: %i[register]
 
   def register
-    user = User.new(user_from_request)
-    return head :not_found unless user.facility.present?
-    return render json: { errors: user.errors }, status: :bad_request if user.invalid?
+    if FeatureToggle.enabled?('MASTER_USER_AUTHENTICATION')
+      user = MasterUser.build_with_phone_number_authentication(user_from_request)
+      registration_facility = user.user_authentications.first.authenticatable.facility
+      return head :not_found unless registration_facility.present?
+      return render json: { errors: user.errors }, status: :bad_request if user.invalid?
+      send_approval_notification_email(user)
+    else
+      user = User.new(user_from_request)
+      return head :not_found unless user.facility.present?
+      return render json: { errors: user.errors }, status: :bad_request if user.invalid?
+      send_approval_notification_email(user)
+    end
+
+    render json: {
+      user: user_to_response(user),
+      access_token: user.access_token
+    }, status: :ok
+  end
+
+  def send_approval_notification_email(user)
     if FeatureToggle.auto_approve_for_qa?
       user.sync_approval_allowed
       user.save
@@ -16,10 +33,6 @@ class Api::Current::UsersController < APIController
       user.save
       ApprovalNotifierMailer.with(user: user).registration_approval_email.deliver_later
     end
-    render json: {
-      user: user_to_response(user),
-      access_token: user.access_token
-    }, status: :ok
   end
 
   def find

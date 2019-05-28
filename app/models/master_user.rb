@@ -58,6 +58,14 @@ class MasterUser < ApplicationRecord
     delegate_to_phone_number_authentication(:otp_valid?)
   end
 
+  def facility_group
+    delegate_to_phone_number_authentication(:facility_group)
+  end
+
+  def organization
+    delegate_to_phone_number_authentication(:organization)
+  end
+
   def self.build_with_phone_number_authentication(params)
     phone_number_authentication = PhoneNumberAuthentication.new(
       phone_number: params[:phone_number],
@@ -70,8 +78,8 @@ class MasterUser < ApplicationRecord
     master_user = new(
       id: params[:id],
       full_name: params[:full_name],
-      device_created_at: params[:created_at],
-      device_updated_at: params[:updated_at]
+      device_created_at: params[:device_created_at],
+      device_updated_at: params[:device_updated_at]
     )
     master_user.sync_approval_requested(I18n.t('registration'))
 

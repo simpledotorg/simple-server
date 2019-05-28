@@ -24,16 +24,20 @@
 
 <p>
   <strong><%= t('registration_approval_email.registration_facility') %>:</strong>
-  <%= @user.facility.name %>
+  <% if FeatureToggle.is_enabled?('MASTER_USER_AUTHENTICATION') %>
+    <%= @user.registration_facility.name %>
+  <% else %>
+    <%= @user.facility.name %>
+  <% end %>
 </p>
 
 <p>
   <strong><%= t('registration_approval_email.accessible_facilities') %>:</strong>
-  <ul>
-    <% @user.facility_group.facilities.each do |facility| %>
-      <li><%= facility.name %></li>
-    <% end %>
-  </ul>
+<ul>
+  <% @user.facility_group.facilities.each do |facility| %>
+    <li><%= facility.name %></li>
+  <% end %>
+</ul>
 </p>
 
 <%= link_to t('registration_approval_email.allow_or_deny_access'), admin_user_url(@user) %>
