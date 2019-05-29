@@ -41,7 +41,7 @@ RSpec.describe Api::V1::BloodPressuresController, type: :controller do
 
         updated_records.each do |record|
           db_record = BloodPressure.find(record['id'])
-          expect(build_blood_pressure_payload_v2(db_record).with_int_timestamps)
+          expect(build_blood_pressure_payload_v1(db_record).with_int_timestamps)
             .to eq(record.to_json_and_back.with_int_timestamps)
         end
       end
