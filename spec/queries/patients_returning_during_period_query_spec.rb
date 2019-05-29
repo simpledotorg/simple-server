@@ -18,8 +18,12 @@ RSpec.describe PatientsReturningDuringPeriodQuery do
 
     before :each do
       Timecop.travel(from_time) do
-        returning_patients.each { |patient| create(:blood_pressure, patient: patient) }
-        new_patients.each { |patient| create(:blood_pressure, patient: patient) }
+        returning_patients.each do |patient|
+          create(:blood_pressure, patient: patient, recorded_at: Time.now)
+        end
+        new_patients.each do |patient|
+          create(:blood_pressure, patient: patient, recorded_at: Time.now)
+        end
       end
     end
 

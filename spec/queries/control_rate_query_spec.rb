@@ -8,12 +8,14 @@ RSpec.describe ControlRateQuery do
     before :each do
       hypertensive_patients_registered_in_cohort = Timecop.travel(from_time - ControlRateQuery::COHORT_DELTA) do
         patients = create_list(:patient, 5)
-        patients.each { |patient| create(:blood_pressure, :high, patient: patient) }
+        patients.each do |patient|
+          create(:blood_pressure, :high, patient: patient, recorded_at: Time.now)
+        end
         patients
       end
       Timecop.travel(from_time) do
         hypertensive_patients_registered_in_cohort.take(2).each do |patient|
-          create(:blood_pressure, :under_control, patient: patient)
+          create(:blood_pressure, :under_control, patient: patient, recorded_at: Time.now)
         end
       end
     end
