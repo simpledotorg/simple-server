@@ -99,7 +99,7 @@ namespace :data_migration do
     patients = Patient.where(recorded_at: nil)
 
     patients.each do |patient|
-      earliest_blood_pressure = patient.blood_pressures.order(device_created_at: :asc).first
+      earliest_blood_pressure = patient.blood_pressures.order(recorded_at: :asc).first
       earlier_date = [earliest_blood_pressure.device_created_at, patient.device_created_at].min
       patient.update_column(:recorded_at, earlier_date)
     end
