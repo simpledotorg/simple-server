@@ -6,10 +6,12 @@ class Api::Current::UsersController < APIController
 
   def register
     if FeatureToggle.enabled?('MASTER_USER_AUTHENTICATION')
-      user = MasterUser.build_with_phone_number_authentication(user_from_request)
-      registration_facility = user.user_authentications.first.authenticatable.facility
+      result = MasterUser.build_with_phone_number_authentication(user_from_request)
+      user = result[:master_user]
+      phone_number_authentication = result[:phone_number_authentication]
+      registration_facility = phone_number_authentication.facility
       return head :not_found unless registration_facility.present?
-      return render json: { errors: user.errors }, status: :bad_request if user.invalid?
+      return render json: { errors: user.errors }, status: :bad_request if (user.invalid? || phone_number_authentication.invalid?)
       send_approval_notification_email(user)
     else
       user = User.new(user_from_request)

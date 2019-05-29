@@ -23,12 +23,14 @@ RSpec.describe MasterUser, type: :model do
           phone_number: phone_number,
           password_digest: password_digest,
           registration_facility_id: registration_facility.id,
-          created_at: Time.now.iso8601,
-          updated_at: Time.now.iso8601
+          device_created_at: Time.now.iso8601,
+          device_updated_at: Time.now.iso8601
         }
       end
 
-      let(:master_user) { MasterUser.build_with_phone_number_authentication(params) }
+      let(:result) { MasterUser.build_with_phone_number_authentication(params) }
+      let(:master_user) { result[:master_user] }
+      let(:phone_number_authentication) { result[:phone_number_authentication] }
 
       it 'builds a valid master user' do
         expect(master_user).to be_valid
@@ -39,7 +41,6 @@ RSpec.describe MasterUser, type: :model do
       end
 
       it 'builds a valid phone number authentication a master user' do
-        phone_number_authentication = master_user.user_authentications.first.authenticatable
         expect(phone_number_authentication).to be_instance_of(PhoneNumberAuthentication)
         expect(phone_number_authentication).to be_valid
         expect(phone_number_authentication.password_digest).to eq(password_digest)
@@ -47,7 +48,6 @@ RSpec.describe MasterUser, type: :model do
       end
 
       it 'assigns an otp and access token to the phone number authentication' do
-        phone_number_authentication = master_user.user_authentications.first.authenticatable
         expect(phone_number_authentication.otp).to be_present
         expect(phone_number_authentication.otp_valid_until).to be_present
         expect(phone_number_authentication.access_token).to be_present

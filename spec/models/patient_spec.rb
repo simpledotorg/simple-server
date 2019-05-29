@@ -20,7 +20,7 @@ describe Patient, type: :model do
     end
 
     it { should belong_to(:registration_facility).class_name("Facility") }
-    it { should belong_to(:registration_user).class_name("User") }
+    it { should belong_to(:registration_user).class_name('MasterUser') }
   end
 
   describe 'Associations' do

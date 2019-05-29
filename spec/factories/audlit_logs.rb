@@ -3,6 +3,6 @@ FactoryBot.define do
     action { 'fetch' }
     auditable_type { 'Patient' }
     auditable_id { create(:patient).id }
-    user
+    user { create(:master_user, :with_phone_number_authentication)}
   end
 end

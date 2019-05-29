@@ -31,6 +31,8 @@ RSpec.describe Api::V2::UsersController, type: :controller do
                  created_at: Time.now.iso8601,
                  updated_at: Time.now.iso8601)
       end
+      let(:phone_number) { user_params[:phone_number] }
+      let(:password_digest) { user_params[:password_digest] }
 
       it 'creates a user, and responds with the created user object and their access token' do
         post :register, params: { user: user_params }
@@ -52,11 +54,9 @@ RSpec.describe Api::V2::UsersController, type: :controller do
                      'device_created_at',
                      'created_at',
                      'updated_at',
-                     'access_token',
-                     'logged_in_at',
-                     'otp',
-                     'otp_valid_until')
-                   .merge('registration_facility_id' => facility.id)
+                     'sync_approval_status',
+                     'sync_approval_status_reason')
+                   .merge('registration_facility_id' => facility.id, 'phone_number' => phone_number, 'password_digest' => password_digest)
                    .as_json
                    .with_int_timestamps)
 

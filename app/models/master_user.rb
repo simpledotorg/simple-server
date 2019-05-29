@@ -90,7 +90,7 @@ class MasterUser < ApplicationRecord
       )
     ]
 
-    master_user
+    { master_user: master_user, phone_number_authentication: phone_number_authentication}
   end
 
   def sync_approval_denied(reason = "")

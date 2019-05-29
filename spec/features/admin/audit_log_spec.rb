@@ -14,7 +14,7 @@ RSpec.feature 'Admin::AuditLogs', type: :feature do
     expect(page).not_to have_selector('tbody tr')
   end
 
-  describe 'User name is entered' do
+  xdescribe 'User name is entered' do
     let(:priyanka) { create(:master_user, full_name: 'Dr. Priyanka Sodhi') }
     let(:yash) { create(:master_user, full_name: 'Yash Bahl') }
     let(:rohit) { create(:master_user, full_name: 'Rohit Mehra') }

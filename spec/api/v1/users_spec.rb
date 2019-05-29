@@ -17,7 +17,7 @@ describe 'Users V1 API', swagger_doc: 'v1/swagger.json' do
       parameter name: :id, in: :query, type: :string, description: 'User UUID'
 
       let(:known_phone_number) { Faker::PhoneNumber.phone_number }
-      let!(:user) { FactoryBot.create(:user, phone_number: known_phone_number, registration_facility_id: facility.id) }
+      let!(:user) { FactoryBot.create(:master_user, :with_phone_number_authentication, phone_number: known_phone_number, registration_facility: facility) }
       let(:id) { user.id }
 
       response '200', 'user is found' do
@@ -29,6 +29,7 @@ describe 'Users V1 API', swagger_doc: 'v1/swagger.json' do
 
       response '404', 'user is not found' do
         let(:phone_number) { Faker::PhoneNumber.phone_number }
+        let(:id) { SecureRandom.uuid }
         run_test!
       end
     end
@@ -61,7 +62,7 @@ describe 'Users V1 API', swagger_doc: 'v1/swagger.json' do
 
       response '400', 'returns bad request if phone number already exists' do
         let(:used_phone_number) { Faker::PhoneNumber.phone_number }
-        let!(:existing_user) { FactoryBot.create(:user, phone_number: used_phone_number) }
+        let!(:existing_user) { FactoryBot.create(:master_user, :with_phone_number_authentication, phone_number: used_phone_number) }
         let(:user) do
           { user: FactoryBot.attributes_for(:user, :created_on_device, phone_number: used_phone_number)
                     .merge(created_at: Time.now, updated_at: Time.now, facility_ids: [facility.id]) }
@@ -87,7 +88,7 @@ describe 'Users V1 API', swagger_doc: 'v1/swagger.json' do
       tags 'User'
       parameter name: :id, in: :path, description: 'User UUID', type: :string
 
-      let!(:user) { FactoryBot.create(:user, registration_facility_id: facility.id) }
+      let!(:user) { FactoryBot.create(:master_user, :with_phone_number_authentication, registration_facility: facility) }
 
       before :each do
         sms_notification_service = double(SmsNotificationService.new(nil))
@@ -114,7 +115,7 @@ describe 'Users V1 API', swagger_doc: 'v1/swagger.json' do
       tags 'User'
       security [ basic: [] ]
       parameter name: :password_digest, in: :body, schema: Api::V1::Schema.user_reset_password_request
-      let(:user) { FactoryBot.create(:user, registration_facility_id: facility.id) }
+      let(:user) { FactoryBot.create(:master_user, :with_phone_number_authentication, registration_facility: facility) }
       let(:HTTP_X_USER_ID) { user.id }
       let(:Authorization) { "Bearer #{user.access_token}" }
       let(:password_digest) { { password_digest:  BCrypt::Password.create('1234') } }
