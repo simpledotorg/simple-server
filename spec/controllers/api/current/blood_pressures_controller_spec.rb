@@ -64,7 +64,7 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
           expect(bp.recorded_at.to_i).to eq(recorded_at.to_i)
         end
 
-        it 'does not modify the recorded_at for a patient' do
+        it 'does not modify the recorded_at for a patient if params have recorded_at' do
           patient_recorded_at = 4.months.ago
           patient = FactoryBot.create(:patient, recorded_at: patient_recorded_at)
           older_bp_recording_date = 5.months.ago
