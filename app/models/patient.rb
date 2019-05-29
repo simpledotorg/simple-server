@@ -16,7 +16,7 @@ class Patient < ApplicationRecord
   has_many :phone_numbers, class_name: 'PatientPhoneNumber'
   has_many :business_identifiers, class_name: 'PatientBusinessIdentifier'
   has_many :blood_pressures, inverse_of: :patient
-  has_many :latest_blood_pressures, -> { order(device_created_at: :desc) }, class_name: 'BloodPressure'
+  has_many :latest_blood_pressures, -> { order(recorded_at: :desc) }, class_name: 'BloodPressure'
   has_many :prescription_drugs
   has_many :facilities, -> { distinct }, through: :blood_pressures
   has_many :users, -> { distinct }, through: :blood_pressures
