@@ -10,7 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190516113220) do
+ActiveRecord::Schema.define(version: 20190529120752) do
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "pgcrypto"
@@ -134,14 +135,12 @@ ActiveRecord::Schema.define(version: 20190516113220) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "caller_phone_number", null: false
-    t.uuid "user_id"
-    t.string "caller_phone_number"
-    t.index ["user_id"], name: "index_call_logs_on_user_id"
   end
 
   create_table "communications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "appointment_id", null: false
     t.uuid "user_id", null: false
+    t.string "communication_type"
     t.datetime "device_created_at", null: false
     t.datetime "device_updated_at", null: false
     t.datetime "created_at", null: false
@@ -149,7 +148,6 @@ ActiveRecord::Schema.define(version: 20190516113220) do
     t.datetime "deleted_at"
     t.string "detailable_type"
     t.bigint "detailable_id"
-    t.string "communication_type"
     t.index ["appointment_id"], name: "index_communications_on_appointment_id"
     t.index ["deleted_at"], name: "index_communications_on_deleted_at"
     t.index ["detailable_type", "detailable_id"], name: "index_communications_on_detailable_type_and_detailable_id"
