@@ -27,11 +27,16 @@ module Api::Current::SyncToUser
     end
 
     def response_process_token
-      { current_facility_id: current_facility.id,
-        current_facility_processed_since: processed_until(current_facility_records) || current_facility_processed_since,
-        other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
-        resync_token: resync_token
-      }
+      base_process_token = { current_facility_id: current_facility.id,
+                             resync_token: resync_token }
+
+      return base_process_token.merge(current_facility_processed_since: Time.new(0),
+                                      other_facilities_processed_since: Time.new(0)) if sync_from_beginning?
+
+      base_process_token.merge(current_facility_processed_since:
+                                 processed_until(current_facility_records) || current_facility_processed_since,
+                               other_facilities_processed_since:
+                                 processed_until(other_facility_records) || other_facilities_processed_since)
     end
 
     def encode_process_token(process_token)
@@ -39,14 +44,11 @@ module Api::Current::SyncToUser
     end
 
     def other_facilities_processed_since
-      return Time.new(0) if sync_from_beginning?
       process_token[:other_facilities_processed_since].try(:to_time) || Time.new(0)
     end
 
     def current_facility_processed_since
       case
-        when sync_from_beginning? then
-          Time.new(0)
         when process_token[:current_facility_processed_since].blank? then
           other_facilities_processed_since
         when process_token[:current_facility_id] != current_facility.id then

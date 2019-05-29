@@ -98,8 +98,18 @@ RSpec.shared_examples 'current API sync requests' do
       post sync_route, params: many_valid_records.to_json, headers: headers
     end
 
-    it 'syncs all records from beginning if resync_token in headers is different from the one in process_token' do
+    it 'syncs all records from beginning if resync_token in process_token is nil' do
       get sync_route, params: { process_token: process_token_without_resync }, headers: headers_with_resync_token
+      response_body = JSON(response.body)
+
+      expect(response_body[response_key].count).to eq(10)
+      expect(parse_process_token(response_body)[:resync_token]).to eq(resync_token)
+    end
+
+    it 'syncs all records from beginning if resync_token in headers is different from the one in process_token' do
+      get sync_route,
+          params: { process_token: process_token_without_resync.merge(resync_token: "2") },
+          headers: headers_with_resync_token
       response_body = JSON(response.body)
 
       expect(response_body[response_key].count).to eq(10)
