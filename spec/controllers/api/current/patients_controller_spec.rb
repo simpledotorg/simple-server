@@ -71,7 +71,7 @@ RSpec.describe Api::Current::PatientsController, type: :controller do
           blood_pressure_recorded_at = 1.month.ago
           FactoryBot.create(:blood_pressure,
                             patient_id: patient.id,
-                            device_created_at: blood_pressure_recorded_at)
+                            recorded_at: blood_pressure_recorded_at)
 
           patient_payload = build_patient_payload(patient).except('recorded_at')
           post :sync_from_user, params: { patients: [patient_payload] }, as: :json
