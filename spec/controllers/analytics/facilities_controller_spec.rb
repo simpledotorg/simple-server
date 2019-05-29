@@ -21,8 +21,8 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
     context 'from_time and to_time are set' do
       render_views
 
-      it 'has summary for all the users that have recorded blood pressures in the facility' do
-        users = create_list :user, 3
+      xit 'has summary for all the users that have recorded blood pressures in the facility' do
+        users = create_list :master_user, 3
         users.each do |user|
           create :blood_pressure, user: user, facility: facility
         end

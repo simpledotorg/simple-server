@@ -12,6 +12,10 @@ class MasterUser < ApplicationRecord
   }, _prefix: true
 
   has_many :user_authentications
+  has_many :blood_pressures, foreign_key: 'user_id'
+  has_many :patients, -> { distinct }, through: :blood_pressures
+
+  has_many :registered_patients, class_name: "Patient", foreign_key: "registration_user_id"
 
   validates :full_name, presence: true
 

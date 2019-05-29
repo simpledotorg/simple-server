@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe AppointmentNotificationService do
   context '#send_after_missed_visit' do
-    let!(:user) { create(:user) }
+    let!(:user) { create(:master_user) }
     let!(:facility_1) { create(:facility) }
     let!(:facility_2) { create(:facility) }
     let!(:overdue_appointments_from_facility_1) { create_list(:appointment, 10, :overdue, facility: facility_1) }

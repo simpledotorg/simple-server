@@ -8,7 +8,7 @@ RSpec.describe User, type: :model do
 
     it { should have_many(:registered_patients).class_name("Patient").with_foreign_key("registration_user_id") }
 
-    it 'has distinct patients' do
+    xit 'has distinct patients' do
       user = FactoryBot.create(:user)
       patient = FactoryBot.create(:patient)
       FactoryBot.create_list(:blood_pressure, 5, user: user, patient: patient)

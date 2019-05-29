@@ -8,7 +8,7 @@ FactoryBot.define do
     deleted_at { [nil, Time.now].sample }
     association :facility, strategy: :build
     association :patient, strategy: :build
-    user
+    association :user, factory: :master_user_with_phone_number_authentication
 
     trait :critical do
       systolic 181

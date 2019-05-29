@@ -7,7 +7,7 @@ class Admin::AuditLogsController < AdminController
     audit_logs = policy_scope(AuditLog).none
 
     if params[:user_name].present?
-      users = policy_scope(User).where('full_name ilike ?', "%#{params[:user_name]}%")
+      users = MasterUser.where('full_name ilike ?', "%#{params[:user_name]}%")
       audit_logs = policy_scope(AuditLog).where(user_id: users.pluck(:id)).order(created_at: :desc)
     end
 

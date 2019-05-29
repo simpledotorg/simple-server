@@ -11,7 +11,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
 
   it 'sends reminder SMSes for all appointments and creates communication entries for them' do
     expect {
-      described_class.perform_async(create(:user).id,
+      described_class.perform_async(create(:master_user).id,
                                     create_list(:appointment, 3, :overdue).map(&:id),
                                     'missed_visit_sms_reminder')
     }.to change(described_class.jobs, :size).by(1)
@@ -37,7 +37,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     allow(sms_response_double).to receive(:status).and_return('queued')
 
     expect {
-      described_class.perform_async(create(:user).id,
+      described_class.perform_async(create(:master_user).id,
                                     create_list(:appointment, 3, :overdue).map(&:id),
                                     'missed_visit_sms_reminder')
     }.to change(described_class.jobs, :size).by(1)
