@@ -28,7 +28,6 @@ class NonReturningHypertensivePatientsDuringPeriodQuery
 
     latest_blood_pressure.present? &&
       latest_blood_pressure.hypertensive? &&
-      latest_blood_pressure.device_created_at < before_time
+      latest_blood_pressure.recorded_at < before_time
   end
-
 end

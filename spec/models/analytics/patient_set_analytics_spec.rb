@@ -34,6 +34,7 @@ RSpec.describe Analytics::PatientSetAnalytics do
           create(:blood_pressure,
                  :under_control,
                  patient: patient,
+                 recorded_at: patient.device_created_at,
                  device_created_at: patient.device_created_at)
         end
       end
@@ -42,8 +43,15 @@ RSpec.describe Analytics::PatientSetAnalytics do
     # returning patients
     Timecop.travel(from_time) do
       returning_patients = old_patients.take(2)
-      create(:blood_pressure, :high, patient: returning_patients.first)
-      create(:blood_pressure, :under_control, patient: returning_patients.second)
+      create(:blood_pressure, :high, patient: returning_patients.first, recorded_at: Time.now)
+      create(:blood_pressure, :under_control, patient: returning_patients.second, recorded_at: Time.now)
+    end
+
+    # retro-actively added blood_pressures
+    Timecop.travel(first_feb) do
+      returning_patients = old_patients.take(2)
+      create(:blood_pressure, :high, patient: returning_patients.first, recorded_at: 1.week.ago)
+      create(:blood_pressure, :under_control, patient: returning_patients.second, recorded_at: 1.week.ago)
     end
   end
 
@@ -93,13 +101,12 @@ RSpec.describe Analytics::PatientSetAnalytics do
     end
   end
 
-
   describe '#blood_pressure_recored_per_week' do
     it 'returns the number of blood pressures recorded per week for a group of patients' do
       expected_counts = {
         Date.new(2019, 1, 06) => 0,
         Date.new(2019, 1, 13) => 0,
-        Date.new(2019, 1, 20) => 0,
+        Date.new(2019, 1, 20) => 2,
         Date.new(2019, 1, 27) => 5,
         Date.new(2019, 2, 03) => 0,
         Date.new(2019, 2, 10) => 0,
