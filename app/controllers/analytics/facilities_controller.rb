@@ -1,8 +1,8 @@
 class Analytics::FacilitiesController < AnalyticsController
   before_action :set_facility
-  before_action :set_facility_group
   before_action :set_organization
-  before_action :set_cache_key
+  before_action :set_facility_group
+  before_action :set_organization_district
 
   def show
     @facility_analytics = @facility.patient_set_analytics(@from_time, @to_time)
@@ -26,17 +26,12 @@ class Analytics::FacilitiesController < AnalyticsController
     @facility_group = @facility.facility_group
   end
 
-  def set_organization
-    @organization = @facility.organization
+  def set_organization_district
+    @organization_district = OrganizationDistrict.new(@facility.district, @organization)
   end
 
-  def set_cache_key
-    @cache_key = [
-      "analytics/facilities",
-      @facility.slug,
-      @from_time.strftime("%Y-%m-%d"),
-      @to_time.strftime("%Y-%m-%d")
-    ]
+  def set_organization
+    @organization = @facility.organization
   end
 
   def users_for_facility

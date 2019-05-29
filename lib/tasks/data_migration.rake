@@ -88,8 +88,8 @@ namespace :data_migration do
     # we default to the device_created_at
     blood_pressures = BloodPressure.where(recorded_at: nil)
 
-    blood_pressures.each do |record|
-      record.update_column(:recorded_at, record.device_created_at)
+    blood_pressures.each do |blood_pressure|
+      blood_pressure.update_column(:recorded_at, blood_pressure.device_created_at)
     end
 
     puts "Total number of BloodPressure records updated = #{blood_pressures.size}"
@@ -98,13 +98,9 @@ namespace :data_migration do
     patients = Patient.where(recorded_at: nil)
 
     patients.each do |patient|
-      earliest_blood_pressure = patient.blood_pressures.order(device_created_at: :asc).first
-      earlier_date = if earliest_blood_pressure.present?
-                       [patient.device_created_at, earliest_blood_pressure.device_created_at].min
-                     else
-                       patient.device_created_at
-                     end
-      patient.update_column(:recorded_at, earlier_date)
+      earliest_blood_pressure = patient.blood_pressures.order(recorded_at: :asc).first
+      patient_recorded_at = [earliest_blood_pressure.recorded_at, patient.device_created_at].min
+      patient.update_column(:recorded_at, patient_recorded_at)
     end
 
     puts "Total number of Patient records updated = #{patients.size}"
