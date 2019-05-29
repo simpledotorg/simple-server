@@ -4,6 +4,7 @@ class AppointmentNotification::MissedVisitJob
 
   sidekiq_options unique_across_queues: true,
                   queue: 'default',
+                  lock: :until_and_while_executing,
                   lock_expiration: 6.hours.to_i
 
   def perform(user_id, schedule_hour_start, schedule_hour_finish)
