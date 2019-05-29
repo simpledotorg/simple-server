@@ -44,14 +44,16 @@ module Api::Current::SyncToUser
     end
 
     def current_facility_processed_since
-      return Time.new(0) if sync_from_beginning?
-
-      if process_token[:current_facility_processed_since].blank?
-        other_facilities_processed_since
-      elsif process_token[:current_facility_id] != current_facility.id
-        [process_token[:current_facility_processed_since].to_time, other_facilities_processed_since].min
-      else
-        process_token[:current_facility_processed_since].to_time
+      case
+        when sync_from_beginning? then
+          Time.new(0)
+        when process_token[:current_facility_processed_since].blank? then
+          other_facilities_processed_since
+        when process_token[:current_facility_id] != current_facility.id then
+          [process_token[:current_facility_processed_since].to_time,
+           other_facilities_processed_since].min
+        else
+          process_token[:current_facility_processed_since].to_time
       end
     end
 
