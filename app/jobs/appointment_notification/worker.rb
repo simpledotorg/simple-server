@@ -31,7 +31,7 @@ class AppointmentNotification::Worker
   def send_sms(appointment, type)
     SmsNotificationService
       .new(appointment.patient.latest_phone_number,
-           ENV.fetch('TWILIO_REMINDERS_ACCOUNT_SID'),
+           ENV.fetch('TWILIO_REMINDERS_ACCOUNT_PHONE_NUMBER'),
            SMS_CLIENT)
       .send_reminder_sms(type,
                          appointment,
