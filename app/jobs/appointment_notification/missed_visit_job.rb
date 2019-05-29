@@ -2,9 +2,7 @@ class AppointmentNotification::MissedVisitJob
   include Notifiable
   include Sidekiq::Worker
 
-  sidekiq_options unique_across_queues: true,
-                  queue: 'default',
-                  lock: :until_and_while_executing,
+  sidekiq_options lock: :until_and_while_executing,
                   lock_expiration: 6.hours.to_i
 
   def perform(user_id, schedule_hour_start, schedule_hour_finish)
