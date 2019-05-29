@@ -38,7 +38,8 @@ class Api::Current::BloodPressuresController < Api::Current::SyncController
   end
 
   def patient_recorded_at(bp_params, patient)
-    [bp_params['created_at'], patient.recorded_at].min
+    earliest_blood_pressure = patient.blood_pressures.order(recorded_at: :asc).first
+    [bp_params['created_at'], earliest_blood_pressure.recorded_at, patient.device_created_at].min
   end
 
   def transform_to_response(blood_pressure)
