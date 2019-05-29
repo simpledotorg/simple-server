@@ -3,6 +3,8 @@ require 'sidekiq/testing'
 
 RSpec.describe AppointmentNotification::Worker, type: :job do
   before do
+    FakeRedis.disable
+
     sms_response_double = double('SmsNotificationServiceResponse')
     allow_any_instance_of(SmsNotificationService).to receive(:send_reminder_sms).and_return(sms_response_double)
     allow(sms_response_double).to receive(:sid).and_return(SecureRandom.uuid)

@@ -2,8 +2,7 @@ class AppointmentNotification::Worker
   include Rails.application.routes.url_helpers
   include Sidekiq::Worker
 
-  sidekiq_options lock: :until_and_while_executing,
-                  lock_expiration: 6.hours.to_i
+  sidekiq_options lock: :until_executing, on_conflict: :log, lock_expiration: 1.hour.to_i
 
   def perform(user_id, appointments, communication_type)
     Appointment.where(id: appointments).each do |appointment|
