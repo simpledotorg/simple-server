@@ -11,6 +11,10 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     allow(sms_response_double).to receive(:status).and_return('queued')
   end
 
+  after do
+    FakeRedis.enable
+  end
+
   it 'sends reminder SMSes for all appointments and creates communication entries for them' do
     expect {
       described_class.perform_async(create(:user).id,
