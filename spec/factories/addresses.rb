@@ -9,5 +9,9 @@ FactoryBot.define do
     pin { Faker::Address.zip }
     device_created_at { Time.now }
     device_updated_at { Time.now }
+
+    trait(:no_street_address) do
+      street_address { nil }
+    end
   end
 end
