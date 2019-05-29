@@ -130,13 +130,15 @@ RSpec.describe Analytics::PatientSetAnalytics do
       Timecop.travel(from_time - ControlRateQuery::COHORT_DELTA) do
         # newly enrolled patients in the cohort
         cohort_patients = create_list(:patient, 5)
-        cohort_patients.each { |patient| create(:blood_pressure, :high, patient: patient) }
+        cohort_patients.each do |patient|
+          create(:blood_pressure, :high, patient: patient, recorded_at: Time.now)
+        end
       end
 
       Timecop.travel(from_time) do
         # returning patients from the earlier cohort
-        create(:blood_pressure, :high, patient: cohort_patients.first)
-        create(:blood_pressure, :under_control, patient: cohort_patients.second)
+        create(:blood_pressure, :high, patient: cohort_patients.first, recorded_at: Time.now)
+        create(:blood_pressure, :under_control, patient: cohort_patients.second, recorded_at: Time.now)
       end
     end
 

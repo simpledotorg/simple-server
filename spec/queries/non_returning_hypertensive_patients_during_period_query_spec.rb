@@ -9,9 +9,7 @@ RSpec.describe NonReturningHypertensivePatientsDuringPeriodQuery do
     let!(:hypertensive_patients) do
       Timecop.travel(one_year_ago) do
         patients = create_list(:patient, 5)
-        patients.each do |patient|
-          create(:blood_pressure, :high, patient: patient, recorded_at: Time.now)
-        end
+        patients.each { |patient| create(:blood_pressure, :high, patient: patient) }
         patients
       end
     end
