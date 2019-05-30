@@ -2,10 +2,6 @@ class AppointmentNotification::Worker
   include Rails.application.routes.url_helpers
   include Sidekiq::Worker
 
-  sidekiq_options unique_across_queues: true,
-                  queue: 'default',
-                  lock_expiration: 6.hours.to_i
-
   def perform(user_id, appointments, communication_type)
     Appointment.where(id: appointments).each do |appointment|
       next if appointment.previously_communicated_via?(communication_type)
@@ -26,9 +22,14 @@ class AppointmentNotification::Worker
 
   private
 
+  SMS_CLIENT = Twilio::REST::Client.new(ENV.fetch('TWILIO_REMINDERS_ACCOUNT_SID'),
+                                        ENV.fetch('TWILIO_REMINDERS_ACCOUNT_AUTH_TOKEN'))
+
   def send_sms(appointment, type)
     SmsNotificationService
-      .new(appointment.patient.latest_phone_number)
+      .new(appointment.patient.latest_phone_number,
+           ENV.fetch('TWILIO_REMINDERS_ACCOUNT_PHONE_NUMBER'),
+           SMS_CLIENT)
       .send_reminder_sms(type,
                          appointment,
                          sms_delivery_callback_url,
