@@ -158,7 +158,7 @@ namespace :data_migration do
 
   desc "Fix null invited_by for email authentications when migrating from admins"
   task fix_invited_by_for_email_authentications: :environment do
-    EmailAuthentication.all.take(1).each do |email_authentication|
+    EmailAuthentication.all.each do |email_authentication|
       email_authentication.transaction do
         admin = Admin.find_by(email: email_authentication.email)
         invited_by = EmailAuthentication.find_by(email: admin.invited_by.email)

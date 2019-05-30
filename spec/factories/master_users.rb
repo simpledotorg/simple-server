@@ -51,7 +51,6 @@ FactoryBot.define do
   end
 end
 
-
 def register_user_request_params(arguments = {})
   { id: SecureRandom.uuid,
     full_name: Faker::Name.name,

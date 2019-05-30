@@ -23,7 +23,6 @@ class MasterUser < ApplicationRecord
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
-
   def phone_number_authentication
     phone_number_authentications.first
   end

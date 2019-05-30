@@ -110,8 +110,10 @@ RSpec.describe Admin::UsersController, type: :controller do
     let(:user) { FactoryBot.create(:user, registration_facility_id: facility.id) }
 
     before :each do
-      sms_notification_service = double(SmsNotificationService.new(user))
-      allow(SmsNotificationService).to receive(:new).with(user.phone_number).and_return(sms_notification_service)
+      sms_notification_service = double(SmsNotificationService.new(nil, nil))
+      allow(SmsNotificationService).to receive(:new)
+                                         .with(user.phone_number, ENV['TWILIO_PHONE_NUMBER'])
+                                         .and_return(sms_notification_service)
       expect(sms_notification_service).to receive(:send_request_otp_sms)
     end
 
