@@ -22,6 +22,7 @@ class MasterUser < ApplicationRecord
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
+
   def phone_number_authentication
     user_authentication_of_type(AUTHENTICATION_TYPES[:phone_number_authentication])
   end
@@ -29,6 +30,8 @@ class MasterUser < ApplicationRecord
   def registration_facility
     delegate_to_phone_number_authentication(:facility)
   end
+
+  alias_method :facility, :registration_facility
 
   def access_token
     delegate_to_phone_number_authentication(:access_token)

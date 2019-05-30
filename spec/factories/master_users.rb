@@ -33,5 +33,31 @@ FactoryBot.define do
     end
 
     factory :master_user_with_phone_number_authentication, traits: [:with_phone_number_authentication]
+
+    if FeatureToggle.enabled?('MASTER_USER_AUTHENTICATION')
+      factory :user, traits: [:with_phone_number_authentication] do
+        trait :with_sanitized_phone_number do
+          phone_number { rand(1e9...1e10).to_i.to_s }
+        end
+
+        trait :sync_requested do
+          sync_approval_status { MasterUser.sync_approval_statuses[:requested] }
+        end
+      end
+
+      factory :user_created_on_device, traits: [:with_phone_number_authentication]
+    end
   end
+end
+
+
+def register_user_request_params(arguments = {})
+  { id: SecureRandom.uuid,
+    full_name: Faker::Name.name,
+    phone_number: Faker::PhoneNumber.phone_number,
+    password_digest: BCrypt::Password.create("1234"),
+    registration_facility_id: SecureRandom.uuid,
+    created_at: Time.now.iso8601,
+    updated_at: Time.now.iso8601
+  }.merge(arguments)
 end

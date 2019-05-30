@@ -25,13 +25,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     describe 'registration payload is valid' do
       let(:facility) { FactoryBot.create(:facility) }
       let(:user_params) do
-        FactoryBot.attributes_for(:user)
-          .slice(:full_name, :phone_number)
-          .merge(id: SecureRandom.uuid,
-                 password_digest: BCrypt::Password.create("1234"),
-                 facility_ids: [facility.id],
-                 created_at: Time.now.iso8601,
-                 updated_at: Time.now.iso8601)
+        register_user_request_params(facility_ids: [facility.id]).except(:facility_id)
       end
       let(:phone_number) { user_params[:phone_number] }
       let(:password_digest) { user_params[:password_digest] }

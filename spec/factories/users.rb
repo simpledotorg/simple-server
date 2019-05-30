@@ -1,39 +1,41 @@
 FactoryBot.define do
-  factory :user do
-    full_name { Faker::Name.name }
-    phone_number { Faker::PhoneNumber.phone_number }
-    password { rand(1000..9999).to_s }
-    password_confirmation { password }
-    device_updated_at { Time.now }
-    device_created_at { Time.now }
-    sync_approval_status { User.sync_approval_statuses[:allowed] }
-    sync_approval_status_reason nil
-    facility
-
-    trait :created_on_device do
-      id { SecureRandom.uuid }
-      password_digest { BCrypt::Password.create(password) }
-      password nil
-      password_confirmation nil
-    end
-
-    trait :sync_allowed do
+  if !FeatureToggle.enabled?('MASTER_USER_AUTHENTICATION')
+    factory :user do
+      full_name { Faker::Name.name }
+      phone_number { Faker::PhoneNumber.phone_number }
+      password { rand(1000..9999).to_s }
+      password_confirmation { password }
+      device_updated_at { Time.now }
+      device_created_at { Time.now }
       sync_approval_status { User.sync_approval_statuses[:allowed] }
-    end
+      sync_approval_status_reason nil
+      facility
 
-    trait :sync_denied do
-      sync_approval_status { User.sync_approval_statuses[:denied] }
-    end
+      trait :created_on_device do
+        id { SecureRandom.uuid }
+        password_digest { BCrypt::Password.create(password) }
+        password nil
+        password_confirmation nil
+      end
 
-    trait :sync_requested do
-      sync_approval_status { User.sync_approval_statuses[:requested] }
-    end
+      trait :sync_allowed do
+        sync_approval_status { User.sync_approval_statuses[:allowed] }
+      end
 
-    trait(:with_sanitized_phone_number) do
-      phone_number { rand(1e9...1e10).to_i.to_s }
-    end
+      trait :sync_denied do
+        sync_approval_status { User.sync_approval_statuses[:denied] }
+      end
 
-    factory :user_created_on_device, traits: [:created_on_device]
+      trait :sync_requested do
+        sync_approval_status { User.sync_approval_statuses[:requested] }
+      end
+
+      trait(:with_sanitized_phone_number) do
+        phone_number { rand(1e9...1e10).to_i.to_s }
+      end
+
+      factory :user_created_on_device, traits: [:created_on_device]
+    end
   end
 end
 

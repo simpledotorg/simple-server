@@ -43,44 +43,26 @@ describe 'Users V2 API', swagger_doc: 'v2/swagger.json' do
       let(:phone_number) { Faker::PhoneNumber.phone_number }
 
       response '200', 'user is registered' do
-        let(:user) do
-          { user: FactoryBot.attributes_for(
-            :user_created_on_device,
-            registration_facility_id: facility.id).merge(created_at: Time.now, updated_at: Time.now)
-          }
-        end
+        let(:user) { { user: register_user_request_params(registration_facility_id: facility.id) } }
 
         schema Api::V2::Schema.user_registration_response
         run_test!
       end
 
       response '400', 'returns bad request for invalid params' do
-        let(:user) do
-          { user: FactoryBot.attributes_for(:user, :created_on_device)
-                    .merge(created_at: Time.now,
-                           updated_at: Time.now,
-                           registration_facility_id: facility.id, full_name: nil) }
-        end
+        let(:user) { { user: register_user_request_params(full_name: nil) } }
         run_test!
       end
 
       response '400', 'returns bad request if phone number already exists' do
         let(:used_phone_number) { Faker::PhoneNumber.phone_number }
         let!(:existing_user) { FactoryBot.create(:master_user, :with_phone_number_authentication, phone_number: used_phone_number) }
-        let(:user) do
-          { user: FactoryBot.attributes_for(:user, :created_on_device, phone_number: used_phone_number)
-                    .merge(created_at: Time.now,
-                           updated_at: Time.now,
-                           registration_facility_id: facility.id) }
-        end
+        let(:user) { { user: register_user_request_params(phone_number: used_phone_number, registration_facility_id: facility.id) } }
         run_test!
       end
 
       response '404', 'returns not found if  facility id is not known' do
-        let(:user) do
-          { user: FactoryBot.attributes_for(:user, :created_on_device, phone_number: phone_number)
-                    .merge(created_at: Time.now, updated_at: Time.now, registration_facility_id: SecureRandom.uuid) }
-        end
+        let(:user) { { user: register_user_request_params(phone_number: phone_number, registration_facility_id: SecureRandom.uuid) } }
         run_test!
       end
     end
