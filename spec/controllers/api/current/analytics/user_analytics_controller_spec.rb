@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::Current::Analytics::UserAnalyticsController, type: :controller do
-  let(:request_user) { create(:master_user, :with_phone_number_authentication) }
+  let(:request_user) { create(:user) }
   let(:request_facility) { request_user.registration_facility }
 
   before :each do

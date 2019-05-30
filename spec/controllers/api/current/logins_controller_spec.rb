@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Api::Current::LoginsController, type: :controller do
   describe '#login_user' do
     let(:password) { '1234' }
-    let!(:db_user) { create(:master_user, :with_phone_number_authentication, password: password) }
+    let!(:db_user) { create(:user, password: password) }
     describe 'request with valid phone number, password and otp' do
       let(:request_params) do
         { user:

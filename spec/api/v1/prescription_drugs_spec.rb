@@ -10,7 +10,7 @@ describe 'PrescriptionDrugs V1 API', swagger_doc: 'v1/swagger.json' do
       parameter name: :prescription_drugs, in: :body, schema: Api::V1::Schema.prescription_drug_sync_from_user_request
 
       response '200', 'blood pressures created' do
-        let(:request_user) { FactoryBot.create(:master_user, :with_phone_number_authentication) }
+        let(:request_user) { FactoryBot.create(:user) }
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
@@ -19,7 +19,7 @@ describe 'PrescriptionDrugs V1 API', swagger_doc: 'v1/swagger.json' do
       end
 
       response '200', 'some, or no errors were found' do
-        let(:request_user) { FactoryBot.create(:master_user, :with_phone_number_authentication) }
+        let(:request_user) { FactoryBot.create(:user) }
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
@@ -44,7 +44,7 @@ describe 'PrescriptionDrugs V1 API', swagger_doc: 'v1/swagger.json' do
       end
 
       response '200', 'blood pressures received' do
-        let(:request_user) { FactoryBot.create(:master_user, :with_phone_number_authentication) }
+        let(:request_user) { FactoryBot.create(:user) }
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 

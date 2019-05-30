@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::AppointmentsController, type: :controller do
-  let(:request_user) { create(:master_user, :with_phone_number_authentication) }
+  let(:request_user) { create(:user) }
 
   before :each do
     request.env['X_USER_ID'] = request_user.id
@@ -17,12 +17,12 @@ RSpec.describe Api::V1::AppointmentsController, type: :controller do
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
   def create_record(options = {})
-    facility = FactoryBot.create(:facility, facility_group: request_user.registration_facility.facility_group)
+    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
     FactoryBot.create(:appointment, options.merge(facility: facility))
   end
 
   def create_record_list(n, options = {})
-    facility = FactoryBot.create(:facility, facility_group: request_user.registration_facility.facility_group)
+    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
     FactoryBot.create_list(:appointment, n, options.merge(facility: facility))
   end
 
@@ -88,7 +88,7 @@ RSpec.describe Api::V1::AppointmentsController, type: :controller do
   end
 
   describe 'syncing within a facility group' do
-    let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_user.registration_facility.facility_group) }
+    let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
     let(:facility_in_another_group) { FactoryBot.create(:facility) }
 
     before :each do

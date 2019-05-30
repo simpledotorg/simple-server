@@ -1,7 +1,7 @@
 require 'swagger_helper'
 
 describe 'Login V1 API', swagger_doc: 'v1/swagger.json' do
-  let!(:db_user) { FactoryBot.create(:master_user, :with_phone_number_authentication, password: '1234') }
+  let!(:db_user) { FactoryBot.create(:user, password: '1234') }
 
   path '/login' do
     post 'Login in valid user' do
@@ -22,7 +22,7 @@ describe 'Login V1 API', swagger_doc: 'v1/swagger.json' do
 
       response '401', 'user is not logged in with expired otp' do
         let(:db_user) do
-          Timecop.freeze(Date.today - 30) { FactoryBot.create(:master_user, :with_phone_number_authentication, password: '1234') }
+          Timecop.freeze(Date.today - 30) { FactoryBot.create(:user, password: '1234') }
         end
         let(:user) do
           { user: { phone_number: db_user.phone_number,

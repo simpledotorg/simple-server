@@ -18,8 +18,8 @@ describe 'Analytics Current API', swagger_doc: 'current/swagger.json' do
       end
 
       response '200', 'JSON received' do
-        let(:request_user) { FactoryBot.create(:master_user, :with_phone_number_authentication) }
-        let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.registration_facility.facility_group) }
+        let(:request_user) { FactoryBot.create(:user) }
+        let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:HTTP_X_FACILITY_ID) { request_facility.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
@@ -47,8 +47,8 @@ describe 'Analytics Current API', swagger_doc: 'current/swagger.json' do
       end
 
       response '200', 'HTML received' do
-        let(:request_user) { FactoryBot.create(:master_user, :with_phone_number_authentication) }
-        let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.registration_facility.facility_group) }
+        let(:request_user) { FactoryBot.create(:user) }
+        let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:HTTP_X_FACILITY_ID) { request_facility.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }

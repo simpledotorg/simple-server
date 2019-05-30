@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::PatientsController, type: :controller do
-  let(:request_user) { create(:master_user, :with_phone_number_authentication) }
+  let(:request_user) { create(:user) }
 
   let(:model) { Patient }
 
@@ -17,12 +17,12 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
   it_behaves_like 'a working sync controller that short circuits disabled apis'
 
   def create_record(options = {})
-    facility = FactoryBot.create(:facility, facility_group: request_user.registration_facility.facility_group)
+    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
     FactoryBot.create(:patient, options.merge(registration_facility: facility))
   end
 
   def create_record_list(n, options = {})
-    facility = FactoryBot.create(:facility, facility_group: request_user.registration_facility.facility_group)
+    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
     FactoryBot.create_list(:patient, n, options.merge(registration_facility: facility))
   end
 
@@ -163,7 +163,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
     it_behaves_like 'a working V1 sync controller sending records'
 
     describe 'syncing within a facility group' do
-      let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_user.registration_facility.facility_group) }
+      let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
       let(:facility_in_another_group) { FactoryBot.create(:facility) }
 
       let(:patients_in_another_group) { FactoryBot.create_list(:patient, 5, registration_facility: facility_in_another_group, updated_at: 3.minutes.ago) }

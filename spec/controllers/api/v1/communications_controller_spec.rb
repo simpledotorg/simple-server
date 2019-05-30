@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::CommunicationsController, type: :controller do
-  let(:request_user) { create(:master_user, :with_phone_number_authentication) }
+  let(:request_user) { create(:user) }
 
   before :each do
     request.env['X_USER_ID'] = request_user.id

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::PrescriptionDrugsController, type: :controller do
-  let(:request_user) { create(:master_user, :with_phone_number_authentication) }
+  let(:request_user) { create(:user) }
   let(:model) { PrescriptionDrug }
 
   let(:build_payload) { lambda { build_prescription_drug_payload } }
@@ -11,12 +11,12 @@ RSpec.describe Api::V1::PrescriptionDrugsController, type: :controller do
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
   def create_record(options = {})
-    facility = FactoryBot.create(:facility, facility_group: request_user.registration_facility.facility_group)
+    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
     FactoryBot.create(:prescription_drug, options.merge(facility: facility))
   end
 
   def create_record_list(n, options = {})
-    facility = FactoryBot.create(:facility, facility_group: request_user.registration_facility.facility_group)
+    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
     FactoryBot.create_list(:prescription_drug, n, options.merge(facility: facility))
   end
 
@@ -53,7 +53,7 @@ RSpec.describe Api::V1::PrescriptionDrugsController, type: :controller do
     it_behaves_like 'a working V1 sync controller sending records'
 
     describe 'syncing within a facility group' do
-      let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_user.registration_facility.facility_group) }
+      let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
       let(:facility_in_another_group) { FactoryBot.create(:facility) }
 
       before :each do
