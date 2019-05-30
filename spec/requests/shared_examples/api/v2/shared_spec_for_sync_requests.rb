@@ -106,6 +106,16 @@ RSpec.shared_examples 'v2 API sync requests' do
       expect(parse_process_token(response_body)[:resync_token]).to eq(resync_token)
     end
 
+    it 'syncs normally once resync_token has been calibrated' do
+      get sync_route, params: { process_token: process_token_without_resync }, headers: headers_with_resync_token
+      process_token_with_resync = JSON(response.body)['process_token']
+
+      get sync_route, params: { process_token: process_token_with_resync }, headers: headers_with_resync_token
+      response_body = JSON(response.body)
+
+      expect(response_body[response_key].count).to eq(1)
+    end
+
     it 'syncs normally if resync_token in headers is the same as the one in process_token' do
       get sync_route, params: { process_token: process_token_without_resync }, headers: headers_with_resync_token
       process_token_with_resync = JSON(response.body)['process_token']
