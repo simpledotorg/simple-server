@@ -14,8 +14,9 @@ class MasterUser < ApplicationRecord
   has_many :user_authentications
   has_many :blood_pressures, foreign_key: 'user_id'
   has_many :patients, -> { distinct }, through: :blood_pressures
+  has_many :phone_number_authentications, through: :user_authentications, source: :authenticatable, source_type: 'PhoneNumberAuthentication'
 
-  has_many :registered_patients, class_name: "Patient", foreign_key: "registration_user_id"
+  has_many :registered_patients, class_name: "Patient", foreign_key: 'registration_user_id'
 
   validates :full_name, presence: true
 
@@ -24,7 +25,7 @@ class MasterUser < ApplicationRecord
 
 
   def phone_number_authentication
-    user_authentication_of_type(AUTHENTICATION_TYPES[:phone_number_authentication])
+    phone_number_authentications.first
   end
 
   def registration_facility

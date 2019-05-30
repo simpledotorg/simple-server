@@ -3,6 +3,7 @@ FactoryBot.define do
     transient do
       password { '1234' }
       registration_facility { create(:facility) }
+      registration_facility_id { registration_facility.id }
       phone_number { Faker::PhoneNumber.phone_number }
     end
 

@@ -2,7 +2,7 @@ class Admin::UsersController < AdminController
   before_action :set_user, except: [:index, :new, :create]
 
   def index
-    authorize User
+    authorize MasterUser
     @users_by_district = {}
     policy_scope(Facility).group_by(&:district).each do |district, facilities|
       @users_by_district[district] = facilities.map(&:users).flatten.sort_by do |user|
@@ -55,7 +55,7 @@ class Admin::UsersController < AdminController
   end
 
   def set_user
-    @user = User.find(params[:id] || params[:user_id])
+    @user = MasterUser.find(params[:id] || params[:user_id])
     authorize @user
   end
 
