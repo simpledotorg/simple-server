@@ -108,7 +108,9 @@ RSpec.shared_examples 'current API sync requests' do
 
     it 'syncs all records from beginning if resync_token in headers is different from the one in process_token' do
       get sync_route,
-          params: { process_token: process_token_without_resync.merge(resync_token: "2") },
+          params: { process_token: make_process_token(current_facility_processed_since: Time.now,
+                                                      other_facilities_processed_since: Time.now,
+                                                      resync_token: '2') },
           headers: headers_with_resync_token
       response_body = JSON(response.body)
 
