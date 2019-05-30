@@ -35,7 +35,7 @@ class Api::Current::UsersController < APIController
     user.save
 
     SmsNotificationService
-      .new(user.phone_number)
+      .new(user.phone_number, ENV['TWILIO_PHONE_NUMBER'])
       .send_request_otp_sms(user.otp) unless FeatureToggle.auto_approve_for_qa?
 
     head :ok
