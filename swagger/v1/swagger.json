@@ -1581,8 +1581,8 @@
         "communication_type": {
           "type": "string",
           "enum": [
-            "manual_call",
-            "voip_call"
+            "voip_call",
+            "manual_call"
           ]
         },
         "communication_result": {
