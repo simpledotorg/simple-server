@@ -197,7 +197,7 @@ Rails.application.routes.draw do
   end
 
   authenticate :admin, lambda(&:owner?) do
-    require 'sidekiq_unique_jobs/web'
+    require 'sidekiq/web'
     mount Sidekiq::Web => '/sidekiq'
   end
 end
