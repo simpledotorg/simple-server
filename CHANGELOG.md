@@ -6,6 +6,18 @@
 ### Removed 
 ### Security
 
+# 2019-05-30-1
+### Added
+- Add Twilio sub-account support
+- Add percentage symbol to BP header and values in Dashboard
+- Show enrolment date in overdue list download 
+### Changed
+### Fixed
+- Fixing formatting issues in overdue list dashboard view
+### Deprecated
+### Removed
+### Security
+
 # 2019-05-25-1
 ### Added
 ### Changed
