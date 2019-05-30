@@ -2,8 +2,6 @@ class AppointmentNotification::MissedVisitJob
   include Notifiable
   include Sidekiq::Worker
 
-  sidekiq_options lock: :until_executing, on_conflict: :log, lock_expiration: 1.hour.to_i
-
   def perform(user_id, schedule_hour_start, schedule_hour_finish)
     return unless FeatureToggle.enabled?('SMS_REMINDERS')
 
