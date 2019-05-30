@@ -23,7 +23,7 @@ class MasterUser < ApplicationRecord
   end
 
   def registration_facility_id
-    return nil unless phone_number_authentication.present?
+    return unless phone_number_authentication.present?
     phone_number_authentication.registration_facility_id
   end
 
