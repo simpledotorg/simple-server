@@ -231,7 +231,6 @@ ActiveRecord::Schema.define(version: 20190531064335) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
-    t.uuid "organization_id"
     t.string "user_type"
   end
 
@@ -392,8 +391,8 @@ ActiveRecord::Schema.define(version: 20190531064335) do
   create_table "user_permissions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id", null: false
     t.string "permission_slug"
-    t.string "resource_type", null: false
-    t.bigint "resource_id", null: false
+    t.string "resource_type"
+    t.uuid "resource_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"

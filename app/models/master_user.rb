@@ -22,8 +22,6 @@ class MasterUser < ApplicationRecord
   has_many :email_authentications, through: :user_authentications, source: :authenticatable, source_type: 'EmailAuthentication'
   has_many :user_permissions, foreign_key: :user_id
 
-  belongs_to :organization
-
   validates :full_name, presence: true
 
   validates :device_created_at, presence: true
