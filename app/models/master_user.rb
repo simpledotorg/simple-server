@@ -12,6 +12,7 @@ class MasterUser < ApplicationRecord
   }, _prefix: true
 
   has_many :user_authentications
+  has_many :email_authentications, through: :user_authentications, source: :authenticatable, source_type: 'EmailAuthentication'
   has_many :user_permissions
 
   validates :full_name, presence: true
