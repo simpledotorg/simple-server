@@ -42,6 +42,10 @@ class MasterUser < ApplicationRecord
     user_permissions.find_by(permission_slug: permission_slug, resource: resource).present?
   end
 
+  def has_permission?(permission_slug)
+    user_permissions.find_by(permission_slug: permission_slug).present?
+  end
+
   private
 
   def user_authentication_of_type(authenticatable_type)

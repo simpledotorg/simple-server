@@ -9,9 +9,10 @@ class ApplicationPolicy
   def user_has_any_permissions?(*permissions)
     permissions.any? do |permission|
       if permission.is_a?(Array)
-        return user.authorized?(permission.first, resource: permission.second)
+        user.authorized?(permission.first, resource: permission.second)
+      else
+        user.authorized?(permission)
       end
-      user.authorized?(permission)
     end
   end
 
