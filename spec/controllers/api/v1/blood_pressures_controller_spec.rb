@@ -2,17 +2,18 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::BloodPressuresController, type: :controller do
   let(:request_user) { FactoryBot.create(:user) }
+
   before :each do
-    request.env['X_USER_ID'] = request_user.id
+    request.env['HTTP_X_USER_ID'] = request_user.id
     request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
   end
 
   let(:model) { BloodPressure }
 
-  let(:build_payload) { lambda { build_blood_pressure_payload } }
+  let(:build_payload) { lambda { build_blood_pressure_payload_v1 } }
   let(:build_invalid_payload) { lambda { build_invalid_blood_pressure_payload } }
   let(:invalid_record) { build_invalid_payload.call }
-  let(:update_payload) { lambda { |blood_pressure| updated_blood_pressure_payload blood_pressure } }
+  let(:update_payload) { lambda { |blood_pressure| updated_blood_pressure_payload_v1 blood_pressure } }
   let(:number_of_schema_errors_in_invalid_payload) { 3 }
 
   def create_record(options = {})
@@ -31,23 +32,72 @@ RSpec.describe Api::V1::BloodPressuresController, type: :controller do
 
   describe 'POST sync: send data from device to server;' do
     it_behaves_like 'a working sync controller creating records'
-    it_behaves_like 'a working sync controller updating records'
+
+    describe 'updates records' do
+      it 'with updated record attributes' do
+        updated_records = create_record_list(1).map(&update_payload)
+        updated_payload = Hash['blood_pressures', updated_records]
+        post :sync_from_user, params: updated_payload, as: :json
+
+        updated_records.each do |record|
+          db_record = BloodPressure.find(record['id'])
+          expect(build_blood_pressure_payload_v1(db_record).with_int_timestamps)
+            .to eq(record.to_json_and_back.with_int_timestamps)
+        end
+      end
+    end
 
     describe 'creates new blood pressures' do
-      before :each do
-        request.env['HTTP_X_USER_ID'] = request_user.id
-        request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
-      end
-
       it 'creates new blood pressures with associated patient' do
         patient = FactoryBot.create(:patient)
         blood_pressures = (1..10).map do
-          build_blood_pressure_payload(FactoryBot.build(:blood_pressure, patient: patient))
+          build_blood_pressure_payload_v1(FactoryBot.build(:blood_pressure, patient: patient))
         end
         post(:sync_from_user, params: { blood_pressures: blood_pressures }, as: :json)
         expect(BloodPressure.count).to eq 10
         expect(patient.blood_pressures.count).to eq 10
         expect(response).to have_http_status(200)
+      end
+
+      it 'defaults recorded_at to device_created_at' do
+        blood_pressure = build_blood_pressure_payload_v1(FactoryBot.build(:blood_pressure))
+        post(:sync_from_user, params: { blood_pressures: [blood_pressure] }, as: :json)
+
+        blood_pressure_in_db = BloodPressure.find(blood_pressure['id'])
+        expect(blood_pressure_in_db.recorded_at).to eq(blood_pressure_in_db.device_created_at)
+      end
+
+      it "sets patient's recorded_at to bp's device_created_at if it is older than itself" do
+        patient = FactoryBot.create(:patient)
+        older_blood_pressure_recording_date = patient.device_created_at - 1.month
+        blood_pressure = build_blood_pressure_payload_v1(
+          FactoryBot.build(:blood_pressure,
+                           patient: patient,
+                           device_created_at: older_blood_pressure_recording_date))
+        post(:sync_from_user, params: { blood_pressures: [blood_pressure] }, as: :json)
+
+        patient.reload
+        blood_pressure_in_db = patient.blood_pressures.first
+        expect(patient.recorded_at).to eq(blood_pressure_in_db.device_created_at)
+      end
+
+      it "sets patient's recorded_at to their oldest bp's device_created_at" do
+        patient = FactoryBot.create(:patient)
+        one_month_ago = patient.device_created_at - 1.months
+        two_months_ago = patient.device_created_at - 2.months
+        blood_pressure_recorded_one_month_ago = build_blood_pressure_payload_v1(
+          FactoryBot.build(:blood_pressure,
+                           patient: patient,
+                           device_created_at: one_month_ago))
+        blood_pressure_recorded_two_months_ago = build_blood_pressure_payload_v1(
+          FactoryBot.build(:blood_pressure,
+                           patient: patient,
+                           device_created_at: two_months_ago))
+        post(:sync_from_user, params: { blood_pressures: [blood_pressure_recorded_two_months_ago] }, as: :json)
+        post(:sync_from_user, params: { blood_pressures: [blood_pressure_recorded_one_month_ago] }, as: :json)
+
+        patient.reload
+        expect(patient.recorded_at.to_i).to eq(two_months_ago.to_i)
       end
     end
   end

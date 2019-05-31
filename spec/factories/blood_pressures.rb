@@ -5,6 +5,7 @@ FactoryBot.define do
     diastolic { rand(60..140) }
     device_created_at { Time.now }
     device_updated_at { Time.now }
+    recorded_at { 1.month.ago }
     deleted_at { [nil, Time.now].sample }
     association :facility, strategy: :build
     association :patient, strategy: :build
@@ -33,8 +34,14 @@ FactoryBot.define do
 end
 
 def build_blood_pressure_payload(blood_pressure = FactoryBot.build(:blood_pressure))
-  blood_pressure.attributes.with_payload_keys
+  Api::Current::Transformer.to_response(blood_pressure).with_indifferent_access
 end
+
+def build_blood_pressure_payload_v2(blood_pressure = FactoryBot.build(:blood_pressure))
+  Api::V2::BloodPressureTransformer.to_response(blood_pressure).with_indifferent_access
+end
+
+alias build_blood_pressure_payload_v1 build_blood_pressure_payload_v2
 
 def build_invalid_blood_pressure_payload
   build_blood_pressure_payload.merge(
@@ -51,3 +58,10 @@ def updated_blood_pressure_payload(existing_blood_pressure)
     'systolic' => rand(80..240)
   )
 end
+
+def updated_blood_pressure_payload_v2(existing_blood_pressure)
+  updated_blood_pressure_payload(existing_blood_pressure)
+    .except('recorded_at')
+end
+
+alias updated_blood_pressure_payload_v1 updated_blood_pressure_payload_v2

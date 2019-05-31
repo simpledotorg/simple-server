@@ -46,6 +46,41 @@ RSpec.describe Api::Current::PatientsController, type: :controller do
         expect(response).to have_http_status(200)
       end
 
+      it 'sets the recorded_at sent in the params' do
+        time = Time.now
+        patient = FactoryBot.build(:patient, recorded_at: time)
+        patient_payload = build_patient_payload(patient)
+        post(:sync_from_user, params: { patients: [patient_payload] }, as: :json)
+
+        patient_in_db = Patient.find(patient.id)
+        expect(patient_in_db.recorded_at.to_i).to eq(time.to_i)
+      end
+
+      context 'recorded_at is not sent' do
+        it 'defaults recorded_at to device_created_at' do
+          patient = FactoryBot.build(:patient)
+          patient_payload = build_patient_payload(patient).except('recorded_at')
+          post(:sync_from_user, params: { patients: [patient_payload] }, as: :json)
+
+          patient_in_db = Patient.find(patient.id)
+          expect(patient_in_db.recorded_at.to_i).to eq(patient_in_db.device_created_at.to_i)
+        end
+
+        it "sets recorded_at to the earliest bp's recorded_at in case patient is synced later" do
+          patient = FactoryBot.build(:patient)
+          blood_pressure_recorded_at = 1.month.ago
+          FactoryBot.create(:blood_pressure,
+                            patient_id: patient.id,
+                            recorded_at: blood_pressure_recorded_at)
+
+          patient_payload = build_patient_payload(patient).except('recorded_at')
+          post :sync_from_user, params: { patients: [patient_payload] }, as: :json
+
+          patient_in_db = Patient.find(patient.id)
+          expect(patient_in_db.recorded_at.to_i).to eq(blood_pressure_recorded_at.to_i)
+        end
+      end
+
       it 'creates new patients without address' do
         post(:sync_from_user, params: { patients: [build_patient_payload.except('address')] }, as: :json)
         expect(Patient.count).to eq 1
@@ -265,7 +300,7 @@ RSpec.describe Api::Current::PatientsController, type: :controller do
         get :sync_to_user, params: { limit: 15 }
 
         response_patients = JSON(response.body)['patients']
-        response_ids = response_patients.map { |patient| patient['id']}.to_set
+        response_ids = response_patients.map { |patient| patient['id'] }.to_set
 
         expect(response_ids.count).to eq 10
         patients_in_another_group.map(&:id).each do |patient_in_another_group_id|

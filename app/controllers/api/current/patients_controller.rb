@@ -37,9 +37,8 @@ class Api::Current::PatientsController < Api::Current::SyncController
       { errors_hash: validator.errors_hash }
     else
       patients_params_with_metadata = single_patient_params.merge(metadata: metadata)
-      patient = MergePatientService.new(
-        Api::Current::PatientTransformer.from_nested_request(patients_params_with_metadata)
-      ).merge
+      transformed_params = Api::Current::PatientTransformer.from_nested_request(patients_params_with_metadata)
+      patient = MergePatientService.new(transformed_params).merge
       { record: patient }
     end
   end
@@ -65,6 +64,7 @@ class Api::Current::PatientsController < Api::Current::SyncController
         :date_of_birth,
         :created_at,
         :updated_at,
+        :recorded_at,
         phone_numbers: [permitted_phone_number_params],
         address: permitted_address_params,
         business_identifiers: [permitted_business_identifier_params]
