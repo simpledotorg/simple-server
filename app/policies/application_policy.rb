@@ -6,34 +6,6 @@ class ApplicationPolicy
     @record = record
   end
 
-  def index?
-    user.owner?
-  end
-
-  def show?
-    user.owner?
-  end
-
-  def create?
-    user.owner?
-  end
-
-  def new?
-    create?
-  end
-
-  def update?
-    user.owner?
-  end
-
-  def edit?
-    update?
-  end
-
-  def destroy?
-    user.owner?
-  end
-
   def user_has_any_permissions?(*permissions)
     permissions.any? do |permission|
       if permission.is_a?(Array)
