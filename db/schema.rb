@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190510143926) do
+ActiveRecord::Schema.define(version: 20190531045054) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -387,6 +387,18 @@ ActiveRecord::Schema.define(version: 20190510143926) do
     t.index ["master_user_id"], name: "index_user_authentications_on_master_user_id"
   end
 
+  create_table "user_permissions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.bigint "user_id"
+    t.string "permission_slug"
+    t.string "resource_type"
+    t.bigint "resource_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["resource_type", "resource_id"], name: "index_user_permissions_on_resource_type_and_resource_id"
+    t.index ["user_id"], name: "index_user_permissions_on_user_id"
+  end
+
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "full_name"
     t.string "phone_number"
@@ -409,7 +421,6 @@ ActiveRecord::Schema.define(version: 20190510143926) do
   end
 
   add_foreign_key "appointments", "facilities"
-  add_foreign_key "communications", "users"
   add_foreign_key "facilities", "facility_groups"
   add_foreign_key "facility_groups", "organizations"
   add_foreign_key "patient_phone_numbers", "patients"
