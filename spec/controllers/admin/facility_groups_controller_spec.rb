@@ -21,7 +21,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
 
   before do
     admin = create(:admin)
-    create(:user_permission, user: admin.master_user, permission_slug: :can_list_facility_groups_for_organization, resource: admin.master_user.organization )
+    create(:user_permission, user: admin.master_user, permission_slug: :can_manage_facility_groups_for_organization, resource: organization )
     sign_in(admin)
   end
 

@@ -34,6 +34,15 @@ class ApplicationPolicy
     user.owner?
   end
 
+  def user_has_any_permissions?(*permissions)
+    permissions.any? do |permission|
+      if permission.is_a?(Array)
+        return user.authorized?(permission.first, resource: permission.second)
+      end
+      user.authorized?(permission)
+    end
+  end
+
   class Scope
     attr_reader :user, :scope
 
@@ -44,6 +53,16 @@ class ApplicationPolicy
 
     def resolve
       scope.all
+    end
+
+    private
+
+    def resources_for_permission(permission_slug)
+      user.user_permissions
+        .where(permission_slug: permission_slug)
+        .includes(:resource)
+        .map(&:resource)
+        .compact
     end
   end
 end

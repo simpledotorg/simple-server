@@ -38,7 +38,7 @@ class MasterUser < ApplicationRecord
     phone_number_authentication.registration_facility_id
   end
 
-  def authorized?(permission_slug, resource)
+  def authorized?(permission_slug, resource: nil)
     user_permissions.find_by(permission_slug: permission_slug, resource: resource).present?
   end
 
