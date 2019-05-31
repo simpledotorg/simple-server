@@ -141,7 +141,7 @@ Rails.application.routes.draw do
     end
   end
 
-  devise_for :admins, controllers: { invitations: 'admins/invitations' }
+  devise_for :admins, class_name: 'EmailAuthentication', controllers: { invitations: 'admins/invitations' }
   resources :admins
 
   namespace :analytics do
