@@ -93,7 +93,7 @@ describe 'Users V2 API', swagger_doc: 'v2/swagger.json' do
       let!(:user) { FactoryBot.create(:user, registration_facility_id: facility.id) }
 
       before :each do
-        sms_notification_service = double(SmsNotificationService.new(nil))
+        sms_notification_service = double(SmsNotificationService.new(nil, nil))
         allow(SmsNotificationService).to receive(:new).and_return(sms_notification_service)
         allow(sms_notification_service).to receive(:send_request_otp_sms).and_return(true)
       end

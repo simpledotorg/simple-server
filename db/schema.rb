@@ -10,7 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190510143922) do
+ActiveRecord::Schema.define(version: 20190510143926) do
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "pgcrypto"
@@ -132,14 +133,12 @@ ActiveRecord::Schema.define(version: 20190510143922) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "caller_phone_number", null: false
-    t.uuid "user_id"
-    t.string "caller_phone_number"
-    t.index ["user_id"], name: "index_call_logs_on_user_id"
   end
 
   create_table "communications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "appointment_id", null: false
     t.uuid "user_id", null: false
+    t.string "communication_type"
     t.datetime "device_created_at", null: false
     t.datetime "device_updated_at", null: false
     t.datetime "created_at", null: false
@@ -147,11 +146,45 @@ ActiveRecord::Schema.define(version: 20190510143922) do
     t.datetime "deleted_at"
     t.string "detailable_type"
     t.bigint "detailable_id"
-    t.string "communication_type"
     t.index ["appointment_id"], name: "index_communications_on_appointment_id"
     t.index ["deleted_at"], name: "index_communications_on_deleted_at"
     t.index ["detailable_type", "detailable_id"], name: "index_communications_on_detailable_type_and_detailable_id"
     t.index ["user_id"], name: "index_communications_on_user_id"
+  end
+
+  create_table "email_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer "sign_in_count", default: 0, null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.inet "current_sign_in_ip"
+    t.inet "last_sign_in_ip"
+    t.integer "failed_attempts", default: 0, null: false
+    t.string "unlock_token"
+    t.datetime "locked_at"
+    t.string "invitation_token"
+    t.datetime "invitation_created_at"
+    t.datetime "invitation_sent_at"
+    t.datetime "invitation_accepted_at"
+    t.integer "invitation_limit"
+    t.uuid "invited_by_id"
+    t.string "invited_by_type"
+    t.integer "invitations_count", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_email_authentications_on_deleted_at"
+    t.index ["email"], name: "index_email_authentications_on_email", unique: true
+    t.index ["invitation_token"], name: "index_email_authentications_on_invitation_token", unique: true
+    t.index ["invitations_count"], name: "index_email_authentications_on_invitations_count"
+    t.index ["invited_by_id"], name: "index_email_authentications_on_invited_by_id"
+    t.index ["invited_by_type", "invited_by_id"], name: "index_email_authentications_invited_by"
+    t.index ["reset_password_token"], name: "index_email_authentications_on_reset_password_token", unique: true
+    t.index ["unlock_token"], name: "index_email_authentications_on_unlock_token", unique: true
   end
 
   create_table "facilities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -187,6 +220,17 @@ ActiveRecord::Schema.define(version: 20190510143922) do
     t.index ["deleted_at"], name: "index_facility_groups_on_deleted_at"
     t.index ["organization_id"], name: "index_facility_groups_on_organization_id"
     t.index ["slug"], name: "index_facility_groups_on_slug", unique: true
+  end
+
+  create_table "master_users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "full_name"
+    t.string "sync_approval_status", null: false
+    t.string "sync_approval_status_reason"
+    t.datetime "device_updated_at", null: false
+    t.datetime "device_created_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
   end
 
   create_table "medical_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -274,6 +318,19 @@ ActiveRecord::Schema.define(version: 20190510143922) do
     t.index ["registration_user_id"], name: "index_patients_on_registration_user_id"
   end
 
+  create_table "phone_number_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "phone_number", null: false
+    t.string "password_digest", null: false
+    t.string "otp", null: false
+    t.datetime "otp_valid_until", null: false
+    t.datetime "logged_in_at"
+    t.string "access_token", null: false
+    t.uuid "registration_facility_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+  end
+
   create_table "prescription_drugs", id: :uuid, default: nil, force: :cascade do |t|
     t.string "name", null: false
     t.string "rxnorm_code"
@@ -317,6 +374,17 @@ ActiveRecord::Schema.define(version: 20190510143922) do
     t.datetime "delivered_on"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "user_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "master_user_id"
+    t.string "authenticatable_type"
+    t.uuid "authenticatable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["master_user_id", "authenticatable_type", "authenticatable_id"], name: "user_authentications_master_users_authenticatable_uniq_index", unique: true
+    t.index ["master_user_id"], name: "index_user_authentications_on_master_user_id"
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
