@@ -6,6 +6,8 @@ FactoryBot.define do
     device_updated_at { Time.now }
 
     sync_approval_status { MasterUser.sync_approval_statuses[:requested] }
+    user_type { 'nurse' }
+    organization
 
     transient do
       email { Faker::Internet.email }

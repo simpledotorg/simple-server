@@ -1,6 +1,6 @@
 class FacilityGroupPolicy < ApplicationPolicy
   def index?
-    user.owner? || user.organization_owner?
+    user.authorized?(:can_list_facility_groups_for_organization, user.organization)
   end
 
   def show?
@@ -50,7 +50,7 @@ class FacilityGroupPolicy < ApplicationPolicy
     end
 
     def resolve
-      scope.where(id: @user.facility_groups.map(&:id))
+      scope.where(id: @user.organization.facility_groups.map(&:id))
     end
   end
 end

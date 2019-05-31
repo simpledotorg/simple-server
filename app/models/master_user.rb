@@ -11,9 +11,18 @@ class MasterUser < ApplicationRecord
     denied: 'denied'
   }, _prefix: true
 
+  enum user_type: {
+    nurse: 'nurse',
+    admin: 'admin',
+    analyst: 'analyst',
+    root: 'root'
+  }
+
   has_many :user_authentications
   has_many :email_authentications, through: :user_authentications, source: :authenticatable, source_type: 'EmailAuthentication'
-  has_many :user_permissions
+  has_many :user_permissions, foreign_key: :user_id
+
+  belongs_to :organization
 
   validates :full_name, presence: true
 
@@ -29,6 +38,10 @@ class MasterUser < ApplicationRecord
   def registration_facility_id
     return unless phone_number_authentication.present?
     phone_number_authentication.registration_facility_id
+  end
+
+  def authorized?(permission_slug, resource)
+    user_permissions.find_by(permission_slug: permission_slug, resource: resource).present?
   end
 
   private

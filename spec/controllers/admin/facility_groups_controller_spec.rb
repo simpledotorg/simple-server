@@ -20,7 +20,9 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
   }
 
   before do
-    sign_in(create(:admin))
+    admin = create(:admin)
+    create(:user_permission, user: admin.master_user, permission_slug: :can_list_facility_groups_for_organization, resource: admin.master_user.organization )
+    sign_in(admin)
   end
 
   describe 'GET #index' do
