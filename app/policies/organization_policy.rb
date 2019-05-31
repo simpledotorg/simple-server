@@ -1,10 +1,21 @@
 class OrganizationPolicy < ApplicationPolicy
   def index?
-    user.owner? || user.organization_owner?
+    user_has_any_permissions?(:can_manage_all_organizations)
   end
 
   def show?
-    user.owner? || admin_can_access?(:organization_owner)
+    user_has_any_permissions?(
+      :can_manage_all_organizations,
+      [:can_manage_an_organization, record]
+    )
+  end
+
+  def create?
+    user_has_any_permissions?(:can_manage_all_organizations)
+  end
+
+  def new?
+    create?
   end
 
   def update?
@@ -16,7 +27,7 @@ class OrganizationPolicy < ApplicationPolicy
   end
 
   def destroy?
-    destroyable? && user.owner?
+    destroyable? && user_has_any_permissions?(:can_manage_all_organizations)
   end
 
   private
@@ -25,11 +36,7 @@ class OrganizationPolicy < ApplicationPolicy
     record.facility_groups.none?
   end
 
-  def admin_can_access?(role)
-    user.role == role.to_s && user.organizations.include?(record)
-  end
-
-  class Scope
+  class Scope < Scope
     attr_reader :user, :scope
 
     def initialize(user, scope)
@@ -38,7 +45,13 @@ class OrganizationPolicy < ApplicationPolicy
     end
 
     def resolve
-      scope.where(id: @user.organizations.map(&:id))
+      if user.has_permission?(:can_manage_all_organizations)
+        scope.all
+      elsif user.has_permission?(:can_manage_an_organization)
+        scope.where(id: resources_for_permission(:can_manage_an_organization).map(&:id))
+      else
+        scope.none
+      end
     end
   end
 end

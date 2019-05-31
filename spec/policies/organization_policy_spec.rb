@@ -1,80 +1,62 @@
-require "rails_helper"
+require 'rails_helper'
 
 RSpec.describe OrganizationPolicy do
   subject { described_class }
 
-  let(:organization) { FactoryBot.create(:organization) }
+  let(:organization_1) { FactoryBot.create(:organization) }
+  let(:organization_2) { FactoryBot.create(:organization) }
 
-  let(:owner) { create(:admin, :owner) }
-  let(:organization_owner) { FactoryBot.create(:admin, :organization_owner, admin_access_controls: [AdminAccessControl.new(access_controllable: organization)]) }
-  let(:supervisor) { FactoryBot.create(:admin, :supervisor) }
-  let(:analyst) { create(:admin, :analyst) }
-
-  permissions :index? do
-    it "permits owners" do
-      expect(subject).to permit(owner, Organization)
-    end
-
-    it "permits organization owners" do
-      expect(subject).to permit(organization_owner, Organization)
-    end
-
-    it "denies supervisors" do
-      expect(subject).not_to permit(supervisor, Organization)
-    end
-
-    it "denies analysts" do
-      expect(subject).not_to permit(analyst, Organization)
-    end
+  let(:user_can_manage_all_organizations) do
+    user = create(:master_user)
+    create(:user_permission, user: user, permission_slug: :can_manage_all_organizations, resource: nil)
+    user
   end
 
-  permissions :show?, :new?, :create?, :update?, :edit? do
-    it "permits owners" do
-      expect(subject).to permit(owner, Organization)
+  let(:user_can_manage_an_organization) do
+    user = create(:master_user)
+    create(:user_permission, user: user, permission_slug: :can_manage_an_organization, resource: organization_1)
+    user
+  end
+
+  let(:other_user) { create(:master_user) }
+
+  permissions :index?, :new?, :create? do
+    it 'permits users who can manage all organizations' do
+      expect(subject).to permit(user_can_manage_all_organizations, Organization)
     end
 
-    it "denies supervisors" do
-      expect(subject).not_to permit(supervisor, Organization)
-    end
-
-    it "denies analysts" do
-      expect(subject).not_to permit(analyst, Organization)
+    it 'denies other users' do
+      expect(subject).not_to permit(other_user, Organization)
     end
   end
 
   permissions :show?, :update?, :edit? do
-    it "permits organization owners only for their organizations" do
-      other_organization = FactoryBot.create(:organization)
-      expect(subject).to permit(organization_owner, organization)
-      expect(subject).not_to permit(organization_owner, other_organization)
+    it 'permits users who can manage all organizations' do
+      expect(subject).to permit(user_can_manage_all_organizations, organization_1)
+      expect(subject).to permit(user_can_manage_all_organizations, organization_2)
+    end
+
+    it 'permits users who have permission to manage an organization' do
+      expect(subject).to permit(user_can_manage_an_organization, organization_1)
+    end
+
+    it 'denies users who have permission to manage an organization for other organizations' do
+      expect(subject).not_to permit(user_can_manage_an_organization, organization_2)
+    end
+
+    it 'denies other users' do
+      expect(subject).not_to permit(other_user, organization_1)
+      expect(subject).not_to permit(other_user, organization_2)
     end
   end
 
   permissions :destroy? do
-    it "permits owners" do
-      expect(subject).to permit(owner, organization)
+    it 'permits users with permission to manage all organizations' do
+      expect(subject).to permit(user_can_manage_all_organizations, organization_1)
     end
 
-    it "denies organization owners" do
-      expect(subject).not_to permit(organization_owner, organization)
-    end
-
-    it "denies supervisors" do
-      expect(subject).not_to permit(supervisor, organization)
-    end
-
-    it "denies analysts" do
-      expect(subject).not_to permit(analyst, organization)
-    end
-
-    context "with associated facility_groups" do
-      before do
-        create(:facility_group, organization: organization)
-      end
-
-      it "denies everyone" do
-        expect(subject).not_to permit(owner, organization)
-      end
+    it 'denies other users' do
+      expect(subject).not_to permit(other_user, organization_1)
     end
   end
 end
@@ -83,51 +65,41 @@ RSpec.describe OrganizationPolicy::Scope do
   let(:subject) { described_class }
   let(:organization_1) { create(:organization) }
   let(:organization_2) { create(:organization) }
+  let(:organization_3) { create(:organization) }
 
-  let(:facility_group_1) { create(:facility_group, organization: organization_1) }
-  let(:facility_group_2) { create(:facility_group, organization: organization_2) }
+  let(:user_can_manage_all_organizations) do
+    user = create(:master_user)
+    create(:user_permission, user: user, permission_slug: :can_manage_all_organizations, resource: nil)
+    user
+  end
 
-  describe "owner" do
-    let(:owner) { create(:admin, :owner) }
-    it "resolves all organizations" do
-      resolved_records = subject.new(owner, Organization.all).resolve
+  let(:user_can_manage_an_organization) do
+    user = create(:master_user)
+    create(:user_permission, user: user, permission_slug: :can_manage_an_organization, resource: organization_1)
+    create(:user_permission, user: user, permission_slug: :can_manage_an_organization, resource: organization_2)
+    user
+  end
+
+  let(:other_user) { create(:master_user) }
+
+  context 'user has permission to manage all organizations' do
+    it 'resolves all organizations' do
+      resolved_records = subject.new(user_can_manage_all_organizations, Organization.all).resolve
       expect(resolved_records.to_a).to match_array(Organization.all.to_a)
     end
   end
 
-  describe "organization owner" do
-    let(:organization_owner) {
-      create(:admin,
-             :organization_owner,
-             admin_access_controls: [AdminAccessControl.new(access_controllable: organization_1)]
-      ) }
-    it "resolves their organizations" do
-      resolved_records = subject.new(organization_owner, Organization.all).resolve
-      expect(resolved_records).to match_array([organization_1])
+  context 'user has permission to manage an organizations' do
+    it 'resolves to a list of organizations they have permission to manage' do
+      resolved_records = subject.new(user_can_manage_an_organization, Organization.all).resolve
+      expect(resolved_records.to_a).to match_array([organization_1, organization_2])
     end
   end
 
-  describe "supervisor" do
-    let(:supervisor) {
-      create(:admin,
-             :supervisor,
-             admin_access_controls: [AdminAccessControl.new(access_controllable: facility_group_1)])
-    }
-    it "resolves their organization" do
-      resolved_records = subject.new(supervisor, Organization.all).resolve
-      expect(resolved_records).to match_array([organization_1])
-    end
-  end
-
-  describe "analyst" do
-    let(:analyst) {
-      create(:admin,
-             :analyst,
-             admin_access_controls: [AdminAccessControl.new(access_controllable: facility_group_1)])
-    }
-    it "resolves their organization" do
-      resolved_records = subject.new(analyst, Organization.all).resolve
-      expect(resolved_records).to match_array([organization_1])
+  context 'other users' do
+    it 'resolves to an collection' do
+      resolved_records = subject.new(other_user, Organization.all).resolve
+      expect(resolved_records.to_a).to be_empty
     end
   end
 end
