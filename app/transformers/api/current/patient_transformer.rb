@@ -1,5 +1,11 @@
 class Api::Current::PatientTransformer
   class << self
+    #
+    # We set the recorded_at if it's available (the app supports retroactive data-entry)
+    # If it's unavailable, we pick the earlier of the following:
+    #   1. Patient's earliest recorded blood pressure
+    #   2. Patient's device_created_at
+    #
     def recorded_at(patient_params)
       return patient_params['recorded_at'] if patient_params['recorded_at'].present?
 
