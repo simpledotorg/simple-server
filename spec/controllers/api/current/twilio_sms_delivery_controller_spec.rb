@@ -91,5 +91,26 @@ RSpec.describe Api::Current::TwilioSmsDeliveryController, type: :controller do
         expect(TwilioSmsDeliveryDetail.count).to be(0)
       end
     end
+
+    context ':not_found' do
+      it 'returns a 404 when the twilio session id is not found' do
+        existing_session_id = SecureRandom.uuid
+        new_session_id = SecureRandom.uuid
+        create(:twilio_sms_delivery_detail,
+               session_id: existing_session_id,
+               result: 'sent')
+        params = base_callback_params.merge('SmsSid' => new_session_id,
+                                            'SmsStatus' => 'delivered')
+
+        set_twilio_signature_header(callback_url, params)
+        post :create, params: params
+
+        expect(response).to have_http_status(404)
+
+        twilio_sms_delivery_detail = TwilioSmsDeliveryDetail.find_by_session_id(existing_session_id)
+        expect(twilio_sms_delivery_detail.result).to eq('sent')
+        expect(twilio_sms_delivery_detail.delivered_on).to be_nil
+      end
+    end
   end
 end

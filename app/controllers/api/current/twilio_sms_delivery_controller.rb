@@ -3,8 +3,14 @@ class Api::Current::TwilioSmsDeliveryController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def create
-    TwilioSmsDeliveryDetail.where(session_id: params['SmsSid']).first.update(update_params)
-    head :ok
+    existing_session = TwilioSmsDeliveryDetail.where(session_id: params['SmsSid'])
+
+    if existing_session.blank?
+      head :not_found
+    else
+      existing_session.first.update(update_params)
+      head :ok
+    end
   end
 
   private
