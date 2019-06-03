@@ -35,6 +35,6 @@ class AppointmentNotificationService < Struct.new(:user)
   def eligible_for_sending_sms?(appointment, communication_type)
     facility_eligible?(appointment.facility_id, 'APPOINTMENT_NOTIFICATION_FACILITY_IDS') &&
       (not appointment.previously_communicated_via?(communication_type)) &&
-      appointment.patient.phone_number?
+      appointment.patient&.phone_number?
   end
 end
