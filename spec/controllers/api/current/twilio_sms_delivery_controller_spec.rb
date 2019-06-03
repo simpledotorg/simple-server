@@ -107,6 +107,7 @@ RSpec.describe Api::Current::TwilioSmsDeliveryController, type: :controller do
 
         expect(response).to have_http_status(404)
 
+        twilio_sms_delivery_detail = TwilioSmsDeliveryDetail.find_by_session_id(existing_session_id)
         expect(twilio_sms_delivery_detail.result).to eq('sent')
         expect(twilio_sms_delivery_detail.delivered_on).to be_nil
       end

@@ -4,6 +4,7 @@ class Api::Current::TwilioSmsDeliveryController < ApplicationController
 
   def create
     existing_session = TwilioSmsDeliveryDetail.where(session_id: params['SmsSid'])
+
     if existing_session.blank?
       head :not_found
     else
