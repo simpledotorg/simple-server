@@ -35,7 +35,7 @@ class Analytics::FacilitiesController < AnalyticsController
   end
 
   def users_for_facility
-    MasterUser.joins(:blood_pressures).where('blood_pressures.facility_id = ?', @facility.id).order(:full_name).distinct
+    User.joins(:blood_pressures).where('blood_pressures.facility_id = ?', @facility.id).order(:full_name).distinct
   end
 
   def user_analytics

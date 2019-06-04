@@ -4,7 +4,7 @@ class Api::V1::PatientsController < Api::V2::PatientsController
 
   def metadata
     { registration_user_id: current_user.id,
-      registration_facility_id: current_facility&.id || current_user.registration_facility.id }
+      registration_facility_id: current_facility&.id || current_user.facility.id }
   end
 
   def transform_to_response(patient)

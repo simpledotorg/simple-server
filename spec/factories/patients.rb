@@ -20,7 +20,7 @@ FactoryBot.define do
     association :address, strategy: :build
     phone_numbers { build_list(:patient_phone_number, rand(1..3), patient_id: id) }
     association :registration_facility, factory: :facility
-    association :registration_user, factory: :master_user_with_phone_number_authentication
+    association :registration_user, factory: :user_created_on_device
     business_identifiers { build_list(:patient_business_identifier, 1, patient_id: id) }
 
     trait(:with_sanitized_phone_number) do

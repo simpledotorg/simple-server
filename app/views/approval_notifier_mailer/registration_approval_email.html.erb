@@ -29,11 +29,11 @@
 
 <p>
   <strong><%= t('registration_approval_email.accessible_facilities') %>:</strong>
-<ul>
-  <% @user.facility_group.facilities.each do |facility| %>
-    <li><%= facility.name %></li>
-  <% end %>
-</ul>
+  <ul>
+    <% @user.facility_group.facilities.each do |facility| %>
+      <li><%= facility.name %></li>
+    <% end %>
+  </ul>
 </p>
 
 <%= link_to t('registration_approval_email.allow_or_deny_access'), admin_user_url(@user) %>

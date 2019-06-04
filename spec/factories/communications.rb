@@ -2,7 +2,7 @@ FactoryBot.define do
   factory :communication do
     id { SecureRandom.uuid }
     appointment
-    association :user, factory: :master_user_with_phone_number_authentication
+    user
     communication_type { :manual_call }
     device_created_at { Time.now }
     device_updated_at { Time.now }

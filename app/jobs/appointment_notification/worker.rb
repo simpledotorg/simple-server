@@ -8,7 +8,7 @@ class AppointmentNotification::Worker
 
       begin
         sms_response = send_sms(appointment, communication_type)
-        Communication.create_with_twilio_details!(user: MasterUser.find(user_id),
+        Communication.create_with_twilio_details!(user: User.find(user_id),
                                                   appointment: appointment,
                                                   twilio_sid: sms_response.sid,
                                                   twilio_msg_status: sms_response.status,
