@@ -105,6 +105,7 @@ namespace :data_migration do
           :password_digest,
           :otp,
           :otp_valid_until,
+          :registration_facility_id,
           :logged_in_at,
           :access_token,
           :created_at,
