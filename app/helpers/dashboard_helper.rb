@@ -36,7 +36,7 @@ module DashboardHelper
   end
 
   def string_for_range(from_time, to_time)
-    if from_time.to_date == 90.days.ago.to_date
+    if from_time.to_date == 91.days.ago.to_date
       t('analytics.last_90_days')
     else
       label_for_quarter({ from_time: from_time, to_time: to_time })
