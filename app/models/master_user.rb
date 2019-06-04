@@ -134,6 +134,10 @@ class MasterUser < ApplicationRecord
     end
   end
 
+  def self.requested_sync_approval
+    where(sync_approval_status: :requested)
+  end
+
   private
 
   def delegate_to_phone_number_authentication(method)
@@ -145,3 +149,5 @@ class MasterUser < ApplicationRecord
     user_authentications.find_by(authenticatable_type: authenticatable_type).authenticatable
   end
 end
+
+User = MasterUser

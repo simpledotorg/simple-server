@@ -42,7 +42,7 @@ class MasterUserPolicy < ApplicationPolicy
     def resolve
       # facilities = @user.facility_groups.flat_map(&:facilities)
       # scope.where(facility: facilities)
-      scope
+      scope.all
     end
   end
 end

@@ -5,13 +5,8 @@ class Api::Current::LoginsController < APIController
   before_action :validate_login_payload, only: %i[create]
 
   def login_user
-    if FeatureToggle.enabled?('MASTER_USER_AUTHENTICATION')
-      authentication = PhoneNumberAuthentication.find_by(phone_number: login_params[:phone_number])
-      user = authentication.try(:master_user)
-    else
-      authentication = User.find_by(phone_number: login_params[:phone_number])
-      user = authentication
-    end
+    authentication = PhoneNumberAuthentication.find_by(phone_number: login_params[:phone_number])
+    user = authentication.try(:master_user)
 
     errors = errors_in_user_login(authentication)
 
