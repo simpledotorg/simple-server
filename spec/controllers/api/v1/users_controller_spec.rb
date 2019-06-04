@@ -134,7 +134,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
     it "updates the user otp and sends an sms to the user's phone number with the new otp" do
       existing_otp = user.otp
-      sms_notification_service = double(SmsNotificationService.new(nil))
+      sms_notification_service = double(SmsNotificationService.new(nil, nil))
       expect(SmsNotificationService).to receive(:new).and_return(sms_notification_service)
       expect(sms_notification_service).to receive(:send_request_otp_sms).and_return(true)
 

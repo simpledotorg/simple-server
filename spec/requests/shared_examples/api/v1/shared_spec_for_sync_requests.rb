@@ -2,9 +2,9 @@ require 'rails_helper'
 
 RSpec.shared_examples 'sync requests' do
   let(:auth_headers) do
-    {'HTTP_X_USER_ID' => request_user.id,
-     'HTTP_X_FACILITY_ID' => request_user.facility.id,
-     'HTTP_AUTHORIZATION' => "Bearer #{request_user.access_token}" }
+    { 'HTTP_X_USER_ID' => request_user.id,
+      'HTTP_X_FACILITY_ID' => request_user.facility.id,
+      'HTTP_AUTHORIZATION' => "Bearer #{request_user.access_token}" }
   end
   let(:headers) do
     { 'ACCEPT' => 'application/json', 'CONTENT_TYPE' => 'application/json' }.merge(auth_headers)
@@ -12,7 +12,7 @@ RSpec.shared_examples 'sync requests' do
 
   let(:response_key) { model.to_s.underscore.pluralize }
   let(:empty_payload) { Hash[response_key.to_sym, []] }
-  let(:valid_payload) { Hash[response_key.to_sym, [build_payload.call]]}
+  let(:valid_payload) { Hash[response_key.to_sym, [build_payload.call]] }
   let(:created_records) { (1..10).map { build_payload.call } }
   let(:many_valid_records) { Hash[response_key.to_sym, created_records] }
   let(:expected_response) do
@@ -42,8 +42,8 @@ RSpec.shared_examples 'sync requests' do
 
     expect(received_records.to_set)
       .to include model.updated_on_server_since(processed_since.to_time)
-               .map { |record| to_response(record) }
-               .to_set
+                    .map { |record| to_response(record) }
+                    .to_set
   end
 
   it 'pushes nothing, pulls nothing' do
