@@ -3,6 +3,7 @@ FactoryBot.define do
     transient do
       password { '1234' }
       registration_facility { create(:facility) }
+      facility { registration_facility }
       registration_facility_id { registration_facility.id }
       phone_number { Faker::PhoneNumber.phone_number }
     end
@@ -23,7 +24,7 @@ FactoryBot.define do
           :phone_number_authentication,
           phone_number: options.phone_number,
           password: options.password,
-          facility: options.registration_facility,
+          facility: options.registration_facility || options.facility,
         )
         master_user.user_authentications = [
           UserAuthentication.new(authenticatable: phone_number_authentication)
@@ -37,15 +38,24 @@ FactoryBot.define do
 
     if FeatureToggle.enabled?('MASTER_USER_AUTHENTICATION')
       factory :user, traits: [:with_phone_number_authentication] do
+
         trait :with_sanitized_phone_number do
           phone_number { rand(1e9...1e10).to_i.to_s }
         end
 
-        trait :created_on_device
-
         trait :sync_requested do
           sync_approval_status { MasterUser.sync_approval_statuses[:requested] }
         end
+
+        trait :sync_allowed do
+          sync_approval_status { MasterUser.sync_approval_statuses[:allowed] }
+        end
+
+        trait :sync_denied do
+          sync_approval_status { MasterUser.sync_approval_statuses[:denied] }
+        end
+
+        trait :created_on_device
       end
 
       factory :user_created_on_device, traits: [:with_phone_number_authentication]

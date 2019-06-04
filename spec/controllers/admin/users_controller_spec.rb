@@ -6,7 +6,7 @@ def login_user
   sign_in admin
 end
 
-RSpec.describe Admin::UsersController, type: :controller do
+RSpec.xdescribe Admin::UsersController, type: :controller do
 
   # This should return the minimal set of attributes required to create a valid
   # User. As you add validations to User, be sure to

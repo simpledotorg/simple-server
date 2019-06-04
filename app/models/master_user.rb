@@ -77,6 +77,10 @@ class MasterUser < ApplicationRecord
     delegate_to_phone_number_authentication(:organization)
   end
 
+  def password_digest
+    delegate_to_phone_number_authentication(:password_digest)
+  end
+
   def self.build_with_phone_number_authentication(params)
     phone_number_authentication = PhoneNumberAuthentication.new(
       phone_number: params[:phone_number],
