@@ -84,7 +84,7 @@ namespace :data_migration do
 
   desc "Create master users for users"
   task create_master_users_for_users: :environment do
-    User.all.each do |user|
+    User.where.not(sync_approval_status: nil).all.each do |user|
       next if MasterUser.find_by(id: user.id).present?
       user.transaction do
         user_attributes = user.attributes.with_indifferent_access
@@ -112,7 +112,7 @@ namespace :data_migration do
           :deleted_at
         ))
 
-        master_user.master_user_authentications.create(
+        master_user.user_authentications.create(
           authenticatable: phone_number_authentication
         )
       end
@@ -149,7 +149,7 @@ namespace :data_migration do
 
         email_authentication.save(validate: false)
 
-        master_user.master_user_authentications.create(
+        master_user.user_authentications.create(
           authenticatable: email_authentication
         )
       end
