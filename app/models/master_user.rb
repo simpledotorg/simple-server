@@ -23,12 +23,20 @@ class MasterUser < ApplicationRecord
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
+  delegate :registration_facility,
+           :access_token,
+           :logged_in_at,
+           :has_never_logged_in?,
+           :mark_as_logged_in,
+           :phone_number,
+           :otp,
+           :otp_valid?,
+           :facility_group,
+           :organization,
+           :password_digest, to: :phone_number_authentication, allow_nil: true
+
   def phone_number_authentication
     phone_number_authentications.first
-  end
-
-  def registration_facility
-    delegate_to_phone_number_authentication(:facility)
   end
 
   def registration_facility_id
@@ -37,48 +45,8 @@ class MasterUser < ApplicationRecord
 
   alias_method :facility, :registration_facility
 
-  def access_token
-    delegate_to_phone_number_authentication(:access_token)
-  end
-
   def access_token_valid?
     self.sync_approval_status_allowed?
-  end
-
-  def logged_in_at
-    delegate_to_phone_number_authentication(:logged_in_at)
-  end
-
-  def has_never_logged_in?
-    delegate_to_phone_number_authentication(:has_never_logged_in?)
-  end
-
-  def mark_as_logged_in
-    delegate_to_phone_number_authentication(:mark_as_logged_in)
-  end
-
-  def phone_number
-    delegate_to_phone_number_authentication(:phone_number)
-  end
-
-  def otp
-    delegate_to_phone_number_authentication(:otp)
-  end
-
-  def otp_valid?
-    delegate_to_phone_number_authentication(:otp_valid?)
-  end
-
-  def facility_group
-    delegate_to_phone_number_authentication(:facility_group)
-  end
-
-  def organization
-    delegate_to_phone_number_authentication(:organization)
-  end
-
-  def password_digest
-    delegate_to_phone_number_authentication(:password_digest)
   end
 
   def self.build_with_phone_number_authentication(params)
@@ -105,7 +73,7 @@ class MasterUser < ApplicationRecord
       )
     ]
 
-    { master_user: master_user, phone_number_authentication: phone_number_authentication}
+    { master_user: master_user, phone_number_authentication: phone_number_authentication }
   end
 
   def sync_approval_denied(reason = "")

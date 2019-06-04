@@ -13,6 +13,8 @@ class PhoneNumberAuthentication < ApplicationRecord
   validates :password, allow_blank: true, length: { is: 4 }, format: { with: /[0-9]/, message: 'only allows numbers' }
   validate :presence_of_password
 
+  alias_method :registration_facility, :facility
+
   def presence_of_password
     unless password_digest.present? || password.present?
       errors.add(:password, 'Either password_digest or password should be present')
