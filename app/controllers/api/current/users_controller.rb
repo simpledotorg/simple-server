@@ -5,12 +5,13 @@ class Api::Current::UsersController < APIController
   before_action :validate_registration_payload, only: %i[register]
 
   def register
-    result = MasterUser.build_with_phone_number_authentication(user_from_request)
-    user = result[:master_user]
-    phone_number_authentication = result[:phone_number_authentication]
-    registration_facility = phone_number_authentication.facility
-    return head :not_found unless registration_facility.present?
-    return render json: { errors: user.errors }, status: :bad_request if (user.invalid? || phone_number_authentication.invalid?)
+    user = MasterUser.build_with_phone_number_authentication(user_from_request)
+    return head :not_found unless user.registration_facility.present?
+
+    if user.invalid? || user.phone_number_authentication.invalid?
+      return render json: { errors: user.errors }, status: :bad_request
+    end
+
     send_approval_notification_email(user)
 
     render json: {

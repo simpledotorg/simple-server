@@ -66,14 +66,8 @@ class MasterUser < ApplicationRecord
     )
     master_user.sync_approval_requested(I18n.t('registration'))
 
-    master_user.user_authentications = [
-      UserAuthentication.new(
-        master_user: master_user,
-        authenticatable: phone_number_authentication
-      )
-    ]
-
-    { master_user: master_user, phone_number_authentication: phone_number_authentication }
+    master_user.phone_number_authentications = [phone_number_authentication]
+    master_user
   end
 
   def sync_approval_denied(reason = "")
