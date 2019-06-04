@@ -70,6 +70,15 @@ class MasterUser < ApplicationRecord
     master_user
   end
 
+  def update_with_phone_number_authentication(params)
+    user_params = params.slice(:full_name, :sync_approval_status, :sync_approval_status_reason)
+    phone_number_authentication_params = params.slice(:phone_number, :password, :password_digest, :registration_facility_id)
+
+    transaction do
+      update(user_params) && phone_number_authentication.update(phone_number_authentication_params)
+    end
+  end
+
   def sync_approval_denied(reason = "")
     self.sync_approval_status = :denied
     self.sync_approval_status_reason = reason

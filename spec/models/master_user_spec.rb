@@ -62,4 +62,8 @@ RSpec.describe MasterUser, type: :model do
       end
     end
   end
+
+  xdescribe '.update_with_phone_number_authentication' do
+
+  end
 end

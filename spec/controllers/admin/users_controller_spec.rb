@@ -6,7 +6,7 @@ def login_user
   sign_in admin
 end
 
-RSpec.xdescribe Admin::UsersController, type: :controller do
+RSpec.describe Admin::UsersController, type: :controller do
 
   # This should return the minimal set of attributes required to create a valid
   # User. As you add validations to User, be sure to
@@ -31,7 +31,7 @@ RSpec.xdescribe Admin::UsersController, type: :controller do
 
   describe 'GET #index' do
     it 'returns a success response' do
-      user = User.create! valid_attributes
+      user = create(:user)
       get :index, params: { facility_id: facility.id }
       expect(response).to be_success
     end
@@ -39,7 +39,7 @@ RSpec.xdescribe Admin::UsersController, type: :controller do
 
   describe 'GET #show' do
     it 'returns a success response' do
-      user = User.create! valid_attributes
+      user = create(:user)
       get :show, params: { id: user.to_param, facility_id: facility.id }
       expect(response).to be_success
     end
@@ -47,7 +47,7 @@ RSpec.xdescribe Admin::UsersController, type: :controller do
 
   describe 'GET #edit' do
     it 'returns a success response' do
-      user = User.create! valid_attributes
+      user = create(:user)
       get :edit, params: { id: user.to_param, facility_id: facility.id }
       expect(response).to be_success
     end
@@ -56,31 +56,28 @@ RSpec.xdescribe Admin::UsersController, type: :controller do
   describe 'PUT #update' do
     context 'with valid params' do
       let(:new_attributes) {
-        FactoryBot.attributes_for(:user)
-          .merge(registration_facility_id: facility.id)
-          .except(:device_created_at, :device_updated_at, :otp, :otp_valid_until)
+        register_user_request_params(registration_facility_id: facility.id)
+          .except(:id, :password_digest)
       }
 
       it 'updates the requested user' do
-        user = User.create! valid_attributes
+        user = create(:user)
         put :update, params: { id: user.to_param, user: new_attributes, facility_id: facility.id }
         user.reload
-        expect(user.attributes.except(
-          'id', 'created_at', 'updated_at', 'deleted_at', 'device_created_at', 'device_updated_at',
-          'password_digest', 'otp', 'otp_valid_until', 'access_token', 'logged_in_at'))
-          .to eq new_attributes.with_indifferent_access.except('password', 'password_confirmation')
+        expect(user.full_name).to eq(new_attributes[:full_name])
+        expect(user.phone_number).to eq(new_attributes[:phone_number])
       end
 
       it 'redirects to the user' do
-        user = User.create! valid_attributes
+        user = create(:user)
         put :update, params: { id: user.to_param, user: valid_attributes }
-        expect(response).to redirect_to([:admin, user])
+        expect(response).to redirect_to(admin_user_url(user))
       end
     end
 
     context 'with invalid params' do
       it "returns a success response (i.e. to display the 'edit' template)" do
-        user = User.create! valid_attributes
+        user = create(:user)
         put :update, params: { id: user.to_param, user: invalid_attributes, facility_id: facility.id }
         expect(response).to be_success
       end
@@ -89,7 +86,7 @@ RSpec.xdescribe Admin::UsersController, type: :controller do
 
   describe 'PUT #disable_access' do
     it 'disables the access token for the user' do
-      user = User.create! valid_attributes
+      user = create(:user)
       put :disable_access, params: { user_id: user.id, facility_id: user.facility.id }
       user.reload
       expect(user.access_token_valid?).to be false
