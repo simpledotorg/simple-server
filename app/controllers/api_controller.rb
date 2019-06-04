@@ -14,11 +14,7 @@ class APIController < ApplicationController
   end
 
   def current_user
-    if FeatureToggle.enabled?('MASTER_USER_AUTHENTICATION')
-      @current_user ||= MasterUser.find_by(id: request.headers['HTTP_X_USER_ID'])
-    else
-      @current_user ||= User.find_by(id: request.headers['HTTP_X_USER_ID'])
-    end
+    @current_user ||= MasterUser.find_by(id: request.headers['HTTP_X_USER_ID'])
   end
 
   def current_facility

@@ -36,30 +36,28 @@ FactoryBot.define do
 
     factory :master_user_with_phone_number_authentication, traits: [:with_phone_number_authentication]
 
-    if FeatureToggle.enabled?('MASTER_USER_AUTHENTICATION')
-      factory :user, traits: [:with_phone_number_authentication] do
+    factory :user, traits: [:with_phone_number_authentication] do
 
-        trait :with_sanitized_phone_number do
-          phone_number { rand(1e9...1e10).to_i.to_s }
-        end
-
-        trait :sync_requested do
-          sync_approval_status { MasterUser.sync_approval_statuses[:requested] }
-        end
-
-        trait :sync_allowed do
-          sync_approval_status { MasterUser.sync_approval_statuses[:allowed] }
-        end
-
-        trait :sync_denied do
-          sync_approval_status { MasterUser.sync_approval_statuses[:denied] }
-        end
-
-        trait :created_on_device
+      trait :with_sanitized_phone_number do
+        phone_number { rand(1e9...1e10).to_i.to_s }
       end
 
-      factory :user_created_on_device, traits: [:with_phone_number_authentication]
+      trait :sync_requested do
+        sync_approval_status { MasterUser.sync_approval_statuses[:requested] }
+      end
+
+      trait :sync_allowed do
+        sync_approval_status { MasterUser.sync_approval_statuses[:allowed] }
+      end
+
+      trait :sync_denied do
+        sync_approval_status { MasterUser.sync_approval_statuses[:denied] }
+      end
+
+      trait :created_on_device
     end
+
+    factory :user_created_on_device, traits: [:with_phone_number_authentication]
   end
 end
 
