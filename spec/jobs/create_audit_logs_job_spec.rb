@@ -4,7 +4,7 @@ RSpec.describe CreateAuditLogsJob, type: :job do
   include ActiveJob::TestHelper
 
   describe '#perform_later' do
-    let(:user) { create :master_user }
+    let(:user) { create :user }
     let(:record_class) { 'Patient' }
     let(:record_ids) { create_list(record_class.underscore.to_sym, 3).pluck(:id) }
     let(:action) { 'fetch' }

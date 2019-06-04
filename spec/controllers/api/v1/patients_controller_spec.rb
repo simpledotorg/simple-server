@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::PatientsController, type: :controller do
-  let(:request_user) { create(:user) }
+  let(:request_user) { FactoryBot.create(:user) }
 
   let(:model) { Patient }
 
@@ -77,7 +77,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         post(:sync_from_user, params: { patients: [build_patient_payload] }, as: :json)
         expect(response).to have_http_status(200)
         expect(Patient.count).to eq 1
-        expect(Patient.first.registration_facility).to eq request_user.registration_facility
+        expect(Patient.first.registration_facility).to eq request_user.facility
       end
     end
 

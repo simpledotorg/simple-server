@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Api::V2::MedicalHistoriesController, type: :controller do
-  let(:request_user) { create(:user) }
-  let(:request_facility) { request_user.registration_facility }
+  let(:request_user) { FactoryBot.create(:user) }
+  let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
   before :each do
     request.env['X_USER_ID'] = request_user.id
     request.env['X_FACILITY_ID'] = request_facility.id
@@ -24,7 +24,7 @@ RSpec.describe Api::V2::MedicalHistoriesController, type: :controller do
   end
 
   def create_record_list(n, options = {})
-    facility = FactoryBot.create(:facility, facility_group_id: request_user.registration_facility.facility_group.id)
+    facility = FactoryBot.create(:facility, facility_group_id: request_user.facility.facility_group.id)
     patient = FactoryBot.create(:patient, registration_facility_id: facility.id)
     FactoryBot.create_list(:medical_history, n, options.merge(patient: patient))
   end

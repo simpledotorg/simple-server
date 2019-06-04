@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Api::Current::AppointmentsController, type: :controller do
-  let(:request_user) { create(:user) }
-  let(:request_facility) { request_user.registration_facility }
+  let(:request_user) { FactoryBot.create(:user) }
+  let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
   before :each do
     request.env['X_USER_ID'] = request_user.id
     request.env['X_FACILITY_ID'] = request_facility.id
@@ -18,12 +18,12 @@ RSpec.describe Api::Current::AppointmentsController, type: :controller do
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
   def create_record(options = {})
-    facility = FactoryBot.create(:facility, facility_group: request_facility.facility_group)
+    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
     FactoryBot.create(:appointment, options.merge(facility: facility))
   end
 
   def create_record_list(n, options = {})
-    facility = FactoryBot.create(:facility, facility_group: request_facility.facility_group)
+    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
     FactoryBot.create_list(:appointment, n, options.merge(facility: facility))
   end
 

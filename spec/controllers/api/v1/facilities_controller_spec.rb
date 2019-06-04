@@ -1,12 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::FacilitiesController, type: :controller do
-  let(:request_user) { create(:user) }
+  let(:request_user) { FactoryBot.create(:user) }
 
   let(:model) { Facility }
 
   def create_record_list(n, options = {})
-    FactoryBot.create_list(:facility, n, facility_group: request_user.registration_facility.facility_group)
+    FactoryBot.create_list(:facility, n, facility_group: request_user.facility.facility_group)
   end
 
   describe 'a working V1 sync controller sending records' do

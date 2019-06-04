@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Api::Current::PatientsController, type: :controller do
-  let(:request_user) { create(:user) }
-  let(:request_facility) { request_user.registration_facility }
+  let(:request_user) { FactoryBot.create(:user) }
+  let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
 
   let(:model) { Patient }
 
@@ -195,7 +195,7 @@ RSpec.describe Api::Current::PatientsController, type: :controller do
 
       it 'does not change registration user or facility' do
         current_user = FactoryBot.create(:user)
-        current_facility = FactoryBot.create(:facility, facility_group: current_user.registration_facility.facility_group)
+        current_facility = FactoryBot.create(:facility, facility_group: current_user.facility.facility_group)
         request.env['HTTP_X_USER_ID'] = current_user.id
         request.env['HTTP_X_FACILITY_ID'] = current_facility.id
         request.env['HTTP_AUTHORIZATION'] = "Bearer #{current_user.access_token}"

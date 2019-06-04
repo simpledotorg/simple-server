@@ -41,6 +41,8 @@ FactoryBot.define do
           phone_number { rand(1e9...1e10).to_i.to_s }
         end
 
+        trait :created_on_device
+
         trait :sync_requested do
           sync_approval_status { MasterUser.sync_approval_statuses[:requested] }
         end

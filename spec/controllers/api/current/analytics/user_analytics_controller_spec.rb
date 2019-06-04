@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Api::Current::Analytics::UserAnalyticsController, type: :controller do
-  let(:request_user) { create(:user) }
-  let(:request_facility) { request_user.registration_facility }
+  let!(:request_user) { create(:user) }
+  let!(:request_facility) { create(:facility, facility_group: request_user.facility.facility_group) }
 
   before :each do
     request.env['HTTP_X_USER_ID'] = request_user.id

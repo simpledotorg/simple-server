@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Api::Current::BloodPressuresController, type: :controller do
-  let(:request_user) { create(:user) }
-  let(:request_facility) { request_user.registration_facility }
+  let(:request_user) { FactoryBot.create(:user) }
+  let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
   before :each do
     request.env['X_USER_ID'] = request_user.id
     request.env['X_FACILITY_ID'] = request_facility.id
@@ -102,7 +102,7 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
         get :sync_to_user, params: { limit: 15 }
 
         response_blood_pressures = JSON(response.body)['blood_pressures']
-        response_facilities = response_blood_pressures.map { |blood_pressure| blood_pressure['facility_id'] }.to_set
+        response_facilities = response_blood_pressures.map { |blood_pressure| blood_pressure['facility_id']}.to_set
 
         expect(response_blood_pressures.count).to eq 10
         expect(response_facilities).to match_array([request_facility.id, facility_in_same_group.id])

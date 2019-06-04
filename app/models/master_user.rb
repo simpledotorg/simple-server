@@ -31,6 +31,10 @@ class MasterUser < ApplicationRecord
     delegate_to_phone_number_authentication(:facility)
   end
 
+  def registration_facility_id
+    registration_facility.id
+  end
+
   alias_method :facility, :registration_facility
 
   def access_token

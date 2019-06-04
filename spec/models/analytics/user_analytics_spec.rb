@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Analytics::UserAnalytics do
   let(:facility) { create :facility }
-  let(:user) { create :master_user }
+  let(:user) { create :user }
   let(:from_time) { Time.new(2019, 1, 1) }
   let(:to_time) { from_time + 12.weeks }
 

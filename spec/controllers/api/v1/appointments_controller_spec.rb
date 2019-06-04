@@ -1,8 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::AppointmentsController, type: :controller do
-  let(:request_user) { create(:user) }
-
+  let(:request_user) { FactoryBot.create(:user) }
   before :each do
     request.env['X_USER_ID'] = request_user.id
     request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
@@ -113,7 +112,7 @@ RSpec.describe Api::V1::AppointmentsController, type: :controller do
     it 'coerces new reasons into other' do
       set_authentication_headers
 
-      FactoryBot.create_list(:appointment, 10, facility_id: request_user.registration_facility.id, cancel_reason: [:invalid_phone_number, :public_hospital_transfer, :moved_to_private].sample)
+      FactoryBot.create_list(:appointment, 10, facility_id: request_user.registration_facility_id, cancel_reason: [:invalid_phone_number, :public_hospital_transfer, :moved_to_private].sample)
 
       get :sync_to_user
       response_body = JSON(response.body)
@@ -124,7 +123,7 @@ RSpec.describe Api::V1::AppointmentsController, type: :controller do
     it 'does not coerce old reasons' do
       set_authentication_headers
       v1_cancel_reasons = Appointment.cancel_reasons.keys.map(&:to_sym) - [:invalid_phone_number, :public_hospital_transfer, :moved_to_private]
-      appointments = 10.times.map {|_| FactoryBot.create(:appointment, facility_id: request_user.registration_facility.id, cancel_reason: v1_cancel_reasons.sample) }
+      appointments = 10.times.map {|_| FactoryBot.create(:appointment, facility_id: request_user.registration_facility_id, cancel_reason: v1_cancel_reasons.sample) }
 
       get :sync_to_user
       response_body = JSON(response.body)

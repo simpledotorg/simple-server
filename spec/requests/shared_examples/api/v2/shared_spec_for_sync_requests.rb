@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.shared_examples 'v2 API sync requests' do
   let(:auth_headers) do
     {'HTTP_X_USER_ID' => request_user.id,
-     'HTTP_X_FACILITY_ID' => request_user.registration_facility.id,
+     'HTTP_X_FACILITY_ID' => request_user.facility.id,
      'HTTP_AUTHORIZATION' => "Bearer #{request_user.access_token}" }
   end
   let(:headers) do

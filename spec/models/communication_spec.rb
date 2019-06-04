@@ -16,7 +16,7 @@ describe Communication, type: :model do
   end
 
   describe '.create_with_twilio_details!' do
-    let(:user) { create(:master_user) }
+    let(:user) { create(:user) }
     let(:appointment) { create(:appointment) }
 
     it 'creates a communication with a TwilioSmsDeliveryDetail' do

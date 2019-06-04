@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::PrescriptionDrugsController, type: :controller do
-  let(:request_user) { create(:user) }
+  let(:request_user) { FactoryBot.create(:user) }
   let(:model) { PrescriptionDrug }
 
   let(:build_payload) { lambda { build_prescription_drug_payload } }

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::BloodPressuresController, type: :controller do
-  let(:request_user) { create(:user) }
+  let(:request_user) { FactoryBot.create(:user) }
   before :each do
     request.env['X_USER_ID'] = request_user.id
     request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
