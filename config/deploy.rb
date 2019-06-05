@@ -17,6 +17,10 @@ set :pty,  false
 
 set :sidekiq_config, -> { File.join(shared_path, 'config', 'sidekiq.yml') }
 
+set :db_local_clean, true
+set :db_remote_clean, true
+set :disallow_pushing, true
+
 append :linked_files, ".env.production"
 append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
 
