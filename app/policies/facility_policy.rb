@@ -1,6 +1,10 @@
 class FacilityPolicy < ApplicationPolicy
   def index?
-    user.owner? || user.organization_owner? || user.supervisor?
+    user_has_any_permissions?(
+      :can_manage_all_organizations,
+      [:can_manage_facility_groups_for_organization, record.organization],
+      [:can_view_facilities_in_facility_group, record.facility_group]
+    )
   end
 
   def show?
