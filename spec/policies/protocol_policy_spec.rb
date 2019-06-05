@@ -3,32 +3,21 @@ require "rails_helper"
 RSpec.describe ProtocolPolicy do
   subject { described_class }
 
-  let(:user_can_manage_all_protocols) do
-    user = create(:master_user)
-    create(:user_permission, user: user, permission_slug: :can_manage_all_protocols, resource: nil)
-    user
-  end
+  let(:owner) { create(:admin, :owner) }
+  let(:supervisor) { create(:admin, :supervisor) }
+  let(:analyst) { create(:admin, :analyst) }
 
-  let(:other_user) { create(:master_user) }
-
-  permissions :index? do
-    it "permits users with permission to manage all protocols" do
-      expect(subject).to permit(user_can_manage_all_protocols, Protocol)
+  permissions :index?, :show?, :new?, :create?, :update?, :edit?, :destroy? do
+    it "permits owners" do
+      expect(subject).to permit(owner, Protocol)
     end
 
-    it "denies other users" do
-      expect(subject).not_to permit(other_user, Protocol)
-    end
-  end
-
-
-  permissions :show?, :new?, :create?, :update?, :edit?, :destroy? do
-    it "permits users with permission to manage all protocols" do
-      expect(subject).to permit(user_can_manage_all_protocols, build(:protocol))
+    it "denies supervisors" do
+      expect(subject).not_to permit(supervisor, Protocol)
     end
 
-    it "denies other users" do
-      expect(subject).not_to permit(other_user, build(:protocol))
+    it "denies analysts" do
+      expect(subject).not_to permit(analyst, Protocol)
     end
   end
 end
@@ -43,21 +32,47 @@ RSpec.describe ProtocolPolicy::Scope do
   let!(:facility_group_1) { create(:facility_group, organization: organization, protocol: protocol_1) }
   let!(:facility_group_2) { create(:facility_group, organization: organization, protocol: protocol_2) }
 
-  let(:user_can_manage_all_protocols) do
-    user = create(:master_user)
-    create(:user_permission, user: user, permission_slug: :can_manage_all_protocols, resource: nil)
-    user
+  describe "owner" do
+    let(:owner) { create(:admin, :owner) }
+    it "resolves protocols" do
+      resolved_records = subject.new(owner, Protocol.all).resolve
+      expect(resolved_records.to_a).to match_array(Protocol.all.to_a)
+    end
   end
 
-  let(:other_user) { create(:master_user) }
-
-  it 'resolves all protocol drugs for users with permission to manage all protocols' do
-    resolved_records = subject.new(user_can_manage_all_protocols, Protocol.all).resolve
-    expect(resolved_records.to_a).to match_array(Protocol.all.to_a)
+  describe "organization owner" do
+    let(:organization_owner) {
+      create(:admin,
+             :organization_owner,
+             admin_access_controls: [AdminAccessControl.new(access_controllable: organization)]
+      ) }
+    it "resolves all protocols in their organizations" do
+      resolved_records = subject.new(organization_owner, Protocol.all).resolve
+      expect(resolved_records).to match_array([protocol_1, protocol_2])
+    end
   end
 
-  it 'resolves no protocol drugs for other users' do
-    resolved_records = subject.new(other_user, Protocol.all).resolve
-    expect(resolved_records.to_a).to be_empty
+  describe "supervisor" do
+    let(:supervisor) {
+      create(:admin,
+             :supervisor,
+             admin_access_controls: [AdminAccessControl.new(access_controllable: facility_group_1)])
+    }
+    it "resolves all protocols in their facility groups" do
+      resolved_records = subject.new(supervisor, Protocol.all).resolve
+      expect(resolved_records).to match_array([protocol_1])
+    end
+  end
+
+  describe "analyst" do
+    let(:analyst) {
+      create(:admin,
+             :analyst,
+             admin_access_controls: [AdminAccessControl.new(access_controllable: facility_group_1)])
+    }
+    it "resolves all protocols in their facility groups" do
+      resolved_records = subject.new(analyst, Protocol.all).resolve
+      expect(resolved_records).to match_array([protocol_1])
+    end
   end
 end
