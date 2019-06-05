@@ -3,25 +3,31 @@ require "rails_helper"
 RSpec.describe ProtocolDrugPolicy do
   subject { described_class }
 
-  let(:owner) { create(:admin, :owner) }
-  let(:supervisor) { create(:admin, :supervisor) }
-  let(:analyst) { create(:admin, :analyst) }
+  let(:user_can_manage_all_protocols) do
+    user = create(:master_user)
+    create(:user_permission, user: user, permission_slug: :can_manage_all_protocols, resource: nil)
+    user
+  end
+
+  let(:other_user) { create(:master_user) }
+
+  permissions :index? do
+    it "permits users with permission to manage all protocols" do
+      expect(subject).to permit(user_can_manage_all_protocols, ProtocolDrug)
+    end
+
+    it "denies other users" do
+      expect(subject).not_to permit(other_user, ProtocolDrug)
+    end
+  end
 
   permissions :index?, :show?, :new?, :create?, :update?, :edit?, :destroy? do
-    it "permits owners" do
-      expect(subject).to permit(owner, ProtocolDrug)
+    it "permits users with permission to manage all protocols" do
+      expect(subject).to permit(user_can_manage_all_protocols, build(:protocol_drug))
     end
 
-    it "permits organization owners" do
-      expect(subject).to permit(owner, ProtocolDrug)
-    end
-
-    it "denies supervisors" do
-      expect(subject).not_to permit(supervisor, ProtocolDrug)
-    end
-
-    it "denies analysts" do
-      expect(subject).not_to permit(analyst, ProtocolDrug)
+    it "denies other users" do
+      expect(subject).not_to permit(other_user, build(:protocol_drug))
     end
   end
 end
@@ -29,6 +35,14 @@ end
 RSpec.describe ProtocolDrugPolicy::Scope do
   let(:subject) { described_class }
   let(:organization) { create(:organization) }
+
+  let(:user_can_manage_all_protocols) do
+    user = create(:master_user)
+    create(:user_permission, user: user, permission_slug: :can_manage_all_protocols, resource: nil)
+    user
+  end
+
+  let(:other_user) { create(:master_user) }
 
   let(:protocol_1) { create(:protocol) }
   let(:protocol_2) { create(:protocol) }
@@ -38,47 +52,13 @@ RSpec.describe ProtocolDrugPolicy::Scope do
   let!(:facility_group_1) { create(:facility_group, organization: organization, protocol: protocol_1) }
   let!(:facility_group_2) { create(:facility_group, organization: organization, protocol: protocol_2) }
 
-  describe "owner" do
-    let(:owner) { create(:admin, :owner) }
-    it "resolves all protocol drugs" do
-      resolved_records = subject.new(owner, ProtocolDrug.all).resolve
-      expect(resolved_records.to_a).to match_array(ProtocolDrug.all.to_a)
-    end
+  it 'resolves all protocol drugs for users with permission to manage all protocols' do
+    resolved_records = subject.new(user_can_manage_all_protocols, ProtocolDrug.all).resolve
+    expect(resolved_records.to_a).to match_array(ProtocolDrug.all.to_a)
   end
 
-  describe "organization owner" do
-    let(:organization_owner) {
-      create(:admin,
-             :organization_owner,
-             admin_access_controls: [AdminAccessControl.new(access_controllable: organization)]
-      ) }
-    it "resolves all protocol drugs their organizations" do
-      resolved_records = subject.new(organization_owner, ProtocolDrug.all).resolve
-      expect(resolved_records).to match_array(protocol_drugs_1 + protocol_drugs_2)
-    end
-  end
-
-  describe "supervisor" do
-    let(:supervisor) {
-      create(:admin,
-             :supervisor,
-             admin_access_controls: [AdminAccessControl.new(access_controllable: facility_group_1)])
-    }
-    it "resolves all protocol drugs their facility groups" do
-      resolved_records = subject.new(supervisor, ProtocolDrug.all).resolve
-      expect(resolved_records).to match_array(protocol_drugs_1)
-    end
-  end
-
-  describe "analyst" do
-    let(:analyst) {
-      create(:admin,
-             :analyst,
-             admin_access_controls: [AdminAccessControl.new(access_controllable: facility_group_1)])
-    }
-    it "resolves all protocol drugs in their facility groups" do
-      resolved_records = subject.new(analyst, ProtocolDrug.all).resolve
-      expect(resolved_records).to match_array(protocol_drugs_1)
-    end
+  it 'resolves no protocol drugs for other users' do
+    resolved_records = subject.new(other_user, ProtocolDrug.all).resolve
+    expect(resolved_records.to_a).to be_empty
   end
 end
