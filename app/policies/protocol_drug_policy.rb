@@ -29,7 +29,7 @@ class ProtocolDrugPolicy < ApplicationPolicy
 
   private
 
-  class Scope
+  class Scope < Scope
     attr_reader :user, :scope
 
     def initialize(user, scope)

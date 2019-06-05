@@ -27,7 +27,7 @@ class ProtocolPolicy < ApplicationPolicy
     user_has_any_permissions?(:can_manage_all_protocols)
   end
 
-  class Scope
+  class Scope < Scope
     attr_reader :user, :scope
 
     def initialize(user, scope)
