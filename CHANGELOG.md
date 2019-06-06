@@ -6,6 +6,20 @@
 ### Removed 
 ### Security
 
+# 2019-06-05-1
+### Added
+- Add non-breaking Sync API changes without frequent version bumps
+- Use capistrano to copy sandbox DB to local dev
+- Use Google Analytics in production
+- Create master users model
+### Changed
+### Fixed
+- Fix patient not existing on an appointment when trying to notify them
+- Show labels as 'Last 90 days'
+### Deprecated
+### Removed
+### Security
+
 # 2019-05-30-1
 ### Added
 - Add Twilio sub-account support
