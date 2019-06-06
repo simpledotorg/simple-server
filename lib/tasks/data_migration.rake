@@ -86,8 +86,10 @@ namespace :data_migration do
   task set_default_recorded_at_for_existing_blood_pressures: :environment do
     # For BloodPressure records,
     # we default to the device_created_at
+    puts 'Fetching BloodPressure where recorded_at is nil...'
     blood_pressures = BloodPressure.where(recorded_at: nil)
 
+    puts 'Updating BloodPressure recorded_at to be device_created_at...'
     blood_pressures.each do |blood_pressure|
       blood_pressure.update_column(:recorded_at, blood_pressure.device_created_at)
     end
@@ -95,11 +97,15 @@ namespace :data_migration do
     puts "Total number of BloodPressure records updated = #{blood_pressures.size}"
 
     # Patients' recorded_at is set to their earliest BP's device_created_at if older
+    puts 'Fetching Patients where recorded_at is nil'
     patients = Patient.where(recorded_at: nil)
 
+    puts 'Updating Patients recorded_at...'
     patients.each do |patient|
       earliest_blood_pressure = patient.blood_pressures.order(recorded_at: :asc).first
-      patient_recorded_at = [earliest_blood_pressure.recorded_at, patient.device_created_at].min
+      patient_recorded_at = earliest_blood_pressure.present? ?
+                              [earliest_blood_pressure.recorded_at, patient.device_created_at].min :
+                              patient.device_created_at
       patient.update_column(:recorded_at, patient_recorded_at)
     end
 
@@ -195,7 +201,7 @@ namespace :data_migration do
   end
 
   desc 'Move all the user phone numbers from the call logs to a de-normalized caller_phone_number field'
-  task de_normalize_user_phone_numbers_in_call_logs: :environment  do
+  task de_normalize_user_phone_numbers_in_call_logs: :environment do
     CallLog.all.each do |call_log|
       call_log.caller_phone_number = call_log.user.phone_number
       call_log.save!
