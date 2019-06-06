@@ -17,6 +17,7 @@ FactoryBot.define do
     age_updated_at { Time.now - rand(10).days if age.present? }
     device_created_at { Time.now }
     device_updated_at { Time.now }
+    recorded_at { device_created_at }
     association :address, strategy: :build
     phone_numbers { build_list(:patient_phone_number, rand(1..3), patient_id: id) }
     association :registration_facility, factory: :facility
@@ -46,6 +47,13 @@ def build_patient_payload(patient = FactoryBot.build(:patient))
     )
 end
 
+def build_patient_payload_v2(patient = FactoryBot.build(:patient))
+  build_patient_payload(patient)
+    .except('recorded_at')
+end
+
+alias build_patient_payload_v1 build_patient_payload_v2
+
 def build_invalid_patient_payload
   patient                          = build_patient_payload
   patient['created_at']            = nil
@@ -74,3 +82,10 @@ def updated_patient_payload(existing_patient)
       'metadata' => business_identifier.metadata&.to_json)]
   )
 end
+
+def updated_patient_payload_v2(existing_patient)
+  updated_patient_payload(existing_patient)
+    .except('recorded_at')
+end
+
+alias updated_patient_payload_v1 updated_patient_payload_v2

@@ -82,6 +82,30 @@ namespace :data_migration do
     puts "Number of unprocessed/errored defaulters = #{unprocessed_or_errored_defaulters_count}"
   end
 
+  desc "Set default 'recorded_at' for existing blood pressure and patient records"
+  task set_default_recorded_at_for_existing_blood_pressures: :environment do
+    # For BloodPressure records,
+    # we default to the device_created_at
+    blood_pressures = BloodPressure.where(recorded_at: nil)
+
+    blood_pressures.each do |blood_pressure|
+      blood_pressure.update_column(:recorded_at, blood_pressure.device_created_at)
+    end
+
+    puts "Total number of BloodPressure records updated = #{blood_pressures.size}"
+
+    # Patients' recorded_at is set to their earliest BP's device_created_at if older
+    patients = Patient.where(recorded_at: nil)
+
+    patients.each do |patient|
+      earliest_blood_pressure = patient.blood_pressures.order(recorded_at: :asc).first
+      patient_recorded_at = [earliest_blood_pressure.recorded_at, patient.device_created_at].min
+      patient.update_column(:recorded_at, patient_recorded_at)
+    end
+
+    puts "Total number of Patient records updated = #{patients.size}"
+  end
+
   desc "Create master users for users"
   task create_master_users_for_users: :environment do
     User.where.not(sync_approval_status: nil).all.each do |user|

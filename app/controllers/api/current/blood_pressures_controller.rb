@@ -18,9 +18,38 @@ class Api::Current::BloodPressuresController < Api::Current::SyncController
       NewRelic::Agent.increment_metric('Merge/BloodPressure/schema_invalid')
       { errors_hash: validator.errors_hash }
     else
-      blood_pressure = BloodPressure.merge(Api::Current::Transformer.from_request(blood_pressure_params))
+      blood_pressure = ActiveRecord::Base.transaction do
+        set_patient_recorded_at(blood_pressure_params)
+        transformed_params = Api::Current::BloodPressureTransformer.from_request(blood_pressure_params)
+        BloodPressure.merge(transformed_params)
+      end
       { record: blood_pressure }
     end
+  end
+
+  def set_patient_recorded_at(bp_params)
+    # We don't set the patient recorded if retroactive data-entry is supported by the app
+    # If the app supports retroactive data-entry, we expect the app to update the patients and sync
+    return if bp_params['recorded_at'].present?
+
+    patient = Patient.find_by(id: bp_params['patient_id'])
+    # If the patient is not synced yet, we simply ignore setting patient's recorded_at
+    return if patient.blank?
+
+    # We only try to set the patient's recorded_at when retroactive data-entry is not supported on the app
+    patient.recorded_at = patient_recorded_at(bp_params, patient)
+    patient.save
+  end
+
+  #
+  # Patient recorded_at is the earlier of the two:
+  #   1. Patient's earliest recorded blood pressure
+  #   2. Patient's device_created_at
+  #   3. The device_created_at of the current blood pressure being synced
+  #
+  def patient_recorded_at(bp_params, patient)
+    earliest_blood_pressure = patient.blood_pressures.order(recorded_at: :asc).first
+    [bp_params['created_at'], earliest_blood_pressure&.recorded_at, patient.device_created_at].compact.min
   end
 
   def transform_to_response(blood_pressure)
@@ -38,6 +67,7 @@ class Api::Current::BloodPressuresController < Api::Current::SyncController
         :user_id,
         :created_at,
         :updated_at,
+        :recorded_at,
         :deleted_at
       )
     end

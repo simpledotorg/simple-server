@@ -1,5 +1,4 @@
 class Api::Current::PatientPayloadValidator < Api::Current::PayloadValidator
-
   attr_accessor(
     :id,
     :full_name,
@@ -10,7 +9,9 @@ class Api::Current::PatientPayloadValidator < Api::Current::PayloadValidator
     :age_updated_at,
     :created_at,
     :updated_at,
+    :recorded_at,
     :deleted_at,
+    :recorded_at,
     :address,
     :phone_numbers,
     :business_identifiers,

@@ -1,5 +1,15 @@
 class Api::V2::Models < Api::Current::Models
   class << self
+    def patient
+      super
+        .tap { |d| d[:properties].delete(:recorded_at) }
+    end
+
+    def blood_pressure
+      super
+        .tap { |d| d[:properties].delete(:recorded_at) }
+    end
+
     def nested_patient
       patient.deep_merge(
         properties: {
