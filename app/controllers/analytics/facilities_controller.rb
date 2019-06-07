@@ -24,10 +24,6 @@ class Analytics::FacilitiesController < AnalyticsController
     @organization = @facility.organization
   end
 
-  def set_cache_key
-    @cache_key = ["view", @facility.analytics_cache_key(@from_time, @to_time)]
-  end
-
   def users_for_facility
     User.joins(:blood_pressures).where('blood_pressures.facility_id = ?', @facility.id).order(:full_name).distinct
   end
