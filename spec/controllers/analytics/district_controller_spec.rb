@@ -42,23 +42,40 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
     context 'organization district analytics are not cached' do
       before :each do
         Rails.cache.clear
-
-        allow(OrganizationDistrict).to receive(:new).and_return(organization_district)
-        allow(organization_district).to receive(:report_on_patients).and_return(patients)
-      end
-
-      it 'calculates the patient set analytics for all the patients in the district' do
-        expect(Analytics::PatientSetAnalytics)
-          .to receive(:new).with(patients, from_time, to_time).at_least(:once).and_call_original
-
-        get :show, params: { organization_id: organization.id, id: district_name, from_time: from_time, to_time: to_time }
       end
 
       it 'stores the calculated analytics in the cache' do
         expect(Rails.cache.exist?(organization_district.analytics_cache_key(from_time, to_time))).to be_falsey
-        get :show, params: { organization_id: organization.id, id: district_name, from_time: from_time, to_time: to_time }
+
+        get :show, params: { organization_id: organization.id,
+                             id: district_name,
+                             from_time: from_time,
+                             to_time: to_time }
 
         expect(Rails.cache.exist?(organization_district.analytics_cache_key(from_time, to_time))).to be_truthy
+      end
+
+      it 'calculates the patient set analytics for all the patients in the district' do
+        request_time = Time.new(2019, 6, 1)
+
+        Timecop.freeze(request_time) do
+          get :show, params: { organization_id: organization.id,
+                               id: district_name,
+                               from_time: from_time,
+                               to_time: to_time }
+        end
+
+        expected_analytics_keys = [:newly_enrolled_patients,
+                                   :returning_patients,
+                                   :non_returning_hypertensive_patients,
+                                   :control_rate,
+                                   :unique_patients_enrolled,
+                                   :blood_pressures_recorded_per_week,
+                                   :cache_updated_at]
+
+        expect(assigns(:district_analytics).keys).to match_array(expected_analytics_keys)
+        expect(assigns(:district_analytics)[:cache_updated_at]).to eq(request_time)
+        expect(assigns(:facility_analytics)[facility].keys).to match_array(expected_analytics_keys)
       end
     end
   end
