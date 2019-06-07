@@ -25,22 +25,6 @@ RSpec.feature "Home page", type: :feature do
       expect(page).to have_content("IHMI")
       expect(page).to have_content("PATH")
     end
-
-    if !FeatureToggle.enabled?('DASHBOARD_VIEW_BY_DISTRICT')
-      it "shows all facility groups" do
-        expect(page).to have_link("Bathinda")
-        expect(page).to have_link("Mansa")
-        expect(page).to have_link("Amir Singh Facility Group")
-      end
-
-      it "links to the facility group" do
-        click_link "Bathinda"
-        expect(current_path).to eq analytics_facility_group_path(ihmi_group_bathinda)
-      end
-    end
-  end
-
-  context "organization owner" do
   end
 
   context "supervisor in bathinda" do
