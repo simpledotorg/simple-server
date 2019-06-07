@@ -17,7 +17,7 @@ describe 'Patients Current API', swagger_doc: 'current/swagger.json' do
         let(:HTTP_X_FACILITY_ID) { request_facility.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
-        let(:patients) { { patients: (1..10).map { build_patient_payload } } }
+        let(:patients) { { patients: (1..3).map { build_patient_payload } } }
         run_test!
       end
 
@@ -29,7 +29,7 @@ describe 'Patients Current API', swagger_doc: 'current/swagger.json' do
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
         schema Api::Current::Schema.sync_from_user_errors
-        let(:patients) { { patients: (1..10).map { build_invalid_patient_payload } } }
+        let(:patients) { { patients: (1..3).map { build_invalid_patient_payload } } }
         run_test!
       end
     end
@@ -45,7 +45,7 @@ describe 'Patients Current API', swagger_doc: 'current/swagger.json' do
 
       before :each do
         Timecop.travel(10.minutes.ago) do
-          FactoryBot.create_list(:patient, 10)
+          FactoryBot.create_list(:patient, 3)
         end
       end
 

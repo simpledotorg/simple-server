@@ -14,7 +14,7 @@ describe 'Medical History V1 API', swagger_doc: 'v1/swagger.json' do
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
-        let(:medical_histories) { { medical_histories: (1..10).map { build_medical_history_payload_v1 } } }
+        let(:medical_histories) { { medical_histories: (1..3).map { build_medical_history_payload_v1 } } }
 
         run_test!
       end
@@ -25,7 +25,7 @@ describe 'Medical History V1 API', swagger_doc: 'v1/swagger.json' do
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
         schema Api::V1::Schema.sync_from_user_errors
-        let(:medical_histories) { { medical_histories: (1..10).map { build_invalid_medical_history_payload_v1 } } }
+        let(:medical_histories) { { medical_histories: (1..3).map { build_invalid_medical_history_payload_v1 } } }
         run_test!
       end
     end
@@ -40,7 +40,7 @@ describe 'Medical History V1 API', swagger_doc: 'v1/swagger.json' do
 
       before :each do
         Timecop.travel(10.minutes.ago) do
-          FactoryBot.create_list(:medical_history, 10)
+          FactoryBot.create_list(:medical_history, 3)
         end
       end
 

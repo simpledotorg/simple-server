@@ -11,10 +11,10 @@ RSpec.describe Analytics::UserAnalytics do
   describe '#registered_patients_count' do
     it 'returns the number of patients registered by the user during the period' do
       Timecop.travel(from_time) do
-        create_list(:patient, 10, registration_user: user, registration_facility: facility)
+        create_list(:patient, 2, registration_user: user, registration_facility: facility)
       end
 
-      expect(user_analytics.registered_patients_count).to eq(10)
+      expect(user_analytics.registered_patients_count).to eq(2)
     end
   end
 

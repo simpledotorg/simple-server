@@ -42,7 +42,7 @@ RSpec.describe Api::V1::AppointmentsController, type: :controller do
         let(:request_key) { model.to_s.underscore.pluralize }
 
         it 'sets appointment_type to manual if field is not set in the sync payload' do
-          new_records = (1..5).map { build_payload.call.except(:appointment_type) }
+          new_records = (1..3).map { build_payload.call.except(:appointment_type) }
           new_records_payload = Hash[request_key, new_records]
 
           post(:sync_from_user, params: new_records_payload, as: :json)
@@ -61,7 +61,7 @@ RSpec.describe Api::V1::AppointmentsController, type: :controller do
         end
 
         it 'sets appointment_type to manual even if appointment_type explicitly provided' do
-          new_records = (1..5).map { build_payload.call }
+          new_records = (1..3).map { build_payload.call }
           new_records_payload = Hash[request_key, new_records]
 
           post(:sync_from_user, params: new_records_payload, as: :json)
@@ -92,8 +92,8 @@ RSpec.describe Api::V1::AppointmentsController, type: :controller do
 
     before :each do
       set_authentication_headers
-      FactoryBot.create_list(:appointment, 5, facility: facility_in_another_group, updated_at: 3.minutes.ago)
-      FactoryBot.create_list(:appointment, 5, facility: facility_in_same_group, updated_at: 5.minutes.ago)
+      FactoryBot.create_list(:appointment, 2, facility: facility_in_another_group, updated_at: 3.minutes.ago)
+      FactoryBot.create_list(:appointment, 2, facility: facility_in_same_group, updated_at: 5.minutes.ago)
     end
 
     it "only sends data for facilities belonging in the sync group of user's registration facility" do
@@ -102,7 +102,7 @@ RSpec.describe Api::V1::AppointmentsController, type: :controller do
       response_appointments = JSON(response.body)['appointments']
       response_facilities = response_appointments.map { |appointment| appointment['facility_id']}.to_set
 
-      expect(response_appointments.count).to eq 5
+      expect(response_appointments.count).to eq 2
       expect(response_facilities).not_to include(facility_in_another_group.id)
 
     end
@@ -112,22 +112,22 @@ RSpec.describe Api::V1::AppointmentsController, type: :controller do
     it 'coerces new reasons into other' do
       set_authentication_headers
 
-      FactoryBot.create_list(:appointment, 10, facility_id: request_user.registration_facility_id, cancel_reason: [:invalid_phone_number, :public_hospital_transfer, :moved_to_private].sample)
+      FactoryBot.create_list(:appointment, 3, facility_id: request_user.registration_facility_id, cancel_reason: [:invalid_phone_number, :public_hospital_transfer, :moved_to_private].sample)
 
       get :sync_to_user
       response_body = JSON(response.body)
-      expect(response_body['appointments'].count).to eq 10
+      expect(response_body['appointments'].count).to eq 3
       expect(response_body['appointments'].map{|a|a['cancel_reason']}.to_set).to eq(Set['other'])
     end
 
     it 'does not coerce old reasons' do
       set_authentication_headers
       v1_cancel_reasons = Appointment.cancel_reasons.keys.map(&:to_sym) - [:invalid_phone_number, :public_hospital_transfer, :moved_to_private]
-      appointments = 10.times.map {|_| FactoryBot.create(:appointment, facility_id: request_user.registration_facility_id, cancel_reason: v1_cancel_reasons.sample) }
+      appointments = 3.times.map {|_| FactoryBot.create(:appointment, facility_id: request_user.registration_facility_id, cancel_reason: v1_cancel_reasons.sample) }
 
       get :sync_to_user
       response_body = JSON(response.body)
-      expect(response_body['appointments'].count).to eq 10
+      expect(response_body['appointments'].count).to eq 3
       expect(response_body['appointments'].map{|a|a['cancel_reason']}).to eq(appointments.map(&:cancel_reason))
     end
 

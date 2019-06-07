@@ -44,7 +44,7 @@ RSpec.describe Api::V2::AppointmentsController, type: :controller do
         let(:request_key) { model.to_s.underscore.pluralize }
 
         it 'sets appointment_type to manual if field is not set in the sync payload' do
-          new_records = (1..5).map { build_payload.call.except(:appointment_type) }
+          new_records = (1..3).map { build_payload.call.except(:appointment_type) }
           new_records_payload = Hash[request_key, new_records]
 
           post(:sync_from_user, params: new_records_payload, as: :json)
@@ -63,7 +63,7 @@ RSpec.describe Api::V2::AppointmentsController, type: :controller do
         end
 
         it 'sets appointment_type to manual even if appointment_type explicitly provided' do
-          new_records = (1..5).map { build_payload.call }
+          new_records = (1..3).map { build_payload.call }
           new_records_payload = Hash[request_key, new_records]
 
           post(:sync_from_user, params: new_records_payload, as: :json)
@@ -90,28 +90,28 @@ RSpec.describe Api::V2::AppointmentsController, type: :controller do
     describe 'v2 facility prioritisation' do
       it "syncs request facility's records first" do
         request_2_facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
-        FactoryBot.create_list(:appointment, 5, facility: request_2_facility, updated_at: 3.minutes.ago)
-        FactoryBot.create_list(:appointment, 5, facility: request_2_facility, updated_at: 5.minutes.ago)
-        FactoryBot.create_list(:appointment, 5, facility: request_facility, updated_at: 7.minutes.ago)
-        FactoryBot.create_list(:appointment, 5, facility: request_facility, updated_at: 10.minutes.ago)
+        FactoryBot.create_list(:appointment, 2, facility: request_2_facility, updated_at: 3.minutes.ago)
+        FactoryBot.create_list(:appointment, 2, facility: request_2_facility, updated_at: 5.minutes.ago)
+        FactoryBot.create_list(:appointment, 2, facility: request_facility, updated_at: 7.minutes.ago)
+        FactoryBot.create_list(:appointment, 2, facility: request_facility, updated_at: 10.minutes.ago)
 
         # GET request 1
         set_authentication_headers
-        get :sync_to_user, params: { limit: 10 }
+        get :sync_to_user, params: { limit: 4 }
         response_1_body = JSON(response.body)
 
         response_1_record_ids = response_1_body['appointments'].map { |r| r['id'] }
         response_1_records = model.where(id: response_1_record_ids)
-        expect(response_1_records.count).to eq 10
+        expect(response_1_records.count).to eq 4
         expect(response_1_records.map(&:facility).to_set).to eq Set[request_facility]
 
         # GET request 2
-        get :sync_to_user, params: { limit: 10, process_token: response_1_body['process_token'] }
+        get :sync_to_user, params: { limit: 4, process_token: response_1_body['process_token'] }
         response_2_body = JSON(response.body)
 
         response_2_record_ids = response_2_body['appointments'].map { |r| r['id'] }
         response_2_records = model.where(id: response_2_record_ids)
-        expect(response_2_records.count).to eq 10
+        expect(response_2_records.count).to eq 4
         expect(response_2_records.map(&:facility).to_set).to eq Set[request_facility, request_2_facility]
       end
     end
@@ -122,9 +122,9 @@ RSpec.describe Api::V2::AppointmentsController, type: :controller do
 
       before :each do
         set_authentication_headers
-        FactoryBot.create_list(:appointment, 5, facility: facility_in_another_group, updated_at: 3.minutes.ago)
-        FactoryBot.create_list(:appointment, 5, facility: facility_in_same_group, updated_at: 5.minutes.ago)
-        FactoryBot.create_list(:appointment, 5, facility: request_facility, updated_at: 7.minutes.ago)
+        FactoryBot.create_list(:appointment, 2, facility: facility_in_another_group, updated_at: 3.minutes.ago)
+        FactoryBot.create_list(:appointment, 2, facility: facility_in_same_group, updated_at: 5.minutes.ago)
+        FactoryBot.create_list(:appointment, 2, facility: request_facility, updated_at: 7.minutes.ago)
       end
 
       it "only sends data for facilities belonging in the sync group of user's registration facility" do
@@ -133,7 +133,7 @@ RSpec.describe Api::V2::AppointmentsController, type: :controller do
         response_appointments = JSON(response.body)['appointments']
         response_facilities = response_appointments.map { |appointment| appointment['facility_id']}.to_set
 
-        expect(response_appointments.count).to eq 10
+        expect(response_appointments.count).to eq 4
         expect(response_facilities).to match_array([request_facility.id, facility_in_same_group.id])
         expect(response_facilities).not_to include(facility_in_another_group.id)
       end

@@ -17,8 +17,8 @@ RSpec.describe 'Patients sync', type: :request do
 
   include_examples 'sync requests'
 
-  it 'pushes 10 new patients, updates only address or phone numbers, and pulls updated ones' do
-    first_patients_payload = (1..10).map { build_payload.call }
+  it 'pushes 3 new patients, updates only address or phone numbers, and pulls updated ones' do
+    first_patients_payload = (1..3).map { build_payload.call }
     post sync_route, params: { patients: first_patients_payload }.to_json, headers: headers
     get sync_route, params: {}, headers: headers
     processed_since = JSON(response.body)['processed_since']

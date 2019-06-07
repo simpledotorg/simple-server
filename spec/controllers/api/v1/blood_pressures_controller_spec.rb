@@ -50,12 +50,12 @@ RSpec.describe Api::V1::BloodPressuresController, type: :controller do
     describe 'creates new blood pressures' do
       it 'creates new blood pressures with associated patient' do
         patient = FactoryBot.create(:patient)
-        blood_pressures = (1..10).map do
+        blood_pressures = (1..3).map do
           build_blood_pressure_payload_v1(FactoryBot.build(:blood_pressure, patient: patient))
         end
         post(:sync_from_user, params: { blood_pressures: blood_pressures }, as: :json)
-        expect(BloodPressure.count).to eq 10
-        expect(patient.blood_pressures.count).to eq 10
+        expect(BloodPressure.count).to eq 3
+        expect(patient.blood_pressures.count).to eq 3
         expect(response).to have_http_status(200)
       end
 
@@ -112,8 +112,8 @@ RSpec.describe Api::V1::BloodPressuresController, type: :controller do
 
     before :each do
       set_authentication_headers
-      FactoryBot.create_list(:blood_pressure, 5, facility: facility_in_another_group, updated_at: 3.minutes.ago)
-      FactoryBot.create_list(:blood_pressure, 5, facility: facility_in_same_group, updated_at: 5.minutes.ago)
+      FactoryBot.create_list(:blood_pressure, 2, facility: facility_in_another_group, updated_at: 3.minutes.ago)
+      FactoryBot.create_list(:blood_pressure, 2, facility: facility_in_same_group, updated_at: 5.minutes.ago)
     end
 
     it "only sends data for facilities belonging in the sync group of user's registration facility" do
@@ -122,7 +122,7 @@ RSpec.describe Api::V1::BloodPressuresController, type: :controller do
       response_blood_pressures = JSON(response.body)['blood_pressures']
       response_facilities = response_blood_pressures.map { |blood_pressure| blood_pressure['facility_id']}.to_set
 
-      expect(response_blood_pressures.count).to eq 5
+      expect(response_blood_pressures.count).to eq 2
       expect(response_facilities).not_to include(facility_in_another_group.id)
     end
   end

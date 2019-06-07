@@ -36,10 +36,10 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
       end
 
       it 'creates new patients' do
-        patients = (1..10).map { build_patient_payload }
+        patients = (1..3).map { build_patient_payload }
         post(:sync_from_user, params: { patients: patients }, as: :json)
-        expect(Patient.count).to eq 10
-        expect(Address.count).to eq 10
+        expect(Patient.count).to eq 3
+        expect(Address.count).to eq 3
         expect(PatientPhoneNumber.count).to eq(patients.sum { |patient| patient['phone_numbers'].count })
         expect(response).to have_http_status(200)
       end
@@ -111,7 +111,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
       end
 
-      let(:existing_patients) { FactoryBot.create_list(:patient, 10) }
+      let(:existing_patients) { FactoryBot.create_list(:patient, 3) }
       let(:updated_patients_payload) { existing_patients.map { |patient| updated_patient_payload patient } }
 
       it 'with only updated patient attributes' do
@@ -145,7 +145,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         sync_time = Time.now
         post :sync_from_user, params: { patients: patients_payload }, as: :json
 
-        expect(PatientPhoneNumber.updated_on_server_since(sync_time).count).to eq 10
+        expect(PatientPhoneNumber.updated_on_server_since(sync_time).count).to eq 3
         patients_payload.each do |updated_patient|
           updated_phone_number = updated_patient['phone_numbers'].first
           db_phone_number = PatientPhoneNumber.find(updated_phone_number['id'])
@@ -172,7 +172,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
             .to eq(updated_patient['address'])
         end
 
-        expect(PatientPhoneNumber.updated_on_server_since(sync_time).count).to eq 10
+        expect(PatientPhoneNumber.updated_on_server_since(sync_time).count).to eq 3
         patients_payload.each do |updated_patient|
           updated_phone_number = updated_patient['phone_numbers'].first
           db_phone_number = PatientPhoneNumber.find(updated_phone_number['id'])
@@ -190,12 +190,12 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
       let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
       let(:facility_in_another_group) { FactoryBot.create(:facility) }
 
-      let(:patients_in_another_group) { FactoryBot.create_list(:patient, 5, registration_facility: facility_in_another_group, updated_at: 3.minutes.ago) }
+      let(:patients_in_another_group) { FactoryBot.create_list(:patient, 2, registration_facility: facility_in_another_group, updated_at: 3.minutes.ago) }
 
       before :each do
         set_authentication_headers
-        FactoryBot.create_list(:patient, 5, registration_facility: facility_in_same_group, updated_at: 5.minutes.ago)
-        FactoryBot.create_list(:patient, 5, registration_facility: facility_in_another_group, updated_at: 3.minutes.ago)
+        FactoryBot.create_list(:patient, 2, registration_facility: facility_in_same_group, updated_at: 5.minutes.ago)
+        FactoryBot.create_list(:patient, 2, registration_facility: facility_in_another_group, updated_at: 3.minutes.ago)
       end
 
       it "only sends data for facilities belonging in the sync group of user's registration facility" do
@@ -204,7 +204,7 @@ RSpec.describe Api::V1::PatientsController, type: :controller do
         response_patients = JSON(response.body)['patients']
         response_ids = response_patients.map { |patient| patient['id'] }.to_set
 
-        expect(response_ids.count).to eq 5
+        expect(response_ids.count).to eq 2
         patients_in_another_group.map(&:id).each do |patient_in_another_group_id|
           expect(response_ids).not_to include(patient_in_another_group_id)
         end

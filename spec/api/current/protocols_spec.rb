@@ -11,7 +11,7 @@ describe 'Protocols Current API', swagger_doc: 'current/swagger.json' do
       before :each do
         Timecop.travel(10.minutes.ago) do
           protocol = FactoryBot.create(:protocol)
-          FactoryBot.create_list(:protocol_drug, 10, protocol: protocol)
+          FactoryBot.create_list(:protocol_drug, 3, protocol: protocol)
         end
       end
 
