@@ -6,9 +6,9 @@ RSpec.describe Api::V2::PatientsController, type: :controller do
 
   let(:model) { Patient }
 
-  let(:build_payload) { lambda { build_patient_payload } }
+  let(:build_payload) { lambda { build_patient_payload_v2 } }
   let(:build_invalid_payload) { lambda { build_invalid_patient_payload } }
-  let(:update_payload) { lamda { |record| updated_patient_payload record } }
+  let(:update_payload) { lambda { |record| updated_patient_payload_v2 record } }
   let(:invalid_record) { build_invalid_payload.call }
 
   let(:number_of_schema_errors_in_invalid_payload) { 2 + invalid_record['phone_numbers'].count }
@@ -38,36 +38,60 @@ RSpec.describe Api::V2::PatientsController, type: :controller do
       end
 
       it 'creates new patients' do
-        patients = (1..10).map { build_patient_payload }
+        patients = (1..10).map { build_patient_payload_v2 }
         post(:sync_from_user, params: { patients: patients }, as: :json)
         expect(Patient.count).to eq 10
         expect(Address.count).to eq 10
         expect(PatientPhoneNumber.count).to eq(patients.sum { |patient| patient['phone_numbers'].count })
         expect(response).to have_http_status(200)
       end
+
+      it 'defaults recorded_at to device_created_at' do
+        patient = FactoryBot.build(:patient)
+        patient_payload = build_patient_payload_v2(patient)
+        post(:sync_from_user, params: { patients: [patient_payload] }, as: :json)
+
+        patient_in_db = Patient.find(patient.id)
+        expect(patient_in_db.recorded_at.to_i).to eq(patient_in_db.device_created_at.to_i)
+      end
+
+      it "sets recorded_at to the earliest bp's recorded_at in case patient is synced later" do
+        patient = FactoryBot.build(:patient)
+        blood_pressure_recorded_at = 1.month.ago
+        FactoryBot.create(:blood_pressure,
+                          patient_id: patient.id,
+                          device_created_at: blood_pressure_recorded_at)
+
+        patient_payload = build_patient_payload_v2(patient)
+        post :sync_from_user, params: { patients: [patient_payload] }, as: :json
+
+        patient_in_db = Patient.find(patient.id)
+        expect(patient_in_db.recorded_at.to_i).to eq(blood_pressure_recorded_at.to_i)
+      end
+
       it 'creates new patients without address' do
-        post(:sync_from_user, params: { patients: [build_patient_payload.except('address')] }, as: :json)
+        post(:sync_from_user, params: { patients: [build_patient_payload_v2.except('address')] }, as: :json)
         expect(Patient.count).to eq 1
         expect(Address.count).to eq 0
         expect(response).to have_http_status(200)
       end
 
       it 'creates new patients without phone numbers' do
-        post(:sync_from_user, params: { patients: [build_patient_payload.except('phone_numbers')] }, as: :json)
+        post(:sync_from_user, params: { patients: [build_patient_payload_v2.except('phone_numbers')] }, as: :json)
         expect(Patient.count).to eq 1
         expect(PatientPhoneNumber.count).to eq 0
         expect(response).to have_http_status(200)
       end
 
       it 'associates registration user with the patients' do
-        post(:sync_from_user, params: { patients: [build_patient_payload.except('phone_numbers')] }, as: :json)
+        post(:sync_from_user, params: { patients: [build_patient_payload_v2.except('phone_numbers')] }, as: :json)
         expect(response).to have_http_status(200)
         expect(Patient.count).to eq 1
         expect(Patient.first.registration_user).to eq request_user
       end
 
       it 'associates registration facility with the patients' do
-        post(:sync_from_user, params: { patients: [build_patient_payload.except('phone_numbers')] }, as: :json)
+        post(:sync_from_user, params: { patients: [build_patient_payload_v2.except('phone_numbers')] }, as: :json)
         expect(response).to have_http_status(200)
         expect(Patient.count).to eq 1
         expect(Patient.first.registration_facility).to eq request_facility
@@ -82,7 +106,7 @@ RSpec.describe Api::V2::PatientsController, type: :controller do
       end
 
       let(:existing_patients) { FactoryBot.create_list(:patient, 10) }
-      let(:updated_patients_payload) { existing_patients.map { |patient| updated_patient_payload patient } }
+      let(:updated_patients_payload) { existing_patients.map { |patient| updated_patient_payload_v2 patient } }
 
       it 'with only updated patient attributes' do
         patients_payload = updated_patients_payload.map { |patient| patient.except('address', 'phone_numbers', 'business_identifiers') }
@@ -95,6 +119,7 @@ RSpec.describe Api::V2::PatientsController, type: :controller do
                    .except('address_id')
                    .except('registration_user_id')
                    .except('registration_facility_id')
+                   .except('recorded_at')
                    .except('test_data'))
             .to eq(updated_patient.with_int_timestamps)
         end
@@ -137,6 +162,7 @@ RSpec.describe Api::V2::PatientsController, type: :controller do
                    .except('address_id')
                    .except('registration_user_id')
                    .except('registration_facility_id')
+                   .except('recorded_at')
                    .except('test_data'))
             .to eq(updated_patient.except('address', 'phone_numbers', 'business_identifiers'))
 

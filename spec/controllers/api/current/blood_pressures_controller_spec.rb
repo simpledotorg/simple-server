@@ -52,6 +52,76 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
         expect(patient.blood_pressures.count).to eq 10
         expect(response).to have_http_status(200)
       end
+
+      context 'recorded_at is sent' do
+        it 'sets the recorded_at sent in the params' do
+          recorded_at = 1.month.ago
+          blood_pressure = build_blood_pressure_payload(FactoryBot.build(:blood_pressure, recorded_at: recorded_at))
+
+          post(:sync_from_user, params: { blood_pressures: [blood_pressure] }, as: :json)
+
+          bp = BloodPressure.find(blood_pressure['id'])
+          expect(bp.recorded_at.to_i).to eq(recorded_at.to_i)
+        end
+
+        it 'does not modify the recorded_at for a patient if params have recorded_at' do
+          patient_recorded_at = 4.months.ago
+          patient = FactoryBot.create(:patient, recorded_at: patient_recorded_at)
+          older_bp_recording_date = 5.months.ago
+          blood_pressure = build_blood_pressure_payload(FactoryBot.build(:blood_pressure,
+                                                                         patient: patient,
+                                                                         recorded_at: older_bp_recording_date))
+          post(:sync_from_user, params: { blood_pressures: [blood_pressure] }, as: :json)
+
+          patient.reload
+          expect(patient.recorded_at.to_i).to eq(patient_recorded_at.to_i)
+        end
+      end
+
+      context 'recorded_at is not sent' do
+        it 'defaults recorded_at to device_created_at' do
+          blood_pressure = build_blood_pressure_payload(FactoryBot.build(:blood_pressure)).except('recorded_at')
+          post(:sync_from_user, params: { blood_pressures: [blood_pressure] }, as: :json)
+
+          bp = BloodPressure.find(blood_pressure['id'])
+          expect(bp.recorded_at).to eq(bp.device_created_at)
+        end
+
+        it "sets patient's recorded_at to bp's device_created_at if the bp is older" do
+          patient = FactoryBot.create(:patient)
+          older_bp_recording_date = 2.months.ago
+          blood_pressure = build_blood_pressure_payload(
+            FactoryBot.build(:blood_pressure,
+                             patient: patient,
+                             device_created_at: older_bp_recording_date)).except('recorded_at')
+          post(:sync_from_user, params: { blood_pressures: [blood_pressure] }, as: :json)
+
+          patient.reload
+          expect(patient.recorded_at.to_i).to eq(older_bp_recording_date.to_i)
+        end
+
+        it "sets patient's recorded_at to their oldest bp's device_created_at" do
+          patient = FactoryBot.create(:patient)
+          two_months_ago = 2.months.ago
+          three_months_ago = 3.months.ago
+          bp_recorded_two_months_ago = build_blood_pressure_payload(
+            FactoryBot.build(:blood_pressure,
+                             patient: patient,
+                             device_created_at: two_months_ago))
+                                         .except('recorded_at')
+          bp_recorded_three_months_ago = build_blood_pressure_payload(
+            FactoryBot.build(:blood_pressure,
+                             patient: patient,
+                             device_created_at: three_months_ago))
+                                           .except('recorded_at')
+
+          post(:sync_from_user, params: { blood_pressures: [bp_recorded_three_months_ago] }, as: :json)
+          post(:sync_from_user, params: { blood_pressures: [bp_recorded_two_months_ago] }, as: :json)
+
+          patient.reload
+          expect(patient.recorded_at.to_i).to eq(three_months_ago.to_i)
+        end
+      end
     end
   end
 
@@ -102,7 +172,7 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
         get :sync_to_user, params: { limit: 15 }
 
         response_blood_pressures = JSON(response.body)['blood_pressures']
-        response_facilities = response_blood_pressures.map { |blood_pressure| blood_pressure['facility_id']}.to_set
+        response_facilities = response_blood_pressures.map { |blood_pressure| blood_pressure['facility_id'] }.to_set
 
         expect(response_blood_pressures.count).to eq 10
         expect(response_facilities).to match_array([request_facility.id, facility_in_same_group.id])

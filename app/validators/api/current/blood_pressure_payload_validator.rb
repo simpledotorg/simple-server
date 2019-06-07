@@ -1,5 +1,4 @@
 class Api::Current::BloodPressurePayloadValidator < Api::Current::PayloadValidator
-
   attr_accessor(
     :id,
     :systolic,
@@ -9,7 +8,8 @@ class Api::Current::BloodPressurePayloadValidator < Api::Current::PayloadValidat
     :user_id,
     :created_at,
     :updated_at,
-    :deleted_at
+    :deleted_at,
+    :recorded_at
   )
 
   validate :validate_schema
