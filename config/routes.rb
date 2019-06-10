@@ -166,6 +166,10 @@ Rails.application.routes.draw do
     resources :facilities, only: [:index]
     resources :facility_groups do
       resources :facilities
+      collection do
+        get 'upload'
+        post 'upload'
+      end
     end
 
     resources :protocols do

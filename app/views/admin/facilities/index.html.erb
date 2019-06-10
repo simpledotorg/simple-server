@@ -1,8 +1,12 @@
 <% if policy(FacilityGroup).new? %>
-  <%= link_to '+ Facility group', new_admin_facility_group_path, class: "btn btn-sm btn-primary float-right" %>
+  <div class="page-header">
+    <h1 class="page-title"">All facilities</h1>
+    <nav class="page-nav">
+      <%= link_to '+ Facility group', new_admin_facility_group_path, class: "btn btn-sm btn-primary" %>
+      <%= link_to '+ Upload Facilities CSV', upload_admin_facility_groups_path, class: "btn btn-sm btn-primary" %>
+    </nav>
+  </div>
 <% end %>
-
-<h1 style="margin-bottom: 32px;">All facilities</h1>
 
 <% @organizations.order(:name).each do |organization| %>
   <% if @organizations.size > 1 %><h1><%= organization.name %></h1><% end %>
