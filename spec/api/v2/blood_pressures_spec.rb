@@ -17,7 +17,7 @@ describe 'BloodPressures V2 API', swagger_doc: 'v2/swagger.json' do
         let(:HTTP_X_FACILITY_ID) { request_facility.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
-        let(:blood_pressures) { { blood_pressures: (1..10).map { build_blood_pressure_payload } } }
+        let(:blood_pressures) { { blood_pressures: (1..3).map { build_blood_pressure_payload } } }
 
         run_test!
       end
@@ -30,7 +30,7 @@ describe 'BloodPressures V2 API', swagger_doc: 'v2/swagger.json' do
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
         schema Api::V2::Schema.sync_from_user_errors
-        let(:blood_pressures) { { blood_pressures: (1..10).map { build_invalid_blood_pressure_payload } } }
+        let(:blood_pressures) { { blood_pressures: (1..3).map { build_invalid_blood_pressure_payload } } }
         run_test!
       end
     end
@@ -46,7 +46,7 @@ describe 'BloodPressures V2 API', swagger_doc: 'v2/swagger.json' do
 
       before :each do
         Timecop.travel(10.minutes.ago) do
-          FactoryBot.create_list(:blood_pressure, 10)
+          FactoryBot.create_list(:blood_pressure, 3)
         end
       end
 

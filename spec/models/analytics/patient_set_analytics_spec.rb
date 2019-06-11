@@ -16,7 +16,7 @@ RSpec.describe Analytics::PatientSetAnalytics do
   before do
     # old patients recorded as hypertensive
     old_patients = Timecop.travel(one_year_ago) do
-      old_patients = create_list(:patient, 5)
+      old_patients = create_list(:patient, 3)
       old_patients.each { |patient| create(:blood_pressure, :high, patient: patient) }
       old_patients
     end
@@ -29,7 +29,7 @@ RSpec.describe Analytics::PatientSetAnalytics do
     # newly enrolled patients each month
     [first_jan, first_feb, first_mar].each do |first_of_month|
       Timecop.travel(first_of_month) do
-        patients = create_list(:patient, 5)
+        patients = create_list(:patient, 2)
         patients.each do |patient|
           create(:blood_pressure,
                  :under_control,
@@ -51,13 +51,13 @@ RSpec.describe Analytics::PatientSetAnalytics do
 
   describe '#unique_patients_count' do
     it 'returns the number of unique patients in the list' do
-      expect(analytics.unique_patients_count).to eq(20)
+      expect(analytics.unique_patients_count).to eq(9)
     end
   end
 
   describe '#newly_enrolled_patients_count' do
     it 'returns the number of patients newly enrolled in the period' do
-      expect(analytics.newly_enrolled_patients_count).to eq(15)
+      expect(analytics.newly_enrolled_patients_count).to eq(6)
     end
   end
 
@@ -65,9 +65,9 @@ RSpec.describe Analytics::PatientSetAnalytics do
     it 'returns the number of patients newly enrolled per month' do
       expect(analytics.newly_enrolled_patients_count_per_month(4))
         .to include(first_dec_prev_year => 0,
-                    first_jan => 5,
-                    first_feb => 5,
-                    first_mar => 5)
+                    first_jan => 2,
+                    first_feb => 2,
+                    first_mar => 2)
     end
   end
 
@@ -79,17 +79,17 @@ RSpec.describe Analytics::PatientSetAnalytics do
 
   describe '#non_returning_hypertensive_patients_count' do
     it 'return the number of patients enrolled as hypertensives that have not had a BP recorded in the period' do
-      expect(analytics.non_returning_hypertensive_patients_count).to eq(3)
+      expect(analytics.non_returning_hypertensive_patients_count).to eq(1)
     end
   end
 
   describe '#non_returning_hypertensive_patients_count_per_month' do
     it 'return the number of patients enrolled as hypertensives that have not had a BP recorded per month' do
       expect(analytics.non_returning_hypertensive_patients_count_per_month(4))
-        .to eq(first_dec_prev_year => 3,
-               first_jan => 3,
-               first_feb => 4,
-               first_mar => 4)
+        .to eq(first_dec_prev_year => 1,
+               first_jan => 1,
+               first_feb => 2,
+               first_mar => 2)
     end
   end
 
@@ -100,11 +100,11 @@ RSpec.describe Analytics::PatientSetAnalytics do
         Date.new(2019, 1, 06) => 0,
         Date.new(2019, 1, 13) => 0,
         Date.new(2019, 1, 20) => 0,
-        Date.new(2019, 1, 27) => 5,
+        Date.new(2019, 1, 27) => 2,
         Date.new(2019, 2, 03) => 0,
         Date.new(2019, 2, 10) => 0,
         Date.new(2019, 2, 17) => 0,
-        Date.new(2019, 2, 24) => 5,
+        Date.new(2019, 2, 24) => 2,
         Date.new(2019, 3, 03) => 0,
         Date.new(2019, 3, 10) => 0,
         Date.new(2019, 3, 17) => 0,
@@ -122,7 +122,7 @@ RSpec.describe Analytics::PatientSetAnalytics do
 
       Timecop.travel(from_time - ControlRateQuery::COHORT_DELTA) do
         # newly enrolled patients in the cohort
-        cohort_patients = create_list(:patient, 5)
+        cohort_patients = create_list(:patient, 3)
         cohort_patients.each { |patient| create(:blood_pressure, :high, patient: patient) }
       end
 
@@ -137,20 +137,20 @@ RSpec.describe Analytics::PatientSetAnalytics do
       context 'number of patients now under control / number of hypertensives patients recorded in cohort' do
         it 'returns the control rate for the set of patients in the period' do
           expect(analytics.control_rate)
-            .to eq(control_rate: 20,
-                   hypertensive_patients_in_cohort: 5,
+            .to eq(control_rate: 33,
+                   hypertensive_patients_in_cohort: 3,
                    patients_under_control_in_period: 1)
         end
       end
     end
 
     describe '#control_rate_per_month' do
-      it 'returns the number of blood pressures recorded per week for a group of patients' do
+      it 'returns the control rate per month for a group of patients' do
         expected_counts = {
           Date.new(2018, 10, 1) => 0,
           Date.new(2018, 11, 1) => 0,
           Date.new(2018, 12, 1) => 0,
-          Date.new(2019, 1, 1) => 20,
+          Date.new(2019, 1, 1) => 33,
           Date.new(2019, 2, 1) => 0,
           Date.new(2019, 3, 1) => 0,
         }
