@@ -1,12 +1,6 @@
 <h1>Upload Facilities</h1>
 
 Upload a filled in csv file in this format to bulk create facilities
-<script>$(document).on('ready turbolinks:load', function() {
-          $('.custom-file-input').change(function(){
-            $('.custom-file-label').text(this.value);
-          });
-        });
-</script>
 <%= bootstrap_form_tag(url: '/admin/facility_groups/upload' , multipart: true) do |f| %>
   <%= f.file_field :facilities_csv %>
   <%= f.primary 'Upload' %>
