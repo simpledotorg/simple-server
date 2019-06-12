@@ -12,7 +12,7 @@ describe 'Analytics V2 API', swagger_doc: 'v2/swagger.json' do
       before :each do
         4.times do |w|
           Timecop.travel(w.weeks.ago) do
-            FactoryBot.create_list(:patient, 5 + Random.rand(10))
+            FactoryBot.create_list(:patient, 3)
           end
         end
       end
@@ -41,7 +41,7 @@ describe 'Analytics V2 API', swagger_doc: 'v2/swagger.json' do
       before :each do
         4.times do |w|
           Timecop.travel(w.weeks.ago) do
-            FactoryBot.create_list(:patient, 5 + Random.rand(10))
+            FactoryBot.create_list(:patient, 3)
           end
         end
       end

@@ -13,7 +13,7 @@ RSpec.describe PatientsController, type: :controller do
 
     let!(:facility_1) { create(:facility, facility_group: facility_group) }
     let!(:patients_to_followup_in_facility_1) do
-      patients = create_list(:patient, 50,
+      patients = create_list(:patient, 3,
                              registration_facility: facility_1,
                              device_created_at: 10.days.ago)
       patients.each do |patient|
@@ -24,7 +24,7 @@ RSpec.describe PatientsController, type: :controller do
 
     let!(:facility_2) { create(:facility, facility_group: facility_group) }
     let!(:patients_to_followup_in_facility_2) do
-      patients = create_list(:patient, 50,
+      patients = create_list(:patient, 3,
                              registration_facility: facility_2,
                              device_created_at: 10.days.ago)
       patients.each do |patient|
@@ -59,16 +59,18 @@ RSpec.describe PatientsController, type: :controller do
     end
 
     describe 'pagination' do
-      it 'shows 20 records per page by default' do
+      it 'shows "Pagination::DEFAULT_PAGE_SIZE" records per page by default' do
+        stub_const("Pagination::DEFAULT_PAGE_SIZE", 5)
         get :index, params: {}
 
-        expect(response.body.scan(/recorded at/).length).to be(20)
+        expect(response.body.scan(/recorded at/).length).to be(5)
       end
 
       it 'shows the selected number of records per page' do
+        stub_const("Pagination::DEFAULT_PAGE_SIZE", 5)
         get :index, params: { per_page: 50 }
 
-        expect(response.body.scan(/recorded at/).length).to be(50)
+        expect(response.body.scan(/recorded at/).length).to be(6)
       end
 
       it 'shows all records if All is selected' do

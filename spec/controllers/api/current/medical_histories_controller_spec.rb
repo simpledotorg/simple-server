@@ -53,9 +53,9 @@ RSpec.describe Api::Current::MedicalHistoriesController, type: :controller do
     before :each do
       set_authentication_headers
 
-      FactoryBot.create_list(:medical_history, 5, patient: patient_in_request_facility, updated_at: 7.minutes.ago)
-      FactoryBot.create_list(:medical_history, 5, patient: patient_in_same_group, updated_at: 5.minutes.ago)
-      FactoryBot.create_list(:medical_history, 5, patient: patient_in_another_group, updated_at: 3.minutes.ago)
+      FactoryBot.create_list(:medical_history, 2, patient: patient_in_request_facility, updated_at: 7.minutes.ago)
+      FactoryBot.create_list(:medical_history, 2, patient: patient_in_same_group, updated_at: 5.minutes.ago)
+      FactoryBot.create_list(:medical_history, 2, patient: patient_in_another_group, updated_at: 3.minutes.ago)
     end
 
     it "only sends data for facilities belonging in the sync group of user's registration facility" do
@@ -64,7 +64,7 @@ RSpec.describe Api::Current::MedicalHistoriesController, type: :controller do
       response_medical_histories = JSON(response.body)['medical_histories']
       response_patients = response_medical_histories.map { |medical_history| medical_history['patient_id'] }.to_set
 
-      expect(response_medical_histories.count).to eq 10
+      expect(response_medical_histories.count).to eq 4
       expect(response_patients).not_to include(patient_in_another_group.id)
     end
   end
