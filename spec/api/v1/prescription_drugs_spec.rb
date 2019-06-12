@@ -14,7 +14,7 @@ describe 'PrescriptionDrugs V1 API', swagger_doc: 'v1/swagger.json' do
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
-        let(:prescription_drugs) { { prescription_drugs: (1..10).map { build_prescription_drug_payload } } }
+        let(:prescription_drugs) { { prescription_drugs: (1..3).map { build_prescription_drug_payload } } }
         run_test!
       end
 
@@ -24,7 +24,7 @@ describe 'PrescriptionDrugs V1 API', swagger_doc: 'v1/swagger.json' do
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
         schema Api::V1::Schema.sync_from_user_errors
-        let(:prescription_drugs) { { prescription_drugs: (1..10).map { build_invalid_prescription_drug_payload } } }
+        let(:prescription_drugs) { { prescription_drugs: (1..3).map { build_invalid_prescription_drug_payload } } }
         run_test!
       end
     end
@@ -39,7 +39,7 @@ describe 'PrescriptionDrugs V1 API', swagger_doc: 'v1/swagger.json' do
 
       before :each do
         Timecop.travel(10.minutes.ago) do
-          FactoryBot.create_list(:prescription_drug, 10)
+          FactoryBot.create_list(:prescription_drug, 3)
         end
       end
 

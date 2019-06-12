@@ -13,7 +13,7 @@ RSpec.shared_examples 'sync requests' do
   let(:response_key) { model.to_s.underscore.pluralize }
   let(:empty_payload) { Hash[response_key.to_sym, []] }
   let(:valid_payload) { Hash[response_key.to_sym, [build_payload.call]] }
-  let(:created_records) { (1..10).map { build_payload.call } }
+  let(:created_records) { (1..5).map { build_payload.call } }
   let(:many_valid_records) { Hash[response_key.to_sym, created_records] }
   let(:expected_response) do
     valid_payload[response_key.to_sym].map do |payload|
@@ -27,7 +27,7 @@ RSpec.shared_examples 'sync requests' do
   let(:updated_records) do
     model
       .find(created_records.map { |record| record['id'] })
-      .take(5)
+      .take(2)
       .map(&update_payload)
   end
   let(:updated_payload) { Hash[response_key.to_sym, updated_records] }
@@ -72,7 +72,7 @@ RSpec.shared_examples 'sync requests' do
     expect(response_body['processed_since'].to_time.to_i).to eq(model.first.updated_at.to_i)
   end
 
-  it 'pushes 10 new blood_pressures, updates 5, and pulls only updated ones' do
+  it 'pushes 5 new blood_pressures, updates 2, and pulls only updated ones' do
     post sync_route, params: many_valid_records.to_json, headers: headers
     get sync_route, params: {}, headers: headers
     processed_since = JSON(response.body)['processed_since']

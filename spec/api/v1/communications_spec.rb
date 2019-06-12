@@ -14,7 +14,7 @@ describe 'Communication V1 API', swagger_doc: 'v1/swagger.json' do
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
-        let(:communications) { { communications: (1..10).map { build_communication_payload } } }
+        let(:communications) { { communications: (1..3).map { build_communication_payload } } }
 
         run_test!
       end
@@ -25,7 +25,7 @@ describe 'Communication V1 API', swagger_doc: 'v1/swagger.json' do
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
         schema Api::V1::Schema.sync_from_user_errors
-        let(:communications) { { communications: (1..10).map { build_invalid_communication_payload } } }
+        let(:communications) { { communications: (1..3).map { build_invalid_communication_payload } } }
         run_test!
       end
     end
@@ -40,7 +40,7 @@ describe 'Communication V1 API', swagger_doc: 'v1/swagger.json' do
 
       before :each do
         Timecop.travel(10.minutes.ago) do
-          FactoryBot.create_list(:communication, 10)
+          FactoryBot.create_list(:communication, 3)
         end
       end
 

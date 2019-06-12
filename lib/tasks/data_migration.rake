@@ -82,9 +82,43 @@ namespace :data_migration do
     puts "Number of unprocessed/errored defaulters = #{unprocessed_or_errored_defaulters_count}"
   end
 
+  desc "Set default 'recorded_at' for existing blood pressure and patient records"
+  task set_default_recorded_at_for_existing_blood_pressures: :environment do
+    # For BloodPressure records,
+    # we default to the device_created_at
+    puts 'Fetching BloodPressure where recorded_at is nil...'
+    blood_pressures = BloodPressure.where(recorded_at: nil)
+
+    puts "Total number of BloodPressure records to be updated = #{blood_pressures.size}"
+
+    puts 'Updating BloodPressure recorded_at to be device_created_at...'
+    blood_pressures.update_all('recorded_at = device_created_at')
+
+    # Patients' recorded_at is set to their earliest BP's device_created_at if older
+    puts 'Fetching Patients where recorded_at is nil'
+    patients =
+      Patient.select(%Q(
+      DISTINCT ON(patients.id) patients.id,
+patients.device_created_at AS patient_registration_date,
+blood_pressures.recorded_at AS oldest_bp_recorded_at))
+        .left_joins(:blood_pressures)
+        .order('patients.id', 'blood_pressures.recorded_at')
+        .where('patients.recorded_at IS NULL')
+
+    puts 'Updating Patients recorded_at...'
+    patients.each do |patient|
+      patient_recorded_at = patient.oldest_bp_recorded_at.present? ?
+                              [patient.oldest_bp_recorded_at, patient.patient_registration_date].min :
+                              patient.patient_registration_date
+      Patient.where(id: patient.id).update_all(recorded_at: patient_recorded_at)
+    end
+
+    puts "Total number of Patient records updated = #{patients.size}"
+  end
+
   desc "Create master users for users"
   task create_master_users_for_users: :environment do
-    User.all.each do |user|
+    User.where.not(sync_approval_status: nil).all.each do |user|
       next if MasterUser.find_by(id: user.id).present?
       user.transaction do
         user_attributes = user.attributes.with_indifferent_access
@@ -105,6 +139,7 @@ namespace :data_migration do
           :password_digest,
           :otp,
           :otp_valid_until,
+          :registration_facility_id,
           :logged_in_at,
           :access_token,
           :created_at,
@@ -112,7 +147,7 @@ namespace :data_migration do
           :deleted_at
         ))
 
-        master_user.master_user_authentications.create(
+        master_user.user_authentications.create(
           authenticatable: phone_number_authentication
         )
       end
@@ -149,7 +184,7 @@ namespace :data_migration do
 
         email_authentication.save(validate: false)
 
-        master_user.master_user_authentications.create(
+        master_user.user_authentications.create(
           authenticatable: email_authentication
         )
       end
@@ -170,7 +205,7 @@ namespace :data_migration do
   end
 
   desc 'Move all the user phone numbers from the call logs to a de-normalized caller_phone_number field'
-  task de_normalize_user_phone_numbers_in_call_logs: :environment  do
+  task de_normalize_user_phone_numbers_in_call_logs: :environment do
     CallLog.all.each do |call_log|
       call_log.caller_phone_number = call_log.user.phone_number
       call_log.save!

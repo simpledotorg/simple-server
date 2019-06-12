@@ -5,12 +5,12 @@ RSpec.describe AppointmentNotificationService do
     let!(:user) { create(:user) }
     let!(:facility_1) { create(:facility) }
     let!(:facility_2) { create(:facility) }
-    let!(:overdue_appointments_from_facility_1) { create_list(:appointment, 10, :overdue, facility: facility_1) }
-    let!(:overdue_appointments_from_facility_2) { create_list(:appointment, 10, :overdue, facility: facility_2) }
+    let!(:overdue_appointments_from_facility_1) { create_list(:appointment, 4, :overdue, facility: facility_1) }
+    let!(:overdue_appointments_from_facility_2) { create_list(:appointment, 4, :overdue, facility: facility_2) }
     let!(:overdue_appointments) { overdue_appointments_from_facility_1 + overdue_appointments_from_facility_2 }
     let!(:recently_overdue_appointments) do
       create_list(:appointment,
-                  10,
+                  2,
                   facility: facility_1,
                   scheduled_date: 1.day.ago,
                   status: :scheduled)
@@ -36,7 +36,7 @@ RSpec.describe AppointmentNotificationService do
       AppointmentNotification::Worker.drain
 
       eligible_appointments = overdue_appointments.select { |a| a.communications.present? }
-      expect(eligible_appointments.count).to eq(20)
+      expect(eligible_appointments.count).to eq(8)
     end
 
     it 'should ignore appointments which are recently overdue (< 3 days)' do
@@ -80,7 +80,7 @@ RSpec.describe AppointmentNotificationService do
       AppointmentNotification::Worker.drain
 
       eligible_appointments = overdue_appointments.select { |a| a.communications.present? }
-      expect(eligible_appointments.count).to eq(10)
+      expect(eligible_appointments.count).to eq(4)
     end
 
     it 'should only send reminder of half the appointments if the rollout percentage is 50%' do
@@ -91,7 +91,7 @@ RSpec.describe AppointmentNotificationService do
       AppointmentNotification::Worker.drain
 
       eligible_appointments = overdue_appointments.select { |a| a.communications.present? }
-      expect(eligible_appointments.count).to eq(5)
+      expect(eligible_appointments.count).to eq(2)
     end
   end
 end

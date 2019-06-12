@@ -1,17 +1,11 @@
 class Analytics::FacilitiesController < AnalyticsController
   before_action :set_facility
   before_action :set_organization
-  before_action :set_facility_group
   before_action :set_organization_district
 
   def show
     @facility_analytics = @facility.patient_set_analytics(@from_time, @to_time)
     @user_analytics = user_analytics
-  end
-
-  def graphics
-    @current_month = Date.today.at_beginning_of_month.to_date
-    @facility_analytics = @facility.patient_set_analytics(@from_time, @to_time)
   end
 
   private
@@ -20,10 +14,6 @@ class Analytics::FacilitiesController < AnalyticsController
     facility_id = params[:id] || params[:facility_id]
     @facility = Facility.friendly.find(facility_id)
     authorize(@facility)
-  end
-
-  def set_facility_group
-    @facility_group = @facility.facility_group
   end
 
   def set_organization_district

@@ -31,7 +31,7 @@ RSpec.describe AuditLogPolicy::Scope do
   let(:subject) { described_class }
 
   before :each do
-    FactoryBot.create_list(:audit_log, 20)
+    FactoryBot.create_list(:audit_log, 3)
   end
 
   describe "owner" do
