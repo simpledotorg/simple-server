@@ -56,6 +56,11 @@ en:
     registration_facility: "Registration Facility"
     subject: 'PIN Reset: User %{full_name} is requesting access.'
     allow_or_deny_access: "Allow or deny access"
+  anonymized_data_download_email:
+    accessible_districts: "User will have access to anonymized data from the following district's facilities"
+    accessible_facilities: 'User will have access to anonymized data from the following facilities'
+    organization: 'Organization'
+    subject: 'Anonymized Data dump: Requested by User %{full_name}'
 
   admin:
     reset_otp_alert: 'Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP'

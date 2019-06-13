@@ -3,7 +3,7 @@ class AnonymizedDataDownloadMailer < ApplicationMailer
 
   def mail_anonymized_data
     @user = params[:user]
-    subject = 'Anonymized Data dump: Requested by User %{@user.full_name}'
+    subject = 'Anonymized Data dump: Requested by User %{full_name}'
     mail(subject: subject,
          from: from,
          to: @user.email)
