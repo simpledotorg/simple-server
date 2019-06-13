@@ -6,6 +6,7 @@ class AnonymizedDataDownloadJob < ApplicationJob
   DEFAULT_RETRY_SECONDS = 5.minutes.seconds.to_i
 
   def perform(*args)
-    puts 'Hello from Data Anon job!'
+    status = AnonymizedDataDownloadService.new.execute
+    puts "Status - #{status}"
   end
 end
