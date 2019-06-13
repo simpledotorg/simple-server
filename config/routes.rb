@@ -147,7 +147,9 @@ Rails.application.routes.draw do
   namespace :analytics do
     resources :facilities, only: [:show]
     resources :organizations do
-      resources :districts, only: [:show]
+      resources :districts, only: [:show] do
+        get 'share', to: 'districts#share_anonymized_data'
+      end
     end
   end
 

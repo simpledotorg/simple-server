@@ -11,6 +11,14 @@ class Analytics::DistrictsController < AnalyticsController
     @facility_analytics = facility_analytics(@from_time, @to_time)
   end
 
+  def share_anonymized_data
+    recipient_role = current_admin.role
+    recipient_email = current_admin.email
+    recipient_name = recipient_email.split('@').first
+
+    AnonymizedDataDownloadJob.perform_later(recipient_name, recipient_email, recipient_role)
+  end
+
   private
 
   def set_organization

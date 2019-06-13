@@ -60,7 +60,7 @@ en:
     accessible_districts: "User will have access to anonymized data from the following district's facilities"
     accessible_facilities: 'User will have access to anonymized data from the following facilities'
     organization: 'Organization'
-    subject: 'Anonymized Data dump: Requested by User %{full_name}'
+    subject: 'Anonymized Data dump: Requested by User %{recipient_name} (%{recipient_role})'
 
   admin:
     reset_otp_alert: 'Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP'
@@ -70,6 +70,7 @@ en:
     denied_access_to_user: '%{admin_name} denied access'
     dashboard_title: "Simple Server"
     phi_download_alert: "You are about to download confidental patient data. Are you sure you want to proceed?"
+    phi_anonymized_download_alert: "You are about to download confidental (anonymized) patient data. Are you sure you want to proceed?"
 
   api:
     documentation:
