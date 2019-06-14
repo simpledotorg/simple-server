@@ -42,6 +42,16 @@ class Admin::FacilitiesController < AdminController
     redirect_to admin_facilities_url, notice: 'Facility was successfully deleted.'
   end
 
+  def upload
+    authorize FacilityGroup
+    if params[:upload_facilities_file]
+      flash[:notice] = validate_upload_facility_file
+      render :upload
+    else
+      render :upload
+    end
+  end
+
   private
 
   def set_facility
@@ -66,5 +76,11 @@ class Admin::FacilitiesController < AdminController
       :latitude,
       :longitude
     )
+  end
+
+  def validate_upload_facility_file
+    file = params[:upload_facilities_file]
+    errors = []
+    errors_str = errors.join(", ")
   end
 end

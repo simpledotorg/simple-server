@@ -48,15 +48,6 @@ class Admin::FacilityGroupsController < AdminController
     end
   end
 
-  def upload
-    authorize FacilityGroup
-    if params[:facilities_csv]
-      redirect_to admin_facilities_url, notice: "File uploaded #{params[:facilities_csv].original_filename}"
-    else
-      render :upload
-    end
-  end
-
   private
 
   def set_organizations
