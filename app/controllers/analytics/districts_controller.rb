@@ -3,7 +3,7 @@ class Analytics::DistrictsController < AnalyticsController
   before_action :set_district
 
   def show
-    @analytics = @organization_district.dashboard_analytics
+    @analytics = @organization_district.analytics_by_facility
   end
 
   private
