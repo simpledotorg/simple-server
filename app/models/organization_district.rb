@@ -4,7 +4,7 @@ class OrganizationDistrict < Struct.new(:district_name, :organization)
   end
 
   def analytics_by_facility
-    RegisteredPatientsInDistrictQuery
+    DistrictAnalyticsQuery
       .new(district_name: district_name)
       .by_facility
   end
