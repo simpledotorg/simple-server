@@ -12,10 +12,10 @@ RSpec.describe Api::V2::FacilitiesController, type: :controller do
   describe 'a working V2 sync controller sending records' do
     before :each do
       Timecop.travel(15.minutes.ago) do
-        create_record_list(5)
+        create_record_list(2)
       end
       Timecop.travel(14.minutes.ago) do
-        create_record_list(5)
+        create_record_list(2)
       end
     end
 
@@ -31,7 +31,7 @@ RSpec.describe Api::V2::FacilitiesController, type: :controller do
       end
 
       it 'only sends facilities that belong to a facility group' do
-        facilities_without_group = FactoryBot.create_list(:facility, 5, facility_group: nil)
+        facilities_without_group = FactoryBot.create_list(:facility, 2, facility_group: nil)
         get :sync_to_user
 
         response_body = JSON(response.body)
@@ -40,11 +40,11 @@ RSpec.describe Api::V2::FacilitiesController, type: :controller do
       end
 
       it 'Returns new records added since last sync' do
-        expected_records = create_record_list(5, updated_at: 5.minutes.ago)
+        expected_records = create_record_list(2, updated_at: 5.minutes.ago)
         get :sync_to_user, params: { process_token: make_process_token({ other_facilities_processed_since: 10.minutes.ago }) }
 
         response_body = JSON(response.body)
-        expect(response_body[response_key].count).to eq 5
+        expect(response_body[response_key].count).to eq 2
 
         expect(response_body[response_key].map { |record| record['id'] }.to_set)
           .to eq(expected_records.map(&:id).to_set)
@@ -76,7 +76,7 @@ RSpec.describe Api::V2::FacilitiesController, type: :controller do
         it 'Returns all the records on server over multiple small batches' do
           get :sync_to_user, params: {
             process_token: make_process_token({ other_facilities_processed_since: 20.minutes.ago }),
-            limit: 7
+            limit: 2
           }
 
           response_1 = JSON(response.body)

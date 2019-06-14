@@ -13,7 +13,7 @@ RSpec.shared_examples 'current API sync requests' do
   let(:response_key) { model.to_s.underscore.pluralize }
   let(:empty_payload) { Hash[response_key.to_sym, []] }
   let(:valid_payload) { Hash[response_key.to_sym, [build_payload.call]] }
-  let(:created_records) { (1..10).map { build_payload.call } }
+  let(:created_records) { (1..5).map { build_payload.call } }
   let(:many_valid_records) { Hash[response_key.to_sym, created_records] }
   let(:expected_response) do
     valid_payload[response_key.to_sym].map do |payload|
@@ -27,7 +27,7 @@ RSpec.shared_examples 'current API sync requests' do
   let(:updated_records) do
     model
       .find(created_records.map { |record| record['id'] })
-      .take(5)
+      .take(2)
       .map(&update_payload)
   end
   let(:updated_payload) { Hash[response_key.to_sym, updated_records] }
@@ -77,7 +77,7 @@ RSpec.shared_examples 'current API sync requests' do
     expect(response_process_token[:current_facility_processed_since].to_time.to_i).to eq(model.first.updated_at.to_i)
   end
 
-  it 'pushes 10 new records, updates 5, and pulls only updated ones' do
+  it 'pushes 5 new records, updates 2, and pulls only updated ones' do
     post sync_route, params: many_valid_records.to_json, headers: headers
     get sync_route, params: {}, headers: headers
     process_token = JSON(response.body)['process_token']
@@ -102,7 +102,7 @@ RSpec.shared_examples 'current API sync requests' do
       get sync_route, params: { process_token: process_token_without_resync }, headers: headers_with_resync_token
       response_body = JSON(response.body)
 
-      expect(response_body[response_key].count).to eq(10)
+      expect(response_body[response_key].count).to eq(5)
       expect(parse_process_token(response_body)[:resync_token]).to eq(resync_token)
     end
 
@@ -114,7 +114,7 @@ RSpec.shared_examples 'current API sync requests' do
           headers: headers_with_resync_token
       response_body = JSON(response.body)
 
-      expect(response_body[response_key].count).to eq(10)
+      expect(response_body[response_key].count).to eq(5)
       expect(parse_process_token(response_body)[:resync_token]).to eq(resync_token)
     end
 
@@ -150,7 +150,7 @@ RSpec.shared_examples 'current API sync requests' do
       get sync_route, params: { process_token: process_token_without_resync }, headers: headers
       response_body = JSON(response.body)
 
-      expect(response_body[response_key].count).to eq(10)
+      expect(response_body[response_key].count).to eq(5)
       expect(parse_process_token(response_body)[:resync_token]).to eq(nil)
 
       get sync_route, params: { process_token: JSON(response.body)['process_token'] }, headers: headers

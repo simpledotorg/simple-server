@@ -14,7 +14,7 @@ describe 'BloodPressures V1 API', swagger_doc: 'v1/swagger.json' do
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
-        let(:blood_pressures) { { blood_pressures: (1..10).map { build_blood_pressure_payload } } }
+        let(:blood_pressures) { { blood_pressures: (1..3).map { build_blood_pressure_payload } } }
 
         run_test!
       end
@@ -25,7 +25,7 @@ describe 'BloodPressures V1 API', swagger_doc: 'v1/swagger.json' do
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
         schema Api::V1::Schema.sync_from_user_errors
-        let(:blood_pressures) { { blood_pressures: (1..10).map { build_invalid_blood_pressure_payload } } }
+        let(:blood_pressures) { { blood_pressures: (1..3).map { build_invalid_blood_pressure_payload } } }
         run_test!
       end
     end

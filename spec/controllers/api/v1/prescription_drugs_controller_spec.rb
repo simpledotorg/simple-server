@@ -35,15 +35,15 @@ RSpec.describe Api::V1::PrescriptionDrugsController, type: :controller do
         
         patient            = FactoryBot.create(:patient)
         facility           = FactoryBot.create(:facility)
-        prescription_drugs = (1..10).map do
+        prescription_drugs = (1..3).map do
           build_prescription_drug_payload(FactoryBot.build(:prescription_drug,
                                                            patient:  patient,
                                                            facility: facility))
         end
         post(:sync_from_user, params: { prescription_drugs: prescription_drugs }, as: :json)
-        expect(PrescriptionDrug.count).to eq 10
-        expect(patient.prescription_drugs.count).to eq 10
-        expect(facility.prescription_drugs.count).to eq 10
+        expect(PrescriptionDrug.count).to eq 3
+        expect(patient.prescription_drugs.count).to eq 3
+        expect(facility.prescription_drugs.count).to eq 3
         expect(response).to have_http_status(200)
       end
     end
@@ -58,8 +58,8 @@ RSpec.describe Api::V1::PrescriptionDrugsController, type: :controller do
 
       before :each do
         set_authentication_headers
-        FactoryBot.create_list(:prescription_drug, 5, facility: facility_in_another_group, updated_at: 3.minutes.ago)
-        FactoryBot.create_list(:prescription_drug, 5, facility: facility_in_same_group, updated_at: 5.minutes.ago)
+        FactoryBot.create_list(:prescription_drug, 2, facility: facility_in_another_group, updated_at: 3.minutes.ago)
+        FactoryBot.create_list(:prescription_drug, 2, facility: facility_in_same_group, updated_at: 5.minutes.ago)
       end
 
       it "only sends data for facilities belonging in the sync group of user's registration facility" do
@@ -68,7 +68,7 @@ RSpec.describe Api::V1::PrescriptionDrugsController, type: :controller do
         response_prescription_drugs = JSON(response.body)['prescription_drugs']
         response_facilities = response_prescription_drugs.map { |prescription_drug| prescription_drug['facility_id']}.to_set
 
-        expect(response_prescription_drugs.count).to eq 5
+        expect(response_prescription_drugs.count).to eq 2
         expect(response_facilities).not_to include(facility_in_another_group.id)
       end
     end

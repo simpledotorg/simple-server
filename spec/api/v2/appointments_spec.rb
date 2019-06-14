@@ -17,7 +17,7 @@ describe 'Appointment V2 API', swagger_doc: 'v2/swagger.json' do
         let(:HTTP_X_FACILITY_ID) { request_facility.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
-        let(:appointments) { { appointments: (1..10).map { build_appointment_payload } } }
+        let(:appointments) { { appointments: (1..3).map { build_appointment_payload } } }
 
         run_test!
       end
@@ -29,7 +29,7 @@ describe 'Appointment V2 API', swagger_doc: 'v2/swagger.json' do
         let(:HTTP_X_FACILITY_ID) { request_facility.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
-        let(:appointments) { { appointments: (1..10).map { build_invalid_appointment_payload } } }
+        let(:appointments) { { appointments: (1..3).map { build_invalid_appointment_payload } } }
         run_test!
       end
     end
@@ -45,7 +45,7 @@ describe 'Appointment V2 API', swagger_doc: 'v2/swagger.json' do
 
       before :each do
         Timecop.travel(10.minutes.ago) do
-          FactoryBot.create_list(:appointment, 10)
+          FactoryBot.create_list(:appointment, 3)
         end
       end
 
