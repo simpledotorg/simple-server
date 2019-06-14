@@ -56,7 +56,7 @@
         </td>
       </tr>
 
-      <% analytics.each do |facility, data| %>
+      <% analytics.sort_by { |facility, _| facility.name }.each do |facility, data| %>
         <tr>
           <td class="row-rank"></td>
 
