@@ -5,12 +5,18 @@
       <tr>
         <th colspan="2"></th>
         <th class="row-label">Registered patients</th>
-        <th class="row-label" colspan="2">Follow-up patients<br></th>
+        <th class="row-label" colspan="3">Follow-up patients<br></th>
+        <th class="row-label" colspan="3">New registrations<br></th>
       </tr>
 
       <tr>
         <td colspan="2"></td>
         <td class="row-label"><strong>Total</strong></td>
+
+        <td class="row-label"><strong><%= (Date.current - 2.month).strftime("%B %Y") %></strong></td>
+        <td class="row-label"><strong><%= (Date.current - 1.month).strftime("%B %Y") %></strong></td>
+        <td class="row-label"><strong><%= Date.current.strftime("%B %Y") %></strong></td>
+
         <td class="row-label"><strong><%= (Date.current - 2.month).strftime("%B %Y") %></strong></td>
         <td class="row-label"><strong><%= (Date.current - 1.month).strftime("%B %Y") %></strong></td>
         <td class="row-label"><strong><%= Date.current.strftime("%B %Y") %></strong></td>
@@ -22,18 +28,31 @@
       <tr class="row-total">
         <td class="row-rank row-total"></td>
         <td class="row-title row-total">All
+
         <td class="row-enrolled text-green row-total">
-          <%= dash_if_zero(analytics.values.map { |v| v["registered_patients"] }.inject(:+)) %>
+          <%= dash_if_zero(analytics.values.map { |v| v["total_registered_patients"] }.inject(:+)) %>
         </td>
 
+        <!--follow-up-->
         <td class="row-enrolled text-green row-total">
           <%= dash_if_zero(analytics.values.map { |v| v["follow_up_penultimate_month"] }.inject(:+)) %>
         </td>
         <td class="row-enrolled text-green row-total">
-          <%= dash_if_zero(analytics.values.map { |v| v["follow_up_last_month"] }.inject(:+))  %>
+          <%= dash_if_zero(analytics.values.map { |v| v["follow_up_last_month"] }.inject(:+)) %>
         </td>
         <td class="row-enrolled text-green row-total">
-          <%= dash_if_zero(analytics.values.map { |v| v["follow_up_current_month"] }.inject(:+))  %>
+          <%= dash_if_zero(analytics.values.map { |v| v["follow_up_current_month"] }.inject(:+)) %>
+        </td>
+
+        <!--new registrations-->
+        <td class="row-enrolled text-green row-total">
+          <%= dash_if_zero(analytics.values.map { |v| v["registered_patients_penultimate_month"] }.inject(:+)) %>
+        </td>
+        <td class="row-enrolled text-green row-total">
+          <%= dash_if_zero(analytics.values.map { |v| v["registered_patients_last_month"] }.inject(:+)) %>
+        </td>
+        <td class="row-enrolled text-green row-total">
+          <%= dash_if_zero(analytics.values.map { |v| v["registered_patients_current_month"] }.inject(:+)) %>
         </td>
       </tr>
 
@@ -47,11 +66,15 @@
                                                                to_time: to_time) %>
           </td>
 
-          <td class="row-enrolled text-green"><%= dash_if_zero(data['registered_patients']) %></td>
+          <td class="row-enrolled text-green"><%= dash_if_zero(data['total_registered_patients']) %></td>
 
           <td class="row-enrolled text-green"><%= dash_if_zero(data['follow_up_penultimate_month']) %></td>
           <td class="row-enrolled text-green"><%= dash_if_zero(data['follow_up_last_month']) %></td>
           <td class="row-enrolled text-green"><%= dash_if_zero(data['follow_up_current_month']) %></td>
+
+          <td class="row-enrolled text-green"><%= dash_if_zero(data['registered_patients_penultimate_month']) %></td>
+          <td class="row-enrolled text-green"><%= dash_if_zero(data['registered_patients_last_month']) %></td>
+          <td class="row-enrolled text-green"><%= dash_if_zero(data['registered_patients_current_month']) %></td>
         </tr>
       <% end %>
       </tbody>
