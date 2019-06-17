@@ -61,6 +61,7 @@ en:
     accessible_facilities: 'User will have access to anonymized data from the following facilities'
     organization: 'Organization'
     subject: 'Anonymized Data dump: Requested by User %{recipient_name} (%{recipient_role})'
+    notice: 'You will be e-mailed a copy of the anonymized data for district "%{district_name}" soon.'
 
   admin:
     reset_otp_alert: 'Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP'
