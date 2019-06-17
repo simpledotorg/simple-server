@@ -1,4 +1,5 @@
 class Analytics::FacilitiesController < AnalyticsController
+  before_action :set_time_period, only: [:show]
   before_action :set_facility
   before_action :set_organization
   before_action :set_organization_district
