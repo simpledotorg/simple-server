@@ -7,8 +7,17 @@ class AnonymizedDataDownloadMailer < ApplicationMailer
     recipient_role = params[:recipient_role]
 
     subject = I18n.t('anonymized_data_download_email.subject', recipient_name: recipient_name, recipient_role: recipient_role)
-    attachments['sensitive_data.csv'] = File.read('/Users/timmyjose/Desktop/sensitive_data.csv')
+    attachments['sample.csv'] = {
+      mime_type: 'text/csv',
+      content: test_csv_data
+    }
     mail(subject: subject,
          to: recipient_email)
+  end
+
+  private
+
+  def test_csv_data
+    csv = 'id,name,age,gender,comments'
   end
 end

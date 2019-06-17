@@ -77,8 +77,13 @@
     <section class="table-compact">No Users Analytics For Facility</section>
   <% end %>
 
-  <div class="float-right text-right ">
-    <button class="btn btn-sm btn-primary">Anonymized Data (XLS)</button><br>
+  <div class="float-right text-right">
+    <%= link_to 'Anonymized Data (XLS)', analytics_facility_share_path(organization_id: @organization.id,
+                                                                                    facility_id: @facility.id,
+                                                                                    from_time: analytics_date_format(@from_time),
+                                                                                    to_time: analytics_date_format(@to_time)),
+                class: "btn btn-primary btn-sm float-right",
+                data: { confirm: I18n.t('admin.phi_anonymized_download_alert') } %>
   </div>
 
   <section>

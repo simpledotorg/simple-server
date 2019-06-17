@@ -8,6 +8,20 @@ class Analytics::FacilitiesController < AnalyticsController
     @user_analytics = user_analytics
   end
 
+  def share_anonymized_data
+    recipient_role = current_admin.role
+    recipient_email = current_admin.email
+    recipient_name = recipient_email.split('@').first
+
+    AnonymizedDataDownloadJob.perform_later(recipient_name, recipient_email, recipient_role, @facility)
+
+    from_time = @from_time.strftime('%Y-%m-%d')
+    to_time = @to_time.strftime('%Y-%m-%d')
+
+    redirect_to analytics_facility_path(id: @facility.id, from_time: from_time, to_time: to_time),
+                notice: I18n.t('anonymized_data_download_email.facility_notice', facility_name: @facility.name)
+  end
+
   private
 
   def set_facility

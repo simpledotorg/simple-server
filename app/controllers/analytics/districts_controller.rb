@@ -12,19 +12,17 @@ class Analytics::DistrictsController < AnalyticsController
   end
 
   def share_anonymized_data
-    authorize OrganizationDistrict
-
     recipient_role = current_admin.role
     recipient_email = current_admin.email
     recipient_name = recipient_email.split('@').first
 
-    AnonymizedDataDownloadJob.perform_later(recipient_name, recipient_email, recipient_role)
+    AnonymizedDataDownloadJob.perform_later(recipient_name, recipient_email, recipient_role, @organization_district)
 
     from_time = @from_time.strftime('%Y-%m-%d')
     to_time = @to_time.strftime('%Y-%m-%d')
 
     redirect_to analytics_organization_district_path(id: @organization_district.district_name, from_time: from_time, to_time: to_time),
-                notice: I18n.t('anonymized_data_download_email.notice', district_name: @organization_district.district_name)
+                notice: I18n.t('anonymized_data_download_email.district_notice', district_name: @organization_district.district_name)
   end
 
   private
