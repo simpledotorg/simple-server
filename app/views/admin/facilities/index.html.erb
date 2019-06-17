@@ -2,7 +2,9 @@
   <div class="page-header">
     <h1 class="page-title"">All facilities</h1>
     <nav class="page-nav">
-      <%= link_to '+ Upload Facilities CSV', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
+      <% if policy(Facility).upload? %>
+        <%= link_to '+ Upload Facilities CSV', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
+      <% end %>
       <%= link_to '+ Facility group', new_admin_facility_group_path, class: "btn btn-sm btn-primary" %>
     </nav>
   </div>

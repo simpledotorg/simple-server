@@ -1,3 +1,5 @@
+require 'csv'
+
 class Admin::FacilitiesController < AdminController
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
   before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy]
@@ -43,9 +45,15 @@ class Admin::FacilitiesController < AdminController
   end
 
   def upload
-    authorize FacilityGroup
-    if params[:upload_facilities_file]
-      flash[:notice] = validate_upload_facility_file
+    authorize Facility
+    @file = params[:upload_facilities_file]
+    if @file.present?
+      errors = validate_upload_facilities_file
+      if errors.present?
+        flash[:alert] = errors
+      else
+        flash[:notice] = "File upload successful, your facilities will be created shortly."
+      end
       render :upload
     else
       render :upload
@@ -78,9 +86,41 @@ class Admin::FacilitiesController < AdminController
     )
   end
 
-  def validate_upload_facility_file
-    file = params[:upload_facilities_file]
+  def validate_upload_facilities_file
     errors = []
-    errors_str = errors.join(", ")
+    errors << "File type not supported, please upload a CSV file instead" if
+            ["text/csv"].exclude? @file.content_type
+
+    errors << "File is too big, must be smaller than 5MB" if @file.size > 5.megabytes
+    errors << validate_upload_facilities_fields if errors.blank?
+    errors.join("<br/>").html_safe
   end
+
+  def validate_upload_facilities_fields
+    errors = []
+    row_num = 2
+    CSV.parse(@file.tempfile, headers: true, converters: :strip_whitespace) do |row|
+      facility = Facility.new(organization_name: row['organization'],
+                              facility_group_name: row['facility_group'],
+                              name: row['facility_name'],
+                              facility_type: row['facility_type'],
+                              street_address: row['street_address'],
+                              village_or_colony: row['village_or_colony'],
+                              district: row['district'],
+                              state: row['state'],
+                              country: row['country'],
+                              pin: row['pin'],
+                              latitude: row['latitude'],
+                              longitude: row['longitude'],
+                              import: true)
+      if facility.invalid?
+        row_errors = facility.errors.full_messages.to_sentence
+        errors << "Row #{row_num}: #{row_errors}"
+      end
+      row_num += 1
+    end
+    errors
+  end
+
+  CSV::Converters[:strip_whitespace] = ->(value) { value.strip rescue value }
 end
