@@ -16,7 +16,7 @@ class Analytics::FacilitiesController < AnalyticsController
     AnonymizedDataDownloadJob.perform_later(recipient_name,
                                             recipient_email,
                                             recipient_role,
-                                            { facility_id: @facility },
+                                            { facility_id: @facility.id },
                                             'facility')
 
     from_time = @from_time.strftime('%Y-%m-%d')
