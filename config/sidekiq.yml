@@ -5,3 +5,4 @@
 :queues:
   - default
   - [analytics_warmup, 2]
+  - [anonymized_data_download, 2]
