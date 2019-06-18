@@ -32,7 +32,7 @@ module DashboardHelper
     is_active = from_time.to_date == range[:from_time].to_date && to_time.to_date == range[:to_time].to_date
     link_to label,
             url_for(range),
-            class: is_active ? 'sub-nav-link  sub-nav-link-active' : 'sub-nav-link'
+            class: is_active ? 'sub-nav-link sub-nav-link-active' : 'sub-nav-link'
   end
 
   def string_for_range(from_time, to_time)
@@ -48,7 +48,7 @@ module DashboardHelper
       yield(n.months.ago.at_beginning_of_month.to_date)
     end
   end
-
+  
   def analytics_month_totals(analytics, metric, month)
     dash_if_zero(analytics.sum { |_, facility_analytics| facility_analytics.dig(metric, month) || 0 })
   end
