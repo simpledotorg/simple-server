@@ -6,8 +6,8 @@ class DistrictAnalyticsQuery
   def registered_patients_by_month
     @registered_patients_by_month ||=
       Patient
-        .joins('INNER JOIN facilities ON facilities.id = patients.registration_facility_id')
-        .where('facilities.district = ?', @district_name)
+        .joins(:registration_facility)
+        .where(facilities: { district: @district_name })
         .group('facilities.id')
         .group_by_month(:device_created_at)
         .count
@@ -21,15 +21,16 @@ class DistrictAnalyticsQuery
         .select('facilities.id AS facility_id',
                 "(DATE_TRUNC('month', (blood_pressures.device_created_at::timestamptz) AT TIME ZONE 'Etc/UTC')) AT TIME ZONE 'Etc/UTC'",
                 'count(blood_pressures.id) AS blood_pressures_count')
-        .joins('LEFT OUTER JOIN users ON blood_pressures.user_id = users.id')
-        .joins('LEFT OUTER JOIN patients ON blood_pressures.patient_id = patients.id')
-        .joins('INNER JOIN facilities ON facilities.id = blood_pressures.facility_id')
-        .where('facilities.district = ?', @district_name)
+        .left_outer_joins(:user)
+        .left_outer_joins(:patient)
+        .joins(:facility)
+        .where(facilities: { district: @district_name })
         .group('facilities.id')
         .group_by_month('blood_pressures.device_created_at', last: months_prior)
         .where("patients.device_created_at < DATE_TRUNC('month', blood_pressures.device_created_at::timestamptz)")
         .order('facilities.id')
-        .count('distinct(patients.id)')
+        .distinct
+        .count('patients.id')
 
     group_by_facility(@follow_up_patients_by_month)
   end
