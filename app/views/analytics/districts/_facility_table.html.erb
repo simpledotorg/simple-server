@@ -30,52 +30,61 @@
         <td class="row-title row-total">All
 
         <td class="row-enrolled text-green row-total">
-          <%= dash_if_zero(analytics.values.map { |v| v["total_registered_patients"] }.inject(:+)) %>
+          <%= dash_if_zero(1) %>
         </td>
 
         <!--follow-up-->
         <td class="row-enrolled text-green row-total">
-          <%= dash_if_zero(analytics.values.map { |v| v["follow_up_penultimate_month"] }.inject(:+)) %>
+          <%= dash_if_zero(1) %>
         </td>
         <td class="row-enrolled text-green row-total">
-          <%= dash_if_zero(analytics.values.map { |v| v["follow_up_last_month"] }.inject(:+)) %>
+          <%= dash_if_zero(1) %>
         </td>
         <td class="row-enrolled text-green row-total">
-          <%= dash_if_zero(analytics.values.map { |v| v["follow_up_current_month"] }.inject(:+)) %>
+          <%= dash_if_zero(1) %>
         </td>
 
         <!--new registrations-->
         <td class="row-enrolled text-green row-total">
-          <%= dash_if_zero(analytics.values.map { |v| v["registered_patients_penultimate_month"] }.inject(:+)) %>
+          <%= dash_if_zero(1) %>
         </td>
         <td class="row-enrolled text-green row-total">
-          <%= dash_if_zero(analytics.values.map { |v| v["registered_patients_last_month"] }.inject(:+)) %>
+          <%= dash_if_zero(1) %>
         </td>
         <td class="row-enrolled text-green row-total">
-          <%= dash_if_zero(analytics.values.map { |v| v["registered_patients_current_month"] }.inject(:+)) %>
+          <%= dash_if_zero(1) %>
         </td>
       </tr>
 
-      <% analytics.sort_by { |facility, _| facility.name }.each do |facility, data| %>
-        <tr>
-          <td class="row-rank"></td>
+      <% policy_scope(Facility.order(:name)).each do |facility| %>
+        <% if analytics[:registered_patients][facility.id].present? && analytics[:total_registered_patients][facility.id].present? && analytics[:follow_up_patients_by_month][facility.id].present? %>
+          <tr>
+            <td class="row-rank"></td>
 
-          <td class="row-title">
-            <%= link_to facility.name, analytics_facility_path(facility,
-                                                               from_time: analytics_date_format(90.days.ago.yesterday),
-                                                               to_time: analytics_date_format(Time.now.yesterday)) %>
-          </td>
+            <td class="row-title">
+              <%= link_to facility.name, analytics_facility_path(facility,
+                                                                 from_time: analytics_date_format(90.days.ago.yesterday),
+                                                                 to_time: analytics_date_format(Time.now.yesterday)) %>
+            </td>
 
-          <td class="row-enrolled text-green"><%= dash_if_zero(data['total_registered_patients']) %></td>
+            <td class="row-enrolled text-green">
+              <%= dash_if_zero(analytics[:total_registered_patients][facility.id]) %>
+            </td>
 
-          <td class="row-enrolled text-green"><%= dash_if_zero(data['follow_up_penultimate_month']) %></td>
-          <td class="row-enrolled text-green"><%= dash_if_zero(data['follow_up_last_month']) %></td>
-          <td class="row-enrolled text-green"><%= dash_if_zero(data['follow_up_current_month']) %></td>
+            <% %>
+            <% analytics[:registered_patients][facility.id].each do |_, v| %>
+              <td class="row-enrolled text-green">
+                <%= dash_if_zero(v) %>
+              </td>
+            <% end %>
 
-          <td class="row-enrolled text-green"><%= dash_if_zero(data['registered_patients_penultimate_month']) %></td>
-          <td class="row-enrolled text-green"><%= dash_if_zero(data['registered_patients_last_month']) %></td>
-          <td class="row-enrolled text-green"><%= dash_if_zero(data['registered_patients_current_month']) %></td>
-        </tr>
+            <% analytics[:follow_up_patients_by_month][facility.id].each do |_, v| %>
+              <td class="row-enrolled text-green">
+                <%= dash_if_zero(v) %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
       <% end %>
       </tbody>
     </table>
