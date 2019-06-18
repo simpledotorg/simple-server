@@ -57,7 +57,7 @@
       </tr>
 
       <% policy_scope(Facility.order(:name)).each do |facility| %>
-        <% if analytics[:registered_patients][facility.id].present? && analytics[:total_registered_patients][facility.id].present? && analytics[:follow_up_patients_by_month][facility.id].present? %>
+        <% if analytics[facility.id].present? %>
           <tr>
             <td class="row-rank"></td>
 
@@ -67,23 +67,33 @@
                                                                  to_time: analytics_date_format(Time.now.yesterday)) %>
             </td>
 
+
             <td class="row-enrolled text-green">
-              <%= dash_if_zero(analytics[:total_registered_patients][facility.id]) %>
+              <%= dash_if_zero(analytics[facility.id][:total_registered_patients]) %>
             </td>
 
-            <% %>
-            <% analytics[:registered_patients][facility.id].each do |_, v| %>
-              <td class="row-enrolled text-green">
-                <%= dash_if_zero(v) %>
-              </td>
+            <% if analytics[facility.id][:follow_up_patients_by_month].present? %>
+              <% analytics[facility.id][:follow_up_patients_by_month].each do |_, v| %>
+                <td class="row-enrolled text-green">
+                  <%= dash_if_zero(v) %>
+                </td>
+              <% end %>
+
+            <% else %>
+              <% 3.times do %>
+                <td class="row-enrolled text-green">
+                  <%= dash_if_zero(0) %>
+                </td>
+              <% end %>
             <% end %>
 
-            <% analytics[:follow_up_patients_by_month][facility.id].each do |_, v| %>
+            <% analytics[facility.id][:registered_patients_by_month].select {|k| k > 3.months.ago}.each do |_, v| %>
               <td class="row-enrolled text-green">
                 <%= dash_if_zero(v) %>
               </td>
             <% end %>
           </tr>
+
         <% end %>
       <% end %>
       </tbody>

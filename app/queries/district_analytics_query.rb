@@ -12,7 +12,7 @@ class DistrictAnalyticsQuery
         .group_by_month(:device_created_at)
         .count
 
-    group_by_facility(@registered_patients_by_month)
+    group_by_facility(@registered_patients_by_month, :registered_patients_by_month)
   end
 
   def follow_up_patients_by_month(months_prior: 3)
@@ -32,14 +32,14 @@ class DistrictAnalyticsQuery
         .distinct
         .count('patients.id')
 
-    group_by_facility(@follow_up_patients_by_month)
+    group_by_facility(@follow_up_patients_by_month, :follow_up_patients_by_month)
   end
 
   private
 
-  def group_by_facility(query_results)
+  def group_by_facility(query_results, key)
     query_results.map do |(facility_id, date), value|
-      { facility_id => { date => value } }
+      { facility_id => { key =>  { date => value } } }
     end.inject(&:deep_merge)
   end
 end
