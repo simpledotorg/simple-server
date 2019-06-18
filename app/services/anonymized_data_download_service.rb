@@ -1,10 +1,9 @@
 require 'csv'
 
 class AnonymizedDataDownloadService
-  def initialize(recipient_name, recipient_email, recipient_role, entity_map, entity_type)
+  def initialize(recipient_name, recipient_email, entity_map, entity_type)
     @recipient_name = recipient_name
     @recipient_email = recipient_email
-    @recipient_role = recipient_role
     @entity_map = entity_map
     @entity_type = entity_type
   end
@@ -16,7 +15,6 @@ class AnonymizedDataDownloadService
       AnonymizedDataDownloadMailer
         .with(recipient_name: @recipient_name,
               recipient_email: @recipient_email,
-              recipient_role: @recipient_role,
               anonymized_data: anonymized_data)
         .mail_anonymized_data
         .deliver_later
@@ -30,26 +28,16 @@ class AnonymizedDataDownloadService
   def anonymize_data
     case @entity_type
     when 'district'
-      anonymize_district_data
+      organization_district = OrganizationDistrict.new(@entity_map[:district_name], Organization.find(@entity_map[:organization_id]))
+      organization_district_patients = organization_district.facilities.flat_map(&:patients)
+      anonymize(organization_district_patients)
     when 'facility'
-      anonymize_facility_data
+      facility = Facility.find(@entity_map[:facility_id])
+      facility_patients = facility.patients
+      anonymize(facility_patients)
     else
       raise "Error: Unknown entity type: #{entity_type}"
     end
-  end
-
-  def anonymize_district_data
-    organization_district = OrganizationDistrict.new(@entity_map[:district_name], Organization.find(@entity_map[:organization_id]))
-    organization_district_patients = organization_district.facilities.flat_map(&:patients)
-
-    anonymize(organization_district_patients)
-  end
-
-  def anonymize_facility_data
-    facility = Facility.find(@entity_map[:facility_id])
-    facility_patients = facility.patients
-
-    anonymize(facility_patients)
   end
 
   def anonymize(patients)

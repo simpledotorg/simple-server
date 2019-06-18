@@ -3,10 +3,9 @@ class AnonymizedDataDownloadMailerPreview < ActionMailer::Preview
   def mail_anonymized_data
     recipient_name = 'test_admin'
     recipient_email = 'test_admin@admins.org'
-    recipient_role = 'owner'
 
     AnonymizedDataDownloadMailer
-      .with(recipient_name: recipient_name, recipient_email: recipient_email, recipient_role: recipient_role)
+      .with(recipient_name: recipient_name, recipient_email: recipient_email, anonymized_data: { 'patients.csv' => [] })
       .mail_anonymized_data
   end
 end

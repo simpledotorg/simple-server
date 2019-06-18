@@ -12,13 +12,11 @@ class Analytics::DistrictsController < AnalyticsController
   end
 
   def share_anonymized_data
-    recipient_role = current_admin.role
     recipient_email = current_admin.email
     recipient_name = recipient_email.split('@').first
 
     AnonymizedDataDownloadJob.perform_later(recipient_name,
                                             recipient_email,
-                                            recipient_role,
                                             { district_name: @organization_district.district_name,
                                               organization_id: @organization_district.organization.id },
                                             'district')
