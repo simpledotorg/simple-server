@@ -48,11 +48,16 @@ class Admin::FacilitiesController < AdminController
     authorize Facility
     @file = params[:upload_facilities_file]
     if @file.present?
-      errors = validate_upload_facilities_file
-      if errors.present?
-        flash[:alert] = errors
+      @errors = []
+      validate_facilities_file(@file)
+      file_contents = @file.read if @errors.blank?
+      validate_facilities_fields(file_contents) if @errors.blank?
+      if @errors.present?
+        flash.now[:alert] = @errors.join("<br/>").html_safe
       else
-        flash[:notice] = "File upload successful, your facilities will be created shortly."
+        facilities = Facility.parse_csv(file_contents)
+        ImportFacilitiesJob.perform_later(facilities)
+        flash.now[:notice] = "File upload successful, your facilities will be created shortly."
       end
       render :upload
     else
@@ -86,41 +91,23 @@ class Admin::FacilitiesController < AdminController
     )
   end
 
-  def validate_upload_facilities_file
-    errors = []
-    errors << "File type not supported, please upload a CSV file instead" if
-            ["text/csv"].exclude? @file.content_type
+  def validate_facilities_file(file)
+    @errors << "File type not supported, please upload a CSV file instead" if
+            ["text/csv"].exclude? file.content_type
 
-    errors << "File is too big, must be smaller than 5MB" if @file.size > 5.megabytes
-    errors << validate_upload_facilities_fields if errors.blank?
-    errors.join("<br/>").html_safe
+    @errors << "File is too big, must be smaller than 5MB" if file.size > 5.megabytes
   end
 
-  def validate_upload_facilities_fields
-    errors = []
+  def validate_facilities_fields(file_contents)
+    facilities = Facility.parse_csv(file_contents)
     row_num = 2
-    CSV.parse(@file.tempfile, headers: true, converters: :strip_whitespace) do |row|
-      facility = Facility.new(organization_name: row['organization'],
-                              facility_group_name: row['facility_group'],
-                              name: row['facility_name'],
-                              facility_type: row['facility_type'],
-                              street_address: row['street_address'],
-                              village_or_colony: row['village_or_colony'],
-                              district: row['district'],
-                              state: row['state'],
-                              country: row['country'],
-                              pin: row['pin'],
-                              latitude: row['latitude'],
-                              longitude: row['longitude'],
-                              import: true)
-      if facility.invalid?
-        row_errors = facility.errors.full_messages.to_sentence
-        errors << "Row #{row_num}: #{row_errors}"
+    facilities.each do |facility|
+      import_facility = Facility.new(facility)
+      if import_facility.invalid?
+        row_errors = import_facility.errors.full_messages.to_sentence
+        @errors << "Row #{row_num}: #{row_errors}" if row_errors.present?
       end
       row_num += 1
     end
-    errors
   end
-
-  CSV::Converters[:strip_whitespace] = ->(value) { value.strip rescue value }
 end

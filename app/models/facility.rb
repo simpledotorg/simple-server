@@ -27,7 +27,7 @@ class Facility < ApplicationRecord
   with_options if: :is_import? do |facility|
     facility.validates :organization_name, presence: true
     facility.validates :facility_group_name, presence: true
-    facility.validate :facility_group_and_organization_unique_exist
+    facility.validate :unique_facility_group_and_organization
   end
 
   delegate :protocol, to: :facility_group, allow_nil: true
@@ -39,23 +39,47 @@ class Facility < ApplicationRecord
     registered_patients
   end
 
+  def self.parse_csv(csv_file)
+    facilities = []
+    CSV.parse(csv_file, headers: true, converters: :strip_whitespace) do |row|
+      facility = {organization_name: row['organization'],
+                  facility_group_name: row['facility_group'],
+                  name: row['facility_name'],
+                  facility_type: row['facility_type'],
+                  street_address: row['street_address'],
+                  village_or_colony: row['village_or_colony'],
+                  district: row['district'],
+                  state: row['state'],
+                  country: row['country'],
+                  pin: row['pin'],
+                  latitude: row['latitude'],
+                  longitude: row['longitude'],
+                  import: true}
+      facilities << facility
+    end
+
+    facilities
+  end
+
   def is_import?
     import
   end
 
-  def facility_group_and_organization_unique_exist
+  def unique_facility_group_and_organization
     organization = Organization.find_by(name: organization_name)
-    if organization.blank?
+    unless organization.present?
       errors.add(:organization, "doesn't exist")
-    else
-      facility_group = FacilityGroup.find_by(name: facility_group_name,
-                                             organization_id: organization.id)
-      if facility_group.blank?
-        errors.add(:facility_group, "for organization doesn't exist")
-      else
-        facility = Facility.find_by(name: name, facility_group: facility_group.id)
-        errors.add(:facility, "already exists") if facility.present?
-      end
+      return nil
     end
+    facility_group = FacilityGroup.find_by(name: facility_group_name,
+                                             organization_id: organization.id)
+    unless facility_group.present?
+      errors.add(:facility_group, "for organization doesn't exist")
+      return nil
+    end
+    facility = Facility.find_by(name: name, facility_group: facility_group.id)
+    errors.add(:facility, "already exists") if facility.present?
   end
+
+  CSV::Converters[:strip_whitespace] = ->(value) { value.strip rescue value }
 end
