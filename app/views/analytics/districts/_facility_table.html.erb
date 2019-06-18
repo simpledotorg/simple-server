@@ -11,15 +11,18 @@
 
       <tr>
         <td colspan="2"></td>
+        <!--Registered patients-->
         <td class="row-label"><strong>Total</strong></td>
 
-        <td class="row-label"><strong><%= (Date.current - 2.month).strftime("%B %Y") %></strong></td>
-        <td class="row-label"><strong><%= (Date.current - 1.month).strftime("%B %Y") %></strong></td>
-        <td class="row-label"><strong><%= Date.current.strftime("%B %Y") %></strong></td>
+        <!--Follow-up patients-->
+        <% repeat_for_last(months: 3) do |month| %>
+          <td class="row-label"><strong><%= month.strftime("%B %Y") %></strong></td>
+        <% end %>
 
-        <td class="row-label"><strong><%= (Date.current - 2.month).strftime("%B %Y") %></strong></td>
-        <td class="row-label"><strong><%= (Date.current - 1.month).strftime("%B %Y") %></strong></td>
-        <td class="row-label"><strong><%= Date.current.strftime("%B %Y") %></strong></td>
+        <!--New registrations-->
+        <% repeat_for_last(months: 3) do |month| %>
+          <td class="row-label"><strong><%= month.strftime("%B %Y") %></strong></td>
+        <% end %>
       </tr>
 
       </thead>
@@ -27,33 +30,26 @@
 
       <tr class="row-total">
         <td class="row-rank row-total"></td>
-        <td class="row-title row-total">All
+        <td class="row-title row-total">All</td>
 
+        <!--Registered patients-->
         <td class="row-enrolled text-green row-total">
-          <%= dash_if_zero(1) %>
-        </td>
-
-        <!--follow-up-->
-        <td class="row-enrolled text-green row-total">
-          <%= dash_if_zero(1) %>
-        </td>
-        <td class="row-enrolled text-green row-total">
-          <%= dash_if_zero(1) %>
-        </td>
-        <td class="row-enrolled text-green row-total">
-          <%= dash_if_zero(1) %>
+          <%= dash_if_zero(analytics.sum { |_, facility_analytics| facility_analytics[:total_registered_patients] }) %>
         </td>
 
-        <!--new registrations-->
-        <td class="row-enrolled text-green row-total">
-          <%= dash_if_zero(1) %>
-        </td>
-        <td class="row-enrolled text-green row-total">
-          <%= dash_if_zero(1) %>
-        </td>
-        <td class="row-enrolled text-green row-total">
-          <%= dash_if_zero(1) %>
-        </td>
+        <!--Follow-up patients-->
+        <% repeat_for_last(months: 3) do |month| %>
+          <td class="row-enrolled text-green row-total">
+            <%= analytics_month_totals(analytics, :follow_up_patients_by_month, month) %>
+          </td>
+        <% end %>
+
+        <!--New registrations-->
+        <% repeat_for_last(months: 3) do |month| %>
+          <td class="row-enrolled text-green row-total">
+            <%= analytics_month_totals(analytics, :registered_patients_by_month, month) %>
+          </td>
+        <% end %>
       </tr>
 
       <% policy_scope(Facility.order(:name)).each do |facility| %>
@@ -62,38 +58,32 @@
             <td class="row-rank"></td>
 
             <td class="row-title">
-              <%= link_to facility.name, analytics_facility_path(facility,
-                                                                 from_time: analytics_date_format(90.days.ago.yesterday),
-                                                                 to_time: analytics_date_format(Time.now.yesterday)) %>
+              <%= link_to facility.name,
+                          analytics_facility_path(facility,
+                                                  from_time: analytics_date_format(90.days.ago.yesterday),
+                                                  to_time: analytics_date_format(Time.now.yesterday)) %>
             </td>
 
 
+            <!--Registered patients-->
             <td class="row-enrolled text-green">
               <%= dash_if_zero(analytics[facility.id][:total_registered_patients]) %>
             </td>
 
-            <% if analytics[facility.id][:follow_up_patients_by_month].present? %>
-              <% analytics[facility.id][:follow_up_patients_by_month].each do |_, v| %>
-                <td class="row-enrolled text-green">
-                  <%= dash_if_zero(v) %>
-                </td>
-              <% end %>
-
-            <% else %>
-              <% 3.times do %>
-                <td class="row-enrolled text-green">
-                  <%= dash_if_zero(0) %>
-                </td>
-              <% end %>
+            <!--Follow-up patients-->
+            <% repeat_for_last(months: 3) do |month| %>
+              <td class="row-enrolled text-green">
+                <%= dash_if_zero(analytics.dig(facility.id, :follow_up_patients_by_month, month)) %>
+              </td>
             <% end %>
 
-            <% analytics[facility.id][:registered_patients_by_month].select {|k| k > 3.months.ago}.each do |_, v| %>
+            <!--New registrations-->
+            <% repeat_for_last(months: 3) do |month| %>
               <td class="row-enrolled text-green">
-                <%= dash_if_zero(v) %>
+                <%= dash_if_zero(analytics.dig(facility.id, :registered_patients_by_month, month)) %>
               </td>
             <% end %>
           </tr>
-
         <% end %>
       <% end %>
       </tbody>

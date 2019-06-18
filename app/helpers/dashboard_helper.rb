@@ -42,4 +42,14 @@ module DashboardHelper
       label_for_quarter({ from_time: from_time, to_time: to_time })
     end
   end
+
+  def repeat_for_last(months: 3)
+    (0..(months - 1)).to_a.reverse.each do |n|
+      yield(n.months.ago.at_beginning_of_month.to_date)
+    end
+  end
+
+  def analytics_month_totals(analytics, metric, month)
+    dash_if_zero(analytics.sum { |_, facility_analytics| facility_analytics.dig(metric, month) || 0 })
+  end
 end
