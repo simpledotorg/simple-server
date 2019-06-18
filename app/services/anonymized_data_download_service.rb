@@ -41,27 +41,27 @@ class AnonymizedDataDownloadService
   end
 
   def anonymize(patients)
+    patient_ids = patients.map(&:id).to_set
+
     csv_data = Hash.new
 
     patients_csv_file = CSVGeneration::patients_csv(patients)
     csv_data[AnonymizedDataConstants::PATIENTS_FILE] = patients_csv_file
 
-    blood_pressures = patients.flat_map(&:blood_pressures)
+    blood_pressures = BloodPressure.all.select { |bp| patient_ids.include?(bp.patient_id) }
     bps_csv_file = CSVGeneration::bps_csv(blood_pressures)
     csv_data[AnonymizedDataConstants::BPS_FILE] = bps_csv_file
 
-    prescriptions = patients.flat_map(&:prescription_drugs)
+    prescriptions = PrescriptionDrug.all.select { |pd| patient_ids.include?(pd.patient_id) }
     meds_csv_file = CSVGeneration::medicines_csv(prescriptions)
     csv_data[AnonymizedDataConstants::MEDICINES_FILE] = meds_csv_file
 
-    appointments = patients.flat_map(&:appointments)
+    appointments = Appointment.all.select { |app| patient_ids.include?(app.patient_id) }
     appointments_csv_file = CSVGeneration::appointments_csv(appointments)
     csv_data[AnonymizedDataConstants::APPOINTMENTS_FILE] = appointments_csv_file
 
-    all_overdue_appointments = Appointment.overdue
-    all_patient_ids = patients.map(&:id)
-    overdue_appointments = all_overdue_appointments.select do |overdue_appointment|
-      all_patient_ids.include?(overdue_appointment.id)
+    overdue_appointments = Appointment.overdue.select do |overdue_app|
+      patient_ids.include?(overdue_app.id)
     end
 
     overdue_appointments_csv_file = CSVGeneration::overdue_csv(overdue_appointments)
