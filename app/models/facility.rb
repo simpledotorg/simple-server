@@ -29,7 +29,7 @@ class Facility < ApplicationRecord
   with_options if: :is_import? do |facility|
     facility.validates :organization_name, presence: true
     facility.validates :facility_group_name, presence: true
-    facility.validate :unique_facility_group_and_organization
+    facility.validate :unique_for_facility_group_and_organization
   end
 
   delegate :protocol, to: :facility_group, allow_nil: true
@@ -77,7 +77,7 @@ class Facility < ApplicationRecord
     import
   end
 
-  def unique_facility_group_and_organization
+  def unique_for_facility_group_and_organization
     organization = Organization.find_by(name: organization_name)
     unless organization.present?
       errors.add(:organization, "doesn't exist")
