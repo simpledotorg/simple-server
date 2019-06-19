@@ -34,7 +34,7 @@
 
         <!--Registered patients-->
         <td class="row-enrolled text-green row-total">
-          <%= dash_if_zero(analytics.sum { |_, facility_analytics| facility_analytics[:total_registered_patients] || 0 }) %>
+          <%= dash_if_zero(analytics.sum { |_, row| row[:total_registered_patients] || 0 }) %>
         </td>
 
         <!--Follow-up patients-->

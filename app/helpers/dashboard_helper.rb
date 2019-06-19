@@ -50,6 +50,6 @@ module DashboardHelper
   end
 
   def analytics_month_totals(analytics, metric, month)
-    dash_if_zero(analytics.sum { |_, facility_analytics| facility_analytics.dig(metric, month) || 0 })
+    dash_if_zero(analytics.sum { |_, row| row.dig(metric, month) || 0 })
   end
 end
