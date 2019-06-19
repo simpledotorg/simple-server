@@ -1,4 +1,4 @@
-require 'csv'
+require 'tempfile'
 
 class Admin::FacilitiesController < AdminController
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
@@ -46,23 +46,21 @@ class Admin::FacilitiesController < AdminController
 
   def upload
     authorize Facility
-    @file = params[:upload_facilities_file]
-    if @file.present?
-      @errors = []
-      validate_facilities_file(@file)
-      file_contents = @file.read if @errors.blank?
+    file = params[:upload_facilities_file]
+    @errors = []
+    if file.present?
+      validate_facilities_file(file)
+      file_contents = Facility.read_import_file(file) if @errors.blank?
       validate_facilities_fields(file_contents) if @errors.blank?
       if @errors.present?
-        flash.now[:alert] = @errors.join("<br/>").html_safe
+        flash.now[:alert] = @errors.join('<br/>').html_safe
       else
-        facilities = Facility.parse_csv(file_contents)
+        facilities = Facility.parse_import(file_contents)
         ImportFacilitiesJob.perform_later(facilities)
-        flash.now[:notice] = "File upload successful, your facilities will be created shortly."
+        flash.now[:notice] = 'File upload successful, your facilities will be created shortly.'
       end
-      render :upload
-    else
-      render :upload
     end
+    render :upload
   end
 
   private
@@ -92,14 +90,19 @@ class Admin::FacilitiesController < AdminController
   end
 
   def validate_facilities_file(file)
-    @errors << "File type not supported, please upload a CSV file instead" if
-            ["text/csv"].exclude? file.content_type
-
-    @errors << "File is too big, must be smaller than 5MB" if file.size > 5.megabytes
+    @errors << 'File type not supported, please upload a CSV file instead' if
+        valid_mime_types.exclude? file.content_type
+    @errors << 'File is too big, must be smaller than 5MB' if file.size > 5.megabytes
   end
 
   def validate_facilities_fields(file_contents)
-    facilities = Facility.parse_csv(file_contents)
+    facilities = Facility.parse_import(file_contents)
+    # Look for duplicates in the import file
+    facilities_slice = facilities.map { |facility| facility.slice(:organization_name, :facility_group_name, :name) }
+    @errors << 'Uploaded file has duplicate facilities' if
+        facilities_slice.count != facilities_slice.uniq.count
+
+    # Do Facility validations
     row_num = 2
     facilities.each do |facility|
       import_facility = Facility.new(facility)
@@ -110,4 +113,13 @@ class Admin::FacilitiesController < AdminController
       row_num += 1
     end
   end
+
+  def valid_mime_types
+    %w[
+      text/csv
+      application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+    ].freeze
+  end
+
+
 end

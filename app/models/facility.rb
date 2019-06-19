@@ -1,3 +1,5 @@
+require 'roo'
+
 class Facility < ApplicationRecord
   include Mergeable
   include PatientSetAnalyticsReportable
@@ -39,9 +41,10 @@ class Facility < ApplicationRecord
     registered_patients
   end
 
-  def self.parse_csv(csv_file)
+
+  def self.parse_import(file_contents)
     facilities = []
-    CSV.parse(csv_file, headers: true, converters: :strip_whitespace) do |row|
+    CSV.parse(file_contents, headers: true, converters: :strip_whitespace) do |row|
       facility = {organization_name: row['organization'],
                   facility_group_name: row['facility_group'],
                   name: row['facility_name'],
@@ -57,8 +60,17 @@ class Facility < ApplicationRecord
                   import: true}
       facilities << facility
     end
-
     facilities
+  end
+
+  def self.read_import_file(file)
+    file_contents = ''
+    if file.content_type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      xlsx = Roo::Spreadsheet.open(file.path)
+      file_contents = xlsx.to_csv
+    end
+    file_contents = file.read if file.content_type == 'text/csv'
+    file_contents
   end
 
   def is_import?
