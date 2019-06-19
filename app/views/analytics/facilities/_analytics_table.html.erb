@@ -52,32 +52,32 @@
         <% end %>
       </tr>
 
-      <% policy_scope(Facility.order(:name)).each do |facility| %>
-        <% if analytics[facility.id].present? %>
+      <% policy_scope(User.order(:full_name)).each do |user| %>
+        <% if analytics[user.id].present? %>
           <tr>
             <td class="row-rank"></td>
 
             <td class="row-title">
-              <%= link_to facility.name, analytics_facility_path(facility) %>
+              <%= link_to user.full_name, [:admin, user] %>
             </td>
-
 
             <!--Registered patients-->
             <td class="row-enrolled text-green">
-              <%= dash_if_zero(analytics.dig(facility.id, :total_registered_patients)) %>
+              <%= dash_if_zero(analytics.dig(user.id, :total_registered_patients)) %>
             </td>
 
             <!--Follow-up patients-->
             <% repeat_for_last(months: 3) do |month| %>
               <td class="row-enrolled text-green">
-                <%= dash_if_zero(analytics.dig(facility.id, :follow_up_patients_by_month, month)) %>
+                <%= dash_if_zero(analytics.dig(user.id, :follow_up_patients_by_month, month)) %>
               </td>
             <% end %>
+
 
             <!--New registrations-->
             <% repeat_for_last(months: 3) do |month| %>
               <td class="row-enrolled text-green">
-                <%= dash_if_zero(analytics.dig(facility.id, :registered_patients_by_month, month)) %>
+                <%= dash_if_zero(analytics.dig(user.id, :registered_patients_by_month, month)) %>
               </td>
             <% end %>
           </tr>

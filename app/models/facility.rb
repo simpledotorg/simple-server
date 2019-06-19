@@ -1,6 +1,5 @@
 class Facility < ApplicationRecord
   include Mergeable
-  include PatientSetAnalyticsReportable
   extend FriendlyId
 
   belongs_to :facility_group, optional: true
@@ -25,7 +24,11 @@ class Facility < ApplicationRecord
 
   friendly_id :name, use: :slugged
 
-  def report_on_patients
-    registered_patients
+  def dashboard_analytics
+    query = FacilityAnalyticsQuery.new(facility: self)
+
+    [query.follow_up_patients_by_month,
+     query.registered_patients_by_month,
+     query.total_registered_patients].inject(&:deep_merge)
   end
 end
