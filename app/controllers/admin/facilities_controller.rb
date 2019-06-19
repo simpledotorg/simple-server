@@ -47,12 +47,14 @@ class Admin::FacilitiesController < AdminController
   def upload
     authorize Facility
     file = params[:upload_facilities_file]
+    @file_contents = ''
     @errors = []
-    run_file_validations(file) if file.present?
+    run_validations_and_read(file) if file.present?
     if @errors.present?
+      @errors.prepend "Please fix the errors below and try again:"
       flash.now[:alert] = @errors.join('<br/>').html_safe
-    else
-      facilities = Facility.parse_import(file_contents)
+    elsif file.present?
+      facilities = Facility.parse_facilities(@file_contents)
       ImportFacilitiesJob.perform_later(facilities)
       flash.now[:notice] = 'File upload successful, your facilities will be created shortly.'
     end
@@ -86,12 +88,13 @@ class Admin::FacilitiesController < AdminController
   end
 
   # Validation functions
-  def run_file_validations(file)
+  def run_validations_and_read(file)
     validate_facilities_file(file)
     return nil if @errors.present?
 
-    file_contents = Facility.read_import_file(file)
-    validate_facilities_fields(file_contents)
+    # This assignment is to avoid creating a temp file and passing it around
+    @file_contents = Facility.read_import_file(file)
+    validate_facilities_fields(@file_contents)
   end
 
   def validate_facilities_file(file)
@@ -103,9 +106,13 @@ class Admin::FacilitiesController < AdminController
 
   def validate_facilities_fields(file_contents)
     # Row validations
-    facilities = Facility.parse_import(file_contents)
+    facilities = Facility.parse_facilities(file_contents)
+    # Check that the file has at least one facility
+    validate_at_least_one_facility(facilities)
+
     # Look for duplicates in the import file
     validate_duplicate_rows(facilities)
+
     # Do Facility model validations
     row_num = 2
     facilities.each do |facility|
@@ -116,6 +123,10 @@ class Admin::FacilitiesController < AdminController
       end
       row_num += 1
     end
+  end
+
+  def validate_at_least_one_facility(facilities)
+    @errors << "Uploaded file doesn't contain any valid facilities" if facilities.blank?
   end
 
   def validate_duplicate_rows(facilities)

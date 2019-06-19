@@ -42,7 +42,7 @@ class Facility < ApplicationRecord
   end
 
 
-  def self.parse_import(file_contents)
+  def self.parse_facilities(file_contents)
     facilities = []
     CSV.parse(file_contents, headers: true, converters: :strip_whitespace) do |row|
       facility = {organization_name: row['organization'],
@@ -60,7 +60,7 @@ class Facility < ApplicationRecord
                   import: true}
       facilities << facility
     end
-    facilities
+    facilities.delete_if { |facility| facility.except(:import).values.all?(&:blank?) }
   end
 
   def self.read_import_file(file)
