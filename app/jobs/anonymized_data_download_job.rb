@@ -1,6 +1,6 @@
 class AnonymizedDataDownloadJob < ApplicationJob
-  queue_as :anonymized_data_download
-  self.queue_adapter = :default
+  queue_as :default
+  self.queue_adapter = :sidekiq
 
   DEFAULT_RETRY_TIMES = 3
   DEFAULT_RETRY_SECONDS = 5.minutes.seconds.to_i
