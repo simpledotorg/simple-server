@@ -119,7 +119,7 @@ class AnonymizedDataDownloadService
             bp.created_at,
             bp.recorded_at,
             original_else_blank_value(facility_name),
-            hashed_else_blank_value(bp.user.id),
+            hashed_else_blank_value(bp.user_id),
             bp.systolic,
             bp.diastolic
           ]
@@ -175,9 +175,6 @@ class AnonymizedDataDownloadService
         overdue_appointments.each do |overdue_appointment|
           user_id = overdue_appointment.patient.registration_user_id
           facility_name = Facility.where(id: overdue_appointment.facility_id).first&.name
-          agreed_to_visit = overdue_appointment.agreed_to_visit
-          remind_on = overdue_appointment.remind_on
-          cancel_reason = overdue_appointment.cancel_reason
 
           csv << [
             hash_uuid(overdue_appointment.id),
@@ -186,9 +183,8 @@ class AnonymizedDataDownloadService
             original_else_blank_value(facility_name),
             hashed_else_blank_value(user_id),
             overdue_appointment.status,
-            original_else_blank_value(agreed_to_visit),
-            original_else_blank_value(remind_on),
-            original_else_blank_value(cancel_reason)
+            original_else_blank_value(overdue_appointment.agreed_to_visit),
+            original_else_blank_value(overdue_appointment.remind_on)
           ]
         end
       end
@@ -198,18 +194,17 @@ class AnonymizedDataDownloadService
       CSV.generate(headers: true) do |csv|
         csv << AnonymizedDataConstants::sms_reminders_headers.map(&:titleize)
 
-        communications.each do |communication|
-          patient_id = communication.appointment.patient.id
-          communication_result = communication.communication_result
+        communications.each do |comm|
+          patient_id = comm.appointment.patient.id
 
           csv << [
-            hash_uuid(communication.id),
-            hash_uuid(communication.appointment_id),
+            hash_uuid(comm.id),
+            hash_uuid(comm.appointment_id),
             hashed_else_blank_value(patient_id),
-            hashed_else_blank_value(communication.user_id),
-            communication.created_at,
-            original_else_blank_value(communication.communication_type),
-            original_else_blank_value(communication_result)
+            hashed_else_blank_value(comm.user_id),
+            comm.created_at,
+            comm.communication_type,
+            comm.communication_result,
           ]
         end
       end
@@ -277,7 +272,7 @@ class AnonymizedDataDownloadService
     end
 
     def self.overdue_headers
-      %w[id patient_id created_at facility_name user_id status agreed_to_visit remind_on cancel_reason]
+      %w[id patient_id created_at facility_name user_id status agreed_to_visit remind_on]
     end
 
     def self.sms_reminders_headers
@@ -285,7 +280,7 @@ class AnonymizedDataDownloadService
     end
 
     def self.phone_calls_headers
-      %w[id, created_at, result, duration, start_time, end_time]
+      %w[id created_at result duration start_time end_time]
     end
   end
 end
