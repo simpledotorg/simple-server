@@ -60,13 +60,6 @@ class AnonymizedDataDownloadService
     appointments_csv_file = CSVGeneration::appointments_csv(appointments)
     csv_data[AnonymizedDataConstants::APPOINTMENTS_FILE] = appointments_csv_file
 
-    overdue_appointments = Appointment.overdue.select do |overdue_app|
-      patient_ids.include?(overdue_app.patient_id)
-    end
-
-    overdue_appointments_csv_file = CSVGeneration::overdue_csv(overdue_appointments)
-    csv_data[AnonymizedDataConstants::OVERDUES_FILE] = overdue_appointments_csv_file
-
     communications = appointments.flat_map(&:communications)
     sms_reminders_file = CSVGeneration::sms_reminders(communications)
     csv_data[AnonymizedDataConstants::SMS_REMINDERS_FILE] = sms_reminders_file
@@ -162,29 +155,10 @@ class AnonymizedDataDownloadService
             app.created_at,
             original_else_blank_value(facility_name),
             hashed_else_blank_value(user_id),
-            app.scheduled_date
-          ]
-        end
-      end
-    end
-
-    def self.overdue_csv(overdue_appointments)
-      CSV.generate(headers: true) do |csv|
-        csv << AnonymizedDataConstants::overdue_headers.map(&:titleize)
-
-        overdue_appointments.each do |overdue_appointment|
-          user_id = overdue_appointment.patient.registration_user_id
-          facility_name = Facility.where(id: overdue_appointment.facility_id).first&.name
-
-          csv << [
-            hash_uuid(overdue_appointment.id),
-            hash_uuid(overdue_appointment.patient_id),
-            overdue_appointment.created_at,
-            original_else_blank_value(facility_name),
-            hashed_else_blank_value(user_id),
-            overdue_appointment.status,
-            original_else_blank_value(overdue_appointment.agreed_to_visit),
-            original_else_blank_value(overdue_appointment.remind_on)
+            app.scheduled_date,
+            app.status,
+            original_else_blank_value(app.agreed_to_visit),
+            original_else_blank_value(app.remind_on),
           ]
         end
       end
@@ -251,7 +225,6 @@ class AnonymizedDataDownloadService
     BPS_FILE = 'blood_pressures.csv'
     MEDICINES_FILE = 'medicines.csv'
     APPOINTMENTS_FILE = 'appointments.csv'
-    OVERDUES_FILE = 'overdue_appointments.csv'
     SMS_REMINDERS_FILE = 'sms_reminders.csv'
     PHONE_CALLS_FILE = 'phone_calls.csv'
 
@@ -268,11 +241,7 @@ class AnonymizedDataDownloadService
     end
 
     def self.appointment_headers
-      %w[id patient_id created_at facility_name user_id appointment_date]
-    end
-
-    def self.overdue_headers
-      %w[id patient_id created_at facility_name user_id status agreed_to_visit remind_on]
+      %w[id patient_id created_at facility_name user_id scheduled_date status agreed_to_visit remind_on]
     end
 
     def self.sms_reminders_headers
