@@ -25,7 +25,7 @@ RSpec.describe AnonymizedDataDownloadMailer, type: :mailer do
   }
   let(:sent_email) { ActionMailer::Base.deliveries.last }
 
-  before(:each) do
+  before do
     ActiveJob::Base.queue_adapter = :test
   end
 
@@ -77,5 +77,10 @@ RSpec.describe AnonymizedDataDownloadMailer, type: :mailer do
         end
       end
     end
+  end
+
+  after do
+    clear_enqueued_jobs
+    clear_performed_jobs
   end
 end

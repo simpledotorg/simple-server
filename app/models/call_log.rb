@@ -1,6 +1,10 @@
 class CallLog < ApplicationRecord
+  include DataAnonymizable
+
   validates :caller_phone_number, presence: true
   validates :callee_phone_number, presence: true
+
+  ANONYMIZED_DATA_FIELDS = %w[id created_at result duration start_time end_time]
 
   enum result: {
     queued: 'queued',
@@ -13,4 +17,15 @@ class CallLog < ApplicationRecord
     canceled: 'canceled',
     unknown: 'unknown'
   }, _prefix: true
+
+  def anonymized_data
+    {
+      id: CallLog.hash_uuid(id),
+      created_at: created_at,
+      result: result,
+      duration: duration,
+      start_time: start_time,
+      end_time: end_time
+    }
+  end
 end

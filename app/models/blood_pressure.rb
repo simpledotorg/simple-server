@@ -1,5 +1,8 @@
 class BloodPressure < ApplicationRecord
   include Mergeable
+  include DataAnonymizable
+
+  ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at bp_date facility_name user_id bp_systolic bp_diastolic]
 
   belongs_to :facility, optional: true
   belongs_to :patient, optional: true
@@ -39,5 +42,20 @@ class BloodPressure < ApplicationRecord
 
   def to_s
     [systolic, diastolic].join("/")
+  end
+
+  def anonymized_data
+    facility_name = Facility.where(id: facility_id).first&.name
+
+    {
+      id: BloodPressure.hash_uuid(id),
+      patient_id: BloodPressure.hash_uuid(patient_id),
+      created_at: created_at,
+      bp_date: recorded_at,
+      facility_name: BloodPressure.original_else_blank_value(facility_name),
+      user_id: BloodPressure.hashed_else_blank_value(user_id),
+      bp_systolic: systolic,
+      bp_diastolic: diastolic
+    }
   end
 end
