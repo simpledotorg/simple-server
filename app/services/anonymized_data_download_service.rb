@@ -1,20 +1,15 @@
 require 'csv'
 
 class AnonymizedDataDownloadService
-  def initialize(recipient_name, recipient_email, entity_map, entity_type)
-    @recipient_name = recipient_name
-    @recipient_email = recipient_email
-    @entity_map = entity_map
-    @entity_type = entity_type
-  end
-
-  def execute
+  def run_for_district(recipient_name, recipient_email, district_name, organization_id)
     begin
-      anonymized_data = anonymize_data
+      organization_district = OrganizationDistrict.new(district_name, Organization.find(organization_id))
+      organization_district_patients = organization_district.facilities.flat_map(&:patients)
+      anonymized_data = anonymize(organization_district_patients)
 
       AnonymizedDataDownloadMailer
-        .with(recipient_name: @recipient_name,
-              recipient_email: @recipient_email,
+        .with(recipient_name: recipient_name,
+              recipient_email: recipient_email,
               anonymized_data: anonymized_data)
         .mail_anonymized_data
         .deliver_later
@@ -23,22 +18,22 @@ class AnonymizedDataDownloadService
     end
   end
 
-  private
-
-  def anonymize_data
-    case @entity_type
-    when 'district'
-      organization_district = OrganizationDistrict.new(@entity_map[:district_name], Organization.find(@entity_map[:organization_id]))
-      organization_district_patients = organization_district.facilities.flat_map(&:patients)
-      anonymize(organization_district_patients)
-    when 'facility'
-      facility = Facility.find(@entity_map[:facility_id])
+  def run_for_facility(recipient_name, recipient_email, facility_id)
+    begin
+      facility = Facility.find(facility_id)
       facility_patients = facility.patients
-      anonymize(facility_patients)
-    else
-      raise "Error: Unknown entity type: #{entity_type}"
+      anonymized_data = anonymize(facility_patients)
+
+      AnonymizedDataDownloadMailer
+        .with(recipient_name: recipient_name,
+              recipient_email: recipient_email,
+              anonymized_data: anonymized_data)
+    rescue StandardError => e
+      puts "Caught error: #{e.inspect}"
     end
   end
+
+  private
 
   def anonymize(patients)
     patient_ids = patients.map(&:id).to_set
