@@ -1,50 +1,46 @@
 class FacilityGroupPolicy < ApplicationPolicy
   def index?
-    user_has_any_permissions?(
-      :can_manage_all_organizations,
-      [:can_manage_facility_groups_for_organization, record]
-    )
+    user_permission_slugs = user.user_permissions.pluck(:permission_slug).map(&:to_sym)
+    [:can_manage_all_organizations,
+     :can_manage_an_organization,
+     :can_manage_a_facility_group
+    ].any? { |slug| user_permission_slugs.include? slug }
   end
 
   def show?
     user_has_any_permissions?(
       :can_manage_all_organizations,
-      [:can_manage_facility_groups_for_organization, record.organization]
+      [:can_manage_an_organization, record.organization],
+      [:can_manage_a_facility_group, record]
     )
   end
 
   def create?
     user_has_any_permissions?(
       :can_manage_all_organizations,
-      [:can_manage_facility_groups_for_organization, record.organization]
+      [:can_manage_an_organization, record.organization]
     )
   end
 
   def new?
-    user_has_any_permissions?(
-      :can_manage_all_organizations,
-      [:can_manage_facility_groups_for_organization, record.organization]
-    )
+    create?
   end
 
   def update?
     user_has_any_permissions?(
       :can_manage_all_organizations,
-      [:can_manage_facility_groups_for_organization, record.organization]
+      [:can_manage_an_organization, record.organization]
     )
   end
 
   def edit?
-    user_has_any_permissions?(
-      :can_manage_all_organizations,
-      [:can_manage_facility_groups_for_organization, record.organization]
-    )
+    update?
   end
 
   def destroy?
     destroyable? && user_has_any_permissions?(
       :can_manage_all_organizations,
-      [:can_manage_facility_groups_for_organization, record.organization]
+      [:can_manage_an_organization, record.organization]
     )
   end
 
@@ -71,10 +67,14 @@ class FacilityGroupPolicy < ApplicationPolicy
     end
 
     def resolve
-      if user.authorized?(:can_manage_all_organizations)
+      if user.has_permission?(:can_manage_all_organizations)
         scope.all
+      elsif user.has_permission?(:can_manage_an_organization)
+        scope.where(organization: resources_for_permission(:can_manage_an_organization))
+      elsif user.has_permission?(:can_manage_a_facility_group)
+        scope.where(id: resources_for_permission(:can_manage_a_facility_group).map(&:id))
       else
-        scope.where(organization: resources_for_permission(:can_manage_facility_groups_for_organization))
+        scope.none
       end
     end
   end

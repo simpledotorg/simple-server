@@ -1,6 +1,9 @@
 class OrganizationPolicy < ApplicationPolicy
   def index?
-    user_has_any_permissions?(:can_manage_all_organizations)
+    user_permission_slugs = user.user_permissions.pluck(:permission_slug).map(&:to_sym)
+    [:can_manage_all_organizations,
+     :can_manage_an_organization,
+    ].any? { |slug| user_permission_slugs.include? slug }
   end
 
   def show?
@@ -19,7 +22,10 @@ class OrganizationPolicy < ApplicationPolicy
   end
 
   def update?
-    show?
+    user_has_any_permissions?(
+      :can_manage_all_organizations,
+      [:can_manage_an_organization, record]
+    )
   end
 
   def edit?

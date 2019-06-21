@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe InvitationPolicy do
+RSpec.xdescribe InvitationPolicy do
   subject { described_class }
 
   let(:owner) { create(:admin, :owner) }

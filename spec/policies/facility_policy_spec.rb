@@ -3,103 +3,75 @@ require "rails_helper"
 RSpec.describe FacilityPolicy do
   subject { described_class }
 
-  let(:organization) { FactoryBot.create(:organization) }
-  let!(:facility_group) { FactoryBot.create(:facility_group, organization: organization) }
+  let(:organization) { create(:organization)}
+  let(:facility_group) { create(:facility_group, organization: organization)}
 
-  let(:owner) { FactoryBot.create(:admin, :owner) }
-  let(:organization_owner) { FactoryBot.create(:admin, :organization_owner, admin_access_controls: [AdminAccessControl.new(access_controllable: organization)]) }
-  let(:supervisor) { FactoryBot.create(:admin, :supervisor, admin_access_controls: [AdminAccessControl.new(access_controllable: facility_group)]) }
-  let(:analyst) { FactoryBot.create(:admin, :analyst) }
+  let(:facility_1) { build(:facility, facility_group: facility_group) }
+  let(:facility_2) { build(:facility) }
 
-  permissions :show? do
-    it "denies organization owners for facilities outside their organizations" do
-      facility = FactoryBot.create(:facility)
-      expect(subject).not_to permit(organization_owner, facility)
+  context 'user can manage all organizations' do
+    let(:user_with_permission) do
+      create(:master_user, permissions: [:can_manage_all_organizations])
     end
 
-    it "denies supervisors for facilities outside their facility group" do
-      facility = FactoryBot.create(:facility)
-      expect(subject).not_to permit(supervisor, facility)
-    end
-  end
-
-  permissions :index?, :show? do
-    it "permits owners" do
-      expect(subject).to permit(owner, Facility)
-    end
-
-    it "permits organization owners for facilities in their organizations" do
-      facility = FactoryBot.create(:facility, facility_group: organization_owner.facility_groups.first)
-      expect(subject).to permit(organization_owner, facility)
-    end
-
-    it "permits supervisors for facilities in their facility group" do
-      facility = FactoryBot.create(:facility, facility_group: supervisor.facility_groups.first)
-      expect(subject).to permit(supervisor, facility)
-    end
-
-    it "denies analysts" do
-      expect(subject).not_to permit(analyst, Facility)
-    end
-  end
-
-  permissions :new?, :create?, :update?, :edit? do
-    it "permits owners" do
-      expect(subject).to permit(owner, Facility)
-    end
-
-    it "permits organization owners" do
-      expect(subject).to permit(owner, Facility)
-    end
-
-    it "denies supervisors" do
-      expect(subject).not_to permit(supervisor, Facility)
-    end
-
-    it "denies analysts" do
-      expect(subject).not_to permit(analyst, Facility)
-    end
-  end
-
-  permissions :destroy? do
-    let!(:facility_group) { create(:facility_group, organization: organization) }
-    let!(:facility) { create(:facility, facility_group: facility_group) }
-
-    it "permits owners" do
-      expect(subject).to permit(owner, facility)
-    end
-
-    it "permits organization owners" do
-      expect(subject).to permit(owner, facility)
-    end
-
-    it "denies supervisors" do
-      expect(subject).not_to permit(supervisor, facility)
-    end
-
-    it "denies analysts" do
-      expect(subject).not_to permit(analyst, facility)
-    end
-
-    context "with associated patients" do
-      before do
-        facility.registered_patients << create(:patient)
-      end
-
-      it "denies everyone" do
-        expect(subject).not_to permit(owner, facility)
-        expect(subject).not_to permit(organization_owner, facility)
+    permissions :index? do
+      it 'allows the user' do
+        expect(subject).to permit(user_with_permission, Facility)
       end
     end
 
-    context "with associated blood pressures" do
-      before do
-        create(:blood_pressure, facility: facility)
+    permissions :show?, :new?, :create?, :edit?, :update?, :destroy? do
+      it 'allows the user for all facilities' do
+        expect(subject).to permit(user_with_permission, facility_1)
+        expect(subject).to permit(user_with_permission, facility_2)
+      end
+    end
+  end
+
+  context 'user can manage an organization' do
+    let(:user_with_permission) do
+      create(:master_user, permissions: [[:can_manage_an_organization, organization]])
+    end
+
+    permissions :index? do
+      it 'allows the user' do
+        expect(subject).to permit(user_with_permission, Facility)
+      end
+    end
+
+    permissions :show?, :new?, :create?, :edit?, :update?, :destroy? do
+      it 'allows the user for facility in their organization' do
+        expect(subject).to permit(user_with_permission, facility_1)
       end
 
-      it "denies everyone" do
-        expect(subject).not_to permit(owner, facility)
-        expect(subject).not_to permit(organization_owner, facility)
+      it 'denies the user for facility outside their organization' do
+        expect(subject).not_to permit(user_with_permission, facility_2)
+      end
+    end
+  end
+
+  context 'user can manage a facility group' do
+    let(:facility_group_1) { create(:facility_group) }
+    let(:facility_group_2) { create(:facility_group) }
+
+    let(:user_with_permission) do
+      create(:master_user, permissions: [[:can_manage_a_facility_group, facility_group]])
+    end
+
+    permissions :index? do
+      it 'allows the user' do
+        expect(subject).to permit(user_with_permission, FacilityGroup)
+      end
+    end
+
+    permissions :show?, :new?, :create?, :edit?, :update?, :destroy? do
+      it 'allows the user for facilities in their facility groups' do
+        expect(subject).to permit(user_with_permission, facility_1)
+      end
+
+
+      it 'denies the user for facilities outside facility groups' do
+        expect(subject).not_to permit(user_with_permission, facility_2)
       end
     end
   end
@@ -108,52 +80,53 @@ end
 RSpec.describe FacilityPolicy::Scope do
   let(:subject) { described_class }
   let(:organization) { create(:organization) }
-  let(:facility_group) { create(:facility_group, organization: organization) }
-  let!(:facility_1) { create(:facility, facility_group: facility_group) }
-  let!(:facility_2) { create(:facility, facility_group: facility_group) }
+  let(:facility_group_1) { create(:facility_group, organization: organization) }
+  let(:facility_group_2) { create(:facility_group, organization: organization) }
+  let!(:facility_1) { create(:facility, facility_group: facility_group_1) }
+  let!(:facility_2) { create(:facility, facility_group: facility_group_2) }
   let!(:facility_3) { create(:facility) }
 
-  describe "owner" do
-    let(:owner) { create(:admin, :owner) }
-    it "resolves all facilities" do
-      resolved_records = subject.new(owner, Facility.all).resolve
-      expect(resolved_records.to_a).to match_array(Facility.all.to_a)
+  context 'user can manage all organizations' do
+    let(:user_with_permission) do
+      create(:master_user, permissions: [:can_manage_all_organizations])
+    end
+
+    it 'resolve all facilities ' do
+      resolved_records = subject.new(user_with_permission, Facility.all).resolve
+      expect(resolved_records).to match_array(Facility.all)
     end
   end
 
-  describe "organization owner" do
-    let(:organization_owner) {
-      create(:admin,
-             :organization_owner,
-             admin_access_controls: [AdminAccessControl.new(access_controllable: organization)]
-      ) }
-    it "resolves facility for their organizations" do
-      resolved_records = subject.new(organization_owner, Facility.all).resolve
+  context 'user can manage an organization' do
+    let(:user_with_permission) do
+      create(:master_user, permissions: [[:can_manage_an_organization, organization]])
+    end
+
+    it 'resolve all facilities in their organization' do
+      resolved_records = subject.new(user_with_permission, Facility.all).resolve
       expect(resolved_records).to match_array([facility_1, facility_2])
     end
   end
 
-  describe "supervisor" do
-    let(:supervisor) {
-      create(:admin,
-             :supervisor,
-             admin_access_controls: [AdminAccessControl.new(access_controllable: facility_group)])
-    }
-    it "resolves facilities of their facility groups" do
-      resolved_records = subject.new(supervisor, Facility.all).resolve
-      expect(resolved_records).to match_array([facility_1, facility_2])
+  context 'user can manage a facility group' do
+    let(:user_with_permission) do
+      create(:master_user, permissions: [[:can_manage_a_facility_group, facility_group_1]])
+    end
+
+    it 'resolve to their facilities in their facility group' do
+      resolved_records = subject.new(user_with_permission, Facility.all).resolve
+      expect(resolved_records).to match_array([facility_1])
     end
   end
 
-  describe "analyst" do
-    let(:analyst) {
-      create(:admin,
-             :analyst,
-             admin_access_controls: [AdminAccessControl.new(access_controllable: facility_group)])
-    }
-    it "resolves facilities of their facility groups" do
-      resolved_records = subject.new(analyst, Facility.all).resolve
-      expect(resolved_records).to match_array([facility_1, facility_2])
+  context 'other users' do
+    let(:other_user) do
+      create(:master_user, permissions: [])
+    end
+
+    it 'resolves an empty set' do
+      resolved_records = subject.new(other_user, Facility.all).resolve
+      expect(resolved_records).to be_empty
     end
   end
 end

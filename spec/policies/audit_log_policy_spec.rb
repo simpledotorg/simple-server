@@ -3,26 +3,41 @@ require "rails_helper"
 RSpec.describe AuditLogPolicy do
   subject { described_class }
 
-  let(:owner) { create(:admin, :owner) }
-  let(:organization_owner) { create(:admin, :organization_owner) }
-  let(:supervisor) { create(:admin, :supervisor) }
-  let(:analyst) { create(:admin, :analyst) }
-
-  permissions :index?, :show? do
-    it "permits owners" do
-      expect(subject).to permit(owner, AuditLog)
+  context 'user with permission to manage audit logs' do
+    let(:user_with_permission) do
+      create(:master_user, permissions: [:can_manage_audit_logs])
     end
 
-    it "permits supervisors" do
-      expect(subject).not_to permit(supervisor, AuditLog)
+    permissions :index? do
+      it 'allows the user to view all audit logs' do
+        expect(subject).to permit(user_with_permission, AuditLog)
+      end
     end
 
-    it "permits analysts" do
-      expect(subject).not_to permit(analyst, AuditLog)
+    permissions :show? do
+      it 'allows the user to view all audit logs' do
+        audit_log = build(:audit_log)
+        expect(subject).to permit(user_with_permission, audit_log)
+      end
+    end
+  end
+
+  context 'other users' do
+    let(:other_user) do
+      create(:master_user, permissions: [])
     end
 
-    it "permits organization owners" do
-      expect(subject).not_to permit(organization_owner, AuditLog)
+    permissions :index? do
+      it 'allows the user to view all audit logs' do
+        expect(subject).not_to permit(other_user, AuditLog)
+      end
+    end
+
+    permissions :show? do
+      it 'allows the user to view all audit logs' do
+        audit_log = build(:audit_log)
+        expect(subject).not_to permit(other_user, audit_log)
+      end
     end
   end
 end
@@ -34,35 +49,24 @@ RSpec.describe AuditLogPolicy::Scope do
     FactoryBot.create_list(:audit_log, 3)
   end
 
-  describe "owner" do
-    let(:owner) { FactoryBot.create(:admin, :owner) }
+  context 'user with permission to manage audit logs' do
+    let(:user_with_permission) do
+      create(:master_user, permissions: [:can_manage_audit_logs])
+    end
 
-    it "resolves all audit logs" do
-      resolved_records = subject.new(owner, AuditLog.all).resolve
-      expect(resolved_records.to_a).to match_array(AuditLog.all.to_a)
+    it 'resolves all audit logs' do
+      resolved_records = subject.new(user_with_permission, AuditLog.all).resolve
+      expect(resolved_records).to match_array(AuditLog.all)
     end
   end
 
-  describe "organization owner" do
-    let(:organization_owner) { FactoryBot.create(:admin, :organization_owner) }
-    it "resolves no audit logs" do
-      resolved_records = subject.new(organization_owner, AuditLog.all).resolve
-      expect(resolved_records).to be_empty
+  context 'other users' do
+    let(:other_user) do
+      create(:master_user, permissions: [])
     end
-  end
 
-  describe "supervisor" do
-    let(:supervisor) { FactoryBot.create(:admin, :supervisor) }
-    it "resolves no audit logs" do
-      resolved_records = subject.new(supervisor, AuditLog.all).resolve
-      expect(resolved_records).to be_empty
-    end
-  end
-
-  describe "analyst" do
-    let(:analyst) { FactoryBot.create(:admin, :analyst) }
-    it "resolves no audit logs" do
-      resolved_records = subject.new(analyst, AuditLog.all).resolve
+    it 'resolves an empty set' do
+      resolved_records = subject.new(other_user, AuditLog.all).resolve
       expect(resolved_records).to be_empty
     end
   end

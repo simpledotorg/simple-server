@@ -46,6 +46,18 @@ class MasterUser < ApplicationRecord
     user_permissions.find_by(permission_slug: permission_slug).present?
   end
 
+  def assign_permissions(permissions)
+    new_permissions = []
+    permissions.each do |permission|
+      permission = [permission] unless permission.is_a?(Array)
+      new_permissions << user_permissions.new(
+        permission_slug: permission.first,
+        resource: permission.second)
+    end
+    self.user_permissions = new_permissions
+    self.save
+  end
+
   private
 
   def user_authentication_of_type(authenticatable_type)

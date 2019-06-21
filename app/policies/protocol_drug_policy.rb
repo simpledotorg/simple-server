@@ -38,7 +38,7 @@ class ProtocolDrugPolicy < ApplicationPolicy
     end
 
     def resolve
-      if user.has_permission?(:can_manage_all_protocols)
+        if user.has_permission?(:can_manage_all_protocols)
         scope.all
       else
         scope.none
