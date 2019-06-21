@@ -1,7 +1,8 @@
-:concurrency: 10
+:concurrency: 15
 :pidfile: ./tmp/pids/sidekiq.pid
 :logfile: ./log/sidekiq.log
 
 :queues:
   - default
   - [analytics_warmup, 2]
+  - [high, 3]
