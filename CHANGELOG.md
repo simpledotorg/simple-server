@@ -9,7 +9,7 @@
 # 2019-06-21-1
 ### Added
 - Add a high-priority queue for time-sensitive jobs like sms reminders
--  Legal footer to the dashboard
+- Legal footer to the dashboard
 ### Changed
 - Update the staging public IP for cap
 ### Fixed
