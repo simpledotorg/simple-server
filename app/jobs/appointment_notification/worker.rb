@@ -2,6 +2,8 @@ class AppointmentNotification::Worker
   include Rails.application.routes.url_helpers
   include Sidekiq::Worker
 
+  sidekiq_options queue: 'high'
+
   def perform(user_id, appointments, communication_type)
     Appointment.where(id: appointments).each do |appointment|
       next if appointment.previously_communicated_via?(communication_type)
