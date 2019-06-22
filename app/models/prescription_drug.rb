@@ -13,7 +13,7 @@ class PrescriptionDrug < ApplicationRecord
   validates :is_deleted, inclusion: { in: [true, false] }
 
   def anonymized_data
-    user_id = patient.registration_user_id
+    user_id = patient&.registration_user_id
     facility_name = Facility.where(id: facility_id).first&.name
 
     {

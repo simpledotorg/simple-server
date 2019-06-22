@@ -10,25 +10,23 @@ class AnonymizedDataDownloadService
 
   def run_for_district(recipient_name, recipient_email, district_name, organization_id)
     organization_district = OrganizationDistrict.new(district_name, Organization.find(organization_id))
-    organization_district_patients = organization_district.facilities.flat_map(&:patients)
-    anonymized_data = anonymize(organization_district_patients)
+    anonymized_data = anonymize_district(organization_district)
 
-    facilities = organization_district.facilities.flat_map(&:name).sort
+    names_of_facilities = organization_district.facilities.flat_map(&:name).sort
 
     AnonymizedDataDownloadMailer
       .with(recipient_name: recipient_name,
             recipient_email: recipient_email,
             anonymized_data: anonymized_data,
             resource: { district_name: district_name,
-                        facilities: facilities })
+                        facilities: names_of_facilities })
       .mail_anonymized_data
       .deliver_later
   end
 
   def run_for_facility(recipient_name, recipient_email, facility_id)
     facility = Facility.find(facility_id)
-    facility_patients = facility.patients
-    anonymized_data = anonymize(facility_patients)
+    anonymized_data = anonymize_facility(facility)
 
     AnonymizedDataDownloadMailer
       .with(recipient_name: recipient_name,
@@ -42,22 +40,23 @@ class AnonymizedDataDownloadService
 
   private
 
-  def anonymize(patients)
-    patient_ids = patients.map(&:id).to_set
+  def anonymize_district(district)
+    facilities = district.facilities
 
     csv_data = Hash.new
 
+    patients = facilities.flat_map(&:patients)
     csv_data[PATIENTS_FILE] = to_csv(patients)
 
-    blood_pressures = BloodPressure.all.select { |bp| patient_ids.include?(bp.patient_id) }
+    blood_pressures = facilities.flat_map(&:blood_pressures)
     blood_pressures_csv_data = to_csv(blood_pressures)
     csv_data[BPS_FILE] = blood_pressures_csv_data if blood_pressures_csv_data.present?
 
-    prescriptions = PrescriptionDrug.all.select { |pd| patient_ids.include?(pd.patient_id) }
+    prescriptions = facilities.flat_map(&:prescription_drugs)
     prescriptions_csv_data = to_csv(prescriptions)
     csv_data[MEDICINES_FILE] = prescriptions_csv_data if prescriptions_csv_data.present?
 
-    appointments = Appointment.all.select { |app| patient_ids.include?(app.patient_id) }
+    appointments = facilities.flat_map(&:appointments)
     appointments_csv_data = to_csv(appointments)
     csv_data[APPOINTMENTS_FILE] = appointments_csv_data if appointments_csv_data.present?
 
@@ -65,7 +64,38 @@ class AnonymizedDataDownloadService
     communications_csv_data = to_csv(communications)
     csv_data[SMS_REMINDERS_FILE] = communications_csv_data if communications_csv_data.present?
 
-    all_bp_users_phone_numbers = blood_pressures.flat_map(&:user).compact.map(&:phone_number).uniq
+    all_bp_users_phone_numbers = facilities.flat_map(&:users).compact.map(&:phone_number).uniq
+    phone_calls = CallLog.all.select { |call| all_bp_users_phone_numbers.include?(call.caller_phone_number) }
+    phone_calls_csv_data = to_csv(phone_calls)
+    csv_data[PHONE_CALLS_FILE] = phone_calls_csv_data if phone_calls_csv_data.present?
+
+    csv_data
+  end
+
+
+  def anonymize_facility(facility)
+    csv_data = Hash.new
+
+    patients = facility.patients
+    csv_data[PATIENTS_FILE] = to_csv(patients)
+
+    blood_pressures = facility.blood_pressures
+    blood_pressures_csv_data = to_csv(blood_pressures)
+    csv_data[BPS_FILE] = blood_pressures_csv_data if blood_pressures_csv_data.present?
+
+    prescriptions = facility.prescription_drugs
+    prescriptions_csv_data = to_csv(prescriptions)
+    csv_data[MEDICINES_FILE] = prescriptions_csv_data if prescriptions_csv_data.present?
+
+    appointments = facility.appointments
+    appointments_csv_data = to_csv(appointments)
+    csv_data[APPOINTMENTS_FILE] = appointments_csv_data if appointments_csv_data.present?
+
+    communications = appointments.flat_map(&:communications)
+    communications_csv_data = to_csv(communications)
+    csv_data[SMS_REMINDERS_FILE] = communications_csv_data if communications_csv_data.present?
+
+    all_bp_users_phone_numbers = facility.users.compact.map(&:phone_number).uniq
     phone_calls = CallLog.all.select { |call| all_bp_users_phone_numbers.include?(call.caller_phone_number) }
     phone_calls_csv_data = to_csv(phone_calls)
     csv_data[PHONE_CALLS_FILE] = phone_calls_csv_data if phone_calls_csv_data.present?
