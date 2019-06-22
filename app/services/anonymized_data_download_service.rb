@@ -12,7 +12,8 @@ class AnonymizedDataDownloadService
 
   def run_for_district(recipient_name, recipient_email, district_name, organization_id)
     organization_district = OrganizationDistrict.new(district_name, Organization.find(organization_id))
-    anonymized_data = anonymize_district(organization_district)
+    district_facilities = district.facilities
+    anonymized_data = anonymize_district(district_facilities)
 
     names_of_facilities = organization_district.facilities.flat_map(&:name).sort
 
@@ -42,32 +43,20 @@ class AnonymizedDataDownloadService
 
   private
 
-  def anonymize_district(district)
-    facilities = district.facilities
-
+  def anonymize_district(district_facilities)
     csv_data = {}
 
     patients = []
-    facilities.each do |fac|
-      patients << patient_data(fac)
-    end
-
-    patients.flatten!
+    district_facilities.each { |fac| patients << patient_data(fac) }; patients.flatten!
     csv_data[PATIENTS_FILE] = to_csv(patients)
 
     blood_pressures = []
-    facilities.each do |fac|
-      blood_pressures << patient_data(fac)
-    end
-
-    blood_pressures.flatten!
+    district_facilities.each { |fac| blood_pressures << patient_data(fac) }; blood_pressures.flatten!
     blood_pressures_csv_data = to_csv(blood_pressures)
     csv_data[BPS_FILE] = blood_pressures_csv_data if blood_pressures_csv_data.present?
 
     prescriptions = []
-    facilities.each do |fac|
-      prescriptions << prescription_data(fac)
-    end
+    district_facilities.each { |fac| prescriptions << prescription_data(fac) }
 
     prescriptions.flatten!
     prescriptions_csv_data = to_csv(prescriptions)
@@ -75,11 +64,7 @@ class AnonymizedDataDownloadService
 
     appointments = []
 
-    facilities.each do |fac|
-      appointments << appointment_data(fac)
-    end
-
-    appointments.flatten!
+    district_facilities.each { |fac| appointments << appointment_data(fac) }; appointments.flatten!
     appointments_csv_data = to_csv(appointments)
     csv_data[APPOINTMENTS_FILE] = appointments_csv_data if appointments_csv_data.present?
 
@@ -87,7 +72,7 @@ class AnonymizedDataDownloadService
     communications_csv_data = to_csv(communications)
     csv_data[SMS_REMINDERS_FILE] = communications_csv_data if communications_csv_data.present?
 
-    all_bp_users_phone_numbers = facilities.flat_map(&:users).compact.map(&:phone_number).uniq
+    all_bp_users_phone_numbers = district_facilities.flat_map(&:users).compact.map(&:phone_number).uniq
     phone_calls = phone_call_data(all_bp_users_phone_numbers)
     phone_calls_csv_data = to_csv(phone_calls)
     csv_data[PHONE_CALLS_FILE] = phone_calls_csv_data if phone_calls_csv_data.present?
