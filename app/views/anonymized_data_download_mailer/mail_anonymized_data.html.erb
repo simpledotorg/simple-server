@@ -4,10 +4,13 @@
   <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
 </head>
 <body>
-
-<h3>Anonymized Data dump</h3>
 <p>
   <strong><%= I18n.t('anonymized_data_download_email.accessible_facilities') %>:</strong>
+<ul>
+  <% @facilities.each do |facility| %>
+    <li><%= facility %></li>
+  <% end %>
+</ul>
 </p>
 </body>
 </html>

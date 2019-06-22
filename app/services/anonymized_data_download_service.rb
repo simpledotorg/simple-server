@@ -13,10 +13,14 @@ class AnonymizedDataDownloadService
     organization_district_patients = organization_district.facilities.flat_map(&:patients)
     anonymized_data = anonymize(organization_district_patients)
 
+    facilities = organization_district.facilities.flat_map(&:name).sort
+
     AnonymizedDataDownloadMailer
       .with(recipient_name: recipient_name,
             recipient_email: recipient_email,
-            anonymized_data: anonymized_data)
+            anonymized_data: anonymized_data,
+            resource: { district_name: district_name,
+                        facilities: facilities })
       .mail_anonymized_data
       .deliver_later
   end
@@ -29,7 +33,9 @@ class AnonymizedDataDownloadService
     AnonymizedDataDownloadMailer
       .with(recipient_name: recipient_name,
             recipient_email: recipient_email,
-            anonymized_data: anonymized_data)
+            anonymized_data: anonymized_data,
+            resource: { facility_name: facility.name,
+                        facilities: [facility_name] })
       .mail_anonymized_data
       .deliver_later
   end

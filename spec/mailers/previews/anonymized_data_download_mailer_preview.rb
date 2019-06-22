@@ -5,7 +5,11 @@ class AnonymizedDataDownloadMailerPreview < ActionMailer::Preview
     recipient_email = 'test_admin@admins.org'
 
     AnonymizedDataDownloadMailer
-      .with(recipient_name: recipient_name, recipient_email: recipient_email, anonymized_data: { 'patients.csv' => [] })
+      .with(recipient_name: recipient_name,
+            recipient_email: recipient_email,
+            anonymized_data: { 'patients.csv' => [] },
+            resource: { district_name: 'Sample District',
+                        facilities: ['CHC Sample Facility'] })
       .mail_anonymized_data
   end
 end

@@ -57,10 +57,10 @@ en:
     subject: 'PIN Reset: User %{full_name} is requesting access.'
     allow_or_deny_access: "Allow or deny access"
   anonymized_data_download_email:
-    accessible_districts: "User will have access to anonymized data from the following district's facilities"
-    accessible_facilities: 'User will have access to anonymized data from the following facilities'
+    accessible_facilities: 'Attached documents contain anonymized data from the following facilities'
     organization: 'Organization'
-    subject: 'Anonymized Data dump: Requested by User %{recipient_name}'
+    district_subject: 'Anonymized Data dump for district %{district_name}: requested by User %{recipient_name}'
+    facility_subject: 'Anonymized Data dump for facility ${facility_name}: requested by User %{recipient_name}'
     district_notice: 'You will be e-mailed a copy of the anonymized data for district "%{district_name}" soon.'
     facility_notice: 'You will be e-mailed a copy of the anonymized data for facility "%{facility_name}" soon.'
 

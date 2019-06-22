@@ -2,13 +2,13 @@ class AnonymizedDataDownloadMailer < ApplicationMailer
   default from: 'help@simple.org'
 
   def mail_anonymized_data
-    recipient_name = params[:recipient_name]
-    recipient_email = params[:recipient_email]
-    attachment_data = params[:anonymized_data]
+    @recipient_name = params[:recipient_name]
+    @recipient_email = params[:recipient_email]
+    @attachment_data = params[:anonymized_data]
+    @resource = params[:resource]
+    @facilities = @resource[:facilities]
 
-    subject = I18n.t('anonymized_data_download_email.subject', recipient_name: recipient_name)
-
-    attachment_data.each do |file_name, file_contents|
+    @attachment_data.each do |file_name, file_contents|
       attachments[file_name] = {
         mime_type: 'text/csv',
         content: file_contents
@@ -16,6 +16,16 @@ class AnonymizedDataDownloadMailer < ApplicationMailer
     end
 
     mail(subject: subject,
-         to: recipient_email)
+         to: @recipient_email)
+  end
+
+  private
+
+  def subject
+    if @resource.keys.include?(:district_name)
+      I18n.t('anonymized_data_download_email.district_subject', district_name: @resource[:district_name], recipient_name: @recipient_name)
+    else
+      I18n.t('anonymized_data_download_email.facility_subject', facility_name: @resource[:facility_name], recipient_name: @recipient_name)
+    end
   end
 end
