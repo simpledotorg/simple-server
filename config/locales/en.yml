@@ -59,8 +59,8 @@ en:
   anonymized_data_download_email:
     accessible_facilities: 'Attached documents contain anonymized data from the following facilities'
     organization: 'Organization'
-    district_subject: 'Anonymized Data dump for district %{district_name}: requested by User %{recipient_name}'
-    facility_subject: 'Anonymized Data dump for facility ${facility_name}: requested by User %{recipient_name}'
+    district_subject: 'Anonymized Data dump for District %{district_name}, requested by User %{recipient_name}'
+    facility_subject: 'Anonymized Data dump for Facility %{facility_name}, requested by User %{recipient_name}'
     district_notice: 'You will be e-mailed a copy of the anonymized data for district "%{district_name}" soon.'
     facility_notice: 'You will be e-mailed a copy of the anonymized data for facility "%{facility_name}" soon.'
 

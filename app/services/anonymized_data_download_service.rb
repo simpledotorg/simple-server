@@ -35,7 +35,7 @@ class AnonymizedDataDownloadService
             recipient_email: recipient_email,
             anonymized_data: anonymized_data,
             resource: { facility_name: facility.name,
-                        facilities: [facility_name] })
+                        facilities: [facility.name] })
       .mail_anonymized_data
       .deliver_later
   end

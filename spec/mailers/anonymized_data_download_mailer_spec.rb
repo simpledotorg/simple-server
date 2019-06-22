@@ -43,7 +43,9 @@ RSpec.describe AnonymizedDataDownloadMailer, type: :mailer do
       perform_enqueued_jobs do
         AnonymizedDataDownloadMailer.with(recipient_name: recipient_name,
                                           recipient_email: recipient_email,
-                                          anonymized_data: empty_attachment_data)
+                                          anonymized_data: empty_attachment_data,
+                                          resource: { district_name: 'Sample District',
+                                                      facilities: ['Sample Facility'] })
           .mail_anonymized_data.deliver_later
       end
     }.to change { ActionMailer::Base.deliveries.size }.by(1)
@@ -54,7 +56,9 @@ RSpec.describe AnonymizedDataDownloadMailer, type: :mailer do
       perform_enqueued_jobs do
         AnonymizedDataDownloadMailer.with(recipient_name: recipient_name,
                                           recipient_email: recipient_email,
-                                          anonymized_data: attachment_data)
+                                          anonymized_data: attachment_data,
+                                          resource: { district_name: 'Sample District',
+                                                      facilities: ['Sample Facility'] })
           .mail_anonymized_data.deliver_later
       end
     end

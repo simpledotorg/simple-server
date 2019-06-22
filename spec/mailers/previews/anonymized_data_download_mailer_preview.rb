@@ -9,7 +9,7 @@ class AnonymizedDataDownloadMailerPreview < ActionMailer::Preview
             recipient_email: recipient_email,
             anonymized_data: { 'patients.csv' => [] },
             resource: { district_name: 'Sample District',
-                        facilities: ['CHC Sample Facility'] })
+                        facilities: ['Sample Facility'] })
       .mail_anonymized_data
   end
 end
