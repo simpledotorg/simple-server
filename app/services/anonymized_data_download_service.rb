@@ -1,6 +1,8 @@
 require 'csv'
 
 class AnonymizedDataDownloadService
+  DATA_ANONYMIZATION_COLLECTION_START_DATE = 12.months.ago
+
   PATIENTS_FILE = 'patients.csv'
   BPS_FILE = 'blood_pressures.csv'
   MEDICINES_FILE = 'medicines.csv'
@@ -45,27 +47,27 @@ class AnonymizedDataDownloadService
 
     csv_data = Hash.new
 
-    patients = facilities.flat_map(&:patients)
+    patients = facilities.flat_map(&:patients).select { |p| p.device_created_at >= DATA_ANONYMIZATION_COLLECTION_START_DATE }
     csv_data[PATIENTS_FILE] = to_csv(patients)
 
-    blood_pressures = facilities.flat_map(&:blood_pressures)
+    blood_pressures = facilities.flat_map(&:blood_pressures).select { |bp| bp.device_created_at >= DATA_ANONYMIZATION_COLLECTION_START_DATE }
     blood_pressures_csv_data = to_csv(blood_pressures)
     csv_data[BPS_FILE] = blood_pressures_csv_data if blood_pressures_csv_data.present?
 
-    prescriptions = facilities.flat_map(&:prescription_drugs)
+    prescriptions = facilities.flat_map(&:prescription_drugs).select { |pd| pd.device_created_at >= DATA_ANONYMIZATION_COLLECTION_START_DATE }
     prescriptions_csv_data = to_csv(prescriptions)
     csv_data[MEDICINES_FILE] = prescriptions_csv_data if prescriptions_csv_data.present?
 
-    appointments = facilities.flat_map(&:appointments)
+    appointments = facilities.flat_map(&:appointments).select { |app| app.device_created_at >= DATA_ANONYMIZATION_COLLECTION_START_DATE }
     appointments_csv_data = to_csv(appointments)
     csv_data[APPOINTMENTS_FILE] = appointments_csv_data if appointments_csv_data.present?
 
-    communications = appointments.flat_map(&:communications)
+    communications = appointments.flat_map(&:communications).select { |comm| comm.device_created_dat >= DATA_ANONYMIZATION_COLLECTION_START_DATE }
     communications_csv_data = to_csv(communications)
     csv_data[SMS_REMINDERS_FILE] = communications_csv_data if communications_csv_data.present?
 
     all_bp_users_phone_numbers = facilities.flat_map(&:users).compact.map(&:phone_number).uniq
-    phone_calls = CallLog.all.select { |call| all_bp_users_phone_numbers.include?(call.caller_phone_number) }
+    phone_calls = CallLog.all.select { |call| all_bp_users_phone_numbers.include?(call.caller_phone_number && call.created_at >= DATA_ANONYMIZATION_COLLECTION_START_DATE) }
     phone_calls_csv_data = to_csv(phone_calls)
     csv_data[PHONE_CALLS_FILE] = phone_calls_csv_data if phone_calls_csv_data.present?
 
@@ -76,27 +78,27 @@ class AnonymizedDataDownloadService
   def anonymize_facility(facility)
     csv_data = Hash.new
 
-    patients = facility.patients
+    patients = facility.patients.select { |p| p.device_created_at >= DATA_ANONYMIZATION_COLLECTION_START_DATE }
     csv_data[PATIENTS_FILE] = to_csv(patients)
 
-    blood_pressures = facility.blood_pressures
+    blood_pressures = facility.blood_pressures.select { |bp| bp.device_created_at >= DATA_ANONYMIZATION_COLLECTION_START_DATE }
     blood_pressures_csv_data = to_csv(blood_pressures)
     csv_data[BPS_FILE] = blood_pressures_csv_data if blood_pressures_csv_data.present?
 
-    prescriptions = facility.prescription_drugs
+    prescriptions = facility.prescription_drugs.select { |pd| pd.device_created_at >= DATA_ANONYMIZATION_COLLECTION_START_DATE }
     prescriptions_csv_data = to_csv(prescriptions)
     csv_data[MEDICINES_FILE] = prescriptions_csv_data if prescriptions_csv_data.present?
 
-    appointments = facility.appointments
+    appointments = facility.appointments.select { |app| app.device_created_at >= DATA_ANONYMIZATION_COLLECTION_START_DATE }
     appointments_csv_data = to_csv(appointments)
     csv_data[APPOINTMENTS_FILE] = appointments_csv_data if appointments_csv_data.present?
 
-    communications = appointments.flat_map(&:communications)
+    communications = appointments.flat_map(&:communications).select { |comm| comm.device_created_at >= DATA_ANONYMIZATION_COLLECTION_START_DATE }
     communications_csv_data = to_csv(communications)
     csv_data[SMS_REMINDERS_FILE] = communications_csv_data if communications_csv_data.present?
 
     all_bp_users_phone_numbers = facility.users.compact.map(&:phone_number).uniq
-    phone_calls = CallLog.all.select { |call| all_bp_users_phone_numbers.include?(call.caller_phone_number) }
+    phone_calls = CallLog.all.select { |call| all_bp_users_phone_numbers.include?(call.caller_phone_number) && call.created_at >= DATA_ANONYMIZATION_COLLECTION_START_DATE }
     phone_calls_csv_data = to_csv(phone_calls)
     csv_data[PHONE_CALLS_FILE] = phone_calls_csv_data if phone_calls_csv_data.present?
 
