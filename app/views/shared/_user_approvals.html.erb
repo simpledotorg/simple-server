@@ -8,7 +8,7 @@
           <div class="row">
             <div class="col-lg-3">
 
-              <strong style="margin-top: -4px; display: block;"><%= link_to user.full_name, admin_user_path(user) %></strong>
+              <strong style="margin-top: -4px; display: block;"><%= link_to user.full_name, [:admin, user] %></strong>
               <% if user.sync_approval_status_reason.present? %>
                 <span class="approval-reason"><%= user.sync_approval_status_reason %></span>
               <% end %>
@@ -22,7 +22,7 @@
                 </div>
                 <div class="col tight">
                   <small>
-                    Facility: <%= user.registration_facility.present? ? link_to(user.registration_facility.name, admin_facilities_path(user.registration_facility)) : "N/A" %>
+                    Facility: <%= user.registered_at_facility.present? ? link_to(user.registered_at_facility.name, admin_facilities_path(user.registered_at_facility)) : "N/A" %>
                   </small>
                 </div>
               </div>
