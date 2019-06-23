@@ -93,6 +93,10 @@ class MasterUser < ApplicationRecord
     self.save
   end
 
+  def self.requested_sync_approval
+    where(sync_approval_status: :requested)
+  end
+
   private
 
   def user_authentication_of_type(authenticatable_type)

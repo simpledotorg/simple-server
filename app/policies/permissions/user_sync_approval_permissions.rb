@@ -12,9 +12,8 @@ module Permissions::UserSyncApprovalPermissions
       resource_type: 'Organization'
     },
     can_approve_all_users: {
-      type: :resource,
-      slug: :can_approve_all_users,
-      resource_type: 'Organization'
+      type: :global,
+      slug: :can_approve_all_users
     }
   }
 end
