@@ -215,8 +215,9 @@ blood_pressures.recorded_at AS oldest_bp_recorded_at))
       end
 
       default_permissions = MasterUser::DEFAULT_PERMISSIONS_FOR_ROLE[master_user.role.to_sym]
-      default_permissions.group_by { |permission_slug| Permissions::ALL_PERMISSIONS[permission_slug][:resource_type]}
-      .each do |resource_type, permission_slugs|
+      default_permissions
+        .group_by { |permission_slug| Permissions::ALL_PERMISSIONS[permission_slug][:resource_type] }
+        .each do |resource_type, permission_slugs|
         case resource_type
         when nil
           master_user.assign_permissions(permission_slugs)

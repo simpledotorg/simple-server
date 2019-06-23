@@ -22,13 +22,13 @@
                 </div>
                 <div class="col tight">
                   <small>
-                    Facility: <%= user.registered_at_facility.present? ? link_to(user.registered_at_facility.name, admin_facilities_path(user.registered_at_facility)) : "N/A" %>
+                    Facility: <%= user.registration_facility.present? ? link_to(user.registration_facility.name, admin_facilities_path(user.registration_facility)) : "N/A" %>
                   </small>
                 </div>
               </div>
             </div>
             <div class="col-lg-4 text-lg-right">
-              <%= link_to "Allow access", admin_user_enable_access_path(user), method: :put, class: "btn btn-sm btn-success", data: { confirm: I18n.t('admin.enable_access_alert') } %>
+              <%= link_to "Allow access", admin_master_user_enable_access_path(user), method: :put, class: "btn btn-sm btn-success", data: { confirm: I18n.t('admin.enable_access_alert') } %>
               <%= link_to 'Deny access', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal', class: "btn btn-sm btn-outline-danger" %>
 
               <%= render partial: "admin/users/deny_access_modal", locals: { user: user } %>

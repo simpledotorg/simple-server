@@ -21,13 +21,35 @@ class MasterUser < ApplicationRecord
   }
 
   has_many :user_authentications
-  has_many :email_authentications, through: :user_authentications, source: :authenticatable, source_type: 'EmailAuthentication'
+
+  has_many :phone_number_authentications,
+           through: :user_authentications,
+           source: :authenticatable,
+           source_type: 'PhoneNumberAuthentication'
+
+  has_many :email_authentications,
+           through: :user_authentications,
+           source: :authenticatable,
+           source_type: 'EmailAuthentication'
+
   has_many :user_permissions, foreign_key: :user_id
 
   validates :full_name, presence: true
 
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
+
+  delegate :registration_facility,
+           :access_token,
+           :logged_in_at,
+           :has_never_logged_in?,
+           :mark_as_logged_in,
+           :phone_number,
+           :otp,
+           :otp_valid?,
+           :facility_group,
+           :organization,
+           :password_digest, to: :phone_number_authentication, allow_nil: true
 
   delegate :email, :password, to: :email_authentication, allow_nil: true
 
@@ -67,7 +89,7 @@ class MasterUser < ApplicationRecord
   end
 
   def phone_number_authentication
-    user_authentication_of_type(AUTHENTICATION_TYPES[:phone_number_authentication])
+    phone_number_authentications.first
   end
 
   def registration_facility_id
