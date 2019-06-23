@@ -425,7 +425,6 @@ ActiveRecord::Schema.define(version: 20190531064335) do
   end
 
   add_foreign_key "appointments", "facilities"
-  add_foreign_key "communications", "users"
   add_foreign_key "facilities", "facility_groups"
   add_foreign_key "facility_groups", "organizations"
   add_foreign_key "patient_phone_numbers", "patients"

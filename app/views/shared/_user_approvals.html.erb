@@ -8,7 +8,7 @@
           <div class="row">
             <div class="col-lg-3">
 
-              <strong style="margin-top: -4px; display: block;"><%= link_to user.full_name, [:admin, user] %></strong>
+              <strong style="margin-top: -4px; display: block;"><%= link_to user.full_name, admin_user_path(user) %></strong>
               <% if user.sync_approval_status_reason.present? %>
                 <span class="approval-reason"><%= user.sync_approval_status_reason %></span>
               <% end %>

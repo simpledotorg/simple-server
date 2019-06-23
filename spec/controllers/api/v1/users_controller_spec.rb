@@ -12,8 +12,13 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
   describe '#register' do
     describe 'registration payload is invalid' do
-      let(:facility) { FactoryBot.create(:facility)}
-      let(:request_params) { { user: FactoryBot.attributes_for(:user).slice(:full_name, :phone_number).merge(facility_ids: [facility.id]) } }
+      let(:facility) { FactoryBot.create(:facility) }
+      let(:request_params) do
+        { user: register_user_request_params
+                  .slice(:full_name, :phone_number)
+                  .except(:registration_facility_id)
+                  .merge(facility_ids: [facility.id]) }
+      end
       it 'responds with 400' do
         post :register, params: request_params
 
@@ -24,49 +29,46 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     describe 'registration payload is valid' do
       let(:facility) { FactoryBot.create(:facility) }
       let(:user_params) do
-        FactoryBot.attributes_for(:user)
-          .slice(:full_name, :phone_number)
-          .merge(id: SecureRandom.uuid,
-                 password_digest: BCrypt::Password.create("1234"),
-                 facility_ids: [facility.id],
-                 created_at: Time.now.iso8601,
-                 updated_at: Time.now.iso8601)
+        register_user_request_params(facility_ids: [facility.id]).except(:facility_id)
       end
+      let(:phone_number) { user_params[:phone_number] }
+      let(:password_digest) { user_params[:password_digest] }
 
       it 'creates a user, and responds with the created user object and their access token' do
         post :register, params: { user: user_params }
 
-        created_user = User.find_by(full_name: user_params[:full_name], phone_number: user_params[:phone_number])
+        created_user = MasterUser.find_by(full_name: user_params[:full_name])
         expect(response.status).to eq(200)
         expect(created_user).to be_present
+        expect(created_user.phone_number_authentication).to be_present
+        expect(created_user.phone_number_authentication.phone_number).to eq(user_params[:phone_number])
+
         expect(JSON(response.body)['user'].except('device_updated_at', 'device_created_at', 'facility_ids').with_int_timestamps)
           .to eq( Api::Current::Transformer.to_response(created_user)
                    .except(
                      'device_updated_at',
-                     'device_created_at',
-                     'access_token',
-                     'logged_in_at',
-                     'otp',
-                     'otp_valid_until')
+                     'device_created_at')
+                    .merge('phone_number' => phone_number, 'password_digest' => password_digest)
                    .as_json
                    .with_int_timestamps)
-        expect(JSON(response.body)['user']['facility_ids']).to match_array([created_user.facility.id])
+        expect(JSON(response.body)['user']['facility_ids']).to match_array([created_user.registration_facility.id])
         expect(JSON(response.body)['access_token']).to eq(created_user.access_token)
       end
 
       it 'sets the user status to requested' do
         post :register, params: { user: user_params }
-        created_user = User.find_by(full_name: user_params[:full_name], phone_number: user_params[:phone_number])
+        created_user = MasterUser.find_by(full_name: user_params[:full_name])
         expect(created_user.sync_approval_status).to eq(User.sync_approval_statuses[:requested])
         expect(created_user.sync_approval_status_reason).to eq(I18n.t('registration'))
       end
 
       it 'sets the user status to approved if AUTO_APPROVE_USER_FOR_QA feature is enabled' do
+        allow(FeatureToggle).to receive(:enabled?).with('MASTER_USER_AUTHENTICATION').and_return(true)
         allow(FeatureToggle).to receive(:enabled?).with('FIXED_OTP_ON_REQUEST_FOR_QA').and_return(false)
         allow(FeatureToggle).to receive(:enabled?).with('AUTO_APPROVE_USER_FOR_QA').and_return(true)
 
         post :register, params: { user: user_params }
-        created_user = User.find_by(full_name: user_params[:full_name], phone_number: user_params[:phone_number])
+        created_user = MasterUser.find_by(full_name: user_params[:full_name]  )
         expect(created_user.sync_approval_status).to eq(User.sync_approval_statuses[:allowed])
       end
 
@@ -144,7 +146,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   end
 
   describe '#reset_password' do
-    let(:user) { FactoryBot.create(:user, facility: facility) }
+    let(:user) { FactoryBot.create(:user, registration_facility: facility) }
 
     before(:each) do
       request.env['HTTP_X_USER_ID'] = user.id

@@ -29,7 +29,7 @@ RSpec.feature 'Admin::AuditLogs', type: :feature do
       FactoryBot.create_list(:audit_log, 5, user: priyanka)
       FactoryBot.create_list(:audit_log, 5, user: yash)
       FactoryBot.create_list(:audit_log, 5, user: rohit)
-      login_as admin, :scope => :admin
+      login_as admin.email_authentication, :scope => :admin
       visit '/admin/audit_logs'
       fill_in 'user_name', with: 'Ya'
       click_button 'Search'

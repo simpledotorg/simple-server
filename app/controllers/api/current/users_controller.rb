@@ -5,17 +5,17 @@ class Api::Current::UsersController < APIController
   before_action :validate_registration_payload, only: %i[register]
 
   def register
-    user = User.new(user_from_request)
-    return head :not_found unless user.facility.present?
-    return render json: { errors: user.errors }, status: :bad_request if user.invalid?
-    if FeatureToggle.auto_approve_for_qa?
-      user.sync_approval_allowed
-      user.save
-    else
-      user.sync_approval_requested(I18n.t('registration'))
-      user.save
-      ApprovalNotifierMailer.with(user: user).registration_approval_email.deliver_later
+    user = MasterUser.build_with_phone_number_authentication(user_from_request)
+    return head :not_found unless user.registration_facility.present?
+
+    if user.invalid? || user.phone_number_authentication.invalid?
+      return render json: {
+        errors: user.errors
+      }, status: :bad_request
     end
+
+    send_approval_notification_email(user)
+
     render json: {
       user: user_to_response(user),
       access_token: user.access_token
@@ -24,15 +24,16 @@ class Api::Current::UsersController < APIController
 
   def find
     return head :bad_request unless find_params.present?
-    user = User.find_by(find_params)
+    user = find_master_user(find_params)
     return head :not_found unless user.present?
     render json: user_to_response(user), status: 200
   end
 
   def request_otp
-    user = User.find(request_user_id)
-    user.set_otp
-    user.save
+    user = MasterUser.find(request_user_id)
+    phone_number_authentication = user.phone_number_authentication
+    phone_number_authentication.set_otp
+    phone_number_authentication.save
 
     SmsNotificationService
       .new(user.phone_number, ENV['TWILIO_PHONE_NUMBER'])
@@ -42,8 +43,7 @@ class Api::Current::UsersController < APIController
   end
 
   def reset_password
-    current_user.reset_password(reset_password_digest)
-    current_user.save
+    current_user.reset_phone_number_authentication_password!(reset_password_digest)
     ApprovalNotifierMailer.with(user: current_user).reset_password_approval_email.deliver_later
     render json: {
       user: user_to_response(current_user),
@@ -52,6 +52,26 @@ class Api::Current::UsersController < APIController
   end
 
   private
+
+  def send_approval_notification_email(user)
+    if FeatureToggle.auto_approve_for_qa?
+      user.sync_approval_allowed
+      user.save
+    else
+      user.sync_approval_requested(I18n.t('registration'))
+      user.save
+      ApprovalNotifierMailer.with(user: user).registration_approval_email.deliver_later
+    end
+  end
+
+  def find_master_user(params)
+    if params[:id].present?
+      MasterUser.find_by(id: find_params[:id])
+    elsif params[:phone_number].present?
+      phone_number_authentication = PhoneNumberAuthentication.find_by(phone_number: params[:phone_number])
+      phone_number_authentication.master_user if phone_number_authentication.present?
+    end
+  end
 
   def user_from_request
     Api::Current::Transformer.from_request(registration_params)

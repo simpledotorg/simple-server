@@ -6,6 +6,28 @@
 ### Removed 
 ### Security
 
+# 2019-06-21-1
+### Added
+- Add a high-priority queue for time-sensitive jobs like sms reminders
+- Legal footer to the dashboard
+### Changed
+- Update the staging public IP for cap
+### Fixed
+### Deprecated
+### Removed
+### Security
+
+# 2019-06-12-1
+### Added
+- Add support for Retroactive Data Entry
+### Changed
+- Optimize the initial data migration queries for Retroactive Data Entry
+- Speed up tests (~35% on a single thread)
+### Fixed
+### Deprecated
+### Removed
+### Security
+
 # 2019-06-05-1
 ### Added
 - Add non-breaking Sync API changes without frequent version bumps

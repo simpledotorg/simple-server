@@ -1,4 +1,4 @@
-class User < ApplicationRecord
+class OldUser < ApplicationRecord
   include Mergeable
 
   enum sync_approval_status: {

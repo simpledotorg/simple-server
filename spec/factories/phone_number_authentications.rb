@@ -9,8 +9,6 @@ FactoryBot.define do
 
     facility
 
-    association :master_user, :with_phone_authentication
-
     trait :with_password_digest do
       password { nil }
       password_digest { Faker::Crypto.sha256 }

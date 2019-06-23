@@ -2,6 +2,8 @@ class AppointmentNotification::MissedVisitJob
   include Notifiable
   include Sidekiq::Worker
 
+  sidekiq_options queue: 'high'
+
   def perform(user_id, schedule_hour_start, schedule_hour_finish)
     return unless FeatureToggle.enabled?('SMS_REMINDERS')
 

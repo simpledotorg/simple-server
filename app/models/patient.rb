@@ -19,10 +19,10 @@ class Patient < ApplicationRecord
   has_many :latest_blood_pressures, -> { order(device_created_at: :desc) }, class_name: 'BloodPressure'
   has_many :prescription_drugs
   has_many :facilities, -> { distinct }, through: :blood_pressures
-  has_many :users, -> { distinct }, through: :blood_pressures
+  has_many :users, -> { distinct }, through: :blood_pressures, class_name: 'MasterUser'
 
-  belongs_to :registration_facility, class_name: "Facility", optional: true
-  belongs_to :registration_user, class_name: "User"
+  belongs_to :registration_facility, class_name: 'Facility', optional: true
+  belongs_to :registration_user, class_name: 'MasterUser'
 
   has_many :appointments
   has_one :medical_history
