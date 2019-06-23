@@ -1,4 +1,6 @@
-class MasterUser < ApplicationRecord
+class User < ApplicationRecord
+
+  self.table_name = 'master_users'
 
   AUTHENTICATION_TYPES = {
     email_authentication: 'EmailAuthentication',
@@ -21,7 +23,7 @@ class MasterUser < ApplicationRecord
   }
 
   has_many :user_authentications
-  has_many :blood_pressures, foreign_key: 'user_id'
+  has_many :blood_pressures
   has_many :patients, -> { distinct }, through: :blood_pressures
   has_many :phone_number_authentications, through: :user_authentications, source: :authenticatable, source_type: 'PhoneNumberAuthentication'
 
@@ -116,16 +118,16 @@ class MasterUser < ApplicationRecord
     phone_number_authentication.set_otp
     phone_number_authentication.set_access_token
 
-    master_user = new(
+    user = new(
       id: params[:id],
       full_name: params[:full_name],
       device_created_at: params[:device_created_at],
       device_updated_at: params[:device_updated_at]
     )
-    master_user.sync_approval_requested(I18n.t('registration'))
+    user.sync_approval_requested(I18n.t('registration'))
 
-    master_user.phone_number_authentications = [phone_number_authentication]
-    master_user
+    user.phone_number_authentications = [phone_number_authentication]
+    user
   end
 
   def update_with_phone_number_authentication(params)
@@ -142,6 +144,10 @@ class MasterUser < ApplicationRecord
     end
   end
 
+  def self.requested_sync_approval
+    where(sync_approval_status: :requested)
+  end
+
   def sync_approval_denied(reason = "")
     self.sync_approval_status = :denied
     self.sync_approval_status_reason = reason
@@ -149,6 +155,11 @@ class MasterUser < ApplicationRecord
 
   def sync_approval_allowed(reason = "")
     self.sync_approval_status = :allowed
+    self.sync_approval_status_reason = reason
+  end
+
+  def sync_approval_requested(reason)
+    self.sync_approval_status = :requested
     self.sync_approval_status_reason = reason
   end
 
@@ -170,15 +181,6 @@ class MasterUser < ApplicationRecord
     self.save
   end
 
-  def self.requested_sync_approval
-    where(sync_approval_status: :requested)
-  end
-
-  def sync_approval_requested(reason)
-    self.sync_approval_status = :requested
-    self.sync_approval_status_reason = reason
-  end
-
   def reset_phone_number_authentication_password!(password_digest)
     transaction do
       authentication = phone_number_authentication
@@ -190,5 +192,3 @@ class MasterUser < ApplicationRecord
     end
   end
 end
-
-User = MasterUser

@@ -7,7 +7,7 @@ class AuditLog < ApplicationRecord
     old:     'touch'
   }.freeze
 
-  belongs_to :user, class_name: 'MasterUser'
+  belongs_to :user, class_name: 'User'
   belongs_to :auditable, polymorphic: true
 
   validates :action, presence: true

@@ -1,6 +1,5 @@
 FactoryBot.define do
   factory :user_authentication do
-    master_user
-    authenticatable
+    user
   end
 end

@@ -5,7 +5,7 @@ class Api::Current::UsersController < APIController
   before_action :validate_registration_payload, only: %i[register]
 
   def register
-    user = MasterUser.build_with_phone_number_authentication(user_from_request)
+    user = User.build_with_phone_number_authentication(user_from_request)
     return head :not_found unless user.registration_facility.present?
 
     if user.invalid? || user.phone_number_authentication.invalid?
@@ -24,13 +24,13 @@ class Api::Current::UsersController < APIController
 
   def find
     return head :bad_request unless find_params.present?
-    user = find_master_user(find_params)
+    user = find_user(find_params)
     return head :not_found unless user.present?
     render json: user_to_response(user), status: 200
   end
 
   def request_otp
-    user = MasterUser.find(request_user_id)
+    user = User.find(request_user_id)
     phone_number_authentication = user.phone_number_authentication
     phone_number_authentication.set_otp
     phone_number_authentication.save
@@ -64,12 +64,12 @@ class Api::Current::UsersController < APIController
     end
   end
 
-  def find_master_user(params)
+  def find_user(params)
     if params[:id].present?
-      MasterUser.find_by(id: find_params[:id])
+      User.find_by(id: find_params[:id])
     elsif params[:phone_number].present?
       phone_number_authentication = PhoneNumberAuthentication.find_by(phone_number: params[:phone_number])
-      phone_number_authentication.master_user if phone_number_authentication.present?
+      phone_number_authentication.user if phone_number_authentication.present?
     end
   end
 

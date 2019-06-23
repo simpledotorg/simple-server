@@ -2,7 +2,7 @@ class PhoneNumberAuthentication < ApplicationRecord
   has_secure_password
 
   has_one :user_authentication, as: :authenticatable
-  has_one :master_user, through: :user_authentication
+  has_one :user, through: :user_authentication
 
   belongs_to :facility, foreign_key: 'registration_facility_id'
 

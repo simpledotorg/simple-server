@@ -1,4 +1,4 @@
-class MasterUserPolicy < ApplicationPolicy
+class UserPolicy < ApplicationPolicy
   def index?
     user.owner? || user.supervisor? || user.organization_owner?
   end

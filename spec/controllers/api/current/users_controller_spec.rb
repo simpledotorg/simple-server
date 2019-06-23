@@ -29,7 +29,7 @@ RSpec.describe Api::Current::UsersController, type: :controller do
         post :register, params: { user: user_params }
         parsed_response = JSON(response.body)
 
-        created_user = MasterUser.find_by(full_name: user_params[:full_name])
+        created_user = User.find_by(full_name: user_params[:full_name])
         expect(response.status).to eq(200)
         expect(created_user).to be_present
         expect(created_user.phone_number_authentication).to be_present
@@ -56,7 +56,7 @@ RSpec.describe Api::Current::UsersController, type: :controller do
 
       it 'sets the user status to requested' do
         post :register, params: { user: user_params }
-        created_user = MasterUser.find_by(full_name: user_params[:full_name])
+        created_user = User.find_by(full_name: user_params[:full_name])
         expect(created_user.sync_approval_status).to eq(User.sync_approval_statuses[:requested])
         expect(created_user.sync_approval_status_reason).to eq(I18n.t('registration'))
       end
@@ -67,7 +67,7 @@ RSpec.describe Api::Current::UsersController, type: :controller do
         allow(FeatureToggle).to receive(:enabled?).with('AUTO_APPROVE_USER_FOR_QA').and_return(true)
 
         post :register, params: { user: user_params }
-        created_user = MasterUser.find_by(full_name: user_params[:full_name])
+        created_user = User.find_by(full_name: user_params[:full_name])
         expect(created_user.sync_approval_status).to eq(User.sync_approval_statuses[:allowed])
       end
 
@@ -98,15 +98,8 @@ RSpec.describe Api::Current::UsersController, type: :controller do
   describe '#find' do
     let(:phone_number) { Faker::PhoneNumber.phone_number }
     let(:facility) { create(:facility) }
-    let!(:db_users) do
-      create_list(:master_user, 10,
-                  :with_phone_number_authentication,
-                  registration_facility: facility)
-    end
-    let!(:user) { create(:master_user,
-                         :with_phone_number_authentication,
-                         phone_number: phone_number,
-                         registration_facility: facility) }
+    let!(:db_users) { create_list(:user, 10, registration_facility: facility) }
+    let!(:user) { create(:user, phone_number: phone_number, registration_facility: facility) }
 
     it 'lists the users with the given phone number' do
       get :find, params: { phone_number: phone_number }

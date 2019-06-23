@@ -29,7 +29,7 @@ RSpec.describe Api::V2::UsersController, type: :controller do
         post :register, params: { user: user_params }
         parsed_response = JSON(response.body)
 
-        created_user = MasterUser.find_by(full_name: user_params[:full_name])
+        created_user = User.find_by(full_name: user_params[:full_name])
         expect(response.status).to eq(200)
         expect(created_user).to be_present
         expect(created_user.phone_number_authentication).to be_present
@@ -57,7 +57,7 @@ RSpec.describe Api::V2::UsersController, type: :controller do
 
       it 'sets the user status to requested' do
         post :register, params: { user: user_params }
-        created_user = MasterUser.find_by(full_name: user_params[:full_name])
+        created_user = User.find_by(full_name: user_params[:full_name])
         expect(created_user.sync_approval_status).to eq(User.sync_approval_statuses[:requested])
         expect(created_user.sync_approval_status_reason).to eq(I18n.t('registration'))
       end
@@ -68,7 +68,7 @@ RSpec.describe Api::V2::UsersController, type: :controller do
         allow(FeatureToggle).to receive(:enabled?).with('AUTO_APPROVE_USER_FOR_QA').and_return(true)
 
         post :register, params: { user: user_params }
-        created_user = MasterUser.find_by(full_name: user_params[:full_name])
+        created_user = User.find_by(full_name: user_params[:full_name])
         expect(created_user.sync_approval_status).to eq(User.sync_approval_statuses[:allowed])
       end
 

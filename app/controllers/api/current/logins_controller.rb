@@ -11,7 +11,7 @@ class Api::Current::LoginsController < APIController
     if errors.present?
       render json: { errors: errors }, status: :unauthorized
     else
-      user = authentication.master_user
+      user = authentication.user
       authentication.set_access_token
       authentication.save
       AuditLog.login_log(user)

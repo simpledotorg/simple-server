@@ -3,7 +3,7 @@ class BloodPressure < ApplicationRecord
 
   belongs_to :facility, optional: true
   belongs_to :patient, optional: true
-  belongs_to :user, class_name: 'MasterUser', optional: true
+  belongs_to :user, class_name: 'User', optional: true
 
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true

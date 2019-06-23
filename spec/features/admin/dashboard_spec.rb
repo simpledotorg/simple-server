@@ -39,7 +39,7 @@ RSpec.feature 'Verify Dashboard', type: :feature do
   end
 
   it 'SignIn as Owner and verify approval request in dashboard' do
-    user = create(:master_user, sync_approval_status: :requested)
+    user = create(:user, sync_approval_status: :requested)
     visit root_path
     sign_in(owner.email_authentication)
 
