@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe AppointmentsController, type: :controller do
   let(:facility_group) { create(:facility_group) }
-  let(:counsellor) { create(:master_user,
+  let(:counsellor) { create(:user,
                             :with_email_authentication,
                             permissions: [[:can_access_appointment_information_for_facility_group, facility_group]]) }
 

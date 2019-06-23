@@ -6,7 +6,7 @@ RSpec.describe ProtocolPolicy do
   let(:protocol) { build(:protocol) }
   context 'user can manage all protocols' do
     let(:user_with_permission) do
-      create(:master_user, permissions: [:can_manage_all_protocols])
+      create(:user, permissions: [:can_manage_all_protocols])
     end
 
     permissions :index? do
@@ -24,7 +24,7 @@ RSpec.describe ProtocolPolicy do
 
   context 'other users' do
     let(:other_user) do
-      create(:master_user, permissions: [])
+      create(:user, permissions: [])
     end
 
     permissions :index? do
@@ -50,7 +50,7 @@ RSpec.describe ProtocolPolicy::Scope do
 
   context 'user can manage all protocols' do
     let(:user_with_permission) do
-      create(:master_user, permissions: [:can_manage_all_protocols])
+      create(:user, permissions: [:can_manage_all_protocols])
     end
 
     it 'resolves all the protocol durgs' do
@@ -61,7 +61,7 @@ RSpec.describe ProtocolPolicy::Scope do
 
   context 'other users' do
     let(:other_user) do
-      create(:master_user, permissions: [])
+      create(:user, permissions: [])
     end
 
     it 'resolves no protocol drugs' do

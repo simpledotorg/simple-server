@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.feature 'End to end test', type: :feature do
 
-  let(:owner) { create(:master_user, :with_email_authentication, permissions: [:can_manage_all_protocols]) }
+  let(:owner) { create(:user, :with_email_authentication, permissions: [:can_manage_all_protocols]) }
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:protocol) { create(:protocol, name: "PunjabTestProtocol", follow_up_days: "20") }
   let!(:ihmi_group_bathinda) { create(:facility_group, organization: ihmi, name: "Bathinda", protocol: protocol) }

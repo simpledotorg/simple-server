@@ -14,7 +14,7 @@ RSpec.feature "Home page", type: :feature do
   let!(:path_clinic) { create(:facility, facility_group: path_group, name: "Dr. Amir Singh") }
 
   context "owner" do
-    let!(:owner) { create(:master_user, :with_email_authentication, email: "owner@example.com") }
+    let!(:owner) { create(:user, :with_email_authentication, email: "owner@example.com") }
 
     before do
       sign_in(owner.email_authentication)
@@ -28,7 +28,7 @@ RSpec.feature "Home page", type: :feature do
   end
 
   context "supervisor in bathinda" do
-    let!(:supervisor) { create(:master_user, :with_email_authentication, email: "supervisor@example.com") }
+    let!(:supervisor) { create(:user, :with_email_authentication, email: "supervisor@example.com") }
     let!(:new_user) { create(:user, :sync_requested, facility: bathinda) }
 
     skip "shows all facilities" do

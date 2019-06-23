@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.feature 'Adherence follow-ups', type: :feature do
   let(:facility_group) { create(:facility_group)}
-  let(:counsellor) { create(:master_user,
+  let(:counsellor) { create(:user,
                             :with_email_authentication,
                             permissions: [[:can_access_patient_information_for_facility_group, facility_group]]) }
 

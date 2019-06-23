@@ -5,7 +5,7 @@ RSpec.feature 'Overdue appointments', type: :feature do
   let!(:ihmi_group) { create(:facility_group, organization: ihmi) }
   let!(:supervisor) {
     create(
-      :master_user,
+      :user,
       :with_email_authentication,
       role: :counsellor,
       facility_group: ihmi_group

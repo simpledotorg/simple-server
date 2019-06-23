@@ -8,7 +8,7 @@ RSpec.describe PatientPolicy do
 
   context 'user with permission to access patient information for all organizations' do
     let(:user_with_permission) do
-      create(:master_user, permissions: [:can_access_patient_information_for_all_organizations])
+      create(:user, permissions: [:can_access_patient_information_for_all_organizations])
     end
 
     permissions :index? do
@@ -30,7 +30,7 @@ RSpec.describe PatientPolicy do
 
   context 'user with permission to access patient information for an organization' do
     let(:user_with_permission) do
-      create(:master_user,
+      create(:user,
              permissions: [[:can_access_patient_information_for_organization, facility1.organization]])
     end
 
@@ -57,7 +57,7 @@ RSpec.describe PatientPolicy do
 
   context 'user with permission to access patient information for a facility group' do
     let(:user_with_permission) do
-      create(:master_user,
+      create(:user,
              permissions: [[:can_access_patient_information_for_facility_group, facility1.facility_group]])
     end
 
@@ -83,7 +83,7 @@ RSpec.describe PatientPolicy do
 
   context 'user with permission to access patient information for a facility' do
     let(:user_with_permission) do
-      create(:master_user,
+      create(:user,
              permissions: [[:can_access_patient_information_for_facility, facility1]])
     end
 
@@ -109,7 +109,7 @@ RSpec.describe PatientPolicy do
 
   context 'other users' do
     let(:user_without_necessary_permissions) do
-      create(:master_user)
+      create(:user)
     end
 
     permissions :index? do
@@ -143,7 +143,7 @@ RSpec.describe PatientPolicy::Scope do
   let!(:patient2) { create(:patient, registration_facility: facility2) }
 
   context 'user with permission to access patient information for all organizations' do
-    let(:user) { create(:master_user, permissions: [:can_access_patient_information_for_all_organizations]) }
+    let(:user) { create(:user, permissions: [:can_access_patient_information_for_all_organizations]) }
 
     it 'resolves all patients for users who can access patient information for all organizations' do
       resolved_records = subject.new(user, Patient.all).resolve
@@ -152,7 +152,7 @@ RSpec.describe PatientPolicy::Scope do
   end
 
   context 'user with permission to access patient information for an organization' do
-    let(:user) { create(:master_user, permissions: [[:can_access_patient_information_for_organization, organization]]) }
+    let(:user) { create(:user, permissions: [[:can_access_patient_information_for_organization, organization]]) }
 
     it 'resolves all patients in the organization' do
       resolved_records = subject.new(user, Patient.all).resolve
@@ -161,7 +161,7 @@ RSpec.describe PatientPolicy::Scope do
   end
 
   context 'user with permission to access patient information for a facility group' do
-    let(:user) { create(:master_user, permissions: [[:can_access_patient_information_for_facility_group, facility_group]]) }
+    let(:user) { create(:user, permissions: [[:can_access_patient_information_for_facility_group, facility_group]]) }
 
     it 'resolves all patients in the facility group' do
       resolved_records = subject.new(user, Patient.all).resolve
@@ -170,7 +170,7 @@ RSpec.describe PatientPolicy::Scope do
   end
 
   context 'user with permission to access patient information for a facility group' do
-    let(:user) { create(:master_user, permissions: [[:can_access_patient_information_for_facility, facility1]]) }
+    let(:user) { create(:user, permissions: [[:can_access_patient_information_for_facility, facility1]]) }
     it 'resolves all patients in the facility' do
       resolved_records = subject.new(user, Patient.all).resolve
       expect(resolved_records).to match_array(Patient.where(registration_facility: facility1))
@@ -178,7 +178,7 @@ RSpec.describe PatientPolicy::Scope do
   end
 
   context 'other users' do
-    let(:other_user) { create(:master_user) }
+    let(:other_user) { create(:user) }
 
     it 'resolves no patients for other users' do
       resolved_records = subject.new(other_user, Patient.all).resolve

@@ -2,7 +2,7 @@ require 'rails_helper'
 
 def login_user
   @request.env["devise.mapping"] = Devise.mappings[:admin]
-  admin = FactoryBot.create(:master_user, :with_email_authentication)
+  admin = FactoryBot.create(:user, :with_email_authentication)
   sign_in admin.email_authentication
 end
 

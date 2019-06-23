@@ -19,7 +19,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       organization_id: organization.id)
   }
 
-  let(:user) { create(:master_user, :with_email_authentication) }
+  let(:user) { create(:user, :with_email_authentication) }
 
   before do
     sign_in(user.email_authentication)

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Analytics::DistrictsController, type: :controller do
-  let(:admin) { create(:master_user, :with_email_authentication) }
+  let(:admin) { create(:user, :with_email_authentication) }
   let(:from_time) { Time.new(2019, 1, 1) }
   let(:to_time) { Time.new(2019, 3, 31) }
 

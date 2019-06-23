@@ -11,7 +11,7 @@ RSpec.describe Admin::ProtocolDrugsController, type: :controller do
     FactoryBot.attributes_for(:protocol_drug, name: nil, protocol_id: protocol.id)
   }
 
-  let(:user) { create(:master_user, :with_email_authentication, permissions: [:can_manage_all_protocols]) }
+  let(:user) { create(:user, :with_email_authentication, permissions: [:can_manage_all_protocols]) }
   before do
     sign_in(user.email_authentication)
   end

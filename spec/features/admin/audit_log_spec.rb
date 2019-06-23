@@ -4,7 +4,7 @@ RSpec.feature 'Admin::AuditLogs', type: :feature do
   let(:admin_email) { 'user@test.com' }
   let(:admin_password) { 'password' }
   let(:admin) do
-    create(:master_user,
+    create(:user,
            :with_email_authentication,
            email: admin_email,
            password: admin_password,

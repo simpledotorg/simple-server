@@ -8,7 +8,7 @@ RSpec.describe OrganizationPolicy do
 
   context 'user can manage all organizations' do
     let(:user_with_permission) do
-      create(:master_user, permissions: [:can_manage_all_organizations])
+      create(:user, permissions: [:can_manage_all_organizations])
     end
 
     permissions :index? do
@@ -27,7 +27,7 @@ RSpec.describe OrganizationPolicy do
 
   context 'user can manage an organization' do
     let(:user_with_permission) do
-      create(:master_user, permissions: [[:can_manage_an_organization, organization_1]])
+      create(:user, permissions: [[:can_manage_an_organization, organization_1]])
     end
 
     permissions :index? do
@@ -62,7 +62,7 @@ RSpec.describe OrganizationPolicy::Scope do
 
   context 'user can manage all organizations' do
     let(:user_with_permission) do
-      create(:master_user, permissions: [:can_manage_all_organizations])
+      create(:user, permissions: [:can_manage_all_organizations])
     end
 
     it 'resolve all organizations' do
@@ -73,7 +73,7 @@ RSpec.describe OrganizationPolicy::Scope do
 
   context 'user can manage an organization' do
     let(:user_with_permission) do
-      create(:master_user, permissions: [[:can_manage_an_organization, organization_1]])
+      create(:user, permissions: [[:can_manage_an_organization, organization_1]])
     end
 
     it 'resolves their organization' do
@@ -84,7 +84,7 @@ RSpec.describe OrganizationPolicy::Scope do
 
   context 'other users' do
     let(:other_user) do
-      create(:master_user, permissions: [])
+      create(:user, permissions: [])
     end
 
     it 'resolves an empty set' do

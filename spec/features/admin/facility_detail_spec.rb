@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.feature 'Facility page functionality', type: :feature do
-  let(:owner) { create(:master_user, :with_email_authentication) }
+  let(:owner) { create(:user, :with_email_authentication) }
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:another_organization) { create(:organization) }
   let!(:ihmi_group_bathinda) { create(:facility_group, organization: ihmi, name: "Bathinda") }

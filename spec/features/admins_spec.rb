@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.feature "Admins", type: :feature do
-  let!(:owner) { create(:master_user, :with_email_authentication, email: "owner@example.com") }
-  let!(:supervisor) { create(:master_user, :with_email_authentication, email: "supervisor@example.com") }
+  let!(:owner) { create(:user, :with_email_authentication, email: "owner@example.com") }
+  let!(:supervisor) { create(:user, :with_email_authentication, email: "supervisor@example.com") }
 
   describe "index" do
     before { sign_in(owner.email_authentication) }
@@ -179,7 +179,7 @@ RSpec.feature "Admins", type: :feature do
   end
 
   describe 'inviting Counsellors' do
-    let!(:organization_owner) { create(:master_user, :with_email_authentication) }
+    let!(:organization_owner) { create(:user, :with_email_authentication) }
     let!(:organization) { organization_owner.organizations.first }
     let!(:facility_group) { create(:facility_group, organization: organization) }
     let!(:email) { 'new_counsellor@example.com' }

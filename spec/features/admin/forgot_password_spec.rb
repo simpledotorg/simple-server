@@ -8,7 +8,7 @@ RSpec.feature 'To test Forgot password functionality', type: :feature do
     expect(page).to have_content('Login')
   end
 
-  let(:owner) { create(:master_user, :with_email_authentication) }
+  let(:owner) { create(:user, :with_email_authentication) }
   login_page = LoginPage.new
   forgot_password = ForgotPassword.new
 

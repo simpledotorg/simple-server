@@ -11,7 +11,7 @@ RSpec.describe FacilityPolicy do
 
   context 'user can manage all organizations' do
     let(:user_with_permission) do
-      create(:master_user, permissions: [:can_manage_all_organizations])
+      create(:user, permissions: [:can_manage_all_organizations])
     end
 
     permissions :index? do
@@ -30,7 +30,7 @@ RSpec.describe FacilityPolicy do
 
   context 'user can manage an organization' do
     let(:user_with_permission) do
-      create(:master_user, permissions: [[:can_manage_an_organization, organization]])
+      create(:user, permissions: [[:can_manage_an_organization, organization]])
     end
 
     permissions :index? do
@@ -55,7 +55,7 @@ RSpec.describe FacilityPolicy do
     let(:facility_group_2) { create(:facility_group) }
 
     let(:user_with_permission) do
-      create(:master_user, permissions: [[:can_manage_a_facility_group, facility_group]])
+      create(:user, permissions: [[:can_manage_a_facility_group, facility_group]])
     end
 
     permissions :index? do
@@ -88,7 +88,7 @@ RSpec.describe FacilityPolicy::Scope do
 
   context 'user can manage all organizations' do
     let(:user_with_permission) do
-      create(:master_user, permissions: [:can_manage_all_organizations])
+      create(:user, permissions: [:can_manage_all_organizations])
     end
 
     it 'resolve all facilities ' do
@@ -99,7 +99,7 @@ RSpec.describe FacilityPolicy::Scope do
 
   context 'user can manage an organization' do
     let(:user_with_permission) do
-      create(:master_user, permissions: [[:can_manage_an_organization, organization]])
+      create(:user, permissions: [[:can_manage_an_organization, organization]])
     end
 
     it 'resolve all facilities in their organization' do
@@ -110,7 +110,7 @@ RSpec.describe FacilityPolicy::Scope do
 
   context 'user can manage a facility group' do
     let(:user_with_permission) do
-      create(:master_user, permissions: [[:can_manage_a_facility_group, facility_group_1]])
+      create(:user, permissions: [[:can_manage_a_facility_group, facility_group_1]])
     end
 
     it 'resolve to their facilities in their facility group' do
@@ -121,7 +121,7 @@ RSpec.describe FacilityPolicy::Scope do
 
   context 'other users' do
     let(:other_user) do
-      create(:master_user, permissions: [])
+      create(:user, permissions: [])
     end
 
     it 'resolves an empty set' do

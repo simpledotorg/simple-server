@@ -2,12 +2,12 @@ require 'rails_helper'
 
 RSpec.describe Api::Current::UsersController, type: :controller do
   let(:facility) { create(:facility) }
-  let!(:supervisor) { create(:master_user, :with_email_authentication,
+  let!(:supervisor) { create(:user, :with_email_authentication,
                             permissions: [[:can_approve_users_for_facility_group, facility.facility_group]]) }
-  let!(:organization_owner) { create(:master_user, :with_email_authentication,
+  let!(:organization_owner) { create(:user, :with_email_authentication,
                                     permissions: [[:can_approve_users_for_organization, facility.organization]]) }
 
-  let!(:owner) { create(:master_user, :with_email_authentication,
+  let!(:owner) { create(:user, :with_email_authentication,
                         permissions: [:can_approve_all_users]) }
 
   describe '#register' do
