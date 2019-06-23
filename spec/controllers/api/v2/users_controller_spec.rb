@@ -100,7 +100,7 @@ RSpec.describe Api::V2::UsersController, type: :controller do
   describe '#find' do
     let(:phone_number) { Faker::PhoneNumber.phone_number }
     let(:facility) { FactoryBot.create(:facility) }
-    let!(:db_users) { FactoryBot.create_list(:user, 10, registration_facility_id: facility.id) }
+    let!(:db_users) { FactoryBot.create_list(:user, 3, registration_facility_id: facility.id) }
     let!(:user) { FactoryBot.create(:user, phone_number: phone_number, registration_facility_id: facility.id) }
 
     it 'lists the users with the given phone number' do

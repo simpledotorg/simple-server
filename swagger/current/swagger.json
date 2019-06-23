@@ -1131,6 +1131,9 @@
         },
         "updated_at": {
           "$ref": "#/definitions/timestamp"
+        },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
         }
       },
       "required": [
@@ -1139,6 +1142,7 @@
         "full_name",
         "created_at",
         "updated_at",
+        "recorded_at",
         "status"
       ]
     },
@@ -1283,6 +1287,9 @@
         "updated_at": {
           "$ref": "#/definitions/timestamp"
         },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
+        },
         "address": {
           "$ref": "#/definitions/address"
         },
@@ -1299,6 +1306,7 @@
         "full_name",
         "created_at",
         "updated_at",
+        "recorded_at",
         "status"
       ],
       "description": "Patient with address, phone numbers and business identifiers nested."
@@ -1333,6 +1341,9 @@
         "updated_at": {
           "$ref": "#/definitions/timestamp"
         },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
+        },
         "patient_id": {
           "$ref": "#/definitions/uuid"
         },
@@ -1348,6 +1359,7 @@
         "diastolic",
         "created_at",
         "updated_at",
+        "recorded_at",
         "patient_id",
         "facility_id",
         "user_id"

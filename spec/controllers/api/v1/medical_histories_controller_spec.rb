@@ -36,7 +36,7 @@ RSpec.describe Api::V1::MedicalHistoriesController, type: :controller do
 
     describe 'updates records' do
       let(:existing_records) do
-        FactoryBot.create_list(:medical_history, 10)
+        FactoryBot.create_list(:medical_history, 3)
       end
       let(:record_updates) { MedicalHistory::MEDICAL_HISTORY_QUESTIONS.map { |key| [key.to_s, %w(unknown yes).sample] }.to_h }
       let(:updated_records) { existing_records.map { |record| build_medical_history_payload_current(record).merge(record_updates).merge(updated_at: 10.minutes.from_now) } }
@@ -104,8 +104,8 @@ RSpec.describe Api::V1::MedicalHistoriesController, type: :controller do
       let(:false_medical_history_questions) { medical_history_questions.map { |key| [key, false] }.to_h }
       before :each do
         set_authentication_headers
-        FactoryBot.create_list(:medical_history, 10, :unknown)
-        FactoryBot.create_list(:medical_history, 10)
+        FactoryBot.create_list(:medical_history, 2, :unknown)
+        FactoryBot.create_list(:medical_history, 2)
       end
 
       it 'converts :unknown and :no to false in the response' do
@@ -129,8 +129,8 @@ RSpec.describe Api::V1::MedicalHistoriesController, type: :controller do
     before :each do
       set_authentication_headers
 
-      FactoryBot.create_list(:medical_history, 5, patient: patient_in_same_group, updated_at: 5.minutes.ago)
-      FactoryBot.create_list(:medical_history, 5, patient: patient_in_another_group, updated_at: 3.minutes.ago)
+      FactoryBot.create_list(:medical_history, 2, patient: patient_in_same_group, updated_at: 5.minutes.ago)
+      FactoryBot.create_list(:medical_history, 2, patient: patient_in_another_group, updated_at: 3.minutes.ago)
     end
 
     it "only sends data for facilities belonging in the sync group of user's registration facility" do
@@ -139,7 +139,7 @@ RSpec.describe Api::V1::MedicalHistoriesController, type: :controller do
       response_medical_histories = JSON(response.body)['medical_histories']
       response_patients = response_medical_histories.map { |medical_history| medical_history['patient_id'] }.to_set
 
-      expect(response_medical_histories.count).to eq 5
+      expect(response_medical_histories.count).to eq 2
       expect(response_patients).not_to include(patient_in_another_group.id)
     end
   end

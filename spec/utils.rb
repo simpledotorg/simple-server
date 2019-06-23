@@ -1,6 +1,6 @@
 class Hash
   def with_int_timestamps
-    ts_keys = %w[created_at updated_at device_created_at device_updated_at age_updated_at otp_valid_until deleted_at]
+    ts_keys = %w[recorded_at created_at updated_at device_created_at device_updated_at age_updated_at otp_valid_until deleted_at]
     self.each_pair do |key, value|
       if ts_keys.include?(key) && value.present?
         self[key] = value.to_time.to_i

@@ -11,11 +11,6 @@ class Analytics::DistrictsController < AnalyticsController
     @facility_analytics = facility_analytics(@from_time, @to_time)
   end
 
-  def graphics
-    @current_month = Date.today.at_beginning_of_month.to_date
-    @district_analytics = @district.patient_set_analytics(@from_time, @to_time)
-  end
-
   private
 
   def set_organization
