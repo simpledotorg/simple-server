@@ -173,6 +173,7 @@ blood_pressures.recorded_at AS oldest_bp_recorded_at))
           full_name: master_user_full_name,
           sync_approval_status: 'denied',
           sync_approval_status_reason: 'User is an admin',
+          role: admin.role,
           device_created_at: admin.created_at,
           device_updated_at: admin.updated_at,
           created_at: admin.created_at,
@@ -200,6 +201,39 @@ blood_pressures.recorded_at AS oldest_bp_recorded_at))
 
         email_authentication.invited_by = invited_by.master_user
         email_authentication.save
+      end
+    end
+  end
+
+  desc "Initialize permissions for users"
+  task initialize_permissions_for_users: :environment do
+    MasterUser.all.each do |master_user|
+      admin = Admin.find_by(email: master_user.email)
+      unless admin.present?
+        puts "Did not find admin with email #{master_user.email}. Skipping assigning permissions"
+      end
+
+      default_permissions = MasterUser::DEFAULT_PERMISSIONS_FOR_ROLE[master_user.role.to_sym]
+      default_permissions.group_by { |permission_slug| Permissions::ALL_PERMISSIONS[permission_slug][:resource_type]}
+      .each do |resource_type, permission_slugs|
+        case resource_type
+        when nil
+          master_user.assign_permissions(permission_slugs)
+        when 'Organization'
+          organizations = admin.admin_access_controls.where(access_controllable_type: 'Organization').map(&:access_controllable)
+          new_permissions = permission_slugs.flat_map do |slug|
+            organizations.map { |organization| [slug, organization] }
+          end
+          master_user.assign_permissions(new_permissions)
+        when 'FacilityGroup'
+          facility_groups = admin.admin_access_controls.where(access_controllable_type: 'FacilityGroup').map(&:access_controllable)
+          new_permissions = permission_slugs.flat_map do |slug|
+            facility_groups.map { |facility_group| [slug, facility_group] }
+          end
+          master_user.assign_permissions(new_permissions)
+        else
+          puts "Skipping resource of type #{resource_type}"
+        end
       end
     end
   end

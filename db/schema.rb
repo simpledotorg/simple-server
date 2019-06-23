@@ -233,7 +233,7 @@ ActiveRecord::Schema.define(version: 20190531064335) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
-    t.string "user_type"
+    t.string "role"
   end
 
   create_table "medical_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

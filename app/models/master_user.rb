@@ -11,11 +11,13 @@ class MasterUser < ApplicationRecord
     denied: 'denied'
   }, _prefix: true
 
-  enum user_type: {
+  enum role: {
     nurse: 'nurse',
-    admin: 'admin',
-    analyst: 'analyst',
-    root: 'root'
+    owner: 'owner',
+    organization_owner: 'organization_owner',
+    supervisor: 'supervisor',
+    counsellor: 'counsellor',
+    analyst: 'analyst'
   }
 
   has_many :user_authentications
@@ -28,6 +30,35 @@ class MasterUser < ApplicationRecord
   validates :device_updated_at, presence: true
 
   delegate :email, :password, to: :email_authentication, allow_nil: true
+
+  DEFAULT_PERMISSIONS_FOR_ROLE = {
+    nurse: [],
+    owner: [
+      :can_manage_all_organizations,
+      :can_manage_all_protocols,
+      :can_manage_audit_logs,
+      :can_access_patient_information_for_all_organizations,
+      :can_access_appointment_information_for_all_organizations,
+      :can_download_overdue_list_for_all_organizations,
+      :can_approve_all_users
+    ],
+    organization_owner: [
+      :can_manage_an_organization,
+      :can_access_patient_information_for_organization,
+      :can_access_appointment_information_for_organization,
+      :can_download_overdue_list_for_organization,
+      :can_approve_users_for_organization
+    ],
+    supervisor: [
+      :can_manage_a_facility_group,
+      :can_approve_users_for_facility_group
+    ],
+    counsellor: [
+      :can_access_appointment_information_for_facility_group,
+      :can_access_patient_information_for_facility_group
+    ],
+    analyst: [],
+  }
 
   DEFAULT_SYNC_APPROVAL_DENIAL_STATUS = 'User does not need to sync'.freeze
 
@@ -53,14 +84,12 @@ class MasterUser < ApplicationRecord
   end
 
   def assign_permissions(permissions)
-    new_permissions = []
     permissions.each do |permission|
       permission = [permission] unless permission.is_a?(Array)
-      new_permissions << user_permissions.new(
+      self.user_permissions.new(
         permission_slug: permission.first,
         resource: permission.second)
     end
-    self.user_permissions = new_permissions
     self.save
   end
 
