@@ -1,4 +1,4 @@
-<% if policy(FacilityGroup).new? %>
+<% if policy(FacilityGroup.new).new? %>
   <%= link_to '+ Facility group', new_admin_facility_group_path, class: "btn btn-sm btn-primary float-right" %>
 <% end %>
 

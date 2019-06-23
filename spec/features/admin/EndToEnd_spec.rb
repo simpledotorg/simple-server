@@ -12,7 +12,7 @@ RSpec.feature 'End to end test', type: :feature do
 
   before(:each) do
     visit root_path
-    LoginPage.new.do_login(owner.email, owner.password)
+    sign_in(owner.email_authentication)
   end
 
   it 'update protocol and verify it for assigned facility group' do

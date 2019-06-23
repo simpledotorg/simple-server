@@ -55,7 +55,7 @@ class Admin::UsersController < AdminController
   end
 
   def set_user
-    @user = User.find(params[:id] || params[:user_id])
+    @user = MasterUser.find(params[:id] || params[:user_id])
     authorize @user
   end
 

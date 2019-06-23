@@ -17,7 +17,7 @@ RSpec.feature 'Facility page functionality', type: :feature do
 
   before(:each) do
     visit root_path
-    login_page.do_login(owner.email, owner.password)
+    sign_in(owner.email_authentication)
     visit admin_facilities_path
   end
 
@@ -80,6 +80,4 @@ RSpec.feature 'Facility page functionality', type: :feature do
 
     expect(page).to have_content(unassociated_facility02.name)
   end
-
-
 end

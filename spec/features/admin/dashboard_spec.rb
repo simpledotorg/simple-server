@@ -5,13 +5,12 @@ RSpec.feature 'Verify Dashboard', type: :feature do
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:path) { create(:organization, name: "PATH") }
 
-  login_page = LoginPage.new
   dashboard = DashboardPage.new
   home_page = HomePage.new
 
   it 'Verify organization is displayed in dashboard' do
     visit root_path
-    login_page.do_login(owner.email, owner.password)
+    sign_in(owner.email_authentication)
     #asssertion
     expect(dashboard.get_organization_count).to eq(2)
     expect(page).to have_content("IHMI")
@@ -21,7 +20,7 @@ RSpec.feature 'Verify Dashboard', type: :feature do
   it 'Verify organisation name/count get updated in dashboard when new org is added via manage section' do
 
     visit root_path
-    login_page.do_login(owner.email, owner.password)
+    sign_in(owner.email_authentication)
     #total number of organizaiton present in dashborad
     organization_count = dashboard.get_organization_count
 
@@ -42,7 +41,7 @@ RSpec.feature 'Verify Dashboard', type: :feature do
   it 'SignIn as Owner and verify approval request in dashboard' do
     user = create(:user, sync_approval_status: :requested)
     visit root_path
-    login_page.do_login(owner.email, owner.password)
+    sign_in(owner.email_authentication)
 
     expect(page).to have_content("Allow access")
     expect(page).to have_content("Deny access")

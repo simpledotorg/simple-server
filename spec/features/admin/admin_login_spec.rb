@@ -1,14 +1,16 @@
 require 'rails_helper'
 
 RSpec.feature 'Owner Login as Admin', type: :feature do
-  let(:owner) {create(:master_user, :with_email_authentication)}
+  let(:email) { Faker::Internet.email }
+  let(:password) { Faker::Internet.password }
+  let(:owner) { create(:master_user, :with_email_authentication, email: email, password: password) }
   login_page = LoginPage.new
   home_page = HomePage.new
 
   context "owners login and logout" do
     before(:each) do
       visit root_path
-      login_page.do_login(owner.email, owner.password)
+      login_page.do_login(email, password)
     end
 
     it 'Logs in ' do
