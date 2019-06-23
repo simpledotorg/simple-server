@@ -19,7 +19,7 @@ describe 'Facilities V2 API', swagger_doc: 'v2/swagger.json' do
       end
 
       response '200', 'facilities received' do
-        let(:request_user) { FactoryBot.create(:user) }
+        let(:request_user) { FactoryBot.create(:user, :with_phone_number_authentication) }
         let(:request_facility) { FactoryBot.create(:facility) }
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:HTTP_X_FACILITY_ID) { request_facility.id }

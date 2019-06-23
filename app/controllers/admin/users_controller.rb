@@ -19,7 +19,7 @@ class Admin::UsersController < AdminController
 
   def update
     if @user.update_with_phone_number_authentication(user_params)
-      redirect_to admin_master_user_url(@user), notice: 'User was successfully updated.'
+      redirect_to admin_user_url(@user), notice: 'User was successfully updated.'
     else
       render :edit
     end

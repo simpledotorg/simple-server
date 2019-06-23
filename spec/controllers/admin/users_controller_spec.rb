@@ -31,7 +31,7 @@ RSpec.describe Admin::UsersController, type: :controller do
 
   describe 'GET #index' do
     it 'returns a success response' do
-      user = create(:user)
+      user = create(:user, :with_phone_number_authentication)
       get :index, params: { facility_id: facility.id }
       expect(response).to be_success
     end
@@ -39,7 +39,7 @@ RSpec.describe Admin::UsersController, type: :controller do
 
   describe 'GET #show' do
     it 'returns a success response' do
-      user = create(:user)
+      user = create(:user, :with_phone_number_authentication)
       get :show, params: { id: user.to_param, facility_id: facility.id }
       expect(response).to be_success
     end
@@ -47,7 +47,7 @@ RSpec.describe Admin::UsersController, type: :controller do
 
   describe 'GET #edit' do
     it 'returns a success response' do
-      user = create(:user)
+      user = create(:user, :with_phone_number_authentication)
       get :edit, params: { id: user.to_param, facility_id: facility.id }
       expect(response).to be_success
     end
@@ -61,7 +61,7 @@ RSpec.describe Admin::UsersController, type: :controller do
       }
 
       it 'updates the requested user' do
-        user = create(:user)
+        user = create(:user, :with_phone_number_authentication)
         put :update, params: { id: user.to_param, user: new_attributes, facility_id: facility.id }
         user.reload
         expect(user.full_name).to eq(new_attributes[:full_name])
@@ -69,7 +69,7 @@ RSpec.describe Admin::UsersController, type: :controller do
       end
 
       it 'redirects to the user' do
-        user = create(:user)
+        user = create(:user, :with_phone_number_authentication)
         put :update, params: { id: user.to_param, user: valid_attributes }
         expect(response).to redirect_to(admin_user_url(user))
       end
@@ -77,7 +77,7 @@ RSpec.describe Admin::UsersController, type: :controller do
 
     context 'with invalid params' do
       it "returns a success response (i.e. to display the 'edit' template)" do
-        user = create(:user)
+        user = create(:user, :with_phone_number_authentication)
         put :update, params: { id: user.to_param, user: invalid_attributes, facility_id: facility.id }
         expect(response.status).to eq(400)
       end
@@ -86,7 +86,7 @@ RSpec.describe Admin::UsersController, type: :controller do
 
   describe 'PUT #disable_access' do
     it 'disables the access token for the user' do
-      user = create(:user)
+      user = create(:user, :with_phone_number_authentication)
       put :disable_access, params: { user_id: user.id, facility_id: user.facility.id }
       user.reload
       expect(user.access_token_valid?).to be false
@@ -94,7 +94,7 @@ RSpec.describe Admin::UsersController, type: :controller do
   end
 
   describe 'PUT #enable_access' do
-    let(:user) { FactoryBot.create(:user, registration_facility_id: facility.id) }
+    let(:user) { FactoryBot.create(:user, :with_phone_number_authentication, registration_facility_id: facility.id) }
 
     it 'sets sync_approval_status to allowed' do
       put :enable_access, params: { user_id: user.id, facility_id: facility.id }
@@ -104,7 +104,7 @@ RSpec.describe Admin::UsersController, type: :controller do
   end
 
   describe 'PUT #reset_otp' do
-    let(:user) { FactoryBot.create(:user, registration_facility_id: facility.id) }
+    let(:user) { FactoryBot.create(:user, :with_phone_number_authentication, registration_facility_id: facility.id) }
 
     before :each do
       sms_notification_service = double(SmsNotificationService.new(nil, nil))

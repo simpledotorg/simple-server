@@ -10,7 +10,7 @@ describe 'Communication V1 API', swagger_doc: 'v1/swagger.json' do
       parameter name: :communications, in: :body, schema: Api::V1::Schema.communication_sync_from_user_request
 
       response '200', 'communications created' do
-        let(:request_user) { FactoryBot.create(:user) }
+        let(:request_user) { FactoryBot.create(:user, :with_phone_number_authentication) }
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
@@ -20,7 +20,7 @@ describe 'Communication V1 API', swagger_doc: 'v1/swagger.json' do
       end
 
       response '200', 'some, or no errors were found' do
-        let(:request_user) { FactoryBot.create(:user) }
+        let(:request_user) { FactoryBot.create(:user, :with_phone_number_authentication) }
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
@@ -45,7 +45,7 @@ describe 'Communication V1 API', swagger_doc: 'v1/swagger.json' do
       end
 
       response '200', 'communications received' do
-        let(:request_user) { FactoryBot.create(:user) }
+        let(:request_user) { FactoryBot.create(:user, :with_phone_number_authentication) }
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 

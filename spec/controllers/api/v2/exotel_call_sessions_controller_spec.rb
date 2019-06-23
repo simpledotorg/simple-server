@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V2::ExotelCallSessionsController, type: :controller do
-  let!(:user) { create(:user, :with_sanitized_phone_number) }
+  let!(:user) { create(:user, :with_phone_number_authentication, :with_sanitized_phone_number) }
   let!(:patient) { create(:patient, :with_sanitized_phone_number) }
   let!(:unknown_phone_number) { '1234567890' }
   let!(:invalid_patient_phone_number) { '1800-SIMPLE' }

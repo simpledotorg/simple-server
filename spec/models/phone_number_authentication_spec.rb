@@ -8,7 +8,7 @@ RSpec.describe PhoneNumberAuthentication, type: :model do
   end
 
   describe 'Validations' do
-    let(:user) { create(:user) }
+    let(:user) { create(:user, :with_phone_number_authentication) }
     let(:registration_facility) { create(:facility) }
     let(:subject) { user.phone_number_authentication }
 

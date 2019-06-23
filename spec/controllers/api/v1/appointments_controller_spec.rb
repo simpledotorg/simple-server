@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::AppointmentsController, type: :controller do
-  let(:request_user) { FactoryBot.create(:user) }
+  let(:request_user) { FactoryBot.create(:user, :with_phone_number_authentication) }
   before :each do
     request.env['X_USER_ID'] = request_user.id
     request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"

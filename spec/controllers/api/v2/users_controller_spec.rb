@@ -100,7 +100,7 @@ RSpec.describe Api::V2::UsersController, type: :controller do
     let(:phone_number) { Faker::PhoneNumber.phone_number }
     let(:facility) { FactoryBot.create(:facility) }
     let!(:db_users) { FactoryBot.create_list(:user, 3, registration_facility_id: facility.id) }
-    let!(:user) { FactoryBot.create(:user, phone_number: phone_number, registration_facility_id: facility.id) }
+    let!(:user) { FactoryBot.create(:user, :with_phone_number_authentication, phone_number: phone_number, registration_facility_id: facility.id) }
 
     it 'lists the users with the given phone number' do
       get :find, params: { phone_number: phone_number }
@@ -123,7 +123,7 @@ RSpec.describe Api::V2::UsersController, type: :controller do
   end
 
   describe '#request_otp' do
-    let(:user) { FactoryBot.create(:user) }
+    let(:user) { FactoryBot.create(:user, :with_phone_number_authentication) }
 
     it "returns 404 if the user with id doesn't exist" do
       post :request_otp, params: { id: SecureRandom.uuid }
@@ -144,7 +144,7 @@ RSpec.describe Api::V2::UsersController, type: :controller do
   end
 
   describe '#reset_password' do
-    let(:user) { FactoryBot.create(:user) }
+    let(:user) { FactoryBot.create(:user, :with_phone_number_authentication) }
     let(:facility) { FactoryBot.create(:facility, facility_group: user.facility.facility_group) }
 
     before(:each) do

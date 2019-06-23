@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'Patients sync', type: :request do
   let(:model) { Patient }
-  let(:request_user) { FactoryBot.create(:user) }
+  let(:request_user) { FactoryBot.create(:user, :with_phone_number_authentication) }
 
   let(:sync_route) { '/api/v1/patients/sync' }
 

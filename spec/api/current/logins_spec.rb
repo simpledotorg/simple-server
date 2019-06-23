@@ -7,7 +7,7 @@ describe 'Login Current API', swagger_doc: 'current/swagger.json' do
       parameter name: :user, in: :body, schema: Api::Current::Schema.user_login_request
 
       response '200', 'user is logged in' do
-        let(:db_user) { FactoryBot.create(:user, password: '1234') }
+        let(:db_user) { FactoryBot.create(:user, :with_phone_number_authentication, password: '1234') }
         let(:user) do
           { user: { phone_number: db_user.phone_number,
                     password:     '1234',
@@ -21,7 +21,7 @@ describe 'Login Current API', swagger_doc: 'current/swagger.json' do
 
       response '401', 'user is not logged in with expired otp' do
         let(:db_user) do
-          Timecop.freeze(Date.today - 30) { FactoryBot.create(:user, password: '1234') }
+          Timecop.freeze(Date.today - 30) { FactoryBot.create(:user, :with_phone_number_authentication, password: '1234') }
         end
         let(:user) do
           { user: { phone_number: db_user.phone_number,
@@ -35,7 +35,7 @@ describe 'Login Current API', swagger_doc: 'current/swagger.json' do
       end
 
       response '401', 'user is not logged in with wrong password' do
-        let(:db_user) { FactoryBot.create(:user) }
+        let(:db_user) { FactoryBot.create(:user, :with_phone_number_authentication) }
         let(:user) do
           { user: { phone_number: db_user.phone_number,
                     password:     'wrong_password',
@@ -48,7 +48,7 @@ describe 'Login Current API', swagger_doc: 'current/swagger.json' do
       end
 
       response '401', 'user is not logged in with otp' do
-        let(:db_user) { FactoryBot.create(:user) }
+        let(:db_user) { FactoryBot.create(:user, :with_phone_number_authentication) }
         let(:user) do
           { user: { phone_number: db_user.phone_number,
                     password:     'wrong_password',

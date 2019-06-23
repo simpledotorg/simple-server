@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'BloodPressures sync', type: :request do
   let(:sync_route) { '/api/v3/blood_pressures/sync' }
-  let(:request_user) { FactoryBot.create(:user) }
+  let(:request_user) { FactoryBot.create(:user, :with_phone_number_authentication) }
 
   let(:model) { BloodPressure }
 

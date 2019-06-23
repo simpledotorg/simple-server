@@ -1,13 +1,13 @@
 require 'rails_helper'
 
 describe CallSession, type: :model do
-  let!(:user) { create(:user, :with_sanitized_phone_number) }
+  let!(:user) { create(:user, :with_phone_number_authentication, :with_sanitized_phone_number) }
   let!(:patient) { create(:patient, :with_sanitized_phone_number) }
   let!(:call_id) { SecureRandom.uuid }
 
   describe '#initialize' do
     it 'should strip leading 0 when looking up users by phone number' do
-      user = create(:user, phone_number: '9876543210')
+      user = create(:user, :with_phone_number_authentication, phone_number: '9876543210')
 
       session = CallSession.new(call_id, '09876543210', patient.phone_numbers.first.number)
 

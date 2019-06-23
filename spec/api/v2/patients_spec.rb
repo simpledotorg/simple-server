@@ -11,7 +11,7 @@ describe 'Patients V2 API', swagger_doc: 'v2/swagger.json' do
       parameter name: :patients, in: :body, schema: Api::V2::Schema.patient_sync_from_user_request
 
       response '200', 'patients created' do
-        let(:request_user) { FactoryBot.create(:user) }
+        let(:request_user) { FactoryBot.create(:user, :with_phone_number_authentication) }
         let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:HTTP_X_FACILITY_ID) { request_facility.id }
@@ -22,7 +22,7 @@ describe 'Patients V2 API', swagger_doc: 'v2/swagger.json' do
       end
 
       response '200', 'some, or no errors were found' do
-        let(:request_user) { FactoryBot.create(:user) }
+        let(:request_user) { FactoryBot.create(:user, :with_phone_number_authentication) }
         let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:HTTP_X_FACILITY_ID) { request_facility.id }
@@ -50,7 +50,7 @@ describe 'Patients V2 API', swagger_doc: 'v2/swagger.json' do
       end
 
       response '200', 'patients received' do
-        let(:request_user) { FactoryBot.create(:user) }
+        let(:request_user) { FactoryBot.create(:user, :with_phone_number_authentication) }
         let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:HTTP_X_FACILITY_ID) { request_facility.id }

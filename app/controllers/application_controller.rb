@@ -8,7 +8,7 @@ class ApplicationController < ActionController::Base
 
   # Tell pundit how to find the current user
   def pundit_user
-    current_admin.master_user
+    current_admin.user
   end
 
   # Send a user to the admins index after sending invitations

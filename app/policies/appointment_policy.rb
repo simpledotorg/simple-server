@@ -39,9 +39,19 @@ class AppointmentPolicy < ApplicationPolicy
     end
 
     def resolve
-      scope.where(
-        facility: resources_for_permission(:can_manage_overdue_list_for_facility) +
-          resources_for_permission(:can_download_overdue_list_for_facility))
+      if user.has_permission?(:can_access_appointment_information_for_all_organizations)
+        scope.all
+      elsif user.has_permission?(:can_access_appointment_information_for_organization)
+        scope.where(facility: resources_for_permission(:can_access_appointment_information_for_organization)
+                                .flat_map(&:facilities))
+      elsif user.has_permission?(:can_access_appointment_information_for_facility_group)
+        scope.where(facility: resources_for_permission(:can_access_appointment_information_for_facility_group)
+                                .flat_map(&:facilities))
+      elsif user.has_permission?(:can_access_appointment_information_for_facility)
+        scope.where(facility: resources_for_permission(:can_access_appointment_information_for_facility))
+      else
+        scope.none
+      end
     end
   end
 end

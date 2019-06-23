@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V2::PatientsController, type: :controller do
-  let(:request_user) { FactoryBot.create(:user) }
+  let(:request_user) { FactoryBot.create(:user, :with_phone_number_authentication) }
   let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
 
   let(:model) { Patient }
@@ -180,7 +180,7 @@ RSpec.describe Api::V2::PatientsController, type: :controller do
       end
 
       it 'does not change registration user or facility' do
-        v2_user = FactoryBot.create(:user)
+        v2_user = FactoryBot.create(:user, :with_phone_number_authentication)
         v2_facility = FactoryBot.create(:facility, facility_group: v2_user.facility.facility_group)
         request.env['HTTP_X_USER_ID'] = v2_user.id
         request.env['HTTP_X_FACILITY_ID'] = v2_facility.id
