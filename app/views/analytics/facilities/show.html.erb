@@ -42,7 +42,7 @@
               <td>
                 <div class="user"></div>
               </td>
-              <td class="row-title"><%= link_to user.full_name, admin_master_user_path(user) %></td>
+              <td class="row-title"><%= link_to user.full_name, [:admin, user] %></td>
               <td class="row-default text-green"><%= dash_if_zero(analytics.registered_patients_count) %></td>
               <td class="row-calls text-yellow"><%= dash_if_zero(analytics.calls_made_by_user_at_facility) %></td>
 
