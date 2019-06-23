@@ -130,7 +130,7 @@ RSpec.describe Api::Current::LoginsController, type: :controller do
         audit_log = AuditLog.where(user_id: db_user.id).first
 
         expect(audit_log.action).to eq('login')
-        expect(audit_log.auditable_type).to eq('MasterUser')
+        expect(audit_log.auditable_type).to eq('User')
         expect(audit_log.auditable_id).to eq(db_user.id)
       end
     end

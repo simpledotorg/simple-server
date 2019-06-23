@@ -2,7 +2,7 @@ class Communication < ApplicationRecord
   include Mergeable
 
   belongs_to :appointment
-  belongs_to :user, class_name: 'MasterUser'
+  belongs_to :user, class_name: 'User'
   belongs_to :detailable, polymorphic: true, optional: true
 
   delegate :unsuccessful?, :successful?, :in_progress?, to: :detailable

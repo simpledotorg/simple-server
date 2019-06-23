@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe MasterUser, type: :model do
+RSpec.describe User, type: :model do
   describe 'Associations' do
     it { should have_many(:user_authentications) }
   end
@@ -28,18 +28,18 @@ RSpec.describe MasterUser, type: :model do
         }
       end
 
-      let(:master_user) { MasterUser.build_with_phone_number_authentication(params) }
-      let(:phone_number_authentication) { master_user.phone_number_authentication }
+      let(:user) { User.build_with_phone_number_authentication(params) }
+      let(:phone_number_authentication) { user.phone_number_authentication }
 
-      it 'builds a valid master user' do
-        expect(master_user).to be_valid
-        expect(master_user.id).to eq(id)
-        expect(master_user.full_name).to eq(full_name)
-        expect(master_user.user_authentications).to be_present
-        expect(master_user.user_authentications.size).to eq(1)
+      it 'builds a valid user' do
+        expect(user).to be_valid
+        expect(user.id).to eq(id)
+        expect(user.full_name).to eq(full_name)
+        expect(user.user_authentications).to be_present
+        expect(user.user_authentications.size).to eq(1)
       end
 
-      it 'builds a valid phone number authentication a master user' do
+      it 'builds a valid phone number authentication a user' do
         expect(phone_number_authentication).to be_instance_of(PhoneNumberAuthentication)
         expect(phone_number_authentication).to be_valid
         expect(phone_number_authentication.password_digest).to eq(password_digest)
@@ -52,12 +52,12 @@ RSpec.describe MasterUser, type: :model do
         expect(phone_number_authentication.access_token).to be_present
       end
 
-      it 'creates the master_user with required associations when save is called on it' do
-        expect { master_user.save }.to change(MasterUser, :count).by(1)
+      it 'creates the user with required associations when save is called on it' do
+        expect { user.save }.to change(User, :count).by(1)
 
-        expect(master_user.user_authentications).to be_present
-        expect(master_user.phone_number_authentication).to be_present
-        expect(master_user.phone_number_authentication)
+        expect(user.user_authentications).to be_present
+        expect(user.phone_number_authentication).to be_present
+        expect(user.phone_number_authentication)
           .to eq(PhoneNumberAuthentication.find_by(phone_number: phone_number))
       end
     end
