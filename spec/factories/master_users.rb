@@ -6,7 +6,7 @@ FactoryBot.define do
     device_updated_at { Time.now }
 
     sync_approval_status { MasterUser.sync_approval_statuses[:requested] }
-    user_type { MasterUser.user_types[:nurse] }
+    role { MasterUser.roles[:nurse] }
 
     transient do
       email { Faker::Internet.email }
@@ -27,7 +27,7 @@ FactoryBot.define do
     end
 
     trait :with_email_authentication do
-      user_type { MasterUser.user_types[:root] }
+      role { MasterUser.roles[:owner] }
       permissions { [] }
 
       after :create do |master_user, options|

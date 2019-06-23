@@ -17,7 +17,7 @@ RSpec.feature "Home page", type: :feature do
     let!(:owner) { create(:master_user, :with_email_authentication, email: "owner@example.com") }
 
     before do
-      sign_in(owner)
+      sign_in(owner.email_authentication)
       visit root_path
     end
 
