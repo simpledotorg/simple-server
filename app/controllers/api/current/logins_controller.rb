@@ -6,13 +6,12 @@ class Api::Current::LoginsController < APIController
 
   def login_user
     authentication = PhoneNumberAuthentication.find_by(phone_number: login_params[:phone_number])
-    user = authentication.try(:master_user)
-
     errors = errors_in_user_login(authentication)
 
     if errors.present?
       render json: { errors: errors }, status: :unauthorized
     else
+      user = authentication.master_user
       authentication.set_access_token
       authentication.save
       AuditLog.login_log(user)

@@ -118,7 +118,7 @@ blood_pressures.recorded_at AS oldest_bp_recorded_at))
 
   desc "Create master users for users"
   task create_master_users_for_users: :environment do
-    User.where.not(sync_approval_status: nil).all.each do |user|
+    OldUser.where.not(sync_approval_status: nil).all.each do |user|
       next if MasterUser.find_by(id: user.id).present?
       user.transaction do
         user_attributes = user.attributes.with_indifferent_access

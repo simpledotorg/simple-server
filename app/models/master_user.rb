@@ -72,10 +72,15 @@ class MasterUser < ApplicationRecord
 
   def update_with_phone_number_authentication(params)
     user_params = params.slice(:full_name, :sync_approval_status, :sync_approval_status_reason)
-    phone_number_authentication_params = params.slice(:phone_number, :password, :password_digest, :registration_facility_id)
+    phone_number_authentication_params = params.slice(
+      :phone_number,
+      :password,
+      :password_digest,
+      :registration_facility_id
+    )
 
     transaction do
-      update(user_params) && phone_number_authentication.update(phone_number_authentication_params)
+      update!(user_params) && phone_number_authentication.update!(phone_number_authentication_params)
     end
   end
 
@@ -100,24 +105,13 @@ class MasterUser < ApplicationRecord
       authentication.password_digest = password_digest
       authentication.set_access_token
       self.sync_approval_requested(I18n.t('reset_password'))
-      authentication.save
-      self.save
+      authentication.save!
+      self.save!
     end
   end
 
   def self.requested_sync_approval
     where(sync_approval_status: :requested)
-  end
-
-  private
-
-  def delegate_to_phone_number_authentication(method)
-    return nil unless phone_number_authentication.present?
-    phone_number_authentication.send(method)
-  end
-
-  def user_authentication_of_type(authenticatable_type)
-    user_authentications.find_by(authenticatable_type: authenticatable_type).authenticatable
   end
 end
 

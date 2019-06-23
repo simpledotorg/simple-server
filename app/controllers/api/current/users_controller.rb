@@ -9,7 +9,9 @@ class Api::Current::UsersController < APIController
     return head :not_found unless user.registration_facility.present?
 
     if user.invalid? || user.phone_number_authentication.invalid?
-      return render json: { errors: user.errors }, status: :bad_request
+      return render json: {
+        errors: user.errors
+      }, status: :bad_request
     end
 
     send_approval_notification_email(user)
@@ -18,17 +20,6 @@ class Api::Current::UsersController < APIController
       user: user_to_response(user),
       access_token: user.access_token
     }, status: :ok
-  end
-
-  def send_approval_notification_email(user)
-    if FeatureToggle.auto_approve_for_qa?
-      user.sync_approval_allowed
-      user.save
-    else
-      user.sync_approval_requested(I18n.t('registration'))
-      user.save
-      ApprovalNotifierMailer.with(user: user).registration_approval_email.deliver_later
-    end
   end
 
   def find
@@ -61,6 +52,17 @@ class Api::Current::UsersController < APIController
   end
 
   private
+
+  def send_approval_notification_email(user)
+    if FeatureToggle.auto_approve_for_qa?
+      user.sync_approval_allowed
+      user.save
+    else
+      user.sync_approval_requested(I18n.t('registration'))
+      user.save
+      ApprovalNotifierMailer.with(user: user).registration_approval_email.deliver_later
+    end
+  end
 
   def find_master_user(params)
     if params[:id].present?
