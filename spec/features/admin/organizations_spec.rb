@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.feature 'Organization management', type: :feature do
-  let!(:owner) { create(:admin, :owner) }
+  let!(:owner) { create(:master_user, :with_email_authentication, permissions: [:can_manage_all_organizations]) }
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:path) { create(:organization, name: "PATH") }
   login = LoginPage.new

@@ -22,12 +22,12 @@ class AppointmentPolicy < ApplicationPolicy
   end
 
   def download?
-    user_has_any_permissions?(
-      :can_access_appointment_information_for_all_organizations,
-      [:can_access_appointment_information_for_organization, record.facility.organization],
-      [:can_access_appointment_information_for_facility_group, record.facility.facility_group],
-      [:can_access_appointment_information_for_facility, record.facility]
-    )
+    user_permission_slugs = user.user_permissions.pluck(:permission_slug).map(&:to_sym)
+    [:can_access_appointment_information_for_all_organizations,
+     :can_access_appointment_information_for_organization,
+     :can_access_appointment_information_for_facility_group,
+     :can_access_appointment_information_for_facility
+    ].any? { |slug| user_permission_slugs.include? slug }
   end
 
   class Scope < Scope

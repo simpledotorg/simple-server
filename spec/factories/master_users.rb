@@ -28,7 +28,7 @@ FactoryBot.define do
 
     trait :with_email_authentication do
       user_type { MasterUser.user_types[:root] }
-      permissions { MasterUser::DEFAULT_PERMISSIONS_FOR_ROLES[user_type] }
+      permissions { [] }
 
       after :create do |master_user, options|
         master_user.sync_approval_status = MasterUser.sync_approval_statuses[:denied]

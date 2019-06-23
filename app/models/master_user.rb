@@ -27,7 +27,13 @@ class MasterUser < ApplicationRecord
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
+  delegate :email, :password, to: :email_authentication, allow_nil: true
+
   DEFAULT_SYNC_APPROVAL_DENIAL_STATUS = 'User does not need to sync'.freeze
+
+  def email_authentication
+    email_authentications.first
+  end
 
   def phone_number_authentication
     user_authentication_of_type(AUTHENTICATION_TYPES[:phone_number_authentication])

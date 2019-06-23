@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.feature 'Owner Login as Admin', type: :feature do
-  let(:owner) {create(:admin)}
+  let(:owner) {create(:master_user, :with_email_authentication)}
   login_page = LoginPage.new
   home_page = HomePage.new
 

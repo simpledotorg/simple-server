@@ -1,14 +1,9 @@
 require 'swagger_helper'
 
 describe 'Users Current API', swagger_doc: 'current/swagger.json' do
-  let(:supervisor) { FactoryBot.create(:admin, :supervisor) }
-  let(:organization_owner) { FactoryBot.create(:admin, :organization_owner) }
-  let(:facility) { FactoryBot.create(:facility) }
-
-  before :each do
-    FactoryBot.create(:admin_access_control, admin: supervisor)
-    FactoryBot.create(:admin_access_control, admin: organization_owner, access_controllable: facility.facility_group)
-  end
+  let(:supervisor) { create(:master_user, :with_email_authentication) }
+  let(:organization_owner) { create(:master_user, :with_email_authentication) }
+  let(:facility) { create(:facility) }
 
   path '/users/find' do
     get 'Find a existing user' do

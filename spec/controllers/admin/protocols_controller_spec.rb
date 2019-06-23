@@ -10,8 +10,10 @@ RSpec.describe Admin::ProtocolsController, type: :controller do
     FactoryBot.attributes_for(:protocol, name: nil)
   }
 
+  let(:user) { create(:master_user, :with_email_authentication, permissions: [:can_manage_all_protocols]) }
+
   before do
-    sign_in(create(:admin))
+    sign_in(user.email_authentication)
   end
 
   describe "GET #index" do

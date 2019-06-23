@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Analytics::DistrictsController, type: :controller do
-  let(:admin) { create(:admin) }
+  let(:admin) { create(:master_user, :with_email_authentication) }
   let(:from_time) { Time.new(2019, 1, 1) }
   let(:to_time) { Time.new(2019, 3, 31) }
 
@@ -15,7 +15,7 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
     Patient.where(id: patient_ids)
   end
   before do
-    sign_in(admin)
+    sign_in(admin.email_authentication)
   end
 
   describe '#show' do

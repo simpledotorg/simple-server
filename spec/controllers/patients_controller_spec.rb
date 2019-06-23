@@ -1,11 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe PatientsController, type: :controller do
-  let(:counsellor) { create(:admin, :counsellor) }
-  let(:facility_group) { counsellor.facility_groups.first }
+  let(:facility_group) { create(:facility_group) }
+  let(:counsellor) { create(:master_user, :with_email_authentication, permissions: [[:can_access_patient_information_for_facility_group, facility_group]]) }
 
   before do
-    sign_in(counsellor)
+    sign_in(counsellor.email_authentication)
   end
 
   describe 'GET #index' do

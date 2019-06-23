@@ -9,8 +9,10 @@ RSpec.describe Admin::OrganizationsController, type: :controller do
     FactoryBot.attributes_for(:organization, name: nil)
   }
 
+  let(:user) { create(:master_user, :with_email_authentication, permissions: [:can_manage_all_organizations]) }
+
   before do
-    sign_in(create(:admin))
+    sign_in(user.email_authentication)
   end
 
   describe 'GET #index' do

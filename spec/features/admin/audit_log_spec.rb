@@ -3,10 +3,16 @@ require 'rails_helper'
 RSpec.feature 'Admin::AuditLogs', type: :feature do
   let(:admin_email) { 'user@test.com' }
   let(:admin_password) { 'password' }
-  let(:admin) { create(:admin, email: admin_email, password: admin_password, role: :owner) }
+  let(:admin) do
+    create(:master_user,
+           :with_email_authentication,
+           email: admin_email,
+           password: admin_password,
+           permissions: [:can_manage_audit_logs])
+  end
 
   it 'Display Empty table when user name is empty' do
-    login_as admin, :scope => :admin
+    login_as admin.email_authentication, :scope => :admin
     visit '/admin/audit_logs'
     fill_in "user_name", with: ""
     click_button 'Search'

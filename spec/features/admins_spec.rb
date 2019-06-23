@@ -1,11 +1,11 @@
 require 'rails_helper'
 
 RSpec.feature "Admins", type: :feature do
-  let!(:owner) { create(:admin, :owner, email: "owner@example.com") }
-  let!(:supervisor) { create(:admin, :supervisor, email: "supervisor@example.com") }
+  let!(:owner) { create(:master_user, :with_email_authentication, email: "owner@example.com") }
+  let!(:supervisor) { create(:master_user, :with_email_authentication, email: "supervisor@example.com") }
 
   describe "index" do
-    before { sign_in(owner) }
+    before { sign_in(owner.email_authentication) }
 
     it "shows all admins and roles" do
       visit admins_path
@@ -28,7 +28,7 @@ RSpec.feature "Admins", type: :feature do
     let!(:counsellor) { create( :admin, :counsellor) }
 
     before do
-      sign_in(owner)
+      sign_in(owner.email_authentication)
       visit edit_admin_path(counsellor)
     end
 
@@ -47,7 +47,7 @@ RSpec.feature "Admins", type: :feature do
     let!(:facility_groups) { FactoryBot.create_list(:facility_group, 2) }
 
     before do
-      sign_in(owner)
+      sign_in(owner.email_authentication)
 
       visit admins_path
 
@@ -85,7 +85,7 @@ RSpec.feature "Admins", type: :feature do
     let!(:organizations) { FactoryBot.create_list(:organization, 2) }
 
     before do
-      sign_in(owner)
+      sign_in(owner.email_authentication)
 
       visit admins_path
 
@@ -123,7 +123,7 @@ RSpec.feature "Admins", type: :feature do
     let(:new_supervisor) { Admin.find_by(email: email) }
 
     before do
-      sign_in(owner)
+      sign_in(owner.email_authentication)
       visit admins_path
 
     end
@@ -179,7 +179,7 @@ RSpec.feature "Admins", type: :feature do
   end
 
   describe 'inviting Counsellors' do
-    let!(:organization_owner) { create(:admin, :organization_owner) }
+    let!(:organization_owner) { create(:master_user, :with_email_authentication) }
     let!(:organization) { organization_owner.organizations.first }
     let!(:facility_group) { create(:facility_group, organization: organization) }
     let!(:email) { 'new_counsellor@example.com' }

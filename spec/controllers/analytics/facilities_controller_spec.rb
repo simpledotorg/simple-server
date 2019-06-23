@@ -1,14 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe Analytics::FacilitiesController, type: :controller do
-  let(:admin) { create(:admin) }
+  let(:admin) { create(:master_user, :with_email_authentication) }
   let(:from_time) { Date.new(2019, 1, 1) }
   let(:to_time) { Date.new(2019, 3, 31) }
 
   let(:facility) { create(:facility) }
 
   before do
-    sign_in(admin)
+    sign_in(admin.email_authentication)
   end
 
   describe '#show' do

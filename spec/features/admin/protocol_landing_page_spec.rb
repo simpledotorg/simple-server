@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.feature 'test protocol screen functionality', type: :feature do
-  let(:owner) { create(:admin) }
+  let(:user) { create(:master_user, :with_email_authentication, permissions: [:can_manage_all_protocols]) }
   let!(:var_protocol) { create(:protocol, name: "PunjabTestProtocol", follow_up_days: "20") }
   protocol_page = ProtocolLandingPage.new
   protocol_form = ProtocolFormPage.new
