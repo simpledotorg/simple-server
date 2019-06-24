@@ -240,6 +240,13 @@ blood_pressures.recorded_at AS oldest_bp_recorded_at))
     end
   end
 
+  desc 'Add role to all the nurses'
+  task add_role_to_nurses: :environment do
+    PhoneNumberAuthentication.all.each do |phone_number_authentication|
+      phone_number_authentication.user.update!(role: :nurse)
+    end
+  end
+
   desc 'Move all the user phone numbers from the call logs to a de-normalized caller_phone_number field'
   task de_normalize_user_phone_numbers_in_call_logs: :environment do
     CallLog.all.each do |call_log|

@@ -8,9 +8,8 @@
     <li class="nav-item">
       <a class="nav-link <%= 'active' if i == 0 %>" id="<%= user_role %>-tab" data-toggle="tab"
          href="#<%= user_role %>" role="tab"
-         aria-controls="<%= user_role %>" aria-selected=
-      <% i == 0 %>>
-        <%= user_role %>
+         aria-controls="<%= user_role %>" aria-selected=<% i == 0 %>>
+        <%= user_role.humanize.pluralize %>
       </a>
     </li>
   <% end %>
@@ -20,57 +19,99 @@
 <div class="tab-content">
   <% User.roles.values.each_with_index do |user_role, i| %>
     <div class="tab-pane <%= 'active' if i == 0 %>" id="<%= user_role %>" role="tabpanel" aria-labelledby="<%= user_role %>-tab">
-      <div class="table-responsive">
-        <table class="table">
-          <thead class="thead-light">
-          <tr>
-            <th>Name</th>
-            <th>Sync status</th>
-            <th>Status reason</th>
-            <th>Phone number</th>
-            <th>Registered at facility</th>
-            <th></th>
-          </tr>
-          </thead>
+      <% @user.where(role: user_role).each do |user| %>
+        <div class="card">
+          <div class="card-body">
+            <div class="card-header row">
+              <div class="col-sm-12 col-md-6">
+                <%= user.full_name %>
+              </div>
+              <div class="col-sm-12 col-md-6">
+                <div class="sync_approval_status float-right">
+                  <%= user.sync_approval_status_reason %>
+                  <span class="label <%= user.sync_approval_status %>"><%= user.sync_approval_status&.capitalize %></span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-          <tbody>
-          <% @user.where(role: user_role).each do |user| %>
-            <tr>
-              <td class="nowrap"><%= link_to user.full_name, [:admin, user] %></td>
-              <td class="sync_approval_status nowrap">
-                <span class="label <%= user.sync_approval_status %>"><%= user.sync_approval_status&.capitalize %></span>
-              </td>
-              <td class="sync_approval_status_reason"><%= user.sync_approval_status_reason %></td>
-              <td class="nowrap"><a href="tel:<%= user.phone_number %>"><%= user.phone_number %></a></td>
-              <td>
-                <% if user.registration_facility.present? %>
-                  <% facility = user.registration_facility %>
+          <div class="card-body row">
+            <div class="syncing_information col-sm-12 col-md-6">
+              <% if user.sync_approval_status == "allowed" && user.registration_facility.facility_group.present? %>
+                The user can sync data for
+                <%= user.registration_facility.facility_group.facilities.count %> facilities,
+                belonging to <%= user.registration_facility.facility_group.name %>.
+              <% else %>
+                The user can not sync data for any facilities.
+              <% end %>
+            </div>
+            <% if user.user_permissions.present? %>
+              <h5>The user has the following permissions:</h5>
 
-                  <% if policy(facility).show? %>
-                    <%= link_to facility.name, admin_facilities_path(facility) %>
-                  <% else %>
-                    <%= user.registration_facility.name %>
-                  <% end %>
+              <ul>
+                <% user.user_permissions.group_by(&:permission_slug).each do |permission_slug, permissions| %>
+                  <li><%= permission_slug %></li>
                 <% end %>
-              </td>
-              <td class="nowrap">
-                <% if policy(user).edit? %>
-                  <%= link_to 'Edit', edit_admin_user_path(user) %>
-                <% end %>
-                <% unless user.sync_approval_status == 'denied' %>
-                  <span class="light divider">|</span> <%= link_to 'Deny access', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal' %>
-                <% end %>
-                <% unless user.sync_approval_status == 'allowed' %>
-                  <span class="light divider">|</span> <%= link_to 'Allow access', admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
-                <% end %>
-
-                <%= render partial: "deny_access_modal", locals: { user: user } %>
-              </td>
-            </tr>
-          <% end %>
-          </tbody>
-        </table>
-      </div>
+              </ul>
+            <% end %>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+          </div>
+        </div>
+      <% end %>
     </div>
   <% end %>
 </div>
+
+<!--<div class="tab-pane <%#= 'active' if i == 0 %>" id="<%#= user_role %>" role="tabpanel" aria-labelledby="<%#= user_role %>-tab">-->
+<!--  <div class="table-responsive">-->
+<!--    <table class="table">-->
+<!--      <thead class="thead-light">-->
+<!--      <tr>-->
+<!--        <th>Name</th>-->
+<!--        <th>Sync status</th>-->
+<!--        <th>Status reason</th>-->
+<!--        <th>Phone number</th>-->
+<!--        <th>Registered at facility</th>-->
+<!--        <th></th>-->
+<!--      </tr>-->
+<!--      </thead>-->
+
+<!--      <tbody>-->
+<%# @user.where(role: user_role).each do |user| %>
+<!--        <tr>-->
+<!--          <td class="nowrap"><%#= link_to user.full_name, [:admin, user] %></td>-->
+<!--          <td class="sync_approval_status nowrap">-->
+<!--            <span class="label <%#= user.sync_approval_status %>"><%#= user.sync_approval_status&.capitalize %></span>-->
+<!--          </td>-->
+<!--          <td class="sync_approval_status_reason"><%#= user.sync_approval_status_reason %></td>-->
+<!--          <td class="nowrap"><a href="tel:<%#= user.phone_number %>"><%#= user.phone_number %></a></td>-->
+<!--          <td>-->
+<%# if user.registration_facility.present? %>
+<%# facility = user.registration_facility %>
+
+<%# if policy(facility).show? %>
+<%#= link_to facility.name, admin_facilities_path(facility) %>
+<%# else %>
+<%#= user.registration_facility.name %>
+<%# end %>
+<%# end %>
+<!--          </td>-->
+<!--          <td class="nowrap">-->
+<%# if policy(user).edit? %>
+<%#= link_to 'Edit', edit_admin_user_path(user) %>
+<%# end %>
+<%# unless user.sync_approval_status == 'denied' %>
+<!--              <span class="light divider">|</span> <%#= link_to 'Deny access', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal' %>-->
+<%# end %>
+<%# unless user.sync_approval_status == 'allowed' %>
+<!--              <span class="light divider">|</span> <%#= link_to 'Allow access', admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>-->
+<%# end %>
+
+<%#= render partial: "deny_access_modal", locals: { user: user } %>
+<!--          </td>-->
+<!--        </tr>-->
+<%# end %>
+<!--      </tbody>-->
+<!--    </table>-->
+<!--  </div>-->
+<!--</div>-->

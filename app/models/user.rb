@@ -56,6 +56,7 @@ class User < ApplicationRecord
            :otp_valid?,
            :facility_group,
            :organization,
+           :facility_group,
            :password_digest, to: :phone_number_authentication, allow_nil: true
 
   delegate :email, :password, to: :email_authentication, allow_nil: true
