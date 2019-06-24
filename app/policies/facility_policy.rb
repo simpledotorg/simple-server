@@ -65,6 +65,12 @@ class FacilityPolicy < ApplicationPolicy
         return scope.where(facility_group: facility_groups)
       elsif user.has_permission?(:can_manage_a_facility_group)
         return scope.where(facility_group: resources_for_permission(:can_manage_a_facility_group))
+      elsif user.has_permission?(:can_access_appointment_information_for_facility_group)
+        return scope.where(facility_group: resources_for_permission(:can_access_appointment_information_for_facility_group))
+      elsif user.has_permission?(:can_access_patient_information_for_facility_group)
+        return scope.where(facility_group: resources_for_permission(:can_access_patient_information_for_facility_group))
+      elsif user.has_permission?(:can_access_appointment_information_for_organization)
+        return scope.where(organization: resources_for_permission(:can_access_appointment_information_for_organization))
       end
 
       scope.none

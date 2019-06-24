@@ -6,7 +6,7 @@ FactoryBot.define do
       registration_facility_id { registration_facility.id }
       phone_number { Faker::PhoneNumber.phone_number }
 
-      permissions { [] }
+      permissions { nil }
 
       email { Faker::Internet.email }
       password { Faker::Internet.password }
@@ -87,6 +87,10 @@ FactoryBot.define do
         user.user_authentications = [
           UserAuthentication.new(authenticatable: email_authentication)
         ]
+
+        if user.user_permissions.present?
+          next user.save
+        end
 
         default_permissions = User::DEFAULT_PERMISSIONS_FOR_ROLE[user.role.to_sym]
         default_permissions

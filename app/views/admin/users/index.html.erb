@@ -19,40 +19,40 @@
       </thead>
 
       <tbody>
-        <% users.sort_by(&:full_name).each do |user| %>
-          <tr>
-            <td class="nowrap"><%= link_to user.full_name, [:admin, user] %></td>
-            <td class="sync_approval_status nowrap">
-              <span class="label <%= user.sync_approval_status %>"><%= user.sync_approval_status&.capitalize %></span>
-            </td>
-            <td class="sync_approval_status_reason"><%= user.sync_approval_status_reason %></td>
-            <td class="nowrap"><a href="tel:<%= user.phone_number %>"><%= user.phone_number %></a></td>
-            <td>
-              <% if user.registration_facility.present? %>
-                <% facility = user.registration_facility %>
+      <% users.sort_by(&:full_name).each do |user| %>
+        <tr>
+          <td class="nowrap"><%= link_to user.full_name, [:admin, user] %></td>
+          <td class="sync_approval_status nowrap">
+            <span class="label <%= user.sync_approval_status %>"><%= user.sync_approval_status&.capitalize %></span>
+          </td>
+          <td class="sync_approval_status_reason"><%= user.sync_approval_status_reason %></td>
+          <td class="nowrap"><a href="tel:<%= user.phone_number %>"><%= user.phone_number %></a></td>
+          <td>
+            <% if user.registration_facility.present? %>
+              <% facility = user.registration_facility %>
 
-                <% if policy(facility).show? %>
-                  <%= link_to facility.name, admin_facilities_path(facility) %>
-                <% else %>
-                  <%= user.registration_facility.name %>
-                <% end %>
+              <% if policy(facility).show? %>
+                <%= link_to facility.name, admin_facilities_path(facility) %>
+              <% else %>
+                <%= user.registration_facility.name %>
               <% end %>
-            </td>
-            <td class="nowrap">
-              <% if policy(user).edit? %>
-                <%= link_to 'Edit', edit_admin_master_user_path(user) %>
-              <% end %>
-              <% unless user.sync_approval_status == 'denied' %>
-                <span class="light divider">|</span> <%= link_to 'Deny access', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal' %>
-              <% end %>
-              <% unless user.sync_approval_status == 'allowed' %>
-                <span class="light divider">|</span> <%= link_to 'Allow access', admin_master_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
-              <% end %>
+            <% end %>
+          </td>
+          <td class="nowrap">
+            <% if policy(user).edit? %>
+              <%= link_to 'Edit', edit_admin_user_path(user) %>
+            <% end %>
+            <% unless user.sync_approval_status == 'denied' %>
+              <span class="light divider">|</span> <%= link_to 'Deny access', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal' %>
+            <% end %>
+            <% unless user.sync_approval_status == 'allowed' %>
+              <span class="light divider">|</span> <%= link_to 'Allow access', admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
+            <% end %>
 
-              <%= render partial: "deny_access_modal", locals: { user: user } %>
-            </td>
-          </tr>
-        <% end %>
+            <%= render partial: "deny_access_modal", locals: { user: user } %>
+          </td>
+        </tr>
+      <% end %>
       </tbody>
     </table>
   </div>

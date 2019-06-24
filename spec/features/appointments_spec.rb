@@ -7,13 +7,14 @@ RSpec.feature 'Overdue appointments', type: :feature do
     create(
       :user,
       :with_email_authentication,
-      role: :counsellor,
-      facility_group: ihmi_group
+      permissions: [[:can_access_appointment_information_for_facility_group, ihmi_group]]
     )
   }
 
   describe 'index' do
-    before { sign_in(supervisor.email_authentication) }
+    before :each do
+      sign_in(supervisor.email_authentication)
+    end
 
     it 'shows Overdue tab' do
       visit root_path

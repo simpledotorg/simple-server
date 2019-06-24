@@ -1,16 +1,26 @@
 require 'rails_helper'
 
 RSpec.feature 'Verify Dashboard', type: :feature do
-  let(:owner) { create(:user, :with_email_authentication, permissions: [:can_manage_all_organizations]) }
+  let(:email) { Faker::Internet.email }
+  let(:password) { Faker::Internet.password }
+
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:path) { create(:organization, name: "PATH") }
 
+  before :each do
+    create(:user, :with_email_authentication,
+           email: email,
+           password: password,
+           permissions: [:can_manage_all_organizations])
+  end
+
+  login_page = LoginPage.new
   dashboard = DashboardPage.new
   home_page = HomePage.new
 
   it 'Verify organization is displayed in dashboard' do
     visit root_path
-    sign_in(owner.email_authentication)
+    login_page.do_login(email, password)
     #asssertion
     expect(dashboard.get_organization_count).to eq(2)
     expect(page).to have_content("IHMI")
@@ -20,7 +30,7 @@ RSpec.feature 'Verify Dashboard', type: :feature do
   it 'Verify organisation name/count get updated in dashboard when new org is added via manage section' do
 
     visit root_path
-    sign_in(owner.email_authentication)
+    login_page.do_login(email, password)
     #total number of organizaiton present in dashborad
     organization_count = dashboard.get_organization_count
 
@@ -41,7 +51,7 @@ RSpec.feature 'Verify Dashboard', type: :feature do
   it 'SignIn as Owner and verify approval request in dashboard' do
     user = create(:user, sync_approval_status: :requested)
     visit root_path
-    sign_in(owner.email_authentication)
+    login_page.do_login(email, password)
 
     expect(page).to have_content("Allow access")
     expect(page).to have_content("Deny access")
