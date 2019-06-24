@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.feature 'Verify Dashboard', type: :feature do
-  let(:owner) { create(:admin) }
+  let!(:owner) { create(:admin) }
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:path) { create(:organization, name: "PATH") }
 

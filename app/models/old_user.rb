@@ -1,6 +1,8 @@
 class OldUser < ApplicationRecord
   include Mergeable
 
+  self.table_name = 'users'
+
   enum sync_approval_status: {
     requested: 'requested',
     allowed: 'allowed',
