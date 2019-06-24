@@ -1,5 +1,3 @@
-require 'tempfile'
-
 class Admin::FacilitiesController < AdminController
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
   before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy]
