@@ -142,7 +142,6 @@ Rails.application.routes.draw do
   end
 
   devise_for :admins, class_name: 'EmailAuthentication', controllers: { invitations: 'admins/invitations' }
-  resources :admins
 
   namespace :analytics do
     resources :facilities, only: [:show]

@@ -4,7 +4,9 @@ class Admin::UsersController < AdminController
   def index
     authorize User
     @users_by_district = {}
-    policy_scope(Facility).group_by(&:district).each do |district, facilities|
+    @user = policy_scope(User.all)
+
+    policy_scope(Facility.includes(phone_number_authentications: :user)).group_by(&:district).each do |district, facilities|
       @users_by_district[district] = facilities.map(&:users).flatten.sort_by do |user|
         [ordered_sync_approval_statuses[user.sync_approval_status], user.full_name]
       end
