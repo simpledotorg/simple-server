@@ -3,9 +3,9 @@ require 'swagger_helper'
 describe 'Users Current API', swagger_doc: 'current/swagger.json' do
   let(:facility) { create(:facility) }
   let!(:supervisor) { create(:user, :with_email_authentication,
-                             permissions: [[:can_approve_users_for_facility_group, facility.facility_group]]) }
+                             permissions: [[:can_manage_users_for_facility_group, facility.facility_group]]) }
   let!(:organization_owner) { create(:user, :with_email_authentication,
-                                     permissions: [[:can_approve_users_for_organization, facility.organization]]) }
+                                     permissions: [[:can_manage_users_for_organization, facility.organization]]) }
 
   path '/users/find' do
     get 'Find a existing user' do

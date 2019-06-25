@@ -3,12 +3,12 @@ require 'rails_helper'
 RSpec.describe Api::Current::UsersController, type: :controller do
   let(:facility) { create(:facility) }
   let!(:supervisor) { create(:user, :with_email_authentication,
-                            permissions: [[:can_approve_users_for_facility_group, facility.facility_group]]) }
+                            permissions: [[:can_manage_users_for_facility_group, facility.facility_group]]) }
   let!(:organization_owner) { create(:user, :with_email_authentication,
-                                    permissions: [[:can_approve_users_for_organization, facility.organization]]) }
+                                    permissions: [[:can_manage_users_for_organization, facility.organization]]) }
 
   let!(:owner) { create(:user, :with_email_authentication,
-                        permissions: [:can_approve_all_users]) }
+                        permissions: [:can_manage_all_users]) }
 
   describe '#register' do
     describe 'registration payload is invalid' do

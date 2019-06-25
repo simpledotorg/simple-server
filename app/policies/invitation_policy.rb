@@ -1,6 +1,6 @@
 class InvitationPolicy < Struct.new(:user, :invitaion)
   def create?
-    user.owner? || user.organization_owner?
+
   end
 
   def new?

@@ -20,7 +20,7 @@ class User < ApplicationRecord
     supervisor: 'supervisor',
     counsellor: 'counsellor',
     analyst: 'analyst'
-  }
+  }, _prefix: true
 
   has_many :user_authentications
   has_many :blood_pressures
@@ -70,18 +70,18 @@ class User < ApplicationRecord
       :can_access_patient_information_for_all_organizations,
       :can_access_appointment_information_for_all_organizations,
       :can_download_overdue_list_for_all_organizations,
-      :can_approve_all_users
+      :can_manage_all_users
     ],
     organization_owner: [
       :can_manage_an_organization,
       :can_access_patient_information_for_organization,
       :can_access_appointment_information_for_organization,
       :can_download_overdue_list_for_organization,
-      :can_approve_users_for_organization
+      :can_manage_users_for_organization
     ],
     supervisor: [
       :can_manage_a_facility_group,
-      :can_approve_users_for_facility_group
+      :can_manage_users_for_facility_group
     ],
     counsellor: [
       :can_access_appointment_information_for_facility_group,

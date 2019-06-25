@@ -27,21 +27,21 @@ class ApprovalNotifierMailer < ApplicationMailer
 
   def supervisor_emails
     UserPermission
-      .where(permission_slug: :can_approve_users_for_facility_group, resource: user.facility_group)
+      .where(permission_slug: :can_manage_users_for_facility_group, resource: user.facility_group)
       .map { |permission| permission.user.email }
       .join(',')
   end
 
   def organization_owner_emails
     UserPermission
-      .where(permission_slug: :can_approve_users_for_organization, resource: user.organization)
+      .where(permission_slug: :can_manage_users_for_organization, resource: user.organization)
       .map { |permission| permission.user.email }
       .join(',')
   end
 
   def owner_emails
     UserPermission
-      .where(permission_slug: :can_approve_all_users)
+      .where(permission_slug: :can_manage_all_users)
       .map { |permission| permission.user.email }
       .join(',')
   end

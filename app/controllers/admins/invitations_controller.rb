@@ -3,7 +3,6 @@ class Admins::InvitationsController < Devise::InvitationsController
 
   def new
     authorize :invitation, :new?
-    @role = params[:role].downcase.to_sym
     super
   end
 

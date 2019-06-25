@@ -207,14 +207,14 @@ blood_pressures.recorded_at AS oldest_bp_recorded_at))
 
   desc "Initialize permissions for users"
   task initialize_permissions_for_users: :environment do
-    MasterUser.all.each do |master_user|
+    User.all.each do |master_user|
       # TODO: Skip if permissions already exsit for master user
       admin = Admin.find_by(email: master_user.email)
       unless admin.present?
         puts "Did not find admin with email #{master_user.email}. Skipping assigning permissions"
       end
 
-      default_permissions = MasterUser::DEFAULT_PERMISSIONS_FOR_ROLE[master_user.role.to_sym]
+      default_permissions = User::DEFAULT_PERMISSIONS_FOR_ROLE[master_user.role.to_sym]
       default_permissions
         .group_by { |permission_slug| Permissions::ALL_PERMISSIONS[permission_slug][:resource_type] }
         .each do |resource_type, permission_slugs|
