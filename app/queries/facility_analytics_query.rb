@@ -13,9 +13,10 @@ class FacilityAnalyticsQuery
     @registered_patients_by_month ||=
       Patient
         .joins(:registration_facility)
-        .joins(:registration_user)
+        .joins('INNER JOIN blood_pressures ON blood_pressures.facility_id = patients.registration_facility_id')
         .where(registration_facility: @facility)
-        .group('users.id', date_truncate_sql('patients', 'device_created_at', period: 'month'))
+        .group('registration_user_id', date_truncate_sql('patients', 'device_created_at', period: 'month'))
+        .distinct('patients.id')
         .count
 
     group_by_user_and_date(@registered_patients_by_month, :registered_patients_by_month)
