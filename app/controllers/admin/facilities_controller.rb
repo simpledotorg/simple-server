@@ -49,7 +49,8 @@ class Admin::FacilitiesController < AdminController
     @errors = []
     run_validations_and_read(file) if file.present?
     if @errors.present?
-      @errors.prepend "Please fix the errors below and try again:"
+      @errors.prepend 'Please fix the errors below and try again:'
+      @errors << ['', 'Please contact team@simple.org if you need assistance']
       flash.now[:alert] = @errors.join('<br/>').html_safe
     elsif file.present?
       facilities = Facility.parse_facilities(@file_contents)
