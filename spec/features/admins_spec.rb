@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.feature "Admins", type: :feature do
+RSpec.xfeature "Admins", type: :feature do
   let!(:owner) { create(:user, :with_email_authentication, email: "owner@example.com") }
   let!(:supervisor) { create(:user, :with_email_authentication, email: "supervisor@example.com") }
 

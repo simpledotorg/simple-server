@@ -1,10 +1,8 @@
 class UserPolicy < ApplicationPolicy
   def index?
-    user.owner? || user.supervisor? || user.organization_owner?
-  end
-
-  def user_belongs_to_admin?
-    user.users.include?(record)
+    user_permission_slugs = user.user_permissions.pluck(:permission_slug).map(&:to_sym)
+    [:can_manage_all_organizations
+    ].any? { |slug| user_permission_slugs.include? slug }
   end
 
   def show?
