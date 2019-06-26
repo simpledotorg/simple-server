@@ -10,7 +10,6 @@ class ImportFacilitiesJob < ApplicationJob
       facility_group = FacilityGroup.find_by(name: facility[:facility_group_name],
                                              organization_id: organization.id)
       import_facility = Facility.new(facility.merge!(facility_group_id: facility_group.id))
-      puts import_facility
       import_facilities << import_facility
     end
     Facility.import!(import_facilities, validate: true)

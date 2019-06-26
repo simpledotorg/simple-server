@@ -1,17 +1,17 @@
 require 'rails_helper'
 
 RSpec.describe Admin::FacilitiesController, type: :controller do
-  let(:facility_id) { SecureRandom.uuid }
-  let(:facility_group) { FactoryBot.create(:facility_group) }
+
+  let(:facility_group) { create(:facility_group) }
   let(:valid_attributes) {
-    FactoryBot.attributes_for(
+    attributes_for(
         :facility,
         facility_group_id: facility_group.id,
     )
   }
 
   let(:invalid_attributes) {
-    FactoryBot.attributes_for(
+    attributes_for(
         :facility,
         name: nil)
   }
@@ -67,7 +67,6 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
     context 'with invalid params' do
       it "returns a success response (i.e. to display the 'new' template)" do
         post :create, params: { facility: invalid_attributes, facility_group_id: facility_group.id }
-
         expect(response).to be_success
       end
     end
@@ -76,7 +75,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
   describe 'PUT #update' do
     context 'with valid params' do
       let(:new_attributes) {
-        FactoryBot.attributes_for(
+        attributes_for(
             :facility,
             facility_group_id: facility_group.id,
             pin: "999999"

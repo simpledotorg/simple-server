@@ -31,10 +31,6 @@ class FacilityGroupPolicy < ApplicationPolicy
     show?
   end
 
-  def upload?
-    user.owner? || user.organization_owner?
-  end
-
   private
 
   def destroyable?

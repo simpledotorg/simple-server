@@ -26,7 +26,7 @@ class Facility < ApplicationRecord
   validates :country, presence: true
   validates :pin, numericality: true, allow_blank: true
 
-  with_options if: :is_import? do |facility|
+  with_options if: :import do |facility|
     facility.validates :organization_name, presence: true
     facility.validates :facility_group_name, presence: true
     facility.validate :unique_for_facility_group_and_organization
@@ -40,7 +40,6 @@ class Facility < ApplicationRecord
   def report_on_patients
     registered_patients
   end
-
 
   def self.parse_facilities(file_contents)
     facilities = []
@@ -58,9 +57,11 @@ class Facility < ApplicationRecord
                   latitude: row['latitude'],
                   longitude: row['longitude'],
                   import: true}
+      next if facility.except(:import).values.all?(&:blank?)
+
       facilities << facility
     end
-    facilities.delete_if { |facility| facility.except(:import).values.all?(&:blank?) }
+    facilities
   end
 
   def self.read_import_file(file)
@@ -73,9 +74,6 @@ class Facility < ApplicationRecord
     file_contents
   end
 
-  def is_import?
-    import
-  end
 
   def unique_for_facility_group_and_organization
     organization = Organization.find_by(name: organization_name)

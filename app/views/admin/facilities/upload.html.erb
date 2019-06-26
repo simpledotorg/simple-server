@@ -15,8 +15,8 @@
     <% end %></li>
   <li>Ensure that the Organization (Column A) and Facility Group (Column B) are entered correctly.</li>
 </ol>
-<%= bootstrap_form_tag(url: '/admin/facilities/upload' , multipart: true) do |f| %>
-  <%= f.file_field :upload_facilities_file, required: true, label:'Upload your filled in facilities file' %>
+<%= bootstrap_form_tag(url: upload_admin_facilities_url, multipart: true) do |f| %>
+  <%= f.file_field :upload_facilities_file, required: true, label:'Upload your filled in facilities file', accept: '.csv, .xlsx'%>
   <%= f.primary 'Upload' %>
 <% end %>
 
