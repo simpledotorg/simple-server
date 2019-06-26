@@ -1,5 +1,5 @@
 class CallLog < ApplicationRecord
-  include DataAnonymizable
+  include Hashable
 
   validates :caller_phone_number, presence: true
   validates :callee_phone_number, presence: true
@@ -20,7 +20,7 @@ class CallLog < ApplicationRecord
 
   def anonymized_data
     {
-      id: CallLog.hash_uuid(id),
+      id: hash_uuid(id),
       created_at: created_at,
       result: result,
       duration: duration,

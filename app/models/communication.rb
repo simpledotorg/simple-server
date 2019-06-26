@@ -1,6 +1,6 @@
 class Communication < ApplicationRecord
   include Mergeable
-  include DataAnonymizable
+  include Hashable
 
   belongs_to :appointment
   belongs_to :user
@@ -65,10 +65,10 @@ class Communication < ApplicationRecord
   end
 
   def anonymized_data
-    { id: Communication.hash_uuid(id),
-      appointment_id: Communication.hash_uuid(appointment_id),
-      patient_id: Communication.hashed_else_blank_value(appointment.patient_id),
-      user_id: Communication.hashed_else_blank_value(user_id),
+    { id: hash_uuid(id),
+      appointment_id: hash_uuid(appointment_id),
+      patient_id: hash_uuid(appointment.patient_id),
+      user_id: hash_uuid(user_id),
       created_at: created_at,
       communication_type: communication_type,
       communication_result: communication_result,

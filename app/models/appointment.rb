@@ -2,7 +2,7 @@ require 'csv'
 
 class Appointment < ApplicationRecord
   include Mergeable
-  include DataAnonymizable
+  include Hashable
 
   belongs_to :patient, optional: true
   belongs_to :facility
@@ -108,16 +108,16 @@ class Appointment < ApplicationRecord
     facility_name = Facility.where(id: facility_id).first&.name
 
     {
-      id: Appointment.hash_uuid(id),
-      patient_id: Appointment.hash_uuid(patient_id),
+      id: hash_uuid(id),
+      patient_id: hash_uuid(patient_id),
       created_at: created_at,
-      facility_name: Appointment.original_else_blank_value(facility_name),
-      user_id: Appointment.hashed_else_blank_value(user_id),
+      facility_name: facility_name,
+      user_id: hash_uuid(user_id),
       scheduled_date: scheduled_date,
       overdue: days_overdue > 0 ? 'Yes' : 'No',
       status: status,
-      agreed_to_visit: Appointment.original_else_blank_value(agreed_to_visit),
-      remind_on: Appointment.original_else_blank_value(remind_on)
+      agreed_to_visit: agreed_to_visit,
+      remind_on: remind_on
     }
   end
 

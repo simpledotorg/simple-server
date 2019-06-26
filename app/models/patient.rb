@@ -1,6 +1,6 @@
 class Patient < ApplicationRecord
   include Mergeable
-  include DataAnonymizable
+  include Hashable
 
   GENDERS = %w[male female transgender].freeze
   STATUSES = %w[active dead migrated unresponsive inactive].freeze
@@ -145,11 +145,11 @@ class Patient < ApplicationRecord
     user_id = User.where(id: registration_user_id).first
     facility_name = Facility.where(id: registration_facility_id).first&.name
 
-    { id: Patient.hash_uuid(id),
+    { id: hash_uuid(id),
       created_at: created_at,
       registration_date: recorded_at,
-      facility_name: Patient.original_else_blank_value(facility_name),
-      user_id: Patient.hashed_else_blank_value(user_id),
+      facility_name: facility_name,
+      user_id: hash_uuid(user_id),
       age: age,
       gender: gender
     }

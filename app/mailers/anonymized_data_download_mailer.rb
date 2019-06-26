@@ -9,6 +9,8 @@ class AnonymizedDataDownloadMailer < ApplicationMailer
     @facilities = @resource[:facilities]
 
     @attachment_data.each do |file_name, file_contents|
+      next if file_contents.blank?
+
       attachments[file_name] = {
         mime_type: 'text/csv',
         content: file_contents
