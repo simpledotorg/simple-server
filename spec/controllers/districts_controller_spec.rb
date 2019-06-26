@@ -14,14 +14,17 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
     # register patients
     #
     registered_patients = Timecop.travel(Date.new(2019, 1, 1)) do
-      create_list(:patient, 3, registration_facility: facility)
+      create_list(:patient, 3, registration_facility: facility, registration_user: user)
     end
 
     #
     # add blood_pressures next month
     #
     Timecop.travel(Date.new(2019, 2, 1)) do
-      registered_patients.each { |patient| create(:blood_pressure, patient: patient, facility: facility) }
+      registered_patients.each { |patient| create(:blood_pressure,
+                                                  patient: patient,
+                                                  facility: facility,
+                                                  user: user) }
     end
 
     Patient.where(id: registered_patients.map(&:id))
@@ -32,6 +35,8 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
   end
 
   describe '#show' do
+    render_views
+
     it 'returns relevant analytics keys per facility' do
       get :show, params: { organization_id: organization.id, id: district_name }
 
@@ -39,6 +44,11 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
       expect(assigns(:analytics)[facility.id].keys).to eq([:follow_up_patients_by_month,
                                                            :registered_patients_by_month,
                                                            :total_registered_patients])
+    end
+
+    it 'renders the analytics table view' do
+      get :show, params: { organization_id: organization.id, id: district_name }
+      expect(response).to render_template(partial: 'analytics/districts/_analytics_table')
     end
   end
 end

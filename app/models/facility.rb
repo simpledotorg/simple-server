@@ -29,6 +29,6 @@ class Facility < ApplicationRecord
 
     [query.follow_up_patients_by_month,
      query.registered_patients_by_month,
-     query.total_registered_patients].inject(&:deep_merge)
+     query.total_registered_patients].compact.inject(&:deep_merge)
   end
 end
