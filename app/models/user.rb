@@ -22,6 +22,8 @@ class User < ApplicationRecord
     analyst: 'analyst'
   }, _prefix: true
 
+  belongs_to :organization, optional: true
+
   has_many :user_authentications
   has_many :blood_pressures
   has_many :patients, -> { distinct }, through: :blood_pressures
@@ -92,6 +94,8 @@ class User < ApplicationRecord
   }
 
   DEFAULT_SYNC_APPROVAL_DENIAL_STATUS = 'User does not need to sync'.freeze
+
+  validates :organization, presence: true, unless: :role_owner?
 
   def email_authentication
     email_authentications.first
