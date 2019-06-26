@@ -1,6 +1,6 @@
 class PrescriptionDrug < ApplicationRecord
   include Mergeable
-  include DataAnonymizable
+  include Hashable
 
   ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at facility_name user_id medicine_name dosage]
 
@@ -13,15 +13,12 @@ class PrescriptionDrug < ApplicationRecord
   validates :is_deleted, inclusion: { in: [true, false] }
 
   def anonymized_data
-    user_id = patient&.registration_user_id
-    facility_name = Facility.where(id: facility_id).first&.name
-
     {
-      id: PrescriptionDrug.hash_uuid(id),
-      patient_id: PrescriptionDrug.hash_uuid(patient_id),
+      id: hash_uuid(id),
+      patient_id: hash_uuid(patient_id),
       created_at: created_at,
-      facility_name: PrescriptionDrug.original_else_blank_value(facility_name),
-      user_id: PrescriptionDrug.hashed_else_blank_value(user_id),
+      facility_name: facility.name,
+      user_id: hash_uuid(patient&.registration_user&.id),
       medicine_name: name,
       dosage: dosage,
     }

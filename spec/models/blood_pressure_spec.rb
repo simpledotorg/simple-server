@@ -1,4 +1,5 @@
 require 'rails_helper'
+include Hashable
 
 RSpec.describe BloodPressure, type: :model do
   describe 'Validations' do
@@ -94,6 +95,28 @@ RSpec.describe BloodPressure, type: :model do
     describe "#to_s" do
       it "is systolic/diastolic" do
         expect(bp_normal.to_s).to eq("120/80")
+      end
+    end
+  end
+
+  context 'anonymised data for blood pressures' do
+    describe 'anonymized_data' do
+      it 'correctly retrieves the anonymised data for the blood pressure' do
+        blood_pressure = create(:blood_pressure)
+
+        anonymised_data =
+          {
+            id: hash_uuid(blood_pressure.id),
+            patient_id: hash_uuid(blood_pressure.patient_id),
+            created_at: blood_pressure.created_at,
+            bp_date: blood_pressure.recorded_at,
+            facility_name: blood_pressure.facility.name,
+            user_id: hash_uuid(blood_pressure.user.id),
+            bp_systolic: blood_pressure.systolic,
+            bp_diastolic: blood_pressure.diastolic
+          }
+
+        expect(blood_pressure.anonymized_data).to eq anonymised_data
       end
     end
   end
