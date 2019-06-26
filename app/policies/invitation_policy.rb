@@ -1,29 +1,15 @@
 class InvitationPolicy < Struct.new(:user, :invitaion)
   def create?
-
+    user.has_permission?(:can_manage_all_users)
   end
 
   def new?
     create?
   end
 
-  def invite_owner?
-    user.owner?
-  end
-
-  def invite_organization_owner?
-    user.owner? || user.organization_owner?
-  end
-
-  def invite_supervisor?
-    user.owner? || user.organization_owner?
-  end
-
-  def invite_analyst?
-    user.owner? || user.organization_owner?
-  end
-
-  def invite_counsellor?
-    user.owner? || user.organization_owner?
+  def roles_user_can_invite
+    if user.has_permission?(:can_manage_all_users)
+      User.roles.except(:nurse)
+    end
   end
 end

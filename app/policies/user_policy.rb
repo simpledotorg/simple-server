@@ -6,7 +6,7 @@ class UserPolicy < ApplicationPolicy
   end
 
   def show?
-    user.owner? || user_belongs_to_admin?
+   user.has_permission?(:can_manage_all_organizations)
   end
 
   def update?

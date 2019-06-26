@@ -214,6 +214,7 @@ blood_pressures.recorded_at AS oldest_bp_recorded_at))
         puts "Did not find admin with email #{master_user.email}. Skipping assigning permissions"
       end
 
+      next unless master_user.role.present?
       default_permissions = User::DEFAULT_PERMISSIONS_FOR_ROLE[master_user.role.to_sym]
       default_permissions
         .group_by { |permission_slug| Permissions::ALL_PERMISSIONS[permission_slug][:resource_type] }

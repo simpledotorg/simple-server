@@ -70,7 +70,8 @@ class User < ApplicationRecord
       :can_access_patient_information_for_all_organizations,
       :can_access_appointment_information_for_all_organizations,
       :can_download_overdue_list_for_all_organizations,
-      :can_manage_all_users
+      :can_manage_all_users,
+      :can_manage_user_permissions
     ],
     organization_owner: [
       :can_manage_an_organization,

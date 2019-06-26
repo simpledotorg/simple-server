@@ -14,6 +14,10 @@ module Permissions::UserManagementPermissions
     can_manage_all_users: {
       type: :global,
       slug: :can_manage_all_users
+    },
+    can_manage_user_permissions: {
+      type: :global,
+      slug: :can_manage_user_permissions
     }
   }
 end
