@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe FacilityAnalyticsQuery do
   let!(:users) { create_list(:user, 2) }
   let!(:facility) { create(:facility) }
-  let!(:analytics) { FacilityAnalyticsQuery.new(facility: facility) }
+  let!(:analytics) { FacilityAnalyticsQuery.new(facility) }
 
   let(:first_jan) { Date.new(2019, 1, 1) }
   let(:first_feb) { Date.new(2019, 2, 1) }

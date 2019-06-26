@@ -2,41 +2,35 @@ require 'rails_helper'
 
 RSpec.describe DistrictAnalyticsQuery do
   let!(:facility) { create(:facility) }
-  let!(:analytics) { DistrictAnalyticsQuery.new(district_name: facility.district) }
+  let!(:analytics) { DistrictAnalyticsQuery.new(facility.district) }
 
   let(:first_jan) { Date.new(2019, 1, 1) }
   let(:first_feb) { Date.new(2019, 2, 1) }
   let(:first_mar) { Date.new(2019, 3, 1) }
+  let(:first_apr) { Date.new(2019, 4, 1) }
 
   before do
-    #
-    # first batch of registered patients
-    #
-    registered_patients_on_jan = Timecop.travel(first_jan) do
-      create_list(:patient, 3, registration_facility: facility)
-    end
+    [first_jan, first_feb].each do |month|
+      #
+      # register patients
+      #
+      registered_patients_on_jan = Timecop.travel(month) do
+        create_list(:patient, 3, registration_facility: facility)
+      end
 
-    Timecop.travel(first_feb) do
-      registered_patients_on_jan.each { |patient| create(:blood_pressure, patient: patient, facility: facility) }
-    end
+      #
+      # add blood_pressures next month
+      #
+      Timecop.travel(month + 1.month) do
+        registered_patients_on_jan.each { |patient| create(:blood_pressure, patient: patient, facility: facility) }
+      end
 
-    Timecop.travel(first_mar) do
-      registered_patients_on_jan.each { |patient| create(:blood_pressure, patient: patient, facility: facility) }
-    end
-
-    #
-    # second batch of registered patients
-    #
-    registered_patients_on_feb = Timecop.travel(first_feb) do
-      create_list(:patient, 3, registration_facility: facility)
-    end
-
-    Timecop.travel(first_feb) do
-      registered_patients_on_feb.each { |patient| create(:blood_pressure, patient: patient, facility: facility) }
-    end
-
-    Timecop.travel(first_mar) do
-      registered_patients_on_feb.each { |patient| create(:blood_pressure, patient: patient, facility: facility) }
+      #
+      # add blood_pressures after a couple of months
+      #
+      Timecop.travel(month + 2.months) do
+        registered_patients_on_jan.each { |patient| create(:blood_pressure, patient: patient, facility: facility) }
+      end
     end
   end
 
@@ -46,7 +40,8 @@ RSpec.describe DistrictAnalyticsQuery do
         { facility.id =>
             { :follow_up_patients_by_month =>
                 { first_feb => 3,
-                  first_mar => 6
+                  first_mar => 6,
+                  first_apr => 3
                 }
             }
         }
@@ -62,7 +57,7 @@ RSpec.describe DistrictAnalyticsQuery do
             { :registered_patients_by_month =>
                 {
                   first_jan => 3,
-                  first_feb => 3
+                  first_feb => 3,
                 }
             }
         }

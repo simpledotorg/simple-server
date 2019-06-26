@@ -4,7 +4,7 @@ class OrganizationDistrict < Struct.new(:district_name, :organization)
   end
 
   def dashboard_analytics
-    query = DistrictAnalyticsQuery.new(district_name: district_name)
+    query = DistrictAnalyticsQuery.new(district_name)
 
     [query.follow_up_patients_by_month,
      query.registered_patients_by_month,

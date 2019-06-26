@@ -1,5 +1,5 @@
 class DistrictAnalyticsQuery
-  def initialize(district_name:)
+  def initialize(district_name)
     @district_name = district_name
   end
 

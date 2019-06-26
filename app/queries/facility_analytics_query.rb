@@ -1,5 +1,5 @@
 class FacilityAnalyticsQuery
-  def initialize(facility:)
+  def initialize(facility)
     @facility = facility
   end
 

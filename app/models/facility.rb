@@ -25,7 +25,7 @@ class Facility < ApplicationRecord
   friendly_id :name, use: :slugged
 
   def dashboard_analytics
-    query = FacilityAnalyticsQuery.new(facility: self)
+    query = FacilityAnalyticsQuery.new(self)
 
     [query.follow_up_patients_by_month,
      query.registered_patients_by_month,
