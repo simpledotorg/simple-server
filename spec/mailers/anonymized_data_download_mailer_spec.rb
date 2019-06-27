@@ -79,7 +79,7 @@ RSpec.describe AnonymizedDataDownloadMailer, type: :mailer do
         received_attachment_data_file_names = sent_email.attachments.map(&:filename)
 
         received_attachment_data_file_names.each do |file_name|
-          attachment_data_file_names.include?(file_name)
+          attachment_file_names.include?(file_name)
         end
       end
     end
