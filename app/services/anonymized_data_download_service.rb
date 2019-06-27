@@ -1,33 +1,113 @@
 require 'csv'
 
+module AnonymizedData
+  class DistrictData
+    attr_reader :district_facilities
+
+    def initialize(district)
+      @district_facilities = district.facilities
+    end
+
+    def raw_data
+      {
+        AnonymizedData::Constants::PATIENTS_FILE => district_facilities.map { |fac| FacilityData.new(fac).patient_data }.flatten,
+        AnonymizedData::Constants::BPS_FILE => district_facilities.map { |fac| FacilityData.new(fac).bp_data }.flatten,
+        AnonymizedData::Constants::MEDICINES_FILE => district_facilities.map { |fac| FacilityData.new(fac).prescription_data }.flatten,
+        AnonymizedData::Constants::APPOINTMENTS_FILE => appointments,
+        AnonymizedData::Constants::SMS_REMINDERS_FILE => communication_data(appointments),
+        AnonymizedData::Constants::PHONE_CALLS_FILE => phone_call_data(users_phone_numbers),
+      }
+    end
+
+    def communication_data(appointments)
+      appointments.flat_map(&:communications).select { |comm| comm.device_created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE }
+    end
+
+    def phone_call_data(users_phone_numbers)
+      CallLog.all.select { |call| users_phone_numbers.include?(call.caller_phone_number && call.created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE) }
+    end
+
+    def users_phone_numbers
+      district_facilities.flat_map(&:users).compact.map(&:phone_number).uniq
+    end
+
+    def appointments
+      district_facilities.map { |fac| FacilityData.new(fac).appointment_data }.flatten
+    end
+  end
+
+  class FacilityData
+    attr_reader :facility, :appointments
+
+    def initialize(facility)
+      @facility = facility
+      @appointments = appointment_data
+    end
+
+    def raw_data
+      {
+        AnonymizedData::Constants::PATIENTS_FILE => patient_data,
+        AnonymizedData::Constants::BPS_FILE => bp_data,
+        AnonymizedData::Constants::MEDICINES_FILE => prescription_data,
+        AnonymizedData::Constants::APPOINTMENTS_FILE => appointments,
+        AnonymizedData::Constants::SMS_REMINDERS_FILE => communication_data(appointments),
+        AnonymizedData::Constants::PHONE_CALLS_FILE => phone_call_data(users_phone_numbers)
+      }
+    end
+
+    def patient_data
+      facility.patients.select { |p| p.device_created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE }
+    end
+
+    def bp_data
+      facility.blood_pressures.select { |bp| bp.device_created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE }
+    end
+
+    def prescription_data
+      facility.prescription_drugs.select { |pd| pd.device_created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE }
+    end
+
+    def appointment_data
+      facility.appointments.select { |app| app.device_created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE }
+    end
+
+    def communication_data(appointments)
+      appointments.flat_map(&:communications).select { |comm| comm.device_created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE }
+    end
+
+    def phone_call_data(users_phone_numbers)
+      CallLog.all.select { |call| users_phone_numbers.include?(call.caller_phone_number && call.created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE) }
+    end
+
+    def users_phone_numbers
+      facility.users.compact.map(&:phone_number).uniq
+    end
+  end
+
+  module Constants
+    ANONYMIZATION_START_DATE = 12.months.ago
+    UNAVAILABLE = 'Unavailable'.freeze
+    PATIENTS_FILE = 'patients.csv'.freeze
+    BPS_FILE = 'blood_pressures.csv'.freeze
+    MEDICINES_FILE = 'medicines.csv'.freeze
+    APPOINTMENTS_FILE = 'appointments.csv'.freeze
+    SMS_REMINDERS_FILE = 'sms_reminders.csv'.freeze
+    PHONE_CALLS_FILE = 'phone_calls.csv'.freeze
+  end
+end
+
 class AnonymizedDataDownloadService
-  DATA_ANONYMIZATION_COLLECTION_START_DATE = 12.months.ago
-
-  UNAVAILABLE = 'Unavailable'.freeze
-
-  PATIENTS_FILE = 'patients.csv'.freeze
-  BPS_FILE = 'blood_pressures.csv'.freeze
-  MEDICINES_FILE = 'medicines.csv'.freeze
-  APPOINTMENTS_FILE = 'appointments.csv'.freeze
-  SMS_REMINDERS_FILE = 'sms_reminders.csv'.freeze
-  PHONE_CALLS_FILE = 'phone_calls.csv'.freeze
-
   def run_for_district(recipient_name, recipient_email, district_name, organization_id)
     organization_district = OrganizationDistrict.new(district_name, Organization.find(organization_id))
-    anonymized_data = anonymize_district(organization_district)
-
     names_of_facilities = organization_district.facilities.flat_map(&:name).sort
-
-    send_email(recipient_name, recipient_email, anonymized_data, { district_name: district_name,
-                                                                   facilities: names_of_facilities })
+    send_email(recipient_name, recipient_email, anonymize(AnonymizedData::DistrictData.new(organization_district).raw_data), { district_name: district_name,
+                                                                                                                               facilities: names_of_facilities })
   end
 
   def run_for_facility(recipient_name, recipient_email, facility_id)
     facility = Facility.find(facility_id)
-    anonymized_data = anonymize_facility(facility)
-
-    send_email(recipient_name, recipient_email, anonymized_data, { facility_name: facility.name,
-                                                                   facilities: [facility.name] })
+    send_email(recipient_name, recipient_email, anonymize(AnonymizedData::FacilityData.new(facility).raw_data), { facility_name: facility.name,
+                                                                                                                  facilities: [facility.name] })
   end
 
   private
@@ -42,15 +122,6 @@ class AnonymizedDataDownloadService
       .deliver_later
   end
 
-  def anonymize_district(district)
-    district_facilities = district.facilities
-    anonymize(district_data_map(district_facilities))
-  end
-
-  def anonymize_facility(facility)
-    anonymize(facility_data_map(facility))
-  end
-
   def anonymize(csv_data_map)
     combined_csv_data = {}
 
@@ -59,58 +130,6 @@ class AnonymizedDataDownloadService
     end
 
     combined_csv_data
-  end
-
-  def facility_data_map(facility)
-    appointments = appointment_data(facility)
-    users_phone_numbers = facility.users.compact.map(&:phone_number).uniq
-
-    {
-      PATIENTS_FILE => patient_data(facility),
-      BPS_FILE => bp_data(facility),
-      MEDICINES_FILE => prescription_data(facility),
-      APPOINTMENTS_FILE => appointments,
-      SMS_REMINDERS_FILE => communication_data(appointments),
-      PHONE_CALLS_FILE => phone_call_data(users_phone_numbers)
-    }
-  end
-
-  def district_data_map(district_facilities)
-    appointments = district_facilities.map { |fac| appointment_data(fac) }.flatten
-    users_phone_numbers = district_facilities.flat_map(&:users).compact.map(&:phone_number).uniq
-
-    {
-      PATIENTS_FILE => district_facilities.map { |fac| patient_data(fac) }.flatten,
-      BPS_FILE => district_facilities.map { |fac| bp_data(fac) }.flatten,
-      MEDICINES_FILE => district_facilities.map { |fac| prescription_data(fac) }.flatten,
-      APPOINTMENTS_FILE => appointments,
-      SMS_REMINDERS_FILE => communication_data(appointments),
-      PHONE_CALLS_FILE => phone_call_data(users_phone_numbers),
-    }
-  end
-
-  def patient_data(facility)
-    facility.patients.select { |p| p.device_created_at >= DATA_ANONYMIZATION_COLLECTION_START_DATE }
-  end
-
-  def bp_data(facility)
-    facility.blood_pressures.select { |bp| bp.device_created_at >= DATA_ANONYMIZATION_COLLECTION_START_DATE }
-  end
-
-  def prescription_data(facility)
-    facility.prescription_drugs.select { |pd| pd.device_created_at >= DATA_ANONYMIZATION_COLLECTION_START_DATE }
-  end
-
-  def appointment_data(facility)
-    facility.appointments.select { |app| app.device_created_at >= DATA_ANONYMIZATION_COLLECTION_START_DATE }
-  end
-
-  def communication_data(appointments)
-    appointments.flat_map(&:communications).select { |comm| comm.device_created_at >= DATA_ANONYMIZATION_COLLECTION_START_DATE }
-  end
-
-  def phone_call_data(users_phone_numbers)
-    CallLog.all.select { |call| users_phone_numbers.include?(call.caller_phone_number && call.created_at >= DATA_ANONYMIZATION_COLLECTION_START_DATE) }
   end
 
   def to_csv(resources)
@@ -125,7 +144,7 @@ class AnonymizedDataDownloadService
       resources.map do |r|
         values = r.anonymized_data
         csv << headers.map do |h|
-          values[h.to_sym] || UNAVAILABLE
+          values[h.to_sym] || AnonymizedData::Constants::UNAVAILABLE
         end
       end
     end
