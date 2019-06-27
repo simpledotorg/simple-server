@@ -1,44 +1,35 @@
 class CohortAnalyticsQuery
-  def initialize(patients, year, quarter, quarters_previous=2)
+  def initialize(patients)
     @patients = patients
-    @year = year
-    @quarter = quarter
-    @quarters_previous = quarters_previous
-
-    @cohort_start = quarter_start(@year, @quarter) - (@quarters_previous * 3).months
-    @cohort_end   = quarter_end(@year, @quarter)
   end
 
-  def patient_counts
-    cohort_start = quarter_start(year, quarter)
-    cohort_end   = quarter_end(year, quarter)
+  def patient_counts(year:, quarter:, quarters_previous: 2)
+    report_start = quarter_start(year, quarter)
+    report_end   = quarter_end(year, quarter)
+
+    cohort_start = report_start - (quarters_previous * 3).months
+    cohort_end   = report_end   - (quarters_previous * 3).months
+
+    registered_patients = registered(cohort_start, cohort_end)
+    followed_up_patients = followed_up(registered_patients, report_start, report_end)
+    controlled_patients = controlled(followed_up_patients)
+    uncontrolled_patients = followed_up_patients - controlled_patients
+
+    {
+      registered_patients: registered_patients.size,
+      followed_up_patients: followed_up_patients.size,
+      defaulted_patients: registered_patients.size - followed_up_patients.size,
+      controlled_patients: controlled_patients.size,
+      uncontrolled_patients: uncontrolled_patients.size
+    }
   end
 
-  def registered(year, cohort_start, cohort_end)
-    cohort_start = @from_time - COHORT_MONTHS_PREVIOUS.months
-    cohort_end = @to_time - COHORT_MONTHS_PREVIOUS.months
-
-    @patients.select(%Q(
-      patients.*,
-      oldest_bps.device_created_at as bp_device_created_at,
-      oldest_bps.facility_id as bp_facility_id,
-      oldest_bps.systolic as bp_systolic,
-      oldest_bps.diastolic as bp_diastolic
-    )).joins(%Q(
-      INNER JOIN (
-        SELECT DISTINCT ON (patient_id) *
-        FROM blood_pressures
-        ORDER BY patient_id, device_created_at ASC
-      ) as oldest_bps
-      ON oldest_bps.patient_id = patients.id
-    )).where(
-      "oldest_bps.device_created_at" => cohort_start..cohort_end,
-      "oldest_bps.facility_id" => @facility
-    )
+  def registered(cohort_start, cohort_end)
+    @patients.where(recorded_at: cohort_start..cohort_end)
   end
 
-  def visited(patients, quarter_start, quarter_end)
-    patients.select(%Q(
+  def followed_up(registered_patients, report_start, report_end)
+    registered_patients.select(%Q(
       patients.*,
       newest_bps.device_created_at as bp_device_created_at,
       newest_bps.systolic as bp_systolic,
@@ -47,8 +38,8 @@ class CohortAnalyticsQuery
       INNER JOIN (
         SELECT DISTINCT ON (patient_id) *
         FROM blood_pressures
-        WHERE device_created_at >= '#{quarter_start}'
-        AND device_created_at <= '#{quarter_end}'
+        WHERE device_created_at >= '#{report_start}'
+        AND device_created_at <= '#{report_end}'
         ORDER BY patient_id, device_created_at DESC
       ) as newest_bps
       ON newest_bps.patient_id = patients.id
