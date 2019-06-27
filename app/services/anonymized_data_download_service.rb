@@ -76,24 +76,13 @@ class AnonymizedDataDownloadService
   end
 
   def district_data_map(district_facilities)
-    patients = []
-    district_facilities.each { |fac| patients << patient_data(fac) }; patients.flatten!
-
-    blood_pressures = []
-    district_facilities.each { |fac| blood_pressures << bp_data(fac) }; blood_pressures.flatten!
-
-    prescriptions = []
-    district_facilities.each { |fac| prescriptions << prescription_data(fac) }; prescriptions.flatten!
-
-    appointments = []
-    district_facilities.each { |fac| appointments << appointment_data(fac) }; appointments.flatten!
-
+    appointments = district_facilities.map { |fac| appointment_data(fac) }.flatten
     users_phone_numbers = district_facilities.flat_map(&:users).compact.map(&:phone_number).uniq
 
     {
-      PATIENTS_FILE => patients,
-      BPS_FILE => blood_pressures,
-      MEDICINES_FILE => prescriptions,
+      PATIENTS_FILE => district_facilities.map { |fac| patient_data(fac) }.flatten,
+      BPS_FILE => district_facilities.map { |fac| bp_data(fac) }.flatten,
+      MEDICINES_FILE => district_facilities.map { |fac| prescription_data(fac) }.flatten,
       APPOINTMENTS_FILE => appointments,
       SMS_REMINDERS_FILE => communication_data(appointments),
       PHONE_CALLS_FILE => phone_call_data(users_phone_numbers),
