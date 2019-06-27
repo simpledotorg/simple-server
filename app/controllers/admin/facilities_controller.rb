@@ -2,12 +2,9 @@ class Admin::FacilitiesController < AdminController
   include FileUploadable
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
   before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy]
-  before_action :initialize_upload, :validate_file_type, :validate_file_size, :if => :file_exists?, only: [:upload]
-  before_action :parse_file, :validate_at_least_one_facility, :validate_duplicate_rows, :validate_facilities,
-                :if => :file_valid?, only: [:upload]
-
-
-  VALID_MIME_TYPES = %w[text/csv application/vnd.openxmlformats-officedocument.spreadsheetml.sheet].freeze
+  before_action :initialize_upload, :validate_file_type, :validate_file_size, :parse_file,
+                :validate_at_least_one_facility, :validate_duplicate_rows, :validate_facilities,
+                :if => :file_exists?, only: [:upload]
 
   def index
     authorize Facility
@@ -51,10 +48,9 @@ class Admin::FacilitiesController < AdminController
 
   def upload
     authorize Facility
-    if @errors.present?
-      render :upload, :status => :bad_request
-      return
-    elsif @facilities.present?
+    return render :upload, :status => :bad_request if @errors.present?
+
+    if @facilities.present?
       ImportFacilitiesJob.perform_later(@facilities)
       flash.now[:notice] = 'File upload successful, your facilities will be created shortly.'
     end
@@ -92,17 +88,8 @@ class Admin::FacilitiesController < AdminController
     @file = params.require(:upload_facilities_file)
   end
 
-  def validate_file_type
-    @errors << 'File type not supported, please upload a csv or xlsx file instead' if
-        VALID_MIME_TYPES.exclude?(@file.content_type)
-  end
-
-  def validate_file_size
-    @errors << 'File is too big, must be smaller than 5MB' if @file.size > 5.megabytes
-  end
-
   def parse_file
-    render :upload, :status => :bad_request if @errors.present?
+    return render :upload, :status => :bad_request if @errors.present?
 
     @file_contents = read_xlsx_or_csv_file(@file)
     @facilities = Facility.parse_facilities(@file_contents)

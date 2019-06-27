@@ -153,7 +153,11 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
       let(:upload_file) { fixture_file_upload('files/upload_facilities_test_2.csv', 'text/csv') }
       it 'uploads facilities file and fails validations' do
         post :upload, params: { :upload_facilities_file => upload_file }
-        expect(assigns(:errors)).to eq(["Uploaded file has duplicate facilities"])
+        expect(assigns(:errors)).to eq(["Uploaded file has duplicate facilities",
+                                        "Row 2: Facility group doesn't exist for the organization",
+                                        "Row 3: Organization doesn't exist",
+                                        "Row 4: Facility group doesn't exist for the organization",
+                                        "Row 5: District can't be blank and Facility group doesn't exist for the organization"])
       end
     end
     context 'with invalid organization and facility group' do
