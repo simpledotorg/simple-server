@@ -18,31 +18,29 @@ class AnonymizedDataDownloadService
 
     names_of_facilities = organization_district.facilities.flat_map(&:name).sort
 
-    AnonymizedDataDownloadMailer
-      .with(recipient_name: recipient_name,
-            recipient_email: recipient_email,
-            anonymized_data: anonymized_data,
-            resource: { district_name: district_name,
-                        facilities: names_of_facilities })
-      .mail_anonymized_data
-      .deliver_later
+    send_email(recipient_name, recipient_email, anonymized_data, { district_name: district_name,
+                                                                   facilities: names_of_facilities })
   end
 
   def run_for_facility(recipient_name, recipient_email, facility_id)
     facility = Facility.find(facility_id)
     anonymized_data = anonymize_facility(facility)
 
+    send_email(recipient_name, recipient_email, anonymized_data, { facility_name: facility.name,
+                                                                   facilities: [facility.name] })
+  end
+
+  private
+
+  def send_email(recipient_name, recipient_email, anonymized_data, resource)
     AnonymizedDataDownloadMailer
       .with(recipient_name: recipient_name,
             recipient_email: recipient_email,
             anonymized_data: anonymized_data,
-            resource: { facility_name: facility.name,
-                        facilities: [facility.name] })
+            resource: resource)
       .mail_anonymized_data
       .deliver_later
   end
-
-  private
 
   def anonymize_district(district)
     district_facilities = district.facilities
