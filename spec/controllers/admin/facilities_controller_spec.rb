@@ -144,11 +144,31 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
       end
     end
 
-    context 'with invalid organization and facility group' do
-      let(:upload_file) { fixture_file_upload('files/upload_facilities_test.csv', 'text/csv') }
+    context 'with duplicate rows' do
+      let(:organization) { FactoryBot.create(:organization, name: "OrgOne") }
+      let!(:facility_group_2) {
+        FactoryBot.create(:facility_group, name: "FGTwo",
+                          organization_id: organization.id)
+      }
+      let(:upload_file) { fixture_file_upload('files/upload_facilities_test_2.csv', 'text/csv') }
       it 'uploads facilities file and fails validations' do
         post :upload, params: { :upload_facilities_file => upload_file }
-        expect(flash[:alert]).to match(/Please fix the errors below and try again: */)
+        expect(assigns(:errors)).to eq(["Uploaded file has duplicate facilities"])
+      end
+    end
+    context 'with invalid organization and facility group' do
+      let(:organization) { FactoryBot.create(:organization, name: "OrgOne") }
+      let!(:facility_group_2) {
+        FactoryBot.create(:facility_group, name: "FGTwo",
+                          organization_id: organization.id)
+      }
+      let(:upload_file) { fixture_file_upload('files/upload_facilities_test_3.csv', 'text/csv') }
+      it 'uploads facilities file and fails validations' do
+        post :upload, params: { :upload_facilities_file => upload_file }
+        expect(assigns(:errors)).to eq(["Row 2: Facility group doesn't exist for the organization",
+                                        "Row 3: Organization doesn't exist",
+                                        "Row 4: District can't be blank and Facility group doesn't exist for the organization",
+                                        "Row 5: Organization name can't be blank"])
       end
     end
     context 'with unsupported file type' do
@@ -158,7 +178,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
       }
       it 'uploads facilities file and fails validations' do
         post :upload, params: { :upload_facilities_file => upload_file }
-        expect(flash[:alert]).to match(/.*File type not supported, please upload a csv or xlsx file instead*/)
+        expect(assigns(:errors)).to eq(["File type not supported, please upload a csv or xlsx file instead"])
       end
     end
   end
