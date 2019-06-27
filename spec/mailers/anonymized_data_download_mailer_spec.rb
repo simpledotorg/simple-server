@@ -76,9 +76,19 @@ RSpec.describe AnonymizedDataDownloadMailer, type: :mailer do
       end
 
       it 'should have all the attachments files' do
-        attachment_file_names.each do |file|
-          sent_email.attachments.include?(file)
+        received_attachment_data_file_names = sent_email.attachments.map(&:filename)
+
+        received_attachment_data_file_names.each do |file_name|
+          attachment_data_file_names.include?(file_name)
         end
+      end
+    end
+
+    it 'should have the correct data in the attachment files' do
+      received_attachment_data = sent_email.attachments
+
+      received_attachment_data.each do |attachment|
+        expect(attachment.body.decoded).to eq attachment_data[attachment.filename].flatten.join
       end
     end
   end
