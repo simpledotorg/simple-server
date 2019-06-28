@@ -679,6 +679,7 @@ td.featured-middle {
 
 .table-compact .row-title {
     font-family: $font-condensed;
+    border-right: 1px solid $grey-lightest;
 }
 
 .table-compact .row-title a {
@@ -764,6 +765,7 @@ td.featured-middle {
 .table-compact .row-unique-date,
 .table-compact .row-calls {
     text-align: center;
+    border-right: 1px solid $grey-lightest;
 }
 
 .table-compact .row-total {
