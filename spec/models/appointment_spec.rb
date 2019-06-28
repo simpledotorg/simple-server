@@ -209,7 +209,7 @@ describe Appointment, type: :model do
             id: hash_uuid(appointment.id),
             patient_id: hash_uuid(appointment.patient_id),
             created_at: appointment.created_at,
-            facility_name: appointment.facility.name,
+            registration_facility_name: appointment.facility.name,
             user_id: hash_uuid(appointment.patient.registration_user.id),
             scheduled_date: appointment.scheduled_date,
             overdue: appointment.days_overdue > 0 ? 'Yes' : 'No',

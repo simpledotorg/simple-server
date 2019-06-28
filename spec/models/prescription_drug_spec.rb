@@ -25,7 +25,7 @@ RSpec.describe PrescriptionDrug, type: :model do
             id: hash_uuid(prescription_drug.id),
             patient_id: hash_uuid(prescription_drug.patient_id),
             created_at: prescription_drug.created_at,
-            facility_name: prescription_drug.facility.name,
+            registration_facility_name: prescription_drug.facility.name,
             user_id: hash_uuid(prescription_drug.patient.registration_user.id),
             medicine_name: prescription_drug.name,
             dosage: prescription_drug.dosage,

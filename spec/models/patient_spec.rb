@@ -184,7 +184,7 @@ describe Patient, type: :model do
           { id: hash_uuid(patient.id),
             created_at: patient.created_at,
             registration_date: patient.recorded_at,
-            facility_name: patient.registration_facility.name,
+            registration_facility_name: patient.registration_facility.name,
             user_id: hash_uuid(patient.registration_user.id),
             age: patient.age,
             gender: patient.gender

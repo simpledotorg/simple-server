@@ -110,7 +110,7 @@ RSpec.describe BloodPressure, type: :model do
             patient_id: hash_uuid(blood_pressure.patient_id),
             created_at: blood_pressure.created_at,
             bp_date: blood_pressure.recorded_at,
-            facility_name: blood_pressure.facility.name,
+            registration_facility_name: blood_pressure.facility.name,
             user_id: hash_uuid(blood_pressure.user.id),
             bp_systolic: blood_pressure.systolic,
             bp_diastolic: blood_pressure.diastolic
