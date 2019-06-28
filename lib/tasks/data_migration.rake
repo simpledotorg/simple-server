@@ -118,11 +118,11 @@ blood_pressures.recorded_at AS oldest_bp_recorded_at))
 
   desc "Create master users for users"
   task create_master_users_for_users: :environment do
-    User.where.not(sync_approval_status: nil).all.each do |user|
-      next if MasterUser.find_by(id: user.id).present?
+    OldUser.where.not(sync_approval_status: nil).all.each do |user|
+      next if User.find_by(id: user.id).present?
       user.transaction do
         user_attributes = user.attributes.with_indifferent_access
-        master_user = MasterUser.create(user_attributes.slice(
+        master_user = User.create(user_attributes.slice(
           :id,
           :full_name,
           :sync_approval_status,
@@ -164,11 +164,11 @@ blood_pressures.recorded_at AS oldest_bp_recorded_at))
 
       master_user_full_name = admin.email.split('@').first
 
-      next if MasterUser.find_by(id: master_user_id).present?
+      next if User.find_by(id: master_user_id).present?
       admin.transaction do
         admin_attributes = admin.attributes.with_indifferent_access
 
-        master_user = MasterUser.create(
+        master_user = User.create(
           id: master_user_id,
           full_name: master_user_full_name,
           sync_approval_status: 'denied',

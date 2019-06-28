@@ -38,7 +38,7 @@
 <% unless @user.sync_approval_status == 'allowed' %>
   <span class="light divider">|</span> <%= link_to 'Allow access', admin_user_enable_access_path(@user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
 <% end %>
-<% if policy(@user.audit_logs).edit? %>
+<% if policy(@user.audit_logs).index? %>
   <span class="light divider">|</span> <%= link_to 'Audit logs', admin_audit_logs_url(user_name: @user.full_name) %>
 <% end %>
 
