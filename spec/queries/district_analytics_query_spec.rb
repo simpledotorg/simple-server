@@ -35,22 +35,6 @@ RSpec.describe DistrictAnalyticsQuery do
       end
     end
 
-    describe '#follow_up_patients_by_month' do
-      it 'groups the follow up patients by facility and beginning of month' do
-        expected_result =
-          { facility.id =>
-              { :follow_up_patients_by_month =>
-                  { first_feb => 3,
-                    first_mar => 6,
-                    first_apr => 3
-                  }
-              }
-          }
-
-        expect(analytics.follow_up_patients_by_month).to eq(expected_result)
-      end
-    end
-
     describe '#registered_patients_by_month' do
       it 'groups the registered patients by facility and beginning of month' do
         expected_result =
@@ -79,10 +63,26 @@ RSpec.describe DistrictAnalyticsQuery do
         expect(analytics.total_registered_patients).to eq(expected_result)
       end
     end
+
+    describe '#follow_up_patients_by_month' do
+      it 'groups the follow up patients by facility and beginning of month' do
+        expected_result =
+          { facility.id =>
+              { :follow_up_patients_by_month =>
+                  { first_feb => 3,
+                    first_mar => 6,
+                    first_apr => 3
+                  }
+              }
+          }
+
+        expect(analytics.follow_up_patients_by_month).to eq(expected_result)
+      end
+    end
   end
 
   context 'when there is no data available' do
-    it 'returns nil if there are no analytics' do
+    it 'returns nil for all analytics queries' do
       expect(analytics.registered_patients_by_month).to eq(nil)
       expect(analytics.total_registered_patients).to eq(nil)
       expect(analytics.follow_up_patients_by_month).to eq(nil)

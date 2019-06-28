@@ -24,6 +24,7 @@ class FacilityAnalyticsQuery
     group_by_user_and_date(@registered_patients_by_month, :registered_patients_by_month)
   end
 
+  # NOTE: temporary usage of master_users (instead of users table) until users migration is finished
   def follow_up_patients_by_month
     date_truncate_string = date_truncate_sql('blood_pressures', 'device_created_at', period: 'month')
 
