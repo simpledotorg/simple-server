@@ -23,7 +23,7 @@ class Api::Current::FacilitiesController < Api::Current::SyncController
   end
 
   def records_to_sync
-    Facility.updated_on_server_since(other_facilities_processed_since, limit)
+    Facility.updated_on_server_since(other_facilities_processed_since, limit).includes(:facility_group)
       .where.not(facility_group: nil)
   end
 end
