@@ -8,7 +8,7 @@ class FacilityPolicy < ApplicationPolicy
   end
 
   def share_anonymized_data?
-    user.owner? || admin_can_access?(:organization_owner) || admin_can_access?(:supervisor)
+    user.owner?
   end
 
   def create?
