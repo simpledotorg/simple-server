@@ -1,20 +1,45 @@
 FactoryBot.define do
   factory :user do
-    full_name { Faker::Name.name }
-    phone_number { Faker::PhoneNumber.phone_number }
-    password { rand(1000..9999).to_s }
-    password_confirmation { password }
-    device_updated_at { Time.now }
-    device_created_at { Time.now }
-    sync_approval_status { User.sync_approval_statuses[:allowed] }
-    sync_approval_status_reason nil
-    facility
+    transient do
+      password { '1234' }
+      registration_facility { create(:facility) }
+      facility { registration_facility }
+      registration_facility_id { registration_facility.id }
+      phone_number { Faker::PhoneNumber.phone_number }
+    end
 
-    trait :created_on_device do
-      id { SecureRandom.uuid }
-      password_digest { BCrypt::Password.create(password) }
-      password nil
-      password_confirmation nil
+    full_name { Faker::Name.name }
+
+    device_created_at { Time.now }
+    device_updated_at { Time.now }
+
+    sync_approval_status { User.sync_approval_statuses[:requested] }
+
+    after :create do |user, options|
+      user.sync_approval_status = User.sync_approval_statuses[:allowed]
+      user.sync_approval_status_reason = 'User is allowed'
+
+      phone_number_authentication = create(
+        :phone_number_authentication,
+        phone_number: options.phone_number,
+        password: options.password,
+        facility: options.registration_facility || options.facility,
+      )
+      user.user_authentications = [
+        UserAuthentication.new(authenticatable: phone_number_authentication)
+      ]
+
+      user.save
+    end
+
+    trait :with_phone_number_authentication
+
+    trait :with_sanitized_phone_number do
+      phone_number { rand(1e9...1e10).to_i.to_s }
+    end
+
+    trait :sync_requested do
+      sync_approval_status { User.sync_approval_statuses[:requested] }
     end
 
     trait :sync_allowed do
@@ -25,33 +50,19 @@ FactoryBot.define do
       sync_approval_status { User.sync_approval_statuses[:denied] }
     end
 
-    trait :sync_requested do
-      sync_approval_status { User.sync_approval_statuses[:requested] }
-    end
+    trait :created_on_device
 
-    trait(:with_sanitized_phone_number) do
-      phone_number { rand(1e9...1e10).to_i.to_s }
-    end
-
-    factory :user_created_on_device, traits: [:created_on_device]
+    factory :user_created_on_device, traits: [:with_phone_number_authentication]
   end
 end
 
-def build_user_payload(user = FactoryBot.build(:user_created_on_device))
-  user.attributes.with_payload_keys
-end
-
-def build_invalid_user_payload
-  build_user_payload.merge(
-    'created_at' => nil,
-    'full_name' => nil
-  )
-end
-
-def updated_user_payload(existing_user)
-  update_time = 10.days.from_now
-  build_user_payload(existing_user).merge(
-    'updated_at' => update_time,
-    'full_name' => Faker::Name.name
-  )
+def register_user_request_params(arguments = {})
+  { id: SecureRandom.uuid,
+    full_name: Faker::Name.name,
+    phone_number: Faker::PhoneNumber.phone_number,
+    password_digest: BCrypt::Password.create("1234"),
+    registration_facility_id: SecureRandom.uuid,
+    created_at: Time.now.iso8601,
+    updated_at: Time.now.iso8601
+  }.merge(arguments)
 end

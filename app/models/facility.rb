@@ -11,7 +11,9 @@ class Facility < ApplicationRecord
 
   belongs_to :facility_group, optional: true
 
-  has_many :users, foreign_key: 'registration_facility_id'
+  has_many :phone_number_authentications, foreign_key: 'registration_facility_id'
+  has_many :users, through: :phone_number_authentications
+
   has_many :blood_pressures
   has_many :patients, -> { distinct }, through: :blood_pressures
   has_many :prescription_drugs

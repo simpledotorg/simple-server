@@ -22,7 +22,7 @@
                 </div>
                 <div class="col tight">
                   <small>
-                    Facility: <%= user.registered_at_facility.present? ? link_to(user.registered_at_facility.name, admin_facilities_path(user.registered_at_facility)) : "N/A" %>
+                    Facility: <%= user.registration_facility.present? ? link_to(user.registration_facility.name, admin_facilities_path(user.registration_facility)) : "N/A" %>
                   </small>
                 </div>
               </div>
@@ -39,4 +39,3 @@
     <% end %>
   <% end %>
 <% end %>
-
