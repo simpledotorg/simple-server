@@ -23,11 +23,16 @@ class AnonymizedData::DistrictData
   end
 
   def communication_data(appointments)
-    appointments.flat_map(&:communications).select { |comm| comm.device_created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE }
+    appointments.flat_map(&:communications).select do |comm|
+      comm.device_created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE
+    end
   end
 
   def phone_call_data(users_phone_numbers)
-    CallLog.all.select { |call| users_phone_numbers.include?(call.caller_phone_number && call.created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE) }
+    CallLog.all.select do |call|
+      users_phone_numbers.include?(call.caller_phone_number &&
+                                     call.created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE)
+    end
   end
 
   def users_phone_numbers

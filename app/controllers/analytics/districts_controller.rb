@@ -24,8 +24,11 @@ class Analytics::DistrictsController < AnalyticsController
     from_time = @from_time.strftime('%Y-%m-%d')
     to_time = @to_time.strftime('%Y-%m-%d')
 
-    redirect_to analytics_organization_district_path(id: @organization_district.district_name, from_time: from_time, to_time: to_time),
-                notice: I18n.t('anonymized_data_download_email.district_notice', district_name: @organization_district.district_name)
+    redirect_to analytics_organization_district_path(id: @organization_district.district_name,
+                                                     from_time: from_time,
+                                                     to_time: to_time),
+                notice: I18n.t('anonymized_data_download_email.district_notice',
+                               district_name: @organization_district.district_name)
   end
 
   private

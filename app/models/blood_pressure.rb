@@ -2,7 +2,8 @@ class BloodPressure < ApplicationRecord
   include Mergeable
   include Hashable
 
-  ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at bp_date registration_facility_name user_id bp_systolic bp_diastolic]
+  ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at bp_date registration_facility_name user_id
+                              bp_systolic bp_diastolic]
 
   belongs_to :facility, optional: true
   belongs_to :patient, optional: true

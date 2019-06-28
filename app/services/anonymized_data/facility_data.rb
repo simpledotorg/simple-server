@@ -24,27 +24,40 @@ class AnonymizedData::FacilityData
   end
 
   def patient_data
-    facility.patients.select { |p| p.device_created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE }
+    facility.patients.select do |p|
+      p.device_created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE
+    end
   end
 
   def bp_data
-    facility.blood_pressures.select { |bp| bp.device_created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE }
+    facility.blood_pressures.select do |bp|
+      bp.device_created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE
+    end
   end
 
   def prescription_data
-    facility.prescription_drugs.select { |pd| pd.device_created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE }
+    facility.prescription_drugs.select do |pd|
+      pd.device_created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE
+    end
   end
 
   def appointment_data
-    facility.appointments.select { |app| app.device_created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE }
+    facility.appointments.select do |app|
+      app.device_created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE
+    end
   end
 
   def communication_data(appointments)
-    appointments.flat_map(&:communications).select { |comm| comm.device_created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE }
+    appointments.flat_map(&:communications).select do |comm|
+      comm.device_created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE
+    end
   end
 
   def phone_call_data(users_phone_numbers)
-    CallLog.all.select { |call| users_phone_numbers.include?(call.caller_phone_number && call.created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE) }
+    CallLog.all.select do |call|
+      users_phone_numbers.include?(call.caller_phone_number &&
+                                     call.created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE)
+    end
   end
 
   def users_phone_numbers

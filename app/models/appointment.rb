@@ -9,7 +9,8 @@ class Appointment < ApplicationRecord
 
   has_many :communications
 
-  ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at registration_facility_name user_id scheduled_date overdue status agreed_to_visit remind_on]
+  ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at registration_facility_name user_id scheduled_date
+                              overdue status agreed_to_visit remind_on]
 
   enum status: {
     scheduled: 'scheduled',

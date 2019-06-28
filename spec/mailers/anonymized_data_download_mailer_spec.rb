@@ -5,7 +5,8 @@ RSpec.describe AnonymizedDataDownloadMailer, type: :mailer do
   let (:sender_email) { 'help@simple.org' }
   let (:recipient_name) { 'Example User' }
   let (:recipient_email) { 'user@example.com' }
-  let (:attachment_file_names) { %w[patients.csv blood_pressures.csv medicines.csv appointments.csv sms_reminders.csv phone_calls.csv] }
+  let (:attachment_file_names) { %w[patients.csv blood_pressures.csv medicines.csv appointments.csv
+                                    sms_reminders.csv phone_calls.csv] }
   let (:empty_attachment_data) { Hash.new }
   let (:attachment_data) { JSON.parse(File.read('spec/support/fixtures/anonymised_attachment_data.json')) }
   let(:sent_email) { ActionMailer::Base.deliveries.last }

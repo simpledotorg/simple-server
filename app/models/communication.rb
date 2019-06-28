@@ -23,7 +23,8 @@ class Communication < ApplicationRecord
     unknown: 'unknown'
   }
 
-  ANONYMIZED_DATA_FIELDS = %w[id appointment_id patient_id user_id created_at communication_type communication_result]
+  ANONYMIZED_DATA_FIELDS = %w[id appointment_id patient_id user_id created_at communication_type
+                              communication_result]
 
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
