@@ -31,6 +31,10 @@ class FacilityPolicy < ApplicationPolicy
     show?
   end
 
+  def upload?
+    user.owner?
+  end
+
   private
 
   def destroyable?
