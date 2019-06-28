@@ -42,28 +42,32 @@ class Facility < ApplicationRecord
 
   def dashboard_analytics
     query = FacilityAnalyticsQuery.new(self)
+    results = [
+      query.registered_patients_by_month,
+      query.total_registered_patients,
+      query.follow_up_patients_by_month
+    ].compact
 
-    [query.follow_up_patients_by_month,
-     query.registered_patients_by_month,
-     query.total_registered_patients].compact.inject(&:deep_merge)
+    return {} if results.blank?
+    results.inject(&:deep_merge)
   end
 
   def self.parse_facilities(file_contents)
     facilities = []
     CSV.parse(file_contents, headers: true, converters: :strip_whitespace) do |row|
-      facility = {organization_name: row['organization'],
-                  facility_group_name: row['facility_group'],
-                  name: row['facility_name'],
-                  facility_type: row['facility_type'],
-                  street_address: row['street_address (optional)'],
-                  village_or_colony: row['village_or_colony (optional)'],
-                  district: row['district'],
-                  state: row['state'],
-                  country: row['country'],
-                  pin: row['pin (optional)'],
-                  latitude: row['latitude (optional)'],
-                  longitude: row['longitude (optional)'],
-                  import: true}
+      facility = { organization_name: row['organization'],
+                   facility_group_name: row['facility_group'],
+                   name: row['facility_name'],
+                   facility_type: row['facility_type'],
+                   street_address: row['street_address (optional)'],
+                   village_or_colony: row['village_or_colony (optional)'],
+                   district: row['district'],
+                   state: row['state'],
+                   country: row['country'],
+                   pin: row['pin (optional)'],
+                   latitude: row['latitude (optional)'],
+                   longitude: row['longitude (optional)'],
+                   import: true }
       next if facility.except(:import).values.all?(&:blank?)
 
       facilities << facility

@@ -39,14 +39,14 @@
 
         <!--Follow-up patients-->
         <% repeat_for_last(months: 3) do |month| %>
-          <td class="row-enrolled text-green row-total">
+          <td class="row-enrolled row-total">
             <%= analytics_month_totals(analytics, :follow_up_patients_by_month, month) %>
           </td>
         <% end %>
 
         <!--New registrations-->
         <% repeat_for_last(months: 3) do |month| %>
-          <td class="row-enrolled text-green row-total">
+          <td class="row-enrolled row-total">
             <%= analytics_month_totals(analytics, :registered_patients_by_month, month) %>
           </td>
         <% end %>
@@ -69,14 +69,14 @@
 
             <!--Follow-up patients-->
             <% repeat_for_last(months: 3) do |month| %>
-              <td class="row-enrolled text-green">
+              <td class="row-enrolled">
                 <%= dash_if_zero(analytics.dig(resource.id, :follow_up_patients_by_month, month)) %>
               </td>
             <% end %>
 
             <!--New registrations-->
             <% repeat_for_last(months: 3) do |month| %>
-              <td class="row-enrolled text-green">
+              <td class="row-enrolled">
                 <%= dash_if_zero(analytics.dig(resource.id, :registered_patients_by_month, month)) %>
               </td>
             <% end %>
