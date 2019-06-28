@@ -41,9 +41,9 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
       get :show, params: { id: facility.id }
 
       expect(response.status).to eq(200)
-      expect(assigns(:analytics)[user.id].keys).to eq([:follow_up_patients_by_month,
-                                                       :registered_patients_by_month,
-                                                       :total_registered_patients])
+      expect(assigns(:analytics)[user.id].keys).to match_array([:follow_up_patients_by_month,
+                                                                :registered_patients_by_month,
+                                                                :total_registered_patients])
     end
 
     it 'renders the analytics table view' do
