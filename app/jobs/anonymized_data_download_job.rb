@@ -13,8 +13,8 @@ class AnonymizedDataDownloadJob < ApplicationJob
       AnonymizedData::DownloadService.new.run_for_facility(recipient_name,
                                                            recipient_email,
                                                            model_params_map[:facility_id])
-    else
-      raise StandardError("Error while downloading anonymized data: unknown model type #{model_type}")
     end
   end
 end
+
+
