@@ -6,7 +6,7 @@ class AnonymizedData::DownloadService
     names_of_facilities = organization_district.facilities.flat_map(&:name).sort
 
     send_email(recipient_name, recipient_email,
-               anonymize(AnonymizedData::DistrictData.new(organization_district).raw_data),
+               anonymize(AnonymizedData::DistrictData.new(organization_district).fetch),
                { district_name: district_name, facilities: names_of_facilities })
   end
 
@@ -14,7 +14,7 @@ class AnonymizedData::DownloadService
     facility = Facility.find(facility_id)
 
     send_email(recipient_name, recipient_email,
-               anonymize(AnonymizedData::FacilityData.new(facility).raw_data),
+               anonymize(AnonymizedData::FacilityData.new(facility).fetch),
                { facility_name: facility.name, facilities: [facility.name] })
   end
 

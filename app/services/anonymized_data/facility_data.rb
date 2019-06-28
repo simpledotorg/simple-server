@@ -6,7 +6,7 @@ class AnonymizedData::FacilityData
     @appointments = appointment_data
   end
 
-  def raw_data
+  def fetch
     {
       AnonymizedData::Constants::PATIENTS_FILE =>
         patient_data,

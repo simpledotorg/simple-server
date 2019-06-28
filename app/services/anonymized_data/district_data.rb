@@ -5,7 +5,7 @@ class AnonymizedData::DistrictData
     @facilities = district.facilities
   end
 
-  def raw_data
+  def fetch
     {
       AnonymizedData::Constants::PATIENTS_FILE =>
         facilities.map { |f| AnonymizedData::FacilityData.new(f).patient_data }.flatten,
