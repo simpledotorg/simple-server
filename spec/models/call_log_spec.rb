@@ -13,8 +13,7 @@ RSpec.describe CallLog, type: :model do
         call_log = create(:call_log)
 
         anonymised_data =
-          {
-            id: hash_uuid(call_log.id),
+          { id: hash_uuid(call_log.id),
             created_at: call_log.created_at,
             result: call_log.result,
             duration: call_log.duration,

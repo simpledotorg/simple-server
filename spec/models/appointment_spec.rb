@@ -205,8 +205,7 @@ describe Appointment, type: :model do
     describe 'anonymized_data' do
       it 'correctly retrieves the anonymised data for an appointment' do
         anonymised_data =
-          {
-            id: hash_uuid(appointment.id),
+          { id: hash_uuid(appointment.id),
             patient_id: hash_uuid(appointment.patient_id),
             created_at: appointment.created_at,
             registration_facility_name: appointment.facility.name,

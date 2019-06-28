@@ -21,8 +21,7 @@ RSpec.describe PrescriptionDrug, type: :model do
         prescription_drug = create(:prescription_drug)
 
         anonymised_data =
-          {
-            id: hash_uuid(prescription_drug.id),
+          { id: hash_uuid(prescription_drug.id),
             patient_id: hash_uuid(prescription_drug.patient_id),
             created_at: prescription_drug.created_at,
             registration_facility_name: prescription_drug.facility.name,

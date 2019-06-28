@@ -105,8 +105,7 @@ RSpec.describe BloodPressure, type: :model do
         blood_pressure = create(:blood_pressure)
 
         anonymised_data =
-          {
-            id: hash_uuid(blood_pressure.id),
+          { id: hash_uuid(blood_pressure.id),
             patient_id: hash_uuid(blood_pressure.patient_id),
             created_at: blood_pressure.created_at,
             bp_date: blood_pressure.recorded_at,
