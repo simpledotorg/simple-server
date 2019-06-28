@@ -46,8 +46,7 @@ class BloodPressure < ApplicationRecord
   end
 
   def anonymized_data
-    {
-      id: hash_uuid(id),
+    { id: hash_uuid(id),
       patient_id: hash_uuid(patient_id),
       created_at: created_at,
       bp_date: recorded_at,

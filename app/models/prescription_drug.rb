@@ -13,8 +13,7 @@ class PrescriptionDrug < ApplicationRecord
   validates :is_deleted, inclusion: { in: [true, false] }
 
   def anonymized_data
-    {
-      id: hash_uuid(id),
+    { id: hash_uuid(id),
       patient_id: hash_uuid(patient_id),
       created_at: created_at,
       registration_facility_name: facility.name,

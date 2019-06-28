@@ -19,8 +19,7 @@ class CallLog < ApplicationRecord
   }, _prefix: true
 
   def anonymized_data
-    {
-      id: hash_uuid(id),
+    { id: hash_uuid(id),
       created_at: created_at,
       result: result,
       duration: duration,
