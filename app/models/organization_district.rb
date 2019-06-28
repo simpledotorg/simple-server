@@ -3,6 +3,10 @@ class OrganizationDistrict < Struct.new(:district_name, :organization)
     district_name.split(" ").select(&:present?).join("-").downcase
   end
 
+  def facilities
+    organization.facilities.where(district: district_name)
+  end
+
   def dashboard_analytics
     query = DistrictAnalyticsQuery.new(district_name)
     results = [

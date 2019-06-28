@@ -56,6 +56,13 @@ en:
     registration_facility: "Registration Facility"
     subject: 'PIN Reset: User %{full_name} is requesting access.'
     allow_or_deny_access: "Allow or deny access"
+  anonymized_data_download_email:
+    accessible_facilities: 'Attached documents contain anonymized data from the following facility/facilities'
+    organization: 'Organization'
+    district_subject: 'Anonymized Data dump for District %{district_name}, requested by User %{recipient_name}'
+    facility_subject: 'Anonymized Data dump for Facility %{facility_name}, requested by User %{recipient_name}'
+    district_notice: 'You will be e-mailed a copy of the anonymized data for district "%{district_name}" soon.'
+    facility_notice: 'You will be e-mailed a copy of the anonymized data for facility "%{facility_name}" soon.'
 
   admin:
     reset_otp_alert: 'Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP'
@@ -65,6 +72,7 @@ en:
     denied_access_to_user: '%{admin_name} denied access'
     dashboard_title: "Simple Server"
     phi_download_alert: "You are about to download confidental patient data. Are you sure you want to proceed?"
+    phi_anonymized_download_alert: "You are about to download confidential (anonymized) patient data. Are you sure you want to proceed?"
 
   api:
     documentation:

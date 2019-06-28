@@ -6,4 +6,8 @@ class OrganizationDistrictPolicy < ApplicationPolicy
   def show?
     [:owner, :organization_owner, :supervisor, :analyst].include?(user.role.to_sym)
   end
+
+  def share_anonymized_data?
+    user.owner?
+  end
 end

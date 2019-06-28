@@ -1,5 +1,6 @@
 class Communication < ApplicationRecord
   include Mergeable
+  include Hashable
 
   belongs_to :appointment
   belongs_to :user
@@ -21,6 +22,9 @@ class Communication < ApplicationRecord
     in_progress: 'in_progress',
     unknown: 'unknown'
   }
+
+  ANONYMIZED_DATA_FIELDS = %w[id appointment_id patient_id user_id created_at communication_type
+                              communication_result]
 
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
@@ -46,14 +50,29 @@ class Communication < ApplicationRecord
 
   def communication_result
     case
-    when successful?   then COMMUNICATION_RESULTS[:successful]
-    when unsuccessful? then COMMUNICATION_RESULTS[:unsuccessful]
-    when in_progress?  then COMMUNICATION_RESULTS[:in_progress]
-    else                    COMMUNICATION_RESULTS[:unknown]
+    when successful? then
+      COMMUNICATION_RESULTS[:successful]
+    when unsuccessful? then
+      COMMUNICATION_RESULTS[:unsuccessful]
+    when in_progress? then
+      COMMUNICATION_RESULTS[:in_progress]
+    else
+      COMMUNICATION_RESULTS[:unknown]
     end
   end
 
   def attempted?
     successful? || in_progress?
+  end
+
+  def anonymized_data
+    { id: hash_uuid(id),
+      appointment_id: hash_uuid(appointment_id),
+      patient_id: hash_uuid(appointment.patient_id),
+      user_id: hash_uuid(user_id),
+      created_at: created_at,
+      communication_type: communication_type,
+      communication_result: communication_result,
+    }
   end
 end

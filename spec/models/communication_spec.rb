@@ -1,4 +1,5 @@
 require 'rails_helper'
+include Hashable
 
 describe Communication, type: :model do
   context 'Associations' do
@@ -73,6 +74,28 @@ describe Communication, type: :model do
 
       expect(communication_1.communication_result).to eq('in_progress')
       expect(communication_2.communication_result).to eq('in_progress')
+    end
+  end
+
+  context 'anonymised data for communications' do
+    describe 'anonymized_data' do
+      it 'correctly retrieves the anonymised data for the communication' do
+        communication = create(:communication,
+                               :missed_visit_sms_reminder,
+                               detailable: create(:twilio_sms_delivery_detail, :sent))
+
+        anonymised_data =
+          { id: hash_uuid(communication.id),
+            appointment_id: hash_uuid(communication.appointment_id),
+            patient_id: hash_uuid(communication.appointment.patient_id),
+            user_id: hash_uuid(communication.user_id),
+            created_at: communication.created_at,
+            communication_type: communication.communication_type,
+            communication_result: communication.communication_result,
+          }
+
+        expect(communication.anonymized_data).to eq anonymised_data
+      end
     end
   end
 end

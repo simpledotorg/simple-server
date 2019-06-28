@@ -1,5 +1,6 @@
 class Patient < ApplicationRecord
   include Mergeable
+  include Hashable
 
   GENDERS = %w[male female transgender].freeze
   STATUSES = %w[active dead migrated unresponsive inactive].freeze
@@ -11,6 +12,8 @@ class Patient < ApplicationRecord
     LOW: 4,
     NONE: 5
   }.freeze
+
+  ANONYMIZED_DATA_FIELDS = %w[id created_at registration_date registration_facility_name user_id age gender]
 
   belongs_to :address, optional: true
   has_many :phone_numbers, class_name: 'PatientPhoneNumber'
@@ -89,10 +92,14 @@ class Patient < ApplicationRecord
 
   def risk_priority_label
     case risk_priority
-    when RISK_PRIORITIES[:HIGHEST] then "Critical"
-    when RISK_PRIORITIES[:VERY_HIGH] then "Very high"
-    when RISK_PRIORITIES[:HIGH] then "High"
-    else nil
+    when RISK_PRIORITIES[:HIGHEST] then
+      "Critical"
+    when RISK_PRIORITIES[:VERY_HIGH] then
+      "Very high"
+    when RISK_PRIORITIES[:HIGH] then
+      "High"
+    else
+      nil
     end
   end
 
@@ -132,6 +139,17 @@ class Patient < ApplicationRecord
     where(contacted_by_counsellor: false)
       .where(could_not_contact_reason: nil)
       .where('device_created_at <= ?', 2.days.ago)
+  end
+
+  def anonymized_data
+    { id: hash_uuid(id),
+      created_at: created_at,
+      registration_date: recorded_at,
+      registration_facility_name: registration_facility&.name,
+      user_id: hash_uuid(registration_user&.id),
+      age: age,
+      gender: gender
+    }
   end
 
   private

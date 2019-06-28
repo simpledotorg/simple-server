@@ -1,4 +1,5 @@
 require 'rails_helper'
+include Hashable
 
 describe Appointment, type: :model do
   subject(:appointment) { create(:appointment) }
@@ -197,6 +198,27 @@ describe Appointment, type: :model do
              detailable: create(:twilio_sms_delivery_detail, :delivered))
 
       expect(overdue_appointment.previously_communicated_via?(:missed_visit_sms_reminder)).to eq(true)
+    end
+  end
+
+  context 'anonymised data for appointments' do
+    describe 'anonymized_data' do
+      it 'correctly retrieves the anonymised data for an appointment' do
+        anonymised_data =
+          { id: hash_uuid(appointment.id),
+            patient_id: hash_uuid(appointment.patient_id),
+            created_at: appointment.created_at,
+            registration_facility_name: appointment.facility.name,
+            user_id: hash_uuid(appointment.patient.registration_user.id),
+            scheduled_date: appointment.scheduled_date,
+            overdue: appointment.days_overdue > 0 ? 'Yes' : 'No',
+            status: appointment.status,
+            agreed_to_visit: appointment.agreed_to_visit,
+            remind_on: appointment.remind_on
+          }
+
+        expect(appointment.anonymized_data).to eq anonymised_data
+      end
     end
   end
 end

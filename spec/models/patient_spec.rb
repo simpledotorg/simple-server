@@ -1,4 +1,5 @@
 require 'rails_helper'
+include Hashable
 
 describe Patient, type: :model do
   subject(:patient) { build(:patient) }
@@ -172,6 +173,24 @@ describe Patient, type: :model do
         patient.call_result = 'dead'
 
         expect(patient.status).to eq('dead')
+      end
+    end
+  end
+
+  context 'anonymised data for patients' do
+    describe 'anonymized_data' do
+      it 'correctly retrieves the anonymised data for the patient' do
+        anonymised_data =
+          { id: hash_uuid(patient.id),
+            created_at: patient.created_at,
+            registration_date: patient.recorded_at,
+            registration_facility_name: patient.registration_facility.name,
+            user_id: hash_uuid(patient.registration_user.id),
+            age: patient.age,
+            gender: patient.gender
+          }
+
+        expect(patient.anonymized_data).to eq anonymised_data
       end
     end
   end
