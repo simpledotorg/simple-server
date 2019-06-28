@@ -1,5 +1,11 @@
 class User < ApplicationRecord
-  include Mergeable
+
+  self.table_name = 'master_users'
+
+  AUTHENTICATION_TYPES = {
+    email_authentication: 'EmailAuthentication',
+    phone_number_authentication: 'PhoneNumberAuthentication'
+  }
 
   enum sync_approval_status: {
     requested: 'requested',
@@ -7,40 +13,77 @@ class User < ApplicationRecord
     denied: 'denied'
   }, _prefix: true
 
-  has_secure_password
-
-  belongs_to :facility, foreign_key: 'registration_facility_id'
+  has_many :user_authentications
   has_many :blood_pressures
   has_many :patients, -> { distinct }, through: :blood_pressures
-  has_many :audit_logs, as: :auditable
+  has_many :phone_number_authentications, through: :user_authentications, source: :authenticatable, source_type: 'PhoneNumberAuthentication'
 
-  has_many :registered_patients, class_name: "Patient", foreign_key: "registration_user_id"
-
-  before_create :set_otp
-  before_create :set_access_token
+  has_many :registered_patients, class_name: "Patient", foreign_key: 'registration_user_id'
 
   validates :full_name, presence: true
-  validates :phone_number, presence: true, uniqueness: true, case_sensitive: false
-  validates :password, allow_blank: true, length: { is: 4 }, format: { with: /[0-9]/, message: 'only allows numbers' }
-  validate :presence_of_password
 
-  delegate :facility_group, to: :facility
-  delegate :organization, to: :facility_group
+  validates :device_created_at, presence: true
+  validates :device_updated_at, presence: true
 
-  def presence_of_password
-    unless password_digest.present? || password.present?
-      errors.add(:password, 'Either password_digest or password should be present')
+  delegate :registration_facility,
+           :access_token,
+           :logged_in_at,
+           :has_never_logged_in?,
+           :mark_as_logged_in,
+           :phone_number,
+           :otp,
+           :otp_valid?,
+           :facility_group,
+           :organization,
+           :password_digest, to: :phone_number_authentication, allow_nil: true
+
+  def phone_number_authentication
+    phone_number_authentications.first
+  end
+
+  def registration_facility_id
+    registration_facility.id
+  end
+
+  alias_method :facility, :registration_facility
+
+  def access_token_valid?
+    self.sync_approval_status_allowed?
+  end
+
+  def self.build_with_phone_number_authentication(params)
+    phone_number_authentication = PhoneNumberAuthentication.new(
+      phone_number: params[:phone_number],
+      password_digest: params[:password_digest],
+      registration_facility_id: params[:registration_facility_id]
+    )
+    phone_number_authentication.set_otp
+    phone_number_authentication.set_access_token
+
+    user = new(
+      id: params[:id],
+      full_name: params[:full_name],
+      device_created_at: params[:device_created_at],
+      device_updated_at: params[:device_updated_at]
+    )
+    user.sync_approval_requested(I18n.t('registration'))
+
+    user.phone_number_authentications = [phone_number_authentication]
+    user
+  end
+
+  def update_with_phone_number_authentication(params)
+    user_params = params.slice(:full_name, :sync_approval_status, :sync_approval_status_reason)
+    phone_number_authentication_params = params.slice(
+      :phone_number,
+      :password,
+      :password_digest,
+      :registration_facility_id
+    )
+
+    transaction do
+      update!(user_params) && phone_number_authentication.update!(phone_number_authentication_params)
     end
-  end
-
-  def set_otp
-    generated_otp = self.class.generate_otp
-    self.otp = generated_otp[:otp]
-    self.otp_valid_until = generated_otp[:otp_valid_until]
-  end
-
-  def set_access_token
-    self.access_token = self.class.generate_access_token
   end
 
   def sync_approval_denied(reason = "")
@@ -58,55 +101,18 @@ class User < ApplicationRecord
     self.sync_approval_status_reason = reason
   end
 
-  def self.generate_otp
-    digits = FeatureToggle.enabled?('FIXED_OTP_ON_REQUEST_FOR_QA') ? [0] : (0..9).to_a
-    otp = ''
-    6.times do
-      otp += digits.sample.to_s
+  def reset_phone_number_authentication_password!(password_digest)
+    transaction do
+      authentication = phone_number_authentication
+      authentication.password_digest = password_digest
+      authentication.set_access_token
+      self.sync_approval_requested(I18n.t('reset_password'))
+      authentication.save!
+      self.save!
     end
-    otp_valid_until = Time.now + ENV['USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES'].to_i.minutes
-
-    { otp: otp, otp_valid_until: otp_valid_until }
-  end
-
-  def self.generate_access_token
-    SecureRandom.hex(32)
-  end
-
-  def access_token_valid?
-    self.sync_approval_status_allowed?
-  end
-
-  def otp_valid?
-    otp_valid_until >= Time.now
-  end
-
-  def mark_as_logged_in
-    now = Time.now
-    self.otp_valid_until = now
-    self.logged_in_at = now
-    save
-  end
-
-  def has_never_logged_in?
-    logged_in_at.blank?
-  end
-
-  def reset_login
-    self.logged_in_at = nil
   end
 
   def self.requested_sync_approval
     where(sync_approval_status: :requested)
-  end
-
-  def reset_password(password_digest)
-    self.password_digest = password_digest
-    self.set_access_token
-    self.sync_approval_requested(I18n.t('reset_password'))
-  end
-
-  def registered_at_facility
-    self.facility
   end
 end

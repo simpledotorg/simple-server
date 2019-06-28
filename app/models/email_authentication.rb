@@ -3,5 +3,5 @@ class EmailAuthentication < ApplicationRecord
          :rememberable, :timeoutable, :trackable, :validatable
 
   has_one :user_authentication, as: :authenticatable
-  has_one :master_user, through: :user_authentication
+  has_one :user, through: :user_authentication
 end

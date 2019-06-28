@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.feature 'Verify Dashboard', type: :feature do
-  let(:owner) { create(:admin) }
+  let!(:owner) { create(:admin) }
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:path) { create(:organization, name: "PATH") }
 
@@ -40,7 +40,10 @@ RSpec.feature 'Verify Dashboard', type: :feature do
   end
 
   it 'SignIn as Owner and verify approval request in dashboard' do
-    user = create(:user, sync_approval_status: :requested)
+    user = build(:user)
+    user.sync_approval_status = User.sync_approval_statuses[:requested]
+    user.save
+
     visit root_path
     login_page.do_login(owner.email, owner.password)
 
