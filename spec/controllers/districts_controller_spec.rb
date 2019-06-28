@@ -45,7 +45,7 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
 
     it 'renders the analytics table view' do
       get :show, params: { organization_id: organization.id, id: district_name }
-      expect(response).to render_template(partial: 'analytics/districts/_analytics_table')
+      expect(response).to render_template(partial: 'shared/_analytics_table')
     end
   end
 end

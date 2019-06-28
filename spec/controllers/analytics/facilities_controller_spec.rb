@@ -48,7 +48,7 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
 
     it 'renders the analytics table view' do
       get :show, params: { id: facility.id }
-      expect(response).to render_template(partial: 'analytics/facilities/_analytics_table')
+      expect(response).to render_template(partial: 'shared/_analytics_table')
     end
   end
 end
