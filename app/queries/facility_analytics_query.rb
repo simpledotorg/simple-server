@@ -34,9 +34,9 @@ class FacilityAnalyticsQuery
         .left_outer_joins(:patient)
         .joins(:facility)
         .where(facility: @facility)
-        .group('users.id', date_truncate_string)
+        .group('master_users.id', date_truncate_string)
         .where("patients.device_created_at < #{date_truncate_string}")
-        .order('users.id')
+        .order('master_users.id')
         .distinct
         .count('patients.id')
 
