@@ -2,7 +2,6 @@ class AnalyticsController < AdminController
   before_action :set_analytics_timezone
   after_action :reset_analytics_timezone
 
-  before_action :set_time_period, only: [:show, :share_anonymized_data]
   before_action :set_month, only: [:graphics]
 
   DEFAULT_ANALYTICS_TIME_ZONE = 'Asia/Kolkata'

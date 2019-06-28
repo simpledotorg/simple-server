@@ -19,7 +19,9 @@ class AppointmentNotificationService < Struct.new(:user)
                                 communication_type)
     end
 
-    sampled_appointments = eligible_appointments.group_by(&:facility_id).flat_map do |_, facility_appointments|
+    sampled_appointments = eligible_appointments
+                             .group_by(&:facility_id)
+                             .flat_map do |_, facility_appointments|
       facility_appointments.sample(roll_out_for(facility_appointments.size,
                                                 'APPOINTMENT_NOTIFICATION_ROLLOUT_PERCENTAGE'))
     end

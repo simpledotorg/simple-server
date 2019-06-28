@@ -1,0 +1,89 @@
+<section class="table-compact">
+  <div class="table-responsive">
+    <table>
+      <thead>
+      <tr>
+        <th colspan="2"></th>
+        <th class="row-label" colspan="1">Registered patients</th>
+        <th class="row-label" colspan="3">Follow-up patients<br></th>
+        <th class="row-label" colspan="3">New registrations<br></th>
+      </tr>
+
+      <tr>
+        <td colspan="2"></td>
+        <!--Registered patients-->
+        <td class="row-label"><strong>Total</strong></td>
+
+        <!--Follow-up patients-->
+        <% repeat_for_last(months: 3) do |month| %>
+          <td class="row-label"><strong><%= month.strftime("%B %Y") %></strong></td>
+        <% end %>
+
+        <!--New registrations-->
+        <% repeat_for_last(months: 3) do |month| %>
+          <td class="row-label"><strong><%= month.strftime("%B %Y") %></strong></td>
+        <% end %>
+      </tr>
+
+      </thead>
+      <tbody>
+
+      <tr class="row-total">
+        <td class="row-rank row-total"></td>
+        <td class="row-title row-total">All</td>
+
+        <!--Registered patients-->
+        <td class="row-enrolled text-green row-total">
+          <%= dash_if_zero(analytics.sum { |_, row| row[:total_registered_patients] || 0 }) %>
+        </td>
+
+        <!--Follow-up patients-->
+        <% repeat_for_last(months: 3) do |month| %>
+          <td class="row-enrolled row-total">
+            <%= analytics_month_totals(analytics, :follow_up_patients_by_month, month) %>
+          </td>
+        <% end %>
+
+        <!--New registrations-->
+        <% repeat_for_last(months: 3) do |month| %>
+          <td class="row-enrolled row-total">
+            <%= analytics_month_totals(analytics, :registered_patients_by_month, month) %>
+          </td>
+        <% end %>
+      </tr>
+
+      <% policy_scope(row_resource).each do |resource| %>
+        <% if analytics[resource.id].present? %>
+          <tr>
+            <td class="row-rank"></td>
+
+            <td class="row-title">
+              <%= link_to resource.send(row_resource_display_field),
+                          send(row_resource_link, resource) %>
+            </td>
+
+            <!--Registered patients-->
+            <td class="row-enrolled text-green">
+              <%= dash_if_zero(analytics.dig(resource.id, :total_registered_patients)) %>
+            </td>
+
+            <!--Follow-up patients-->
+            <% repeat_for_last(months: 3) do |month| %>
+              <td class="row-enrolled">
+                <%= dash_if_zero(analytics.dig(resource.id, :follow_up_patients_by_month, month)) %>
+              </td>
+            <% end %>
+
+            <!--New registrations-->
+            <% repeat_for_last(months: 3) do |month| %>
+              <td class="row-enrolled">
+                <%= dash_if_zero(analytics.dig(resource.id, :registered_patients_by_month, month)) %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>

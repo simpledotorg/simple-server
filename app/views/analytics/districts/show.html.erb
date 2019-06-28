@@ -1,52 +1,25 @@
-<%= render 'shared/analytics/analytics_period_links',
-           from_time: @from_time,
-           to_time: @to_time %>
+<div class="dashboard">
+  <h1><%= @organization_district.district_name %></h1>
+</div>
 
-<% cache @organization_district.analytics_cache_key(@from_time, @to_time) do %>
-  <div class="dashboard">
+<%= render 'shared/analytics_table',
+           analytics: @analytics,
+           row_resource: Facility.order(:name),
+           row_resource_display_field: :name,
+           row_resource_link: :analytics_facility_path %>
 
-    <h1><%= @organization_district.district_name %></h1>
-    <%= string_for_range(@from_time, @to_time) %>
+<% if policy(@organization_district).share_anonymized_data? %>
+  <div class="float-right text-right">
+    <%= link_to 'Anonymized Data (XLS)',
+                analytics_organization_district_share_path(organization_id: @organization_district.organization.id,
+                                                           district_id: @organization_district.district_name),
+                class: "btn btn-primary btn-sm float-right",
+                data: { confirm: I18n.t('admin.phi_anonymized_download_alert') } %>
   </div>
-
-  <%= render 'facility_table',
-             group_analytics: @district_analytics,
-             facility_analytics: @facility_analytics,
-             from_time: @from_time,
-             to_time: @to_time %>
-
-  <% if policy(@organization_district).share_anonymized_data? %>
-    <div class="float-right text-right">
-      <%= link_to 'Anonymized Data (XLS)',
-                  analytics_organization_district_share_path(organization_id: @organization.id,
-                                                             district_id: @organization_district.district_name,
-                                                             from_time: analytics_date_format(@from_time),
-                                                             to_time: analytics_date_format(@to_time)),
-                  class: "btn btn-primary btn-sm float-right",
-                  data: { confirm: I18n.t('admin.phi_anonymized_download_alert') } %>
-    </div>
-  <% end %>
-
-  <section>
-    <h4>Notes</h4>
-    <p class="footnote"><strong>Didn't attend</strong> patients are enrolled hypertensives that have not had a BP
-      recorded
-      in the past 3 months.</p>
-    <p class="footnote">
-      <strong><%= t('analytics.control_rate') %></strong>
-      <%= t('analytics.control_rate_explanation',
-            hypertensive_patients_in_cohort: @district_analytics[:control_rate][:hypertensive_patients_in_cohort],
-            patients_under_control: @district_analytics[:control_rate][:patients_under_control_in_period],
-            control_rate_for_month: @district_analytics[:control_rate][:control_rate],
-            number_of_months: pluralize(1, 'month')) %>
-    </p>
-    <p class="footnote"><strong>Unique patients</strong> indicates how many patients had at least one recorded BP during
-      the period. The "Week of" numbers are "Unique patients with a BP recorded during that week".</p>
-  </section>
-
-  <footer class="text-muted">
-    <p>
-      <small>Note: All times are in India Standard Time</small>
-    </p>
-  </footer>
 <% end %>
+
+<footer class="text-muted">
+  <p>
+    <small>Note: All times are in India Standard Time</small>
+  </p>
+</footer>
