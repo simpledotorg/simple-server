@@ -13,7 +13,7 @@ class Patient < ApplicationRecord
     NONE: 5
   }.freeze
 
-  ANONYMIZED_DATA_FIELDS = %w[id created_at registration_date facility_name user_id age gender]
+  ANONYMIZED_DATA_FIELDS = %w[id created_at registration_date registration_facility_name user_id age gender]
 
   belongs_to :address, optional: true
   has_many :phone_numbers, class_name: 'PatientPhoneNumber'
@@ -145,7 +145,7 @@ class Patient < ApplicationRecord
     { id: hash_uuid(id),
       created_at: created_at,
       registration_date: recorded_at,
-      facility_name: registration_facility&.name,
+      registration_facility_name: registration_facility&.name,
       user_id: hash_uuid(registration_user&.id),
       age: age,
       gender: gender
