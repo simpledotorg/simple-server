@@ -1,5 +1,6 @@
 class Facility < ApplicationRecord
   include Mergeable
+  include QuarterHelper
   extend FriendlyId
 
   belongs_to :facility_group, optional: true
@@ -23,6 +24,18 @@ class Facility < ApplicationRecord
   delegate :organization, to: :facility_group, allow_nil: true
 
   friendly_id :name, use: :slugged
+
+  def cohort_analytics
+    query = CohortAnalyticsQuery.new(self.patients)
+    results = {}
+
+    (0..2).each do |quarters_back|
+      date = (Date.today - (quarters_back * 3).months).beginning_of_quarter
+      results[date] = query.patient_counts(year: date.year, quarter: quarter(date))
+    end
+
+    results
+  end
 
   def dashboard_analytics
     query = FacilityAnalyticsQuery.new(self)

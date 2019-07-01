@@ -2,57 +2,7 @@
   <h1><%= @organization_district.district_name %></h1>
 </div>
 
-<div class="featured">
-  <div class="featured-section featured-1">
-    <h4>Q2 Progress</h4>
-
-    <div style="margin-bottom: 1em;" class="table-bullets">
-      <div class="didntattend">Didn't attend for follow-up visit: <b><%= @num_defaulted %> of <%= pluralize(@num_registered, "patient") %>*</b></div>
-      <div class="uncontrolled">Visited and BP &ge; 140/90: <b><%= pluralize(@num_uncontrolled, "patient") %>*</b></div>
-      <div class="controlled">Visited and BP &lt; 140/90: <b><%= pluralize(@num_controlled, "patient") %>*</b></div>
-    </div>
-
-    <table class="split-bars" style="margin-bottom: 5px; clear: none;">
-      <tr>
-        <td class="small">Didn't attend</td>
-        <td class="small"><span class="desktop">Visited and BP </span>&ge; 140/90</td>
-        <td class="small"><span class="desktop">Visited and BP </span>&lt; 140/90</td>
-      </tr>
-    </table>
-
-    <% @cohort_analytics.each_with_index do |(date, analytics), quarters_back| %>
-      <% if quarters_back == 0 %>
-        <div class="small" style="float: left; font-weight: bold; position: absolute;">
-      <% else %>
-        <div class="small">
-      <% end %>
-        Q<%= quarter(date) %> <%= date.year %>
-      </div>
-
-      <%
-        controlled_percent = (analytics[:controlled].to_f / analytics[:registered] * 100).round
-        uncontrolled_percent = (analytics[:controlled].to_f / analytics[:registered] * 100).round
-        default_percent = (analytics[:defaulted].to_f / analytics[:registered] * 100).round
-      %>
-
-      <table class="split-bars" style="margin-bottom: 5px; clear: none;">
-        <tr>
-          <td class="bar bar-1" style="width: <%= default_percent %>%;"><%= analytics[:defaulted] %></td>
-          <td class="bar bar-2" style="width: <%= uncontrolled_percent %>%;"><%= analytics[:uncontrolled] %></td>
-          <td class="bar bar-3" style="width: <%= controlled_percent %>%;"><%= analytics[:controlled] %></td>
-        </tr>
-      </table>
-    <% end %>
-
-    <table class="split-bars" style="margin-bottom: 5px; clear: none;">
-      <tr>
-        <td colspan="2" class="bar-label"><div>Uncontrolled BP</div><em></em></td>
-        <td></td>
-      </tr>
-    </table>
-    <div class="small" style="margin-top: 4px;">* Patients who were enrolled 6-9 months ago</div>
-  </div>
-</div>
+<%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics %>
 
 <%=
   render 'shared/analytics_table',

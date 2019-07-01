@@ -2,6 +2,8 @@
   <h1><%= @facility.name %></h1>
 </div>
 
+<%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics %>
+
 <%= render 'shared/analytics_table',
            analytics: @analytics,
            row_resource: User.order(:full_name),
