@@ -39,11 +39,11 @@ RSpec.describe CohortAnalyticsQuery do
   describe "#patient_counts" do
     it "calculates return and control patient counts in Q3 for patients registered in Q1" do
       expected_result = {
-        registered_patients: 15,
-        followed_up_patients: 5,
-        defaulted_patients: 10,
-        controlled_patients: 2,
-        uncontrolled_patients: 3
+        registered: 15,
+        followed_up: 5,
+        defaulted: 10,
+        controlled: 2,
+        uncontrolled: 3
       }
 
       expect(analytics.patient_counts(year: 2019, quarter: 3)).to eq(expected_result)
@@ -51,11 +51,11 @@ RSpec.describe CohortAnalyticsQuery do
 
     it "calculates return and control patient counts in Q3 for patients registered in Q2" do
       expected_result = {
-        registered_patients: 20,
-        followed_up_patients: 7,
-        defaulted_patients: 13,
-        controlled_patients: 3,
-        uncontrolled_patients: 4
+        registered: 20,
+        followed_up: 7,
+        defaulted: 13,
+        controlled: 3,
+        uncontrolled: 4
       }
 
       expect(analytics.patient_counts(year: 2019, quarter: 3, quarters_previous: 1)).to eq(expected_result)
