@@ -2,14 +2,9 @@
 
 <div class="row">
   <div class="col-md-6">
-    <%= bootstrap_form_tag(url: invitation_path(resource_name), html: { method: :post }) do |f| %>
+    <%= bootstrap_form_for(resource, as: resource_name, url: invitation_path(resource_name), html: { method: :post }) do |f| %>
       <% resource.class.invite_key_fields.each do |field| -%>
         <%= f.text_field field %></p>
-      <% end %>
-      <%= f.select :role, policy(:invitation).roles_user_can_invite.map { |k, v| [v.humanize, k] }.to_h %>
-
-      <% if policy(:user_permission).create? %>
-        
       <% end %>
 
       <%= f.primary t("devise.invitations.new.submit_button") %>

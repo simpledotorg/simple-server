@@ -8,18 +8,8 @@ class Admins::InvitationsController < Devise::InvitationsController
 
   def create
     authorize :invitation, :create?
-    @role = params.require(:admin).require(:role).downcase.to_sym
-
-    super
-
-    unless @role == :owner
-      admin_access_controls = access_controllable_ids.reject(&:empty?).map do |access_controllable_id|
-        AdminAccessControl.new(
-          access_controllable_type: access_controllable_type,
-          access_controllable_id: access_controllable_id)
-      end
-
-      resource.update(admin_access_controls: admin_access_controls)
+    super do |email_authentication|
+      return redirect_to admin_new_user_for_invite_path(email_authentication_id: email_authentication.id)
     end
   end
 

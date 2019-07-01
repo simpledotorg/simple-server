@@ -175,6 +175,14 @@ Rails.application.routes.draw do
       put 'reset_otp', to: 'users#reset_otp'
       put 'disable_access', to: 'users#disable_access'
       put 'enable_access', to: 'users#enable_access'
+      get 'assign_permissions', to: 'users#assign_permissions', as: :assign_permissions
+      post 'assign_permissions', to: 'users#assign_permissions', as: :save_permissions
+      resources :user_permissions
+    end
+
+    scope :users do
+      get '/:email_authentication_id/invite', to: 'users#new_user_for_invitation', as: :new_user_for_invite
+      post '/:email_authentication_id/invite', to: 'users#create_user_for_invitation', as: :create_user_for_invite
     end
   end
 

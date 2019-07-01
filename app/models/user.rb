@@ -197,4 +197,14 @@ class User < ApplicationRecord
       self.save!
     end
   end
+
+  def self.default_user_params(full_name:, role:)
+    current_time = Time.now
+    { full_name: full_name,
+      role: role,
+      sync_approval_status: User.sync_approval_statuses[:denied],
+      sync_approval_status_reason: User::DEFAULT_SYNC_APPROVAL_DENIAL_STATUS,
+      device_created_at: current_time,
+      device_updated_at: current_time }
+  end
 end
