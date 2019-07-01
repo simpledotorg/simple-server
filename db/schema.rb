@@ -10,7 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190529120752) do
+ActiveRecord::Schema.define(version: 20190623191212) do
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "pgcrypto"
@@ -380,14 +381,14 @@ ActiveRecord::Schema.define(version: 20190529120752) do
   end
 
   create_table "user_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "master_user_id"
+    t.uuid "user_id"
     t.string "authenticatable_type"
     t.uuid "authenticatable_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
-    t.index ["master_user_id", "authenticatable_type", "authenticatable_id"], name: "user_authentications_master_users_authenticatable_uniq_index", unique: true
-    t.index ["master_user_id"], name: "index_user_authentications_on_master_user_id"
+    t.index ["user_id", "authenticatable_type", "authenticatable_id"], name: "user_authentications_master_users_authenticatable_uniq_index", unique: true
+    t.index ["user_id"], name: "index_user_authentications_on_user_id"
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -412,7 +413,6 @@ ActiveRecord::Schema.define(version: 20190529120752) do
   end
 
   add_foreign_key "appointments", "facilities"
-  add_foreign_key "communications", "users"
   add_foreign_key "facilities", "facility_groups"
   add_foreign_key "facility_groups", "organizations"
   add_foreign_key "patient_phone_numbers", "patients"

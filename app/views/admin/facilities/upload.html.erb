@@ -1,0 +1,31 @@
+<h1>Upload Facilities</h1>
+<% if @errors.present? %>
+  <div class="alert alert-warning">
+    <p>Please fix the errors below and try again:</p>
+    <ul>
+      <% @errors.each do |error| %>
+        <li> <%= error %> </li>
+      <% end %>
+    </ul>
+    <p>You can also contact team@simple.org for assistance</p>
+  </div>
+<% end %>
+<h3>Instructions:</h3>
+<ol>
+  <li>Download and fill in <%= link_to 'this template', '/documents/upload_facilities.csv'%> to create multiple facilities via file upload.</li>
+  <li>Organizations for the facilities must already exist.
+    <% if policy(Organization).new? %>
+      Click here to create an organization:
+      <%= link_to '+ Organization', new_admin_organization_path, class: "btn btn-sm btn-outline-primary" %>
+    <% end %></li>
+  <li>Facility Groups for the facilities must already exist.
+    <% if policy(FacilityGroup).new? %>
+      Click here to create a facility group:
+      <%= link_to '+ Facility group', new_admin_facility_group_path, class: "btn btn-sm btn-outline-primary" %>
+    <% end %></li>
+  <li>Ensure that the Organization (Column A) and Facility Group (Column B) are entered correctly.</li>
+</ol>
+<%= bootstrap_form_tag(url: upload_admin_facilities_url, multipart: true) do |f| %>
+  <%= f.file_field :upload_facilities_file, required: true, accept: '.csv, .xlsx', label:'Upload your filled in facilities file'%>
+  <%= f.primary 'Upload' %>
+<% end %>

@@ -145,9 +145,14 @@ Rails.application.routes.draw do
   resources :admins
 
   namespace :analytics do
-    resources :facilities, only: [:show]
+    resources :facilities, only: [:show] do
+      get 'share', to: 'facilities#share_anonymized_data'
+    end
+
     resources :organizations do
-      resources :districts, only: [:show]
+      resources :districts, only: [:show] do
+        get 'share', to: 'districts#share_anonymized_data'
+      end
     end
   end
 
@@ -163,7 +168,12 @@ Rails.application.routes.draw do
 
     resources :organizations
 
-    resources :facilities, only: [:index]
+    resources :facilities, only: [:index] do
+      collection do
+        get 'upload'
+        post 'upload'
+      end
+    end
     resources :facility_groups do
       resources :facilities
     end

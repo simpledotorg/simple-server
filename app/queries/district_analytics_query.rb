@@ -4,6 +4,8 @@ class DistrictAnalyticsQuery
   end
 
   def total_registered_patients
+    return if registered_patients_by_month.blank?
+
     registered_patients_by_month.map do |facility_id, facility_analytics|
       [facility_id, { :total_registered_patients => facility_analytics[:registered_patients_by_month].values.sum }]
     end.to_h

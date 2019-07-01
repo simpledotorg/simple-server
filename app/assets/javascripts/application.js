@@ -14,4 +14,6 @@
 //= require jquery3
 //= require popper
 //= require bootstrap-sprockets
+//= require bs-custom-file-input.js
+//= require bs-file-input-init.js
 //= require_tree .

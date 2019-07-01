@@ -5,20 +5,20 @@ class Api::Current::LoginsController < APIController
   before_action :validate_login_payload, only: %i[create]
 
   def login_user
-    user = User.find_by(phone_number: login_params[:phone_number])
-
-    errors = errors_in_user_login(user)
+    authentication = PhoneNumberAuthentication.find_by(phone_number: login_params[:phone_number])
+    errors = errors_in_user_login(authentication)
 
     if errors.present?
       render json: { errors: errors }, status: :unauthorized
     else
-      user.set_access_token
-      user.save
+      user = authentication.user
+      authentication.set_access_token
+      authentication.save
       AuditLog.login_log(user)
       render json: {
         user: user_to_response(user),
         access_token: user.access_token
-      }, status:   :ok
+      }, status: :ok
     end
   end
 
@@ -55,11 +55,11 @@ class Api::Current::LoginsController < APIController
       Raven.capture_message(
         'Login Error',
         logger: 'logger',
-        extra:  {
+        extra: {
           login_params: login_params,
           errors: error_string
         },
-        tags:   { type: 'login' }
+        tags: { type: 'login' }
       )
       { user: [error_string] } if error_string.present?
     end

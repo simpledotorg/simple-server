@@ -4,6 +4,8 @@ class FacilityAnalyticsQuery
   end
 
   def total_registered_patients
+    return if registered_patients_by_month.blank?
+
     registered_patients_by_month.map do |user_id, facility_analytics|
       [user_id, { :total_registered_patients => facility_analytics[:registered_patients_by_month].values.sum }]
     end.to_h
@@ -22,6 +24,10 @@ class FacilityAnalyticsQuery
     group_by_user_and_date(@registered_patients_by_month, :registered_patients_by_month)
   end
 
+<<<<<<< HEAD
+=======
+  # NOTE: temporary usage of master_users (instead of users table) until users migration is finished
+>>>>>>> master
   def follow_up_patients_by_month
     date_truncate_string = date_truncate_sql('blood_pressures', 'device_created_at', period: 'month')
 
@@ -34,9 +40,15 @@ class FacilityAnalyticsQuery
         .left_outer_joins(:patient)
         .joins(:facility)
         .where(facility: @facility)
+<<<<<<< HEAD
         .group('users.id', date_truncate_string)
         .where("patients.device_created_at < #{date_truncate_string}")
         .order('users.id')
+=======
+        .group('master_users.id', date_truncate_string)
+        .where("patients.device_created_at < #{date_truncate_string}")
+        .order('master_users.id')
+>>>>>>> master
         .distinct
         .count('patients.id')
 

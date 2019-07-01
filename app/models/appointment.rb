@@ -2,11 +2,15 @@ require 'csv'
 
 class Appointment < ApplicationRecord
   include Mergeable
+  include Hashable
 
   belongs_to :patient, optional: true
   belongs_to :facility
 
   has_many :communications
+
+  ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at registration_facility_name user_id scheduled_date
+                              overdue status agreed_to_visit remind_on]
 
   enum status: {
     scheduled: 'scheduled',
@@ -98,6 +102,20 @@ class Appointment < ApplicationRecord
   def mark_patient_as_dead
     self.patient.status = :dead
     self.patient.save
+  end
+
+  def anonymized_data
+    { id: hash_uuid(id),
+      patient_id: hash_uuid(patient_id),
+      created_at: created_at,
+      registration_facility_name: facility.name,
+      user_id: hash_uuid(patient&.registration_user&.id),
+      scheduled_date: scheduled_date,
+      overdue: days_overdue > 0 ? 'Yes' : 'No',
+      status: status,
+      agreed_to_visit: agreed_to_visit,
+      remind_on: remind_on
+    }
   end
 
   # CSV export

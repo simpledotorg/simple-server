@@ -4,11 +4,22 @@
 
 <%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics %>
 
-<%= render 'shared/analytics_table',
-           analytics: @analytics,
-           row_resource: User.order(:full_name),
-           row_resource_display_field: :full_name,
-           row_resource_link: :admin_user_path %>
+<%=
+  render 'shared/analytics_table',
+    analytics: @analytics,
+    row_resource: User.order(:full_name),
+    row_resource_display_field: :full_name,
+    row_resource_link: :admin_user_path
+%>
+
+<% if policy(@facility).share_anonymized_data? %>
+  <div class="float-right text-right">
+    <%= link_to 'Anonymized Data (XLS)',
+                analytics_facility_share_path(facility_id: @facility.id),
+                class: "btn btn-primary btn-sm float-right",
+                data: { confirm: I18n.t('admin.phi_anonymized_download_alert') } %>
+  </div>
+<% end %>
 
 <footer class="text-muted">
   <p>

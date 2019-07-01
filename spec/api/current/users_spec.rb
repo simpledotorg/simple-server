@@ -28,6 +28,7 @@ describe 'Users Current API', swagger_doc: 'current/swagger.json' do
       end
 
       response '404', 'user is not found' do
+        let(:id) { SecureRandom.uuid }
         let(:phone_number) { Faker::PhoneNumber.phone_number }
         run_test!
       end
@@ -42,44 +43,26 @@ describe 'Users Current API', swagger_doc: 'current/swagger.json' do
       let(:phone_number) { Faker::PhoneNumber.phone_number }
 
       response '200', 'user is registered' do
-        let(:user) do
-          { user: FactoryBot.attributes_for(
-            :user_created_on_device,
-            registration_facility_id: facility.id).merge(created_at: Time.now, updated_at: Time.now)
-          }
-        end
+        let(:user) { register_user_request_params(registration_facility_id: facility.id) }
 
         schema Api::Current::Schema.user_registration_response
         run_test!
       end
 
       response '400', 'returns bad request for invalid params' do
-        let(:user) do
-          { user: FactoryBot.attributes_for(:user, :created_on_device)
-                    .merge(created_at: Time.now,
-                           updated_at: Time.now,
-                           registration_facility_id: facility.id, full_name: nil) }
-        end
+        let(:user) { register_user_request_params(full_name: nil) }
         run_test!
       end
 
       response '400', 'returns bad request if phone number already exists' do
         let(:used_phone_number) { Faker::PhoneNumber.phone_number }
         let!(:existing_user) { FactoryBot.create(:user, phone_number: used_phone_number) }
-        let(:user) do
-          { user: FactoryBot.attributes_for(:user, :created_on_device, phone_number: used_phone_number)
-                    .merge(created_at: Time.now,
-                           updated_at: Time.now,
-                           registration_facility_id: facility.id) }
-        end
+        let(:user) { register_user_request_params(phone_number: used_phone_number, registration_facility_id: facility.id) }
         run_test!
       end
 
       response '404', 'returns not found if  facility id is not known' do
-        let(:user) do
-          { user: FactoryBot.attributes_for(:user, :created_on_device, phone_number: phone_number)
-                    .merge(created_at: Time.now, updated_at: Time.now, registration_facility_id: SecureRandom.uuid) }
-        end
+        let(:user) { register_user_request_params(phone_number: phone_number, registration_facility_id: SecureRandom.uuid) }
         run_test!
       end
     end
@@ -90,7 +73,7 @@ describe 'Users Current API', swagger_doc: 'current/swagger.json' do
       tags 'User'
       parameter name: :id, in: :path, description: 'User UUID', type: :string
 
-      let!(:user) { FactoryBot.create(:user, registration_facility_id: facility.id) }
+      let!(:user) { FactoryBot.create(:user, registration_facility: facility) }
 
       before :each do
         sms_notification_service = double(SmsNotificationService.new(nil, nil))
@@ -118,7 +101,7 @@ describe 'Users Current API', swagger_doc: 'current/swagger.json' do
       tags 'User'
       security [basic: []]
       parameter name: :password_digest, in: :body, schema: Api::Current::Schema.user_reset_password_request
-      let(:user) { FactoryBot.create(:user, registration_facility_id: facility.id) }
+      let(:user) { FactoryBot.create(:user, registration_facility: facility) }
       let(:HTTP_X_USER_ID) { user.id }
       let(:HTTP_X_FACILITY_ID) { facility.id }
       let(:Authorization) { "Bearer #{user.access_token}" }

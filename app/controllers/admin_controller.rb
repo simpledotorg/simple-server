@@ -5,8 +5,12 @@ class AdminController < ApplicationController
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
+  rescue_from ActiveRecord::RecordInvalid do
+    head :bad_request
+  end
+
   rescue_from ActionController::ParameterMissing do
-    render nothing: true, status: :bad_request
+    head :bad_request
   end
 
   private
