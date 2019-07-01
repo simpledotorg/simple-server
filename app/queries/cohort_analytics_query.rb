@@ -1,4 +1,6 @@
 class CohortAnalyticsQuery
+  include QuarterHelper
+
   def initialize(patients)
     @patients = patients
   end
@@ -16,11 +18,11 @@ class CohortAnalyticsQuery
     uncontrolled_patients = followed_up_patients - controlled_patients
 
     {
-      registered_patients: registered_patients.size,
-      followed_up_patients: followed_up_patients.size,
-      defaulted_patients: registered_patients.size - followed_up_patients.size,
-      controlled_patients: controlled_patients.size,
-      uncontrolled_patients: uncontrolled_patients.size
+      registered: registered_patients.size,
+      followed_up: followed_up_patients.size,
+      defaulted: registered_patients.size - followed_up_patients.size,
+      controlled: controlled_patients.size,
+      uncontrolled: uncontrolled_patients.size
     }
   end
 
@@ -48,24 +50,5 @@ class CohortAnalyticsQuery
 
   def controlled(patients)
     patients.select { |p| p.bp_systolic < 140 && p.bp_diastolic < 90 }
-  end
-
-  def uncontrolled(patients)
-    patients.select { |p| p.bp_systolic >= 140 || p.bp_diastolic >= 90 }
-  end
-
-  private
-
-  def quarter_datetime(year, quarter)
-    quarter_month = ((quarter - 1) * 3) + 1
-    DateTime.new(year, quarter_month, 1)
-  end
-
-  def quarter_start(year, quarter)
-    quarter_datetime(year, quarter).beginning_of_quarter
-  end
-
-  def quarter_end(year, quarter)
-    quarter_datetime(year, quarter).end_of_quarter
   end
 end
