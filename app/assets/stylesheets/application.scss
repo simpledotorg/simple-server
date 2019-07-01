@@ -24,7 +24,11 @@ $font-small: 11px;
 
 /********/
 
+// Third-party imports
 @import "bootstrap";
+
+// Local imports
+@import "dashboard";
 
 body {
   padding-top: 5rem;
