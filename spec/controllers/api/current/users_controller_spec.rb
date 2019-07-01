@@ -27,7 +27,7 @@ RSpec.describe Api::Current::UsersController, type: :controller do
       let(:password_digest) { user_params[:password_digest] }
 
       it 'creates a user, and responds with the created user object and their access token' do
-        post :register, params: { user: user_params }
+        post :register, params: user_params
         parsed_response = JSON(response.body)
 
         created_user = User.find_by(full_name: user_params[:full_name])
@@ -44,9 +44,7 @@ RSpec.describe Api::Current::UsersController, type: :controller do
                      'device_updated_at',
                      'device_created_at',
                      'created_at',
-                     'updated_at',
-                     'sync_approval_status',
-                     'sync_approval_status_reason')
+                     'updated_at')
                    .merge('registration_facility_id' => facility.id, 'phone_number' => phone_number, 'password_digest' => password_digest)
                    .as_json
                    .with_int_timestamps)
@@ -56,7 +54,7 @@ RSpec.describe Api::Current::UsersController, type: :controller do
       end
 
       it 'sets the user status to requested' do
-        post :register, params: { user: user_params }
+        post :register, params: user_params
         created_user = User.find_by(full_name: user_params[:full_name])
         expect(created_user.sync_approval_status).to eq(User.sync_approval_statuses[:requested])
         expect(created_user.sync_approval_status_reason).to eq(I18n.t('registration'))
@@ -67,13 +65,13 @@ RSpec.describe Api::Current::UsersController, type: :controller do
         allow(FeatureToggle).to receive(:enabled?).with('FIXED_OTP_ON_REQUEST_FOR_QA').and_return(false)
         allow(FeatureToggle).to receive(:enabled?).with('AUTO_APPROVE_USER_FOR_QA').and_return(true)
 
-        post :register, params: { user: user_params }
+        post :register, params: user_params
         created_user = User.find_by(full_name: user_params[:full_name])
         expect(created_user.sync_approval_status).to eq(User.sync_approval_statuses[:allowed])
       end
 
       it 'sends an email to a list of owners and supervisors' do
-        post :register, params: { user: user_params }
+        post :register, params: user_params
         approval_email = ActionMailer::Base.deliveries.last
         expect(approval_email.to).to include(supervisor.email)
         expect(approval_email.cc).to include(organization_owner.email)
@@ -81,13 +79,13 @@ RSpec.describe Api::Current::UsersController, type: :controller do
       end
 
       it 'sends an email with owners in the bcc list' do
-        post :register, params: { user: user_params }
+        post :register, params: user_params
         approval_email = ActionMailer::Base.deliveries.last
         expect(approval_email.bcc).to include(owner.email)
       end
 
       it 'sends an approval email with list of accessible facilities' do
-        post :register, params: { user: user_params }
+        post :register, params: user_params
         approval_email = ActionMailer::Base.deliveries.last
         facility.facility_group.facilities.each do |facility|
           expect(approval_email.body.to_s).to match(Regexp.quote(facility.name))
