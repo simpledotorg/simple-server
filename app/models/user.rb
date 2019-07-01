@@ -17,6 +17,7 @@ class User < ApplicationRecord
   has_many :blood_pressures
   has_many :patients, -> { distinct }, through: :blood_pressures
   has_many :phone_number_authentications, through: :user_authentications, source: :authenticatable, source_type: 'PhoneNumberAuthentication'
+  has_many :audit_logs, as: :auditable
 
   has_many :registered_patients, class_name: "Patient", foreign_key: 'registration_user_id'
 
