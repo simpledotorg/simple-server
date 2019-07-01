@@ -108,7 +108,7 @@ class OldUser < ApplicationRecord
     self.sync_approval_requested(I18n.t('reset_password'))
   end
 
-  def registered_at_facility
+  def registration_facility
     self.facility
   end
 end
