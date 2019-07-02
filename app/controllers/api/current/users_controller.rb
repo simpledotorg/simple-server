@@ -90,14 +90,15 @@ class Api::Current::UsersController < APIController
   end
 
   def registration_params
-    params.permit(
-      :id,
-      :full_name,
-      :phone_number,
-      :password_digest,
-      :updated_at,
-      :created_at,
-      :registration_facility_id)
+    params.require(:user)
+      .permit(
+        :id,
+        :full_name,
+        :phone_number,
+        :password_digest,
+        :updated_at,
+        :created_at,
+        :registration_facility_id)
   end
 
   def find_params
