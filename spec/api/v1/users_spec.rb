@@ -38,7 +38,7 @@ describe 'Users V1 API', swagger_doc: 'v1/swagger.json' do
   path '/users/register' do
     post 'Register a new user' do
       tags 'User'
-      parameter name: :user, in: :body, schema: Api::V1::Schema.user_registration_request
+      parameter name: :user, in: :body, schema: { '$ref' => '#/definitions/user' }
 
       let(:phone_number) { Faker::PhoneNumber.phone_number }
 
@@ -99,12 +99,12 @@ describe 'Users V1 API', swagger_doc: 'v1/swagger.json' do
 
     post 'Request for reset password' do
       tags 'User'
-      security [ basic: [] ]
+      security [basic: []]
       parameter name: :password_digest, in: :body, schema: Api::V1::Schema.user_reset_password_request
       let(:user) { FactoryBot.create(:user, registration_facility: facility) }
       let(:HTTP_X_USER_ID) { user.id }
       let(:Authorization) { "Bearer #{user.access_token}" }
-      let(:password_digest) { { password_digest:  BCrypt::Password.create('1234') } }
+      let(:password_digest) { { password_digest: BCrypt::Password.create('1234') } }
 
       response '200', 'user password reset request is received' do
         schema Api::V1::Schema.user_registration_response

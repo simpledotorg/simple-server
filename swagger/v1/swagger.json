@@ -857,15 +857,7 @@
             "name": "user",
             "in": "body",
             "schema": {
-              "type": "object",
-              "properties": {
-                "user": {
-                  "$ref": "#/definitions/user"
-                }
-              },
-              "required": [
-                "user"
-              ]
+              "$ref": "#/definitions/user"
             }
           }
         ],
