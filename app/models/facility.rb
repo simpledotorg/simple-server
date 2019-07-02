@@ -21,19 +21,23 @@ class Facility < ApplicationRecord
 
   has_many :appointments
 
-  validates :name, presence: true
-  validates :district, presence: true
-  validates :state, presence: true
-  validates :country, presence: true
-  validates :pin, numericality: true, allow_blank: true
-
   with_options if: :import do |facility|
     facility.validates :organization_name, presence: true
     facility.validates :facility_group_name, presence: true
+    facility.validate  :facility_name_presence
     facility.validate  :organization_exists
     facility.validate  :facility_group_exists
     facility.validate  :facility_is_unique
   end
+
+  with_options unless: :import do |facility|
+    facility.validates :name, presence: true
+  end
+
+  validates :district, presence: true
+  validates :state, presence: true
+  validates :country, presence: true
+  validates :pin, numericality: true, allow_blank: true
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, to: :facility_group, allow_nil: true
@@ -98,6 +102,12 @@ class Facility < ApplicationRecord
     errors.add(:facility, 'already exists') if
         organization.present? && facility_group.present? && facility.present?
 
+  end
+
+  def facility_name_presence
+    if name.blank?
+      errors.add(:facility_name, "can't be blank")
+    end
   end
 
   CSV::Converters[:strip_whitespace] = ->(value) { value.strip rescue value }
