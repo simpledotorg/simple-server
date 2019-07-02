@@ -38,7 +38,7 @@ describe 'Users Current API', swagger_doc: 'current/swagger.json' do
   path '/users/register' do
     post 'Register a new user' do
       tags 'User'
-      parameter name: :user, in: :body, schema: { '$ref' => '#/definitions/user' }
+      parameter name: :user, in: :body, schema: Api::Current::Schema.user_registration_request
 
       let(:phone_number) { Faker::PhoneNumber.phone_number }
 
