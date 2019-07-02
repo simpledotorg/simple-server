@@ -10,7 +10,7 @@ class Api::Current::UsersController < APIController
 
     if user.invalid? || user.phone_number_authentication.invalid?
       return render json: {
-        errors: user.errors
+        errors: user.phone_number_authentication.errors
       }, status: :bad_request
     end
 
