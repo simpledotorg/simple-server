@@ -10,7 +10,7 @@ class Api::Current::UsersController < APIController
 
     if user.invalid? || user.phone_number_authentication.invalid?
       return render json: {
-        errors: user.errors
+        errors: user.phone_number_authentication.errors
       }, status: :bad_request
     end
 
@@ -90,14 +90,15 @@ class Api::Current::UsersController < APIController
   end
 
   def registration_params
-    params.permit(
-      :id,
-      :full_name,
-      :phone_number,
-      :password_digest,
-      :updated_at,
-      :created_at,
-      :registration_facility_id)
+    params.require(:user)
+      .permit(
+        :id,
+        :full_name,
+        :phone_number,
+        :password_digest,
+        :updated_at,
+        :created_at,
+        :registration_facility_id)
   end
 
   def find_params
