@@ -13,17 +13,13 @@
 %>
 
 <% if policy(@organization_district).share_anonymized_data? %>
-  <div class="float-right text-right">
-    <%= link_to 'Anonymized Data (XLS)',
+  <div class="downloads">
+      <h4>Downloads</h4>
+      <i class="far fa-file-excel" style="margin-right: 4px;"></i> <%= link_to ' Anonymized Data (XLS)',
                 analytics_organization_district_share_path(organization_id: @organization_district.organization.id,
                                                            district_id: @organization_district.district_name),
-                class: "btn btn-primary btn-sm float-right",
+                class: "download",
                 data: { confirm: I18n.t('admin.phi_anonymized_download_alert') } %>
   </div>
 <% end %>
-
-<footer class="text-muted">
-  <p>
-    <small>Note: All times are in India Standard Time</small>
-  </p>
-</footer>
+  

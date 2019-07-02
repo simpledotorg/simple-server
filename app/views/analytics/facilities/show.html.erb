@@ -1,5 +1,5 @@
 <div class="dashboard">
-  <h1><%= @facility.name %></h1>
+  <h1><a href="#">Bathinda</a> <i class="fas fa-chevron-right" style="position: relative; top: -3px; color: rgba(0,0,0,0.2); padding: 0 6px; font-size: 70%;"></i> <span class="glyphicon glyphicon-asterisk"></span> <%= @facility.name %></h1>
 </div>
 
 <%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics %>
@@ -13,16 +13,11 @@
 %>
 
 <% if policy(@facility).share_anonymized_data? %>
-  <div class="float-right text-right">
-    <%= link_to 'Anonymized Data (XLS)',
-                analytics_facility_share_path(facility_id: @facility.id),
-                class: "btn btn-primary btn-sm float-right",
-                data: { confirm: I18n.t('admin.phi_anonymized_download_alert') } %>
+  <div class="downloads">
+      <h4>Downloads</h4>
+      <i class="far fa-file-excel" style="margin-right: 4px;"></i>  <%= link_to 'Anonymized Data (XLS)',
+                    analytics_facility_share_path(facility_id: @facility.id),
+                    class: "download",
+                    data: { confirm: I18n.t('admin.phi_anonymized_download_alert') } %>
   </div>
 <% end %>
-
-<footer class="text-muted">
-  <p>
-    <small>Note: All times are in India Standard Time</small>
-  </p>
-</footer>
