@@ -8,7 +8,7 @@ class Api::Current::UsersController < APIController
     user = User.build_with_phone_number_authentication(user_from_request)
     return head :not_found unless user.registration_facility.present?
 
-    if user.invalid? || user.phone_number_authentication.invalid?
+    if user.phone_number_authentication.invalid?
       return render json: {
         errors: user.phone_number_authentication.errors
       }, status: :bad_request
