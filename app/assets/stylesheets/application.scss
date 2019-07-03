@@ -170,6 +170,10 @@ footer {
 }
 
 @include media-breakpoint-up(md) {
+    .container div.container {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
     .navbar {
         border-bottom: 1px solid rgba(0,0,0,0.07);
     }

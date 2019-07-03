@@ -96,11 +96,15 @@
             </ul>
 
             <ul class="navbar-nav ml-auto">
-              <li class="nav-item nav-link" style="pointer-events: none;">
-                <%= current_admin.email %>
-              </li>
-              <li class="nav-item">
-                <%= link_to('Logout', destroy_admin_session_path, method: :delete, class: "nav-link") %>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle dropdown-more" href="#" id="navbarDropdown2" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <%= current_admin.email %>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <%= link_to('Logout', destroy_admin_session_path, method: :delete, class: "nav-link") %>
+                  <a href="https://www.simple.org/privacy/" class="nav-link">Privacy Policy</a>
+                  <a href="https://opensource.org/licenses/MIT" class="nav-link">License</a>
+                </div>
               </li>
             </ul>
           <% else %>
@@ -125,10 +129,6 @@
       <% end %>
 
       <%= yield %>
-    
-        <footer id="app-footer">
-            <a href="https://www.simple.org/privacy/">Privacy Policy</a> and <a href="https://opensource.org/licenses/MIT">License</a>
-        </footer>
     </main>
     
   </body>
