@@ -90,6 +90,17 @@ h6.bold {
     font-weight: bold;
 }
 
+.info {
+    color: $green;
+}
+
+.info i {
+    position: relative;
+    top: 2px;
+    font-size: 140%;
+    margin-right: 4px;
+}
+
 .mobile {
     display: none;
 }
@@ -778,25 +789,15 @@ Overdue list
     position: relative;
 }
 
-.overdue-details {
+.desc {
     color: $grey-dark;
+    margin-top: 8px;
 }
 
 .overdue-time {
     color: $grey-mid;
     text-align: right;
     padding: 0 0 16px 0;
-}
-
-span.high-risk {
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    color: $offwhite;
-    background: $red;
-    border-radius: 3px;
-    padding: 2px 5px;
-    display: inline-block;
-    margin-left: 16px;
 }
 
 /******************

@@ -1,8 +1,3 @@
-<h1>Adherence follow-ups</h1>
-<p>Patients that are newly registered and need 48-hour adherence follow-up.</p>
-
-<div class="row">
-  <div class="col-md-6">
     <%= render(
       'shared/paginate_and_filter_by_facility',
       form_url: patients_path,
@@ -10,8 +5,11 @@
       facility_id: @facility_id,
       per_page: @per_page
     ) %>
-  </div>
-</div>
+
+<div class="card">
+<h1>Adherence follow-ups</h1>
+<p class="info"><i class="fas fa-question-circle"></i> Patients that are newly registered and need 48-hour adherence follow-up.</p>
+
 
 <div id="patients-to-followup">
   <% if @patients.present? %>
@@ -36,6 +34,7 @@
       <p class="overdue-title" style="color: #999;">No patients found for follow up</p>
     </div>
   <% end %>
+</div>
 </div>
 
 <%= paginate @patients %>
