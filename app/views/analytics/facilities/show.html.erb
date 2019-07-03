@@ -1,5 +1,5 @@
 <div class="dashboard">
-  <h1><a href="#">Bathinda</a> <i class="fas fa-chevron-right" style="position: relative; top: -3px; color: rgba(0,0,0,0.2); padding: 0 6px; font-size: 70%;"></i> <span class="glyphicon glyphicon-asterisk"></span> <%= @facility.name %></h1>
+  <h1><a href="#"><%= link_to @facility.district, analytics_organization_district_path(@facility.organization.id, @facility.district) %></a> <i class="fas fa-chevron-right" style="position: relative; top: -3px; color: rgba(0,0,0,0.2); padding: 0 6px; font-size: 70%;"></i> <span class="glyphicon glyphicon-asterisk"></span> <%= @facility.name %></h1>
 </div>
 
 <%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics %>
@@ -8,6 +8,7 @@
   render 'shared/analytics_table',
     analytics: @analytics,
     row_resource: User.order(:full_name),
+    row_resource_description: "Users",
     row_resource_display_field: :full_name,
     row_resource_link: :admin_user_path
 %>
@@ -15,9 +16,11 @@
 <% if policy(@facility).share_anonymized_data? %>
   <div class="downloads">
       <h4>Downloads</h4>
-      <i class="far fa-file-excel" style="margin-right: 4px;"></i>  <%= link_to 'Anonymized Data (XLS)',
-                    analytics_facility_share_path(facility_id: @facility.id),
-                    class: "download",
-                    data: { confirm: I18n.t('admin.phi_anonymized_download_alert') } %>
+      <%= link_to analytics_facility_share_path(facility_id: @facility.id),
+                  class: "download",
+                  data: { confirm: I18n.t('admin.phi_anonymized_download_alert') } do %>
+        <i class="far fa-file-excel" style="margin-right: 4px;"></i>
+        Anonymized Data (XLS)
+      <% end %>
   </div>
 <% end %>
