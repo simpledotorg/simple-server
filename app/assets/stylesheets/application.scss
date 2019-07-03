@@ -145,7 +145,6 @@ footer {
 @include media-breakpoint-down(sm) {
     main.container {
         margin: 0 !important;
-        padding: 0 8px !important;
     }
     div.container {
         margin: 0 !important;
@@ -153,6 +152,10 @@ footer {
     }
     .mobile {
         display: inherit;
+    }
+    .navbar {
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        border-bottom: 1px solid rgba(0,0,0,0.07);
     }
     .navbar-nav {
         margin-top: 8px;
@@ -408,18 +411,6 @@ span.inactive {
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
-.card.mb-3 {
-    margin-bottom: 4px !important;
-}
-
-.card .card-body {
-    padding: 10px;
-}
-
-.card-details {
-    margin: 4px 0 0 0;
-}
-
 .user-row {
     border-top: 1px solid rgba(0,0,0,0.05);
     padding: 8px 0;
@@ -655,7 +646,6 @@ td.featured-middle {
     padding: 8px 4px;
     vertical-align: middle;
     border-top: 1px solid $grey-lightest;
-    font-size: 13px;
 }
 
 .table-compact .row-month {
@@ -667,7 +657,15 @@ td.featured-middle {
 }
 
 .table-compact .row-title {
-    font-family: $font-condensed;
+    position: relative;
+}
+
+.table-compact .row-title i {
+    position: absolute;
+    top: 10px;
+    right: 8px;
+    font-size: 120%;
+    color: $grey-light;
 }
 
 .table-compact .row-title a {
