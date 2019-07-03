@@ -1,26 +1,35 @@
-<%= render "shared/user_approvals" %>
+<div class="container">
+  <div class="row">
+      
+      <div class="col-sm order-2" style="margin-top: 18px;">
+        <%= render "shared/user_approvals" %>
+      </div>
+      
+      <div class="col-sm order-1">
+        <% @organizations.each do |organization| %>
+            <section class="table-compact" id="facility-groups">
+              <div class="card table-responsive">
+                <h2><%= organization.name %></h2>
+                    <table>
 
-<section class="table-compact" id="facility-groups">
-  <div class="table-responsive">
-    <table>
-      <% @organizations.each do |organization| %>
-        <tr>
-          <th><h2 style="padding-top: 1em;"><%= organization.name %></h2></th>
-        </tr>
-
-        <% policy_scope(organization.facility_groups)
-               .flat_map(&:facilities)
-               .group_by(&:district)
-               .keys
-               .sort
-               .each do |district| %>
-          <tr>
-            <td class="row-title">
-              <%= link_to district, analytics_organization_district_path(organization.id, district) %>
-            </td>
-          </tr>
-        <% end %>
-      <% end %>
-    </table>
-  </div>
-</section>
+                    <% policy_scope(organization.facility_groups)
+                           .flat_map(&:facilities)
+                           .group_by(&:district)
+                           .keys
+                           .sort
+                           .each do |district| %>
+                      <tr>
+                        <td class="row-title">
+                          <%= link_to district, analytics_organization_district_path(organization.id, district) %>
+                        </td>
+                      </tr>
+                    <% end %>
+                  
+                </table>
+              </div>
+            </section>
+            <% end %>
+         </div>
+      </div>
+    </div>
+</div>

@@ -180,12 +180,6 @@ footer {
     padding: 0 5px;
 }
 
-input.btn,
-button.btn,
-a.btn {
-    //text-transform: capitalize;
-}
-
 .btn.disabled {
     background: $grey-lightest;
     border-color: $grey-lightest;
@@ -198,22 +192,12 @@ a.btn {
 
 .btn-outline-primary {
     border-color: #E0F0FF;
+    background: #fff;
 }
 
 .btn-outline-danger {
     border-color: #FFD6DD;
-}
-
-.btn-success {
-  background: $green-light;
-  border-color: $green-light;
-  color: $green-dark;
-
-  &:hover {
-    background: $green;
-    border-color: $green;
-    color: #FFF;
-  }
+    background: #fff;
 }
 
 .btn-default {
@@ -417,8 +401,9 @@ span.inactive {
 .card {
     border: none;
     background: #fff;
-    border: 1px solid $highlight;
     margin-top: 4px;
+    padding: 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
 .card.mb-3 {
@@ -431,6 +416,16 @@ span.inactive {
 
 .card-details {
     margin: 4px 0 0 0;
+}
+
+.user-row {
+    border-top: 1px solid rgba(0,0,0,0.05);
+    padding: 8px 0;
+}
+
+.user-row .event,
+.user-row .event a {
+    color: $grey-mid;
 }
 
 /*****************
@@ -502,7 +497,6 @@ Dashboard UI
 .featured {
     clear: both;
     position: relative;
-    display: table;
     width: 100%;
     border-radius: 5px;
     padding: 16px;
