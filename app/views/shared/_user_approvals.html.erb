@@ -5,15 +5,15 @@
   <% @users_requesting_approval.each do |user| %>
     <% if policy(user).enable_access? %>
         <div class="user-row">
-          
+
 
               <h5><%= link_to user.full_name, [:admin, user] %></h5>
               <div class="event">
                   <% if user.sync_approval_status_reason.present? %>
-                    <span><%= user.sync_approval_status_reason %> at <%= user.registration_facility.present? ? link_to(user.registration_facility.name, admin_facilities_path(user.registration_facility)) : "N/A" %></span>, 14-JUN-2019
+                    <span><%= user.sync_approval_status_reason %> at <%= user.registration_facility.present? ? link_to(user.registration_facility.name, admin_facilities_path(user.registration_facility)) : "N/A" %></span>, <%= l user.updated_at.to_date %>
                   <% end %>
               </div>
-            
+
             <div class="row">
                 <div class="col">
                     <a href="tel:<%= user.phone_number %>" class="btn btn-outline-primary btn-sm" style="letter-spacing: 0.1em;"><i class="fas fa-phone" style="font-size: 90%;"></i> <%= user.phone_number %></a>
