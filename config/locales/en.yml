@@ -32,7 +32,7 @@
 en:
   date:
     formats:
-      default: "%d-%^B-%Y"
+      default: "%d-%^b-%Y"
   name: "Name"
   phone_number: "Phone Number"
   login:
