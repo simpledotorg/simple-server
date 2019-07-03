@@ -1,6 +1,6 @@
 <% if policy(FacilityGroup).new? %>
   <div class="page-header">
-    <h1 class="page-title"">All facilities</h1>
+    <h1 class="page-title">All facilities</h1>
     <nav class="page-nav">
       <% if policy(Facility).upload? %>
         <%= link_to '+ Upload Facilities CSV', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
@@ -11,45 +11,50 @@
 <% end %>
 
 <% @organizations.order(:name).each do |organization| %>
-  <% if @organizations.size > 1 %><h1><%= organization.name %></h1><% end %>
+  <% if @organizations.size > 1 %><h2 style="margin-top: 32px;"><%= organization.name %></h2><% end %>
 
-  <% policy_scope(organization.facility_groups).order(:name).each do |facility_group| %>
+  <% policy_scope(organization.facility_groups).order(:name).each do |facility_group| %>    
 
-    <h2>
-      <%= facility_group.name %>
-      <% if policy(facility_group).edit? %>
-        <small style="margin-left: 8px;"><%= link_to 'EDIT', edit_admin_facility_group_path(facility_group) %></small>
-      <% end %>
-    </h2>
-
-    <div>
-        <% if policy(facility_group).edit? %>
-          <%= link_to "+ New Facility", new_admin_facility_group_facility_path(facility_group), class: "btn btn-default float-right" %>
-        <% end %>
-    </div>
-
-    <p>
+   <div class="row" style="margin-top: 32px;">
+       <div class="col-8">
+           <h4 style="margin: 0;">
+              <%= facility_group.name %>
+              <% if policy(facility_group).edit? %>
+                <%= link_to 'EDIT', edit_admin_facility_group_path(facility_group) %>
+              <% end %>
+            </h4>
+       </div>
+       <div class="col-4 text-right">
+           <% if policy(facility_group).edit? %>
+              <%= link_to "+ New Facility", new_admin_facility_group_facility_path(facility_group), class: "nowrap" %>
+            <% end %>
+        </div>
+    </div> 
+    <!--p>
         Protocol: <%= facility_group.protocol.name %>
-    </p>
+    </p-->
 
-    <div style="padding-bottom: 32px; clear: both;">
+    <div style="clear: both;">
           <% policy_scope(facility_group.facilities).order(:name).each do |facility| %>
               <div class="card">
-                  <div class="card-body">
-                  <% if policy(facility).edit? %>
-                    <%= link_to 'Edit', edit_admin_facility_group_facility_path(facility_group, facility), class: "btn btn-default float-right" %>
-                  <% end %>
+                  <div class="row">
+                      <div class="col-10">
+                          <h5><%= link_to facility.name, [:admin, facility_group, facility] %> <!-- <%= facility.facility_type %> --></h5>
 
-                  <h5><%= link_to facility.name, [:admin, facility_group, facility] %> <!-- <%= facility.facility_type %> --></h5>
-
-                      <div class="card-details">
-                      <%= facility.street_address %>
-                      <%= facility.village_or_colony %>
-                      <%= facility.district %>
-                      <%= facility.state %>
-                      <!-- <%= facility.country %></td-->
-                      <%= facility.pin %>
-                     </div>
+                          <div class="card-details">
+                          <%= facility.street_address %>
+                          <%= facility.village_or_colony %>
+                          <%= facility.district %>
+                          <%= facility.state %>
+                          <!-- <%= facility.country %></td-->
+                          <%= facility.pin %>
+                         </div>
+                      </div>
+                      <div class="col-2 text-right">
+                          <% if policy(facility).edit? %>
+                            <%= link_to 'Edit', edit_admin_facility_group_facility_path(facility_group, facility), class: "btn btn-sm btn-outline-primary" %>
+                          <% end %>
+                      </div>
                   </div>
               </div>
           <% end %>

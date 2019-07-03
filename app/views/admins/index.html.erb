@@ -2,49 +2,51 @@
   <h1 class="page-title">Admins</h1>
   <nav class="page-nav">
     <% if policy(:invitation).invite_owner? %>
-      <%= link_to 'Invite Owner', new_admin_invitation_path(role: 'owner'), class: "btn btn-sm btn-primary" %>
+      <%= link_to '+ Owner', new_admin_invitation_path(role: 'owner'), class: "btn btn-sm btn-primary" %>
     <% end %>
     <% if policy(:invitation).invite_organization_owner? %>
-      <%= link_to 'Invite Organization Owner', new_admin_invitation_path(role: 'organization_owner'), class: "btn btn-sm btn-primary" %>
+      <%= link_to '+ Organization Owner', new_admin_invitation_path(role: 'organization_owner'), class: "btn btn-sm btn-primary" %>
     <% end %>
     <% if policy(:invitation).invite_supervisor? %>
-      <%= link_to 'Invite Supervisor', new_admin_invitation_path(role: 'supervisor'), class: "btn btn-sm btn-primary" %>
+      <%= link_to '+ Supervisor', new_admin_invitation_path(role: 'supervisor'), class: "btn btn-sm btn-primary" %>
     <% end %>
     <% if policy(:invitation).invite_analyst? %>
-      <%= link_to 'Invite Analyst', new_admin_invitation_path(role: 'analyst'), class: "btn btn-sm btn-primary" %>
+      <%= link_to '+ Analyst', new_admin_invitation_path(role: 'analyst'), class: "btn btn-sm btn-primary" %>
     <% end %>
     <% if policy(:invitation).invite_counsellor? %>
-      <%= link_to 'Invite Counsellor', new_admin_invitation_path(role: 'counsellor'), class: "btn btn-sm btn-primary" %>
+      <%= link_to '+ Counsellor', new_admin_invitation_path(role: 'counsellor'), class: "btn btn-sm btn-primary" %>
     <% end %>
   </nav>
 </div>
 
-<div class="table-responsive">
+<div class="card">
   <table class="table">
     <thead class="thead-light">
     <tr>
       <th>Email</th>
       <th>Role</th>
-      <th colspan="3"></th>
+      <th></th>
     </tr>
     </thead>
 
     <tbody>
     <% @admins.each do |admin| %>
       <tr>
-        <td><%= link_to admin.email, admin %></td>
-        <td><%= admin.role.humanize %></td>
         <td>
-          <% if admin.invited_to_sign_up? %>
-            Invitation sent
+            <%= link_to admin.email, admin %>
+            <% if admin.invited_to_sign_up? %>
+                &nbsp;<span class="badge badge-pill badge-secondary">Invite sent</span>
           <% end %>
         </td>
+        <td><%= admin.role.humanize %></td>
+        <td class="text-right">
         <% if policy(admin).edit? %>
-          <td><%= link_to 'Edit', edit_admin_path(admin) %></td>
+          <%= link_to 'Edit', edit_admin_path(admin), class: "btn btn-sm btn-outline-primary" %>
         <% end %>
         <% if policy(admin).destroy? %>
-          <td><%= link_to 'Delete', admin, method: :delete, data: { confirm: "Are you sure you want to delete #{admin.email}?" } %></td>
+          <%= link_to 'Delete', admin, method: :delete, data: { confirm: "Are you sure you want to delete #{admin.email}?" }, class: "btn btn-sm btn-outline-danger" %>
         <% end %>
+        </td>
       </tr>
     <% end %>
     </tbody>

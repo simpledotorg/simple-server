@@ -6,28 +6,30 @@
     <% end %>
   </nav>
 </div>
+<div class="card">
+    <table class="table">
+      <thead class="thead-light">
+        <tr>
+          <th>Protocol</th>
+          <th class="nowrap text-center">Follow up days</th>
+          <th></th>
+        </tr>
+      </thead>
 
-<table class="table table-responsive">
-  <thead class="thead-light">
-    <tr>
-      <th>Name</th>
-      <th class="nowrap">Follow up days</th>
-      <th colspan="2"></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @protocols.each do |protocol| %>
-      <tr>
-        <td class="nowrap"><%= link_to protocol.name, [:admin, protocol] %></td>
-        <td><%= protocol.follow_up_days %></td>
-        <% if policy(protocol).edit? %>
-          <td><%= link_to 'Edit', edit_admin_protocol_path(protocol) %></td>
+      <tbody>
+        <% @protocols.each do |protocol| %>
+          <tr>
+            <td class="nowrap"><%= link_to protocol.name, [:admin, protocol] %></td>
+            <td class="text-center"><%= protocol.follow_up_days %></td>
+            <td class="text-right">
+            <% if policy(protocol).edit? %>
+              <%= link_to 'Edit', edit_admin_protocol_path(protocol), class: "btn btn-sm btn-outline-primary" %>
+            <% end %>
+            <% if policy(protocol).destroy? %>
+              <%= link_to 'Delete', [:admin, protocol], method: :delete, data: { confirm: "Are you sure you want to delete #{protocol.name}?" }, class: "btn btn-sm btn-outline-danger" %>
+            <% end %>
+          </tr>
         <% end %>
-        <% if policy(protocol).destroy? %>
-          <td><%= link_to 'Delete', [:admin, protocol], method: :delete, data: { confirm: "Are you sure you want to delete #{protocol.name}?" } %></td>
-        <% end %>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+      </tbody>
+    </table>
+</div>

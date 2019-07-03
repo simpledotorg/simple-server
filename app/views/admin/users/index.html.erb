@@ -3,8 +3,8 @@
 </div>
 
 <% @users_by_district.sort.each do |district, users| %>
+<div class="card">
   <h2><%= district %></h2>
-
   <div class="table-responsive">
     <table class="table">
       <thead class="thead-light">
@@ -56,4 +56,5 @@
       </tbody>
     </table>
   </div>
+</div>
 <% end %>
