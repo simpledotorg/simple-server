@@ -887,7 +887,15 @@
             "name": "user",
             "in": "body",
             "schema": {
-              "$ref": "#/definitions/user"
+              "type": "object",
+              "properties": {
+                "user": {
+                  "$ref": "#/definitions/user"
+                }
+              },
+              "required": [
+                "user"
+              ]
             }
           }
         ],
@@ -1142,7 +1150,6 @@
         "full_name",
         "created_at",
         "updated_at",
-        "recorded_at",
         "status"
       ]
     },
@@ -1306,7 +1313,6 @@
         "full_name",
         "created_at",
         "updated_at",
-        "recorded_at",
         "status"
       ],
       "description": "Patient with address, phone numbers and business identifiers nested."
@@ -1359,7 +1365,6 @@
         "diastolic",
         "created_at",
         "updated_at",
-        "recorded_at",
         "patient_id",
         "facility_id",
         "user_id"
