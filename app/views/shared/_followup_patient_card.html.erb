@@ -1,19 +1,15 @@
-<div class="container">
+<div class="overdue-patient">
   <div class="row">
     <div class="col-sm">
     
-          <% if days_overdue.present? %>
-            <div class="overdue-time">
-              <%= days_overdue %> days overdue
-              <% if high_risk %>
-                <br><span>HIGH RISK</span>
-              <% end %>
-            </div>
-          <% end %>
           <h5>
             <%= patient.full_name %>,
             <%= patient.gender.capitalize %>,
             <%= patient.current_age %>
+              
+            <% if high_risk %>
+              <span class="high-risk">HIGH RISK</span>
+            <% end %>
           </h5>
           <% if show_enrolment_date %>
             <div class="overdue-details">
@@ -38,24 +34,39 @@
             <% if patient.address.has_street_address? %><%= patient.address.street_address %>,<% end %>
             <%= patient.address.village_or_colony %>
           </div>
+        
       </div>
       <div class="col-sm">
-              <% if phone_number = patient.phone_numbers.first&.number %>
-                <a href="tel:<%= phone_number %>" class="btn btn-sm btn-info btn-phone"><i class="fas fa-phone" style="font-size: 80%;"></i> <%= phone_number %></a>
-              <% else %>
-                <a href="3" class="btn btn-sm btn-info disabled">&lt; No mobile &gt;</a>
-              <% end %>
-
-              <%= bootstrap_form_with(model: form_model) do |form| %>
-                <%= form.select :call_result,
-                                call_result_options,
-                                {
-                                    prompt: "Result of follow-up...",
-                                    hide_label: true
-                                },
-                                onchange: "this.form.submit();"
-                %>
-              <% end %>
-        </div>
-    </div>
+            
+            <% if days_overdue.present? %>
+                <div class="overdue-time">
+                  <%= days_overdue %> days overdue
+                </div>
+            <% end %>
+          
+            <div class="form-row">
+                <div class="col">
+                    <% if phone_number = patient.phone_numbers.first&.number %>
+                        <a href="tel:<%= phone_number %>" class="btn btn-sm btn-info btn-phone" style="min-width: 13em;"><i class="fas fa-phone" style="font-size: 80%;"></i> <%= phone_number %></a>
+                      <% else %>
+                        <a href="3" class="btn btn-sm btn-info disabled" style="min-width: 13em;">&lt; No mobile &gt;</a>
+                      <% end %>
+                </div>
+                <div class="col">
+                  <%= bootstrap_form_with(model: form_model) do |form| %>
+                    <%= form.select :call_result,
+                                    call_result_options,
+                                    {
+                                        prompt: "Result of follow-up...",
+                                        hide_label: true
+                                    },
+                                    onchange: "this.form.submit();",
+                                    class: "form-control-sm"
+                    %>
+                  
+                  <% end %>
+                </div>
+            </div>
+      </div>
+  </div>
 </div>

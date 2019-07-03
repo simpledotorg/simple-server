@@ -759,7 +759,9 @@ td.featured-middle {
 }
 
 .table-compact .row-total {
-    background: $grey-lightest;
+    border-top: 1px solid $grey-mid;
+    border-bottom: 1px solid $grey-mid;
+    font-weight: bold;
 }
 
 /******************
@@ -772,27 +774,29 @@ Overdue list
 
 .overdue-patient {
     border-top: 1px solid $grey-lightest;
-    padding-top: 8px;
-    padding-left: 16px;
+    padding: 16px 0;
     position: relative;
 }
 
-.overdue-time span {
-    font-size: 13px;
-    color: $offwhite;
-    background: $red;
-    border-radius: 3px;
-    padding: 2px 5px;
-    display: inline-block;
-}
-
 .overdue-details {
-    font-size: 12px;
     color: $grey-dark;
 }
 
 .overdue-time {
     color: $grey-mid;
+    text-align: right;
+    padding: 0 0 16px 0;
+}
+
+span.high-risk {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: $offwhite;
+    background: $red;
+    border-radius: 3px;
+    padding: 2px 5px;
+    display: inline-block;
+    margin-left: 16px;
 }
 
 /******************
@@ -852,3 +856,25 @@ nav.breadcrumb {
   margin-right: 0;
   border-top: 1px solid #F0F2F5;
 }
+
+/******************
+Environments
+******************/
+
+nav a.nav-link { color: $grey-darkest !important; }
+nav a.nav-link:hover { color: $grey-mid !important; }
+
+nav.navbar-development a.nav-link { color: #265788 !important; }
+nav.navbar-development a.nav-link:hover { color: #4D86BF !important; }
+
+nav.navbar-qa a.nav-link { color: #00B849 !important; }
+nav.navbar-qa a.nav-link:hover { color: #4BE287 !important; }
+
+nav.navbar-sandbox a.nav-link { color: #5300E0 !important; }
+nav.navbar-sandbox a.nav-link:hover { color: #935EEC !important; }
+
+nav.navbar-staging a.nav-link { color: #D71D3C !important; }
+nav.navbar-staging a.nav-link:hover { color: #F15D76 !important; }
+
+nav.navbar-production a.nav-link { color: $grey-darkest !important; }
+nav.navbar-production a.nav-link:hover { color: $grey-mid !important; }

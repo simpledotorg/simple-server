@@ -49,7 +49,7 @@
         <% if policy(Appointment).download? && @appointments.present? %>
           <% if @facility_id == "All" %>
             <div>
-              Select a facility to download Overdue Patients list
+              <i class="far fa-file-excel" style="margin-right: 4px;"></i> Select a facility to download Overdue Patients list
             </div>
           <% else %>
             <i class="far fa-file-excel" style="margin-right: 4px;"></i> <%= link_to "Download Overdue List", appointments_path(facility_id: @facility_id, format: "csv"), class: "", data: { confirm: I18n.t('admin.phi_download_alert') } %>
