@@ -8,6 +8,7 @@
   render 'shared/analytics_table',
     analytics: @analytics,
     row_resource: Facility.order(:name),
+    row_resource_description: "Facilities",
     row_resource_display_field: :name,
     row_resource_link: :analytics_facility_path
 %>
