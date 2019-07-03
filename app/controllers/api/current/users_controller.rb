@@ -14,10 +14,7 @@ class Api::Current::UsersController < APIController
       }, status: :bad_request
     end
 
-    ApprovalNotifierMailer
-      .with(user: user)
-      .registration_approval_email
-      .deliver_later if approve_and_save(user)
+    send_approval_email(user) if approve_and_save(user)
 
     render json: {
       user: user_to_response(user),
@@ -62,6 +59,15 @@ class Api::Current::UsersController < APIController
       user.sync_approval_requested(I18n.t('registration'))
 
     user.save
+  end
+
+  def send_approval_email(user)
+    return if FeatureToggle.auto_approve_for_qa?
+
+    ApprovalNotifierMailer
+      .with(user: user)
+      .registration_approval_email
+      .deliver_later
   end
 
   def find_user(params)
