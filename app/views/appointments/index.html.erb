@@ -1,30 +1,33 @@
-<% if policy(Appointment).download? && @appointments.present? %>
-  <% if @facility_id == "All" %>
-    <div class="float-right text-right">
-      <button class="btn btn-sm btn-secondary" disabled>Download Overdue List</button><br>
-      <small>Select a facility to download</small>
+<div class="container">
+  <div class="row">
+    <div class="col-sm">
+        <%= render(
+          'shared/paginate_and_filter_by_facility',
+          form_url: appointments_path,
+          current_admin: current_admin,
+          facility_id: @facility_id,
+          per_page: @per_page
+        ) %>
     </div>
-  <% else %>
-    <%= link_to "Download Overdue List", appointments_path(facility_id: @facility_id, format: "csv"), class: "btn btn-primary btn-sm float-right", data: { confirm: I18n.t('admin.phi_download_alert') } %>
-  <% end %>
-<% end %>
-
-<h1>Overdue patients</h1>
-<p>Patients that are overdue for follow-up BP measure.</p>
-
-<div class="row">
-  <div class="col-md-6">
-    <%= render(
-      'shared/paginate_and_filter_by_facility',
-      form_url: appointments_path,
-      current_admin: current_admin,
-      facility_id: @facility_id,
-      per_page: @per_page
-    ) %>
+    <div class="col-sm">
+        <% if policy(Appointment).download? && @appointments.present? %>
+          <% if @facility_id == "All" %>
+            <div>
+              <button class="btn btn-sm btn-secondary" disabled>Download Overdue List</button>
+              <small>Select a facility to download</small>
+            </div>
+          <% else %>
+            <%= link_to "Download Overdue List", appointments_path(facility_id: @facility_id, format: "csv"), class: "btn btn-primary btn-sm float-right", data: { confirm: I18n.t('admin.phi_download_alert') } %>
+          <% end %>
+        <% end %>
+    </div>
   </div>
 </div>
 
-<div id="overdue-patients">
+<div id="overdue-patients" class="card">
+<h1>Overdue patients</h1>
+<p>Patients that are overdue for follow-up BP measure.</p>
+    
   <% if @appointments.present? %>
     <% call_result_options = {
         'Patient responded' => [['Agreed to visit', 'agreed_to_visit'], ['Patient has already visited', 'patient_has_already_visited']],

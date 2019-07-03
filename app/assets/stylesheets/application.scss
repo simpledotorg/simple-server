@@ -143,6 +143,14 @@ footer {
 }
 
 @include media-breakpoint-down(sm) {
+    main.container {
+        margin: 0 !important;
+        padding: 0 8px !important;
+    }
+    div.container {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
     .mobile {
         display: inherit;
     }
@@ -197,6 +205,11 @@ footer {
 
 .btn-outline-danger {
     border-color: #FFD6DD;
+    background: #fff;
+}
+
+.btn-outline-success {
+    border-color: #C5E4D1;
     background: #fff;
 }
 
@@ -323,17 +336,6 @@ span.inactive {
   }
 }
 
-@include media-breakpoint-down(md) {
-  .card .row .row {
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
-
-    .col {
-      margin-bottom: 0.5rem;
-    }
-  }
-}
-
 .approval-reason {
     display: block;
     color: $grey-mid;
@@ -401,7 +403,7 @@ span.inactive {
 .card {
     border: none;
     background: #fff;
-    margin-top: 4px;
+    margin: 4px 0;
     padding: 16px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
@@ -421,6 +423,10 @@ span.inactive {
 .user-row {
     border-top: 1px solid rgba(0,0,0,0.05);
     padding: 8px 0;
+}
+
+.user-row .event {
+    margin: 0.2em 0;
 }
 
 .user-row .event,
@@ -768,19 +774,6 @@ Overdue list
     position: relative;
 }
 
-.overdue-patient .btn,
-.overdue-patient select {
-    font-size: inherit;
-    height: auto;
-    margin-bottom: 8px;
-}
-
-.overdue-title,
-.overdue-time {
-    font-family: $font-condensed;
-    font-size: 18px;
-}
-
 .overdue-time span {
     font-size: 13px;
     color: $offwhite;
@@ -796,10 +789,6 @@ Overdue list
 }
 
 .overdue-time {
-    float: right;
-    display: block;
-    padding: 4px 0 0 16px;
-    font-size: 12px;
     color: $grey-mid;
 }
 
