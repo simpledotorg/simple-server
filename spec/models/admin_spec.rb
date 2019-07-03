@@ -5,7 +5,7 @@ RSpec.describe Admin, type: :model do
     it { should have_many(:admin_access_controls) }
 
     describe 'protocols' do
-      before :all do
+      before :each do
         create_list :protocol, 3
       end
 
@@ -34,7 +34,7 @@ RSpec.describe Admin, type: :model do
     end
 
     describe 'facilities' do
-      before :all do
+      before :each do
         create_list :facility, 3
       end
 
@@ -62,7 +62,7 @@ RSpec.describe Admin, type: :model do
     end
 
     describe 'users' do
-      before :all do
+      before :each do
         create_list :user, 3
       end
 
