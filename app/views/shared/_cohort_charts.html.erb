@@ -1,41 +1,39 @@
 <div class="card">
-
-    <h3>Cohort report</h3>
-    <div class="desc">Outcomes for patients registered 3-6 months previously:
-        <div class="key">
-          <div class="didntattend">Didn't attend for<br class="mobile"> follow-up visit</div>
-          <div class="uncontrolled">Visited and <br class="mobile">BP &ge; 140/90</div>
-          <div class="controlled">Visited and <br class="mobile">BP &lt; 140/90</div>
-        </div>
-    </div>
-    <% @cohort_analytics.each_with_index do |(date, analytics), quarters_back| %>
-      <%
-        registered = analytics[:registered]
-        followed_up = analytics[:followed_up]
-        defaulted = analytics[:defaulted]
-        controlled = analytics[:controlled]
-        uncontrolled = analytics[:uncontrolled]
-
-        controlled_percent = (controlled.to_f / registered * 100).round
-        uncontrolled_percent = (controlled.to_f / registered * 100).round
-        default_percent = (defaulted.to_f / registered * 100).round
-
-        current_quarter = (quarters_back == 0)
-      %>
-
-      <div class="split-row">
-          <div class="bar-total">Outcomes for XX patients reg. <%= current_quarter ? "This quarter" : "Q#{quarter(date)} #{date.year}" %></div>
-          <h6<% if current_quarter %> class="bold"<% end %>><%= current_quarter ? "This quarter" : "Q#{quarter(date)} #{date.year}" %></h6>
-
-          <table class="split-bars">
-            <tr>
-              <td class="bar bar-1" style="width: <%= default_percent %>%;"><%= defaulted %></td>
-              <td class="bar bar-2" style="width: <%= uncontrolled_percent %>%;"><%= uncontrolled %></td>
-              <td class="bar bar-3" style="width: <%= controlled_percent %>%;"><%= controlled %></td>
-            </tr>
-          </table>
+  <h3>Cohort report</h3>
+  <div class="desc">Outcomes for patients registered 3-6 months previously:
+      <div class="key">
+        <div class="didntattend">Didn't attend for<br class="mobile"> follow-up visit</div>
+        <div class="uncontrolled">Visited and <br class="mobile">BP &ge; 140/90</div>
+        <div class="controlled">Visited and <br class="mobile">BP &lt; 140/90</div>
       </div>
-    <% end %>
-      
+  </div>
 
+  <% @cohort_analytics.each_with_index do |(date, analytics), quarters_back| %>
+    <%
+      registered = analytics[:registered]
+      followed_up = analytics[:followed_up]
+      defaulted = analytics[:defaulted]
+      controlled = analytics[:controlled]
+      uncontrolled = analytics[:uncontrolled]
+
+      controlled_percent = (controlled.to_f / registered * 100).round
+      uncontrolled_percent = (controlled.to_f / registered * 100).round
+      default_percent = (defaulted.to_f / registered * 100).round
+
+      current_quarter = (quarters_back == 0)
+    %>
+
+    <div class="split-row">
+      <div class="bar-total">Outcomes for <%= registered %> patients reg. <%= current_quarter ? "This quarter" : "Q#{quarter(date)} #{date.year}" %></div>
+      <h6<% if current_quarter %> class="bold"<% end %>><%= current_quarter ? "This quarter" : "Q#{quarter(date)} #{date.year}" %></h6>
+
+      <table class="split-bars">
+        <tr>
+          <td class="bar bar-1" style="width: <%= default_percent %>%;"><%= defaulted %></td>
+          <td class="bar bar-2" style="width: <%= uncontrolled_percent %>%;"><%= uncontrolled %></td>
+          <td class="bar bar-3" style="width: <%= controlled_percent %>%;"><%= controlled %></td>
+        </tr>
+      </table>
+    </div>
+  <% end %>
 </div>
