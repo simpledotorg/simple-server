@@ -16,22 +16,28 @@
       controlled = analytics[:controlled]
       uncontrolled = analytics[:uncontrolled]
 
-      controlled_percent = (controlled.to_f / registered * 100).round
-      uncontrolled_percent = (controlled.to_f / registered * 100).round
-      default_percent = (defaulted.to_f / registered * 100).round
-
-      current_quarter = (quarters_back == 0)
+      is_current_quarter = (quarters_back == 0)
     %>
 
     <div class="split-row">
       <div class="bar-total">Outcomes for <%= registered %> patients reg. <%= "Q#{quarter(date - 6.months)} #{(date - 6.months).year}" %></div>
-      <h6<% if current_quarter %> class="bold"<% end %>><%= current_quarter ? "This quarter" : "Q#{quarter(date)} #{date.year}" %></h6>
+      <h6<% if is_current_quarter %> class="bold"<% end %>><%= is_current_quarter ? "This quarter" : "Q#{quarter(date)} #{date.year}" %></h6>
 
       <table class="split-bars">
         <tr>
-          <td class="bar bar-1" style="width: <%= default_percent %>%;"><%= defaulted %></td>
-          <td class="bar bar-2" style="width: <%= uncontrolled_percent %>%;"><%= uncontrolled %></td>
-          <td class="bar bar-3" style="width: <%= controlled_percent %>%;"><%= controlled %></td>
+          <% if registered > 0 %>
+            <%
+              controlled_percent = (controlled.to_f / registered * 100).round
+              uncontrolled_percent = (controlled.to_f / registered * 100).round
+              default_percent = (defaulted.to_f / registered * 100).round
+            %>
+
+            <td class="bar bar-1" style="width: <%= default_percent %>%;"><%= defaulted %></td>
+            <td class="bar bar-2" style="width: <%= uncontrolled_percent %>%;"><%= uncontrolled %></td>
+            <td class="bar bar-3" style="width: <%= controlled_percent %>%;"><%= controlled %></td>
+          <% else %>
+            <td class="bar bar-1" style="width: 100%;">No patients</td>
+          <% end %>
         </tr>
       </table>
     </div>
