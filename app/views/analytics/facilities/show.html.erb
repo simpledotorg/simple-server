@@ -1,5 +1,5 @@
 <div class="dashboard">
-  <h1><a href="#"><%= link_to @facility.district, analytics_organization_district_path(@facility.organization.id, @facility.district) %></a> <i class="fas fa-chevron-right" style="position: relative; top: -3px; color: rgba(0,0,0,0.2); padding: 0 6px; font-size: 70%;"></i> <span class="glyphicon glyphicon-asterisk"></span> <%= @facility.name %></h1>
+  <h1><%= link_to @facility.district, analytics_organization_district_path(@facility.organization.id, @facility.district) %> <i class="fas fa-chevron-right" style="position: relative; top: -3px; color: rgba(0,0,0,0.2); padding: 0 6px; font-size: 70%;"></i> <span class="glyphicon glyphicon-asterisk"></span> <%= @facility.name %></h1>
 </div>
 
 <%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics %>
