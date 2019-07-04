@@ -2,7 +2,13 @@ class Analytics::DistrictsController < AnalyticsController
   before_action :set_organization_district
 
   def show
-    @analytics = @organization_district.dashboard_analytics
+    district_analytics = @organization_district.dashboard_analytics
+    available_facilities = policy_scope(Facility).where(id: district_analytics.keys)
+
+    @analytics = district_analytics.map do |facility_id, data|
+      facility = available_facilities.detect { |f| f.id == facility_id }
+      [facility, data]
+    end.to_h
   end
 
   def share_anonymized_data

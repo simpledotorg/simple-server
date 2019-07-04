@@ -4,7 +4,6 @@
 
 <%= render 'shared/analytics_table',
            analytics: @analytics,
-           row_resource: User.order(:full_name),
            row_resource_display_field: :full_name,
            row_resource_link: :admin_user_path %>
 

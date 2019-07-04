@@ -52,36 +52,36 @@
         <% end %>
       </tr>
 
-      <% policy_scope(row_resource).each do |resource| %>
-        <% if analytics[resource.id].present? %>
-          <tr>
-            <td class="row-rank"></td>
+      <% analytics
+             .sort_by { |resource, | resource.send(row_resource_display_field) }
+             .each do |resource, data| %>
+        <tr>
+          <td class="row-rank"></td>
 
-            <td class="row-title">
-              <%= link_to resource.send(row_resource_display_field),
-                          send(row_resource_link, resource) %>
+          <td class="row-title">
+            <%= link_to resource.send(row_resource_display_field),
+                        send(row_resource_link, resource) %>
+          </td>
+
+          <!--Registered patients-->
+          <td class="row-enrolled text-green">
+            <%= dash_if_zero(data.dig(:total_registered_patients)) %>
+          </td>
+
+          <!--Follow-up patients-->
+          <% repeat_for_last(months: 3) do |month| %>
+            <td class="row-enrolled">
+              <%= dash_if_zero(data.dig(:follow_up_patients_by_month, month)) %>
             </td>
+          <% end %>
 
-            <!--Registered patients-->
-            <td class="row-enrolled text-green">
-              <%= dash_if_zero(analytics.dig(resource.id, :total_registered_patients)) %>
+          <!--New registrations-->
+          <% repeat_for_last(months: 3) do |month| %>
+            <td class="row-enrolled">
+              <%= dash_if_zero(data.dig(:registered_patients_by_month, month)) %>
             </td>
-
-            <!--Follow-up patients-->
-            <% repeat_for_last(months: 3) do |month| %>
-              <td class="row-enrolled">
-                <%= dash_if_zero(analytics.dig(resource.id, :follow_up_patients_by_month, month)) %>
-              </td>
-            <% end %>
-
-            <!--New registrations-->
-            <% repeat_for_last(months: 3) do |month| %>
-              <td class="row-enrolled">
-                <%= dash_if_zero(analytics.dig(resource.id, :registered_patients_by_month, month)) %>
-              </td>
-            <% end %>
-          </tr>
-        <% end %>
+          <% end %>
+        </tr>
       <% end %>
       </tbody>
     </table>

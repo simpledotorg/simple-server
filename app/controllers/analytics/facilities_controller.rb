@@ -2,7 +2,13 @@ class Analytics::FacilitiesController < AnalyticsController
   before_action :set_facility
 
   def show
-    @analytics = @facility.dashboard_analytics
+    facility_analytics = @facility.dashboard_analytics
+    available_users = policy_scope(User).where(id: facility_analytics.keys)
+
+    @analytics = facility_analytics.map do |user_id, data|
+      user = available_users.detect { |f| f.id == user_id }
+      [user, data]
+    end.to_h
   end
 
   def share_anonymized_data

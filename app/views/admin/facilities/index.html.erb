@@ -1,6 +1,6 @@
 <% if policy(FacilityGroup).new? %>
   <div class="page-header">
-    <h1 class="page-title"">All facilities</h1>
+    <h1 class="page-title">All facilities</h1>
     <nav class="page-nav">
       <% if policy(Facility).upload? %>
         <%= link_to '+ Upload Facilities CSV', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
