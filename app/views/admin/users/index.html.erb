@@ -28,13 +28,13 @@
             <td class="sync_approval_status_reason"><%= user.sync_approval_status_reason %></td>
             <td class="nowrap"><a href="tel:<%= user.phone_number %>"><%= user.phone_number %></a></td>
             <td>
-              <% if user.registered_at_facility.present? %>
-                <% facility = user.registered_at_facility %>
+              <% if user.registration_facility.present? %>
+                <% facility = user.registration_facility %>
 
                 <% if policy(facility).show? %>
                   <%= link_to facility.name, [:admin, facility.facility_group, facility] %>
                 <% else %>
-                  <%= user.registered_at_facility.name %>
+                  <%= user.registration_facility.name %>
                 <% end %>
               <% end %>
             </td>

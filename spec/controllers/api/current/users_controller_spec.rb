@@ -44,9 +44,7 @@ RSpec.describe Api::Current::UsersController, type: :controller do
                      'device_updated_at',
                      'device_created_at',
                      'created_at',
-                     'updated_at',
-                     'sync_approval_status',
-                     'sync_approval_status_reason')
+                     'updated_at')
                    .merge('registration_facility_id' => facility.id, 'phone_number' => phone_number, 'password_digest' => password_digest)
                    .as_json
                    .with_int_timestamps)
