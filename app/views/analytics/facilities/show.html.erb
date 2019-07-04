@@ -4,11 +4,13 @@
 
 <%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics %>
 
-<%= render 'shared/analytics_table',
-           analytics: @analytics,
-           row_resource: User.order(:full_name),
-           row_resource_display_field: :full_name,
-           row_resource_link: :admin_user_path %>
+<%=
+  render 'shared/analytics_table',
+    analytics: @analytics,
+    row_resource: User.order(:full_name),
+    row_resource_display_field: :full_name,
+    row_resource_link: :admin_user_path
+%>
 
 <% if policy(@facility).share_anonymized_data? %>
   <div class="float-right text-right">
