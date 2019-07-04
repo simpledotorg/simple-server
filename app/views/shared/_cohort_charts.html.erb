@@ -1,7 +1,13 @@
 <div class="featured">
   <div class="featured-section featured-1">
-    <h4>Cohort report</h4>
-
+    <h3>Cohort report</h3>
+    <div class="desc">Outcomes for patients registered 3-6 months previously:
+        <div class="key">
+          <div class="didntattend">Didn't attend for<br class="mobile"> follow-up visit</div>
+          <div class="uncontrolled">Visited and <br class="mobile">BP &ge; 140/90</div>
+          <div class="controlled">Visited and <br class="mobile">BP &lt; 140/90</div>
+        </div>
+    </div>
     <% @cohort_analytics.each_with_index do |(date, analytics), quarters_back| %>
       <%
         registered = analytics[:registered]
@@ -17,39 +23,19 @@
         current_quarter = (quarters_back == 0)
       %>
 
-      <% if current_quarter %>
-        <!-- Current quarter-->
-        <div style="margin-bottom: 1em;" class="table-bullets">
-          <div class="didntattend">Didn't attend for follow-up visit: <b><%= defaulted %> of <%= pluralize(registered, "patient") %>*</b></div>
-          <div class="uncontrolled">Visited and BP &ge; 140/90: <b><%= pluralize(uncontrolled, "patient") %>*</b></div>
-          <div class="controlled">Visited and BP &lt; 140/90: <b><%= pluralize(controlled, "patient") %>*</b></div>
-        </div>
+      <div class="split-row">
+          <div class="bar-total">Outcomes for XX patients reg. <%= current_quarter ? "This quarter" : "Q#{quarter(date)} #{date.year}" %></div>
+          <h6<% if current_quarter %> class="bold"<% end %>><%= current_quarter ? "This quarter" : "Q#{quarter(date)} #{date.year}" %></h6>
 
-        <table class="split-bars" style="margin-bottom: 5px; clear: none;">
-          <tr>
-            <td class="small">Didn't attend</td>
-            <td class="small"><span class="desktop">Visited and BP </span>&ge; 140/90</td>
-            <td class="small"><span class="desktop">Visited and BP </span>&lt; 140/90</td>
-          </tr>
-        </table>
-      <% end %>
-
-      <table class="split-bars" style="margin-bottom: 5px; clear: none;">
-        <tr>
-          <td class="bar bar-label" style="width: 200px;"><%= current_quarter ? "This quarter" : "Q#{quarter(date)} #{date.year}" %></td>
-          <td class="bar bar-1" style="width: <%= default_percent %>%;"><%= defaulted %></td>
-          <td class="bar bar-2" style="width: <%= uncontrolled_percent %>%;"><%= uncontrolled %></td>
-          <td class="bar bar-3" style="width: <%= controlled_percent %>%;"><%= controlled %></td>
-        </tr>
-      </table>
+          <table class="split-bars">
+            <tr>
+              <td class="bar bar-1" style="width: <%= default_percent %>%;"><%= defaulted %></td>
+              <td class="bar bar-2" style="width: <%= uncontrolled_percent %>%;"><%= uncontrolled %></td>
+              <td class="bar bar-3" style="width: <%= controlled_percent %>%;"><%= controlled %></td>
+            </tr>
+          </table>
+      </div>
     <% end %>
-
-    <table class="split-bars" style="margin-bottom: 5px; clear: none;">
-      <tr>
-        <td colspan="2" class="bar-label"><div>Uncontrolled BP</div><em></em></td>
-        <td></td>
-      </tr>
-    </table>
-    <div class="small" style="margin-top: 4px;">* Patients who were enrolled 6-9 months ago</div>
+      
   </div>
 </div>

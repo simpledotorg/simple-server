@@ -11,13 +11,13 @@ $yellow: #FFC800;
 $offwhite: #f8f9fa;
 
 $grey-lightest: #F0F2F5;
-$grey-light: #DADDE0;
+$grey-light: #dce4e8;
 $grey-mid: #ADB2B8;
 $grey-dark: #6C737A;
 $grey-darkest: #2F363D;
 
 $highlight: #E9F3FF; /* LIGHT BLUE */
-$blue: #007bff;
+$blue: #0075EB;
 $blue-light: #E9F3FF;
 $green-light: #E0FFED;
 $green-mid: #5CFF9D;
@@ -38,24 +38,28 @@ $font-small: 11px;
 body {
   padding-top: 5rem;
   font-size: 14px;
-  font-family: Roboto, sans-serif;
+  font-family: "Roboto Condensed", sans-serif;
+  background: $grey-lightest;
 }
 
 h1 {
     font-size: 28px;
-    //color: $accent-color;
+    font-family: "Roboto";
     font-weight: bold;
+    padding-bottom: 8px;
 }
 
 h2 {
     font-size: 18px;
     font-weight: bold;
+    font-family: "Roboto";
 }
 
 h3 {
-    font-size: 16px;
-    //color: $accent-color;
-    font-weight: 500;
+    font-size: 18px;
+    color: $grey-darkest;
+    font-weight: 700;
+    font-family: "Roboto";
 }
 
 h4 {
@@ -73,6 +77,25 @@ h5 {
     font-size: 16px;
     font-family: $font-condensed;
     margin: 0;
+}
+
+h6 {
+    font-family: $font-condensed;
+    font-weight: normal;
+    font-size: 100%;
+    margin: 0 0 0.2em 0;
+}
+
+h6.bold {
+    font-weight: bold;
+}
+
+.mobile {
+    display: none;
+}
+
+.desc {
+    font-family: $font-condensed;
 }
 
 #app-footer {
@@ -120,12 +143,18 @@ footer {
 }
 
 @include media-breakpoint-down(sm) {
+    .mobile {
+        display: inherit;
+    }
     .navbar-nav {
         margin-top: 8px;
     }
     .navbar-nav li > a {
         padding: 1em 0;
         border-top: 1px solid rgba(0,0,0,0.05);
+    }
+    h1 {
+        font-size: 22px;
     }
 }
 
@@ -273,12 +302,6 @@ nav.navbar button.navbar-toggler {
 
 .table thead.thead-light th small {
     font-size: 12px;
-}
-
-h3 {
-    font-size: 16px;
-    color: $accent-color;
-    font-weight: 500;
 }
 
 .table thead.thead-light th {
@@ -515,27 +538,19 @@ Dashboard UI
     position: relative;
     display: table;
     width: 100%;
-    border-spacing: 4px;
-    margin: 16px -4px;
-}
-
-.featured-section {
-    display: table-cell;
-    width: 33%;
-    border-radius: 3px;
-    border: 1px solid $highlight;
-    padding: 8px;
+    border-radius: 5px;
+    padding: 16px;
+    margin: 8px -4px 0 -4px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     background: #fff;
-    position: relative;
 }
 
-.featured-title {
-    display: block;
-    font-size: 14px;
-    margin: 0 0 4px 0;
-    font-weight: normal;
-    font-family: $font-condensed;
-    line-height: 1.3;
+.downloads {
+    margin: 32px 0;
+}
+
+.downloads h4 {
+    color: $grey-mid;
 }
 
 .graphics a {
@@ -655,9 +670,7 @@ td.featured-middle {
 }
 
 .table-compact {
-    margin-bottom: 32px;
     clear: both;
-    padding-top: 16px;
 }
 
 .table-compact h4 {
@@ -667,12 +680,12 @@ td.featured-middle {
 }
 
 .table-compact th {
-    padding: 4px 4px;
     vertical-align: middle;
+    border: none;
 }
 
 .table-compact td {
-    padding: 4px 2px;
+    padding: 8px 4px;
     vertical-align: middle;
     border-top: 1px solid $grey-lightest;
     font-size: 13px;
@@ -688,7 +701,6 @@ td.featured-middle {
 
 .table-compact .row-title {
     font-family: $font-condensed;
-    border-right: 1px solid $grey-lightest;
 }
 
 .table-compact .row-title a {
@@ -734,7 +746,7 @@ td.featured-middle {
 
 .table-compact .row-label {
     white-space: nowrap;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: normal;
     text-align: center;
     line-height: 1.2;
