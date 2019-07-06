@@ -90,6 +90,10 @@ h6.bold {
     font-weight: bold;
 }
 
+.form-no-label label {
+    display: none;
+}
+
 .info {
     color: $green;
 }
@@ -424,6 +428,20 @@ span.inactive {
     margin: 8px 0;
     padding: 16px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    position: relative;
+}
+
+.card-footer {
+    margin: 0 -16px -16px -16px;
+    background: $offwhite;
+}
+
+.card-date {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    color: $grey-mid;
+    text-align: right;
 }
 
 .user-row {
@@ -773,31 +791,6 @@ td.featured-middle {
     border-top: 1px solid $grey-mid;
     border-bottom: 1px solid $grey-mid;
     font-weight: bold;
-}
-
-/******************
-Overdue list
-******************/
-
-.overdue-facility {
-    padding-top: 16px;
-}
-
-.overdue-patient {
-    border-top: 1px solid $grey-lightest;
-    padding: 16px 0;
-    position: relative;
-}
-
-.desc {
-    color: $grey-dark;
-    margin-top: 8px;
-}
-
-.overdue-time {
-    color: $grey-mid;
-    text-align: right;
-    padding: 0 0 16px 0;
 }
 
 /******************

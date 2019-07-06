@@ -42,7 +42,7 @@ module ApplicationHelper
 
     last_interaction = patient.appointments.order(scheduled_date: :desc).second
     last_interaction_date = last_interaction.created_at.strftime("%d-%b-%Y")
-    interaction_result = "Last interaction: " + last_interaction_date
+    interaction_result = "" + last_interaction_date
 
     if last_interaction.agreed_to_visit.present?
       interaction_result += ' - Agreed to visit'

@@ -1,3 +1,5 @@
+<h1>Overdue patients</h1>
+<p class="info"><i class="fas fa-question-circle"></i> Patients that are overdue for follow-up BP measure.</p>
 
         <%= render(
           'shared/paginate_and_filter_by_facility',
@@ -9,9 +11,7 @@
     
     
 
-<div id="overdue-patients" class="card">
-<h1>Overdue patients</h1>
-<p class="info"><i class="fas fa-question-circle"></i> Patients that are overdue for follow-up BP measure.</p>
+
     
   <% if @appointments.present? %>
     <% call_result_options = {
@@ -33,11 +33,10 @@
       ) %>
     <% end %>
   <% else %>
-    <div class="overdue-patient">
-      <p class="overdue-title" style="color: #999;">No overdue patients found</p>
+    <div class="card">
+      <p>No overdue patients found</p>
     </div>
   <% end %>
-</div>
 
 <%= paginate @appointments %>
 

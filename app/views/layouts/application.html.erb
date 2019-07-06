@@ -118,7 +118,7 @@
       </div>
     </nav>
 
-    <main role="main" class="container">
+    <main role="main" class="container pb-5">
       <% flash.each do |type, message| %>
         <div class="alert <%= bootstrap_class_for_flash(type) %> alert-dismissable fade show">
           <%= message %>

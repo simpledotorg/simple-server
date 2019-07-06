@@ -1,44 +1,35 @@
 <h1>Audit Logs</h1>
 
-<div class="row">
-  <div class="col-md-6">
-    <%= bootstrap_form_tag(url: [:admin, :audit_logs], local: true, label_errors: true, method: :get) do |form| %>
-      <%= form.text_field :user_name, value: params[:user_name] || "", label: "Search by user's full name" %>
+<%= bootstrap_form_tag(url: [:admin, :audit_logs], local: true, label_errors: true, method: :get) do |form| %>
 
+<div class="form-inline form-no-label">
+  
+      <%= form.text_field :user_name, value: params[:user_name] || "", label: "Full name", placeholder: "Search by user's full name", class: "mr-1"; %>
       <%= form.primary 'Search' %>
-    <% end %>
-  </div>
+
 </div>
-<br/>
+
+<% end %>
+
 
 <% if params[:user_name].present? %>
+  
   <% if @audit_logs.any? %>
-    <table class="table">
-      <thead class="thead-light">
-        <tr>
-          <th>Timestamp</th>
-          <th>Action type</th>
-          <th>Model type</th>
-          <th>Model ID</th>
-          <th>User</th>
-          <th colspan="2"></th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <% @audit_logs.each do |audit_log| %>
-          <tr>
-            <td><%= audit_log.created_at %></td>
-            <td><%= audit_log.action %></td>
-            <td><%= audit_log.auditable_type %></td>
-            <td><%= audit_log.auditable_id %></td>
-            <td><%= link_to audit_log.user.full_name, [:admin, audit_log.user] %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+           <% @audit_logs.each do |audit_log| %>
+              <div class="card">
+                <h5 class="pb-1"><%= link_to audit_log.user.full_name, [:admin, audit_log.user] %></h5>
+                <div class="card-date"><%= audit_log.created_at %></div>
+                <div class="row">
+                    <div class="col-md-2"><span class="text-secondary">Action:</span> <%= audit_log.action %></div>
+                    <div class="col-md-2"><span class="text-secondary">Type:</span> <%= audit_log.auditable_type %></div>
+                    <div class="col-md-8"><span class="text-secondary">ID:</span> <%= audit_log.auditable_id %></div>
+                </div>
+              </div>
+            <% end %>
   <% else %>
-    <p>No audit logs found for "<%= params[:user_name] %>"</p>
+    <div class="card">
+        <p>No audit logs found for "<%= params[:user_name] %>"</p>
+    </div>
   <% end %>
 <% end %>
 

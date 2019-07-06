@@ -14,35 +14,22 @@
     <% end %>
   </nav>
 </div>
-<div class="card">
 
-    <table class="table">
-    <thead class="thead-light">
-    <tr>
-      <th class="nowrap">Protocol drugs</th>
-      <th>Dosage</th>
-      <th class="nowrap">RxNorm code</th>
-      <th></th>
-    </tr>
-    </thead>
-
-    <tbody>
     <% @protocol_drugs.each do |protocol_drug| %>
-      <tr>
-        <td class="nowrap"><%= protocol_drug.name %></td>
-        <td class="nowrap"><%= protocol_drug.dosage %></td>
-        <td class="nowrap"><%= protocol_drug.rxnorm_code %></td>
-        <td class="text-right">
-        <% if policy(protocol_drug).edit? %>
-          <%= link_to 'Edit', edit_admin_protocol_protocol_drug_path(@protocol, protocol_drug), class: "btn btn-sm btn-outline-primary" %>
-        <% end %>
-        <% if policy(protocol_drug).destroy? %>
-          <%= link_to 'Delete', [:admin, @protocol, protocol_drug], method: :delete, data: { confirm: "Are you sure you want to delete #{protocol_drug.name}?" }, class: "btn btn-sm btn-outline-danger" %>
-        <% end %>
-        </td>
-      </tr>
+      <div class="card">
+        <div class="row">
+            <div class="col-7">
+                <h5 class="mb-1"><%= protocol_drug.dosage %> <%= protocol_drug.name %></h5>
+                <div><i class="fas fa-pills light mr-1"></i> <span class="text-secondary">RXnorm Code:</span> <%= protocol_drug.rxnorm_code %></div>
+            </div>
+            <div class="col-5 text-right">
+                <% if policy(protocol_drug).edit? %>
+                  <%= link_to 'Edit', edit_admin_protocol_protocol_drug_path(@protocol, protocol_drug), class: "btn btn-sm btn-outline-primary" %>
+                <% end %>
+                <% if policy(protocol_drug).destroy? %>
+                  <%= link_to 'Delete', [:admin, @protocol, protocol_drug], method: :delete, data: { confirm: "Are you sure you want to delete #{protocol_drug.name}?" }, class: "btn btn-sm btn-outline-danger" %>
+                <% end %>
+            </div>
+        </div>
+      </div>
     <% end %>
-    </tbody>
-    </table>
-
-</div>
