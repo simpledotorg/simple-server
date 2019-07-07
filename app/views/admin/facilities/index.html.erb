@@ -28,36 +28,27 @@
             <% end %>
         </div>
     </div> 
-    <!--p>
-        Protocol: <%= facility_group.protocol.name %>
-    </p-->
-
     
-          <% policy_scope(facility_group.facilities).order(:name).each do |facility| %>
-              
-                  <div class="row card-row">
-                      <div class="col-4">
-                          <h5><%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %></h5>
-                      </div>
-                      <div class="col-5">
-                          <div class="card-details">
-                          <i class="fas fa-map-marker-alt light mr-2"></i> <%= facility.street_address %>
-                          <%= facility.village_or_colony %>
-                          <%= facility.district %>
-                          <%= facility.state %>
-                          <!-- <%= facility.country %></td-->
-                          <%= facility.pin %>
-                         </div>
-                      </div>
-                      <div class="col-3"><i class="fas fa-hospital light mr-2"></i> <%= facility.facility_type %></div>
-                      <!--div class="col-2 text-right">
-                          <% if policy(facility).edit? %>
-                            <%= link_to 'Edit', edit_admin_facility_group_facility_path(facility_group, facility), class: "btn btn-sm btn-outline-primary" %>
-                          <% end %>
-                      </div-->
-                  </div>
-              
-          <% end %>
+    <% policy_scope(facility_group.facilities).order(:name).each do |facility| %>
+
+          <div class="row card-row">
+              <div class="col-md-4">
+                  <h5><%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %></h5>
+              </div>
+              <div class="col-md-5">
+                  <div class="card-details">
+                  <i class="fas fa-map-marker-alt light mr-2"></i> <%= facility.street_address %>
+                  <%= facility.village_or_colony %>
+                  <%= facility.district %>
+                  <%= facility.state %>
+                  <!-- <%= facility.country %></td-->
+                  <%= facility.pin %>
+                 </div>
+              </div>
+              <div class="col-md-3"><i class="fas fa-hospital light mr-2"></i> <%= facility.facility_type %></div>
+          </div>
+
+    <% end %>
       </div>
   <% end %>
 <% end %>

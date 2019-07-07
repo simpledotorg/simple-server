@@ -2,25 +2,54 @@
   <h1 class="page-title">Admins</h1>
   <nav class="page-nav">
     <div class="dropdown">
-      <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
         Add new admin
       </button>
-      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <% if policy(:invitation).invite_owner? %>
-          <%= link_to 'Owner', new_admin_invitation_path(role: 'owner'), class: "dropdown-item" %>
-        <% end %>
-        <% if policy(:invitation).invite_organization_owner? %>
-          <%= link_to 'Organization Owner', new_admin_invitation_path(role: 'organization_owner'), class: "dropdown-item" %>
-        <% end %>
-        <% if policy(:invitation).invite_supervisor? %>
-          <%= link_to 'Supervisor', new_admin_invitation_path(role: 'supervisor'), class: "dropdown-item" %>
-        <% end %>
-        <% if policy(:invitation).invite_analyst? %>
-          <%= link_to 'Analyst', new_admin_invitation_path(role: 'analyst'), class: "dropdown-item" %>
-        <% end %>
-        <% if policy(:invitation).invite_counsellor? %>
-          <%= link_to 'Counsellor', new_admin_invitation_path(role: 'counsellor'), class: "dropdown-item" %>
-        <% end %>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Choose access level of the new admin</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+                    <% if policy(:invitation).invite_owner? %>
+                        <div class="row mb-3">
+                            <div class="col-5"><%= link_to 'Owner', new_admin_invitation_path(role: 'owner'), class: "btn btn-sm btn-outline-primary btn-block" %></div>
+                            <div class="col-7"><strong>Owners</strong> can edit and add new admins. Only top level people should be Owners.</div>
+                        </div>
+                    <% end %>
+                    <% if policy(:invitation).invite_organization_owner? %>
+                        <div class="row mb-3">
+                            <div class="col-5"><%= link_to 'Organization Owner', new_admin_invitation_path(role: 'organization_owner'), class: "btn btn-sm btn-outline-primary btn-block" %></div>
+                            <div class="col-7">Organization owners can...</div>
+                        </div>
+                    <% end %>
+                    <% if policy(:invitation).invite_supervisor? %>
+                        <div class="row mb-3">
+                            <div class="col-5"><%= link_to 'Supervisor', new_admin_invitation_path(role: 'supervisor'), class: "btn btn-sm btn-outline-primary btn-block" %></div>
+                            <div class="col-7">Supervisors can...</div>
+                        </div>
+                    <% end %>
+                    <% if policy(:invitation).invite_analyst? %>
+                        <div class="row mb-3">              
+                            <div class="col-5"><%= link_to 'Analyst', new_admin_invitation_path(role: 'analyst'), class: "btn btn-sm btn-outline-primary btn-block" %></div>
+                            <div class="col-7">Analysts can...</div>
+                        </div>
+                    <% end %>
+                    <% if policy(:invitation).invite_counsellor? %>
+                        <div class="row">
+                            <div class="col-5"><%= link_to 'Counsellor', new_admin_invitation_path(role: 'counsellor'), class: "btn btn-sm btn-outline-primary btn-block" %></div>
+                            <div class="col-7">Counsellors can...</div>
+                        </div>
+                    <% end %>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </nav>
