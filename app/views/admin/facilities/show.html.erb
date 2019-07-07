@@ -1,7 +1,6 @@
 <div class="page-header">
   <h1 class="page-title">
-    <small><%= link_to @facility.facility_group.name, admin_facilities_path %></small><br>
-    <%= @facility.name %>
+    <%= link_to @facility.facility_group.name, admin_facilities_path %> <i class="fas fa-angle-right light"></i> <%= @facility.name %>
   </h1>
   <nav class="page-nav">
     <% if policy(@facility).edit? %>
@@ -10,70 +9,72 @@
   </nav>
 </div>
 
-<h2>Address</h2>
-<p>
-  <%= @facility.street_address %><br>
-  <%= @facility.village_or_colony %><br>
-  <%= @facility.district %>, <%= @facility.state %><br>
-  <%= @facility.pin %><br>
-  <%= @facility.country %>
-</p>
-
-<% if @facility.latitude.present? && @facility.longitude.present? %>
-  <h3>Latitude/Longitude</h3>
-  <p><%= @facility.latitude %>, <%= @facility.longitude %></p>
-<% end %>
-
-<h2>Users</h2>
-<div class="table-responsive">
-  <table class="table">
-    <thead class="thead-light">
-    <tr>
-      <th>Name</th>
-      <th>Sync status</th>
-      <th>Status reason</th>
-      <th>Phone number</th>
-      <th>Last login</th>
-      <th colspan="2"></th>
-    </tr>
-    </thead>
-
-    <tbody>
-    <% @facility.users.order(:full_name).each do |user| %>
-      <tr>
-        <td class="nowrap"><%= link_to user.full_name, [:admin, user] %></td>
-        <td class="sync_approval_status nowrap">
-          <span class="label <%= user.sync_approval_status %>"><%= user.sync_approval_status&.capitalize %></span>
-        </td>
-        <td class="sync_approval_status_reason"><%= user.sync_approval_status_reason %></td>
-        <td class="nowrap"><a href="tel:<%= user.phone_number %>"><%= user.phone_number %></a></td>
-        <td class="nowrap">
-          <%=
-            if (user.logged_in_at.present?)
-              'Logged in at:' + user.logged_in_at.to_s
-            else
-              'Has not logged in yet'
-            end
-          %>
-        </td>
-        <td class="nowrap">
-          <% if policy(user).edit? %>
-            <%= link_to 'Edit', edit_admin_user_path(user) %>
-          <% end %>
-          <% if policy(user).destroy? %>
-            <span class="light divider">|</span> <%= link_to 'Delete', [:admin, user], method: :delete, data: { confirm: "Are you sure you want to delete #{user.full_name}?" } %>
-          <% end %>
-          <% unless user.sync_approval_status == 'denied' %>
-            <span class="light divider">|</span> <%= link_to 'Deny access', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal' %>
-          <% end %>
-          <% unless user.sync_approval_status == 'allowed' %>
-            <span class="light divider">|</span> <%= link_to 'Allow access', admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
-          <% end %>
-
-          <%= render partial: "admin/users/deny_access_modal", locals: { user: user } %>
-        </td>
-      </tr>
+<div class="card">
+    <h2>Address</h2>
+    <div>
+      <div><%= @facility.street_address %></div>
+      <div><%= @facility.village_or_colony %></div>
+      <div><%= @facility.district %>, <%= @facility.state %></div>
+      <div><%= @facility.pin %></div>
+      <div><%= @facility.country %></div>
+    </div>
+</div>
+<div class="card">
+    <h3>Latitude/Longitude</h3>
+    <% if @facility.latitude.present? && @facility.longitude.present? %>
+        <div><i class="fas fa-map-marker-alt light mr-2"></i> <%= @facility.latitude %>, <%= @facility.longitude %></div>
+    <% else %>
+        <div><i class="fas fa-angle-left light"></i> None entered <i class="fas fa-angle-right light"></i></div>
     <% end %>
-    </tbody>
-  </table>
+</div>
+
+
+<div class="card">
+    <h2>Users</h2>
+        <% @facility.users.order(:full_name).each do |user| %>
+          <div class="card-row row">
+            <div class="col">
+                <h5>
+                    <%= link_to user.full_name, [:admin, user] %>
+                    <% unless user.sync_approval_status == 'allowed' %>
+                        <span class="badge badge-primary <%= user.sync_approval_status %>"><%= user.sync_approval_status&.capitalize %></span>
+                    <% end %>
+                </h5>
+                <div class="mt-1 mb-1">
+                    <%=
+                        if (user.logged_in_at.present?)
+                          'Last login: ' + user.logged_in_at.to_s
+                        else
+                          'Has not logged in yet'
+                        end
+                    %>
+                </div>
+                <div>
+                    <a href="tel:<%= user.phone_number %>" class="btn btn-sm btn-phone btn-outline-primary"><i class="fas fa-phone"></i> <%= user.phone_number %></a>
+                </div>
+            </div>
+            <div class="col text-right">
+              <% if policy(user).edit? %>
+                <%= link_to 'Edit', edit_admin_user_path(user), class: "btn btn-sm btn-outline-primary" %>
+              <% end %>
+              
+              <% if policy(user).destroy? %>
+                <%= link_to 'Delete', [:admin, user], method: :delete, data: { confirm: "Are you sure you want to delete #{user.full_name}?" }, class: "btn btn-sm btn-outline-danger" %>
+              <% end %>
+              
+              <% unless user.sync_approval_status == 'allowed' or 'denied' %>
+                <%= link_to 'Deny', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal', class: "btn btn-sm btn-outline-danger" %>
+              <% end %>
+                
+              <% unless user.sync_approval_status == 'allowed' or 'denied' %>
+                <%= link_to 'Allow access', admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') }, class: "btn btn-sm btn-outline-success" %>
+              <% end %>
+
+              <%= render partial: "admin/users/deny_access_modal", locals: { user: user } %>
+                <div class="mt-2"><i class="fas fa-info-circle light mr-1"></i> <%= user.sync_approval_status_reason %></div>
+            </div>
+        </div>
+            
+        <% end %>
+
 </div>

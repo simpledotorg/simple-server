@@ -36,11 +36,11 @@
                 <h5>
                     <%= link_to admin.email, admin %>
                 </h5>
-                <div><%= admin.role.humanize %></div>
+                <div class="mt-2"><i class="fas fa-shield-alt light mr-2"></i> <%= admin.role.humanize %></div>
             </div>
             <div class="col col-6 text-right">
                 <% if admin.invited_to_sign_up? %>
-                    <span class="badge badge-info mr-4">Invite sent</span>
+                    <span class="badge badge-success badge-pill mr-4 mt-1" style="font-size: 90%; font-weight: normal;">Invite sent</span>
                 <% end %>
                 <% if policy(admin).edit? %>
                   <%= link_to 'Edit', edit_admin_path(admin), class: "btn btn-sm btn-outline-primary" %>

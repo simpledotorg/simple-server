@@ -1,34 +1,47 @@
-<h1><%= @admin.email %></h1>
-
-<div class="row">
-  <div class="col-md-4 col-lg-3">
-    <p>
-      <strong>Role:</strong>
-      <%= @admin.role.humanize %>
-    </p>
-
-    <% if @admin.supervisor? || @admin.analyst? || @admin.counsellor? %>
-      <p>
-        <strong>Facility Groups:</strong>
-      </p>
-      <ul>
-        <% @admin.facility_groups.each do |facility_group| %>
-          <li><%= link_to facility_group.name, admin_facility_group_path(facility_group) %></li>
-        <% end %>
-      </ul>
-    <% elsif @admin.organization_owner? %>
-      <p>
-        <strong>Organizations:</strong>
-      </p>
-      <ul>
-        <% @admin.organizations.each do |organization| %>
-          <li><%= link_to organization.name, admin_organization_path(organization) %></li>
-        <% end %>
-      </ul>
-    <% end %>
-
+<div class="page-header">
+  <h1 class="page-title">
+    <% if policy(Admin).index? %>
+        <%= link_to "Admins", admins_path, class: "#{active_controller?("admins")}" %>  <i class="fas fa-angle-right light"></i> 
+      <% end %>
+      
+      Admin
+  </h1>
+  <nav class="page-nav">
     <% if policy(@admin).edit? %>
       <%= link_to 'Edit admin', edit_admin_path(@admin), class: "btn btn-sm btn-primary" %>
     <% end %>
-  </div>
+  </nav>
+</div>
+
+<div class="card">
+    <h2>
+        <%= @admin.email %>
+    </h2>
+    <div class="card-row">
+        <strong>Role:</strong> <%= @admin.role.humanize %>
+    </div>
+    
+    
+    <% if @admin.supervisor? || @admin.analyst? || @admin.counsellor? %>
+        <div class="card-row">    
+            <strong>Facility Groups:</strong>
+
+            <ul>
+                <% @admin.facility_groups.each do |facility_group| %>
+                    <li class="mt-2 mb-2"><%= link_to facility_group.name, admin_facility_group_path(facility_group) %></li>
+                <% end %>
+            </ul>
+        </div>
+    <% elsif @admin.organization_owner? %>
+        <div class="card-row">
+            <strong>Organizations:</strong>
+
+            <ul>
+            <% @admin.organizations.each do |organization| %>
+            <li class="mt-2 mb-2"><%= link_to organization.name, admin_organization_path(organization) %></li>
+            <% end %>
+            </ul>
+        </div>
+    <% end %>
+
 </div>

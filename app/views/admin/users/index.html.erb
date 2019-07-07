@@ -10,10 +10,16 @@
             <div class="card">
                 <div class="row">
                     <div class="col">
-                        <h5 class="mb-1"><%= link_to user.full_name, [:admin, user] %></h5>
+                        <h5 class="mb-1">
+                            <%= link_to user.full_name, [:admin, user] %>
+                            <% unless user.sync_approval_status == 'allowed' %>
+                                <span class="ml-2 badge badge-pill badge-primary <%= user.sync_approval_status %>"><%= user.sync_approval_status&.capitalize %></span>
+                            <% end %>
+                        </h5>
                         <div>
-                            <span class="label <%= user.sync_approval_status %>">Status: "<%= user.sync_approval_status&.capitalize %>" - </span>
-                            <%= user.sync_approval_status_reason %>.
+                            <% unless user.sync_approval_status == 'allowed' %>
+                                <%= user.sync_approval_status_reason %>.
+                            <% end %>
                             
                             <% if user.registration_facility.present? %>
                                 Registration facility: 
@@ -31,12 +37,17 @@
                         </div>
                     </div>
                     <div class="col text-right">
-                      <% unless user.sync_approval_status == 'allowed' %>
+                      <% unless user.sync_approval_status == 'allowed' or 'denied' %>
                         <%= link_to 'Allow', admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') }, class: 'btn btn-sm btn-outline-success' %>
                       <% end %>
-                      <% unless user.sync_approval_status == 'denied' %>
+                      <% unless user.sync_approval_status == 'allowed' or 'denied' %>
                         <%= link_to 'Deny', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal', class: 'btn btn-sm btn-outline-danger' %>
                       <% end %>
+                        
+                      <% if policy(user).destroy? %>
+                        <%= link_to 'Delete', [:admin, user], method: :delete, data: { confirm: "Are you sure you want to delete #{user.full_name}?" }, class: "btn btn-sm btn-outline-danger" %>
+                      <% end %>
+                        
                       <% if policy(user).edit? %>
                         <%= link_to 'Edit', edit_admin_user_path(user), class: 'btn btn-sm btn-outline-primary' %>
                       <% end %>
