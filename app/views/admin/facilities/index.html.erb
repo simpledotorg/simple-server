@@ -3,30 +3,28 @@
     <h1 class="page-title">All facilities</h1>
     <nav class="page-nav">
       <% if policy(Facility).upload? %>
-        <%= link_to '+ Upload Facilities CSV', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
+        <%= link_to '+ Upload facilities CSV', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
       <% end %>
-      <%= link_to '+ Facility group', new_admin_facility_group_path, class: "btn btn-sm btn-primary" %>
+      <%= link_to 'New facility group', new_admin_facility_group_path, class: "btn btn-sm btn-primary" %>
     </nav>
   </div>
 <% end %>
 
 <% @organizations.order(:name).each do |organization| %>
-  <% if @organizations.size > 1 %><h2 style="margin-top: 32px;"><%= organization.name %></h2><% end %>
+  <% if @organizations.size > 1 %><h2 class="mt-5"><%= organization.name %></h2><% end %>
 
   <% policy_scope(organization.facility_groups).order(:name).each do |facility_group| %>    
-
-   <div class="row" style="margin-top: 32px;">
-       <div class="col-8">
-           <h4 style="margin: 0;">
-              <%= facility_group.name %>
-              <% if policy(facility_group).edit? %>
-                <%= link_to 'EDIT', edit_admin_facility_group_path(facility_group) %>
-              <% end %>
-            </h4>
+  <div class="card">
+   <div class="row">
+       <div class="col-6">
+           <h3><%= facility_group.name %></h3>
        </div>
-       <div class="col-4 text-right">
-           <% if policy(facility_group).edit? %>
-              <%= link_to "+ New Facility", new_admin_facility_group_facility_path(facility_group), class: "nowrap" %>
+       <div class="col-6 text-right">
+            <% if policy(facility_group).edit? %>
+              <%= link_to 'Edit', edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %>
+            <% end %>
+            <% if policy(facility_group).edit? %>
+              <%= link_to "New Facility", new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-outline-success" %>
             <% end %>
         </div>
     </div> 
@@ -34,15 +32,16 @@
         Protocol: <%= facility_group.protocol.name %>
     </p-->
 
-    <div style="clear: both;">
+    
           <% policy_scope(facility_group.facilities).order(:name).each do |facility| %>
-              <div class="card">
-                  <div class="row">
-                      <div class="col-10">
-                          <h5><%= link_to facility.name, [:admin, facility_group, facility] %> <!-- <%= facility.facility_type %> --></h5>
-
+              
+                  <div class="row card-row">
+                      <div class="col-4">
+                          <h5><%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %></h5>
+                      </div>
+                      <div class="col-5">
                           <div class="card-details">
-                          <%= facility.street_address %>
+                          <i class="fas fa-map-marker-alt light mr-2"></i> <%= facility.street_address %>
                           <%= facility.village_or_colony %>
                           <%= facility.district %>
                           <%= facility.state %>
@@ -50,14 +49,15 @@
                           <%= facility.pin %>
                          </div>
                       </div>
-                      <div class="col-2 text-right">
+                      <div class="col-3"><i class="fas fa-hospital light mr-2"></i> <%= facility.facility_type %></div>
+                      <!--div class="col-2 text-right">
                           <% if policy(facility).edit? %>
                             <%= link_to 'Edit', edit_admin_facility_group_facility_path(facility_group, facility), class: "btn btn-sm btn-outline-primary" %>
                           <% end %>
-                      </div>
+                      </div-->
                   </div>
-              </div>
+              
           <% end %>
-    </div>
+      </div>
   <% end %>
 <% end %>

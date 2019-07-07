@@ -37,6 +37,7 @@
   </head>
 
   <body>
+    <% if admin_signed_in? %>
     <nav class="<%= style_class_for_environment %>">
       <div class="container">
         <%= link_to root_path, class: "navbar-brand" do %>
@@ -117,13 +118,14 @@
         </div>
       </div>
     </nav>
-
+    <% end %>
+      
     <main role="main" class="container pb-5">
       <% flash.each do |type, message| %>
-        <div class="alert <%= bootstrap_class_for_flash(type) %> alert-dismissable fade show">
+        <div class="<% if !admin_signed_in? %>col-md-6 mx-auto<% end %> alert <%= bootstrap_class_for_flash(type) %> alert-dismissable fade show">
           <%= message %>
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+            <i class="fas fa-times" style="font-size: 85%; position: relative; bottom: 2px;"></i>
           </button>
         </div>
       <% end %>
