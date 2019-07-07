@@ -16,11 +16,13 @@
           <div class="card-footer">
               <div class="row">            
                   <div class="col">
+                    <div class="mt-2">
                     <% if devise_mapping.rememberable? -%>
                         <%= f.form_group :remember_me do %>
                         <%= f.check_box :remember_me %>
                         <% end %>
                     <% end -%>
+                    </div>
                   </div>
                   <div class="col text-right">
                     <%= f.primary "Login" %>
