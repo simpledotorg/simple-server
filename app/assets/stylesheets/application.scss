@@ -188,7 +188,7 @@ footer {
         font-size: 14px;
     }
     h1 {
-        font-size: 18px;
+        font-size: 28px;
     }
 }
 
@@ -712,22 +712,17 @@ Breadcrumb nav
 nav.breadcrumb {
     background: transparent;
     padding-left: 0;
-    margin: 0;
+    margin: -12px 0 8px 0;
 }
 
 nav.breadcrumb .arrow,
 nav.breadcrumb i {
    font-weight: 900;
    color: $grey-mid;
-    margin-right: 4px;
+    margin: 0 4px;
     font-size: 85%;
     top: 4px;
     position: relative;
-}
-
-nav.breadcrumb a {
-   margin: 0 0.5em 0 0;
-   font-family: $font-condensed;
 }
 
 /******************
