@@ -49,6 +49,14 @@ h1 {
     padding-bottom: 8px;
 }
 
+h1 .fa-chevron-right {
+    position: relative;
+    top: -3px;
+    color: rgba(0,0,0,0.2);
+    padding: 0 6px;
+    font-size: 70%;
+}
+
 h2 {
     font-size: 18px;
     font-weight: bold;
@@ -114,18 +122,6 @@ h6.bold {
     display: none;
 }
 
-.desc {
-    font-family: $font-condensed;
-}
-
-#app-footer {
-    font-size: 85%;
-    padding: 16px 0 32px 0;
-    margin-top: 32px;
-    text-align: right;
-    border-top: 1px solid $grey-lightest;
-}
-
 .user {
     width: 32px;
     height: 32px;
@@ -153,6 +149,7 @@ table {
 .text-red { color: $red; }
 .text-green { color: $green; }
 .text-yellow { color: $yellow-dark; }
+.text-info { color: #30B496; }
 
 footer {
     padding: 2em 0 1em 0;
@@ -184,8 +181,14 @@ footer {
         padding: 1em 0;
         border-top: 1px solid rgba(0,0,0,0.05);
     }
+    .navbar-toggler-icon {
+        font-size: 14px;
+    }
+    .dropdown-item {
+        font-size: 14px;
+    }
     h1 {
-        font-size: 22px;
+        font-size: 18px;
     }
 }
 
@@ -199,6 +202,10 @@ footer {
     }
     .navbar-nav li > a.active {
         color: #000;
+    }
+    .navbar .nav-link,
+    .dropdown-item {
+        font-size: 15px;
     }
     .table-compact .row-title a {
         width: 100% !important;
@@ -381,10 +388,6 @@ span.inactive {
     margin-top: 1.5em;
 }
 
-.table .table-info strong {
-    font-size: 14px;
-}
-
 .table td.row-title,
 .table h3 {
     white-space: nowrap;
@@ -411,16 +414,6 @@ span.inactive {
   &.holiday {
     background-color: #f6f6f6;
   }
-}
-
-.table-info > td {
-  background-color: $highlight;
-  border-top-color: #666;
-
-    &.holiday {
-        background: #eee;
-    }
-
 }
 
 .card .row.tight {
@@ -469,58 +462,6 @@ span.inactive {
 Dashboard UI
 *****************/
 
-.snapshot {
-    max-width: 380px;
-    padding: 0 8px 16px 8px;
-    background: $offwhite;
-}
-
-.snapshot .featured-section {
-    border: none;
-    box-shadow:
-        0 1px 3px rgba(0,0,0,0.07)
-    ;
-}
-
-.snapshot-simple .featured-section {
-    background: #fff 12px 12px url(/assets/icon-happy.png) no-repeat;
-    background-size: 50px;
-    text-align: left;
-    padding: 8px 16px 8px 70px;
-    min-height: 1px;
-}
-
-.snapshot-header {
-    margin: 0 -8px 16px -8px;
-    padding: 5px 8px;
-    background: $red;
-    color: #fff;
-    font-size: 13px;
-    font-weight: bold;
-}
-
-.snapshot-header span {
-    float: right;
-    font-size: 11px;
-    padding-top: 2px;
-    display: block;
-    font-family: $font-condensed;
-}
-
-.snapshot-goal {
-    background: url(/assets/trophy.png) 8px 50% no-repeat;
-    background-size: 32px;
-    margin: 12px -4px 12px -4px;
-    padding: 8px 8px 8px 48px;
-    border: 1px solid $yellow;
-    font-size: 12px;
-    color: rgba(0,0,0,0.6);
-}
-
-.snapshot .table-compact td {
-    border-color: rgba(0,0,0,0.07);
-}
-
 .dashboard h1 {
     margin-bottom: 0;
 }
@@ -550,22 +491,6 @@ Dashboard UI
     color: $grey-mid;
 }
 
-.graphics a {
-    text-indent: -1000em;
-    width: 42px;
-    height: 42px;
-    background: url(/assets/whatsapp-dashboard.svg);
-    background-size: cover;
-    display: block;
-    float: right;
-    margin: -10px -4px 0 0;
-}
-
-.snapshot-simple .featured-title {
-    font-weight: normal;
-    font-size: 14px;
-}
-
 .featured-graph {
     height: 60px;
 }
@@ -584,13 +509,6 @@ Dashboard UI
     line-height: 1;
     margin: 8px 0 16px 0;
     display: block;
-}
-
-.snapshot-simple .featured-number {
-    font-size: 18px;
-    margin-bottom: 8px;
-    display: block;
-    font-weight: 700;
 }
 
 td.featured-middle {
@@ -637,10 +555,6 @@ td.featured-middle {
     border-radius: 3px 3px 0 0;
     padding-top: 4px;
     min-height: 24px;
-}
-
-.snapshot-simple .featured-graph-column {
-    font-size: 11px;
 }
 
 .featured-graph-column-yellow {
@@ -728,14 +642,6 @@ td.featured-middle {
     padding: 3px 0;
 }
 
-.snapshot .table-compact .row-title a {
-    width: 10em !important;
-}
-
-.snapshot .table-compact .row-title a {
-    color: $grey-darkest;
-}
-
 .table-compact .row-title span {
     display: block;
     color: $grey-mid;
@@ -809,52 +715,14 @@ nav.breadcrumb {
     margin: 0;
 }
 
- nav.breadcrumb .arrow {
-     font-weight: 900;
-     color: $grey-mid;
- }
-
- nav.breadcrumb a {
-     margin: 0 0.5em 0 0;
-     font-family: $font-condensed;
-  }
-
-/******************
-???
-******************/
-
-.snapshot-padding {
-  margin-bottom: 26px;
+nav.breadcrumb .arrow {
+   font-weight: 900;
+   color: $grey-mid;
 }
 
-.snapshot-footer {
-  margin-top: -26px;
-  padding-top: 6px;
-  color: #999;
-  margin-right: 0;
-  border-top: 1px solid #F0F2F5;
-}
-
-.facility-graphics-message {
-  line-height: 1.3;
-  margin: 0.5em 0 0.5em 0;
-}
-
-.call-hypertensive-patients-text {
-  margin-bottom: 0;
-  padding: 16px 70px 0 0;
-  text-align: right;
-  background: url(/assets/icon-arrow.png) 90% 30% no-repeat;
-  background-size: 40px;
-  line-height: 1.2;
-}
-
-.facility-snapshot-footer {
-  margin-top: 8px;
-  padding-top: 6px;
-  color: #999;
-  margin-right: 0;
-  border-top: 1px solid #F0F2F5;
+nav.breadcrumb a {
+   margin: 0 0.5em 0 0;
+   font-family: $font-condensed;
 }
 
 /******************
