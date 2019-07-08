@@ -22,7 +22,7 @@
     <div class="split-row">
       <div class="row px-lg-0">
           <div class="col-lg-3 nowrap order-lg-3">
-              <div class="bar-total float-right float-lg-none mb-n5 mb-lg-0">Outcomes for <%= registered %> patients reg. <%= "Q#{quarter(date - 6.months)} #{(date - 6.months).year}" %></div>
+              <div class="bar-total float-right float-lg-none mb-n5 mb-lg-0">Outcomes for <%= registered %> patients reg. <%= "Q#{quarter(date - 3.months)} #{(date - 3.months).year}" %></div>
           </div>
           <div class="col-lg-1 nowrap order-lg-1 pt-lg-2">
               <h6<% if is_current_quarter %> class="bold"<% end %>><%= is_current_quarter ? "This quarter" : "Q#{quarter(date)} #{date.year}" %></h6>
@@ -46,7 +46,7 @@
                   <% end %>
                 </tr>
               </table>
-              
+
         </div>
       </div>
     </div>

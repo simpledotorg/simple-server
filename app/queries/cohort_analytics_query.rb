@@ -5,7 +5,7 @@ class CohortAnalyticsQuery
     @patients = patients
   end
 
-  def patient_counts(year:, quarter:, quarters_previous: 2)
+  def patient_counts(year:, quarter:, quarters_previous: 1)
     report_start = quarter_start(year, quarter)
     report_end   = quarter_end(year, quarter)
 
