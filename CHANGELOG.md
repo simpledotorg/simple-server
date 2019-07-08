@@ -1,9 +1,30 @@
 # Unreleased
-### Added 
+### Added
 ### Changed
 ### Fixed
-### Deprecated 
-### Removed 
+### Deprecated
+### Removed
+### Security
+
+# 2019-07-08-1
+### Added
+- Add quarterly cohort charts to district and facility dashboards (#463)
+- Add audit_logs to User (master_users) model (#456)
+- Sharing anonymised data dump
+- Simple Dashboard V2 (District + Facility View) (#447)
+- Bulk upload facilities V1
+### Changed
+- Updated staging domain name
+- Replace before :all with before :each to ensure db is cleaned up afte…
+- Move user authentication to master user
+### Fixed
+- Only display flash messages of type String in the login page (#455)
+- Avoid sending emails during registration when auto approve is enabled (…
+- Update swagger.json + handle user registration errors better (#458)
+- Fix issues with user registration and login (#454)
+- Prevent n+1 queries for facility and patient sync (#453)
+### Deprecated
+### Removed
 ### Security
 
 # 2019-06-21-1
