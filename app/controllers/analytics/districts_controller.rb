@@ -2,6 +2,7 @@ class Analytics::DistrictsController < AnalyticsController
   before_action :set_organization_district
 
   def show
+    @cohort_analytics = @organization_district.cohort_analytics
     @analytics = @organization_district.dashboard_analytics
   end
 
