@@ -26,25 +26,25 @@
                     <% if policy(:invitation).invite_organization_owner? %>
                         <div class="row mb-3">
                             <div class="col-5"><%= link_to 'Organization Owner', new_admin_invitation_path(role: 'organization_owner'), class: "btn btn-sm btn-outline-primary btn-block" %></div>
-                            <div class="col-7">Organization owners can...</div>
+                            <div class="col-7"><strong>Organization owners</strong> can...</div>
                         </div>
                     <% end %>
                     <% if policy(:invitation).invite_supervisor? %>
                         <div class="row mb-3">
                             <div class="col-5"><%= link_to 'Supervisor', new_admin_invitation_path(role: 'supervisor'), class: "btn btn-sm btn-outline-primary btn-block" %></div>
-                            <div class="col-7">Supervisors can...</div>
+                            <div class="col-7"><strong>Supervisors</strong> can...</div>
                         </div>
                     <% end %>
                     <% if policy(:invitation).invite_analyst? %>
                         <div class="row mb-3">              
                             <div class="col-5"><%= link_to 'Analyst', new_admin_invitation_path(role: 'analyst'), class: "btn btn-sm btn-outline-primary btn-block" %></div>
-                            <div class="col-7">Analysts can...</div>
+                            <div class="col-7"><strong>Analysts</strong> can...</div>
                         </div>
                     <% end %>
                     <% if policy(:invitation).invite_counsellor? %>
                         <div class="row">
                             <div class="col-5"><%= link_to 'Counsellor', new_admin_invitation_path(role: 'counsellor'), class: "btn btn-sm btn-outline-primary btn-block" %></div>
-                            <div class="col-7">Counsellors can...</div>
+                            <div class="col-7"><strong>Counsellors</strong> can only view Overdue and Adherence call lists.</div>
                         </div>
                     <% end %>
             </div>

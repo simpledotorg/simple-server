@@ -31,6 +31,7 @@
 
 <div class="card">
     <h2>Users</h2>
+    <% if @facility.users.present? %>
         <% @facility.users.order(:full_name).each do |user| %>
           <div class="card-row row">
             <div class="col">
@@ -78,5 +79,8 @@
         </div>
             
         <% end %>
+    <% else %>
+        <div><i class="fas fa-angle-left light"></i> No users <i class="fas fa-angle-right light"></i></div>
+    <% end %>
 
 </div>

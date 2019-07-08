@@ -25,7 +25,14 @@
         <div class="row">
             <div class="col-7">
                 <h5 class="mb-1"><%= protocol_drug.dosage %> <%= protocol_drug.name %></h5>
-                <div><i class="fas fa-pills light mr-1"></i> <span class="text-secondary">RXnorm Code:</span> <%= protocol_drug.rxnorm_code %></div>
+                <div><i class="fas fa-pills light mr-1"></i>
+                    <span class="text-secondary">RXnorm Code:</span> 
+                    <% if protocol_drug.rxnorm_code.present? %>
+                        <%= protocol_drug.rxnorm_code %>
+                    <% else %>
+                        <span class="light"><i class="fas fa-angle-left"></i>NONE<i class="fas fa-angle-right"></i></span>
+                    <% end %>
+                </div>
             </div>
             <div class="col-5 text-right">
                 <% if policy(protocol_drug).edit? %>

@@ -19,6 +19,13 @@ module SimpleServerEnvHelper
     image_tag image_name, width: 30, height: 30, class: "d-inline-block mr-2 align-top", alt: alt_for_environment
 
   end
+    
+  def favicon_for_environment
+    env = ENV.fetch("SIMPLE_SERVER_ENV")
+
+    image_name = CUSTOMIZED_ENVS.include?(env) ? "simple_logo_#{env}_favicon.png" : "simple_logo_favicon.png"
+
+  end
 
   def alt_for_environment
     env = ENV.fetch("SIMPLE_SERVER_ENV")

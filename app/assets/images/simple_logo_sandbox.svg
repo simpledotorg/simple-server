@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="410px" height="410px" viewBox="0 0 410 410" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="420px" height="420px" viewBox="0 0 420 420" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
-    <title>09 Assets/storeIcon_demo_512px</title>
+    <title>09 Assets/simple_logo_sandbox</title>
     <desc>Created with Sketch.</desc>
-    <g id="09-Assets" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="09-Assets/storeIcon_experiments_512px" transform="translate(-51.000000, -51.000000)">
-            <polygon id="bounds" points="0 0 512 0 512 512 0 512"></polygon>
-            <path d="M256,452 C335.529004,452 400,387.529004 400,308 C400,236 352,152 256,56 C160,152 112,236 112,308 C112,387.529004 176.470996,452 256,452 Z" id="Oval-Copy" fill="#5300E0" fill-rule="nonzero"></path>
-            <path d="M169.944361,373.244511 C163.73419,365.481796 164.992774,354.154533 172.755489,347.944361 C180.518204,341.73419 191.845467,342.992774 198.055639,350.755489 C223.657068,382.757276 270.353702,387.945791 302.355489,362.344361 C306.634498,358.921155 310.521155,355.034498 313.944361,350.755489 C320.154533,342.992774 331.481796,341.73419 339.244511,347.944361 C347.007226,354.154533 348.26581,365.481796 342.055639,373.244511 C336.971688,379.599449 331.199449,385.371688 324.844511,390.455639 C277.317294,428.477412 207.966135,420.771728 169.944361,373.244511 Z" id="Path-2" fill="#FFFFFF" fill-rule="nonzero"></path>
-            <g id="Group" transform="translate(88.000000, 192.000000)" fill="#EDE2FF" fill-rule="nonzero">
-                <rect id="Rectangle" x="0" y="0" width="336" height="128"></rect>
-            </g>
-            <text id="SBX" font-family="Metropolis-Bold, Metropolis" font-size="100" font-weight="bold" fill="#0C3966">
-                <tspan x="157.35" y="292">SBX</tspan>
-            </text>
+    <g id="09-Assets/simple_logo_sandbox" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <polygon id="bounds" points="0 0 420 0 420 420 0 420"></polygon>
+        <path d="M210,408 C289.529004,408 354,343.529004 354,264 C354,192 306,108 210,12 C114,108 66,192 66,264 C66,343.529004 130.470996,408 210,408 Z" id="Oval-Copy" fill="#8D17DE" fill-rule="nonzero"></path>
+        <path d="M123.944361,329.244511 C117.73419,321.481796 118.992774,310.154533 126.755489,303.944361 C134.518204,297.73419 145.845467,298.992774 152.055639,306.755489 C177.657068,338.757276 224.353702,343.945791 256.355489,318.344361 C260.634498,314.921155 264.521155,311.034498 267.944361,306.755489 C274.154533,298.992774 285.481796,297.73419 293.244511,303.944361 C301.007226,310.154533 302.26581,321.481796 296.055639,329.244511 C290.971688,335.599449 285.199449,341.371688 278.844511,346.455639 C231.317294,384.477412 161.966135,376.771728 123.944361,329.244511 Z" id="Path-2" fill="#FFFFFF" fill-rule="nonzero"></path>
+        <g id="Group" transform="translate(42.000000, 148.000000)" fill="#EDE2FF" fill-rule="nonzero">
+            <rect id="Rectangle" x="0" y="0" width="336" height="128"></rect>
         </g>
+        <text id="SBX" font-family="Metropolis-Bold, Metropolis" font-size="100" font-weight="bold" fill="#6D24A0">
+            <tspan x="111.35" y="248">SBX</tspan>
+        </text>
     </g>
 </svg>
