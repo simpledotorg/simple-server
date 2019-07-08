@@ -10,11 +10,11 @@
 <% @protocols.each do |protocol| %>
     <div class="card">
       <div class="row">
-          <div class="col-9">
+          <div class="col-8">
                 <h5 class="mb-1"><%= link_to protocol.name, [:admin, protocol] %></h5>
                 <div><i class="far fa-calendar-alt light mr-2"></i> Follow-up days: <%= protocol.follow_up_days %></div>
           </div>
-          <div class="col-3 text-right">
+          <div class="col-4 text-right">
                 <% if policy(protocol).edit? %>
                   <%= link_to 'Edit', edit_admin_protocol_path(protocol), class: "btn btn-sm btn-outline-primary" %>
                 <% end %>

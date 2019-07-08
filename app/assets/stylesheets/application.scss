@@ -122,6 +122,10 @@ h6.bold {
     display: none;
 }
 
+.desktop {
+    display: inherit;
+}
+
 .user {
     width: 32px;
     height: 32px;
@@ -169,6 +173,9 @@ footer {
     }
     .mobile {
         display: inherit;
+    }
+    .desktop {
+        display: none;
     }
     .navbar {
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
