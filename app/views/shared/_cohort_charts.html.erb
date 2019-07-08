@@ -1,3 +1,7 @@
+<script>
+    $(function () { $('[data-toggle="tooltip"]').tooltip() })
+</script>
+
 <div class="card pb-4">
   <h3>Cohort report</h3>
   <div class="desc">Outcomes for patients registered 3-6 months previously:
@@ -38,9 +42,9 @@
                       default_percent = (defaulted.to_f / registered * 100).round
                     %>
 
-                    <td class="bar bar-1" style="width: <%= default_percent %>%;"><%= defaulted %></td>
-                    <td class="bar bar-2" style="width: <%= uncontrolled_percent %>%;"><%= uncontrolled %></td>
-                    <td class="bar bar-3" style="width: <%= controlled_percent %>%;"><%= controlled %></td>
+                    <td class="bar bar-1"  data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="<%= default_percent %>%" style="width: <%= default_percent %>%;"><%= defaulted %></td>
+                    <td class="bar bar-2"  data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="<%= uncontrolled_percent %>%" style="width: <%= uncontrolled_percent %>%;"><%= uncontrolled %></td>
+                    <td class="bar bar-3"  data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="<%= controlled_percent %>%" style="width: <%= controlled_percent %>%;"><%= controlled %></td>
                   <% else %>
                     <td class="bar bar-1" style="width: 100%;">No patients</td>
                   <% end %>
