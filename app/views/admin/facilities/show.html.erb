@@ -1,6 +1,9 @@
+<nav class="breadcrumb">
+    <%= link_to 'All facilities', admin_facilities_path %> <i class="fas fa-angle-right light"></i> <%= @facility.facility_group.name %> <i class="fas fa-angle-right light"></i> <%= @facility.name %>
+</nav>
 <div class="page-header">
   <h1 class="page-title">
-    <%= link_to @facility.facility_group.name, admin_facilities_path %> <i class="fas fa-angle-right light"></i> <%= @facility.name %>
+    <%= @facility.name %>
   </h1>
   <nav class="page-nav">
     <% if policy(@facility).edit? %>
@@ -44,11 +47,11 @@
                 <div class="mt-1 mb-1">
                     <%=
                         if (user.logged_in_at.present?)
-                          'Last login: ' + user.logged_in_at.to_s
+                          'Last login: ' + rounded_time_ago_in_words(user.logged_in_at)
                         else
                           'Has not logged in yet'
                         end
-                    %>
+                    %> <div class="text-info mt-2 mb-2">Access: <%= user.sync_approval_status_reason %></div>
                 </div>
                 <div>
                     <a href="tel:<%= user.phone_number %>" class="btn btn-sm btn-phone btn-outline-primary"><i class="fas fa-phone"></i> <%= user.phone_number %></a>
@@ -74,7 +77,7 @@
               <% end %>
 
               <%= render partial: "admin/users/deny_access_modal", locals: { user: user } %>
-                <div class="mt-2"><i class="fas fa-info-circle light mr-1"></i> <%= user.sync_approval_status_reason %></div>
+
             </div>
         </div>
             

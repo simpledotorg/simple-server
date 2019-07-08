@@ -10,7 +10,7 @@
       <% if show_enrollment_date %>
         <div>
           <span class="text-secondary">Enrolled on:</span>
-          <%= handle_impossible_registration_date(patient.device_created_at, format: "%d-%b-%Y") %><br>
+          <%= handle_impossible_registration_date(patient.device_created_at, format: "%d-%^b-%Y") %><br>
         </div>
       <% end %>
       <% if bp = patient.latest_blood_pressure %>
@@ -39,14 +39,14 @@
     <% end %>  
     
     <div class="row mt-2">
-        <div class="col-md-3">
+        <div class="col-md-3 mt-2">
             <% if phone_number = patient.phone_numbers.first&.number %>
                 <a href="tel:<%= phone_number %>" class="btn btn-sm btn-block btn-phone btn-outline-primary btn-phone"><i class="fas fa-phone" style="font-size: 80%;"></i> <%= phone_number %></a>
             <% else %>
                 <a href="#" class="btn btn-sm btn-block btn-info disabled">&lt; No mobile &gt;</a>
             <% end %>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 mt-2">
             <%= bootstrap_form_with(model: form_model) do |form| %>
                 <%= form.select :call_result,
                     call_result_options,
