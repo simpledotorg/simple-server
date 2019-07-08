@@ -715,9 +715,14 @@ nav.breadcrumb {
     margin: 0;
 }
 
-nav.breadcrumb .arrow {
+nav.breadcrumb .arrow,
+nav.breadcrumb i {
    font-weight: 900;
    color: $grey-mid;
+    margin-right: 4px;
+    font-size: 85%;
+    top: 4px;
+    position: relative;
 }
 
 nav.breadcrumb a {

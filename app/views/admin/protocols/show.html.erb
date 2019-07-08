@@ -1,10 +1,10 @@
 <div class="page-header">
   <div class="page-title">
+    <nav class="breadcrumb">
+        <%= link_to "Protocols", admin_protocols_path, class: "#{active_controller?("admin/protocols")}" %> <i class="fas fa-chevron-right"></i> <%= @protocol.name %>
+    </nav>
     <h1 class="page-title">
-        <% if policy(Protocol).index? %>
-            <%= link_to "Protocols", admin_protocols_path, class: "#{active_controller?("admin/protocols")}" %>
-        <% end %> 
-        <i class="fas fa-angle-right light"></i> <%= @protocol.name %>
+        <%= @protocol.name %>
     </h1>
     <p>
       <strong>Follow up days:</strong> <%= @protocol.follow_up_days %>
