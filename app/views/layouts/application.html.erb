@@ -102,9 +102,10 @@
                   <%= current_admin.email %>
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <%= link_to('Logout', destroy_admin_session_path, method: :delete, class: "nav-link") %>
-                  <a href="https://www.simple.org/privacy/" class="nav-link">Privacy Policy</a>
-                  <a href="https://opensource.org/licenses/MIT" class="nav-link">License</a>
+                  <%= link_to('Logout', destroy_admin_session_path, method: :delete, class: "dropdown-item") %>
+                  <div class="dropdown-divider"></div>
+                  <a href="https://www.simple.org/privacy/" class="dropdown-item">Privacy Policy</a>
+                  <a href="https://opensource.org/licenses/MIT" class="dropdown-item">License</a>
                 </div>
               </li>
             </ul>

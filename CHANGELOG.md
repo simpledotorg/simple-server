@@ -46,7 +46,7 @@
 ### Added
 - Add Twilio sub-account support
 - Add percentage symbol to BP header and values in Dashboard
-- Show enrolment date in overdue list download 
+- Show enrollment date in overdue list download 
 ### Changed
 ### Fixed
 - Fixing formatting issues in overdue list dashboard view
@@ -92,7 +92,7 @@
 # 2019-05-14-1
 ### Added
 - Schedule automatic SMS reminders (Feature toggled off)
-- Show enrolment date for overdue patients
+- Show enrollment date for overdue patients
 - Display last interaction result (if present)
 - Add caller_phone_number to `CallLog`
 - Data migration to move User phone numbers to caller_phone_numbers in `CallLogs`
@@ -150,7 +150,7 @@
 - Hide download button if no appointments present
 ### Fixed
 - Use time range when showing user analytics on facilities dashboard
-- Adherence tab: show enrolment date for patients without BP
+- Adherence tab: show enrollment date for patients without BP
 ### Deprecated
 ### Removed
 ### Security
@@ -234,7 +234,7 @@
 # 2019-04-12-1
 ## Portal
 ### Added
-- Adding patient record creation date as enrolment date for adherence tab
+- Adding patient record creation date as enrollment date for adherence tab
 - Add pagination to the AuditLogs index view
 - Add views for whatsapp graphics for facility and facility groups
 - Add a job to warmup analytics cache
@@ -273,7 +273,7 @@
 # 2019-04-10-1 [[CANCELLED] Impossible dates on Adherence followup screen]
 ## Portal
 ### Added
-- Adding patient record creation date as enrolment date for adherence tab
+- Adding patient record creation date as enrollment date for adherence tab
 - Add pagination to the AuditLogs index view
 - Add views for whatsapp graphics for facility and facility groups
 ### Changed

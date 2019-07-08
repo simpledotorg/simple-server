@@ -1,6 +1,6 @@
 <% if @users_requesting_approval.any? %>
   <h2><%= pluralize(@users_requesting_approval.count || 0, "user") %> to review</h2>
-  <p>Please contact these users promptly. Check that they are are approved to access patient data at their facility.</p>
+  <p>Contact these users promptly. Check that they are are approved to access patient data at their facility.</p>
 
   <% @users_requesting_approval.each do |user| %>
     <% if policy(user).enable_access? %>

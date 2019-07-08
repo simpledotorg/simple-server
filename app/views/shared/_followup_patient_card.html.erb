@@ -7,7 +7,7 @@
     </h5>
 
     <div>
-      <% if show_enrolment_date %>
+      <% if show_enrollment_date %>
         <div>
           <span class="text-secondary">Enrolled on:</span>
           <%= handle_impossible_registration_date(patient.device_created_at, format: "%d-%b-%Y") %><br>
@@ -60,10 +60,11 @@
             <% end %>
         </div>
     </div>
-    <% if show_last_interaction %>
-        <div class="card-footer">
-          Last interaction: <%= show_last_interaction_date_and_result(patient) %>
-        </div>
-    <% end %>
+    <% last_interaction = show_last_interaction_date_and_result(patient) %>
+        <% if last_interaction.present? %>
+            <div class="card-footer text-info">
+                Last interaction: <%= last_interaction %>
+            </div>
+        <% end %>
 
 </div>

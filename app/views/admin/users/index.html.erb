@@ -9,7 +9,7 @@
         <% users.sort_by(&:full_name).each do |user| %>
             <div class="card">
                 <div class="row">
-                    <div class="col">
+                    <div class="col-md-7">
                         <h5 class="mb-1">
                             <%= link_to user.full_name, [:admin, user] %>
                             <% unless user.sync_approval_status == 'allowed' %>
@@ -26,7 +26,7 @@
                                 <% facility = user.registration_facility %>
 
                                 <% if policy(facility).show? %>
-                                  <%= link_to facility.name, [:admin, facility.facility_group, facility] %>
+                                  <%= link_to facility.name, [:admin, facility.facility_group, facility], class: "text-dark" %>
                                 <% else %>
                                   <%= user.registration_facility.name %>
                                 <% end %>
@@ -36,7 +36,7 @@
                             <a href="tel:<%= user.phone_number %>" class="btn btn-sm btn-outline-primary btn-phone"><i class="fas fa-phone"></i> <%= user.phone_number %></a>
                         </div>
                     </div>
-                    <div class="col text-right">
+                    <div class="col-md-5 text-right">
                       <% unless user.sync_approval_status == 'allowed' %>
                         <%= link_to 'Allow', admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') }, class: 'btn btn-sm btn-outline-success' %>
                       <% end %>
@@ -47,7 +47,7 @@
                       <% end %>
                         
                       <% if policy(user).destroy? %>
-                        <%= link_to 'Delete', [:admin, user], method: :delete, data: { confirm: "Are you sure you want to delete #{user.full_name}?" }, class: "btn btn-sm btn-outline-danger" %>
+                        <%= link_to '<i class="fas fa-trash-alt"></i>' .html_safe, [:admin, user], method: :delete, data: { confirm: "Are you sure you want to delete #{user.full_name}?" }, class: "btn btn-sm btn-outline-danger ml-2" %>
                       <% end %>
                         
                       <% if policy(user).edit? %>
