@@ -24,7 +24,7 @@ class AnonymizedData::FacilityData
   end
 
   def patient_data
-    facility.patients.select do |p|
+    facility.registered_patients.select do |p|
       p.device_created_at >= AnonymizedData::Constants::ANONYMIZATION_START_DATE
     end
   end
