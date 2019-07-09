@@ -1,6 +1,6 @@
 class HomePage < ApplicationPage
 
-  LOGOUT_BUTTON = { xpath: "//a[@class='nav-link']" }
+  LOGOUT_BUTTON = { css: 'a.nav-link[href="/admins/sign_out"]'}
   MANAGE_OPTION = { xpath: "//li/div/a" }
   MAIN_MENU_TABS = { xpath: '//ul/li/a' }
 
