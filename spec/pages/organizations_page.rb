@@ -1,9 +1,9 @@
 class OrganizationsPage < ApplicationPage
 
-  ADD_NEW_ORGANIZATION_BUTTON = { xpath: "//a[@class='btn btn-sm btn-primary']" }.freeze
+  ADD_NEW_ORGANIZATION_BUTTON = { css: 'a.btn.btn-sm.btn-primary' }.freeze
   ORGANIZATION_NAME_TEXT_FIELD = { id: 'organization_name' }.freeze
   ORGANIZATION_DESCRIPTION_TEXT_FIELD = { id: 'organization_description' }.freeze
-  CREATE_ORGANIZATION_BUTTON = { xpath: "//input[@class='btn btn-primary']" }.freeze
+  CREATE_ORGANIZATION_BUTTON = { css: 'input.btn.btn-primary'}.freeze
   ORG_NAME_LIST = { xpath: "//tr/td[1]" }.freeze
 
   def create_new_organization(orgName, orgDesc)

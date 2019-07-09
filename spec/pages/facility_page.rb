@@ -1,9 +1,9 @@
 class FacilityPage < ApplicationPage
 
-  FACILITY_PAGE_HEADING = { xpath: "//h1[text()='All facilities']" }.freeze
-  ADD_FACILITY_GROUP_BUTTON = { xpath: "//a[@class='btn btn-sm btn-primary']" }.freeze
-  ORGANISATION_LIST = { xpath: '//h1' }.freeze
-  NEW_FACILITY = { xpath: "//a[text()=' New Facility']" }.freeze
+  FACILITY_PAGE_HEADING = { css: 'h1.page-title' }.freeze
+  ADD_FACILITY_GROUP_BUTTON = { css: 'a.btn.btn-sm.btn-primary' }.freeze
+  ORGANISATION_LIST = { css: 'h2' }.freeze
+  NEW_FACILITY = { css: 'a.btn.btn-default.float-right' }.freeze
 
 
   def click_add_facility_group_button
