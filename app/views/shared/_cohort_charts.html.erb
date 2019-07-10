@@ -25,7 +25,7 @@
               <div class="bar-total float-right float-lg-none mb-n5 mb-lg-0">Outcomes for <%= registered %> patients reg. <%= "Q#{quarter(date - 3.months)} #{(date - 3.months).year}" %></div>
           </div>
           <div class="col-lg-1 nowrap order-lg-1 pt-lg-2">
-              <h6<% if is_current_quarter %> class="bold"<% end %>  data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="<%= "#{l date.to_date.beginning_of_quarter} to #{l date.to_date.end_of_quarter}" %>"><%= is_current_quarter ? "Current quarter " : "Q#{quarter(date)} #{date.year}" %></h6>
+              <h6<% if is_current_quarter %> class="bold"<% end %>  data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="<%= "#{l date.to_date.beginning_of_quarter} to #{l date.to_date.end_of_quarter}" %>"><%= is_current_quarter ? "This quarter " : "Q#{quarter(date)} #{date.year}" %></h6>
           </div>
           <div class="col-lg-8 order-lg-2 pr-lg-0">
 
