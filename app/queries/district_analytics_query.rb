@@ -1,6 +1,7 @@
 class DistrictAnalyticsQuery
-  def initialize(district_name)
+  def initialize(district_name, organization)
     @district_name = district_name
+    @organization = organization
   end
 
   def total_registered_patients
@@ -15,7 +16,7 @@ class DistrictAnalyticsQuery
     @registered_patients_by_month ||=
       Patient
         .joins(:registration_facility)
-        .where(facilities: { district: @district_name })
+        .where(facilities: { id: facilities })
         .group('facilities.id', date_truncate_sql('patients', 'recorded_at', period: 'month'))
         .count
 
@@ -33,7 +34,7 @@ class DistrictAnalyticsQuery
         .left_outer_joins(:user)
         .left_outer_joins(:patient)
         .joins(:facility)
-        .where(facilities: { district: @district_name })
+        .where(facilities: { id: facilities })
         .group('facilities.id', date_truncate_string)
         .where("patients.recorded_at < #{date_truncate_string}")
         .order('facilities.id')
@@ -53,5 +54,9 @@ class DistrictAnalyticsQuery
     query_results.map do |(facility_id, date), value|
       { facility_id => { key => { date => value } } }
     end.inject(&:deep_merge)
+  end
+
+  def facilities
+    @organization.facilities.where(district: @district_name)
   end
 end

@@ -1,8 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe DistrictAnalyticsQuery do
-  let!(:facility) { create(:facility) }
-  let!(:analytics) { DistrictAnalyticsQuery.new(facility.district) }
+  let!(:organization) { create(:organization) }
+  let!(:facility_group) { create(:facility_group, organization: organization)}
+  let!(:district_name) { "Bathinda" }
+  let!(:facility) { create(:facility, facility_group: facility_group, district: district_name) }
+  let!(:analytics) { DistrictAnalyticsQuery.new(district_name, organization) }
 
   let(:first_jan) { Date.new(2019, 1, 1) }
   let(:first_feb) { Date.new(2019, 2, 1) }
@@ -77,6 +80,16 @@ RSpec.describe DistrictAnalyticsQuery do
           }
 
         expect(analytics.follow_up_patients_by_month).to eq(expected_result)
+      end
+    end
+
+    context 'facilities in the same district but belonging to different organizations' do
+      let!(:facility_in_another_org) { create(:facility) }
+      let!(:bp_in_another_org) { create(:blood_pressure, facility: facility_in_another_org) }
+      it 'does not contain data from a different organization' do
+        expect(analytics.registered_patients_by_month.keys).not_to include(facility_in_another_org.id)
+        expect(analytics.total_registered_patients.keys).not_to include(facility_in_another_org.id)
+        expect(analytics.follow_up_patients_by_month.keys).not_to include(facility_in_another_org.id)
       end
     end
   end
