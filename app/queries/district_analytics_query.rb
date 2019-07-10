@@ -17,14 +17,14 @@ class DistrictAnalyticsQuery
       Patient
         .joins(:registration_facility)
         .where(facilities: { id: facilities })
-        .group('facilities.id', date_truncate_sql('patients', 'device_created_at', period: 'month'))
+        .group('facilities.id', date_truncate_sql('patients', 'recorded_at', period: 'month'))
         .count
 
     group_by_facility_and_date(@registered_patients_by_month, :registered_patients_by_month)
   end
 
   def follow_up_patients_by_month
-    date_truncate_string = date_truncate_sql('blood_pressures', 'device_created_at', period: 'month')
+    date_truncate_string = date_truncate_sql('blood_pressures', 'recorded_at', period: 'month')
 
     @follow_up_patients_by_month ||=
       BloodPressure
@@ -36,7 +36,7 @@ class DistrictAnalyticsQuery
         .joins(:facility)
         .where(facilities: { id: facilities })
         .group('facilities.id', date_truncate_string)
-        .where("patients.device_created_at < #{date_truncate_string}")
+        .where("patients.recorded_at < #{date_truncate_string}")
         .order('facilities.id')
         .distinct
         .count('patients.id')

@@ -17,7 +17,7 @@ class FacilityAnalyticsQuery
         .joins(:registration_facility)
         .joins('INNER JOIN blood_pressures ON blood_pressures.facility_id = patients.registration_facility_id')
         .where(registration_facility: @facility)
-        .group('registration_user_id', date_truncate_sql('patients', 'device_created_at', period: 'month'))
+        .group('registration_user_id', date_truncate_sql('patients', 'recorded_at', period: 'month'))
         .distinct('patients.id')
         .count
 
@@ -26,7 +26,7 @@ class FacilityAnalyticsQuery
 
   # NOTE: temporary usage of master_users (instead of users table) until users migration is finished
   def follow_up_patients_by_month
-    date_truncate_string = date_truncate_sql('blood_pressures', 'device_created_at', period: 'month')
+    date_truncate_string = date_truncate_sql('blood_pressures', 'recorded_at', period: 'month')
 
     @follow_up_patients_by_month ||=
       BloodPressure
@@ -38,7 +38,7 @@ class FacilityAnalyticsQuery
         .joins(:facility)
         .where(facility: @facility)
         .group('master_users.id', date_truncate_string)
-        .where("patients.device_created_at < #{date_truncate_string}")
+        .where("patients.recorded_at < #{date_truncate_string}")
         .order('master_users.id')
         .distinct
         .count('patients.id')

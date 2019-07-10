@@ -33,16 +33,16 @@ class CohortAnalyticsQuery
   def followed_up(registered_patients, report_start, report_end)
     registered_patients.select(%Q(
       patients.*,
-      newest_bps.device_created_at as bp_device_created_at,
+      newest_bps.recorded_at as bp_recorded_at,
       newest_bps.systolic as bp_systolic,
       newest_bps.diastolic as bp_diastolic
     )).joins(%Q(
       INNER JOIN (
         SELECT DISTINCT ON (patient_id) *
         FROM blood_pressures
-        WHERE device_created_at >= '#{report_start}'
-        AND device_created_at <= '#{report_end}'
-        ORDER BY patient_id, device_created_at DESC
+        WHERE recorded_at >= '#{report_start}'
+        AND recorded_at <= '#{report_end}'
+        ORDER BY patient_id, recorded_at DESC
       ) as newest_bps
       ON newest_bps.patient_id = patients.id
     ))
