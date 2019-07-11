@@ -2,6 +2,7 @@ class Analytics::FacilitiesController < AnalyticsController
   before_action :set_facility
 
   def show
+    @cohort_analytics = @facility.cohort_analytics
     @analytics = @facility.dashboard_analytics
   end
 

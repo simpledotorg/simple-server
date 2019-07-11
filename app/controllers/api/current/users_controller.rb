@@ -8,13 +8,13 @@ class Api::Current::UsersController < APIController
     user = User.build_with_phone_number_authentication(user_from_request)
     return head :not_found unless user.registration_facility.present?
 
-    if user.invalid? || user.phone_number_authentication.invalid?
+    if user.phone_number_authentication.invalid?
       return render json: {
         errors: user.phone_number_authentication.errors
       }, status: :bad_request
     end
 
-    send_approval_notification_email(user)
+    send_approval_email(user) if approve_and_save(user)
 
     render json: {
       user: user_to_response(user),
@@ -53,15 +53,21 @@ class Api::Current::UsersController < APIController
 
   private
 
-  def send_approval_notification_email(user)
-    if FeatureToggle.auto_approve_for_qa?
-      user.sync_approval_allowed
-      user.save
-    else
+  def approve_and_save(user)
+    FeatureToggle.auto_approve_for_qa? ?
+      user.sync_approval_allowed :
       user.sync_approval_requested(I18n.t('registration'))
-      user.save
-      ApprovalNotifierMailer.with(user: user).registration_approval_email.deliver_later
-    end
+
+    user.save
+  end
+
+  def send_approval_email(user)
+    return if FeatureToggle.auto_approve_for_qa?
+
+    ApprovalNotifierMailer
+      .with(user: user)
+      .registration_approval_email
+      .deliver_later
   end
 
   def find_user(params)

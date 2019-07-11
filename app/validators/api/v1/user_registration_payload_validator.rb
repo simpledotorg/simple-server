@@ -9,6 +9,8 @@ class Api::V1::UserRegistrationPayloadValidator < Api::V1::PayloadValidator
     :updated_at
   )
 
+  validate :validate_schema
+
   def schema
     Api::V1::Models.user
   end

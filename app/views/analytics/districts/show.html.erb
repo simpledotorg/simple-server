@@ -2,24 +2,25 @@
   <h1><%= @organization_district.district_name %></h1>
 </div>
 
-<%= render 'shared/analytics_table',
-           analytics: @analytics,
-           row_resource: Facility.order(:name),
-           row_resource_display_field: :name,
-           row_resource_link: :analytics_facility_path %>
+<%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics %>
+
+<%=
+  render 'shared/analytics_table',
+    analytics: @analytics,
+    row_resource: Facility.order(:name),
+    row_resource_description: "Facilities",
+    row_resource_display_field: :name,
+    row_resource_link: :analytics_facility_path
+%>
 
 <% if policy(@organization_district).share_anonymized_data? %>
-  <div class="float-right text-right">
-    <%= link_to 'Anonymized Data (XLS)',
-                analytics_organization_district_share_path(organization_id: @organization_district.organization.id,
+  <div class="downloads">
+      <h4>Downloads</h4>
+      <%= link_to analytics_organization_district_share_path(organization_id: @organization_district.organization.id,
                                                            district_id: @organization_district.district_name),
-                class: "btn btn-primary btn-sm float-right",
-                data: { confirm: I18n.t('admin.phi_anonymized_download_alert') } %>
+                class: "download",
+                data: { confirm: I18n.t('admin.phi_anonymized_download_alert') } do %>
+        <i class="far fa-file-excel" style="margin-right: 4px;"></i> Anonymized Data (XLS)
+      <% end %>
   </div>
 <% end %>
-
-<footer class="text-muted">
-  <p>
-    <small>Note: All times are in India Standard Time</small>
-  </p>
-</footer>
