@@ -29,14 +29,20 @@ RSpec.feature "Home page", type: :feature do
 
   context "supervisor in bathinda" do
     let!(:supervisor) { create(:admin, :supervisor, email: "supervisor@example.com") }
-    let!(:access_controls) { create(:admin_access_control, admin: supervisor, access_controllable: bathinda.facility_group) }
-    let!(:new_user) { create(:user, :sync_requested, facility: bathinda) }
+    let!(:access_controls) { create(:admin_access_control, admin: supervisor, access_controllable: bathinda_chc.facility_group) }
+    let!(:new_user) { create(:user, :sync_requested, facility: bathinda_chc) }
 
-    skip "shows all facilities" do
-      expect(page).to have_content("CHC Buccho")
-      expect(page).to have_content("PHC Batala")
-      expect(page).to have_content("PHC Joga")
-      expect(page).to have_content("Dr. Amir Singh")
+    before do
+      sign_in(supervisor)
+      visit root_path
+    end
+
+    it "shows supervisor's organization" do
+      expect(page).to have_content("IHMI")
+    end
+
+    it "doesn't show other organizations" do
+      expect(page).not_to have_content("PATH")
     end
   end
 end

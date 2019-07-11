@@ -5,7 +5,7 @@ FactoryBot.define do
     diastolic { rand(60..140) }
     device_created_at { Time.now }
     device_updated_at { Time.now }
-    recorded_at { 1.month.ago }
+    recorded_at { device_created_at }
     deleted_at { [nil, Time.now].sample }
     association :facility, strategy: :build
     association :patient, strategy: :build
