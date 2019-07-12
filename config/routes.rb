@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
   devise_scope :admin do
+    authenticated :admin, ->(a) { a.has_role?(:counsellor) } do
+      root to: "patients#index", as: :counsellor_root
+    end
+
     authenticated :admin do
       root to: "organizations#index", as: :admin_root
     end
