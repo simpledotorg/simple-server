@@ -13,7 +13,7 @@ class OrganizationDistrict < Struct.new(:district_name, :organization)
     patients =
       Patient
         .joins(:registration_facility)
-        .where(facilities: { district: district_name })
+        .where(facilities: { id: facilities })
 
     query = CohortAnalyticsQuery.new(patients)
     results = {}
@@ -27,7 +27,7 @@ class OrganizationDistrict < Struct.new(:district_name, :organization)
   end
 
   def dashboard_analytics
-    query = DistrictAnalyticsQuery.new(district_name)
+    query = DistrictAnalyticsQuery.new(district_name, organization)
     results = [
       query.registered_patients_by_month,
       query.total_registered_patients,
