@@ -17,3 +17,5 @@
 //= require bs-custom-file-input.js
 //= require bs-file-input-init.js
 //= require_tree .
+
+$(function () { $('[data-toggle="tooltip"]').tooltip() })
