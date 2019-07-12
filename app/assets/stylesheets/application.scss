@@ -18,6 +18,7 @@ $grey-darkest: #2F363D;
 
 $highlight: #E9F3FF; /* LIGHT BLUE */
 $blue: #0075EB;
+$blue-mid: #9db8d2;
 $blue-light: #E9F3FF;
 $green-light: #E0FFED;
 $green-mid: #5CFF9D;
@@ -307,6 +308,15 @@ nav.navbar button.navbar-toggler {
 
 .col-lg-3 {
     transform: translate(0, 10%);
+}
+
+th .icon {
+    padding-bottom: 8px;
+}
+
+th .icon i {
+    font-size: 200%;
+    color: $blue-mid;
 }
 
 .table thead.thead-light th {
