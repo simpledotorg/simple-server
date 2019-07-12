@@ -38,7 +38,7 @@ RSpec.describe SimpleServerEnvHelper do
       it 'should return the production style class' do
         ENV[simple_server_env] = 'sandbox'
 
-        expect(style_class_for_environment).to eq 'navbar navbar-expand-md fixed-top navbar-dark navbar-sandbox'
+        expect(style_class_for_environment).to eq 'navbar navbar-expand-md fixed-top navbar-light bg-light navbar-sandbox'
       end
     end
 
@@ -46,7 +46,7 @@ RSpec.describe SimpleServerEnvHelper do
       it 'should return the production style class' do
         ENV[simple_server_env] = 'production'
 
-        expect(style_class_for_environment).to eq 'navbar navbar-expand-md fixed-top navbar-dark navbar-production'
+        expect(style_class_for_environment).to eq 'navbar navbar-expand-md fixed-top navbar-light bg-light navbar-production'
       end
     end
   end
@@ -111,7 +111,7 @@ RSpec.describe SimpleServerEnvHelper do
       it 'should return the QA alt for the logo' do
         ENV[simple_server_env] = 'qa'
 
-        expect(alt_for_environment).to eq 'Simple Server Qa Logo'
+        expect(alt_for_environment).to eq 'Simple Server QA Logo'
       end
     end
 

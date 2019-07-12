@@ -1,22 +1,37 @@
-<h2 style="margin-bottom: 1em;">Login</h2>
+<div class="col-md-6 mx-auto">
+    <div class="card">
+        <div class="row">
+            <div class="col">
+                <h1>Login</h1>
+            </div>
+            <div class="col text-right login-logo">
+                <%= logo_for_environment %>
+            </div>
+        </div>
+        
+        <%= bootstrap_form_for(resource, as: resource_name, url: session_path(resource_name), label_errors: true) do |f| %>
+          <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+          <%= f.password_field :password, autocomplete: "off" %>
 
-<div class="row">
-  <div class="col-md-6">
-    <%= bootstrap_form_for(resource, as: resource_name, url: session_path(resource_name), label_errors: true) do |f| %>
-      <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
-      <%= f.password_field :password, autocomplete: "off" %>
-
-      <% if devise_mapping.rememberable? -%>
-        <%= f.form_group :remember_me do %>
-          <%= f.check_box :remember_me %>
+          <div class="card-footer">
+              <div class="row">            
+                  <div class="col">
+                    <div class="mt-2">
+                    <% if devise_mapping.rememberable? -%>
+                        <%= f.form_group :remember_me do %>
+                        <%= f.check_box :remember_me %>
+                        <% end %>
+                    <% end -%>
+                    </div>
+                  </div>
+                  <div class="col text-right">
+                    <%= f.primary "Login" %>
+                  </div>
+              </div>
+          </div>
         <% end %>
-      <% end -%>
-
-      <%= f.primary "Login" %>
-    <% end %>
-  </div>
-</div>
-
-<div class="actions mt-4" style="line-height: 2.5em;">
-  <%= render "admins/shared/links" %>
+    </div>
+    <div class="actions mt-4" style="line-height: 2.5em;">
+      <%= render "admins/shared/links" %>
+    </div>
 </div>

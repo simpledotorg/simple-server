@@ -1,59 +1,70 @@
-<section class="overdue-patient">
-  <% if days_overdue.present? %>
-    <div class="overdue-time">
-      <%= days_overdue %> days overdue
-      <% if high_risk %>
-        <br><span>HIGH RISK</span>
+<div class="card">
+    
+    <h5 class="mb-2">
+        <%= patient.full_name %>,
+        <%= patient.gender.capitalize %>,
+        <%= patient.current_age %>
+    </h5>
+
+    <div>
+      <% if show_enrollment_date %>
+        <div>
+          <span class="text-secondary">Enrolled on:</span>
+          <%= handle_impossible_registration_date(patient.device_created_at, format: "%d-%^b-%Y") %><br>
+        </div>
       <% end %>
-    </div>
-  <% end %>
-  <div class="overdue-title">
-    <%= patient.full_name %>,
-    <%= patient.gender.capitalize %>,
-    <%= patient.current_age %>
-  </div>
-  <% if show_enrolment_date %>
-    <div class="overdue-details">
-      Enrolled on:
-      <%= handle_impossible_registration_date(patient.device_created_at, format: "%d-%b-%Y") %><br>
-    </div>
-  <% end %>
-  <% if show_last_interaction %>
-    <div class="overdue-details">
-      <%= show_last_interaction_date_and_result(patient) %>
-    </div>
-  <% end %>
-  <% if bp = patient.latest_blood_pressure %>
-    <div class="overdue-details">
-      Last BP:
-      <%= bp.to_s %> recorded at <%= bp.facility.name %>
-      <%= rounded_time_ago_in_words(bp.device_created_at.to_date) %>
-    </div>
-  <% end %>
-  <div class="overdue-details">
-    Home:
-    <% if patient.address.has_street_address? %><%= patient.address.street_address %>,<% end %>
-    <%= patient.address.village_or_colony %>
-  </div>
-  <div class="row mt-2">
-    <div class="col-md-6 col-lg-4 overdue-button">
-      <% if phone_number = patient.phone_numbers.first&.number %>
-        <a href="tel:<%= phone_number %>" class="btn btn-info btn-phone w-100">&#128222; <%= phone_number %></a>
-      <% else %>
-        <a href="3" class="btn btn-info disabled w-100">&lt; No mobile &gt;</a>
+      <% if bp = patient.latest_blood_pressure %>
+        <div>
+          <span class="text-secondary">Last BP:</span>
+          <%= bp.to_s %> recorded at <%= bp.facility.name %>
+          <%= rounded_time_ago_in_words(bp.device_created_at.to_date) %>
+        </div>
       <% end %>
+      <div>
+        <span class="text-secondary">Home:</span>
+        <% if patient.address.has_street_address? %><%= patient.address.street_address %>,<% end %>
+        <%= patient.address.village_or_colony %>
+      </div>
     </div>
-    <div class="col-md-6 col-lg-4 overdue-form">
-      <%= bootstrap_form_with(model: form_model) do |form| %>
-        <%= form.select :call_result,
-                        call_result_options,
-                        {
-                            prompt: "Result of follow-up...",
-                            hide_label: true
-                        },
-                        onchange: "this.form.submit();"
-        %>
-      <% end %>
+            
+    <% if days_overdue.present? %>
+        <div class="card-date">
+            <% if high_risk %>
+            <div>
+              <span class="badge badge-pill badge-danger ml-2">HIGH RISK</span>
+            </div>
+            <% end %>
+            <%= days_overdue %> days overdue
+        </div>
+    <% end %>  
+    
+    <div class="row mt-2">
+        <div class="col-md-3 mt-2">
+            <% if phone_number = patient.phone_numbers.first&.number %>
+                <a href="tel:<%= phone_number %>" class="btn btn-sm btn-block btn-phone btn-outline-primary btn-phone"><i class="fas fa-phone" style="font-size: 80%;"></i> <%= phone_number %></a>
+            <% else %>
+                <a href="#" class="btn btn-sm btn-block btn-info disabled">&lt; No mobile &gt;</a>
+            <% end %>
+        </div>
+        <div class="col-md-4 mt-2">
+            <%= bootstrap_form_with(model: form_model) do |form| %>
+                <%= form.select :call_result,
+                    call_result_options,
+                    {
+                        prompt: "Result of follow-up...",
+                        hide_label: true
+                    },
+                    onchange: "this.form.submit();",
+                    class: "form-control-sm"
+            %>
+            <% end %>
+        </div>
     </div>
-  </div>
-</section>
+    <% last_interaction = show_last_interaction_date_and_result(patient) %>
+        <% if last_interaction.present? %>
+            <div class="card-footer text-info">
+                Last interaction: <%= last_interaction %>
+            </div>
+        <% end %>
+
+</div>
