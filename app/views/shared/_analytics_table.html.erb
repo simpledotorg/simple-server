@@ -28,7 +28,7 @@
                 <div class="icon"><i class="fas fa-undo"></i></div>
                 <strong>Follow-up patients</strong>
             </th>
-            <th class="row-label" colspan="3" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="New patients registered in Simple app">
+            <th class="row-label" colspan="3" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="New patients registered in Simple app for the first time">
                 <div class="icon"><i class="fas fa-user-plus"></i></div>
                 <strong>New registrations</strong>
             </th>
@@ -44,17 +44,17 @@
 
             <!--Follow-up patients-->
             <% repeat_for_last(months: 3) do |month| %>
-              <th class="row-label" style="padding: 8px 4px;"><%= month.strftime("%B %Y") %></th>
+              <th class="row-label" style="padding: 8px 4px;"><%= month.strftime("%^b-%Y") %></th>
             <% end %>
 
             <!--New registrations-->
             <% repeat_for_last(months: 3) do |month| %>
-              <th class="row-label" style="padding: 8px 4px;"><%= month.strftime("%B %Y") %></th>
+              <th class="row-label" style="padding: 8px 4px;"><%= month.strftime("%^b-%Y") %></th>
             <% end %>
               
             <!--Calls made -->
             <% repeat_for_last(months: 3) do |month| %>
-              <th class="row-label" style="padding: 8px 4px;"><%= month.strftime("%B %Y") %></th>
+              <th class="row-label" style="padding: 8px 4px;"><%= month.strftime("%^b-%Y") %></th>
             <% end %>
           </tr>
 
