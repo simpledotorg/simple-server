@@ -102,7 +102,7 @@ RSpec.describe PatientsController, type: :controller do
       patient.reload
 
       expect(patient.contacted_by_counsellor).to be(true)
-      expect(response).to redirect_to(action: 'index')
+      expect(response).to redirect_to(patients_path)
     end
 
     it 'sets reason why the patient could not be contacted' do
@@ -116,7 +116,7 @@ RSpec.describe PatientsController, type: :controller do
       patient.reload
 
       expect(patient.could_not_contact_reason).to eq('moved')
-      expect(response).to redirect_to(action: 'index')
+      expect(response).to redirect_to(patients_path)
     end
 
     it 'updates the status if dead' do
@@ -131,7 +131,7 @@ RSpec.describe PatientsController, type: :controller do
 
       expect(patient.could_not_contact_reason).to eq('dead')
       expect(patient.status).to eq('dead')
-      expect(response).to redirect_to(action: 'index')
+      expect(response).to redirect_to(patients_path)
     end
   end
 end
