@@ -53,7 +53,7 @@
       </tr>
 
       <% analytics
-             .sort_by { |resource, | resource.send(row_resource_display_field) }
+             .sort_by { |resource, _| resource.send(row_resource_display_field) }
              .each do |resource, data| %>
         <tr>
           <td class="row-rank"></td>

@@ -5,10 +5,11 @@ class Analytics::FacilitiesController < AnalyticsController
     facility_analytics = @facility.dashboard_analytics
     available_users = policy_scope(User).where(id: facility_analytics.keys)
 
-    @analytics = facility_analytics.map do |user_id, data|
-      user = available_users.detect { |f| f.id == user_id }
-      [user, data]
-    end.to_h
+    @analytics =
+      available_users.inject({}) do |acc, user|
+        acc[user] = facility_analytics[user.id]
+        acc
+      end
   end
 
   def share_anonymized_data
