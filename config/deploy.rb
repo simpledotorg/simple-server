@@ -13,7 +13,7 @@ set :sidekiq_roles, :sidekiq
 set :sidekiq_processes, 1
 set :bundler_path, "/home/deploy/.rbenv/shims/bundle"
 set :init_system, :systemd
-set :pty,  false
+set :pty, false
 
 set :sidekiq_config, -> { File.join(shared_path, 'config', 'sidekiq.yml') }
 
@@ -24,9 +24,9 @@ set :disallow_pushing, true
 append :linked_files, ".env.production"
 append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
 
-
 set :whenever_path, -> { release_path }
 
+ENVS_FOR_CONFIRMATION_STEP = ["production", "staging"]
 namespace :deploy do
   desc 'Runs any rake task, example: cap deploy:rake task=db:seed'
   task rake: [:set_rails_env] do
@@ -38,4 +38,35 @@ namespace :deploy do
       end
     end
   end
+
+  desc 'Confirm if you really want to execute the task'
+  task :confirmation do
+    puts <<-WARN
+
+    ===============================================================================
+
+      WARNING: You're about to run tasks on #{ENVS_FOR_CONFIRMATION_STEP.join('/')} server(s)
+      Please confirm that all your intentions are kind and friendly.
+
+      Check if:
+
+      * You are deploying the correct branch
+      * You are deploying to the correct environment
+      * Your application configs are up-to-date
+      * Any necessary database/data migrations have been run
+
+    ===============================================================================
+
+    WARN
+    ask :value, "Are you sure you want to continue? (Y)"
+
+    if fetch(:value) != 'Y'
+      puts "\nDeploy cancelled!"
+      exit
+    end
+  end
+end
+
+Capistrano::DSL.stages.each do |stage|
+  after stage, 'deploy:confirmation' if ENVS_FOR_CONFIRMATION_STEP.any? { |env| stage == env }
 end
