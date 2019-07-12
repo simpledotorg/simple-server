@@ -17,11 +17,25 @@
           </colgroup>
           <thead>
           <tr>
-            <th rowspan="2"><h3><%= row_resource_description %></h3></th>
-            <th class="row-label"><div class="icon"><i class="fas fa-users"></i></div><strong>Registered patients</strong></th>
-            <th class="row-label" colspan="3"><div class="icon"><i class="fas fa-undo"></i></div><strong>Follow-up patients</strong></th>
-            <th class="row-label" colspan="3"><div class="icon"><i class="fas fa-user-plus"></i></div><strong>New registrations</strong></th>
-            <th class="row-label" colspan="3"><div class="icon"><i class="fas fa-phone"></i></div> <strong>Calls made</strong></th>
+            <th rowspan="2">
+                <h3><%= row_resource_description %></h3>
+            </th>
+            <th class="row-label" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="Total registered patients in Simple app">
+                <div class="icon"><i class="fas fa-users"></i></div>
+                <strong>Registered patients</strong>
+            </th>
+            <th class="row-label" colspan="3" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="Patients with a follow-up BP recorded in Simple app">
+                <div class="icon"><i class="fas fa-undo"></i></div>
+                <strong>Follow-up patients</strong>
+            </th>
+            <th class="row-label" colspan="3" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="New patients registered in Simple app">
+                <div class="icon"><i class="fas fa-user-plus"></i></div>
+                <strong>New registrations</strong>
+            </th>
+            <th class="row-label" colspan="3" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="Number of patients called by users using Overdue list in Simple app">
+                <div class="icon"><i class="fas fa-phone"></i></div>
+                <strong>Patients called</strong>
+            </th>
           </tr>
 
           <tr>
