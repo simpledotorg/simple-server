@@ -6,3 +6,4 @@
   - default
   - [analytics_warmup, 2]
   - [high, 3]
+  - [exotel_phone_whitelist, 1]
