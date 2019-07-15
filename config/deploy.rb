@@ -48,6 +48,8 @@ namespace :deploy do
       WARNING: You're about to run tasks on #{ENVS_FOR_CONFIRMATION_STEP.join('/')} server(s)
       Please confirm that all your intentions are kind and friendly.
 
+      This will deploy `#{fetch(:branch)}` to `#{fetch(:stage)}`
+
       Check if:
 
       * You are deploying the correct branch
