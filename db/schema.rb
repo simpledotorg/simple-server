@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190623191212) do
+ActiveRecord::Schema.define(version: 20190715122633) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -189,6 +189,15 @@ ActiveRecord::Schema.define(version: 20190623191212) do
     t.index ["unlock_token"], name: "index_email_authentications_on_unlock_token", unique: true
   end
 
+  create_table "exotel_phone_number_details", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "patient_phone_number_id", null: false
+    t.string "whitelist_status", null: false
+    t.datetime "whitelist_status_valid_until"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["patient_phone_number_id"], name: "index_exotel_phone_number_details_on_patient_phone_number_id"
+  end
+
   create_table "facilities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.string "street_address"
@@ -294,6 +303,7 @@ ActiveRecord::Schema.define(version: 20190623191212) do
     t.datetime "device_created_at", null: false
     t.datetime "device_updated_at", null: false
     t.datetime "deleted_at"
+    t.boolean "dnd_status"
     t.index ["deleted_at"], name: "index_patient_phone_numbers_on_deleted_at"
   end
 
@@ -413,6 +423,7 @@ ActiveRecord::Schema.define(version: 20190623191212) do
   end
 
   add_foreign_key "appointments", "facilities"
+  add_foreign_key "exotel_phone_number_details", "patient_phone_numbers"
   add_foreign_key "facilities", "facility_groups"
   add_foreign_key "facility_groups", "organizations"
   add_foreign_key "patient_phone_numbers", "patients"

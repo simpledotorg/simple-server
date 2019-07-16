@@ -6,5 +6,6 @@ FactoryBot.define do
     active { [true, false].sample }
     device_created_at { Time.now }
     device_updated_at { Time.now }
+    dnd_status { false }
   end
 end
