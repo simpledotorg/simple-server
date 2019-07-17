@@ -1,11 +1,7 @@
 <div class="container">
   <div class="row">
       
-      <div class="col-md mt-md-3">
-        <%= render "shared/user_approvals" %>
-      </div>
-      
-      <div class="col-md order-md-first">
+      <div class="col-md">
         <% @organizations.each do |organization| %>
             <section id="facility-groups">
               <div class="card">
@@ -27,5 +23,8 @@
             </section>
             <% end %>
          </div>
-      </div>
+  </div>
+  <div class="col-md mt-md-3">
+    <%= render "shared/user_approvals" %>
+  </div>
 </div>
