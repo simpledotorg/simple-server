@@ -37,4 +37,11 @@ class OrganizationDistrict < Struct.new(:district_name, :organization)
     return {} if results.blank?
     results.inject(&:deep_merge)
   end
+
+  def analytics_cache_key
+    to_date = Date.today.strftime("%Y-%m-%d")
+    from_date = 3.months.ago.strftime("%Y-%m-%d")
+
+    "analytics/organization/#{organization.id}/district/#{district_name.downcase.split(' ').join('-')}/#{from_date}/#{to_date}"
+  end
 end
