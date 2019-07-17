@@ -75,4 +75,36 @@ describe ExotelAPIService, type: :model do
       }.to raise_error(ExotelAPIService::HTTPError)
     end
   end
+
+  describe '#whitelist_phone_numbers' do
+    let(:account_sid) { Faker::Internet.user_name }
+    let(:token) { SecureRandom.base64 }
+    let(:request_url) { URI.parse("https://api.exotel.com/v1/Accounts/#{account_sid}/CustomerWhitelist.json") }
+    let(:virtual_number) { Faker::PhoneNumber.phone_number }
+    let(:phone_numbers) { (0..3).map { Faker::PhoneNumber.phone_number } }
+    let!(:auth_token) { Base64.strict_encode64([account_sid, token].join(':')) }
+    let!(:request_headers) {
+      {
+        'Authorization' => "Basic #{auth_token}",
+        'Connection' => 'close',
+        'Host' => 'api.exotel.com',
+        'User-Agent' => 'http.rb/4.1.1'
+      }
+    }
+    let(:request_body) { {
+      :Language => 'en',
+      :VirtualNumber => virtual_number,
+      :Number => phone_numbers.join(',')
+    } }
+
+    let(:service) { ExotelAPIService.new(account_sid, token) }
+    it 'calls the exotel whitelist api for given virtual number and phone number list' do
+      stub = stub_request(:post, request_url).with(
+        headers: request_headers,
+        body: request_body)
+
+      service.whitelist_phone_numbers(virtual_number, phone_numbers)
+      expect(stub).to have_been_requested
+    end
+  end
 end

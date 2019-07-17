@@ -2,6 +2,8 @@ class ExotelAPIService
   BASE_PATH = 'https://api.exotel.com/v1/Accounts/'
   RESPONSE_FORMAT = '.json'
 
+  attr_reader :account_sid, :token
+
   class ExotelAPIService::HTTPError < HTTP::Error;
   end
 
@@ -11,19 +13,43 @@ class ExotelAPIService
   end
 
   def call_details(call_sid)
-    response = execute(call_details_url(call_sid))
+    response = execute_get(call_details_url(call_sid))
     parse_response(response) if response.present?
+  end
+
+  def whitelist_phone_numbers(virtual_number, phone_numbers)
+    request_body = {
+      :Language => 'en',
+      :VirtualNumber => virtual_number,
+      :Number => phone_numbers.join(',')
+    }
+
+    # TODO: log response
+    execute_post(whitelist_phone_numbers_url, form: request_body)
   end
 
   private
 
-  def execute(url)
-    HTTP
-      .basic_auth(user: @account_sid, pass: @token)
-      .get(url)
-  rescue HTTP::Error => e
-    report_error(url, e)
-    raise ExotelAPIService::HTTPError
+  def execute_get(url)
+    begin
+      HTTP
+        .basic_auth(user: account_sid, pass: token)
+        .get(url)
+    rescue HTTP::Error => e
+      report_error(url, e)
+      raise ExotelAPIService::HTTPError
+    end
+  end
+
+  def execute_post(url, data)
+    begin
+      HTTP
+        .basic_auth(user: account_sid, pass: token)
+        .post(url, data)
+    rescue HTTP::Error => e
+      report_error(url, e)
+      raise ExotelAPIService::HTTPError
+    end
   end
 
   def parse_response(response)
@@ -32,7 +58,7 @@ class ExotelAPIService
   end
 
   def base_uri
-    URI.join(BASE_PATH, @account_sid)
+    URI.join(BASE_PATH, account_sid)
   end
 
   def report_error(api_path, exception)
@@ -48,5 +74,9 @@ class ExotelAPIService
 
   def call_details_url(call_sid)
     URI.parse("#{base_uri}/Calls/#{call_sid}#{RESPONSE_FORMAT}")
+  end
+
+  def whitelist_phone_numbers_url
+    URI.parse("#{base_uri}/CustomerWhitelist#{RESPONSE_FORMAT}")
   end
 end
