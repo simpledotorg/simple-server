@@ -1,7 +1,7 @@
 class ProtocolDetailPage < ApplicationPage
 
-  SUCCESSFUL_MESSAGE = { xpath: "//div[@class='alert alert-primary alert-dismissable fade show']" }.freeze
-  MESSAGE_CROSS_BUTTON = { xpath: "//div[contains(@class,'alert')]//span" }.freeze
+  SUCCESSFUL_MESSAGE = { css: "div.fade.show" }.freeze
+  MESSAGE_CROSS_BUTTON = { css: "button.close"}.freeze
   FOLLOW_UP_DAYS = { xpath: "//div[@class='page-title']/p" }.freeze
   EDIT_PROTOCOL_BUTTON = { xpath: "//a[text()='Edit protocol']" }.freeze
   NEW_PROTOCOL_DRUG_BUTTON = { xpath: "//a[text()='New protocol drug']" }.freeze
