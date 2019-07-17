@@ -1,4 +1,9 @@
-<h1>User details</h1>
+<div class="dashboard">
+  <nav class="breadcrumb">
+    <%= link_to 'All users', admin_users_path %> <i class="fas fa-chevron-right"></i> <%= @user.full_name %>
+  </nav>
+  <h1>User details</h1>
+</div>
 
 <div class="card">
     
@@ -32,7 +37,7 @@
 
 <div class="pt-3">
 <% if policy(@user).edit? %>
-      <%= link_to 'Edit', edit_admin_user_path(@user), class: 'btn btn-primary btn-sm' %>
+      <%= link_to 'Edit user', edit_admin_user_path(@user), class: 'btn btn-primary btn-sm' %>
     <% end %>
     <% unless @user.sync_approval_status == 'denied' %>
       <%= link_to 'Deny access', '#deny-access-modal-' + @user.id , 'data-toggle' => 'modal', class: 'btn btn-danger btn-sm' %>
