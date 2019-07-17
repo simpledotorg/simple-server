@@ -21,6 +21,7 @@ Dashboard UI
 }
 
 .split-bars .bar-1 { background: $grey-light; color: $grey-dark; border-radius: 3px 0 0 3px; }
+.split-bars .bar-none { border-radius: 3px; }
 .split-bars .bar-2 { background: $red; }
 .split-bars .bar-3 { background: $green-mid; border-radius: 0 3px 3px 0; color: $green-dark; }
 
