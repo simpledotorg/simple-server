@@ -1,45 +1,53 @@
-<h1>User details</h1>
-<p>
-  <strong>Name:</strong>
-  <%= @user.full_name %>
-</p>
+<div class="dashboard">
+  <nav class="breadcrumb">
+    <%= link_to 'All users', admin_users_path %> <i class="fas fa-chevron-right"></i> <%= @user.full_name %>
+  </nav>
+  <h1>User details</h1>
+</div>
 
-<p>
-  <strong>Phone number:</strong>
-  <%= @user.phone_number %>
-</p>
+<div class="card">
+    
+     
+    <h2><%= @user.full_name %></h2>
 
-<p>
-  <strong>Registration Facility:</strong>
-  <%= link_to @user.facility.name, [:admin, @user.facility.facility_group, @user.facility] %>
-</p>
+    <div class="row pt-2 pb-2">
+      <div class="col-2"><strong>Phone number:</strong></div>
+      <div class="col-10"><%= @user.phone_number %></div>
+    </div>
+    
+    <div class="row pt-2 pb-2">
+      <div class="col-2"><strong>Registration Facility:</strong></div>
+      <div class="col-10"><%= link_to @user.facility.name, [:admin, @user.facility.facility_group, @user.facility] %></div>
+    </div>
+    
+    <div class="row pt-2 pb-2">
+      <div class="col-2"><strong>Sync status:</strong></div>
+      <div class="col-10"><%= @user.sync_approval_status %></div>
+    </div>
+    
+    <div class="row pt-2 pb-5">
+      <div class="col-2"><strong>Sync reason:</strong></div>
+      <div class="col-10"><%= @user.sync_approval_status_reason %></div>
+    </div>
 
-<p>
-  <strong>Sync status:</strong>
-  <%= @user.sync_approval_status %>
-</p>
+    <div class="card-footer">
+      First logged in at: <%= l(@user.logged_in_at) || 'Not logged in yet' %>
+    </div>
+</div>
 
-<p>
-  <strong>Sync reason:</strong>
-  <%= @user.sync_approval_status_reason %>
-</p>
-
-<p>
-  <strong>First logged in at:</strong>
-  <%= @user.logged_in_at.try(:iso8601) || 'Not logged in yet' %>
-</p>
-
+<div class="pt-3">
 <% if policy(@user).edit? %>
-  <%= link_to 'Edit', edit_admin_user_path(@user) %>
-<% end %>
-<% unless @user.sync_approval_status == 'denied' %>
-  <span class="light divider">|</span> <%= link_to 'Deny access', '#deny-access-modal-' + @user.id , 'data-toggle' => 'modal' %>
-<% end %>
-<% unless @user.sync_approval_status == 'allowed' %>
-  <span class="light divider">|</span> <%= link_to 'Allow access', admin_user_enable_access_path(@user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') } %>
-<% end %>
-<% if policy(@user.audit_logs).index? %>
-  <span class="light divider">|</span> <%= link_to 'Audit logs', admin_audit_logs_url(user_name: @user.full_name) %>
-<% end %>
+      <%= link_to 'Edit user', edit_admin_user_path(@user), class: 'btn btn-primary btn-sm' %>
+    <% end %>
+    <% unless @user.sync_approval_status == 'denied' %>
+      <%= link_to 'Deny access', '#deny-access-modal-' + @user.id , 'data-toggle' => 'modal', class: 'btn btn-danger btn-sm' %>
+    <% end %>
+    <% unless @user.sync_approval_status == 'allowed' %>
+      <%= link_to 'Allow access', admin_user_enable_access_path(@user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') }, class: 'btn btn-success btn-sm' %>
+    <% end %>
+    <% if policy(@user.audit_logs).index? %>
+      <%= link_to 'Audit logs', admin_audit_logs_url(user_name: @user.full_name), class: 'btn btn-secondary btn-sm' %>
+    <% end %>
 
-<%= render partial: "deny_access_modal", locals: {user: @user} %>
+    <%= render partial: "deny_access_modal", locals: {user: @user} %>
+</div>
