@@ -12,7 +12,7 @@ RSpec.describe AutomaticPhoneNumberWhitelistingJob, type: :job do
       end
     end
 
-    it 'queues the job on the default queue' do
+    it 'queues the job on the exotel_phone_whitelist queue' do
       expect(job.queue_name).to eq('exotel_phone_whitelist')
     end
 
