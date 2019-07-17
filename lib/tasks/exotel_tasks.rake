@@ -27,4 +27,31 @@ namespace :exotel_tasks do
       logger.debug("#{task.stats}")
     end
   end
+
+  desc 'Populate patient phone number metadata and whitelist status from Exotel'
+  task populate_patient_phone_metadata_and_whitelist_status :environment do
+    require 'exotel_tasks/populate_metadata_and_whitelist_status'
+
+    account_sid = ENV.fetch('ACCOUNT_SID')
+    token = ENV.fetch('TOKEN')
+    batch_size = (ENV['BATCH_SIZE'] || 100).to_i
+
+    if account_sid.blank? || token.blank?
+      puts 'Please specify all of: ACCOUNT_SID and TOKEN as env vars to continue'
+      abort 'Exiting...'
+    end
+
+    task = ExotelTasks::PopulateMetadataAndWhitelistStatus.new(account_sid, token)
+
+    trap("SIGINT") do
+      pp task.stats
+      abort 'Exiting...'
+    end
+
+    logger.tagged('Populating Metadata and Whitelist Status') do
+      task.process(batch_size)
+      pp task.stats
+      logger.debug("#{task.stats}")
+    end
+  end
 end
