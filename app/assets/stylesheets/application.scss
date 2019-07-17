@@ -202,8 +202,9 @@ footer {
         padding: 1em 0;
         border-top: 1px solid rgba(0,0,0,0.05);
     }
-    .navbar-toggler-icon {
-        font-size: 14px;
+    button.navbar-toggler {
+        font-size: 15px;
+        padding: 8px 20px;
     }
     .dropdown-item {
         font-size: 14px;
