@@ -7,10 +7,10 @@
       
       <div class="col-md order-md-first">
         <% @organizations.each do |organization| %>
-            <section class="table-compact" id="facility-groups">
-              <div class="card table-responsive">
+            <section id="facility-groups">
+              <div class="card">
                 <h2><%= organization.name %></h2>
-                    <table>
+                    
 
                     <% policy_scope(organization.facility_groups)
                            .flat_map(&:facilities)
@@ -18,15 +18,11 @@
                            .keys
                            .sort
                            .each do |district| %>
-                      <tr>
-                        <td class="row-title">
-                          <%= link_to district, analytics_organization_district_path(organization.id, district) %>
-                          <i class="fas fa-angle-right"></i>
-                        </td>
-                      </tr>
+                      
+                          <%= link_to "<i class='fas fa-angle-right light'></i> #{district}".html_safe, analytics_organization_district_path(organization.id, district), class: "link-row" %>
+                      
                     <% end %>
                   
-                </table>
               </div>
             </section>
             <% end %>
