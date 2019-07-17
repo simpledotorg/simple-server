@@ -1,4 +1,4 @@
-<% cache @facility.analytics_cache_key do %>
+<% cache @facility.analytics_cache_key, expires_in: 2.days do %>
   <div class="dashboard">
     <h1><%= link_to @facility.district, analytics_organization_district_path(@facility.organization.id, @facility.district) %>
       <i class="fas fa-chevron-right" style="position: relative; top: -3px; color: rgba(0,0,0,0.2); padding: 0 6px; font-size: 70%;"></i>

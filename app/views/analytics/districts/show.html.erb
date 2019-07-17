@@ -1,4 +1,4 @@
-<% cache @organization_district.analytics_cache_key do %>
+<% cache @organization_district.analytics_cache_key, expires_in: 2.days do %>
   <div class="dashboard">
     <h1><%= @organization_district.district_name %></h1>
   </div>
