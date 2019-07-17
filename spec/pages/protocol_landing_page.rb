@@ -1,6 +1,6 @@
 class ProtocolLandingPage < ApplicationPage
 
-  ADD_NEW_PROTOCOL = { xpath: "//a[@class='btn btn-sm btn-primary']" }
+  ADD_NEW_PROTOCOL = { css: "a.btn-primary" }
 
   def click_add_new_protocol
     click(ADD_NEW_PROTOCOL)
