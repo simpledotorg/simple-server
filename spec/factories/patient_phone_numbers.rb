@@ -7,5 +7,6 @@ FactoryBot.define do
     device_created_at { Time.now }
     device_updated_at { Time.now }
     dnd_status { false }
+    patient
   end
 end

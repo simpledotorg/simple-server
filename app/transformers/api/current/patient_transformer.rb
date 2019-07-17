@@ -52,7 +52,7 @@ class Api::Current::PatientTransformer
         .merge(
           'address' => Api::Current::Transformer.to_response(patient.address),
           'phone_numbers' => patient.phone_numbers.map do |phone_number|
-            Api::Current::Transformer.to_response(phone_number).except('patient_id')
+            Api::Current::Transformer.to_response(phone_number).except('patient_id', 'dnd_status')
           end,
           'business_identifiers' => patient.business_identifiers.map do |business_identifier|
             Api::Current::PatientBusinessIdentifierTransformer.to_response(business_identifier)

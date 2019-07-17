@@ -196,6 +196,7 @@ ActiveRecord::Schema.define(version: 20190715122633) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["patient_phone_number_id"], name: "index_exotel_phone_number_details_on_patient_phone_number_id"
+    t.index ["patient_phone_number_id"], name: "index_unique_exotel_phone_number_details_on_phone_number_id", unique: true
   end
 
   create_table "facilities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -397,11 +398,9 @@ ActiveRecord::Schema.define(version: 20190715122633) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
-    t.index ["user_id", "authenticatable_type", "authenticatable_id"], name: "user_authentications_master_users_authenticatable_uniq_index", unique: true
-    t.index ["user_id"], name: "index_user_authentications_on_user_id"
-  end
-
-  create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.index ["user_id", "authenticatable_type", "authenticatable_id"], name: "user_authentications_master_use  create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "full_name"
+     create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "full_name"
     t.string "phone_number"
     t.string "password_digest"
