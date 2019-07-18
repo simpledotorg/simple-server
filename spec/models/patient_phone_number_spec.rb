@@ -66,14 +66,25 @@ RSpec.describe PatientPhoneNumber, type: :model do
       expect(PatientPhoneNumber.require_whitelisting)
         .to include(dnd_phone,
                     neutral_phone,
-                    expired_whitelist_phone)
+                    expired_whitelist_phone,
+                    whitelist_request_outdated)
 
       expect(PatientPhoneNumber.require_whitelisting)
         .not_to include(non_dnd_phone,
                         blackist_phone,
-                        valid_whitelist_phone)
+                        valid_whitelist_phone,
+                        whitelist_recently_requested)
+    end
+
+    it 'returns numbers that need whitelisting ordered by whitelist_requested_at and then by device_created_at' do
+      expect(PatientPhoneNumber.require_whitelisting.to_a)
+        .to eq([whitelist_request_outdated,
+                dnd_phone,
+                neutral_phone,
+                expired_whitelist_phone])
     end
   end
+
 
   describe 'can_be_called?' do
     let(:patient) { create(:patient) }

@@ -19,7 +19,11 @@ class PatientPhoneNumber < ApplicationRecord
       .where(%Q(
         (exotel_phone_number_details.whitelist_status is null) OR
         (exotel_phone_number_details.whitelist_status = 'neutral') OR
-        (exotel_phone_number_details.whitelist_status = 'whitelist' AND exotel_phone_number_details.whitelist_status_valid_until <= '#{Time.now}')))
+        (exotel_phone_number_details.whitelist_status = 'requested' AND exotel_phone_number_details.whitelist_requested_at <= '#{6.months.ago}') OR
+        (exotel_phone_number_details.whitelist_status = 'whitelist' AND exotel_phone_number_details.whitelist_status_valid_until <= '#{Time.now}'))
+      ).order('exotel_phone_number_details.whitelist_requested_at ASC NULLS FIRST, patient_phone_numbers.device_created_at')
+      .unscoped
+
 
   end
 

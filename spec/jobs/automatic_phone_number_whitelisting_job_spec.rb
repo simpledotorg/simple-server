@@ -18,8 +18,8 @@ RSpec.describe AutomaticPhoneNumberWhitelistingJob, type: :job do
   end
 
   describe '#perform' do
-    let(:patient) { create(:patient) }
-    let(:phones_numbers_need_whitelisting) { create_list(:patient_phone_number, 5, patient: patient, dnd_status: true) }
+    let!(:patient) { create(:patient, phone_numbers: []) }
+    let!(:phones_numbers_need_whitelisting) { create_list(:patient_phone_number, 5, patient: patient, dnd_status: true) }
     let!(:phones_numbers_dont_need_whitelisting) { create(:patient_phone_number, patient: patient, dnd_status: false) }
     let(:request_bodies) do
       phones_numbers_need_whitelisting.each_slice(2).map do |phone_numbers|
@@ -55,9 +55,9 @@ RSpec.describe AutomaticPhoneNumberWhitelistingJob, type: :job do
 
     it "calls the exotel whitelist api in batches for all phone numbers that require whitelisting" do
       AutomaticPhoneNumberWhitelistingJob.perform_now(virtual_number, account_sid, token, batch_size: 2)
-      expect(stubs.first).to have_been_requested
+      expect(stubs.first).to  have_been_requested
       expect(stubs.second).to have_been_requested
-      expect(stubs.third).to have_been_requested
+      expect(stubs.third).to  have_been_requested
     end
 
     it "sleeps for `delay` milliseconds between batches" do
