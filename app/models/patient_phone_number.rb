@@ -20,6 +20,7 @@ class PatientPhoneNumber < ApplicationRecord
         (exotel_phone_number_details.whitelist_status is null) OR
         (exotel_phone_number_details.whitelist_status = 'neutral') OR
         (exotel_phone_number_details.whitelist_status = 'whitelist' AND exotel_phone_number_details.whitelist_status_valid_until <= '#{Time.now}')))
+
   end
 
   def can_be_called?

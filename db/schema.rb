@@ -192,6 +192,7 @@ ActiveRecord::Schema.define(version: 20190715122633) do
   create_table "exotel_phone_number_details", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "patient_phone_number_id", null: false
     t.string "whitelist_status", null: false
+    t.datetime "whitelist_requested_at"
     t.datetime "whitelist_status_valid_until"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

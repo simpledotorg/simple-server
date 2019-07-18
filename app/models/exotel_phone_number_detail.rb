@@ -8,6 +8,7 @@ class ExotelPhoneNumberDetail < ApplicationRecord
   enum whitelist_status: {
     whitelist: 'whitelist',
     neutral: 'neutral',
-    blacklist: 'blacklist'
+    blacklist: 'blacklist',
+    requested: 'requested'
   }, _prefix: true
 end
