@@ -57,17 +57,15 @@ RSpec.feature 'Adherence follow-ups', type: :feature do
       end
 
       it 'shows patients ordered by how long back they registered' do
-        within('#patients-to-followup') do
-          first_item = find(:css, 'section:nth-of-type(1)')
-          second_item = find(:css, 'section:nth-of-type(2)')
+        first_item = find(:css, '.card:nth-of-type(1)')
+        second_item = find(:css, '.card:nth-of-type(2)')
 
-          expect(first_item).to have_content(patient_to_followup_in_facility_1.full_name)
-          expect(second_item).to have_content(patient_to_followup_in_facility_2.full_name)
-        end
+        expect(first_item).to have_content(patient_to_followup_in_facility_1.full_name)
+        expect(second_item).to have_content(patient_to_followup_in_facility_2.full_name)
       end
 
       it 'sets a call_result, and removes patient from the 48 hour list' do
-        within('#patients-to-followup > section:first-of-type') do
+        within('.card:first-of-type') do
           find(:option, 'Dead').click
         end
 

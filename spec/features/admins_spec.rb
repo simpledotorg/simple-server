@@ -12,11 +12,11 @@ RSpec.feature "Admins", type: :feature do
 
       expect(page).to have_content("Admins")
 
-      within("tr", text: "owner@example.com") do
+      within(".card", text: "owner@example.com") do
         expect(page).to have_content("Owner")
       end
 
-      within("tr", text: "supervisor@example.com") do
+      within(".card", text: "supervisor@example.com") do
         expect(page).to have_content("Supervisor")
       end
     end
@@ -51,7 +51,9 @@ RSpec.feature "Admins", type: :feature do
 
       visit admins_path
 
-      click_link "Invite Supervisor"
+      within ".modal" do
+        click_link "Supervisor"
+      end
 
       fill_in "Email", with: email
 
@@ -61,9 +63,9 @@ RSpec.feature "Admins", type: :feature do
     end
 
     it "allows sending new invitations" do
-      within("tr", text: email) do
+      within(".card", text: email) do
         expect(page).to have_content("Supervisor")
-        expect(page).to have_content("Invitation sent")
+        expect(page).to have_content("Invite sent")
       end
     end
 
@@ -89,7 +91,9 @@ RSpec.feature "Admins", type: :feature do
 
       visit admins_path
 
-      click_link "Invite Organization Owner"
+      within ".modal" do
+        click_link "Organization Owner"
+      end
 
       fill_in "Email", with: email
 
@@ -99,9 +103,9 @@ RSpec.feature "Admins", type: :feature do
     end
 
     it "allows sending new invitations" do
-      within("tr", text: email) do
+      within(".card", text: email) do
         expect(page).to have_content("Organization owner")
-        expect(page).to have_content("Invitation sent")
+        expect(page).to have_content("Invite sent")
       end
     end
 
@@ -125,13 +129,15 @@ RSpec.feature "Admins", type: :feature do
     before do
       sign_in(owner)
       visit admins_path
-
     end
 
     describe "inviting supervisors" do
       let!(:facility_groups) { FactoryBot.create_list(:facility_group, 2) }
       before do
-        click_link "Invite Supervisor"
+        within ".modal" do
+          click_link "Supervisor"
+        end
+
         fill_in "Email", with: email
         check facility_groups.first.name
         click_button "Send an invitation"
@@ -147,7 +153,10 @@ RSpec.feature "Admins", type: :feature do
     describe "inviting Analyst" do
       let!(:facility_groups) { FactoryBot.create_list(:facility_group, 2) }
       before do
-        click_link "Invite Analyst"
+        within ".modal" do
+          click_link "Analyst"
+        end
+
         fill_in "Email", with: email
         check facility_groups.first.name
         click_button "Send an invitation"
@@ -163,7 +172,10 @@ RSpec.feature "Admins", type: :feature do
     describe "inviting organization_owners" do
       let!(:organizations) { FactoryBot.create_list(:organization, 2) }
       before do
-        click_link "Invite Organization Owner"
+        within ".modal" do
+          click_link "Organization Owner"
+        end
+
         fill_in "Email", with: email
         check organizations.first.name
         click_button "Send an invitation"
@@ -189,7 +201,10 @@ RSpec.feature "Admins", type: :feature do
       sign_in(organization_owner)
       visit admins_path
 
-      click_link 'Invite Counsellor'
+      within ".modal" do
+        click_link 'Counsellor'
+      end
+
       fill_in 'Email', with: email
       check facility_group.name
       click_button 'Send an invitation'

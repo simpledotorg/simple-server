@@ -98,6 +98,28 @@ RSpec.describe SimpleServerEnvHelper do
     end
   end
 
+  describe 'favicon_for_environment' do
+    context 'when in the default environment' do
+      it 'should return the default logo' do
+        ENV[simple_server_env] = 'default'
+        favicon_for_default_environment = 'simple_logo_favicon.png'
+
+        expect(favicon_for_environment).to eq favicon_for_default_environment
+      end
+    end
+
+    SimpleServerEnvHelper::CUSTOMIZED_ENVS.each do |environment|
+      context "when in the #{environment} environment" do
+        it "should return the #{environment} favicon" do
+          ENV[simple_server_env] = environment
+          favicon_for_environment = "simple_logo_#{environment}_favicon.png"
+
+          expect(favicon_for_environment).to eq favicon_for_environment
+        end
+      end
+    end
+  end
+
   describe 'alt_for_environment' do
     context 'when in the default environment' do
       it 'should return the default alt for the logo' do

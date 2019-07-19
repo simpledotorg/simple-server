@@ -1,5 +1,4 @@
-<div class="row">
-  <div class="col-md-6">
+<div>
     <%= bootstrap_form_with(model: [:admin, @protocol, @protocol_drug], local: true, label_errors: true) do |form| %>
       <%= form.text_field :name, id: :protocol_drug_name %>
       <%= form.text_field :dosage, id: :protocol_drug_dosage %>
@@ -7,5 +6,4 @@
 
       <%= form.primary %>
     <% end %>
-  </div>
 </div>

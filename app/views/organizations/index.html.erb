@@ -1,26 +1,30 @@
-<%= render "shared/user_approvals" %>
+<div class="container">
+  <div class="row">
+      
+      <div class="col-sm-5 col-lg-7">
+        <% @organizations.each do |organization| %>
+            <section id="facility-groups">
+              <div class="card">
+                <h2><%= organization.name %></h2>
+                    
 
-<section class="table-compact" id="facility-groups">
-  <div class="table-responsive">
-    <table>
-      <% @organizations.each do |organization| %>
-        <tr>
-          <th><h2 style="padding-top: 1em;"><%= organization.name %></h2></th>
-        </tr>
-
-        <% policy_scope(organization.facility_groups)
-               .flat_map(&:facilities)
-               .group_by(&:district)
-               .keys
-               .sort
-               .each do |district| %>
-          <tr>
-            <td class="row-title">
-              <%= link_to district, analytics_organization_district_path(organization.id, district) %>
-            </td>
-          </tr>
-        <% end %>
-      <% end %>
-    </table>
+                    <% policy_scope(organization.facility_groups)
+                           .flat_map(&:facilities)
+                           .group_by(&:district)
+                           .keys
+                           .sort
+                           .each do |district| %>
+                      
+                          <%= link_to "<i class='fas fa-angle-right light'></i> #{district}".html_safe, analytics_organization_district_path(organization.id, district), class: "link-row" %>
+                      
+                    <% end %>
+                  
+              </div>
+            </section>
+            <% end %>
+         </div>
+         <div class="col-sm-7 col-lg-5 mt-md-3">
+            <%= render "shared/user_approvals" %>
+        </div>
   </div>
-</section>
+</div>

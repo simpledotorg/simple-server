@@ -21,11 +21,11 @@
     <%= stylesheet_link_tag    'application', media: 'all' %>
     <%= javascript_include_tag 'application' %>
 
-    <link rel="icon" type="image/png" href="/assets/favicon.png">
+    <link rel="icon" type="image/png" href="/assets/<%= favicon_for_environment %>">
 
     <!-- Roboto font -->
     <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700|Roboto:400,700" rel="stylesheet">
-      
+
     <!-- FontAwesome icons -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
 
@@ -37,6 +37,7 @@
   </head>
 
   <body>
+    <% if admin_signed_in? %>
     <nav class="<%= style_class_for_environment %>">
       <div class="container">
         <%= link_to root_path, class: "navbar-brand" do %>
@@ -49,10 +50,11 @@
         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
           <% if admin_signed_in? %>
             <ul class="navbar-nav mr-auto">
-              <li class="nav-item">
-                <%= link_to "Dashboard", admin_root_path, class: "nav-link #{active_controller?("organizations", "facility_groups")}" %>
-              </li>
-
+              <% unless current_admin.has_role?(:counsellor) %>
+                <li class="nav-item">
+                  <%= link_to "Dashboard", admin_root_path, class: "nav-link #{active_controller?("organizations", "facility_groups")}" %>
+                </li>
+              <% end %>
               <% if FeatureToggle.enabled?('PATIENT_FOLLOWUPS') %>
                 <% if policy(Appointment).index? %>
                   <li class="nav-item">
@@ -96,11 +98,16 @@
             </ul>
 
             <ul class="navbar-nav ml-auto">
-              <li class="nav-item nav-link" style="pointer-events: none;">
-                <%= current_admin.email %>
-              </li>
-              <li class="nav-item">
-                <%= link_to('Logout', destroy_admin_session_path, method: :delete, class: "nav-link") %>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle dropdown-more" href="#" id="navbarDropdown2" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <%= current_admin.email %>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <%= link_to('Logout', destroy_admin_session_path, method: :delete, class: "dropdown-item") %>
+                  <div class="dropdown-divider"></div>
+                  <a href="https://www.simple.org/privacy/" class="dropdown-item">Privacy Policy</a>
+                  <a href="https://opensource.org/licenses/MIT" class="dropdown-item">License</a>
+                </div>
               </li>
             </ul>
           <% else %>
@@ -113,25 +120,22 @@
         </div>
       </div>
     </nav>
+    <% end %>
 
-    <main role="main" class="container">
+    <main role="main" class="container pb-5">
       <% flash.each do |type, message| %>
         <% next unless message.is_a? String %>
 
-        <div class="alert <%= bootstrap_class_for_flash(type) %> alert-dismissable fade show">
+        <div class="<% if !admin_signed_in? %>col-md-6 mx-auto<% end %> alert <%= bootstrap_class_for_flash(type) %> alert-dismissable fade show">
           <%= message %>
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+            <i class="fas fa-times" style="font-size: 85%; position: relative; bottom: 2px;"></i>
           </button>
         </div>
       <% end %>
 
       <%= yield %>
-    
-        <footer id="app-footer">
-            <a href="https://www.simple.org/privacy/">Privacy Policy</a> and <a href="https://opensource.org/licenses/MIT">License</a>
-        </footer>
     </main>
-    
+
   </body>
 </html>
