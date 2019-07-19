@@ -2,9 +2,10 @@ class Analytics::FacilitiesController < AnalyticsController
   before_action :set_facility
 
   def show
+    @cohort_analytics = @facility.cohort_analytics
+    
     facility_analytics = @facility.dashboard_analytics
     available_users = policy_scope(User).where(id: facility_analytics.keys)
-
     @analytics =
       available_users.inject({}) do |acc, user|
         acc[user] = facility_analytics[user.id]

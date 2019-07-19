@@ -2,9 +2,10 @@ class Analytics::DistrictsController < AnalyticsController
   before_action :set_organization_district
 
   def show
+    @cohort_analytics = @organization_district.cohort_analytics
+    
     district_analytics = @organization_district.dashboard_analytics
     available_facilities = policy_scope(Facility).where(id: district_analytics.keys)
-
     @analytics =
       available_facilities.inject({}) do |acc, facility|
         acc[facility] = district_analytics[facility.id]

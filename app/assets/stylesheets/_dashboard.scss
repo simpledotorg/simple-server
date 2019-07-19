@@ -1,0 +1,120 @@
+/*****************
+Dashboard UI
+*****************/
+
+.split-bars {
+    font-family: $font-condensed;
+}
+
+.split-bars td {
+    text-align: center;
+    line-height: 1.7; /* Sets height of bar */
+}
+
+.split-bars .bar {
+    background: #ddd;
+    vertical-align: middle;
+    color: rgba(255,255,255,0.85);
+    padding: 4px 8px;
+    font-weight: 500;
+    position: relative;
+}
+
+.split-bars .bar-1 { background: $grey-light; color: $grey-dark; border-radius: 3px 0 0 3px; }
+.split-bars .bar-none { border-radius: 3px; }
+.split-bars .bar-2 { background: $red; }
+.split-bars .bar-3 { background: $green-mid; border-radius: 0 3px 3px 0; color: $green-dark; }
+
+.split-row {
+    margin-top: 16px;
+}
+
+.bar-total {
+    float: right;
+    font-size: 85%;
+    color: $grey-mid;
+    padding: 0 0 4px 0;
+}
+
+.key {
+    display: inline-block;
+}
+
+.key div {
+    position: relative;
+    padding: 4px 0 4px 26px;
+    margin-left: 8px;
+    font-size: 13px;
+    font-family: $font-condensed;
+    display: inline-block;
+}
+
+.key div:after {
+    content: ".";
+    width: 18px;
+    height: 12px;
+    position: absolute;
+    left: 3px;
+    top: 8px;
+    border-radius: 3px;
+    text-indent: -1000em;
+}
+
+.key div.didntattend:after { background: $grey-light; }
+.key div.uncontrolled:after { background: $red; }
+.key div.controlled:after { background: $green-mid; }
+
+.key div.didntattend { color: $grey-dark; }
+.key div.uncontrolled { color: $red-dark; }
+.key div.controlled { color: $green-dark; }
+
+@include media-breakpoint-down(sm) {
+    .key div { margin-left: 0; margin-right: 8px; font-size: 85%; margin-top: 8px; }
+}
+
+.bar-count {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.split-bars-secondary {
+    margin-bottom: 24px;
+}
+
+.split-bars-secondary td {
+    padding: 6px;
+    border-top: 1px solid $grey-lightest;
+}
+
+.split-bars-secondary tr:first-child td {
+    border-top: 0;
+}
+
+.bars {
+    text-align: center;
+    font-size: 11px;
+    color: #ccc;
+    margin-top: 32px;
+}
+
+.bars div {
+    border-radius: 2px 2px 0 0;
+    background: #ddd;
+    min-height: 2px;
+    margin-bottom: 2px;
+}
+
+.bars td:last-child div {
+    background: #aaa;
+}
+
+.graphics a {
+    text-indent: -1000em;
+    width: 42px;
+    height: 42px;
+    background: url(/assets/whatsapp-dashboard.svg);
+    background-size: cover;
+    display: block;
+    float: right;
+    margin: -10px -4px 0 0;
+}

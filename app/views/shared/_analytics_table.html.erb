@@ -1,89 +1,98 @@
-<section class="table-compact">
-  <div class="table-responsive">
-    <table>
-      <thead>
-      <tr>
-        <th colspan="2"></th>
-        <th class="row-label" colspan="1">Registered patients</th>
-        <th class="row-label" colspan="3">Follow-up patients<br></th>
-        <th class="row-label" colspan="3">New registrations<br></th>
-      </tr>
+<div class="card pr-0 pr-md-3">
+      <div class="table-responsive table-compact">
 
-      <tr>
-        <td colspan="2"></td>
-        <!--Registered patients-->
-        <td class="row-label"><strong>Total</strong></td>
+        <table>
+          <colgroup>
+              <col>
+              <col style="border-left: 1px solid #dce4e8;">
+              <col style="border-left: 1px solid #dce4e8;">
+              <col>
+              <col>
+              <col style="border-left: 1px solid #dce4e8;">
+              <col>
+              <col>
+          </colgroup>
+          <thead>
+          <tr>
+            <th rowspan="2"><h3><%= row_resource_description %></h3></th>
+            <th class="row-label"><strong>Registered patients</strong></th>
+            <th class="row-label" colspan="3"><strong>Follow-up patients</strong></th>
+            <th class="row-label" colspan="3"><strong>New registrations</strong></th>
+          </tr>
 
-        <!--Follow-up patients-->
-        <% repeat_for_last(months: 3) do |month| %>
-          <td class="row-label"><strong><%= month.strftime("%B %Y") %></strong></td>
-        <% end %>
+          <tr>
+            <!--Registered patients-->
+            <th class="row-label" style="padding-bottom: 8px;">Total</th>
 
-        <!--New registrations-->
-        <% repeat_for_last(months: 3) do |month| %>
-          <td class="row-label"><strong><%= month.strftime("%B %Y") %></strong></td>
-        <% end %>
-      </tr>
+            <!--Follow-up patients-->
+            <% repeat_for_last(months: 3) do |month| %>
+              <th class="row-label" style="padding-bottom: 8px;"><%= month.strftime("%B %Y") %></th>
+            <% end %>
 
-      </thead>
-      <tbody>
+            <!--New registrations-->
+            <% repeat_for_last(months: 3) do |month| %>
+              <th class="row-label" style="padding-bottom: 8px;"><%= month.strftime("%B %Y") %></th>
+            <% end %>
+          </tr>
 
-      <tr class="row-total">
-        <td class="row-rank row-total"></td>
-        <td class="row-title row-total">All</td>
+          </thead>
+          <tbody>
 
-        <!--Registered patients-->
-        <td class="row-enrolled text-green row-total">
-          <%= dash_if_zero(analytics.sum { |_, row| row[:total_registered_patients] || 0 }) %>
-        </td>
+          <tr class="row-total">
+            <td class="row-title row-total">All</td>
 
-        <!--Follow-up patients-->
-        <% repeat_for_last(months: 3) do |month| %>
-          <td class="row-enrolled row-total">
-            <%= analytics_month_totals(analytics, :follow_up_patients_by_month, month) %>
-          </td>
-        <% end %>
-
-        <!--New registrations-->
-        <% repeat_for_last(months: 3) do |month| %>
-          <td class="row-enrolled row-total">
-            <%= analytics_month_totals(analytics, :registered_patients_by_month, month) %>
-          </td>
-        <% end %>
-      </tr>
-
-      <% analytics
-             .sort_by { |resource, _| resource.send(row_resource_display_field) }
-             .each do |resource, data| %>
-        <tr>
-          <td class="row-rank"></td>
-
-          <td class="row-title">
-            <%= link_to resource.send(row_resource_display_field),
-                        send(row_resource_link, resource) %>
-          </td>
-
-          <!--Registered patients-->
-          <td class="row-enrolled text-green">
-            <%= dash_if_zero(data.dig(:total_registered_patients)) %>
-          </td>
-
-          <!--Follow-up patients-->
-          <% repeat_for_last(months: 3) do |month| %>
-            <td class="row-enrolled">
-              <%= dash_if_zero(data.dig(:follow_up_patients_by_month, month)) %>
+            <!--Registered patients-->
+            <td class="row-total" style="text-align: center;">
+              <%= dash_if_zero(analytics.sum { |_, row| row[:total_registered_patients] || 0 }) %>
             </td>
-          <% end %>
 
-          <!--New registrations-->
-          <% repeat_for_last(months: 3) do |month| %>
-            <td class="row-enrolled">
-              <%= dash_if_zero(data.dig(:registered_patients_by_month, month)) %>
-            </td>
-          <% end %>
-        </tr>
-      <% end %>
-      </tbody>
-    </table>
-  </div>
-</section>
+            <!--Follow-up patients-->
+            <% repeat_for_last(months: 3) do |month| %>
+              <td class="row-total" style="text-align: center;">
+                <%= analytics_month_totals(analytics, :follow_up_patients_by_month, month) %>
+              </td>
+            <% end %>
+
+            <!--New registrations-->
+            <% repeat_for_last(months: 3) do |month| %>
+              <td class="row-total" style="text-align: center;">
+                <%= analytics_month_totals(analytics, :registered_patients_by_month, month) %>
+              </td>
+            <% end %>
+          </tr>
+
+
+<% analytics
+       .sort_by { |resource, _| resource.send(row_resource_display_field) }
+       .each do |resource, data| %>
+  <tr>
+    <td class="row-title">
+      <%= link_to resource.send(row_resource_display_field),
+                  send(row_resource_link, resource) %>
+    </td>
+
+    <!--Registered patients-->
+    <td style="text-align: center;">
+      <%= dash_if_zero(data.dig(:total_registered_patients)) %>
+    </td>
+
+    <!--Follow-up patients-->
+    <% repeat_for_last(months: 3) do |month| %>
+      <td style="text-align: center;">
+        <%= dash_if_zero(data.dig(:follow_up_patients_by_month, month)) %>
+      </td>
+    <% end %>
+
+    <!--New registrations-->
+    <% repeat_for_last(months: 3) do |month| %>
+      <td style="text-align: center;">
+        <%= dash_if_zero(data.dig(:registered_patients_by_month, month)) %>
+      </td>
+    <% end %>
+  </tr>
+<% end %>
+          </tbody>
+        </table>
+
+      </div>
+</div>

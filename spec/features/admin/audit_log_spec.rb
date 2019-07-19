@@ -28,10 +28,10 @@ RSpec.feature 'Admin::AuditLogs', type: :feature do
       fill_in 'user_name', with: 'Ya'
       click_button 'Search'
 
-      expect(page).to have_selector('tbody tr', count: 10)
-      expect(page).to have_selector('tbody tr', text: 'Dr. Priyanka Sodhi')
-      expect(page).to have_selector('tbody tr', text: 'Yash Bahl')
-      expect(page).not_to have_selector('tbody tr', text: 'Rohit Mehra')
+      expect(page).to have_selector('.card', count: 10)
+      expect(page).to have_selector('.card', text: 'Dr. Priyanka Sodhi')
+      expect(page).to have_selector('.card', text: 'Yash Bahl')
+      expect(page).not_to have_selector('.card', text: 'Rohit Mehra')
     end
   end
 end

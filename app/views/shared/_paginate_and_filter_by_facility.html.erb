@@ -1,6 +1,6 @@
 <%= bootstrap_form_with(url: form_url, method: :get, layout: :horizontal, class: "mt-4") do |form| %>
   <div class="form-row">
-    <div id="facility-selector" class="form-group col-9">
+    <div id="facility-selector" class="form-group col-md-6">
       <%= form.select :facility_id,
                       current_admin.facilities.sort_by(&:name).map { |facility| [facility.name, facility.id] },
                       {
@@ -12,11 +12,10 @@
                       onchange: "this.form.submit();"
       %>
     </div>
-    <div id="limit-selector" class="form-group col-3">
+    <div id="limit-selector" class="form-group col-md-3">
       <%= form.select :per_page,
-                      [20, 50, "All"],
+                      ["20 per page", "50 per page", "All"],
                       {
-                          help: "Per page",
                           hide_label: true,
                           selected: per_page,
                       },
