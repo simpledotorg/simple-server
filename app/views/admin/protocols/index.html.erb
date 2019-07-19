@@ -7,27 +7,21 @@
   </nav>
 </div>
 
-<table class="table table-responsive">
-  <thead class="thead-light">
-    <tr>
-      <th>Name</th>
-      <th class="nowrap">Follow up days</th>
-      <th colspan="2"></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @protocols.each do |protocol| %>
-      <tr>
-        <td class="nowrap"><%= link_to protocol.name, [:admin, protocol] %></td>
-        <td><%= protocol.follow_up_days %></td>
-        <% if policy(protocol).edit? %>
-          <td><%= link_to 'Edit', edit_admin_protocol_path(protocol) %></td>
-        <% end %>
-        <% if policy(protocol).destroy? %>
-          <td><%= link_to 'Delete', [:admin, protocol], method: :delete, data: { confirm: "Are you sure you want to delete #{protocol.name}?" } %></td>
-        <% end %>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+<% @protocols.each do |protocol| %>
+    <div class="card">
+      <div class="row">
+          <div class="col-8">
+                <h5 class="mb-1"><%= link_to protocol.name, [:admin, protocol] %></h5>
+                <div><i class="far fa-calendar-alt light mr-2"></i> Follow-up days: <%= protocol.follow_up_days %></div>
+          </div>
+          <div class="col-4 text-right">
+                <% if policy(protocol).edit? %>
+                  <%= link_to 'Edit', edit_admin_protocol_path(protocol), class: "btn btn-sm btn-outline-primary" %>
+                <% end %>
+                <% if policy(protocol).destroy? %>
+                  <%= link_to '<i class="fas fa-trash-alt"></i>' .html_safe, [:admin, protocol], method: :delete, data: { confirm: "Are you sure you want to delete #{protocol.name}?" }, class: "btn btn-sm btn-outline-danger" %>
+                <% end %>
+          </div>
+      </div>
+    </div>
+<% end %>

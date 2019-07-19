@@ -44,7 +44,12 @@ class Api::Current::UsersController < APIController
 
   def reset_password
     current_user.reset_phone_number_authentication_password!(reset_password_digest)
-    ApprovalNotifierMailer.with(user: current_user).reset_password_approval_email.deliver_later
+
+    ApprovalNotifierMailer
+      .with(user: current_user)
+      .reset_password_approval_email
+      .deliver_later unless FeatureToggle.auto_approve_for_qa?
+
     render json: {
       user: user_to_response(current_user),
       access_token: current_user.access_token
