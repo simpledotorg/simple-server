@@ -2,22 +2,7 @@ class Analytics::DistrictsController < AnalyticsController
   before_action :set_organization_district
 
   def show
-  end
-
-  helper_method :analytics
-  helper_method :analytics_cache_key
-
-  def analytics
-    {
-      cohort: @organization_district.cohort_analytics,
-      dashboard: @organization_district.dashboard_analytics
-    }
-  end
-
-  def analytics_cache_key
-    today = Date.today.strftime("%Y-%m-%d")
-    sanitized_district_name = @organization_district.district_name.downcase.split(' ').join('-')
-    "analytics/#{today}/organization/#{@organization_district.organization.id}/district/#{sanitized_district_name}"
+    @analytics = Rails.cache.fetch(analytics_cache_key) { analytics }
   end
 
   def share_anonymized_data
@@ -36,6 +21,20 @@ class Analytics::DistrictsController < AnalyticsController
   end
 
   private
+
+  def analytics
+    {
+      cohort: @organization_district.cohort_analytics,
+      dashboard: @organization_district.dashboard_analytics
+    }
+  end
+
+  # invalidate analytics cache after 1 day
+  def analytics_cache_key
+    today = Date.today.strftime("%Y-%m-%d")
+    sanitized_district_name = @organization_district.district_name.downcase.split(' ').join('-')
+    "analytics/#{today}/organization/#{@organization_district.organization.id}/district/#{sanitized_district_name}"
+  end
 
   def set_organization_district
     district_name = params[:id] || params[:district_id]

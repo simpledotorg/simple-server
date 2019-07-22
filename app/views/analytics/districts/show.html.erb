@@ -1,34 +1,32 @@
-<% cache analytics_cache_key, expires_in: 2.days do %>
-  <div class="dashboard">
-    <nav class="breadcrumb">
-      <%= link_to 'All districts', admin_root_path %>
-      <i class="fas fa-chevron-right"></i>
+<div class="dashboard">
+  <nav class="breadcrumb">
+    <%= link_to 'All districts', admin_root_path %>
+    <i class="fas fa-chevron-right"></i>
 
-      <%= @organization_district.district_name %>
-    </nav>
-    <h1><%= @organization_district.district_name %></h1>
+    <%= @organization_district.district_name %>
+  </nav>
+  <h1><%= @organization_district.district_name %></h1>
+</div>
+
+<%= render 'shared/cohort_charts', cohort_analytics: @analytics[:cohort] %>
+
+<%=
+  render 'shared/analytics_table',
+         dashboard_analytics: @analytics[:dashboard],
+         row_resource: Facility.order(:name),
+         row_resource_description: "Facilities",
+         row_resource_display_field: :name,
+         row_resource_link: :analytics_facility_path
+%>
+
+<% if policy(@organization_district).share_anonymized_data? %>
+  <div class="downloads">
+    <h4>Downloads</h4>
+    <%= link_to analytics_organization_district_share_path(organization_id: @organization_district.organization.id,
+                                                           district_id: @organization_district.district_name),
+                class: "download",
+                data: { confirm: I18n.t('admin.phi_anonymized_download_alert') } do %>
+      <i class="far fa-file-excel" style="margin-right: 4px;"></i> Anonymized Data (XLS)
+    <% end %>
   </div>
-
-  <%= render 'shared/cohort_charts', cohort_analytics: analytics[:cohort] %>
-
-  <%=
-    render 'shared/analytics_table',
-           analytics: analytics[:dashboard],
-           row_resource: Facility.order(:name),
-           row_resource_description: "Facilities",
-           row_resource_display_field: :name,
-           row_resource_link: :analytics_facility_path
-  %>
-
-  <% if policy(@organization_district).share_anonymized_data? %>
-    <div class="downloads">
-      <h4>Downloads</h4>
-      <%= link_to analytics_organization_district_share_path(organization_id: @organization_district.organization.id,
-                                                             district_id: @organization_district.district_name),
-                  class: "download",
-                  data: { confirm: I18n.t('admin.phi_anonymized_download_alert') } do %>
-        <i class="far fa-file-excel" style="margin-right: 4px;"></i> Anonymized Data (XLS)
-      <% end %>
-    </div>
-  <% end %>
 <% end %>
