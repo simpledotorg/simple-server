@@ -1,30 +1,24 @@
 namespace :exotel_tasks do
-  desc 'Whitelist patient phone numbers on Exotel'
-  task whitelist_patient_phone_numbers: :environment do
-    require 'exotel_tasks/whitelist_phone_numbers'
-
-    data_file = ENV.fetch('JSON_FILE_PATH')
+  desc 'Get phone number details from exotel'
+  task get_patient_phone_number_details: :environment do
     account_sid = ENV.fetch('ACCOUNT_SID')
     token = ENV.fetch('TOKEN')
-    virtual_number = ENV.fetch('VIRTUAL_NUMBER')
-    batch_size = (ENV['BATCH_SIZE'] || 1000).to_i
+    batch_size = ENV.fetch('EXOTEL_UPDATE_PHONE_NUMBER_DETAILS_BATCH_SIZE').to_i
 
-    if data_file.blank? || account_sid.blank? || token.blank?
-      puts 'Please specify all of: JSON_FILE_PATH, ACCOUNT_SID and TOKEN as env vars to continue'
-      abort 'Exiting...'
+    PatientPhoneNumber.in_batches(of: batch_size) do |batch|
+      batch.each do |patient_phone_number|
+        UpdatePhoneNumberDetailsJob.perform_later(patient_phone_number.id, account_sid, token)
+      end
     end
+  end
 
-    task = ExotelTasks::WhitelistPhoneNumbers.new(account_sid, token, data_file)
+  desc 'Whitelist patient phone numbers for exotel'
+  task whitelist_patient_phone_numbers: :environment do
+    account_sid = ENV.fetch('ACCOUNT_SID')
+    token = ENV.fetch('TOKEN')
+    batch_size = ENV.fetch('EXOTEL_WHITELIST_PHONE_NUMBER_DETAILS_BATCH_SIZE').to_i
+    virtual_number = ENV.fetch('EXOTEL_VIRTUAL_NUMBER')
 
-    trap("SIGINT") do
-      pp task.stats
-      abort 'Exiting...'
-    end
-
-    logger.tagged('Whitelisting patient phone numbers') do
-      task.process(batch_size, virtual_number)
-      pp task.stats
-      logger.debug("#{task.stats}")
-    end
+    AutomaticPhoneNumberWhitelistingJob.perform_later(virtual_number, account_sid, token, batch_size: batch_size)
   end
 end
