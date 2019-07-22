@@ -1,7 +1,10 @@
 <% cache @organization_district.analytics_cache_key, expires_in: 2.days do %>
-  <div class="dashboard">
-    <h1><%= @organization_district.district_name %></h1>
-  </div>
+<div class="dashboard">
+  <nav class="breadcrumb">
+    <%= link_to 'All districts', admin_root_path %> <i class="fas fa-chevron-right"></i> <%= @organization_district.district_name %>
+  </nav>
+  <h1><%= @organization_district.district_name %></h1>
+</div>
 
   <%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics %>
 

@@ -75,17 +75,15 @@ RSpec.feature 'Overdue appointments', type: :feature do
       end
 
       it 'shows overdue patients ordered by how overdue they are' do
-        within('#overdue-patients') do
-          first_item = find(:css, 'section:nth-of-type(1)')
-          second_item = find(:css, 'section:nth-of-type(2)')
+        first_item = find(:css, '.card:nth-of-type(1)')
+        second_item = find(:css, '.card:nth-of-type(2)')
 
-          expect(first_item).to have_content(overdue_patient_in_facility_1.full_name)
-          expect(second_item).to have_content(overdue_patient_in_facility_2.full_name)
-        end
+        expect(first_item).to have_content(overdue_patient_in_facility_1.full_name)
+        expect(second_item).to have_content(overdue_patient_in_facility_2.full_name)
       end
 
       it 'sets a call_result, and removes patient from the overdue list' do
-        within('#overdue-patients > section:first-of-type') do
+        within('.card:first-of-type') do
           find(:option, 'Dead').click
         end
 
@@ -115,8 +113,8 @@ RSpec.feature 'Overdue appointments', type: :feature do
       end
 
       it 'does not allow you to download the overdue list for all facilities' do
-        expect(page).to have_content("Select a facility to download")
-        expect(page).to have_selector("button:disabled", text: "Download Overdue List")
+        expect(page).to have_content("Select a facility to download Overdue Patients list")
+        expect(page).not_to have_selector("a", text: "Download Overdue List")
       end
     end
   end
