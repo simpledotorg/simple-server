@@ -26,7 +26,6 @@ class ExotelAPIService
       :Number => phone_numbers.join(',')
     }
 
-    # TODO: log response
     execute_post(whitelist_phone_numbers_url, form: request_body)
   end
 

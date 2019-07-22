@@ -1,6 +1,13 @@
-class UpdatePhoneNumberDetailsJob < ApplicationJob
-  queue_as :phone_number_details_queue
-  self.queue_adapter = :sidekiq
+class UpdatePhoneNumberDetailsJob
+  include Sidekiq::Worker
+  include Sidekiq::Throttled::Worker
+
+  sidekiq_options queue: :phone_number_details_queue
+
+  sidekiq_throttle(
+    concurrency: { limit: 2 },
+    threshold: { limit: 1, period: 30.seconds }
+  )
 
   def perform(patient_phone_number_id, sid, token)
     patient_phone_number = PatientPhoneNumber.find(patient_phone_number_id)
