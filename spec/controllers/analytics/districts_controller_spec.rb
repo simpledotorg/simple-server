@@ -34,13 +34,15 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
   describe '#show' do
     render_views
 
-    it 'returns relevant analytics keys per facility' do
-      get :show, params: { organization_id: organization.id, id: district_name }
+    context 'dashboard analytics' do
+      it 'returns relevant analytics keys per facility' do
+        get :show, params: { organization_id: organization.id, id: district_name }
 
-      expect(response.status).to eq(200)
-      expect(assigns(:analytics)[facility.id].keys).to match_array([:follow_up_patients_by_month,
-                                                                    :registered_patients_by_month,
-                                                                    :total_registered_patients])
+        expect(response.status).to eq(200)
+        expect(assigns(:analytics)[:dashboard][facility.id].keys).to match_array([:follow_up_patients_by_month,
+                                                                                  :registered_patients_by_month,
+                                                                                  :total_registered_patients])
+      end
     end
 
     it 'renders the analytics table view' do
