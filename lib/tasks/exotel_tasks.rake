@@ -19,6 +19,6 @@ namespace :exotel_tasks do
     batch_size = ENV.fetch('EXOTEL_WHITELIST_PHONE_NUMBER_DETAILS_BATCH_SIZE').to_i
     virtual_number = ENV.fetch('EXOTEL_VIRTUAL_NUMBER')
 
-    AutomaticPhoneNumberWhitelistingJob.perform_later(virtual_number, account_sid, token, batch_size: batch_size)
+    AutomaticPhoneNumberWhitelistingJob.perform_later(virtual_number, account_sid, token, batch_size)
   end
 end

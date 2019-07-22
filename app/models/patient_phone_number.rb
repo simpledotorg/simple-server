@@ -44,4 +44,14 @@ class PatientPhoneNumber < ApplicationRecord
       end
     end
   end
+
+  def update_whitelist_requested_at(time)
+    return exotel_phone_number_detail.update(whitelist_requested_at: time) if exotel_phone_number_detail.present?
+
+    ExotelPhoneNumberDetail.create(
+      patient_phone_number: self,
+      whitelist_status: ExotelPhoneNumberDetail.whitelist_statuses[:requested],
+      whitelist_requested_at: time
+    )
+  end
 end

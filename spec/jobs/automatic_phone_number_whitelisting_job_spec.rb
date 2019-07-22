@@ -13,16 +13,17 @@ RSpec.describe AutomaticPhoneNumberWhitelistingJob, type: :job do
     end
 
     it 'queues the job on the exotel_phone_whitelist queue' do
-      expect(job.queue_name).to eq('exotel_phone_whitelist')
+      expect(job.queue_name).to eq('phone_number_details_queue')
     end
   end
 
   describe '#perform' do
     let!(:patient) { create(:patient, phone_numbers: []) }
     let!(:phones_numbers_need_whitelisting) { create_list(:patient_phone_number, 5, patient: patient, dnd_status: true) }
-    let!(:phones_numbers_dont_need_whitelisting) { create(:patient_phone_number, patient: patient, dnd_status: false) }
+    let(:batch_size) { 2 }
+    let(:phone_number_batches) { phones_numbers_need_whitelisting.each_slice(batch_size) }
     let(:request_bodies) do
-      phones_numbers_need_whitelisting.each_slice(2).map do |phone_numbers|
+      phone_number_batches.map do |phone_numbers|
         {
           :Language => 'en',
           :VirtualNumber => virtual_number,
@@ -60,10 +61,13 @@ RSpec.describe AutomaticPhoneNumberWhitelistingJob, type: :job do
       expect(stubs.third).to  have_been_requested
     end
 
-    it "sleeps for `delay` milliseconds between batches" do
-
-
+    it "updates the whitelist_requested_at for all the patient phone numbers" do
+      Timecop.freeze do
+        AutomaticPhoneNumberWhitelistingJob.perform_now(virtual_number, account_sid, token, batch_size)
+        phones_numbers_need_whitelisting.each do |phone_number|
+          expect(phone_number.exotel_phone_number_detail.whitelist_requested_at).to eq(Time.now)
+        end
+      end
     end
-
   end
 end
