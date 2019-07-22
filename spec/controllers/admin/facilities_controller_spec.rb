@@ -154,10 +154,9 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
       it 'uploads facilities file and fails validations' do
         post :upload, params: { :upload_facilities_file => upload_file }
         expect(assigns(:errors)).to eq(["Uploaded file has duplicate facilities",
-                                        "Row 2: Facility group doesn't exist for the organization",
-                                        "Row 3: Organization doesn't exist",
-                                        "Row 4: Facility group doesn't exist for the organization",
-                                        "Row 5: District can't be blank and Facility group doesn't exist for the organization"])
+                                        "Row(s) 2, 4: Facility group doesn't exist for the organization",
+                                        "Row(s) 3: Organization doesn't exist",
+                                        "Row(s) 5: Facility group doesn't exist for the organization and District can't be blank"])
       end
     end
     context 'with invalid organization and facility group' do
@@ -169,10 +168,10 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
       let(:upload_file) { fixture_file_upload('files/upload_facilities_test_3.csv', 'text/csv') }
       it 'uploads facilities file and fails validations' do
         post :upload, params: { :upload_facilities_file => upload_file }
-        expect(assigns(:errors)).to eq(["Row 2: Facility group doesn't exist for the organization",
-                                        "Row 3: Organization doesn't exist",
-                                        "Row 4: District can't be blank and Facility group doesn't exist for the organization",
-                                        "Row 5: Organization name can't be blank"])
+        expect(assigns(:errors)).to eq(["Row(s) 2: Facility group doesn't exist for the organization",
+                                        "Row(s) 3: Organization doesn't exist",
+                                        "Row(s) 4: Facility group doesn't exist for the organization and District can't be blank",
+                                        "Row(s) 5: Organization name can't be blank"])
       end
     end
     context 'with unsupported file type' do
