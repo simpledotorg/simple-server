@@ -194,8 +194,9 @@ footer {
         padding: 1em 0;
         border-top: 1px solid rgba(0,0,0,0.05);
     }
-    .navbar-toggler-icon {
-        font-size: 14px;
+    button.navbar-toggler {
+        font-size: 15px;
+        padding: 8px 20px;
     }
     .dropdown-item {
         font-size: 14px;
@@ -528,13 +529,13 @@ Dashboard UI
 
 .link-row {
     display: block;
-    padding: 6px 0;
+    padding: 8px 0;
     border-top: 1px solid $grey-lightest;
     position: relative;
     
     i {
         position: absolute;
-        top: 8px;
+        top: 10px;
         right: 8px;
         font-size: 120%;
         color: $grey-light;
@@ -632,6 +633,7 @@ Breadcrumb nav
 nav.breadcrumb {
     background: transparent;
     padding-left: 0;
+    margin: 0 0 8px 0;
 }
 
 nav.breadcrumb .arrow,
