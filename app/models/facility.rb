@@ -69,13 +69,6 @@ class Facility < ApplicationRecord
     results.inject(&:deep_merge)
   end
 
-  def analytics_cache_key
-    to_time = Date.today.strftime("%Y-%m-%d")
-    from_time = 3.months.ago.strftime("%Y-%m-%d")
-
-    "analytics/#{from_time}/#{to_time}/facilities/#{id}"
-  end
-
   def self.parse_facilities(file_contents)
     facilities = []
     CSV.parse(file_contents, headers: true, converters: :strip_whitespace) do |row|

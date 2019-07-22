@@ -2,8 +2,21 @@ class Analytics::FacilitiesController < AnalyticsController
   before_action :set_facility
 
   def show
-    @cohort_analytics = @facility.cohort_analytics
-    @analytics = @facility.dashboard_analytics
+  end
+
+  helper_method :analytics
+  helper_method :analytics_cache_key
+
+  def analytics
+    {
+      cohort: @facility.cohort_analytics,
+      dashboard: @facility.dashboard_analytics,
+    }
+  end
+
+  def analytics_cache_key
+    today = Date.today.strftime("%Y-%m-%d")
+    "analytics/#{today}/facilities/#{@facility.id}"
   end
 
   def share_anonymized_data
