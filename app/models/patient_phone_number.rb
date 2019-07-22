@@ -14,7 +14,8 @@ class PatientPhoneNumber < ApplicationRecord
   default_scope -> { order("device_created_at ASC") }
 
   def self.require_whitelisting
-    self.left_outer_joins(:exotel_phone_number_detail)
+    self.unscoped
+      left_outer_joins(:exotel_phone_number_detail)
       .where(patient_phone_numbers: { dnd_status: true })
       .where(%Q(
         (exotel_phone_number_details.whitelist_status is null) OR
@@ -22,9 +23,6 @@ class PatientPhoneNumber < ApplicationRecord
         (exotel_phone_number_details.whitelist_status = 'requested' AND exotel_phone_number_details.whitelist_requested_at <= '#{6.months.ago}') OR
         (exotel_phone_number_details.whitelist_status = 'whitelist' AND exotel_phone_number_details.whitelist_status_valid_until <= '#{Time.now}'))
       ).order('exotel_phone_number_details.whitelist_requested_at ASC NULLS FIRST, patient_phone_numbers.device_created_at')
-      .unscoped
-
-
   end
 
   def can_be_called?
