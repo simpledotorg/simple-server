@@ -141,4 +141,24 @@ RSpec.describe PatientPhoneNumber, type: :model do
       end
     end
   end
+
+  describe 'update_exotel_phone_number_detail' do
+    let(:patient) { create(:patient) }
+    let(:patient_phone_number) { create(:patient_phone_number, patient: patient) }
+    let!(:exotel_phone_number_detail) { create(:exotel_phone_number_detail, patient_phone_number: patient_phone_number)}
+    let(:update_attributes) {
+      { dnd_status: true,
+        phone_type: "mobile",
+        whitelist_status: "whitelist",
+        whitelist_status_valid_until: 6.months.from_now
+      }
+    }
+    it "update the phone number it's exotel details" do
+      patient_phone_number.update_exotel_phone_number_detail(update_attributes)
+      expect(patient_phone_number.dnd_status).to eq(update_attributes[:dnd_status])
+      expect(patient_phone_number.phone_type).to eq(update_attributes[:phone_type])
+      expect(exotel_phone_number_detail.whitelist_status).to eq(update_attributes[:whitelist_status])
+      expect(exotel_phone_number_detail.whitelist_status_valid_until).to eq(update_attributes[:whitelist_status_valid_until])
+    end
+  end
 end

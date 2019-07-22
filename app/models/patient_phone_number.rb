@@ -31,4 +31,11 @@ class PatientPhoneNumber < ApplicationRecord
         exotel_phone_number_detail.whitelist_status_whitelist? &&
         exotel_phone_number_detail.whitelist_status_valid_until > Time.now)
   end
+
+  def update_exotel_phone_number_detail(attributes)
+    transaction do
+      self.update(attributes.slice(:dnd_status, :phone_type))
+      self.exotel_phone_number_detail.update(attributes.slice(:whitelist_status, :whitelist_status_valid_until))
+    end
+  end
 end
