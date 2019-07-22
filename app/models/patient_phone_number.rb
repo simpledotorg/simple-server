@@ -34,8 +34,14 @@ class PatientPhoneNumber < ApplicationRecord
 
   def update_exotel_phone_number_detail(attributes)
     transaction do
-      self.update(attributes.slice(:dnd_status, :phone_type))
-      self.exotel_phone_number_detail.update(attributes.slice(:whitelist_status, :whitelist_status_valid_until))
+      self.update!(attributes.slice(:dnd_status, :phone_type))
+      if self.exotel_phone_number_detail.present?
+        self.exotel_phone_number_detail.update!(attributes.slice(:whitelist_status, :whitelist_status_valid_until))
+      else
+        ExotelPhoneNumberDetail.create!(
+          { patient_phone_number_id: self.id }
+            .merge(attributes.slice(:whitelist_status, :whitelist_status_valid_until)))
+      end
     end
   end
 end

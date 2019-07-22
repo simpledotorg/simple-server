@@ -85,7 +85,6 @@ RSpec.describe PatientPhoneNumber, type: :model do
     end
   end
 
-
   describe 'can_be_called?' do
     let(:patient) { create(:patient) }
 
@@ -145,7 +144,6 @@ RSpec.describe PatientPhoneNumber, type: :model do
   describe 'update_exotel_phone_number_detail' do
     let(:patient) { create(:patient) }
     let(:patient_phone_number) { create(:patient_phone_number, patient: patient) }
-    let!(:exotel_phone_number_detail) { create(:exotel_phone_number_detail, patient_phone_number: patient_phone_number)}
     let(:update_attributes) {
       { dnd_status: true,
         phone_type: "mobile",
@@ -153,12 +151,21 @@ RSpec.describe PatientPhoneNumber, type: :model do
         whitelist_status_valid_until: 6.months.from_now
       }
     }
-    it "update the phone number it's exotel details" do
+    it "update the phone number and it's exotel details if they exist" do
+      create(:exotel_phone_number_detail, patient_phone_number: patient_phone_number)
       patient_phone_number.update_exotel_phone_number_detail(update_attributes)
       expect(patient_phone_number.dnd_status).to eq(update_attributes[:dnd_status])
       expect(patient_phone_number.phone_type).to eq(update_attributes[:phone_type])
       expect(exotel_phone_number_detail.whitelist_status).to eq(update_attributes[:whitelist_status])
       expect(exotel_phone_number_detail.whitelist_status_valid_until).to eq(update_attributes[:whitelist_status_valid_until])
     end
+
+    it "update the phone number and creates it's exotel details if they do not exist" do
+      expect {
+        patient_phone_number.update_exotel_phone_number_detail(update_attributes)
+      }.to change(ExotelPhoneNumberDetail.where(patient_phone_number: patient_phone_number), :count)
+             .from(0).to(1)
+    end
+
   end
 end

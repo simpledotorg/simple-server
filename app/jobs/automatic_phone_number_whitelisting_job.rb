@@ -1,5 +1,5 @@
 class AutomaticPhoneNumberWhitelistingJob < ApplicationJob
-  queue_as :exotel_phone_whitelist
+  queue_as :phone_number_details_queue
   self.queue_adapter = :sidekiq
 
   def perform(virtual_number, sid, token, delay: 1, batch_size: 10000)
