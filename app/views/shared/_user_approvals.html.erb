@@ -8,7 +8,7 @@
 
 
               <h5><%= link_to user.full_name, [:admin, user] %></h5>
-              <div class="event">
+              <div class="text-grey mt-1 mb-2">
                   <% if user.sync_approval_status_reason.present? %>
                     <span><%= user.sync_approval_status_reason %> at <%= user.registration_facility.present? ? link_to(user.registration_facility.name, admin_facilities_path(user.registration_facility)) : "N/A" %></span>, <%= l user.updated_at.to_date %>
                   <% end %>
