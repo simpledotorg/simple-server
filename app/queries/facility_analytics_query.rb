@@ -37,6 +37,7 @@ class FacilityAnalyticsQuery
         .left_outer_joins(:patient)
         .joins(:facility)
         .where(facility: @facility)
+        .where(deleted_at: nil)
         .group('master_users.id', date_truncate_string)
         .where("patients.recorded_at < #{date_truncate_string}")
         .order('master_users.id')
