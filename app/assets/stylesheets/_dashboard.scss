@@ -30,8 +30,10 @@ Dashboard UI
 }
 
 .bar-total {
+    float: right;
     font-size: 85%;
     color: $grey-mid;
+    padding: 0 0 4px 0;
 }
 
 .key {

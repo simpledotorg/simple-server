@@ -12,15 +12,9 @@ describe ApplicationHelper, type: :helper do
       expect(helper.rounded_time_ago_in_words(date)).to eq("Yesterday")
     end
 
-    it 'should return date in dd/mm/yyyy format if date is more than a year' do
+    it 'should return date in dd-MMM-yyyy format if date is more than a day ago' do
       date = Date.parse('31-12-2016')
-      expect(helper.rounded_time_ago_in_words(date)).to eq("on 31/12/2016")
-    end
-
-    it 'should return date in number of ago if date is less than a year ago' do
-      expect(helper.rounded_time_ago_in_words(31.days.ago.to_date)).to match(/1 month ago/)
-      expect(helper.rounded_time_ago_in_words(2.months.ago.to_date)).to match(/2 months ago/)
-      expect(helper.rounded_time_ago_in_words(11.months.ago.to_date)).to match(/11 months ago/)
+      expect(helper.rounded_time_ago_in_words(date)).to eq("on 31-DEC-2016")
     end
   end
 
@@ -30,7 +24,7 @@ describe ApplicationHelper, type: :helper do
     end
 
     it 'returns the formatted registraion data if it is greater than the program inception date' do
-      expect(helper.handle_impossible_registration_date(Date.new(2019, 01, 01))).to eq('01-Jan-2019')
+      expect(helper.handle_impossible_registration_date(Date.new(2019, 01, 01))).to eq('01-JAN-2019')
     end
 
     it "returns 'unclear' if the date is lesser than the program inception date" do
