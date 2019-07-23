@@ -9,6 +9,7 @@ RSpec.describe FacilityAnalyticsQuery do
   let(:first_feb) { Date.new(2019, 2, 1) }
   let(:first_mar) { Date.new(2019, 3, 1) }
   let(:first_apr) { Date.new(2019, 4, 1) }
+  let(:first_may) { Date.new(2019, 5, 1) }
 
   context 'when there is data available' do
     before do
@@ -21,6 +22,8 @@ RSpec.describe FacilityAnalyticsQuery do
 
           users.each do |u|
             patients << create_list(:patient, 3, registration_facility: facility, registration_user: u)
+
+            # patients
           end
 
           patients.flatten
@@ -112,6 +115,27 @@ RSpec.describe FacilityAnalyticsQuery do
           }
 
         expect(analytics.follow_up_patients_by_month).to eq(expected_result)
+      end
+    end
+  end
+
+  context 'edge cases' do
+    describe '#registered_patients_by_month' do
+      it 'should count patients as registered even if they do not have a bp' do
+        Timecop.travel(first_may) do
+          create_list(:patient, 3, registration_facility: facility, registration_user: users.first)
+        end
+
+        expected_result =
+          { users.first.id =>
+              { :registered_patients_by_month =>
+                  {
+                    first_may => 3
+                  }
+              }
+          }
+
+        expect(analytics.registered_patients_by_month).to eq(expected_result)
       end
     end
   end
