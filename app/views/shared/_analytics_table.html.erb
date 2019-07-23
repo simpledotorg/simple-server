@@ -86,7 +86,7 @@
             <!--Calls made -->
             <% repeat_for_last(months: 3) do |month| %>
               <td class="row-total" style="text-align: center;">
-                <%= analytics_month_totals(analytics, :registered_patients_by_month, month) %>
+                <%= analytics_month_totals(analytics, :total_calls_made_by_month, month) %>
               </td>
             <% end %>
           </tr>
@@ -122,7 +122,7 @@
                 <!--Calls made -->
                 <% repeat_for_last(months: 3) do |month| %>
                   <td style="text-align: center;">
-                    <%= dash_if_zero(analytics.dig(resource.id, :registered_patients_by_month, month)) %>
+                    <%= dash_if_zero(analytics.dig(resource.id, :total_calls_made_by_month, month)) %>
                   </td>
                 <% end %>
               </tr>
