@@ -46,6 +46,19 @@ class FacilityAnalyticsQuery
     group_by_user_and_date(@follow_up_patients_by_month, :follow_up_patients_by_month)
   end
 
+  def total_calls_made_by_month
+    @total_calls_made_by_month ||=
+      CallLog
+        .joins('INNER JOIN phone_number_authentications ON phone_number_authentications.phone_number = call_logs.caller_phone_number')
+        .joins('INNER JOIN facilities ON facilities.id = phone_number_authentications.registration_facility_id')
+        .joins('INNER JOIN user_authentications ON user_authentications.authenticatable_id = phone_number_authentications.id')
+        .where(phone_number_authentications: { registration_facility_id: @facility.id })
+        .group('user_authentications.user_id::uuid', date_truncate_sql('call_logs', 'end_time', period: 'month'))
+        .count
+
+    group_by_user_and_date(@total_calls_made_by_month, :total_calls_made_by_month)
+  end
+
   private
 
   def date_truncate_sql(table, column, period: 'month')
