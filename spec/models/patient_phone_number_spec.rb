@@ -66,22 +66,12 @@ RSpec.describe PatientPhoneNumber, type: :model do
       expect(PatientPhoneNumber.require_whitelisting)
         .to include(dnd_phone,
                     neutral_phone,
-                    expired_whitelist_phone,
-                    whitelist_request_outdated)
+                    expired_whitelist_phone)
 
       expect(PatientPhoneNumber.require_whitelisting)
         .not_to include(non_dnd_phone,
                         blackist_phone,
-                        valid_whitelist_phone,
-                        whitelist_recently_requested)
-    end
-
-    it 'returns numbers that need whitelisting ordered by whitelist_requested_at and then by device_created_at' do
-      expect(PatientPhoneNumber.require_whitelisting.to_a)
-        .to eq([whitelist_request_outdated,
-                dnd_phone,
-                neutral_phone,
-                expired_whitelist_phone])
+                        valid_whitelist_phone)
     end
   end
 
@@ -156,8 +146,8 @@ RSpec.describe PatientPhoneNumber, type: :model do
       patient_phone_number.update_exotel_phone_number_detail(update_attributes)
       expect(patient_phone_number.dnd_status).to eq(update_attributes[:dnd_status])
       expect(patient_phone_number.phone_type).to eq(update_attributes[:phone_type])
-      expect(exotel_phone_number_detail.whitelist_status).to eq(update_attributes[:whitelist_status])
-      expect(exotel_phone_number_detail.whitelist_status_valid_until).to eq(update_attributes[:whitelist_status_valid_until])
+      expect(patient_phone_number.exotel_phone_number_detail.whitelist_status).to eq(update_attributes[:whitelist_status])
+      expect(patient_phone_number.exotel_phone_number_detail.whitelist_status_valid_until).to eq(update_attributes[:whitelist_status_valid_until])
     end
 
     it "update the phone number and creates it's exotel details if they do not exist" do

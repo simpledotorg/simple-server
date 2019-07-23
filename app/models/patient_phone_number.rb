@@ -8,14 +8,14 @@ class PatientPhoneNumber < ApplicationRecord
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
-  validates :dnd_status, inclusion: [true, false]
+  # validates :dnd_status, inclusion: [true, false]
   has_one :exotel_phone_number_detail
 
   default_scope -> { order("device_created_at ASC") }
 
   def self.require_whitelisting
     self.unscoped
-      left_outer_joins(:exotel_phone_number_detail)
+      .left_outer_joins(:exotel_phone_number_detail)
       .where(patient_phone_numbers: { dnd_status: true })
       .where(%Q(
         (exotel_phone_number_details.whitelist_status is null) OR

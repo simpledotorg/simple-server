@@ -38,7 +38,7 @@ def build_patient_payload(patient = FactoryBot.build(:patient))
     .except('test_data')
     .merge(
       'address'       => patient.address.attributes.with_payload_keys,
-      'phone_numbers' => patient.phone_numbers.map { |phno| phno.attributes.with_payload_keys.except('patient_id') },
+      'phone_numbers' => patient.phone_numbers.map { |phno| phno.attributes.with_payload_keys.except('patient_id', 'dnd_status') },
       'business_identifiers' => patient.business_identifiers.map do |bid|
         bid.attributes.with_payload_keys
           .except('patient_id')
