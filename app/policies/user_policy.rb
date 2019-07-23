@@ -1,14 +1,17 @@
 class UserPolicy < ApplicationPolicy
   def index?
-    user.owner? || user.supervisor? || user.organization_owner?
-  end
-
-  def user_belongs_to_admin?
-    user.users.include?(record)
+    user.has_role?(:owner, :organization_owner, :supervisor)
   end
 
   def show?
-    user.owner? || user_belongs_to_admin?
+    user.owner? || (user.has_role?(:organization_owner, :supervisor) && belongs_to_admin?)
+  end
+
+  def new?
+  end
+
+  def create?
+    new?
   end
 
   def update?
@@ -17,6 +20,9 @@ class UserPolicy < ApplicationPolicy
 
   def edit?
     update?
+  end
+
+  def destroy?
   end
 
   def disable_access?
@@ -40,7 +46,19 @@ class UserPolicy < ApplicationPolicy
     end
 
     def resolve
-      scope.all
+      if @user.owner?
+        scope.all
+      elsif @user.has_role?(:analyst, :counsellor)
+        scope.none
+      else
+        scope.where(id: user.users)
+      end
     end
+  end
+
+  private
+
+  def belongs_to_admin?
+    user.users.include?(record)
   end
 end
