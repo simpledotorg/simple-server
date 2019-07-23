@@ -22,8 +22,6 @@ RSpec.describe FacilityAnalyticsQuery do
 
           users.each do |u|
             patients << create_list(:patient, 3, registration_facility: facility, registration_user: u)
-
-            # patients
           end
 
           patients.flatten
