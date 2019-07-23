@@ -50,8 +50,8 @@ module SimpleServerEnvHelper
       'development' => ['navbar-light', 'bg-light'],
       'staging' => ['navbar-light', 'bg-light'],
       'qa' => ['navbar-light', 'bg-light'],
-      'sandbox' => ['navbar-dark'],
-      'production' => ['navbar-dark'],
+      'sandbox' => ['navbar-light'],
+      'production' => ['navbar-light'],
     }
 
     navbar_classes[env] || ['navbar-light', 'bg-light']
