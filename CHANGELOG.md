@@ -6,6 +6,26 @@
 ### Removed
 ### Security
 
+# 2019-07-23-1
+### Added
+- Complete UI refresh
+- Replace device_created_at with recorded_at in the dashboard queries
+- Added tooltips to cohort reports screen
+- Set patients#index as root route for counsellors 
+- Add a confirmation step for deployment tasks (production & staging)
+- Add docs on how to generate an ERD
+### Changed
+- Skip sending emails in QA env for reset_password flow
+- Improve facility upload error messages
+- Moved cohort reporting to a rake task
+- Make the User dashboard viewing policy respect our actual policy 
+### Fixed
+- Show dashboard data only for facilities under the current organization
+- Uncontrolled patient percent in the cohort chart
+### Deprecated
+### Removed
+### Security
+
 # 2019-07-08-1
 ### Added
 - Add quarterly cohort charts to district and facility dashboards (#463)
