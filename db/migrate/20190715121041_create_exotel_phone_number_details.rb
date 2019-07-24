@@ -10,5 +10,6 @@ class CreateExotelPhoneNumberDetails < ActiveRecord::Migration[5.1]
     end
 
     add_index :exotel_phone_number_details, :patient_phone_number_id, unique: true, name: 'index_unique_exotel_phone_number_details_on_phone_number_id'
+    add_index :exotel_phone_number_details, :whitelist_status
   end
 end

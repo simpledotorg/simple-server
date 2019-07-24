@@ -198,6 +198,7 @@ ActiveRecord::Schema.define(version: 20190715122633) do
     t.datetime "updated_at", null: false
     t.index ["patient_phone_number_id"], name: "index_exotel_phone_number_details_on_patient_phone_number_id"
     t.index ["patient_phone_number_id"], name: "index_unique_exotel_phone_number_details_on_phone_number_id", unique: true
+    t.index ["whitelist_status"], name: "index_exotel_phone_number_details_on_whitelist_status"
   end
 
   create_table "facilities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -307,6 +308,7 @@ ActiveRecord::Schema.define(version: 20190715122633) do
     t.datetime "deleted_at"
     t.boolean "dnd_status", default: true, null: false
     t.index ["deleted_at"], name: "index_patient_phone_numbers_on_deleted_at"
+    t.index ["dnd_status"], name: "index_patient_phone_numbers_on_dnd_status"
   end
 
   create_table "patients", id: :uuid, default: nil, force: :cascade do |t|

@@ -75,62 +75,6 @@ RSpec.describe PatientPhoneNumber, type: :model do
     end
   end
 
-  describe 'can_be_called?' do
-    let(:patient) { create(:patient) }
-
-    context 'phone number DND status is false' do
-      let(:phone_number) { create(:patient_phone_number, patient: patient, dnd_status: false) }
-
-      it 'returns true' do
-        expect(phone_number.can_be_called?).to eq(true)
-      end
-    end
-
-    context 'phone number DND status is true and exotel whitelist status is whitelisted and whitelist is not expired' do
-      let(:phone_number) { create(:patient_phone_number, patient: patient, dnd_status: true) }
-      let!(:exotel_phone_number_details) { create(:exotel_phone_number_detail,
-                                                  patient_phone_number: phone_number,
-                                                  whitelist_status: :whitelist,
-                                                  whitelist_status_valid_until: 1.month.from_now) }
-
-      it 'returns true' do
-        expect(phone_number.can_be_called?).to eq(true)
-      end
-    end
-
-    context 'phone number DND status is true and exotel whitelist status is whitelisted and whitelist is expired' do
-      let(:phone_number) { create(:patient_phone_number, patient: patient, dnd_status: true) }
-      let!(:exotel_phone_number_details) { create(:exotel_phone_number_detail,
-                                                  patient_phone_number: phone_number,
-                                                  whitelist_status: :whitelist,
-                                                  whitelist_status_valid_until: 1.month.ago) }
-
-      it 'returns false' do
-        expect(phone_number.can_be_called?).to eq(false)
-      end
-    end
-
-
-    context 'phone number DND status is true and exotel whitelist status is neutral' do
-      let(:phone_number) { create(:patient_phone_number, patient: patient, dnd_status: true) }
-      let!(:exotel_phone_number_details) { create(:exotel_phone_number_detail, patient_phone_number: phone_number, whitelist_status: :neutral) }
-
-      it 'returns false' do
-        expect(phone_number.can_be_called?).to eq(false)
-      end
-    end
-
-
-    context 'phone number DND status is true and exotel whitelist status is blacklisted' do
-      let(:phone_number) { create(:patient_phone_number, patient: patient, dnd_status: true) }
-      let!(:exotel_phone_number_details) { create(:exotel_phone_number_detail, patient_phone_number: phone_number, whitelist_status: :blacklist) }
-
-      it 'returns false' do
-        expect(phone_number.can_be_called?).to eq(false)
-      end
-    end
-  end
-
   describe 'update_exotel_phone_number_detail' do
     let(:patient) { create(:patient) }
     let(:patient_phone_number) { create(:patient_phone_number, patient: patient) }

@@ -5,8 +5,7 @@ class AutomaticPhoneNumberWhitelistingWorker
   sidekiq_options queue: :phone_number_details_queue
 
   sidekiq_throttle(
-    concurrency: { limit: 2 },
-    threshold: { limit: 1, period: 30.seconds } 
+    threshold: { limit: ENV['EXOTEL_API_RATE_LIMIT_PER_MINUTE'].to_i || 250, period: 1.minute }
   )
 
   def perform(patient_phone_number_ids, virtual_number, sid, token)

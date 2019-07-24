@@ -8,10 +8,11 @@ class PatientPhoneNumber < ApplicationRecord
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
-  # validates :dnd_status, inclusion: [true, false]
   has_one :exotel_phone_number_detail
 
   default_scope -> { order("device_created_at ASC") }
+
+  WHITELIST_PERIOD = 6.months
 
   def self.require_whitelisting
     self.unscoped
@@ -20,16 +21,9 @@ class PatientPhoneNumber < ApplicationRecord
       .where(%Q(
         (exotel_phone_number_details.whitelist_status is null) OR
         (exotel_phone_number_details.whitelist_status = 'neutral') OR
-        (exotel_phone_number_details.whitelist_status = 'requested' AND exotel_phone_number_details.whitelist_requested_at <= '#{6.months.ago}') OR
+        (exotel_phone_number_details.whitelist_status = 'requested' AND exotel_phone_number_details.whitelist_requested_at <= '#{WHITELIST_PERIOD.ago}') OR
         (exotel_phone_number_details.whitelist_status = 'whitelist' AND exotel_phone_number_details.whitelist_status_valid_until <= '#{Time.now}'))
       ).order('exotel_phone_number_details.whitelist_requested_at ASC NULLS FIRST, patient_phone_numbers.device_created_at')
-  end
-
-  def can_be_called?
-    !dnd_status ||
-      (exotel_phone_number_detail.present? &&
-        exotel_phone_number_detail.whitelist_status_whitelist? &&
-        exotel_phone_number_detail.whitelist_status_valid_until > Time.now)
   end
 
   def update_exotel_phone_number_detail(attributes)
@@ -46,12 +40,14 @@ class PatientPhoneNumber < ApplicationRecord
   end
 
   def update_whitelist_requested_at(time)
-    return exotel_phone_number_detail.update(whitelist_requested_at: time) if exotel_phone_number_detail.present?
+    unless exotel_phone_number_detail.present?
+      return ExotelPhoneNumberDetail.create(
+        patient_phone_number: self,
+        whitelist_status: ExotelPhoneNumberDetail.whitelist_statuses[:requested],
+        whitelist_requested_at: time
+      )
+    end
 
-    ExotelPhoneNumberDetail.create(
-      patient_phone_number: self,
-      whitelist_status: ExotelPhoneNumberDetail.whitelist_statuses[:requested],
-      whitelist_requested_at: time
-    )
+    exotel_phone_number_detail.update(whitelist_requested_at: time)
   end
 end
