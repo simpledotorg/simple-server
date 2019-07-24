@@ -7,7 +7,7 @@ namespace :exotel_tasks do
 
     PatientPhoneNumber.in_batches(of: batch_size) do |batch|
       batch.each do |patient_phone_number|
-        UpdatePhoneNumberDetailsJob.perform_async(patient_phone_number.id, account_sid, token)
+        UpdatePhoneNumberDetailsWorker.perform_async(patient_phone_number.id, account_sid, token)
       end
     end
   end
@@ -20,7 +20,7 @@ namespace :exotel_tasks do
     virtual_number = ENV.fetch('EXOTEL_VIRTUAL_NUMBER')
 
     PatientPhoneNumber.require_whitelisting.in_batches(of: batch_size) do |batch|
-      AutomaticPhoneNumberWhitelistingJob.perform_async(batch, virtual_number, account_sid, token)
+      AutomaticPhoneNumberWhitelistingWorker.perform_async(batch, virtual_number, account_sid, token)
     end
   end
 end

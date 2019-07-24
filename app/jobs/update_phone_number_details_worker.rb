@@ -1,4 +1,4 @@
-class UpdatePhoneNumberDetailsJob
+class UpdatePhoneNumberDetailsWorker
   include Sidekiq::Worker
   include Sidekiq::Throttled::Worker
 

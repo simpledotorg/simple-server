@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe AutomaticPhoneNumberWhitelistingJob, type: :job do
+RSpec.describe AutomaticPhoneNumberWhitelistingWorker, type: :job do
   require 'sidekiq/testing'
 
   let!(:patient) { create(:patient, phone_numbers: []) }
@@ -36,23 +36,23 @@ RSpec.describe AutomaticPhoneNumberWhitelistingJob, type: :job do
   describe 'perform_async' do
     it 'queues the job on the phone_number_details_queue' do
       expect {
-        AutomaticPhoneNumberWhitelistingJob.perform_async(phones_numbers_need_whitelisting.map(&:id), virtual_number, account_sid, token)
+        AutomaticPhoneNumberWhitelistingWorker.perform_async(phones_numbers_need_whitelisting.map(&:id), virtual_number, account_sid, token)
       }.to change(Sidekiq::Queues['phone_number_details_queue'], :size).by(1)
-      AutomaticPhoneNumberWhitelistingJob.clear
+      AutomaticPhoneNumberWhitelistingWorker.clear
     end
   end
 
   describe 'perform' do
     it "calls the exotel whitelist api in batches for all phone numbers that require whitelisting" do
-      AutomaticPhoneNumberWhitelistingJob.perform_async(phones_numbers_need_whitelisting.map(&:id), virtual_number, account_sid, token)
-      AutomaticPhoneNumberWhitelistingJob.drain
+      AutomaticPhoneNumberWhitelistingWorker.perform_async(phones_numbers_need_whitelisting.map(&:id), virtual_number, account_sid, token)
+      AutomaticPhoneNumberWhitelistingWorker.drain
       expect(stub).to have_been_requested
     end
 
     it "updates the whitelist_requested_at for all the patient phone numbers" do
       Timecop.freeze do
-        AutomaticPhoneNumberWhitelistingJob.perform_async(phones_numbers_need_whitelisting.map(&:id), virtual_number, account_sid, token)
-        AutomaticPhoneNumberWhitelistingJob.drain
+        AutomaticPhoneNumberWhitelistingWorker.perform_async(phones_numbers_need_whitelisting.map(&:id), virtual_number, account_sid, token)
+        AutomaticPhoneNumberWhitelistingWorker.drain
         phones_numbers_need_whitelisting.each do |phone_number|
           expect(phone_number.exotel_phone_number_detail.whitelist_requested_at.to_i).to eq(Time.now.to_i)
         end

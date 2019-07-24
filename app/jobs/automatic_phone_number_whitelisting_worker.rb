@@ -1,4 +1,4 @@
-class AutomaticPhoneNumberWhitelistingJob
+class AutomaticPhoneNumberWhitelistingWorker
   include Sidekiq::Worker
   include Sidekiq::Throttled::Worker
 

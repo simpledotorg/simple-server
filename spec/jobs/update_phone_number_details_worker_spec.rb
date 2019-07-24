@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe UpdatePhoneNumberDetailsJob, type: :job do
+RSpec.describe UpdatePhoneNumberDetailsWorker, type: :job do
   include ActiveJob::TestHelper
 
   let!(:patient_phone_number) { create(:patient_phone_number, phone_type: 'landline') }
@@ -51,18 +51,18 @@ RSpec.describe UpdatePhoneNumberDetailsJob, type: :job do
   describe '#perform_async' do
     it 'queues the job on the exotel_phone_whitelist queue' do
       expect {
-        UpdatePhoneNumberDetailsJob.perform_async(patient_phone_number.id, account_sid, token)
+        UpdatePhoneNumberDetailsWorker.perform_async(patient_phone_number.id, account_sid, token)
       }.to change(Sidekiq::Queues['phone_number_details_queue'], :size).by(1)
-      UpdatePhoneNumberDetailsJob.clear
+      UpdatePhoneNumberDetailsWorker.clear
     end
   end
 
   describe '#perform' do
     it 'updates the patient phone number details with the values return from exotel apis' do
-      UpdatePhoneNumberDetailsJob.perform_async(patient_phone_number.id, account_sid, token)
+      UpdatePhoneNumberDetailsWorker.perform_async(patient_phone_number.id, account_sid, token)
       time = Time.now
       Timecop.freeze(time) do
-        UpdatePhoneNumberDetailsJob.drain
+        UpdatePhoneNumberDetailsWorker.drain
       end
       patient_phone_number.reload
       expect(patient_phone_number.dnd_status).to eq(true)
