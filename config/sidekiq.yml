@@ -6,5 +6,4 @@
   - default
   - [analytics_warmup, 2]
   - [high, 3]
-  - [phone_number_details_queue, 1]
   - [audit_log_queue, 1]
