@@ -48,9 +48,9 @@ namespace :deploy do
       WARNING: You're about to run tasks on #{ENVS_FOR_CONFIRMATION_STEP.join('/')} server(s)
       Please confirm that all your intentions are kind and friendly.
 
-      This will deploy `#{fetch(:branch)}` to `#{fetch(:stage)}`
+      READ THIS IF YOU ARE RUNNING A DEPLOY TASK:
 
-      Check if:
+      This will deploy `#{fetch(:branch)}` to `#{fetch(:stage)}`. Ensure that:
 
       * You are deploying the correct branch
       * You are deploying to the correct environment
@@ -63,7 +63,7 @@ namespace :deploy do
     ask :value, "Are you sure you want to continue? (Y)"
 
     if fetch(:value) != 'Y'
-      puts "\nDeploy cancelled!"
+      puts "\nDeploy canceled!"
       exit
     end
   end
