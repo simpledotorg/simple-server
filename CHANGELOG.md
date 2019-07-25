@@ -6,6 +6,16 @@
 ### Removed
 ### Security
 
+# 2019-07-25-1
+### Added
+### Changed
+- Better formatting of the dashboard for mobile
+### Fixed
+- Invisible hamburger menu icon on mobile dashboard
+### Deprecated
+### Removed
+### Security
+
 # 2019-07-23-1
 ### Added
 - Complete UI refresh
