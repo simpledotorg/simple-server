@@ -16,3 +16,6 @@ end
 Sidekiq.configure_server do |config|
   config.redis = SidekiqConfig.connection_pool
 end
+
+require "sidekiq/throttled"
+Sidekiq::Throttled.setup!

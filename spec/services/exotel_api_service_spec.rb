@@ -1,6 +1,19 @@
 require 'rails_helper'
 
 describe ExotelAPIService, type: :model do
+  let(:account_sid) { Faker::Internet.user_name }
+  let(:token) { SecureRandom.base64 }
+  let(:service) { ExotelAPIService.new(account_sid, token) }
+  let(:auth_token) { Base64.strict_encode64([account_sid, token].join(':')) }
+  let(:request_headers) {
+    {
+      'Authorization' => "Basic #{auth_token}",
+      'Connection' => 'close',
+      'Host' => 'api.exotel.com',
+      'User-Agent' => 'http.rb/4.1.1'
+    }
+  }
+
   describe '#call_details' do
     let!(:call_details_200) { File.read('spec/support/fixtures/call_details_200.json') }
     let!(:call_details_400) { File.read('spec/support/fixtures/call_details_400.json') }
@@ -73,6 +86,91 @@ describe ExotelAPIService, type: :model do
       expect {
         described_class.new(sid, token).call_details(call_sid)
       }.to raise_error(ExotelAPIService::HTTPError)
+    end
+  end
+
+  describe '#whitelist_phone_numbers' do
+    let(:request_url) { URI.parse("https://api.exotel.com/v1/Accounts/#{account_sid}/CustomerWhitelist.json") }
+    let(:virtual_number) { Faker::PhoneNumber.phone_number }
+    let(:phone_numbers) { (0..3).map { Faker::PhoneNumber.phone_number } }
+    let!(:auth_token) { Base64.strict_encode64([account_sid, token].join(':')) }
+
+    let(:request_body) { {
+      :Language => 'en',
+      :VirtualNumber => virtual_number,
+      :Number => phone_numbers.join(',')
+    } }
+
+    it 'calls the exotel whitelist api for given virtual number and phone number list' do
+      stub = stub_request(:post, request_url).with(
+        headers: request_headers,
+        body: request_body)
+
+      service.whitelist_phone_numbers(virtual_number, phone_numbers)
+      expect(stub).to have_been_requested
+    end
+  end
+
+  describe 'parse_exotel_whitelist_expiry' do
+    it 'returns nil if expiry time is less than 0' do
+      expect(service.parse_exotel_whitelist_expiry(-1)).to be_nil
+    end
+
+    it 'return the time at which the expiry will happen if expiry time is greater than 0' do
+      Timecop.freeze(Time.now) do
+        expected_time = 1.hour.from_now
+        expect(service.parse_exotel_whitelist_expiry(3600)).to eq(expected_time)
+      end
+    end
+  end
+
+  describe 'get_phone_number_details' do
+    let(:phone_number) { Faker::PhoneNumber.phone_number }
+    let(:whitelist_details_url) { URI.parse("https://api.exotel.com/v1/Accounts/#{account_sid}/CustomerWhitelist/#{URI.encode(phone_number)}.json") }
+    let(:numbers_metadata_url) { URI.parse("https://api.exotel.com/v1/Accounts/#{account_sid}/Numbers/#{URI.encode(phone_number)}.json") }
+
+    let!(:whitelist_details_stub) do
+      stub_request(:get, whitelist_details_url).with(headers: request_headers)
+        .to_return(
+          status: 200,
+          headers: {},
+          body: JSON(
+            { "Result" =>
+                { "Status" => "Whitelist",
+                  "Type" => "API",
+                  "Expiry" => 3600 } }))
+    end
+    let!(:numbers_metadata_stub) do
+      stub_request(:get, numbers_metadata_url).with(headers: request_headers)
+        .to_return(
+          status: 200,
+          headers: {},
+          body: JSON(
+            { "Numbers" =>
+                { "PhoneNumber" => phone_number,
+                  "Circle" => "KA",
+                  "CircleName" => "Karnataka",
+                  "Type" => "Mobile",
+                  "Operator" => "V",
+                  "OperatorName" => "Vodafone",
+                  "DND" => "Yes" } }))
+    end
+
+    it 'makes a request to exotel number metadata and whitelist details api' do
+      service.get_phone_number_details(phone_number)
+
+      expect(numbers_metadata_stub).to have_been_requested
+      expect(whitelist_details_stub).to have_been_requested
+    end
+
+    it 'returns the phone number status returned from the two apis' do
+      Timecop.freeze do
+        expect(service.get_phone_number_details(phone_number))
+          .to eq(dnd_status: true,
+                 phone_type: :mobile,
+                 whitelist_status: :whitelist,
+                 whitelist_status_valid_until: Time.now + 3600.seconds)
+      end
     end
   end
 end
