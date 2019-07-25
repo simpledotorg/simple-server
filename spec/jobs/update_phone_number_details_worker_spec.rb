@@ -49,7 +49,7 @@ RSpec.describe UpdatePhoneNumberDetailsWorker, type: :job do
   end
 
   describe '#perform_async' do
-    it 'queues the job on the exotel_phone_whitelist queue' do
+    it 'queues the job on the phone_number_details_queue queue' do
       expect {
         UpdatePhoneNumberDetailsWorker.perform_async(patient_phone_number.id, account_sid, token)
       }.to change(Sidekiq::Queues['phone_number_details_queue'], :size).by(1)

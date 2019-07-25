@@ -99,10 +99,10 @@ class ExotelAPIService
   end
 
   def phone_number_details_url(phone_number)
-    URI.parse("#{base_uri}/Numbers/#{URI.encode(phone_number)}.json")
+    URI.parse("#{base_uri}/Numbers/#{URI.encode(phone_number)}#{RESPONSE_FORMAT}")
   end
 
   def whitelist_details_url(phone_number)
-    URI.parse("#{base_uri}/CustomerWhitelist/#{URI.encode(phone_number)}.json")
+    URI.parse("#{base_uri}/CustomerWhitelist/#{URI.encode(phone_number)}#{RESPONSE_FORMAT}")
   end
 end

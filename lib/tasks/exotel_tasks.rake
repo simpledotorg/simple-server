@@ -20,7 +20,8 @@ namespace :exotel_tasks do
     virtual_number = ENV.fetch('EXOTEL_VIRTUAL_NUMBER')
 
     PatientPhoneNumber.require_whitelisting.in_batches(of: batch_size) do |batch|
-      AutomaticPhoneNumberWhitelistingWorker.perform_async(batch, virtual_number, account_sid, token)
+      phone_number_ids = batch.pluck(:id)
+      AutomaticPhoneNumberWhitelistingWorker.perform_async(phone_number_ids, virtual_number, account_sid, token)
     end
   end
 end

@@ -23,7 +23,7 @@ class PatientPhoneNumber < ApplicationRecord
         (exotel_phone_number_details.whitelist_status = 'neutral') OR
         (exotel_phone_number_details.whitelist_status = 'requested' AND exotel_phone_number_details.whitelist_requested_at <= '#{WHITELIST_PERIOD.ago}') OR
         (exotel_phone_number_details.whitelist_status = 'whitelist' AND exotel_phone_number_details.whitelist_status_valid_until <= '#{Time.now}'))
-      ).order('exotel_phone_number_details.whitelist_requested_at ASC NULLS FIRST, patient_phone_numbers.device_created_at')
+      )
   end
 
   def update_exotel_phone_number_detail(attributes)

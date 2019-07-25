@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe AutomaticPhoneNumberWhitelistingWorker, type: :job do
-  require 'sidekiq/testing'
 
   let!(:patient) { create(:patient, phone_numbers: []) }
   let!(:phones_numbers_need_whitelisting) { create_list(:patient_phone_number, 5, patient: patient, dnd_status: true) }
