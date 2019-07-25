@@ -20,6 +20,13 @@ module SimpleServerEnvHelper
 
   end
 
+  def favicon_for_environment
+    env = ENV.fetch("SIMPLE_SERVER_ENV")
+
+    image_name = CUSTOMIZED_ENVS.include?(env) ? "simple_logo_#{env}_favicon.png" : "simple_logo_favicon.png"
+
+  end
+
   def alt_for_environment
     env = ENV.fetch("SIMPLE_SERVER_ENV")
 
@@ -43,8 +50,8 @@ module SimpleServerEnvHelper
       'development' => ['navbar-light', 'bg-light'],
       'staging' => ['navbar-light', 'bg-light'],
       'qa' => ['navbar-light', 'bg-light'],
-      'sandbox' => ['navbar-dark'],
-      'production' => ['navbar-dark'],
+      'sandbox' => ['navbar-light'],
+      'production' => ['navbar-light'],
     }
 
     navbar_classes[env] || ['navbar-light', 'bg-light']

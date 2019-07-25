@@ -6,6 +6,36 @@
 ### Removed
 ### Security
 
+# 2019-07-25-1
+### Added
+### Changed
+- Better formatting of the dashboard for mobile
+### Fixed
+- Invisible hamburger menu icon on mobile dashboard
+### Deprecated
+### Removed
+### Security
+
+# 2019-07-23-1
+### Added
+- Complete UI refresh
+- Replace device_created_at with recorded_at in the dashboard queries
+- Added tooltips to cohort reports screen
+- Set patients#index as root route for counsellors 
+- Add a confirmation step for deployment tasks (production & staging)
+- Add docs on how to generate an ERD
+### Changed
+- Skip sending emails in QA env for reset_password flow
+- Improve facility upload error messages
+- Moved cohort reporting to a rake task
+- Make the User dashboard viewing policy respect our actual policy 
+### Fixed
+- Show dashboard data only for facilities under the current organization
+- Uncontrolled patient percent in the cohort chart
+### Deprecated
+### Removed
+### Security
+
 # 2019-07-08-1
 ### Added
 - Add quarterly cohort charts to district and facility dashboards (#463)
@@ -67,7 +97,7 @@
 ### Added
 - Add Twilio sub-account support
 - Add percentage symbol to BP header and values in Dashboard
-- Show enrolment date in overdue list download 
+- Show enrollment date in overdue list download 
 ### Changed
 ### Fixed
 - Fixing formatting issues in overdue list dashboard view
@@ -113,7 +143,7 @@
 # 2019-05-14-1
 ### Added
 - Schedule automatic SMS reminders (Feature toggled off)
-- Show enrolment date for overdue patients
+- Show enrollment date for overdue patients
 - Display last interaction result (if present)
 - Add caller_phone_number to `CallLog`
 - Data migration to move User phone numbers to caller_phone_numbers in `CallLogs`
@@ -171,7 +201,7 @@
 - Hide download button if no appointments present
 ### Fixed
 - Use time range when showing user analytics on facilities dashboard
-- Adherence tab: show enrolment date for patients without BP
+- Adherence tab: show enrollment date for patients without BP
 ### Deprecated
 ### Removed
 ### Security
@@ -255,7 +285,7 @@
 # 2019-04-12-1
 ## Portal
 ### Added
-- Adding patient record creation date as enrolment date for adherence tab
+- Adding patient record creation date as enrollment date for adherence tab
 - Add pagination to the AuditLogs index view
 - Add views for whatsapp graphics for facility and facility groups
 - Add a job to warmup analytics cache
@@ -294,7 +324,7 @@
 # 2019-04-10-1 [[CANCELLED] Impossible dates on Adherence followup screen]
 ## Portal
 ### Added
-- Adding patient record creation date as enrolment date for adherence tab
+- Adding patient record creation date as enrollment date for adherence tab
 - Add pagination to the AuditLogs index view
 - Add views for whatsapp graphics for facility and facility groups
 ### Changed

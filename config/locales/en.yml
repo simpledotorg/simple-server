@@ -30,6 +30,12 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
+  date:
+    formats:
+      default: "%d-%^b-%Y"
+  time:
+    formats:
+      default: "%d-%^b-%Y %I:%M %p"
   name: "Name"
   phone_number: "Phone Number"
   login:

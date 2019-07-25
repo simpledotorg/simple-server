@@ -6,7 +6,6 @@ FactoryBot.define do
     device_created_at { Time.now }
     device_updated_at { Time.now }
     recorded_at { device_created_at }
-    deleted_at { [nil, Time.now].sample }
     association :facility, strategy: :build
     association :patient, strategy: :build
     user

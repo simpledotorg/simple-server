@@ -1,4 +1,7 @@
-<h1><%= link_to @protocol.name, [:admin, @protocol] %></h1>
-<h3>New protocol drug</h3>
+<nav class="breadcrumb">
+    <%= link_to @protocol.name, [:admin, @protocol] %> <i class="fas fa-chevron-right"></i> New protocol drug
+</nav>
+
+<h1>New protocol drug</h1>
 
 <%= render 'form', protocol_drug: @protocol_drug %>

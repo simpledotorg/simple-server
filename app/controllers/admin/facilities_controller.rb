@@ -107,14 +107,16 @@ class Admin::FacilitiesController < AdminController
   end
 
   def validate_facilities
+    @row_errors = []
     row_num = 2
     @facilities.each do |facility|
       import_facility = Facility.new(facility)
-      if import_facility.invalid?
-        row_errors = import_facility.errors.full_messages.to_sentence
-        @errors << "Row #{row_num}: #{row_errors}" if row_errors.present?
-      end
+      @row_errors << [row_num, import_facility.errors.full_messages.to_sentence] if
+          import_facility.invalid?
       row_num += 1
+    end
+    if @row_errors.present?
+      group_row_errors.each { |error| @errors << error }
     end
   end
 
@@ -125,4 +127,15 @@ class Admin::FacilitiesController < AdminController
   def file_valid?
     params[:upload_facilities_file].present? && @errors.blank?
   end
+
+  def group_row_errors
+    grouped_errors = []
+    unique_errors = @row_errors.map { |row, message | message }.uniq
+    unique_errors.each do |error|
+      rows = @row_errors.select { |row, message| row if error == message }.map { |row, message| row }
+      grouped_errors << "Row(s) #{rows.join(', ')}: #{error}"
+    end
+    grouped_errors
+  end
+
 end

@@ -38,7 +38,7 @@ RSpec.describe SimpleServerEnvHelper do
       it 'should return the production style class' do
         ENV[simple_server_env] = 'sandbox'
 
-        expect(style_class_for_environment).to eq 'navbar navbar-expand-md fixed-top navbar-dark navbar-sandbox'
+        expect(style_class_for_environment).to eq 'navbar navbar-expand-md fixed-top navbar-light navbar-sandbox'
       end
     end
 
@@ -46,7 +46,7 @@ RSpec.describe SimpleServerEnvHelper do
       it 'should return the production style class' do
         ENV[simple_server_env] = 'production'
 
-        expect(style_class_for_environment).to eq 'navbar navbar-expand-md fixed-top navbar-dark navbar-production'
+        expect(style_class_for_environment).to eq 'navbar navbar-expand-md fixed-top navbar-light navbar-production'
       end
     end
   end
@@ -94,6 +94,28 @@ RSpec.describe SimpleServerEnvHelper do
         logo_for_production_environment = image_tag 'simple_logo_production.svg', width: 30, height: 30, class: "d-inline-block mr-2 align-top", alt: 'Simple Server Production Logo'
 
         expect(logo_for_environment).to eq logo_for_production_environment
+      end
+    end
+  end
+
+  describe 'favicon_for_environment' do
+    context 'when in the default environment' do
+      it 'should return the default logo' do
+        ENV[simple_server_env] = 'default'
+        favicon_for_default_environment = 'simple_logo_favicon.png'
+
+        expect(favicon_for_environment).to eq favicon_for_default_environment
+      end
+    end
+
+    SimpleServerEnvHelper::CUSTOMIZED_ENVS.each do |environment|
+      context "when in the #{environment} environment" do
+        it "should return the #{environment} favicon" do
+          ENV[simple_server_env] = environment
+          favicon_for_environment = "simple_logo_#{environment}_favicon.png"
+
+          expect(favicon_for_environment).to eq favicon_for_environment
+        end
       end
     end
   end
