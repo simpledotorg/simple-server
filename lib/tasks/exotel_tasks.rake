@@ -1,6 +1,6 @@
 namespace :exotel_tasks do
   desc 'Get phone number details from exotel'
-  task get_patient_phone_number_details: :environment do
+  task update_all_patients_phone_number_details: :environment do
     account_sid = ENV.fetch('EXOTEL_SID')
     token = ENV.fetch('EXOTEL_TOKEN')
     batch_size = ENV.fetch('EXOTEL_UPDATE_PHONE_NUMBER_DETAILS_BATCH_SIZE').to_i
