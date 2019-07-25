@@ -7,6 +7,6 @@ class ProtocolLandingPage < ApplicationPage
   end
 
   def click_edit_protocol_link(name)
-    find(:xpath, "//td/a[text()='#{name}']/../../td/a[text()='Edit']").click
+    find(:xpath, "//a[text()='#{name}']/../../..//a[contains(@class,'btn-outline-primary')]").click
   end
 end

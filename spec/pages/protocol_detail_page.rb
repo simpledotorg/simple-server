@@ -43,6 +43,6 @@ class ProtocolDetailPage < ApplicationPage
   end
 
   def click_edit_protocol_drug_button(drug_name)
-    find(:xpath, "//td[text()='#{drug_name}']/../td/a[text()='Edit']").click
+    find(:xpath ,"//h5[text()='#{drug_name}']/../..//a[contains(@class,'btn-outline-primary')]").click
   end
 end

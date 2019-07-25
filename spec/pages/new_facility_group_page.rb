@@ -1,14 +1,14 @@
 class FacilityGroupForm < ApplicationPage
 
-  CREATE_FACILITY_GROUP_BUTTON = { xpath: "//input[@class='btn btn-primary']" }.freeze
+  CREATE_FACILITY_GROUP_BUTTON = { css: "input[value='Create Facility group']"}.freeze
   FACILITY_NAME = { id: 'facility_name' }.freeze
   FACILITY_DESCRIPTION = { id: 'facility_description' }.freeze
-  DELETE_FACILITYGROUP_BUTTON = { xpath: "//nav[@class='page-nav']" }.freeze
+  DELETE_FACILITY_GROUP_BUTTON = {css: "a.ml-4"}.freeze
   PROTOCOL_DROPDOWN = { xpath: "//select[@name='facility_group[protocol_id]']" }.freeze
-  UNASSOCIATED_FACILITY_CHECKBOX = { xpath: "//input[@type='checkbox']" }.freeze
-  SUCCESSFUL_MESSAGE = { xpath: "//div[@class='alert alert-primary alert-dismissable fade show']" }.freeze
-  MESSAGE_CROSS_BUTTON = { xpath: "//button[@type='button']/span" }.freeze
-  UPDATE_FACILITY_GROUP_BUTTON = { xpath: "//input[@class='btn btn-primary']" }.freeze
+  UNASSOCIATED_FACILITY_CHECKBOX = { css: "input[type='checkbox']" }.freeze
+  SUCCESSFUL_MESSAGE = { css: 'fade.show'}.freeze
+  MESSAGE_CROSS_BUTTON = {css: "i.fa-times" }.freeze
+  UPDATE_FACILITY_GROUP_BUTTON = { css: "input[value='Update Facility group']"}.freeze
 
 
   def select_organisation_name_dropdown(value)
@@ -39,11 +39,11 @@ class FacilityGroupForm < ApplicationPage
   end
 
   def is_delete_facilitygroup_button_present
-    present?(DELETE_FACILITYGROUP_BUTTON)
+    present?(DELETE_FACILITY_GROUP_BUTTON)
   end
 
   def click_on_delete_facilitygroup_button
-    click(DELETE_FACILITYGROUP_BUTTON)
+    click(DELETE_FACILITY_GROUP_BUTTON)
     # page.accept_alert("OK")
     # present?(SUCCESSFUL_MESSAGE)
     # click(MESSAGE_CROSS_BUTTON)

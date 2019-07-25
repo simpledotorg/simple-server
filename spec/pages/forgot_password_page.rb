@@ -1,12 +1,12 @@
 class ForgotPassword < ApplicationPage
 
-  EMAIL_TEXT_BOX = { id: 'admin_email' }
-  RESET_PASSWORD_BUTTON = { xpath: "//input[@class='btn btn-primary']" }
-  MESSAGE = { xpath: "//div[@class='alert alert-primary alert-dismissable fade show']" }
-  LOGIN = { xpath: "//div/a[@href='/admins/sign_in']" }
-  MESSAGE_CROSS_BUTTON = { xpath: "//button[@class='close']/span" }
-  UNLOCK_INSTRUCTION_BUTTON = { xpath: "//a[@href='/admins/unlock/new']" }
-  RESEND_INSTRUCTION_BUTTON = { xpath: "//input[@class='btn btn-primary']" }
+  EMAIL_TEXT_BOX = { id: 'admin_email' }.freeze
+  RESET_PASSWORD_BUTTON = { css: "input.btn-primary" }.freeze
+  MESSAGE = { css: 'div.show' }.freeze
+  LOGIN = { css: "a[href='/admins/sign_in']" }.freeze
+  MESSAGE_CROSS_BUTTON = { css: "i.fa-times" }.freeze
+  UNLOCK_INSTRUCTION_BUTTON = { css: "a[href='/admins/unlock/new']"}.freeze
+  RESEND_INSTRUCTION_BUTTON = { css: "input.btn-primary" }.freeze
 
   def do_reset_password(email)
     type(EMAIL_TEXT_BOX, email)

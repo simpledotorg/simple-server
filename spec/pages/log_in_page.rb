@@ -7,9 +7,9 @@ class LoginPage < ApplicationPage
   FORGOT_PASSWORD_LINK = { xpath: "//a[@href='/admins/password/new']" }.freeze
   UNLOCK_INSTRUCTION_LINK = { xpath: "//a[@href='/admins/unlock/new']" }.freeze
   LOGIN_LINK = { css: '.nav-link'}.freeze
-  ERROR_MESSAGE = { css: '.alert alert-warning alert-dismissable fade show' }.freeze
+  ERROR_MESSAGE = { css: '.fade.show' }.freeze
   MESSAGE_CROSS_BUTTON = { css: 'button.close'}.freeze
-  SUCCESSFUL_LOGOUT_MESSAGE = { css: '.alert alert-primary alert-dismissable fade show'}.freeze
+  SUCCESSFUL_LOGOUT_MESSAGE = { css: '.fade.show'}.freeze
 
   def do_login(emailID, password)
     type(EMAIL_TEXT_BOX, emailID)

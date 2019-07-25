@@ -11,11 +11,11 @@ class FacilityPage < ApplicationPage
   end
 
   def is_edit_button_present_for_facilitygroup(name)
-    find(:xpath, "//h2[contains(text(),'#{name}')]//a").text.include? 'EDIT'
+    find(:xpath, "//h3[text()='#{name}']/../..//a[contains(@class,'btn-outline-primary')]").text.include? 'EDIT'
   end
 
   def click_edit_button_present_for_facilitygroup(name)
-    find(:xpath, "//h2[contains(text(),'#{name}')]//a").click
+    find(:xpath, "//h3[text()='#{name}']/../..//a[contains(@class,'btn-outline-primary')]").click
   end
 
 end

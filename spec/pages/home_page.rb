@@ -1,8 +1,9 @@
 class HomePage < ApplicationPage
 
-  LOGOUT_BUTTON = { css: 'a.nav-link[href="/admins/sign_out"]'}
-  MANAGE_OPTION = { xpath: "//li/div/a" }
-  MAIN_MENU_TABS = { xpath: '//ul/li/a' }
+  LOGOUT_BUTTON = { css: 'a.dropdown-item[href="/admins/sign_out"]'}.freeze
+  MANAGE_OPTION = { xpath: "//li/div/a"}.freeze
+  MAIN_MENU_TABS = { css: "ul.mr-auto>li>a" }.freeze
+  PROFILE_DROPDOWN= {id: 'navbarDropdown2'}.freeze
 
   def select_main_menu_tab(option)
     mainMenuTabs = all_elements(MAIN_MENU_TABS)
@@ -21,9 +22,11 @@ class HomePage < ApplicationPage
   end
 
   def select_manage_option(option)
+
     select_main_menu_tab("Manage")
-    manageoption = all_elements(MANAGE_OPTION)
-    manageoption.each do |tab|
+    manage_option = all_elements(MANAGE_OPTION)
+    puts manage_option.size
+    manage_option.each do |tab|
       if tab.text.include? option
         tab.click
       end
@@ -31,6 +34,7 @@ class HomePage < ApplicationPage
   end
 
   def click_logout_button
+    click(PROFILE_DROPDOWN)
     click(LOGOUT_BUTTON)
   end
 end
