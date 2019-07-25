@@ -1,6 +1,7 @@
-class CreateAuditLogsJob < ApplicationJob
-  queue_as :default
-  self.queue_adapter = :sidekiq
+class CreateAuditLogsWorker
+  include Sidekiq::Worker
+
+  sidekiq_options queue: :audit_log_queue
 
   def perform(user_id, record_class, record_ids, action)
     user = User.find(user_id)
