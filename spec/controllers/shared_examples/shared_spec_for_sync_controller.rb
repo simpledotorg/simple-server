@@ -439,17 +439,16 @@ RSpec.shared_examples 'a sync controller that audits the data access' do
   describe 'creates an audit log for data synced to user' do
     let!(:records) { create_record_list(5) }
     it 'creates an audit log for data fetched by the user' do
-      perform_enqueued_jobs do
+      Sidekiq::Testing.inline! do
         get :sync_to_user, params: {
           processed_since: 20.minutes.ago,
           limit: 5
         }, as: :json
+        audit_logs = AuditLog.where(user_id: request_user.id, auditable_type: auditable_type)
+        expect(audit_logs.count).to eq(5)
+        expect(audit_logs.map(&:auditable_id).to_set).to eq(records.map(&:id).to_set)
+        expect(audit_logs.map(&:action).to_set).to eq(['fetch'].to_set)
       end
-
-      audit_logs = AuditLog.where(user_id: request_user.id, auditable_type: auditable_type)
-      expect(audit_logs.count).to be 5
-      expect(audit_logs.map(&:auditable_id).to_set).to eq(records.map(&:id).to_set)
-      expect(audit_logs.map(&:action).to_set).to eq(['fetch'].to_set)
     end
   end
 end
