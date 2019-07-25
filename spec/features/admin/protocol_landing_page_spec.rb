@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.feature 'test protocol screen functionality', type: :feature do
-  skip "TODO: update tests to match new UI" do
     let(:owner) { create(:admin) }
     let!(:var_protocol) { create(:protocol, name: "PunjabTestProtocol", follow_up_days: "20") }
 
@@ -29,8 +28,7 @@ RSpec.feature 'test protocol screen functionality', type: :feature do
         protocol_form.update_protocol_followup_days(40)
         protocol_detail.verify_updated_followup_days("40")
         visit admin_protocols_path
-        find(:xpath, "//td/a[text()='#{var_protocol.name}']/../../td[2]").text.include?("40")
+        find(:xpath,"//a[text()='#{var_protocol.name}']/../../..//a[contains(@class,'btn-outline-primary')]").text.include?("40")
       end
     end
   end
-end

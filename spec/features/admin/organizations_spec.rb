@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.feature 'Organization management', type: :feature do
-  skip "TODO: update tests to match new UI" do
     let!(:owner) { create(:admin, :owner) }
     let!(:ihmi) { create(:organization, name: "IHMI") }
     let!(:path) { create(:organization, name: "PATH") }
@@ -31,9 +30,7 @@ RSpec.feature 'Organization management', type: :feature do
         organization = OrganizationsPage.new
         organization.create_new_organization("test", "testDescription")
 
-        find(:xpath, "//td/a[text() ='test']/../..//td[6]/a").click
-        # click_button 'OK'
+        organization.delete_organization("test")
       end
     end
   end
-end

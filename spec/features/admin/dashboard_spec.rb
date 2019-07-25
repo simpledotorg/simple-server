@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.feature 'Verify Dashboard', type: :feature do
-  skip "TODO: update tests to match new UI" do
     let!(:owner) { create(:admin) }
     let!(:ihmi) { create(:organization, name: "IHMI") }
     let!(:path) { create(:organization, name: "PATH") }
@@ -49,10 +48,9 @@ RSpec.feature 'Verify Dashboard', type: :feature do
       login_page.do_login(owner.email, owner.password)
 
       expect(page).to have_content("Allow access")
-      expect(page).to have_content("Deny access")
+      expect(page).to have_selector("i.fa-times")
       #check for user info
       expect(page).to have_content(user.full_name)
       expect(page).to have_content(user.phone_number)
     end
   end
-end
