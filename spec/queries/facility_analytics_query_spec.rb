@@ -118,6 +118,36 @@ RSpec.describe FacilityAnalyticsQuery do
   end
 
   context 'edge cases' do
+    describe '#follow_up_patients_by_month' do
+      it 'should discount counting as follow-up if the last BP is removed' do
+        patient = Timecop.travel(first_feb) do
+          create(:patient, registration_facility: facility, registration_user: users.first)
+        end
+
+        _mar_bp = Timecop.travel(first_mar) do
+          create(:blood_pressure, patient: patient, facility: facility, user: users.first)
+        end
+
+        apr_bp = Timecop.travel(first_apr) do
+          create(:blood_pressure, patient: patient, facility: facility, user: users.first)
+        end
+
+        # simulate soft-deleting a blood_pressure
+        apr_bp.discard
+
+        expected_result =
+          { users.first.id =>
+              { :follow_up_patients_by_month =>
+                  {
+                    first_mar => 1
+                  }
+              }
+          }
+
+        expect(analytics.follow_up_patients_by_month).to eq(expected_result)
+      end
+    end
+
     describe '#registered_patients_by_month' do
       it 'should count patients as registered even if they do not have a bp' do
         Timecop.travel(first_may) do
