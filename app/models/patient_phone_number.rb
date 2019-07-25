@@ -12,7 +12,7 @@ class PatientPhoneNumber < ApplicationRecord
 
   default_scope -> { order("device_created_at ASC") }
 
-  EXOTEL_RE_REQUEST_WHITELIST_MONTHS = ENV.fetch(EXOTEL_RE_REQUEST_WHITELIST_MONTHS).to_i.months || 6.months
+  EXOTEL_RE_REQUEST_WHITELIST_MONTHS = ENV['EXOTEL_RE_REQUEST_WHITELIST_MONTHS'].to_i.months || 6.months
 
   def self.require_whitelisting
     self.left_outer_joins(:exotel_phone_number_detail)
@@ -20,8 +20,8 @@ class PatientPhoneNumber < ApplicationRecord
       .where(%Q(
         (exotel_phone_number_details.whitelist_status is null) OR
         (exotel_phone_number_details.whitelist_status = 'neutral') OR
-        (exotel_phone_number_details.whitelist_status = 'requested' AND exotel_phone_number_details.whitelist_requested_at <= "#{EXOTEL_RE_REQUEST_WHITELIST_MONTHS.ago}") OR
-        (exotel_phone_number_details.whitelist_status = 'whitelist' AND exotel_phone_number_details.whitelist_status_valid_until <= "#{Time.now}"))
+        (exotel_phone_number_details.whitelist_status = 'requested' AND exotel_phone_number_details.whitelist_requested_at <= '#{EXOTEL_RE_REQUEST_WHITELIST_MONTHS.ago}') OR
+        (exotel_phone_number_details.whitelist_status = 'whitelist' AND exotel_phone_number_details.whitelist_status_valid_until <= '#{Time.now}'))
       )
   end
 
