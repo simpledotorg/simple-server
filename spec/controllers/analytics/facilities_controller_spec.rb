@@ -37,18 +37,56 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
   describe '#show' do
     render_views
 
-    it 'returns relevant analytics keys per facility' do
-      get :show, params: { id: facility.id }
+    context 'dashboard analytics' do
+      it 'returns relevant analytics keys per facility' do
+        get :show, params: { id: facility.id }
 
-      expect(response.status).to eq(200)
-      expect(assigns(:analytics)[user.id].keys).to match_array([:follow_up_patients_by_month,
-                                                                :registered_patients_by_month,
-                                                                :total_registered_patients])
+        expect(response.status).to eq(200)
+        expect(assigns(:analytics).dig(:dashboard, user.id).keys).to match_array([:follow_up_patients_by_month,
+                                                                                  :registered_patients_by_month,
+                                                                                  :total_registered_patients])
+      end
     end
 
     it 'renders the analytics table view' do
       get :show, params: { id: facility.id }
       expect(response).to render_template(partial: 'shared/_analytics_table')
+    end
+
+    context 'analytics caching for facilities' do
+      before do
+        Rails.cache.clear
+      end
+
+      let(:today) { Date.today }
+      let(:cohort_date1) { (today - (0 * 3).months).beginning_of_quarter }
+      let(:cohort_date2) { (today - (1 * 3).months).beginning_of_quarter }
+      let(:cohort_date3) { (today - (2 * 3).months).beginning_of_quarter }
+
+      it 'caches the facility correctly' do
+        today = Date.today.strftime("%Y-%m-%d")
+        analytics_cache_key = "analytics/#{today}/facilities/#{facility.id}"
+
+        expected_cache_value =
+          { cohort: {
+            cohort_date1 => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
+            cohort_date2 => { :registered => 3, :followed_up => 0, :defaulted => 3, :controlled => 0, :uncontrolled => 0 },
+            cohort_date3 => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 }
+          },
+            dashboard: {
+              user.id => {
+                registered_patients_by_month: { Date.new(2019, 1, 1) => 3 },
+                total_registered_patients: 3,
+                follow_up_patients_by_month: { Date.new(2019, 2, 1) => 3 }
+              }
+            }
+          }
+
+        get :show, params: { id: facility.id }
+
+        expect(Rails.cache.exist?(analytics_cache_key)).to be true
+        expect(Rails.cache.fetch(analytics_cache_key)).to eq expected_cache_value
+      end
     end
   end
 end
