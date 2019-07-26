@@ -33,34 +33,36 @@ RSpec.describe PatientPhoneNumber, type: :model do
   end
 
   describe 'require_whitelisting' do
-    let(:patient) { create(:patient) }
-    let(:non_dnd_phone) { create(:patient_phone_number, patient: patient, dnd_status: false) }
+    let!(:patient) { create(:patient) }
+    let!(:non_dnd_phone) { create(:patient_phone_number, patient: patient, dnd_status: false) }
 
-    let(:dnd_phone) { create(:patient_phone_number, patient: patient, dnd_status: true) }
+    let!(:dnd_phone) { create(:patient_phone_number, patient: patient, dnd_status: true) }
 
-    let(:blackist_phone) do
+    let!(:blackist_phone) do
       phone_number = create(:patient_phone_number, patient: patient, dnd_status: true)
       create(:exotel_phone_number_detail, patient_phone_number: phone_number, whitelist_status: 'blacklist')
       phone_number
     end
 
-    let(:neutral_phone) do
+    let!(:neutral_phone) do
       phone_number = create(:patient_phone_number, patient: patient, dnd_status: true)
       create(:exotel_phone_number_detail, patient_phone_number: phone_number, whitelist_status: 'neutral')
       phone_number
     end
 
-    let(:valid_whitelist_phone) do
+    let!(:valid_whitelist_phone) do
       phone_number = create(:patient_phone_number, patient: patient, dnd_status: true)
       create(:exotel_phone_number_detail, patient_phone_number: phone_number, whitelist_status: 'whitelist', whitelist_status_valid_until: 3.days.from_now)
       phone_number
     end
 
-    let(:expired_whitelist_phone) do
+    let!(:expired_whitelist_phone) do
       phone_number = create(:patient_phone_number, patient: patient, dnd_status: true)
       create(:exotel_phone_number_detail, patient_phone_number: phone_number, whitelist_status: 'whitelist', whitelist_status_valid_until: 3.days.ago)
       phone_number
     end
+
+    let!(:invalid_phone) { create(:patient_phone_number, patient: patient, phone_type: :invalid) }
 
     it 'returns all the numbers that require whitelisting' do
       expect(PatientPhoneNumber.require_whitelisting)
@@ -71,7 +73,8 @@ RSpec.describe PatientPhoneNumber, type: :model do
       expect(PatientPhoneNumber.require_whitelisting)
         .not_to include(non_dnd_phone,
                         blackist_phone,
-                        valid_whitelist_phone)
+                        valid_whitelist_phone,
+                        invalid_phone)
     end
   end
 
