@@ -22,8 +22,7 @@ RSpec.feature 'Facility page functionality', type: :feature do
 
 
   it 'Verify facility landing page ' do
-    expect(page).to have_content("All facilities")
-    expect(page).to have_content("New facility group")
+    facility_page.verify_facility_page_header
     expect(page).to have_content('IHMI')
     expect(page).to have_content('Bathinda')
 

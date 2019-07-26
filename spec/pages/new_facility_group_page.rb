@@ -6,8 +6,8 @@ class FacilityGroupForm < ApplicationPage
   DELETE_FACILITY_GROUP_BUTTON = {css: "a.ml-4"}.freeze
   PROTOCOL_DROPDOWN = { xpath: "//select[@name='facility_group[protocol_id]']" }.freeze
   UNASSOCIATED_FACILITY_CHECKBOX = { css: "input[type='checkbox']" }.freeze
-  SUCCESSFUL_MESSAGE = { css: 'fade.show'}.freeze
-  MESSAGE_CROSS_BUTTON = {css: "i.fa-times" }.freeze
+  SUCCESSFUL_MESSAGE = { css: '.fade.show'}.freeze
+  MESSAGE_CROSS_BUTTON = {css: ".fade.show>button" }.freeze
   UPDATE_FACILITY_GROUP_BUTTON = { css: "input[value='Update Facility group']"}.freeze
 
 
@@ -50,8 +50,10 @@ class FacilityGroupForm < ApplicationPage
   end
 
   def select_unassociated_facility(facility_name)
-    find(:xpath, "//div[@class='form-check']/label[text()='#{facility_name}']").text.include? 'testfacility'
-    find(:xpath, "//div[@class='form-check']/label[text()='#{facility_name}']/../input").click
+    within(:xpath ,"//label[text()='Unassociated facilities']/..")do
+      page.has_content?(facility_name)
+      find(:xpath, "//div[@class='form-check']/label[text()='#{facility_name}']/../input").click
+    end
   end
 
   def click_on_update_facility_group_button

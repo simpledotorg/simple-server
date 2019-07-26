@@ -1,6 +1,6 @@
 class OrganizationsPage < ApplicationPage
 
-  ADD_NEW_ORGANIZATION_BUTTON = { css: 'a.btn-primary' }.freeze
+  ADD_NEW_ORGANIZATION_BUTTON = { css: 'nav.page-nav>a' }.freeze
   ORGANIZATION_NAME_TEXT_FIELD = { id: 'organization_name' }.freeze
   ORGANIZATION_DESCRIPTION_TEXT_FIELD = { id: 'organization_description' }.freeze
   CREATE_ORGANIZATION_BUTTON = { css: 'input.btn-primary'}.freeze
@@ -21,6 +21,8 @@ class OrganizationsPage < ApplicationPage
   end
 
   def delete_organization(org_name)
-      find(:xpath ,"//a[text()='#{org_name}']/../../..//a/i").click
+      within(:xpath ,"//a[text()='#{org_name}']/../../..") do
+        find(:css ,'i.fa-trash-alt').click
+      end
   end
 end

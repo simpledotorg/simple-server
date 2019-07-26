@@ -25,7 +25,6 @@ class HomePage < ApplicationPage
 
     select_main_menu_tab("Manage")
     manage_option = all_elements(MANAGE_OPTION)
-    puts manage_option.size
     manage_option.each do |tab|
       if tab.text.include? option
         tab.click

@@ -16,7 +16,6 @@ class ProtocolDetailPage < ApplicationPage
 
   def verify_updated_followup_days(days)
     verifyText(FOLLOW_UP_DAYS, days)
-
   end
 
   def click_message_cross_button
@@ -43,6 +42,8 @@ class ProtocolDetailPage < ApplicationPage
   end
 
   def click_edit_protocol_drug_button(drug_name)
-    find(:xpath ,"//h5[text()='#{drug_name}']/../..//a[contains(@class,'btn-outline-primary')]").click
+    within(:xpath ,"//h5[text()='#{drug_name}']/../..")do
+      find(:css ,"a.btn-outline-primary").click
+    end
   end
 end

@@ -1,12 +1,12 @@
 class ForgotPassword < ApplicationPage
 
   EMAIL_TEXT_BOX = { id: 'admin_email' }.freeze
-  RESET_PASSWORD_BUTTON = { css: "input.btn-primary" }.freeze
+  RESET_PASSWORD_BUTTON = { css: "div.text-right>input" }.freeze
   MESSAGE = { css: 'div.show' }.freeze
+  MESSAGE_CROSS_BUTTON = { css: "div.show>button" }.freeze
   LOGIN = { css: "a[href='/admins/sign_in']" }.freeze
-  MESSAGE_CROSS_BUTTON = { css: "i.fa-times" }.freeze
   UNLOCK_INSTRUCTION_BUTTON = { css: "a[href='/admins/unlock/new']"}.freeze
-  RESEND_INSTRUCTION_BUTTON = { css: "input.btn-primary" }.freeze
+  RESEND_INSTRUCTION_BUTTON = { css: "div.text-right>input" }.freeze
 
   def do_reset_password(email)
     type(EMAIL_TEXT_BOX, email)
