@@ -4,7 +4,7 @@ class OrganizationsPage < ApplicationPage
   ORGANIZATION_NAME_TEXT_FIELD = { id: 'organization_name' }.freeze
   ORGANIZATION_DESCRIPTION_TEXT_FIELD = { id: 'organization_description' }.freeze
   CREATE_ORGANIZATION_BUTTON = { css: 'input.btn-primary'}.freeze
-  ORG_NAME_LIST = { css: "div.card" }.freeze
+  ORGANIZATION_NAME = {css: "div.card" }.freeze
 
   def create_new_organization(orgName, orgDesc)
     click(ADD_NEW_ORGANIZATION_BUTTON)
@@ -13,10 +13,10 @@ class OrganizationsPage < ApplicationPage
     click(CREATE_ORGANIZATION_BUTTON)
   end
 
-  def verify_organization_info()
-    orgnameList = all_elements(ORG_NAME_LIST)
-    orgnameList.each do |name|
-      name.text.include? 'test'
+  def is_organization_name_present(orgName)
+    org_name = all_elements(ORGANIZATION_NAME)
+    org_name.each do |name|
+      name.text.include? orgName
     end
   end
 

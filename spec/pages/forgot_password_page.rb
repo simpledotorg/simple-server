@@ -2,8 +2,8 @@ class ForgotPassword < ApplicationPage
 
   EMAIL_TEXT_BOX = { id: 'admin_email' }.freeze
   RESET_PASSWORD_BUTTON = { css: "div.text-right>input" }.freeze
-  MESSAGE = { css: 'div.show' }.freeze
-  MESSAGE_CROSS_BUTTON = { css: "div.show>button" }.freeze
+  MESSAGE = { css: 'div.alert-primary' }.freeze
+  MESSAGE_CROSS_BUTTON = { css: "button.close" }.freeze
   LOGIN = { css: "a[href='/admins/sign_in']" }.freeze
   UNLOCK_INSTRUCTION_BUTTON = { css: "a[href='/admins/unlock/new']"}.freeze
   RESEND_INSTRUCTION_BUTTON = { css: "div.text-right>input" }.freeze

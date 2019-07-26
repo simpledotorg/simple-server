@@ -6,8 +6,8 @@ class FacilityGroupForm < ApplicationPage
   DELETE_FACILITY_GROUP_BUTTON = {css: "a.ml-4"}.freeze
   PROTOCOL_DROPDOWN = { xpath: "//select[@name='facility_group[protocol_id]']" }.freeze
   UNASSOCIATED_FACILITY_CHECKBOX = { css: "input[type='checkbox']" }.freeze
-  SUCCESSFUL_MESSAGE = { css: '.fade.show'}.freeze
-  MESSAGE_CROSS_BUTTON = {css: ".fade.show>button" }.freeze
+  SUCCESSFUL_MESSAGE = { css: 'div.alert-primary'}.freeze
+  MESSAGE_CROSS_BUTTON = {css: "button.close" }.freeze
   UPDATE_FACILITY_GROUP_BUTTON = { css: "input[value='Update Facility group']"}.freeze
 
 

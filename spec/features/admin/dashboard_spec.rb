@@ -31,7 +31,7 @@ RSpec.feature 'Verify Dashboard', type: :feature do
 
       #assertion at organization screen
       expect(page).to have_content('Organization was successfully created.')
-      organization.verify_organization_info
+      organization.is_organization_name_present("test")
 
       home_page.select_main_menu_tab("Dashboard")
       #assertion at dashboard screen
