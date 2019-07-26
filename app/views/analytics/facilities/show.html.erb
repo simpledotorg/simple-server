@@ -1,28 +1,35 @@
 <div class="dashboard">
   <nav class="breadcrumb">
-    <%= link_to 'All districts', admin_root_path %> <i class="fas fa-chevron-right"></i> <%= link_to @facility.district, analytics_organization_district_path(@facility.organization.id, @facility.district) %> <i class="fas fa-chevron-right"></i> <%= @facility.name %>
+    <%= link_to 'All districts', admin_root_path %>
+
+    <i class="fas fa-chevron-right"></i>
+    <%= link_to @facility.district,
+                analytics_organization_district_path(@facility.organization.id, @facility.district) %>
+
+    <i class="fas fa-chevron-right"></i>
+    <%= @facility.name %>
   </nav>
   <h1><%= @facility.name %></h1>
 </div>
 
-<%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics %>
+<%= render 'shared/cohort_charts', cohort_analytics: @analytics[:cohort] %>
 
 <%=
   render 'shared/analytics_table',
-    analytics: @analytics,
-    row_resource: User.order(:full_name),
-    row_resource_description: "Users",
-    row_resource_display_field: :full_name,
-    row_resource_link: :admin_user_path
+         dashboard_analytics: @analytics[:dashboard],
+         row_resource: User.order(:full_name),
+         row_resource_description: "Users",
+         row_resource_display_field: :full_name,
+         row_resource_link: :admin_user_path
 %>
 
 <% if policy(@facility).share_anonymized_data? %>
   <div class="downloads">
-      <h4>Downloads</h4>
-      <%= link_to analytics_facility_share_path(facility_id: @facility.id),
-                  class: "download",
-                  data: { confirm: I18n.t('admin.phi_anonymized_download_alert') } do %>
-        <i class="far fa-file-excel" style="margin-right: 4px;"></i> Anonymized Data (XLS)
-      <% end %>
+    <h4>Downloads</h4>
+    <%= link_to analytics_facility_share_path(facility_id: @facility.id),
+                class: "download",
+                data: { confirm: I18n.t('admin.phi_anonymized_download_alert') } do %>
+      <i class="far fa-file-excel" style="margin-right: 4px;"></i> Anonymized Data (XLS)
+    <% end %>
   </div>
 <% end %>
