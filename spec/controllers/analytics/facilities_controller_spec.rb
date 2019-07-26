@@ -58,9 +58,10 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
         Rails.cache.clear
       end
 
-      let(:cohort_date1) { (Date.today - (0 * 3).months).beginning_of_quarter }
-      let(:cohort_date2) { (Date.today - (1 * 3).months).beginning_of_quarter }
-      let(:cohort_date3) { (Date.today - (2 * 3).months).beginning_of_quarter }
+      let(:today) { Date.today }
+      let(:cohort_date1) { (today - (0 * 3).months).beginning_of_quarter }
+      let(:cohort_date2) { (today - (1 * 3).months).beginning_of_quarter }
+      let(:cohort_date3) { (today - (2 * 3).months).beginning_of_quarter }
 
       it 'caches the facility correctly' do
         today = Date.today.strftime("%Y-%m-%d")
