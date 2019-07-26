@@ -35,18 +35,23 @@ class ExotelAPIService
 
     {
       dnd_status: EXOTEL_TRUTHY_STRINGS.include?(phone_number_details_response.dig('Numbers', 'DND')),
-      phone_type: phone_number_details_response.dig('Numbers', 'Type').downcase.to_sym,
-      whitelist_status: exotel_whitelist_details_response.dig('Result', 'Status').downcase.to_sym,
+      phone_type: parse_response_field(phone_number_details_response.dig('Numbers', 'Type'), :invalid),
+      whitelist_status: parse_response_field(exotel_whitelist_details_response.dig('Result', 'Status'), nil),
       whitelist_status_valid_until: parse_exotel_whitelist_expiry(exotel_whitelist_details_response.dig('Result', 'Expiry'))
     }
   end
 
   def parse_exotel_whitelist_expiry(expiry_time)
-    return if expiry_time < 0
+    return if expiry_time.blank? || expiry_time < 0
     Time.now + expiry_time.seconds
   end
 
   private
+
+  def parse_response_field(field, default)
+    return default if field.blank?
+    field.downcase.to_sym
+  end
 
   def execute_get(url)
     begin

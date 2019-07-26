@@ -72,7 +72,8 @@ class Api::Current::Models
         properties: {
           id: { '$ref' => '#/definitions/uuid' },
           number: { '$ref' => '#/definitions/non_empty_string' },
-          phone_type: { type: :string, enum: PatientPhoneNumber::PHONE_TYPE },
+          # TODO: Client only handles `mobile` and `landline` phone_types. Allow `invalid` when mobile supports it
+          phone_type: { type: :string, enum: PatientPhoneNumber.phone_types.slice(:mobile, :landline).keys },
           active: { type: :boolean },
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },

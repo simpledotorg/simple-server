@@ -1,7 +1,11 @@
 class PatientPhoneNumber < ApplicationRecord
   include Mergeable
 
-  PHONE_TYPE = %w[mobile landline].freeze
+  enum phone_type: {
+    mobile: 'mobile',
+    landline: 'landline',
+    invalid: 'invalid'
+  }, _prefix: true
 
   belongs_to :patient
 
