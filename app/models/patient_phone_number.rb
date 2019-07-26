@@ -1,7 +1,11 @@
 class PatientPhoneNumber < ApplicationRecord
   include Mergeable
 
-  PHONE_TYPE = %w[mobile landline].freeze
+  enum phone_type: {
+    mobile: 'mobile',
+    landline: 'landline',
+    invalid: 'invalid'
+  }, _prefix: true
 
   belongs_to :patient
 
@@ -17,6 +21,7 @@ class PatientPhoneNumber < ApplicationRecord
   def self.require_whitelisting
     self.left_outer_joins(:exotel_phone_number_detail)
       .where(patient_phone_numbers: { dnd_status: true })
+      .where.not(patient_phone_numbers: { phone_type: 'invalid' })
       .where(%Q(
         (exotel_phone_number_details.whitelist_status is null) OR
         (exotel_phone_number_details.whitelist_status = 'neutral') OR

@@ -112,6 +112,11 @@ describe ExotelAPIService, type: :model do
   end
 
   describe 'parse_exotel_whitelist_expiry' do
+    it 'returns nil if expiry time is nil' do
+      expect(service.parse_exotel_whitelist_expiry(nil)).to be_nil
+    end
+
+
     it 'returns nil if expiry time is less than 0' do
       expect(service.parse_exotel_whitelist_expiry(-1)).to be_nil
     end
