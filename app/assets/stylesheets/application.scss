@@ -37,7 +37,7 @@ $font-small: 11px;
 @import "graphs";
 
 body {
-    padding-top: 4rem;
+    padding-top: 5rem;
     font-size: 15px;
     font-family: "Roboto Condensed", sans-serif;
     background: $grey-lightest;
@@ -170,6 +170,9 @@ footer {
 }
 
 @include media-breakpoint-down(sm) {
+    body {
+        padding-top: 4.5rem;
+    }
     main.container {
         margin: 0 !important;
     }

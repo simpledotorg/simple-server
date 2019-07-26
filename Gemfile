@@ -34,6 +34,7 @@ gem 'kaminari'
 gem 'phonelib'
 gem 'http'
 gem 'sidekiq'
+gem "sidekiq-throttled"
 gem 'connection_pool'
 gem 'whenever', require: false
 gem 'redis'

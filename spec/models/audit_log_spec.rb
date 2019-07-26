@@ -1,5 +1,4 @@
 require 'rails_helper'
-
 describe AuditLog, type: :model do
   include ActiveJob::TestHelper
 
@@ -56,18 +55,18 @@ describe AuditLog, type: :model do
     let(:action) { 'fetch' }
 
     it 'schedules a job to create audit logs in the background' do
-      assert_enqueued_jobs 1, only: CreateAuditLogsJob do
+      expect {
         AuditLog.create_logs_async(user, records, action)
-      end
+      }.to change(CreateAuditLogsWorker.jobs, :size).by(1)
+      CreateAuditLogsWorker.clear
     end
 
     it 'creates audit logs for user and records when the job is completed' do
-      perform_enqueued_jobs do
+      Sidekiq::Testing.inline! do
         AuditLog.create_logs_async(user, records, action)
-      end
-
-      records.each do |record|
-        expect(AuditLog.find_by(user: user, auditable: record, action: action)).to be_present
+        records.each do |record|
+          expect(AuditLog.find_by(user: user, auditable: record, action: action)).to be_present
+        end
       end
     end
   end
