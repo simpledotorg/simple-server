@@ -14,7 +14,7 @@ RSpec.describe Api::V2::AppointmentTransformer do
     let(:appointment_payload) { build_appointment_payload }
 
     it 'removes appointment_type from appointment hashes' do
-      transformed_payload = Api::V1::AppointmentTransformer.from_request(appointment_payload)
+      transformed_payload = Api::V2::AppointmentTransformer.from_request(appointment_payload)
       expect(transformed_payload).not_to include('appointment_type')
     end
   end

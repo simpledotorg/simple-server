@@ -52,25 +52,6 @@ Rails.application.routes.draw do
   end
 
   namespace :api, defaults: { format: 'json' } do
-    namespace :v1 do
-      get 'ping', to: 'pings#show'
-      post 'login', to: 'logins#login_user'
-
-      scope :users do
-        get 'find', to: 'users#find'
-        post 'register', to: 'users#register'
-        post '/:id/request_otp', to: 'users#request_otp'
-        post '/me/reset_password', to: 'users#reset_password'
-      end
-
-      scope '/communications' do
-        get 'sync', to: 'communications#sync_to_user'
-        post 'sync', to: 'communications#sync_from_user'
-      end
-
-      concerns :sync_routes
-    end
-
     namespace :v2 do
       get 'ping', to: 'pings#show'
       post 'login', to: 'logins#login_user'
