@@ -2,7 +2,7 @@ class Analytics::FacilitiesController < AnalyticsController
   before_action :set_facility
 
   def show
-    if ENV.fetch('SIMPLE_SERVER_ENV') == 'qa'
+    unless FeatureToggle.enabled?('CACHED_QUERIES_FOR_DASHBOARD')
       @analytics = analytics
     else
       @analytics = Rails.cache.fetch(analytics_cache_key) { analytics }
