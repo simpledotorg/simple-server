@@ -52,6 +52,12 @@ Rails.application.routes.draw do
   end
 
   namespace :api, defaults: { format: 'json' } do
+
+    # Returning HTTP Status `410` for deprecated API version `v1`
+    namespace :v1 do
+      match '*all', via: [:get, :post, :put, :delete, :patch], to: proc { [410, {}, ['']] }
+    end
+
     namespace :v2 do
       get 'ping', to: 'pings#show'
       post 'login', to: 'logins#login_user'
