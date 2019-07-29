@@ -31,7 +31,7 @@
     </div>
 
     <div class="card-footer">
-      First logged in at: <%= l(@user.logged_in_at) || 'Not logged in yet' %>
+      First logged in at: <%= @user.logged_in_at.present? ? l(@user.logged_in_at) : 'Not logged in yet' %>
     </div>
 </div>
 
