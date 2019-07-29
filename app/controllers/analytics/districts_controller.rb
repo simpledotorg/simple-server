@@ -2,7 +2,11 @@ class Analytics::DistrictsController < AnalyticsController
   before_action :set_organization_district
 
   def show
-    @analytics = Rails.cache.fetch(analytics_cache_key) { analytics }
+    if ENV.fetch('SIMPLE_SERVER_ENV') == 'qa'
+      @analytics = analytics
+    else
+      @analytics = Rails.cache.fetch(analytics_cache_key) { analytics }
+    end
   end
 
   def share_anonymized_data

@@ -2,7 +2,11 @@ class Analytics::FacilitiesController < AnalyticsController
   before_action :set_facility
 
   def show
-    @analytics = Rails.cache.fetch(analytics_cache_key) { analytics }
+    if ENV.fetch('SIMPLE_SERVER_ENV') == 'qa'
+      @analytics = analytics
+    else
+      @analytics = Rails.cache.fetch(analytics_cache_key) { analytics }
+    end
   end
 
   def share_anonymized_data
