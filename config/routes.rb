@@ -156,6 +156,7 @@ Rails.application.routes.draw do
     resources :organizations do
       resources :districts, only: [:show] do
         get 'share', to: 'districts#share_anonymized_data'
+        get 'graphics', to: 'districts#whatsapp_graphics'
       end
     end
   end

@@ -105,25 +105,17 @@ en:
         url: 'https://github.com/simpledotorg/simple-server/blob/master/LICENSE'
   registration: 'New registration'
   reset_password: 'Reset PIN'
-  analytics:
-    newly_enrolled: 'new patients enrolled'
-    return_patients: 'enrolled patients returned for a BP'
-    non_returning_hypertensive_patients: "How many expected patients didn't get a BP?"
-    control_rate: 'BP control rate'
-    control_rate_title: 'What was the BP control in a rolling 3-month cohort?'
-    control_rate_explanation: 'is calculated as a rolling cohort. %{hypertensive_patients_in_cohort} patients enrolled 6-9 months ago / %{patients_under_control} of those patients had SBP < 140 and DBP < 90 at last measure in past %{number_of_months} = %{control_rate_for_month}% BP control'
+  dashboard:
     graphics:
-      facility:
-        report_title: "%{organization_name} Hypertension Control Report"
-        report_message: "Thank you for your hard work. You are truly saving lives from heart attacks and strokes."
-        blood_pressures_recorded_in_month: "Recorded BPs this month for:"
-        patients_recorded_this_month: "Enrolled this month:"
-        patients_recorded_this_month_count_message: "%{count} new patients"
-        overdue_patients_this_month: "Hypertensives with no BP in > 90 days:"
-        overdue_patients_this_month_count_message: "%{count} overdue patients"
-        footnote:
-          control_rate_explanation: 'is calculated as a rolling cohort. %{hypertensive_patients_in_cohort} patients enrolled 6-9 months ago / %{patients_under_control} of those patients had SBP < 140 and DBP < 90 at last measure in past 3 months = %{control_rate_for_month}% BP control'
-    last_90_days: "Last 90 days"
+      graphics_title: "What happened in %{current_quarter_string} to the %{patients_in_previous_quarter} patients registered during %{previous_quarter_string}?"
+      report_name: "Hypertension Report"
+      patients_controlled_in_quarter: "patients visited with BP"
+      patients_uncontrolled_in_quarter: "patients visited with BP"
+      patients_defaulted_in_quarter: "patients didn't attend for an expected follow-up visit"
+      new_patients_registered: "New patients registered"
+      patients_called_for_followup: "Patients called for follow-up reminder"
+
+
   months:
     1: 'January'
     2: 'February'

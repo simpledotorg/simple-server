@@ -16,4 +16,14 @@ module DashboardHelper
   def analytics_month_totals(analytics, metric, month)
     dash_if_zero(analytics.sum { |_, row| row.dig(metric, month) || 0 })
   end
+
+  def calculate_percentage_for_analytics(analytics)
+    total = analytics.values.sum
+    analytics.map { |k, v| [k, (v * 100.0)/total] }.to_h
+  end
+
+  def percentage_string(percentage)
+    return '< 1%' if percentage < 1
+    "#{percentage.round(0)}%"
+  end
 end

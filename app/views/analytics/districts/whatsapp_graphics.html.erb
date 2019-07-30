@@ -1,0 +1,17 @@
+<div class="snapshot">
+  <% cohort_analytics = @analytics[:cohort] %>
+
+  <%= render 'shared/graphics/graphics_header',
+             date: Date.today,
+             organization_name: @organization_district.organization.name,
+             district_name: @organization_district.district_name %>
+
+  <%= render 'shared/graphics/graphics_control_rate_card',
+             current_cohort_analytics: cohort_analytics[quarter_start(current_year, current_quarter).to_date] %>
+
+  <%= render 'shared/graphics/graphics_registration_card', cohort_analytics: cohort_analytics %>
+
+</div>
+<div class="snapshot-send">
+  Dr John Smith: Whatsapp +91-876-999-0909
+</div>

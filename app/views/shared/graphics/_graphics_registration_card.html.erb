@@ -1,0 +1,20 @@
+<div class="card" style="margin-top: -2px;">
+  <table class="snapshot-table">
+    <thead>
+    <tr>
+      <th></th>
+      <th><%= t('dashboard.graphics.new_patients_registered') %></th>
+      <th><%= t('dashboard.graphics.patients_called_for_followup') %></th>
+    </tr>
+    </thead>
+    <tbody>
+    <% cohort_analytics.sort_by { |k, v| k }.reverse.each do |date, quarter_analytics| %>
+      <tr>
+        <td class="snapshot-quarter"><%= quarter_string(date) %></td>
+        <td class="green"><%= quarter_analytics[:registered] %></td>
+        <td class="green"><%= quarter_analytics[:followed_up] %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>

@@ -14,7 +14,7 @@ Dashboard UI
 .split-bars .bar {
     background: #ddd;
     vertical-align: middle;
-    color: rgba(255,255,255,0.85);
+    color: rgba(255,255,255,1);
     padding: 4px 8px;
     font-weight: 500;
     position: relative;
@@ -30,37 +30,26 @@ Dashboard UI
 }
 
 .bar-total {
-    float: right;
-    font-size: 90%;
-    color: $grey-dark;
-    padding: 0 0 4px 0;
+    font-size: 85%;
+    color: $grey-mid;
 }
 
-.key.desktop {
+.key {
     display: inline-block;
 }
 
-@include media-breakpoint-down(sm) {
-    .key.desktop {
-        display: none;
-    }
-}
-
-.key div.key-definition {
+.key div {
     position: relative;
-    padding: 4px 0 4px 28px;
-    display: inline-block;
-}
-
-.desktop .key div.key-definition {
-    font-size: 90%;
-    display: inline-block;
+    padding: 4px 0 4px 26px;
     margin-left: 8px;
+    font-size: 13px;
+    font-family: $font-condensed;
+    display: inline-block;
 }
 
-.key div.key-definition:after {
+.key div:after {
     content: ".";
-    width: 20px;
+    width: 18px;
     height: 12px;
     position: absolute;
     left: 3px;
@@ -78,13 +67,7 @@ Dashboard UI
 .key div.controlled { color: $green-dark; }
 
 @include media-breakpoint-down(sm) {
-    .key {
-        display: inherit;
-        
-        .row {
-            margin: 16px 0 -6px 0;
-        }
-    }
+    .key div { margin-left: 0; margin-right: 8px; font-size: 85%; margin-top: 8px; }
 }
 
 .bar-count {
@@ -121,15 +104,4 @@ Dashboard UI
 
 .bars td:last-child div {
     background: #aaa;
-}
-
-.graphics a {
-    text-indent: -1000em;
-    width: 42px;
-    height: 42px;
-    background: url(/assets/whatsapp-dashboard.svg);
-    background-size: cover;
-    display: block;
-    float: right;
-    margin: -10px -4px 0 0;
 }
