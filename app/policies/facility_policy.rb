@@ -11,6 +11,10 @@ class FacilityPolicy < ApplicationPolicy
     user.owner?
   end
 
+  def whatsapp_graphics?
+    show?
+  end
+
   def create?
     user.owner? || user.organization_owner?
   end
@@ -29,10 +33,6 @@ class FacilityPolicy < ApplicationPolicy
 
   def destroy?
     destroyable? && (user.owner? || admin_can_access?(:organization_owner))
-  end
-
-  def graphics?
-    show?
   end
 
   def upload?

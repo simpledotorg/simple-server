@@ -12,6 +12,6 @@ class OrganizationDistrictPolicy < ApplicationPolicy
   end
 
   def whatsapp_graphics?
-    user.owner?
+    show?
   end
 end
