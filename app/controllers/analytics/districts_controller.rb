@@ -2,7 +2,11 @@ class Analytics::DistrictsController < AnalyticsController
   before_action :set_organization_district
 
   def show
-    @analytics = Rails.cache.fetch(analytics_cache_key) { analytics }
+    if FeatureToggle.enabled?('CACHED_QUERIES_FOR_DASHBOARD')
+      @analytics = Rails.cache.fetch(analytics_cache_key) { analytics }
+    else
+      @analytics = analytics
+    end
   end
 
   def share_anonymized_data
