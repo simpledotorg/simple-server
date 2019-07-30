@@ -38,8 +38,8 @@ class MoveUserRecordedDataToRegistrationFacility
   private
 
   def fix_data_for_relation(relation, update_hash)
-    records_to_fix = relation.where.not(update_hash)
-    Rails.logger.info "Moving #{records_to_fix.count} #{relation.klass.to_s} records, for user: #{user.full_name}, to #{user.registration_facility.name}"
-    records_to_fix.count if records_to_fix.update(update_hash)
+    Rails.logger.info "Moving #{relation.count} #{relation.klass.to_s} records, for user: #{user.full_name}, to #{user.registration_facility.name}"
+    updated_records = relation.update(update_hash)
+    updated_records.count
   end
 end

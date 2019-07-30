@@ -45,7 +45,6 @@ namespace :data_fixes do
   task :move_user_data_from_a_facility_to_their_registration_facility, [:user_id, :facility_id] => :environment do |_t, args|
     user = User.find(args.user_id)
     wrong_facility = Facility.find(args.facility_id)
-
     service = MoveUserRecordedDataToRegistrationFacility.new(user, wrong_facility)
     patient_count = service.fix_patient_data
     bp_count = service.fix_blood_pressure_data
