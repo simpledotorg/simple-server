@@ -28,7 +28,7 @@
           <% last_date = bp.recorded_at.to_date %>
         <% end %>
         <tr class="<%= "date-row" if print_date %>">
-          <td class="nowrap" style="width: 10em;">
+          <td class="nowrap" style="width: 10em; <%= "border: none;" if !print_date %>">
             <% if print_date %>
               <strong>
                 <%= l bp.recorded_at.to_date %>
