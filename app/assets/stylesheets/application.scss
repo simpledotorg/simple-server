@@ -536,6 +536,10 @@ Dashboard UI
     border-left: 1px solid $grey-lightest;
 }
 
+.table-compact .date-row td {
+    border-top-color: $grey-light;
+}
+
 .row-spacer {
     border-right: 1px solid $grey-lightest;
 }
@@ -581,8 +585,8 @@ Dashboard UI
 
 .table-compact .row-total {
     background: #fff;
-    border-top: 1px solid $grey-mid;
-    border-bottom: 1px solid $grey-mid;
+    border-top: 1px solid $grey-light;
+    border-bottom: 1px solid $grey-light;
     font-weight: bold;
 }
 
