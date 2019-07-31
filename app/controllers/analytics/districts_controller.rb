@@ -1,4 +1,6 @@
 class Analytics::DistrictsController < AnalyticsController
+  include GraphicsDownload
+
   before_action :set_organization_district
   before_action :set_analytics, only: [:show, :whatsapp_graphics]
 
@@ -23,27 +25,18 @@ class Analytics::DistrictsController < AnalyticsController
   def whatsapp_graphics
     respond_to do |format|
       format.png do
-        render_graphics_image(
+        filename = graphics_filename(
           @organization_district.organization.name,
-          @organization_district.district_name)
+          @organization_district.district_name,
+          Date.today)
+
+        render_as_png('/analytics/districts/graphics/image_template', filename)
       end
       format.html { render }
     end
   end
 
   private
-
-  def render_graphics_image(organization_name, district_name)
-    kit = IMGKit.new(
-      render_to_string('/analytics/districts/graphics/image_template', formats: [:html], layout: false),
-      width: 0, height: 0, enable_smart_width: true, transparent: true
-    )
-
-    send_data(
-      kit.to_png, type: "image/png",
-      filename: "whatsapp_graphics_#{organization_name}_#{district_name}_#{Date.today}.png"
-    )
-  end
 
   def set_analytics
     if FeatureToggle.enabled?('CACHED_QUERIES_FOR_DASHBOARD')
