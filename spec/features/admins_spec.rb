@@ -73,7 +73,7 @@ RSpec.feature "Admins", type: :feature do
       invite_email = ActionMailer::Base.deliveries.last
 
       expect(invite_email.subject).to match(/Invitation/)
-      expect(invite_email.body.encoded).to match(/Accept invitation/)
+      expect(invite_email.body.encoded).to match(/ACCEPT INVITATION/)
     end
 
     it "creates the user pending invitation" do
@@ -113,7 +113,7 @@ RSpec.feature "Admins", type: :feature do
       invite_email = ActionMailer::Base.deliveries.last
 
       expect(invite_email.subject).to match(/Invitation/)
-      expect(invite_email.body.encoded).to match(/Accept invitation/)
+      expect(invite_email.body.encoded).to match(/ACCEPT INVITATION/)
     end
 
     it "creates the user pending invitation" do

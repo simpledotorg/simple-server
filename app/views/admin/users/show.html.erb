@@ -16,7 +16,7 @@
     </div>
     
     <div class="row pt-2 pb-2">
-      <div class="col-2"><strong>Registration Facility:</strong></div>
+      <div class="col-2"><strong>Registration facility:</strong></div>
       <div class="col-10"><%= link_to @user.facility.name, [:admin, @user.facility.facility_group, @user.facility] %></div>
     </div>
     
@@ -31,7 +31,7 @@
     </div>
 
     <div class="card-footer">
-      First logged in at: <%= @user.logged_in_at.present? ? l(@user.logged_in_at) : 'Not logged in yet' %>
+      First login: <%= @user.logged_in_at.present? ? l(@user.logged_in_at) : '&lt;Not logged in yet&gt;'.html_safe %>
     </div>
 </div>
 
