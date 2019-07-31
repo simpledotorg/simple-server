@@ -19,7 +19,9 @@ module DashboardHelper
 
   def calculate_percentage_for_analytics(analytics)
     total = analytics.values.sum
-    analytics.map { |k, v| [k, (v * 100.0)/total] }.to_h
+    return analytics if total == 0
+
+    analytics.map { |k, v| [k, (v * 100.0) / total] }.to_h
   end
 
   def percentage_string(percentage)

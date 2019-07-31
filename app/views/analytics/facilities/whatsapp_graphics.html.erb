@@ -1,14 +1,1 @@
-<div class="snapshot">
-  <% cohort_analytics = @analytics[:cohort] %>
-
-  <%= render 'shared/graphics/graphics_header',
-             date: Date.today,
-             organization_name: @facility.organization.name,
-             name: @facility.name %>
-
-  <%= render 'shared/graphics/graphics_control_rate_card',
-             current_cohort_analytics: cohort_analytics[quarter_start(current_year, current_quarter).to_date] %>
-
-  <%= render 'shared/graphics/graphics_registration_card', cohort_analytics: cohort_analytics %>
-
-</div>
+<%= render 'analytics/facilities/graphics/partial' %>
