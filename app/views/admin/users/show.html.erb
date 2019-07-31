@@ -6,25 +6,25 @@
 </div>
 
 <div class="card">
-    
-     
+
+
     <h2><%= @user.full_name %></h2>
 
     <div class="row pt-2 pb-2">
       <div class="col-2"><strong>Phone number:</strong></div>
       <div class="col-10"><%= @user.phone_number %></div>
     </div>
-    
+
     <div class="row pt-2 pb-2">
       <div class="col-2"><strong>Registration facility:</strong></div>
       <div class="col-10"><%= link_to @user.facility.name, [:admin, @user.facility.facility_group, @user.facility] %></div>
     </div>
-    
+
     <div class="row pt-2 pb-2">
       <div class="col-2"><strong>Sync status:</strong></div>
       <div class="col-10"><%= @user.sync_approval_status %></div>
     </div>
-    
+
     <div class="row pt-2 pb-5">
       <div class="col-2"><strong>Sync reason:</strong></div>
       <div class="col-10"><%= @user.sync_approval_status_reason %></div>
@@ -50,4 +50,12 @@
     <% end %>
 
     <%= render partial: "deny_access_modal", locals: {user: @user} %>
+</div>
+
+<div class="pt-4">
+  <%=
+    render 'shared/recent_bp_log',
+      blood_pressures: @recent_blood_pressures,
+      display_model: :user
+  %>
 </div>

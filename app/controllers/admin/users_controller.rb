@@ -12,6 +12,7 @@ class Admin::UsersController < AdminController
   end
 
   def show
+    @recent_blood_pressures = @user.blood_pressures.includes(:patient, :facility).order(recorded_at: :desc).limit(50)
   end
 
   def edit
@@ -29,7 +30,7 @@ class Admin::UsersController < AdminController
     phone_number_authentication = @user.phone_number_authentication
     phone_number_authentication.set_otp
     phone_number_authentication.save
-    
+
     SmsNotificationService.new(@user.phone_number, ENV['TWILIO_PHONE_NUMBER']).send_request_otp_sms(@user.otp)
     redirect_to admin_user_url(@user), notice: 'User OTP has been reset.'
   end

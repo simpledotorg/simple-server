@@ -48,7 +48,7 @@ class Analytics::FacilitiesController < AnalyticsController
     {
       cohort: @facility.cohort_analytics,
       dashboard: @facility.dashboard_analytics,
-      recent_blood_pressures: @facility.blood_pressures.includes(:patient).order(recorded_at: :desc).limit(50)
+      recent_blood_pressures: @facility.blood_pressures.includes(:patient, :user).order(recorded_at: :desc).limit(50)
     }
   end
 
