@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.feature 'test protocol detail page functionality', type: :feature do
-  skip "TODO: update tests to match new UI" do
     let(:owner) { create(:admin) }
 
     login_page = LoginPage.new
@@ -37,9 +36,8 @@ RSpec.feature 'test protocol detail page functionality', type: :feature do
       it 'should edit protocol drug' do
         protocol_detail.click_new_protocol_drug_button
         protocol_drug.add_new_protocol_drug("test_drug", "10mg", "AXDSC")
-        protocol_detail.click_edit_protocol_drug_button("test_drug")
+        protocol_detail.click_edit_protocol_drug_button("10mg test_drug")
         protocol_drug.edit_protocol_drug_info("50mg", "AXDFC")
       end
     end
   end
-end
