@@ -1,12 +1,10 @@
 require 'rails_helper'
 
 RSpec.feature 'Owner Login as Admin', type: :feature do
-  skip "TODO: update tests to match new UI" do
     let(:owner) {create(:admin)}
     let(:counsellor) {create(:admin, :counsellor)}
     login_page = LoginPage.new
-    owner_home_page = HomePage.new
-    counsellor_home_page = PatientsPage.new
+    home_page = HomePage.new
 
     context "owners login and logout" do
       before(:each) do
@@ -15,12 +13,12 @@ RSpec.feature 'Owner Login as Admin', type: :feature do
       end
 
       it 'Logs in ' do
-        owner_home_page.validate_owners_home_page
+        home_page.validate_owners_home_page
         expect(page).to have_content(owner.email)
       end
 
       it 'log Out' do
-        owner_home_page.click_logout_button
+        home_page.click_logout_button
         login_page.is_successful_logout_message_present
         login_page.click_successful_message_cross_button
       end
@@ -37,7 +35,7 @@ RSpec.feature 'Owner Login as Admin', type: :feature do
       end
 
       it 'log Out' do
-        counsellor_home_page.click_logout_button
+        home_page.click_logout_button
         login_page.is_successful_logout_message_present
         login_page.click_successful_message_cross_button
       end
@@ -49,4 +47,3 @@ RSpec.feature 'Owner Login as Admin', type: :feature do
       login_page.click_errormessage_cross_button
     end
   end
-end

@@ -6,6 +6,22 @@
 ### Removed
 ### Security
 
+# 2019-07-30-1
+### Added
+- Added caching for analytics dashboard
+- Auto whiltelist patient phone numbers
+- Periodically update patient phone numbers
+### Changed
+- Moved Download Overdue List to the top of the screen
+### Fixed
+- Check if user.logged_in_at is present before localizing time
+- Removing the last BP for a patient should decrement follow-up count
+- Count patients registered without a BP as registered patients
+### Deprecated
+### Removed
+### Security
+
+
 # 2019-07-25-1
 ### Added
 ### Changed
