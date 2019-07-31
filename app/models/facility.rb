@@ -69,6 +69,10 @@ class Facility < ApplicationRecord
     results.inject(&:deep_merge)
   end
 
+  def patient_log
+    blood_pressures.includes(:patient).limit(20).order(recorded_at: :desc)
+  end
+
   def self.parse_facilities(file_contents)
     facilities = []
     CSV.parse(file_contents, headers: true, converters: :strip_whitespace) do |row|
