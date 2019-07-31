@@ -20,6 +20,8 @@ class ExotelAPIService
   end
 
   def whitelist_phone_numbers(virtual_number, phone_numbers)
+    return unless FeatureToggle.enabled?('EXOTEL_WHITELIST_API')
+
     request_body = {
       :Language => 'en',
       :VirtualNumber => virtual_number,

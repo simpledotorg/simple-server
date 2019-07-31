@@ -2,7 +2,11 @@ class Analytics::FacilitiesController < AnalyticsController
   before_action :set_facility
 
   def show
-    @analytics = Rails.cache.fetch(analytics_cache_key) { analytics }
+    if FeatureToggle.enabled?('CACHED_QUERIES_FOR_DASHBOARD')
+      @analytics = Rails.cache.fetch(analytics_cache_key) { analytics }
+    else
+      @analytics = analytics
+    end
   end
 
   def share_anonymized_data
