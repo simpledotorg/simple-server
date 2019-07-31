@@ -89,4 +89,26 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
       end
     end
   end
+
+  describe '#whatsapp_graphics' do
+    render_views
+
+    context 'html requested' do
+      it 'renders graphics_header partial' do
+        get :whatsapp_graphics, format: :html, params: { facility_id: facility.id}
+
+        expect(response).to be_ok
+        expect(response).to render_template('analytics/facilities/graphics/_partial')
+      end
+    end
+
+    context 'png requested' do
+      it 'renders the image template for downloading' do
+        get :whatsapp_graphics, format: :png, params: { facility_id: facility.id}
+
+        expect(response).to be_ok
+        expect(response).to render_template('analytics/facilities/graphics/image_template')
+      end
+    end
+  end
 end
