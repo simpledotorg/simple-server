@@ -26,10 +26,10 @@
             <% if bp.recorded_at.to_date > bp.patient.recorded_at.to_date %>
               <span class="patient-return text-muted">Return patient</span>
             <% else %>
-              <span class="patient-new">New reg.</span>
+              <span class="patient-new">New registration</span>
             <% end %>
           </td>
-          <td class="nowrap"><%= bp.user.full_name %></td>
+          <td class="nowrap"><%= bp.user.present? ? bp.user.full_name : "unknown" %></td>
         </tr>
 
       <% end %>
