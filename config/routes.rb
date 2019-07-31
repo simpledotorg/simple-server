@@ -52,23 +52,10 @@ Rails.application.routes.draw do
   end
 
   namespace :api, defaults: { format: 'json' } do
+
+    # Returning HTTP Status `410` for deprecated API version `v1`
     namespace :v1 do
-      get 'ping', to: 'pings#show'
-      post 'login', to: 'logins#login_user'
-
-      scope :users do
-        get 'find', to: 'users#find'
-        post 'register', to: 'users#register'
-        post '/:id/request_otp', to: 'users#request_otp'
-        post '/me/reset_password', to: 'users#reset_password'
-      end
-
-      scope '/communications' do
-        get 'sync', to: 'communications#sync_to_user'
-        post 'sync', to: 'communications#sync_from_user'
-      end
-
-      concerns :sync_routes
+      match '*all', via: [:get, :post, :put, :delete, :patch], to: proc { [410, {}, ['']] }
     end
 
     namespace :v2 do

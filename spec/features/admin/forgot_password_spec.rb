@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.feature 'To test Forgot password functionality', type: :feature do
-  skip "TODO: update tests to match new UI" do
     def assert_forgot_password_landing_page(page)
       expect(page).to have_content('Email')
       expect(page).to have_field('admin_email')
@@ -47,5 +46,4 @@ RSpec.feature 'To test Forgot password functionality', type: :feature do
       forgot_password.resend_unlock_instruction(owner.email)
     end
   end
-end
 
