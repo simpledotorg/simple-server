@@ -35,7 +35,6 @@
                 analytics_organization_district_graphics_path(organization_id: @organization_district.organization.id,
                                                           district_id: @organization_district.district_name,
                                                           format: "png"),
-                class: "download",
-                data: { confirm: I18n.t('admin.phi_download_alert') } %>
+                class: "download" %>
   <% end %>
 </div>
