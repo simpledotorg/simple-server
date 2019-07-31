@@ -138,11 +138,13 @@ Rails.application.routes.draw do
   namespace :analytics do
     resources :facilities, only: [:show] do
       get 'share', to: 'facilities#share_anonymized_data'
+      get 'graphics', to: 'facilities#whatsapp_graphics'
     end
 
     resources :organizations do
       resources :districts, only: [:show] do
         get 'share', to: 'districts#share_anonymized_data'
+        get 'graphics', to: 'districts#whatsapp_graphics'
       end
     end
   end

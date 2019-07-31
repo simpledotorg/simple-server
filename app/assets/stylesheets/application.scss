@@ -19,6 +19,7 @@ $grey-darkest: #2F363D;
 $highlight: #E9F3FF; /* LIGHT BLUE */
 $blue: #0075EB;
 $blue-light: #E9F3FF;
+$blue-dark: #0c3966;
 $green-light: #E0FFED;
 $green-mid: #5CFF9D;
 $green: #00B849;
@@ -35,6 +36,7 @@ $font-small: 11px;
 // Local imports
 @import "dashboard";
 @import "graphs";
+@import "whatsapp_graphics";
 
 body {
     padding-top: 5rem;
