@@ -1,8 +1,25 @@
-<div class="dashboard">
-  <nav class="breadcrumb">
+<nav class="breadcrumb">
     <%= link_to 'All users', admin_users_path %> <i class="fas fa-chevron-right"></i> <%= @user.full_name %>
-  </nav>
-  <h1>User details</h1>
+</nav>
+
+<div class="page-header">
+    <h1 class="page-title">User details</h1>
+    <nav class="page-nav">
+        <% if policy(@user).edit? %>
+            <%= link_to 'Edit user', edit_admin_user_path(@user), class: 'btn btn-primary btn-sm' %>
+        <% end %>
+        <% unless @user.sync_approval_status == 'denied' %>
+            <%= link_to 'Deny access', '#deny-access-modal-' + @user.id , 'data-toggle' => 'modal', class: 'btn btn-danger btn-sm' %>
+        <% end %>
+        <% unless @user.sync_approval_status == 'allowed' %>
+            <%= link_to 'Allow access', admin_user_enable_access_path(@user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') }, class: 'btn btn-success btn-sm' %>
+        <% end %>
+        <% if policy(@user.audit_logs).index? %>
+            <%= link_to 'Audit logs', admin_audit_logs_url(user_name: @user.full_name), class: 'btn btn-secondary btn-sm' %>
+        <% end %>
+
+        <%= render partial: "deny_access_modal", locals: {user: @user} %>
+    </nav>
 </div>
 
 <div class="card">
@@ -11,23 +28,23 @@
     <h2><%= @user.full_name %></h2>
 
     <div class="row pt-2 pb-2">
-      <div class="col-2"><strong>Phone number:</strong></div>
-      <div class="col-10"><%= @user.phone_number %></div>
+      <div class="col-sm-2"><strong>Phone number:</strong></div>
+      <div class="col-sm-10"><%= @user.phone_number %></div>
     </div>
 
     <div class="row pt-2 pb-2">
-      <div class="col-2"><strong>Registration facility:</strong></div>
-      <div class="col-10"><%= link_to @user.facility.name, [:admin, @user.facility.facility_group, @user.facility] %></div>
+      <div class="col-sm-2"><strong>Registration facility:</strong></div>
+      <div class="col-sm-10"><%= link_to @user.facility.name, [:admin, @user.facility.facility_group, @user.facility] %></div>
     </div>
 
     <div class="row pt-2 pb-2">
-      <div class="col-2"><strong>Sync status:</strong></div>
-      <div class="col-10"><%= @user.sync_approval_status %></div>
+      <div class="col-sm-2"><strong>Sync status:</strong></div>
+      <div class="col-sm-10"><%= @user.sync_approval_status %></div>
     </div>
 
     <div class="row pt-2 pb-5">
-      <div class="col-2"><strong>Sync reason:</strong></div>
-      <div class="col-10"><%= @user.sync_approval_status_reason %></div>
+      <div class="col-sm-2"><strong>Sync reason:</strong></div>
+      <div class="col-sm-10"><%= @user.sync_approval_status_reason %></div>
     </div>
 
     <div class="card-footer">
@@ -35,24 +52,7 @@
     </div>
 </div>
 
-<div class="pt-3">
-<% if policy(@user).edit? %>
-      <%= link_to 'Edit user', edit_admin_user_path(@user), class: 'btn btn-primary btn-sm' %>
-    <% end %>
-    <% unless @user.sync_approval_status == 'denied' %>
-      <%= link_to 'Deny access', '#deny-access-modal-' + @user.id , 'data-toggle' => 'modal', class: 'btn btn-danger btn-sm' %>
-    <% end %>
-    <% unless @user.sync_approval_status == 'allowed' %>
-      <%= link_to 'Allow access', admin_user_enable_access_path(@user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') }, class: 'btn btn-success btn-sm' %>
-    <% end %>
-    <% if policy(@user.audit_logs).index? %>
-      <%= link_to 'Audit logs', admin_audit_logs_url(user_name: @user.full_name), class: 'btn btn-secondary btn-sm' %>
-    <% end %>
-
-    <%= render partial: "deny_access_modal", locals: {user: @user} %>
-</div>
-
-<div class="pt-4">
+<div>
   <%=
     render 'shared/recent_bp_log',
       blood_pressures: @recent_blood_pressures,
