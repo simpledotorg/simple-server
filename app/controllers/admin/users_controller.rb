@@ -12,7 +12,10 @@ class Admin::UsersController < AdminController
   end
 
   def show
-    @recent_blood_pressures = @user.blood_pressures.includes(:patient, :facility).order(recorded_at: :desc).limit(50)
+    @recent_blood_pressures = @user.blood_pressures
+                                   .includes(:patient, :facility)
+                                   .order("DATE(recorded_at) DESC, recorded_at ASC")
+                                   .limit(50)
   end
 
   def edit
