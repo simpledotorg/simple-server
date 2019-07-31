@@ -69,7 +69,7 @@ class Facility < ApplicationRecord
     results.inject(&:deep_merge)
   end
 
-  def patient_log
+  def recent_blood_pressures
     blood_pressures.includes(:patient).limit(20).order(recorded_at: :desc)
   end
 

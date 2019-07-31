@@ -1,0 +1,29 @@
+<div class="card pr-0 pr-md-3">
+  <h3>Recent BPs</h3>
+  <div class="table-responsive table-compact">
+    <table>
+      <% last_date = nil %>
+      <% blood_pressures.each do |bp| %>
+        <tr>
+          <td>
+            <% if bp.recorded_at.to_date != last_date %>
+              <%= l bp.recorded_at.to_date %></td>
+              <% last_date = bp.recorded_at.to_date %>
+            <% end %>
+          </td>
+          <td><%= bp.recorded_at.strftime("%I:%M %p") %></td>
+          <td class="<%= bp.hypertensive? ? "bp-uncontrolled" : "bp-controlled" %>"><%= bp.to_s %></td>
+          <td>
+            <% if bp.recorded_at.to_date > bp.patient.recorded_at.to_date %>
+              <span class="patient-return">return patient</span>
+            <% else %>
+              <span class="patient-new">new registration</span>
+            <% end %>
+          </td>
+          <td><%= bp.user.full_name %></td>
+        </tr>
+
+      <% end %>
+    </table>
+  </div>
+</div>

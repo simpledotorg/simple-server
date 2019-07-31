@@ -48,7 +48,7 @@ class Analytics::FacilitiesController < AnalyticsController
     {
       cohort: @facility.cohort_analytics,
       dashboard: @facility.dashboard_analytics,
-      patient_log: @facility.patient_log
+      recent_blood_pressures: @facility.recent_blood_pressures
     }
   end
 
