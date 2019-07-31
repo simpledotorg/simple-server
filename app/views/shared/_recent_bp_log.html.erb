@@ -32,7 +32,7 @@
               <span class="patient-new">New registration</span>
             <% end %>
           </td>
-          <td class="nowrap"><%= bp.user.present? ? bp.user.full_name : "unknown" %></td>
+          <td class="nowrap"><%= bp.user.present? ? link_to(bp.user.full_name, [:admin, bp.user]) : "unknown" %></td>
         </tr>
 
       <% end %>
