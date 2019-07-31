@@ -3,22 +3,24 @@
     <table>
       <thead>
         <tr>
-            <th colspan="2" class="pl-1"><h3>Recent BPs</h3></th>  
+            <th colspan="2" class="pl-1"><h3>Recent BPs</h3></th>
             <th class="pl-1">BP</th>
             <th class="pl-1">Patient</th>
             <th class="pl-1">Recorded by</th>
-        </tr>  
+        </tr>
       </thead>
       <% last_date = nil %>
       <% blood_pressures.each do |bp| %>
-        <tr>
+        <% if print_date = (bp.recorded_at.to_date != last_date) %>
+          <% last_date = bp.recorded_at.to_date %>
+        <% end %>
+        <tr class="<%= "date-row" if print_date %>">
           <td class="nowrap">
-            <strong>
-            <% if bp.recorded_at.to_date != last_date %>
-              <%= l bp.recorded_at.to_date %>
-              <% last_date = bp.recorded_at.to_date %>
+            <% if print_date %>
+              <strong>
+                <%= l bp.recorded_at.to_date %>
+              </strong>
             <% end %>
-            </strong>
           </td>
           <td class="nowrap text-muted"><%= bp.recorded_at.strftime("%I:%M %p") %></td>
           <td class="nowrap <%= bp.hypertensive? ? "bp-uncontrolled" : "bp-controlled text-muted" %>"><i class="fas fa-heart mr-2"></i> <%= bp.to_s %></td>
