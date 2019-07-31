@@ -1,12 +1,13 @@
 <div class="card">
+  <h3>Recent BPs</h3>
   <div class="table-responsive table-compact">
     <table>
       <thead>
         <tr>
-            <th colspan="2" class="pl-1"><h3>Recent BPs</h3></th>
-            <th class="pl-1">BP</th>
-            <th class="pl-1">Patient</th>
-            <th class="pl-1">Recorded by</th>
+            <th colspan="2" class="pl-0 pb-3" style="font-weight: normal;">A log of all recent BPs recorded at this facility.</th>
+            <th class="pl-1 pb-3">BP</th>
+            <th class="pl-1 pb-3">Patient</th>
+            <th class="pl-1 pb-3">Recorded by</th>
         </tr>
       </thead>
       <% last_date = nil %>
@@ -15,7 +16,7 @@
           <% last_date = bp.recorded_at.to_date %>
         <% end %>
         <tr class="<%= "date-row" if print_date %>">
-          <td class="nowrap">
+          <td class="nowrap" style="width: 10em;">
             <% if print_date %>
               <strong>
                 <%= l bp.recorded_at.to_date %>
