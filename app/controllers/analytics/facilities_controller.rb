@@ -5,6 +5,10 @@ class Analytics::FacilitiesController < AnalyticsController
   before_action :set_analytics, only: [:show, :whatsapp_graphics]
 
   def show
+    @recent_blood_pressures = @facility.blood_pressures
+                                       .includes(:patient, :user)
+                                       .order("DATE(recorded_at) DESC, recorded_at ASC")
+                                       .limit(50)
   end
 
   def share_anonymized_data
@@ -48,10 +52,6 @@ class Analytics::FacilitiesController < AnalyticsController
     {
       cohort: @facility.cohort_analytics,
       dashboard: @facility.dashboard_analytics,
-      recent_blood_pressures: @facility.blood_pressures
-                                       .includes(:patient, :user)
-                                       .order("DATE(recorded_at) DESC, recorded_at ASC")
-                                       .limit(50)
     }
   end
 
