@@ -1,0 +1,3 @@
+class AppointmentsPage < ApplicationPage
+
+end

@@ -1,4 +1,4 @@
-class FacilityPage < ApplicationPage
+class AdminFacilityPageShow < ApplicationPage
 
   FACILITY_PAGE_HEADING = {css: 'h1.page-title'}.freeze
   UPLOAD_FACILITY_CSV_LINK={css: "nav.page-nav>a.btn-default"}

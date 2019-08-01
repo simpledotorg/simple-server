@@ -1,4 +1,4 @@
-class HomePage < ApplicationPage
+class DashboardPageNavigation < ApplicationPage
 
   LOGOUT_BUTTON = { css: 'a.dropdown-item[href="/admins/sign_out"]'}.freeze
   MANAGE_OPTION = { xpath: "//li/div/a"}.freeze

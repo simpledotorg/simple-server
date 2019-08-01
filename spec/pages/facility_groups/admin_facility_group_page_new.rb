@@ -1,4 +1,4 @@
-class FacilityGroupForm < ApplicationPage
+class AdminFacilityGroupPageNew < ApplicationPage
 
   CREATE_FACILITY_GROUP_BUTTON = { css: "input[value='Create Facility group']"}.freeze
   FACILITY_NAME = { id: 'facility_name' }.freeze
@@ -38,11 +38,7 @@ class FacilityGroupForm < ApplicationPage
     click(CREATE_FACILITY_GROUP_BUTTON)
   end
 
-  def is_delete_facilitygroup_button_present
-    present?(DELETE_FACILITY_GROUP_BUTTON)
-  end
-
-  def click_on_delete_facilitygroup_button
+  def click_on_delete_facility_group_button
     click(DELETE_FACILITY_GROUP_BUTTON)
     # page.accept_alert("OK")
     # present?(SUCCESSFUL_MESSAGE)

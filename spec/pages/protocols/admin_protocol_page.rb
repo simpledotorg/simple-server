@@ -1,4 +1,4 @@
-class ProtocolLandingPage < ApplicationPage
+class AdminProtocolPage < ApplicationPage
 
   ADD_NEW_PROTOCOL = {css: "a.btn-primary"}
 
@@ -10,5 +10,9 @@ class ProtocolLandingPage < ApplicationPage
     within(:xpath, "//a[text()='#{name}']/../../..") do
       find(:css, "a.btn-outline-primary").click
     end
+  end
+
+  def select_protocol(name)
+    find(:xpath ,"//a[text()='#{name}']").click
   end
 end

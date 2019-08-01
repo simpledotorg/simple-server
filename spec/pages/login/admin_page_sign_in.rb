@@ -1,4 +1,4 @@
-class LoginPage < ApplicationPage
+class AdminPageSignIn < ApplicationPage
 
   EMAIL_TEXT_BOX = { id: 'admin_email' }
   PASSWORD_TEXT_BOX = { id: 'admin_password' }.freeze
