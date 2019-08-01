@@ -1,11 +1,6 @@
 class FacilityPolicy < ApplicationPolicy
   def index?
-    user.has_role?(
-      :owner,
-      :organization_owner,
-      :supervisor,
-      :analyst
-    )
+    user.has_role?(:owner, :organization_owner, :supervisor, :analyst)
   end
 
   def show?
