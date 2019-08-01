@@ -10,13 +10,12 @@ RSpec.feature 'Facility page functionality', type: :feature do
 
   let!(:protocol_01) {create(:protocol, name: "testProtocol")}
 
-  login_page = LoginPage.new
-  facility_page = FacilityPage.new
-  facility_group = FacilityGroupForm.new
+  facility_page = AdminFacilityPageShow.new
+  facility_group = AdminFacilityGroupPageNew.new
 
   before(:each) do
     visit root_path
-    login_page.do_login(owner.email, owner.password)
+    sign_in(owner)
     visit admin_facilities_path
   end
 
@@ -54,8 +53,7 @@ RSpec.feature 'Facility page functionality', type: :feature do
 
     facility_page.click_edit_button_present_for_facilitygroup(ihmi_group_bathinda.name)
     expect(page).to have_content('Edit facility group')
-    facility_group.is_delete_facilitygroup_button_present
-    facility_group.click_on_delete_facilitygroup_button
+    facility_group.click_on_delete_facility_group_button
   end
 
   it "owner should be able to edit facility group info " do
