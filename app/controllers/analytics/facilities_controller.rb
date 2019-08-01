@@ -30,7 +30,7 @@ class Analytics::FacilitiesController < AnalyticsController
     today = Date.today
 
     @analytics_data_date = show_for_current_quarter == 'true' ? today : today.prev_quarter.beginning_of_quarter
-    @quarter = show_for_current_quarter == 'true' ? current_quarter : previous_quarter
+    @quarter = show_for_current_quarter == 'true' ? quarters_back(1) : quarters_back(2)
 
     respond_to do |format|
       format.png do
