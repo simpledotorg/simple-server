@@ -33,6 +33,10 @@ class UserPolicy < ApplicationPolicy
     update?
   end
 
+  def request_access?
+    update?
+  end
+
   def reset_otp?
     update?
   end
