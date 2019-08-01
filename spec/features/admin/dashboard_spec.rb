@@ -5,9 +5,11 @@ RSpec.feature 'Verify Dashboard', type: :feature do
     let!(:ihmi) { create(:organization, name: "IHMI") }
     let!(:path) { create(:organization, name: "PATH") }
 
-    login_page = LoginPage.new
+    login_page = AdminPageSignIn.new
     dashboard = DashboardPage.new
-    home_page = HomePage.new
+    dashboard_navigation = DashboardPageNavigation.new
+    org_page=AdminOrganizationsPage.new
+
 
     it 'Verify organization is displayed in dashboard' do
       visit root_path
@@ -22,21 +24,23 @@ RSpec.feature 'Verify Dashboard', type: :feature do
 
       visit root_path
       login_page.do_login(owner.email, owner.password)
-      #total number of organizaiton present in dashborad
-      organization_count = dashboard.get_organization_count
 
-      home_page.select_manage_option("Organizations")
-      organization = OrganizationsPage.new
-      organization.create_new_organization("test", "testDescription")
+      #total number of organizaiton present in dashborad
+      var_organization_count = dashboard.get_organization_count
+
+      dashboard_navigation.select_manage_option("Organizations")
+
+      org_page.click_on_add_organization_button
+      AdminOrganizationsPageNew.new.create_new_organization("test", "testDescription")
 
       #assertion at organization screen
       expect(page).to have_content('Organization was successfully created.')
-      organization.is_organization_name_present("test")
+      org_page.is_organization_name_present("test")
 
-      home_page.select_main_menu_tab("Dashboard")
+      dashboard_navigation.select_main_menu_tab("Dashboard")
       #assertion at dashboard screen
       expect(page).to have_content("test")
-      expect(dashboard.get_organization_count).to eq(organization_count + 1)
+      expect(dashboard.get_organization_count).to eq(var_organization_count + 1)
     end
 
     it 'SignIn as Owner and verify approval request in dashboard' do
