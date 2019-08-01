@@ -32,25 +32,36 @@
 <div class="downloads">
   <h4>Downloads</h4>
   <% if policy(@facility).share_anonymized_data? %>
+    <p>
     <%= link_to analytics_facility_share_path(facility_id: @facility.id),
                 class: "download",
                 data: { confirm: I18n.t('admin.phi_anonymized_download_alert') } do %>
-      <i class="far fa-file-excel" style="margin-right: 4px;"></i> Anonymized Data (XLS)
+      <i class="far fa-file-excel mr-2"></i>Anonymized Data (XLS)
     <% end %>
+    </p>
   <% end %>
-  <br><br>
+  
   <% if policy(@facility).whatsapp_graphics? %>
-    <%= link_to "<i class='far fa-file-image mr-2'></i>Dashboard Snapshot for #{quarter_string(Date.today.prev_quarter)}".html_safe,
+    <p>
+    <%= link_to "<i class='fas fa-camera mr-2'></i>#{quarter_string(Date.today.prev_quarter)} snapshot (PNG)".html_safe,
                 analytics_facility_graphics_path(facility_id: @facility.id,
                                                  show_for_current_quarter: false,
                                                  format: "png"),
                 class: "download" %>
-    <br><br>
-    <%= link_to "<i class='far fa-file-image mr-2'></i>Dashboard Snapshot for Current Quarter".html_safe,
+    and 
+    <%= link_to "<i class='far fa-window-maximize mr-2 ml-2'></i>HTML".html_safe,
+                analytics_facility_graphics_path(facility_id: @facility.id,
+                                                 show_for_current_quarter: false,
+                                                 format: "html"),
+                class: "download" %>
+    </p>
+    <p>
+    <%= link_to "<i class='fas fa-camera mr-2'></i>Current quarter snapshot (PNG)".html_safe,
                 analytics_facility_graphics_path(facility_id: @facility.id,
                                                  show_for_current_quarter: true,
                                                  format: "png"),
                 class: "download" %>
+    </p>
   <% end %>
 </div>
 

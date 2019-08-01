@@ -1,10 +1,8 @@
 <div class="snapshot-header">
+  <div class="snapshot-logo"><%= inline_svg('simple_logo.svg') %></div>
   <div class="snapshot-org">
     <div>
-      <%= quarter_string(date) %>: <%= quarter_range_string(date, '%b') %>
-    </div>
-    <div>
-      <%= organization_name %> <%= t('dashboard.graphics.report_name') %>
+      <strong style="text-transform: uppercase;"><%= t('dashboard.graphics.report_name') %></strong>: <%= quarter_string(date) %>: <%= quarter_range_string(date, '%b') %>
     </div>
   </div>
   <div class="snapshot-location"><%= name %></div>

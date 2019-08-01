@@ -22,27 +22,39 @@
 <div class="downloads">
   <h4>Downloads</h4>
   <% if policy(@organization_district).share_anonymized_data? %>
-    <%= link_to analytics_organization_district_share_path(organization_id: @organization_district.organization.id,
-                                                           district_id: @organization_district.district_name),
-                class: "download",
-                data: { confirm: I18n.t('admin.phi_anonymized_download_alert') } do %>
-      <i class="far fa-file-excel" style="margin-right: 4px;"></i> Anonymized Data (XLS)
-    <% end %>
+    <p>
+        <%= link_to analytics_organization_district_share_path(organization_id: @organization_district.organization.id,
+                                                               district_id: @organization_district.district_name),
+                    class: "download",
+                    data: { confirm: I18n.t('admin.phi_anonymized_download_alert') } do %>
+          <i class="far fa-file-excel mr-2"></i>Anonymized data (XLS)
+        <% end %>
+    </p>
   <% end %>
-  <br><br>
+  
   <% if policy(@organization_district).whatsapp_graphics? %>
-    <%= link_to "<i class='far fa-file-image mr-2'></i>Dashboard Snapshot for #{quarter_string(Date.today.prev_quarter)}".html_safe,
+    <p>
+    <%= link_to "<i class='fas fa-camera mr-2'></i>#{quarter_string(Date.today.prev_quarter)} snapshot (PNG)".html_safe,
                 analytics_organization_district_graphics_path(organization_id: @organization_district.organization.id,
                                                               district_id: @organization_district.district_name,
                                                               show_for_current_quarter: false,
                                                               format: "png"),
                 class: "download" %>
-    <br><br>
-    <%= link_to "<i class='far fa-file-image mr-2'></i>Dashboard Snapshot for Current Quarter".html_safe,
+    and 
+    <%= link_to "<i class='far fa-window-maximize mr-2 ml-2'></i>HTML".html_safe,
+                analytics_organization_district_graphics_path(organization_id: @organization_district.organization.id,
+                                                              district_id: @organization_district.district_name,
+                                                              show_for_current_quarter: false,
+                                                              format: "html"),
+                class: "download" %>
+    </p>
+    <p>
+    <%= link_to "<i class='fas fa-camera mr-2'></i>Current quarter snapshot (PNG)".html_safe,
                 analytics_organization_district_graphics_path(organization_id: @organization_district.organization.id,
                                                               district_id: @organization_district.district_name,
                                                               show_for_current_quarter: true,
                                                               format: "png"),
                 class: "download" %>
+    </p>
   <% end %>
 </div>
