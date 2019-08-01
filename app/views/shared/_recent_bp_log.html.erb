@@ -1,57 +1,66 @@
-<div class="card">
+<div class="card" id="recent-bps">
   <h3>Recent BPs</h3>
-  <div class="table-responsive table-compact">
-    <table>
-      <thead>
-        <tr>
-            <th colspan="2" class="pl-0 pb-3" style="font-weight: normal;">
-              A log of the last <%= blood_pressures.size %> BPs recorded
+
+  <% if blood_pressures.any? %>
+    <div class="table-responsive table-compact">
+      <table>
+        <thead>
+          <tr>
+              <th colspan="2" class="pl-0 pb-3" style="font-weight: normal;">
+                A log of the last <%= blood_pressures.size %> BPs recorded
+                <% if display_model == :facility %>
+                  at this facility.
+                <% elsif display_model == :user %>
+                  by this user.
+                <% end %>
+              </th>
+              <th class="pl-1 pb-3">BP</th>
+              <th class="pl-1 pb-3">Patient</th>
               <% if display_model == :facility %>
-                at this facility.
-              <% elsif display_model == :user %>
-                by this user.
+                <th class="pl-1 pb-3">Recorded by</th>
               <% end %>
-            </th>
-            <th class="pl-1 pb-3">BP</th>
-            <th class="pl-1 pb-3">Patient</th>
+              <% if display_model == :user %>
+                <th class="pl-1 pb-3">Facility</th>
+              <% end %>
+          </tr>
+        </thead>
+        <% last_date = nil %>
+        <% blood_pressures.each do |bp| %>
+          <% if print_date = (bp.recorded_at.to_date != last_date) %>
+            <% last_date = bp.recorded_at.to_date %>
+          <% end %>
+          <tr class="<%= "date-row" if print_date %>">
+            <td class="nowrap" style="width: 10em; <%= "border: none;" if !print_date %>">
+              <% if print_date %>
+                <strong>
+                  <%= l bp.recorded_at.to_date %>
+                </strong>
+              <% end %>
+            </td>
+            <td class="nowrap text-muted"><%= bp.recorded_at.strftime("%I:%M %p") %></td>
+            <td class="nowrap <%= bp.hypertensive? ? "bp-uncontrolled" : "bp-controlled text-muted" %>"><i class="fas fa-heart mr-2"></i> <%= bp.to_s %></td>
+            <td class="nowrap">
+              <% if bp.recorded_at.to_date > bp.patient.recorded_at.to_date %>
+                <span class="patient-return text-muted">Follow-up patient</span>
+              <% else %>
+                <span class="patient-new">New registration</span>
+              <% end %>
+            </td>
             <% if display_model == :facility %>
-              <th class="pl-1 pb-3">Recorded by</th>
+              <td class="nowrap"><%= bp.user.present? ? link_to(bp.user.full_name, [:admin, bp.user]) : "unknown" %></td>
             <% end %>
             <% if display_model == :user %>
-              <th class="pl-1 pb-3">Facility</th>
+              <td class="nowrap"><%= bp.facility.present? ? link_to(bp.facility.name, analytics_facility_path(bp.facility)) : "unknown" %></td>
             <% end %>
-        </tr>
-      </thead>
-      <% last_date = nil %>
-      <% blood_pressures.each do |bp| %>
-        <% if print_date = (bp.recorded_at.to_date != last_date) %>
-          <% last_date = bp.recorded_at.to_date %>
+          </tr>
         <% end %>
-        <tr class="<%= "date-row" if print_date %>">
-          <td class="nowrap" style="width: 10em; <%= "border: none;" if !print_date %>">
-            <% if print_date %>
-              <strong>
-                <%= l bp.recorded_at.to_date %>
-              </strong>
-            <% end %>
-          </td>
-          <td class="nowrap text-muted"><%= bp.recorded_at.strftime("%I:%M %p") %></td>
-          <td class="nowrap <%= bp.hypertensive? ? "bp-uncontrolled" : "bp-controlled text-muted" %>"><i class="fas fa-heart mr-2"></i> <%= bp.to_s %></td>
-          <td class="nowrap">
-            <% if bp.recorded_at.to_date > bp.patient.recorded_at.to_date %>
-              <span class="patient-return text-muted">Return patient</span>
-            <% else %>
-              <span class="patient-new">New registration</span>
-            <% end %>
-          </td>
-          <% if display_model == :facility %>
-            <td class="nowrap"><%= bp.user.present? ? link_to(bp.user.full_name, [:admin, bp.user]) : "unknown" %></td>
-          <% end %>
-          <% if display_model == :user %>
-            <td class="nowrap"><%= bp.facility.present? ? link_to(bp.facility.name, analytics_facility_path(bp.facility)) : "unknown" %></td>
-          <% end %>
-        </tr>
-      <% end %>
-    </table>
-  </div>
+      </table>
+    </div>
+  <% else %>
+    <p class="text-muted mb-0">
+      <i class="fas fa-chevron-left"></i>
+      No BPs recorded
+      <i class="fas fa-chevron-right"></i>
+    </p>
+  <% end %>
 </div>
