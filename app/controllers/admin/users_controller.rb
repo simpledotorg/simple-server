@@ -1,5 +1,6 @@
 class Admin::UsersController < AdminController
   before_action :set_user, except: [:index, :new, :create]
+  around_action :set_time_zone, only: [:show]
 
   def index
     authorize User
@@ -63,6 +64,11 @@ class Admin::UsersController < AdminController
   def set_user
     @user = User.find(params[:id] || params[:user_id])
     authorize @user
+  end
+
+  def set_time_zone
+    time_zone = ENV['ANALYTICS_TIME_ZONE'] || AnalyticsController::DEFAULT_ANALYTICS_TIME_ZONE
+    Time.use_zone(time_zone) { yield }
   end
 
   def user_params
