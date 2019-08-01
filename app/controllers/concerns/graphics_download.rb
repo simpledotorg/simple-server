@@ -16,7 +16,7 @@ module GraphicsDownload
     end
 
     def graphics_filename(*args)
-      "whatapp_graphics_#{args.join('_')}.png"
+      "dashboard_snapshot_#{args.join('_')}.png"
     end
   end
 end
