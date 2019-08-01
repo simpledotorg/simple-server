@@ -40,9 +40,16 @@
   <% end %>
   <br><br>
   <% if policy(@facility).whatsapp_graphics? %>
-    <%= link_to "<i class='far fa-file-image mr-2'></i>WhatsApp Graphics".html_safe,
+    <%= link_to "<i class='far fa-file-image mr-2'></i>WhatsApp Snapshot for #{quarter_string(Date.today.prev_quarter)}".html_safe,
                 analytics_facility_graphics_path(facility_id: @facility.id,
-                                                              format: "png"),
+                                                 show_for_current_quarter: false,
+                                                 format: "png"),
+                class: "download" %>
+    <br><br>
+    <%= link_to "<i class='far fa-file-image mr-2'></i>WhatsApp Snapshot for Current Quarter".html_safe,
+                analytics_facility_graphics_path(facility_id: @facility.id,
+                                                 show_for_current_quarter: true,
+                                                 format: "png"),
                 class: "download" %>
   <% end %>
 </div>

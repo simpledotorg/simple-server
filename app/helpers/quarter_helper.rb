@@ -7,11 +7,13 @@ module QuarterHelper
     quarter(Date.today)
   end
 
+  def previous_quarter
+    quarter(Date.today.prev_quarter)
+  end
+
   def quarter_string(date)
     year = date.year
     quarter = quarter(date)
-    start_month = quarter_start(year, quarter).strftime('%b')
-    end_month = quarter_end(year, quarter).strftime('%b')
 
     "Q#{quarter} #{year}"
   end
