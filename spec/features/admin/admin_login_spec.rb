@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.feature 'Owner Login as Admin', type: :feature do
     let(:owner) {create(:admin)}
     let(:counsellor) {create(:admin, :counsellor)}
-    login_page = LoginPage.new
-    home_page = HomePage.new
+    login_page = AdminPageSignIn.new
+    dashboard_navigation = DashboardPageNavigation.new
 
     context "owners login and logout" do
       before(:each) do
@@ -13,12 +13,12 @@ RSpec.feature 'Owner Login as Admin', type: :feature do
       end
 
       it 'Logs in ' do
-        home_page.validate_owners_home_page
+        dashboard_navigation.validate_owners_home_page
         expect(page).to have_content(owner.email)
       end
 
       it 'log Out' do
-        home_page.click_logout_button
+        dashboard_navigation.click_logout_button
         login_page.is_successful_logout_message_present
         login_page.click_successful_message_cross_button
       end
@@ -35,7 +35,7 @@ RSpec.feature 'Owner Login as Admin', type: :feature do
       end
 
       it 'log Out' do
-        home_page.click_logout_button
+        dashboard_navigation.click_logout_button
         login_page.is_successful_logout_message_present
         login_page.click_successful_message_cross_button
       end
