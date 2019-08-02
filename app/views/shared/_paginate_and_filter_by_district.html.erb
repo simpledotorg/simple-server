@@ -1,0 +1,27 @@
+<%= bootstrap_form_with(url: form_url, method: :get, layout: :horizontal, class: "mt-4") do |form| %>
+  <div class="form-row">
+    <div id="district-selector" class="form-group col-md-6">
+      <%= form.select :district,
+                      current_admin.facilities.sort_by(&:district).map { |facility| [facility.district, facility.district] }.uniq,
+                      {
+                          hide_label: true,
+                          include_blank: "All districts",
+                          selected: district,
+                          wrapper: false
+                      },
+                      onchange: "this.form.submit();"
+      %>
+    </div>
+    <div id="limit-selector" class="form-group col-md-3">
+      <%= form.select :per_page,
+                      ["20 per page", "50 per page", "All"],
+                      {
+                          hide_label: true,
+                          selected: per_page,
+                      },
+                      onchange: "this.form.submit();"
+      %>
+    </div>
+  </div>
+  <%= form.submit "Filter", style: "position: absolute; left: -9999px; width: 1px; height: 1px;" %>
+<% end %>
