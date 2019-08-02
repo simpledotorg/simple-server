@@ -32,9 +32,14 @@ class ExotelAPIService
   end
 
   def get_phone_number_details(phone_number)
-    phone_number_details_response = JSON.parse(execute_get(phone_number_details_url(phone_number)).body)
-    exotel_whitelist_details_response = JSON.parse(execute_get(whitelist_details_url(phone_number)).body)
-
+    phone_number_details_raw_response = execute_get(phone_number_details_url(phone_number))
+    if phone_number_details_raw_response.status == 200
+      phone_number_details_response = JSON.parse(phone_number_details_raw_response.body)
+      exotel_whitelist_details_response = JSON.parse(execute_get(whitelist_details_url(phone_number)).body)
+    else
+      phone_number_details_response = {}
+      exotel_whitelist_details_response = {}
+    end
     {
       dnd_status: EXOTEL_TRUTHY_STRINGS.include?(phone_number_details_response.dig('Numbers', 'DND')),
       phone_type: parse_response_field(phone_number_details_response.dig('Numbers', 'Type'), :invalid),
