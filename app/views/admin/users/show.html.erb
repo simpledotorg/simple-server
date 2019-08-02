@@ -9,10 +9,14 @@
             <%= link_to 'Edit user', edit_admin_user_path(@user), class: 'btn btn-primary btn-sm' %>
         <% end %>
         <% unless @user.sync_approval_status == 'denied' %>
+          <% if policy(@user).disable_access? %>
             <%= link_to 'Deny access', '#deny-access-modal-' + @user.id , 'data-toggle' => 'modal', class: 'btn btn-danger btn-sm' %>
+          <% end %>
         <% end %>
         <% unless @user.sync_approval_status == 'allowed' %>
+          <% if policy(@user).enable_access? %>
             <%= link_to 'Allow access', admin_user_enable_access_path(@user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') }, class: 'btn btn-success btn-sm' %>
+          <% end %>
         <% end %>
         <% if policy(@user.audit_logs).index? %>
             <%= link_to 'Audit logs', admin_audit_logs_url(user_name: @user.full_name), class: 'btn btn-secondary btn-sm' %>
