@@ -16,8 +16,9 @@ FactoryBot.define do
     sync_approval_status { User.sync_approval_statuses[:requested] }
 
     after :create do |user, options|
-      user.sync_approval_status = User.sync_approval_statuses[:allowed]
-      user.sync_approval_status_reason = 'User is allowed'
+      if user.sync_approval_status == User.sync_approval_statuses[:allowed]
+        user.sync_approval_status_reason = 'User is allowed'
+      end
 
       phone_number_authentication = create(
         :phone_number_authentication,
@@ -40,6 +41,7 @@ FactoryBot.define do
 
     trait :sync_requested do
       sync_approval_status { User.sync_approval_statuses[:requested] }
+      sync_approval_status_reason { 'New registration' }
     end
 
     trait :sync_allowed do
