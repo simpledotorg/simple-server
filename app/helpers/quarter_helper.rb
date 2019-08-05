@@ -7,9 +7,10 @@ module QuarterHelper
     quarter(Date.today)
   end
 
-  def quarters_back(n)
-    quarter = (current_quarter - (n % 4)) % 4
-    quarter == 0 ? 4 : quarter
+  def previous_quarter_and_year
+    return [4, current_year - 1] if current_quarter == 1
+
+    [current_quarter - 1, current_year]
   end
 
   def quarter_string(date)

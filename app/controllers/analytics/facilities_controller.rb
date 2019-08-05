@@ -7,9 +7,9 @@ class Analytics::FacilitiesController < AnalyticsController
 
   def show
     @recent_blood_pressures = @facility.blood_pressures
-                                       .includes(:patient, :user)
-                                       .order("DATE(recorded_at) DESC, recorded_at ASC")
-                                       .limit(50)
+                                .includes(:patient, :user)
+                                .order("DATE(recorded_at) DESC, recorded_at ASC")
+                                .limit(50)
   end
 
   def share_anonymized_data
@@ -26,24 +26,9 @@ class Analytics::FacilitiesController < AnalyticsController
   end
 
   def whatsapp_graphics
-    show_for_current_quarter = params[:show_for_current_quarter]
-    today = Date.today
-
-    @analytics_data_date = show_for_current_quarter == 'true' ? today : today.prev_quarter.beginning_of_quarter
-    @quarter = show_for_current_quarter == 'true' ? quarters_back(1) : quarters_back(2)
-
-    respond_to do |format|
-      format.png do
-        filename = graphics_filename(
-          quarter_string(@analytics_data_date).split.join('_'),
-          @facility.district,
-          @facility.name,
-          Date.today)
-
-        render_as_png('/analytics/facilities/graphics/image_template', filename)
-      end
-      format.html { render }
-    end
+    whatsapp_graphics_handler(
+      @facility.organization.name,
+      @facility.name)
   end
 
   private

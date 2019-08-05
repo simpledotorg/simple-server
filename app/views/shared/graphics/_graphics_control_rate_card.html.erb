@@ -1,11 +1,11 @@
 <div class="card">
   <div class="snapshot-title">
     <%= t('dashboard.graphics.graphics_title_html',
-          current_quarter_string: quarter_string(@analytics_data_date),
-          previous_quarter_string: quarter_string(@analytics_data_date.prev_quarter),
+          current_quarter_string: quarter_string(date),
+          previous_quarter_string: quarter_string(date.prev_quarter),
           patients_in_previous_quarter: @analytics.dig(
               :cohort,
-              @analytics_data_date.prev_quarter.beginning_of_quarter,
+              date.prev_quarter.beginning_of_quarter,
               :registered) || 0
         ) %>
   </div>

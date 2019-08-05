@@ -42,26 +42,9 @@
   <% end %>
   
   <% if policy(@facility).whatsapp_graphics? %>
-    <p>
-    <%= link_to "<i class='fas fa-camera mr-2'></i>#{quarter_string(Date.today.prev_quarter)} snapshot (PNG)".html_safe,
-                analytics_facility_graphics_path(facility_id: @facility.id,
-                                                 show_for_current_quarter: false,
-                                                 format: "png"),
-                class: "download" %>
-    and 
-    <%= link_to "<i class='far fa-window-maximize mr-2 ml-2'></i>HTML".html_safe,
-                analytics_facility_graphics_path(facility_id: @facility.id,
-                                                 show_for_current_quarter: false,
-                                                 format: "html"),
-                class: "download" %>
-    </p>
-    <p>
-    <%= link_to "<i class='fas fa-camera mr-2'></i>Current quarter snapshot (PNG)".html_safe,
-                analytics_facility_graphics_path(facility_id: @facility.id,
-                                                 show_for_current_quarter: true,
-                                                 format: "png"),
-                class: "download" %>
-    </p>
+    <%= render "shared/graphics/graphics_download_links",
+               graphics_path: -> (options) { analytics_facility_graphics_path(options) },
+               options: { facility_id: @facility.id } %>
   <% end %>
 </div>
 

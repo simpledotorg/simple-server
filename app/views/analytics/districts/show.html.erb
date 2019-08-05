@@ -8,53 +8,32 @@
   <h1><%= @organization_district.district_name %></h1>
 </div>
 
-<%= render 'shared/cohort_charts', cohort_analytics: @analytics[:cohort] %>
+<%= render 'shared/cohort_charts', cohort_analytics: @analytics[:cohort], quarter: current_quarter, year: current_year %>
 
-<%=
-  render 'shared/analytics_table',
-         dashboard_analytics: @analytics[:dashboard],
-         row_resource: Facility.order(:name),
-         row_resource_description: "Facilities",
-         row_resource_display_field: :name,
-         row_resource_link: :analytics_facility_path
-%>
+<%= render 'shared/analytics_table',
+           dashboard_analytics: @analytics[:dashboard],
+           row_resource: Facility.order(:name),
+           row_resource_description: "Facilities",
+           row_resource_display_field: :name,
+           row_resource_link: :analytics_facility_path %>
 
 <div class="downloads">
   <h4>Downloads</h4>
   <% if policy(@organization_district).share_anonymized_data? %>
     <p>
-        <%= link_to analytics_organization_district_share_path(organization_id: @organization_district.organization.id,
-                                                               district_id: @organization_district.district_name),
-                    class: "download",
-                    data: { confirm: I18n.t('admin.phi_anonymized_download_alert') } do %>
-          <i class="far fa-file-excel mr-2"></i>Anonymized data (XLS)
-        <% end %>
+      <%= link_to analytics_organization_district_share_path(organization_id: @organization_district.organization.id,
+                                                             district_id: @organization_district.district_name),
+                  class: "download",
+                  data: { confirm: I18n.t('admin.phi_anonymized_download_alert') } do %>
+        <i class="far fa-file-excel mr-2"></i>Anonymized data (XLS)
+      <% end %>
     </p>
   <% end %>
-  
+
   <% if policy(@organization_district).whatsapp_graphics? %>
-    <p>
-    <%= link_to "<i class='fas fa-camera mr-2'></i>#{quarter_string(Date.today.prev_quarter)} snapshot (PNG)".html_safe,
-                analytics_organization_district_graphics_path(organization_id: @organization_district.organization.id,
-                                                              district_id: @organization_district.district_name,
-                                                              show_for_current_quarter: false,
-                                                              format: "png"),
-                class: "download" %>
-    and 
-    <%= link_to "<i class='far fa-window-maximize mr-2 ml-2'></i>HTML".html_safe,
-                analytics_organization_district_graphics_path(organization_id: @organization_district.organization.id,
-                                                              district_id: @organization_district.district_name,
-                                                              show_for_current_quarter: false,
-                                                              format: "html"),
-                class: "download" %>
-    </p>
-    <p>
-    <%= link_to "<i class='fas fa-camera mr-2'></i>Current quarter snapshot (PNG)".html_safe,
-                analytics_organization_district_graphics_path(organization_id: @organization_district.organization.id,
-                                                              district_id: @organization_district.district_name,
-                                                              show_for_current_quarter: true,
-                                                              format: "png"),
-                class: "download" %>
-    </p>
+    <%= render "shared/graphics/graphics_download_links",
+               graphics_path: -> (options) { analytics_organization_district_graphics_path(options) },
+               options: { organization_id: @organization_district.organization.id,
+                          district_id: @organization_district.district_name } %>
   <% end %>
 </div>

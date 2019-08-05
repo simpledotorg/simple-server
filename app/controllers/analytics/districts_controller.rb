@@ -24,24 +24,9 @@ class Analytics::DistrictsController < AnalyticsController
   end
 
   def whatsapp_graphics
-    show_for_current_quarter = params[:show_for_current_quarter]
-    today = Date.today
-
-    @analytics_data_date = show_for_current_quarter == 'true' ? today : today.prev_quarter.beginning_of_quarter
-    @quarter = show_for_current_quarter == 'true' ? quarters_back(1) : quarters_back(2)
-
-    respond_to do |format|
-      format.png do
-        filename = graphics_filename(
-          quarter_string(@analytics_data_date).split.join('_'),
-          @organization_district.organization.name,
-          @organization_district.district_name,
-          Date.today)
-
-        render_as_png('/analytics/districts/graphics/image_template', filename)
-      end
-      format.html { render }
-    end
+    whatsapp_graphics_handler(
+      @organization_district.organization.name,
+      @organization_district.district_name)
   end
 
   private
