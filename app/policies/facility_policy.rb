@@ -1,10 +1,10 @@
 class FacilityPolicy < ApplicationPolicy
   def index?
-    user.owner? || user.organization_owner? || user.supervisor?
+    user.has_role?(:owner, :organization_owner, :supervisor, :analyst)
   end
 
   def show?
-    user.owner? || admin_can_access?(:organization_owner) || admin_can_access?(:supervisor)
+    user.owner? || (user.has_role?(:organization_owner, :analyst, :supervisor) && belongs_to_admin?)
   end
 
   def share_anonymized_data?
@@ -24,7 +24,7 @@ class FacilityPolicy < ApplicationPolicy
   end
 
   def update?
-    user.owner? || admin_can_access?(:organization_owner)
+    user.owner? || (user.organization_owner? && belongs_to_admin?)
   end
 
   def edit?
@@ -32,21 +32,11 @@ class FacilityPolicy < ApplicationPolicy
   end
 
   def destroy?
-    destroyable? && (user.owner? || admin_can_access?(:organization_owner))
+    destroyable? && (user.owner? || (user.organization_owner? && belongs_to_admin?))
   end
 
   def upload?
     user.owner?
-  end
-
-  private
-
-  def destroyable?
-    record.registered_patients.none? && record.blood_pressures.none?
-  end
-
-  def admin_can_access?(role)
-    user.role == role.to_s && user.facilities.include?(record)
   end
 
   class Scope
@@ -61,4 +51,15 @@ class FacilityPolicy < ApplicationPolicy
       scope.where(facility_group: user.facility_groups)
     end
   end
+
+  private
+
+  def destroyable?
+    record.registered_patients.none? && record.blood_pressures.none?
+  end
+
+  def belongs_to_admin?
+    user.facilities.include?(record)
+  end
+
 end

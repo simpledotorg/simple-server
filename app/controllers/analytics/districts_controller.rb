@@ -1,5 +1,6 @@
 class Analytics::DistrictsController < AnalyticsController
   include GraphicsDownload
+  include QuarterHelper
 
   before_action :set_organization_district
   before_action :set_analytics, only: [:show, :whatsapp_graphics]
@@ -23,17 +24,9 @@ class Analytics::DistrictsController < AnalyticsController
   end
 
   def whatsapp_graphics
-    respond_to do |format|
-      format.png do
-        filename = graphics_filename(
-          @organization_district.organization.name,
-          @organization_district.district_name,
-          Date.today)
-
-        render_as_png('/analytics/districts/graphics/image_template', filename)
-      end
-      format.html { render }
-    end
+    whatsapp_graphics_handler(
+      @organization_district.organization.name,
+      @organization_district.district_name)
   end
 
   private
