@@ -1,16 +1,19 @@
 class AnalyticsController < AdminController
-  before_action :set_analytics_timezone
-  after_action :reset_analytics_timezone
-
+  around_action :set_time_zone
   before_action :set_month, only: [:graphics]
 
   DEFAULT_ANALYTICS_TIME_ZONE = 'Asia/Kolkata'
 
-  def set_analytics_timezone
-    Groupdate.time_zone = ENV['ANALYTICS_TIME_ZONE'] || DEFAULT_ANALYTICS_TIME_ZONE
-  end
+  def set_time_zone
+    time_zone = ENV['ANALYTICS_TIME_ZONE'] || DEFAULT_ANALYTICS_TIME_ZONE
 
-  def reset_analytics_timezone
+    Groupdate.time_zone = time_zone
+
+    Time.use_zone(time_zone) do
+      yield
+    end
+
+    # Make sure we reset the timezone
     Groupdate.time_zone = "UTC"
   end
 

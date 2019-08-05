@@ -11,18 +11,6 @@ RSpec.describe FacilityPolicy do
   let(:supervisor) { FactoryBot.create(:admin, :supervisor, admin_access_controls: [AdminAccessControl.new(access_controllable: facility_group)]) }
   let(:analyst) { FactoryBot.create(:admin, :analyst) }
 
-  permissions :show? do
-    it "denies organization owners for facilities outside their organizations" do
-      facility = FactoryBot.create(:facility)
-      expect(subject).not_to permit(organization_owner, facility)
-    end
-
-    it "denies supervisors for facilities outside their facility group" do
-      facility = FactoryBot.create(:facility)
-      expect(subject).not_to permit(supervisor, facility)
-    end
-  end
-
   permissions :index?, :show? do
     it "permits owners" do
       expect(subject).to permit(owner, Facility)
@@ -38,8 +26,21 @@ RSpec.describe FacilityPolicy do
       expect(subject).to permit(supervisor, facility)
     end
 
-    it "denies analysts" do
-      expect(subject).not_to permit(analyst, Facility)
+    it "permits analysts for facilities in their facility group" do
+      facility = FactoryBot.create(:facility, facility_group: analyst.facility_groups.first)
+      expect(subject).to permit(analyst, facility)
+    end
+  end
+
+  permissions :show? do
+    it "denies organization owners for facilities outside their organizations" do
+      facility = FactoryBot.create(:facility)
+      expect(subject).not_to permit(organization_owner, facility)
+    end
+
+    it "denies supervisors for facilities outside their facility group" do
+      facility = FactoryBot.create(:facility)
+      expect(subject).not_to permit(supervisor, facility)
     end
   end
 

@@ -10,7 +10,7 @@ RSpec.describe UserPolicy do
   let(:owner) { FactoryBot.create(:admin, :owner) }
   let(:organization_owner) { FactoryBot.create(:admin, :organization_owner, admin_access_controls: [AdminAccessControl.new(access_controllable: organization)]) }
   let(:supervisor) { FactoryBot.create(:admin, :supervisor, admin_access_controls: [AdminAccessControl.new(access_controllable: facility_group)]) }
-  let(:analyst) { FactoryBot.create(:admin, :analyst) }
+  let(:analyst) { FactoryBot.create(:admin, :supervisor, admin_access_controls: [AdminAccessControl.new(access_controllable: facility_group)]) }
   let(:counsellor) { FactoryBot.create(:admin, :counsellor) }
 
   permissions :index? do
@@ -26,8 +26,8 @@ RSpec.describe UserPolicy do
       expect(subject).to permit(owner, User)
     end
 
-    it "denies analysts" do
-      expect(subject).not_to permit(analyst, User)
+    it "permits analysts" do
+      expect(subject).to permit(analyst, User)
     end
 
     it "denies counsellors" do
@@ -57,7 +57,7 @@ RSpec.describe UserPolicy do
     end
   end
 
-  permissions :show?, :update?, :edit?, :disable_access?, :enable_access?, :reset_otp? do
+  permissions :show? do
     it "permits owners" do
       expect(subject).to permit(owner, User)
     end
@@ -82,8 +82,44 @@ RSpec.describe UserPolicy do
       expect(subject).not_to permit(supervisor, user)
     end
 
-    it "denies supervisors" do
-      expect(subject).not_to permit(supervisor, User)
+    it "permits analysts for facilities in their facility group" do
+      user = FactoryBot.create(:user, registration_facility: analyst.facilities.first)
+      expect(subject).to permit(analyst, user)
+    end
+
+    it "denies analysts for facilities outside their facility group" do
+      user = FactoryBot.create(:user)
+      expect(subject).not_to permit(analyst, user)
+    end
+
+    it "denies counsellors" do
+      expect(subject).not_to permit(counsellor, User)
+    end
+  end
+
+  permissions :update?, :edit?, :disable_access?, :enable_access?, :reset_otp? do
+    it "permits owners" do
+      expect(subject).to permit(owner, User)
+    end
+
+    it "permits organization owners for facilities in their organizations" do
+      user = FactoryBot.create(:user, registration_facility: organization_owner.facilities.first)
+      expect(subject).to permit(organization_owner, user)
+    end
+
+    it "denies organization owners for facilities outside their organizations" do
+      user = FactoryBot.create(:user)
+      expect(subject).not_to permit(organization_owner, user)
+    end
+
+    it "permits supervisors for facilities in their facility group" do
+      user = FactoryBot.create(:user, registration_facility: supervisor.facilities.first)
+      expect(subject).to permit(supervisor, user)
+    end
+
+    it "denies supervisors for facilities outside their facility group" do
+      user = FactoryBot.create(:user)
+      expect(subject).not_to permit(supervisor, user)
     end
 
     it "denies analysts" do
@@ -131,7 +167,7 @@ RSpec.describe UserPolicy::Scope do
              :supervisor,
              admin_access_controls: [AdminAccessControl.new(access_controllable: facility_group)])
     }
-    it "resolves users of their user groups" do
+    it "resolves users of their facility groups" do
       resolved_records = subject.new(supervisor, User.all).resolve
       expect(resolved_records).to match_array([user_1, user_2])
     end
@@ -143,9 +179,9 @@ RSpec.describe UserPolicy::Scope do
              :analyst,
              admin_access_controls: [AdminAccessControl.new(access_controllable: facility_group)])
     }
-    it "resolves to no users" do
+    it "resolves users of their facility groups" do
       resolved_records = subject.new(analyst, User.all).resolve
-      expect(resolved_records).to be_empty
+      expect(resolved_records).to match_array([user_1, user_2])
     end
   end
 
