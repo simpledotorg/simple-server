@@ -6,5 +6,9 @@
 </head>
 
 <body style="margin: 0; padding: 0;">
-  <%= render 'analytics/districts/graphics/partial' %>
+<%= render 'shared/graphics/graphics_partial',
+           cohort_analytics: @analytics[:cohort],
+           organization_name: @organization_name,
+           name: @name,
+           quarter: @quarter, year: @year %>
 </body>
