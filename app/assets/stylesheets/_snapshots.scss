@@ -1,0 +1,143 @@
+/*****************
+Snapshot UI
+*****************/
+
+.snapshot {
+  width: 420px;
+  position: relative;
+  background: $blue-dark;
+  padding: 8px 8px 2px 8px;
+  font-size: 16px;
+  line-height: 1.3;
+  zoom: 2;
+}
+
+.snapshot-header {
+  color: #fff;
+  font-weight: bold;
+  padding: 8px;
+}
+
+.snapshot-org {
+  color: rgba(255,255,255,1);
+  display: block;
+}
+
+.snapshot-org div {
+  color: rgba(255,255,255,1);
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.snapshot-location {
+  font-size: 32px;
+  white-space: nowrap;
+  margin-top: 14px;
+}
+
+.snapshot-logo {
+    float: right;
+}
+
+.snapshot-logo svg {
+    width: 40px;
+    height: 40px;
+}
+
+.snapshot-desc {
+  color: rgba(255,255,255,0.6);
+  font-weight: normal;
+  margin: 4px 0 0 0;
+}
+
+.snapshot-title {
+  font-size: 20px;
+  font-weight: 300;
+}
+
+.snapshot-title b {
+    font-weight: bold;
+}
+
+.snapshot .split-bars {
+  margin-bottom: -16px;
+}
+
+.snapshot .bar-3 {
+  border-radius: 4px 4px 0 0;
+}
+
+.snapshot .bar-2 {
+  border-radius: 0;
+  width: 100px;
+}
+
+.snapshot .bar-1 {
+  border-radius: 0;
+}
+
+.snapshot .bar {
+  font-weight: bold;
+  font-size: 16px;
+  padding: 0;
+}
+
+.snapshot-key {
+  text-align: left;
+  position: relative;
+}
+
+.snapshot-key div {
+  padding-left: 20px;
+  text-align: left;
+  line-height: 1.2;
+}
+
+.snapshot-key div:before {
+  content: "";
+  width: 20px;
+  height: 1px;
+  position: absolute;
+  top: 50%;
+  left: -5px;
+  opacity: 0.5;
+}
+
+.snapshot-didntattend div:before { background: $grey-dark; }
+.snapshot-uncontrolled div:before { background: $red-dark; }
+.snapshot-controlled div:before { background: $green-dark; }
+
+.snapshot-didntattend { color: $grey-dark; }
+.snapshot-uncontrolled { color: $red-dark; }
+.snapshot-controlled { color: $green; }
+
+.snapshot-table {
+  margin-bottom: -8px;
+  margin-top: -4px;
+}
+
+.snapshot-table thead th {
+  padding-bottom: 10px;
+  font-weight: 300;
+}
+
+.snapshot-table tbody td {
+  border-top: 1px solid $grey-light;
+  padding: 6px 0;
+}
+
+.snapshot-quarter {
+  white-space: nowrap;
+  width: 120px;
+  font-weight: bold;
+}
+
+.snapshot .split-bars i {
+  font-size: 75%;
+  position: relative;
+  top: -1px;
+}
+
+.snapshot .green {
+  color: $green;
+}

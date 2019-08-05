@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <%= inline_stylesheet('application.css') %>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700|Roboto:400,700" rel="stylesheet">
+</head>
+
+<body style="margin: 0; padding: 0;">
+<%= render 'shared/graphics/graphics_partial',
+           cohort_analytics: @analytics[:cohort],
+           organization_name: @organization_name,
+           name: @name,
+           quarter: @quarter, year: @year %>
+</body>

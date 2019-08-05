@@ -33,6 +33,8 @@ describe 'Communication V2 API', swagger_doc: 'v2/swagger.json' do
         let(:communications) { { communications: (1..3).map { build_invalid_communication_payload } } }
         run_test!
       end
+
+      include_examples 'returns 403 for post requests for forbidden users', :communications
     end
 
     get 'Syncs communication data from server to device.' do
@@ -68,6 +70,8 @@ describe 'Communication V2 API', swagger_doc: 'v2/swagger.json' do
           assert_response_matches_metadata(example.metadata)
         end
       end
+
+      include_examples 'returns 403 for get requests for forbidden users'
     end
   end
 end

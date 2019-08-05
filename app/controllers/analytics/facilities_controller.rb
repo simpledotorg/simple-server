@@ -1,12 +1,15 @@
 class Analytics::FacilitiesController < AnalyticsController
+  include GraphicsDownload
+  include QuarterHelper
+
   before_action :set_facility
+  before_action :set_analytics, only: [:show, :whatsapp_graphics]
 
   def show
-    if FeatureToggle.enabled?('CACHED_QUERIES_FOR_DASHBOARD')
-      @analytics = Rails.cache.fetch(analytics_cache_key) { analytics }
-    else
-      @analytics = analytics
-    end
+    @recent_blood_pressures = @facility.blood_pressures
+                                .includes(:patient, :user)
+                                .order("DATE(recorded_at) DESC, recorded_at ASC")
+                                .limit(50)
   end
 
   def share_anonymized_data
@@ -22,7 +25,21 @@ class Analytics::FacilitiesController < AnalyticsController
                 notice: I18n.t('anonymized_data_download_email.facility_notice', facility_name: @facility.name)
   end
 
+  def whatsapp_graphics
+    whatsapp_graphics_handler(
+      @facility.organization.name,
+      @facility.name)
+  end
+
   private
+
+  def set_analytics
+    if FeatureToggle.enabled?('CACHED_QUERIES_FOR_DASHBOARD')
+      @analytics = Rails.cache.fetch(analytics_cache_key) { analytics }
+    else
+      @analytics = analytics
+    end
+  end
 
   def analytics
     {

@@ -19,12 +19,13 @@ $grey-darkest: #2F363D;
 $highlight: #E9F3FF; /* LIGHT BLUE */
 $blue: #0075EB;
 $blue-light: #E9F3FF;
+$blue-dark: #0c3966;
 $green-light: #E0FFED;
 $green-mid: #5CFF9D;
 $green: #00B849;
 $green-dark: #007A31;
 
-$font-condensed: 'Roboto Condensed';
+$font-condensed: 'Roboto Condensed', sans-serif;
 $font-small: 11px;
 
 /********/
@@ -35,17 +36,18 @@ $font-small: 11px;
 // Local imports
 @import "dashboard";
 @import "graphs";
+@import "snapshots";
 
 body {
     padding-top: 5rem;
     font-size: 15px;
-    font-family: "Roboto Condensed", sans-serif;
+    font-family: $font-condensed;
     background: $grey-lightest;
 }
 
 h1 {
     font-size: 28px;
-    font-family: "Roboto";
+    font-family: "Roboto", sans-serif;
     font-weight: bold;
     padding-bottom: 8px;
     
@@ -61,14 +63,14 @@ h1 {
 h2 {
     font-size: 22px;
     font-weight: bold;
-    font-family: "Roboto";
+    font-family: "Roboto", sans-serif;
 }
 
 h3 {
     font-size: 20px;
     color: $grey-darkest;
     font-weight: 700;
-    font-family: "Roboto";
+    font-family: "Roboto", sans-serif;
 }
 
 h4 {
@@ -96,6 +98,14 @@ h6 {
 
 h6.bold {
     font-weight: bold;
+}
+
+.bp-uncontrolled {
+    color: $red;
+}
+
+.patient-new {
+    color: $green;
 }
 
 .mobile {
@@ -426,7 +436,7 @@ span.inactive {
 .card {
     border: none;
     background: #fff;
-    margin: 8px 0;
+    margin: 8px 0 16px 0;
     padding: 16px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     position: relative;
@@ -526,6 +536,10 @@ Dashboard UI
     border-left: 1px solid $grey-lightest;
 }
 
+.table-compact .date-row td {
+    border-top-color: $grey-light;
+}
+
 .row-spacer {
     border-right: 1px solid $grey-lightest;
 }
@@ -571,8 +585,8 @@ Dashboard UI
 
 .table-compact .row-total {
     background: #fff;
-    border-top: 1px solid $grey-mid;
-    border-bottom: 1px solid $grey-mid;
+    border-top: 1px solid $grey-light;
+    border-bottom: 1px solid $grey-light;
     font-weight: bold;
 }
 
@@ -643,9 +657,9 @@ nav.breadcrumb .arrow,
 nav.breadcrumb i {
    font-weight: 900;
    color: $grey-mid;
-    margin: 0 4px;
+    margin: 0 6px;
     font-size: 85%;
-    top: 4px;
+    top: 5px;
     position: relative;
 }
 

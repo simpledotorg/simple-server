@@ -1,4 +1,6 @@
 class Api::Current::UsersController < APIController
+  skip_before_action :current_user_present?, only: [:register, :find, :request_otp]
+  skip_before_action :validate_sync_approval_status_allowed, only: [:register, :find, :request_otp]
   skip_before_action :authenticate, only: [:register, :find, :request_otp]
   skip_before_action :validate_facility, only: [:register, :find, :request_otp]
   skip_before_action :validate_current_facility_belongs_to_users_facility_group, only: [:register, :find, :request_otp]

@@ -41,6 +41,8 @@ gem 'redis'
 gem 'redis-rails'
 gem 'activerecord-import'
 gem "roo", "~> 2.8.0"
+gem 'wkhtmltoimage-binary'
+gem 'imgkit'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

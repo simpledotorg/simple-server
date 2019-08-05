@@ -72,25 +72,3 @@ def updated_medical_history_payload_v2(existing_medical_history)
     'prior_heart_attack' => MedicalHistory::MEDICAL_HISTORY_ANSWERS.values.sample
   )
 end
-
-# Payloads for V1 API
-
-def build_medical_history_payload_v1(medical_history = FactoryBot.build(:medical_history))
-  Api::V1::MedicalHistoryTransformer.to_response(medical_history).with_indifferent_access
-end
-
-def build_invalid_medical_history_payload_v1
-  build_medical_history_payload_v1.merge(
-    prior_heart_attack: nil,
-    prior_stroke: nil
-  )
-end
-
-def updated_medical_history_payload_v1(existing_medical_history)
-  update_time = 10.days.from_now
-
-  build_medical_history_payload_v1(existing_medical_history).merge(
-    'updated_at' => update_time,
-    'prior_heart_attack' => MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys.sample
-  )
-end
