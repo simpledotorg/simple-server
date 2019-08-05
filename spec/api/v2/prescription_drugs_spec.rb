@@ -32,6 +32,8 @@ describe 'PrescriptionDrugs V2 API', swagger_doc: 'v2/swagger.json' do
         let(:prescription_drugs) { { prescription_drugs: (1..3).map { build_invalid_prescription_drug_payload } } }
         run_test!
       end
+
+      include_examples 'returns 403 for post requests for forbidden users', :prescription_drugs
     end
 
     get 'Syncs prescription drugs data from server to device.' do
@@ -61,6 +63,8 @@ describe 'PrescriptionDrugs V2 API', swagger_doc: 'v2/swagger.json' do
         let(:limit) { 10 }
         run_test!
       end
+
+      include_examples 'returns 403 for get requests for forbidden users'
     end
   end
 end

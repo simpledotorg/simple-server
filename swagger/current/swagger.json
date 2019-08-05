@@ -58,6 +58,9 @@
         "responses": {
           "200": {
             "description": "JSON received"
+          },
+          "403": {
+            "description": "user is not allowed to sync"
           }
         }
       }
@@ -93,6 +96,9 @@
         "responses": {
           "200": {
             "description": "HTML received"
+          },
+          "403": {
+            "description": "user is not allowed to sync"
           }
         }
       }
@@ -140,6 +146,9 @@
         "responses": {
           "200": {
             "description": "some, or no errors were found"
+          },
+          "403": {
+            "description": "user is not allowed to sync"
           }
         }
       },
@@ -198,6 +207,9 @@
                 "process_token"
               ]
             }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
           }
         }
       }
@@ -253,6 +265,9 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
           }
         }
       },
@@ -311,6 +326,9 @@
                 "process_token"
               ]
             }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
           }
         }
       }
@@ -513,6 +531,9 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
           }
         }
       },
@@ -571,6 +592,9 @@
                 "process_token"
               ]
             }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
           }
         }
       }
@@ -626,6 +650,9 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
           }
         }
       },
@@ -684,6 +711,9 @@
                 "process_token"
               ]
             }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
           }
         }
       }
@@ -739,6 +769,9 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
           }
         }
       },
@@ -797,6 +830,9 @@
                 "process_token"
               ]
             }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
           }
         }
       }

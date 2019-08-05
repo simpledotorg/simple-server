@@ -36,6 +36,21 @@ RSpec.shared_examples 'a sync controller that authenticates user requests' do
       expect(response.status).not_to eq(401)
     end
 
+    it 'returns 403 for user which has been denied access' do
+      request_user.update(sync_approval_status: :denied)
+      get :sync_to_user, params: empty_payload
+
+      expect(response.status).to eq(403)
+    end
+
+    it 'returns 403 for users which have sync approval status set to requested' do
+      request_user.update(sync_approval_status: :requested)
+      get :sync_to_user, params: empty_payload
+
+      expect(response.status).to eq(403)
+    end
+
+
     it 'sets user logged_in_at on successful authentication' do
       now = Time.now
       Timecop.freeze(now) do
