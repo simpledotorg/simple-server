@@ -162,15 +162,14 @@ describe ExotelAPIService, type: :model do
     end
 
     it 'makes a request to exotel number metadata and whitelist details api' do
-      service.get_phone_number_details(phone_number)
-
+      service.phone_number_details(phone_number)
       expect(numbers_metadata_stub).to have_been_requested
       expect(whitelist_details_stub).to have_been_requested
     end
 
     it 'returns the phone number status returned from the two apis' do
       Timecop.freeze do
-        expect(service.get_phone_number_details(phone_number))
+        expect(service.phone_number_details(phone_number))
           .to eq(dnd_status: true,
                  phone_type: :mobile,
                  whitelist_status: :whitelist,
