@@ -1,4 +1,6 @@
 class Qa::PurgesController < APIController
+  skip_before_action :current_user_present?, only: [:purge_patient_data]
+  skip_before_action :validate_sync_approval_status_allowed, only: [:purge_patient_data]
   skip_before_action :authenticate, only: [:purge_patient_data]
   skip_before_action :validate_facility, only: [:purge_patient_data]
   skip_before_action :validate_current_facility_belongs_to_users_facility_group, only: [:purge_patient_data]

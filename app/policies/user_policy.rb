@@ -1,10 +1,10 @@
 class UserPolicy < ApplicationPolicy
   def index?
-    user.has_role?(:owner, :organization_owner, :supervisor)
+    user.has_role?(:owner, :organization_owner, :supervisor, :analyst)
   end
 
   def show?
-    user.owner? || (user.has_role?(:organization_owner, :supervisor) && belongs_to_admin?)
+    user.owner? || (user.has_role?(:organization_owner, :supervisor, :analyst) && belongs_to_admin?)
   end
 
   def new?
@@ -15,7 +15,7 @@ class UserPolicy < ApplicationPolicy
   end
 
   def update?
-    show?
+    user.owner? || (user.has_role?(:organization_owner, :supervisor) && belongs_to_admin?)
   end
 
   def edit?
@@ -48,10 +48,10 @@ class UserPolicy < ApplicationPolicy
     def resolve
       if @user.owner?
         scope.all
-      elsif @user.has_role?(:analyst, :counsellor)
+      elsif @user.counsellor?
         scope.none
       else
-        scope.where(id: user.users)
+        scope.where(id: @user.users)
       end
     end
   end
