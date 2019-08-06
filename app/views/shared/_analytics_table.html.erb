@@ -20,6 +20,7 @@
             <th class="row-label"><strong>Registered patients</strong></th>
             <th class="row-label" colspan="3"><strong>Follow-up patients</strong></th>
             <th class="row-label" colspan="3"><strong>New registrations</strong></th>
+            <th class="row-label" colspan="3"><strong>Patients called</strong></th>
           </tr>
 
           <tr>
@@ -70,7 +71,7 @@
             <!--Calls made -->
             <% repeat_for_last(months: 3) do |month| %>
               <td class="row-total" style="text-align: center;">
-                <%= analytics_month_totals(analytics, :total_calls_made_by_month, month) %>
+                <%= analytics_month_totals(dashboard_analytics, :total_calls_made_by_month, month) %>
               </td>
             <% end %>
           </tr>
@@ -106,7 +107,7 @@
                 <!--Calls made -->
                 <% repeat_for_last(months: 3) do |month| %>
                   <td style="text-align: center;">
-                    <%= dash_if_zero(analytics.dig(resource.id, :total_calls_made_by_month, month)) %>
+                    <%= dash_if_zero(dashboard_analytics.dig(resource.id, :total_calls_made_by_month, month)) %>
                   </td>
                 <% end %>
               </tr>
