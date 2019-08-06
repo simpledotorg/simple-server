@@ -38,7 +38,7 @@ def build_patient_payload(patient = FactoryBot.build(:patient))
     .except('test_data')
     .merge(
       'address'       => patient.address.attributes.with_payload_keys,
-      'phone_numbers' => patient.phone_numbers.map { |phno| phno.attributes.with_payload_keys.except('patient_id') },
+      'phone_numbers' => patient.phone_numbers.map { |phno| phno.attributes.with_payload_keys.except('patient_id', 'dnd_status') },
       'business_identifiers' => patient.business_identifiers.map do |bid|
         bid.attributes.with_payload_keys
           .except('patient_id')
@@ -51,8 +51,6 @@ def build_patient_payload_v2(patient = FactoryBot.build(:patient))
   build_patient_payload(patient)
     .except('recorded_at')
 end
-
-alias build_patient_payload_v1 build_patient_payload_v2
 
 def build_invalid_patient_payload
   patient                          = build_patient_payload
@@ -87,5 +85,3 @@ def updated_patient_payload_v2(existing_patient)
   updated_patient_payload(existing_patient)
     .except('recorded_at')
 end
-
-alias updated_patient_payload_v1 updated_patient_payload_v2

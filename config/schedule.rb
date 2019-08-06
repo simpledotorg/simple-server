@@ -12,3 +12,11 @@ end
 every :day, at: local('11:00 pm').utc, roles: [:cron] do
   rake 'appointment_notification:three_days_after_missed_visit'
 end
+
+every :day, at: local('11:00 pm'), roles: [:whitelist_phone_numbers] do
+  rake 'exotel_tasks:whitelist_patient_phone_numbers'
+end
+
+every :week, at: local('11:00 pm'), roles: [:whitelist_phone_numbers] do
+  rake 'exotel_tasks:update_all_patients_phone_number_details'
+end

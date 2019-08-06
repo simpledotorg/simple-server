@@ -10,4 +10,8 @@ class OrganizationDistrictPolicy < ApplicationPolicy
   def share_anonymized_data?
     user.owner?
   end
+
+  def whatsapp_graphics?
+    show?
+  end
 end

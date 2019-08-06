@@ -104,7 +104,7 @@ RSpec.feature 'Overdue appointments', type: :feature do
         select facility_1.name, from: "facility_id"
         click_button "Filter"
 
-        click_link "Download Overdue List"
+        click_link "Download overdue list"
 
         expect(page).to have_content(Appointment.csv_headers.to_csv.strip)
 

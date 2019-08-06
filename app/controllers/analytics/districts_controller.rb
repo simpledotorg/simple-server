@@ -1,9 +1,11 @@
 class Analytics::DistrictsController < AnalyticsController
+  include GraphicsDownload
+  include QuarterHelper
+
   before_action :set_organization_district
+  before_action :set_analytics, only: [:show, :whatsapp_graphics]
 
   def show
-    @cohort_analytics = @organization_district.cohort_analytics
-    @analytics = @organization_district.dashboard_analytics
   end
 
   def share_anonymized_data
@@ -21,7 +23,35 @@ class Analytics::DistrictsController < AnalyticsController
                                district_name: @organization_district.district_name)
   end
 
+  def whatsapp_graphics
+    whatsapp_graphics_handler(
+      @organization_district.organization.name,
+      @organization_district.district_name)
+  end
+
   private
+
+  def set_analytics
+    if FeatureToggle.enabled?('CACHED_QUERIES_FOR_DASHBOARD')
+      @analytics = Rails.cache.fetch(analytics_cache_key) { analytics }
+    else
+      @analytics = analytics
+    end
+  end
+
+  def analytics
+    {
+      cohort: @organization_district.cohort_analytics,
+      dashboard: @organization_district.dashboard_analytics
+    }
+  end
+
+  # invalidate analytics cache after 1 day
+  def analytics_cache_key
+    today = Date.today.strftime("%Y-%m-%d")
+    sanitized_district_name = @organization_district.district_name.downcase.split(' ').join('-')
+    "analytics/#{today}/organization/#{@organization_district.organization.id}/district/#{sanitized_district_name}"
+  end
 
   def set_organization_district
     district_name = params[:id] || params[:district_id]

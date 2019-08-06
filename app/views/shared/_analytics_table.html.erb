@@ -1,6 +1,5 @@
 <div class="card pr-0 pr-md-3">
       <div class="table-responsive table-compact">
-
         <table>
           <colgroup>
               <col>
@@ -17,25 +16,10 @@
           </colgroup>
           <thead>
           <tr>
-            <th rowspan="2">
-                <h3><%= row_resource_description %></h3>
-            </th>
-            <th class="row-label" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="Total registered patients in Simple app">
-                <div class="icon"><i class="fas fa-users"></i></div>
-                <strong>Registered patients</strong>
-            </th>
-            <th class="row-label" colspan="3" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="Patients with a follow-up BP recorded in Simple app">
-                <div class="icon"><i class="fas fa-undo"></i></div>
-                <strong>Follow-up patients</strong>
-            </th>
-            <th class="row-label" colspan="3" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="New patients registered in Simple app for the first time">
-                <div class="icon"><i class="fas fa-user-plus"></i></div>
-                <strong>New registrations</strong>
-            </th>
-            <th class="row-label" colspan="3" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="Number of patients called by users using Overdue list in Simple app">
-                <div class="icon"><i class="fas fa-phone"></i></div>
-                <strong>Patients called</strong>
-            </th>
+            <th rowspan="2"><h3 class="ml-n2"><%= row_resource_description %></h3></th>
+            <th class="row-label"><strong>Registered patients</strong></th>
+            <th class="row-label" colspan="3"><strong>Follow-up patients</strong></th>
+            <th class="row-label" colspan="3"><strong>New registrations</strong></th>
           </tr>
 
           <tr>
@@ -66,20 +50,20 @@
 
             <!--Registered patients-->
             <td class="row-total" style="text-align: center;">
-              <%= dash_if_zero(analytics.sum { |_, row| row[:total_registered_patients] || 0 }) %>
+              <%= dash_if_zero(dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 }) %>
             </td>
 
             <!--Follow-up patients-->
             <% repeat_for_last(months: 3) do |month| %>
               <td class="row-total" style="text-align: center;">
-                <%= analytics_month_totals(analytics, :follow_up_patients_by_month, month) %>
+                <%= analytics_month_totals(dashboard_analytics, :follow_up_patients_by_month, month) %>
               </td>
             <% end %>
 
             <!--New registrations-->
             <% repeat_for_last(months: 3) do |month| %>
               <td class="row-total" style="text-align: center;">
-                <%= analytics_month_totals(analytics, :registered_patients_by_month, month) %>
+                <%= analytics_month_totals(dashboard_analytics, :registered_patients_by_month, month) %>
               </td>
             <% end %>
             
@@ -92,7 +76,7 @@
           </tr>
 
           <% policy_scope(row_resource).each do |resource| %>
-            <% if analytics[resource.id].present? %>
+            <% if dashboard_analytics[resource.id].present? %>
               <tr>
 
                 <td class="row-title">
@@ -102,20 +86,20 @@
 
                 <!--Registered patients-->
                 <td style="text-align: center;">
-                  <%= dash_if_zero(analytics.dig(resource.id, :total_registered_patients)) %>
+                  <%= dash_if_zero(dashboard_analytics.dig(resource.id, :total_registered_patients)) %>
                 </td>
 
                 <!--Follow-up patients-->
                 <% repeat_for_last(months: 3) do |month| %>
                   <td style="text-align: center;">
-                    <%= dash_if_zero(analytics.dig(resource.id, :follow_up_patients_by_month, month)) %>
+                    <%= dash_if_zero(dashboard_analytics.dig(resource.id, :follow_up_patients_by_month, month)) %>
                   </td>
                 <% end %>
 
                 <!--New registrations-->
                 <% repeat_for_last(months: 3) do |month| %>
                   <td style="text-align: center;">
-                    <%= dash_if_zero(analytics.dig(resource.id, :registered_patients_by_month, month)) %>
+                    <%= dash_if_zero(dashboard_analytics.dig(resource.id, :registered_patients_by_month, month)) %>
                   </td>
                 <% end %>
                 
@@ -130,6 +114,5 @@
           <% end %>
           </tbody>
         </table>
-
       </div>
 </div>

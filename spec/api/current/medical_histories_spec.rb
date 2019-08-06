@@ -33,6 +33,8 @@ describe 'Medical History Current API', swagger_doc: 'current/swagger.json' do
         let(:medical_histories) { { medical_histories: (1..3).map { build_invalid_medical_history_payload_current } } }
         run_test!
       end
+
+      include_examples 'returns 403 for post requests for forbidden users', :medical_histories
     end
 
     get 'Syncs medical_history data from server to device.' do
@@ -69,6 +71,8 @@ describe 'Medical History Current API', swagger_doc: 'current/swagger.json' do
           assert_response_matches_metadata(example.metadata)
         end
       end
+
+      include_examples 'returns 403 for get requests for forbidden users'
     end
   end
 end

@@ -31,27 +31,36 @@ Dashboard UI
 
 .bar-total {
     float: right;
-    font-size: 85%;
-    color: $grey-mid;
+    font-size: 90%;
+    color: $grey-dark;
     padding: 0 0 4px 0;
 }
 
-.key {
+.key.desktop {
     display: inline-block;
 }
 
-.key div {
+@include media-breakpoint-down(sm) {
+    .key.desktop {
+        display: none;
+    }
+}
+
+.key div.key-definition {
     position: relative;
-    padding: 4px 0 4px 26px;
-    margin-left: 8px;
-    font-size: 13px;
-    font-family: $font-condensed;
+    padding: 4px 0 4px 28px;
     display: inline-block;
 }
 
-.key div:after {
+.desktop .key div.key-definition {
+    font-size: 90%;
+    display: inline-block;
+    margin-left: 8px;
+}
+
+.key div.key-definition:after {
     content: ".";
-    width: 18px;
+    width: 20px;
     height: 12px;
     position: absolute;
     left: 3px;
@@ -69,7 +78,13 @@ Dashboard UI
 .key div.controlled { color: $green-dark; }
 
 @include media-breakpoint-down(sm) {
-    .key div { margin-left: 0; margin-right: 8px; font-size: 85%; margin-top: 8px; }
+    .key {
+        display: inherit;
+        
+        .row {
+            margin: 16px 0 -6px 0;
+        }
+    }
 }
 
 .bar-count {
@@ -106,15 +121,4 @@ Dashboard UI
 
 .bars td:last-child div {
     background: #aaa;
-}
-
-.graphics a {
-    text-indent: -1000em;
-    width: 42px;
-    height: 42px;
-    background: url(/assets/whatsapp-dashboard.svg);
-    background-size: cover;
-    display: block;
-    float: right;
-    margin: -10px -4px 0 0;
 }

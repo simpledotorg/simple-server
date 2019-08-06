@@ -2,62 +2,68 @@
   <h1 class="page-title">Users</h1>
 </div>
 
-<% @users_by_district.sort.each do |district, users| %>
+<%= render 'shared/paginate_and_filter_by_district',
+           form_url: admin_users_path,
+           current_admin: current_admin,
+           district: @district,
+           per_page: @per_page %>
 
-  <h2 class="mt-3"><%= district %></h2>
-  
-        <% users.sort_by(&:full_name).each do |user| %>
-            <div class="card">
-                <div class="row">
-                    <div class="col-md-7">
-                        <h5 class="mb-1">
-                            <%= link_to user.full_name, [:admin, user] %>
-                            <% unless user.sync_approval_status == 'allowed' %>
-                                <span class="ml-2 badge badge-pill badge-primary <%= user.sync_approval_status %>"><%= user.sync_approval_status&.capitalize %></span>
-                            <% end %>
-                        </h5>
-                        <div>
-                            <% unless user.sync_approval_status == 'allowed' %>
-                                <%= user.sync_approval_status_reason %>.
-                            <% end %>
-                            
-                            <% if user.registration_facility.present? %>
-                                Registration facility: 
-                                <% facility = user.registration_facility %>
+<% @users.group_by(&:facility).each do |facility, users| %>
+  <h2 class="mt-3"><%= facility.name %></h2>
+  <% users.sort_by(&:full_name).each do |user| %>
+    <div class="card">
+      <div class="row">
+        <div class="col-md-7">
+          <h5 class="mb-1">
+            <%= link_to user.full_name, [:admin, user] %>
+            <% unless user.sync_approval_status == 'allowed' %>
+              <span class="ml-2 badge badge-pill badge-primary <%= user.sync_approval_status %>"><%= user.sync_approval_status&.capitalize %></span>
+            <% end %>
+          </h5>
+          <div>
+            <% unless user.sync_approval_status == 'allowed' %>
+              <%= user.sync_approval_status_reason %>.
+            <% end %>
 
-                                <% if policy(facility).show? %>
-                                  <%= link_to facility.name, [:admin, facility.facility_group, facility], class: "text-dark" %>
-                                <% else %>
-                                  <%= user.registration_facility.name %>
-                                <% end %>
-                            <% end %>
-                        </div>
-                        <div class="mt-2">
-                            <a href="tel:<%= user.phone_number %>" class="btn btn-sm btn-outline-primary btn-phone"><i class="fas fa-phone"></i> <%= user.phone_number %></a>
-                        </div>
-                    </div>
-                    <div class="col-md-5 text-right">
-                      <% unless user.sync_approval_status == 'allowed' %>
-                        <%= link_to 'Allow', admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') }, class: 'btn btn-sm btn-outline-success' %>
-                      <% end %>
-                      <% unless user.sync_approval_status == 'denied' %>
-                        <% unless user.sync_approval_status == 'allowed' %>
-                        <%= link_to 'Deny', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal', class: 'btn btn-sm btn-outline-danger' %>
-                        <% end %>
-                      <% end %>
-                        
-                      <% if policy(user).destroy? %>
-                        <%= link_to '<i class="fas fa-trash-alt"></i>' .html_safe, [:admin, user], method: :delete, data: { confirm: "Are you sure you want to delete #{user.full_name}?" }, class: "btn btn-sm btn-outline-danger ml-2" %>
-                      <% end %>
-                        
-                      <% if policy(user).edit? %>
-                        <%= link_to 'Edit', edit_admin_user_path(user), class: 'btn btn-sm btn-outline-primary' %>
-                      <% end %>
+            <% if user.registration_facility.present? %>
+              Registration facility:
+              <% facility = user.registration_facility %>
 
-                      <%= render partial: "deny_access_modal", locals: { user: user } %>
-                    </div>
-                </div>
+              <% if policy(facility).show? %>
+                <%= link_to facility.name, [:admin, facility.facility_group, facility], class: "text-dark" %>
+              <% else %>
+                <%= user.registration_facility.name %>
+              <% end %>
+            <% end %>
           </div>
-        <% end %>
+          <div class="mt-2">
+            <a href="tel:<%= user.phone_number %>" class="btn btn-sm btn-outline-primary btn-phone"><i class="fas fa-phone"></i> <%= user.phone_number %>
+            </a>
+          </div>
+        </div>
+        <div class="col-md-5 text-right">
+          <% unless user.sync_approval_status == 'allowed' %>
+            <%= link_to 'Allow', admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') }, class: 'btn btn-sm btn-outline-success' %>
+          <% end %>
+          <% unless user.sync_approval_status == 'denied' %>
+            <% unless user.sync_approval_status == 'allowed' %>
+              <%= link_to 'Deny', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal', class: 'btn btn-sm btn-outline-danger' %>
+            <% end %>
+          <% end %>
 
+          <% if policy(user).destroy? %>
+            <%= link_to '<i class="fas fa-trash-alt"></i>'.html_safe, [:admin, user], method: :delete, data: { confirm: "Are you sure you want to delete #{user.full_name}?" }, class: "btn btn-sm btn-outline-danger ml-2" %>
+          <% end %>
+
+          <% if policy(user).edit? %>
+            <%= link_to 'Edit', edit_admin_user_path(user), class: 'btn btn-sm btn-outline-primary' %>
+          <% end %>
+
+          <%= render partial: "deny_access_modal", locals: { user: user } %>
+        </div>
+      </div>
+    </div>
+  <% end %>
 <% end %>
+
+<%= paginate(@users) %>

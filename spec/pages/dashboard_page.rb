@@ -1,8 +1,8 @@
 class DashboardPage < ApplicationPage
 
-  ORGANIZATION_NAME = { xpath: "//th/h2" }.freeze
+  ORGANIZATIONS = {css: "div.card" }.freeze
 
   def get_organization_count
-    all_elements(ORGANIZATION_NAME).size
+    all_elements(ORGANIZATIONS).size
   end
 end

@@ -1,0 +1,52 @@
+<div class="card">
+  <div class="snapshot-title">
+    <%= t('dashboard.graphics.graphics_title_html',
+          current_quarter_string: quarter_string(date),
+          previous_quarter_string: quarter_string(date.prev_quarter),
+          patients_in_previous_quarter: @analytics.dig(
+              :cohort,
+              date.prev_quarter.beginning_of_quarter,
+              :registered) || 0
+        ) %>
+  </div>
+
+  <div class="split-row">
+    <% analytics_percentages = calculate_percentage_for_analytics(current_cohort_analytics.slice(:defaulted, :controlled, :uncontrolled)) %>
+    <table class="split-bars" style="height: 180px;">
+
+      <tr>
+        <td class="bar bar-3" style="height: <%= analytics_percentages[:controlled]%>%">
+          <%= percentage_string(analytics_percentages[:controlled]) %>
+        </td>
+        <td class="snapshot-controlled snapshot-key">
+          <div>
+            <%= current_cohort_analytics[:controlled] %> <%= t('dashboard.graphics.patients_controlled_in_quarter') %>
+            <i class="fas fa-less-than"></i>
+            140/90
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="bar bar-2" style="height: <%= analytics_percentages[:uncontrolled] %>%;">
+          <%= percentage_string(analytics_percentages[:uncontrolled]) %>
+        </td>
+        <td class="snapshot-uncontrolled snapshot-key">
+          <div><%= current_cohort_analytics[:uncontrolled] %> <%= t('dashboard.graphics.patients_uncontrolled_in_quarter') %>
+            <i class="fas fa-greater-than-equal"></i> 140/90
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="bar bar-1" style="height: <%= analytics_percentages[:defaulted] %>%;">
+          <%= percentage_string(analytics_percentages[:defaulted]) %>
+        </td>
+        <td class="snapshot-didntattend snapshot-key">
+          <div><%= current_cohort_analytics[:defaulted] %> <%= t('dashboard.graphics.patients_defaulted_in_quarter') %>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

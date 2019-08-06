@@ -27,7 +27,7 @@ class Api::Current::PatientTransformer
       address_attributes = Api::Current::Transformer.from_request(address) if address.present?
 
       phone_numbers_attributes = phone_numbers.map do |phone_number|
-        Api::Current::Transformer.from_request(phone_number)
+        Api::Current::PatientPhoneNumberTransformer.from_request(phone_number)
       end if phone_numbers.present?
 
       business_identifiers_attributes = business_identifiers.map do |business_identifier|
@@ -52,7 +52,7 @@ class Api::Current::PatientTransformer
         .merge(
           'address' => Api::Current::Transformer.to_response(patient.address),
           'phone_numbers' => patient.phone_numbers.map do |phone_number|
-            Api::Current::Transformer.to_response(phone_number).except('patient_id')
+            Api::Current::PatientPhoneNumberTransformer.to_response(phone_number)
           end,
           'business_identifiers' => patient.business_identifiers.map do |business_identifier|
             Api::Current::PatientBusinessIdentifierTransformer.to_response(business_identifier)
