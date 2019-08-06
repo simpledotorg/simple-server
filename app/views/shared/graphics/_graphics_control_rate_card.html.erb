@@ -5,7 +5,7 @@
           previous_quarter_string: quarter_string(date.prev_quarter),
           patients_in_previous_quarter: @analytics.dig(
               :cohort,
-              date.prev_quarter.beginning_of_quarter,
+              date.beginning_of_quarter,
               :registered) || 0
         ) %>
   </div>

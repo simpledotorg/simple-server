@@ -13,8 +13,18 @@ module DashboardHelper
     end
   end
 
-  def analytics_month_totals(analytics, metric, month)
-    dash_if_zero(analytics.sum { |_, row| row.dig(metric, month) || 0 })
+  def repeat_for_last_n_quarters(n: 3)
+    (0..(n-1)).to_a.each do |num_of_quarter|
+      yield((num_of_quarter * 3).months.ago.beginning_of_quarter.to_date)
+    end
+  end
+
+  def analytics_month_totals(analytics, metric, period)
+    dash_if_zero(analytics.sum { |_, row| row.dig(metric, period) || 0 })
+  end
+
+  def analytics_totals(analytics, metric, period)
+    dash_if_zero(analytics.sum { |_, row| row.dig(metric, period) || 0 })
   end
 
   def calculate_percentage_for_analytics(analytics)
