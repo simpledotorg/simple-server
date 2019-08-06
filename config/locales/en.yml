@@ -107,7 +107,7 @@ en:
   reset_password: 'Reset PIN'
   dashboard:
     graphics:
-      graphics_title: "What happened in %{current_quarter_string} to the %{patients_in_previous_quarter} patients registered during %{previous_quarter_string}?"
+      graphics_title_html: "What happened in <b>%{current_quarter_string}</b> to the %{patients_in_previous_quarter} patients registered during <b>%{previous_quarter_string}</b>?"
       report_name: "Hypertension Report"
       patients_controlled_in_quarter: "patients visited with BP"
       patients_uncontrolled_in_quarter: "patients visited with BP"

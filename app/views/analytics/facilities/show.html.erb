@@ -32,18 +32,19 @@
 <div class="downloads">
   <h4>Downloads</h4>
   <% if policy(@facility).share_anonymized_data? %>
+    <p>
     <%= link_to analytics_facility_share_path(facility_id: @facility.id),
                 class: "download",
                 data: { confirm: I18n.t('admin.phi_anonymized_download_alert') } do %>
-      <i class="far fa-file-excel" style="margin-right: 4px;"></i> Anonymized Data (XLS)
+      <i class="far fa-file-excel mr-2"></i>Anonymized Data (XLS)
     <% end %>
+    </p>
   <% end %>
-  <br><br>
+  
   <% if policy(@facility).whatsapp_graphics? %>
-    <%= link_to "<i class='far fa-file-image mr-2'></i>WhatsApp Graphics".html_safe,
-                analytics_facility_graphics_path(facility_id: @facility.id,
-                                                              format: "png"),
-                class: "download" %>
+    <%= render "shared/graphics/graphics_download_links",
+               graphics_path: -> (options) { analytics_facility_graphics_path(options) },
+               options: { facility_id: @facility.id } %>
   <% end %>
 </div>
 

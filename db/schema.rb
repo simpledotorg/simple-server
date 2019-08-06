@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190715122633) do
+ActiveRecord::Schema.define(version: 20190802121156) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -191,7 +191,7 @@ ActiveRecord::Schema.define(version: 20190715122633) do
 
   create_table "exotel_phone_number_details", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "patient_phone_number_id", null: false
-    t.string "whitelist_status", null: false
+    t.string "whitelist_status"
     t.datetime "whitelist_requested_at"
     t.datetime "whitelist_status_valid_until"
     t.datetime "created_at", null: false

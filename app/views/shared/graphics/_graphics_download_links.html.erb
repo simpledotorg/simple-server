@@ -1,0 +1,33 @@
+<div>
+  <% previous_quarter, previous_quarter_year = previous_quarter_and_year %>
+  <p>
+    <%= link_to graphics_path.call(
+                    options.merge(
+                        quarter: previous_quarter, year: previous_quarter_year,
+                        format: "png")),
+                class: "download" do %>
+      <i class='fas fa-camera mr-2'></i>
+      <%= "#{quarter_string(Date.today.prev_quarter)} snapshot (PNG)" %>
+    <% end %>
+
+    and
+
+    <%= link_to graphics_path.call(
+                    options.merge(
+                        quarter: previous_quarter, year: previous_quarter_year,
+                        format: "html")),
+                class: "download" do %>
+      <i class='far fa-window-maximize mr-2 ml-2'></i>
+      HTML
+    <% end %>
+  <p>
+    <%= link_to graphics_path.call(
+                    options.merge(
+                        quarter: current_quarter, year: current_year,
+                        format: "png")),
+                class: "download" do %>
+      <i class='fas fa-camera mr-2'></i>
+      Current quarter snapshot (PNG)
+    <% end %>
+  </p>
+</div>

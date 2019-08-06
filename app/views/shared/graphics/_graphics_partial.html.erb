@@ -1,0 +1,13 @@
+<div class="snapshot">
+  <% quarter_start_date = quarter_start(year, quarter).to_date %>
+  <%= render 'shared/graphics/graphics_header',
+             date: quarter_start_date,
+             organization_name: organization_name,
+             name: name %>
+
+  <%= render 'shared/graphics/graphics_control_rate_card',
+             current_cohort_analytics: cohort_analytics[quarter_start_date],
+             date: quarter_start_date %>
+
+  <%= render 'shared/graphics/graphics_registration_card', cohort_analytics: cohort_analytics %>
+</div>
