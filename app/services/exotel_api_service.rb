@@ -31,15 +31,17 @@ class ExotelAPIService
     execute_post(whitelist_phone_numbers_url, form: request_body)
   end
 
-  def get_phone_number_details(phone_number)
-    phone_number_details_response = JSON.parse(execute_get(phone_number_details_url(phone_number)).body)
-    exotel_whitelist_details_response = JSON.parse(execute_get(whitelist_details_url(phone_number)).body)
+  def phone_number_details(phone_number)
+    phone_number_details_response = execute_get(phone_number_details_url(phone_number))
+    whitelist_details_response = execute_get(whitelist_details_url(phone_number))
 
+    phone_number_details = parse_response(phone_number_details_response) || {}
+    whitelist_details = parse_response(whitelist_details_response) || {}
     {
-      dnd_status: EXOTEL_TRUTHY_STRINGS.include?(phone_number_details_response.dig('Numbers', 'DND')),
-      phone_type: parse_response_field(phone_number_details_response.dig('Numbers', 'Type'), :invalid),
-      whitelist_status: parse_response_field(exotel_whitelist_details_response.dig('Result', 'Status'), nil),
-      whitelist_status_valid_until: parse_exotel_whitelist_expiry(exotel_whitelist_details_response.dig('Result', 'Expiry'))
+      dnd_status: EXOTEL_TRUTHY_STRINGS.include?(phone_number_details.dig(:Numbers, :DND)),
+      phone_type: parse_response_field(phone_number_details.dig(:Numbers, :Type), :invalid),
+      whitelist_status: parse_response_field(whitelist_details.dig(:Result, :Status), nil),
+      whitelist_status_valid_until: parse_exotel_whitelist_expiry(whitelist_details.dig(:Result, :Expiry))
     }
   end
 
@@ -78,8 +80,9 @@ class ExotelAPIService
   end
 
   def parse_response(response)
-    JSON.parse(response,
-               symbolize_names: true) if response.status.ok?
+    return unless response.status.ok?
+
+    JSON.parse(response, symbolize_names: true)
   end
 
   def base_uri

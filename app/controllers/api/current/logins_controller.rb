@@ -1,4 +1,6 @@
 class Api::Current::LoginsController < APIController
+  skip_before_action :current_user_present?, only: [:login_user]
+  skip_before_action :validate_sync_approval_status_allowed, only: [:login_user]
   skip_before_action :authenticate, only: [:login_user]
   skip_before_action :validate_facility, only: [:login_user]
   skip_before_action :validate_current_facility_belongs_to_users_facility_group, only: [:login_user]

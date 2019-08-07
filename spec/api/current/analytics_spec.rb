@@ -27,6 +27,8 @@ describe 'Analytics Current API', swagger_doc: 'current/swagger.json' do
 
         run_test!
       end
+
+      include_examples 'returns 403 for get requests for forbidden users'
     end
   end
 
@@ -56,6 +58,8 @@ describe 'Analytics Current API', swagger_doc: 'current/swagger.json' do
 
         run_test!
       end
+
+      include_examples 'returns 403 for get requests for forbidden users'
     end
   end
 end

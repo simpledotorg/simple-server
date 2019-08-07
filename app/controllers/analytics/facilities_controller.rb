@@ -1,14 +1,15 @@
 class Analytics::FacilitiesController < AnalyticsController
   include GraphicsDownload
+  include QuarterHelper
 
   before_action :set_facility
   before_action :set_analytics, only: [:show, :whatsapp_graphics]
 
   def show
     @recent_blood_pressures = @facility.blood_pressures
-                                       .includes(:patient, :user)
-                                       .order("DATE(recorded_at) DESC, recorded_at ASC")
-                                       .limit(50)
+                                .includes(:patient, :user)
+                                .order("DATE(recorded_at) DESC, recorded_at ASC")
+                                .limit(50)
   end
 
   def share_anonymized_data
@@ -25,17 +26,9 @@ class Analytics::FacilitiesController < AnalyticsController
   end
 
   def whatsapp_graphics
-    respond_to do |format|
-      format.png do
-        filename = graphics_filename(
-          @facility.district,
-          @facility.name,
-          Date.today)
-
-        render_as_png('/analytics/facilities/graphics/image_template', filename)
-      end
-      format.html { render }
-    end
+    whatsapp_graphics_handler(
+      @facility.organization.name,
+      @facility.name)
   end
 
   private

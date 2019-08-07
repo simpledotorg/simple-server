@@ -25,7 +25,7 @@ $green-mid: #5CFF9D;
 $green: #00B849;
 $green-dark: #007A31;
 
-$font-condensed: 'Roboto Condensed';
+$font-condensed: 'Roboto Condensed', sans-serif;
 $font-small: 11px;
 
 /********/
@@ -36,18 +36,18 @@ $font-small: 11px;
 // Local imports
 @import "dashboard";
 @import "graphs";
-@import "whatsapp_graphics";
+@import "snapshots";
 
 body {
     padding-top: 5rem;
     font-size: 15px;
-    font-family: "Roboto Condensed", sans-serif;
+    font-family: $font-condensed;
     background: $grey-lightest;
 }
 
 h1 {
     font-size: 28px;
-    font-family: "Roboto";
+    font-family: "Roboto", sans-serif;
     font-weight: bold;
     padding-bottom: 8px;
     
@@ -63,14 +63,14 @@ h1 {
 h2 {
     font-size: 22px;
     font-weight: bold;
-    font-family: "Roboto";
+    font-family: "Roboto", sans-serif;
 }
 
 h3 {
     font-size: 20px;
     color: $grey-darkest;
     font-weight: 700;
-    font-family: "Roboto";
+    font-family: "Roboto", sans-serif;
 }
 
 h4 {
