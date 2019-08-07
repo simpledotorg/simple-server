@@ -13,9 +13,9 @@ module DashboardHelper
     end
   end
 
-  def repeat_for_last_n_quarters(n: 3)
-    (0..(n-1)).to_a.each do |num_of_quarter|
-      yield((num_of_quarter * 3).months.ago.beginning_of_quarter.to_date)
+  def repeat_for_last_n_quarters(from_date, n: 3)
+    (0..n-1).to_a.each do |num_of_quarter|
+      yield(from_date.prev_month(num_of_quarter * 3))
     end
   end
 
