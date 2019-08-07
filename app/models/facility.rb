@@ -46,7 +46,7 @@ class Facility < ApplicationRecord
   friendly_id :name, use: :slugged
 
   def cohort_analytics
-    query = CohortAnalyticsQuery.new(self.patients)
+    query = CohortAnalyticsQuery.new(self.registered_patients)
     results = {}
 
     (0..2).each do |quarters_back|
