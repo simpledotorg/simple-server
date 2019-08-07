@@ -50,6 +50,6 @@ namespace :data_fixes do
     bp_count = service.fix_blood_pressure_data
     appointment_count = service.fix_appointment_data
     prescription_drug_count = service.fix_prescription_drug_data
-    puts "#{user.full_name},#{wrong_facility.name},#{patient_count},#{bp_count},#{appointment_count},#{prescription_drug_count}"
+    puts "[DATA FIXED] #{user.full_name},#{wrong_facility.name},#{patient_count},#{bp_count},#{appointment_count},#{prescription_drug_count}"
   end
 end
