@@ -42,8 +42,8 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
         get :show, params: { id: facility.id }
 
         expect(response.status).to eq(200)
-        expect(assigns(:analytics).dig(:dashboard, user.id).keys).to match_array([:follow_up_patients_by_month,
-                                                                                  :registered_patients_by_month,
+        expect(assigns(:analytics).dig(:dashboard, user.id).keys).to match_array([:follow_up_patients_by_period,
+                                                                                  :registered_patients_by_period,
                                                                                   :total_registered_patients])
       end
     end
@@ -85,9 +85,9 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
           },
             dashboard: {
               user.id => {
-                registered_patients_by_month: { Date.new(2019, 1, 1) => 3 },
+                registered_patients_by_period: { Date.new(2019, 1, 1) => 3 },
                 total_registered_patients: 3,
-                follow_up_patients_by_month: { Date.new(2019, 2, 1) => 3 }
+                follow_up_patients_by_period: { Date.new(2019, 2, 1) => 3 }
               }
             }
           }
