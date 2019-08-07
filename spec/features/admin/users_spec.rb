@@ -41,27 +41,15 @@ RSpec.feature "User admin", type: :feature do
 
     context 'sync approval status and reason' do
       let!(:sync_approval_allowed_user) { create(:user) }
-
-      let!(:sync_approval_denied_user) do
-        user = create(:user)
-        user.sync_approval_status = :denied
-        user.sync_approval_status_reason = 'No particular reason'
-        user.save
-        user
-      end
-
-      let!(:sync_approval_requested_user) {
-        user = create(:user)
-        user.sync_approval_status = :requested
-        user.sync_approval_status_reason = 'New Registration'
-        user.save
-        user
-      }
+      let!(:sync_approval_denied_user) { create(:user, :sync_denied) }
+      let!(:sync_approval_requested_user) { create(:user, :sync_requested) }
 
       it "shows the Deny access button when sync approval status is 'allowed'" do
         visit admin_user_path(sync_approval_allowed_user)
 
         expect(page).to have_selector(:link_or_button, 'Deny access')
+        expect(page).to have_content('User is allowed')
+
         expect(page).not_to have_selector(:link_or_button, 'Request access')
         expect(page).not_to have_selector(:link_or_button, 'Allow access')
       end
@@ -79,7 +67,7 @@ RSpec.feature "User admin", type: :feature do
       it "shows the Deny access and Allow access buttons when sync approval status is 'requested'" do
         visit admin_user_path(sync_approval_requested_user)
 
-        expect(page).to have_content('New Registration')
+        expect(page).to have_content('New registration')
 
         expect(page).to have_selector(:link_or_button, 'Allow access')
         expect(page).to have_selector(:link_or_button, 'Deny access')
