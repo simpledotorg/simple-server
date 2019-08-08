@@ -57,7 +57,7 @@
         <% end %>
       </table>
     </div>
-<% else %>
+  <% else %>
     <p class="text-muted mb-0">
       <i class="fas fa-chevron-left"></i>
       No BPs recorded
@@ -65,6 +65,6 @@
     </p>
   <% end %>
   <div class="card-footer">
-    <%= paginate blood_pressures %>
+    <%= paginate blood_pressures, params: { anchor: 'recent-bps' } %>
   </div>
 </div>
