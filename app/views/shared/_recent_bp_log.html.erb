@@ -2,27 +2,27 @@
   <h3>Recent BPs</h3>
 
   <% if blood_pressures.any? %>
-    <div class="table-responsive table-compact">
+    <div class="table-responsive table-compact pb-3">
       <table>
         <thead>
-          <tr>
-              <th colspan="2" class="pl-0 pb-3" style="font-weight: normal;">
-                A log of the last <%= blood_pressures.size %> BPs recorded
-                <% if display_model == :facility %>
-                  at this facility.
-                <% elsif display_model == :user %>
-                  by this user.
-                <% end %>
-              </th>
-              <th class="pl-1 pb-3">BP</th>
-              <th class="pl-1 pb-3">Patient</th>
-              <% if display_model == :facility %>
-                <th class="pl-1 pb-3">Recorded by</th>
-              <% end %>
-              <% if display_model == :user %>
-                <th class="pl-1 pb-3">Facility</th>
-              <% end %>
-          </tr>
+        <tr>
+          <th colspan="2" class="pl-0 pb-3" style="font-weight: normal;">
+            A log of the BPs recorded
+            <% if display_model == :facility %>
+              at this facility.
+            <% elsif display_model == :user %>
+              by this user.
+            <% end %>
+          </th>
+          <th class="pl-1 pb-3">BP</th>
+          <th class="pl-1 pb-3">Patient</th>
+          <% if display_model == :facility %>
+            <th class="pl-1 pb-3">Recorded by</th>
+          <% end %>
+          <% if display_model == :user %>
+            <th class="pl-1 pb-3">Facility</th>
+          <% end %>
+        </tr>
         </thead>
         <% last_date = nil %>
         <% blood_pressures.each do |bp| %>
@@ -38,7 +38,8 @@
               <% end %>
             </td>
             <td class="nowrap text-muted"><%= bp.recorded_at.strftime("%I:%M %p") %></td>
-            <td class="nowrap <%= bp.hypertensive? ? "bp-uncontrolled" : "bp-controlled text-muted" %>"><i class="fas fa-heart mr-2"></i> <%= bp.to_s %></td>
+            <td class="nowrap <%= bp.hypertensive? ? "bp-uncontrolled" : "bp-controlled text-muted" %>">
+              <i class="fas fa-heart mr-2"></i> <%= bp.to_s %></td>
             <td class="nowrap">
               <% if bp.recorded_at.to_date > bp.patient.recorded_at.to_date %>
                 <span class="patient-return text-muted">Follow-up patient</span>
@@ -63,4 +64,7 @@
       <i class="fas fa-chevron-right"></i>
     </p>
   <% end %>
+  <div class="card-footer">
+    <%= paginate blood_pressures, params: { anchor: 'recent-bps' } %>
+  </div>
 </div>
