@@ -6,6 +6,27 @@
 ### Removed
 ### Security
 
+# 2019-08-08-1
+### Added
+- Add support for downloading Dashsboard Snapshots
+- Add task to move data incorrectly recorded by a user to the correct facility
+- Add Recent BP logs to facility and user views
+### Changed
+- Paginate the user list on dashboard and user index
+- Return 403 for users not allowed to sync
+- Styling changes for user details page
+- Swapped out the new Hindi help video in the HELP section.
+### Fixed
+- Only show analytics for registered patients in cohort reports for a facility
+- Handle unsuccessful responses for exotel phone number info api calls
+- Fixed incorrect quarters data being shown in the graphics header
+- Fix analyst permissions
+- Fix consistent time zones in analytics and user controllers
+### Deprecated
+- Remove support for V1 api
+### Removed
+### Security
+
 # 2019-07-30-1
 ### Added
 - Added caching for analytics dashboard
