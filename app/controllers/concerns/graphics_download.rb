@@ -8,6 +8,9 @@ module GraphicsDownload
       @quarter = params[:quarter].present? ? params[:quarter].to_i : current_quarter
       @year = params[:year].present? ? params[:year].to_i : current_year
 
+      @organization_name = organization_name
+      @name = name
+
       respond_to do |format|
         format.png do
           filename = graphics_filename(
