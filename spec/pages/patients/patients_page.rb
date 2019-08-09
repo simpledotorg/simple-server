@@ -1,4 +1,0 @@
-class PatientsPage < ApplicationPage
-
-
-end
