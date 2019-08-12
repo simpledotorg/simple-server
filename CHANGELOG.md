@@ -6,6 +6,16 @@
 ### Removed
 ### Security
 
+# 2019-08-12-1
+### Added
+### Changed
+- Generalize move user data task to accept destination facility
+- View specs: Page object refactoring
+### Fixed
+### Deprecated
+### Removed
+### Security
+
 # 2019-08-08-1
 ### Added
 - Add support for downloading Dashsboard Snapshots
