@@ -1,6 +1,7 @@
 class Admin::UsersController < AdminController
   include DistrictFiltering
   include Pagination
+
   before_action :set_user, except: [:index, :new, :create]
   around_action :set_time_zone, only: [:show]
 
@@ -15,10 +16,12 @@ class Admin::UsersController < AdminController
   end
 
   def show
-    @recent_blood_pressures = @user.blood_pressures
-                                   .includes(:patient, :facility)
-                                   .order("DATE(recorded_at) DESC, recorded_at ASC")
-                                   .limit(50)
+    @recent_blood_pressures = @user
+                                .blood_pressures
+                                .includes(:patient, :facility)
+                                .order("DATE(recorded_at) DESC, recorded_at ASC")
+
+    @recent_blood_pressures = paginate(@recent_blood_pressures)
   end
 
   def edit
