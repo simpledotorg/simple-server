@@ -113,8 +113,8 @@ en:
       patients_uncontrolled_in_quarter: "patients visited with BP"
       patients_defaulted_in_quarter: "patients didn't attend for an expected follow-up visit"
       new_patients_registered: "New patients registered"
-      patients_called_for_followup: "Patients called for follow-up reminder"
-
+      patients_called_for_followup: "Follow-up Patients"
+      patients_called_for_missed_followup: "Patients called"
 
   months:
     1: 'January'
