@@ -4,8 +4,8 @@ module Pagination
   DEFAULT_PAGE_SIZE = 20
 
   included do
-    before_action :set_page, only: [:index]
-    before_action :set_per_page, only: [:index]
+    before_action :set_page, only: [:index, :show]
+    before_action :set_per_page, only: [:index, :show]
 
     private
 
