@@ -25,7 +25,7 @@ class Analytics::DistrictsController < AnalyticsController
 
   def whatsapp_graphics
     @cohort_analytics = @organization_district.cohort_analytics
-    @dashboard_analytics = @organization_district.dashboard_analytics(time_period: 'quarter')
+    @dashboard_analytics = @organization_district.dashboard_analytics(time_period: :quarter)
 
     whatsapp_graphics_handler(
       @organization_district.organization.name,

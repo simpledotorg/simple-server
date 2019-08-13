@@ -1,8 +1,8 @@
 class DistrictAnalyticsQuery
-  def initialize(district_name, organization, time_period = 'month')
+  def initialize(district_name, organization, time_period = :month)
     @district_name = district_name
-    @organization = organization
     @time_period = time_period
+    @organization = organization
   end
 
   def total_registered_patients

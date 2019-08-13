@@ -1,5 +1,5 @@
 class FacilityAnalyticsQuery
-  def initialize(facility, time_period = 'month')
+  def initialize(facility, time_period = :month)
     @facility = facility
     @time_period = time_period
   end

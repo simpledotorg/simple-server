@@ -26,8 +26,10 @@ class OrganizationDistrict < Struct.new(:district_name, :organization)
     results
   end
 
-  def dashboard_analytics(time_period: 'month')
-    query = DistrictAnalyticsQuery.new(district_name, organization, time_period)
+  def dashboard_analytics(time_period: :month)
+    query = DistrictAnalyticsQuery.new(district_name,
+                                       organization,
+                                       time_period)
     results = [
       query.registered_patients_by_period,
       query.total_registered_patients,
