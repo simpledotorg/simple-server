@@ -14,9 +14,8 @@ class FacilityAnalyticsQuery
 
   def registered_patients_by_period
     @registered_patients_by_period ||=
-      Patient
-        .joins(:registration_facility)
-        .where(registration_facility: @facility)
+      @facility
+        .registered_patients
         .group('registration_user_id', date_truncate_sql('patients', 'recorded_at', @time_period))
         .distinct('patients.id')
         .count
