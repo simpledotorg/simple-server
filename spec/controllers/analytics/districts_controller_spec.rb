@@ -27,11 +27,11 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
     Patient.where(id: registered_patients.map(&:id))
   end
 
-  before do
-    sign_in(admin)
-  end
-
   describe '#show' do
+    before do
+      sign_in(admin)
+    end
+
     render_views
 
     context 'dashboard analytics' do
@@ -94,11 +94,19 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
   end
 
   describe '#whatsapp_graphics' do
+    before do
+      admin = create(:admin, :supervisor)
+      sign_in(admin)
+      create(:admin_access_control, access_controllable: facility_group, admin: admin)
+    end
+
     render_views
 
     context 'html requested' do
       it 'renders graphics_header partial' do
         get :whatsapp_graphics, format: :html, params: { organization_id: organization.id, district_id: district_name }
+
+        p response
 
         expect(response).to be_ok
         expect(response).to render_template('shared/graphics/_graphics_partial')
@@ -108,6 +116,7 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
     context 'png requested' do
       it 'renders the image template for downloading' do
         get :whatsapp_graphics, format: :png, params: { organization_id: organization.id, district_id: district_name }
+
 
         expect(response).to be_ok
         expect(response).to render_template('shared/graphics/image_template')

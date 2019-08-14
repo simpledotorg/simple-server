@@ -4,9 +4,11 @@ class Analytics::FacilitiesController < AnalyticsController
   include Pagination
 
   before_action :set_facility
-  before_action :set_analytics, only: [:show, :whatsapp_graphics]
+  before_action :set_cohort_analytics, only: [:show, :whatsapp_graphics]
 
   def show
+    set_dashboard_analytics(:month)
+
     @recent_blood_pressures = @facility.blood_pressures
                                 .includes(:patient, :user)
                                 .order("DATE(recorded_at) DESC, recorded_at ASC")
@@ -28,8 +30,7 @@ class Analytics::FacilitiesController < AnalyticsController
   end
 
   def whatsapp_graphics
-    @cohort_analytics = @facility.cohort_analytics
-    @dashboard_analytics = @facility.dashboard_analytics(time_period: :quarter)
+    set_dashboard_analytics(:month)
 
     whatsapp_graphics_handler(
       @facility.organization.name,
@@ -38,25 +39,26 @@ class Analytics::FacilitiesController < AnalyticsController
 
   private
 
-  def set_analytics
-    if FeatureToggle.enabled?('CACHED_QUERIES_FOR_DASHBOARD')
-      @analytics = Rails.cache.fetch(analytics_cache_key) { analytics }
-    else
-      @analytics = analytics
-    end
+  def set_cohort_analytics
+    @cohort_analytics = Rails.cache.fetch(analytics_cache_key_cohort) { @facility.cohort_analytics }
   end
 
-  def analytics
-    {
-      cohort: @facility.cohort_analytics,
-      dashboard: @facility.dashboard_analytics,
+  def set_dashboard_analytics(time_period)
+    @dashboard_analytics = Rails.cache.fetch(analytics_cache_key_dashboard(time_period)) {
+      @facility.dashboard_analytics(time_period: time_period)
     }
   end
 
-  # invalidate analytics cache after 1 day
   def analytics_cache_key
-    today = Date.today.strftime("%Y-%m-%d")
-    "analytics/#{today}/facilities/#{@facility.id}"
+    "analytics/facilities/#{@facility.id}"
+  end
+
+  def analytics_cache_key_cohort
+    "#{analytics_cache_key}/cohort"
+  end
+
+  def analytics_cache_key_dashboard(time_period)
+    "#{analytics_cache_key}/dashboard/#{time_period}"
   end
 
   def set_facility
