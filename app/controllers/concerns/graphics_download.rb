@@ -5,9 +5,6 @@ module GraphicsDownload
     private
 
     def whatsapp_graphics_handler(organization_name, name)
-      @quarter = params[:quarter].present? ? params[:quarter].to_i : current_quarter
-      @year = params[:year].present? ? params[:year].to_i : current_year
-
       @organization_name = organization_name
       @name = name
 

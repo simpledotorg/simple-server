@@ -40,25 +40,17 @@ class Analytics::FacilitiesController < AnalyticsController
   private
 
   def set_cohort_analytics
-    @cohort_analytics = Rails.cache.fetch(analytics_cache_key_cohort) { @facility.cohort_analytics }
+    @cohort_analytics =  set_analytics_cache(analytics_cache_key_cohort,
+                                             @facility.cohort_analytics)
   end
 
   def set_dashboard_analytics(time_period)
-    @dashboard_analytics = Rails.cache.fetch(analytics_cache_key_dashboard(time_period)) {
-      @facility.dashboard_analytics(time_period: time_period)
-    }
+    @dashboard_analytics = set_analytics_cache(analytics_cache_key_dashboard(time_period),
+                                               @facility.dashboard_analytics(time_period: time_period))
   end
 
   def analytics_cache_key
     "analytics/facilities/#{@facility.id}"
-  end
-
-  def analytics_cache_key_cohort
-    "#{analytics_cache_key}/cohort"
-  end
-
-  def analytics_cache_key_dashboard(time_period)
-    "#{analytics_cache_key}/dashboard/#{time_period}"
   end
 
   def set_facility

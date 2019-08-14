@@ -35,26 +35,18 @@ class Analytics::DistrictsController < AnalyticsController
   private
 
   def set_cohort_analytics
-    @cohort_analytics = Rails.cache.fetch(analytics_cache_key_cohort) { @organization_district.cohort_analytics }
+    @cohort_analytics = set_analytics_cache(analytics_cache_key_cohort,
+                                            @organization_district.cohort_analytics)
   end
 
   def set_dashboard_analytics(time_period)
-    @dashboard_analytics = Rails.cache.fetch(analytics_cache_key_dashboard(time_period)) {
-      @organization_district.dashboard_analytics(time_period: time_period)
-    }
+    @dashboard_analytics = set_analytics_cache(analytics_cache_key_dashboard(time_period),
+                                               @organization_district.dashboard_analytics(time_period: time_period))
   end
 
   def analytics_cache_key
     sanitized_district_name = @organization_district.district_name.downcase.split(' ').join('-')
     "analytics/organization/#{@organization_district.organization.id}/district/#{sanitized_district_name}"
-  end
-
-  def analytics_cache_key_cohort
-    "#{analytics_cache_key}/cohort"
-  end
-
-  def analytics_cache_key_dashboard(time_period)
-    "#{analytics_cache_key}/dashboard/#{time_period}"
   end
 
   def set_organization_district
