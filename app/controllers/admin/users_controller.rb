@@ -60,12 +60,6 @@ class Admin::UsersController < AdminController
     redirect_to request.referer || admin_user_url(@user), notice: 'User access has been enabled.'
   end
 
-  def request_access
-    @user.sync_approval_requested(I18n.t('registration'))
-    @user.save
-    redirect_to request.referer || admin_user_url(@user), notice: 'User access has been requested.'
-  end
-
   private
 
   def ordered_sync_approval_statuses

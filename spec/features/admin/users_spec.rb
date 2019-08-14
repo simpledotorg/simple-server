@@ -50,17 +50,15 @@ RSpec.feature "User admin", type: :feature do
         expect(page).to have_selector(:link_or_button, 'Deny access')
         expect(page).to have_content('User is allowed')
 
-        expect(page).not_to have_selector(:link_or_button, 'Request access')
         expect(page).not_to have_selector(:link_or_button, 'Allow access')
       end
 
-      it "shows the Request access button when sync approval status is 'denied'" do
+      it "shows the Allow access button when sync approval status is 'denied'" do
         visit admin_user_path(sync_approval_denied_user)
 
-        expect(page).to have_selector(:link_or_button, 'Request access')
         expect(page).to have_content('No particular reason')
 
-        expect(page).not_to have_selector(:link_or_button, 'Allow access')
+        expect(page).to have_selector(:link_or_button, 'Allow access')
         expect(page).not_to have_selector(:link_or_button, 'Deny access')
       end
 
@@ -71,7 +69,6 @@ RSpec.feature "User admin", type: :feature do
 
         expect(page).to have_selector(:link_or_button, 'Allow access')
         expect(page).to have_selector(:link_or_button, 'Deny access')
-        expect(page).not_to have_selector(:link_or_button, 'Request access')
       end
     end
   end

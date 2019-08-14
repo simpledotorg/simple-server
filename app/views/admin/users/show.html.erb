@@ -14,14 +14,9 @@
           <% end %>
         <% end %>
         <% unless @user.sync_approval_status == 'allowed' %>
-            <% unless @user.sync_approval_status == 'denied' %>
-              <%= link_to 'Allow access', admin_user_enable_access_path(@user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') }, class: 'btn btn-success btn-sm' %>
+          <% if policy(@user).enable_access? %>
+            <%= link_to 'Allow access', admin_user_enable_access_path(@user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') }, class: 'btn btn-success btn-sm' %>
           <% end %>
-        <% end %>
-        <% unless @user.sync_approval_status == 'requested' %>
-            <% unless @user.sync_approval_status == 'allowed' %>
-              <%= link_to 'Request access', admin_user_request_access_path(@user), method: :put, class: 'btn btn-warning btn-sm' %>
-            <% end %>
         <% end %>
         <% if policy(@user.audit_logs).index? %>
             <%= link_to 'Audit logs', admin_audit_logs_url(user_name: @user.full_name), class: 'btn btn-secondary btn-sm' %>
