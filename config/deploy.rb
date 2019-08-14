@@ -17,7 +17,7 @@ set :pty, false
 
 set :sidekiq_config, -> { File.join(shared_path, 'config', 'sidekiq.yml') }
 
-set :db_local_clean, true
+set :db_local_clean, false
 set :db_remote_clean, true
 set :disallow_pushing, true
 
