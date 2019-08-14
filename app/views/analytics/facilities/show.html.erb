@@ -31,16 +31,6 @@
 
 <div class="downloads">
   <h4>Downloads</h4>
-  <% if policy(@facility).share_anonymized_data? %>
-    <p>
-    <%= link_to analytics_facility_share_path(facility_id: @facility.id),
-                class: "download",
-                data: { confirm: I18n.t('admin.phi_anonymized_download_alert') } do %>
-      <i class="far fa-file-excel mr-2"></i>Anonymized Data (XLS)
-    <% end %>
-    </p>
-  <% end %>
-  
   <% if policy(@facility).whatsapp_graphics? %>
     <%= render "shared/graphics/graphics_download_links",
                graphics_path: -> (options) { analytics_facility_graphics_path(options) },
