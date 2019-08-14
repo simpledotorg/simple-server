@@ -1,23 +1,12 @@
 class Analytics::DistrictsController < AnalyticsController
-  include GraphicsDownload
   include QuarterHelper
+  include GraphicsDownload
 
   before_action :set_organization_district
-  # before_action :set_analytics, only: [:show, :whatsapp_graphics]
+  before_action :set_cohort_analytics, only: [:show, :whatsapp_graphics]
 
   def show
-    cohort_analytics = Rails.cache.fetch(analytics_cache_key_cohort) {
-      @organization_district.cohort_analytics
-    }
-
-    dashboard_analytics = Rails.cache.fetch(analytics_cache_key_dashboard(:month)) {
-      @organization_district.dashboard_analytics(time_period: :month)
-    }
-
-    @analytics = {
-      cohort: cohort_analytics,
-      dashboard: dashboard_analytics
-    }
+    set_dashboard_analytics(:month)
   end
 
   def share_anonymized_data
@@ -36,18 +25,7 @@ class Analytics::DistrictsController < AnalyticsController
   end
 
   def whatsapp_graphics
-    cohort_analytics = Rails.cache.fetch(analytics_cache_key_cohort) {
-      @organization_district.cohort_analytics
-    }
-
-    dashboard_analytics = Rails.cache.fetch(analytics_cache_key_dashboard(:quarter)) {
-      @organization_district.dashboard_analytics(time_period: :quarter)
-    }
-
-    @analytics = {
-      cohort: cohort_analytics,
-      dashboard: dashboard_analytics
-    }
+    set_dashboard_analytics(:month)
 
     whatsapp_graphics_handler(
       @organization_district.organization.name,
@@ -56,14 +34,27 @@ class Analytics::DistrictsController < AnalyticsController
 
   private
 
-  def analytics_cache_key_cohort
+  def set_cohort_analytics
+    @cohort_analytics = Rails.cache.fetch(analytics_cache_key_cohort) { @organization_district.cohort_analytics }
+  end
+
+  def set_dashboard_analytics(time_period)
+    @dashboard_analytics = Rails.cache.fetch(analytics_cache_key_dashboard(time_period)) {
+      @organization_district.dashboard_analytics(time_period: time_period)
+    }
+  end
+
+  def analytics_cache_key
     sanitized_district_name = @organization_district.district_name.downcase.split(' ').join('-')
-    "analytics/organization/#{@organization_district.organization.id}/district/#{sanitized_district_name}/cohort"
+    "analytics/organization/#{@organization_district.organization.id}/district/#{sanitized_district_name}"
+  end
+
+  def analytics_cache_key_cohort
+    "#{analytics_cache_key}/cohort"
   end
 
   def analytics_cache_key_dashboard(time_period)
-    sanitized_district_name = @organization_district.district_name.downcase.split(' ').join('-')
-    "analytics/organization/#{@organization_district.organization.id}/district/#{sanitized_district_name}/dashboard/#{time_period}"
+    "#{analytics_cache_key}/dashboard/#{time_period}"
   end
 
   def set_organization_district

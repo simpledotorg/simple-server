@@ -39,9 +39,9 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
         get :show, params: { organization_id: organization.id, id: district_name }
 
         expect(response.status).to eq(200)
-        expect(assigns(:analytics)[:dashboard][facility.id].keys).to match_array([:follow_up_patients_by_period,
-                                                                                  :registered_patients_by_period,
-                                                                                  :total_registered_patients])
+        expect(assigns(:dashboard_analytics)[facility.id].keys).to match_array([:follow_up_patients_by_period,
+                                                                                :registered_patients_by_period,
+                                                                                :total_registered_patients])
       end
     end
 
