@@ -1,6 +1,6 @@
 <%= render 'shared/graphics/graphics_partial',
-           cohort_analytics: @cohort_analytics,
-           dashboard_analytics: @dashboard_analytics,
+           cohort_analytics: @analytics[:cohort],
+           dashboard_analytics: @analytics[:dashboard],
            organization_name: @organization_district.organization.name,
            name: @organization_district.district_name,
            quarter: @quarter,

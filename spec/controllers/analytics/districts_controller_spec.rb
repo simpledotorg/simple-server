@@ -61,16 +61,18 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
       let(:cohort_date3) { (today - (2 * 3).months).beginning_of_quarter }
 
       it 'caches the district correctly' do
-        today = Date.today.strftime("%Y-%m-%d")
         sanitized_district_name = organization_district.district_name.downcase.split(' ').join('-')
-        analytics_cache_key = "analytics/#{today}/organization/#{organization.id}/district/#{sanitized_district_name}"
+        analytics_cohort_cache_key = "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/cohort"
+        analytics_dashboard_cache_key = "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/dashboard/month"
 
         expected_cache_value =
-          { cohort: {
-            cohort_date1 => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
-            cohort_date2 => { :registered => 3, :followed_up => 0, :defaulted => 3, :controlled => 0, :uncontrolled => 0 },
-            cohort_date3 => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 }
-          },
+          {
+            cohort: {
+              cohort_date1 => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
+              cohort_date2 => { :registered => 3, :followed_up => 0, :defaulted => 3, :controlled => 0, :uncontrolled => 0 },
+              cohort_date3 => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 }
+            },
+
             dashboard: {
               facility.id => {
                 registered_patients_by_period: { Date.new(2019, 1, 1) => 3 },
@@ -82,8 +84,11 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
 
         get :show, params: { organization_id: organization.id, id: district_name }
 
-        expect(Rails.cache.exist?(analytics_cache_key)).to be true
-        expect(Rails.cache.fetch(analytics_cache_key)).to eq expected_cache_value
+        expect(Rails.cache.exist?(analytics_cohort_cache_key)).to be true
+        expect(Rails.cache.fetch(analytics_cohort_cache_key)).to eq expected_cache_value[:cohort]
+
+        expect(Rails.cache.exist?(analytics_dashboard_cache_key)).to be true
+        expect(Rails.cache.fetch(analytics_dashboard_cache_key)).to eq expected_cache_value[:dashboard]
       end
     end
   end
