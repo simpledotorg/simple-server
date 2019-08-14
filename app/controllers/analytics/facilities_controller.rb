@@ -30,7 +30,7 @@ class Analytics::FacilitiesController < AnalyticsController
   end
 
   def whatsapp_graphics
-    set_dashboard_analytics(:month)
+    set_dashboard_analytics(:quarter)
 
     whatsapp_graphics_handler(
       @facility.organization.name,

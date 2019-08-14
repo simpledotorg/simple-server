@@ -25,7 +25,7 @@ class Analytics::DistrictsController < AnalyticsController
   end
 
   def whatsapp_graphics
-    set_dashboard_analytics(:month)
+    set_dashboard_analytics(:quarter)
 
     whatsapp_graphics_handler(
       @organization_district.organization.name,
