@@ -3,9 +3,9 @@ class Analytics::DistrictsController < AnalyticsController
   include GraphicsDownload
 
   before_action :set_organization_district
-  before_action :set_cohort_analytics, only: [:show, :whatsapp_graphics]
 
   def show
+    set_cohort_analytics
     set_dashboard_analytics(:month)
   end
 
@@ -25,6 +25,7 @@ class Analytics::DistrictsController < AnalyticsController
   end
 
   def whatsapp_graphics
+    set_cohort_analytics
     set_dashboard_analytics(:quarter)
 
     whatsapp_graphics_handler(
