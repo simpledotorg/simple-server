@@ -34,7 +34,7 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
   end
 
   def first_patient_at_facility
-    current_facility.registered_patients.order(:device_created_at).first
+    current_facility.registered_patients.order(:recorded_at).first
   end
 
   def total_patients_count
@@ -43,15 +43,15 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
 
   def unique_patients_recorded_per_month
     BloodPressure.where(facility: current_facility)
-      .group_by_month(:device_created_at, last: MONTHS_TO_REPORT, reverse: true)
+      .group_by_month(:recorded_at, last: MONTHS_TO_REPORT, reverse: true)
       .count('distinct patient_id')
-      .select { |k, v| k >= first_patient_at_facility.device_created_at.at_beginning_of_month }
+      .select { |k, v| k >= first_patient_at_facility.recorded_at.at_beginning_of_month }
   end
 
   def patients_enrolled_per_month
     Patient.where(registration_facility_id: current_facility.id)
-      .group_by_month(:device_created_at, reverse: true, last: MONTHS_TO_REPORT)
+      .group_by_month(:recorded_at, reverse: true, last: MONTHS_TO_REPORT)
       .count
-      .select { |k, v| k >= first_patient_at_facility.device_created_at.at_beginning_of_month }
+      .select { |k, v| k >= first_patient_at_facility.recorded_at.at_beginning_of_month }
   end
 end
