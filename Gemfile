@@ -59,6 +59,7 @@ group :development, :test do
   gem 'capistrano-db-tasks', require: false
   gem 'parallel_tests', group: [:development, :test]
   gem 'rails-controller-testing'
+  gem 'rb-readline'
 end
 
 group :development do
