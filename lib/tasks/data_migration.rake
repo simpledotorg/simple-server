@@ -173,6 +173,7 @@ blood_pressures.recorded_at AS oldest_bp_recorded_at))
           full_name: master_user_full_name,
           sync_approval_status: 'denied',
           sync_approval_status_reason: 'User is an admin',
+          role: admin.role,
           device_created_at: admin.created_at,
           device_updated_at: admin.updated_at,
           created_at: admin.created_at,

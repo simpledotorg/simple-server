@@ -46,7 +46,7 @@ class Admin::UsersController < AdminController
 
   def disable_access
     reason_for_denial =
-      I18n.t('admin.denied_access_to_user', admin_name: current_admin.email.split('@').first) + "; " +
+      I18n.t('admin.denied_access_to_user', admin_name: current_user.email.split('@').first) + "; " +
         params[:reason_for_denial].to_s
 
     @user.sync_approval_denied(reason_for_denial)
@@ -55,7 +55,7 @@ class Admin::UsersController < AdminController
   end
 
   def enable_access
-    @user.sync_approval_allowed(I18n.t('admin.allowed_access_to_user', admin_name: current_admin.email.split('@').first))
+    @user.sync_approval_allowed(I18n.t('admin.allowed_access_to_user', admin_name: current_user.email.split('@').first))
     @user.save
     redirect_to request.referer || admin_user_url(@user), notice: 'User access has been enabled.'
   end

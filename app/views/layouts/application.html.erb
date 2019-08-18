@@ -50,7 +50,7 @@
         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
           <% if admin_signed_in? %>
             <ul class="navbar-nav mr-auto">
-              <% unless current_admin.has_role?(:counsellor) %>
+              <% unless current_user.has_role?(:counsellor) %>
                 <li class="nav-item">
                   <%= link_to "Dashboard", admin_root_path, class: "nav-link #{active_controller?("organizations", "facility_groups")}" %>
                 </li>
@@ -68,7 +68,7 @@
                 <% end %>
 
               <% end %>
-              <% unless current_admin.has_role?(:counsellor, :analyst) %>
+              <% unless current_user.has_role?(:counsellor, :analyst) %>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle dropdown-more" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   Manage
@@ -100,7 +100,7 @@
             <ul class="navbar-nav ml-auto">
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle dropdown-more" href="#" id="navbarDropdown2" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <%= current_admin.email %>
+                  <%= current_user.email %>
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                   <%= link_to('Logout', destroy_admin_session_path, method: :delete, class: "dropdown-item") %>

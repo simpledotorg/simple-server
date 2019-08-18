@@ -13,7 +13,13 @@ class AdminController < ApplicationController
     head :bad_request
   end
 
+  helper_method :current_user
+
   private
+
+  def current_user
+    current_admin.user
+  end
 
   def user_not_authorized
     flash[:alert] = "You are not authorized to perform this action."

@@ -7,7 +7,7 @@ RSpec.feature "User admin", type: :feature do
   let!(:bp_2) { create(:blood_pressure, user: user, systolic: 115, diastolic: 75, recorded_at: Time.parse("2019-03-15 2:15pm +05:30")) }
 
   before do
-    sign_in(owner)
+    sign_in(owner.email_authentication)
   end
 
   describe "show a user" do

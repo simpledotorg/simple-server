@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   devise_scope :admin do
-    authenticated :admin, ->(a) { a.has_role?(:counsellor) } do
+    authenticated :admin, ->(a) { a.user.has_role?(:counsellor) } do
       root to: "patients#index", as: :counsellor_root
     end
 
@@ -132,7 +132,8 @@ Rails.application.routes.draw do
     end
   end
 
-  devise_for :admins, controllers: { invitations: 'admins/invitations' }
+  # devise_for :admins, controllers: { invitations: 'admins/invitations' }
+  devise_for :admins, class_name: 'EmailAuthentication', controllers: { invitations: 'admins/invitations' }
   resources :admins
 
   namespace :analytics do

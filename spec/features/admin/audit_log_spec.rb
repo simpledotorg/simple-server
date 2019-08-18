@@ -6,7 +6,7 @@ RSpec.feature 'Admin::AuditLogs', type: :feature do
   let(:admin) { create(:admin, email: admin_email, password: admin_password, role: :owner) }
 
   it 'Display Empty table when user name is empty' do
-    login_as admin, :scope => :admin
+    login_as admin.email_authentication
     visit '/admin/audit_logs'
     fill_in "user_name", with: ""
     click_button 'Search'
@@ -23,7 +23,7 @@ RSpec.feature 'Admin::AuditLogs', type: :feature do
       FactoryBot.create_list(:audit_log, 5, user: priyanka)
       FactoryBot.create_list(:audit_log, 5, user: yash)
       FactoryBot.create_list(:audit_log, 5, user: rohit)
-      login_as admin, :scope => :admin
+      login_as admin.email_authentication
       visit '/admin/audit_logs'
       fill_in 'user_name', with: 'Ya'
       click_button 'Search'

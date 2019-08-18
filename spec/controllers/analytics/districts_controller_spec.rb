@@ -28,7 +28,7 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
   end
 
   before do
-    sign_in(admin)
+    sign_in(admin.email_authentication)
   end
 
   describe '#show' do

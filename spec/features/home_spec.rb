@@ -17,7 +17,7 @@ RSpec.feature "Home page", type: :feature do
     let!(:owner) { create(:admin, :owner, email: "owner@example.com") }
 
     before do
-      sign_in(owner)
+      sign_in(owner.email_authentication)
       visit root_path
     end
 
@@ -33,7 +33,7 @@ RSpec.feature "Home page", type: :feature do
     let!(:new_user) { create(:user, :sync_requested, facility: bathinda_chc) }
 
     before do
-      sign_in(supervisor)
+      sign_in(supervisor.email_authentication)
       visit root_path
     end
 

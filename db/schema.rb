@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190802121156) do
+ActiveRecord::Schema.define(version: 20190814081621) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -37,6 +37,7 @@ ActiveRecord::Schema.define(version: 20190802121156) do
     t.string "access_controllable_type", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "user_id"
     t.index ["access_controllable_id", "access_controllable_type"], name: "index_access_controls_on_controllable_id_and_type"
     t.index ["admin_id"], name: "index_admin_access_controls_on_admin_id"
   end
@@ -245,6 +246,7 @@ ActiveRecord::Schema.define(version: 20190802121156) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
+    t.string "role"
   end
 
   create_table "medical_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
