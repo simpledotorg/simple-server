@@ -1,6 +1,4 @@
 class User < ApplicationRecord
-  include HasAdminAccessControls
-
   self.table_name = 'master_users'
 
   AUTHENTICATION_TYPES = {
@@ -36,9 +34,9 @@ class User < ApplicationRecord
            source: :authenticatable,
            source_type: 'EmailAuthentication'
 
-  has_many :audit_logs, as: :auditable
+  has_many :user_permissions, foreign_key: :user_id
 
-  has_many :registered_patients, class_name: "Patient", foreign_key: 'registration_user_id'
+  has_many :audit_logs, as: :auditable
 
   validates :full_name, presence: true
 
@@ -144,6 +142,14 @@ class User < ApplicationRecord
     self.sync_approval_status_reason = reason
   end
 
+  def authorized?(permission_slug, resource: nil)
+    user_permissions.find_by(permission_slug: permission_slug, resource: resource).present?
+  end
+
+  def has_permission?(permission_slug)
+    user_permissions.find_by(permission_slug: permission_slug).present?
+  end
+
   def reset_phone_number_authentication_password!(password_digest)
     transaction do
       authentication = phone_number_authentication
@@ -157,5 +163,9 @@ class User < ApplicationRecord
 
   def self.requested_sync_approval
     where(sync_approval_status: :requested)
+  end
+
+  def has_role?(*roles)
+    roles.map(&:to_sym).include?(self.role.to_sym)
   end
 end

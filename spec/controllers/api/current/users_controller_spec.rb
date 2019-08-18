@@ -1,15 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe Api::Current::UsersController, type: :controller do
-  let(:supervisor) { FactoryBot.create(:admin, :supervisor) }
-  let(:organization_owner) { FactoryBot.create(:admin, :organization_owner) }
   let(:facility) { FactoryBot.create(:facility) }
   let!(:owner) { FactoryBot.create(:admin, :owner) }
-
-  before :each do
-    FactoryBot.create(:admin_access_control, admin: supervisor, access_controllable: facility.facility_group)
-    FactoryBot.create(:admin_access_control, admin: organization_owner, access_controllable: facility.organization)
-  end
+  let!(:supervisor) { FactoryBot.create(:admin, :supervisor, facility_group: facility.facility_group) }
+  let!(:organization_owner) { FactoryBot.create(:admin, :organization_owner, organization: facility.organization) }
 
   describe '#register' do
     describe 'registration payload is invalid' do

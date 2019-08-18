@@ -55,37 +55,64 @@ FactoryBot.define do
     transient do
       email { Faker::Internet.email(full_name) }
       password { Faker::Internet.password(6) }
+      facility_group { build(:facility_group) }
+      organization { build(:organization) }
     end
 
     full_name { Faker::Name.name }
     device_created_at { Time.now }
     device_updated_at { Time.now }
     sync_approval_status { User.sync_approval_statuses[:denied] }
-    email_authentications { create_list(:email_authentication, 1, email: email, password: password) }
+    email_authentications { build_list(:email_authentication, 1, email: email, password: password) }
+    user_permissions { [] }
 
     role :owner
 
     trait(:owner) do
       role :owner
+      user_permissions { [
+        build(:user_permission, permission_slug: :can_manage_all_organizations),
+        build(:user_permission, permission_slug: :can_manage_all_protocols),
+        build(:user_permission, permission_slug: :can_manage_audit_logs),
+        build(:user_permission, permission_slug: :can_manage_all_users)
+      ] }
     end
 
     trait(:supervisor) do
       role :supervisor
+      user_permissions { [
+        build(:user_permission, permission_slug: :can_manage_a_facility_group, resource: facility_group),
+        build(:user_permission, permission_slug: :can_access_appointment_information_for_facility_group, resource: facility_group),
+        build(:user_permission, permission_slug: :can_access_patient_information_for_facility_group, resource: facility_group),
+        build(:user_permission, permission_slug: :can_manage_users_for_facility_group, resource: facility_group)
+      ] }
     end
 
     trait(:analyst) do
       role :analyst
-      admin_access_controls { FactoryBot.create_list(:admin_access_control, 1, access_controllable: FactoryBot.create(:facility_group))}
+
+      user_permissions { [
+        build(:user_permission, permission_slug: :can_manage_a_facility_group, resource: facility_group)
+      ] }
     end
 
     trait(:counsellor) do
       role :counsellor
-      admin_access_controls { FactoryBot.create_list(:admin_access_control, 1, access_controllable: FactoryBot.create(:facility_group))}
+      user_permissions { [
+        build(:user_permission, permission_slug: :can_manage_a_facility_group, resource: facility_group),
+        build(:user_permission, permission_slug: :can_access_appointment_information_for_facility_group, resource: facility_group),
+        build(:user_permission, permission_slug: :can_access_patient_information_for_facility_group, resource: facility_group)
+      ] }
     end
 
     trait(:organization_owner) do
       role :organization_owner
-      admin_access_controls { FactoryBot.create_list(:admin_access_control, 1, access_controllable: FactoryBot.create(:organization))}
+      user_permissions { [
+        build(:user_permission, permission_slug: :can_manage_an_organization, resource: organization),
+        build(:user_permission, permission_slug: :can_access_appointment_information_for_facility_group, resource: organization),
+        build(:user_permission, permission_slug: :can_access_patient_information_for_facility_group, resource: organization),
+        build(:user_permission, permission_slug: :can_manage_users_for_organization, resource: organization)
+      ] }
     end
   end
 end

@@ -26,14 +26,17 @@ class ApprovalNotifierMailer < ApplicationMailer
   private
 
   def supervisor_emails
-    user.facility_group.admins.where(role: 'supervisor').map(&:email).join(',')
+    users = UserPermission.where(permission_slug: :can_manage_users_for_facility_group, resource: user.facility_group).map(&:user)
+    users.map(&:email).join(',')
   end
 
   def organization_owner_emails
-    user.organization.admins.where(role: 'organization_owner').map(&:email).join(',')
+    users = UserPermission.where(permission_slug: :can_manage_users_for_organization, resource: user.organization).map(&:user)
+    users.map(&:email).join(',')
   end
 
   def owner_emails
-    User.where(role: 'owner').map(&:email).join(',')
+    users = UserPermission.where(permission_slug: :can_manage_all_users).map(&:user)
+    users.map(&:email).join(',')
   end
 end

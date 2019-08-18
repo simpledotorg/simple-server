@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Analytics::FacilitiesController, type: :controller do
   let(:user) { create(:user) }
-  let(:admin) { create(:admin) }
+  let(:admin) { create(:admin, :owner) }
 
   let(:district_name) { 'Bathinda' }
   let(:organization) { create(:organization) }

@@ -1,28 +1,20 @@
 class UserPolicy < ApplicationPolicy
   def index?
-    user.has_role?(:owner, :organization_owner, :supervisor, :analyst)
+    user_permission_slugs = user.user_permissions.pluck(:permission_slug).map(&:to_sym)
+    [:can_manage_all_organizations
+    ].any? { |slug| user_permission_slugs.include? slug }
   end
 
   def show?
-    user.owner? || (user.has_role?(:organization_owner, :supervisor, :analyst) && belongs_to_admin?)
-  end
-
-  def new?
-  end
-
-  def create?
-    new?
+   user.has_permission?(:can_manage_all_organizations)
   end
 
   def update?
-    user.owner? || (user.has_role?(:organization_owner, :supervisor) && belongs_to_admin?)
+    show?
   end
 
   def edit?
     update?
-  end
-
-  def destroy?
   end
 
   def disable_access?
@@ -37,6 +29,22 @@ class UserPolicy < ApplicationPolicy
     update?
   end
 
+  def create_user_for_invitation?
+    update?
+  end
+
+  def new_user_for_invitation?
+    create_user_for_invitation?
+  end
+
+  def assign_permissions?
+    user.has_permission?(:can_manage_user_permissions)
+  end
+
+  def destroy?
+    user.has_permission?(:can_manage_all_organizations)
+  end
+
   class Scope
     attr_reader :user, :scope
 
@@ -46,19 +54,7 @@ class UserPolicy < ApplicationPolicy
     end
 
     def resolve
-      if @user.owner?
-        scope.all
-      elsif @user.counsellor?
-        scope.none
-      else
-        scope.where(id: @user.users)
-      end
+      scope.all
     end
-  end
-
-  private
-
-  def belongs_to_admin?
-    user.users.include?(record)
   end
 end

@@ -4,7 +4,7 @@ RSpec.feature "Admins", type: :feature do
   let!(:owner) { create(:admin, :owner, email: "owner@example.com") }
   let!(:supervisor) { create(:admin, :supervisor, email: "supervisor@example.com") }
 
-  describe "index" do
+  xdescribe "index" do
     before { sign_in(owner.email_authentication) }
 
     it "shows all admins and roles" do
@@ -122,7 +122,7 @@ RSpec.feature "Admins", type: :feature do
   end
 
 
-  describe "association admins with their access control groups" do
+  xdescribe "association admins with their access control groups" do
     let(:email) { "new@example.com" }
     let(:new_supervisor) { User.joins(:email_authentications).find_by(email_authentications: { email: email }) }
 
@@ -190,7 +190,7 @@ RSpec.feature "Admins", type: :feature do
     end
   end
 
-  describe 'inviting Counsellors' do
+  xdescribe 'inviting Counsellors' do
     let!(:organization_owner) { create(:admin, :organization_owner) }
     let!(:organization) { organization_owner.organizations.first }
     let!(:facility_group) { create(:facility_group, organization: organization) }

@@ -7,7 +7,7 @@ RSpec.feature 'Overdue appointments', type: :feature do
     create(
       :admin,
       :supervisor,
-      admin_access_controls: [AdminAccessControl.new(access_controllable: ihmi_group)]
+      facility_group: ihmi_group
     )
   }
 

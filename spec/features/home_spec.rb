@@ -28,8 +28,7 @@ RSpec.feature "Home page", type: :feature do
   end
 
   context "supervisor in bathinda" do
-    let!(:supervisor) { create(:admin, :supervisor, email: "supervisor@example.com") }
-    let!(:access_controls) { create(:admin_access_control, admin: supervisor, access_controllable: bathinda_chc.facility_group) }
+    let!(:supervisor) { create(:admin, :supervisor, email: "supervisor@example.com", facility_group: bathinda_chc.facility_group) }
     let!(:new_user) { create(:user, :sync_requested, facility: bathinda_chc) }
 
     before do

@@ -1,12 +1,12 @@
 require "rails_helper"
 
-RSpec.describe InvitationPolicy do
+RSpec.xdescribe InvitationPolicy do
   subject { described_class }
 
-  let(:owner) { create(:admin, :owner) }
-  let(:supervisor) { create(:admin, :supervisor) }
-  let(:analyst) { create(:admin, :analyst) }
-  let(:organization_owner) { create(:admin, :organization_owner) }
+  let(:owner) { create(:user, :with_email_authentication) }
+  let(:supervisor) { create(:user, :with_email_authentication) }
+  let(:analyst) { create(:user, :with_email_authentication) }
+  let(:organization_owner) { create(:user, :with_email_authentication) }
 
   permissions :new?, :create? do
     it "permits owners" do

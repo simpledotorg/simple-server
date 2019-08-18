@@ -1,14 +1,21 @@
 class OrganizationDistrictPolicy < ApplicationPolicy
   def index?
-    user.owner? || user.organization_owner?
+    user_permission_slugs = user.user_permissions.pluck(:permission_slug).map(&:to_sym)
+    [:can_manage_all_organizations,
+     :can_manage_an_organization,
+     :can_manage_a_facility_group
+    ].any? { |slug| user_permission_slugs.include? slug }
   end
 
   def show?
-    [:owner, :organization_owner, :supervisor, :analyst].include?(user.role.to_sym)
+    user_has_any_permissions?(
+      :can_manage_all_organizations,
+      [:can_manage_an_organization, record.organization],
+    )
   end
 
   def share_anonymized_data?
-    user.owner?
+    user_has_any_permissions?(:can_manage_all_organizations)
   end
 
   def whatsapp_graphics?

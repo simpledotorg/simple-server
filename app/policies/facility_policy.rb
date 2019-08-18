@@ -1,14 +1,22 @@
 class FacilityPolicy < ApplicationPolicy
   def index?
-    user.has_role?(:owner, :organization_owner, :supervisor, :analyst)
+    user_permission_slugs = user.user_permissions.pluck(:permission_slug).map(&:to_sym)
+    [:can_manage_all_organizations,
+     :can_manage_an_organization,
+     :can_manage_a_facility_group
+    ].any? { |slug| user_permission_slugs.include? slug }
   end
 
   def show?
-    user.owner? || (user.has_role?(:organization_owner, :analyst, :supervisor) && belongs_to_admin?)
+    user_has_any_permissions?(
+      :can_manage_all_organizations,
+      [:can_manage_an_organization, record.organization],
+      [:can_manage_a_facility_group, record.facility_group]
+    )
   end
 
   def share_anonymized_data?
-    user.owner?
+    user_has_any_permissions?(:can_manage_all_organizations)
   end
 
   def whatsapp_graphics?
@@ -16,7 +24,11 @@ class FacilityPolicy < ApplicationPolicy
   end
 
   def create?
-    user.owner? || user.organization_owner?
+    user_has_any_permissions?(
+      :can_manage_all_organizations,
+      [:can_manage_an_organization, record.organization],
+      [:can_manage_a_facility_group, record.facility_group]
+    )
   end
 
   def new?
@@ -24,7 +36,11 @@ class FacilityPolicy < ApplicationPolicy
   end
 
   def update?
-    user.owner? || (user.organization_owner? && belongs_to_admin?)
+    user_has_any_permissions?(
+      :can_manage_all_organizations,
+      [:can_manage_an_organization, record.organization],
+      [:can_manage_a_facility_group, record.facility_group]
+    )
   end
 
   def edit?
@@ -32,14 +48,27 @@ class FacilityPolicy < ApplicationPolicy
   end
 
   def destroy?
-    destroyable? && (user.owner? || (user.organization_owner? && belongs_to_admin?))
+    destroyable? && create?
   end
 
   def upload?
-    user.owner?
+    user_permission_slugs = user.user_permissions.pluck(:permission_slug).map(&:to_sym)
+    [:can_manage_all_organizations,
+     :can_manage_an_organization,
+     :can_manage_a_facility_group
+    ].any? { |slug| user_permission_slugs.include? slug }
   end
 
-  class Scope
+  def download_overdue_list?
+    user_has_any_permissions?(
+      :can_access_appointment_information_for_all_organizations,
+      [:can_access_appointment_information_for_organization, record.organization],
+      [:can_access_appointment_information_for_facility_group, record.facility_group],
+      [:can_access_appointment_information_for_facility, record]
+    )
+  end
+
+  class Scope < Scope
     attr_reader :user, :scope
 
     def initialize(user, scope)
@@ -48,7 +77,22 @@ class FacilityPolicy < ApplicationPolicy
     end
 
     def resolve
-      scope.where(facility_group: user.facility_groups)
+      if user.has_permission?(:can_manage_all_organizations)
+        return scope.all
+      elsif user.has_permission?(:can_manage_an_organization)
+        facility_groups = resources_for_permission(:can_manage_an_organization).flat_map(&:facility_groups)
+        return scope.where(facility_group: facility_groups)
+      elsif user.has_permission?(:can_manage_a_facility_group)
+        return scope.where(facility_group: resources_for_permission(:can_manage_a_facility_group))
+      elsif user.has_permission?(:can_access_appointment_information_for_facility_group)
+        return scope.where(facility_group: resources_for_permission(:can_access_appointment_information_for_facility_group))
+      elsif user.has_permission?(:can_access_patient_information_for_facility_group)
+        return scope.where(facility_group: resources_for_permission(:can_access_patient_information_for_facility_group))
+      elsif user.has_permission?(:can_access_appointment_information_for_organization)
+        return scope.where(organization: resources_for_permission(:can_access_appointment_information_for_organization))
+      end
+
+      scope.none
     end
   end
 
@@ -57,9 +101,4 @@ class FacilityPolicy < ApplicationPolicy
   def destroyable?
     record.registered_patients.none? && record.blood_pressures.none?
   end
-
-  def belongs_to_admin?
-    user.facilities.include?(record)
-  end
-
 end
