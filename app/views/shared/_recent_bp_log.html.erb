@@ -26,6 +26,7 @@
         </thead>
         <% last_date = nil %>
         <% blood_pressures.each do |bp| %>
+          <% next if bp.patient.blank? %>
           <% if print_date = (bp.recorded_at.to_date != last_date) %>
             <% last_date = bp.recorded_at.to_date %>
           <% end %>
