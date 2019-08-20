@@ -29,7 +29,7 @@ RSpec.feature "Home page", type: :feature do
 
   context "supervisor in bathinda" do
     let!(:supervisor) { create(:admin, :supervisor, email: "supervisor@example.com", facility_group: bathinda_chc.facility_group) }
-    let!(:new_user) { create(:user, :sync_requested, facility: bathinda_chc) }
+    let!(:new_user) { create(:user, :sync_requested, registration_facility: bathinda_chc) }
 
     before do
       sign_in(supervisor.email_authentication)

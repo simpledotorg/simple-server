@@ -94,7 +94,7 @@ RSpec.describe Admin::UsersController, type: :controller do
   end
 
   describe 'PUT #enable_access' do
-    let(:user) { FactoryBot.create(:user, registration_facility_id: facility.id) }
+    let(:user) { FactoryBot.create(:user, registration_facility: facility) }
 
     it 'sets sync_approval_status to allowed' do
       put :enable_access, params: { user_id: user.id, facility_id: facility.id }
@@ -104,7 +104,7 @@ RSpec.describe Admin::UsersController, type: :controller do
   end
 
   describe 'PUT #reset_otp' do
-    let(:user) { FactoryBot.create(:user, registration_facility_id: facility.id) }
+    let(:user) { FactoryBot.create(:user, registration_facility: facility) }
 
     before :each do
       sms_notification_service = double(SmsNotificationService.new(nil, nil))

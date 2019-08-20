@@ -3,8 +3,6 @@ FactoryBot.define do
     transient do
       password { '1234' }
       registration_facility { create(:facility) }
-      facility { registration_facility }
-      registration_facility_id { registration_facility.id }
       phone_number { Faker::PhoneNumber.phone_number }
     end
 
@@ -21,7 +19,7 @@ FactoryBot.define do
         :phone_number_authentication,
         phone_number: options.phone_number,
         password: options.password,
-        facility: options.registration_facility || options.facility,
+        facility: options.registration_facility
       )
       user.user_authentications = [
         UserAuthentication.new(authenticatable: phone_number_authentication)

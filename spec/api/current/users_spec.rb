@@ -12,7 +12,7 @@ describe 'Users Current API', swagger_doc: 'current/swagger.json' do
       parameter name: :id, in: :query, type: :string, description: 'User UUID'
 
       let(:known_phone_number) { Faker::PhoneNumber.phone_number }
-      let!(:user) { FactoryBot.create(:user, phone_number: known_phone_number, registration_facility_id: facility.id) }
+      let!(:user) { FactoryBot.create(:user, phone_number: known_phone_number, registration_facility: facility) }
       let(:id) { user.id }
 
       response '200', 'user is found' do
