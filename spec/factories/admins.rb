@@ -4,6 +4,11 @@ FactoryBot.define do
     password "helloworld"
     role :owner
 
+    transient do
+      organization { create(:organization) }
+      facility_group { create(:facility_group) }
+    end
+
     trait(:owner) do
       role :owner
     end
@@ -14,17 +19,18 @@ FactoryBot.define do
 
     trait(:analyst) do
       role :analyst
-      admin_access_controls { FactoryBot.create_list(:admin_access_control, 1, access_controllable: FactoryBot.create(:facility_group))}
+      admin_access_controls { FactoryBot.create_list(:admin_access_control, 1, access_controllable: facility_group) }
     end
 
     trait(:counsellor) do
       role :counsellor
-      admin_access_controls { FactoryBot.create_list(:admin_access_control, 1, access_controllable: FactoryBot.create(:facility_group))}
+      admin_access_controls { FactoryBot.create_list(:admin_access_control, 1, access_controllable: facility_group) }
     end
 
     trait(:organization_owner) do
       role :organization_owner
-      admin_access_controls { FactoryBot.create_list(:admin_access_control, 1, access_controllable: FactoryBot.create(:organization))}
+
+      admin_access_controls { FactoryBot.create_list(:admin_access_control, 1, access_controllable: organization) }
     end
   end
 end
