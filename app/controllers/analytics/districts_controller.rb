@@ -1,11 +1,12 @@
 class Analytics::DistrictsController < AnalyticsController
-  include GraphicsDownload
   include QuarterHelper
+  include GraphicsDownload
 
   before_action :set_organization_district
-  before_action :set_analytics, only: [:show, :whatsapp_graphics]
 
   def show
+    set_cohort_analytics
+    set_dashboard_analytics(:month)
   end
 
   def share_anonymized_data
@@ -24,6 +25,9 @@ class Analytics::DistrictsController < AnalyticsController
   end
 
   def whatsapp_graphics
+    set_cohort_analytics
+    set_dashboard_analytics(:quarter)
+
     whatsapp_graphics_handler(
       @organization_district.organization.name,
       @organization_district.district_name)
@@ -31,26 +35,19 @@ class Analytics::DistrictsController < AnalyticsController
 
   private
 
-  def set_analytics
-    if FeatureToggle.enabled?('CACHED_QUERIES_FOR_DASHBOARD')
-      @analytics = Rails.cache.fetch(analytics_cache_key) { analytics }
-    else
-      @analytics = analytics
-    end
+  def set_cohort_analytics
+    @cohort_analytics = set_analytics_cache(analytics_cache_key_cohort,
+                                            @organization_district.cohort_analytics)
   end
 
-  def analytics
-    {
-      cohort: @organization_district.cohort_analytics,
-      dashboard: @organization_district.dashboard_analytics
-    }
+  def set_dashboard_analytics(time_period)
+    @dashboard_analytics = set_analytics_cache(analytics_cache_key_dashboard(time_period),
+                                               @organization_district.dashboard_analytics(time_period: time_period))
   end
 
-  # invalidate analytics cache after 1 day
   def analytics_cache_key
-    today = Date.today.strftime("%Y-%m-%d")
     sanitized_district_name = @organization_district.district_name.downcase.split(' ').join('-')
-    "analytics/#{today}/organization/#{@organization_district.organization.id}/district/#{sanitized_district_name}"
+    "analytics/organization/#{@organization_district.organization.id}/district/#{sanitized_district_name}"
   end
 
   def set_organization_district
