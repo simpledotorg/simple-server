@@ -5,14 +5,16 @@
       <th></th>
       <th><%= t('dashboard.graphics.new_patients_registered') %></th>
       <th class="pl-3"><%= t('dashboard.graphics.patients_called_for_followup') %></th>
+      <th class="pl-3"><%= t('dashboard.graphics.patients_called_for_missed_followup') %></th>
     </tr>
     </thead>
     <tbody>
-    <% cohort_analytics.sort_by { |k, v| k }.reverse.each do |date, quarter_analytics| %>
+    <% repeat_for_last_n_quarters(quarter_datetime(@year.to_i, @quarter.to_i), n: 3) do |quarter| %>
       <tr>
-        <td class="snapshot-quarter"><%= quarter_string(date) %></td>
-        <td class="green text-right pr-3" style="border-right: 1px solid #dce4e8;"><%= quarter_analytics[:registered] %></td>
-        <td class="green text-right pl-3 pr-3"><%= quarter_analytics[:followed_up] %></td>
+        <td class="snapshot-quarter"><%= quarter_string(quarter) %></td>
+        <td class="green text-right pr-3" style="border-right: 1px solid #dce4e8;"><%= analytics_totals(dashboard_analytics, :registered_patients_by_period, quarter) %></td>
+        <td class="green text-right pl-3 pr-3" style="border-right: 1px solid #dce4e8;"><%= analytics_totals(dashboard_analytics, :follow_up_patients_by_period, quarter) %></td>
+        <td class="green text-right pl-3 pr-3"><%= analytics_totals(dashboard_analytics, :total_calls_made_by_period, quarter) %></td>
       </tr>
     <% end %>
     </tbody>

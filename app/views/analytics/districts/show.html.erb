@@ -8,10 +8,10 @@
   <h1><%= @organization_district.district_name %></h1>
 </div>
 
-<%= render 'shared/cohort_charts', cohort_analytics: @analytics[:cohort], quarter: current_quarter, year: current_year %>
+<%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics, quarter: current_quarter, year: current_year %>
 
 <%= render 'shared/analytics_table',
-           dashboard_analytics: @analytics[:dashboard],
+           dashboard_analytics: @dashboard_analytics,
            row_resource: Facility.order(:name),
            row_resource_description: "Facilities",
            row_resource_display_field: :name,
