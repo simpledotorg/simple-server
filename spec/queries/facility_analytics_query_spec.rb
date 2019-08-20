@@ -53,25 +53,25 @@ RSpec.describe FacilityAnalyticsQuery do
       end
     end
 
-    describe '#registered_patients_by_month' do
+    describe '#registered_patients_by_period' do
       it 'groups the registered patients by facility and beginning of month' do
         expected_result =
           { users.first.id =>
-              { :registered_patients_by_month =>
+              { :registered_patients_by_period =>
                   { first_jan => 3,
                     first_feb => 3,
                   }
               },
 
             users.second.id =>
-              { :registered_patients_by_month =>
+              { :registered_patients_by_period =>
                   { first_jan => 3,
                     first_feb => 3,
                   }
               }
           }
 
-        expect(analytics.registered_patients_by_month).to eq(expected_result)
+        expect(analytics.registered_patients_by_period).to eq(expected_result)
       end
     end
 
@@ -92,11 +92,11 @@ RSpec.describe FacilityAnalyticsQuery do
       end
     end
 
-    describe '#follow_up_patients_by_month' do
+    describe '#follow_up_patients_by_period' do
       it 'groups the follow up patients by facility and beginning of month' do
         expected_result =
           { users.first.id =>
-              { :follow_up_patients_by_month =>
+              { :follow_up_patients_by_period =>
                   { first_feb => 6,
                     first_mar => 12,
                     first_apr => 6
@@ -104,7 +104,7 @@ RSpec.describe FacilityAnalyticsQuery do
               },
 
             users.second.id =>
-              { :follow_up_patients_by_month =>
+              { :follow_up_patients_by_period =>
                   { first_feb => 6,
                     first_mar => 12,
                     first_apr => 6
@@ -112,13 +112,13 @@ RSpec.describe FacilityAnalyticsQuery do
               }
           }
 
-        expect(analytics.follow_up_patients_by_month).to eq(expected_result)
+        expect(analytics.follow_up_patients_by_period).to eq(expected_result)
       end
     end
   end
 
   context 'edge cases' do
-    describe '#follow_up_patients_by_month' do
+    describe '#follow_up_patients_by_period' do
       it 'should discount counting as follow-up if the last BP is removed' do
         patient = Timecop.travel(first_feb) do
           create(:patient, registration_facility: facility, registration_user: users.first)
@@ -137,18 +137,18 @@ RSpec.describe FacilityAnalyticsQuery do
 
         expected_result =
           { users.first.id =>
-              { :follow_up_patients_by_month =>
+              { :follow_up_patients_by_period =>
                   {
                     first_mar => 1
                   }
               }
           }
 
-        expect(analytics.follow_up_patients_by_month).to eq(expected_result)
+        expect(analytics.follow_up_patients_by_period).to eq(expected_result)
       end
     end
 
-    describe '#registered_patients_by_month' do
+    describe '#registered_patients_by_period' do
       it 'should count patients as registered even if they do not have a bp' do
         Timecop.travel(first_may) do
           create_list(:patient, 3, registration_facility: facility, registration_user: users.first)
@@ -156,23 +156,23 @@ RSpec.describe FacilityAnalyticsQuery do
 
         expected_result =
           { users.first.id =>
-              { :registered_patients_by_month =>
+              { :registered_patients_by_period =>
                   {
                     first_may => 3
                   }
               }
           }
 
-        expect(analytics.registered_patients_by_month).to eq(expected_result)
+        expect(analytics.registered_patients_by_period).to eq(expected_result)
       end
     end
   end
 
   context 'when there is no data available' do
     it 'returns nil for all analytics queries' do
-      expect(analytics.registered_patients_by_month).to eq(nil)
+      expect(analytics.registered_patients_by_period).to eq(nil)
       expect(analytics.total_registered_patients).to eq(nil)
-      expect(analytics.follow_up_patients_by_month).to eq(nil)
+      expect(analytics.follow_up_patients_by_period).to eq(nil)
     end
   end
 end

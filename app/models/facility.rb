@@ -57,13 +57,14 @@ class Facility < ApplicationRecord
     results
   end
 
-  def dashboard_analytics
-    query = FacilityAnalyticsQuery.new(self)
+  def dashboard_analytics(time_period: :month)
+    query = FacilityAnalyticsQuery.new(self,
+                                       time_period)
     results = [
-      query.registered_patients_by_month,
+      query.registered_patients_by_period,
       query.total_registered_patients,
-      query.follow_up_patients_by_month,
-      query.total_calls_made_by_month
+      query.follow_up_patients_by_period,
+      query.total_calls_made_by_period
     ].compact
 
     return {} if results.blank?
