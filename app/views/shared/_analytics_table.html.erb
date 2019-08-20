@@ -10,6 +10,9 @@
               <col style="border-left: 1px solid #dce4e8;">
               <col>
               <col>
+              <col style="border-left: 1px solid #dce4e8;">
+              <col>
+              <col>
           </colgroup>
           <thead>
           <tr>
@@ -17,20 +20,26 @@
             <th class="row-label"><strong>Registered patients</strong></th>
             <th class="row-label" colspan="3"><strong>Follow-up patients</strong></th>
             <th class="row-label" colspan="3"><strong>New registrations</strong></th>
+            <th class="row-label" colspan="3"><strong>Patients called</strong></th>
           </tr>
 
           <tr>
             <!--Registered patients-->
-            <th class="row-label" style="padding-bottom: 8px;">Total</th>
+            <th class="row-label" style="padding: 8px 4px;">Total</th>
 
             <!--Follow-up patients-->
             <% repeat_for_last(months: 3) do |month| %>
-              <th class="row-label" style="padding-bottom: 8px;"><%= month.strftime("%B %Y") %></th>
+              <th class="row-label" style="padding: 8px 4px;"><%= month.strftime("%^b-%Y") %></th>
             <% end %>
 
             <!--New registrations-->
             <% repeat_for_last(months: 3) do |month| %>
-              <th class="row-label" style="padding-bottom: 8px;"><%= month.strftime("%B %Y") %></th>
+              <th class="row-label" style="padding: 8px 4px;"><%= month.strftime("%^b-%Y") %></th>
+            <% end %>
+              
+            <!--Calls made -->
+            <% repeat_for_last(months: 3) do |month| %>
+              <th class="row-label" style="padding: 8px 4px;"><%= month.strftime("%^b-%Y") %></th>
             <% end %>
           </tr>
 
@@ -56,6 +65,13 @@
             <% repeat_for_last(months: 3) do |month| %>
               <td class="row-total" style="text-align: center;">
                 <%= analytics_month_totals(dashboard_analytics, :registered_patients_by_month, month) %>
+              </td>
+            <% end %>
+            
+            <!--Calls made -->
+            <% repeat_for_last(months: 3) do |month| %>
+              <td class="row-total" style="text-align: center;">
+                <%= analytics_month_totals(dashboard_analytics, :total_calls_made_by_month, month) %>
               </td>
             <% end %>
           </tr>
@@ -85,6 +101,13 @@
                 <% repeat_for_last(months: 3) do |month| %>
                   <td style="text-align: center;">
                     <%= dash_if_zero(dashboard_analytics.dig(resource.id, :registered_patients_by_month, month)) %>
+                  </td>
+                <% end %>
+                
+                <!--Calls made -->
+                <% repeat_for_last(months: 3) do |month| %>
+                  <td style="text-align: center;">
+                    <%= dash_if_zero(dashboard_analytics.dig(resource.id, :total_calls_made_by_month, month)) %>
                   </td>
                 <% end %>
               </tr>
