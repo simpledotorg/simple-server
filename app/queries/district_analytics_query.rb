@@ -58,6 +58,19 @@ class DistrictAnalyticsQuery
     group_by_facility_and_date(@total_calls_made_by_period, :total_calls_made_by_period)
   end
 
+  def total_calls_made_by_month
+    @total_calls_made_by_month ||=
+      CallLog
+        .result_completed
+        .joins('INNER JOIN phone_number_authentications ON phone_number_authentications.phone_number = call_logs.caller_phone_number')
+        .joins('INNER JOIN facilities ON facilities.id = phone_number_authentications.registration_facility_id')
+        .where(phone_number_authentications: { registration_facility_id: facilities })
+        .group('facilities.id::uuid', date_truncate_sql('call_logs', 'end_time', period: 'month'))
+        .count
+
+    group_by_facility_and_date(@total_calls_made_by_month, :total_calls_made_by_month)
+  end
+
   private
 
   def date_truncate_sql(table, column, period)
