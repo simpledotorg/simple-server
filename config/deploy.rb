@@ -25,7 +25,7 @@ append :linked_files, ".env.production"
 append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
 
 set :whenever_path, -> { release_path }
-set :whenever_roles, [:cron, :whitelist_phone_numbers]
+set :whenever_roles, [:cron, :whitelist_phone_numbers, :seed]
 
 ENVS_FOR_CONFIRMATION_STEP = ["production", "staging"]
 namespace :deploy do

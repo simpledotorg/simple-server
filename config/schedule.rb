@@ -3,7 +3,7 @@ require 'tzinfo'
 set :output, "/home/deploy/apps/simple-server/shared/log/cron.log"
 
 env :PATH, ENV['PATH']
-DEFAULT_CRON_TIME_ZONE='Asia/Kolkata'
+DEFAULT_CRON_TIME_ZONE = 'Asia/Kolkata'
 
 def local(time)
   TZInfo::Timezone.get(DEFAULT_CRON_TIME_ZONE).local_to_utc(Time.parse(time))
@@ -19,4 +19,12 @@ end
 
 every :week, at: local('11:00 pm'), roles: [:whitelist_phone_numbers] do
   rake 'exotel_tasks:update_all_patients_phone_number_details'
+end
+
+every :week, at: local('11:00 pm'), roles: [:seed] do
+  rake 'db:drop'
+end
+
+every :week, at: local('11:00 pm'), roles: [:seed] do
+  rake 'db:seed'
 end
