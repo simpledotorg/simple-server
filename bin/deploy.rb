@@ -230,9 +230,6 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 end
 
-class DeploymentError < StandardError;
-end
-
 Deploy
   .new(current_environment:
          ARGV[0],
