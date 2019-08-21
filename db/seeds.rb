@@ -1,16 +1,16 @@
-number_of_months = ENV["NUMBER_OF_MONTHS"].to_i
+number_of_months = ENV.fetch("NUMBER_OF_MONTHS") { 12 }.to_i
 
 module SeedConstants
-  NUMBER_OF_ORGANIZATIONS = 5
+  NUMBER_OF_ORGANIZATIONS = rand(2..5)
   NUMBER_OF_PROTOCOLS = 3
-  FACILITY_GROUPS_PER_ORGANIZATION = 2
-  FACILITIES_PER_FACILITY_GROUP = 2
-  USERS_PER_FACILITY = 2
-  PATIENTS_PER_USER = 10
+  FACILITY_GROUPS_PER_ORGANIZATION = rand(2..5)
+  FACILITIES_PER_FACILITY_GROUP = rand(2..5)
+  USERS_PER_FACILITY = rand(2..5)
+  NUMBER_OF_PATIENTS = rand(5..10)
   MEDICAL_HISTORIES_PER_PATIENT = 3
   PRESCRIPTION_DRUGS_PER_PATIENT = 3
-  BLOOD_PRESSURES_PER_PATIENT = 10
-  APPOINTMENTS_PER_PATIENT = 10
+  BLOOD_PRESSURES_PER_PATIENT = rand(10..15)
+  APPOINTMENTS_PER_PATIENT = rand(5..10)
 end
 
 def create_protocols
@@ -35,11 +35,11 @@ def create_organization_patient_records(organization, date)
   facility_groups = organization.facility_groups
 
   facility_groups.flat_map(&:facilities).flat_map(&:registered_patients).each do |patient|
-    create_blood_pressures(patient, date) if Random.rand(1..10) < 7
+    create_blood_pressures(patient, date) if Random.rand(1..10) < 8
   end
 
   facility_groups.flat_map(&:users).each do |user|
-    2.times do
+    SeedConstants::NUMBER_OF_PATIENTS.times do
       patient = FactoryBot.create(:patient, registration_facility: user.registration_facility,
                                   registration_user: user,
                                   created_at: date,
@@ -52,8 +52,6 @@ def create_organization_patient_records(organization, date)
       create_appointments(patient, date)
     end
   end
-  # create bps for 70% of all existing patients with first bp < 6 months ago
-  nil
 end
 
 def create_facility_groups(organization, creation_date)
@@ -87,6 +85,16 @@ def create_users(facilities, creation_date)
     SeedConstants::USERS_PER_FACILITY.times do
       user = FactoryBot.create(:user, registration_facility: f, created_at: creation_date, updated_at: creation_date)
       create_patients(user, creation_date)
+
+      FactoryBot.create(:user, :sync_requested,
+                        registration_facility: f,
+                        created_at: creation_date,
+                        updated_at: creation_date) if rand(1..10) < 5
+
+      FactoryBot.create(:user, :sync_denied,
+                        registration_facility: f,
+                        created_at: creation_date,
+                        updated_at: creation_date) if rand(1..10) < 5
     end
   end
 end
@@ -94,7 +102,7 @@ end
 def create_patients(user, creation_date)
   puts "Creating patients for #{creation_date}"
 
-  SeedConstants::PATIENTS_PER_USER.times do
+  SeedConstants::NUMBER_OF_PATIENTS.times do
     patient = FactoryBot.create(:patient, registration_facility: user.registration_facility,
                                 registration_user: user,
                                 created_at: creation_date,
