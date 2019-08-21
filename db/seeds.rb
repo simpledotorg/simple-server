@@ -1,11 +1,24 @@
 number_of_months = ENV["NUMBER_OF_MONTHS"].to_i
 
+module SeedConstants
+  NUMBER_OF_ORGANIZATIONS = 5
+  NUMBER_OF_PROTOCOLS = 3
+  FACILITY_GROUPS_PER_ORGANIZATION = 2
+  FACILITIES_PER_FACILITY_GROUP = 2
+  USERS_PER_FACILITY = 2
+  PATIENTS_PER_USER = 10
+  MEDICAL_HISTORIES_PER_PATIENT = 3
+  PRESCRIPTION_DRUGS_PER_PATIENT = 3
+  BLOOD_PRESSURES_PER_PATIENT = 10
+  APPOINTMENTS_PER_PATIENT = 10
+end
+
 def create_protocols
   puts "Creating protocols"
 
   protocol = FactoryBot.create(:protocol)
 
-  3.times do
+  SeedConstants::NUMBER_OF_PROTOCOLS.times do
     FactoryBot.create(:protocol_drug, protocol: protocol)
   end
 end
@@ -18,10 +31,35 @@ def create_organization(creation_date)
   organization
 end
 
+def create_organization_patient_records(organization, date)
+  facility_groups = organization.facility_groups
+
+  facility_groups.flat_map(&:facilities).flat_map(&:registered_patients).each do |patient|
+    create_blood_pressures(patient, date) if Random.rand(1..10) < 7
+  end
+
+  facility_groups.flat_map(&:users).each do |user|
+    2.times do
+      patient = FactoryBot.create(:patient, registration_facility: user.registration_facility,
+                                  registration_user: user,
+                                  created_at: date,
+                                  updated_at: date,
+                                  device_created_at: date,
+                                  device_updated_at: date)
+      create_medical_history(patient, date)
+      create_prescription_drugs(patient, date)
+      create_blood_pressures(patient, date)
+      create_appointments(patient, date)
+    end
+  end
+  # create bps for 70% of all existing patients with first bp < 6 months ago
+  nil
+end
+
 def create_facility_groups(organization, creation_date)
   puts "Creating facility groups for #{creation_date}"
 
-  2.times do
+  SeedConstants::FACILITY_GROUPS_PER_ORGANIZATION.times do
     facility_group = FactoryBot.create(:facility_group, organization: organization, created_at: creation_date, updated_at: creation_date)
 
     facilities = create_and_return_facilities(facility_group, creation_date)
@@ -34,7 +72,7 @@ def create_and_return_facilities(facility_group, creation_date)
 
   facilities = []
 
-  2.times do
+  SeedConstants::FACILITIES_PER_FACILITY_GROUP.times do
     facility = FactoryBot.create(:facility, facility_group: facility_group, created_at: creation_date, updated_at: creation_date)
     facilities << facility
   end
@@ -46,7 +84,7 @@ def create_users(facilities, creation_date)
   puts "Creating users for #{creation_date}"
 
   facilities.each do |f|
-    2.times do
+    SeedConstants::USERS_PER_FACILITY.times do
       user = FactoryBot.create(:user, registration_facility: f, created_at: creation_date, updated_at: creation_date)
       create_patients(user, creation_date)
     end
@@ -56,7 +94,7 @@ end
 def create_patients(user, creation_date)
   puts "Creating patients for #{creation_date}"
 
-  10.times do
+  SeedConstants::PATIENTS_PER_USER.times do
     patient = FactoryBot.create(:patient, registration_facility: user.registration_facility,
                                 registration_user: user,
                                 created_at: creation_date,
@@ -78,7 +116,7 @@ end
 def create_medical_history(patient, creation_date)
   puts "Creating medical histories for #{creation_date}"
 
-  3.times do
+  SeedConstants::MEDICAL_HISTORIES_PER_PATIENT.times do
     FactoryBot.create(:medical_history, :unknown,
                       patient: patient,
                       created_at: creation_date,
@@ -94,7 +132,7 @@ end
 def create_prescription_drugs(patient, creation_date)
   puts "Creating prescription drugs for #{creation_date}"
 
-  3.times do
+  SeedConstants::PRESCRIPTION_DRUGS_PER_PATIENT.times do
     FactoryBot.create(:prescription_drug, patient: patient,
                       facility: patient.registration_facility,
                       created_at: creation_date,
@@ -102,48 +140,61 @@ def create_prescription_drugs(patient, creation_date)
   end
 end
 
+def create_normal_blood_pressures(creation_date, patient)
+  FactoryBot.create(:blood_pressure, :under_control,
+                    patient: patient,
+                    facility: patient.registration_facility,
+                    user: patient.registration_user,
+                    created_at: creation_date,
+                    updated_at: creation_date,
+                    recorded_at: creation_date)
+end
+
+def create_high_blood_pressures(creation_date, patient)
+  FactoryBot.create(:blood_pressure, :high,
+                    patient: patient,
+                    facility: patient.registration_facility,
+                    user: patient.registration_user,
+                    created_at: creation_date,
+                    updated_at: creation_date,
+                    recorded_at: creation_date)
+end
+
+def create_very_high_blood_pressures(creation_date, patient)
+  FactoryBot.create(:blood_pressure, :very_high,
+                    patient: patient,
+                    facility: patient.registration_facility,
+                    user: patient.registration_user,
+                    created_at: creation_date,
+                    updated_at: creation_date,
+                    recorded_at: creation_date)
+end
+
+def create_critical_blood_pressures(creation_date, patient)
+  FactoryBot.create(:blood_pressure, :critical,
+                    patient: patient,
+                    facility: patient.registration_facility,
+                    user: patient.registration_user,
+                    created_at: creation_date,
+                    updated_at: creation_date,
+                    recorded_at: creation_date)
+end
+
 def create_blood_pressures(patient, creation_date)
   puts "Creating blood pressures for #{creation_date}"
 
-  3.times do
-    FactoryBot.create(:blood_pressure, :under_control,
-                      patient: patient,
-                      facility: patient.registration_facility,
-                      user: patient.registration_user,
-                      created_at: creation_date,
-                      updated_at: creation_date,
-                      recorded_at: creation_date)
-
-    FactoryBot.create(:blood_pressure, :high,
-                      patient: patient,
-                      facility: patient.registration_facility,
-                      user: patient.registration_user,
-                      created_at: creation_date,
-                      updated_at: creation_date,
-                      recorded_at: creation_date)
-
-    FactoryBot.create(:blood_pressure, :very_high,
-                      patient: patient,
-                      facility: patient.registration_facility,
-                      user: patient.registration_user,
-                      created_at: creation_date,
-                      updated_at: creation_date,
-                      recorded_at: creation_date)
-
-    FactoryBot.create(:blood_pressure, :critical,
-                      patient: patient,
-                      facility: patient.registration_facility,
-                      user: patient.registration_user,
-                      created_at: creation_date,
-                      updated_at: creation_date,
-                      recorded_at: creation_date)
+  SeedConstants::BLOOD_PRESSURES_PER_PATIENT.times do
+    create_normal_blood_pressures(creation_date, patient)
+    create_high_blood_pressures(creation_date, patient)
+    create_very_high_blood_pressures(creation_date, patient)
+    create_critical_blood_pressures(creation_date, patient)
   end
 end
 
 def create_appointments(patient, creation_date)
   puts "Creating appointments for #{creation_date}"
 
-  3.times do
+  SeedConstants::APPOINTMENTS_PER_PATIENT.times do
     FactoryBot.create(:appointment, patient: patient,
                       facility: patient.registration_facility,
                       created_at: creation_date,
@@ -203,21 +254,22 @@ end
 def create_seed_data(number_of_months)
   create_protocols
 
-  number_of_months.times do |month_number|
-    creation_date = month_number.months.ago
-
-    organization = create_organization(creation_date)
+  organizations = []
+  SeedConstants::NUMBER_OF_ORGANIZATIONS.times do
+    organization = create_organization(number_of_months.months.ago)
     create_admins(organization)
 
+    organizations << organization
     puts
+  end
+
+  number_of_months.downto(0) do |month_number|
+    creation_date = month_number.months.ago
+
+    organizations.each do |organization|
+      create_organization_patient_records(organization, creation_date)
+    end
   end
 end
 
 create_seed_data(number_of_months)
-
-# TwilioSmsDeliveryDetail
-#
-# MasterUser
-# PhoneNumberAuthentication
-# UserAuthentication
-
