@@ -176,15 +176,13 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   def wrap_step_in_box(step_name, &blk)
     puts "#{step_name}"
     puts "+---------------------------------------+"
-    result_string = begin
-      yield(blk)
-      colorize("\u2713".encode('utf-8'), 32)
-    rescue StandardError
-      colorize("\u2717".encode('utf-8'), 31)
-    end
-
+    yield(blk)
+    puts colorize("\u2713".encode('utf-8'), 32)
+  rescue DeployError
+    puts colorize("\u2717".encode('utf-8'), 31)
+    exit 1
+  ensure
     puts "+---------------------------------------+"
-    puts result_string
   end
 
   def execute_safely(cmd, env_vars = {}, confirm: false)
