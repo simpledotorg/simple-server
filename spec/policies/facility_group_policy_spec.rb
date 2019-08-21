@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.xdescribe FacilityGroupPolicy do
+RSpec.describe FacilityGroupPolicy do
   subject { described_class }
 
   context 'user can manage all organizations' do

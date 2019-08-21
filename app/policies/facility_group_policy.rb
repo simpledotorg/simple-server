@@ -16,10 +16,10 @@ class FacilityGroupPolicy < ApplicationPolicy
   end
 
   def create?
-    user_permission_slugs = user.user_permissions.pluck(:permission_slug).map(&:to_sym)
-    [:can_manage_all_organizations,
-     :can_manage_an_organization
-    ].any? { |slug| user_permission_slugs.include? slug }
+    user_has_any_permissions?(
+      :can_manage_all_organizations,
+      [:can_manage_an_organization, record.organization]
+    )
   end
 
   def new?
