@@ -12,7 +12,7 @@ class FacilityPolicy < ApplicationPolicy
   end
 
   def whatsapp_graphics?
-    show?
+    user.has_role?(:organization_owner, :supervisor) && belongs_to_admin?
   end
 
   def create?
@@ -61,5 +61,4 @@ class FacilityPolicy < ApplicationPolicy
   def belongs_to_admin?
     user.facilities.include?(record)
   end
-
 end
