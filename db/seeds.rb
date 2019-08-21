@@ -9,7 +9,7 @@ module SeedConstants
   NUMBER_OF_PATIENTS = rand(5..10)
   MEDICAL_HISTORIES_PER_PATIENT = 3
   PRESCRIPTION_DRUGS_PER_PATIENT = 3
-  BLOOD_PRESSURES_PER_PATIENT = rand(10..15)
+  BLOOD_PRESSURES_PER_PATIENT = rand(5..10)
   APPOINTMENTS_PER_PATIENT = rand(5..10)
 end
 
@@ -78,6 +78,26 @@ def create_and_return_facilities(facility_group, creation_date)
   facilities
 end
 
+def create_sync_requested_users(facility, creation_date)
+  user = FactoryBot.create(:user,
+                           registration_facility: facility,
+                           created_at: creation_date,
+                           updated_at: creation_date)
+  user.sync_approval_status = 'requested'
+  user.sync_approval_status_reason = nil
+  user.save
+end
+
+def create_sync_denied_users(facility, creation_date)
+  user = FactoryBot.create(:user,
+                           registration_facility: facility,
+                           created_at: creation_date,
+                           updated_at: creation_date)
+  user.sync_approval_status = 'denied'
+  user.sync_approval_status_reason = 'some random reason'
+  user.save
+end
+
 def create_users(facilities, creation_date)
   puts "Creating users for #{creation_date}"
 
@@ -86,15 +106,8 @@ def create_users(facilities, creation_date)
       user = FactoryBot.create(:user, registration_facility: f, created_at: creation_date, updated_at: creation_date)
       create_patients(user, creation_date)
 
-      FactoryBot.create(:user, :sync_requested,
-                        registration_facility: f,
-                        created_at: creation_date,
-                        updated_at: creation_date) if rand(1..10) < 5
-
-      FactoryBot.create(:user, :sync_denied,
-                        registration_facility: f,
-                        created_at: creation_date,
-                        updated_at: creation_date) if rand(1..10) < 5
+      create_sync_requested_users(f, creation_date) if rand(1..10) < 5
+      create_sync_denied_users(f, creation_date) if rand(1..10) < 5
     end
   end
 end
@@ -148,54 +161,19 @@ def create_prescription_drugs(patient, creation_date)
   end
 end
 
-def create_normal_blood_pressures(creation_date, patient)
-  FactoryBot.create(:blood_pressure, :under_control,
-                    patient: patient,
-                    facility: patient.registration_facility,
-                    user: patient.registration_user,
-                    created_at: creation_date,
-                    updated_at: creation_date,
-                    recorded_at: creation_date)
-end
-
-def create_high_blood_pressures(creation_date, patient)
-  FactoryBot.create(:blood_pressure, :high,
-                    patient: patient,
-                    facility: patient.registration_facility,
-                    user: patient.registration_user,
-                    created_at: creation_date,
-                    updated_at: creation_date,
-                    recorded_at: creation_date)
-end
-
-def create_very_high_blood_pressures(creation_date, patient)
-  FactoryBot.create(:blood_pressure, :very_high,
-                    patient: patient,
-                    facility: patient.registration_facility,
-                    user: patient.registration_user,
-                    created_at: creation_date,
-                    updated_at: creation_date,
-                    recorded_at: creation_date)
-end
-
-def create_critical_blood_pressures(creation_date, patient)
-  FactoryBot.create(:blood_pressure, :critical,
-                    patient: patient,
-                    facility: patient.registration_facility,
-                    user: patient.registration_user,
-                    created_at: creation_date,
-                    updated_at: creation_date,
-                    recorded_at: creation_date)
-end
-
 def create_blood_pressures(patient, creation_date)
   puts "Creating blood pressures for #{creation_date}"
 
   SeedConstants::BLOOD_PRESSURES_PER_PATIENT.times do
-    create_normal_blood_pressures(creation_date, patient)
-    create_high_blood_pressures(creation_date, patient)
-    create_very_high_blood_pressures(creation_date, patient)
-    create_critical_blood_pressures(creation_date, patient)
+    [:under_control, :high, :very_high, :critical].each do |bp_type|
+      FactoryBot.create(:blood_pressure, bp_type,
+                        patient: patient,
+                        facility: patient.registration_facility,
+                        user: patient.registration_user,
+                        created_at: creation_date,
+                        updated_at: creation_date,
+                        recorded_at: creation_date)
+    end
   end
 end
 
@@ -212,7 +190,7 @@ def create_appointments(patient, creation_date)
                       patient: patient,
                       facility: patient.registration_facility,
                       created_at: creation_date,
-                      updated_at: creation_date)
+                      updated_at: creation_date) if rand(1..10) < 5
   end
 end
 
