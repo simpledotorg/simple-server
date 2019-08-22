@@ -129,3 +129,9 @@ en:
     10: 'October'
     11: 'November'
     12: 'December'
+
+  faker:
+    address:
+      state: ['Punjab', 'Maharashtra', 'Tamil Nadu', 'Kerala', 'Sikkim']
+      district: ['Mansa', 'Bathinda', 'Gurdaspur', 'East Mumbai', 'West Mumbai']
+      city: ['Chandigarh', 'Mumbai', 'Chennai', 'Thiruvananthapuram', 'Gangtok']

@@ -245,16 +245,7 @@ namespace :generate do
 
       facility_groups.flat_map(&:users).each do |user|
         SeedConstants::NUMBER_OF_PATIENTS.times do
-          patient = FactoryBot.create(:patient, registration_facility: user.registration_facility,
-                                      registration_user: user,
-                                      created_at: date,
-                                      updated_at: date,
-                                      device_created_at: date,
-                                      device_updated_at: date)
-          create_medical_history(patient, date)
-          create_prescription_drugs(patient, date)
-          create_blood_pressures(patient, date)
-          create_appointments(patient, date)
+          create_patients(user, date)
         end
       end
     end
@@ -325,8 +316,16 @@ namespace :generate do
                                     registration_user: user,
                                     created_at: creation_date,
                                     updated_at: creation_date,
+                                    age_updated_at: creation_date,
                                     device_created_at: creation_date,
                                     device_updated_at: creation_date)
+
+        if patient.age.nil?
+          patient.age = rand(18..100)
+          patient.date_of_birth = nil
+          patient.save
+        end
+
         create_medical_history(patient, creation_date)
         create_prescription_drugs(patient, creation_date)
         create_blood_pressures(patient, creation_date)
@@ -403,6 +402,7 @@ namespace :generate do
       puts "Creating admins for organization #{organization.name}"
 
       facility_group = organization.facility_groups.first
+
       FactoryBot.create(:admin, :counsellor, facility_group: facility_group)
       FactoryBot.create(:admin, :analyst, facility_group: facility_group)
       FactoryBot.create(:admin, :supervisor)
@@ -456,7 +456,7 @@ namespace :generate do
         puts
       end
 
-      number_of_months.downto(0) do |month_number|
+      number_of_months.downto(1) do |month_number|
         creation_date = month_number.months.ago
 
         organizations.each do |organization|
