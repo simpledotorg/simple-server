@@ -18,6 +18,7 @@ $grey-darkest: #2F363D;
 
 $highlight: #E9F3FF; /* LIGHT BLUE */
 $blue: #0075EB;
+$blue-mid: #9db8d2;
 $blue-light: #E9F3FF;
 $blue-dark: #0c3966;
 $green-light: #E0FFED;
@@ -339,6 +340,26 @@ table span.label {
 
 nav.navbar {
     background: #fff !important;
+}
+
+.table thead.thead-light th {
+    //background: #fff;
+    font-size: 12px;
+    color: $grey-dark;
+}
+
+.table thead.thead-light th small {
+    font-size: 12px;
+}
+
+.table thead.thead-light th {
+    //background: #fff;
+    font-size: 12px;
+    color: $grey-dark;
+}
+
+.table thead.thead-light th small {
+    font-size: 12px;
 }
 
 span.inactive {
