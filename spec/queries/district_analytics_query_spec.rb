@@ -38,11 +38,11 @@ RSpec.describe DistrictAnalyticsQuery do
       end
     end
 
-    describe '#registered_patients_by_month' do
+    describe '#registered_patients_by_period' do
       it 'groups the registered patients by facility and beginning of month' do
         expected_result =
           { facility.id =>
-              { :registered_patients_by_month =>
+              { :registered_patients_by_period =>
                   {
                     first_jan => 3,
                     first_feb => 3,
@@ -50,7 +50,7 @@ RSpec.describe DistrictAnalyticsQuery do
               }
           }
 
-        expect(analytics.registered_patients_by_month).to eq(expected_result)
+        expect(analytics.registered_patients_by_period).to eq(expected_result)
       end
     end
 
@@ -67,11 +67,11 @@ RSpec.describe DistrictAnalyticsQuery do
       end
     end
 
-    describe '#follow_up_patients_by_month' do
+    describe '#follow_up_patients_by_period' do
       it 'groups the follow up patients by facility and beginning of month' do
         expected_result =
           { facility.id =>
-              { :follow_up_patients_by_month =>
+              { :follow_up_patients_by_period =>
                   { first_feb => 3,
                     first_mar => 6,
                     first_apr => 3
@@ -79,7 +79,7 @@ RSpec.describe DistrictAnalyticsQuery do
               }
           }
 
-        expect(analytics.follow_up_patients_by_month).to eq(expected_result)
+        expect(analytics.follow_up_patients_by_period).to eq(expected_result)
       end
     end
 
@@ -87,18 +87,18 @@ RSpec.describe DistrictAnalyticsQuery do
       let!(:facility_in_another_org) { create(:facility) }
       let!(:bp_in_another_org) { create(:blood_pressure, facility: facility_in_another_org) }
       it 'does not contain data from a different organization' do
-        expect(analytics.registered_patients_by_month.keys).not_to include(facility_in_another_org.id)
+        expect(analytics.registered_patients_by_period.keys).not_to include(facility_in_another_org.id)
         expect(analytics.total_registered_patients.keys).not_to include(facility_in_another_org.id)
-        expect(analytics.follow_up_patients_by_month.keys).not_to include(facility_in_another_org.id)
+        expect(analytics.follow_up_patients_by_period.keys).not_to include(facility_in_another_org.id)
       end
     end
   end
 
   context 'when there is no data available' do
     it 'returns nil for all analytics queries' do
-      expect(analytics.registered_patients_by_month).to eq(nil)
+      expect(analytics.registered_patients_by_period).to eq(nil)
       expect(analytics.total_registered_patients).to eq(nil)
-      expect(analytics.follow_up_patients_by_month).to eq(nil)
+      expect(analytics.follow_up_patients_by_period).to eq(nil)
     end
   end
 end

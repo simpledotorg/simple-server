@@ -11,12 +11,10 @@ FactoryBot.define do
     full_name { Faker::Name.name }
     device_created_at { Time.now }
     device_updated_at { Time.now }
-    sync_approval_status { User.sync_approval_statuses[:requested] }
+
+    sync_allowed
 
     after :create do |user, options|
-      user.sync_approval_status = User.sync_approval_statuses[:allowed]
-      user.sync_approval_status_reason = 'User is allowed'
-
       phone_number_authentication = create(
         :phone_number_authentication,
         phone_number: options.phone_number,
@@ -37,14 +35,17 @@ FactoryBot.define do
 
     trait :sync_requested do
       sync_approval_status { User.sync_approval_statuses[:requested] }
+      sync_approval_status_reason { 'New registration' }
     end
 
     trait :sync_allowed do
       sync_approval_status { User.sync_approval_statuses[:allowed] }
+      sync_approval_status_reason { 'User is allowed' }
     end
 
     trait :sync_denied do
       sync_approval_status { User.sync_approval_statuses[:denied] }
+      sync_approval_status_reason { 'No particular reason' }
     end
 
     trait :created_on_device

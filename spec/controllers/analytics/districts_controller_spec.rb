@@ -32,6 +32,10 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
   end
 
   describe '#show' do
+    before do
+      sign_in(admin)
+    end
+
     render_views
 
     context 'dashboard analytics' do
@@ -39,9 +43,9 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
         get :show, params: { organization_id: organization.id, id: district_name }
 
         expect(response.status).to eq(200)
-        expect(assigns(:analytics)[:dashboard][facility.id].keys).to match_array([:follow_up_patients_by_month,
-                                                                                  :registered_patients_by_month,
-                                                                                  :total_registered_patients])
+        expect(assigns(:dashboard_analytics)[facility.id].keys).to match_array([:follow_up_patients_by_period,
+                                                                                :registered_patients_by_period,
+                                                                                :total_registered_patients])
       end
     end
 
@@ -61,39 +65,52 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
       let(:cohort_date3) { (today - (2 * 3).months).beginning_of_quarter }
 
       it 'caches the district correctly' do
-        today = Date.today.strftime("%Y-%m-%d")
         sanitized_district_name = organization_district.district_name.downcase.split(' ').join('-')
-        analytics_cache_key = "analytics/#{today}/organization/#{organization.id}/district/#{sanitized_district_name}"
+        analytics_cohort_cache_key = "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/cohort"
+        analytics_dashboard_cache_key = "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/dashboard/month"
 
         expected_cache_value =
-          { cohort: {
-            cohort_date1 => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
-            cohort_date2 => { :registered => 3, :followed_up => 0, :defaulted => 3, :controlled => 0, :uncontrolled => 0 },
-            cohort_date3 => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 }
-          },
+          {
+            cohort: {
+              cohort_date1 => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
+              cohort_date2 => { :registered => 3, :followed_up => 0, :defaulted => 3, :controlled => 0, :uncontrolled => 0 },
+              cohort_date3 => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 }
+            },
+
             dashboard: {
               facility.id => {
-                registered_patients_by_month: { Date.new(2019, 1, 1) => 3 },
+                registered_patients_by_period: { Date.new(2019, 1, 1) => 3 },
                 total_registered_patients: 3,
-                follow_up_patients_by_month: { Date.new(2019, 2, 1) => 3 }
+                follow_up_patients_by_period: { Date.new(2019, 2, 1) => 3 }
               }
             }
           }
 
         get :show, params: { organization_id: organization.id, id: district_name }
 
-        expect(Rails.cache.exist?(analytics_cache_key)).to be true
-        expect(Rails.cache.fetch(analytics_cache_key)).to eq expected_cache_value
+        expect(Rails.cache.exist?(analytics_cohort_cache_key)).to be true
+        expect(Rails.cache.fetch(analytics_cohort_cache_key)).to eq expected_cache_value[:cohort]
+
+        expect(Rails.cache.exist?(analytics_dashboard_cache_key)).to be true
+        expect(Rails.cache.fetch(analytics_dashboard_cache_key)).to eq expected_cache_value[:dashboard]
       end
     end
   end
 
   describe '#whatsapp_graphics' do
+    before do
+      admin = create(:admin, :supervisor)
+      sign_in(admin)
+      create(:admin_access_control, access_controllable: facility_group, admin: admin)
+    end
+
     render_views
 
     context 'html requested' do
       it 'renders graphics_header partial' do
         get :whatsapp_graphics, format: :html, params: { organization_id: organization.id, district_id: district_name }
+
+        p response
 
         expect(response).to be_ok
         expect(response).to render_template('shared/graphics/_graphics_partial')
@@ -103,6 +120,7 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
     context 'png requested' do
       it 'renders the image template for downloading' do
         get :whatsapp_graphics, format: :png, params: { organization_id: organization.id, district_id: district_name }
+
 
         expect(response).to be_ok
         expect(response).to render_template('shared/graphics/image_template')

@@ -1,6 +1,6 @@
 class AnalyticsController < AdminController
   around_action :set_time_zone
-  before_action :set_month, only: [:graphics]
+  before_action :set_quarter, only: [:whatsapp_graphics]
 
   DEFAULT_ANALYTICS_TIME_ZONE = 'Asia/Kolkata'
 
@@ -17,14 +17,22 @@ class AnalyticsController < AdminController
     Groupdate.time_zone = "UTC"
   end
 
-  def set_time_period
-    @from_time = params.require(:from_time).to_time
-    @to_time = params.require(:to_time).to_time
+  def set_quarter
+    @quarter = params[:quarter].present? ? params[:quarter].to_i : current_quarter
+    @year = params[:year].present? ? params[:year].to_i : current_year
   end
 
-  def set_month
-    month = params.require(:month).to_time
-    @from_time = month.at_beginning_of_month
-    @to_time = month.at_end_of_month
+  def set_analytics_cache(key, data)
+    Rails.cache.fetch(key, expires_in: ENV.fetch('ANALYTICS_DASHBOARD_CACHE_TTL')) { data }
+  end
+
+  def analytics_cache_key_cohort
+    "#{analytics_cache_key}/cohort"
+  end
+
+  def analytics_cache_key_dashboard(time_period)
+    key = "#{analytics_cache_key}/dashboard/#{time_period}"
+    key = "#{key}/#{@quarter}/#{@year}" if @quarter && @year
+    key
   end
 end
