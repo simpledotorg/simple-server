@@ -1,18 +1,18 @@
 def common_names
   {
     'english' =>
-      { 'female'      => %w[Anjali Divya Ishita Priya Priyanka Riya Shreya Tanvi Tanya Vani].take(3).take(3),
-        'male'        => %w[Abhishek Aditya Amit Ankit Deepak Mahesh Rahul Rohit Shyam Yash].take(3),
+      { 'female' => %w[Anjali Divya Ishita Priya Priyanka Riya Shreya Tanvi Tanya Vani].take(3).take(3),
+        'male' => %w[Abhishek Aditya Amit Ankit Deepak Mahesh Rahul Rohit Shyam Yash].take(3),
         'transgender' => %w[Bharathi Madhu Bharathi Manabi Anjum Vani Riya Shreya Kiran Amit].take(3),
-        'last_name'   => %w[Lamba Bahl Sodhi Sardana Puri Chhabra Khanna Malhotra Mehra Garewal Dhillon].take(3)
+        'last_name' => %w[Lamba Bahl Sodhi Sardana Puri Chhabra Khanna Malhotra Mehra Garewal Dhillon].take(3)
       },
 
     'punjabi' =>
       {
-        'female'      => %w[ਅੰਜਲੀ ਦਿਵਿਆ ਇਸ਼ਿਤਾ ਪ੍ਰਿਆ ਪ੍ਰਿਯੰਕਾ ਰਿਯਾ ਸ਼੍ਰੇਯਾ ਟਾਂਵੀ ਤੰਯਾ ਵਨੀ].take(3),
-        'male'        => %w[ਅਭਿਸ਼ੇਕ ਆਦਿਤਿਆ ਅਮਿਤ ਅੰਕਿਤ ਦੀਪਕ ਮਹੇਸ਼ ਰਾਹੁਲ ਰੋਹਿਤ ਸ਼ਿਆਮ ਯਸ਼ ].take(3),
+        'female' => %w[ਅੰਜਲੀ ਦਿਵਿਆ ਇਸ਼ਿਤਾ ਪ੍ਰਿਆ ਪ੍ਰਿਯੰਕਾ ਰਿਯਾ ਸ਼੍ਰੇਯਾ ਟਾਂਵੀ ਤੰਯਾ ਵਨੀ].take(3),
+        'male' => %w[ਅਭਿਸ਼ੇਕ ਆਦਿਤਿਆ ਅਮਿਤ ਅੰਕਿਤ ਦੀਪਕ ਮਹੇਸ਼ ਰਾਹੁਲ ਰੋਹਿਤ ਸ਼ਿਆਮ ਯਸ਼ ].take(3),
         'transgender' => %w[ਭਰਾਠੀ ਮਧੂ ਮਾਨਬੀ ਅੰਜੁਮ ਵਨੀ ਰਿਯਾ ਸ਼੍ਰੇਯਾ ਕਿਰਨ ਅਮਿਤ].take(3),
-        'last_name'   => %w[ਲੰਬਾ ਬਹਿਲ ਸੋਢੀ ਸਰਦਾਨਾ ਪੂਰੀ ਛਾਬੜਾ ਖੰਨਾ ਮਲਹੋਤਰਾ ਮੇਹਰ ਗਰੇਵਾਲ ਢਿੱਲੋਂ].take(3)
+        'last_name' => %w[ਲੰਬਾ ਬਹਿਲ ਸੋਢੀ ਸਰਦਾਨਾ ਪੂਰੀ ਛਾਬੜਾ ਖੰਨਾ ਮਲਹੋਤਰਾ ਮੇਹਰ ਗਰੇਵਾਲ ਢਿੱਲੋਂ].take(3)
       }
   }
 end
@@ -21,21 +21,21 @@ def common_addresses
   {
     'bathinda' => {
       'english' => {
-        street_name:       ['Bhagat singh colony', 'Gandhi Basti', 'NFL Colony', 'Farid Nagari'],
+        street_name: ['Bhagat singh colony', 'Gandhi Basti', 'NFL Colony', 'Farid Nagari'],
         village_or_colony: %w[Bathinda Bhagwangarh Dannewala Nandgarh Nathana],
       },
       'punjabi' => {
-        street_name:       ['ਭਗਤ ਸਿੰਘ ਕਾਲੋਨੀ', 'ਗਾਂਧੀ ਬਸਤੀ', 'ਨਫ਼ਲ ਕਾਲੋਨੀ', 'ਫਰੀਦ ਨਗਰੀ'],
+        street_name: ['ਭਗਤ ਸਿੰਘ ਕਾਲੋਨੀ', 'ਗਾਂਧੀ ਬਸਤੀ', 'ਨਫ਼ਲ ਕਾਲੋਨੀ', 'ਫਰੀਦ ਨਗਰੀ'],
         village_or_colony: %w[ਬਠਿੰਡਾ ਭਗਵੰਗੜ੍ਹ ਡੰਨਵਾਲਾ ਨੰਦਗੜ੍ਹ ਨਥਾਣਾ],
       }
     },
-    'mansa'    => {
+    'mansa' => {
       'english' => {
-        street_name:       ['Bathinda Road', 'Bus Stand Rd', 'Hirke Road', 'Makhewala Jhanduke Road'],
+        street_name: ['Bathinda Road', 'Bus Stand Rd', 'Hirke Road', 'Makhewala Jhanduke Road'],
         village_or_colony: ['Bhikhi', 'Budhlada', 'Hirke', 'Jhanduke', 'Mansa', 'Bareta', 'Bhaini Bagha', 'Sadulgarh', 'Sardulewala']
       },
       'punjabi' => {
-        street_name:       ['ਬਠਿੰਡਾ ਰੋਡ', 'ਬੱਸ ਸਟੈਂਡ ਰੱਦ', 'ਹੀਰਕੇ ਰੋਡ', 'ਮਖੇਵਾਲਾ ਝੰਡੂਕੇ ਰੋਡ'],
+        street_name: ['ਬਠਿੰਡਾ ਰੋਡ', 'ਬੱਸ ਸਟੈਂਡ ਰੱਦ', 'ਹੀਰਕੇ ਰੋਡ', 'ਮਖੇਵਾਲਾ ਝੰਡੂਕੇ ਰੋਡ'],
         village_or_colony: ['ਭੀਖੀ', 'ਬੁਢਲਾਡਾ', 'ਹੀਰਕੇ', 'ਝੰਡੂਕੇ', 'ਮਾਨਸਾ', 'ਬਰੇਟਾ', 'ਭੈਣੀ ਬਾਘਾ', 'ਸਾਦੁਲਗੜ੍ਹ', 'ਸਰਦੁਲੇਵਾਲਾ']
       }
     }
@@ -47,7 +47,7 @@ def random_date(from = 0.0, to = Time.now)
 end
 
 def generate_phone_number
-  digits       = (0..9).to_a
+  digits = (0..9).to_a
   phone_number = ''
   10.times do
     phone_number += digits.sample.to_s
@@ -57,11 +57,11 @@ end
 
 def create_random_patient_phone_number(patient_id)
   patient_phone_number = {
-    id:                SecureRandom.uuid,
-    number:            generate_phone_number,
-    phone_type:        PatientPhoneNumber::PHONE_TYPE.sample,
-    active:            true,
-    patient_id:        patient_id,
+    id: SecureRandom.uuid,
+    number: generate_phone_number,
+    phone_type: PatientPhoneNumber::PHONE_TYPE.sample,
+    active: true,
+    patient_id: patient_id,
     device_created_at: Time.now,
     device_updated_at: Time.now
   }
@@ -70,14 +70,14 @@ end
 
 def create_random_address(district, language)
   addresses = common_addresses[district][language]
-  address   = {
-    id:                SecureRandom.uuid,
-    street_address:    "# #{rand(100)}, #{addresses[:street_name].sample}",
+  address = {
+    id: SecureRandom.uuid,
+    street_address: "# #{rand(100)}, #{addresses[:street_name].sample}",
     village_or_colony: addresses[:village_or_colony].sample,
-    district:          district,
-    state:             language == 'punjabi' ? 'ਪੰਜਾਬ' : 'Punjab',
-    country:           language == 'punjabi' ? 'ਇੰਡੀਆ' : 'India',
-    pin:               district == 'bathinda' ? "1510#{rand(100)}" : "1515#{rand(100)}",
+    district: district,
+    state: language == 'punjabi' ? 'ਪੰਜਾਬ' : 'Punjab',
+    country: language == 'punjabi' ? 'ਇੰਡੀਆ' : 'India',
+    pin: district == 'bathinda' ? "1510#{rand(100)}" : "1515#{rand(100)}",
     device_created_at: Time.now,
     device_updated_at: Time.now
   }
@@ -85,21 +85,21 @@ def create_random_address(district, language)
 end
 
 def create_random_patient(address_id, language)
-  has_age   = [true, false].sample
-  gender    = Patient::GENDERS.sample
+  has_age = [true, false].sample
+  gender = Patient::GENDERS.sample
   full_name = "#{common_names[language][gender].sample} #{common_names[language]['last_name'].sample}"
-  patient   = {
-    id:                SecureRandom.uuid,
-    gender:            gender,
-    full_name:         full_name,
-    status:            'active',
-    age:               has_age ? rand(18..100) : nil,
-    age_updated_at:    has_age ? Time.now : nil,
-    address_id:        address_id,
-    date_of_birth:     !has_age ? random_date : nil,
+  patient = {
+    id: SecureRandom.uuid,
+    gender: gender,
+    full_name: full_name,
+    status: 'active',
+    age: has_age ? rand(18..100) : nil,
+    age_updated_at: has_age ? Time.now : nil,
+    address_id: address_id,
+    date_of_birth: !has_age ? random_date : nil,
     device_created_at: Time.now,
     device_updated_at: Time.now,
-    test_data:         true
+    test_data: true
   }
 
   Patient.create(patient)
@@ -109,14 +109,14 @@ namespace :generate do
   desc 'Generate test patients for user tests'
   # Example: rake "generate:random_patients_for_user_tests[20]"
   task :random_patients_for_user_tests, [:number_of_patients_to_generate] => :environment do |_t, args|
-    max_patient_phone_numbers      = 1
+    max_patient_phone_numbers = 1
     number_of_patients_to_generate = args.number_of_patients_to_generate.to_i
 
     number_of_patients_to_generate.times do
       district = common_addresses.keys.sample
       language = common_addresses[district].keys.sample
-      address  = create_random_address(district, language)
-      patient  = create_random_patient(address.id, language)
+      address = create_random_address(district, language)
+      patient = create_random_patient(address.id, language)
       rand(1..max_patient_phone_numbers).times do
         create_random_patient_phone_number(patient.id)
       end
@@ -189,18 +189,286 @@ namespace :generate do
 
     test_patient_data.each do |patient_data|
       patient = Patient.create(
-        id:                SecureRandom.uuid,
-        full_name:         patient_data[:full_name],
-        age:               patient_data[:age],
-        gender:            'male',
-        status:            'active',
-        age_updated_at:    Time.now,
-        address_id:        create_random_address('bathinda', patient_data[:language]).id,
-        date_of_birth:     nil,
+        id: SecureRandom.uuid,
+        full_name: patient_data[:full_name],
+        age: patient_data[:age],
+        gender: 'male',
+        status: 'active',
+        age_updated_at: Time.now,
+        address_id: create_random_address('bathinda', patient_data[:language]).id,
+        date_of_birth: nil,
         device_created_at: Time.now,
         device_updated_at: Time.now,
-        test_data:         true)
+        test_data: true)
       create_random_patient_phone_number(patient.id)
+    end
+  end
+
+  namespace :seed do
+    module SeedConstants
+      NUMBER_OF_ORGANIZATIONS = rand(2..5)
+      NUMBER_OF_PROTOCOLS = 3
+      FACILITY_GROUPS_PER_ORGANIZATION = rand(2..5)
+      FACILITIES_PER_FACILITY_GROUP = rand(2..5)
+      USERS_PER_FACILITY = rand(2..5)
+      NUMBER_OF_PATIENTS = rand(2..5)
+      MEDICAL_HISTORIES_PER_PATIENT = 3
+      PRESCRIPTION_DRUGS_PER_PATIENT = 3
+      BLOOD_PRESSURES_PER_PATIENT = rand(2..5)
+      APPOINTMENTS_PER_PATIENT = rand(2..5)
+    end
+
+    def create_protocols
+      puts "Creating protocols"
+
+      protocol = FactoryBot.create(:protocol)
+
+      SeedConstants::NUMBER_OF_PROTOCOLS.times do
+        FactoryBot.create(:protocol_drug, protocol: protocol)
+      end
+    end
+
+    def create_organization(creation_date)
+      puts "Creating organizations for #{creation_date}"
+
+      organization = FactoryBot.create(:organization, created_at: creation_date, updated_at: creation_date)
+      create_facility_groups(organization, creation_date)
+      organization
+    end
+
+    def create_organization_patient_records(organization, date)
+      facility_groups = organization.facility_groups
+
+      facility_groups.flat_map(&:facilities).flat_map(&:registered_patients).each do |patient|
+        create_blood_pressures(patient, date) if Random.rand(1..10) < 8
+      end
+
+      facility_groups.flat_map(&:users).each do |user|
+        SeedConstants::NUMBER_OF_PATIENTS.times do
+          patient = FactoryBot.create(:patient, registration_facility: user.registration_facility,
+                                      registration_user: user,
+                                      created_at: date,
+                                      updated_at: date,
+                                      device_created_at: date,
+                                      device_updated_at: date)
+          create_medical_history(patient, date)
+          create_prescription_drugs(patient, date)
+          create_blood_pressures(patient, date)
+          create_appointments(patient, date)
+        end
+      end
+    end
+
+    def create_facility_groups(organization, creation_date)
+      puts "Creating facility groups for #{creation_date}"
+
+      SeedConstants::FACILITY_GROUPS_PER_ORGANIZATION.times do
+        facility_group = FactoryBot.create(:facility_group, organization: organization, created_at: creation_date, updated_at: creation_date)
+
+        facilities = create_and_return_facilities(facility_group, creation_date)
+        create_users(facilities, creation_date)
+      end
+    end
+
+    def create_and_return_facilities(facility_group, creation_date)
+      puts "Creating facilities for #{creation_date}"
+
+      facilities = []
+
+      SeedConstants::FACILITIES_PER_FACILITY_GROUP.times do
+        facility = FactoryBot.create(:facility, facility_group: facility_group, created_at: creation_date, updated_at: creation_date)
+        facilities << facility
+      end
+
+      facilities
+    end
+
+    def create_sync_requested_users(facility, creation_date)
+      user = FactoryBot.create(:user,
+                               registration_facility: facility,
+                               created_at: creation_date,
+                               updated_at: creation_date)
+      user.sync_approval_status = 'requested'
+      user.sync_approval_status_reason = nil
+      user.save
+    end
+
+    def create_sync_denied_users(facility, creation_date)
+      user = FactoryBot.create(:user,
+                               registration_facility: facility,
+                               created_at: creation_date,
+                               updated_at: creation_date)
+      user.sync_approval_status = 'denied'
+      user.sync_approval_status_reason = 'some random reason'
+      user.save
+    end
+
+    def create_users(facilities, creation_date)
+      puts "Creating users for #{creation_date}"
+
+      facilities.each do |f|
+        SeedConstants::USERS_PER_FACILITY.times do
+          user = FactoryBot.create(:user, registration_facility: f, created_at: creation_date, updated_at: creation_date)
+          create_patients(user, creation_date)
+
+          create_sync_requested_users(f, creation_date) if rand(1..10) < 5
+          create_sync_denied_users(f, creation_date) if rand(1..10) < 5
+        end
+      end
+    end
+
+    def create_patients(user, creation_date)
+      puts "Creating patients for #{creation_date}"
+
+      SeedConstants::NUMBER_OF_PATIENTS.times do
+        patient = FactoryBot.create(:patient, registration_facility: user.registration_facility,
+                                    registration_user: user,
+                                    created_at: creation_date,
+                                    updated_at: creation_date,
+                                    device_created_at: creation_date,
+                                    device_updated_at: creation_date)
+        create_medical_history(patient, creation_date)
+        create_prescription_drugs(patient, creation_date)
+        create_blood_pressures(patient, creation_date)
+        create_appointments(patient, creation_date)
+
+        if rand(1..10) == 1
+          create_call_logs(patient, creation_date)
+          create_exotel_phone_number_detail(patient, creation_date)
+        end
+      end
+    end
+
+    def create_medical_history(patient, creation_date)
+      puts "Creating medical histories for #{creation_date}"
+
+      SeedConstants::MEDICAL_HISTORIES_PER_PATIENT.times do
+        FactoryBot.create(:medical_history, :unknown,
+                          patient: patient,
+                          created_at: creation_date,
+                          updated_at: creation_date)
+
+        FactoryBot.create(:medical_history, :prior_risk_history,
+                          patient: patient,
+                          created_at: creation_date,
+                          updated_at: creation_date)
+      end
+    end
+
+    def create_prescription_drugs(patient, creation_date)
+      puts "Creating prescription drugs for #{creation_date}"
+
+      SeedConstants::PRESCRIPTION_DRUGS_PER_PATIENT.times do
+        FactoryBot.create(:prescription_drug, patient: patient,
+                          facility: patient.registration_facility,
+                          created_at: creation_date,
+                          updated_at: creation_date)
+      end
+    end
+
+    def create_blood_pressures(patient, creation_date)
+      puts "Creating blood pressures for #{creation_date}"
+
+      SeedConstants::BLOOD_PRESSURES_PER_PATIENT.times do
+        [:under_control, :high, :very_high, :critical].each do |bp_type|
+          FactoryBot.create(:blood_pressure, bp_type,
+                            patient: patient,
+                            facility: patient.registration_facility,
+                            user: patient.registration_user,
+                            created_at: creation_date,
+                            updated_at: creation_date,
+                            recorded_at: creation_date)
+        end
+      end
+    end
+
+    def create_appointments(patient, creation_date)
+      puts "Creating appointments for #{creation_date}"
+
+      SeedConstants::APPOINTMENTS_PER_PATIENT.times do
+        FactoryBot.create(:appointment, patient: patient,
+                          facility: patient.registration_facility,
+                          created_at: creation_date,
+                          updated_at: creation_date)
+
+        FactoryBot.create(:appointment, :overdue,
+                          patient: patient,
+                          facility: patient.registration_facility,
+                          created_at: creation_date,
+                          updated_at: creation_date) if rand(1..10) < 3
+      end
+    end
+
+    def create_admins(organization)
+      puts "Creating admins for organization #{organization.name}"
+
+      facility_group = organization.facility_groups.first
+      FactoryBot.create(:admin, :counsellor, facility_group: facility_group)
+      FactoryBot.create(:admin, :analyst, facility_group: facility_group)
+      FactoryBot.create(:admin, :supervisor)
+      FactoryBot.create(:admin, :organization_owner, organization: organization)
+    end
+
+    def create_call_logs(patient, creation_date)
+      puts "Creating call logs for #{creation_date}"
+
+      caller_phone_number = patient.registration_user.phone_number_authentications.first.phone_number
+      callee_phone_number = patient.phone_numbers.first.number
+
+      Timecop.travel(creation_date) do
+        FactoryBot.create(:call_log,
+                          session_id: SecureRandom.uuid.remove('-'),
+                          caller_phone_number: caller_phone_number,
+                          callee_phone_number: callee_phone_number,
+                          created_at: creation_date,
+                          updated_at: creation_date,
+                          duration: rand(60) + 1)
+      end
+
+      Timecop.return
+    end
+
+    def create_exotel_phone_number_detail(patient, creation_date)
+      puts "Creating exotel phone number details for #{creation_date}"
+
+      Timecop.travel(creation_date) do
+        whitelist_status = ExotelPhoneNumberDetail.whitelist_statuses.to_a.sample.first
+        FactoryBot.create(:exotel_phone_number_detail, whitelist_status: whitelist_status,
+                          patient_phone_number: patient.phone_numbers.first,
+                          created_at: creation_date,
+                          updated_at: creation_date)
+      end
+
+      Timecop.return
+    end
+
+    def create_seed_data(number_of_months)
+      create_protocols
+
+      Admin.create(email: "admin@simple.org", password: "password", role: :owner)
+
+      organizations = []
+      SeedConstants::NUMBER_OF_ORGANIZATIONS.times do
+        organization = create_organization(number_of_months.months.ago)
+        create_admins(organization)
+
+        organizations << organization
+        puts
+      end
+
+      number_of_months.downto(0) do |month_number|
+        creation_date = month_number.months.ago
+
+        organizations.each do |organization|
+          create_organization_patient_records(organization, creation_date)
+        end
+      end
+    end
+
+    task :generate_data, [:number_of_months] => :environment do |_t, args|
+      number_of_months = args.fetch(:number_of_months) { 12 }.to_i
+
+      create_seed_data(number_of_months)
     end
   end
 end
