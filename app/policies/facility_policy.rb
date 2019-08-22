@@ -20,7 +20,7 @@ class FacilityPolicy < ApplicationPolicy
   end
 
   def whatsapp_graphics?
-    user.has_role?(:organization_owner, :supervisor) && belongs_to_admin?
+    show?
   end
 
   def create?

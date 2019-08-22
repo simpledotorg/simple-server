@@ -47,7 +47,7 @@ class FacilityGroupPolicy < ApplicationPolicy
     )
   end
 
-  def graphics?
+  def whatsapp_graphics?
     show?
   end
 

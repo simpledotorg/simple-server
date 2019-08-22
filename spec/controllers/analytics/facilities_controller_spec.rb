@@ -35,10 +35,6 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
   end
 
   describe '#show' do
-    before do
-      sign_in(admin)
-    end
-
     render_views
 
     context 'dashboard analytics' do
@@ -105,12 +101,6 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
   end
 
   describe '#whatsapp_graphics' do
-    before do
-      admin = create(:admin, :supervisor)
-      sign_in(admin)
-      create(:admin_access_control, access_controllable: facility_group, admin: admin)
-    end
-
     render_views
 
     context 'html requested' do
