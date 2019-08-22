@@ -3,14 +3,17 @@ class CreateAuditLogsWorker
 
   sidekiq_options queue: :audit_log_queue
 
-  def perform(user_id, record_class, record_ids, action)
+  def perform(user_id, record_class, record_ids, action, time)
     user = User.find(user_id)
     audit_logs = record_ids.map do |record_id|
-      AuditLog.new({ user: user,
-                     auditable_type: record_class,
-                     auditable_id: record_id,
-                     action: action })
+      { user: user,
+        auditable_type: record_class,
+        auditable_id: record_id,
+        action: action,
+        time: time }
     end
-    AuditLog.import!(audit_logs, validate: true)
+    audit_logs.each do |audit_log|
+      AuditLog.write_audit_log(audit_log.to_s)
+    end
   end
 end
