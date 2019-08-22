@@ -42,7 +42,7 @@ RSpec.describe FacilityGroupPolicy do
       end
     end
 
-    permissions :show?, :new?, :create?, :edit?, :update?, :destroy? do
+    permissions :show?, :create?, :edit?, :update?, :destroy? do
       it 'allows the user for facility groups in their organization' do
         expect(subject).to permit(user_with_permission, facility_group_1)
       end

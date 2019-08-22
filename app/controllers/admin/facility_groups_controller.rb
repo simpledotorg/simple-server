@@ -1,7 +1,6 @@
 class Admin::FacilityGroupsController < AdminController
   before_action :set_facility_group, only: [:show, :edit, :update, :destroy]
   before_action :set_organizations, only: [:new, :edit]
-  before_action :set_organization, only: [:new, :edit]
   before_action :set_protocols, only: [:new, :edit]
 
   def index
@@ -15,7 +14,7 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def new
-    @facility_group = @organization.facility_groups.new
+    @facility_group = FacilityGroup.new
     authorize @facility_group
   end
 
@@ -53,10 +52,6 @@ class Admin::FacilityGroupsController < AdminController
 
   def set_organizations
     @organizations = policy_scope(Organization)
-  end
-
-  def set_organization
-    @organization = Organization.friendly.find(params[:organization_id])
   end
 
   def set_protocols
