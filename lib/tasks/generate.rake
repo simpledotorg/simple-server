@@ -370,6 +370,8 @@ namespace :generate do
       facilities.each do |fac|
         facility_records << FactoryBot.create(:facility, facility_group: facility_group,
                                               name: fac[:name],
+                                              district: fac[:district],
+                                              state: fac[:state],
                                               created_at: creation_date,
                                               updated_at: creation_date)
       end
