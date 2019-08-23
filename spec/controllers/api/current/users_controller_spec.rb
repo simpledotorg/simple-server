@@ -137,8 +137,10 @@ RSpec.describe Api::Current::UsersController, type: :controller do
   end
 
   describe '#reset_password' do
-    let(:user) { FactoryBot.create(:user) }
-    let(:facility) { FactoryBot.create(:facility, facility_group: user.facility.facility_group) }
+    let(:facility_group) { FactoryBot.create(:facility_group) }
+    let(:facility) { FactoryBot.create(:facility, facility_group: facility_group) }
+    let(:user) { FactoryBot.create(:user, registration_facility: facility, organization: facility.organization) }
+
 
     before(:each) do
       request.env['HTTP_X_USER_ID'] = user.id
