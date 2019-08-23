@@ -228,12 +228,110 @@ namespace :generate do
       end
     end
 
-    def create_organization(creation_date)
+    def dev_organizations
+      [
+        {
+          name: "IHCI",
+          facility_groups: [
+            {
+              name: "Bathinda and Mansa",
+              facilities: [
+                { name: "CHC Buccho", district: "Bathinda", state: "Punjab" },
+                { name: "CHC Meheraj", district: "Bathinda", state: "Punjab" },
+                { name: "District Hospital Bathinda", district: "Bathinda", state: "Punjab" },
+                { name: "PHC Joga", district: "Mansa", state: "Punjab" }
+              ]
+            },
+            {
+              name: "Gurdaspur",
+              facilities: [
+                { name: "CHC Kalanaur", district: "Gurdaspur", state: "Punjab" },
+                { name: "PHC Bhumbli", district: "Gurdaspur", state: "Punjab" },
+                { name: "SDH Batala", district: "Gurdaspur", state: "Punjab" }
+              ]
+            },
+            {
+              name: "Bhandara",
+              facilities: [
+                { name: "CH Bhandara", district: "Bhandara", state: "Maharashtra" },
+                { name: "HWC Bagheda", district: "Bhandara", state: "Maharashtra" },
+                { name: "HWC Chikhali", district: "Bhandara", state: "Maharashtra" }
+              ]
+            },
+            {
+              name: "Hoshiarpur",
+              facilities: [
+                { name: "CHC Bhol Kalota", district: "Hoshiarpur", state: "Punjab" },
+                { name: "PHC Hajipur", district: "Hoshiarpur", state: "Punjab" },
+                { name: "SDH Mukerian", district: "Hoshiarpur", state: "Punjab" }
+              ]
+            },
+            {
+              name: "Satara",
+              facilities: [
+                { name: "CHC Satara", district: "Satara", state: "Maharashtra" },
+                { name: "PHC Girvi", district: "Satara", state: "Maharashtra" },
+                { name: "SDH Indoli", district: "Satara", state: "Maharashtra" }
+              ]
+            },
+          ]
+        },
+        {
+          name: "PATH",
+          facility_groups: [
+            {
+              name: "Amir Singh Facility Group",
+              facilities: [
+                { name: "Amir Singh", district: "Mumbai", state: "Maharashtra" }
+              ]
+            },
+            {
+              name: "Dr. Anwar Facility Group",
+              facilities: [
+                { name: "Dr. Anwar", district: "Mumbai", state: "Maharashtra" }
+              ]
+            },
+            {
+              name: "Dr. Abhishek Tripathi",
+              facilities: [
+                { name: "Dr. Abhishek Tripathi", district: "N Ward", state: "Maharashtra" }
+              ]
+            },
+            {
+              name: "Dr. Shailaja Thorat",
+              facilities: [
+                { name: "Dr. Shailaja Thorat", district: "Ghatkopar E", state: "Maharashtra" }
+              ]
+            },
+            {
+              name: "Dr. Ayazuddin Farooqui",
+              facilities: [
+                { name: "Dr. Ayazuddin Farooqui", district: "Dharavi", state: "Maharashtra" }
+              ]
+            }
+          ]
+        }
+      ]
+    end
+
+    def create_and_return_organizations(creation_date)
       puts "Creating organizations for #{creation_date}"
 
-      organization = FactoryBot.create(:organization, created_at: creation_date, updated_at: creation_date)
-      create_facility_groups(organization, creation_date)
-      organization
+      organizations = []
+
+      dev_organizations.each do |dev_org|
+        organization = FactoryBot.create(:organization, name: dev_org[:name],
+                                         created_at: creation_date,
+                                         updated_at: creation_date)
+
+        create_facility_groups(organization, dev_org[:facility_groups], creation_date)
+        create_admins(organization)
+
+        organizations << organization
+        puts
+      end
+
+      organizations
     end
 
     def create_organization_patient_records(organization, date)
@@ -250,28 +348,33 @@ namespace :generate do
       end
     end
 
-    def create_facility_groups(organization, creation_date)
+    def create_facility_groups(organization, facility_groups, creation_date)
       puts "Creating facility groups for #{creation_date}"
 
-      SeedConstants::FACILITY_GROUPS_PER_ORGANIZATION.times do
-        facility_group = FactoryBot.create(:facility_group, organization: organization, created_at: creation_date, updated_at: creation_date)
+      facility_groups.each do |fac_group|
+        facility_group = FactoryBot.create(:facility_group, name: fac_group[:name],
+                                           organization: organization,
+                                           created_at: creation_date,
+                                           updated_at: creation_date)
 
-        facilities = create_and_return_facilities(facility_group, creation_date)
+        facilities = create_and_return_facilities(facility_group, fac_group[:facilities], creation_date)
         create_users(facilities, creation_date)
       end
     end
 
-    def create_and_return_facilities(facility_group, creation_date)
+    def create_and_return_facilities(facility_group, facilities, creation_date)
       puts "Creating facilities for #{creation_date}"
 
-      facilities = []
+      facility_records = []
 
-      SeedConstants::FACILITIES_PER_FACILITY_GROUP.times do
-        facility = FactoryBot.create(:facility, facility_group: facility_group, created_at: creation_date, updated_at: creation_date)
-        facilities << facility
+      facilities.each do |fac|
+        facility_records << FactoryBot.create(:facility, facility_group: facility_group,
+                                              name: fac[:name],
+                                              created_at: creation_date,
+                                              updated_at: creation_date)
       end
 
-      facilities
+      facility_records
     end
 
     def create_sync_requested_users(facility, creation_date)
@@ -447,14 +550,7 @@ namespace :generate do
 
       Admin.create(email: "admin@simple.org", password: "password", role: :owner)
 
-      organizations = []
-      SeedConstants::NUMBER_OF_ORGANIZATIONS.times do
-        organization = create_organization(number_of_months.months.ago)
-        create_admins(organization)
-
-        organizations << organization
-        puts
-      end
+      organizations = create_and_return_organizations(number_of_months.months.ago)
 
       number_of_months.downto(1) do |month_number|
         creation_date = month_number.months.ago

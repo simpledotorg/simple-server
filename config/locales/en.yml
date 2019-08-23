@@ -133,5 +133,5 @@ en:
   faker:
     address:
       state: ['Punjab', 'Maharashtra', 'Tamil Nadu', 'Kerala', 'Sikkim']
-      district: ['Mansa', 'Bathinda', 'Gurdaspur', 'East Mumbai', 'West Mumbai']
+      district: ['Wardha', 'Gurdaspur', 'Satara', 'N Ward', 'Pathankot', 'G North', 'Bathinda', 'Mansa', 'Hoshiarpur', 'Mumbai', 'Ghatkopar E', 'Ghatkopar West', 'Dharavi', 'Bhandara', 'Sindhudurg']
       city: ['Chandigarh', 'Mumbai', 'Chennai', 'Thiruvananthapuram', 'Gangtok']
