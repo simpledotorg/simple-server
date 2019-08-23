@@ -41,6 +41,10 @@ RSpec.describe AppointmentPolicy do
       let(:ihmi_group) { create(:facility_group, organization: ihmi) }
       let(:non_ihmi_group) { create(:facility_group) }
 
+      before do
+        ENV['IHCI_ORGANIZATION_UUID'] = ihmi.id
+      end
+
       it 'permits supervisors in IHMI' do
         supervisor.admin_access_controls = [AdminAccessControl.new(access_controllable: ihmi_group)]
         expect(subject).to permit(supervisor, User)
