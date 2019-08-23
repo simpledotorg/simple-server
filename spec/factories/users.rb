@@ -7,6 +7,7 @@ FactoryBot.define do
     end
 
     full_name { Faker::Name.name }
+    organization
     device_created_at { Time.now }
     device_updated_at { Time.now }
 
@@ -55,7 +56,6 @@ FactoryBot.define do
       email { Faker::Internet.email(full_name) }
       password { Faker::Internet.password(6) }
       facility_group { build(:facility_group) }
-      organization { build(:organization) }
     end
 
     full_name { Faker::Name.name }
@@ -64,6 +64,7 @@ FactoryBot.define do
     sync_approval_status { User.sync_approval_statuses[:denied] }
     email_authentications { build_list(:email_authentication, 1, email: email, password: password) }
     user_permissions { [] }
+    organization
 
     role :owner
 

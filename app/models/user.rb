@@ -20,6 +20,8 @@ class User < ApplicationRecord
     counsellor: 'counsellor'
   }
 
+  belongs_to :organization
+
   has_many :user_authentications
   has_many :blood_pressures
   has_many :patients, -> { distinct }, through: :blood_pressures
@@ -52,7 +54,6 @@ class User < ApplicationRecord
            :otp,
            :otp_valid?,
            :facility_group,
-           :organization,
            :password_digest, to: :phone_number_authentication, allow_nil: true
 
   delegate :email,
