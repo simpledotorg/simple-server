@@ -6,6 +6,39 @@ class User < ApplicationRecord
     phone_number_authentication: 'PhoneNumberAuthentication'
   }
 
+  DEFAULT_PERMISSIONS = {
+    owner: [
+      :can_manage_all_organizations,
+      :can_manage_all_protocols,
+      :can_manage_audit_logs,
+      :can_manage_all_users
+    ],
+
+    supervisor: [
+      :can_manage_a_facility_group,
+      :can_access_appointment_information_for_facility_group,
+      :can_access_patient_information_for_facility_group,
+      :can_manage_users_for_facility_group
+    ],
+
+    analyst: [
+      :can_manage_a_facility_group
+    ],
+
+    counsellor: [
+      :can_manage_a_facility_group,
+      :can_access_appointment_information_for_facility_group,
+      :can_access_patient_information_for_facility_group
+    ],
+
+    organization_owner: [
+      :can_manage_an_organization,
+      :can_access_appointment_information_for_facility_group,
+      :can_access_patient_information_for_facility_group,
+      :can_manage_users_for_organization
+    ]
+  }
+
   enum sync_approval_status: {
     requested: 'requested',
     allowed: 'allowed',
@@ -20,7 +53,7 @@ class User < ApplicationRecord
     counsellor: 'counsellor'
   }
 
-  belongs_to :organization
+  belongs_to :organization, optional: true
 
   has_many :user_authentications
   has_many :blood_pressures

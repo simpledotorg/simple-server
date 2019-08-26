@@ -1,7 +1,11 @@
 module Permissions
   ALL_PERMISSIONS = [
-    Permissions::ManagementPermissions::PERMISSIONS,
-    Permissions::PHIAccessOnDashboardPermissions::PERMISSIONS,
-    Permissions::UserManagementPermissions::PERMISSIONS
+    ManagementPermissions::PERMISSIONS,
+    PHIAccessOnDashboardPermissions::PERMISSIONS,
+    UserManagementPermissions::PERMISSIONS
   ].inject({}, &:merge)
+
+  def self.select_permissions(query)
+    ALL_PERMISSIONS.select()
+  end
 end

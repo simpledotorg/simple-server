@@ -1,9 +1,9 @@
 class InvitationPolicy < ApplicationPolicy
   def create?
-    user_has_any_permissions?(
-      :can_manage_all_users,
-      [:can_manage_users_for_organization, record.organization]
-    ) && user_can_invite_role(record.role)
+    user_permission_slugs = user.user_permissions.pluck(:permission_slug).map(&:to_sym)
+    [:can_manage_all_users,
+     :can_manage_users_for_organization
+    ].any? { |slug| user_permission_slugs.include? slug } 
   end
 
   def new?

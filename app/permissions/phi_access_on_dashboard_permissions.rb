@@ -1,4 +1,4 @@
-module Permissions::PHIAccessOnDashboardPermissions
+module PHIAccessOnDashboardPermissions
   PATIENT_PERMISSIONS = {
     can_access_patient_information_for_all_organizations: {
       type: :global,

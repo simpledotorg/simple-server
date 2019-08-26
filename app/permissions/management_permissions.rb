@@ -1,4 +1,4 @@
-module Permissions::ManagementPermissions
+module ManagementPermissions
   PERMISSIONS = {
     can_manage_all_organizations: {
       type: :global,

@@ -1,4 +1,4 @@
-module Permissions::UserManagementPermissions
+module UserManagementPermissions
 
   PERMISSIONS = {
     can_manage_users_for_facility_group: {
