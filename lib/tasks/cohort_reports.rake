@@ -1,12 +1,14 @@
 namespace :cohort_reports do
-  desc 'Generate cohort report CSV for each state in IHMI'
-  task :generate, [:year, :quarter] => :environment do |_t, args|
+  desc 'Generate cohort report CSV for each state'
+  task :generate, [:year, :quarter, :organization_name] => :environment do |_t, args|
     abort 'Requires [year, quarter] arguments' unless args[:year].present? && args[:quarter].present?
+    abort 'Requires [organization_name]' unless args[:organization_name].present?
 
     year    = args[:year].to_i
     quarter = args[:quarter].to_i
+    organization_name = args[:organization_name]
 
-    states = Organization.find_by(name: "IHMI").facilities.pluck(:state).uniq
+    states = Organization.find_by(name: organization_name).facilities.pluck(:state).uniq
 
     states.each do |state|
       file = File.join(Dir.home, "#{year}-q#{quarter}-#{state.downcase}.csv")

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190819191312) do
+ActiveRecord::Schema.define(version: 20190827061712) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -122,6 +122,7 @@ ActiveRecord::Schema.define(version: 20190819191312) do
     t.datetime "deleted_at"
     t.datetime "recorded_at"
     t.index ["deleted_at"], name: "index_blood_pressures_on_deleted_at"
+    t.index ["patient_id"], name: "index_blood_pressures_on_patient_id"
     t.index ["recorded_at"], name: "index_blood_pressures_on_recorded_at"
     t.index ["user_id"], name: "index_blood_pressures_on_user_id"
   end
@@ -247,6 +248,8 @@ ActiveRecord::Schema.define(version: 20190819191312) do
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
     t.string "role"
+    t.uuid "organizations_id"
+    t.index ["organizations_id"], name: "index_master_users_on_organizations_id"
   end
 
   create_table "medical_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -311,6 +314,7 @@ ActiveRecord::Schema.define(version: 20190819191312) do
     t.boolean "dnd_status", default: true, null: false
     t.index ["deleted_at"], name: "index_patient_phone_numbers_on_deleted_at"
     t.index ["dnd_status"], name: "index_patient_phone_numbers_on_dnd_status"
+    t.index ["patient_id"], name: "index_patient_phone_numbers_on_patient_id"
   end
 
   create_table "patients", id: :uuid, default: nil, force: :cascade do |t|
@@ -365,6 +369,7 @@ ActiveRecord::Schema.define(version: 20190819191312) do
     t.boolean "is_deleted", null: false
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_prescription_drugs_on_deleted_at"
+    t.index ["patient_id"], name: "index_prescription_drugs_on_patient_id"
   end
 
   create_table "protocol_drugs", id: :uuid, default: nil, force: :cascade do |t|
@@ -405,17 +410,6 @@ ActiveRecord::Schema.define(version: 20190819191312) do
     t.datetime "deleted_at"
     t.index ["user_id", "authenticatable_type", "authenticatable_id"], name: "user_authentications_master_users_authenticatable_uniq_index", unique: true
     t.index ["user_id"], name: "index_user_authentications_on_user_id"
-  end
-
-  create_table "user_permissions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "user_id", null: false
-    t.string "permission_slug"
-    t.string "resource_type"
-    t.uuid "resource_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "deleted_at"
-    t.index ["resource_type", "resource_id"], name: "index_user_permissions_on_resource_type_and_resource_id"
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
