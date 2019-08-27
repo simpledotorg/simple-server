@@ -1,5 +1,5 @@
 class DashboardPageNavigation < ApplicationPage
-  LOGOUT_BUTTON = { css: 'a.dropdown-item[href="/admins/sign_out"]'}.freeze
+  LOGOUT_BUTTON = { css: 'a.dropdown-item[href="/email_authentications/sign_out"]'}.freeze
   MANAGE_OPTION = { xpath: "//li/div/a"}.freeze
   MAIN_MENU_TABS = { css: "ul.mr-auto>li>a" }.freeze
   PROFILE_DROPDOWN= {id: 'navbarDropdown2'}.freeze

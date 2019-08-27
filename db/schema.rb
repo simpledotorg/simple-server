@@ -248,8 +248,8 @@ ActiveRecord::Schema.define(version: 20190827061712) do
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
     t.string "role"
-    t.uuid "organizations_id"
-    t.index ["organizations_id"], name: "index_master_users_on_organizations_id"
+    t.uuid "organization_id"
+    t.index ["organization_id"], name: "index_master_users_on_organization_id"
   end
 
   create_table "medical_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

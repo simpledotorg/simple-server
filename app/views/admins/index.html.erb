@@ -19,32 +19,32 @@
           <div class="modal-body">
                     <% if policy(:invitation).invite_owner? %>
                         <div class="row mb-3">
-                            <div class="col-4"><%= link_to 'Owner', new_admin_invitation_path(role: 'owner'), class: "btn btn-sm btn-warning btn-block" %></div>
+                            <div class="col-4"><%= link_to 'Owner', new_email_authentication_invitation_path(role: 'owner'), class: "btn btn-sm btn-warning btn-block" %></div>
                             <div class="col-8"><strong>Owners</strong> have top level access to add new admins, access audit logs, download overdue lists, etc.</div>
                         </div>
                     <% end %>
                     <% if policy(:invitation).invite_organization_owner? %>
                         <div class="row mb-3">
-                            <div class="col-4"><%= link_to 'Organization Owner', new_admin_invitation_path(role: 'organization_owner'), class: "btn btn-sm btn-warning btn-block" %></div>
+                            <div class="col-4"><%= link_to 'Organization Owner', new_email_authentication_invitation_path(role: 'organization_owner'), class: "btn btn-sm btn-warning btn-block" %></div>
                             <div class="col-8"><strong>Organization owners</strong> have all 'Owner' access for their organization.</div>
                         </div>
                         <hr>
                     <% end %>
                     <% if policy(:invitation).invite_supervisor? %>
                         <div class="row mb-3">
-                            <div class="col-4"><%= link_to 'Supervisor', new_admin_invitation_path(role: 'supervisor'), class: "btn btn-sm btn-primary btn-block" %></div>
+                            <div class="col-4"><%= link_to 'Supervisor', new_email_authentication_invitation_path(role: 'supervisor'), class: "btn btn-sm btn-primary btn-block" %></div>
                             <div class="col-8"><strong>Supervisors</strong> can view dashboards, download overdue lists, and approve users at their facilities.</div>
                         </div>
                     <% end %>
                     <% if policy(:invitation).invite_analyst? %>
                         <div class="row mb-3">              
-                            <div class="col-4"><%= link_to 'Analyst', new_admin_invitation_path(role: 'analyst'), class: "btn btn-sm btn-primary btn-block" %></div>
+                            <div class="col-4"><%= link_to 'Analyst', new_email_authentication_invitation_path(role: 'analyst'), class: "btn btn-sm btn-primary btn-block" %></div>
                             <div class="col-8"><strong>Analysts</strong> can <em>only</em> view dashboards for their districts or facilities.</div>
                         </div>
                     <% end %>
                     <% if policy(:invitation).invite_counsellor? %>
                         <div class="row">
-                            <div class="col-4"><%= link_to 'Counsellor', new_admin_invitation_path(role: 'counsellor'), class: "btn btn-sm btn-primary btn-block" %></div>
+                            <div class="col-4"><%= link_to 'Counsellor', new_email_authentication_invitation_path(role: 'counsellor'), class: "btn btn-sm btn-primary btn-block" %></div>
                             <div class="col-8"><strong>Counsellors</strong> are typically call-center employees who <em>only</em> have access to overdue and adherence call lists.</div>
                         </div>
                     <% end %>

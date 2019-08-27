@@ -36,7 +36,7 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
 
   describe '#show' do
     before do
-      sign_in(admin)
+      sign_in(admin.email_authentication)
     end
 
     render_views
@@ -107,7 +107,7 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
   describe '#whatsapp_graphics' do
     before do
       admin = create(:admin, :supervisor)
-      sign_in(admin)
+      sign_in(admin.email_authentication)
       create(:admin_access_control, access_controllable: facility_group, admin: admin)
     end
 

@@ -6,6 +6,11 @@ class ApplicationController < ActionController::Base
 
   private
 
+  # Tell pundit how to find the current user
+  def pundit_user
+    current_admin
+  end
+
   # Send a user to the admins index after sending invitations
   def after_invite_path_for(inviter, invitee)
     admins_path

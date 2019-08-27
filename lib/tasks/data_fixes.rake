@@ -1,4 +1,4 @@
-require 'tasks/data_clean_up/move_user_recorded_data_to_registration_facility'
+require 'tasks/scripts/move_user_recorded_data_to_registration_facility'
 
 namespace :data_fixes do
   desc 'Set all appointments with a newer blood pressure reading than the created_at date to "visited"'

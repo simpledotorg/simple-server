@@ -4,7 +4,7 @@
     <%= render(
       'shared/paginate_and_filter_by_facility',
       form_url: patients_path,
-      current_user: current_user,
+      current_admin: current_admin,
       facility_id: @facility_id,
       per_page: @per_page
     ) %>
