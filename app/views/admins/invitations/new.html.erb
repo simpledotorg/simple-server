@@ -1,22 +1,31 @@
 <h1><%= t "devise.invitations.new.header", role_title: @role.to_s.titleize %></h1>
 
 <%= bootstrap_form_for(resource, as: resource_name, url: invitation_path(resource_name), html: { method: :post }) do |f| %>
+  <%= f.hidden_field :role, readonly: true, value: @role.to_s %>
+  <%= f.text_field :full_name %>
   <% resource.class.invite_key_fields.each do |field| -%>
-    <%= f.text_field field %></p>
-    <%= f.hidden_field :role, readonly: true, value: @role.to_s %>
+    <%= f.text_field field %>
   <% end %>
-  <%= f.hidden_field :access_controllable_type, value: AdminAccessControl::ACCESS_CONTROLLABLE_TYPE_FOR_ROLE[@role] %>
 
-  <% if [:supervisor, :analyst, :counsellor].include?(@role) %>
+  <% if selectable_resource_types.include?('FacilityGroup') %>
     <h3>Select facility groups</h3>
     <% policy_scope(FacilityGroup).group_by(&:organization).each do |organization, facility_groups| %>
-      <%= f.collection_check_boxes :access_controllable_ids, facility_groups, :id, :name, label: "Organization: #{organization.name}" %>
+      <%= f.collection_check_boxes :resources,
+                                   facility_groups,
+                                   :to_gid_param,
+                                   :name,
+                                   label: "Organization: #{organization.name}" %>
     <% end %>
   <% end %>
 
-  <% if @role == :organization_owner %>
+  <% if selectable_resource_types.include?('Organization') %>
     <h3>Select organizations</h3>
-    <%= f.collection_check_boxes :access_controllable_ids, policy_scope(Organization), :id, :name, label: 'Organizations', size: 1 %>
+    <%= f.collection_check_boxes :resources,
+                                 policy_scope(Organization),
+                                 :to_gid_param,
+                                 :name,
+                                 label: 'Organizations',
+                                 size: 1 %>
   <% end %>
 
   <%= f.primary t("devise.invitations.new.submit_button") %>

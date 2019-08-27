@@ -44,9 +44,9 @@ module CreateMasterUser
     return nil if admin.owner?
     organizations =
       if admin.organization_owner?
-        AdminAccessControl.where(admin: admin).map(&:access_controllable).uniq
+        admin.admin_access_controls.map(&:access_controllable).uniq
       else
-        AdminAccessControl.where(admin: admin).map(&:access_controllable).map(&:organization).uniq
+        admin.admin_access_controls.map(&:access_controllable).map(&:organization).uniq
       end
 
     throw "#{admin.email} belongs to more than one organization" if organizations.length != 1
@@ -62,10 +62,7 @@ module CreateMasterUser
 
       throw "#{permission_slug} is an unknown permission" unless permission.present?
 
-      binding.pry
-
       if permission[:type] == :global
-        binding.pry
         user.user_permissions.create!(permission_slug: permission_slug)
         next
       end

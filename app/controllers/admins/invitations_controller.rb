@@ -1,7 +1,7 @@
 class Admins::InvitationsController < Devise::InvitationsController
   before_action :configure_permitted_parameters
 
-  helper_method :current_user
+  helper_method :current_user, :selectable_resource_types, :resource_type_and_id
 
   def new
     authorize :invitation, :new?
@@ -12,27 +12,13 @@ class Admins::InvitationsController < Devise::InvitationsController
   def create
     authorize :invitation, :create?
     @role = params.require(:admin).require(:role).downcase.to_sym
-    user = nil
     User.transaction do
       super do |resource|
-
-        # Temporary to make tests work
-        user = User.new(full_name: 'test',
-                        device_created_at: Time.now,
-                        device_updated_at: Time.now,
-                        sync_approval_status: :denied)
-
+        user = User.new(user_params)
         user.email_authentications = [resource]
-        unless @role == :owner
-          admin_access_controls = access_controllable_ids.reject(&:empty?).map do |access_controllable_id|
-            AdminAccessControl.new(
-              access_controllable_type: access_controllable_type,
-              access_controllable_id: access_controllable_id)
-          end
-
-          user.admin_access_controls =  admin_access_controls
-        end
         user.save!
+        resources_by_type = user.resources.group_by { |r| r.class.to_s}
+        user.assign_default_permissions!(resources_by_type)
       end
     end
   end
@@ -43,12 +29,18 @@ class Admins::InvitationsController < Devise::InvitationsController
     current_admin.user
   end
 
-  def access_controllable_ids
-    params.require(:admin).require(:access_controllable_ids)
+  def selectable_resource_types
+    User::DEFAULT_PERMISSIONS[@role]
+      .map { |permission_slug| Permissions::ALL_PERMISSIONS[permission_slug][:resource_type] }
+      .uniq
   end
 
-  def access_controllable_type
-    params.require(:admin).require(:access_controllable_type)
+  def user_params
+    params.require(:admin)
+      .permit(:full_name, :role, resources: [])
+      .merge(device_created_at: Time.now,
+             device_updated_at: Time.now,
+             sync_approval_status: :denied)
   end
 
   def configure_permitted_parameters
