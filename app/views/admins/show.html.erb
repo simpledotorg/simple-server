@@ -1,7 +1,7 @@
 <div class="page-header">
   <h1 class="page-title">
     <% if policy(Admin).index? %>
-      <%= link_to "Admins", admins_path, class: "#{active_controller?("admins")}" %>
+      <%= link_to "Admins", admins_path, class: "#{active_controller?("email_authentications")}" %>
       <i class="fas fa-angle-right light"></i>
     <% end %>
 

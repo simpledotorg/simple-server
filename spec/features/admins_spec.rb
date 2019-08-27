@@ -7,7 +7,7 @@ RSpec.feature "Admins", type: :feature do
   xdescribe "index" do
     before { sign_in(owner.email_authentication) }
 
-    it "shows all admins and roles" do
+    it "shows all email_authentications and roles" do
       visit admins_path
 
       expect(page).to have_content("Admins")
@@ -22,7 +22,7 @@ RSpec.feature "Admins", type: :feature do
     end
   end
 
-  xdescribe "editing admins" do
+  xdescribe "editing email_authentications" do
     let!(:facility_group) { create(:facility_group, name: "CHC Buccho") }
     let!(:other_facility_group) { create(:facility_group, name: "PHC Ubha") }
     let!(:counsellor) { create(:admin, :counsellor) }
@@ -120,7 +120,6 @@ RSpec.feature "Admins", type: :feature do
       expect(new_supervisor.invited_to_sign_up?).to eq(true)
     end
   end
-
 
   xdescribe "association admins with their access control groups" do
     let(:email) { "new@example.com" }

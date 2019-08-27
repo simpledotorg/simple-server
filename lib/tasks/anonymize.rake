@@ -98,7 +98,7 @@ namespace :anonymize do
         whitelist_timestamps
       end
 
-      table 'admins' do
+      table 'email_authentications' do
         primary_key 'id'
         whitelist 'email'
         whitelist 'encrypted_password'

@@ -214,7 +214,6 @@ class User < ApplicationRecord
   end
 
   def default_permissions_for_resource_type(resource_type)
-    binding.pry
     DEFAULT_PERMISSIONS[role.to_sym].select do |permission_slug|
       Permissions::ALL_PERMISSIONS[permission_slug][:resource_type] == resource_type
     end

@@ -1,7 +1,7 @@
-class Admins::InvitationsController < Devise::InvitationsController
+class EmailAuthentications::InvitationsController < Devise::InvitationsController
   before_action :configure_permitted_parameters
 
-  helper_method :current_user, :selectable_resource_types, :resource_type_and_id
+  helper_method :current_admin, :selectable_resource_types, :resource_type_and_id
 
   def new
     authorize :invitation, :new?
@@ -11,7 +11,7 @@ class Admins::InvitationsController < Devise::InvitationsController
 
   def create
     authorize :invitation, :create?
-    @role = params.require(:admin).require(:role).downcase.to_sym
+    @role = params.require(:email_authentication).require(:role).downcase.to_sym
     User.transaction do
       super do |resource|
         user = User.new(user_params)
@@ -25,8 +25,12 @@ class Admins::InvitationsController < Devise::InvitationsController
 
   protected
 
-  def current_user
-    current_admin.user
+  def current_admin
+    current_inviter.user
+  end
+
+  def pundit_user
+    current_admin
   end
 
   def selectable_resource_types
@@ -36,7 +40,7 @@ class Admins::InvitationsController < Devise::InvitationsController
   end
 
   def user_params
-    params.require(:admin)
+    params.require(:email_authentication)
       .permit(:full_name, :role, resources: [])
       .merge(device_created_at: Time.now,
              device_updated_at: Time.now,

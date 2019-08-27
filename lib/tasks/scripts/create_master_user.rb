@@ -56,7 +56,7 @@ module CreateMasterUser
   #@todo: User should be enough here
   def self.assign_permissions!(user, admin)
     user_permissions = User::DEFAULT_PERMISSIONS[user.role.to_sym]
-    resources = AdminAccessControl.where(admin: admin)
+    resources = admin.admin_access_controls
     user_permissions.each do |permission_slug|
       permission = Permissions::ALL_PERMISSIONS[permission_slug]
 

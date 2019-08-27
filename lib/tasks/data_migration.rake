@@ -167,7 +167,7 @@ blood_pressures.recorded_at AS oldest_bp_recorded_at))
     end
   end
 
-  desc "Fix null invited_by for email authentications when migrating from admins"
+  desc "Fix null invited_by for email authentications when migrating from email_authentications"
   task fix_invited_by_for_email_authentications: :environment do
     EmailAuthentication.all.each do |email_authentication|
       email_authentication.transaction do
