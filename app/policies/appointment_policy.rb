@@ -17,8 +17,9 @@ class AppointmentPolicy < ApplicationPolicy
     )
   end
 
-  def edit?
-    update?
+  def download?
+    user.owner? || user.supervisor? &&
+      user.organizations.include?(Organization.find(ENV['IHCI_ORGANIZATION_UUID']))
   end
 
   class Scope < Scope

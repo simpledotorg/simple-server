@@ -74,8 +74,13 @@ RSpec.describe AppointmentPolicy do
       let(:appointment1) { build(:appointment, :overdue, facility: facility1) }
       let(:appointment2) { build(:appointment, :overdue, facility: facility2) }
 
-      it 'permits the user to access all appointments in the given facility_group' do
-        expect(subject).to permit(user_with_permission, appointment1)
+      before do
+        ENV['IHCI_ORGANIZATION_UUID'] = ihmi.id
+      end
+
+      it 'permits supervisors in IHMI' do
+        supervisor.admin_access_controls = [AdminAccessControl.new(access_controllable: ihmi_group)]
+        expect(subject).to permit(supervisor, User)
       end
 
       it 'denies the user to access any appointment outside the given facility_group' do

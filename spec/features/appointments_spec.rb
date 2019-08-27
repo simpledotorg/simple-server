@@ -11,6 +11,10 @@ RSpec.feature 'Overdue appointments', type: :feature do
     )
   }
 
+  before do
+    ENV['IHCI_ORGANIZATION_UUID'] = ihmi.id
+  end
+
   describe 'index' do
     before { sign_in(supervisor.email_authentication) }
 
