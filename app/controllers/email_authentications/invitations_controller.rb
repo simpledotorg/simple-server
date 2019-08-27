@@ -1,7 +1,7 @@
-class Admins::InvitationsController < Devise::InvitationsController
+class EmailAuthentications::InvitationsController < Devise::InvitationsController
   before_action :configure_permitted_parameters
 
-  helper_method :current_user
+  helper_method :current_admin
 
   def new
     authorize :invitation, :new?
@@ -11,7 +11,7 @@ class Admins::InvitationsController < Devise::InvitationsController
 
   def create
     authorize :invitation, :create?
-    @role = params.require(:admin).require(:role).downcase.to_sym
+    @role = params.require(:email_authentication).require(:role).downcase.to_sym
     user = nil
     User.transaction do
       super do |resource|
@@ -39,16 +39,20 @@ class Admins::InvitationsController < Devise::InvitationsController
 
   protected
 
-  def current_user
-    current_admin.user
+  def current_admin
+    current_inviter.user
+  end
+
+  def pundit_user
+    current_admin
   end
 
   def access_controllable_ids
-    params.require(:admin).require(:access_controllable_ids)
+    params.require(:email_authentication).require(:access_controllable_ids)
   end
 
   def access_controllable_type
-    params.require(:admin).require(:access_controllable_type)
+    params.require(:email_authentication).require(:access_controllable_type)
   end
 
   def configure_permitted_parameters

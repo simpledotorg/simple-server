@@ -109,7 +109,6 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
       it 'renders the image template for downloading' do
         get :whatsapp_graphics, format: :png, params: { organization_id: organization.id, district_id: district_name }
 
-
         expect(response).to be_ok
         expect(response).to render_template('shared/graphics/image_template')
       end

@@ -1,5 +1,5 @@
 class AdminController < ApplicationController
-  before_action :authenticate_admin!
+  before_action :authenticate_email_authentication!
   after_action :verify_authorized
   after_action :verify_policy_scoped, only: :index
 
@@ -13,12 +13,16 @@ class AdminController < ApplicationController
     head :bad_request
   end
 
-  helper_method :current_user
+  helper_method :current_admin
 
   private
 
-  def current_user
-    current_admin.user
+  def current_admin
+    current_email_authentication.user
+  end
+
+  def pundit_user
+    current_admin
   end
 
   def user_not_authorized
