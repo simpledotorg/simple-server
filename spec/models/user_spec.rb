@@ -23,6 +23,7 @@ RSpec.describe User, type: :model do
           phone_number: phone_number,
           password_digest: password_digest,
           registration_facility_id: registration_facility.id,
+          organization_id: registration_facility.organization.id,
           device_created_at: Time.now.iso8601,
           device_updated_at: Time.now.iso8601
         }

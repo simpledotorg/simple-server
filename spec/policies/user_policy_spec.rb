@@ -31,7 +31,8 @@ RSpec.describe UserPolicy do
 
   context 'user can manage users for an organization' do
     let(:user_with_permission) do
-      create(:admin, user_permissions: [build(:user_permission, permission_slug: :can_manage_users_for_organization, resource: organization)])
+      create(:admin, user_permissions: [build(:user_permission, permission_slug: :can_manage_users_for_organization, resource: user_1.organization)],
+             organization: user_1.organization)
     end
 
     permissions :index? do

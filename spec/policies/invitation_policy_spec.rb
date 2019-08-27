@@ -7,6 +7,7 @@ RSpec.describe InvitationPolicy do
     let(:user_with_permission) do
       create(:admin, user_permissions: [build(:user_permission, permission_slug: :can_manage_all_users)])
     end
+    let(:organization) { create(:organization) }
 
     permissions :new?, :create? do
       it 'allows user to invite admins with any role' do

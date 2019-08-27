@@ -3,7 +3,7 @@ class InvitationPolicy < ApplicationPolicy
     user_permission_slugs = user.user_permissions.pluck(:permission_slug).map(&:to_sym)
     [:can_manage_all_users,
      :can_manage_users_for_organization
-    ].any? { |slug| user_permission_slugs.include? slug } 
+    ].any? { |slug| user_permission_slugs.include? slug }
   end
 
   def new?
@@ -13,7 +13,7 @@ class InvitationPolicy < ApplicationPolicy
   private
 
   def user_can_invite_role(role)
-    slugs = user.user_permissions.pluck(:permission_slug)
+    slugs = user.user_permissions.pluck(:permission_slug).map { |slug| slug.to_sym }
     roles_user_can_invite
       .slice(*slugs)
       .values

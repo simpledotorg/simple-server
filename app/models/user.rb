@@ -138,6 +138,7 @@ class User < ApplicationRecord
     user = new(
       id: params[:id],
       full_name: params[:full_name],
+      organization_id: params[:organization_id],
       device_created_at: params[:device_created_at],
       device_updated_at: params[:device_updated_at]
     )
