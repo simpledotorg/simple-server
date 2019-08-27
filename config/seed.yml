@@ -1,0 +1,29 @@
+development:
+  protocols: 3
+  protocol_drugs: 3
+  users:
+    count: 3
+    patients:
+      count: 3
+      traits:
+        - overdue
+        - hypertensive
+      medical_histories: 3
+      prescription_drugs: 3
+      blood_pressures: 3
+      appointments: 3
+
+sandbox:
+  protocols: 3
+  protocol_drugs: 3
+  users:
+    count: 5
+    patients:
+      count: 5
+      traits:
+        - overdue
+        - hypertensive
+      medical_histories: 5
+      prescription_drugs: 5
+      blood_pressures: 5
+      appointments: 5

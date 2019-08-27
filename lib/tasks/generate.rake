@@ -1,3 +1,5 @@
+require 'yaml'
+
 def common_names
   {
     'english' =>
@@ -105,6 +107,16 @@ def create_random_patient(address_id, language)
   Patient.create(patient)
 end
 
+def create_blood_pressure(bp_type, creation_date, patient)
+  FactoryBot.create(:blood_pressure, bp_type,
+                    patient: patient,
+                    facility: patient.registration_facility,
+                    user: patient.registration_user,
+                    created_at: creation_date,
+                    updated_at: creation_date,
+                    recorded_at: creation_date)
+end
+
 namespace :generate do
   desc 'Generate test patients for user tests'
   # Example: rake "generate:random_patients_for_user_tests[20]"
@@ -205,26 +217,19 @@ namespace :generate do
   end
 
   namespace :seed do
-    module SeedConstants
-      NUMBER_OF_ORGANIZATIONS = rand(2..5)
-      NUMBER_OF_PROTOCOLS = 3
-      FACILITY_GROUPS_PER_ORGANIZATION = rand(2..5)
-      FACILITIES_PER_FACILITY_GROUP = rand(2..5)
-      USERS_PER_FACILITY = rand(2..5)
-      NUMBER_OF_PATIENTS = rand(2..5)
-      MEDICAL_HISTORIES_PER_PATIENT = 3
-      PRESCRIPTION_DRUGS_PER_PATIENT = 3
-      BLOOD_PRESSURES_PER_PATIENT = rand(2..5)
-      APPOINTMENTS_PER_PATIENT = rand(2..5)
-    end
-
-    def create_protocols
+    def create_protocols(config)
       puts "Creating protocols"
 
-      protocol = FactoryBot.create(:protocol)
+      number_of_protocols = config.fetch('protocols')
 
-      SeedConstants::NUMBER_OF_PROTOCOLS.times do
-        FactoryBot.create(:protocol_drug, protocol: protocol)
+      protocols = []
+      number_of_protocols.times do
+        protocols << FactoryBot.create(:protocol)
+      end
+
+      number_of_protocol_drugs = config.fetch('protocol_drugs')
+      number_of_protocol_drugs.times do
+        FactoryBot.create(:protocol_drug, protocol: protocols.sample)
       end
     end
 
@@ -314,7 +319,7 @@ namespace :generate do
       ]
     end
 
-    def create_and_return_organizations(creation_date)
+    def create_and_return_organizations(creation_date, config)
       puts "Creating organizations for #{creation_date}"
 
       organizations = []
@@ -324,7 +329,7 @@ namespace :generate do
                                          created_at: creation_date,
                                          updated_at: creation_date)
 
-        create_facility_groups(organization, dev_org[:facility_groups], creation_date)
+        create_facility_groups(organization, dev_org[:facility_groups], creation_date, config)
         create_admins(organization)
 
         organizations << organization
@@ -334,21 +339,24 @@ namespace :generate do
       organizations
     end
 
-    def create_organization_patient_records(organization, date)
+    def create_organization_patient_records(organization, date, config)
       facility_groups = organization.facility_groups
 
+      number_of_blood_pressures = get_count_for_property(config.dig('users', 'patients'), 'blood_pressures')
+      is_hypertensive = get_traits_for_property(config['users'], 'patients').has_key?('hypertensive')
+
       facility_groups.flat_map(&:facilities).flat_map(&:registered_patients).each do |patient|
-        create_blood_pressures(patient, date) if Random.rand(1..10) < 8
+        create_blood_pressures(patient, date, number_of_blood_pressures, is_hypertensive) if Random.rand(1..10) < 8
       end
 
       facility_groups.flat_map(&:users).each do |user|
         SeedConstants::NUMBER_OF_PATIENTS.times do
-          create_patients(user, date)
+          create_patients(user, date, config)
         end
       end
     end
 
-    def create_facility_groups(organization, facility_groups, creation_date)
+    def create_facility_groups(organization, facility_groups, creation_date, config)
       puts "Creating facility groups for #{creation_date}"
 
       facility_groups.each do |fac_group|
@@ -358,7 +366,7 @@ namespace :generate do
                                            updated_at: creation_date)
 
         facilities = create_and_return_facilities(facility_group, fac_group[:facilities], creation_date)
-        create_users(facilities, creation_date)
+        create_users(facilities, creation_date, config)
       end
     end
 
@@ -399,24 +407,28 @@ namespace :generate do
       user.save
     end
 
-    def create_users(facilities, creation_date)
+    def create_users(facilities, creation_date, config)
       puts "Creating users for #{creation_date}"
 
-      facilities.each do |f|
-        SeedConstants::USERS_PER_FACILITY.times do
-          user = FactoryBot.create(:user, registration_facility: f, created_at: creation_date, updated_at: creation_date)
-          create_patients(user, creation_date)
+      number_of_users = get_count_for_property(config, 'users')
 
-          create_sync_requested_users(f, creation_date) if rand(1..10) < 5
-          create_sync_denied_users(f, creation_date) if rand(1..10) < 5
+      facilities.each do |f|
+        number_of_users.times do
+          user = FactoryBot.create(:user, registration_facility: f, created_at: creation_date, updated_at: creation_date)
+          create_patients(user, creation_date, config['users'])
+
+          create_sync_requested_users(f, creation_date) if rand(1..10) < 3
+          create_sync_denied_users(f, creation_date) if rand(1..10) < 3
         end
       end
     end
 
-    def create_patients(user, creation_date)
+    def create_patients(user, creation_date, config)
       puts "Creating patients for #{creation_date}"
 
-      SeedConstants::NUMBER_OF_PATIENTS.times do
+      number_of_patients = get_count_for_property(config, 'patients')
+
+      number_of_patients.times do
         patient = FactoryBot.create(:patient, registration_facility: user.registration_facility,
                                     registration_user: user,
                                     created_at: creation_date,
@@ -431,10 +443,15 @@ namespace :generate do
           patient.save
         end
 
-        create_medical_history(patient, creation_date)
-        create_prescription_drugs(patient, creation_date)
-        create_blood_pressures(patient, creation_date)
-        create_appointments(patient, creation_date)
+        patient_traits = get_traits_for_property(config, 'patients')
+        is_overdue = patient_traits.include?('overdue')
+        is_hypertensive = patient_traits.include?('hypertensive')
+
+        patient_config = config['patients']
+        create_medical_history(patient, creation_date, patient_config)
+        create_prescription_drugs(patient, creation_date, patient_config)
+        create_blood_pressures(patient, creation_date, patient_config, is_hypertensive)
+        create_appointments(patient, creation_date, patient_config, is_overdue)
 
         if rand(1..10) == 1
           create_call_logs(patient, creation_date)
@@ -443,10 +460,12 @@ namespace :generate do
       end
     end
 
-    def create_medical_history(patient, creation_date)
+    def create_medical_history(patient, creation_date, config)
       puts "Creating medical histories for #{creation_date}"
 
-      SeedConstants::MEDICAL_HISTORIES_PER_PATIENT.times do
+      number_of_medical_histories = config.fetch('medical_histories')
+
+      number_of_medical_histories.times do
         FactoryBot.create(:medical_history, :unknown,
                           patient: patient,
                           created_at: creation_date,
@@ -459,10 +478,12 @@ namespace :generate do
       end
     end
 
-    def create_prescription_drugs(patient, creation_date)
+    def create_prescription_drugs(patient, creation_date, config)
       puts "Creating prescription drugs for #{creation_date}"
 
-      SeedConstants::PRESCRIPTION_DRUGS_PER_PATIENT.times do
+      number_of_prescription_drugs = config.fetch('prescription_drugs')
+
+      number_of_prescription_drugs.times do
         FactoryBot.create(:prescription_drug, patient: patient,
                           facility: patient.registration_facility,
                           created_at: creation_date,
@@ -470,26 +491,26 @@ namespace :generate do
       end
     end
 
-    def create_blood_pressures(patient, creation_date)
+    def create_blood_pressures(patient, creation_date, config, is_hypertensive)
       puts "Creating blood pressures for #{creation_date}"
 
-      SeedConstants::BLOOD_PRESSURES_PER_PATIENT.times do
-        [:under_control, :high, :very_high, :critical].each do |bp_type|
-          FactoryBot.create(:blood_pressure, bp_type,
-                            patient: patient,
-                            facility: patient.registration_facility,
-                            user: patient.registration_user,
-                            created_at: creation_date,
-                            updated_at: creation_date,
-                            recorded_at: creation_date)
+      number_of_blood_pressures = config.fetch('blood_pressures')
+
+      number_of_blood_pressures.times do
+        create_blood_pressure(:under_control, creation_date, patient)
+
+        [:high, :very_high, :critical].each do |bp_type|
+          create_blood_pressure(bp_type, creation_date, patient) if is_hypertensive
         end
       end
     end
 
-    def create_appointments(patient, creation_date)
+    def create_appointments(patient, creation_date, config, is_overdue)
       puts "Creating appointments for #{creation_date}"
 
-      SeedConstants::APPOINTMENTS_PER_PATIENT.times do
+      number_of_appointments = config.fetch('appointments')
+
+      number_of_appointments.times do
         FactoryBot.create(:appointment, patient: patient,
                           facility: patient.registration_facility,
                           created_at: creation_date,
@@ -499,7 +520,7 @@ namespace :generate do
                           patient: patient,
                           facility: patient.registration_facility,
                           created_at: creation_date,
-                          updated_at: creation_date) if rand(1..10) < 3
+                          updated_at: creation_date) if is_overdue && rand(1..10) < 3
       end
     end
 
@@ -547,26 +568,38 @@ namespace :generate do
       Timecop.return
     end
 
-    def create_seed_data(number_of_months)
-      create_protocols
+    def create_seed_data(number_of_months, config)
+      create_protocols(config)
 
       Admin.create(email: "admin@simple.org", password: "password", role: :owner)
 
-      organizations = create_and_return_organizations(number_of_months.months.ago)
+      organizations = create_and_return_organizations(number_of_months.months.ago, config)
 
       number_of_months.downto(1) do |month_number|
         creation_date = month_number.months.ago
 
         organizations.each do |organization|
-          create_organization_patient_records(organization, creation_date)
+          create_organization_patient_records(organization, creation_date, config)
         end
       end
     end
 
     task :generate_data, [:number_of_months] => :environment do |_t, args|
       number_of_months = args.fetch(:number_of_months) { 12 }.to_i
+      environment = ENV.fetch('SIMPLE_SERVER_ENV') { 'development' }
+      config = YAML.load_file('config/seed.yml').dig(environment)
 
-      create_seed_data(number_of_months)
+      create_seed_data(number_of_months, config)
+    end
+
+    private
+
+    def get_count_for_property(config_hash, property)
+      config_hash.dig(property, 'count')
+    end
+
+    def get_traits_for_property(config_hash, property)
+      config_hash.dig(property, 'traits')
     end
   end
 end
