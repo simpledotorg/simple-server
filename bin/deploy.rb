@@ -25,6 +25,7 @@ class Deploy
     'db/' => 'Holds all the database migrations',
     'lib/' => "Holds all the rake tasks for data migrations",
     '.env.development' => "Holds all application configs",
+    'config/' => "Holds all service / third-party configs"
   }
 
   attr_reader :current_environment,
@@ -94,17 +95,19 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 
   def find_changes_in_files(list_of_files)
-    list_of_files.each do |file|
+    list_of_files.each_with_index do |file, idx|
       puts "Looking for changes in #{file}"
 
       if change_in_file?(file)
-        puts "Found changes in #{file}. Exiting..."
-        exit 1
+        puts "Found changes in #{file}."
+        prompt_for_confirmation('Please check the diff in the file and confirm', ['y', 'Y'], 32)
       else
         puts "Found no change in #{file}. Moving ahead..."
       end
 
-      print_newlines(n: 1)
+      unless idx == (list_of_files.size - 1)
+        print_newlines(n: 1)
+      end
     end
   end
 
@@ -169,7 +172,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 
   def deploy
-    execute_safely("cap #{current_environment} deploy --dry-run",
+    execute_safely("cap #{current_environment} deploy",
                    { 'BRANCH' => @tag_to_deploy })
   end
 
@@ -177,16 +180,17 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
     puts "#{step_name}"
     puts "+---------------------------------------+"
     yield(blk)
-    puts colorize("\u2713".encode('utf-8'), 32)
+    puts colorize("💧".encode('utf-8'), 31)
   rescue DeployError
-    puts colorize("\u2717".encode('utf-8'), 31)
+    puts colorize("💉".encode('utf-8'), 32)
     exit 1
   ensure
     puts "+---------------------------------------+"
   end
 
   def execute_safely(cmd, env_vars = {}, confirm: false)
-    prompt_for_confirmation if confirm
+    prompt_for_confirmation('Confirm before proceeding', ['y', 'Y'], 32) if confirm
+
     env_vars.each { |env_var, value| ENV[env_var] = value } unless env_vars.empty?
     output = `#{cmd}`
     raise DeployError if $?.exitstatus > 0
@@ -219,14 +223,14 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
     %r{([0-9]{4})-([0][0-9]|[1][0-2])-([0][0-9]|[1][0-9]|[2][0-9]|[3][0-1])-([0-9]{1,})}
   end
 
-  def prompt_for_confirmation
-    printf colorize("Press 'y/Y' to continue: ", 34)
+  def prompt_for_confirmation(msg, prompt_codes, color)
+    printf colorize("#{msg}: [#{prompt_codes.join(',')}] ", color)
     prompt = STDIN.gets.chomp
-    exit 1 unless ['y', 'Y'].include?(prompt)
+    exit 1 unless prompt_codes.include?(prompt)
   end
 
   def print_newlines(n: 3)
-    n.times { send(:puts) }
+    puts "\n" * n
   end
 end
 
