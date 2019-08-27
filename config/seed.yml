@@ -13,6 +13,21 @@ development:
       blood_pressures: 3
       appointments: 3
 
+test:
+  protocols: 1
+  protocol_drugs: 1
+  users:
+    count: 1
+    patients:
+      count: 1
+      traits:
+        - overdue
+        - hypertensive
+      medical_histories: 1
+      prescription_drugs: 1
+      blood_pressures: 1
+      appointments: 1
+
 sandbox:
   protocols: 3
   protocol_drugs: 3

@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :admin do
-    sequence(:email) { |n| "admin_#{n}@example.com" }
+    sequence(:email) { |n| "admin_#{Faker::Name.first_name}_#{Faker::Name.last_name}_#{n}_@example.com" }
     password "helloworld"
     role :owner
 
