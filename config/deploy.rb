@@ -40,6 +40,14 @@ namespace :deploy do
     end
   end
 
+  desc 'Print the latest deployed revision SHA'
+  task :get_latest_deployed_sha do
+    on release_roles([:app]) do
+      invoke "deploy:set_previous_revision"
+      puts fetch(:previous_revision)
+    end
+  end
+
   desc 'Confirm if you really want to execute the task'
   task :confirmation do
     puts <<-WARN
