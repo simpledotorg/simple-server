@@ -98,11 +98,13 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
     list_of_files.each_with_index do |file, idx|
       puts "Looking for changes in #{file}"
 
-      if change_in_file?(file)
-        puts "Found changes in #{file}."
-        prompt_for_confirmation('Please check the diff in the file and confirm', ['y', 'Y'], 32)
-      else
+      changes = changes_in_file(file)
+      if changes.empty?
         puts "Found no change in #{file}. Moving ahead..."
+      else
+        puts "Found changes in #{file}."
+        puts changes
+        prompt_for_confirmation('Please check the diff in the file and confirm', ['y', 'Y'], 32)
       end
 
       unless idx == (list_of_files.size - 1)
@@ -152,10 +154,8 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
       .strip
   end
 
-  def change_in_file?(file)
-    word_count = execute_safely("git diff #{last_deployed_sha}..HEAD #{file} | wc -l").to_i
-    return true if word_count > 0
-    false
+  def changes_in_file(file)
+    execute_safely("git diff #{last_deployed_sha}..HEAD #{file}")
   end
 
   def find_existing_release_tags(date)
@@ -172,7 +172,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 
   def deploy
-    execute_safely("cap #{current_environment} deploy",
+    execute_safely("bundle exec cap #{current_environment} deploy",
                    { 'BRANCH' => @tag_to_deploy })
   end
 
@@ -180,9 +180,9 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
     puts "#{step_name}"
     puts "+---------------------------------------+"
     yield(blk)
-    puts colorize("💧".encode('utf-8'), 31)
+    puts colorize("✔".encode('utf-8'), 32)
   rescue DeployError
-    puts colorize("💉".encode('utf-8'), 32)
+    puts colorize("✗".encode('utf-8'), 31)
     exit 1
   ensure
     puts "+---------------------------------------+"
