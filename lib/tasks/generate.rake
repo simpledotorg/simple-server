@@ -385,7 +385,7 @@ namespace :generate do
                                created_at: creation_date,
                                updated_at: creation_date)
       user.sync_approval_status = 'requested'
-      user.sync_approval_status_reason = 'New Registration'
+      user.sync_approval_status_reason = ['New Registration', 'Reset PIN'].sample
       user.save
     end
 
