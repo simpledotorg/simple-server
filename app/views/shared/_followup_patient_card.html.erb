@@ -10,7 +10,7 @@
       <% if show_enrollment_date %>
         <div>
           <span class="text-secondary">Registered on:</span>
-          <%= patient.recorded_at.strftime("%d-%^b-%Y") %><br>
+          <%= patient.registration_date %><br>
         </div>
       <% end %>
       <% if bp = patient.latest_blood_pressure %>

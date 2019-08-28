@@ -1,6 +1,7 @@
 require 'csv'
 
 class Appointment < ApplicationRecord
+  include ApplicationHelper
   include Mergeable
   include Hashable
 
@@ -154,10 +155,10 @@ class Appointment < ApplicationRecord
       patient.gender.capitalize,
       patient.current_age,
       days_overdue,
-      patient.recorded_at,
+      patient.registration_date,
       patient.latest_blood_pressure.to_s,
       patient.latest_blood_pressure.facility.name,
-      patient.latest_blood_pressure.device_created_at.to_date,
+      display_date(patient.latest_blood_pressure.device_created_at),
       patient.risk_priority_label,
       patient.address.street_address,
       patient.address.village_or_colony,
