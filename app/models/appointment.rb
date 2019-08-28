@@ -1,6 +1,7 @@
 require 'csv'
 
 class Appointment < ApplicationRecord
+  include ApplicationHelper
   include Mergeable
   include Hashable
 
@@ -49,10 +50,6 @@ class Appointment < ApplicationRecord
 
   def days_overdue
     (Date.today - scheduled_date).to_i
-  end
-
-  def enrollment_date
-    ApplicationController.helpers.handle_impossible_registration_date(device_created_at)
   end
 
   def scheduled?
@@ -141,7 +138,7 @@ class Appointment < ApplicationRecord
       "Gender",
       "Age",
       "Days overdue",
-      "Enrollment date",
+      "Registration date",
       "Last BP",
       "Last BP taken at",
       "Last BP date",
@@ -158,10 +155,10 @@ class Appointment < ApplicationRecord
       patient.gender.capitalize,
       patient.current_age,
       days_overdue,
-      enrollment_date,
+      patient.registration_date,
       patient.latest_blood_pressure.to_s,
       patient.latest_blood_pressure.facility.name,
-      patient.latest_blood_pressure.device_created_at.to_date,
+      display_date(patient.latest_blood_pressure.recorded_at),
       patient.risk_priority_label,
       patient.address.street_address,
       patient.address.village_or_colony,
