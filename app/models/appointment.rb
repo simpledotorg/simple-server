@@ -158,7 +158,7 @@ class Appointment < ApplicationRecord
       patient.registration_date,
       patient.latest_blood_pressure.to_s,
       patient.latest_blood_pressure.facility.name,
-      display_date(patient.latest_blood_pressure.device_created_at),
+      display_date(patient.latest_blood_pressure.recorded_at),
       patient.risk_priority_label,
       patient.address.street_address,
       patient.address.village_or_colony,
