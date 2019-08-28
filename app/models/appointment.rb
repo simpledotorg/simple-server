@@ -51,10 +51,6 @@ class Appointment < ApplicationRecord
     (Date.today - scheduled_date).to_i
   end
 
-  def enrollment_date
-    ApplicationController.helpers.handle_impossible_registration_date(device_created_at)
-  end
-
   def scheduled?
     status.to_sym == :scheduled
   end
@@ -141,7 +137,7 @@ class Appointment < ApplicationRecord
       "Gender",
       "Age",
       "Days overdue",
-      "Enrollment date",
+      "Registration date",
       "Last BP",
       "Last BP taken at",
       "Last BP date",
@@ -158,7 +154,7 @@ class Appointment < ApplicationRecord
       patient.gender.capitalize,
       patient.current_age,
       days_overdue,
-      enrollment_date,
+      patient.recorded_at,
       patient.latest_blood_pressure.to_s,
       patient.latest_blood_pressure.facility.name,
       patient.latest_blood_pressure.device_created_at.to_date,
