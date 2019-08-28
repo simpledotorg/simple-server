@@ -154,7 +154,7 @@ describe Appointment, type: :model do
           appointment.patient.latest_blood_pressure.to_s,
           appointment.patient.latest_blood_pressure.facility.name,
           ApplicationController.helpers.display_date(
-            appointment.patient.latest_blood_pressure.device_created_at.to_date),
+            appointment.patient.latest_blood_pressure.recorded_at),
           appointment.patient.risk_priority_label,
           appointment.patient.address.street_address,
           appointment.patient.address.village_or_colony,
