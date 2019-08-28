@@ -385,7 +385,7 @@ namespace :generate do
                                created_at: creation_date,
                                updated_at: creation_date)
       user.sync_approval_status = 'requested'
-      user.sync_approval_status_reason = nil
+      user.sync_approval_status_reason = 'New Registration'
       user.save
     end
 
@@ -395,7 +395,7 @@ namespace :generate do
                                created_at: creation_date,
                                updated_at: creation_date)
       user.sync_approval_status = 'denied'
-      user.sync_approval_status_reason = 'some random reason'
+      user.sync_approval_status_reason = 'Some random reason'
       user.save
     end
 
