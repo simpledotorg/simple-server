@@ -29,7 +29,7 @@
         <div class="card-row">    
             <h5><i class="fas fa-network-wired"></i> Facility Groups</h5>
 
-            <ul>
+            <ul alt="facility_groups">
                 <% @admin.facility_groups.each do |facility_group| %>
                     <li class="mt-2 mb-2"><%= link_to facility_group.name, admin_facility_group_path(facility_group) %></li>
                 <% end %>
@@ -39,7 +39,7 @@
         <div class="card-row">
             <h5><i class="fas fa-network-wired"></i> Organizations</h5>
 
-            <ul>
+            <ul alt="organizations">
             <% @admin.organizations.each do |organization| %>
             <li class="mt-2 mb-2"><%= link_to organization.name, admin_organization_path(organization) %></li>
             <% end %>
