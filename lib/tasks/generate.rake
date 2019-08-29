@@ -1,4 +1,5 @@
 require 'yaml'
+require 'factory_bot_rails'
 
 def common_names
   {

@@ -43,10 +43,11 @@ gem 'activerecord-import'
 gem "roo", "~> 2.8.0"
 gem 'wkhtmltoimage-binary'
 gem 'imgkit'
+gem 'factory_bot_rails', require: false
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
-  gem 'factory_bot_rails'
+  gem 'factory_bot_rails', require: true
   gem 'shoulda-matchers', '~> 3.1'
   gem 'faker'
   gem 'timecop', '~> 0.9.0'
