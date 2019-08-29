@@ -6,53 +6,22 @@ RSpec.describe 'generate:seed:generate_data' do
 
   let!(:env) { ENV.fetch('SIMPLE_SERVER_ENV') }
   let! (:seed_config) { YAML.load_file('config/seed.yml').fetch(env) }
-  let!(:overdue) { seed_config.dig('users', 'patients', 'traits').include?('overdue') }
-  let!(:hypertensive) { seed_config.dig('users', 'patients', 'traits').include?('hypertensive') }
-  let!(:organizations_count) { Organization.count }
-  let!(:facility_groups_count) { FacilityGroup.count }
-  let!(:facilities_count) { Facility.count }
+  let!(:overdue) { seed_config.dig('patients', 'traits').include?('overdue') }
+  let!(:hypertensive) { seed_config.dig('patients', 'traits').include?('hypertensive') }
+  let!(:user) { create(:user, registration_facility: create(:facility, facility_group: create(:facility_group, organization: create(:organization)))) }
+  let!(:user_patient_count) { user.registered_patients.count }
 
-  before(:all) do
+  before do
     invoke_task('generate:seed:generate_data[1]')
   end
 
-  context 'predefined values' do
-    it 'has organizations created' do
-      expect(Organization.count).to be >= organizations_count
-    end
-
-    it 'has facility groups created' do
-      expect(FacilityGroup.count).to be >= facility_groups_count
-    end
-
-    it 'has facilities created' do
-      expect(Facility.count).to be >= facilities_count
-    end
-
-
-    it 'has admins created' do
-      expect(Admin.count).to be >= 1
-    end
-
-  end
-
   context 'user-supplied values' do
-    it 'generates correct protocols data' do
-      expect(Protocol.count).to be >= seed_config.fetch('protocols')
-    end
-
-    it 'generates correct protocol drugs data' do
-      expect(ProtocolDrug.count).to be >= seed_config.fetch('protocol_drugs')
-    end
-
-    it 'generates correct user data' do
-      expect(User.count).to be >= seed_config.dig('users', 'count')
-    end
-
     it 'generates correct patient data' do
-      expect(Patient.count).to be >= seed_config.dig('users', 'patients', 'count')
-      expect(BloodPressure.count).to be >= seed_config.dig('users', 'patients', 'blood_pressures')
-      expect(Appointment.count).to be >= seed_config.dig('users', 'patients', 'appointments')
+      expect(user.registered_patients.count).to eq user_patient_count + seed_config.dig('patients', 'count')
+
+      expect(Patient.count).to be >= seed_config.dig('patients', 'count')
+      expect(BloodPressure.count).to be >= seed_config.dig('patients', 'blood_pressures')
+      expect(Appointment.count).to be >= seed_config.dig('patients', 'appointments')
     end
 
     it 'has overdue appointments is specified' do
