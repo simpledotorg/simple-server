@@ -4,13 +4,13 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   helper_method :current_admin, :selectable_resource_types, :resource_type_and_id
 
   def new
-    authorize :invitation, :new?
+    authorize current_admin, :new_user_for_invitation?
     @role = params[:role].downcase.to_sym
     super
   end
 
   def create
-    authorize :invitation, :create?
+    authorize current_admin, :create_user_for_invitation?
     @role = params.require(:email_authentication).require(:role).downcase.to_sym
     User.transaction do
       super do |resource|
@@ -49,7 +49,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:invite) do |admin_params|
-      admin_params.permit({ admin_access_controls: [] }, :email)
+      admin_params.permit(:email)
     end
   end
 end

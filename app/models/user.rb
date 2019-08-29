@@ -69,7 +69,9 @@ class User < ApplicationRecord
            source: :authenticatable,
            source_type: 'EmailAuthentication'
 
-  has_many :user_permissions, foreign_key: :user_id
+  accepts_nested_attributes_for :email_authentications, reject_if: :all_blank
+
+  has_many :user_permissions, foreign_key: :user_id, dependent: :delete_all
 
   has_many :audit_logs, as: :auditable
 
@@ -93,20 +95,6 @@ class User < ApplicationRecord
            :password,
            :authenticatable_salt,
            :invited_to_sign_up?, to: :email_authentication, allow_nil: true
-
-  def self.invite!(options = {})
-    transaction do
-      now = Time.now
-      User.create(
-        options
-          .slice(:full_name, :role)
-          .merge(device_created_at: now,
-                 device_updated_at: now,
-                 sync_approval_status: sync_approval_statuses[:denied]))
-
-      EmailAuthentication.invite!(nil, options.slice(:email))
-    end
-  end
 
   def phone_number_authentication
     phone_number_authentications.first
@@ -210,7 +198,11 @@ class User < ApplicationRecord
   end
 
   def resources
-    @resources
+    @resources || user_permissions.map(&:resource)
+  end
+
+  def resource_gids
+    resources.map(&:to_gid_param)
   end
 
   def default_permissions_for_resource_type(resource_type)

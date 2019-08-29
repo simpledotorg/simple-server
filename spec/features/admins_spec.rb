@@ -1,10 +1,11 @@
 require 'rails_helper'
 
 RSpec.feature "Admins", type: :feature do
+  let(:full_name) { Faker::Name.name }
   let!(:owner) { create(:admin, :owner, email: "owner@example.com") }
   let!(:supervisor) { create(:admin, :supervisor, email: "supervisor@example.com") }
 
-  xdescribe "index" do
+  describe "index" do
     before { sign_in(owner.email_authentication) }
 
     it "shows all email_authentications and roles" do
@@ -22,7 +23,7 @@ RSpec.feature "Admins", type: :feature do
     end
   end
 
-  xdescribe "editing email_authentications" do
+  describe "editing email_authentications" do
     let!(:facility_group) { create(:facility_group, name: "CHC Buccho") }
     let!(:other_facility_group) { create(:facility_group, name: "PHC Ubha") }
     let!(:counsellor) { create(:admin, :counsellor) }
@@ -36,12 +37,12 @@ RSpec.feature "Admins", type: :feature do
       check "CHC Buccho"
       click_button "Update Admin"
 
-      expect(counsellor.reload.facility_groups).to include(facility_group)
-      expect(counsellor.facility_groups).not_to include(other_facility_group)
+      expect(counsellor.reload.resources).to include(facility_group)
+      expect(counsellor.resources).not_to include(other_facility_group)
     end
   end
 
-  xdescribe "sending invitations to supervisors" do
+  describe "sending invitations to supervisors" do
     let(:email) { "new@example.com" }
     let(:new_supervisor) { User.joins(:email_authentications).find_by(email_authentications: { email: email }) }
     let!(:facility_groups) { FactoryBot.create_list(:facility_group, 2) }
@@ -55,6 +56,7 @@ RSpec.feature "Admins", type: :feature do
         click_link "Supervisor"
       end
 
+      fill_in "Full name", with: full_name
       fill_in "Email", with: email
 
       check facility_groups.first.name
@@ -81,7 +83,7 @@ RSpec.feature "Admins", type: :feature do
     end
   end
 
-  xdescribe "sending invitations to organization owners" do
+  describe "sending invitations to organization owners" do
     let(:email) { "new@example.com" }
     let(:new_supervisor) { User.joins(:email_authentications).find_by(email_authentications: { email: email }) }
     let!(:organizations) { FactoryBot.create_list(:organization, 2) }
@@ -95,6 +97,7 @@ RSpec.feature "Admins", type: :feature do
         click_link "Organization Owner"
       end
 
+      fill_in "Full name", with: full_name
       fill_in "Email", with: email
 
       check organizations.first.name
@@ -121,7 +124,7 @@ RSpec.feature "Admins", type: :feature do
     end
   end
 
-  xdescribe "association admins with their access control groups" do
+  describe "association admins with their access control groups" do
     let(:email) { "new@example.com" }
     let(:new_supervisor) { User.joins(:email_authentications).find_by(email_authentications: { email: email }) }
 
@@ -137,15 +140,16 @@ RSpec.feature "Admins", type: :feature do
           click_link "Supervisor"
         end
 
+        fill_in "Full name", with: full_name
         fill_in "Email", with: email
         check facility_groups.first.name
         click_button "Send an invitation"
       end
 
       it "associates new supervisors to facility groups" do
-        expect(new_supervisor.admin_access_controls.count).to eq(1)
-        expect(new_supervisor.admin_access_controls.first.access_controllable_type).to eq('FacilityGroup')
-        expect(new_supervisor.admin_access_controls.first.access_controllable_id).to eq(facility_groups.first.id)
+        expect(new_supervisor.user_permissions.count).to eq(4)
+        expect(new_supervisor.user_permissions.first.resource_type).to eq('FacilityGroup')
+        expect(new_supervisor.user_permissions.first.resource_id).to eq(facility_groups.first.id)
       end
     end
 
@@ -156,15 +160,16 @@ RSpec.feature "Admins", type: :feature do
           click_link "Analyst"
         end
 
+        fill_in "Full name", with: full_name
         fill_in "Email", with: email
         check facility_groups.first.name
         click_button "Send an invitation"
       end
 
       it "associates new analysts to facility groups" do
-        expect(new_supervisor.admin_access_controls.count).to eq(1)
-        expect(new_supervisor.admin_access_controls.first.access_controllable_type).to eq('FacilityGroup')
-        expect(new_supervisor.admin_access_controls.first.access_controllable_id).to eq(facility_groups.first.id)
+        expect(new_supervisor.user_permissions.count).to eq(1)
+        expect(new_supervisor.user_permissions.first.resource_type).to eq('FacilityGroup')
+        expect(new_supervisor.user_permissions.first.resource_id).to eq(facility_groups.first.id)
       end
     end
 
@@ -175,23 +180,24 @@ RSpec.feature "Admins", type: :feature do
           click_link "Organization Owner"
         end
 
+        fill_in "Full name", with: full_name
         fill_in "Email", with: email
         check organizations.first.name
         click_button "Send an invitation"
       end
 
       it "associates new supervisors to facility groups" do
-        expect(new_supervisor.admin_access_controls.count).to eq(1)
-        expect(new_supervisor.admin_access_controls.first.access_controllable_type).to eq('Organization')
-        expect(new_supervisor.admin_access_controls.first.access_controllable_id).to eq(organizations.first.id)
+        expect(new_supervisor.user_permissions.count).to eq(4)
+        expect(new_supervisor.user_permissions.first.resource_type).to eq('Organization')
+        expect(new_supervisor.user_permissions.first.resource_id).to eq(organizations.first.id)
       end
 
     end
   end
 
-  xdescribe 'inviting Counsellors' do
+  describe 'inviting Counsellors' do
     let!(:organization_owner) { create(:admin, :organization_owner) }
-    let!(:organization) { organization_owner.organizations.first }
+    let!(:organization) { organization_owner.resources.first }
     let!(:facility_group) { create(:facility_group, organization: organization) }
     let!(:email) { 'new_counsellor@example.com' }
 
@@ -204,6 +210,7 @@ RSpec.feature "Admins", type: :feature do
         click_link 'Counsellor'
       end
 
+      fill_in "Full name", with: full_name
       fill_in 'Email', with: email
       check facility_group.name
       click_button 'Send an invitation'
@@ -212,25 +219,26 @@ RSpec.feature "Admins", type: :feature do
     it 'associates new counsellor to facility group' do
       new_counsellor = User.joins(:email_authentications).find_by(email_authentications: { email: email })
 
-      expect(new_counsellor.admin_access_controls.count).to eq(1)
-      expect(new_counsellor.admin_access_controls.first.access_controllable_type).to eq('FacilityGroup')
-      expect(new_counsellor.admin_access_controls.first.access_controllable_id).to eq(facility_group.id)
+      expect(new_counsellor.user_permissions.count).to eq(3)
+      expect(new_counsellor.user_permissions.first.resource_type).to eq('FacilityGroup')
+      expect(new_counsellor.user_permissions.first.resource_id).to eq(facility_group.id)
     end
   end
 
-  xdescribe "accepting invitations" do
+  describe "accepting invitations" do
     let(:email) { "new@example.com" }
-    let(:new_supervisor) { User.invite!(email: email, role: :supervisor) }
+    let(:new_supervisor) { create(:admin, :supervisor)}
+    let(:email_authentication) { EmailAuthentication.invite!(email: email, user: new_supervisor) }
 
     it "allows the user to set a password" do
-      visit accept_admin_invitation_path(invitation_token: new_supervisor.raw_invitation_token)
+      visit accept_email_authentication_invitation_path(invitation_token: email_authentication.raw_invitation_token)
 
       fill_in "Password", with: "new_password"
       fill_in "Password confirmation", with: "new_password"
 
       click_button "Set my password"
 
-      expect(new_supervisor.reload.invited_to_sign_up?).to eq(false)
+      expect(email_authentication.reload.invited_to_sign_up?).to eq(false)
     end
   end
 end

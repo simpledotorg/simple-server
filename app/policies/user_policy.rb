@@ -35,7 +35,9 @@ class UserPolicy < ApplicationPolicy
   end
 
   def create_user_for_invitation?
-    update?
+    user_has_any_permissions?(
+      :can_manage_all_users,
+      [:can_manage_users_for_organization, user.organization])
   end
 
   def new_user_for_invitation?
@@ -51,6 +53,20 @@ class UserPolicy < ApplicationPolicy
       :can_manage_all_users,
       [:can_manage_users_for_organization, record.organization],
       [:can_manage_users_for_facility_group, record.facility_group])
+  end
+
+  def user_can_invite_role(role)
+    slugs = user.user_permissions.pluck(:permission_slug).map { |slug| slug.to_sym }
+    roles_user_can_invite
+      .slice(*slugs)
+      .values
+      .flat_map(&:itself)
+      .include?(role.to_sym)
+  end
+
+  def roles_user_can_invite
+    { can_manage_all_users: [:owner, :supervisor, :analyst, :organization_owner, :counsellor],
+      can_manage_users_for_organization: [:supervisor, :analyst, :organization_owner, :counsellor] }
   end
 
   class Scope < Scope

@@ -1,23 +1,34 @@
 <div class="row">
   <div class="col-md-6">
-    <%= bootstrap_form_for(admin_path(admin), autocomplete: "off", label_errors: true) do |form| %>
-      <%= form.text_field :email, id: :email_authentication_email, required: true, autocomplete: "off" %>
+    <%= bootstrap_form_for(admin, as: :admin, url: admin_path(admin), autocomplete: "off", label_errors: true) do |form| %>
+      <%= form.text_field :full_name, required: true, autocomplete: "off" %>
+      <%= form.fields_for :email_authentications do |email_form| %>
+        <%= email_form.text_field :email, required: true, autocomplete: "off" %>
+      <% end %>
       <%= form.text_field :role, value: admin.role, readonly: true %>
-      <%= form.hidden_field :access_controllable_type, value: AdminAccessControl::ACCESS_CONTROLLABLE_TYPE_FOR_ROLE[admin.role.to_sym] %>
 
-      <% if admin.has_role?(:supervisor, :analyst, :counsellor) %>
+      <% if selectable_resource_types.include?('FacilityGroup') %>
         <h3>Select facility groups</h3>
         <% policy_scope(FacilityGroup).group_by(&:organization).each do |organization, facility_groups| %>
-          <%= form.collection_check_boxes :access_controllable_ids, facility_groups, :id, :name, label: "Organization: #{organization.name}" %>
+          <%= form.collection_check_boxes :resource_gids,
+                                          facility_groups,
+                                          :to_gid_param,
+                                          :name,
+                                          label: "Organization: #{organization.name}" %>
         <% end %>
       <% end %>
 
-      <% if admin.has_role?(:organanization_owner) %>
-        <h3>Select Organizations</h3>
-        <%= form.collection_check_boxes :access_controllable_ids, policy_scope(Organization), :id, :name %>
+      <% if selectable_resource_types.include?('Organization') %>
+        <h3>Select organizations</h3>
+        <%= form.collection_check_boxes :resource_gids,
+                                        policy_scope(Organization),
+                                        :to_gid_param,
+                                        :name,
+                                        label: 'Organizations',
+                                        size: 1 %>
       <% end %>
 
-      <%= form.primary %>
+      <%= form.primary "Update Admin" %>
     <% end %>
   </div>
 </div>

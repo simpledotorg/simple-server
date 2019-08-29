@@ -35,7 +35,7 @@ class OrganizationPolicy < ApplicationPolicy
   def destroy?
     destroyable? && user_has_any_permissions?(:can_manage_all_organizations)
   end
-
+  
   private
 
   def destroyable?
