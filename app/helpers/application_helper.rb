@@ -1,19 +1,24 @@
 module ApplicationHelper
   DEFAULT_PROGRAM_INCEPTION_DATE = Time.new(2018, 01, 01)
+  STANDARD_DATE_DISPLAY_FORMAT = "%d-%^b-%Y"
 
   def bootstrap_class_for_flash(flash_type)
     case flash_type
-    when 'success'
-      'alert-success'
-    when 'error'
-      'alert-danger'
-    when 'alert'
-      'alert-warning'
-    when 'notice'
-      'alert-primary'
-    else
-      flash_type.to_s
+      when 'success'
+        'alert-success'
+      when 'error'
+        'alert-danger'
+      when 'alert'
+        'alert-warning'
+      when 'notice'
+        'alert-primary'
+      else
+        flash_type.to_s
     end
+  end
+
+  def display_date(date)
+    date.strftime(STANDARD_DATE_DISPLAY_FORMAT)
   end
 
   def rounded_time_ago_in_words(date)
@@ -22,16 +27,17 @@ module ApplicationHelper
     elsif date == Date.yesterday
       "Yesterday"
     else
-      "on #{date.strftime("%d-%^b-%Y")}".html_safe
+      "on #{display_date(date)}".html_safe
     end
   end
 
-  def handle_impossible_registration_date(date, format: "%d-%^b-%Y")
-    program_inception_date = ENV['PROGRAM_INCEPTION_DATE'] ? ENV['PROGRAM_INCEPTION_DATE'].to_time : DEFAULT_PROGRAM_INCEPTION_DATE
+  def handle_impossible_registration_date(date)
+    program_inception_date =
+      ENV['PROGRAM_INCEPTION_DATE'] ? ENV['PROGRAM_INCEPTION_DATE'].to_time : DEFAULT_PROGRAM_INCEPTION_DATE
     if date < program_inception_date # Date of inception of program
       'Unclear'
     else
-      date.strftime(format)
+      display_date(date)
     end
   end
 
@@ -39,7 +45,7 @@ module ApplicationHelper
     return if patient.appointments.count < 2
 
     last_interaction = patient.appointments.order(scheduled_date: :desc).second
-    last_interaction_date = last_interaction.created_at.strftime("%d-%^b-%Y")
+    last_interaction_date = last_interaction.created_at.strftime(STANDARD_DATE_DISPLAY_FORMAT)
     interaction_result = "" + last_interaction_date
 
     if last_interaction.agreed_to_visit.present?

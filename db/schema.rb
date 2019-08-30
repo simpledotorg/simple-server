@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190828011312) do
+ActiveRecord::Schema.define(version: 20190828133628) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -451,4 +451,207 @@ ActiveRecord::Schema.define(version: 20190828011312) do
   add_foreign_key "patient_phone_numbers", "patients"
   add_foreign_key "patients", "addresses"
   add_foreign_key "protocol_drugs", "protocols"
+
+  create_view "bp_drugs_views", sql_definition: <<-SQL
+      SELECT bp.id AS bp_id,
+      bp.systolic,
+      bp.diastolic,
+      bp.created_at,
+      bp.updated_at,
+      bp.device_created_at AS visit_date,
+      bp.facility_id,
+      bp.user_id,
+      p.id AS patient_id,
+      p.full_name,
+      p.age,
+      p.gender,
+      p.date_of_birth,
+      p.status AS patient_status,
+      p.address_id,
+      p.device_created_at AS registration_date,
+      a.street_address,
+      a.village_or_colony,
+      a.district,
+      a.state,
+      a.country,
+      a.pin,
+      f.name AS facility_name,
+      f.facility_type,
+      f.latitude,
+      f.longitude,
+      u.full_name AS user_name,
+      pn.number AS phone_number,
+      pn.phone_type,
+      pd.id AS drug_id,
+      pd.name AS drug_name,
+      pd.rxnorm_code,
+      pd.dosage,
+      pd.is_protocol_drug,
+      pd.is_deleted
+     FROM ((((((patients p
+       JOIN blood_pressures bp ON ((p.id = bp.patient_id)))
+       JOIN facilities f ON ((f.id = bp.facility_id)))
+       JOIN addresses a ON ((p.address_id = a.id)))
+       JOIN users u ON ((u.id = bp.user_id)))
+       LEFT JOIN patient_phone_numbers pn ON ((pn.patient_id = p.id)))
+       LEFT JOIN prescription_drugs pd ON (((bp.patient_id = pd.patient_id) AND (date_trunc('day'::text, bp.device_created_at) = date_trunc('day'::text, pd.device_created_at)))));
+  SQL
+  create_view "bp_views", sql_definition: <<-SQL
+      SELECT bp.id AS bp_id,
+      bp.systolic,
+      bp.diastolic,
+      bp.created_at,
+      bp.updated_at,
+      bp.device_created_at AS visit_date,
+      bp.facility_id,
+      bp.user_id,
+      p.id AS patient_id,
+      p.full_name,
+      p.age,
+      p.gender,
+      p.date_of_birth,
+      p.status AS patient_status,
+      p.address_id,
+      p.device_created_at AS registration_date,
+      a.street_address,
+      a.village_or_colony,
+      a.district,
+      a.state,
+      a.country,
+      a.pin,
+      f.name AS facility_name,
+      f.facility_type,
+      f.latitude,
+      f.longitude,
+      u.full_name AS user_name,
+      pn.number AS phone_number,
+      pn.phone_type
+     FROM (((((patients p
+       JOIN blood_pressures bp ON ((p.id = bp.patient_id)))
+       JOIN facilities f ON ((f.id = bp.facility_id)))
+       JOIN addresses a ON ((p.address_id = a.id)))
+       JOIN users u ON ((u.id = bp.user_id)))
+       LEFT JOIN patient_phone_numbers pn ON ((pn.patient_id = p.id)));
+  SQL
+  create_view "follow_up_views", sql_definition: <<-SQL
+      SELECT ap.id,
+      ap.patient_id,
+      ap.facility_id,
+      ap.scheduled_date,
+      ap.status,
+      ap.cancel_reason,
+      ap.device_created_at,
+      ap.device_updated_at,
+      ap.created_at,
+      ap.updated_at,
+      ap.remind_on,
+      ap.agreed_to_visit,
+      date_part('day'::text, (lead(ap.device_created_at, 1) OVER (PARTITION BY ap.patient_id ORDER BY ap.scheduled_date) - (ap.scheduled_date)::timestamp without time zone)) AS follow_up_delta,
+      f.name AS facility_name,
+      f.facility_type,
+      f.latitude,
+      f.longitude
+     FROM (appointments ap
+       JOIN facilities f ON ((ap.facility_id = f.id)));
+  SQL
+  create_view "overdue_views", sql_definition: <<-SQL
+      SELECT ap.id AS appointment_id,
+      ap.facility_id,
+      ap.scheduled_date,
+      ap.status AS appointment_status,
+      ap.cancel_reason,
+      ap.device_created_at,
+      ap.device_updated_at,
+      ap.created_at,
+      ap.updated_at,
+      ap.remind_on,
+      ap.agreed_to_visit,
+      p.id AS patient_id,
+      p.full_name,
+      p.age,
+      p.gender,
+      p.date_of_birth,
+      p.status AS patient_status,
+      p.address_id,
+      p.device_created_at AS registration_date,
+      a.street_address,
+      a.village_or_colony,
+      a.district,
+      a.state,
+      a.country,
+      a.pin,
+      f.name AS facility_name,
+      f.facility_type,
+      f.latitude,
+      f.longitude
+     FROM ((((appointments ap
+       JOIN patients p ON ((p.id = ap.patient_id)))
+       JOIN facilities f ON ((f.id = ap.facility_id)))
+       JOIN addresses a ON ((p.address_id = a.id)))
+       LEFT JOIN patient_phone_numbers pn ON ((pn.patient_id = p.id)));
+  SQL
+  create_view "patient_first_bp_views", sql_definition: <<-SQL
+      SELECT bp.id AS bp_id,
+      bp.systolic,
+      bp.diastolic,
+      bp.created_at,
+      bp.updated_at,
+      bp.device_created_at AS visit_date,
+      bp.facility_id,
+      bp.user_id,
+      p.id AS patient_id,
+      p.full_name,
+      p.age,
+      p.gender,
+      p.date_of_birth,
+      p.status AS patient_status,
+      p.address_id,
+      p.device_created_at AS registration_date,
+      a.street_address,
+      a.village_or_colony,
+      a.district,
+      a.state,
+      a.country,
+      a.pin,
+      f.name AS facility_name,
+      f.facility_type,
+      f.latitude,
+      f.longitude,
+      u.full_name AS user_name,
+      pn.number AS phone_number,
+      pn.phone_type
+     FROM (((((patients p
+       LEFT JOIN blood_pressures bp ON (((p.id = bp.patient_id) AND (date_trunc('day'::text, p.device_created_at) = date_trunc('day'::text, bp.device_created_at)))))
+       JOIN facilities f ON ((f.id = bp.facility_id)))
+       JOIN addresses a ON ((p.address_id = a.id)))
+       JOIN users u ON ((u.id = bp.user_id)))
+       LEFT JOIN patient_phone_numbers pn ON ((pn.patient_id = p.id)));
+  SQL
+  create_view "patients_blood_pressures_facilities", sql_definition: <<-SQL
+      SELECT patients.id AS p_id,
+      patients.age AS p_age,
+      patients.gender AS p_gender,
+      blood_pressures.id,
+      blood_pressures.systolic,
+      blood_pressures.diastolic,
+      blood_pressures.patient_id,
+      blood_pressures.created_at,
+      blood_pressures.updated_at,
+      blood_pressures.device_created_at,
+      blood_pressures.device_updated_at,
+      blood_pressures.facility_id,
+      blood_pressures.user_id,
+      blood_pressures.deleted_at,
+      facilities.name,
+      facilities.district,
+      facilities.state,
+      facilities.facility_type,
+      users.full_name,
+      users.sync_approval_status
+     FROM patients,
+      blood_pressures,
+      facilities,
+      users
+    WHERE ((blood_pressures.patient_id = patients.id) AND (blood_pressures.facility_id = facilities.id) AND (blood_pressures.user_id = users.id));
+  SQL
 end
