@@ -1,6 +1,10 @@
 # These configuration values are multipliers, not absolute value
 
 development:
+  users:
+    count: 2
+  protocols: 2
+  protocol_drugs: 2
   patients:
     count: 2
     traits:

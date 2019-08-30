@@ -358,10 +358,6 @@ namespace :generate do
       number_of_months.downto(1) do |month_number|
         creation_date = month_number.months.ago
 
-        Organization.all.each do |organization|
-          create_organization_patient_records(organization, creation_date, config)
-        end
-
         Organization.all.flat_map(&:users).each do |user|
           create_patients(user, creation_date, config)
         end
@@ -372,6 +368,20 @@ namespace :generate do
       number_of_months = args.fetch(:number_of_months) { 6 }.to_i
       environment = ENV.fetch('SIMPLE_SERVER_ENV') { 'development' }
       config = YAML.load_file('config/seed.yml').dig(environment)
+
+      if environment == 'development'
+        truncate_db
+        FactoryBot.create(:admin, email: "admin@simple.org", password: 123456, role: 'owner')
+        create_protocols_and_protocol_drugs(config)
+        create_organizations(number_of_months.months.ago, config)
+
+        number_of_months.downto(1) do |month_number|
+          creation_date = month_number.months.ago
+          Organization.all.each do |organization|
+            create_organization_patient_records(organization, creation_date, config)
+          end
+        end
+      end
 
       create_seed_data(number_of_months, config)
 
@@ -387,5 +397,195 @@ namespace :generate do
     def get_traits_for_property(config_hash, property)
       config_hash.dig(property, 'traits')
     end
+
+    def create_protocols_and_protocol_drugs(config)
+      config.fetch('protocols').times do
+        protocol = FactoryBot.create(:protocol)
+
+        config.fetch('protocol_drugs').times do
+          FactoryBot.create(:protocol_drug, protocol: protocol)
+        end
+      end
+    end
+
+    def truncate_db
+      conn = ActiveRecord::Base.connection
+      tables = conn.execute("
+      SELECT tablename
+      FROM pg_catalog.pg_tables
+      WHERE schemaname = 'public' AND
+            tablename NOT IN ('schema_migrations', 'ar_internal_metadata')
+    ")
+
+      tables.each do |t|
+        tablename = t["tablename"]
+        conn.execute("TRUNCATE #{tablename} CASCADE")
+      end
+    end
+  end
+
+  def dev_organizations
+    [
+      {
+        name: "IHCI",
+        facility_groups: [
+          {
+            name: "Bathinda and Mansa",
+            facilities: [
+              { name: "CHC Buccho", district: "Bathinda", state: "Punjab" },
+              { name: "CHC Meheraj", district: "Bathinda", state: "Punjab" },
+              { name: "District Hospital Bathinda", district: "Bathinda", state: "Punjab" },
+              { name: "PHC Joga", district: "Mansa", state: "Punjab" }
+            ]
+          },
+          {
+            name: "Gurdaspur",
+            facilities: [
+              { name: "CHC Kalanaur", district: "Gurdaspur", state: "Punjab" },
+              { name: "PHC Bhumbli", district: "Gurdaspur", state: "Punjab" },
+              { name: "SDH Batala", district: "Gurdaspur", state: "Punjab" }
+            ]
+          },
+          {
+            name: "Bhandara",
+            facilities: [
+              { name: "CH Bhandara", district: "Bhandara", state: "Maharashtra" },
+              { name: "HWC Bagheda", district: "Bhandara", state: "Maharashtra" },
+              { name: "HWC Chikhali", district: "Bhandara", state: "Maharashtra" }
+            ]
+          },
+          {
+            name: "Hoshiarpur",
+            facilities: [
+              { name: "CHC Bhol Kalota", district: "Hoshiarpur", state: "Punjab" },
+              { name: "PHC Hajipur", district: "Hoshiarpur", state: "Punjab" },
+              { name: "SDH Mukerian", district: "Hoshiarpur", state: "Punjab" }
+            ]
+          },
+          {
+            name: "Satara",
+            facilities: [
+              { name: "CHC Satara", district: "Satara", state: "Maharashtra" },
+              { name: "PHC Girvi", district: "Satara", state: "Maharashtra" },
+              { name: "SDH Indoli", district: "Satara", state: "Maharashtra" }
+            ]
+          },
+        ]
+      },
+      {
+        name: "PATH",
+        facility_groups: [
+          {
+            name: "Amir Singh Facility Group",
+            facilities: [
+              { name: "Amir Singh", district: "Mumbai", state: "Maharashtra" }
+            ]
+          },
+          {
+            name: "Dr. Anwar Facility Group",
+            facilities: [
+              { name: "Dr. Anwar", district: "Mumbai", state: "Maharashtra" }
+            ]
+          },
+          {
+            name: "Dr. Abhishek Tripathi",
+            facilities: [
+              { name: "Dr. Abhishek Tripathi", district: "N Ward", state: "Maharashtra" }
+            ]
+          },
+          {
+            name: "Dr. Shailaja Thorat",
+            facilities: [
+              { name: "Dr. Shailaja Thorat", district: "Ghatkopar E", state: "Maharashtra" }
+            ]
+          },
+          {
+            name: "Dr. Ayazuddin Farooqui",
+            facilities: [
+              { name: "Dr. Ayazuddin Farooqui", district: "Dharavi", state: "Maharashtra" }
+            ]
+          }
+        ]
+      }
+    ]
+  end
+
+  def create_organizations(creation_date, config)
+    dev_organizations.each do |dev_org|
+      organization = FactoryBot.create(:organization, name: dev_org[:name],
+                                       created_at: creation_date,
+                                       updated_at: creation_date)
+
+      create_facility_groups(organization, dev_org[:facility_groups], creation_date, config)
+      create_admins(organization)
+    end
+  end
+
+  def create_facility_groups(organization, facility_groups, creation_date, config)
+    facility_groups.each do |fac_group|
+      facility_group = FactoryBot.create(:facility_group, name: fac_group[:name],
+                                         organization: organization,
+                                         created_at: creation_date,
+                                         updated_at: creation_date)
+
+      facilities = create_and_return_facilities(facility_group, fac_group[:facilities], creation_date)
+      create_users(facilities, creation_date, config)
+    end
+  end
+
+  def create_and_return_facilities(facility_group, facilities, creation_date)
+    facility_records = []
+
+    facilities.each do |fac|
+      facility_records << FactoryBot.create(:facility, facility_group: facility_group,
+                                            name: fac[:name],
+                                            district: fac[:district],
+                                            state: fac[:state],
+                                            created_at: creation_date,
+                                            updated_at: creation_date)
+    end
+
+    facility_records
+  end
+
+  def create_sync_requested_users(facility, creation_date)
+    user = FactoryBot.create(:user,
+                             registration_facility: facility,
+                             created_at: creation_date,
+                             updated_at: creation_date)
+    user.sync_approval_status = 'requested'
+    user.sync_approval_status_reason = ['New Registration', 'Reset PIN'].sample
+
+    user.save
+  end
+
+  def create_sync_denied_users(facility, creation_date)
+    user = FactoryBot.create(:user,
+                             registration_facility: facility,
+                             created_at: creation_date,
+                             updated_at: creation_date)
+    user.sync_approval_status = 'denied'
+    user.sync_approval_status_reason = 'some random reason'
+    user.save
+  end
+
+  def create_users(facilities, creation_date, config)
+    facilities.each do |f|
+      config.dig('users', 'count').times do
+        FactoryBot.create(:user, registration_facility: f, created_at: creation_date, updated_at: creation_date)
+        create_sync_requested_users(f, creation_date)
+        create_sync_denied_users(f, creation_date)
+      end
+    end
+  end
+
+  def create_admins(organization)
+
+    facility_group = organization.facility_groups.first
+
+    FactoryBot.create(:admin, :counsellor, facility_group: facility_group)
+    FactoryBot.create(:admin, :analyst, facility_group: facility_group)
+    FactoryBot.create(:admin, :supervisor)
+    FactoryBot.create(:admin, :organization_owner, organization: organization)
   end
 end
