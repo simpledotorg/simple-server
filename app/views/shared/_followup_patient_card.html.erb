@@ -9,8 +9,8 @@
     <div>
       <% if show_enrollment_date %>
         <div>
-          <span class="text-secondary">Enrolled on:</span>
-          <%= handle_impossible_registration_date(patient.device_created_at, format: "%d-%^b-%Y") %><br>
+          <span class="text-secondary">Registered on:</span>
+          <%= patient.registration_date %><br>
         </div>
       <% end %>
       <% if bp = patient.latest_blood_pressure %>
