@@ -1,4 +1,4 @@
-# These configuration values are multipliers, not absolute value
+# These configuration values are multipliers, not absolute values
 
 development:
   users:

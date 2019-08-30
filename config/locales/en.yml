@@ -131,7 +131,6 @@ en:
     12: 'December'
 
   faker:
-    address:
-      state: ['Punjab', 'Maharashtra', 'Tamil Nadu', 'Kerala', 'Sikkim']
-      district: ['Wardha', 'Gurdaspur', 'Satara', 'N Ward', 'Pathankot', 'G North', 'Bathinda', 'Mansa', 'Hoshiarpur', 'Mumbai', 'Ghatkopar E', 'Ghatkopar West', 'Dharavi', 'Bhandara', 'Sindhudurg']
-      city: ['Chandigarh', 'Mumbai', 'Chennai', 'Thiruvananthapuram', 'Gangtok']
+    name:
+      first_name: ['Ishita', 'Riya', 'Aditya', 'Shreya', 'Mahesh', 'Priya', 'Deepak', 'Rahul', 'Ankit', 'Tanvi', 'Amit', 'Yash', 'Abhishek', 'Tanya', 'Shyam', 'Vani', 'Divya', 'Rohit', 'Anjali', 'Priyanka']
+      last_name: ['Lamba', 'Bahl', 'Sodhi', 'Sardana', 'Puri', 'Chhabra', 'Khanna', 'Malhotra', 'Mehra', 'Garewal', 'Dhillon', 'Bharathi', 'Madhu', 'Bharathi', 'Manabi', 'Anjum', 'Vani', 'Riya', 'Shreya']
