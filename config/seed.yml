@@ -1,3 +1,5 @@
+# These configuration values are multipliers, not absolute value
+
 development:
   patients:
     count: 2
@@ -6,27 +8,27 @@ development:
       - hypertensive
     medical_histories: 1
     prescription_drugs: 1
-    blood_pressures: 3
+    blood_pressures: 2
     appointments: 2
 
 test:
   patients:
-    count: 3
+    count: 1
     traits:
       - overdue
       - hypertensive
-    medical_histories: 3
-    prescription_drugs: 3
-    blood_pressures: 3
-    appointments: 3
+    medical_histories: 1
+    prescription_drugs: 1
+    blood_pressures: 1
+    appointments: 1
 
 sandbox:
   patients:
-    count: 3
+    count: 2
     traits:
       - overdue
       - hypertensive
-    medical_histories: 3
-    prescription_drugs: 3
-    blood_pressures: 3
-    appointments: 3
+    medical_histories: 1
+    prescription_drugs: 1
+    blood_pressures: 2
+    appointments: 2

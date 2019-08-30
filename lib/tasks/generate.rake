@@ -226,7 +226,7 @@ namespace :generate do
       is_hypertensive = get_traits_for_property(config, 'patients').include?('hypertensive')
 
       facility_groups.flat_map(&:facilities).flat_map(&:registered_patients).each do |patient|
-        create_blood_pressures(patient, date, config, is_hypertensive) if Random.rand(1..10) < 6
+        create_blood_pressures(patient, date, config, is_hypertensive)
       end
 
       number_of_patients = get_count_for_property(config, 'patients')
@@ -264,10 +264,8 @@ namespace :generate do
         create_blood_pressures(patient, creation_date, config, is_hypertensive)
         create_appointments(patient, creation_date, config, is_overdue)
 
-        if rand(1..10) == 1
-          create_call_logs(patient, creation_date)
-          create_exotel_phone_number_detail(patient, creation_date)
-        end
+        create_call_logs(patient, creation_date)
+        create_exotel_phone_number_detail(patient, creation_date)
       end
     end
 
@@ -323,7 +321,7 @@ namespace :generate do
                           patient: patient,
                           facility: patient.registration_facility,
                           created_at: creation_date,
-                          updated_at: creation_date) if is_overdue && rand(1..10) < 3
+                          updated_at: creation_date)
       end
     end
 
@@ -371,7 +369,7 @@ namespace :generate do
     end
 
     task :generate_data, [:number_of_months] => :environment do |_t, args|
-      number_of_months = args.fetch(:number_of_months) { 12 }.to_i
+      number_of_months = args.fetch(:number_of_months) { 6 }.to_i
       environment = ENV.fetch('SIMPLE_SERVER_ENV') { 'development' }
       config = YAML.load_file('config/seed.yml').dig(environment)
 
