@@ -1,4 +1,5 @@
 class Patient < ApplicationRecord
+  include ApplicationHelper
   include Mergeable
   include Hashable
 
@@ -70,6 +71,10 @@ class Patient < ApplicationRecord
 
   def phone_number?
     latest_phone_number.present?
+  end
+
+  def registration_date
+    handle_impossible_registration_date(recorded_at)
   end
 
   def risk_priority
