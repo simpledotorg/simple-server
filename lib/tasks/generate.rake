@@ -221,7 +221,7 @@ namespace :generate do
 
   namespace :seed do
     task :generate_data, [:number_of_months] => :environment do |_t, args|
-      number_of_months = args.fetch(:number_of_months) { 6 }.to_i
+      number_of_months = args.fetch(:number_of_months) { 3 }.to_i
       environment = ENV.fetch('SIMPLE_SERVER_ENV') { 'development' }
       config = YAML.load_file('config/seed.yml').dig(environment)
 
