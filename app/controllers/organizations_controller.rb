@@ -6,7 +6,7 @@ class OrganizationsController < AdminController
 
     @users_requesting_approval = policy_scope(User)
                                    .requested_sync_approval
-                                   .order(device_created_at: :asc)
+                                   .order(updated_at: :desc)
 
     @users_requesting_approval = paginate(@users_requesting_approval)
 
