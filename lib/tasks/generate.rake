@@ -225,10 +225,16 @@ namespace :generate do
       environment = ENV.fetch('SIMPLE_SERVER_ENV') { 'development' }
       config = YAML.load_file('config/seed.yml').dig(environment)
 
+      Rails.logger.info("Creating seed data for environment \"#{environment}\" for a period of #{number_of_months} month(s)")
+
       if environment == 'development'
+        Rails.logger.info("Detected development environment. Creating organization hierarchy first...")
+
         truncate_db
+        Rails.logger.info("Truncated database")
 
         FactoryBot.create(:admin, email: "admin@simple.org", password: 123456, role: 'owner')
+        Rails.logger.info("Created login admin (admin@simple.org/123456)")
 
         create_protocols_and_protocol_drugs(config)
         create_organizations(number_of_months.months.ago, config)
@@ -244,7 +250,7 @@ namespace :generate do
 
       create_seed_data(number_of_months, config)
 
-      puts "Finished generating seed data for #{ENV.fetch('SIMPLE_SERVER_ENV')}"
+      Rails.logger.info("Finished generating seed data for #{ENV.fetch('SIMPLE_SERVER_ENV')}")
     end
 
     def create_seed_data(number_of_months, config)
@@ -265,6 +271,8 @@ namespace :generate do
           FactoryBot.create(:protocol_drug, protocol: protocol)
         end
       end
+
+      Rails.logger.info("Created protocols and protocol drugs")
     end
 
     def create_organization_patient_records(organization, date, config)
@@ -314,6 +322,8 @@ namespace :generate do
         create_call_logs(patient, creation_date)
         create_exotel_phone_number_detail(patient, creation_date)
       end
+
+      Rails.logger.info("Created patients for date #{creation_date}")
     end
 
     def create_medical_history(patient, creation_date, config)
@@ -330,6 +340,8 @@ namespace :generate do
                           created_at: creation_date,
                           updated_at: creation_date)
       end
+
+      Rails.logger.info("Created medical histories for date #{creation_date}")
     end
 
     def create_prescription_drugs(patient, creation_date, config)
@@ -341,6 +353,8 @@ namespace :generate do
                           created_at: creation_date,
                           updated_at: creation_date)
       end
+
+      Rails.logger.info("Created Prescription Drugs for date #{creation_date}")
     end
 
     def create_blood_pressures(patient, creation_date, config, is_hypertensive)
@@ -353,6 +367,8 @@ namespace :generate do
           create_blood_pressure(bp_type, creation_date, patient) if is_hypertensive
         end
       end
+
+      Rails.logger.info("Created blood pressures for date #{creation_date}")
     end
 
     def create_appointments(patient, creation_date, config, is_overdue)
@@ -370,6 +386,8 @@ namespace :generate do
                           created_at: creation_date,
                           updated_at: creation_date)
       end
+
+      Rails.logger.info("Created appointments for date #{creation_date}")
     end
 
     def create_call_logs(patient, creation_date)
@@ -386,6 +404,7 @@ namespace :generate do
                           duration: rand(60) + 1)
       end
 
+      Rails.logger.info("Created call logs for date #{creation_date}")
       Timecop.return
     end
 
@@ -398,6 +417,7 @@ namespace :generate do
                           updated_at: creation_date)
       end
 
+      Rails.logger.info("Created exotel phone number details for date #{creation_date}")
       Timecop.return
     end
 
@@ -515,6 +535,8 @@ namespace :generate do
           create_sync_denied_users(f, creation_date)
         end
       end
+
+      Rails.logger.info("Created users for date #{creation_date}")
     end
 
     def create_sync_requested_users(facility, creation_date)
@@ -548,6 +570,8 @@ namespace :generate do
         create_facility_groups(organization, dev_org[:facility_groups], creation_date, config)
         create_admins(organization)
       end
+
+      Rails.logger.info("Created organizations for date #{creation_date}")
     end
 
     def create_facility_groups(organization, facility_groups, creation_date, config)
@@ -560,6 +584,8 @@ namespace :generate do
         facilities = create_and_return_facilities(facility_group, fac_group[:facilities], creation_date)
         create_users(facilities, creation_date, config)
       end
+
+      Rails.logger.info("Created facility groups for date #{creation_date}")
     end
 
     def create_admins(organization)
@@ -569,6 +595,8 @@ namespace :generate do
       FactoryBot.create(:admin, :analyst, facility_group: facility_group)
       FactoryBot.create(:admin, :supervisor)
       FactoryBot.create(:admin, :organization_owner, organization: organization)
+
+      Rails.logger.info("Created admins for organization #{organization.name}")
     end
 
     def create_and_return_facilities(facility_group, facilities, creation_date)
@@ -583,6 +611,7 @@ namespace :generate do
                                               updated_at: creation_date)
       end
 
+      Rails.logger.info("Created facilities for facility groyp #{facility_group.name} for date #{creation_date}")
       facility_records
     end
   end
