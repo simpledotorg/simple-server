@@ -80,7 +80,7 @@ class Deploy
 
       3 => { msg: 'Creating release tag...',
              action: -> { create_and_push_release_tag(current_date) },
-             skip_for: ['sandbox', 'production'] },
+             skip_for:  ['sandbox', 'qa', 'production'] },
 
       4 => { msg: 'Deploying...',
              action: -> { deploy } }
