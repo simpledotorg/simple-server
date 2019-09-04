@@ -13,6 +13,6 @@ class OrganizationDistrictPolicy < ApplicationPolicy
   end
 
   def whatsapp_graphics?
-    user.has_role?(:organization_owner, :supervisor) && user.organizations.include?(record.organization)
+    user.owner? || (user.has_role?(:organization_owner, :supervisor) && user.organizations.include?(record.organization))
   end
 end
