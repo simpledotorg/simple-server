@@ -4,16 +4,15 @@ class CreateAuditLogsWorker
   sidekiq_options queue: :audit_log_queue
 
   def perform(user_id, record_class, record_ids, action, time)
-    user = User.find(user_id)
     audit_logs = record_ids.map do |record_id|
-      { user: user,
+      { user: user_id,
         auditable_type: record_class,
         auditable_id: record_id,
         action: action,
         time: time }
     end
     audit_logs.each do |audit_log|
-      AuditLog.write_audit_log(audit_log.to_s)
+      AuditLog.write_audit_log(audit_log)
     end
   end
 end

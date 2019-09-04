@@ -1,3 +1,5 @@
+require_relative '../../app/logging/audit_log_formatter'
+
 class AuditLog < ApplicationRecord
   ACTIONS = %w[fetch create update login invalid touch].freeze
   MERGE_STATUS_TO_ACTION = {
@@ -15,6 +17,8 @@ class AuditLog < ApplicationRecord
   validates :auditable_id, presence: true
 
   @@audit_logger ||= Logger.new("#{Rails.root}/log/audit.log")
+  @@audit_logger.formatter ||= AuditLogFormatter.new
+
 
   def self.merge_log(user, record)
     return unless user.present?
@@ -23,7 +27,7 @@ class AuditLog < ApplicationRecord
         auditable_type: record.class.to_s,
         auditable_id: record.id,
         action: MERGE_STATUS_TO_ACTION[record.merge_status],
-        time: Time.now }.to_s
+        time: Time.now }
     )
   end
 
@@ -34,7 +38,7 @@ class AuditLog < ApplicationRecord
         auditable_type: record.class.to_s,
         auditable_id: record.id,
         action: 'fetch',
-        time: Time.now }.to_s
+        time: Time.now }
     )
   end
 
@@ -45,7 +49,7 @@ class AuditLog < ApplicationRecord
         auditable_type: 'User',
         auditable_id: user.id,
         action: 'login',
-        time: Time.now }.to_s
+        time: Time.now }
     )
   end
 
@@ -58,7 +62,7 @@ class AuditLog < ApplicationRecord
     end
   end
 
-  def self.write_audit_log(log_string)
-    @@audit_logger.info(log_string)
+  def self.write_audit_log(log)
+    @@audit_logger.info(log)
   end
 end
