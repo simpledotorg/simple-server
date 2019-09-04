@@ -6,6 +6,15 @@
 ### Removed
 ### Security
 
+# 2019-09-04-2
+### Added
+### Changed
+### Fixed
+- Feature toggle to enable downloading dashboard graphics
+### Deprecated
+### Removed
+### Security
+
 # 2019-09-04-1
 ### Added
 - Add managed SQL views to the repo
