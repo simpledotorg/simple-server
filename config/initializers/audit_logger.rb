@@ -5,3 +5,6 @@ class AuditLogFormatter
     msg.to_json + "\n" if msg.present?
   end
 end
+
+::AuditLogger ||= Logger.new("#{Rails.root}/log/audit.log")
+::AuditLogger.formatter ||= AuditLogFormatter.new
