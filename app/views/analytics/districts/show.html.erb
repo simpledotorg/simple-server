@@ -17,12 +17,14 @@
            row_resource_display_field: :name,
            row_resource_link: :analytics_facility_path %>
 
-<div class="downloads">
-  <h4>Downloads</h4>
-  <% if policy(@organization_district).whatsapp_graphics? %>
-    <%= render "shared/graphics/graphics_download_links",
-               graphics_path: -> (options) { analytics_organization_district_graphics_path(options) },
-               options: { organization_id: @organization_district.organization.id,
-                          district_id: @organization_district.district_name } %>
-  <% end %>
-</div>
+<% if FeatureToggle.enabled?('DASHBOARD_SNAPSHOT') %>
+  <div class="downloads">
+    <h4>Downloads</h4>
+    <% if policy(@organization_district).whatsapp_graphics? %>
+      <%= render "shared/graphics/graphics_download_links",
+                 graphics_path: -> (options) { analytics_organization_district_graphics_path(options) },
+                 options: { organization_id: @organization_district.organization.id,
+                            district_id: @organization_district.district_name } %>
+    <% end %>
+  </div>
+<% end %>

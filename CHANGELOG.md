@@ -6,6 +6,27 @@
 ### Removed
 ### Security
 
+# 2019-09-04-2
+### Added
+### Changed
+### Fixed
+- Feature toggle to enable downloading dashboard graphics
+### Deprecated
+### Removed
+### Security
+
+# 2019-09-04-1
+### Added
+- Add managed SQL views to the repo
+### Changed
+- Change 'enrollment' to 'registration' for consistency
+- Order the dashboard sync approval users by updated_at
+### Fixed
+- Allow owners to download whatsapp graphics as well
+### Deprecated
+### Removed
+### Security
+
 # 2019-08-12-1
 ### Added
 ### Changed
