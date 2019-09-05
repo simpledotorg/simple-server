@@ -1,6 +1,7 @@
 class Api::Current::SyncController < APIController
   include Api::Current::SyncToUser
   before_action :check_disabled_api
+  before_action :instrument_process_token
 
   def model_name
     controller_name.classify.constantize
@@ -80,5 +81,9 @@ class Api::Current::SyncController < APIController
     else
       ENV['DEFAULT_NUMBER_OF_RECORDS'].to_i
     end
+  end
+
+  def instrument_process_token
+    ::NewRelic::Agent.add_custom_attributes({ process_token: process_token })
   end
 end
