@@ -34,6 +34,7 @@ class Deploy
               :last_deployed_sha
 
   def initialize(current_environment:, tag_to_deploy:)
+    print_usage_and_exit unless check_current_git_branch == 'master'
     print_usage_and_exit if current_environment.nil? || current_environment == 'help'
 
     unless ENVIRONMENTS_SUPPORTED.include?(current_environment)
@@ -148,6 +149,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
     $stderr.puts "Usage: bin/deploy <environment> [tag-to-deploy]"
     $stderr.puts ""
     $stderr.puts "Note: tag-to-deploy is required to deploy to production"
+    $stderr.puts "Note: Make sure you are locally on the latest master branch"
     exit 1
   end
 
