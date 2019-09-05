@@ -417,52 +417,70 @@ RSpec.shared_examples 'a sync controller that audits the data access' do
     let(:payload) { Hash[request_key, [record]] }
 
     it 'creates an audit log for new data created by the user' do
-      post :sync_from_user, params: payload, as: :json
+      Timecop.freeze do
+        expect(AuditLogger)
+          .to receive(:info).with({ user: request_user.id,
+                                    auditable_type: auditable_type,
+                                    auditable_id: record[:id],
+                                    action: 'create',
+                                    time: Time.now }.to_json)
 
-      audit_logs = AuditLog.where(user_id: request_user.id, auditable_type: auditable_type, auditable_id: record[:id])
-
-      expect(audit_logs.count).to eq 1
-      expect(audit_logs.first.action).to eq('create')
+        post :sync_from_user, params: payload, as: :json
+      end
     end
 
     it 'creates an audit log for data updated by the user' do
-      exiting_record = create_record
-      record[:id] = exiting_record.id
+      existing_record = create_record
+      record[:id] = existing_record.id
       payload[request_key] = [record]
+      Timecop.freeze do
+        expect(AuditLogger)
+          .to receive(:info).with({ user: request_user.id,
+                                    auditable_type: auditable_type,
+                                    auditable_id: record[:id],
+                                    action: 'update',
+                                    time: Time.now }.to_json)
 
-      post :sync_from_user, params: payload, as: :json
-
-      audit_logs = AuditLog.where(user_id: request_user.id, auditable_type: auditable_type, auditable_id: record[:id])
-      expect(audit_logs.count).to be 1
-      expect(audit_logs.first.action).to eq('update')
+        post :sync_from_user, params: payload, as: :json
+      end
     end
 
     it 'creates an audit log for data touched by the user' do
-      exiting_record = create_record
-      record[:id] = exiting_record.id
+      existing_record = create_record
+      record[:id] = existing_record.id
       record[:updated_at] = 3.days.ago
       payload[request_key] = [record]
+      Timecop.freeze do
+        expect(AuditLogger)
+          .to receive(:info).with({ user: request_user.id,
+                                    auditable_type: auditable_type,
+                                    auditable_id: record[:id],
+                                    action: 'touch',
+                                    time: Time.now }.to_json)
 
-      post :sync_from_user, params: payload, as: :json
-
-      audit_logs = AuditLog.where(user_id: request_user.id, auditable_type: auditable_type, auditable_id: record[:id])
-      expect(audit_logs.count).to be 1
-      expect(audit_logs.first.action).to eq('touch')
+        post :sync_from_user, params: payload, as: :json
+      end
     end
   end
 
   describe 'creates an audit log for data synced to user' do
     let!(:records) { create_record_list(5) }
     it 'creates an audit log for data fetched by the user' do
-      Sidekiq::Testing.inline! do
-        get :sync_to_user, params: {
-          processed_since: 20.minutes.ago,
-          limit: 5
-        }, as: :json
-        audit_logs = AuditLog.where(user_id: request_user.id, auditable_type: auditable_type)
-        expect(audit_logs.count).to eq(5)
-        expect(audit_logs.map(&:auditable_id).to_set).to eq(records.map(&:id).to_set)
-        expect(audit_logs.map(&:action).to_set).to eq(['fetch'].to_set)
+      Timecop.freeze do
+        Sidekiq::Testing.inline! do
+          records.each do |record|
+            expect(AuditLogger)
+              .to receive(:info).with({ user: request_user.id,
+                                        auditable_type: auditable_type,
+                                        auditable_id: record[:id],
+                                        action: 'fetch',
+                                        time: Time.now }.to_json)
+          end
+          get :sync_to_user, params: {
+            processed_since: 20.minutes.ago,
+            limit: 5
+          }, as: :json
+        end
       end
     end
   end

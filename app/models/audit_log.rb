@@ -45,11 +45,15 @@ class AuditLog < ApplicationRecord
     records_by_class = records.group_by { |record| record.class.to_s }
 
     records_by_class.each do |record_class, records_for_class|
-      CreateAuditLogsWorker.perform_async(user.id, record_class, records_for_class.map(&:id), action, time)
+      CreateAuditLogsWorker.perform_async({ user_id: user.id,
+                                            record_class: record_class,
+                                            record_ids: records_for_class.map(&:id),
+                                            action: action,
+                                            time: time }.to_json)
     end
   end
 
   def self.write_audit_log(log)
-    AuditLogger.info(log)
+    AuditLogger.info(log.to_json)
   end
 end
