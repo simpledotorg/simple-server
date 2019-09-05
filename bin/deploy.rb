@@ -34,6 +34,7 @@ class Deploy
               :last_deployed_sha
 
   def initialize(current_environment:, tag_to_deploy:)
+    print_usage_and_exit unless check_current_git_branch == 'master'
     print_usage_and_exit if current_environment.nil? || current_environment == 'help'
 
     unless ENVIRONMENTS_SUPPORTED.include?(current_environment)
@@ -47,15 +48,16 @@ class Deploy
 
     @tag_to_deploy = tag_to_deploy
     @current_environment = current_environment
-    @last_deployed_sha = last_deployed_sha
-    @changelog = changelog
   end
+
 
   def start
     steps = deploy_steps.sort
     final_step = (steps.size - 1)
 
     steps.each_with_index do |(_, step), step_num|
+      next if step.key?(:skip_for) && step[:skip_for].include?(current_environment)
+
       wrap_step_in_box(step[:msg]) do
         step[:action].call
       end
@@ -78,7 +80,8 @@ class Deploy
              action: -> { find_changes_in_files(DIRS_WITH_CRITICAL_CHANGES.keys) } },
 
       3 => { msg: 'Creating release tag...',
-             action: -> { create_and_push_release_tag(current_date) } },
+             action: -> { create_and_push_release_tag(current_date) },
+             skip_for:  ['sandbox', 'qa', 'production'] },
 
       4 => { msg: 'Deploying...',
              action: -> { deploy } }
@@ -90,7 +93,7 @@ class Deploy
 Use this commit history to document CHANGELOG.md or share it in appropriate release channels.
 This is generated from the diff between #{last_deployed_sha}..HEAD
 
-#{changelog}
+#{changelog.empty? ? "No changelog could be generated." : changelog}
     CHANGELOG
   end
 
@@ -114,10 +117,15 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 
   def create_and_push_release_tag(date)
+    unless @tag_to_deploy.nil?
+      puts "Skipping, since you have specified a tag."
+      return
+    end
+
     existing_tag =
       find_existing_release_tags(date)
 
-    @tag_to_deploy ||=
+    @tag_to_deploy =
       if existing_tag.nil? || existing_tag.empty?
         puts "Putting up a release tag #{generate_release_tag_value(date)} with a CHANGELOG..."
         generate_release_tag_value(date)
@@ -141,17 +149,24 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
     $stderr.puts "Usage: bin/deploy <environment> [tag-to-deploy]"
     $stderr.puts ""
     $stderr.puts "Note: tag-to-deploy is required to deploy to production"
+    $stderr.puts "Note: Make sure you are locally on the latest master branch"
     exit 1
   end
 
   def last_deployed_sha
-    execute_safely("cap #{current_environment} deploy:get_latest_deployed_sha")
-      .strip
+    @last_deployed_sha ||=
+      execute_safely("cap #{current_environment} deploy:get_latest_deployed_sha",
+                     { 'CONFIRM' => 'false' }).strip
   end
 
   def changelog
-    execute_safely("git log #{last_deployed_sha}..HEAD --oneline --decorate=no | cut -c10- | grep -v '^Merge'")
-      .strip
+    @changelog ||= execute_safely("git log #{last_deployed_sha}..HEAD --oneline --decorate=no")
+                     .strip
+                     .split("\n")
+                     .map { |line| line.match(/\s(.*)/)&.captures&.last }
+                     .reject { |line| line =~ /^Merge/ }
+                     .compact
+                     .join("\n")
   end
 
   def changes_in_file(file)
@@ -172,20 +187,21 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 
   def deploy
+    puts "'#{@tag_to_deploy || 'master'}' to '#{current_environment}'"
     execute_safely("bundle exec cap #{current_environment} deploy",
-                   { 'BRANCH' => @tag_to_deploy })
+                   { 'BRANCH' => @tag_to_deploy, 'CONFIRM' => 'false' })
   end
 
   def wrap_step_in_box(step_name, &blk)
     puts "#{step_name}"
-    puts "+---------------------------------------+"
+    puts "+#{"-" * (step_name.size - 1)}+"
     yield(blk)
     puts colorize("✔".encode('utf-8'), 32)
   rescue DeployError
     puts colorize("✗".encode('utf-8'), 31)
     exit 1
   ensure
-    puts "+---------------------------------------+"
+    puts "+#{"-" * (step_name.size - 1)}+"
   end
 
   def execute_safely(cmd, env_vars = {}, confirm: false)
@@ -231,6 +247,10 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
 
   def print_newlines(n: 3)
     puts "\n" * n
+  end
+
+  def check_current_git_branch
+    execute_safely('git rev-parse --abbrev-ref HEAD').strip
   end
 end
 
