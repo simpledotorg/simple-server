@@ -7,6 +7,13 @@ class AuditLog < ApplicationRecord
     old: 'touch'
   }.freeze
 
+  belongs_to :user
+  belongs_to :auditable, polymorphic: true
+
+  validates :action, presence: true
+  validates :auditable_type, presence: true
+  validates :auditable_id, presence: true
+
   def self.merge_log(user, record)
     return unless user.present?
     write_audit_log(
