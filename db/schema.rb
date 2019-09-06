@@ -37,7 +37,6 @@ ActiveRecord::Schema.define(version: 20190828133628) do
     t.string "access_controllable_type", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.uuid "user_id"
     t.index ["access_controllable_id", "access_controllable_type"], name: "index_access_controls_on_controllable_id_and_type"
     t.index ["admin_id"], name: "index_admin_access_controls_on_admin_id"
   end
