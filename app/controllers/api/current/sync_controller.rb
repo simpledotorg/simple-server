@@ -3,8 +3,6 @@ class Api::Current::SyncController < APIController
   before_action :check_disabled_api
   before_action :instrument_process_token
 
-  MAX_LIMIT = 500
-
   def model_name
     controller_name.classify.constantize
   end
@@ -77,11 +75,15 @@ class Api::Current::SyncController < APIController
     end
   end
 
+  def max_limit
+    1000
+  end
+
   def limit
     return ENV['DEFAULT_NUMBER_OF_RECORDS'].to_i unless params[:limit].present?
     params_limit = params[:limit].to_i
 
-    params_limit < MAX_LIMIT ? params_limit : MAX_LIMIT
+    params_limit < max_limit ? params_limit : max_limit
   end
 
   def instrument_process_token

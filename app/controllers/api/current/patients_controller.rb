@@ -29,6 +29,10 @@ class Api::Current::PatientsController < Api::Current::SyncController
 
   private
 
+  def max_limit
+    500
+  end
+
   def merge_if_valid(single_patient_params)
     validator = Api::Current::PatientPayloadValidator.new(single_patient_params)
     logger.debug "Patient had errors: #{validator.errors_hash}" if validator.invalid?
