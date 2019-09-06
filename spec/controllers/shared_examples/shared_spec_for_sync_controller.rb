@@ -151,8 +151,8 @@ RSpec.shared_examples 'a working sync controller updating records' do
 
       updated_records.each do |record|
         db_record = model.find(record['id'])
-        expect(db_record.attributes.to_json_and_back.with_payload_keys.with_int_timestamps)
-          .to eq(record.to_json_and_back.with_int_timestamps)
+        expect(db_record.attributes.to_json_and_back.except("user_id").with_payload_keys.with_int_timestamps)
+          .to eq(record.to_json_and_back.except("user_id").with_int_timestamps)
       end
     end
   end

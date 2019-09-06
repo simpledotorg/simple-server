@@ -9,6 +9,10 @@ class Api::Current::AppointmentsController < Api::Current::SyncController
     __sync_to_user__('appointments')
   end
 
+  def metadata
+    { user_id: current_user.id }
+  end
+
   private
 
   def merge_if_valid(appointment_params)
@@ -19,13 +23,14 @@ class Api::Current::AppointmentsController < Api::Current::SyncController
       { errors_hash: validator.errors_hash }
     else
       record_params = Api::Current::Transformer.from_request(appointment_params)
+      record_params = record_params.merge(user_id: metadata[:user_id])
       appointment = Appointment.merge(record_params)
       { record: appointment }
     end
   end
 
   def transform_to_response(appointment)
-    Api::Current::Transformer.to_response(appointment)
+    Api::Current::Transformer.to_response(appointment).except(:user_id)
   end
 
   def appointments_params
