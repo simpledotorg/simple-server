@@ -6,7 +6,7 @@ RSpec.feature 'Organization management', type: :feature do
   let!(:path) { create(:organization, name: "PATH") }
 
   login = AdminPage::Sessions::New.new
-  dashboard_navigation = DashboardPageNavigation.new
+  dashboard_navigation = Navigations::DashboardPageNavigation.new
   organization_page = AdminPage::Organizations::Index.new
 
   describe "test organization screen" do
