@@ -44,7 +44,7 @@ class Deploy
       print_usage_and_exit
     end
 
-    print_usage_and_exit if (current_environment == 'production' && tag.nil?)
+    print_usage_and_exit if (current_environment == 'production' && tag_to_deploy.nil?)
 
     @tag_to_deploy = tag_to_deploy
     @current_environment = current_environment
@@ -81,7 +81,7 @@ class Deploy
 
       3 => { msg: 'Creating release tag...',
              action: -> { create_and_push_release_tag(current_date) },
-             skip_for:  ['sandbox', 'qa', 'production'] },
+             skip_for: ['sandbox', 'qa', 'production'] },
 
       4 => { msg: 'Deploying...',
              action: -> { deploy } }
@@ -118,7 +118,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
 
   def create_and_push_release_tag(date)
     unless @tag_to_deploy.nil?
-      puts "Skipping, since you have specified a tag."
+      puts "Skipping, since you have already specified a tag."
       return
     end
 
@@ -142,7 +142,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
 
     # push tag
     puts "Pushing tag #{@tag_to_deploy} to remote..."
-    execute_safely("git push --dry-run origin refs/tags/#{@tag_to_deploy}", confirm: true)
+    execute_safely("git push origin refs/tags/#{@tag_to_deploy}", confirm: true)
   end
 
   def print_usage_and_exit
@@ -156,7 +156,10 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   def last_deployed_sha
     @last_deployed_sha ||=
       execute_safely("cap #{current_environment} deploy:get_latest_deployed_sha",
-                     { 'CONFIRM' => 'false' }).strip
+                     { 'CONFIRM' => 'false' })
+        .strip
+        .split("\n")
+        .last
   end
 
   def changelog
@@ -187,9 +190,11 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 
   def deploy
-    puts "'#{@tag_to_deploy || 'master'}' to '#{current_environment}'"
+    puts "#{@tag_to_deploy || 'master'} to '#{current_environment}'."
+    puts "Please 'tail -f log/capistrano.log' for more info."
     execute_safely("bundle exec cap #{current_environment} deploy",
-                   { 'BRANCH' => @tag_to_deploy, 'CONFIRM' => 'false' })
+                   { 'BRANCH' => @tag_to_deploy, 'CONFIRM' => 'false' },
+                   confirm: true)
   end
 
   def wrap_step_in_box(step_name, &blk)
