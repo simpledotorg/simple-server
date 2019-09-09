@@ -80,6 +80,10 @@ group :test do
   gem 'fakeredis', require:  false
   gem 'generator_spec'
   gem 'webdriver'
+  gem 'capybara-webkit'
+  gem 'selenium-webdriver'
+  gem 'puma'
+  gem 'chromedriver-helper', '~> 1.0'
   # gem 'rspec-sidekiq'
 end
 

@@ -11,7 +11,7 @@
         ) %>
     
 <% if policy(Appointment).download? && @appointments.present? %>
-<h2>Downloads</h2>
+<h2 name="download_text">Downloads</h2>
 <div class="mb-5 mt-3">
       
   
@@ -49,7 +49,7 @@
       ) %>
     <% end %>
   <% else %>
-    <div class="card">
+    <div class="card" title="no overdue patient">
       <p>No overdue patients found</p>
     </div>
   <% end %>
