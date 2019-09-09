@@ -44,6 +44,8 @@ GEM
       public_suffix (>= 2.0.2, < 4.0)
     airbrussh (1.3.0)
       sshkit (>= 1.6.1, != 1.7.0)
+    archive-zip (0.7.0)
+      io-like (~> 0.3.0)
     arel (8.0.0)
     autoprefixer-rails (9.4.9)
       execjs
@@ -88,7 +90,15 @@ GEM
       rack (>= 1.6.0)
       rack-test (>= 0.6.3)
       xpath (~> 3.0)
+    capybara-webkit (1.15.1)
+      capybara (>= 2.3, < 4.0)
+      json
+    childprocess (1.0.1)
+      rake (< 13.0)
     choice (0.2.0)
+    chromedriver-helper (1.0.0)
+      archive-zip (~> 0.7.0)
+      nokogiri (~> 1.6)
     chronic (0.10.2)
     coderay (1.1.2)
     composite_primary_keys (10.0.5)
@@ -163,6 +173,7 @@ GEM
     i18n (1.6.0)
       concurrent-ruby (~> 1.0)
     imgkit (1.6.2)
+    io-like (0.3.0)
     jbuilder (2.7.0)
       activesupport (>= 4.2.0)
       multi_json (>= 1.2)
@@ -228,6 +239,8 @@ GEM
     pry-rails (0.3.6)
       pry (>= 0.10.4)
     public_suffix (3.0.2)
+    puma (4.1.1)
+      nio4r (~> 2.0)
     pundit (1.1.0)
       activesupport (>= 3.0.0)
     rack (2.0.7)
@@ -345,6 +358,9 @@ GEM
     scenic (1.5.1)
       activerecord (>= 4.0.0)
       railties (>= 4.0.0)
+    selenium-webdriver (3.142.3)
+      childprocess (>= 0.5, < 2.0)
+      rubyzip (~> 1.2, >= 1.2.2)
     sentry-raven (2.7.3)
       faraday (>= 0.7.6, < 1.0)
     shoulda-matchers (3.1.2)
@@ -429,6 +445,8 @@ DEPENDENCIES
   capistrano-rbenv
   capistrano-sidekiq
   capybara
+  capybara-webkit
+  chromedriver-helper (~> 1.0)
   connection_pool
   data-anonymization
   devise (>= 4.7.1)
@@ -454,6 +472,7 @@ DEPENDENCIES
   pg (>= 0.18, < 2.0)
   phonelib
   pry-rails
+  puma
   pundit
   rails (~> 5.1.6.2)
   rails-controller-testing
@@ -466,6 +485,7 @@ DEPENDENCIES
   rswag (~> 1.6.0)
   sassc-rails
   scenic
+  selenium-webdriver
   sentry-raven
   shoulda-matchers (~> 3.1)
   sidekiq
