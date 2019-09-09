@@ -75,12 +75,15 @@ class Api::Current::SyncController < APIController
     end
   end
 
+  def max_limit
+    1000
+  end
+
   def limit
-    if params[:limit].present?
-      params[:limit].to_i
-    else
-      ENV['DEFAULT_NUMBER_OF_RECORDS'].to_i
-    end
+    return ENV['DEFAULT_NUMBER_OF_RECORDS'].to_i unless params[:limit].present?
+    params_limit = params[:limit].to_i
+
+    params_limit < max_limit ? params_limit : max_limit
   end
 
   def instrument_process_token
