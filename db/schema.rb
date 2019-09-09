@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190828133628) do
+ActiveRecord::Schema.define(version: 20190905131736) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -91,6 +91,7 @@ ActiveRecord::Schema.define(version: 20190828133628) do
     t.boolean "agreed_to_visit"
     t.datetime "deleted_at"
     t.string "appointment_type", null: false
+    t.uuid "user_id"
     t.index ["appointment_type"], name: "index_appointments_on_appointment_type"
     t.index ["deleted_at"], name: "index_appointments_on_deleted_at"
     t.index ["facility_id"], name: "index_appointments_on_facility_id"
@@ -267,6 +268,7 @@ ActiveRecord::Schema.define(version: 20190828133628) do
     t.text "diabetes"
     t.text "diagnosed_with_hypertension"
     t.datetime "deleted_at"
+    t.uuid "user_id"
     t.index ["deleted_at"], name: "index_medical_histories_on_deleted_at"
     t.index ["patient_id"], name: "index_medical_histories_on_patient_id"
   end
@@ -364,6 +366,7 @@ ActiveRecord::Schema.define(version: 20190828133628) do
     t.boolean "is_protocol_drug", null: false
     t.boolean "is_deleted", null: false
     t.datetime "deleted_at"
+    t.uuid "user_id"
     t.index ["deleted_at"], name: "index_prescription_drugs_on_deleted_at"
     t.index ["patient_id"], name: "index_prescription_drugs_on_patient_id"
   end

@@ -30,7 +30,7 @@ class Api::Current::PrescriptionDrugsController < Api::Current::SyncController
   end
 
   def transform_to_response(prescription_drug)
-    Api::Current::Transformer.to_response(prescription_drug).except(:user_id)
+    Api::Current::Transformer.to_response(prescription_drug).except('user_id')
   end
 
   def prescription_drugs_params
