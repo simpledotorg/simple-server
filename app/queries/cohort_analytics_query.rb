@@ -5,13 +5,7 @@ class CohortAnalyticsQuery
     @patients = patients
   end
 
-  def patient_counts(year:, quarter:, quarters_previous: 1)
-    report_start = quarter_start(year, quarter)
-    report_end   = quarter_end(year, quarter)
-
-    cohort_start = report_start - (quarters_previous * 3).months
-    cohort_end   = report_end   - (quarters_previous * 3).months
-
+  def patient_counts(cohort_start, cohort_end, report_start, report_end)
     registered_patients = registered(cohort_start, cohort_end)
     followed_up_patients = followed_up(registered_patients, report_start, report_end)
     controlled_patients = controlled(followed_up_patients)
