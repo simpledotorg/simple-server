@@ -30,7 +30,7 @@ class Api::Current::AppointmentsController < Api::Current::SyncController
   end
 
   def transform_to_response(appointment)
-    Api::Current::Transformer.to_response(appointment).except(:user_id)
+    Api::Current::Transformer.to_response(appointment).except('user_id')
   end
 
   def appointments_params
