@@ -26,6 +26,7 @@ append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/syst
 
 set :whenever_path, -> { release_path }
 set :whenever_roles, [:cron, :whitelist_phone_numbers, :seed]
+set :enable_confirmation, ENV['CONFIRM'] || 'true'
 
 ENVS_FOR_CONFIRMATION_STEP = ["production", "staging"]
 namespace :deploy do
@@ -43,7 +44,7 @@ namespace :deploy do
   desc 'Print the latest deployed revision SHA'
   task :get_latest_deployed_sha do
     on release_roles([:app]) do
-      invoke "deploy:set_previous_revision"
+      invoke!("deploy:set_previous_revision")
       puts fetch(:previous_revision)
     end
   end
@@ -79,5 +80,7 @@ namespace :deploy do
 end
 
 Capistrano::DSL.stages.each do |stage|
-  after stage, 'deploy:confirmation' if ENVS_FOR_CONFIRMATION_STEP.any? { |env| stage == env }
+  if ENVS_FOR_CONFIRMATION_STEP.any? { |env| stage == env } && fetch(:enable_confirmation) == 'true'
+    after stage, 'deploy:confirmation'
+  end
 end
