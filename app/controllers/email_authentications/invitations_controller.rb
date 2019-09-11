@@ -11,19 +11,19 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
   def create
     authorize :invitation, :create?
-    @role = params.require(:email_authentication).require(:role).downcase.to_sym
-    user = nil
+    role = params.require(:email_authentication).require(:role).downcase.to_sym
+    full_name = params.require(:email_authentication).require(:full_name)
     User.transaction do
       super do |resource|
-
-        # Temporary to make tests work
-        user = User.new(full_name: 'test',
+        user = User.new(full_name: full_name,
+                        role: role,
                         device_created_at: Time.now,
                         device_updated_at: Time.now,
                         sync_approval_status: :denied)
 
         user.email_authentications = [resource]
-        unless @role == :owner
+
+        unless role == :owner
           admin_access_controls = access_controllable_ids.reject(&:empty?).map do |access_controllable_id|
             AdminAccessControl.new(
               access_controllable_type: access_controllable_type,
@@ -57,7 +57,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:invite) do |admin_params|
-      admin_params.permit({ admin_access_controls: [] }, :email)
+      admin_params.permit(:email)
     end
   end
 end
