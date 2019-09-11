@@ -9,17 +9,17 @@ class OrganizationDistrict < Struct.new(:district_name, :organization)
     organization.facilities.where(district: district_name)
   end
 
-  def cohort_analytics(period: :month, periods: 6)
+  def cohort_analytics(period: :month, prev_periods: 6)
     patients =
       Patient
         .joins(:registration_facility)
         .where(facilities: { id: facilities })
 
     query = CohortAnalyticsQuery.new(patients)
-    results = {}
+    results = []
 
-    (0..(periods - 1)).each do |periods_back|
-      if period = :month
+    (0..(prev_periods - 1)).each do |periods_back|
+      if period == :month
         cohort_start = (Time.now - periods_back.months).beginning_of_month
         cohort_end   = cohort_start.end_of_month
         report_start = (cohort_start + 1.month).beginning_of_month

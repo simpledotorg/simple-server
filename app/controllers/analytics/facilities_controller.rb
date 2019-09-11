@@ -7,7 +7,7 @@ class Analytics::FacilitiesController < AnalyticsController
   before_action :set_cohort_analytics, only: [:show, :whatsapp_graphics]
 
   def show
-    set_dashboard_analytics(:month)
+    set_dashboard_analytics(@period)
 
     @recent_blood_pressures = @facility.blood_pressures
                                 .includes(:patient, :user)
@@ -39,24 +39,28 @@ class Analytics::FacilitiesController < AnalyticsController
 
   private
 
-  def set_cohort_analytics
-    @cohort_analytics =  set_analytics_cache(analytics_cache_key_cohort,
-                                             @facility.cohort_analytics)
-  end
-
-  def set_dashboard_analytics(time_period)
-    @dashboard_analytics = set_analytics_cache(analytics_cache_key_dashboard(time_period),
-                                               @facility.dashboard_analytics(time_period: time_period))
-  end
-
-  def analytics_cache_key
-    "analytics/facilities/#{@facility.id}"
-  end
-
   def set_facility
     facility_id = params[:id] || params[:facility_id]
     @facility = Facility.friendly.find(facility_id)
     authorize(@facility)
+  end
+
+  def set_cohort_analytics
+    @cohort_analytics = set_analytics_cache(
+      analytics_cache_key_cohort(@period),
+      @facility.cohort_analytics(period: @period, prev_periods: @prev_periods)
+    )
+  end
+
+  def set_dashboard_analytics(time_period)
+    @dashboard_analytics = set_analytics_cache(
+      analytics_cache_key_dashboard(@period),
+      @facility.dashboard_analytics(time_period: @period)
+    )
+  end
+
+  def analytics_cache_key
+    "analytics/facilities/#{@facility.id}"
   end
 end
 

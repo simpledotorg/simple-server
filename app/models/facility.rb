@@ -45,11 +45,11 @@ class Facility < ApplicationRecord
 
   friendly_id :name, use: :slugged
 
-  def cohort_analytics(period: :month, periods: 6)
+  def cohort_analytics(period: :month, prev_periods: 6)
     query = CohortAnalyticsQuery.new(self.registered_patients)
-    results = {}
+    results = []
 
-    (0..(periods - 1)).each do |periods_back|
+    (0..(prev_periods - 1)).each do |periods_back|
       if period = :month
         cohort_start = (Time.now - periods_back.months).beginning_of_month
         cohort_end   = cohort_start.end_of_month
