@@ -9,7 +9,7 @@ class OrganizationDistrict < Struct.new(:district_name, :organization)
     organization.facilities.where(district: district_name)
   end
 
-  def cohort_analytics
+  def cohort_analytics(period: :month, periods: 6)
     patients =
       Patient
         .joins(:registration_facility)
@@ -18,9 +18,20 @@ class OrganizationDistrict < Struct.new(:district_name, :organization)
     query = CohortAnalyticsQuery.new(patients)
     results = {}
 
-    (0..2).each do |quarters_back|
-      date = (Date.today - (quarters_back * 3).months).beginning_of_quarter
-      results[date] = query.patient_counts(year: date.year, quarter: quarter(date))
+    (0..(periods - 1)).each do |periods_back|
+      if period = :month
+        cohort_start = (Time.now - periods_back.months).beginning_of_month
+        cohort_end   = cohort_start.end_of_month
+        report_start = (cohort_start + 1.month).beginning_of_month
+        report_end   = (cohort_end + 1.month).end_of_month
+      else
+        cohort_start = (Time.now - periods_back.quarters).beginning_of_quarter
+        cohort_end   = cohort_end.end_of_quarter
+        report_start = (cohort_start + 3.months).beginning_of_quarter
+        report_end   = (cohort_end + 3.months).end_of_quarter
+      end
+
+      results[periods_back] = query.patient_counts(cohort_start, cohort_end, report_start, report_end)
     end
 
     results

@@ -8,7 +8,7 @@
       </div>
   </div>
 
-  <% cohort_analytics.each_with_index do |(date, analytics), quarters_back| %>
+  <% cohort_analytics.each do |periods_back, analytics| %>
     <%
       registered = analytics[:registered]
       followed_up = analytics[:followed_up]
@@ -16,16 +16,19 @@
       controlled = analytics[:controlled]
       uncontrolled = analytics[:uncontrolled]
 
-      is_current_quarter = (quarters_back == 0)
+      is_current_period = (periods_back == 0)
+
+      report_period = (Time.now - periods_back.months).strftime("%b %Y")
+      cohort_period = (Time.now - (periods_back + 1).months).strftime("%b %Y")
     %>
 
     <div class="split-row">
       <div class="row px-lg-0">
           <div class="col-lg-3 nowrap order-lg-3">
-              <div class="bar-total float-right float-lg-none mb-n4">Outcomes for <%= registered %> patients reg. <%= "Q#{quarter(date - 3.months)} #{(date - 3.months).year}" %></div>
+            <div class="bar-total float-right float-lg-none mb-n4">Outcomes for <%= registered %> patients reg. <%= "#{cohort_period}" %></div>
           </div>
           <div class="col-lg-1 nowrap order-lg-1 pt-lg-2">
-              <h6<% if is_current_quarter %> <% end %>  data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="<%= "#{l date.to_date.beginning_of_quarter} to #{l date.to_date.end_of_quarter}" %>"><%= is_current_quarter ? "This quarter " : "Q#{quarter(date)} #{date.year}" %></h6>
+            <h6 data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title=""><%= is_current_period ? "This month" : "#{report_period}" %></h6>
           </div>
           <div class="col-lg-8 order-lg-2 pr-lg-0">
 
@@ -51,7 +54,7 @@
       </div>
     </div>
   <% end %>
-    
+
   <div class="key mobile">
     <div class="row">
         <div class="col-4 key-definition didntattend">Didn't attend for follow-up visit</div>
@@ -59,5 +62,5 @@
         <div class="col-4 key-definition controlled">Visited and BP &lt;&nbsp;140/90</div>
     </div>
   </div>
-    
+
 </div>
