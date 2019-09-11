@@ -44,13 +44,16 @@ gem "roo", "~> 2.8.0"
 gem 'wkhtmltoimage-binary'
 gem 'imgkit'
 gem 'scenic'
+gem 'factory_bot_rails', require: false
+gem 'faker', require: false
+gem 'timecop', '~> 0.9.0', require: false
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
-  gem 'factory_bot_rails'
+  gem 'factory_bot_rails', require: true
   gem 'shoulda-matchers', '~> 3.1'
-  gem 'faker'
-  gem 'timecop', '~> 0.9.0'
+  gem 'faker', require: true
+  gem 'timecop', '~> 0.9.0', require: true
   gem 'capistrano', '~> 3.10'
   gem 'capistrano-rails'
   gem 'capistrano-rbenv'
@@ -60,6 +63,7 @@ group :development, :test do
   gem 'capistrano-db-tasks', require: false
   gem 'parallel_tests', group: [:development, :test]
   gem 'rails-controller-testing'
+  gem 'rb-readline'
 end
 
 group :development do

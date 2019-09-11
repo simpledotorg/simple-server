@@ -1,8 +1,8 @@
 FactoryBot.define do
   factory :patient do
-    common_names = { 'female'      => %w[anjali divya ishita priya priyanka riya shreya tanvi tanya vani],
-                     'male'        => %w[abhishek adityaamit ankit deepak mahesh rahul rohit shyam yash],
-                     'transgender' => %w[bharathi madhu bharathi manabi anjum vani riya shreya kiran amit] }
+    common_names = { 'female'      => %w[Anjali Divya Ishita Priya Priyanka Riya Shreya Tanvi Tanya Vani],
+                     'male'        => %w[Abhishek Aditya Amit Ankit Deepak Mahesh Rahul Rohit Shyam Yash],
+                     'transgender' => %w[Bharathi Madhu Bharathi Manabi Anjum Vani Riya Shreya Kiran Amit] }
 
     transient do
       has_date_of_birth? { [true, false].sample }

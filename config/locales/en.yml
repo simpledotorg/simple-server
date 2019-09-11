@@ -129,3 +129,8 @@ en:
     10: 'October'
     11: 'November'
     12: 'December'
+
+  faker:
+    name:
+      first_name: ['Ishita', 'Riya', 'Aditya', 'Shreya', 'Mahesh', 'Priya', 'Deepak', 'Rahul', 'Ankit', 'Tanvi', 'Amit', 'Yash', 'Abhishek', 'Tanya', 'Shyam', 'Vani', 'Divya', 'Rohit', 'Anjali', 'Priyanka']
+      last_name: ['Lamba', 'Bahl', 'Sodhi', 'Sardana', 'Puri', 'Chhabra', 'Khanna', 'Malhotra', 'Mehra', 'Garewal', 'Dhillon', 'Bharathi', 'Madhu', 'Bharathi', 'Manabi', 'Anjum', 'Vani', 'Riya', 'Shreya']
