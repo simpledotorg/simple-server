@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :call_log do
-    id { rand(1..1000) }
+    id { Faker::Number.unique.number }
     session_id { SecureRandom.uuid }
     result { CallLog.results.keys.sample }
     created_at { Time.now }
