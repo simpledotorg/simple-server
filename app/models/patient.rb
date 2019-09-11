@@ -19,11 +19,13 @@ class Patient < ApplicationRecord
   belongs_to :address, optional: true
   has_many :phone_numbers, class_name: 'PatientPhoneNumber'
   has_many :business_identifiers, class_name: 'PatientBusinessIdentifier'
-  has_many :blood_pressures, inverse_of: :patient
+  has_many :encounters
+  has_many :encounter_events, through: :encounters
+  has_many :blood_pressures, through: :encounters, inverse_of: :patient
+  has_many :prescription_drugs, through: :encounters
   has_many :latest_blood_pressures, -> { order(recorded_at: :desc) }, class_name: 'BloodPressure'
-  has_many :prescription_drugs
-  has_many :facilities, -> { distinct }, through: :blood_pressures
-  has_many :users, -> { distinct }, through: :blood_pressures
+  has_many :users, -> { distinct }, through: :encounter_events
+  has_many :facilities, -> { distinct }, through: :encounters
 
   belongs_to :registration_facility, class_name: "Facility", optional: true
   belongs_to :registration_user, class_name: "User"
