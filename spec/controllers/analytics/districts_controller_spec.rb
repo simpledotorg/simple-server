@@ -106,8 +106,6 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
       it 'renders graphics_header partial' do
         get :whatsapp_graphics, format: :html, params: { organization_id: organization.id, district_id: district_name }
 
-        p response
-
         expect(response).to be_ok
         expect(response).to render_template('shared/graphics/_graphics_partial')
       end
