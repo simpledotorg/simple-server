@@ -8,6 +8,12 @@ METHODS_TO_INSTRUMENT = [
   [Api::Current::PatientsController, :current_facility_records],
   [Api::Current::PatientsController, :other_facility_records],
 
+  [Api::Current::PatientsController, :merge_if_valid],
+  [Api::Current::BloodPressuresController, :merge_if_valid],
+  [Api::Current::AppointmentsController, :merge_if_valid],
+  [Api::Current::PrescriptionDrugsController, :merge_if_valid],
+  [Api::Current::MedicalHistoriesController, :merge_if_valid],
+
   [Api::Current::BloodPressuresController, :current_facility_records],
   [Api::Current::BloodPressuresController, :other_facility_records],
 
