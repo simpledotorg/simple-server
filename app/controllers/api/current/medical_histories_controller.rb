@@ -32,15 +32,17 @@ class Api::Current::MedicalHistoriesController < Api::Current::SyncController
       NewRelic::Agent.increment_metric('Merge/MedicalHistory/schema_invalid')
       { errors_hash: validator.errors_hash }
     else
-      record_params = Api::Current::Transformer.from_request(medical_history_params)
-      record_params = record_params.merge(user_id: metadata[:user_id])
+      record_params = Api::Current::MedicalHistoryTransformer
+                        .from_request(medical_history_params)
+                        .merge(metadata)
+
       medical_history = MedicalHistory.merge(record_params)
       { record: medical_history }
     end
   end
 
   def transform_to_response(medical_history)
-    Api::Current::MedicalHistoryTransformer.to_response(medical_history).except('user_id')
+    Api::Current::MedicalHistoryTransformer.to_response(medical_history)
   end
 
   def medical_histories_params
