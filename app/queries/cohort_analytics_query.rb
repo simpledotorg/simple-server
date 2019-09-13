@@ -3,10 +3,9 @@ class CohortAnalyticsQuery
 
   def initialize(patients, period = :month)
     @patients = patients
-    @period = period
   end
 
-  def patient_counts_by_period(prev_periods: 6)
+  def patient_counts_by_period(period, prev_periods)
     results = {}
 
     (0..(prev_periods)).each do |periods_back|
