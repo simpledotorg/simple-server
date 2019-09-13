@@ -1,8 +1,31 @@
 class CohortAnalyticsQuery
   include QuarterHelper
 
-  def initialize(patients)
+  def initialize(patients, period = :month)
     @patients = patients
+    @period = period
+  end
+
+  def patient_counts_by_period(prev_periods: 6)
+    results = {}
+
+    (0..(prev_periods)).each do |periods_back|
+      if @period == :month
+        cohort_start = (Time.now - periods_back.months).beginning_of_month
+        cohort_end   = cohort_start.end_of_month
+        report_start = (cohort_start + 1.month).beginning_of_month
+        report_end   = (cohort_end + 1.month).end_of_month
+      else
+        cohort_start = (Time.now - (3 * periods_back.months)).beginning_of_quarter
+        cohort_end   = cohort_start.end_of_quarter
+        report_start = (cohort_start + 3.months).beginning_of_quarter
+        report_end   = (cohort_end + 3.months).end_of_quarter
+      end
+
+      results[[cohort_start, report_start]] = patient_counts(cohort_start, cohort_end, report_start, report_end)
+    end
+
+    results
   end
 
   def patient_counts(cohort_start, cohort_end, report_start, report_end)
