@@ -1,11 +1,13 @@
 <div class="card pb-4">
   <h3>Cohort report</h3>
   <div class="desc">Outcomes for patients registered 3-6 months previously:
-      <div class="key desktop">
-        <div class="key-definition didntattend">Didn't attend for<br class="mobile"> follow-up visit</div>
-        <div class="key-definition uncontrolled">Visited and <br class="mobile">BP &ge;&nbsp;140/90</div>
-&nbsp;       <div class="key-definition controlled">Visited and <br class="mobile">BP &lt;&nbsp;140/90</div>
-      </div>
+    <div class="key desktop">
+      <div class="key-definition didntattend">Didn't attend for<br class="mobile"> follow-up visit</div>
+      &nbsp;
+      <div class="key-definition uncontrolled">Visited and <br class="mobile">BP &ge;&nbsp;140/90</div>
+      &nbsp;
+      <div class="key-definition controlled">Visited and <br class="mobile">BP &lt;&nbsp;140/90</div>
+    </div>
   </div>
 
   <% cohort_analytics.each_with_index do |(report_dates, analytics), index| %>
@@ -34,32 +36,30 @@
 
     <div class="split-row">
       <div class="row px-lg-0">
-          <div class="col-lg-3 nowrap order-lg-3">
-            <div class="bar-total float-right float-lg-none mb-n4">Outcomes for <%= registered %> patients reg. <%= "#{cohort_period}" %></div>
-          </div>
-          <div class="col-lg-1 nowrap order-lg-1 pt-lg-2">
-            <h6 data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title=""><%= is_current_period ? "This #{@period}" : "#{report_period}" %></h6>
-          </div>
-          <div class="col-lg-8 order-lg-2 pr-lg-0">
+        <div class="col-lg-3 nowrap order-lg-3">
+          <div class="bar-total float-right float-lg-none mb-n4">Outcomes for <%= registered %> patients reg. <%= "#{cohort_period}" %></div>
+        </div>
+        <div class="col-lg-1 nowrap order-lg-1 pt-lg-2">
+          <h6 data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title=""><%= is_current_period ? "This #{@period}" : "#{report_period}" %></h6>
+        </div>
+        <div class="col-lg-8 order-lg-2 pr-lg-0">
+          <table class="split-bars">
+            <tr>
+              <% if registered > 0 %>
+                <%
+                  controlled_percent = (controlled.to_f / registered * 100).round
+                  uncontrolled_percent = (uncontrolled.to_f / registered * 100).round
+                  default_percent = (defaulted.to_f / registered * 100).round
+                %>
 
-              <table class="split-bars">
-                <tr>
-                  <% if registered > 0 %>
-                    <%
-                      controlled_percent = (controlled.to_f / registered * 100).round
-                      uncontrolled_percent = (uncontrolled.to_f / registered * 100).round
-                      default_percent = (defaulted.to_f / registered * 100).round
-                    %>
-
-                    <td class="bar bar-1" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="<%= (defaulted > 0 && default_percent == 0) ? "< 1" : default_percent %>% didn't attend" style="width: <%= default_percent %>%;"><%= defaulted %></td>
-                    <td class="bar bar-2" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="<%= (uncontrolled > 0 && uncontrolled_percent == 0) ? "< 1" : uncontrolled_percent %>% visited and uncontrolled" style="width: <%= uncontrolled_percent %>%;"><%= uncontrolled %></td>
-                    <td class="bar bar-3" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="<%= (controlled > 0 && controlled_percent == 0) ? "< 1" : controlled_percent %>% visited and controlled" style="width: <%= controlled_percent %>%;"><%= controlled %></td>
-                  <% else %>
-                    <td class="bar bar-1 bar-none" style="width: 100%;">No patients</td>
-                  <% end %>
-                </tr>
-              </table>
-
+                <td class="bar bar-1" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="<%= (defaulted > 0 && default_percent == 0) ? "< 1" : default_percent %>% didn't attend" style="width: <%= default_percent %>%;"><%= defaulted %></td>
+                <td class="bar bar-2" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="<%= (uncontrolled > 0 && uncontrolled_percent == 0) ? "< 1" : uncontrolled_percent %>% visited and uncontrolled" style="width: <%= uncontrolled_percent %>%;"><%= uncontrolled %></td>
+                <td class="bar bar-3" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="<%= (controlled > 0 && controlled_percent == 0) ? "< 1" : controlled_percent %>% visited and controlled" style="width: <%= controlled_percent %>%;"><%= controlled %></td>
+              <% else %>
+                <td class="bar bar-1 bar-none" style="width: 100%;">No patients</td>
+              <% end %>
+            </tr>
+          </table>
         </div>
       </div>
     </div>
@@ -67,10 +67,9 @@
 
   <div class="key mobile">
     <div class="row">
-        <div class="col-4 key-definition didntattend">Didn't attend for follow-up visit</div>
-        <div class="col-4 key-definition uncontrolled">Visited and BP &ge;&nbsp;140/90</div>
-        <div class="col-4 key-definition controlled">Visited and BP &lt;&nbsp;140/90</div>
+      <div class="col-4 key-definition didntattend">Didn't attend for follow-up visit</div>
+      <div class="col-4 key-definition uncontrolled">Visited and BP &ge;&nbsp;140/90</div>
+      <div class="col-4 key-definition controlled">Visited and BP &lt;&nbsp;140/90</div>
     </div>
   </div>
-
 </div>
