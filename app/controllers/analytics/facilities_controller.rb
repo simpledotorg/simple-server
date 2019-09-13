@@ -7,7 +7,7 @@ class Analytics::FacilitiesController < AnalyticsController
 
   def show
     set_cohort_analytics(@period, @prev_periods)
-    set_dashboard_analytics(:month)
+    set_dashboard_analytics(@period, 3)
 
     @recent_blood_pressures = @facility.blood_pressures
                                 .includes(:patient, :user)
@@ -31,7 +31,7 @@ class Analytics::FacilitiesController < AnalyticsController
 
   def whatsapp_graphics
     set_cohort_analytics(:quarter, 3)
-    set_dashboard_analytics(:quarter)
+    set_dashboard_analytics(:quarter, 3)
 
     whatsapp_graphics_handler(
       @facility.organization.name,
@@ -53,10 +53,10 @@ class Analytics::FacilitiesController < AnalyticsController
     )
   end
 
-  def set_dashboard_analytics(period)
+  def set_dashboard_analytics(period, prev_periods)
     @dashboard_analytics = set_analytics_cache(
       analytics_cache_key_dashboard(period),
-      @facility.dashboard_analytics(time_period: period)
+      @facility.dashboard_analytics(period: period, prev_periods: prev_periods)
     )
   end
 

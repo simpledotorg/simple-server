@@ -28,18 +28,18 @@
             <th class="row-label" style="padding: 8px 4px;">Total</th>
 
             <!--Follow-up patients-->
-            <% repeat_for_last(months: 3) do |month| %>
-              <th class="row-label" style="padding: 8px 4px;"><%= month.strftime("%^b-%Y") %></th>
+            <% dates_for_periods(@period, 3).each do |period| %>
+              <th class="row-label" style="padding: 8px 4px;"><%= format_period(@period, period) %></th>
             <% end %>
 
             <!--New registrations-->
-            <% repeat_for_last(months: 3) do |month| %>
-              <th class="row-label" style="padding: 8px 4px;"><%= month.strftime("%^b-%Y") %></th>
+            <% dates_for_periods(@period, 3).each do |period| %>
+              <th class="row-label" style="padding: 8px 4px;"><%= format_period(@period, period) %></th>
             <% end %>
               
             <!--Calls made -->
-            <% repeat_for_last(months: 3) do |month| %>
-              <th class="row-label" style="padding: 8px 4px;"><%= month.strftime("%^b-%Y") %></th>
+            <% dates_for_periods(@period, 3).each do |period| %>
+              <th class="row-label" style="padding: 8px 4px;"><%= format_period(@period, period) %></th>
             <% end %>
           </tr>
 
@@ -55,23 +55,23 @@
             </td>
 
             <!--Follow-up patients-->
-            <% repeat_for_last(months: 3) do |month| %>
+            <% dates_for_periods(@period, 3).each do |period| %>
               <td class="row-total" style="text-align: center;">
-                <%= analytics_month_totals(dashboard_analytics, :follow_up_patients_by_period, month) %>
+                <%= analytics_totals(dashboard_analytics, :follow_up_patients_by_period, period) %>
               </td>
             <% end %>
 
             <!--New registrations-->
-            <% repeat_for_last(months: 3) do |month| %>
+            <% dates_for_periods(@period, 3).each do |period| %>
               <td class="row-total" style="text-align: center;">
-                <%= analytics_month_totals(dashboard_analytics, :registered_patients_by_period, month) %>
+                <%= analytics_totals(dashboard_analytics, :registered_patients_by_period, period) %>
               </td>
             <% end %>
             
             <!--Calls made -->
-            <% repeat_for_last(months: 3) do |month| %>
+            <% dates_for_periods(@period, 3).each do |period| %>
               <td class="row-total" style="text-align: center;">
-                <%= analytics_month_totals(dashboard_analytics, :total_calls_made_by_period, month) %>
+                <%= analytics_totals(dashboard_analytics, :total_calls_made_by_period, period) %>
               </td>
             <% end %>
           </tr>
@@ -91,23 +91,23 @@
                 </td>
 
                 <!--Follow-up patients-->
-                <% repeat_for_last(months: 3) do |month| %>
+                <% dates_for_periods(@period, 3).each do |period| %>
                   <td style="text-align: center;">
-                    <%= dash_if_zero(dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, month)) %>
+                    <%= dash_if_zero(dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, period)) %>
                   </td>
                 <% end %>
 
                 <!--New registrations-->
-                <% repeat_for_last(months: 3) do |month| %>
+                <% dates_for_periods(@period, 3).each do |period| %>
                   <td style="text-align: center;">
-                    <%= dash_if_zero(dashboard_analytics.dig(resource.id, :registered_patients_by_period, month)) %>
+                    <%= dash_if_zero(dashboard_analytics.dig(resource.id, :registered_patients_by_period, period)) %>
                   </td>
                 <% end %>
                 
                 <!--Calls made -->
-                <% repeat_for_last(months: 3) do |month| %>
+                <% dates_for_periods(@period, 3).each do |period| %>
                   <td style="text-align: center;">
-                    <%= dash_if_zero(dashboard_analytics.dig(resource.id, :total_calls_made_by_period, month)) %>
+                    <%= dash_if_zero(dashboard_analytics.dig(resource.id, :total_calls_made_by_period, period)) %>
                   </td>
                 <% end %>
               </tr>
