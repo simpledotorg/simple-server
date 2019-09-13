@@ -16,25 +16,7 @@ class OrganizationDistrict < Struct.new(:district_name, :organization)
         .where(facilities: { id: facilities })
 
     query = CohortAnalyticsQuery.new(patients)
-    results = []
-
-    (0..(prev_periods - 1)).each do |periods_back|
-      if period == :month
-        cohort_start = (Time.now - periods_back.months).beginning_of_month
-        cohort_end   = cohort_start.end_of_month
-        report_start = (cohort_start + 1.month).beginning_of_month
-        report_end   = (cohort_end + 1.month).end_of_month
-      else
-        cohort_start = (Time.now - periods_back.quarters).beginning_of_quarter
-        cohort_end   = cohort_end.end_of_quarter
-        report_start = (cohort_start + 3.months).beginning_of_quarter
-        report_end   = (cohort_end + 3.months).end_of_quarter
-      end
-
-      results[periods_back] = query.patient_counts(cohort_start, cohort_end, report_start, report_end)
-    end
-
-    results
+    query.patient_counts_by_period(prev_periods: prev_periods)
   end
 
   def dashboard_analytics(time_period: :month)
