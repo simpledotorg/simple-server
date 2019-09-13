@@ -40,7 +40,7 @@
     
     <div class="row mt-2">
         <div class="col-md-3 mt-2">
-            <% if phone_number = patient.phone_numbers.first&.number %>
+            <% if phone_number = patient.phone_numbers.first.number %>
                 <a href="tel:<%= phone_number %>" class="btn btn-sm btn-block btn-phone btn-outline-primary btn-phone"><i class="fas fa-phone" style="font-size: 80%;"></i> <%= phone_number %></a>
             <% else %>
                 <a href="#" class="btn btn-sm btn-block btn-info disabled">&lt; No mobile &gt;</a>

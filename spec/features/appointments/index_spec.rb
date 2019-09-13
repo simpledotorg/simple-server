@@ -89,7 +89,7 @@ RSpec.feature 'To test overdue appointment functionality', type: :feature do
         expect(page).to have_content(var_bp.facility.name)
         expect(page).to have_content(var_patients.address.street_address)
         expect(page).to have_content("Call result")
-        expect(find("a.btn-phone").text).to eq(var_patients.phone_numbers.first&.number)
+        expect(find("a.btn-phone").text).to eq(var_patients.phone_numbers.first.number)
         expect(appoint_page.get_overdue_days).to eq(var_appointment.days_overdue.to_s+" days overdue")
       end
     end
