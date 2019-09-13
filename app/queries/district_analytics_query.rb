@@ -16,8 +16,12 @@ class DistrictAnalyticsQuery
         .where(facilities: { id: facilities })
         .group('facilities.id')
         .count
-        .map { |facility_id, count| [facility_id, { :total_registered_patients => count }] }
-        .to_h
+
+    return if @total_registered_patients.blank?
+
+    @total_registered_patients
+      .map { |facility_id, count| [facility_id, { :total_registered_patients => count }] }
+      .to_h
   end
 
   def registered_patients_by_period
@@ -72,15 +76,10 @@ class DistrictAnalyticsQuery
   end
 
   def group_by_facility_and_date(query_results, key)
+    valid_dates = dates_for_periods(@period, @prev_periods)
+
     query_results.map do |(facility_id, date), value|
-      valid_dates = dates_for_periods(@period, @prev_periods)
-
-      value = valid_dates
-                .map { |prev_date| [prev_date, 0] }
-                .to_h
-                .merge({ date => value })
-
-      { facility_id => { key => value.slice(*valid_dates) } }
+      { facility_id => { key => { date => value }.slice(*valid_dates) } }
     end.inject(&:deep_merge)
   end
 end
