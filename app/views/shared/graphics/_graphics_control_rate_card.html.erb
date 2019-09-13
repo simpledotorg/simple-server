@@ -19,9 +19,7 @@
         </td>
         <td class="snapshot-controlled snapshot-key">
           <div>
-            <%= current_cohort_analytics[:controlled] %> <%= t('dashboard.graphics.patients_controlled_in_quarter') %>
-            <i class="fas fa-less-than"></i>
-            140/90
+            <%= current_cohort_analytics[:controlled] %> <%= t('dashboard.graphics.patients_controlled_in_quarter') %> 140/90
           </div>
         </td>
       </tr>
@@ -31,8 +29,7 @@
           <%= percentage_string(analytics_percentages[:uncontrolled]) %>
         </td>
         <td class="snapshot-uncontrolled snapshot-key">
-          <div><%= current_cohort_analytics[:uncontrolled] %> <%= t('dashboard.graphics.patients_uncontrolled_in_quarter') %>
-            <i class="fas fa-greater-than-equal"></i> 140/90
+          <div><%= current_cohort_analytics[:uncontrolled] %> <%= t('dashboard.graphics.patients_uncontrolled_in_quarter') %> 140/90
           </div>
         </td>
       </tr>
