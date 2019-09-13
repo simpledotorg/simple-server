@@ -47,10 +47,11 @@ class Api::Current::UsersController < APIController
   def reset_password
     current_user.reset_phone_number_authentication_password!(reset_password_digest)
 
-    ApprovalNotifierMailer
-      .with(user: current_user)
-      .reset_password_approval_email
-      .deliver_later unless FeatureToggle.auto_approve_for_qa?
+    unless FeatureToggle.auto_approve_for_qa?
+      ApprovalNotifierMailer
+        .delay
+        .reset_password_approval_email(user_id: current_user.id)
+    end
 
     render json: {
       user: user_to_response(current_user),
@@ -72,9 +73,8 @@ class Api::Current::UsersController < APIController
     return if FeatureToggle.auto_approve_for_qa?
 
     ApprovalNotifierMailer
-      .with(user: user)
-      .registration_approval_email
-      .deliver_later
+      .delay
+      .registration_approval_email(user_id: user.id)
   end
 
   def find_user(params)
