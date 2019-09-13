@@ -20,7 +20,7 @@ class AnalyticsController < AdminController
 
   def set_period
     @period = params[:period].present? ? params[:period].to_sym : :month
-    @prev_periods = (@period == :quarter) ? 3 : 6
+    @prev_periods = (@period == :quarter) ? 2 : 6
   end
 
   def set_quarter
