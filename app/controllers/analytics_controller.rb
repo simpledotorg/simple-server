@@ -19,9 +19,8 @@ class AnalyticsController < AdminController
   end
 
   def set_period
-    Rails.logger.debug(params)
     @period = params[:period].present? ? params[:period].to_sym : :month
-    @prev_periods = (@period == :month) ? 6 : 3
+    @prev_periods = (@period == :quarter) ? 3 : 6
   end
 
   def set_quarter

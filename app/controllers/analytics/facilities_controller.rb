@@ -4,10 +4,10 @@ class Analytics::FacilitiesController < AnalyticsController
   include Pagination
 
   before_action :set_facility
-  before_action :set_cohort_analytics, only: [:show, :whatsapp_graphics]
 
   def show
-    set_dashboard_analytics(@period)
+    set_cohort_analytics(@period, @prev_periods)
+    set_dashboard_analytics(:month)
 
     @recent_blood_pressures = @facility.blood_pressures
                                 .includes(:patient, :user)
@@ -30,6 +30,7 @@ class Analytics::FacilitiesController < AnalyticsController
   end
 
   def whatsapp_graphics
+    set_cohort_analytics(:quarter, 3)
     set_dashboard_analytics(:quarter)
 
     whatsapp_graphics_handler(
@@ -45,17 +46,17 @@ class Analytics::FacilitiesController < AnalyticsController
     authorize(@facility)
   end
 
-  def set_cohort_analytics
+  def set_cohort_analytics(period, prev_periods)
     @cohort_analytics = set_analytics_cache(
-      analytics_cache_key_cohort(@period),
-      @facility.cohort_analytics(period: @period, prev_periods: @prev_periods)
+      analytics_cache_key_cohort(period),
+      @facility.cohort_analytics(period: period, prev_periods: prev_periods)
     )
   end
 
-  def set_dashboard_analytics(time_period)
+  def set_dashboard_analytics(period)
     @dashboard_analytics = set_analytics_cache(
-      analytics_cache_key_dashboard(@period),
-      @facility.dashboard_analytics(time_period: @period)
+      analytics_cache_key_dashboard(period),
+      @facility.dashboard_analytics(time_period: period)
     )
   end
 
