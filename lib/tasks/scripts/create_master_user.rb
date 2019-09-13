@@ -10,7 +10,7 @@ module CreateMasterUser
       email_authentication = EmailAuthentication.new(admin_attributes.except(:id, :role))
       email_authentication.save!(validate: false)
       master_user.user_authentications.create!(authenticatable: email_authentication)
-      assign_permissions!(master_user, admin)
+      update_admin_access_controls(admin, master_user)
     end
   end
 
@@ -73,5 +73,9 @@ module CreateMasterUser
           resource: admin_access_control.access_controllable)
       end
     end
+  end
+
+  def self.update_admin_access_controls(admin, master_user)
+    admin.admin_access_controls.update_all(user_id: master_user.id)
   end
 end

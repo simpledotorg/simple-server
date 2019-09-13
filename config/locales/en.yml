@@ -109,8 +109,8 @@ en:
     graphics:
       graphics_title_html: "What happened in <b>%{current_quarter_string}</b> to the %{patients_in_previous_quarter} patients registered during <b>%{previous_quarter_string}</b>?"
       report_name: "Hypertension Report"
-      patients_controlled_in_quarter: "patients visited with BP"
-      patients_uncontrolled_in_quarter: "patients visited with BP"
+      patients_controlled_in_quarter: "patients visited with BP <"
+      patients_uncontrolled_in_quarter: "patients visited with BP ≥"
       patients_defaulted_in_quarter: "patients didn't attend for an expected follow-up visit"
       new_patients_registered: "New registrations"
       patients_called_for_followup: "Follow-up patients"
@@ -129,3 +129,8 @@ en:
     10: 'October'
     11: 'November'
     12: 'December'
+
+  faker:
+    name:
+      first_name: ['Ishita', 'Riya', 'Aditya', 'Shreya', 'Mahesh', 'Priya', 'Deepak', 'Rahul', 'Ankit', 'Tanvi', 'Amit', 'Yash', 'Abhishek', 'Tanya', 'Shyam', 'Vani', 'Divya', 'Rohit', 'Anjali', 'Priyanka']
+      last_name: ['Lamba', 'Bahl', 'Sodhi', 'Sardana', 'Puri', 'Chhabra', 'Khanna', 'Malhotra', 'Mehra', 'Garewal', 'Dhillon', 'Bharathi', 'Madhu', 'Bharathi', 'Manabi', 'Anjum', 'Vani', 'Riya', 'Shreya']

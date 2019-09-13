@@ -18,7 +18,7 @@ gem 'rswag', '~> 1.6.0'
 gem 'rspec-rails', '~> 3.7'
 gem 'newrelic_rpm'
 gem 'bcrypt', '~> 3.1', '>= 3.1.11'
-gem 'devise', '~> 4.6.0'
+gem "devise", ">= 4.7.1"
 gem 'devise_invitable', '~> 1.7.0'
 gem 'twilio-ruby', '~> 5.10', '>= 5.10.3'
 gem 'pundit'
@@ -44,13 +44,16 @@ gem "roo", "~> 2.8.0"
 gem 'wkhtmltoimage-binary'
 gem 'imgkit'
 gem 'scenic'
+gem 'factory_bot_rails', require: false
+gem 'faker', require: false
+gem 'timecop', '~> 0.9.0', require: false
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
-  gem 'factory_bot_rails'
+  gem 'factory_bot_rails', require: true
   gem 'shoulda-matchers', '~> 3.1'
-  gem 'faker'
-  gem 'timecop', '~> 0.9.0'
+  gem 'faker', require: true
+  gem 'timecop', '~> 0.9.0', require: true
   gem 'capistrano', '~> 3.10'
   gem 'capistrano-rails'
   gem 'capistrano-rbenv'
