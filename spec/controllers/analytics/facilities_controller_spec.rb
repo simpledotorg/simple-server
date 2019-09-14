@@ -74,7 +74,7 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
       let(:cohort_date3) { (today - (2 * 3).months).beginning_of_quarter }
 
       it 'caches the facility correctly' do
-        analytics_cohort_cache_key = "analytics/facilities/#{facility.id}/cohort"
+        analytics_cohort_cache_key = "analytics/facilities/#{facility.id}/cohort/month"
 
         expected_cache_value =
           {
