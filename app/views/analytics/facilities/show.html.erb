@@ -32,12 +32,15 @@
     display_model: :facility
 %>
 
-<div class="downloads">
-  <h4>Downloads</h4>
-  <% if policy(@facility).whatsapp_graphics? %>
-    <%= render "shared/graphics/graphics_download_links",
-               graphics_path: -> (options) { analytics_facility_graphics_path(options) },
-               options: { facility_id: @facility.id } %>
-  <% end %>
-</div>
-
+<% if FeatureToggle.enabled?('DASHBOARD_SNAPSHOT') %>
+  <div class="downloads">
+    <h4>Downloads</h4>
+    <% if policy(@facility).whatsapp_graphics? %>
+      <%=
+        render "shared/graphics/graphics_download_links",
+          graphics_path: -> (options) { analytics_facility_graphics_path(options) },
+          options: { facility_id: @facility.id }
+      %>
+    <% end %>
+  </div>
+<% end %>
