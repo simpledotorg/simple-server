@@ -4,7 +4,7 @@
 
     <i class="fas fa-chevron-right"></i>
     <%= link_to @facility.district,
-                analytics_organization_district_path(@facility.organization.id, @facility.district) %>
+                analytics_organization_district_path(@facility.organization.id, @facility.district, period: @period) %>
 
     <i class="fas fa-chevron-right"></i>
     <%= @facility.name %>
