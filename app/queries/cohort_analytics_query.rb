@@ -10,12 +10,12 @@ class CohortAnalyticsQuery
 
     (0..(prev_periods)).each do |periods_back|
       if period == :month
-        report_start = (Time.now - periods_back.months).beginning_of_month
+        report_start = (Time.current - periods_back.months).beginning_of_month
         report_end   = report_start.end_of_month
         cohort_start = (report_start - 1.month).beginning_of_month
         cohort_end   = (report_end - 1.month).end_of_month
       else
-        report_start = (Time.now - (3 * periods_back.months)).beginning_of_quarter
+        report_start = (Time.current - (3 * periods_back.months)).beginning_of_quarter
         report_end   = report_start.end_of_quarter
         cohort_start = (report_start - 3.months).beginning_of_quarter
         cohort_end   = (report_end - 3.months).end_of_quarter
