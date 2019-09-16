@@ -63,4 +63,8 @@ class AuditLog < ApplicationRecord
   def self.write_audit_log(log)
     AuditLogger.info(log.to_json)
   end
+
+  def self.creation_logs_for_type(type)
+    AuditLog.where(auditable_type: type, action: 'create')
+  end
 end

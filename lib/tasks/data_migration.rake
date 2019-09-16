@@ -94,4 +94,16 @@ namespace :data_migration do
       call_log.save!
     end
   end
+
+  desc 'Backfill user_id for appointments from audit_logs'
+  task backfill_user_ids_for_appointments: :environment do
+    batch_size = ENV.fetch('BACKFILL_USER_ID_FROM_AUDIT_LOGS_BATCH_SIZE').to_i
+    AuditLog.creation_logs_for_type('Appointment').in_batches(of: batch_size) do |batch|
+      appointments = batch.map do |appointment|
+        { id: appointment.auditable_id,
+          user_id: appointment.user_id }
+      end
+      UpdateUserIdsFromAuditLogsWorker.perform_async(Appointment, appointments)
+    end
+  end
 end
