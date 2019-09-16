@@ -22,7 +22,7 @@ class Patient < ApplicationRecord
   has_many :encounters
   has_many :encounter_events, through: :encounters
   has_many :blood_pressures, through: :encounters, inverse_of: :patient
-  has_many :prescription_drugs, through: :encounters
+  has_many :prescription_drugs
   has_many :latest_blood_pressures, -> { order(recorded_at: :desc) }, class_name: 'BloodPressure'
   has_many :users, -> { distinct }, through: :encounter_events
   has_many :facilities, -> { distinct }, through: :encounters

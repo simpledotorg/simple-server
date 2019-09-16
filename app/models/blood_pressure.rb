@@ -9,7 +9,7 @@ class BloodPressure < ApplicationRecord
   belongs_to :user, optional: true
   belongs_to :facility, optional: true
 
-  has_one :encounter_event, as: :encountered
+  has_one :encounter_event, as: :encounterable
   has_one :encounter, through: :encounter_event
 
   validates :device_created_at, presence: true

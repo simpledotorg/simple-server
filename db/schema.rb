@@ -193,11 +193,11 @@ ActiveRecord::Schema.define(version: 20190911065742) do
   create_table "encounter_events", force: :cascade do |t|
     t.uuid "encounter_id"
     t.uuid "user_id"
-    t.string "encountered_type"
-    t.uuid "encountered_id"
+    t.string "encounterable_type"
+    t.uuid "encounterable_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["encountered_type", "encountered_id"], name: "index_encounter_events_on_encountered_type_and_encountered_id", unique: true
+    t.index ["encounterable_type", "encounterable_id"], name: "idx_encounter_events_on_encounterable_type_and_id", unique: true
   end
 
   create_table "encounters", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -207,6 +207,9 @@ ActiveRecord::Schema.define(version: 20190911065742) do
     t.text "timezone", null: false
     t.integer "timezone_offset", null: false
     t.jsonb "metadata"
+    t.datetime "recorded_at", null: false
+    t.datetime "device_created_at", null: false
+    t.datetime "device_updated_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

@@ -8,6 +8,10 @@ class CreateEncounters < ActiveRecord::Migration[5.1]
       t.integer :timezone_offset, null: false
       t.jsonb :metadata
 
+      t.datetime :recorded_at, null: false
+      t.datetime :device_created_at, null: false
+      t.datetime :device_updated_at, null: false
+
       t.timestamps
     end
   end

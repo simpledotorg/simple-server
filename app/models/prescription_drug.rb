@@ -7,9 +7,6 @@ class PrescriptionDrug < ApplicationRecord
   belongs_to :facility, optional: true
   belongs_to :patient, optional: true
 
-  has_one :encounter_event, as: :encountered
-  has_one :encounter, through: :encounter_event
-
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
   validates :is_protocol_drug, inclusion: { in: [true, false] }
