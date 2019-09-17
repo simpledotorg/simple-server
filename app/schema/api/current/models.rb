@@ -118,7 +118,7 @@ class Api::Current::Models
             type: :object,
             properties: {
               blood_pressures: { '$ref' => '#/definitions/blood_pressures' },
-              prescription_drugs: { '$ref' => '#/definitions/prescriptions' }
+              prescription_drugs: { '$ref' => '#/definitions/prescription_drugs' }
             },
             required: %w[blood_pressures]
           },
