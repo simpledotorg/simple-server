@@ -26,14 +26,13 @@ class Api::Current::EncountersController < Api::Current::SyncController
                                                                 recorded_at: params[:device_created_at])
     encounter = Encounter.merge(encounter_merge_params)
 
+
     params[:observations][:blood_pressures].map do |bp|
-      observable = BloodPressure.merge(bp).encounter_event
-      observable.update(encounter: encounter, user: current_user)
+      BloodPressure.merge(bp.merge(user: current_user, encounter: encounter))
     end
 
     params[:observations][:prescription_drugs]&.map do |pd|
-      observable = PrescriptionDrug.merge(pd).encounter_event
-      observable.update!(encounter: encounter, user: current_user)
+      PrescriptionDrug.merge(pd.merge(user: current_user, encounter: encounter))
     end
 
     encounter

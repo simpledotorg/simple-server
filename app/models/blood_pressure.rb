@@ -20,6 +20,9 @@ class BloodPressure < ApplicationRecord
 
   after_save :find_or_create_encounter_event
 
+  attribute :user
+  attribute :encounter
+
   def critical?
     systolic > 180 || diastolic > 110
   end
@@ -63,6 +66,6 @@ class BloodPressure < ApplicationRecord
   end
 
   def find_or_create_encounter_event
-    create_encounter_event! if encounter_event.blank?
+    create_encounter_event!(encounter: encounter, user: user) if encounter_event.blank?
   end
 end
