@@ -21,7 +21,7 @@ class Patient < ApplicationRecord
   has_many :business_identifiers, class_name: 'PatientBusinessIdentifier'
 
   has_many :encounters
-  has_many :encounter_events, through: :encounters
+  has_many :observations, through: :encounters
 
   has_many :blood_pressures, inverse_of: :patient
   has_many :prescription_drugs

@@ -9,8 +9,8 @@ class BloodPressure < ApplicationRecord
   belongs_to :user, optional: true
   belongs_to :facility, optional: true
 
-  has_one :encounter_event, as: :encounterable
-  has_one :encounter, through: :encounter_event
+  has_one :observation, as: :observable
+  has_one :encounter, through: :observation
 
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
@@ -18,10 +18,7 @@ class BloodPressure < ApplicationRecord
   scope :hypertensive, -> { where("systolic >= 140 OR diastolic >= 90") }
   scope :under_control, -> { where("systolic < 140 AND diastolic < 90") }
 
-  after_save :find_or_create_encounter_event
-
-  attribute :user
-  attribute :encounter
+  after_save :add_observation
 
   def critical?
     systolic > 180 || diastolic > 110
@@ -65,7 +62,8 @@ class BloodPressure < ApplicationRecord
     }
   end
 
-  def find_or_create_encounter_event
-    create_encounter_event!(encounter: encounter, user: user) if encounter_event.blank?
+  def add_observation
+    observation.user = user
+    observation.save!
   end
 end

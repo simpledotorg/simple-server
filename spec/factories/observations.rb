@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :encounter_event do
+  factory :observation do
     encounter_id ""
     event_id ""
     event_type "MyText"

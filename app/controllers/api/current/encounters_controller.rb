@@ -22,17 +22,18 @@ class Api::Current::EncountersController < Api::Current::SyncController
   end
 
   def merge(params)
-    encounter_merge_params = params.except(:observations).merge(facility: current_facility,
-                                                                recorded_at: params[:device_created_at])
+    encounter_merge_params = params
+                               .except(:observations)
+                               .merge(facility: current_facility,
+                                      recorded_at: params[:device_created_at])
     encounter = Encounter.merge(encounter_merge_params)
 
-
     params[:observations][:blood_pressures].map do |bp|
-      BloodPressure.merge(bp.merge(user: current_user, encounter: encounter))
+      BloodPressure.merge(bp.merge(encounter: encounter))
     end
 
     params[:observations][:prescription_drugs]&.map do |pd|
-      PrescriptionDrug.merge(pd.merge(user: current_user, encounter: encounter))
+      PrescriptionDrug.merge(pd.merge(encounter: encounter))
     end
 
     encounter
@@ -43,7 +44,8 @@ class Api::Current::EncountersController < Api::Current::SyncController
   end
 
   def encounter_params
-    permitted_bp_params = %i[id systolic diastolic patient_id facility_id user_id created_at updated_at recorded_at deleted_at]
+    permitted_bp_params =
+      %i[id systolic diastolic patient_id facility_id user_id created_at updated_at recorded_at deleted_at]
 
     params.require(:encounters).map do |encounter_params|
       encounter_params.permit(
