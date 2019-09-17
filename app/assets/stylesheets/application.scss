@@ -117,6 +117,14 @@ h6.bold {
     display: inherit;
 }
 
+.none {
+    background: rgba(0,0,0,0.05);
+    padding: 24px;
+    text-align: center;
+    color: rgba(0,0,0,0.5);
+    border-radius: 4px;
+}
+
 .tooltip-inner {
     font-family: $font-condensed;
 }
@@ -131,6 +139,10 @@ h6.bold {
 
 .form-no-label label {
     display: none;
+}
+
+.form-label-light {
+    font-weight: normal;
 }
 
 .info {
