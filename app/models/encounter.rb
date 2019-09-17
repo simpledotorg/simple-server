@@ -1,4 +1,6 @@
 class Encounter < ApplicationRecord
+  include Mergeable
+
   belongs_to :patient
   belongs_to :facility
 
@@ -10,17 +12,8 @@ class Encounter < ApplicationRecord
   end
 
   def self.create_encounter_with_events!(params)
-    encounter_params = {
-      patient: params[:patient],
-      facility: params[:facility],
-      timezone: params[:timezone],
-      timezone_offset: params[:timezone_offset],
-      device_created_at: params[:device_created_at],
-      device_updated_at: params[:device_updated_at],
-      recorded_at: params[:recorded_at],
-      encountered_on: encountered_on(params[:device_created_at],
-                                     params[:timezone_offset])
-    }
+    encountered_on = encountered_on(params[:device_created_at],
+                                    params[:timezone_offset])
 
     encounter_event_params =
       params[:encounterables].map do |encounter_event|
@@ -30,7 +23,14 @@ class Encounter < ApplicationRecord
         }
       end
 
-    create!(encounter_params).encounter_events.create!(encounter_event_params)
+    create!(params.slice(:patient,
+                         :facility,
+                         :timezone,
+                         :timezone_offset,
+                         :device_created_at,
+                         :device_updated_at,
+                         :recorded_at).merge(encountered_on: encountered_on))
+      .encounter_events.create!(encounter_event_params)
   end
 
   def self.encountered_on(time, timezone_offset)

@@ -100,9 +100,32 @@ class Api::Current::Models
         properties: {
           address: { '$ref' => '#/definitions/address' },
           phone_numbers: { '$ref' => '#/definitions/phone_numbers' },
-          business_identifiers: { '$ref' => '#/definitions/patient_business_identifiers' },},
+          business_identifiers: { '$ref' => '#/definitions/patient_business_identifiers' }, },
         description: 'Patient with address, phone numbers and business identifiers nested.',
       )
+    end
+
+    def encounter
+      { type: :object,
+        properties: {
+          id: { '$ref' => '#/definitions/uuid' },
+          deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
+          created_at: { '$ref' => '#/definitions/timestamp' },
+          updated_at: { '$ref' => '#/definitions/timestamp' },
+          recorded_at: { '$ref' => '#/definitions/timestamp' },
+          patient_id: { '$ref' => '#/definitions/uuid' },
+          observations: {
+            type: :object,
+            properties: {
+              blood_pressures: { '$ref' => '#/definitions/blood_pressures' },
+              prescription_drugs: { '$ref' => '#/definitions/prescriptions' }
+            },
+            required: %w[blood_pressures]
+          },
+          required: %w[id created_at updated_at recorded_at patient_id observations]
+        },
+        description: 'Encounter with observations: blood_pressures and prescription drugs.'
+      }
     end
 
     def blood_pressure
@@ -289,6 +312,7 @@ class Api::Current::Models
         phone_numbers: array_of('phone_number'),
         nested_patient: nested_patient,
         nested_patients: array_of('nested_patient'),
+        encounter: encounter,
         blood_pressure: blood_pressure,
         blood_pressures: array_of('blood_pressure'),
         facility: facility,

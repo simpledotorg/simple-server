@@ -18,6 +18,8 @@ class BloodPressure < ApplicationRecord
   scope :hypertensive, -> { where("systolic >= 140 OR diastolic >= 90") }
   scope :under_control, -> { where("systolic < 140 AND diastolic < 90") }
 
+  after_save :find_or_create_encounter_event
+
   def critical?
     systolic > 180 || diastolic > 110
   end
@@ -58,5 +60,9 @@ class BloodPressure < ApplicationRecord
       bp_systolic: systolic,
       bp_diastolic: diastolic
     }
+  end
+
+  def find_or_create_encounter_event
+    create_encounter_event! if encounter_event.blank?
   end
 end
