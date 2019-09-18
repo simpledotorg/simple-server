@@ -8,7 +8,13 @@ FactoryBot.define do
     recorded_at { device_created_at }
     association :facility, strategy: :build
     association :patient, strategy: :build
+    association :observation, strategy: :build
     user
+
+    after(:create) do |bp|
+      bp.observation.user_id = bp.user.id
+      bp.save
+    end
 
     trait :critical do
       systolic 181

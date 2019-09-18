@@ -64,7 +64,10 @@ class BloodPressure < ApplicationRecord
 
   def add_observation
     if observation.present?
-      observation.user = user
+      observation.user = user if observation.user.blank?
+      observation.save!
+    else
+      observation = create_observation!(user_id: user.id)
       observation.save!
     end
   end
