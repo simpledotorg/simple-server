@@ -106,4 +106,28 @@ namespace :data_migration do
       UpdateUserIdsFromAuditLogsWorker.perform_async(Appointment, appointments)
     end
   end
+
+  desc 'Backfill user_id for prescription drugs from audit_logs'
+  task backfill_user_ids_for_prescription_drugs: :environment do
+    batch_size = ENV.fetch('BACKFILL_USER_ID_FROM_AUDIT_LOGS_BATCH_SIZE').to_i
+    AuditLog.creation_logs_for_type('PrescriptionDrug').in_batches(of: batch_size) do |batch|
+      prescription_drugs = batch.map do |prescription_drug|
+        { id: prescription_drug.auditable_id,
+          user_id: prescription_drug.user_id }
+      end
+      UpdateUserIdsFromAuditLogsWorker.perform_async(PrescriptionDrug, prescription_drugs)
+    end
+  end
+
+  desc 'Backfill user_id for medical histories from audit_logs'
+  task backfill_user_ids_for_medical_histories: :environment do
+    batch_size = ENV.fetch('BACKFILL_USER_ID_FROM_AUDIT_LOGS_BATCH_SIZE').to_i
+    AuditLog.creation_logs_for_type('MedicalHistory').in_batches(of: batch_size) do |batch|
+      medical_histories = batch.map do |medical_history|
+        { id: medical_history.auditable_id,
+          user_id: medical_history.user_id }
+      end
+      UpdateUserIdsFromAuditLogsWorker.perform_async(MedicalHistory, medical_histories)
+    end
+  end
 end
