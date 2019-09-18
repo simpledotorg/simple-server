@@ -1,8 +1,8 @@
 FactoryBot.define do
   factory :observation do
-    encounter_id ""
-    event_id ""
-    event_type "MyText"
-    user_id ""
+    encounter_id { SecureRandom.uuid }
+    observable_id { SecureRandom.uuid }
+    observable_type 'BloodPressure'
+    user_id { SecureRandom.uuid }
   end
 end
