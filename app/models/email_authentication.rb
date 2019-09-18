@@ -5,5 +5,5 @@ class EmailAuthentication < ApplicationRecord
   has_one :user_authentication, as: :authenticatable
   has_one :user, through: :user_authentication
 
-  delegate :full_name, :resources, to: :user, allow_nil: true
+  delegate :full_name, :resources, :role, :organization, to: :user, allow_nil: true
 end

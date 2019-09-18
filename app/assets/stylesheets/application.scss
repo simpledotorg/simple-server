@@ -101,6 +101,10 @@ h6.bold {
     font-weight: bold;
 }
 
+label.required:after {
+  content:"*";
+}
+
 .bp-uncontrolled {
     color: $red;
 }

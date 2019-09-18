@@ -45,14 +45,6 @@ class User < ApplicationRecord
     denied: 'denied'
   }, _prefix: true
 
-  enum role: {
-    owner: 'owner',
-    supervisor: 'supervisor',
-    analyst: 'analyst',
-    organization_owner: 'organization_owner',
-    counsellor: 'counsellor'
-  }
-
   belongs_to :organization, optional: true
 
   has_many :user_authentications

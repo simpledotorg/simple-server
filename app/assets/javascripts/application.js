@@ -18,7 +18,10 @@
 //= require bs-file-input-init.js
 //= require react
 //= require react_ujs
+//= require lodash
 //= require components
 //= require_tree .
 
-$(function () { $('[data-toggle="tooltip"]').tooltip() })
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+});
