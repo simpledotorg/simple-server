@@ -8,7 +8,7 @@ RSpec.feature 'To test overdue appointment functionality', type: :feature do
   let!(:test_facility) {create(:facility, facility_group: ihmi_facility_group, name: "test_facility")}
 
   login = AdminPage::Sessions::New.new
-  appoint_page = AdminPage::Patient::Index.new
+  appoint_page = AppointmentsPage::Index.new
   nav_page = Navigations::DashboardPageNavigation.new
 
   context "Page verification" do
