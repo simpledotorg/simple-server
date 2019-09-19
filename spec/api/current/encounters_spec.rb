@@ -30,7 +30,7 @@ describe 'Encounters Current API', swagger_doc: 'current/swagger.json' do
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
         schema Api::Current::Schema.sync_from_user_errors
-        let(:blood_pressures) { { blood_pressures: (1..3).map { build_invalid_encounters_payload } } }
+        let(:encounters) { { encounters: (1..3).map { build_invalid_encounters_payload } } }
         run_test!
       end
 
