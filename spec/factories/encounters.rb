@@ -14,3 +14,15 @@ FactoryBot.define do
     device_updated_at { Time.now }
   end
 end
+
+def build_encounters_payload(encounter = FactoryBot.build(:encounter))
+  Api::Current::Transformer.to_response(encounter).with_indifferent_access
+end
+
+def build_invalid_encounters_payload
+  build_encounter_payload.merge(
+    'created_at' => nil,
+    'facility_id' => nil)
+end
+
+

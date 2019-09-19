@@ -1472,6 +1472,61 @@
         "$ref": "#/definitions/nested_patient"
       }
     },
+    "encounter": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "observations": {
+          "type": "object",
+          "properties": {
+            "blood_pressures": {
+              "$ref": "#/definitions/blood_pressures"
+            },
+            "prescription_drugs": {
+              "$ref": "#/definitions/prescription_drugs"
+            }
+          },
+          "required": [
+            "blood_pressures"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "updated_at",
+        "recorded_at",
+        "patient_id",
+        "observations"
+      ],
+      "description": "Encounter with observations: blood_pressures and prescription drugs."
+    },
+    "encounters": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/encounter"
+      }
+    },
     "blood_pressure": {
       "type": "object",
       "properties": {

@@ -121,9 +121,9 @@ class Api::Current::Models
               prescription_drugs: { '$ref' => '#/definitions/prescription_drugs' }
             },
             required: %w[blood_pressures]
-          },
-          required: %w[id created_at updated_at recorded_at patient_id observations]
+          }
         },
+        required: %w[id created_at updated_at recorded_at patient_id observations],
         description: 'Encounter with observations: blood_pressures and prescription drugs.'
       }
     end
@@ -313,6 +313,7 @@ class Api::Current::Models
         nested_patient: nested_patient,
         nested_patients: array_of('nested_patient'),
         encounter: encounter,
+        encounters: array_of('encounter'),
         blood_pressure: blood_pressure,
         blood_pressures: array_of('blood_pressure'),
         facility: facility,
