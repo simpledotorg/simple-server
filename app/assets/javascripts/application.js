@@ -16,6 +16,9 @@
 //= require bootstrap-sprockets
 //= require bs-custom-file-input.js
 //= require bs-file-input-init.js
+//= require react
+//= require react_ujs
+//= require components
 //= require_tree .
 
 $(function () { $('[data-toggle="tooltip"]').tooltip() })
