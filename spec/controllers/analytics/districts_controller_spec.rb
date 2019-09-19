@@ -13,15 +13,15 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
     #
     # register patients
     #
-    registered_patients = Timecop.travel(Date.new(2019, 1, 1)) do
+    registered_patients = Timecop.travel(Date.new(2019, 3, 1)) do
       create_list(:patient, 3, registration_facility: facility)
     end
 
     #
     # add blood_pressures next month
     #
-    Timecop.travel(Date.new(2019, 2, 1)) do
-      registered_patients.each { |patient| create(:blood_pressure, patient: patient, facility: facility) }
+    Timecop.travel(Date.new(2019, 4, 1)) do
+      registered_patients.each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility) }
     end
 
     Patient.where(id: registered_patients.map(&:id))
@@ -53,36 +53,41 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
     context 'analytics caching for districts' do
       before do
         Rails.cache.clear
+        Timecop.travel(Date.new(2019, 5, 1))
       end
 
-      let(:today) { Date.today }
-      let(:cohort_date1) { (today - (0 * 3).months).beginning_of_quarter }
+      after do
+        Timecop.return
+      end
+
+      let(:today) { Date.new(2019, 5, 1) }
+      let(:cohort_date1) { today.beginning_of_quarter }
       let(:cohort_date2) { (today - (1 * 3).months).beginning_of_quarter }
       let(:cohort_date3) { (today - (2 * 3).months).beginning_of_quarter }
 
       it 'caches the district correctly' do
         sanitized_district_name = organization_district.district_name.downcase.split(' ').join('-')
-        analytics_cohort_cache_key = "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/cohort"
+        analytics_cohort_cache_key = "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/cohort/quarter"
         analytics_dashboard_cache_key = "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/dashboard/month"
 
         expected_cache_value =
           {
             cohort: {
-              cohort_date1 => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
-              cohort_date2 => { :registered => 3, :followed_up => 0, :defaulted => 3, :controlled => 0, :uncontrolled => 0 },
-              cohort_date3 => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 }
+              [cohort_date1.prev_quarter, cohort_date1] => { :registered => 3, :followed_up => 3, :defaulted => 0, :controlled => 3, :uncontrolled => 0 },
+              [cohort_date2.prev_quarter, cohort_date2] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
+              [cohort_date3.prev_quarter, cohort_date3] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 }
             },
 
             dashboard: {
               facility.id => {
-                registered_patients_by_period: { Date.new(2019, 1, 1) => 3 },
+                registered_patients_by_period: { Date.new(2019, 3, 1) => 3 },
                 total_registered_patients: 3,
-                follow_up_patients_by_period: { Date.new(2019, 2, 1) => 3 }
+                follow_up_patients_by_period: { Date.new(2019, 4, 1) => 3 }
               }
             }
           }
 
-        get :show, params: { organization_id: organization.id, id: district_name }
+        get :show, params: { organization_id: organization.id, id: district_name, period: :quarter }
 
         expect(Rails.cache.exist?(analytics_cohort_cache_key)).to be true
         expect(Rails.cache.fetch(analytics_cohort_cache_key)).to eq expected_cache_value[:cohort]
