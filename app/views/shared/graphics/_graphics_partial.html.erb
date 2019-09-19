@@ -6,7 +6,7 @@
              name: name %>
 
   <%= render 'shared/graphics/graphics_control_rate_card',
-             current_cohort_analytics: cohort_analytics[quarter_start_date],
+             current_cohort_analytics: cohort_analytics[cohort_analytics.keys.first],
              date: quarter_start_date %>
 
   <%= render 'shared/graphics/graphics_registration_card', dashboard_analytics: dashboard_analytics %>

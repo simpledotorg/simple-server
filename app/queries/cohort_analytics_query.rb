@@ -1,17 +1,33 @@
 class CohortAnalyticsQuery
   include QuarterHelper
 
-  def initialize(patients)
+  def initialize(patients, period = :month)
     @patients = patients
   end
 
-  def patient_counts(year:, quarter:, quarters_previous: 1)
-    report_start = quarter_start(year, quarter)
-    report_end   = quarter_end(year, quarter)
+  def patient_counts_by_period(period, prev_periods)
+    results = {}
 
-    cohort_start = report_start - (quarters_previous * 3).months
-    cohort_end   = report_end   - (quarters_previous * 3).months
+    (0..(prev_periods)).each do |periods_back|
+      if period == :month
+        report_start = (Time.current - periods_back.months).beginning_of_month
+        report_end   = report_start.end_of_month
+        cohort_start = (report_start - 1.month).beginning_of_month
+        cohort_end   = (report_end - 1.month).end_of_month
+      else
+        report_start = (Time.current - (3 * periods_back.months)).beginning_of_quarter
+        report_end   = report_start.end_of_quarter
+        cohort_start = (report_start - 3.months).beginning_of_quarter
+        cohort_end   = (report_end - 3.months).end_of_quarter
+      end
 
+      results[[cohort_start.to_date, report_start.to_date]] = patient_counts(cohort_start, cohort_end, report_start, report_end)
+    end
+
+    results
+  end
+
+  def patient_counts(cohort_start, cohort_end, report_start, report_end)
     registered_patients = registered(cohort_start, cohort_end)
     followed_up_patients = followed_up(registered_patients, report_start, report_end)
     controlled_patients = controlled(followed_up_patients)

@@ -4,34 +4,43 @@
 
     <i class="fas fa-chevron-right"></i>
     <%= link_to @facility.district,
-                analytics_organization_district_path(@facility.organization.id, @facility.district) %>
+                analytics_organization_district_path(@facility.organization.id, @facility.district, period: @period) %>
 
     <i class="fas fa-chevron-right"></i>
     <%= @facility.name %>
   </nav>
+
+  <%= render "period_dropdown" %>
+
   <h1><%= @facility.name %></h1>
 </div>
 
 <%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics %>
 
-<%= render 'shared/analytics_table',
-           dashboard_analytics: @dashboard_analytics,
-           row_resource: User.order(:full_name),
-           row_resource_description: "Users",
-           row_resource_display_field: :full_name,
-           row_resource_link: :admin_user_path %>
+<%=
+  render 'shared/analytics_table',
+    dashboard_analytics: @dashboard_analytics,
+    row_resource: User.order(:full_name),
+    row_resource_description: "Users",
+    row_resource_display_field: :full_name,
+    row_resource_link: :admin_user_path
+%>
 
-<%= render 'shared/recent_bp_log',
-           blood_pressures: @recent_blood_pressures,
-           display_model: :facility %>
+<%=
+  render 'shared/recent_bp_log',
+    blood_pressures: @recent_blood_pressures,
+    display_model: :facility
+%>
 
 <% if FeatureToggle.enabled?('DASHBOARD_SNAPSHOT') %>
   <div class="downloads">
     <h4>Downloads</h4>
     <% if policy(@facility).whatsapp_graphics? %>
-      <%= render "shared/graphics/graphics_download_links",
-                 graphics_path: -> (options) { analytics_facility_graphics_path(options) },
-                 options: { facility_id: @facility.id } %>
+      <%=
+        render "shared/graphics/graphics_download_links",
+          graphics_path: -> (options) { analytics_facility_graphics_path(options) },
+          options: { facility_id: @facility.id }
+      %>
     <% end %>
   </div>
 <% end %>

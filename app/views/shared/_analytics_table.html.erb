@@ -36,7 +36,7 @@
             <% repeat_for_last(months: 3) do |month| %>
               <th class="row-label" style="padding: 8px 4px;"><%= month.strftime("%^b-%Y") %></th>
             <% end %>
-              
+
             <!--Calls made -->
             <% repeat_for_last(months: 3) do |month| %>
               <th class="row-label" style="padding: 8px 4px;"><%= month.strftime("%^b-%Y") %></th>
@@ -67,7 +67,7 @@
                 <%= analytics_month_totals(dashboard_analytics, :registered_patients_by_period, month) %>
               </td>
             <% end %>
-            
+
             <!--Calls made -->
             <% repeat_for_last(months: 3) do |month| %>
               <td class="row-total" style="text-align: center;">
@@ -81,8 +81,11 @@
               <tr>
 
                 <td class="row-title">
-                  <%= link_to resource.send(row_resource_display_field),
-                              send(row_resource_link, resource) %>
+                  <% if row_resource_link == :analytics_facility_path %>
+                    <%= link_to resource.send(row_resource_display_field), send(row_resource_link, resource, period: @period) %>
+                  <% else %>
+                    <%= link_to resource.send(row_resource_display_field), send(row_resource_link, resource) %>
+                  <% end %>
                 </td>
 
                 <!--Registered patients-->
@@ -103,7 +106,7 @@
                     <%= dash_if_zero(dashboard_analytics.dig(resource.id, :registered_patients_by_period, month)) %>
                   </td>
                 <% end %>
-                
+
                 <!--Calls made -->
                 <% repeat_for_last(months: 3) do |month| %>
                   <td style="text-align: center;">
