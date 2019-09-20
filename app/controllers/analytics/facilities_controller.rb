@@ -49,7 +49,7 @@ class Analytics::FacilitiesController < AnalyticsController
   def set_cohort_analytics(period, prev_periods)
     @cohort_analytics = set_analytics_cache(
       analytics_cache_key_cohort(period),
-      @facility.cohort_analytics(period: period, prev_periods: prev_periods)
+      @facility.cohort_analytics(period, prev_periods)
     )
   end
 
