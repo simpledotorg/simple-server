@@ -18,7 +18,7 @@ module DashboardHelper
   end
 
   def format_period(period, value)
-    period == :month ? value.strftime("%^b-%Y") : quarter_string(value)
+    period == :month ? value.strftime("%b %Y") : quarter_string(value)
   end
 
   def repeat_for_last_n_quarters(from_date, n: 3)
