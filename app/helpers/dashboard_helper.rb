@@ -13,18 +13,13 @@ module DashboardHelper
     if period == :month
       period_range.map { |n| n.months.ago.at_beginning_of_month.to_date }
     else
+      # default to quarters
       period_range.map { |num_of_quarter| (from_date - (3 * num_of_quarter.months)).beginning_of_quarter.to_date }
     end
   end
 
   def format_period(period, value)
     period == :month ? value.strftime("%b %Y") : quarter_string(value)
-  end
-
-  def repeat_for_last_n_quarters(from_date, n: 3)
-    (0..n - 1).to_a.each do |num_of_quarter|
-      yield(from_date.prev_month(num_of_quarter * 3))
-    end
   end
 
   def analytics_totals(analytics, metric, period)
