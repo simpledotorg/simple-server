@@ -80,11 +80,10 @@ group :test do
   gem 'fakeredis', require:  false
   gem 'generator_spec'
   gem 'webdriver'
-  gem 'capybara-webkit'
   gem 'selenium-webdriver'
   gem 'puma'
-  gem 'chromedriver-helper', '~> 1.0'
-  # gem 'rspec-sidekiq'
+  gem 'webdrivers', '~> 4.0'
+  gem 'rspec-sidekiq'
 end
 
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
