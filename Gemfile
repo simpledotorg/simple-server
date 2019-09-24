@@ -80,7 +80,6 @@ group :test do
   gem 'fakeredis', require:  false
   gem 'generator_spec'
   gem 'webdriver'
-  # gem 'rspec-sidekiq'
 end
 
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
