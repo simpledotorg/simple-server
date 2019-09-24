@@ -112,7 +112,6 @@ class Api::Current::Models
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' },
-          recorded_at: { '$ref' => '#/definitions/timestamp' },
           patient_id: { '$ref' => '#/definitions/uuid' },
           observations: {
             type: :object,
@@ -123,7 +122,7 @@ class Api::Current::Models
             required: %w[blood_pressures]
           }
         },
-        required: %w[id created_at updated_at recorded_at patient_id observations],
+        required: %w[id created_at updated_at patient_id observations],
         description: 'Encounter with observations: blood_pressures and prescription drugs.'
       }
     end

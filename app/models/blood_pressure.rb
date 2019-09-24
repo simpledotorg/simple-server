@@ -18,8 +18,6 @@ class BloodPressure < ApplicationRecord
   scope :hypertensive, -> { where("systolic >= 140 OR diastolic >= 90") }
   scope :under_control, -> { where("systolic < 140 AND diastolic < 90") }
 
-  after_save :add_observation
-
   def critical?
     systolic > 180 || diastolic > 110
   end
@@ -60,15 +58,5 @@ class BloodPressure < ApplicationRecord
       bp_systolic: systolic,
       bp_diastolic: diastolic
     }
-  end
-
-  def add_observation
-    if observation.present?
-      observation.user = user if observation.user.blank?
-      observation.save!
-    else
-      observation = create_observation!(user_id: user.id)
-      observation.save!
-    end
   end
 end

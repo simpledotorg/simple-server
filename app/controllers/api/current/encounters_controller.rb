@@ -17,26 +17,8 @@ class Api::Current::EncountersController < Api::Current::SyncController
       { errors_hash: validator.errors_hash }
     else
       transformed_params = Api::Current::EncounterTransformer.from_nested_request(encounter_params)
-      { record: merge(transformed_params) }
+      { record: MergeEncounterService.new(transformed_params, current_facility).merge }
     end
-  end
-
-  def merge(params)
-    encounter_merge_params = params
-                               .except(:observations)
-                               .merge(facility: current_facility,
-                                      recorded_at: params[:device_created_at])
-    encounter = Encounter.merge(encounter_merge_params)
-
-    params[:observations][:blood_pressures].map do |bp|
-      BloodPressure.merge(bp.merge(encounter: encounter))
-    end
-
-    params[:observations][:prescription_drugs]&.map do |pd|
-      PrescriptionDrug.merge(pd.merge(encounter: encounter))
-    end
-
-    encounter
   end
 
   def transform_to_response(encounter)
