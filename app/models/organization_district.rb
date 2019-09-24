@@ -9,21 +9,14 @@ class OrganizationDistrict < Struct.new(:district_name, :organization)
     organization.facilities.where(district: district_name)
   end
 
-  def cohort_analytics
+  def cohort_analytics(period, prev_periods)
     patients =
       Patient
         .joins(:registration_facility)
         .where(facilities: { id: facilities })
 
     query = CohortAnalyticsQuery.new(patients)
-    results = {}
-
-    (0..2).each do |quarters_back|
-      date = (Date.today - (quarters_back * 3).months).beginning_of_quarter
-      results[date] = query.patient_counts(year: date.year, quarter: quarter(date))
-    end
-
-    results
+    query.patient_counts_by_period(period, prev_periods)
   end
 
   def dashboard_analytics(time_period: :month)

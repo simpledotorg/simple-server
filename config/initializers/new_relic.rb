@@ -17,7 +17,14 @@ METHODS_TO_INSTRUMENT = [
   [Api::Current::BloodPressuresController, :current_facility_records],
   [Api::Current::BloodPressuresController, :other_facility_records],
 
-  [MergePatientService, :merge]
+  [Api::Current::BloodPressurePayloadValidator, :invalid?],
+  [Api::Current::AppointmentPayloadValidator, :invalid?],
+  [Api::Current::PrescriptionDrugPayloadValidator, :invalid?],
+
+  [MergePatientService, :merge],
+  [BloodPressure.singleton_class, :merge],
+  [Appointment.singleton_class, :merge],
+  [PrescriptionDrug.singleton_class, :merge]
 ]
 
 METHODS_TO_INSTRUMENT.each do |class_method|
