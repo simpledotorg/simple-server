@@ -1,7 +1,7 @@
 class CreateObservations < ActiveRecord::Migration[5.1]
   def change
     create_table :observations do |t|
-      t.uuid :encounter_id
+      t.references :encounter, type: :uuid, null: false, foreign_key: true
       t.uuid :user_id
       t.references :observable,
                    type: :uuid,

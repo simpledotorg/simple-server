@@ -193,9 +193,8 @@ ActiveRecord::Schema.define(version: 20190911065742) do
   create_table "encounters", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "facility_id", null: false
     t.uuid "patient_id", null: false
-    t.date "encountered_on"
-    t.text "timezone"
-    t.integer "timezone_offset"
+    t.date "encountered_on", null: false
+    t.integer "timezone_offset", null: false
     t.jsonb "metadata"
     t.datetime "recorded_at", null: false
     t.datetime "device_created_at", null: false
@@ -203,6 +202,8 @@ ActiveRecord::Schema.define(version: 20190911065742) do
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["facility_id"], name: "index_encounters_on_facility_id"
+    t.index ["patient_id"], name: "index_encounters_on_patient_id"
   end
 
   create_table "exotel_phone_number_details", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -287,12 +288,13 @@ ActiveRecord::Schema.define(version: 20190911065742) do
   end
 
   create_table "observations", force: :cascade do |t|
-    t.uuid "encounter_id"
+    t.uuid "encounter_id", null: false
     t.uuid "user_id"
     t.string "observable_type"
     t.uuid "observable_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["encounter_id"], name: "index_observations_on_encounter_id"
     t.index ["observable_type", "observable_id"], name: "idx_observations_on_observable_type_and_id", unique: true
   end
 
@@ -455,9 +457,12 @@ ActiveRecord::Schema.define(version: 20190911065742) do
   end
 
   add_foreign_key "appointments", "facilities"
+  add_foreign_key "encounters", "facilities"
+  add_foreign_key "encounters", "patients"
   add_foreign_key "exotel_phone_number_details", "patient_phone_numbers"
   add_foreign_key "facilities", "facility_groups"
   add_foreign_key "facility_groups", "organizations"
+  add_foreign_key "observations", "encounters"
   add_foreign_key "patient_phone_numbers", "patients"
   add_foreign_key "patients", "addresses"
   add_foreign_key "protocol_drugs", "protocols"

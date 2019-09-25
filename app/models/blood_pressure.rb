@@ -61,10 +61,7 @@ class BloodPressure < ApplicationRecord
   end
 
   def create_observe!(encounter)
-    build_observation(encounter: encounter,
-                      user: user) if observation.blank?
-
-    observation.update!(encounter: encounter,
-                        updated_at: updated_at)
+    build_observation(encounter: encounter, user: user) if observation.blank?
+    observation.update!(encounter: encounter, updated_at: updated_at)
   end
 end

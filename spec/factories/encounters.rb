@@ -6,7 +6,6 @@ FactoryBot.define do
 
     encountered_on "2019-09-11"
 
-    timezone "Asia/Kolkata"
     timezone_offset 3600
     metadata ""
 

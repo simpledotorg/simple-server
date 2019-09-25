@@ -8,9 +8,11 @@ class MergeEncounterService
     encounter_merge_params = payload
                                .except(:observations)
                                .merge(facility: facility,
-                                      recorded_at: payload[:device_created_at])
+                                      encountered_on:
+                                        Encounter.generate_encountered_on(payload[:recorded_at], 3600))
 
     encounter = Encounter.merge(encounter_merge_params)
+
     {
       encounter: encounter,
       observations: create_observations!(encounter, payload[:observations])
