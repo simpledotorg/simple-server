@@ -21,8 +21,7 @@ class Api::Current::BloodPressuresController < Api::Current::SyncController
       blood_pressure = ActiveRecord::Base.transaction do
         set_patient_recorded_at(bp_params)
         transformed_params = Api::Current::BloodPressureTransformer.from_request(bp_params)
-        set_encounter(transformed_params)
-        BloodPressure.find_by(id: transformed_params['id'])
+        set_encounter(transformed_params)[:observations].last
       end
       { record: blood_pressure }
     end

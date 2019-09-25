@@ -11,8 +11,10 @@ class MergeEncounterService
                                       recorded_at: payload[:device_created_at])
 
     encounter = Encounter.merge(encounter_merge_params)
-    create_observations!(encounter, payload[:observations])
-    encounter
+    {
+      encounter: encounter,
+      observations: create_observations!(encounter, payload[:observations])
+    }
   end
 
   private
@@ -21,7 +23,9 @@ class MergeEncounterService
 
   def create_observations!(encounter, observations)
     observations[:blood_pressures].map do |bp|
-      BloodPressure.merge(bp).create_observe!(encounter)
+      bp = BloodPressure.merge(bp)
+      bp.create_observe!(encounter)
+      bp
     end
   end
 end

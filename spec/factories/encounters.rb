@@ -1,5 +1,6 @@
 FactoryBot.define do
   factory :encounter do
+    id { SecureRandom.uuid }
     association :patient, strategy: :build
     association :facility, strategy: :build
 
@@ -20,7 +21,7 @@ def build_encounters_payload(encounter = FactoryBot.build(:encounter))
 end
 
 def build_invalid_encounters_payload
-  build_encounter_payload.merge(
+  build_encounters_payload.merge(
     'created_at' => nil,
     'facility_id' => nil)
 end
