@@ -11,20 +11,35 @@ class Api::Current::BloodPressuresController < Api::Current::SyncController
 
   private
 
-  def merge_if_valid(blood_pressure_params)
-    validator = Api::Current::BloodPressurePayloadValidator.new(blood_pressure_params)
+  def merge_if_valid(bp_params)
+    validator = Api::Current::BloodPressurePayloadValidator.new(bp_params)
     logger.debug "Blood Pressure had errors: #{validator.errors_hash}" if validator.invalid?
     if validator.invalid?
       NewRelic::Agent.increment_metric('Merge/BloodPressure/schema_invalid')
       { errors_hash: validator.errors_hash }
     else
       blood_pressure = ActiveRecord::Base.transaction do
-        set_patient_recorded_at(blood_pressure_params)
-        transformed_params = Api::Current::BloodPressureTransformer.from_request(blood_pressure_params)
-        BloodPressure.merge(transformed_params)
+        set_patient_recorded_at(bp_params)
+        transformed_params = Api::Current::BloodPressureTransformer.from_request(bp_params)
+        set_encounter(transformed_params)
+        BloodPressure.find_by(id: transformed_params['id'])
       end
       { record: blood_pressure }
     end
+  end
+
+  def set_encounter(params)
+    encounter_merge_params = {
+      id: Encounter.generate_id(params[:facility_id], params[:patient_id], params[:recorded_at]),
+      patient_id: params[:patient_id],
+      device_created_at: params[:device_created_at],
+      device_updated_at: params[:device_updated_at],
+      observations: {
+        blood_pressures: [params],
+      }
+    }.with_indifferent_access
+
+    MergeEncounterService.new(encounter_merge_params, current_facility).merge
   end
 
   def set_patient_recorded_at(bp_params)

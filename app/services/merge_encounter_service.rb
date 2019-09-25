@@ -21,8 +21,7 @@ class MergeEncounterService
 
   def create_observations!(encounter, observations)
     observations[:blood_pressures].map do |bp|
-      encounter.observations.create!(observable: BloodPressure.merge(bp),
-                                     user_id: bp[:user_id])
+      BloodPressure.merge(bp).create_observe!(encounter)
     end
   end
 end
