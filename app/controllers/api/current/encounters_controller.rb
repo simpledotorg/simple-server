@@ -17,7 +17,8 @@ class Api::Current::EncountersController < Api::Current::SyncController
       { errors_hash: validator.errors_hash }
     else
       transformed_params = Api::Current::EncounterTransformer.from_nested_request(encounter_params)
-      { record: MergeEncounterService.new(transformed_params, current_facility).merge[:encounter] }
+      { record: MergeEncounterService.new(transformed_params.merge(timezone_offset: 3600),
+                                          current_facility).merge[:encounter] }
     end
   end
 
