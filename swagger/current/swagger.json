@@ -389,6 +389,67 @@
             "description": "user is not allowed to sync"
           }
         }
+      },
+      "get": {
+        "summary": "Syncs encounters data from server to device.",
+        "tags": [
+          "Encounters"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "process_token",
+            "type": "string",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "encounters received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "encounters": {
+                  "$ref": "#/definitions/encounters"
+                },
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
+                }
+              },
+              "required": [
+                "encounters",
+                "process_token"
+              ]
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
       }
     },
     "/facilities/sync": {
@@ -1435,9 +1496,6 @@
         "updated_at": {
           "$ref": "#/definitions/timestamp"
         },
-        "recorded_at": {
-          "$ref": "#/definitions/timestamp"
-        },
         "patient_id": {
           "$ref": "#/definitions/uuid"
         },
@@ -1460,7 +1518,6 @@
         "id",
         "created_at",
         "updated_at",
-        "recorded_at",
         "patient_id",
         "observations"
       ],

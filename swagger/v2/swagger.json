@@ -1487,9 +1487,6 @@
         "updated_at": {
           "$ref": "#/definitions/timestamp"
         },
-        "recorded_at": {
-          "$ref": "#/definitions/timestamp"
-        },
         "patient_id": {
           "$ref": "#/definitions/uuid"
         },
@@ -1512,7 +1509,6 @@
         "id",
         "created_at",
         "updated_at",
-        "recorded_at",
         "patient_id",
         "observations"
       ],

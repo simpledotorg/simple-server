@@ -108,6 +108,10 @@ class Api::Current::Schema
       sync_to_user_response(:medical_histories)
     end
 
+    def encounter_sync_to_user_response
+      sync_to_user_response(:encounters)
+    end
+
     def user_login_request
       { type: :object,
         properties: {
