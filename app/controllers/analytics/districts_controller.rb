@@ -24,6 +24,10 @@ class Analytics::DistrictsController < AnalyticsController
                                district_name: @organization_district.district_name)
   end
 
+  def patient_list
+    PatientListDownloadJob.perform_later()
+  end
+
   def whatsapp_graphics
     set_cohort_analytics(:quarter, 3)
     set_dashboard_analytics(:quarter, 3)
