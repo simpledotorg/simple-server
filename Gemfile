@@ -79,8 +79,6 @@ group :test do
   gem 'webmock'
   gem 'fakeredis', require:  false
   gem 'generator_spec'
-  gem 'webdriver'
-  gem 'selenium-webdriver'
   gem 'puma'
   gem 'webdrivers', '~> 4.0'
   gem 'rspec-sidekiq'

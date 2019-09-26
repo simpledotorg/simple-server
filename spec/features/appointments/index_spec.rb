@@ -1,18 +1,16 @@
 require 'rails_helper'
 
 RSpec.feature 'To test overdue appointment functionality', type: :feature do
-
-  let!(:owner) {create(:admin)}
-  let!(:ihmi) {create(:organization, name: "IHMI")}
-  let!(:ihmi_facility_group) {create(:facility_group, organization: ihmi, name: "Bathinda")}
-  let!(:test_facility) {create(:facility, facility_group: ihmi_facility_group, name: "test_facility")}
+  let!(:owner) { create(:admin) }
+  let!(:ihmi) { create(:organization, name: "IHMI") }
+  let!(:ihmi_facility_group) { create(:facility_group, organization: ihmi, name: "Bathinda") }
+  let!(:test_facility) { create(:facility, facility_group: ihmi_facility_group, name: "test_facility") }
 
   login = AdminPage::Sessions::New.new
   appoint_page = AppointmentsPage::Index.new
   nav_page = Navigations::DashboardPageNavigation.new
 
   context "Page verification" do
-
     before(:each) do
       visit root_path
       login.do_login(owner.email, owner.password)
@@ -20,7 +18,7 @@ RSpec.feature 'To test overdue appointment functionality', type: :feature do
 
     it "landing page -with no overdue patient" do
       expect(page).to have_content("Overdue patients")
-      nav_page.select_main_menu_tab("Overdue patients")
+      nav_page.click_main_menu_tab("Overdue patients")
       appoint_page.verify_overdue_landing_page
       expect(page).to have_content("All facilities")
       expect(page).to have_content("20 per page")
@@ -29,7 +27,7 @@ RSpec.feature 'To test overdue appointment functionality', type: :feature do
 
     it "landing page -Facility and page dropdown " do
       create_list(:facility, 5)
-      nav_page.select_main_menu_tab("Overdue patients")
+      nav_page.click_main_menu_tab("Overdue patients")
       appoint_page.select_facility_drop_down
       expect(appoint_page.get_all_facility_count).to eq(7)
 
@@ -39,28 +37,33 @@ RSpec.feature 'To test overdue appointment functionality', type: :feature do
 
     it "landing page -patient list - with all facility category" do
       patients = create_list(:patient, 2, registration_facility: test_facility)
+
       appointments = patients.each do |patient|
         create(:appointment, :overdue, facility: test_facility, patient: patient, scheduled_date: 10.days.ago)
       end
+
       blood_pressures =
-          patients.each do |patient|
-            create(:blood_pressure, :critical, facility: test_facility, patient: patient)
-          end
-      nav_page.select_main_menu_tab("Overdue patients")
+        patients.each do |patient|
+          create(:blood_pressure, :critical, facility: test_facility, patient: patient)
+        end
+
+      nav_page.click_main_menu_tab("Overdue patients")
       expect(appoint_page.get_all_patient_count.size).to eq(2)
     end
 
     it "landing page -pagination" do
       patients = create_list(:patient, 22, registration_facility: test_facility)
+
       appointments = patients.each do |patient|
         create(:appointment, :overdue, facility: test_facility, patient: patient, scheduled_date: 10.days.ago)
       end
-      blood_pressures =
-          patients.each do |patient|
-            create(:blood_pressure, :critical, facility: test_facility, patient: patient)
-          end
 
-      nav_page.select_main_menu_tab("Overdue patients")
+      blood_pressures =
+        patients.each do |patient|
+          create(:blood_pressure, :critical, facility: test_facility, patient: patient)
+        end
+
+      nav_page.click_main_menu_tab("Overdue patients")
       expect(page).to have_content("All facilities")
       expect(page).to have_content("20 per page")
 
@@ -77,7 +80,7 @@ RSpec.feature 'To test overdue appointment functionality', type: :feature do
       var_appointment = create(:appointment, :overdue, facility: test_facility, patient: var_patients, scheduled_date: 10.days.ago)
       var_bp = create(:blood_pressure, :critical, facility: test_facility, patient: var_patients)
 
-      nav_page.select_main_menu_tab("Overdue patients")
+      nav_page.click_main_menu_tab("Overdue patients")
 
       within(".card") do
         expect(page).to have_content(var_patients.full_name)
@@ -90,16 +93,15 @@ RSpec.feature 'To test overdue appointment functionality', type: :feature do
         expect(page).to have_content(var_patients.address.street_address)
         expect(page).to have_content("Call result")
         expect(find("a.btn-phone").text).to eq(var_patients.phone_numbers.first.number)
-        expect(appoint_page.get_overdue_days).to eq(var_appointment.days_overdue.to_s+" days overdue")
+        expect(appoint_page.get_overdue_days).to eq(var_appointment.days_overdue.to_s + " days overdue")
       end
     end
   end
 
   describe "Javascript based tests", :js => true do
-
-    let!(:ihmi) {create(:organization, name: "IHMI")}
-    let!(:ihmi_facility_group) {create(:facility_group, organization: ihmi, name: "Bathinda")}
-    let!(:test_facility) {create(:facility, facility_group: ihmi_facility_group, name: "test_facility")}
+    let!(:ihmi) { create(:organization, name: "IHMI") }
+    let!(:ihmi_facility_group) { create(:facility_group, organization: ihmi, name: "Bathinda") }
+    let!(:test_facility) { create(:facility, facility_group: ihmi_facility_group, name: "test_facility") }
 
     before(:each) do
       visit root_path
@@ -109,15 +111,20 @@ RSpec.feature 'To test overdue appointment functionality', type: :feature do
     it "should be able to download patient list" do
       # creating overdue patient test data for test_facility, belongs to IHMI
       patients = create_list(:patient, 5, registration_facility: test_facility)
-      appointments = patients.each do |patient|
-        create(:appointment, :overdue, facility: test_facility, patient: patient, scheduled_date: 10.days.ago)
-      end
-      blood_pressures =
-          patients.each do |patient|
-            create(:blood_pressure, :critical, facility: test_facility, patient: patient)
-          end
 
-      nav_page.select_main_menu_tab("Overdue patients")
+      appointments =
+        patients.each do |patient|
+          create(:appointment, :overdue, facility: test_facility, patient: patient, scheduled_date: 10.days.ago)
+        end
+
+      blood_pressures =
+        patients.each do |patient|
+          create(:blood_pressure, :critical, facility: test_facility, patient: patient)
+        end
+
+      puts Capybara.default_selector
+
+      nav_page.click_main_menu_tab("Overdue patients")
       expect(page).to have_content("Select a facility to download Overdue Patients list")
 
       appoint_page.select_facility("test_facility")
@@ -127,7 +134,6 @@ RSpec.feature 'To test overdue appointment functionality', type: :feature do
 
 
     it "should display list -for different facilities" do
-
       # creating overdue patient test data for test_facility, belongs to IHMI
       patients = create_list(:patient, 3, registration_facility: test_facility)
       patients.each do |patient|
@@ -143,14 +149,16 @@ RSpec.feature 'To test overdue appointment functionality', type: :feature do
       var_path_facility = create(:facility, facility_group: var_facility_group, name: "path_facility")
 
       patients = create_list(:patient, 2, registration_facility: var_path_facility)
+
       patients.each do |patient|
         create(:appointment, :overdue, facility: var_path_facility, patient: patient, scheduled_date: 30.days.ago)
       end
+
       patients.each do |patient|
         create(:blood_pressure, :critical, facility: var_path_facility, patient: patient)
       end
 
-      nav_page.select_main_menu_tab("Overdue patients")
+      nav_page.click_main_menu_tab("Overdue patients")
 
       # selecting first facility and asserting it's result
       appoint_page.select_facility(test_facility.name)
@@ -166,16 +174,17 @@ RSpec.feature 'To test overdue appointment functionality', type: :feature do
     end
 
     it "should be able to select result of follow up" do
-
       # creating overdue patient test data for test_facility, belongs to IHMI
       var_patients = create(:patient, registration_facility: test_facility)
       create(:appointment, :overdue, facility: test_facility, patient: var_patients, scheduled_date: 10.days.ago)
       create(:blood_pressure, :critical, facility: test_facility, patient: var_patients)
 
-      nav_page.select_main_menu_tab("Overdue patients")
+      nav_page.click_main_menu_tab("Overdue patients")
+
       within(".card") do
         select "Agreed to visit", from: "appointment[call_result]"
       end
+
       find(:css, 'button.close').click
       expect(page).not_to have_content(var_patients.full_name)
     end
