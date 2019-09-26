@@ -69,6 +69,10 @@ class Patient < ApplicationRecord
     phone_numbers.last&.number
   end
 
+  def latest_bp_passport
+    business_identifiers.where(identifier_type: "simple_bp_passport").order(:device_created_at).last
+  end
+
   def phone_number?
     latest_phone_number.present?
   end
@@ -155,10 +159,6 @@ class Patient < ApplicationRecord
       age: age,
       gender: gender
     }
-  end
-
-  def latest_bp_passport
-    business_identifiers.where(identifier_type: "simple_bp_passport").order(:device_created_at).last
   end
 
   private
