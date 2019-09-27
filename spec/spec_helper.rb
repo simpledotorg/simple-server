@@ -21,5 +21,6 @@ RSpec.configure do |config|
   config.shared_context_metadata_behavior = :apply_to_host_groups
 
   Capybara.default_max_wait_time = 5
+  Webdrivers::Chromedriver.required_version = '2.46'
 end
 
