@@ -80,7 +80,7 @@ group :test do
   gem 'fakeredis', require:  false
   gem 'generator_spec'
   gem 'puma'
-  gem 'webdrivers', '~> 4.0'
+  gem 'webdrivers'
   gem 'rspec-sidekiq'
 end
 
