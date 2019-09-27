@@ -3,8 +3,8 @@ class ApprovalNotifierMailer < ApplicationMailer
 
   default from: 'help@simple.org'
 
-  def registration_approval_email
-    @user = params[:user]
+  def registration_approval_email(user_id:)
+    @user = User.find(user_id)
     subject = I18n.t('registration_approval_email.subject',
                      full_name: @user.full_name,
                      org_name: @user.facility_group.organization.name)
@@ -14,8 +14,8 @@ class ApprovalNotifierMailer < ApplicationMailer
          bcc: owner_emails)
   end
 
-  def reset_password_approval_email
-    @user = params[:user]
+  def reset_password_approval_email(user_id:)
+    @user = User.find(user_id)
     subject = I18n.t('reset_password_approval_email.subject', full_name: @user.full_name)
     mail(subject: subject,
          to: supervisor_emails,
