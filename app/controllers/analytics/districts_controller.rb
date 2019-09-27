@@ -6,7 +6,7 @@ class Analytics::DistrictsController < AnalyticsController
 
   def show
     set_cohort_analytics(@period, @prev_periods)
-    set_dashboard_analytics(:month)
+    set_dashboard_analytics(@period, 3)
   end
 
   def share_anonymized_data
@@ -26,7 +26,7 @@ class Analytics::DistrictsController < AnalyticsController
 
   def whatsapp_graphics
     set_cohort_analytics(:quarter, 3)
-    set_dashboard_analytics(:quarter)
+    set_dashboard_analytics(:quarter, 3)
 
     whatsapp_graphics_handler(
       @organization_district.organization.name,
@@ -49,10 +49,10 @@ class Analytics::DistrictsController < AnalyticsController
     )
   end
 
-  def set_dashboard_analytics(period)
+  def set_dashboard_analytics(period, prev_periods)
     @dashboard_analytics = set_analytics_cache(
       analytics_cache_key_dashboard(period),
-      @organization_district.dashboard_analytics(time_period: period)
+      @organization_district.dashboard_analytics(period: period, prev_periods: prev_periods)
     )
   end
 
