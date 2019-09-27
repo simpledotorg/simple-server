@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe PatientExporter do
+RSpec.describe PatientsExporter do
   let!(:facility) { create(:facility) }
   let!(:patient) { create(:patient, registration_facility: facility) }
   let!(:blood_pressure) { create(:blood_pressure, facility: facility, patient: patient) }
@@ -56,11 +56,11 @@ RSpec.describe PatientExporter do
 
   describe "#csv" do
     it "generates a CSV of patient records" do
-      expect(PatientExporter.csv([patient])).to eq(headers.to_csv + fields.to_csv)
+      expect(subject.csv([patient])).to eq(headers.to_csv + fields.to_csv)
     end
 
     it "generates a blank CSV (only headers) if no patients exist" do
-      expect(PatientExporter.csv([])).to eq(headers.to_csv)
+      expect(subject.csv([])).to eq(headers.to_csv)
     end
   end
 end

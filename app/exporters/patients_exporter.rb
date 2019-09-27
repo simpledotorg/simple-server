@@ -1,6 +1,6 @@
 require 'csv'
 
-module PatientExporter
+module PatientsExporter
   def self.csv(patients)
     CSV.generate(headers: true) do |csv|
       csv << csv_headers
