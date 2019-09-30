@@ -9,6 +9,10 @@ class OrganizationDistrict < Struct.new(:district_name, :organization)
     organization.facilities.where(district: district_name)
   end
 
+  def registered_patients
+    Patient.where(registration_facility: organization.facilities)
+  end
+
   def cohort_analytics(period, prev_periods)
     patients =
       Patient
