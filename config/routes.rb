@@ -137,14 +137,16 @@ Rails.application.routes.draw do
 
   namespace :analytics do
     resources :facilities, only: [:show] do
-      get 'share', to: 'facilities#share_anonymized_data'
       get 'graphics', to: 'facilities#whatsapp_graphics'
+      get 'patient_list', to: 'facilities#patient_list'
+      get 'share', to: 'facilities#share_anonymized_data'
     end
 
     resources :organizations do
       resources :districts, only: [:show] do
-        get 'share', to: 'districts#share_anonymized_data'
         get 'graphics', to: 'districts#whatsapp_graphics'
+        get 'patient_list', to: 'districts#patient_list'
+        get 'share', to: 'districts#share_anonymized_data'
       end
     end
   end
