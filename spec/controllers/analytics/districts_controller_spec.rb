@@ -68,7 +68,7 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
       it 'caches the district correctly' do
         sanitized_district_name = organization_district.district_name.downcase.split(' ').join('-')
         analytics_cohort_cache_key = "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/cohort/quarter"
-        analytics_dashboard_cache_key = "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/dashboard/month"
+        analytics_dashboard_cache_key = "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/dashboard/quarter"
 
         expected_cache_value =
           {
@@ -80,9 +80,9 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
 
             dashboard: {
               facility.id => {
-                registered_patients_by_period: { Date.new(2019, 3, 1) => 3 },
+                registered_patients_by_period: { cohort_date2 => 3 },
                 total_registered_patients: 3,
-                follow_up_patients_by_period: { Date.new(2019, 4, 1) => 3 }
+                follow_up_patients_by_period: { cohort_date1 => 3 }
               }
             }
           }
