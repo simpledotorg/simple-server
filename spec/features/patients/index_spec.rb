@@ -73,58 +73,60 @@ RSpec.feature 'To test adherence followup patient functionality', type: :feature
   end
 
 
-  describe "Javascript based tests", :js => true do
-    let!(:chc_bagta_facility) {create(:facility, facility_group: ihmi_facility_group, name: "bagta")}
-    let!(:path) {create(:facility, facility_group: ihmi_facility_group, name: "test_facility")}
-    let!(:chc_buccho_facility) {create(:facility, facility_group: ihmi_facility_group, name: "buccho")}
+  pending 'JS specs are currently disabled' do
+    describe "Javascript based tests", :js => true do
+      let!(:chc_bagta_facility) {create(:facility, facility_group: ihmi_facility_group, name: "bagta")}
+      let!(:path) {create(:facility, facility_group: ihmi_facility_group, name: "test_facility")}
+      let!(:chc_buccho_facility) {create(:facility, facility_group: ihmi_facility_group, name: "buccho")}
 
-    before(:each) do
-      visit root_path
-      login.do_login(owner.email, owner.password)
-    end
-
-    it "should display list -for different facilities" do
-      create_list(:patient, 2, registration_facility: chc_bagta_facility, device_created_at: 2.day.ago)
-      create_list(:patient, 4, registration_facility: path, device_created_at: 2.day.ago)
-      create_list(:patient, 9, registration_facility: chc_buccho_facility, device_created_at: 2.day.ago)
-
-
-      nav_page.select_main_menu_tab("Adherence follow-ups")
-
-      adherence_page.select_facility(chc_buccho_facility.name)
-      expect(adherence_page.get_all_patient_count.size).to eq(9)
-
-      adherence_page.select_facility(path.name)
-      expect(adherence_page.get_all_patient_count.size).to eq(4)
-
-      adherence_page.select_facility(chc_bagta_facility.name)
-      expect(adherence_page.get_all_patient_count.size).to eq(2)
-
-      adherence_page.select_facility("All facilities")
-      expect(adherence_page.get_all_patient_count.size).to eq(15)
-    end
-
-    it "should be able to select result of follow up" do
-      var_patients=create(:patient ,registration_facility: chc_bagta_facility, device_created_at: 2.day.ago)
-      nav_page.select_main_menu_tab("Adherence follow-ups")
-      within(".card") do
-        select "Contacted", from: "patient[call_result]"
+      before(:each) do
+        visit root_path
+        login.do_login(owner.email, owner.password)
       end
-      find(:css, 'button.close').click
-      expect(page).not_to have_content(var_patients.full_name)
-    end
 
-    it "should display list - for different page selection" do
-      create_list(:patient, 25, registration_facility: chc_bagta_facility, device_created_at: 2.day.ago)
+      it "should display list -for different facilities" do
+        create_list(:patient, 2, registration_facility: chc_bagta_facility, device_created_at: 2.day.ago)
+        create_list(:patient, 4, registration_facility: path, device_created_at: 2.day.ago)
+        create_list(:patient, 9, registration_facility: chc_buccho_facility, device_created_at: 2.day.ago)
 
-      nav_page.select_main_menu_tab("Adherence follow-ups")
-      expect(adherence_page.get_all_patient_count.size).to eq(20)
-      expect(adherence_page.get_page_link.size).to eq(4)
-      expect(page).to have_content("Next")
-      expect(page).to have_content("Last")
 
-      adherence_page.select_page_dropdown(50)
-      expect(adherence_page.get_all_patient_count.size).to eq(25)
+        nav_page.select_main_menu_tab("Adherence follow-ups")
+
+        adherence_page.select_facility(chc_buccho_facility.name)
+        expect(adherence_page.get_all_patient_count.size).to eq(9)
+
+        adherence_page.select_facility(path.name)
+        expect(adherence_page.get_all_patient_count.size).to eq(4)
+
+        adherence_page.select_facility(chc_bagta_facility.name)
+        expect(adherence_page.get_all_patient_count.size).to eq(2)
+
+        adherence_page.select_facility("All facilities")
+        expect(adherence_page.get_all_patient_count.size).to eq(15)
+      end
+
+      it "should be able to select result of follow up" do
+        var_patients=create(:patient ,registration_facility: chc_bagta_facility, device_created_at: 2.day.ago)
+        nav_page.select_main_menu_tab("Adherence follow-ups")
+        within(".card") do
+          select "Contacted", from: "patient[call_result]"
+        end
+        find(:css, 'button.close').click
+        expect(page).not_to have_content(var_patients.full_name)
+      end
+
+      it "should display list - for different page selection" do
+        create_list(:patient, 25, registration_facility: chc_bagta_facility, device_created_at: 2.day.ago)
+
+        nav_page.select_main_menu_tab("Adherence follow-ups")
+        expect(adherence_page.get_all_patient_count.size).to eq(20)
+        expect(adherence_page.get_page_link.size).to eq(4)
+        expect(page).to have_content("Next")
+        expect(page).to have_content("Last")
+
+        adherence_page.select_page_dropdown(50)
+        expect(adherence_page.get_all_patient_count.size).to eq(25)
+      end
     end
   end
 end
