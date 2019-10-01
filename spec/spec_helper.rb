@@ -5,6 +5,7 @@ require 'fakeredis/rspec'
 require 'sidekiq/testing'
 require 'capybara'
 require 'webdrivers'
+
 WebMock.allow_net_connect!
 
 RSpec.configure do |config|
