@@ -10,14 +10,14 @@ module AdminPage
       PROTOCOL_DRUG_NAME = {id: "drug_name"}.freeze
 
       def verify_successful_message(message)
-        verifyText(SUCCESSFUL_MESSAGE, message)
+        verify_text(SUCCESSFUL_MESSAGE, message)
         present?(EDIT_PROTOCOL_BUTTON)
         present?(NEW_PROTOCOL_DRUG_BUTTON)
         present?(FOLLOW_UP_DAYS)
       end
 
       def verify_updated_followup_days(days)
-        verifyText(FOLLOW_UP_DAYS, days)
+        verify_text(FOLLOW_UP_DAYS, days)
       end
 
       def click_message_cross_button
