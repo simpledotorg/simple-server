@@ -22,5 +22,5 @@ every :week, at: local('11:00 pm'), roles: [:whitelist_phone_numbers] do
 end
 
 every :month, at: local('11:00 pm'), roles: [:seed] do
-  rake 'generate:seed:generate_data[1]'
+  rake 'generate:seed[1]'
 end
