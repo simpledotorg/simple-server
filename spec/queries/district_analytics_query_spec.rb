@@ -2,19 +2,20 @@ require 'rails_helper'
 
 RSpec.describe DistrictAnalyticsQuery do
   let!(:organization) { create(:organization) }
-  let!(:facility_group) { create(:facility_group, organization: organization)}
+  let!(:facility_group) { create(:facility_group, organization: organization) }
   let!(:district_name) { "Bathinda" }
   let!(:facility) { create(:facility, facility_group: facility_group, district: district_name) }
-  let!(:analytics) { DistrictAnalyticsQuery.new(district_name, organization) }
+  let!(:analytics) { DistrictAnalyticsQuery.new(district_name, facility, :month, 5) }
+  let!(:current_month) { Date.today.beginning_of_month }
 
-  let(:first_jan) { Date.new(2019, 1, 1) }
-  let(:first_feb) { Date.new(2019, 2, 1) }
-  let(:first_mar) { Date.new(2019, 3, 1) }
-  let(:first_apr) { Date.new(2019, 4, 1) }
+  let(:four_months_back) { current_month - 4.months }
+  let(:three_months_back) { current_month - 3.months }
+  let(:two_months_back) { current_month - 2.months }
+  let(:one_month_back) { current_month - 1.months }
 
   context 'when there is data available' do
     before do
-      [first_jan, first_feb].each do |month|
+      [four_months_back, three_months_back].each do |month|
         #
         # register patients
         #
@@ -44,8 +45,8 @@ RSpec.describe DistrictAnalyticsQuery do
           { facility.id =>
               { :registered_patients_by_period =>
                   {
-                    first_jan => 3,
-                    first_feb => 3,
+                    four_months_back => 3,
+                    three_months_back => 3,
                   }
               }
           }
@@ -55,7 +56,7 @@ RSpec.describe DistrictAnalyticsQuery do
     end
 
     describe '#total_registered_patients' do
-      it 'groups the registered patients by facility and beginning of month' do
+      it 'groups the registered patients by facility' do
         expected_result =
           { facility.id =>
               {
@@ -72,9 +73,9 @@ RSpec.describe DistrictAnalyticsQuery do
         expected_result =
           { facility.id =>
               { :follow_up_patients_by_period =>
-                  { first_feb => 3,
-                    first_mar => 6,
-                    first_apr => 3
+                  { three_months_back => 3,
+                    two_months_back => 6,
+                    one_month_back => 3
                   }
               }
           }
