@@ -98,95 +98,97 @@ RSpec.feature 'To test overdue appointment functionality', type: :feature do
     end
   end
 
-  describe "Javascript based tests", :js => true do
-    let!(:ihmi) { create(:organization, name: "IHMI") }
-    let!(:ihmi_facility_group) { create(:facility_group, organization: ihmi, name: "Bathinda") }
-    let!(:test_facility) { create(:facility, facility_group: ihmi_facility_group, name: "test_facility") }
+  pending 'JS specs are currently disabled' do
+    describe "Javascript based tests", :js => true do
+      let!(:ihmi) { create(:organization, name: "IHMI") }
+      let!(:ihmi_facility_group) { create(:facility_group, organization: ihmi, name: "Bathinda") }
+      let!(:test_facility) { create(:facility, facility_group: ihmi_facility_group, name: "test_facility") }
 
-    before(:each) do
-      visit root_path
-      login.do_login(owner.email, owner.password)
-    end
+      before(:each) do
+        visit root_path
+        login.do_login(owner.email, owner.password)
+      end
 
-    it "should be able to download patient list" do
-      # creating overdue patient test data for test_facility, belongs to IHMI
-      patients = create_list(:patient, 5, registration_facility: test_facility)
+      it "should be able to download patient list" do
+        # creating overdue patient test data for test_facility, belongs to IHMI
+        patients = create_list(:patient, 5, registration_facility: test_facility)
 
-      appointments =
+        appointments =
+          patients.each do |patient|
+            create(:appointment, :overdue, facility: test_facility, patient: patient, scheduled_date: 10.days.ago)
+          end
+
+        blood_pressures =
+          patients.each do |patient|
+            create(:blood_pressure, :critical, facility: test_facility, patient: patient)
+          end
+
+        puts Capybara.default_selector
+
+        nav_page.click_main_menu_tab("Overdue patients")
+        expect(page).to have_content("Select a facility to download Overdue Patients list")
+
+        appoint_page.select_facility("test_facility")
+        expect(page).to have_content("Downloads")
+        appoint_page.click_download_link
+      end
+
+
+      it "should display list -for different facilities" do
+        # creating overdue patient test data for test_facility, belongs to IHMI
+        patients = create_list(:patient, 3, registration_facility: test_facility)
         patients.each do |patient|
           create(:appointment, :overdue, facility: test_facility, patient: patient, scheduled_date: 10.days.ago)
         end
-
-      blood_pressures =
         patients.each do |patient|
           create(:blood_pressure, :critical, facility: test_facility, patient: patient)
         end
 
-      puts Capybara.default_selector
+        # creating overdue patient test data for test_facility_02 and this belongs to PATH
+        var_path = create(:organization, name: "Path")
+        var_facility_group = create(:facility_group, organization: var_path, name: "path_facility_group")
+        var_path_facility = create(:facility, facility_group: var_facility_group, name: "path_facility")
 
-      nav_page.click_main_menu_tab("Overdue patients")
-      expect(page).to have_content("Select a facility to download Overdue Patients list")
+        patients = create_list(:patient, 2, registration_facility: var_path_facility)
 
-      appoint_page.select_facility("test_facility")
-      expect(page).to have_content("Downloads")
-      appoint_page.click_download_link
-    end
+        patients.each do |patient|
+          create(:appointment, :overdue, facility: var_path_facility, patient: patient, scheduled_date: 30.days.ago)
+        end
 
+        patients.each do |patient|
+          create(:blood_pressure, :critical, facility: var_path_facility, patient: patient)
+        end
 
-    it "should display list -for different facilities" do
-      # creating overdue patient test data for test_facility, belongs to IHMI
-      patients = create_list(:patient, 3, registration_facility: test_facility)
-      patients.each do |patient|
-        create(:appointment, :overdue, facility: test_facility, patient: patient, scheduled_date: 10.days.ago)
-      end
-      patients.each do |patient|
-        create(:blood_pressure, :critical, facility: test_facility, patient: patient)
-      end
+        nav_page.click_main_menu_tab("Overdue patients")
 
-      # creating overdue patient test data for test_facility_02 and this belongs to PATH
-      var_path = create(:organization, name: "Path")
-      var_facility_group = create(:facility_group, organization: var_path, name: "path_facility_group")
-      var_path_facility = create(:facility, facility_group: var_facility_group, name: "path_facility")
+        # selecting first facility and asserting it's result
+        appoint_page.select_facility(test_facility.name)
+        expect(appoint_page.get_all_patient_count.size).to eq(3)
 
-      patients = create_list(:patient, 2, registration_facility: var_path_facility)
+        # selecting second facility and asserting it's result
+        appoint_page.select_facility(var_path_facility.name)
+        expect(appoint_page.get_all_patient_count.size).to eq(2)
 
-      patients.each do |patient|
-        create(:appointment, :overdue, facility: var_path_facility, patient: patient, scheduled_date: 30.days.ago)
+        # selecting All facility and asserting it's result
+        appoint_page.select_facility("All facilities")
+        expect(appoint_page.get_all_patient_count.size).to eq(5)
       end
 
-      patients.each do |patient|
-        create(:blood_pressure, :critical, facility: var_path_facility, patient: patient)
+      it "should be able to select result of follow up" do
+        # creating overdue patient test data for test_facility, belongs to IHMI
+        var_patients = create(:patient, registration_facility: test_facility)
+        create(:appointment, :overdue, facility: test_facility, patient: var_patients, scheduled_date: 10.days.ago)
+        create(:blood_pressure, :critical, facility: test_facility, patient: var_patients)
+
+        nav_page.click_main_menu_tab("Overdue patients")
+
+        within(".card") do
+          select "Agreed to visit", from: "appointment[call_result]"
+        end
+
+        find(:css, 'button.close').click
+        expect(page).not_to have_content(var_patients.full_name)
       end
-
-      nav_page.click_main_menu_tab("Overdue patients")
-
-      # selecting first facility and asserting it's result
-      appoint_page.select_facility(test_facility.name)
-      expect(appoint_page.get_all_patient_count.size).to eq(3)
-
-      # selecting second facility and asserting it's result
-      appoint_page.select_facility(var_path_facility.name)
-      expect(appoint_page.get_all_patient_count.size).to eq(2)
-
-      # selecting All facility and asserting it's result
-      appoint_page.select_facility("All facilities")
-      expect(appoint_page.get_all_patient_count.size).to eq(5)
-    end
-
-    it "should be able to select result of follow up" do
-      # creating overdue patient test data for test_facility, belongs to IHMI
-      var_patients = create(:patient, registration_facility: test_facility)
-      create(:appointment, :overdue, facility: test_facility, patient: var_patients, scheduled_date: 10.days.ago)
-      create(:blood_pressure, :critical, facility: test_facility, patient: var_patients)
-
-      nav_page.click_main_menu_tab("Overdue patients")
-
-      within(".card") do
-        select "Agreed to visit", from: "appointment[call_result]"
-      end
-
-      find(:css, 'button.close').click
-      expect(page).not_to have_content(var_patients.full_name)
     end
   end
 end
