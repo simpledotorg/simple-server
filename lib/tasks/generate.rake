@@ -5,8 +5,7 @@ require 'timecop'
 
 # add entropy of 100ms to 1s
 def time_entropy(time = Time.now)
-  sleep 0.1
-  time + (rand * 1000) + 100
+  time + SecureRandom.random_number(1 << 12) + 100
 end
 
 namespace :generate do
@@ -130,6 +129,7 @@ namespace :generate do
                           device_created_at: time,
                           device_updated_at: time)
 
+        time = time_entropy(creation_date)
         FactoryBot.create(:medical_history, :prior_risk_history,
                           patient: patient,
                           created_at: time,
@@ -162,10 +162,25 @@ namespace :generate do
 
       number_of_blood_pressures.times do
         time = time_entropy(creation_date)
-        create_blood_pressure(:under_control, time, patient)
+        FactoryBot.create(:blood_pressure,
+                          :under_control,
+                          device_created_at: time,
+                          device_updated_at: time,
+                          recorded_at: time,
+                          created_at: time,
+                          updated_at: time,
+                          patient: patient)
 
         [:high, :very_high, :critical].each do |bp_type|
-          create_blood_pressure(bp_type, time, patient) if is_hypertensive
+          time = time_entropy(creation_date)
+          FactoryBot.create(:blood_pressure,
+                            bp_type,
+                            device_created_at: time,
+                            device_updated_at: time,
+                            recorded_at: time,
+                            created_at: time,
+                            updated_at: time,
+                            patient: patient) if is_hypertensive
         end
       end
 
@@ -175,7 +190,7 @@ namespace :generate do
     def create_appointments(patient, creation_date, config)
       number_of_appointments = config.dig('patients', 'appointments')
 
-      Time.travel(creation_date) do
+      Timecop.travel(creation_date) do
         number_of_appointments.times do
           time = time_entropy
           future_date = (30..60).to_a.sample.days.from_now
@@ -189,6 +204,7 @@ namespace :generate do
                             device_created_at: time,
                             device_updated_at: time)
 
+          time = time_entropy
           FactoryBot.create(:appointment,
                             :overdue,
                             patient: patient,
@@ -238,7 +254,7 @@ namespace :generate do
       SELECT tablename
       FROM pg_catalog.pg_tables
       WHERE schemaname = 'public' AND
-            tablename NOT IN ('schema_migrations', 'ar_internal_metadata', 'users', 'admins', 'admin_access_controls')
+            tablename NOT IN ('schema_migrations', 'ar_internal_metadata')
     ")
 
       tables.each do |t|

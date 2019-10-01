@@ -16,7 +16,7 @@ RSpec.describe 'generate:seed:generate_data' do
   it 'generates the correct number of blood pressures' do
     bp_factor = seed_config.dig('patients', 'blood_pressures')
 
-    expect { invoke_task('generate:seed:generate_data[1]') }.to change { user.blood_pressures.count }.by(4 * patient_factor * bp_factor)
+    expect { invoke_task('generate:seed:generate_data[1]') }.to change { BloodPressure.count }.by(4 * patient_factor * bp_factor)
   end
 
   it 'generates the correct number of appointments' do
