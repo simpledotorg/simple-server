@@ -1,12 +1,12 @@
 require 'rails_helper'
 
 RSpec.feature 'test protocol detail page functionality', type: :feature do
-  let(:owner) {create(:admin)}
-  let!(:var_protocol) {create(:protocol, name: "PunjabTestProtocol", follow_up_days: "20")}
-  let!(:var_protocol_drug) {create(:protocol_drug, name: "test_Drug_01", dosage: "10mg", rxnorm_code: "code", protocol: var_protocol)}
+  let(:owner) { create(:admin) }
+  let!(:var_protocol) { create(:protocol, name: "PunjabTestProtocol", follow_up_days: "20") }
+  let!(:var_protocol_drug) { create(:protocol_drug, name: "test_Drug_01", dosage: "10mg", rxnorm_code: "code", protocol: var_protocol) }
 
   protocol = AdminPage::Protocols::Index.new
-  protocol_show=AdminPage::Protocols::Show.new
+  protocol_show = AdminPage::Protocols::Show.new
   protocol_update = AdminPage::Protocols::Edit.new
   new_drug = AdminPage::ProtocolDrugs::New.new
 
@@ -17,7 +17,7 @@ RSpec.feature 'test protocol detail page functionality', type: :feature do
   end
 
   context "protocol show page" do
-    it " edit protocol" do
+    it "edit protocol" do
       protocol.select_protocol(var_protocol.name)
 
       protocol_show.click_edit_protocol_button
@@ -47,12 +47,14 @@ RSpec.feature 'test protocol detail page functionality', type: :feature do
     end
 
     context "javascript based test" do
-      let!(:var_protocol) { create(:protocol, name: "BathindaTestProtocol", follow_up_days: "30")}
-      let!(:var_protocol_drug) {create_list(:protocol_drug, 3, protocol: var_protocol)}
+      let!(:var_protocol) { create(:protocol, name: "BathindaTestProtocol", follow_up_days: "30") }
+      let!(:var_protocol_drug) { create_list(:protocol_drug, 3, protocol: var_protocol) }
 
-      it "should delete protocol drug", js: true do
-        protocol.select_protocol(var_protocol.name)
-        protocol_show.delete_protocol_drug(var_protocol_drug.first.name)
+      pending 'JS specs are currently disabled' do
+        it "should delete protocol drug", js: true do
+          protocol.select_protocol(var_protocol.name)
+          protocol_show.delete_protocol_drug(var_protocol_drug.first.name)
+        end
       end
     end
   end
