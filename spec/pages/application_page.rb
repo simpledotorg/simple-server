@@ -63,7 +63,7 @@ class ApplicationPage
     end
   end
 
-  def verifyText(element, value, scope = { Capybara.default_selector => 'html' })
+  def verify_text(element, value, scope = { Capybara.default_selector => 'html' })
     scope_key = scope.keys[0]
     within(scope_key, scope[scope_key]) do
       key = element.keys[0]
