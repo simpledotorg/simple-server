@@ -1,2 +1,0 @@
-class AppointmentsPage < ApplicationPage
-end
