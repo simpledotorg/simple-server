@@ -2,60 +2,28 @@ require 'rails_helper'
 
 RSpec.describe CohortAnalyticsQuery do
   let!(:facility) { create(:facility) }
-  let(:analytics) { CohortAnalyticsQuery.new(facility.patients) }
+  let(:analytics) { CohortAnalyticsQuery.new(facility.registered_patients) }
 
-  let(:q1) { Date.new(2019, 1, 1) }
-  let(:q2) { Date.new(2019, 4, 1) }
-  let(:q3) { Date.new(2019, 7, 1) }
-  let(:q4) { Date.new(2019, 10, 1) }
+  let(:jan) { Date.new(2019, 1, 1) }
+  let(:march) { Date.new(2019, 3, 1) }
+  let(:april) { Date.new(2019, 4, 1) }
+  let(:july) { Date.new(2019, 7, 1) }
+  let(:oct) { Date.new(2019, 10, 1) }
 
-  before do
-    # register 15 patients and record blood pressures in q1
-    q1_registered_patients = []
-    Timecop.travel(q1) do
-      q1_registered_patients = create_list(:patient, 15, registration_facility: facility)
-      q1_registered_patients.each { |patient| create(:blood_pressure, :very_high, patient: patient, facility: facility) }
-    end
-
-    # register 20 patients and record blood pressures in q1
-    q2_registered_patients = []
-    Timecop.travel(q2) do
-      q2_registered_patients = create_list(:patient, 20, registration_facility: facility)
-      q2_registered_patients.each { |patient| create(:blood_pressure, :very_high, patient: patient, facility: facility) }
-    end
-
-    # record controlled blood pressures for patients in q3
-    Timecop.travel(q3) do
-      # 2 q1 patients under control, 3 not controlled
-      q1_registered_patients[0..1].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility, ) }
-      q1_registered_patients[2..4].each { |patient| create(:blood_pressure, :very_high, patient: patient, facility: facility) }
-
-      # 3 q2 patients under control, 4 not controlled
-      q2_registered_patients[0..2].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility, ) }
-      q2_registered_patients[3..6].each { |patient| create(:blood_pressure, :very_high, patient: patient, facility: facility) }
+  let(:jan_registered_patients) do
+    Timecop.travel(jan) do
+      create_list(:patient, 15, registration_facility: facility)
     end
   end
 
   describe "#patient_counts" do
     it "calculates return and control patient counts in Q2 for patients registered in Q1" do
-      expected_result = {
-        registered: 20,
-        followed_up: 7,
-        defaulted: 13,
-        controlled: 3,
-        uncontrolled: 4
-      }
+      Timecop.travel(april) do
+        # 2 patients under control, 3 not controlled
+        jan_registered_patients[0..1].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility, ) }
+        jan_registered_patients[2..4].each { |patient| create(:blood_pressure, :very_high, patient: patient, facility: facility) }
+      end
 
-      cohort_start = DateTime.new(2019, 4, 1).beginning_of_quarter
-      cohort_end   = cohort_start.end_of_quarter
-
-      report_start = DateTime.new(2019, 9, 1).beginning_of_quarter
-      report_end   = report_start.end_of_quarter
-
-      expect(analytics.patient_counts(cohort_start, cohort_end, report_start, report_end)).to eq(expected_result)
-    end
-
-    it "calculates return and control patient counts in Q3 for patients registered in Q1" do
       expected_result = {
         registered: 15,
         followed_up: 5,
@@ -67,8 +35,32 @@ RSpec.describe CohortAnalyticsQuery do
       cohort_start = DateTime.new(2019, 1, 1).beginning_of_quarter
       cohort_end   = cohort_start.end_of_quarter
 
-      report_start = DateTime.new(2019, 9, 1).beginning_of_quarter
+      report_start = DateTime.new(2019, 4, 1).beginning_of_quarter
       report_end   = report_start.end_of_quarter
+
+      expect(analytics.patient_counts(cohort_start, cohort_end, report_start, report_end)).to eq(expected_result)
+    end
+
+    it "calculates return and control patient counts in Feb-Mar for patients registered in Jan" do
+      Timecop.travel(march) do
+        # 3 patients under control, 5 not controlled
+        jan_registered_patients[0..2].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility, ) }
+        jan_registered_patients[3..7].each { |patient| create(:blood_pressure, :very_high, patient: patient, facility: facility) }
+      end
+
+      expected_result = {
+        registered: 15,
+        followed_up: 8,
+        defaulted: 7,
+        controlled: 3,
+        uncontrolled: 5
+      }
+
+      cohort_start = DateTime.new(2019, 1, 1).beginning_of_month
+      cohort_end   = cohort_start.end_of_month
+
+      report_start = DateTime.new(2019, 2, 1).beginning_of_month
+      report_end   = DateTime.new(2019, 3, 1).end_of_month
 
       expect(analytics.patient_counts(cohort_start, cohort_end, report_start, report_end)).to eq(expected_result)
     end
