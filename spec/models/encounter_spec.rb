@@ -8,7 +8,7 @@ describe Encounter, type: :model do
   context '#encountered_on' do
     it 'returns the encountered_on in the correct timezone' do
       Timecop.travel(DateTime.new(2019, 1, 1)) {
-        expect(create(:encounter, timezone_offset: 24 * 60 * 60).encountered_on).to eq(Date.new(2019, 1, 2))
+        expect(Encounter.generate_encountered_on(Time.now, 24 * 60 * 60)).to eq(Date.new(2019, 1, 2))
       }
     end
   end
