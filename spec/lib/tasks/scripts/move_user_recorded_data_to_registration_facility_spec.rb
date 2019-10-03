@@ -94,15 +94,9 @@ RSpec.describe MoveUserRecordedDataToRegistrationFacility do
   end
 
   describe "#fix_appointments_data" do
-    let!(:appointments_at_correct_facility) { create_list(:appointment, 2, facility: destination_facility) }
-    let!(:appointments_at_source_facility) { create_list(:appointment, 2, facility: source_facility) }
-    let!(:appointments_at_another_source_facility) { create_list(:appointment, 2, facility: another_source_facility) }
-
-    before :each do
-      (appointments_at_correct_facility + appointments_at_source_facility).each do |appointment|
-        create(:audit_log, action: 'create', auditable: appointment, user: user)
-      end
-    end
+    let!(:appointments_at_correct_facility) { create_list(:appointment, 2, facility: destination_facility, user: user) }
+    let!(:appointments_at_source_facility) { create_list(:appointment, 2, facility: source_facility, user: user) }
+    let!(:appointments_at_another_source_facility) { create_list(:appointment, 2, facility: another_source_facility, user: user) }
 
     it "Moves all appointments recorded at the wrong facility to the user's registration facility" do
       expect {
@@ -142,15 +136,9 @@ RSpec.describe MoveUserRecordedDataToRegistrationFacility do
   end
 
   describe "#fix_prescription_drugs_data" do
-    let!(:prescription_drugs_at_correct_facility) { create_list(:prescription_drug, 2, facility: destination_facility) }
-    let!(:prescription_drugs_at_source_facility) { create_list(:prescription_drug, 2, facility: source_facility) }
-    let!(:prescription_drugs_at_another_source_facility) { create_list(:prescription_drug, 2, facility: another_source_facility) }
-
-    before :each do
-      (prescription_drugs_at_correct_facility + prescription_drugs_at_source_facility).each do |prescription_drug|
-        create(:audit_log, action: 'create', auditable: prescription_drug, user: user)
-      end
-    end
+    let!(:prescription_drugs_at_correct_facility) { create_list(:prescription_drug, 2, facility: destination_facility, user: user) }
+    let!(:prescription_drugs_at_source_facility) { create_list(:prescription_drug, 2, facility: source_facility, user: user) }
+    let!(:prescription_drugs_at_another_source_facility) { create_list(:prescription_drug, 2, facility: another_source_facility, user: user) }
 
     it "Moves all prescription_drugs recorded at the wrong facility to the user's registration facility" do
       expect {

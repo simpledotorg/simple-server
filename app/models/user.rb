@@ -39,6 +39,11 @@ class User < ApplicationRecord
 
   accepts_nested_attributes_for :email_authentications, reject_if: :all_blank
 
+  has_many :audit_logs, as: :auditable
+  has_many :appointments
+  has_many :medical_histories
+  has_many :prescription_drugs
+
   has_many :user_permissions, foreign_key: :user_id, dependent: :delete_all
 
   has_many :audit_logs, as: :auditable
