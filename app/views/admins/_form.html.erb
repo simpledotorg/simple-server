@@ -17,7 +17,7 @@
         <%= form.collection_check_boxes :access_controllable_ids, policy_scope(Organization), :id, :name %>
       <% end %>
 
-      <%= form.primary class: "btn btn-primary", disabled: admin.has_role?(:owner, :organization_owner) %>
+      <%= form.primary 'Update Admin', class: "btn btn-primary", disabled: admin.has_role?(:owner, :organization_owner) %>
     <% end %>
   </div>
 </div>

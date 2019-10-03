@@ -22,7 +22,7 @@ RSpec.feature "Admins", type: :feature do
     end
   end
 
-  xdescribe "editing email_authentications" do
+  describe "editing email_authentications" do
     let!(:facility_group) { create(:facility_group, name: "CHC Buccho") }
     let!(:other_facility_group) { create(:facility_group, name: "PHC Ubha") }
     let!(:counsellor) { create(:admin, :counsellor) }
@@ -32,7 +32,7 @@ RSpec.feature "Admins", type: :feature do
       visit edit_admin_path(counsellor)
     end
 
-    it "should allow changing facility groups" do
+    xit "should allow changing facility groups" do
       check "CHC Buccho"
       click_button "Update Admin"
 
@@ -41,7 +41,8 @@ RSpec.feature "Admins", type: :feature do
     end
   end
 
-  xdescribe "sending invitations to supervisors" do
+  describe "sending invitations to supervisors" do
+    let(:full_name) { Faker::Name.name }
     let(:email) { "new@example.com" }
     let(:new_supervisor) { User.joins(:email_authentications).find_by(email_authentications: { email: email }) }
     let!(:facility_groups) { FactoryBot.create_list(:facility_group, 2) }
@@ -55,6 +56,7 @@ RSpec.feature "Admins", type: :feature do
         click_link "Supervisor"
       end
 
+      fill_in "Full name", with: full_name
       fill_in "Email", with: email
 
       check facility_groups.first.name
@@ -81,7 +83,8 @@ RSpec.feature "Admins", type: :feature do
     end
   end
 
-  xdescribe "sending invitations to organization owners" do
+  describe "sending invitations to organization owners" do
+    let(:full_name) { Faker::Name.name }
     let(:email) { "new@example.com" }
     let(:new_supervisor) { User.joins(:email_authentications).find_by(email_authentications: { email: email }) }
     let!(:organizations) { FactoryBot.create_list(:organization, 2) }
@@ -95,6 +98,7 @@ RSpec.feature "Admins", type: :feature do
         click_link "Organization Owner"
       end
 
+      fill_in "Full name", with: full_name
       fill_in "Email", with: email
 
       check organizations.first.name
@@ -123,6 +127,7 @@ RSpec.feature "Admins", type: :feature do
 
 
   describe "association email_authentications with their access control groups" do
+    let(:full_name) { Faker::Name.name }
     let(:email) { "new@example.com" }
     let(:new_supervisor) { User.joins(:email_authentications).find_by(email_authentications: { email: email }) }
 
@@ -138,6 +143,7 @@ RSpec.feature "Admins", type: :feature do
           click_link "Supervisor"
         end
 
+        fill_in "Full name", with: full_name
         fill_in "Email", with: email
         check facility_groups.first.name
         click_button "Send an invitation"
@@ -157,6 +163,7 @@ RSpec.feature "Admins", type: :feature do
           click_link "Analyst"
         end
 
+        fill_in "Full name", with: full_name
         fill_in "Email", with: email
         check facility_groups.first.name
         click_button "Send an invitation"
@@ -176,6 +183,7 @@ RSpec.feature "Admins", type: :feature do
           click_link "Organization Owner"
         end
 
+        fill_in "Full name", with: full_name
         fill_in "Email", with: email
         check organizations.first.name
         click_button "Send an invitation"
@@ -194,6 +202,7 @@ RSpec.feature "Admins", type: :feature do
     let!(:organization_owner) { create(:admin, :organization_owner) }
     let!(:organization) { organization_owner.organizations.first }
     let!(:facility_group) { create(:facility_group, organization: organization) }
+    let(:full_name) { Faker::Name.name }
     let!(:email) { 'new_counsellor@example.com' }
 
 
@@ -205,6 +214,7 @@ RSpec.feature "Admins", type: :feature do
         click_link 'Counsellor'
       end
 
+      fill_in "Full name", with: full_name
       fill_in 'Email', with: email
       check facility_group.name
       click_button 'Send an invitation'
@@ -219,11 +229,11 @@ RSpec.feature "Admins", type: :feature do
     end
   end
 
-  xdescribe "accepting invitations" do
+  describe "accepting invitations" do
     let(:email) { "new@example.com" }
     let(:new_supervisor) { User.invite!(email: email, role: :supervisor) }
 
-    it "allows the user to set a password" do
+    xit "allows the user to set a password" do
       visit accept_admin_invitation_path(invitation_token: new_supervisor.raw_invitation_token)
 
       fill_in "Password", with: "new_password"

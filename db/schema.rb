@@ -216,8 +216,8 @@ ActiveRecord::Schema.define(version: 20190828133628) do
     t.datetime "updated_at", null: false
     t.float "latitude"
     t.float "longitude"
-    t.datetime "deleted_at"
     t.uuid "facility_group_id"
+    t.datetime "deleted_at"
     t.string "slug"
     t.index ["deleted_at"], name: "index_facilities_on_deleted_at"
     t.index ["facility_group_id"], name: "index_facilities_on_facility_group_id"
@@ -426,8 +426,8 @@ ActiveRecord::Schema.define(version: 20190828133628) do
     t.datetime "logged_in_at"
     t.string "sync_approval_status"
     t.text "sync_approval_status_reason"
-    t.datetime "deleted_at"
     t.uuid "registration_facility_id"
+    t.datetime "deleted_at"
     t.index "lower((phone_number)::text)", name: "unique_index_users_on_lowercase_phone_numbers", unique: true
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["registration_facility_id"], name: "index_users_on_registration_facility_id"
