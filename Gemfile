@@ -18,7 +18,7 @@ gem 'rswag', '~> 1.6.0'
 gem 'rspec-rails', '~> 3.7'
 gem 'newrelic_rpm'
 gem 'bcrypt', '~> 3.1', '>= 3.1.11'
-gem 'devise', '~> 4.6.0'
+gem "devise", ">= 4.7.1"
 gem 'devise_invitable', '~> 1.7.0'
 gem 'twilio-ruby', '~> 5.10', '>= 5.10.3'
 gem 'pundit'
@@ -79,8 +79,9 @@ group :test do
   gem 'webmock'
   gem 'fakeredis', require:  false
   gem 'generator_spec'
-  gem 'webdriver'
-  # gem 'rspec-sidekiq'
+  gem 'puma'
+  gem 'webdrivers'
+  gem 'rspec-sidekiq'
 end
 
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
