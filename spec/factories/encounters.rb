@@ -16,13 +16,16 @@ FactoryBot.define do
 end
 
 def build_encounters_payload(encounter = FactoryBot.build(:encounter))
-  Api::Current::Transformer.to_response(encounter).with_indifferent_access
+  encounter.attributes.with_payload_keys
+    .merge('observations' => { 'blood_pressures' => encounter.blood_pressures.map { |bp|
+      bp.attributes.with_payload_keys },
+                               'prescription_drugs' => [] })
 end
 
 def build_invalid_encounters_payload
-  build_encounters_payload.merge(
-    'created_at' => nil,
-    'facility_id' => nil)
+  encounter = build_encounters_payload
+  encounter['created_at'] = nil
+  encounter['facility_id'] = nil
+  encounter
 end
-
 
