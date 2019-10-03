@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Api::Current::UsersController, type: :controller do
+  require 'sidekiq/testing'
+
   let(:supervisor) { FactoryBot.create(:admin, :supervisor) }
   let(:organization_owner) { FactoryBot.create(:admin, :organization_owner) }
   let(:facility) { FactoryBot.create(:facility) }
@@ -71,7 +73,9 @@ RSpec.describe Api::Current::UsersController, type: :controller do
       end
 
       it 'sends an email to a list of owners and supervisors' do
-        post :register, params: { user: user_params }
+        Sidekiq::Testing.inline! do
+          post :register, params: { user: user_params }
+        end
         approval_email = ActionMailer::Base.deliveries.last
         expect(approval_email.to).to include(supervisor.email)
         expect(approval_email.cc).to include(organization_owner.email)
@@ -79,16 +83,28 @@ RSpec.describe Api::Current::UsersController, type: :controller do
       end
 
       it 'sends an email with owners in the bcc list' do
-        post :register, params: { user: user_params }
+        Sidekiq::Testing.inline! do
+          post :register, params: { user: user_params }
+        end
         approval_email = ActionMailer::Base.deliveries.last
         expect(approval_email.bcc).to include(owner.email)
       end
 
       it 'sends an approval email with list of accessible facilities' do
-        post :register, params: { user: user_params }
+        Sidekiq::Testing.inline! do
+          post :register, params: { user: user_params }
+        end
         approval_email = ActionMailer::Base.deliveries.last
         facility.facility_group.facilities.each do |facility|
           expect(approval_email.body.to_s).to match(Regexp.quote(facility.name))
+        end
+      end
+
+      it 'sends an email using sidekiq' do
+        Sidekiq::Testing.fake! do
+          expect {
+            post :register, params: { user: user_params }
+          }.to change(Sidekiq::Extensions::DelayedMailer.jobs, :size).by(1)
         end
       end
     end
@@ -174,13 +190,23 @@ RSpec.describe Api::Current::UsersController, type: :controller do
     end
 
     it 'Sends an email to a list of owners and supervisors' do
-      post :reset_password, params: { id: user.id, password_digest: BCrypt::Password.create('1234').to_s }
+      Sidekiq::Testing.inline! do
+        post :reset_password, params: { id: user.id, password_digest: BCrypt::Password.create('1234').to_s }
+      end
       approval_email = ActionMailer::Base.deliveries.last
       expect(approval_email).to be_present
       expect(approval_email.to).to include(supervisor.email)
       expect(approval_email.cc).to include(organization_owner.email)
       expect(approval_email.body.to_s).to match(Regexp.quote(user.phone_number))
       expect(approval_email.body.to_s).to match("reset")
+    end
+
+    it 'sends an email using sidekiq' do
+      Sidekiq::Testing.fake! do
+        expect {
+          post :reset_password, params: { id: user.id, password_digest: BCrypt::Password.create('1234').to_s }
+        }.to change(Sidekiq::Extensions::DelayedMailer.jobs, :size).by(1)
+      end
     end
   end
 end

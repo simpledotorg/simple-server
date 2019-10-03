@@ -12,6 +12,9 @@ module AdminPage
         type(PROTOCOL_DRUG_DOSAGE, dosage)
         type(RX_NORM_CODE, code)
         click(UPDATE_PROTOCOL_BUTTON)
+
+        # assertion
+        page.has_content?("Protocol drug was successfully updated.")
       end
     end
   end
