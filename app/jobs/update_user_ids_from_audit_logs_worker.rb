@@ -11,7 +11,7 @@ class UpdateUserIdsFromAuditLogsWorker
         db_record.user_id = record['user_id']
         db_record.save
       rescue StandardError => e
-        puts "#{e.message}\nCouldn't update #{record_class_string}: #{db_record} with #{record}"
+        Rails.logger.info("#{e.message}\nCouldn't update #{record_class_string}: #{db_record} with #{record}")
       end
     end
   end

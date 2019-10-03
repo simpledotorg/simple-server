@@ -95,39 +95,16 @@ namespace :data_migration do
     end
   end
 
-  desc 'Backfill user_id for appointments from audit_logs'
-  task backfill_user_ids_for_appointments: :environment do
+  desc 'Backfill user_ids for a model from audit_logs (Appointment, PrescriptionDrug and MedicalHistory)'
+  task :backfill_user_ids_for_model, [:model] => :environment do |_t, args|
+    model = args.model
     batch_size = ENV.fetch('BACKFILL_USER_ID_FROM_AUDIT_LOGS_BATCH_SIZE').to_i
-    AuditLog.creation_logs_for_type('Appointment').in_batches(of: batch_size) do |batch|
-      appointment_log_ids = batch.map do |appointment|
-        { id: appointment.auditable_id,
-          user_id: appointment.user_id }
+    AuditLog.where(auditable_type: model, action: 'create').in_batches(of: batch_size) do |batch|
+      model_log_ids = batch.map do |model_instance|
+        { id: model_instance.auditable_id,
+          user_id: model_instance.user_id }
       end
-      UpdateUserIdsFromAuditLogsWorker.perform_async(Appointment, appointment_log_ids)
-    end
-  end
-
-  desc 'Backfill user_id for prescription drugs from audit_logs'
-  task backfill_user_ids_for_prescription_drugs: :environment do
-    batch_size = ENV.fetch('BACKFILL_USER_ID_FROM_AUDIT_LOGS_BATCH_SIZE').to_i
-    AuditLog.creation_logs_for_type('PrescriptionDrug').in_batches(of: batch_size) do |batch|
-      prescription_drug_log_ids = batch.map do |prescription_drug|
-        { id: prescription_drug.auditable_id,
-          user_id: prescription_drug.user_id }
-      end
-      UpdateUserIdsFromAuditLogsWorker.perform_async(PrescriptionDrug, prescription_drug_log_ids)
-    end
-  end
-
-  desc 'Backfill user_id for medical histories from audit_logs'
-  task backfill_user_ids_for_medical_histories: :environment do
-    batch_size = ENV.fetch('BACKFILL_USER_ID_FROM_AUDIT_LOGS_BATCH_SIZE').to_i
-    AuditLog.creation_logs_for_type('MedicalHistory').in_batches(of: batch_size) do |batch|
-      medical_history_log_ids = batch.map do |medical_history|
-        { id: medical_history.auditable_id,
-          user_id: medical_history.user_id }
-      end
-      UpdateUserIdsFromAuditLogsWorker.perform_async(MedicalHistory, medical_history_log_ids)
+      UpdateUserIdsFromAuditLogsWorker.perform_async(model.constantize, model_log_ids)
     end
   end
 end

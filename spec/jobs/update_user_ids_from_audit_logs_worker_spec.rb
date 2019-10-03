@@ -11,7 +11,7 @@ RSpec.describe UpdateUserIdsFromAuditLogsWorker, type: :job do
     end
   end
   let(:appointment_log_ids) do
-    AuditLog.creation_logs_for_type('Appointment').map do |log|
+    AuditLog.where(auditable_type: 'Appointment', action: 'create').map do |log|
       { id: log.auditable_id,
         user_id: log.user_id }
     end
@@ -31,7 +31,7 @@ RSpec.describe UpdateUserIdsFromAuditLogsWorker, type: :job do
     end
   end
   let(:medical_history_log_ids) do
-    AuditLog.creation_logs_for_type('MedicalHistory').map do |log|
+    AuditLog.where(auditable_type: 'MedicalHistory', action: 'create').map do |log|
       { id: log.auditable_id,
         user_id: log.user_id }
     end
@@ -51,7 +51,7 @@ RSpec.describe UpdateUserIdsFromAuditLogsWorker, type: :job do
     end
   end
   let(:prescription_drug_log_ids) do
-    AuditLog.creation_logs_for_type('PrescriptionDrug').map do |log|
+    AuditLog.where(auditable_type: 'PrescriptionDrug', action: 'create').map do |log|
       { id: log.auditable_id,
         user_id: log.user_id }
     end
