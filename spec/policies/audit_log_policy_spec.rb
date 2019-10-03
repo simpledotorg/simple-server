@@ -5,7 +5,7 @@ RSpec.describe AuditLogPolicy do
 
   context 'user with permission to manage audit logs' do
     let(:user_with_permission) do
-      create(:user, user_permissions: [build(:user_permission, permission_slug: :can_manage_audit_logs)])
+      create(:user, user_permissions: [build(:user_permission, permission_slug: :view_audit_logs)])
     end
 
     permissions :index? do
@@ -51,7 +51,7 @@ RSpec.describe AuditLogPolicy::Scope do
 
   context 'user with permission to manage audit logs' do
     let(:user_with_permission) do
-      create(:user, user_permissions: [build(:user_permission, permission_slug: :can_manage_audit_logs)])
+      create(:user, user_permissions: [build(:user_permission, permission_slug: :view_audit_logs)])
     end
 
     it 'resolves all audit logs' do

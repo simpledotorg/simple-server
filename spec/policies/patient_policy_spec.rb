@@ -8,7 +8,7 @@ RSpec.describe PatientPolicy do
 
   context 'user with permission to access patient information for all organizations' do
     let(:user_with_permission) do
-      create(:admin, user_permissions: [build(:user_permission, permission_slug: :can_access_patient_information_for_all_organizations)])
+      create(:admin, user_permissions: [build(:user_permission, permission_slug: :view_adherence_follow_up_list_for_all_organizations)])
     end
 
     permissions :index? do
@@ -31,7 +31,7 @@ RSpec.describe PatientPolicy do
   context 'user with permission to access patient information for an organization' do
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :can_access_patient_information_for_organization, resource: facility1.organization)
+        build(:user_permission, permission_slug: :view_adherence_follow_up_list_for_organization, resource: facility1.organization)
       ])
     end
 
@@ -59,7 +59,7 @@ RSpec.describe PatientPolicy do
   context 'user with permission to access patient information for a facility group' do
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :can_access_patient_information_for_facility_group, resource: facility1.facility_group)
+        build(:user_permission, permission_slug: :view_adherence_follow_up_list_for_facility_group, resource: facility1.facility_group)
       ])
     end
 
@@ -78,33 +78,6 @@ RSpec.describe PatientPolicy do
       end
 
       it 'denies the user to access any patient outside the given facility_group' do
-        expect(subject).not_to permit(user_with_permission, patient2)
-      end
-    end
-  end
-
-  context 'user with permission to access patient information for a facility' do
-    let(:user_with_permission) do
-      create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :can_access_patient_information_for_facility, resource: facility1)
-      ])
-    end
-
-    permissions :index? do
-      it 'permits the user' do
-        expect(subject).to permit(user_with_permission, Patient)
-      end
-    end
-
-    permissions :edit?, :update? do
-      let(:patient1) { build(:patient, registration_facility: facility1) }
-      let(:patient2) { build(:patient, registration_facility: facility2) }
-
-      it 'permits the user to access all patients in the given facility' do
-        expect(subject).to permit(user_with_permission, patient1)
-      end
-
-      it 'denies the user to access any patient outside the given facility' do
         expect(subject).not_to permit(user_with_permission, patient2)
       end
     end
@@ -146,7 +119,7 @@ RSpec.describe PatientPolicy::Scope do
   let!(:patient2) { create(:patient, registration_facility: facility2) }
 
   context 'user with permission to access patient information for all organizations' do
-    let(:user) { create(:admin, user_permissions: [build(:user_permission, permission_slug: :can_access_patient_information_for_all_organizations)]) }
+    let(:user) { create(:admin, user_permissions: [build(:user_permission, permission_slug: :view_adherence_follow_up_list_for_all_organizations)]) }
 
     it 'resolves all patients for users who can access patient information for all organizations' do
       resolved_records = subject.new(user, Patient.all).resolve
@@ -156,7 +129,7 @@ RSpec.describe PatientPolicy::Scope do
 
   context 'user with permission to access patient information for an organization' do
     let(:user) { create(:admin, user_permissions: [
-      build(:user_permission, permission_slug: :can_access_patient_information_for_organization, resource: organization)
+      build(:user_permission, permission_slug: :view_adherence_follow_up_list_for_organization, resource: organization)
     ]) }
 
     it 'resolves all patients in the organization' do
@@ -167,22 +140,12 @@ RSpec.describe PatientPolicy::Scope do
 
   context 'user with permission to access patient information for a facility group' do
     let(:user) { create(:admin, user_permissions: [
-      build(:user_permission, permission_slug: :can_access_patient_information_for_facility_group, resource: facility_group)
+      build(:user_permission, permission_slug: :view_adherence_follow_up_list_for_facility_group, resource: facility_group)
     ]) }
 
     it 'resolves all patients in the facility group' do
       resolved_records = subject.new(user, Patient.all).resolve
       expect(resolved_records).to match_array(Patient.where(registration_facility: facility_group.facilities))
-    end
-  end
-
-  context 'user with permission to access patient information for a facility group' do
-    let(:user) { create(:admin, user_permissions: [
-      build(:user_permission, permission_slug: :can_access_patient_information_for_facility, resource: facility1)
-    ]) }
-    it 'resolves all patients in the facility' do
-      resolved_records = subject.new(user, Patient.all).resolve
-      expect(resolved_records).to match_array(Patient.where(registration_facility: facility1))
     end
   end
 

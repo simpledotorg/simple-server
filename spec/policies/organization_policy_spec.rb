@@ -8,7 +8,7 @@ RSpec.describe OrganizationPolicy do
 
   context 'user can manage all organizations' do
     let(:user_with_permission) do
-      create(:admin, user_permissions: [build(:user_permission, permission_slug: :can_manage_all_organizations)])
+      create(:admin, user_permissions: [build(:user_permission, permission_slug: :manage_organizations)])
     end
 
     permissions :index? do
@@ -28,7 +28,7 @@ RSpec.describe OrganizationPolicy do
   context 'user can manage an organization' do
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :can_manage_an_organization, resource: organization_1)
+        build(:user_permission, permission_slug: :manage_facility_groups_for_organization, resource: organization_1)
       ])
     end
 
@@ -64,7 +64,7 @@ RSpec.describe OrganizationPolicy::Scope do
 
   context 'user can manage all organizations' do
     let(:user_with_permission) do
-      create(:admin, user_permissions: [build(:user_permission, permission_slug: :can_manage_all_organizations)])
+      create(:admin, user_permissions: [build(:user_permission, permission_slug: :manage_organizations)])
     end
 
     it 'resolve all organizations' do
@@ -76,7 +76,7 @@ RSpec.describe OrganizationPolicy::Scope do
   context 'user can manage an organization' do
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :can_manage_an_organization, resource: organization_1)
+        build(:user_permission, permission_slug: :manage_facility_groups_for_organization, resource: organization_1)
       ])
     end
 

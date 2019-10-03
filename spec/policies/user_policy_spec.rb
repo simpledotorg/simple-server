@@ -12,7 +12,7 @@ RSpec.describe UserPolicy do
 
   context 'user can manage users for all organizations' do
     let(:user_with_permission) do
-      create(:admin, user_permissions: [build(:user_permission, permission_slug: :can_manage_all_users)])
+      create(:admin, user_permissions: [build(:user_permission, permission_slug: :approve_health_workers_for_all_organizations)])
     end
 
     permissions :index? do
@@ -31,7 +31,7 @@ RSpec.describe UserPolicy do
 
   context 'user can manage users for an organization' do
     let(:user_with_permission) do
-      create(:admin, user_permissions: [build(:user_permission, permission_slug: :can_manage_users_for_organization, resource: user_1.organization)],
+      create(:admin, user_permissions: [build(:user_permission, permission_slug: :approve_health_workers_for_organization, resource: user_1.organization)],
              organization: user_1.organization)
     end
 
@@ -55,7 +55,7 @@ RSpec.describe UserPolicy do
 
   context 'user can manage users for a facility group' do
     let(:user_with_permission) do
-      create(:admin, user_permissions: [build(:user_permission, permission_slug: :can_manage_users_for_facility_group, resource: facility_group)])
+      create(:admin, user_permissions: [build(:user_permission, permission_slug: :approve_health_workers_for_facility_group, resource: facility_group)])
     end
 
     permissions :index? do
@@ -89,7 +89,7 @@ RSpec.describe UserPolicy::Scope do
 
   describe "User can manage all users" do
     let(:user_with_permission) do
-      create(:admin, user_permissions: [build(:user_permission, permission_slug: :can_manage_all_users)])
+      create(:admin, user_permissions: [build(:user_permission, permission_slug: :approve_health_workers_for_all_organizations)])
     end
     it "resolves all users" do
       resolved_records = subject.new(user_with_permission, User.all).resolve
@@ -99,7 +99,7 @@ RSpec.describe UserPolicy::Scope do
 
   describe "User can manage users for an organization" do
     let(:user_with_permission) do
-      create(:admin, user_permissions: [build(:user_permission, permission_slug: :can_manage_users_for_organization, resource: organization)])
+      create(:admin, user_permissions: [build(:user_permission, permission_slug: :approve_health_workers_for_organization, resource: organization)])
     end
     it "resolves user for their organizations" do
       resolved_records = subject.new(user_with_permission, User.all).resolve
@@ -114,7 +114,7 @@ RSpec.describe UserPolicy::Scope do
 
   describe "User can manage users for a facility group" do
     let(:user_with_permission) do
-      create(:admin, user_permissions: [build(:user_permission, permission_slug: :can_manage_users_for_facility_group, resource: facility_group_1)])
+      create(:admin, user_permissions: [build(:user_permission, permission_slug: :approve_health_workers_for_facility_group, resource: facility_group_1)])
     end
     it "resolves users of their facility groups" do
       resolved_records = subject.new(user_with_permission, User.all).resolve

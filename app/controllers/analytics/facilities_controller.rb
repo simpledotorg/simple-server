@@ -4,10 +4,10 @@ class Analytics::FacilitiesController < AnalyticsController
   include Pagination
 
   before_action :set_facility
-  before_action :set_cohort_analytics, only: [:show, :whatsapp_graphics]
 
   def show
-    set_dashboard_analytics(:month)
+    set_cohort_analytics(@period, @prev_periods)
+    set_dashboard_analytics(@period, 3)
 
     @recent_blood_pressures = @facility.blood_pressures
                                 .includes(:patient, :user)
@@ -30,7 +30,8 @@ class Analytics::FacilitiesController < AnalyticsController
   end
 
   def whatsapp_graphics
-    set_dashboard_analytics(:quarter)
+    set_cohort_analytics(:quarter, 3)
+    set_dashboard_analytics(:quarter, 3)
 
     whatsapp_graphics_handler(
       @facility.organization.name,
@@ -39,24 +40,28 @@ class Analytics::FacilitiesController < AnalyticsController
 
   private
 
-  def set_cohort_analytics
-    @cohort_analytics =  set_analytics_cache(analytics_cache_key_cohort,
-                                             @facility.cohort_analytics)
-  end
-
-  def set_dashboard_analytics(time_period)
-    @dashboard_analytics = set_analytics_cache(analytics_cache_key_dashboard(time_period),
-                                               @facility.dashboard_analytics(time_period: time_period))
-  end
-
-  def analytics_cache_key
-    "analytics/facilities/#{@facility.id}"
-  end
-
   def set_facility
     facility_id = params[:id] || params[:facility_id]
     @facility = Facility.friendly.find(facility_id)
     authorize(@facility)
+  end
+
+  def set_cohort_analytics(period, prev_periods)
+    @cohort_analytics = set_analytics_cache(
+      analytics_cache_key_cohort(period),
+      @facility.cohort_analytics(period, prev_periods)
+    )
+  end
+
+  def set_dashboard_analytics(period, prev_periods)
+    @dashboard_analytics = set_analytics_cache(
+      analytics_cache_key_dashboard(period),
+      @facility.dashboard_analytics(period: period, prev_periods: prev_periods)
+    )
+  end
+
+  def analytics_cache_key
+    "analytics/facilities/#{@facility.id}"
   end
 end
 

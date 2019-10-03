@@ -3,13 +3,7 @@ require 'rails_helper'
 RSpec.feature 'Overdue appointments', type: :feature do
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:ihmi_group) { create(:facility_group, organization: ihmi) }
-  let!(:supervisor) {
-    create(
-      :admin,
-      :supervisor,
-      facility_group: ihmi_group
-    )
-  }
+  let!(:supervisor) { create(:admin, :supervisor, facility_group: ihmi_group) }
 
   before do
     ENV['IHCI_ORGANIZATION_UUID'] = ihmi.id

@@ -1,0 +1,13 @@
+<div class="dropdown show" style="float: right;">
+  <a class="btn dropdown-toggle btn-sm btn-outline-primary" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <%= @period == :quarter ? "Quarterly" : "Monthly" %> report
+  </a>
+
+  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+    <% if @period == :quarter %>
+      <%= link_to "Monthly report", url_for(period: :month), class: "dropdown-item" %>
+    <% else %>
+      <%= link_to "Quarterly report", url_for(period: :quarter), class: "dropdown-item" %>
+    <% end %>
+  </div>
+</div>
