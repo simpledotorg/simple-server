@@ -10,5 +10,10 @@ describe Api::Current::MedicalHistoryTransformer do
         expect(transformed_medical_history["#{question}_boolean"]).not_to be_present
       end
     end
+
+    it 'removes user_id from medical history response hashes' do
+      transformed_medical_history = Api::Current::MedicalHistoryTransformer.to_response(medical_history)
+        expect(transformed_medical_history).not_to include('user_id')
+    end
   end
 end
