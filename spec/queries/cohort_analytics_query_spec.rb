@@ -46,7 +46,13 @@ RSpec.describe CohortAnalyticsQuery do
         uncontrolled: 4
       }
 
-      expect(analytics.patient_counts(year: 2019, quarter: 3)).to eq(expected_result)
+      cohort_start = DateTime.new(2019, 4, 1).beginning_of_quarter
+      cohort_end   = cohort_start.end_of_quarter
+
+      report_start = DateTime.new(2019, 9, 1).beginning_of_quarter
+      report_end   = report_start.end_of_quarter
+
+      expect(analytics.patient_counts(cohort_start, cohort_end, report_start, report_end)).to eq(expected_result)
     end
 
     it "calculates return and control patient counts in Q3 for patients registered in Q1" do
@@ -58,7 +64,13 @@ RSpec.describe CohortAnalyticsQuery do
         uncontrolled: 3
       }
 
-      expect(analytics.patient_counts(year: 2019, quarter: 3, quarters_previous: 2)).to eq(expected_result)
+      cohort_start = DateTime.new(2019, 1, 1).beginning_of_quarter
+      cohort_end   = cohort_start.end_of_quarter
+
+      report_start = DateTime.new(2019, 9, 1).beginning_of_quarter
+      report_end   = report_start.end_of_quarter
+
+      expect(analytics.patient_counts(cohort_start, cohort_end, report_start, report_end)).to eq(expected_result)
     end
   end
 end
