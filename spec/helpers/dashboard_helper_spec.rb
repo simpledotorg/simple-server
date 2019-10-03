@@ -6,15 +6,29 @@ RSpec.describe DashboardHelper, type: :helper do
   let(:first_mar) { Date.new(2019, 3, 1) }
   let(:first_apr) { Date.new(2019, 4, 1) }
 
-  describe '#repeat_for_last' do
-    it 'should yield the contents repeatedly for last n months' do
-      contents = []
+  describe '#dates_for_periods' do
+    context 'month' do
+      it 'returns the last n months starting from the beginning' do
+        expected_months = []
 
-      Timecop.travel(first_apr) do
-        repeat_for_last(months: 4) { |month| contents << month }
+        Timecop.travel(first_apr) do
+          expected_months = dates_for_periods(:month, 4)
+        end
+
+        expect(expected_months).to eq([first_jan, first_feb, first_mar, first_apr])
       end
+    end
 
-      expect(contents).to eq([first_jan, first_feb, first_mar, first_apr])
+    context 'quarter' do
+      it 'returns the last n quarters starting from the beginning' do
+        expected_months = []
+
+        Timecop.travel(first_apr) do
+          expected_months = dates_for_periods(:quarter, 2)
+        end
+
+        expect(expected_months).to eq([first_jan, first_apr])
+      end
     end
   end
 end

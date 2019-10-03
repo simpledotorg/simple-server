@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190905131736) do
+ActiveRecord::Schema.define(version: 20191003064554) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -411,27 +411,6 @@ ActiveRecord::Schema.define(version: 20190905131736) do
     t.index ["user_id"], name: "index_user_authentications_on_user_id"
   end
 
-  create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "full_name"
-    t.string "phone_number"
-    t.string "password_digest"
-    t.datetime "device_created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.datetime "device_updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "otp", null: false
-    t.datetime "otp_valid_until", null: false
-    t.string "access_token", null: false
-    t.datetime "logged_in_at"
-    t.string "sync_approval_status"
-    t.text "sync_approval_status_reason"
-    t.datetime "deleted_at"
-    t.uuid "registration_facility_id"
-    t.index "lower((phone_number)::text)", name: "unique_index_users_on_lowercase_phone_numbers", unique: true
-    t.index ["deleted_at"], name: "index_users_on_deleted_at"
-    t.index ["registration_facility_id"], name: "index_users_on_registration_facility_id"
-  end
-
   add_foreign_key "appointments", "facilities"
   add_foreign_key "exotel_phone_number_details", "patient_phone_numbers"
   add_foreign_key "facilities", "facility_groups"
@@ -440,6 +419,18 @@ ActiveRecord::Schema.define(version: 20190905131736) do
   add_foreign_key "patients", "addresses"
   add_foreign_key "protocol_drugs", "protocols"
 
+  create_view "users", sql_definition: <<-SQL
+      SELECT master_users.id,
+      master_users.full_name,
+      master_users.sync_approval_status,
+      master_users.sync_approval_status_reason,
+      master_users.device_updated_at,
+      master_users.device_created_at,
+      master_users.created_at,
+      master_users.updated_at,
+      master_users.deleted_at
+     FROM master_users;
+  SQL
   create_view "bp_drugs_views", sql_definition: <<-SQL
       SELECT bp.id AS bp_id,
       bp.systolic,
