@@ -11,6 +11,7 @@ FactoryBot.define do
     agreed_to_visit nil
     remind_on nil
     appointment_type { Appointment.appointment_types.keys.sample }
+    user
     trait :overdue do
       scheduled_date { rand(30..90).days.ago }
       status :scheduled

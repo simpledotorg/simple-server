@@ -6,22 +6,43 @@ RSpec.describe CreateAuditLogsWorker, type: :job do
   describe '#perform_later' do
     let!(:user) { create :user }
     let(:record_class) { 'Patient' }
-    let(:record_ids) { create_list(record_class.underscore.to_sym, 3).pluck(:id) }
+    let(:records) { create_list(record_class.underscore.to_sym, 3) }
+    let(:record_ids) { records.pluck(:id) }
+
     let(:action) { 'fetch' }
 
     it 'queues the job on audit_log_queue' do
       expect {
-        CreateAuditLogsWorker.perform_async(user.id, 'Patient', record_ids, action)
+        CreateAuditLogsWorker.perform_async({ user_id: user.id,
+                                              record_class: record_class,
+                                              record_ids: record_ids,
+                                              action: action,
+                                              time: Time.now }.to_json)
       }.to change(Sidekiq::Queues['audit_log_queue'], :size).by(1)
       CreateAuditLogsWorker.clear
     end
 
-    it 'updates the cache for the facility group with analytics for the given time' do
-      CreateAuditLogsWorker.perform_async(user.id, 'Patient', record_ids, action)
-      CreateAuditLogsWorker.drain
-      user_audit_logs = AuditLog.where(user: user)
-      expect(user_audit_logs.count).to eq(3)
-      expect(user_audit_logs.pluck(:auditable_id)).to match_array(record_ids)
+    it 'Writes fetch audit logs for the given records' do
+      Timecop.freeze do
+        Sidekiq::Testing.inline! do
+          records.each do |record|
+            expect(AuditLogger)
+              .to receive(:info).with({ user: user.id,
+                                        auditable_type: 'Patient',
+                                        auditable_id: record.id,
+                                        action: 'fetch',
+                                        time: Time.now }.to_json)
+          end
+        end
+        CreateAuditLogsWorker.perform_async({ user_id: user.id,
+                                              record_class: record_class,
+                                              record_ids: record_ids,
+                                              action: action,
+                                              time: Time.now }.to_json)
+
+
+        CreateAuditLogsWorker.drain
+      end
     end
   end
 end

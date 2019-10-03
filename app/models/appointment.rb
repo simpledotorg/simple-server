@@ -7,6 +7,7 @@ class Appointment < ApplicationRecord
 
   belongs_to :patient, optional: true
   belongs_to :facility
+  belongs_to :user, optional: true
 
   has_many :communications
 
