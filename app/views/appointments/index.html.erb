@@ -7,7 +7,7 @@
            facility_id: @facility_id,
            per_page: @per_page) %>
 
-<% if policy(Appointment).download? && @appointments.present? %>
+<% if @appointments.present? && policy(@appointments.first).download? %>
   <h2 name="download_text">Downloads</h2>
 
   <div class="mb-5 mt-3">

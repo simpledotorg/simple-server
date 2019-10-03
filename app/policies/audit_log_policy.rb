@@ -1,10 +1,10 @@
 class AuditLogPolicy < ApplicationPolicy
   def index?
-    user_has_any_permissions?(:can_manage_audit_logs)
+    user_has_any_permissions?(:view_audit_logs)
   end
 
   def show?
-    user_has_any_permissions?(:can_manage_audit_logs)
+    user_has_any_permissions?(:view_audit_logs)
   end
 
   class Scope
@@ -16,7 +16,7 @@ class AuditLogPolicy < ApplicationPolicy
     end
 
     def resolve
-      if user.authorized?(:can_manage_audit_logs)
+      if user.authorized?(:view_audit_logs)
         scope.all
       else
         scope.none

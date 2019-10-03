@@ -70,49 +70,62 @@ FactoryBot.define do
 
     trait(:owner) do
       role :owner
-      user_permissions { [
-        build(:user_permission, permission_slug: :can_manage_all_organizations),
-        build(:user_permission, permission_slug: :can_manage_all_protocols),
-        build(:user_permission, permission_slug: :can_manage_audit_logs),
-        build(:user_permission, permission_slug: :can_manage_all_users)
-      ] }
+
+      after :create do |user, options|
+        [:manage_organizations,
+         :manage_protocols,
+         :view_audit_logs,
+         :approve_health_workers_for_all_organizations,
+         :view_overdue_list_for_all_organizations,
+         :view_adherence_follow_up_list_for_all_organizations].each do |slug|
+          user.user_permissions.create(permission_slug: slug)
+        end
+      end
     end
 
     trait(:supervisor) do
       role :supervisor
-      user_permissions { [
-        build(:user_permission, permission_slug: :can_manage_a_facility_group, resource: facility_group),
-        build(:user_permission, permission_slug: :can_access_appointment_information_for_facility_group, resource: facility_group),
-        build(:user_permission, permission_slug: :can_access_patient_information_for_facility_group, resource: facility_group),
-        build(:user_permission, permission_slug: :can_manage_users_for_facility_group, resource: facility_group)
-      ] }
+      after :create do |user, options|
+        [:manage_facilities_for_facility_group,
+         :view_overdue_list_for_facility_group,
+         :download_overdue_list_for_facility_group,
+         :view_adherence_follow_up_list_for_facility_group,
+         :approve_health_workers_for_facility_group].each do |slug|
+          user.user_permissions.create(permission_slug: slug, resource: options.facility_group)
+        end
+      end
     end
 
     trait(:analyst) do
       role :analyst
-
-      user_permissions { [
-        build(:user_permission, permission_slug: :can_manage_a_facility_group, resource: facility_group)
-      ] }
+      after :create do |user, options|
+        [:manage_facilities_for_facility_group].each do |slug|
+          user.user_permissions.create(permission_slug: slug, resource: options.facility_group)
+        end
+      end
     end
 
     trait(:counsellor) do
       role :counsellor
-      user_permissions { [
-        build(:user_permission, permission_slug: :can_manage_a_facility_group, resource: facility_group),
-        build(:user_permission, permission_slug: :can_access_appointment_information_for_facility_group, resource: facility_group),
-        build(:user_permission, permission_slug: :can_access_patient_information_for_facility_group, resource: facility_group)
-      ] }
+      after :create do |user, options|
+        [:manage_facilities_for_facility_group,
+         :view_overdue_list_for_facility_group,
+         :view_adherence_follow_up_list_for_facility_group].each do |slug|
+          user.user_permissions.create(permission_slug: slug, resource: options.facility_group)
+        end
+      end
     end
 
     trait(:organization_owner) do
       role :organization_owner
-      user_permissions { [
-        build(:user_permission, permission_slug: :can_manage_an_organization, resource: organization),
-        build(:user_permission, permission_slug: :can_access_appointment_information_for_facility_group, resource: organization),
-        build(:user_permission, permission_slug: :can_access_patient_information_for_facility_group, resource: organization),
-        build(:user_permission, permission_slug: :can_manage_users_for_organization, resource: organization)
-      ] }
+      after :create do |user, options|
+        [:manage_facility_groups_for_organization,
+         :view_overdue_list_for_facility_group,
+         :view_adherence_follow_up_list_for_facility_group,
+         :approve_health_workers_for_organization].each do |slug|
+          user.user_permissions.create(permission_slug: slug, resource: options.organization)
+        end
+      end
     end
   end
 end

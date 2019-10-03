@@ -11,7 +11,7 @@ RSpec.describe FacilityPolicy do
 
   context 'user can manage all organizations' do
     let(:user_with_permission) do
-      create(:admin, user_permissions: [build(:user_permission, permission_slug: :can_manage_all_organizations)])
+      create(:admin, user_permissions: [build(:user_permission, permission_slug: :manage_organizations)])
     end
 
     permissions :index? do
@@ -31,7 +31,7 @@ RSpec.describe FacilityPolicy do
   context 'user can manage an organization' do
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :can_manage_an_organization, resource: organization)
+        build(:user_permission, permission_slug: :manage_facility_groups_for_organization, resource: organization)
       ])
     end
 
@@ -58,7 +58,7 @@ RSpec.describe FacilityPolicy do
 
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :can_manage_a_facility_group, resource: facility_group)
+        build(:user_permission, permission_slug: :manage_facilities_for_facility_group, resource: facility_group)
       ])
     end
 
@@ -92,7 +92,7 @@ RSpec.describe FacilityPolicy::Scope do
 
   context 'user can manage all organizations' do
     let(:user_with_permission) do
-      create(:admin, user_permissions: [build(:user_permission, permission_slug: :can_manage_all_organizations)])
+      create(:admin, user_permissions: [build(:user_permission, permission_slug: :manage_organizations)])
     end
 
     it 'resolve all facilities ' do
@@ -104,7 +104,7 @@ RSpec.describe FacilityPolicy::Scope do
   context 'user can manage an organization' do
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :can_manage_an_organization, resource: organization)
+        build(:user_permission, permission_slug: :manage_facility_groups_for_organization, resource: organization)
       ])
     end
 
@@ -117,7 +117,7 @@ RSpec.describe FacilityPolicy::Scope do
   context 'user can manage a facility group' do
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :can_manage_a_facility_group, resource: facility_group_1)
+        build(:user_permission, permission_slug: :manage_facilities_for_facility_group, resource: facility_group_1)
       ])
     end
 

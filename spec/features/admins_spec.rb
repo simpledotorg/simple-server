@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.feature "Admins", type: :feature do
+RSpec.xfeature "Admins", type: :feature do
   let(:full_name) { Faker::Name.name }
   let!(:owner) { create(:admin, :owner, email: "owner@example.com") }
   let!(:supervisor) { create(:admin, :supervisor, email: "supervisor@example.com") }

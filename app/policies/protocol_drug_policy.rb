@@ -1,14 +1,14 @@
 class ProtocolDrugPolicy < ApplicationPolicy
   def index?
-    user_has_any_permissions?(:can_manage_all_protocols)
+    user_has_any_permissions?(:manage_protocols)
   end
 
   def show?
-    user_has_any_permissions?(:can_manage_all_protocols)
+    user_has_any_permissions?(:manage_protocols)
   end
 
   def create?
-    user_has_any_permissions?(:can_manage_all_protocols)
+    user_has_any_permissions?(:manage_protocols)
   end
 
   def new?
@@ -16,7 +16,7 @@ class ProtocolDrugPolicy < ApplicationPolicy
   end
 
   def update?
-    user_has_any_permissions?(:can_manage_all_protocols)
+    user_has_any_permissions?(:manage_protocols)
   end
 
   def edit?
@@ -24,7 +24,7 @@ class ProtocolDrugPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user_has_any_permissions?(:can_manage_all_protocols)
+    user_has_any_permissions?(:manage_protocols)
   end
 
   private
@@ -38,7 +38,7 @@ class ProtocolDrugPolicy < ApplicationPolicy
     end
 
     def resolve
-        if user.has_permission?(:can_manage_all_protocols)
+        if user.has_permission?(:manage_protocols)
         scope.all
       else
         scope.none
