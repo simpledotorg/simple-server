@@ -195,8 +195,8 @@ ActiveRecord::Schema.define(version: 20190911065742) do
     t.uuid "patient_id", null: false
     t.date "encountered_on", null: false
     t.integer "timezone_offset", null: false
+    t.text "notes"
     t.jsonb "metadata"
-    t.datetime "recorded_at", null: false
     t.datetime "device_created_at", null: false
     t.datetime "device_updated_at", null: false
     t.datetime "deleted_at"

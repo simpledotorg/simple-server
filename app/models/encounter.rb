@@ -7,14 +7,11 @@ class Encounter < ApplicationRecord
   has_many :observations
   has_many :blood_pressures, through: :observations, source: :observable, source_type: 'BloodPressure'
 
-  def self.generate_id(facility_id, patient_id, recorded_at, timezone_offset)
-    id_params = [
-      facility_id,
-      patient_id,
-      generate_encountered_on(recorded_at, timezone_offset)
-    ].join("")
-
-    UUIDTools::UUID.sha1_create(UUIDTools::UUID_DNS_NAMESPACE, id_params).to_s
+  def self.generate_id(facility_id, patient_id, encountered_on)
+    UUIDTools::UUID
+      .sha1_create(UUIDTools::UUID_DNS_NAMESPACE,
+                   [facility_id, patient_id, encountered_on].join(""))
+      .to_s
   end
 
   def self.generate_encountered_on(time, timezone_offset)

@@ -8,8 +8,8 @@ FactoryBot.define do
 
     timezone_offset 3600
     metadata ""
+    notes ""
 
-    recorded_at { Time.now }
     device_created_at { Time.now }
     device_updated_at { Time.now }
   end
@@ -17,9 +17,9 @@ end
 
 def build_encounters_payload(encounter = FactoryBot.build(:encounter))
   encounter.attributes.with_payload_keys
-    .merge('observations' => { 'blood_pressures' => encounter.blood_pressures.map { |bp|
-      bp.attributes.with_payload_keys },
-                               'prescription_drugs' => [] })
+    .merge('observations' =>
+             { 'blood_pressures' => encounter.blood_pressures.map { |bp|
+               bp.attributes.with_payload_keys } })
 end
 
 def build_invalid_encounters_payload

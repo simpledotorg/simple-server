@@ -1,27 +1,20 @@
 class MergeEncounterService
-  def initialize(payload, facility)
+  def initialize(payload, facility, timezone_offset)
     @payload = payload
     @facility = facility
+    @timezone_offset = timezone_offset
   end
 
   def merge
-    encounter_merge_params = payload
-                               .except(:observations)
-                               .merge(facility: facility,
-                                      encountered_on:
-                                        Encounter.generate_encountered_on(payload[:recorded_at], 3600))
-
+    encounter_merge_params = payload.except(:observations).merge(facility: facility,
+                                                                 timezone_offset: timezone_offset)
     encounter = Encounter.merge(encounter_merge_params)
-
-    {
-      encounter: encounter,
-      observations: create_observations!(encounter, payload[:observations])
-    }
+    { encounter: encounter, observations: create_observations!(encounter, payload[:observations]) }
   end
 
   private
 
-  attr_reader :payload, :facility
+  attr_reader :payload, :facility, :timezone_offset
 
   def create_observations!(encounter, observations)
     observations[:blood_pressures].map do |bp|

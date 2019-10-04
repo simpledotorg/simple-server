@@ -113,17 +113,18 @@ class Api::Current::Models
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' },
           patient_id: { '$ref' => '#/definitions/uuid' },
+          encountered_on: { type: :string, format: :date },
+          notes: { type: :string },
           observations: {
             type: :object,
             properties: {
               blood_pressures: { '$ref' => '#/definitions/blood_pressures' },
-              prescription_drugs: { '$ref' => '#/definitions/prescription_drugs' }
             },
             required: %w[blood_pressures]
           }
         },
-        required: %w[id created_at updated_at patient_id observations],
-        description: 'Encounter with observations: blood_pressures and prescription drugs.'
+        required: %w[id created_at updated_at patient_id encountered_on observations],
+        description: 'Encounter with observations: blood_pressures'
       }
     end
 

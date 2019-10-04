@@ -4,19 +4,13 @@ class Api::Current::EncounterTransformer
       blood_pressures = payload_attributes[:observations][:blood_pressures]
       blood_pressures_attributes = blood_pressures.map do |blood_pressure|
         Api::Current::BloodPressureTransformer.from_request(blood_pressure)
-      end if blood_pressures.present?
-
-      prescription_drugs = payload_attributes[:observations][:prescription_drugs]
-      prescription_drugs_attributes = prescription_drugs.map do |prescription_drug|
-        Api::Current::Transformer.from_request(prescription_drug)
-      end if prescription_drugs.present?
+      end if blood_pressures.present? || []
 
       encounter_attributes = Api::Current::Transformer.from_request(payload_attributes)
 
       encounter_attributes
         .merge(observations: {
-          blood_pressures: blood_pressures_attributes,
-          prescription_drugs: prescription_drugs_attributes
+          blood_pressures: blood_pressures_attributes
         }).with_indifferent_access
     end
 

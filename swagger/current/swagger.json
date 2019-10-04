@@ -1499,14 +1499,18 @@
         "patient_id": {
           "$ref": "#/definitions/uuid"
         },
+        "encountered_on": {
+          "type": "string",
+          "format": "date"
+        },
+        "notes": {
+          "type": "string"
+        },
         "observations": {
           "type": "object",
           "properties": {
             "blood_pressures": {
               "$ref": "#/definitions/blood_pressures"
-            },
-            "prescription_drugs": {
-              "$ref": "#/definitions/prescription_drugs"
             }
           },
           "required": [
@@ -1519,9 +1523,10 @@
         "created_at",
         "updated_at",
         "patient_id",
+        "encountered_on",
         "observations"
       ],
-      "description": "Encounter with observations: blood_pressures and prescription drugs."
+      "description": "Encounter with observations: blood_pressures"
     },
     "encounters": {
       "type": [

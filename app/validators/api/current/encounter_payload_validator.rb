@@ -4,8 +4,9 @@ class Api::Current::EncounterPayloadValidator < Api::Current::PayloadValidator
     :patient_id,
     :created_at,
     :updated_at,
-    :recorded_at,
     :deleted_at,
+    :notes,
+    :encountered_on,
     :observations,
   )
 

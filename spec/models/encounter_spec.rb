@@ -4,6 +4,7 @@ describe Encounter, type: :model do
   let!(:user) { create(:user) }
   let!(:facility) { create(:facility) }
   let!(:patient) { create(:patient, registration_facility: facility) }
+  let!(:blood_pressure) { create(:blood_pressure, patient: patient) }
   let!(:timezone_offset) { 3600 }
 
   context '#encountered_on' do
@@ -14,10 +15,12 @@ describe Encounter, type: :model do
     end
   end
 
-  context '#generate)id' do
+  context '#generate_id' do
     it 'generates the same encounter id consistently' do
-      id_1 = Encounter.generate_id(facility.id, patient.id, patient.recorded_at, timezone_offset)
-      id_2 = Encounter.generate_id(facility.id, patient.id, patient.recorded_at, timezone_offset)
+      encountered_on = Encounter.generate_encountered_on(blood_pressure.recorded_at, timezone_offset)
+
+      id_1 = Encounter.generate_id(facility.id, patient.id, encountered_on)
+      id_2 = Encounter.generate_id(facility.id, patient.id, encountered_on)
 
       expect(id_1).to eq(id_2)
     end
