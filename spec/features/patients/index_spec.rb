@@ -73,7 +73,7 @@ RSpec.feature 'To test adherence followup patient functionality', type: :feature
   end
 
 
-  pending 'JS specs are currently disabled' do
+  skip 'JS specs are currently disabled' do
     describe "Javascript based tests", :js => true do
       let!(:chc_bagta_facility) {create(:facility, facility_group: ihmi_facility_group, name: "bagta")}
       let!(:path) {create(:facility, facility_group: ihmi_facility_group, name: "test_facility")}
