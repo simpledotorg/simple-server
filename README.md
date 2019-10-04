@@ -13,7 +13,7 @@ bundle install
 rake db:create db:setup db:migrate
 ```
 
-To run simple-android app with the server running locally, you can use ngrok https://ngrok.com
+To run [simple-android](https://github.com/simpledotorg/simple-android/) app with the server running locally, you can use ngrok https://ngrok.com
 ```bash
 brew cask install ngrok
 rails server
