@@ -3,12 +3,14 @@ require 'factory_bot_rails'
 require 'faker'
 require 'timecop'
 
-ENTROPY_FACTOR = (1 << 12).freeze
-def time_entropy(time = Time.now)
-  sleep 0.01; time + SecureRandom.rand * (ENTROPY_FACTOR)
-end
-
 namespace :generate do
+
+
+  def time_entropy(time = Time.now)
+    entropy_factor = (1 << 12)
+    sleep 0.01; time + SecureRandom.rand * (entropy_factor)
+  end
+
   task :seed, [:number_of_months] => :environment do |_t, args|
     number_of_months = args.fetch(:number_of_months) { 3 }.to_i
     environment = ENV.fetch('SIMPLE_SERVER_ENV') { 'development' }
