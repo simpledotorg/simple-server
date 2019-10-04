@@ -70,7 +70,7 @@ class Patient < ApplicationRecord
   end
 
   def latest_bp_passport
-    business_identifiers.where(identifier_type: "simple_bp_passport").order(:device_created_at).last
+    business_identifiers.simple_bp_passport.order(:device_created_at).last
   end
 
   def phone_number?
