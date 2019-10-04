@@ -18,9 +18,6 @@
             <%= link_to 'Allow access', admin_user_enable_access_path(@user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') }, class: 'btn btn-success btn-sm' %>
           <% end %>
         <% end %>
-        <% if policy(@user.audit_logs).index? %>
-            <%= link_to 'Audit logs', admin_audit_logs_url(user_name: @user.full_name), class: 'btn btn-secondary btn-sm' %>
-        <% end %>
 
         <%= render partial: "deny_access_modal", locals: {user: @user} %>
     </nav>

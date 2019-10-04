@@ -158,8 +158,6 @@ Rails.application.routes.draw do
   get "admin", to: redirect("/")
 
   namespace :admin do
-    resources :audit_logs, only: [:index, :show]
-
     resources :organizations
 
     resources :facilities, only: [:index] do
