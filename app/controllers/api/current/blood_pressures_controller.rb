@@ -28,7 +28,7 @@ class Api::Current::BloodPressuresController < Api::Current::SyncController
   end
 
   def set_encounter(params)
-    encountered_on = Encounter.generate_encountered_on(params[:recorded_at], 3600)
+    encountered_on = Encounter.generate_encountered_on(params[:recorded_at], current_timezone_offset)
 
     encounter_merge_params = {
       id: Encounter.generate_id(params[:facility_id], params[:patient_id], encountered_on),
@@ -36,13 +36,13 @@ class Api::Current::BloodPressuresController < Api::Current::SyncController
       device_created_at: params[:device_created_at],
       device_updated_at: params[:device_updated_at],
       encountered_on: encountered_on,
-      timezone_offset: 3600,
+      timezone_offset: current_timezone_offset,
       observations: {
         blood_pressures: [params],
       }
     }.with_indifferent_access
 
-    MergeEncounterService.new(encounter_merge_params, current_facility, 3600).merge
+    MergeEncounterService.new(encounter_merge_params, current_facility, current_timezone_offset).merge
   end
 
   def set_patient_recorded_at(bp_params)

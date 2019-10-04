@@ -1,5 +1,4 @@
 class User < ApplicationRecord
-
   self.table_name = 'master_users'
 
   AUTHENTICATION_TYPES = {

@@ -37,6 +37,7 @@ ActiveRecord::Schema.define(version: 20190911065742) do
     t.string "access_controllable_type", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "user_id"
     t.index ["access_controllable_id", "access_controllable_type"], name: "index_access_controls_on_controllable_id_and_type"
     t.index ["admin_id"], name: "index_admin_access_controls_on_admin_id"
   end
@@ -262,6 +263,9 @@ ActiveRecord::Schema.define(version: 20190911065742) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
+    t.string "role"
+    t.uuid "organization_id"
+    t.index ["organization_id"], name: "index_master_users_on_organization_id"
   end
 
   create_table "medical_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -289,13 +293,14 @@ ActiveRecord::Schema.define(version: 20190911065742) do
 
   create_table "observations", force: :cascade do |t|
     t.uuid "encounter_id", null: false
-    t.uuid "user_id"
+    t.uuid "user_id", null: false
     t.string "observable_type"
     t.uuid "observable_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["encounter_id"], name: "index_observations_on_encounter_id"
     t.index ["observable_type", "observable_id"], name: "idx_observations_on_observable_type_and_id", unique: true
+    t.index ["user_id"], name: "index_observations_on_user_id"
   end
 
   create_table "organizations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -435,6 +440,17 @@ ActiveRecord::Schema.define(version: 20190911065742) do
     t.index ["user_id"], name: "index_user_authentications_on_user_id"
   end
 
+  create_table "user_permissions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.string "permission_slug"
+    t.string "resource_type"
+    t.uuid "resource_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["resource_type", "resource_id"], name: "index_user_permissions_on_resource_type_and_resource_id"
+  end
+
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "full_name"
     t.string "phone_number"
@@ -463,6 +479,7 @@ ActiveRecord::Schema.define(version: 20190911065742) do
   add_foreign_key "facilities", "facility_groups"
   add_foreign_key "facility_groups", "organizations"
   add_foreign_key "observations", "encounters"
+  add_foreign_key "observations", "master_users", column: "user_id"
   add_foreign_key "patient_phone_numbers", "patients"
   add_foreign_key "patients", "addresses"
   add_foreign_key "protocol_drugs", "protocols"
