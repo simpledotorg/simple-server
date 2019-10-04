@@ -4,9 +4,9 @@ RSpec.describe Api::V2::AppointmentTransformer do
   describe 'to_response' do
     let(:appointment) { FactoryBot.build(:appointment) }
 
-    it 'removes appointment_type from appointment hashes' do
+    it 'removes appointment_type and user_id from appointment hashes' do
       transformed_appointment = Api::V2::AppointmentTransformer.to_response(appointment)
-      expect(transformed_appointment).not_to include('appointment_type')
+      expect(transformed_appointment).not_to include('appointment_type', 'user_id')
     end
   end
 
