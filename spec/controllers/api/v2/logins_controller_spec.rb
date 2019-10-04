@@ -8,8 +8,8 @@ RSpec.describe Api::V2::LoginsController, type: :controller do
       let(:request_params) do
         { user:
             { phone_number: db_user.phone_number,
-              password:     password,
-              otp:          db_user.otp
+              password: password,
+              otp: db_user.otp
             }
         }
       end
@@ -40,8 +40,8 @@ RSpec.describe Api::V2::LoginsController, type: :controller do
       let(:request_params) do
         { user:
             { phone_number: db_user.phone_number,
-              password:     password,
-              otp:          db_user.otp
+              password: password,
+              otp: db_user.otp
             }
         }
       end
@@ -59,8 +59,8 @@ RSpec.describe Api::V2::LoginsController, type: :controller do
       let(:request_params) do
         { user:
             { phone_number: db_user.phone_number,
-              password:     '1234',
-              otp:          'wrong otp'
+              password: '1234',
+              otp: 'wrong otp'
             }
         }
       end
@@ -78,8 +78,8 @@ RSpec.describe Api::V2::LoginsController, type: :controller do
       let(:request_params) do
         { user:
             { phone_number: db_user.phone_number,
-              password:     'wrong password',
-              otp:          db_user.otp
+              password: 'wrong password',
+              otp: db_user.otp
             }
         }
       end
@@ -97,8 +97,8 @@ RSpec.describe Api::V2::LoginsController, type: :controller do
       let(:request_params) do
         { user:
             { phone_number: 'wrong phone number',
-              password:     '1234',
-              otp:          db_user.otp
+              password: '1234',
+              otp: db_user.otp
             }
         }
       end
@@ -119,19 +119,23 @@ RSpec.describe Api::V2::LoginsController, type: :controller do
       let(:request_params) do
         { user:
             { phone_number: db_user.phone_number,
-              password:     password,
-              otp:          db_user.otp
+              password: password,
+              otp: db_user.otp
             }
         }
       end
 
       it 'creates an audit log of the user login' do
-        post :login_user, params: request_params
-        audit_log = AuditLog.where(user_id: db_user.id).first
+        Timecop.freeze do
+          expect(AuditLogger)
+            .to receive(:info).with({ user: db_user.id,
+                                      auditable_type: 'User',
+                                      auditable_id: db_user.id,
+                                      action: 'login',
+                                      time: Time.now }.to_json)
 
-        expect(audit_log.action).to eq('login')
-        expect(audit_log.auditable_type).to eq('User')
-        expect(audit_log.auditable_id).to eq(db_user.id)
+          post :login_user, params: request_params
+        end
       end
     end
   end

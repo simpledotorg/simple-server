@@ -1,6 +1,11 @@
 <div class="card pb-4">
   <h3>Cohort report</h3>
-  <div class="desc">Outcomes for patients registered 3-6 months previously:
+  <div class="desc">
+    <% if @period == :quarter %>
+      Outcomes for patients registered 3-6 months previously:
+    <% else %>
+      Outcomes for patients registered 1 month previously:
+    <% end %>
     <div class="key desktop">
       <div class="key-definition didntattend">Didn't attend for<br class="mobile"> follow-up visit</div>
       &nbsp;
