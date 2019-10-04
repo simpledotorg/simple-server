@@ -33,7 +33,29 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
 
   describe 'POST sync: send data from device to server;' do
     it_behaves_like 'a working sync controller creating records'
-    it_behaves_like 'a working sync controller updating records'
+
+    describe 'a working sync controller updating records' do
+      let(:request_key) { model.to_s.underscore.pluralize }
+      let(:existing_records) { create_record_list(10) }
+      let(:updated_records) { existing_records.map(&update_payload) }
+      let(:updated_payload) { Hash[request_key, updated_records] }
+
+      before :each do
+        set_authentication_headers
+      end
+
+      describe 'updates records' do
+        it 'with updated record attributes' do
+          post :sync_from_user, params: updated_payload, as: :json
+
+          updated_records.each do |record|
+            db_record = model.find(record['id'])
+            expect(db_record.attributes.to_json_and_back.with_payload_keys.with_int_timestamps)
+              .to eq(record.to_json_and_back.with_int_timestamps)
+          end
+        end
+      end
+    end
 
     describe 'creates new blood pressures' do
       before :each do

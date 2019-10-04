@@ -6,25 +6,25 @@
     <h1 class="page-title">
         <%= @protocol.name %>
     </h1>
-    <p>
+    <p id="Follow up days">
       <strong>Follow up days:</strong> <%= @protocol.follow_up_days %>
     </p>
   </div>
   <nav class="page-nav">
     <% if policy(@protocol).edit? %>
-      <%= link_to "Edit protocol", edit_admin_protocol_path(@protocol), class: "btn btn-sm btn-primary" %>
+      <%= link_to "Edit protocol", edit_admin_protocol_path(@protocol), class: "btn btn-sm btn-primary" ,id: "Edit protocol" %>
     <% end %>
     <% if policy(ProtocolDrug).new? %>
-      <%= link_to 'New protocol drug', new_admin_protocol_protocol_drug_path(@protocol), class: "btn btn-sm btn-primary" %>
+      <%= link_to 'New protocol drug', new_admin_protocol_protocol_drug_path(@protocol), class: "btn btn-sm btn-primary", id: "New protocol drug" %>
     <% end %>
   </nav>
 </div>
 
     <% @protocol_drugs.each do |protocol_drug| %>
-      <div class="card">
+      <div class="card" name="<%= protocol_drug.name %>">
         <div class="row">
             <div class="col-md-4">
-                <h5 class="mb-1"><%= protocol_drug.dosage %> <%= protocol_drug.name %></h5>
+                <h5 class="mb-1" ><%= protocol_drug.dosage %> <%= protocol_drug.name %></h5>
             </div>
             <div class="col-md-3 mb-2"><i class="fas fa-pills light mr-1"></i>
                     <span class="text-secondary">RXnorm Code:</span> 
