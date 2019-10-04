@@ -12,14 +12,14 @@ class CollectionCheckBoxes extends React.Component {
                        onChange={() => updatePermissions(permission)}
                        id={permission.slug}/>
                 <label className="form-check-label form-label-light" htmlFor={permission.slug}>
-                    {permission.slug}
+                    {permission.description}
                 </label>
             </div>);
         });
         return (
             <div className="mt-3 p-3">
                 <div className="row">
-                    <div className="col-md-4">
+                    <div className="col-md-6">
                         {permissions}
                     </div>
                 </div>

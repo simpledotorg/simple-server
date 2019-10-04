@@ -19,12 +19,24 @@ var SelectResourceModal = createReactClass({
             self.setState(updateHash);
         };
 
-        var toggleResource = (resourceId) => {
+        var toggleResource = (resourceId, resourceName) => {
             var newResources = toggleElement(self.state.selectedResources, {
                 resource_type: self.props.resourceType,
-                resource_id: resourceId
+                resource_id: resourceId,
+                resource_name: resourceName
             });
             self.setState({selectedResources: newResources})
+        };
+
+        var selectAllResources = () => {
+            var newResources = _.map(self.state.matchingResources, (resource) => {
+                return {
+                    resource_type: self.props.resourceType,
+                    resource_id: resource[0],
+                    resource_name: resource[1]
+                };
+            });
+            self.setState({selectedResources: newResources});
         };
 
         var selectedResources = self.state.selectedResources;
@@ -34,7 +46,7 @@ var SelectResourceModal = createReactClass({
                        type="checkbox"
                        value={resource[0]}
                        checked={!_.isUndefined(_.find(selectedResources, ['resource_id', resource[0]]))}
-                       onChange={(e) => toggleResource(e.target.value)}
+                       onChange={() => toggleResource(resource[0], resource[1])}
                        id={resource[0]}/>
                 <label className="form-check-label form-label-light" htmlFor={resource[0]}>
                     {resource[1]}
@@ -67,7 +79,7 @@ var SelectResourceModal = createReactClass({
                             </div>
                         </div>
                         <div className="modal-footer justify-content-between">
-                            <button type="button" className="btn btn-outline-success">
+                            <button type="button" className="btn btn-outline-success" onClick={selectAllResources}>
                                 Give access to all facilities
                             </button>
                             <button type="button" className="btn btn-primary" data-dismiss="modal" aria-label="Done"

@@ -55,7 +55,8 @@ module CreateMasterUser
 
   #@todo: User should be enough here
   def self.assign_permissions!(user, admin)
-    user_permissions = User::DEFAULT_PERMISSIONS[user.role.to_sym]
+    access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
+    user_permissions = access_level[:default_permissions]
     resources = admin.admin_access_controls
     user_permissions.each do |permission_slug|
       permission = Permissions::ALL_PERMISSIONS[permission_slug]

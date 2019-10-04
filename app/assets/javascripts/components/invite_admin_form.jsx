@@ -88,7 +88,9 @@ window.InviteAdminForm = createReactClass({
                     'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
                 },
                 data: request_payload,
-                success: console.log
+                success: () => {
+                    window.location.replace("/admins");
+                }
             });
         };
 
