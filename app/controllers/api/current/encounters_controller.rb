@@ -7,6 +7,15 @@ class Api::Current::EncountersController < Api::Current::SyncController
     __sync_to_user__('encounters')
   end
 
+  def generate_id
+    params.require([:facility_id, :patient_id, :encountered_on])
+
+    render plain: Encounter.generate_id(params[:facility_id].strip,
+                                        params[:patient_id].strip,
+                                        params[:encountered_on].strip),
+           status: :ok
+  end
+
   private
 
   def merge_if_valid(encounter_params)
