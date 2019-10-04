@@ -7,7 +7,7 @@ RSpec.feature 'Verify Dashboard', type: :feature do
 
   login_page = AdminPage::Sessions::New.new
   dashboard = OrganizationsPage::Index.new
-  dashboard_navigation = DashboardPageNavigation.new
+  dashboard_navigation = Navigations::DashboardPageNavigation.new
   org_page = AdminPage::Organizations::Index.new
 
 
