@@ -157,7 +157,6 @@ Rails.application.routes.draw do
   get "admin", to: redirect("/")
 
   namespace :admin do
-
     resources :organizations
 
     resources :facilities, only: [:index] do
