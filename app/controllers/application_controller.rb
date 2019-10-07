@@ -4,6 +4,10 @@ class ApplicationController < ActionController::Base
 
   before_action :configure_permitted_parameters, if: :devise_controller?
 
+  def set_locale
+    I18n.locale = http_accept_language.compatible_language_from(I18n.available_locales)
+  end
+
   private
 
   # Tell pundit how to find the current user

@@ -30,5 +30,8 @@ module SimpleServer
       g.system_tests false
       g.helper false
     end
+
+    # List of available locales
+    config.i18n.available_locales = %w(en mr-IN pa-Guru-IN)
   end
 end
