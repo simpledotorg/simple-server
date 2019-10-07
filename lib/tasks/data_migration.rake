@@ -69,4 +69,50 @@ namespace :data_migration do
       UpdateUserIdsFromAuditLogsWorker.perform_async(model.constantize, model_log_ids)
     end
   end
+
+  desc 'Backport all BloodPressures to have Encounters and appropriate Observations'
+  task :add_encounters_to_existing_blood_pressures => :environment do |_t, _args|
+    batch_size = ENV['BACKFILL_ENCOUNTERS_FOR_BPS_BATCH_SIZE'].to_i || 1000
+    timezone_offset = 19800 # For 'Asia/Kolkata'
+
+    migrate all blood_pressures in batches
+    BloodPressure.in_batches(of: batch_size) do |batch|
+      batch.map do |blood_pressure|
+        encountered_on = Encounter.generate_encountered_on(blood_pressure.recorded_at, timezone_offset)
+
+        encounter_merge_params = {
+          id: Encounter.generate_id(blood_pressure.facility.id, blood_pressure.patient.id, encountered_on),
+          patient_id: blood_pressure.patient.id,
+          device_created_at: blood_pressure.device_created_at,
+          device_updated_at: blood_pressure.device_updated_at,
+          encountered_on: encountered_on,
+          timezone_offset: timezone_offset,
+          observations: {
+            blood_pressures: [blood_pressure.attributes.except(:created_at, :updated_at)],
+          }
+        }.with_indifferent_access
+
+        MergeEncounterService.new(encounter_merge_params, blood_pressure.facility, timezone_offset).merge
+      end
+    end
+
+    # migrate all patients that have no blood_pressures
+    Patient.includes(:blood_pressures).select { |p| p.blood_pressures.blank? }.each do |patient|
+      encountered_on = Encounter.generate_encountered_on(patient.recorded_at, timezone_offset)
+
+      encounter_merge_params = {
+        id: Encounter.generate_id(patient.registration_facility.id, patient.id, encountered_on),
+        patient_id: patient.id,
+        device_created_at: patient.device_created_at,
+        device_updated_at: patient.device_updated_at,
+        encountered_on: encountered_on,
+        timezone_offset: timezone_offset,
+        observations: {
+          blood_pressures: []
+        }
+      }.with_indifferent_access
+
+      MergeEncounterService.new(encounter_merge_params, patient.registration_facility, timezone_offset).merge
+    end
+  end
 end
