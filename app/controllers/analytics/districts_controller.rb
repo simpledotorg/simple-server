@@ -24,6 +24,20 @@ class Analytics::DistrictsController < AnalyticsController
                                district_name: @organization_district.district_name)
   end
 
+  def patient_list
+    recipient_email = current_admin.email
+
+    PatientListDownloadJob.perform_later(recipient_email, 'district', {
+      district_name: @organization_district.district_name,
+      organization_id: @organization_district.organization.id
+    })
+
+    redirect_to(
+      analytics_organization_district_path(id: @organization_district.district_name),
+      notice: I18n.t('patient_list_email.notice', model_type: "district", model_name: @organization_district.district_name)
+    )
+  end
+
   def whatsapp_graphics
     set_cohort_analytics(:quarter, 3)
     set_dashboard_analytics(:quarter, 3)
