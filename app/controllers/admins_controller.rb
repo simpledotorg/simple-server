@@ -4,8 +4,6 @@ class AdminsController < AdminController
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
-  helper_method :selectable_resource_types
-
   def index
     authorize User
     @admins = policy_scope(User.where.not(role: :nurse)).sort_by(&:email)
@@ -18,17 +16,15 @@ class AdminsController < AdminController
   end
 
   def update
-    @admin.resources = resource_gids
-    user_permissions = @admin.resources.flat_map do |resource|
-      @admin.default_permissions_for_resource_type(resource.class.to_s).map do |permission_slug|
-        @admin.user_permissions.new(permission_slug: permission_slug, resource: resource)
-      end
-    end
+    User.transaction do
+      binding.pry
+      @admin.update!(user_params)
+      next unless permission_params[:permissions].present?
 
-    if @admin.update(admin_params.merge(user_permissions: user_permissions))
-      redirect_to admin_path(@admin), notice: 'Admin was successfully updated.'
-    else
-      render :edit, notice: @admin.errors
+      user.user_permissions.delete_all!
+      permission_params[:permissions].each do |attributes|
+        user.user_permissions.create!(attributes)
+      end
     end
   end
 
@@ -38,13 +34,6 @@ class AdminsController < AdminController
   end
 
   private
-
-  def selectable_resource_types
-    User::DEFAULT_PERMISSIONS[@admin.role.to_sym]
-      .map { |permission_slug| Permissions::ALL_PERMISSIONS[permission_slug][:resource_type] }
-      .uniq
-  end
-
 
   def user_not_authorized
     flash[:alert] = "You are not authorized to perform this action."
@@ -56,11 +45,14 @@ class AdminsController < AdminController
     authorize @admin
   end
 
-  def resource_gids
-    params.require(:admin).require(:resource_gids)
+  def permission_params
+    params.permit(permissions: [:permission_slug, :resource_type, :resource_id])
   end
 
-  def admin_params
-    params.require(:admin).permit(:full_name, :email)
+  def user_params
+    { full_name: params.require(:full_name),
+      role: params.require(:role),
+      organization_id: params.require(:organization_id),
+      device_updated_at: Time.now }
   end
 end

@@ -5,4 +5,7 @@
                     facility_groups: policy_scope(FacilityGroup.all).pluck(:id, :name),
                     facilities: policy_scope(Facility.all).pluck(:id, :name),
                     permissions: Permissions::ALL_PERMISSIONS.values,
-                    access_levels: Permissions::ACCESS_LEVELS %>
+                    access_levels: Permissions::ACCESS_LEVELS,
+                    submit_route: '/email_authentications/invitation',
+                    submit_text: 'Invite Admin',
+                    submit_method: 'POST' %>

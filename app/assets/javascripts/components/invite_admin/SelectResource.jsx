@@ -1,6 +1,5 @@
 class SelectResource extends React.Component {
     render() {
-        console.log(this.props.selected_resources);
         var inputDisplay = _.chain(this.props.selected_resources)
             .take(2)
             .map('resource_name')

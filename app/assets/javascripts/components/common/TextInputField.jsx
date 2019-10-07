@@ -6,6 +6,7 @@ class TextInputField extends React.Component {
                 <div className="col-md-10">
                     <input className="form-control"
                            type="text"
+                           value={this.props.value}
                            placeholder="" id={this.props.name}
                            onChange={(e) => this.props.updateInput(this.props.name, e.target.value)}/>
                 </div>

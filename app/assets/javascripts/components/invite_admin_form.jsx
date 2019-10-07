@@ -16,14 +16,14 @@ window.InviteAdminForm = createReactClass({
 
     getInitialState: function () {
         return {
-            full_name: null,
-            email: null,
-            role: null,
-            mobile: null,
-            location: null,
-            organization_id: null,
-            selected_permissions: [],
-            selected_resources: [],
+            full_name: _.get(this.props, ['admin', 'full_name'], null),
+            email: _.get(this.props, ['email'], null),
+            role: _.get(this.props, ['admin', 'role'], null),
+            mobile: _.get(this.props, ['admin', 'mobile'], null),
+            location: _.get(this.props, ['admin', 'location'], null),
+            organization_id: _.get(this.props, ['admin', 'organization_id'], null),
+            selected_permissions: _.get(this.props, ['selected_permissions'], []),
+            selected_resources: _.get(this.props, ['selected_resources'], [])
         }
     },
 
@@ -82,8 +82,8 @@ window.InviteAdminForm = createReactClass({
             };
 
             $.ajax({
-                type: "POST",
-                url: "/email_authentications/invitation",
+                type: this.props.submit_method,
+                url: this.props.submit_route,
                 headers: {
                     'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
                 },
@@ -96,11 +96,11 @@ window.InviteAdminForm = createReactClass({
 
         return (
             <div>
-                <TextInputField name="full_name" title="Full Name" updateInput={updateInput}/>
-                <TextInputField name="email" title="Email" updateInput={updateInput}/>
-                <TextInputField name="role" title="Role" updateInput={updateInput}/>
-                <TextInputField name="mobile" title="Mobile" updateInput={updateInput}/>
-                <TextInputField name="location" title="Location" updateInput={updateInput}/>
+                <TextInputField name="full_name" title="Full Name" value={this.state.full_name} updateInput={updateInput}/>
+                <TextInputField name="email" title="Email" value={this.state.email} updateInput={updateInput}/>
+                <TextInputField name="role" title="Role" value={this.state.role} updateInput={updateInput}/>
+                <TextInputField name="mobile" title="Mobile" value={this.state.mobile} updateInput={updateInput}/>
+                <TextInputField name="location" title="Location" value={this.state.location} updateInput={updateInput}/>
                 <CollectionRadioButtons name="organization_id" title="Organization"
                                         organizations={this.props.organizations}
                                         checked_id={this.state.organization_id}
@@ -116,7 +116,9 @@ window.InviteAdminForm = createReactClass({
                                       updateResources={updateResources}
                                       facility_groups={this.props.facility_groups}
                                       facilities={this.props.facilities}/>
-                <button className="btn btn-primary" onClick={submitForm}>Invite Admin</button>
+                <button className="btn btn-primary" onClick={submitForm}>
+                    {this.props.submit_text}
+                </button>
             </div>
         );
     }
