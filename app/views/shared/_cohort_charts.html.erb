@@ -32,7 +32,7 @@
         report_period = quarter_string(report_start)
         cohort_period = quarter_string(cohort_start)
       else
-        report_period = report_start.strftime("%b %Y")
+        report_period = [report_start.strftime("%b"), (report_start + 1.month).strftime("%b")].join(" - ")
         cohort_period = cohort_start.strftime("%b %Y")
       end
 
