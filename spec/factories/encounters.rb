@@ -1,8 +1,8 @@
 FactoryBot.define do
   factory :encounter do
     id { SecureRandom.uuid }
-    association :patient, strategy: :build
-    association :facility, strategy: :build
+    association :patient, strategy: :create
+    association :facility, strategy: :create
 
     encountered_on "2019-09-11"
 

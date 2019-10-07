@@ -33,7 +33,7 @@ class Api::Current::EncountersController < Api::Current::SyncController
   end
 
   def transform_to_response(encounter)
-    Api::Current::EncounterTransformer.to_nested_response(encounter)
+    Api::Current::EncounterTransformer.to_response(encounter)
   end
 
   def encounter_params

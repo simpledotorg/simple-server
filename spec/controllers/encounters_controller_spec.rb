@@ -13,16 +13,39 @@ RSpec.describe Api::Current::EncountersController, type: :controller do
 
   let(:number_of_schema_errors_in_invalid_payload) { 3 }
 
-  def create_record(_options = {})
-    facility = FactoryBot.build(:facility, facility_group: request_user.facility.facility_group)
+  def build_record(_options = {})
+    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
     patient = FactoryBot.create(:patient, registration_facility: facility)
-    blood_pressure = FactoryBot.build(:blood_pressure, facility: facility, patient: patient)
+    blood_pressure = FactoryBot.create(:blood_pressure, facility: facility, patient: patient)
     encounter = FactoryBot.build(:encounter, patient: patient)
-    observation = FactoryBot.build(:observation, encounter: encounter, observable: blood_pressure)
+    observation = FactoryBot.build(:observation, encounter: encounter, observable: blood_pressure, user: request_user)
     encounter.observations = [observation]
     encounter.blood_pressures = [observation.observable]
     encounter
   end
+
+  def create_record(_options = {})
+    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
+    patient = FactoryBot.create(:patient, registration_facility: facility)
+    blood_pressure = FactoryBot.create(:blood_pressure, facility: facility, patient: patient)
+    encounter = FactoryBot.create(:encounter, patient: patient)
+    FactoryBot.create(:observation, encounter: encounter, observable: blood_pressure, user: request_user)
+    encounter
+  end
+
+  def create_record_list(n)
+    encounters = []
+
+    n.times.each do |_|
+      encounters << create_record
+    end
+
+    encounters
+  end
+
+  it_behaves_like 'a sync controller that authenticates user requests'
+  it_behaves_like 'a working sync controller that short circuits disabled apis'
+  it_behaves_like 'a sync controller that audits the data access'
 
   describe 'POST sync: send data from device to server;' do
     describe 'creates new encounters' do
@@ -35,9 +58,8 @@ RSpec.describe Api::Current::EncountersController, type: :controller do
 
       it 'creates new encounters' do
         encounters = (1..3).map do
-          encounter = create_record
+          encounter = build_record
           build_encounters_payload(encounter)
-
         end
 
         expect {
@@ -55,7 +77,7 @@ RSpec.describe Api::Current::EncountersController, type: :controller do
           }
         }.with_indifferent_access
 
-        encounter_with_empty_observations = build_encounters_payload(create_record).merge(empty_observations)
+        encounter_with_empty_observations = build_encounters_payload(build_record).merge(empty_observations)
 
         expect {
           post(:sync_from_user, params: { encounters: [encounter_with_empty_observations] }, as: :json)
@@ -66,7 +88,7 @@ RSpec.describe Api::Current::EncountersController, type: :controller do
       end
 
       it 'associates registration facility with the encounter' do
-        encounter = build_encounters_payload(create_record)
+        encounter = build_encounters_payload(build_record)
 
         expect {
           post(:sync_from_user, params: { encounters: [encounter] }, as: :json)
@@ -77,7 +99,7 @@ RSpec.describe Api::Current::EncountersController, type: :controller do
       end
 
       it 'associates patient with the encounter' do
-        encounter = build_encounters_payload(create_record)
+        encounter = build_encounters_payload(build_record)
         patient = Patient.find(encounter['patient_id'])
 
         expect {
