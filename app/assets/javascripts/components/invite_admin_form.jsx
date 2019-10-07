@@ -99,8 +99,8 @@ window.InviteAdminForm = createReactClass({
                 <TextInputField name="full_name" title="Full Name" value={this.state.full_name} updateInput={updateInput}/>
                 <TextInputField name="email" title="Email" value={this.state.email} updateInput={updateInput}/>
                 <TextInputField name="role" title="Role" value={this.state.role} updateInput={updateInput}/>
-                <TextInputField name="mobile" title="Mobile" value={this.state.mobile} updateInput={updateInput}/>
-                <TextInputField name="location" title="Location" value={this.state.location} updateInput={updateInput}/>
+                {/*<TextInputField name="mobile" title="Mobile" value={this.state.mobile} updateInput={updateInput}/>*/}
+                {/*<TextInputField name="location" title="Location" value={this.state.location} updateInput={updateInput}/>*/}
                 <CollectionRadioButtons name="organization_id" title="Organization"
                                         organizations={this.props.organizations}
                                         checked_id={this.state.organization_id}
