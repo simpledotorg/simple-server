@@ -18,13 +18,17 @@ class AdminsController < AdminController
   def update
     User.transaction do
       @admin.update!(user_params)
-      next unless permission_params[:permissions].present?
+      next unless permission_params.present?
 
-      user.user_permissions.delete_all!
-      permission_params[:permissions].each do |attributes|
-        user.user_permissions.create!(attributes)
+      @admin.user_permissions.delete_all
+      permission_params.each do |attributes|
+        @admin.user_permissions.create!(attributes.permit(
+          :permission_slug,
+          :resource_id,
+          :resource_type))
       end
     end
+    render json: {}, status: :accepted
   end
 
   def destroy
@@ -45,13 +49,13 @@ class AdminsController < AdminController
   end
 
   def permission_params
-    params.permit(permissions: [:permission_slug, :resource_type, :resource_id])
+    params.require(:permissions)
   end
 
   def user_params
     { full_name: params.require(:full_name),
       role: params.require(:role),
-      organization_id: params.require(:organization_id),
+      organization_id: params[:organization_id],
       device_updated_at: Time.now }
   end
 end

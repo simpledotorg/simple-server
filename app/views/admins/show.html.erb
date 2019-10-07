@@ -23,13 +23,15 @@
     <h5><i class="fas fa-shield-alt"></i> Role: <%= @admin.role.humanize %></h5>
     <h5><i class="fas fa-lock"></i> Permissions:</h5>
     <ul>
-      <% @admin.user_permissions.each do |user_permission| %>
-        <li>
-          <%= user_permission.permission_slug.titleize %>
-          <% if user_permission.resource.present? %>
-            <%= link_to user_permission.resource.name, [:admin, user_permission.resource] %>
+      <% @admin.user_permissions.group_by(&:permission_slug).each do |permission_slug, user_permissions| %>
+        <li><%= permission_slug.titleize %></li>
+        <ul>
+          <% user_permissions.each do |user_permission| %>
+            <% if user_permission.resource.present? %>
+              <li><%= link_to user_permission.resource.name, [:admin, user_permission.resource] %></li>
+            <% end %>
           <% end %>
-        </li>
+        </ul>
       <% end %>
     </ul>
   </div>

@@ -14,10 +14,13 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
         user.email_authentications = [resource]
         user.save!
 
-        next unless permission_params[:permissions].present?
+        next if permission_params.blank?
 
-        permission_params[:permissions].each do |attributes|
-          user.user_permissions.create!(attributes)
+        permission_params.each do |attributes|
+          user.user_permissions.create!(attributes.permit(
+            :permission_slug,
+            :resource_id,
+            :resource_type))
         end
       end
     end
@@ -43,7 +46,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   end
 
   def permission_params
-    params.permit(permissions: [:permission_slug, :resource_type, :resource_id])
+    params.require(:permissions)
   end
 
   def invite_params

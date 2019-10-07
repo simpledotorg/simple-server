@@ -3,7 +3,7 @@ var SelectResourceModal = createReactClass({
         return {
             searchText: "",
             matchingResources: this.props.resources,
-            selectedResources: []
+            selectedResources: _.get(this.props, 'selected_resources', [])
         };
     },
 

@@ -36,7 +36,7 @@ module Permissions
     manage_protocols: {
       type: :global,
       slug: :manage_protocols,
-      description: 'Manage organizations'
+      description: 'Manage protocols'
     },
     manage_facility_groups_for_organization: {
       type: :resource,
@@ -48,7 +48,7 @@ module Permissions
       type: :resource,
       slug: :manage_facilities_for_facility_group,
       resource_type: 'FacilityGroup',
-      description: 'Manage facility groups for an organization'
+      description: 'Manage facilities for a facility group'
     },
     view_cohort_reports_for_organization: {
       type: :resource,
@@ -60,7 +60,7 @@ module Permissions
       type: :resource,
       slug: :view_cohort_reports_for_facility_group,
       resource_type: 'Organization',
-      description: 'View cohort reports for organization'
+      description: 'View cohort reports for a facility group'
     },
     view_health_worker_activity_for_organization: {
       type: :resource,
@@ -106,7 +106,7 @@ module Permissions
     view_adherence_follow_up_list_for_all_organizations: {
       type: :global,
       slug: :view_adherence_follow_up_list_for_all_organizations,
-      description: 'View adherence for all organizations'
+      description: 'View adherence follow up list for all organizations'
     },
     view_adherence_follow_up_list_for_organization: {
       type: :resource,

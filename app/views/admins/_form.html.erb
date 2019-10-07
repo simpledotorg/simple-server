@@ -2,7 +2,7 @@
                     admin: admin,
                     email: admin.email,
                     selected_permissions: admin.user_permissions.map { |permission| Permissions::ALL_PERMISSIONS[permission.permission_slug.to_sym] },
-                    selected_resources: admin.user_permissions.map { |permission| { resource_id: permission.resource.id, resource_type: permission.resource_type, resource_name: permission.resource.name } if permission.resource.present? }.compact,
+                    selected_resources: admin.user_permissions.map { |permission| { resource_id: permission.resource.id, resource_type: permission.resource_type, resource_name: permission.resource.name } if permission.resource.present? }.compact.uniq,
                     organizations: policy_scope(Organization.all).pluck(:id, :name),
                     facility_groups: policy_scope(FacilityGroup.all).pluck(:id, :name),
                     facilities: policy_scope(Facility.all).pluck(:id, :name),

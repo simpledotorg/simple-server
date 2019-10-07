@@ -53,12 +53,7 @@ window.InviteAdminForm = createReactClass({
         };
 
         var updateResources = (resources) => {
-            self.setState({
-                selected_resources: _.chain(this.state.selected_resources)
-                    .concat(resources)
-                    .uniq()
-                    .value()
-            });
+            self.setState({selected_resources: _.uniq(resources)});
         };
 
         var access_level = _.chain(self.props.access_levels)
@@ -67,27 +62,37 @@ window.InviteAdminForm = createReactClass({
             .value();
 
         var submitForm = () => {
-            var permissions_payload = _.chain(self.state.selected_permissions)
-                .flatMap((permission) => _.chain(self.state.selected_resources)
-                    .filter({resource_type: permission.resource_type})
-                    .map((resource) => {
-                        return {permission_slug: permission.slug, ...resource}
-                    })
-                    .value())
-                .value();
+            var permissions_payload =
+                _.flatMap(this.state.selected_permissions, (permission) => {
+                    if (permission.resource_type) {
+                        return _.chain(this.state.selected_resources)
+                            .filter((resource) => resource.resource_type == permission.resource_type)
+                            .map((resource) => {
+                                return {
+                                    permission_slug: permission.slug,
+                                    resource_type: resource.resource_type,
+                                    resource_id: resource.resource_id
+                                }
+                            }).value();
+                    }
+                    return {permission_slug: permission.slug}
+                });
 
-            var request_payload = {
-                ...this.state,
-                permissions_payload: permissions_payload
-            };
+            var request_payload =
+                _.chain(this.state)
+                    .pick(['full_name', 'email', 'role', 'mobile', 'location', 'organization_id'])
+                    .merge({permissions: permissions_payload})
+                    .value();
 
+            console.log(request_payload);
             $.ajax({
                 type: this.props.submit_method,
                 url: this.props.submit_route,
+                contentType: "application/json",
                 headers: {
                     'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
                 },
-                data: request_payload,
+                data: JSON.stringify(request_payload),
                 success: () => {
                     window.location.replace("/admins");
                 }
@@ -96,11 +101,10 @@ window.InviteAdminForm = createReactClass({
 
         return (
             <div>
-                <TextInputField name="full_name" title="Full Name" value={this.state.full_name} updateInput={updateInput}/>
+                <TextInputField name="full_name" title="Full Name" value={this.state.full_name}
+                                updateInput={updateInput}/>
                 <TextInputField name="email" title="Email" value={this.state.email} updateInput={updateInput}/>
                 <TextInputField name="role" title="Role" value={this.state.role} updateInput={updateInput}/>
-                {/*<TextInputField name="mobile" title="Mobile" value={this.state.mobile} updateInput={updateInput}/>*/}
-                {/*<TextInputField name="location" title="Location" value={this.state.location} updateInput={updateInput}/>*/}
                 <CollectionRadioButtons name="organization_id" title="Organization"
                                         organizations={this.props.organizations}
                                         checked_id={this.state.organization_id}
@@ -122,5 +126,4 @@ window.InviteAdminForm = createReactClass({
             </div>
         );
     }
-})
-;
+});
