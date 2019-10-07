@@ -17,7 +17,6 @@ class AdminsController < AdminController
 
   def update
     User.transaction do
-      binding.pry
       @admin.update!(user_params)
       next unless permission_params[:permissions].present?
 
