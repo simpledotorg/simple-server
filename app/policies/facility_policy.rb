@@ -23,6 +23,10 @@ class FacilityPolicy < ApplicationPolicy
     show?
   end
 
+  def patient_list?
+    whatsapp_graphics?
+  end
+
   def create?
     user_has_any_permissions?(
       :manage_organizations,

@@ -2,7 +2,7 @@ name: Mark stale pull requests
 
 on:
   schedule:
-  - cron: "* * * * *"
+  - cron: "0 0 * * *"
 
 jobs:
   stale:
@@ -13,4 +13,4 @@ jobs:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         stale-pr-message: 'This PR is stale. Please review/update it or close it.'
         stale-pr-label: 'stale-pr'
-        days-before-stale: 20
+        days-before-stale: 10
