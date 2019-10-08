@@ -12,4 +12,12 @@ class PatientBusinessIdentifier < ApplicationRecord
 
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
+
+  def shortcode
+    if simple_bp_passport?
+      identifier.split(/[^\d]/).join[0..6].insert(3, '-')
+    else
+      identifier
+    end
+  end
 end

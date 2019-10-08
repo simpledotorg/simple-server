@@ -15,4 +15,8 @@ class OrganizationDistrictPolicy < ApplicationPolicy
   def whatsapp_graphics?
     user.owner? || (user.has_role?(:organization_owner, :supervisor) && user.organizations.include?(record.organization))
   end
+
+  def patient_list?
+    whatsapp_graphics?
+  end
 end
