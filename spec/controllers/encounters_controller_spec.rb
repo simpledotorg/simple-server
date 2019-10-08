@@ -24,20 +24,20 @@ RSpec.describe Api::Current::EncountersController, type: :controller do
     encounter
   end
 
-  def create_record(_options = {})
+  def create_record(options = {})
     facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
     patient = FactoryBot.create(:patient, registration_facility: facility)
     blood_pressure = FactoryBot.create(:blood_pressure, facility: facility, patient: patient)
-    encounter = FactoryBot.create(:encounter, patient: patient)
+    encounter = FactoryBot.create(:encounter, options.merge(patient: patient))
     FactoryBot.create(:observation, encounter: encounter, observable: blood_pressure, user: request_user)
     encounter
   end
 
-  def create_record_list(n)
+  def create_record_list(n, options = {})
     encounters = []
 
     n.times.each do |_|
-      encounters << create_record
+      encounters << create_record(options)
     end
 
     encounters
