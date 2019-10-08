@@ -89,9 +89,6 @@
                   <% if policy(User).index? %>
                     <%= link_to "Users", admin_users_path, class: "dropdown-item #{active_controller?("users")}" %>
                   <% end %>
-                  <% if policy(AuditLog).index? %>
-                    <%= link_to "Audit Logs", admin_audit_logs_path, class: "dropdown-item #{active_controller?("audit_logs")}" %>
-                  <% end %>
                 </div>
               </li>
               <% end %>

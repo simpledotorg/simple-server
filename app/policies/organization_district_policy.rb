@@ -21,4 +21,8 @@ class OrganizationDistrictPolicy < ApplicationPolicy
   def whatsapp_graphics?
     show?
   end
+
+  def patient_list?
+    whatsapp_graphics?
+  end
 end

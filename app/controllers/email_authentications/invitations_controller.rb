@@ -46,7 +46,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   end
 
   def permission_params
-    params.require(:permissions)
+    params[:permissions]
   end
 
   def invite_params

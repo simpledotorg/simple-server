@@ -1,7 +1,10 @@
 module CreateMasterUser
   def self.from_admin(admin)
-    user_id = master_user_id(admin.email)
-    return if User.find_by(id: user_id).present?
+    email_authentication = EmailAuthentication.find_by(email: admin.email)
+    if email_authentication.present?
+      Rails.logger.info "Skipping #{admin.email}; User is already present: #{email_authentication.user.full_name}"
+      return
+    end
 
     admin.transaction do
       admin_attributes = admin.attributes.with_indifferent_access

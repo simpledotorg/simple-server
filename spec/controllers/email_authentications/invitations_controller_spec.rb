@@ -30,11 +30,11 @@ RSpec.describe EmailAuthentications::InvitationsController, type: :controller do
     end
 
     let(:permissions) do
-      [{ permission_slug: :can_manage_all_organizations },
-       { permission_slug: :can_manage_an_organization,
+      [{ permission_slug: :manage_organizations },
+       { permission_slug: :manage_facility_groups_for_organization,
          resource_type: 'Organization',
          resource_id: organization.id },
-       { permission_slug: :can_manage_a_facility_group,
+       { permission_slug: :manage_facilities_for_facility_group,
          resource_type: 'FacilityGroup',
          resource_id: facility_group.id }]
     end
