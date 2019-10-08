@@ -33,6 +33,20 @@ namespace :data_migration do
     end
   end
 
+  desc 'Export audit logs to files'
+  task :export_audit_logs_to_files, [:from_date, :to_date] => :environment do |_t, args|
+    from_date = Date.parse(args.from_date)
+    to_date = Date.parse(args.to_date)
+    batch_size = ENV.fetch('EXPORT_AUDIT_LOGS_BATCH_SIZE').to_i
+    (from_date..to_date).each do |date|
+      if AuditLog.where(created_at: date.all_day).count > 0
+        AuditLog.where(created_at: date.all_day).in_batches(of: batch_size) do |batch|
+          ExportAuditLogsWorker.perform_async(date, batch.to_json)
+        end
+      end
+    end
+  end
+
   desc 'Backfill user_ids for a model from audit_logs (Appointment, PrescriptionDrug and MedicalHistory)'
   task :backfill_user_ids_for_model, [:model] => :environment do |_t, args|
     model = args.model

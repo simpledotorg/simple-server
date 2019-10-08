@@ -12,7 +12,11 @@ class FacilityPolicy < ApplicationPolicy
   end
 
   def whatsapp_graphics?
-    user.has_role?(:organization_owner, :supervisor) && belongs_to_admin?
+    user.owner? || user.has_role?(:organization_owner, :supervisor) && belongs_to_admin?
+  end
+
+  def patient_list?
+    whatsapp_graphics?
   end
 
   def create?
