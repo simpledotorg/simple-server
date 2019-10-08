@@ -9,6 +9,10 @@ class Api::Current::PrescriptionDrugsController < Api::Current::SyncController
     __sync_to_user__('prescription_drugs')
   end
 
+  def metadata
+    { user_id: current_user.id }
+  end
+
   private
 
   def merge_if_valid(prescription_drug_params)
@@ -18,13 +22,17 @@ class Api::Current::PrescriptionDrugsController < Api::Current::SyncController
       NewRelic::Agent.increment_metric('Merge/PrescriptionDrug/schema_invalid')
       { errors_hash: validator.errors_hash }
     else
-      prescription_drug = PrescriptionDrug.merge(Api::Current::Transformer.from_request(prescription_drug_params))
+      record_params = Api::Current::PrescriptionDrugTransformer
+                        .from_request(prescription_drug_params)
+                        .merge(metadata)
+
+      prescription_drug = PrescriptionDrug.merge(record_params)
       { record: prescription_drug }
     end
   end
 
   def transform_to_response(prescription_drug)
-    Api::Current::Transformer.to_response(prescription_drug)
+    Api::Current::PrescriptionDrugTransformer.to_response(prescription_drug)
   end
 
   def prescription_drugs_params

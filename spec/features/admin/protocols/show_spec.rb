@@ -50,7 +50,7 @@ RSpec.feature 'test protocol detail page functionality', type: :feature do
       let!(:var_protocol) { create(:protocol, name: "BathindaTestProtocol", follow_up_days: "30") }
       let!(:var_protocol_drug) { create_list(:protocol_drug, 3, protocol: var_protocol) }
 
-      pending 'JS specs are currently disabled' do
+      skip 'JS specs are currently disabled' do
         it "should delete protocol drug", js: true do
           protocol.select_protocol(var_protocol.name)
           protocol_show.delete_protocol_drug(var_protocol_drug.first.name)
