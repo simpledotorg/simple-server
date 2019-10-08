@@ -72,6 +72,6 @@ namespace :data_migration do
 
   desc 'Set reminder_consent to granted for all patients'
   task grant_reminder_consent_for_all_patients: :environment do
-    Patient.update_all(reminder_consent: Patient.reminder_constents[:granted])
+    Patient.update_all(reminder_consent: Patient.reminder_consents[:granted])
   end
 end
