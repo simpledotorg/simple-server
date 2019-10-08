@@ -29,6 +29,17 @@ class Analytics::FacilitiesController < AnalyticsController
                 notice: I18n.t('anonymized_data_download_email.facility_notice', facility_name: @facility.name)
   end
 
+  def patient_list
+    recipient_email = current_admin.email
+
+    PatientListDownloadJob.perform_later(recipient_email, "facility", facility_id: @facility.id)
+
+    redirect_to(
+      analytics_facility_path(@facility),
+      notice: I18n.t('patient_list_email.notice', model_type: "facility", model_name: @facility.name)
+    )
+  end
+
   def whatsapp_graphics
     set_cohort_analytics(:quarter, 3)
     set_dashboard_analytics(:quarter, 3)

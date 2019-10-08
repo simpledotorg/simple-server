@@ -73,6 +73,10 @@ class Patient < ApplicationRecord
     phone_numbers.last&.number
   end
 
+  def latest_bp_passport
+    business_identifiers.simple_bp_passport.order(:device_created_at).last
+  end
+
   def phone_number?
     latest_phone_number.present?
   end
@@ -82,7 +86,7 @@ class Patient < ApplicationRecord
   end
 
   def risk_priority
-    return RISK_PRIORITIES[:NONE] if latest_scheduled_appointment.overdue_for_under_a_month?
+    return RISK_PRIORITIES[:NONE] if latest_scheduled_appointment&.overdue_for_under_a_month?
 
     if latest_blood_pressure&.critical?
       RISK_PRIORITIES[:HIGHEST]
@@ -164,7 +168,7 @@ class Patient < ApplicationRecord
   private
 
   def low_priority?
-    latest_scheduled_appointment.overdue_for_over_a_year? &&
+    latest_scheduled_appointment&.overdue_for_over_a_year? &&
       latest_blood_pressure&.under_control?
   end
 end
