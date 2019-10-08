@@ -6,9 +6,9 @@ FactoryBot.define do
 
     encountered_on "2019-09-11"
 
-    timezone_offset 3600
-    metadata ""
-    notes ""
+    timezone_offset 0
+    metadata nil
+    notes ''
 
     device_created_at { Time.now }
     device_updated_at { Time.now }
@@ -28,4 +28,13 @@ def build_invalid_encounters_payload
   encounter['facility_id'] = nil
   encounter
 end
+
+def updated_encounters_payload(existing_encounter)
+  update_time = 10.days.from_now
+  build_encounters_payload(existing_encounter).merge(
+    'updated_at' => update_time,
+    'systolic' => rand(80..240)
+  )
+end
+
 

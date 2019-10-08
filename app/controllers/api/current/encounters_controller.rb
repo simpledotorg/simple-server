@@ -1,4 +1,6 @@
 class Api::Current::EncountersController < Api::Current::SyncController
+  include Api::Current::PrioritisableByFacility
+
   def sync_from_user
     __sync_from_user__(encounter_params)
   end

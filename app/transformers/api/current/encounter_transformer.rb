@@ -14,7 +14,14 @@ class Api::Current::EncounterTransformer
         }).with_indifferent_access
     end
 
-    def to_response(_)
+    def to_response(encounter)
+      Api::Current::Transformer.to_response(encounter)
+        .merge(
+          'observations' => {
+            'blood_pressures' =>
+              encounter.blood_pressures.map { |blood_pressure|
+                Api::Current::BloodPressureTransformer.to_response(blood_pressure)
+              } })
     end
   end
 end
