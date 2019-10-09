@@ -47,7 +47,8 @@ class Api::Current::Models
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' },
-          recorded_at: { '$ref' => '#/definitions/timestamp' } },
+          recorded_at: { '$ref' => '#/definitions/timestamp' },
+          reminder_consent: { type: :string, enum: Patient.reminder_consents.keys }, },
         required: %w[id gender full_name created_at updated_at status] }
     end
 
@@ -100,7 +101,7 @@ class Api::Current::Models
         properties: {
           address: { '$ref' => '#/definitions/address' },
           phone_numbers: { '$ref' => '#/definitions/phone_numbers' },
-          business_identifiers: { '$ref' => '#/definitions/patient_business_identifiers' },},
+          business_identifiers: { '$ref' => '#/definitions/patient_business_identifiers' }, },
         description: 'Patient with address, phone numbers and business identifiers nested.',
       )
     end
