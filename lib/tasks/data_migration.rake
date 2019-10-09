@@ -59,4 +59,9 @@ namespace :data_migration do
       UpdateUserIdsFromAuditLogsWorker.perform_async(model.constantize, model_log_ids)
     end
   end
+
+  desc 'Set reminder_consent to granted for all patients'
+  task grant_reminder_consent_for_all_patients: :environment do
+    Patient.update_all(reminder_consent: Patient.reminder_consents[:granted])
+  end
 end

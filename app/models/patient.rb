@@ -3,6 +3,11 @@ class Patient < ApplicationRecord
   include Mergeable
   include Hashable
 
+  enum reminder_consent: {
+    granted: 'granted',
+    denied: 'denied'
+  }, _prefix: true
+
   GENDERS = %w[male female transgender].freeze
   STATUSES = %w[active dead migrated unresponsive inactive].freeze
   RISK_PRIORITIES = {
