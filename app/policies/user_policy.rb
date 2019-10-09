@@ -44,6 +44,10 @@ class UserPolicy < ApplicationPolicy
     create_user_for_invitation?
   end
 
+  def index_admins?
+    create_user_for_invitation?
+  end
+
   def assign_permissions?
     user.has_permission?(:manage_admins_for_all_organizations)
   end

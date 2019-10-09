@@ -5,7 +5,7 @@ class AdminsController < AdminController
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   def index
-    authorize User
+    authorize User, :index_admins?
     @admins = policy_scope(User.where.not(role: :nurse)).sort_by(&:email)
   end
 
