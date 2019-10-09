@@ -23,7 +23,8 @@ class Api::Current::BloodPressuresController < Api::Current::SyncController
         transformed_params = Api::Current::BloodPressureTransformer.from_request(bp_params)
 
         if FeatureToggle.enabled?('CREATE_ENCOUNTERS_FROM_BPS')
-          set_encounter(transformed_params)[:observations].last
+          # this will always return a single blood_pressure
+          add_encounter_and_merge_bp(transformed_params)[:observations][:blood_pressures][0]
         else
           BloodPressure.merge(transformed_params)
         end
@@ -32,7 +33,7 @@ class Api::Current::BloodPressuresController < Api::Current::SyncController
     end
   end
 
-  def set_encounter(bp_params)
+  def add_encounter_and_merge_bp(bp_params)
     encountered_on = Encounter.generate_encountered_on(bp_params[:recorded_at], current_timezone_offset)
 
     encounter_merge_params = {
@@ -47,7 +48,7 @@ class Api::Current::BloodPressuresController < Api::Current::SyncController
       }
     }.with_indifferent_access
 
-    MergeEncounterService.new(encounter_merge_params, current_facility, current_timezone_offset).merge
+    MergeEncounterService.new(encounter_merge_params, current_facility, current_user, current_timezone_offset).merge
   end
 
   def set_patient_recorded_at(bp_params)

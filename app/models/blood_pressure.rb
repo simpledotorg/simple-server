@@ -1,6 +1,7 @@
 class BloodPressure < ApplicationRecord
   include Mergeable
   include Hashable
+  include Observeable
 
   ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at bp_date registration_facility_name user_id
                               bp_systolic bp_diastolic]
@@ -58,10 +59,5 @@ class BloodPressure < ApplicationRecord
       bp_systolic: systolic,
       bp_diastolic: diastolic
     }
-  end
-
-  def create_observe!(encounter)
-    build_observation(encounter: encounter, user: user) if observation.blank?
-    observation.update!(encounter: encounter, updated_at: updated_at)
   end
 end
