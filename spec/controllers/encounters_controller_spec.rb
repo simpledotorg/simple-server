@@ -13,31 +13,20 @@ RSpec.describe Api::Current::EncountersController, type: :controller do
 
   let(:number_of_schema_errors_in_invalid_payload) { 3 }
 
-  def build_record(_options = {})
-    facility = create(:facility, facility_group: request_user.facility.facility_group)
-    patient = create(:patient, registration_facility: facility)
-    blood_pressure = create(:blood_pressure, facility: facility, patient: patient)
-    encounter = build(:encounter, patient: patient)
-    observation = build(:observation, encounter: encounter, observable: blood_pressure, user: request_user)
-    encounter.observations = [observation]
-    encounter.blood_pressures = [observation.observable]
-    encounter
+  def build_record(options = {})
+    build(:encounter, :with_observables, { patient: request_patient, facility: request_facility }.merge(options))
   end
 
   def create_record(options = {})
-    facility = create(:facility, facility_group: request_user.facility.facility_group)
-    patient = create(:patient, registration_facility: facility)
-    blood_pressure = create(:blood_pressure, facility: facility, patient: patient)
-    encounter = create(:encounter, options.merge(patient: patient))
-    create(:observation, encounter: encounter, observable: blood_pressure, user: request_user)
-    encounter
+    create(:encounter, :with_observables, { patient: request_patient, facility: request_facility }.merge(options))
   end
 
   def create_record_list(n, options = {})
     encounters = []
+    facility = create(:facility, facility_group: request_facility.facility_group)
 
     n.times.each do |_|
-      encounters << create_record(options)
+      encounters << create_record({ facility: facility }.merge(options))
     end
 
     encounters
@@ -65,7 +54,6 @@ RSpec.describe Api::Current::EncountersController, type: :controller do
         expect {
           post(:sync_from_user, params: { encounters: encounters }, as: :json)
         }.to change { Encounter.count }.by(3)
-               .and change { Observation.count }.by(3)
 
         expect(response).to have_http_status(200)
       end
@@ -122,22 +110,22 @@ RSpec.describe Api::Current::EncountersController, type: :controller do
         patient_1 = create(:patient, registration_facility: request_facility)
         patient_2 = create(:patient, registration_facility: request_2_facility)
 
-        create_list(:encounter, 2,
-                    patient: patient_1,
-                    facility: request_facility,
-                    updated_at: 3.minutes.ago)
-        create_list(:encounter, 2,
-                    patient: patient_1,
-                    facility: request_facility,
-                    updated_at: 5.minutes.ago)
-        create_list(:encounter, 2,
-                    patient: patient_2,
-                    facility: request_2_facility,
-                    updated_at: 7.minutes.ago)
-        create_list(:encounter, 2,
-                    patient: patient_2,
-                    facility: request_2_facility,
-                    updated_at: 10.minutes.ago)
+        create_record_list(2,
+                           patient: patient_1,
+                           facility: request_facility,
+                           updated_at: 3.minutes.ago)
+        create_record_list(2,
+                           patient: patient_1,
+                           facility: request_facility,
+                           updated_at: 5.minutes.ago)
+        create_record_list(2,
+                           patient: patient_2,
+                           facility: request_2_facility,
+                           updated_at: 7.minutes.ago)
+        create_record_list(2,
+                           patient: patient_2,
+                           facility: request_2_facility,
+                           updated_at: 10.minutes.ago)
 
         # GET request 1
         set_authentication_headers
@@ -168,17 +156,20 @@ RSpec.describe Api::Current::EncountersController, type: :controller do
 
       before :each do
         set_authentication_headers
-        create_list(:encounter, 2,
+        create_list(:encounter,
+                    2,
                     patient: patient_in_different_facility,
                     facility: facility_in_another_group,
                     updated_at: 3.minutes.ago)
 
-        create_list(:encounter, 3,
+        create_list(:encounter,
+                    3,
                     patient: patient_in_same_facility,
                     facility: facility_in_same_group,
                     updated_at: 5.minutes.ago)
 
-        create_list(:encounter, 1,
+        create_list(:encounter,
+                    1,
                     patient: patient_in_same_facility,
                     facility: request_facility,
                     updated_at: 7.minutes.ago)

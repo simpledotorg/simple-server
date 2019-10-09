@@ -10,8 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191003064554) do
-  
+ActiveRecord::Schema.define(version: 20191003064556) do
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "pgcrypto"
@@ -475,9 +475,7 @@ ActiveRecord::Schema.define(version: 20191003064554) do
       master_users.device_created_at,
       master_users.created_at,
       master_users.updated_at,
-      master_users.deleted_at,
-      master_users.role,
-      master_users.organization_id
+      master_users.deleted_at
      FROM master_users;
   SQL
   create_view "bp_drugs_views", sql_definition: <<-SQL
