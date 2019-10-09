@@ -61,26 +61,29 @@ namespace :data_migration do
   task :export_audit_logs_to_files, [:from_date, :to_date] => :environment do |_t, args|
     from_date = Date.parse(args.from_date)
     to_date = Date.parse(args.to_date)
-    batch_size = ENV.fetch('EXPORT_AUDIT_LOGS_BATCH_SIZE').to_i
     (from_date..to_date).each do |date|
-      if AuditLog.where(created_at: date.all_day).count > 0
-        AuditLog.where(created_at: date.all_day).in_batches(of: batch_size) do |batch|
-          ExportAuditLogsWorker.perform_async(date, batch.to_json)
-        end
-      end
+      ExportAuditLogsWorker.perform_async(date)
     end
   end
+
 
   desc 'Backfill user_ids for a model from audit_logs (Appointment, PrescriptionDrug and MedicalHistory)'
   task :backfill_user_ids_for_model, [:model] => :environment do |_t, args|
     model = args.model
     batch_size = ENV.fetch('BACKFILL_USER_ID_FROM_AUDIT_LOGS_BATCH_SIZE').to_i
     AuditLog.where(auditable_type: model, action: 'create').in_batches(of: batch_size) do |batch|
+      puts "Fetched #{batch_size} records for #{model}"
       model_log_ids = batch.map do |model_instance|
         { id: model_instance.auditable_id,
           user_id: model_instance.user_id }
       end
+      puts "Enqueueing user id backfill job for #{batch_size} #{model} records"
       UpdateUserIdsFromAuditLogsWorker.perform_async(model.constantize, model_log_ids)
     end
+  end
+
+  desc 'Set reminder_consent to granted for all patients'
+  task grant_reminder_consent_for_all_patients: :environment do
+    Patient.update_all(reminder_consent: Patient.reminder_consents[:granted])
   end
 end

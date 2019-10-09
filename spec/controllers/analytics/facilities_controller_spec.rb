@@ -19,6 +19,9 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
   let(:oct_2018) { Date.new(2018, 10, 1) }
   let(:sep_2018) { Date.new(2018, 9, 1) }
 
+  let(:analytics_cohort_cache_key) { "analytics/facilities/#{facility.id}/cohort/month" }
+  let(:analytics_dashboard_cache_key) { "analytics/facilities/#{facility.id}/dashboard/month" }
+
   before do
     #
     # register patients
@@ -72,7 +75,8 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
 
     context 'analytics caching for facilities' do
       before do
-        Rails.cache.clear
+        Rails.cache.delete(analytics_cohort_cache_key)
+        Rails.cache.delete(analytics_dashboard_cache_key)
         travel_to(may_2019)
       end
 
@@ -81,8 +85,7 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
       end
 
       it 'caches the facility correctly' do
-        analytics_cohort_cache_key = "analytics/facilities/#{facility.id}/cohort/month"
-        analytics_dashboard_cache_key = "analytics/facilities/#{facility.id}/dashboard/month"
+
 
         expected_cache_value =
           {
