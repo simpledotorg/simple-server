@@ -17,7 +17,8 @@ class Api::Current::PatientPayloadValidator < Api::Current::PayloadValidator
     :business_identifiers,
     :contacted_by_counsellor,
     :could_not_contact_reason,
-    :call_result
+    :call_result,
+    :reminder_consent
   )
 
   validate :validate_schema
