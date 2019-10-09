@@ -8,6 +8,9 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
   let(:facility_group) { create(:facility_group, organization: organization) }
   let(:facility) { create(:facility, facility_group: facility_group, district: district_name) }
   let(:organization_district) { OrganizationDistrict.new(district_name, organization) }
+  let(:sanitized_district_name) { organization_district.district_name.downcase.split(' ').join('-') }
+  let(:analytics_cohort_cache_key) { "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/cohort/quarter" }
+  let(:analytics_dashboard_cache_key) { "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/dashboard/quarter" }
 
   before do
     #
@@ -52,7 +55,8 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
 
     context 'analytics caching for districts' do
       before do
-        Rails.cache.clear
+        Rails.cache.delete(analytics_cohort_cache_key)
+        Rails.cache.delete(analytics_dashboard_cache_key)
         Timecop.travel(Date.new(2019, 5, 1))
       end
 
@@ -66,10 +70,6 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
       let(:cohort_date3) { (today - (2 * 3).months).beginning_of_quarter }
 
       it 'caches the district correctly' do
-        sanitized_district_name = organization_district.district_name.downcase.split(' ').join('-')
-        analytics_cohort_cache_key = "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/cohort/quarter"
-        analytics_dashboard_cache_key = "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/dashboard/quarter"
-
         expected_cache_value =
           {
             cohort: {
