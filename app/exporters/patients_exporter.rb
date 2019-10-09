@@ -1,6 +1,8 @@
 require 'csv'
 
 module PatientsExporter
+  extend QuarterHelper
+
   def self.csv(patients)
     CSV.generate(headers: true) do |csv|
       csv << csv_headers
@@ -25,6 +27,7 @@ module PatientsExporter
       "Patient State",
       "Patient Phone Number",
       "Registration Date",
+      "Registration Quarter",
       "Registration Facility Name",
       "Registration Facility Type",
       "Latest BP Systolic",
@@ -49,6 +52,7 @@ module PatientsExporter
       patient.address.state,
       patient.phone_numbers.last&.number,
       patient.recorded_at.presence && I18n.l(patient.recorded_at),
+      patient.recorded_at.presence && quarter_string(patient.recorded_at),
       patient.registration_facility&.name,
       patient.registration_facility&.facility_type,
       patient.latest_blood_pressure&.systolic,
