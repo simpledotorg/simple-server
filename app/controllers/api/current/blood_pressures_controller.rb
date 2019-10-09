@@ -21,7 +21,12 @@ class Api::Current::BloodPressuresController < Api::Current::SyncController
       blood_pressure = ActiveRecord::Base.transaction do
         set_patient_recorded_at(bp_params)
         transformed_params = Api::Current::BloodPressureTransformer.from_request(bp_params)
-        set_encounter(transformed_params)[:observations].last
+
+        if FeatureToggle.enabled?('CREATE_ENCOUNTERS_FROM_BPS')
+          set_encounter(transformed_params)[:observations].last
+        else
+          BloodPressure.merge(transformed_params)
+        end
       end
       { record: blood_pressure }
     end
