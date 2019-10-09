@@ -69,6 +69,7 @@ class Api::Current::PatientsController < Api::Current::SyncController
         :created_at,
         :updated_at,
         :recorded_at,
+        :reminder_consent,
         phone_numbers: [permitted_phone_number_params],
         address: permitted_address_params,
         business_identifiers: [permitted_business_identifier_params]

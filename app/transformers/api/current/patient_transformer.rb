@@ -19,6 +19,15 @@ class Api::Current::PatientTransformer
         patient_created_at : [patient_created_at, earliest_blood_pressure.recorded_at].min
     end
 
+    def reminder_consent(patient_attributes)
+      return patient_attributes['reminder_consent'] if patient_attributes['reminder_consent'].present?
+
+      patient = Patient.find_by(id: patient_attributes['id'])
+      return patient.reminder_consent if patient.present?
+
+      Patient.reminder_consents[:granted]
+    end
+
     def from_nested_request(payload_attributes)
       payload_attributes = payload_attributes.to_hash.with_indifferent_access
       address = payload_attributes[:address]
@@ -39,7 +48,8 @@ class Api::Current::PatientTransformer
         address: address_attributes,
         phone_numbers: phone_numbers_attributes,
         business_identifiers: business_identifiers_attributes,
-        recorded_at: recorded_at(patient_attributes)
+        recorded_at: recorded_at(patient_attributes),
+        reminder_consent: reminder_consent(patient_attributes)
       ).with_indifferent_access
     end
 
