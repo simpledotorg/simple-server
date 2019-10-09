@@ -65,6 +65,7 @@ namespace :data_migration do
     (from_date..to_date).each do |date|
       if AuditLog.where(created_at: date.all_day).count > 0
         AuditLog.where(created_at: date.all_day).in_batches(of: batch_size) do |batch|
+          puts "Enqueueing #{batch_size} audit logs to be exported for #{date}"
           ExportAuditLogsWorker.perform_async(date, batch.to_json)
         end
       end
@@ -76,10 +77,12 @@ namespace :data_migration do
     model = args.model
     batch_size = ENV.fetch('BACKFILL_USER_ID_FROM_AUDIT_LOGS_BATCH_SIZE').to_i
     AuditLog.where(auditable_type: model, action: 'create').in_batches(of: batch_size) do |batch|
+      puts "Fetched #{batch_size} records for #{model}"
       model_log_ids = batch.map do |model_instance|
         { id: model_instance.auditable_id,
           user_id: model_instance.user_id }
       end
+      puts "Enqueueing user id backfill job for #{batch_size} #{model} records"
       UpdateUserIdsFromAuditLogsWorker.perform_async(model.constantize, model_log_ids)
     end
   end
