@@ -1,38 +1,27 @@
 class EmailAuthentications::InvitationsController < Devise::InvitationsController
-  before_action :configure_permitted_parameters
-
   helper_method :current_admin
 
   def new
-    authorize :invitation, :new?
-    @role = params[:role].downcase.to_sym
+    authorize current_admin, :new_user_for_invitation?
     super
   end
 
   def create
-    authorize :invitation, :create?
-    role = params.require(:email_authentication).require(:role).downcase.to_sym
-    full_name = params.require(:email_authentication).require(:full_name)
+    authorize current_admin, :create_user_for_invitation?
     User.transaction do
       super do |resource|
-        user = User.new(full_name: full_name,
-                        role: role,
-                        device_created_at: Time.now,
-                        device_updated_at: Time.now,
-                        sync_approval_status: :denied)
-
+        user = User.new(user_params)
         user.email_authentications = [resource]
-
-        unless role == :owner
-          admin_access_controls = access_controllable_ids.reject(&:empty?).map do |access_controllable_id|
-            AdminAccessControl.new(
-              access_controllable_type: access_controllable_type,
-              access_controllable_id: access_controllable_id)
-          end
-
-          user.admin_access_controls =  admin_access_controls
-        end
         user.save!
+
+        next if permission_params.blank?
+
+        permission_params.each do |attributes|
+          user.user_permissions.create!(attributes.permit(
+            :permission_slug,
+            :resource_id,
+            :resource_type))
+        end
       end
     end
   end
@@ -47,17 +36,20 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
     current_admin
   end
 
-  def access_controllable_ids
-    params.require(:email_authentication).require(:access_controllable_ids)
+  def user_params
+    { full_name: params.require(:full_name),
+      role: params.require(:role),
+      organization_id: params.require(:organization_id),
+      device_created_at: Time.now,
+      device_updated_at: Time.now,
+      sync_approval_status: :denied }
   end
 
-  def access_controllable_type
-    params.require(:email_authentication).require(:access_controllable_type)
+  def permission_params
+    params[:permissions]
   end
 
-  def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:invite) do |admin_params|
-      admin_params.permit(:email)
-    end
+  def invite_params
+    { email: params.require(:email) }
   end
 end

@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Admin::FacilitiesController, type: :controller do
-
   let(:facility_group) { create(:facility_group) }
   let(:valid_attributes) {
     attributes_for(
@@ -17,7 +16,8 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
   }
 
   before do
-    sign_in(create(:admin).email_authentication)
+    admin = create(:admin, :supervisor, facility_group: facility_group)
+    sign_in(admin.email_authentication)
   end
 
   describe 'GET #index' do

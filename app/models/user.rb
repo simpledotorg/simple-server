@@ -1,6 +1,4 @@
 class User < ApplicationRecord
-  include HasAdminAccessControls
-
   self.table_name = 'master_users'
 
   AUTHENTICATION_TYPES = {
@@ -14,19 +12,12 @@ class User < ApplicationRecord
     denied: 'denied'
   }, _prefix: true
 
-  enum role: {
-    owner: 'owner',
-    supervisor: 'supervisor',
-    analyst: 'analyst',
-    organization_owner: 'organization_owner',
-    counsellor: 'counsellor'
-  }
-
   belongs_to :organization, optional: true
 
   has_many :user_authentications
   has_many :blood_pressures
   has_many :patients, -> { distinct }, through: :blood_pressures
+  has_many :registered_patients, inverse_of: :registration_user, class_name: 'Patient', foreign_key: :registration_user_id
 
   has_many :phone_number_authentications,
            through: :user_authentications,
@@ -38,12 +29,16 @@ class User < ApplicationRecord
            source: :authenticatable,
            source_type: 'EmailAuthentication'
 
+  accepts_nested_attributes_for :email_authentications, reject_if: :all_blank
+
   has_many :audit_logs, as: :auditable
   has_many :appointments
   has_many :medical_histories
   has_many :prescription_drugs
 
-  has_many :registered_patients, class_name: "Patient", foreign_key: 'registration_user_id'
+  has_many :user_permissions, foreign_key: :user_id, dependent: :delete_all
+
+  has_many :audit_logs, as: :auditable
 
   validates :full_name, presence: true
 
@@ -59,27 +54,12 @@ class User < ApplicationRecord
            :otp,
            :otp_valid?,
            :facility_group,
-           :organization,
            :password_digest, to: :phone_number_authentication, allow_nil: true
 
   delegate :email,
            :password,
            :authenticatable_salt,
            :invited_to_sign_up?, to: :email_authentication, allow_nil: true
-
-  def self.invite!(options = {})
-    transaction do
-      now = Time.now
-      User.create(
-        options
-          .slice(:full_name, :role)
-          .merge(device_created_at: now,
-                 device_updated_at: now,
-                 sync_approval_status: sync_approval_statuses[:denied]))
-
-      EmailAuthentication.invite!(nil, options.slice(:email))
-    end
-  end
 
   def phone_number_authentication
     phone_number_authentications.first
@@ -111,6 +91,7 @@ class User < ApplicationRecord
     user = new(
       id: params[:id],
       full_name: params[:full_name],
+      organization_id: params[:organization_id],
       device_created_at: params[:device_created_at],
       device_updated_at: params[:device_updated_at]
     )
@@ -149,6 +130,14 @@ class User < ApplicationRecord
     self.sync_approval_status_reason = reason
   end
 
+  def authorized?(permission_slug, resource: nil)
+    user_permissions.find_by(permission_slug: permission_slug, resource: resource).present?
+  end
+
+  def has_permission?(permission_slug)
+    user_permissions.find_by(permission_slug: permission_slug).present?
+  end
+
   def reset_phone_number_authentication_password!(password_digest)
     transaction do
       authentication = phone_number_authentication
@@ -163,4 +152,13 @@ class User < ApplicationRecord
   def self.requested_sync_approval
     where(sync_approval_status: :requested)
   end
+
+  def has_role?(*roles)
+    roles.map(&:to_sym).include?(self.role.to_sym)
+  end
+
+  def resources
+    user_permissions.map(&:resource)
+  end
+
 end
