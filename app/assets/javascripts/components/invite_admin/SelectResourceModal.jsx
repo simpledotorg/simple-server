@@ -76,7 +76,7 @@ var SelectResourceModal = createReactClass({
                             <div className="input-group mb-3">
                                 <input type="text"
                                        className="form-control"
-                                       placeholder="Search by district or facility name..."
+                                       placeholder={"Search " + this.props.resourceDisplayName}
                                        value={this.state.searchText}
                                        onChange={(e) => this.updateSearchInput(e.target.value)}
                                 />
