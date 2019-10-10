@@ -3,7 +3,7 @@ require 'rails_helper'
 def login_user
   @request.env["devise.mapping"] = Devise.mappings[:admin]
   admin = FactoryBot.create(:admin)
-  sign_in admin
+  sign_in admin.email_authentication
 end
 
 RSpec.describe Admin::UsersController, type: :controller do

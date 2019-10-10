@@ -12,7 +12,7 @@ RSpec.feature 'test protocol detail page functionality', type: :feature do
 
   before(:each) do
     visit root_path
-    sign_in(owner)
+    sign_in(owner.email_authentication)
     visit admin_protocols_path
   end
 
