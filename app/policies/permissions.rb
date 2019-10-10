@@ -59,7 +59,7 @@ module Permissions
     view_cohort_reports_for_facility_group: {
       type: :resource,
       slug: :view_cohort_reports_for_facility_group,
-      resource_type: 'Organization',
+      resource_type: 'FacilityGroup',
       description: 'View cohort reports for a facility group'
     },
     view_health_worker_activity_for_organization: {
