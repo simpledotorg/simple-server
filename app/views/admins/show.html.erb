@@ -1,10 +1,11 @@
 <div class="page-header">
   <h1 class="page-title">
-    <% if policy(Admin).index? %>
-        <%= link_to "Admins", admins_path, class: "#{active_controller?("admins")}" %>  <i class="fas fa-angle-right light"></i> 
-      <% end %>
-      
-      Admin
+    <% if policy(User).index? %>
+      <%= link_to "Admins", admins_path, class: "#{active_controller?("email_authentications")}" %>
+      <i class="fas fa-angle-right light"></i>
+    <% end %>
+
+    Admin
   </h1>
   <nav class="page-nav">
     <% if policy(@admin).edit? %>
@@ -14,37 +15,24 @@
 </div>
 
 <div class="card">
-    <h2>
-        <%= @admin.email %>
-    </h2>
-    <div class="card-row">
-        <h5><i class="fas fa-shield-alt"></i> Role</h5>
+  <h2>s
+    <%= @admin.full_name %>
+  </h2>
+  <div class="card-row">
+    <h5><i class="fas fa-envelope"></i> Email: <%= mail_to @admin.email %></h5>
+    <h5><i class="fas fa-shield-alt"></i> Role: <%= @admin.role.humanize %></h5>
+    <h5><i class="fas fa-lock"></i> Permissions:</h5>
+    <ul>
+      <% @admin.user_permissions.group_by(&:permission_slug).each do |permission_slug, user_permissions| %>
+        <li><%= permission_slug.titleize %></li>
         <ul>
-            <li class="mt-2"><%= @admin.role.humanize %></li>
-        </ul>
-    </div>
-    
-    
-    <% if @admin.supervisor? || @admin.analyst? || @admin.counsellor? %>
-        <div class="card-row">    
-            <h5><i class="fas fa-network-wired"></i> Facility Groups</h5>
-
-            <ul title="facility_groups">
-                <% @admin.facility_groups.each do |facility_group| %>
-                    <li class="mt-2 mb-2"><%= link_to facility_group.name, admin_facility_group_path(facility_group) %></li>
-                <% end %>
-            </ul>
-        </div>
-    <% elsif @admin.organization_owner? %>
-        <div class="card-row">
-            <h5><i class="fas fa-network-wired"></i> Organizations</h5>
-
-            <ul title="organizations">
-            <% @admin.organizations.each do |organization| %>
-            <li class="mt-2 mb-2"><%= link_to organization.name, admin_organization_path(organization) %></li>
+          <% user_permissions.each do |user_permission| %>
+            <% if user_permission.resource.present? %>
+              <li><%= link_to user_permission.resource.name, [:admin, user_permission.resource] %></li>
             <% end %>
-            </ul>
-        </div>
-    <% end %>
-
+          <% end %>
+        </ul>
+      <% end %>
+    </ul>
+  </div>
 </div>

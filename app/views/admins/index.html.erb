@@ -2,56 +2,9 @@
   <h1 class="page-title">Admins</h1>
   <nav class="page-nav">
     <div class="dropdown">
-      <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-        Add new admin
-      </button>
-
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h3 class="modal-title" id="exampleModalLongTitle">Choose access level</h3>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <i class="fas fa-times"></i>
-            </button>
-          </div>
-          <div class="modal-body">
-                    <% if policy(:invitation).invite_owner? %>
-                        <div class="row mb-3">
-                            <div class="col-4"><%= link_to 'Owner', new_admin_invitation_path(role: 'owner'), class: "btn btn-sm btn-warning btn-block" %></div>
-                            <div class="col-8"><strong>Owners</strong> have top level access to add new admins, access audit logs, download overdue lists, etc.</div>
-                        </div>
-                    <% end %>
-                    <% if policy(:invitation).invite_organization_owner? %>
-                        <div class="row mb-3">
-                            <div class="col-4"><%= link_to 'Organization Owner', new_admin_invitation_path(role: 'organization_owner'), class: "btn btn-sm btn-warning btn-block" %></div>
-                            <div class="col-8"><strong>Organization owners</strong> have all 'Owner' access for their organization.</div>
-                        </div>
-                        <hr>
-                    <% end %>
-                    <% if policy(:invitation).invite_supervisor? %>
-                        <div class="row mb-3">
-                            <div class="col-4"><%= link_to 'Supervisor', new_admin_invitation_path(role: 'supervisor'), class: "btn btn-sm btn-primary btn-block" %></div>
-                            <div class="col-8"><strong>Supervisors</strong> can view dashboards, download overdue lists, and approve users at their facilities.</div>
-                        </div>
-                    <% end %>
-                    <% if policy(:invitation).invite_analyst? %>
-                        <div class="row mb-3">              
-                            <div class="col-4"><%= link_to 'Analyst', new_admin_invitation_path(role: 'analyst'), class: "btn btn-sm btn-primary btn-block" %></div>
-                            <div class="col-8"><strong>Analysts</strong> can <em>only</em> view dashboards for their districts or facilities.</div>
-                        </div>
-                    <% end %>
-                    <% if policy(:invitation).invite_counsellor? %>
-                        <div class="row">
-                            <div class="col-4"><%= link_to 'Counsellor', new_admin_invitation_path(role: 'counsellor'), class: "btn btn-sm btn-primary btn-block" %></div>
-                            <div class="col-8"><strong>Counsellors</strong> are typically call-center employees who <em>only</em> have access to overdue and adherence call lists.</div>
-                        </div>
-                    <% end %>
-            </div>
-          </div>
-        </div>
-      </div>
+      <%= link_to "Add new admin",
+                  new_email_authentication_invitation_path,
+                  class: "btn btn-sm btn-primary" %>
     </div>
   </nav>
 </div>
@@ -64,7 +17,7 @@
         <div class="row">
             <div class="col col-md-6">
                 <h5>
-                    <%= link_to admin.email, admin %>
+                    <%= link_to admin.email, admin_path(admin) %>
                 </h5>
                 <div class="mt-2"><i class="fas fa-shield-alt light mr-2"></i> <%= admin.role.humanize %></div>
             </div>
@@ -76,7 +29,7 @@
                   <%= link_to 'Edit', edit_admin_path(admin), class: "btn btn-sm btn-outline-primary" %>
                 <% end %>
                 <% if policy(admin).destroy? %>
-                  <%= link_to '<i class="fas fa-trash-alt"></i>' .html_safe, admin, method: :delete, data: { confirm: "Are you sure you want to delete #{admin.email}?" }, class: "btn btn-sm btn-outline-danger" %>
+                  <%= link_to '<i class="fas fa-trash-alt"></i>' .html_safe, admin_path(admin), method: :delete, data: { confirm: "Are you sure you want to delete #{admin.email}?" }, class: "btn btn-sm btn-outline-danger" %>
                 <% end %>
             </div>
         </div>

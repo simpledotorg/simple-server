@@ -1,14 +1,14 @@
 Rails.application.routes.draw do
-  devise_scope :admin do
-    authenticated :admin, ->(a) { a.has_role?(:counsellor) } do
+  devise_scope :email_authentication do
+    authenticated :email_authentication, ->(a) { a.user.has_role?(:counsellor) } do
       root to: "patients#index", as: :counsellor_root
     end
 
-    authenticated :admin do
-      root to: "organizations#index", as: :admin_root
+    authenticated :email_authentication do
+      root to: "organizations#index", as: :email_authentication_root
     end
 
-    unauthenticated :admin do
+    unauthenticated :email_authentication do
       root to: "devise/sessions#new"
     end
   end
@@ -132,7 +132,8 @@ Rails.application.routes.draw do
     end
   end
 
-  devise_for :admins, controllers: { invitations: 'admins/invitations' }
+  # devise_for :email_authentications, controllers: { invitations: 'email_authentications/invitations' }
+  devise_for :email_authentications, path: 'email_authentications', controllers: { invitations: 'email_authentications/invitations' }
   resources :admins
 
   namespace :analytics do

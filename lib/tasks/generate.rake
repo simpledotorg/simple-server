@@ -4,8 +4,6 @@ require 'faker'
 require 'timecop'
 
 namespace :generate do
-
-
   def time_entropy(time = Time.now)
     entropy_factor = (1 << 12)
     sleep 0.01; time + SecureRandom.rand * (entropy_factor)

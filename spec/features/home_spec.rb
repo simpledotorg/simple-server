@@ -17,7 +17,7 @@ RSpec.feature "Home page", type: :feature do
     let!(:owner) { create(:admin, :owner, email: "owner@example.com") }
 
     before do
-      sign_in(owner)
+      sign_in(owner.email_authentication)
       visit root_path
     end
 
@@ -28,12 +28,11 @@ RSpec.feature "Home page", type: :feature do
   end
 
   context "supervisor in bathinda" do
-    let!(:supervisor) { create(:admin, :supervisor, email: "supervisor@example.com") }
-    let!(:access_controls) { create(:admin_access_control, admin: supervisor, access_controllable: bathinda_chc.facility_group) }
-    let!(:new_user) { create(:user, :sync_requested, facility: bathinda_chc) }
+    let!(:supervisor) { create(:admin, :supervisor, email: "supervisor@example.com", facility_group: bathinda_chc.facility_group) }
+    let!(:new_user) { create(:user, :sync_requested, registration_facility: bathinda_chc) }
 
     before do
-      sign_in(supervisor)
+      sign_in(supervisor.email_authentication)
       visit root_path
     end
 
