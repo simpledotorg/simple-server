@@ -1,4 +1,6 @@
 var SelectResourceModal = createReactClass({
+    displayName: 'SelectResourceModal',
+
     getInitialState: function () {
         return {
             searchText: "",
