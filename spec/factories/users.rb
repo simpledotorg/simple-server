@@ -70,7 +70,6 @@ FactoryBot.define do
 
     trait(:owner) do
       role :owner
-
       after :create do |user, options|
         [:manage_organizations,
          :manage_protocols,

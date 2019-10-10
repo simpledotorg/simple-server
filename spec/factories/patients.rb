@@ -19,7 +19,7 @@ FactoryBot.define do
     device_updated_at { Time.now }
     recorded_at { device_created_at }
     association :address, strategy: :build
-    phone_numbers { build_list(:patient_phone_number, rand(1..3), patient_id: id) }
+    phone_numbers { build_list(:patient_phone_number, 1, patient_id: id) }
     association :registration_facility, factory: :facility
     association :registration_user, factory: :user_created_on_device
     business_identifiers { build_list(:patient_business_identifier, 1, patient_id: id) }

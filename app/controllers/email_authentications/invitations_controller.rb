@@ -5,6 +5,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
   def new
     authorize current_admin, :new_user_for_invitation?
+
     @role = params[:role].downcase.to_sym
     super
   end
