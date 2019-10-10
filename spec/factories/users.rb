@@ -70,13 +70,10 @@ FactoryBot.define do
 
     trait(:owner) do
       role :owner
-      after :create do |user, options|
-        [:manage_organizations,
-         :manage_protocols,
-         :view_audit_logs,
-         :approve_health_workers_for_all_organizations,
-         :view_overdue_list_for_all_organizations,
-         :view_adherence_follow_up_list_for_all_organizations].each do |slug|
+
+      after :create do |user, _options|
+        access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
+        access_level[:default_permissions].each do |slug|
           user.user_permissions.create(permission_slug: slug)
         end
       end
@@ -85,11 +82,8 @@ FactoryBot.define do
     trait(:supervisor) do
       role :supervisor
       after :create do |user, options|
-        [:manage_facilities_for_facility_group,
-         :view_overdue_list_for_facility_group,
-         :download_overdue_list_for_facility_group,
-         :view_adherence_follow_up_list_for_facility_group,
-         :approve_health_workers_for_facility_group].each do |slug|
+        access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
+        access_level[:default_permissions].each do |slug|
           user.user_permissions.create(permission_slug: slug, resource: options.facility_group)
         end
       end
@@ -98,7 +92,8 @@ FactoryBot.define do
     trait(:analyst) do
       role :analyst
       after :create do |user, options|
-        [:manage_facilities_for_facility_group].each do |slug|
+        access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
+        access_level[:default_permissions].each do |slug|
           user.user_permissions.create(permission_slug: slug, resource: options.facility_group)
         end
       end
@@ -107,9 +102,8 @@ FactoryBot.define do
     trait(:counsellor) do
       role :counsellor
       after :create do |user, options|
-        [:manage_facilities_for_facility_group,
-         :view_overdue_list_for_facility_group,
-         :view_adherence_follow_up_list_for_facility_group].each do |slug|
+        access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
+        access_level[:default_permissions].each do |slug|
           user.user_permissions.create(permission_slug: slug, resource: options.facility_group)
         end
       end
@@ -118,10 +112,8 @@ FactoryBot.define do
     trait(:organization_owner) do
       role :organization_owner
       after :create do |user, options|
-        [:manage_facility_groups_for_organization,
-         :view_overdue_list_for_facility_group,
-         :view_adherence_follow_up_list_for_facility_group,
-         :approve_health_workers_for_organization].each do |slug|
+        access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
+        access_level[:default_permissions].each do |slug|
           user.user_permissions.create(permission_slug: slug, resource: options.organization)
         end
       end

@@ -36,7 +36,7 @@ module Permissions
     manage_protocols: {
       type: :global,
       slug: :manage_protocols,
-      description: 'Manage organizations'
+      description: 'Manage protocols'
     },
     manage_facility_groups_for_organization: {
       type: :resource,
@@ -48,7 +48,7 @@ module Permissions
       type: :resource,
       slug: :manage_facilities_for_facility_group,
       resource_type: 'FacilityGroup',
-      description: 'Manage facility groups for an organization'
+      description: 'Manage facilities for a facility group'
     },
     view_cohort_reports_for_organization: {
       type: :resource,
@@ -60,7 +60,7 @@ module Permissions
       type: :resource,
       slug: :view_cohort_reports_for_facility_group,
       resource_type: 'Organization',
-      description: 'View cohort reports for organization'
+      description: 'View cohort reports for a facility group'
     },
     view_health_worker_activity_for_organization: {
       type: :resource,
@@ -106,7 +106,7 @@ module Permissions
     view_adherence_follow_up_list_for_all_organizations: {
       type: :global,
       slug: :view_adherence_follow_up_list_for_all_organizations,
-      description: 'View adherence for all organizations'
+      description: 'View adherence follow up list for all organizations'
     },
     view_adherence_follow_up_list_for_organization: {
       type: :resource,
@@ -128,7 +128,7 @@ module Permissions
   }
 
   ACCESS_LEVELS = [
-    { name: :call_center_staff,
+    { name: :counsellor,
       description: "Call center staff (access to PHI)",
       default_permissions: [
         :manage_facilities_for_facility_group,
@@ -136,37 +136,42 @@ module Permissions
         :view_adherence_follow_up_list_for_facility_group
       ]
     },
-    { name: :cvho,
+    { name: :organization_owner,
       description: "CVHO: Cardiovascular Health Officer (access to PHI)",
       default_permissions: [
-        :manage_facilities_for_facility_group,
+        :manage_facility_groups_for_organization,
         :view_overdue_list_for_facility_group,
         :view_adherence_follow_up_list_for_facility_group,
-        :approve_health_workers_for_facility_group
+        :approve_health_workers_for_organization
       ]
     },
-    { name: :data_analyst,
+    { name: :analyst,
       description: "Data analyst",
       default_permissions: [
-        :view_cohort_reports_for_facility_group
+        :view_cohort_reports_for_facility_group,
+        :manage_facilities_for_facility_group
       ]
     },
-    { name: :sts,
+    { name: :supervisor,
       description: "STS: Senior Treatment Supervisor (access to PHI)",
       default_permissions: [
         :manage_facilities_for_facility_group,
         :view_overdue_list_for_facility_group,
+        :download_overdue_list_for_facility_group,
         :view_adherence_follow_up_list_for_facility_group,
         :approve_health_workers_for_facility_group
       ]
     },
-    { name: :super_admin,
+    { name: :owner,
       description: "Super admin",
       default_permissions: [
         :manage_organizations,
         :manage_protocols,
         :view_audit_logs,
-        :approve_health_workers_for_organization
+        :approve_health_workers_for_all_organizations,
+        :view_overdue_list_for_all_organizations,
+        :view_adherence_follow_up_list_for_all_organizations,
+        :manage_admins_for_all_organizations
       ]
     },
     { name: :custom,

@@ -13,7 +13,7 @@ module CreateMasterUser
       email_authentication = EmailAuthentication.new(admin_attributes.except(:id, :role))
       email_authentication.save!(validate: false)
       master_user.user_authentications.create!(authenticatable: email_authentication)
-      update_admin_access_controls(admin, master_user)
+      assign_permissions!(master_user, admin)
     end
   end
 
@@ -58,7 +58,8 @@ module CreateMasterUser
 
   #@todo: User should be enough here
   def self.assign_permissions!(user, admin)
-    user_permissions = User::DEFAULT_PERMISSIONS[user.role.to_sym]
+    access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
+    user_permissions = access_level[:default_permissions]
     resources = admin.admin_access_controls
     user_permissions.each do |permission_slug|
       permission = Permissions::ALL_PERMISSIONS[permission_slug]

@@ -36,11 +36,15 @@ class UserPolicy < ApplicationPolicy
 
   def create_user_for_invitation?
     user_has_any_permissions?(
-      :invite_admins_for_all_organizations,
+      :manage_admins_for_all_organizations,
       [:manage_admins_for_organization, user.organization])
   end
 
   def new_user_for_invitation?
+    create_user_for_invitation?
+  end
+
+  def index_admins?
     create_user_for_invitation?
   end
 

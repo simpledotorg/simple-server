@@ -6,4 +6,6 @@ class UserPermission < ApplicationRecord
   validates :resource, presence: true, if: -> {
     Permissions::ALL_PERMISSIONS[permission_slug.to_sym][:type] != :global
   }
+
+  validates_uniqueness_of :permission_slug, scope: [:user, :resource]
 end

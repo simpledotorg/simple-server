@@ -1,34 +1,13 @@
-<div class="row">
-  <div class="col-md-6">
-    <%= bootstrap_form_for(admin, as: :admin, url: admin_path(admin), autocomplete: "off", label_errors: true) do |form| %>
-      <%= form.text_field :full_name, required: true, autocomplete: "off" %>
-      <%= form.fields_for :email_authentications do |email_form| %>
-        <%= email_form.text_field :email, required: true, autocomplete: "off" %>
-      <% end %>
-      <%= form.text_field :role, value: admin.role, readonly: true %>
-
-      <% if selectable_resource_types.include?('FacilityGroup') %>
-        <h3>Select facility groups</h3>
-        <% policy_scope(FacilityGroup).group_by(&:organization).each do |organization, facility_groups| %>
-          <%= form.collection_check_boxes :resource_gids,
-                                          facility_groups,
-                                          :to_gid_param,
-                                          :name,
-                                          label: "Organization: #{organization.name}" %>
-        <% end %>
-      <% end %>
-
-      <% if selectable_resource_types.include?('Organization') %>
-        <h3>Select organizations</h3>
-        <%= form.collection_check_boxes :resource_gids,
-                                        policy_scope(Organization),
-                                        :to_gid_param,
-                                        :name,
-                                        label: 'Organizations',
-                                        size: 1 %>
-      <% end %>
-
-      <%= form.primary 'Update Admin', class: "btn btn-primary" %>
-    <% end %>
-  </div>
-</div>
+<%= react_component "InviteAdminForm",
+                    admin: admin,
+                    email: admin.email,
+                    selected_permissions: admin.user_permissions.map { |permission| Permissions::ALL_PERMISSIONS[permission.permission_slug.to_sym] },
+                    selected_resources: admin.user_permissions.map { |permission| { resource_id: permission.resource.id, resource_type: permission.resource_type, resource_name: permission.resource.name } if permission.resource.present? }.compact.uniq,
+                    organizations: policy_scope(Organization.all),
+                    facility_groups: policy_scope(FacilityGroup.all),
+                    facilities: policy_scope(Facility.all),
+                    permissions: Permissions::ALL_PERMISSIONS.values,
+                    access_levels: Permissions::ACCESS_LEVELS,
+                    submit_route: admin_path(admin),
+                    submit_text: 'Update Admin',
+                    submit_method: 'PATCH' %>
