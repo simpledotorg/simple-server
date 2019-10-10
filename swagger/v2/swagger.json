@@ -1294,6 +1294,13 @@
         },
         "updated_at": {
           "$ref": "#/definitions/timestamp"
+        },
+        "reminder_consent": {
+          "type": "string",
+          "enum": [
+            "granted",
+            "denied"
+          ]
         }
       },
       "required": [
@@ -1445,6 +1452,13 @@
         },
         "updated_at": {
           "$ref": "#/definitions/timestamp"
+        },
+        "reminder_consent": {
+          "type": "string",
+          "enum": [
+            "granted",
+            "denied"
+          ]
         },
         "address": {
           "$ref": "#/definitions/address"
