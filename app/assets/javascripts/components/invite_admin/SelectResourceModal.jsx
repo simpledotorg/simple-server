@@ -9,39 +9,38 @@ var SelectResourceModal = createReactClass({
         };
     },
 
+    updateSearchInput: function (input) {
+        var updateHash = {};
+        updateHash['searchText'] = input;
+        updateHash['matchingResources'] = this.props.resources
+            .filter((resource) => resource.name.toLowerCase().includes(input.toLowerCase()));
+
+        this.setState(updateHash);
+    },
+
+    toggleResource: function (resourceId, resourceName) {
+        var newResources = toggleElement(this.state.selectedResources, {
+            resource_type: this.props.resourceType,
+            resource_id: resourceId,
+            resource_name: resourceName
+        });
+        this.setState({selectedResources: newResources})
+    },
+
+    selectAllResources: function () {
+        var newResources = _.map(this.state.matchingResources, (resource) => {
+            return {
+                resource_type: this.props.resourceType,
+                resource_id: resource.id,
+                resource_name: resource.name
+            };
+        });
+        this.setState({selectedResources: newResources});
+    },
+
+
     render: function () {
-        var self = this;
-
-        var updateSearchInput = function (input) {
-            var updateHash = {};
-            updateHash['searchText'] = input;
-            updateHash['matchingResources'] = self.props.resources
-                .filter((resource) => resource.name.toLowerCase().includes(input.toLowerCase()));
-
-            self.setState(updateHash);
-        };
-
-        var toggleResource = (resourceId, resourceName) => {
-            var newResources = toggleElement(self.state.selectedResources, {
-                resource_type: self.props.resourceType,
-                resource_id: resourceId,
-                resource_name: resourceName
-            });
-            self.setState({selectedResources: newResources})
-        };
-
-        var selectAllResources = () => {
-            var newResources = _.map(self.state.matchingResources, (resource) => {
-                return {
-                    resource_type: self.props.resourceType,
-                    resource_id: resource.id,
-                    resource_name: resource.name
-                };
-            });
-            self.setState({selectedResources: newResources});
-        };
-
-        var selectedResources = self.state.selectedResources;
+        var selectedResources = this.state.selectedResources;
         var displayResources = _.filter(this.state.matchingResources, (resource) => {
             return resource.organization_id == this.props.organization_id;
         });
@@ -51,7 +50,7 @@ var SelectResourceModal = createReactClass({
                        type="checkbox"
                        value={resource.id}
                        checked={!_.isUndefined(_.find(selectedResources, ['resource_id', resource.id]))}
-                       onChange={() => toggleResource(resource.id, resource.name)}
+                       onChange={() => this.toggleResource(resource.id, resource.name)}
                        id={resource.id}/>
                 <label className="form-check-label form-label-light" htmlFor={resource.id}>
                     {resource.name}
@@ -76,7 +75,7 @@ var SelectResourceModal = createReactClass({
                                        className="form-control"
                                        placeholder="Search by district or facility name..."
                                        value={this.state.searchText}
-                                       onChange={(e) => updateSearchInput(e.target.value)}
+                                       onChange={(e) => this.updateSearchInput(e.target.value)}
                                 />
                             </div>
                             <div className="p-3">
@@ -84,7 +83,7 @@ var SelectResourceModal = createReactClass({
                             </div>
                         </div>
                         <div className="modal-footer justify-content-between">
-                            <button type="button" className="btn btn-outline-success" onClick={selectAllResources}>
+                            <button type="button" className="btn btn-outline-success" onClick={this.selectAllResources}>
                                 Give access to all facilities
                             </button>
                             <button type="button" className="btn btn-primary" data-dismiss="modal" aria-label="Done"

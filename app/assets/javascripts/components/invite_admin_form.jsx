@@ -25,101 +25,107 @@ window.InviteAdminForm = createReactClass({
         }
     },
 
-    render: function () {
-        var self = this;
+    updateInput: function (key, value) {
+        this.setState({[key]: value})
+    },
 
-        var updateInput = (key, value) => self.setState({[key]: value});
+    updateAccessLevel: function (access_level) {
+        var new_permissions = _.chain(this.props.access_levels)
+            .find(['name', access_level])
+            .get('default_permissions')
+            .map((slug) => _.find(this.props.permissions, ['slug', slug]))
+            .value();
 
-        var requiredResources = _.chain(self.state.selected_permissions)
+        this.setState({selected_permissions: new_permissions});
+    },
+
+    updatePermissions: function (permission) {
+        var newPermissions = toggleElement(this.state.selected_permissions, permission);
+        this.setState({selected_permissions: newPermissions});
+    },
+
+    updateResources: function (resources) {
+        this.setState({selected_resources: _.uniq(resources)});
+    },
+
+    getPermissionsPayload: function () {
+        return _.flatMap(this.state.selected_permissions, (permission) => {
+            if (permission.resource_type) {
+                return _.chain(this.state.selected_resources)
+                    .filter((resource) => resource.resource_type == permission.resource_type)
+                    .map((resource) => {
+                        return {
+                            permission_slug: permission.slug,
+                            resource_type: resource.resource_type,
+                            resource_id: resource.resource_id
+                        }
+                    }).value();
+            }
+            return {permission_slug: permission.slug}
+        });
+    },
+
+    submitForm: function () {
+        var permissions_payload = this.getPermissionsPayload();
+        var request_payload =
+            _.chain(this.state)
+                .pick(['full_name', 'email', 'role', 'mobile', 'location', 'organization_id'])
+                .merge({permissions: permissions_payload})
+                .value();
+
+        $.ajax({
+            type: this.props.submit_method,
+            url: this.props.submit_route,
+            contentType: "application/json",
+            headers: {
+                'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
+            },
+            data: JSON.stringify(request_payload),
+            success: () => {
+                window.location.replace("/admins");
+            }
+        });
+    },
+
+    requiredResources: function () {
+        return _.chain(this.state.selected_permissions)
             .map('resource_type')
             .uniq()
             .value();
+    },
 
-        var updateAccessLevel = (access_level) => {
-            var new_permissions = _.chain(self.props.access_levels)
-                .find(['name', access_level])
-                .get('default_permissions')
-                .map((slug) => _.find(self.props.permissions, ['slug', slug]))
-                .value();
-
-            self.setState({selected_permissions: new_permissions});
-        };
-
-        var updatePermissions = function (permission) {
-            var newPermissions = toggleElement(self.state.selected_permissions, permission);
-            self.setState({selected_permissions: newPermissions});
-        };
-
-        var updateResources = (resources) => {
-            self.setState({selected_resources: _.uniq(resources)});
-        };
-
-        var access_level = _.chain(self.props.access_levels)
-            .find((al) => comparePermissionArrays(_.map(self.state.selected_permissions, 'slug'), al.default_permissions))
+    access_level: function () {
+        return _.chain(this.props.access_levels)
+            .find((al) => comparePermissionArrays(_.map(this.state.selected_permissions, 'slug'), al.default_permissions))
             .get('name', 'custom')
             .value();
+    },
 
-        var submitForm = () => {
-            var permissions_payload =
-                _.flatMap(this.state.selected_permissions, (permission) => {
-                    if (permission.resource_type) {
-                        return _.chain(this.state.selected_resources)
-                            .filter((resource) => resource.resource_type == permission.resource_type)
-                            .map((resource) => {
-                                return {
-                                    permission_slug: permission.slug,
-                                    resource_type: resource.resource_type,
-                                    resource_id: resource.resource_id
-                                }
-                            }).value();
-                    }
-                    return {permission_slug: permission.slug}
-                });
 
-            var request_payload =
-                _.chain(this.state)
-                    .pick(['full_name', 'email', 'role', 'mobile', 'location', 'organization_id'])
-                    .merge({permissions: permissions_payload})
-                    .value();
-
-            console.log(request_payload);
-            $.ajax({
-                type: this.props.submit_method,
-                url: this.props.submit_route,
-                contentType: "application/json",
-                headers: {
-                    'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
-                },
-                data: JSON.stringify(request_payload),
-                success: () => {
-                    window.location.replace("/admins");
-                }
-            });
-        };
-
+    render: function () {
         return (
             <div>
                 <TextInputField name="full_name" title="Full Name" value={this.state.full_name}
-                                updateInput={updateInput}/>
-                <TextInputField name="email" title="Email" value={this.state.email} updateInput={updateInput}/>
-                <TextInputField name="role" title="Role" value={this.state.role} updateInput={updateInput}/>
+                                updateInput={this.updateInput.bind(this)}/>
+                <TextInputField name="email" title="Email" value={this.state.email} updateInput={this.updateInput}/>
+                <TextInputField name="role" title="Role" value={this.state.role} updateInput={this.updateInput}/>
                 <CollectionRadioButtons name="organization_id" title="Organization"
                                         organizations={this.props.organizations}
                                         checked_id={this.state.organization_id}
-                                        updateInput={updateInput}/>
+                                        updateInput={this.updateInput}/>
                 <AccessLevelComponent permissions={this.props.permissions}
                                       access_levels={this.props.access_levels}
-                                      selected_level={access_level}
+                                      selected_level={this.access_level()}
                                       selected_permissions={this.state.selected_permissions}
                                       selected_resources={this.state.selected_resources}
-                                      required_resources={requiredResources}
-                                      updateAccessLevel={updateAccessLevel}
-                                      updatePermissions={updatePermissions}
-                                      updateResources={updateResources}
+                                      required_resources={this.requiredResources()}
+                                      updateAccessLevel={this.updateAccessLevel}
+                                      updatePermissions={this.updatePermissions}
+                                      updateResources={this.updateResources}
                                       organization_id={this.state.organization_id}
                                       facility_groups={this.props.facility_groups}
                                       facilities={this.props.facilities}/>
-                <button className="btn btn-primary" onClick={submitForm}>
+                <button className="btn btn-primary" onClick={this.submitForm}>
                     {this.props.submit_text}
                 </button>
             </div>
