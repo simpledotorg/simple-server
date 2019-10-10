@@ -38,18 +38,19 @@ var SelectResourceModal = createReactClass({
         this.setState({selectedResources: newResources});
     },
 
-
-    render: function () {
-        var selectedResources = this.state.selectedResources;
-        var displayResources = _.filter(this.state.matchingResources, (resource) => {
+    displayResources: function() {
+        return _.filter(this.state.matchingResources, (resource) => {
             return resource.organization_id == this.props.organization_id;
         });
-        var resources = displayResources.map((resource, index) =>
+    },
+
+    renderResources: function() {
+        return this.displayResources().map((resource, index) =>
             <div className="form-check" key={index}>
                 <input className="form-check-input"
                        type="checkbox"
                        value={resource.id}
-                       checked={!_.isUndefined(_.find(selectedResources, ['resource_id', resource.id]))}
+                       checked={!_.isUndefined(_.find(this.state.selectedResources, ['resource_id', resource.id]))}
                        onChange={() => this.toggleResource(resource.id, resource.name)}
                        id={resource.id}/>
                 <label className="form-check-label form-label-light" htmlFor={resource.id}>
@@ -57,7 +58,9 @@ var SelectResourceModal = createReactClass({
                 </label>
             </div>
         );
+    },
 
+    render: function () {
         return (
             <div className="modal fade" id="exampleModal" tabIndex="-1" role="dialog"
                  aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -79,7 +82,7 @@ var SelectResourceModal = createReactClass({
                                 />
                             </div>
                             <div className="p-3">
-                                {resources}
+                                {this.renderResources()}
                             </div>
                         </div>
                         <div className="modal-footer justify-content-between">
@@ -94,6 +97,6 @@ var SelectResourceModal = createReactClass({
                     </div>
                 </div>
             </div>
-        )
+        );
     }
 });

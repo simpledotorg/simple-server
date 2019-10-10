@@ -157,32 +157,8 @@ class User < ApplicationRecord
     roles.map(&:to_sym).include?(self.role.to_sym)
   end
 
-  # These are required for the view
-  def resources=(global_ids)
-    @resources = global_ids.map { |global_id| GlobalID.find(global_id) }.compact
-  end
-
   def resources
-    @resources || user_permissions.map(&:resource)
+    user_permissions.map(&:resource)
   end
 
-  def resource_gids
-    resources.map(&:to_gid_param)
-  end
-
-  def default_permissions_for_resource_type(resource_type)
-    DEFAULT_PERMISSIONS[role.to_sym].select do |permission_slug|
-      Permissions::ALL_PERMISSIONS[permission_slug][:resource_type] == resource_type
-    end
-  end
-
-  def assign_default_permissions!(resources_by_type)
-    resources_by_type.each do |resource_type, resources|
-      default_permissions_for_resource_type(resource_type).each do |permission_slug|
-        resources.each do | resource|
-          self.user_permissions.create!(permission_slug: permission_slug, resource: resource)
-        end
-      end
-    end
-  end
 end

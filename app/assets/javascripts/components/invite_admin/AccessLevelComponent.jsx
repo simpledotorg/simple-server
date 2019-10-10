@@ -1,4 +1,5 @@
 class AccessLevelComponent extends React.Component {
+
     render() {
         var selectFacilityGroups = this.props.required_resources.includes('FacilityGroup')
             ? <SelectResource resourceType='FacilityGroup'
@@ -6,13 +7,6 @@ class AccessLevelComponent extends React.Component {
                               updateResources={this.props.updateResources}
                               organization_id={this.props.organization_id}
                               selected_resources={this.props.selected_resources}/>
-            : null;
-
-        var selectFacilities = this.props.required_resources.includes('Facility')
-            ? <SelectResource resourceType='Facility'
-                              resources={this.props.facilities}
-                              organization_id={this.props.organization_id}
-                              updateResources={this.props.updateResources}/>
             : null;
 
         return (
@@ -29,7 +23,6 @@ class AccessLevelComponent extends React.Component {
                                               updatePermissions={this.props.updatePermissions}/>
                     </div>
                 </div>
-                {selectFacilities}
                 {selectFacilityGroups}
             </div>
         )
