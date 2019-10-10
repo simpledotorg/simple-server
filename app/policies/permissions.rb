@@ -131,28 +131,37 @@ module Permissions
     { name: :counsellor,
       description: "Call center staff (access to PHI)",
       default_permissions: [
-        :manage_facilities_for_facility_group,
         :view_overdue_list_for_facility_group,
         :view_adherence_follow_up_list_for_facility_group
       ]
     },
     { name: :organization_owner,
-      description: "CVHO: Cardiovascular Health Officer (access to PHI)",
+      description: "Admin for an organization",
       default_permissions: [
         :manage_facility_groups_for_organization,
-        :view_overdue_list_for_facility_group,
-        :view_adherence_follow_up_list_for_facility_group,
-        :approve_health_workers_for_organization
+        :view_overdue_list_for_organization,
+        :view_adherence_follow_up_list_for_organization,
+        :approve_health_workers_for_organization,
+        :manage_admins_for_organization
       ]
     },
     { name: :analyst,
       description: "Data analyst",
       default_permissions: [
-        :view_cohort_reports_for_facility_group,
-        :manage_facilities_for_facility_group
+        :view_cohort_reports_for_facility_group
       ]
     },
     { name: :supervisor,
+      description: "CVHO: Cardiovascular Health Officer (access to PHI)",
+      default_permissions: [
+        :manage_facilities_for_facility_group,
+        :view_overdue_list_for_facility_group,
+        :download_overdue_list_for_facility_group,
+        :view_adherence_follow_up_list_for_facility_group,
+        :approve_health_workers_for_facility_group
+      ]
+    },
+    { name: :sts,
       description: "STS: Senior Treatment Supervisor (access to PHI)",
       default_permissions: [
         :manage_facilities_for_facility_group,
