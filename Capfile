@@ -13,4 +13,4 @@ require 'capistrano-db-tasks'
 
 require "whenever/capistrano"
 
-Dir.glob("lib/capistrano/tasks/*.rake").each { |r| import r }
+Dir.glob("lib/capistrano/tasks/*.rake").each(&method(:import))
