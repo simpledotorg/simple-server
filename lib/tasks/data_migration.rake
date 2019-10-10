@@ -75,7 +75,7 @@ namespace :data_migration do
     batch_size = ENV['BACKFILL_ENCOUNTERS_FOR_BPS_BATCH_SIZE'].to_i || 1000
     timezone_offset = 19800 # For 'Asia/Kolkata'
 
-    migrate all blood_pressures in batches
+    #migrate all blood_pressures in batches
     BloodPressure.in_batches(of: batch_size) do |batch|
       batch.map do |blood_pressure|
         encountered_on = Encounter.generate_encountered_on(blood_pressure.recorded_at, timezone_offset)
