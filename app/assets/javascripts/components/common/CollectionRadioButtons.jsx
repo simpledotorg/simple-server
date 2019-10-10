@@ -12,12 +12,12 @@ class CollectionRadioButtons extends React.Component {
                             <input className="form-check-input"
                                    name={name}
                                    type="radio"
-                                   value={organization[0]}
-                                   checked={organization[0] == checked_id}
-                                   id={organization[0]}
+                                   value={organization.id}
+                                   checked={organization.id == checked_id}
+                                   id={organization.id}
                                    onChange={(e) => updateInput(name, e.target.value)}/>
-                            <label className="form-check-label form-label-light" htmlFor={organization[0]}>
-                                {organization[1]}
+                            <label className="form-check-label form-label-light" htmlFor={organization.id}>
+                                {organization.name}
                             </label>
                         </div>
                     )

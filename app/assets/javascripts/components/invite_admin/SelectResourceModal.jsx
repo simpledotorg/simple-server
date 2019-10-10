@@ -14,7 +14,7 @@ var SelectResourceModal = createReactClass({
             var updateHash = {};
             updateHash['searchText'] = input;
             updateHash['matchingResources'] = self.props.resources
-                .filter((resource) => resource[1].toLowerCase().includes(input.toLowerCase()));
+                .filter((resource) => resource.name.toLowerCase().includes(input.toLowerCase()));
 
             self.setState(updateHash);
         };
@@ -32,24 +32,27 @@ var SelectResourceModal = createReactClass({
             var newResources = _.map(self.state.matchingResources, (resource) => {
                 return {
                     resource_type: self.props.resourceType,
-                    resource_id: resource[0],
-                    resource_name: resource[1]
+                    resource_id: resource.id,
+                    resource_name: resource.name
                 };
             });
             self.setState({selectedResources: newResources});
         };
 
         var selectedResources = self.state.selectedResources;
-        var resources = this.state.matchingResources.map((resource, index) =>
+        var displayResources = _.filter(this.state.matchingResources, (resource) => {
+            return resource.organization_id == this.props.organization_id;
+        });
+        var resources = displayResources.map((resource, index) =>
             <div className="form-check" key={index}>
                 <input className="form-check-input"
                        type="checkbox"
-                       value={resource[0]}
-                       checked={!_.isUndefined(_.find(selectedResources, ['resource_id', resource[0]]))}
-                       onChange={() => toggleResource(resource[0], resource[1])}
-                       id={resource[0]}/>
-                <label className="form-check-label form-label-light" htmlFor={resource[0]}>
-                    {resource[1]}
+                       value={resource.id}
+                       checked={!_.isUndefined(_.find(selectedResources, ['resource_id', resource.id]))}
+                       onChange={() => toggleResource(resource.id, resource.name)}
+                       id={resource.id}/>
+                <label className="form-check-label form-label-light" htmlFor={resource.id}>
+                    {resource.name}
                 </label>
             </div>
         );
