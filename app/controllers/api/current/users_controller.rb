@@ -5,7 +5,6 @@ class Api::Current::UsersController < APIController
   skip_before_action :validate_facility, only: [:register, :find, :request_otp]
   skip_before_action :validate_current_facility_belongs_to_users_facility_group, only: [:register, :find, :request_otp]
   before_action :validate_registration_payload, only: %i[register]
-  before_action :set_locale
 
   def register
     user = User.build_with_phone_number_authentication(user_from_request)

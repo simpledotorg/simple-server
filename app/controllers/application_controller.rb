@@ -3,9 +3,11 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
 
   before_action :configure_permitted_parameters, if: :devise_controller?
+  around_action :switch_locale
 
-  def set_locale
-    I18n.locale = http_accept_language.compatible_language_from(I18n.available_locales)
+  def switch_locale(&action)
+    locale = http_accept_language.compatible_language_from(I18n.available_locales) || I18n.default_locale
+    I18n.with_locale(locale, &action)
   end
 
   private
