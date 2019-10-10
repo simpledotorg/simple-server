@@ -50,7 +50,13 @@ window.InviteAdminForm = createReactClass({
 
     getPermissionsPayload: function () {
         return _.flatMap(this.state.selected_permissions, (permission) => {
-            if (permission.resource_type) {
+            if (permission.resource_type == 'Organization') {
+                return {
+                    permission_slug: permission.slug,
+                    resource_type: 'Organization',
+                    resource_id: this.state.organization_id
+                }
+            } else if (permission.resource_type) {
                 return _.chain(this.state.selected_resources)
                     .filter((resource) => resource.resource_type == permission.resource_type)
                     .map((resource) => {
