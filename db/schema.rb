@@ -10,8 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191003064554) do
-  
+ActiveRecord::Schema.define(version: 20191009085236) do
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "pgcrypto"
@@ -37,6 +37,7 @@ ActiveRecord::Schema.define(version: 20191003064554) do
     t.string "access_controllable_type", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "user_id"
     t.index ["access_controllable_id", "access_controllable_type"], name: "index_access_controls_on_controllable_id_and_type"
     t.index ["admin_id"], name: "index_admin_access_controls_on_admin_id"
   end
@@ -105,6 +106,7 @@ ActiveRecord::Schema.define(version: 20191003064554) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
+    t.index ["action", "auditable_type"], name: "index_audit_logs_on_action_and_auditable_type"
     t.index ["auditable_type", "auditable_id"], name: "index_audit_logs_on_auditable_type_and_auditable_id"
     t.index ["user_id"], name: "index_audit_logs_on_user_id"
   end
@@ -247,6 +249,9 @@ ActiveRecord::Schema.define(version: 20191003064554) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
+    t.string "role"
+    t.uuid "organization_id"
+    t.index ["organization_id"], name: "index_master_users_on_organization_id"
   end
 
   create_table "medical_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -334,6 +339,7 @@ ActiveRecord::Schema.define(version: 20191003064554) do
     t.boolean "contacted_by_counsellor", default: false
     t.string "could_not_contact_reason"
     t.datetime "recorded_at"
+    t.string "reminder_consent", default: "denied", null: false
     t.index ["deleted_at"], name: "index_patients_on_deleted_at"
     t.index ["recorded_at"], name: "index_patients_on_recorded_at"
     t.index ["registration_facility_id"], name: "index_patients_on_registration_facility_id"
@@ -428,7 +434,9 @@ ActiveRecord::Schema.define(version: 20191003064554) do
       master_users.device_created_at,
       master_users.created_at,
       master_users.updated_at,
-      master_users.deleted_at
+      master_users.deleted_at,
+      master_users.role,
+      master_users.organization_id
      FROM master_users;
   SQL
   create_view "bp_drugs_views", sql_definition: <<-SQL

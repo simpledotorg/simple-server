@@ -12,7 +12,7 @@ RSpec.describe Admin::ProtocolDrugsController, type: :controller do
   }
 
   before do
-    sign_in(create(:admin))
+    sign_in(create(:admin).email_authentication)
   end
 
   describe "GET #index" do

@@ -28,7 +28,6 @@ RSpec.describe InvitationPolicy do
       expect(subject).not_to permit(supervisor)
       expect(subject).not_to permit(analyst)
     end
-
   end
 
   permissions :invite_organization_owner? do
@@ -37,7 +36,7 @@ RSpec.describe InvitationPolicy do
       expect(subject).to permit(organization_owner)
     end
 
-    it "doesn't permit other admins" do
+    it "doesn't permit other email_authentications" do
       expect(subject).not_to permit(supervisor)
       expect(subject).not_to permit(analyst)
     end

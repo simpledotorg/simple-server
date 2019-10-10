@@ -5,7 +5,7 @@ RSpec.describe PatientsController, type: :controller do
   let(:facility_group) { counsellor.facility_groups.first }
 
   before do
-    sign_in(counsellor)
+    sign_in(counsellor.email_authentication)
   end
 
   describe 'GET #index' do

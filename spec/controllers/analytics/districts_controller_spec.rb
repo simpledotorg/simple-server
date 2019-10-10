@@ -8,6 +8,9 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
   let(:facility_group) { create(:facility_group, organization: organization) }
   let(:facility) { create(:facility, facility_group: facility_group, district: district_name) }
   let(:organization_district) { OrganizationDistrict.new(district_name, organization) }
+  let(:sanitized_district_name) { organization_district.district_name.downcase.split(' ').join('-') }
+  let(:analytics_cohort_cache_key) { "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/cohort/quarter" }
+  let(:analytics_dashboard_cache_key) { "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/dashboard/quarter" }
 
   before do
     #
@@ -27,9 +30,13 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
     Patient.where(id: registered_patients.map(&:id))
   end
 
+  before do
+    sign_in(admin.email_authentication)
+  end
+
   describe '#show' do
     before do
-      sign_in(admin)
+      sign_in(admin.email_authentication)
     end
 
     render_views
@@ -52,7 +59,8 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
 
     context 'analytics caching for districts' do
       before do
-        Rails.cache.clear
+        Rails.cache.delete(analytics_cohort_cache_key)
+        Rails.cache.delete(analytics_dashboard_cache_key)
         Timecop.travel(Date.new(2019, 5, 1))
       end
 
@@ -66,10 +74,6 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
       let(:cohort_date3) { (today - (2 * 3).months).beginning_of_quarter }
 
       it 'caches the district correctly' do
-        sanitized_district_name = organization_district.district_name.downcase.split(' ').join('-')
-        analytics_cohort_cache_key = "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/cohort/quarter"
-        analytics_dashboard_cache_key = "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/dashboard/quarter"
-
         expected_cache_value =
           {
             cohort: {
@@ -101,7 +105,7 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
   describe '#whatsapp_graphics' do
     before do
       admin = create(:admin, :supervisor)
-      sign_in(admin)
+      sign_in(admin.email_authentication)
       create(:admin_access_control, access_controllable: facility_group, admin: admin)
     end
 
@@ -119,7 +123,6 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
     context 'png requested' do
       it 'renders the image template for downloading' do
         get :whatsapp_graphics, format: :png, params: { organization_id: organization.id, district_id: district_name }
-
 
         expect(response).to be_ok
         expect(response).to render_template('shared/graphics/image_template')
