@@ -101,6 +101,9 @@ window.InviteAdminForm = createReactClass({
     },
 
     access_level: function () {
+        if(_.isEmpty(this.state.selected_permissions)) {
+            return;
+        }
         return _.chain(this.props.access_levels)
             .find((al) => comparePermissionArrays(_.map(this.state.selected_permissions, 'slug'), al.default_permissions))
             .get('name', 'custom')
