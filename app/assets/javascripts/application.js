@@ -19,6 +19,7 @@
 //= require react
 //= require react_ujs
 //= require lodash
+//= require pluralize/pluralize
 //= require components
 //= require_tree .
 

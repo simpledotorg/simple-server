@@ -67,7 +67,7 @@ var SelectResourceModal = createReactClass({
                 <div className="modal-dialog modal-dialog-scrollable" role="document">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h3 className="modal-title" id="exampleModalLabel">Select facilities or districts</h3>
+                            <h3 className="modal-title" id="exampleModalLabel">Select {this.props.resourceDisplayName}</h3>
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>

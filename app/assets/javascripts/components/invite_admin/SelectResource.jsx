@@ -1,5 +1,12 @@
 class SelectResource extends React.Component {
     render() {
+        var resourceDisplayName = _.chain(this.props.resourceType)
+            .snakeCase()
+            .replace("_", " ")
+            .startCase()
+            .thru(pluralize)
+            .value();
+
         var inputDisplay = _.chain(this.props.selected_resources)
             .take(2)
             .map('resource_name')
@@ -14,7 +21,7 @@ class SelectResource extends React.Component {
             <div>
                 <div className="form-group row">
                     <label htmlFor="facilities-input"
-                           className="col-md-2 col-form-label">{this.props.resourceType}</label>
+                           className="col-md-2 col-form-label">{resourceDisplayName}</label>
                     <div className="col-md-10">
                         <input className="form-control"
                                type="text"
@@ -25,7 +32,7 @@ class SelectResource extends React.Component {
                     </div>
                 </div>
 
-                <SelectResourceModal {...this.props} />
+                <SelectResourceModal {...this.props} resourceDisplayName={resourceDisplayName}/>
             </div>
         );
     }
