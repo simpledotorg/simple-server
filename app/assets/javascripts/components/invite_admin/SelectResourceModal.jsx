@@ -27,8 +27,14 @@ var SelectResourceModal = createReactClass({
         this.setState({selectedResources: newResources})
     },
 
+    displayResources: function() {
+        return _.filter(this.state.matchingResources, (resource) => {
+            return resource.organization_id == this.props.organization_id;
+        });
+    },
+
     selectAllResources: function () {
-        var newResources = _.map(this.state.matchingResources, (resource) => {
+        var newResources = _.map(this.displayResources(), (resource) => {
             return {
                 resource_type: this.props.resourceType,
                 resource_id: resource.id,
@@ -36,12 +42,6 @@ var SelectResourceModal = createReactClass({
             };
         });
         this.setState({selectedResources: newResources});
-    },
-
-    displayResources: function() {
-        return _.filter(this.state.matchingResources, (resource) => {
-            return resource.organization_id == this.props.organization_id;
-        });
     },
 
     renderResources: function() {
