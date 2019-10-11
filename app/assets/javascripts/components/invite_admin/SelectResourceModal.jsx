@@ -87,7 +87,7 @@ var SelectResourceModal = createReactClass({
                         </div>
                         <div className="modal-footer justify-content-between">
                             <button type="button" className="btn btn-outline-success" onClick={this.selectAllResources}>
-                                Give access to all facilities
+                                Give access to all {this.props.resourceDisplayName}
                             </button>
                             <button type="button" className="btn btn-primary" data-dismiss="modal" aria-label="Done"
                                     onClick={() => this.props.updateResources(this.state.selectedResources)}>

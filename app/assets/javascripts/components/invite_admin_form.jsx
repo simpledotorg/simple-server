@@ -29,6 +29,13 @@ window.InviteAdminForm = createReactClass({
         this.setState({[key]: value})
     },
 
+    updateOrganization: function (organization_id) {
+        this.setState({
+            organization_id: organization_id,
+            selected_facility_groups: []
+        });
+    },
+
     updateAccessLevel: function (access_level) {
         var new_permissions = _.chain(this.props.access_levels)
             .find(['name', access_level])
@@ -121,7 +128,7 @@ window.InviteAdminForm = createReactClass({
                 <CollectionRadioButtons name="organization_id" title="Organization"
                                         organizations={this.props.organizations}
                                         checked_id={this.state.organization_id}
-                                        updateInput={this.updateInput}/>
+                                        updateOrganization={this.updateOrganization}/>
                 <AccessLevelComponent permissions={this.props.permissions}
                                       access_levels={this.props.access_levels}
                                       selected_level={this.access_level()}
