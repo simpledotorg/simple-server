@@ -20,7 +20,7 @@ class FacilityGroupPolicy < ApplicationPolicy
   end
 
   def new?
-    create?
+    index?
   end
 
   def update?

@@ -6,7 +6,7 @@ module Permissions
       resource_types: [:global, :organization, :facility_group]
     },
     manage_admins: {
-      slug: :approve_health_workers,
+      slug: :manage_admins,
       description: 'Manage Admins',
       resource_types: [:global, :organization, :facility_group]
     },
@@ -63,7 +63,7 @@ module Permissions
       resource_type: :facility_group,
       default_permissions: [
         :view_overdue_list,
-        :view_adherence_follow_up
+        :view_adherence_follow_up_list
       ]
     },
     { name: :organization_owner,
@@ -92,7 +92,8 @@ module Permissions
         :view_overdue_list,
         :download_overdue_list,
         :view_adherence_follow_up_list,
-        :approve_health_workers
+        :approve_health_workers,
+        :view_cohort_reports
       ]
     },
     { name: :sts,
@@ -112,7 +113,6 @@ module Permissions
       default_permissions: [
         :manage_organizations,
         :manage_protocols,
-        :view_audit_logs,
         :approve_health_workers,
         :view_overdue_list,
         :view_adherence_follow_up_list,

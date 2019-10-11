@@ -11,14 +11,17 @@ class AppointmentsController < AdminController
                       .joins(patient: { latest_blood_pressures: :facility })
                       .includes(patient: [:address, :phone_numbers, :medical_history, { latest_blood_pressures: :facility }])
                       .overdue
-                      .where(facility: selected_facilities)
                       .distinct
                       .order(scheduled_date: :asc)
+
+    if current_facility
+      @appointments = @appointments.where(facility: current_facility)
+    end
 
     respond_to do |format|
       format.html { @appointments = paginate(@appointments) }
       format.csv do
-        facility_name = selected_facilities.size > 1 ? "all" : selected_facilities.first.name.parameterize
+        facility_name = current_facility.present? ? current_facility.name.parameterize : 'all'
         send_data @appointments.to_csv, filename: "overdue-patients_#{facility_name}_#{Date.today}.csv"
       end
     end

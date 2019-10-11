@@ -1,7 +1,7 @@
 class FacilityPolicy < ApplicationPolicy
   def index?
     user.user_permissions
-      .where(permission_slug: [:manage_organizations, :manage_facility_groups])
+      .where(permission_slug: [:manage_organizations, :manage_facility_groups, :manage_facilities])
       .present?
   end
 
@@ -9,6 +9,7 @@ class FacilityPolicy < ApplicationPolicy
     user_has_any_permissions?(
       [:manage_organizations, nil],
       [:manage_facility_groups, record.organization],
+      [:manage_facilities, record.facility_group]
     )
   end
 
@@ -28,6 +29,7 @@ class FacilityPolicy < ApplicationPolicy
     user_has_any_permissions?(
       [:manage_organizations, nil],
       [:manage_facility_groups, record.organization],
+      [:manage_facilities, record.facility_group]
     )
   end
 
@@ -39,6 +41,7 @@ class FacilityPolicy < ApplicationPolicy
     user_has_any_permissions?(
       [:manage_organizations, nil],
       [:manage_facility_groups, record.organization],
+      [:manage_facilities, record.facility_group]
     )
   end
 
@@ -52,7 +55,7 @@ class FacilityPolicy < ApplicationPolicy
 
   def upload?
     user.user_permissions
-      .where(permission_slug: [:manage_organizations, :manage_facility_groups])
+      .where(permission_slug: [:manage_organizations, :manage_facility_groups, :manage_facilities])
       .present?
   end
 
@@ -84,12 +87,6 @@ class FacilityPolicy < ApplicationPolicy
         return scope.where(facility_group: facility_groups)
       elsif user.has_permission?(:manage_facilities)
         return scope.where(facility_group: resources_for_permission(:manage_facilities))
-      elsif user.has_permission?(:view_overdue_list)
-        return scope.where(facility_group: resources_for_permission(:view_overdue_list))
-      elsif user.has_permission?(:view_adherence_follow_up_list)
-        return scope.where(facility_group: resources_for_permission(:view_adherence_follow_up_list))
-      elsif user.has_permission?(:view_overdue_list)
-        return scope.where(organization: resources_for_permission(:view_overdue_list))
       end
 
       scope.none

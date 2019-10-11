@@ -9,8 +9,11 @@ class PatientsController < AdminController
 
     @patients = policy_scope(Patient)
                   .not_contacted
-                  .where(registration_facility: selected_facilities)
                   .order(device_created_at: :asc)
+
+    if current_facility.present?
+      @patients = @patients.where(registration_facility: current_facility)
+    end
 
     @patients = paginate(@patients)
   end
