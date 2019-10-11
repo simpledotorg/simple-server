@@ -93,11 +93,8 @@ window.InviteAdminForm = createReactClass({
         });
     },
 
-    requiredResources: function () {
-        return _.chain(this.state.selected_permissions)
-            .map('resource_type')
-            .uniq()
-            .value();
+    requiredResource: function () {
+        return _.get(this.access_level(), 'resource_type');
     },
 
     access_level: function () {
@@ -106,7 +103,6 @@ window.InviteAdminForm = createReactClass({
         }
         return _.chain(this.props.access_levels)
             .find((al) => comparePermissionArrays(_.map(this.state.selected_permissions, 'slug'), al.default_permissions))
-            .get('name', 'custom')
             .value();
     },
 
@@ -127,7 +123,7 @@ window.InviteAdminForm = createReactClass({
                                       selected_level={this.access_level()}
                                       selected_permissions={this.state.selected_permissions}
                                       selected_resources={this.state.selected_resources}
-                                      required_resources={this.requiredResources()}
+                                      required_resource={this.requiredResource()}
                                       updateAccessLevel={this.updateAccessLevel}
                                       updatePermissions={this.updatePermissions}
                                       updateResources={this.updateResources}

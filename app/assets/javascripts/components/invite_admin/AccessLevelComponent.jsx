@@ -1,7 +1,7 @@
 class AccessLevelComponent extends React.Component {
 
     render() {
-        var selectFacilityGroups = this.props.required_resources.includes('FacilityGroup')
+        var selectFacilityGroups = this.props.required_resource == 'facility_group'
             ? <SelectResource resourceType='FacilityGroup'
                               resources={this.props.facility_groups}
                               updateResources={this.props.updateResources}
