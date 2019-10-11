@@ -26,17 +26,17 @@ class ApprovalNotifierMailer < ApplicationMailer
   private
 
   def supervisor_emails
-    users = UserPermission.where(permission_slug: :approve_health_workers_for_facility_group, resource: user.facility_group).map(&:user)
+    users = UserPermission.where(permission_slug: :approve_health_workers, resource: user.facility_group).map(&:user)
     users.map(&:email).join(',')
   end
 
   def organization_owner_emails
-    users = UserPermission.where(permission_slug: :approve_health_workers_for_organization, resource: user.organization).map(&:user)
+    users = UserPermission.where(permission_slug: :approve_health_workers, resource: user.organization).map(&:user)
     users.map(&:email).join(',')
   end
 
   def owner_emails
-    users = UserPermission.where(permission_slug: :approve_health_workers_for_all_organizations).map(&:user)
+    users = UserPermission.where(permission_slug: :approve_health_workers).map(&:user)
     users.map(&:email).join(',')
   end
 end

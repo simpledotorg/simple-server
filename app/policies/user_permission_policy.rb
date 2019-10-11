@@ -1,8 +1,10 @@
 class UserPermissionPolicy < ApplicationPolicy
   def create?
-    user_permission_slugs = user.user_permissions.pluck(:permission_slug).map(&:to_sym)
-    [:manage_admins_for_organization
-    ].any? { |slug| user_permission_slugs.include? slug }
+    user_has_any_permissions?(
+      [:manage_admins, nil],
+      [:manage_admins, record.facility.organization],
+      [:manage_admins, record.facility.facility_group],
+    )
   end
 
   def new?
@@ -10,7 +12,7 @@ class UserPermissionPolicy < ApplicationPolicy
   end
 
   def roles_user_can_invite
-    if user.has_permission?(:manage_admins_for_all_organizations)
+    if user.has_permission?(:manage_admins)
       User.roles.except(:nurse)
     end
   end
