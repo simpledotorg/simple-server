@@ -66,14 +66,11 @@ class UserPolicy < ApplicationPolicy
     end
 
     def resolve
-      if user.user_permissions.where(permission_slug: :approve_health_workers).present?
-        required_permissions = user.user_permissions.where(permission_slug: :approve_health_workers)
-        resources = required_permissions.map(&:resource).compact
-        return scope.all unless resources.present?
-
-        facilities = resources.flat_map(&:facilities)
-        scope.joins(:phone_number_authentications).where(phone_number_authentications: { facility: facilities })
-      else
+      if user.has_permission?(:approve_health_workers)
+        scope.joins(:phone_number_authentications)
+          .where(phone_number_authentications:
+                   { facility_id: facility_ids_for_slug(:approve_health_workers) })
+      elsif user.has_permissions?(:manage_admins)
         required_permissions = user.user_permissions.where(permission_slug: :manage_admins)
         resources = required_permissions.map(&:resource).compact
         return scope.all unless resources.present?
@@ -82,6 +79,14 @@ class UserPolicy < ApplicationPolicy
       end
 
       scope.none
+    end
+
+    def facility_ids_for_slug(slug)
+      resources = resources_for_permission(slug)
+
+      resources.flat_map do |resource|
+        resource.facilities.map(&:id)
+      end.uniq.compact
     end
   end
 end

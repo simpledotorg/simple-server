@@ -57,9 +57,23 @@ class FacilityGroupPolicy < ApplicationPolicy
       if user.has_permission?(:manage_organizations)
         scope.all
       elsif user.has_permission?(:manage_facility_groups)
-        scope.where(organization: resources_for_permission(:manage_facility_groups))
+        scope.where(id: facility_group_ids_for_permission(:manage_facility_groups))
+      elsif user.has_permission?(:view_cohort_reports)
+        scope.where(id: facility_group_ids_for_permission(:view_cohort_reports))
       else
         scope.none
+      end
+    end
+
+
+    def facility_group_ids_for_permission(slug)
+      resources = resources_for_permission(slug)
+      resources.flat_map do |resource|
+        if resource.is_a? Organization
+          resource.facility_groups.map(&:id)
+        elsif resource.is_a? FacilityGroup
+          resource.id
+        end
       end
     end
   end

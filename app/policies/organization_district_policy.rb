@@ -6,9 +6,9 @@ class OrganizationDistrictPolicy < ApplicationPolicy
   end
 
   def show?
-    user_has_any_permissions?(
+    user.has_permission?(:view_cohort_reports) || user_has_any_permissions?(
       [:manage_organizations, nil],
-      [:manage_facility_groups, record.organization]
+      [:manage_facility_groups, record.organization],
     )
   end
 

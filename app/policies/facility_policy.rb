@@ -6,7 +6,7 @@ class FacilityPolicy < ApplicationPolicy
   end
 
   def show?
-    user_has_any_permissions?(
+    user.has_permission?(:view_cohort_reports) || user_has_any_permissions?(
       [:manage_organizations, nil],
       [:manage_facility_groups, record.organization],
       [:manage_facilities, record.facility_group]
@@ -85,10 +85,10 @@ class FacilityPolicy < ApplicationPolicy
       elsif user.has_permission?(:manage_facility_groups)
         facility_groups = facility_groups_for_permission(:manage_facility_groups)
         return scope.where(facility_group: facility_groups)
-      elsif user.has_permission(:view_overdue_list)
+      elsif user.has_permission?(:view_overdue_list)
         facility_groups = facility_groups_for_permission(:view_overdue_list)
         return scope.where(facility_group: facility_groups)
-      elsif user.has_permission(:approve_health_workers)
+      elsif user.has_permission?(:approve_health_workers)
         facility_groups = facility_groups_for_permission(:approve_health_workers)
         return scope.where(facility_group: facility_groups)
       elsif user.has_permission?(:manage_facilities)
@@ -99,11 +99,11 @@ class FacilityPolicy < ApplicationPolicy
     end
 
     def facility_groups_for_permission(slug)
-      resources = resources_for_permission(:manage_facility_groups)
+      resources = resources_for_permission(slug)
       resources.flat_map do |resource|
         if resource.is_a? Organization
           resource.facility_groups
-        elsif resource.is_a FacilityGroup
+        elsif resource.is_a? FacilityGroup
           resource
         end
       end
