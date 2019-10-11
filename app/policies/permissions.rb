@@ -58,13 +58,6 @@ module Permissions
   }
 
   ACCESS_LEVELS = [
-    { name: :counsellor,
-      description: "Call center staff (access to PHI)",
-      default_permissions: [
-        :view_overdue_list,
-        :view_adherence_follow_up_list
-      ]
-    },
     { name: :organization_owner,
       description: "Admin for an organization",
       default_permissions: [
@@ -75,14 +68,16 @@ module Permissions
         :manage_admins
       ]
     },
-    { name: :analyst,
-      description: "Data analyst",
+
+    { name: :counsellor,
+      description: "Call center staff",
       default_permissions: [
-        :view_cohort_reports
+        :view_overdue_list,
+        :view_adherence_follow_up_list
       ]
     },
     { name: :supervisor,
-      description: "CVHO: Cardiovascular Health Officer (access to PHI)",
+      description: "CVHO: Cardiovascular Health Officer",
       default_permissions: [
         :manage_facilities,
         :view_overdue_list,
@@ -92,8 +87,14 @@ module Permissions
         :view_cohort_reports
       ]
     },
+    { name: :analyst,
+      description: "Data analyst",
+      default_permissions: [
+        :view_cohort_reports
+      ]
+    },
     { name: :sts,
-      description: "STS: Senior Treatment Supervisor (access to PHI)",
+      description: "STS: Senior Treatment Supervisor",
       default_permissions: [
         :manage_facilities,
         :view_overdue_list,

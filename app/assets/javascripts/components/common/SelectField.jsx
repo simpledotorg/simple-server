@@ -6,7 +6,7 @@ class SelectField extends React.Component {
         var updateAccessLevel = this.props.updateAccessLevel;
         return (
             <select className="form-control" id="access-input"
-                    value={_.get(this.props.selected_level, 'name')}
+                    value={this.props.selected_level}
                     onChange={(e) => updateAccessLevel(e.target.value)}>
                 <option>Choose access level...</option>
                 {accessLevels}

@@ -105,6 +105,7 @@ window.InviteAdminForm = createReactClass({
         }
         return _.chain(this.props.access_levels)
             .find((al) => comparePermissionArrays(_.uniq(_.map(this.state.selected_permissions, 'slug')), al.default_permissions))
+            .get('name', 'custom')
             .value();
     }
     ,
