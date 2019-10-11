@@ -83,13 +83,30 @@ class FacilityPolicy < ApplicationPolicy
       if user.has_permission?(:manage_organizations)
         return scope.all
       elsif user.has_permission?(:manage_facility_groups)
-        facility_groups = resources_for_permission(:manage_facility_groups).flat_map(&:facility_groups)
+        facility_groups = facility_groups_for_permission(:manage_facility_groups)
+        return scope.where(facility_group: facility_groups)
+      elsif user.has_permission(:view_overdue_list)
+        facility_groups = facility_groups_for_permission(:view_overdue_list)
+        return scope.where(facility_group: facility_groups)
+      elsif user.has_permission(:approve_health_workers)
+        facility_groups = facility_groups_for_permission(:approve_health_workers)
         return scope.where(facility_group: facility_groups)
       elsif user.has_permission?(:manage_facilities)
         return scope.where(facility_group: resources_for_permission(:manage_facilities))
       end
 
       scope.none
+    end
+
+    def facility_groups_for_permission(slug)
+      resources = resources_for_permission(:manage_facility_groups)
+      resources.flat_map do |resource|
+        if resource.is_a? Organization
+          resource.facility_groups
+        elsif resource.is_a FacilityGroup
+          resource
+        end
+      end
     end
   end
 end
