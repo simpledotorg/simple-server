@@ -10,6 +10,7 @@ require "capistrano/rails"
 require "capistrano/passenger"
 require "capistrano/sidekiq"
 require 'capistrano-db-tasks'
+require 'capistrano/npm'
 
 require "whenever/capistrano"
 
