@@ -21,7 +21,7 @@ window.InviteAdminForm = createReactClass({
             role: _.get(this.props, ['admin', 'role'], ''),
             organization_id: _.get(this.props, ['admin', 'organization_id']),
             selected_permissions: _.get(this.props, ['selected_permissions'], []),
-            selected_resources: _.get(this.props, ['selected_resources'], [])
+            selected_facility_groups: _.get(this.props, ['selected_facility_groups'], [])
         }
     },
 
@@ -45,19 +45,21 @@ window.InviteAdminForm = createReactClass({
     },
 
     updateResources: function (resources) {
-        this.setState({selected_resources: _.uniq(resources)});
+        this.setState({selected_facility_groups: _.uniq(resources)});
     },
 
     getPermissionsPayload: function () {
-        var requiredResourceType = _.get(this.access_level(), 'resource_type');
-        if (requiredResourceType === 'global') {
-            return _.map(this.state.selected_permissions, (permission) => {
-                return {permission_slug: permission.slug};
+        if (!_.isEmpty(this.state.selected_facility_groups)) {
+            return _.flatMap(this.state.selected_permissions, (permission) => {
+                return _.map(this.state.selected_facility_groups, (resource) => {
+                    return {
+                        permission_slug: permission.slug,
+                        resource_type: resource.resource_type,
+                        resource_id: resource.resource_id
+                    }
+                });
             });
-        }
-
-
-        if (requiredResourceType === 'organization') {
+        } else if (this.state.organization_id) {
             return _.flatMap(this.state.selected_permissions, (permission) => {
                 return {
                     permission_slug: permission.slug,
@@ -66,19 +68,8 @@ window.InviteAdminForm = createReactClass({
                 }
             });
         }
-
-        return _.flatMap(this.state.selected_permissions, (permission) => {
-            return _.chain(this.state.selected_resources)
-                .filter((resource) => _.snakeCase(resource.resource_type) === requiredResourceType)
-                .map((resource) => {
-                    return {
-                        permission_slug: permission.slug,
-                        resource_type: resource.resource_type,
-                        resource_id: resource.resource_id
-                    }
-                }).value();
-        });
     },
+
 
     submitForm: function () {
         var permissions_payload = this.getPermissionsPayload();
@@ -100,11 +91,13 @@ window.InviteAdminForm = createReactClass({
                 window.location.replace("/admins");
             }
         });
-    },
+    }
+    ,
 
     requiredResource: function () {
         return _.get(this.access_level(), 'resource_type');
-    },
+    }
+    ,
 
     access_level: function () {
         if (_.isEmpty(this.state.selected_permissions)) {
@@ -113,7 +106,8 @@ window.InviteAdminForm = createReactClass({
         return _.chain(this.props.access_levels)
             .find((al) => comparePermissionArrays(_.uniq(_.map(this.state.selected_permissions, 'slug')), al.default_permissions))
             .value();
-    },
+    }
+    ,
 
 
     render: function () {
@@ -131,7 +125,7 @@ window.InviteAdminForm = createReactClass({
                                       access_levels={this.props.access_levels}
                                       selected_level={this.access_level()}
                                       selected_permissions={this.state.selected_permissions}
-                                      selected_resources={this.state.selected_resources}
+                                      selected_resources={this.state.selected_facility_groups}
                                       required_resource={this.requiredResource()}
                                       updateAccessLevel={this.updateAccessLevel}
                                       updatePermissions={this.updatePermissions}
@@ -145,4 +139,5 @@ window.InviteAdminForm = createReactClass({
             </div>
         );
     }
-});
+})
+;

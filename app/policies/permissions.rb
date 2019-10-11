@@ -60,7 +60,6 @@ module Permissions
   ACCESS_LEVELS = [
     { name: :counsellor,
       description: "Call center staff (access to PHI)",
-      resource_type: :facility_group,
       default_permissions: [
         :view_overdue_list,
         :view_adherence_follow_up_list
@@ -68,7 +67,6 @@ module Permissions
     },
     { name: :organization_owner,
       description: "Admin for an organization",
-      resource_type: :organization,
       default_permissions: [
         :manage_facility_groups,
         :view_overdue_list,
@@ -79,14 +77,12 @@ module Permissions
     },
     { name: :analyst,
       description: "Data analyst",
-      resource_type: :facility_group,
       default_permissions: [
         :view_cohort_reports
       ]
     },
     { name: :supervisor,
       description: "CVHO: Cardiovascular Health Officer (access to PHI)",
-      resource_type: :facility_group,
       default_permissions: [
         :manage_facilities,
         :view_overdue_list,
@@ -98,7 +94,6 @@ module Permissions
     },
     { name: :sts,
       description: "STS: Senior Treatment Supervisor (access to PHI)",
-      resource_type: :facility_group,
       default_permissions: [
         :manage_facilities,
         :view_overdue_list,
@@ -109,7 +104,6 @@ module Permissions
     },
     { name: :owner,
       description: "Super admin",
-      resource_type: :global,
       default_permissions: [
         :manage_organizations,
         :manage_protocols,
