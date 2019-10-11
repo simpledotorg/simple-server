@@ -74,6 +74,12 @@ window.InviteAdminForm = createReactClass({
                     resource_id: this.state.organization_id
                 }
             });
+        } else {
+            return _.flatMap(this.state.selected_permissions, (permission) => {
+                return {
+                    permission_slug: permission.slug
+                }
+            });
         }
     },
 

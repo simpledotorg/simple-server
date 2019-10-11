@@ -6,7 +6,7 @@ class AdminsController < AdminController
 
   def index
     authorize User, :index_admins?
-    @admins = policy_scope(User.where.not(role: :nurse)).sort_by(&:email)
+    @admins =  policy_scope(User.where.not(role: :nurse)).sort_by(&:email)
   end
 
   def show
