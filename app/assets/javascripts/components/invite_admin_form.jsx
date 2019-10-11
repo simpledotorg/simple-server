@@ -49,25 +49,34 @@ window.InviteAdminForm = createReactClass({
     },
 
     getPermissionsPayload: function () {
-        return _.flatMap(this.state.selected_permissions, (permission) => {
-            if (permission.resource_type == 'Organization') {
+        var requiredResourceType = _.get(this.access_level(), 'resource_type');
+        if (requiredResourceType === 'global') {
+            return _.map(this.state.selected_permissions, (permission) => {
+                return {permission_slug: permission.slug};
+            });
+        }
+
+
+        if (requiredResourceType === 'organization') {
+            return _.flatMap(this.state.selected_permissions, (permission) => {
                 return {
                     permission_slug: permission.slug,
                     resource_type: 'Organization',
                     resource_id: this.state.organization_id
                 }
-            } else if (permission.resource_type) {
-                return _.chain(this.state.selected_resources)
-                    .filter((resource) => resource.resource_type == permission.resource_type)
-                    .map((resource) => {
-                        return {
-                            permission_slug: permission.slug,
-                            resource_type: resource.resource_type,
-                            resource_id: resource.resource_id
-                        }
-                    }).value();
-            }
-            return {permission_slug: permission.slug}
+            });
+        }
+
+        return _.flatMap(this.state.selected_permissions, (permission) => {
+            return _.chain(this.state.selected_resources)
+                .filter((resource) => _.snakeCase(resource.resource_type) === requiredResourceType)
+                .map((resource) => {
+                    return {
+                        permission_slug: permission.slug,
+                        resource_type: resource.resource_type,
+                        resource_id: resource.resource_id
+                    }
+                }).value();
         });
     },
 
@@ -98,11 +107,11 @@ window.InviteAdminForm = createReactClass({
     },
 
     access_level: function () {
-        if(_.isEmpty(this.state.selected_permissions)) {
+        if (_.isEmpty(this.state.selected_permissions)) {
             return;
         }
         return _.chain(this.props.access_levels)
-            .find((al) => comparePermissionArrays(_.map(this.state.selected_permissions, 'slug'), al.default_permissions))
+            .find((al) => comparePermissionArrays(_.uniq(_.map(this.state.selected_permissions, 'slug')), al.default_permissions))
             .value();
     },
 
