@@ -66,14 +66,22 @@ class UserPolicy < ApplicationPolicy
     end
 
     def resolve
-      required_permissions = user.user_permissions.where(permission_slug: :approve_health_workers)
-      return scope.none unless required_permissions.present?
+      if user.user_permissions.where(permission_slug: :approve_health_workers).present?
+        required_permissions = user.user_permissions.where(permission_slug: :approve_health_workers)
+        resources = required_permissions.map(&:resource).compact
+        return scope.all unless resources.present?
 
-      resources = required_permissions.map(&:resource).compact
-      return scope.all unless resources.present?
+        facilities = resources.flat_map(&:facilities)
+        scope.joins(:phone_number_authentications).where(phone_number_authentications: { facility: facilities })
+      else
+        required_permissions = user.user_permissions.where(permission_slug: :manage_admins)
+        resources = required_permissions.map(&:resource).compact
+        return scope.all unless resources.present?
 
-      facilities = resources.flat_map(&:facilities)
-      scope.joins(:phone_number_authentications).where(phone_number_authentications: { facility: facilities })
+        scope.where(organization: resources)
+      end
+
+      scope.none
     end
   end
 end

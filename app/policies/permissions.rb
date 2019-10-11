@@ -111,6 +111,7 @@ module Permissions
         :approve_health_workers,
         :view_overdue_list,
         :view_adherence_follow_up_list,
+        :view_cohort_reports,
         :manage_admins
       ]
     },
