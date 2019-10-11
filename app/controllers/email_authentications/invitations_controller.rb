@@ -39,7 +39,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   def user_params
     { full_name: params.require(:full_name),
       role: params.require(:role),
-      organization_id: params.require(:organization_id),
+      organization_id: params[:organization_id],
       device_created_at: Time.now,
       device_updated_at: Time.now,
       sync_approval_status: :denied }
