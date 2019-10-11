@@ -74,9 +74,12 @@ window.InviteAdminForm = createReactClass({
                     resource_id: this.state.organization_id
                 }
             });
+        } else {
+            return _.map(this.state.selected_permissions, (permission) => {
+                return {permission_slug: permission.slug}
+            });
         }
     },
-
 
     submitForm: function () {
         var permissions_payload = this.getPermissionsPayload();
@@ -140,7 +143,7 @@ window.InviteAdminForm = createReactClass({
                                       facilities={this.props.facilities}
                                       organizations={this.props.organizations}
                                       checked_id={this.state.organization_id}
-                                      updateOrganization={this.updateOrganization} />
+                                      updateOrganization={this.updateOrganization}/>
                 <button className="btn btn-primary" onClick={this.submitForm}>
                     {this.props.submit_text}
                 </button>
