@@ -74,12 +74,6 @@ window.InviteAdminForm = createReactClass({
                     resource_id: this.state.organization_id
                 }
             });
-        } else {
-            return _.flatMap(this.state.selected_permissions, (permission) => {
-                return {
-                    permission_slug: permission.slug
-                }
-            });
         }
     },
 
@@ -131,10 +125,7 @@ window.InviteAdminForm = createReactClass({
                                 updateInput={this.updateInput}/>
                 <TextInputField name="email" title="Email" value={this.state.email} updateInput={this.updateInput}/>
                 <TextInputField name="role" title="Role" value={this.state.role} updateInput={this.updateInput}/>
-                <CollectionRadioButtons name="organization_id" title="Organization"
-                                        organizations={this.props.organizations}
-                                        checked_id={this.state.organization_id}
-                                        updateOrganization={this.updateOrganization}/>
+
                 <AccessLevelComponent permissions={this.props.permissions}
                                       access_levels={this.props.access_levels}
                                       selected_level={this.access_level()}
@@ -146,7 +137,10 @@ window.InviteAdminForm = createReactClass({
                                       updateResources={this.updateResources}
                                       organization_id={this.state.organization_id}
                                       facility_groups={this.props.facility_groups}
-                                      facilities={this.props.facilities}/>
+                                      facilities={this.props.facilities}
+                                      organizations={this.props.organizations}
+                                      checked_id={this.state.organization_id}
+                                      updateOrganization={this.updateOrganization} />
                 <button className="btn btn-primary" onClick={this.submitForm}>
                     {this.props.submit_text}
                 </button>

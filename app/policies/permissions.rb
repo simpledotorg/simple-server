@@ -62,13 +62,15 @@ module Permissions
       description: "Admin for an organization",
       default_permissions: [
         :manage_facility_groups,
+        :approve_health_workers,
         :view_overdue_list,
         :view_adherence_follow_up_list,
-        :approve_health_workers,
-        :manage_admins
+        :view_cohort_reports,
+        :manage_admins,
+        :view_health_worker_activity,
+        :download_overdue_list
       ]
     },
-
     { name: :counsellor,
       description: "Call center staff",
       default_permissions: [
@@ -112,7 +114,9 @@ module Permissions
         :view_overdue_list,
         :view_adherence_follow_up_list,
         :view_cohort_reports,
-        :manage_admins
+        :manage_admins,
+        :view_health_worker_activity,
+        :download_overdue_list
       ]
     },
     { name: :custom,
