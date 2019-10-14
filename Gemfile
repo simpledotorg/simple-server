@@ -61,6 +61,7 @@ group :development, :test do
   gem 'capistrano-rails-console', require: false
   gem 'capistrano-sidekiq', require: false
   gem 'capistrano-db-tasks', require: false
+  gem 'capistrano-multiconfig', require: true
   gem 'parallel_tests', group: [:development, :test]
   gem 'rails-controller-testing'
   gem 'rb-readline'

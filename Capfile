@@ -9,6 +9,7 @@ require "capistrano/rbenv"
 require "capistrano/rails"
 require "capistrano/passenger"
 require "capistrano/sidekiq"
+require "capistrano/multiconfig"
 require 'capistrano-db-tasks'
 
 require "whenever/capistrano"

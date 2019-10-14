@@ -16,11 +16,13 @@ end
 
 class Deploy
   DEPLOY_DIR = 'config/deploy/*'
-
-  ENVIRONMENTS_SUPPORTED = Dir
-                             .glob(DEPLOY_DIR)
-                             .map { |file| Pathname.new(file).basename('.rb').to_s }
-
+  COUNTRY_TO_ENVIRONMENT =
+    Dir.glob(DEPLOY_DIR).inject({}) do |acc, file|
+      file_path = Pathname.new(file)
+      acc[file_path.basename.to_s] = file_path.children.map { |f| f.basename('.rb') }.map(&:to_s)
+      acc
+    end
+  COUNTRIES_SUPPORTED = COUNTRY_TO_ENVIRONMENT.keys
   DIRS_WITH_CRITICAL_CHANGES = {
     'db/' => 'Holds all the database migrations',
     'lib/' => "Holds all the rake tasks for data migrations",
@@ -30,16 +32,25 @@ class Deploy
 
   attr_reader :current_environment,
               :tag_to_deploy,
+              :country_to_deploy,
               :changelog,
               :last_deployed_sha
 
-  def initialize(current_environment:, tag_to_deploy:)
-    print_usage_and_exit unless check_current_git_branch == 'master'
+  def initialize(current_environment:, tag_to_deploy:, country_to_deploy:)
+    # print_usage_and_exit unless check_current_git_branch == 'master'
     print_usage_and_exit if current_environment.nil? || current_environment == 'help'
 
-    unless ENVIRONMENTS_SUPPORTED.include?(current_environment)
-      $stderr.puts "Unknown environment '#{current_environment}'"
-      $stderr.puts "Supported environments: #{ENVIRONMENTS_SUPPORTED.sort.join(', ')}"
+    unless COUNTRIES_SUPPORTED.include?(country_to_deploy)
+      $stderr.puts "Unknown country '#{country_to_deploy}'"
+      $stderr.puts "Supported countries: #{COUNTRIES_SUPPORTED.sort.join(', ')}"
+      $stderr.puts ""
+      print_usage_and_exit
+    end
+
+    unless COUNTRY_TO_ENVIRONMENT[country_to_deploy].include?(current_environment)
+      $stderr.puts "Unknown environment '#{current_environment}' for #{country_to_deploy}"
+      $stderr.puts "Supported environments for #{country_to_deploy}: " +
+                     "#{COUNTRY_TO_ENVIRONMENT[country_to_deploy].sort.join(', ')}"
       $stderr.puts ""
       print_usage_and_exit
     end
@@ -47,9 +58,9 @@ class Deploy
     print_usage_and_exit if (current_environment == 'production' && tag_to_deploy.nil?)
 
     @tag_to_deploy = tag_to_deploy
+    @country_to_deploy = country_to_deploy
     @current_environment = current_environment
   end
-
 
   def start
     steps = deploy_steps.sort
@@ -146,7 +157,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 
   def print_usage_and_exit
-    $stderr.puts "Usage: bin/deploy <environment> [tag-to-deploy]"
+    $stderr.puts "Usage: bin/deploy <country> <environment> [tag-to-deploy]"
     $stderr.puts ""
     $stderr.puts "Note: tag-to-deploy is required to deploy to production"
     $stderr.puts "Note: Make sure you are locally on the latest master branch"
@@ -155,7 +166,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
 
   def last_deployed_sha
     @last_deployed_sha ||=
-      execute_safely("cap #{current_environment} deploy:get_latest_deployed_sha",
+      execute_safely("cap #{country_to_deploy}:#{current_environment} deploy:get_latest_deployed_sha",
                      { 'CONFIRM' => 'false' })
         .strip
         .split("\n")
@@ -167,7 +178,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
                      .strip
                      .split("\n")
                      .map { |line| line.match(/\s(.*)/)&.captures&.last }
-                     .reject { |line| line =~ /^Merge/ }
+                     .reject { |line| line =~ /^Merge/ } # remove merge commits
                      .compact
                      .join("\n")
   end
@@ -192,7 +203,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   def deploy
     puts "#{@tag_to_deploy || 'master'} to '#{current_environment}'."
     puts "Please 'tail -f log/capistrano.log' for more info."
-    execute_safely("bundle exec cap #{current_environment} deploy",
+    execute_safely("bundle exec cap #{country_to_deploy}:#{current_environment} deploy",
                    { 'BRANCH' => @tag_to_deploy, 'CONFIRM' => 'false' },
                    confirm: true)
   end
@@ -202,7 +213,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
     puts "+#{"-" * (step_name.size - 1)}+"
     yield(blk)
     puts colorize("✔".encode('utf-8'), 32)
-  rescue DeployError
+  rescue DeployError => e
     puts colorize("✗".encode('utf-8'), 31)
     exit 1
   ensure
@@ -259,9 +270,14 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 end
 
-Deploy
-  .new(current_environment:
-         ARGV[0],
-       tag_to_deploy:
-         ARGV[1])
-  .start
+countries_to_deploy = ARGV[0] == 'all' ? Deploy::COUNTRIES_SUPPORTED : [ARGV[0]]
+countries_to_deploy.each do |country|
+  Deploy
+    .new(country_to_deploy:
+           country,
+         current_environment:
+           ARGV[1],
+         tag_to_deploy:
+           ARGV[2]
+    ).start
+end
