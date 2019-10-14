@@ -26,13 +26,20 @@ class PatientPolicy < ApplicationPolicy
     end
 
     def resolve
-      required_permission = user.user_permissions.find_by(permission_slug: :view_adherence_follow_up_list)
-      return scope.none unless required_permission.present?
+      return scope.none unless user.has_permission?(:view_adherence_follow_up_list)
 
-      resource = required_permission.resource
-      return scope.all unless resource.present?
+      facility_ids = facility_ids_for_slug(:view_adherence_follow_up_lists)
+      return scope.all unless facility_ids.present?
 
-      scope.where(registration_facility: resource.facilities)
+      scope.where(registration_facility_id: facility_ids)
+    end
+
+    def facility_ids_for_slug(slug)
+      resources = resources_for_permission(slug)
+
+      resources.flat_map do |resource|
+        resource.facilities.map(&:id)
+      end.uniq.compact
     end
   end
 end

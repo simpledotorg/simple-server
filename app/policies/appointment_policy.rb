@@ -30,13 +30,20 @@ class AppointmentPolicy < ApplicationPolicy
     end
 
     def resolve
-      required_permission = user.user_permissions.find_by(permission_slug: :view_overdue_list)
-      return scope.none unless required_permission.present?
+      return scope.none unless user.has_permission?(:view_overdue_list)
 
-      resource = required_permission.resource
-      return scope.all unless resource.present?
+      facility_ids = facility_ids_for_slug(:view_overdue_list)
+      return scope.all unless facility_ids.present?
 
-      scope.where(facility: resource.facilities)
+      scope.where(facility_id: facility_ids)
+    end
+
+    def facility_ids_for_slug(slug)
+      resources = resources_for_permission(slug)
+
+      resources.flat_map do |resource|
+        resource.facilities.map(&:id)
+      end.uniq.compact
     end
   end
 end
