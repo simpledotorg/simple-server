@@ -51,8 +51,8 @@
     </div>
 </div>
 
-<%=
-  render 'shared/recent_bp_log',
-         blood_pressures: @recent_blood_pressures,
-         display_model: :user
-%>
+<% if policy(@user.registration_facility).view_health_worker_activity? %>
+<%= render 'shared/recent_bp_log',
+           blood_pressures: @recent_blood_pressures,
+           display_model: :user %>
+<% end %>

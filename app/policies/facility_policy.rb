@@ -67,6 +67,14 @@ class FacilityPolicy < ApplicationPolicy
     )
   end
 
+  def view_health_worker_activity?
+    user_has_any_permissions?(
+      [:view_health_worker_activity, nil],
+      [:view_health_worker_activity, record.organization],
+      [:view_health_worker_activity, record.facility_group],
+    )
+  end
+
   def destroyable?
     record.registered_patients.none? && record.blood_pressures.none?
   end

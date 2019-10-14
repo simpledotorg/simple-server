@@ -17,20 +17,18 @@
 
 <%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics %>
 
-<%=
-  render 'shared/analytics_table',
-    dashboard_analytics: @dashboard_analytics,
-    row_resource: User.order(:full_name),
-    row_resource_description: "Users",
-    row_resource_display_field: :full_name,
-    row_resource_link: :admin_user_path
-%>
+<% if policy(@facility).view_health_worker_activity? %>
+  <%= render 'shared/analytics_table',
+             dashboard_analytics: @dashboard_analytics,
+             row_resource: User.order(:full_name),
+             row_resource_description: "Users",
+             row_resource_display_field: :full_name,
+             row_resource_link: :admin_user_path %>
 
-<%=
-  render 'shared/recent_bp_log',
-    blood_pressures: @recent_blood_pressures,
-    display_model: :facility
-%>
+  <%= render 'shared/recent_bp_log',
+             blood_pressures: @recent_blood_pressures,
+             display_model: :facility %>
+<% end %>
 
 <% if FeatureToggle.enabled?('DASHBOARD_SNAPSHOT') %>
   <div class="downloads">
@@ -48,8 +46,8 @@
     <% if policy(@facility).whatsapp_graphics? %>
       <%=
         render "shared/graphics/graphics_download_links",
-          graphics_path: -> (options) { analytics_facility_graphics_path(options) },
-          options: { facility_id: @facility.id }
+               graphics_path: -> (options) { analytics_facility_graphics_path(options) },
+               options: { facility_id: @facility.id }
       %>
     <% end %>
   </div>
