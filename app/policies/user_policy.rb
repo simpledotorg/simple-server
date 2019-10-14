@@ -48,13 +48,16 @@ class UserPolicy < ApplicationPolicy
     end
 
     def resolve
-      if user.has_permission?(:approve_health_workers)
-        scope.joins(:phone_number_authentications)
-          .where(phone_number_authentications:
-                   { facility_id: facility_ids_for_slug(:approve_health_workers) })
-      end
+      return scope.none unless user.has_permission?(:approve_health_workers)
 
-      scope.none
+      facility_ids = facility_ids_for_slug(:approve_health_workers)
+      user_scope = scope.joins(:phone_number_authentications)
+                     .where.not(phone_number_authentications: { id: nil })
+
+      return user_scope.all if facility_ids.blank?
+
+      user_scope.where(phone_number_authentications:
+                         { facility_id: facility_ids_for_slug(:approve_health_workers) })
     end
 
     def facility_ids_for_slug(slug)
