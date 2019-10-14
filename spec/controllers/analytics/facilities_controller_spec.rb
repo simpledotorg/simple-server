@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Analytics::FacilitiesController, type: :controller do
   let(:user) { create(:user) }
-  let(:admin) { create(:admin) }
+  let(:admin) { create(:admin, :owner) }
 
   let(:district_name) { 'Bathinda' }
   let(:organization) { create(:organization) }
@@ -45,10 +45,6 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
   end
 
   describe '#show' do
-    before do
-      sign_in(admin.email_authentication)
-    end
-
     render_views
 
     context 'dashboard analytics' do
@@ -123,12 +119,6 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
   end
 
   describe '#whatsapp_graphics' do
-    before do
-      admin = create(:admin, :supervisor)
-      sign_in(admin.email_authentication)
-      create(:admin_access_control, access_controllable: facility_group, admin: admin)
-    end
-
     render_views
 
     context 'html requested' do

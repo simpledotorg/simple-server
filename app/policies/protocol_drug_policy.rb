@@ -1,14 +1,14 @@
 class ProtocolDrugPolicy < ApplicationPolicy
   def index?
-    user.owner? || user.organization_owner?
+    user_has_any_permissions?(:manage_protocols)
   end
 
   def show?
-    user.owner? || admin_can_access?(:organization_owner)
+    user_has_any_permissions?(:manage_protocols)
   end
 
   def create?
-    user.owner? || user.organization_owner?
+    user_has_any_permissions?(:manage_protocols)
   end
 
   def new?
@@ -16,7 +16,7 @@ class ProtocolDrugPolicy < ApplicationPolicy
   end
 
   def update?
-    user.owner? || admin_can_access?(:organization_owner)
+    user_has_any_permissions?(:manage_protocols)
   end
 
   def edit?
@@ -24,16 +24,12 @@ class ProtocolDrugPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.owner? || admin_can_access?(:organization_owner)
+    user_has_any_permissions?(:manage_protocols)
   end
 
   private
 
-  def admin_can_access?(role)
-    user.role == role.to_s && user.protocols.include?(record.protocol)
-  end
-
-  class Scope
+  class Scope < Scope
     attr_reader :user, :scope
 
     def initialize(user, scope)
@@ -42,7 +38,11 @@ class ProtocolDrugPolicy < ApplicationPolicy
     end
 
     def resolve
-      scope.where(protocol_id: @user.protocols.map(&:id))
+        if user.has_permission?(:manage_protocols)
+        scope.all
+      else
+        scope.none
+      end
     end
   end
 end

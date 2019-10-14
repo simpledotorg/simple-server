@@ -15,7 +15,7 @@ class Admin::FacilitiesController < AdminController
   end
 
   def new
-    @facility = Facility.new
+    @facility = @facility_group.facilities.new
     authorize @facility
   end
 
