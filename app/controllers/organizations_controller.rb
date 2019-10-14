@@ -2,7 +2,7 @@ class OrganizationsController < AdminController
   include Pagination
 
   def index
-    skip_authorization
+    authorize nil, policy_class: DashboardPolicy
 
     @users_requesting_approval = policy_scope(User)
                                    .requested_sync_approval
