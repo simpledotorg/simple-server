@@ -11,8 +11,18 @@ class AdminPolicy < ApplicationPolicy
       [:manage_admins, record.organization])
   end
 
+  def create?
+    user_has_any_permissions?(
+      [:manage_admins, nil],
+      [:manage_admins, record.organization])
+  end
+
+  def new?
+    create?
+  end
+
   def update?
-    show?
+    create?
   end
 
   def edit?

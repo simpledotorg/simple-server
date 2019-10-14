@@ -92,7 +92,7 @@ window.InviteAdminForm = createReactClass({
 
             return _.map(resources, (resource) => {
                 return {
-                    permission: permission.slug,
+                    permission_slug: permission.slug,
                     resource_type: resource.resource_type,
                     resource_id: resource.resource_id
                 }

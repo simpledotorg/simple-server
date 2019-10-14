@@ -57,7 +57,7 @@ class UserPolicy < ApplicationPolicy
       return user_scope.all if facility_ids.blank?
 
       user_scope.where(phone_number_authentications:
-                         { facility_id: facility_ids_for_slug(:approve_health_workers) })
+                         { registration_facility_id: facility_ids_for_slug(:approve_health_workers) })
     end
 
     def facility_ids_for_slug(slug)
