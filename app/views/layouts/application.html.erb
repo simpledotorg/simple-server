@@ -83,7 +83,7 @@
                   <% if policy(Protocol).index? %>
                     <%= link_to "Protocols", admin_protocols_path, class: "dropdown-item #{active_controller?("admin/protocols")}" %>
                   <% end %>
-                  <% if policy(User).index_admins? %>
+                  <% if policy(Admin).index? %>
                     <%= link_to "Admins", admins_path, class: "dropdown-item #{active_controller?("email_authentications")}" %>
                   <% end %>
                   <% if policy(User).index? %>

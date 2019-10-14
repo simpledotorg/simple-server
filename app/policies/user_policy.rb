@@ -32,24 +32,6 @@ class UserPolicy < ApplicationPolicy
     update?
   end
 
-  def create_user_for_invitation?
-    user_has_any_permissions?(
-      [:manage_admins, nil],
-      [:manage_admins, user.organization])
-  end
-
-  def new_user_for_invitation?
-    create_user_for_invitation?
-  end
-
-  def index_admins?
-    create_user_for_invitation?
-  end
-
-  def assign_permissions?
-    user.has_permission?(:manage_admins)
-  end
-
   def destroy?
     user_has_any_permissions?(
       [:approve_health_workers, nil],
@@ -70,12 +52,6 @@ class UserPolicy < ApplicationPolicy
         scope.joins(:phone_number_authentications)
           .where(phone_number_authentications:
                    { facility_id: facility_ids_for_slug(:approve_health_workers) })
-      elsif user.has_permissions?(:manage_admins)
-        required_permissions = user.user_permissions.where(permission_slug: :manage_admins)
-        resources = required_permissions.map(&:resource).compact
-        return scope.all unless resources.present?
-
-        scope.where(organization: resources)
       end
 
       scope.none
