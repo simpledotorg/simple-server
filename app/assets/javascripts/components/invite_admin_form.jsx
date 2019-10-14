@@ -15,14 +15,26 @@ window.InviteAdminForm = createReactClass({
     displayName: 'InviteAdminForm',
 
     getInitialState: function () {
+        var organization = _.get(this.props, ['admin', 'organization_id']) ? {
+            resource_type: 'Organization',
+            resource_id: _.get(this.props, ['admin', 'organization_id'])
+        } : null;
         return {
             full_name: _.get(this.props, ['admin', 'full_name'], ''),
             email: _.get(this.props, ['email'], ''),
             role: _.get(this.props, ['admin', 'role'], ''),
-            organization_id: _.get(this.props, ['admin', 'organization_id']),
+            organization: organization,
             selected_permissions: _.get(this.props, ['selected_permissions'], []),
             selected_facility_groups: _.get(this.props, ['selected_facility_groups'], [])
         }
+    },
+
+    resourcePriority: function () {
+        return {
+            'facility_group': 'selected_facility_groups',
+            'organization': 'organization',
+            'global': null
+        };
     },
 
     updateInput: function (key, value) {
@@ -31,7 +43,10 @@ window.InviteAdminForm = createReactClass({
 
     updateOrganization: function (organization_id) {
         this.setState({
-            organization_id: organization_id,
+            organization: {
+                resource_type: 'Organization',
+                resource_id: organization_id,
+            },
             selected_facility_groups: []
         });
     },
@@ -55,30 +70,34 @@ window.InviteAdminForm = createReactClass({
         this.setState({selected_facility_groups: _.uniq(resources)});
     },
 
+    getPriortyResources: function (resourcePriority) {
+        if (_.isEmpty(resourcePriority)) {
+            return null;
+        }
+
+        var resources = _.get(this.state, this.resourcePriority()[_.head(resourcePriority)]);
+        if (_.isEmpty(resources)) {
+            return this.getPriortyResources(_.tail(resourcePriority));
+        }
+
+        return _.flatMap([resources]);
+    },
+
     getPermissionsPayload: function () {
-        if (!_.isEmpty(this.state.selected_facility_groups)) {
-            return _.flatMap(this.state.selected_permissions, (permission) => {
-                return _.map(this.state.selected_facility_groups, (resource) => {
-                    return {
-                        permission_slug: permission.slug,
-                        resource_type: resource.resource_type,
-                        resource_id: resource.resource_id
-                    }
-                });
-            });
-        } else if (this.state.organization_id) {
-            return _.flatMap(this.state.selected_permissions, (permission) => {
+        return _.flatMap(this.state.selected_permissions, (permission) => {
+            var resources = this.getPriortyResources(permission.resource_priority);
+            if (resources == null) {
+                return {permission_slug: permission.slug}
+            }
+
+            return _.map(resources, (resource) => {
                 return {
-                    permission_slug: permission.slug,
-                    resource_type: 'Organization',
-                    resource_id: this.state.organization_id
+                    permission: permission.slug,
+                    resource_type: resource.resource_type,
+                    resource_id: resource.resource_id
                 }
             });
-        } else {
-            return _.map(this.state.selected_permissions, (permission) => {
-                return {permission_slug: permission.slug}
-            });
-        }
+        });
     },
 
     submitForm: function () {
@@ -101,13 +120,11 @@ window.InviteAdminForm = createReactClass({
                 window.location.replace("/admins");
             }
         });
-    }
-    ,
+    },
 
     requiredResource: function () {
         return _.get(this.access_level(), 'resource_type');
-    }
-    ,
+    },
 
     access_level: function () {
         if (_.isEmpty(this.state.selected_permissions)) {
@@ -117,8 +134,7 @@ window.InviteAdminForm = createReactClass({
             .find((al) => comparePermissionArrays(_.uniq(_.map(this.state.selected_permissions, 'slug')), al.default_permissions))
             .get('name', 'custom')
             .value();
-    }
-    ,
+    },
 
 
     render: function () {
@@ -138,11 +154,11 @@ window.InviteAdminForm = createReactClass({
                                       updateAccessLevel={this.updateAccessLevel}
                                       updatePermissions={this.updatePermissions}
                                       updateResources={this.updateResources}
-                                      organization_id={this.state.organization_id}
+                                      organization_id={_.get(this.state, ['organization', 'resource_id'])}
                                       facility_groups={this.props.facility_groups}
                                       facilities={this.props.facilities}
                                       organizations={this.props.organizations}
-                                      checked_id={this.state.organization_id}
+                                      checked_id={_.get(this.state, ['organization', 'resource_id'])}
                                       updateOrganization={this.updateOrganization}/>
                 <button className="btn btn-primary" onClick={this.submitForm}>
                     {this.props.submit_text}
@@ -150,5 +166,4 @@ window.InviteAdminForm = createReactClass({
             </div>
         );
     }
-})
-;
+});

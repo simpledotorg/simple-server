@@ -3,57 +3,57 @@ module Permissions
     approve_health_workers: {
       slug: :approve_health_workers,
       description: 'Approve health workers',
-      resource_types: [:global, :organization, :facility_group]
+      resource_priority: [:facility_group, :organization, :global]
     },
     manage_admins: {
       slug: :manage_admins,
       description: 'Manage Admins',
-      resource_types: [:global, :organization, :facility_group]
+      resource_priority: [:organization, :global]
     },
     manage_organizations: {
       slug: :manage_organizations,
       description: 'Manage organizations',
-      resource_types: [:global]
+      resource_priority: [:global]
     },
     manage_protocols: {
       slug: :manage_protocols,
       description: 'Manage protocols',
-      resource_types: [:global]
+      resource_priority: [:global]
     },
     manage_facility_groups: {
       slug: :manage_facility_groups,
       description: 'Manage facility groups',
-      resource_types: [:global, :organization]
+      resource_priority: [:organization, :global]
     },
     manage_facilities: {
       slug: :manage_facilities,
       description: 'Manage facilities',
-      resource_types: [:global, :organization, :facility_group]
+      resource_priority: [:facility_group, :organization, :global]
     },
     view_cohort_reports: {
       slug: :view_cohort_reports,
       description: 'View cohort reports',
-      resource_types: [:global, :organization, :facility_group],
+      resource_priority: [:facility_group, :organization, :global],
     },
     view_health_worker_activity: {
       slug: :view_health_worker_activity,
       description: 'View health worker activity',
-      resource_types: [:global, :organization, :facility_group],
+      resource_priority: [:facility_group, :organization, :global],
     },
     view_overdue_list: {
       slug: :view_overdue_list,
       description: 'View overdue list',
-      resource_types: [:global, :organization, :facility_group]
+      resource_priority: [:facility_group, :organization, :global]
     },
     download_overdue_list: {
       slug: :download_overdue_list,
       description: 'Download overdue list',
-      resource_types: [:global, :organization, :facility_group]
+      resource_priority: [:facility_group, :organization, :global]
     },
     view_adherence_follow_up_list: {
       slug: :view_adherence_follow_up_list,
       description: 'View adherence follow up list',
-      resource_types: [:global, :organization, :facility_group]
+      resource_priority: [:facility_group, :organization, :global]
     }
   }
 
