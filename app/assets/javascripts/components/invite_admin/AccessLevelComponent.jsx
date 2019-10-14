@@ -8,7 +8,7 @@ class AccessLevelComponent extends React.Component {
                 <div>
                     <CollectionRadioButtons name="organization_id" title="Organization"
                                             organizations={this.props.organizations}
-                                            checked_id={this.props.organization_id}
+                                            checked_id={this.props.checked_id}
                                             updateOrganization={this.props.updateOrganization}/>
 
                     <SelectResource resourceType='FacilityGroup'

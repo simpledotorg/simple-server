@@ -23,7 +23,7 @@ module Permissions
     manage_facility_groups: {
       slug: :manage_facility_groups,
       description: 'Manage facility groups',
-      resource_priority: [:organization, :global]
+      resource_priority: [:facility_group, :organization, :global]
     },
     manage_facilities: {
       slug: :manage_facilities,

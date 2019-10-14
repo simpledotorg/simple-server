@@ -18,7 +18,7 @@ class AdminPolicy < ApplicationPolicy
   end
 
   def new?
-    create?
+    user.has_permission?(:manage_admins)
   end
 
   def update?

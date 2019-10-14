@@ -7,10 +7,11 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   end
 
   def create
-    authorize current_admin, policy_class: AdminPolicy
+    user = User.new(user_params)
+    authorize user, policy_class: AdminPolicy
+
     User.transaction do
       super do |resource|
-        user = User.new(user_params)
         user.email_authentications = [resource]
         user.save!
 

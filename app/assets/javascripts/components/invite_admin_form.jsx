@@ -104,8 +104,11 @@ window.InviteAdminForm = createReactClass({
         var permissions_payload = this.getPermissionsPayload();
         var request_payload =
             _.chain(this.state)
-                .pick(['full_name', 'email', 'role', 'mobile', 'location', 'organization_id'])
-                .merge({permissions: permissions_payload})
+                .pick(['full_name', 'email', 'role', 'mobile', 'location'])
+                .merge({
+                    permissions: permissions_payload,
+                    organization_id: this.state.organization.resource_id
+                })
                 .value();
 
         $.ajax({
