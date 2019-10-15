@@ -107,7 +107,7 @@ window.InviteAdminForm = createReactClass({
                 .pick(['full_name', 'email', 'role', 'mobile', 'location'])
                 .merge({
                     permissions: permissions_payload,
-                    organization_id: this.state.organization.resource_id
+                    organization_id: _.get(this.state.organization, 'resource_id')
                 })
                 .value();
 
