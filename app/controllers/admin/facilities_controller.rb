@@ -8,7 +8,7 @@ class Admin::FacilitiesController < AdminController
 
   def index
     authorize Facility
-    @organizations = policy_scope(Organization)
+    @display_facilities =  policy_scope(Facility.all).group_by(&:facility_group).group_by { |k, _| k.organization }
   end
 
   def show

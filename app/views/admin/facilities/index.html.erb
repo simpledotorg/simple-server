@@ -11,11 +11,11 @@
 </div>
 
 
-<% @organizations.order(:name).each do |organization| %>
-  <% if @organizations.size > 1 %><h2 class="mt-5"><%= organization.name %></h2>
+<% @display_facilities.sort_by { |o, _| o.name }.each do |organization, facility_groups| %>
+  <% if facility_groups.size > 1 %><h2 class="mt-5"><%= organization.name %></h2>
   <% end %>
 
-  <% policy_scope(organization.facility_groups).order(:name).each do |facility_group| %>
+  <% facility_groups.sort_by{ |fg, _| fg.name }.each do |facility_group, facilities| %>
     <div class="card">
       <div class="row">
         <div class="col-6">
@@ -31,7 +31,7 @@
         </div>
       </div>
 
-      <% policy_scope(facility_group.facilities).order(:name).each do |facility| %>
+      <% facilities.sort_by(&:name).each do |facility| %>
 
         <div class="row card-row">
           <div class="col-md-4">
