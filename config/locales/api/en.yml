@@ -1,0 +1,27 @@
+en:
+  registration: 'New registration'
+  reset_password: 'Reset PIN'
+  dashboard:
+    graphics:
+      graphics_title_html: "What happened in <b>%{current_quarter_string}</b> to the %{patients_in_previous_quarter} patients registered during <b>%{previous_quarter_string}</b>?"
+      report_name: "Hypertension Report"
+      patients_controlled_in_quarter_html: "patients visited with BP &lt;"
+      patients_uncontrolled_in_quarter_html: "patients visited with BP &ge;"
+      patients_defaulted_in_quarter_html: "patients didn't attend for an expected follow-up visit"
+      new_patients_registered: "New registrations"
+      patients_called_for_followup: "Follow-up patients"
+      patients_called_for_missed_followup: "Patients called"
+
+  months:
+    1: 'January'
+    2: 'February'
+    3: 'March'
+    4: 'April'
+    5: 'May'
+    6: 'June'
+    7: 'July'
+    8: 'August'
+    9: 'September'
+    10: 'October'
+    11: 'November'
+    12: 'December'
