@@ -30,5 +30,10 @@ module SimpleServer
       g.system_tests false
       g.helper false
     end
+
+    # Locale configuration
+    config.i18n.available_locales = %w(en mr-IN pa-Guru-IN bn-BD)
+    config.i18n.default_locale = :en
+    config.i18n.fallbacks = [:en]
   end
 end
