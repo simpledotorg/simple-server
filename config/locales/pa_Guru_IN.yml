@@ -1,4 +1,4 @@
-pa_Guru_IN:
+pa-Guru-IN:
   sms:
     appointment_reminders:
       missed_visit_sms_reminder: 'ਸਰਕਾਰੀ ਹਸਪਤਾਲ %{facility_name} ਵਿੱਚ %{appointment_date} ਨੂੰ  ਤੁਹਾਡੇ ਬੀ.ਪੀ ਦੀ ਜਾਂਚ ਹੋਣੀ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ 9:30 ਤੋਂ 2 ਵਜੇ ਦੇ ਵਿੱਚ ਆਉ।'

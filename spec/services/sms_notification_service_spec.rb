@@ -40,7 +40,7 @@ RSpec.describe SmsNotificationService do
                                                                                status_callback: '',
                                                                                body: expected_msg_marathi)
 
-        sms.send_reminder_sms('missed_visit_sms_reminder', appointment, '', :mr_IN)
+        sms.send_reminder_sms('missed_visit_sms_reminder', appointment, '', 'mr-IN')
       end
 
       it 'should have the SMS body in Punjabi' do
@@ -53,14 +53,14 @@ RSpec.describe SmsNotificationService do
                                                                                status_callback: '',
                                                                                body: expected_msg_punjabi)
 
-        sms.send_reminder_sms('missed_visit_sms_reminder', appointment, '', :pa_Guru_IN)
+        sms.send_reminder_sms('missed_visit_sms_reminder', appointment, '', 'pa-Guru-IN')
       end
 
       it 'should raise an error if the locale for the SMS body is unsupported' do
         sms = SmsNotificationService.new(recipient_phone_number, sender_phone_number, twilio_client)
 
         expect {
-          sms.send_reminder_sms('missed_visit_sms_reminder', appointment, ' ', :gu_IN)
+          sms.send_reminder_sms('missed_visit_sms_reminder', appointment, ' ', 'gu-IN')
         }.to raise_error(StandardError)
       end
     end
