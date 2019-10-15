@@ -26,11 +26,21 @@ class AdminPolicy < ApplicationPolicy
   end
 
   def edit?
-    update?
+    edit_admin?(record)
   end
 
   def destroy?
-    create?
+    destroy_admin?(record)
+  end
+
+  def edit_admin?(record)
+    user_has_any_permissions?(
+      [:manage_admins, nil],
+      [:manage_admins, record.organization])
+  end
+
+  def destroy_admin?(record)
+    edit_admin?(record)
   end
 
   class Scope < Scope

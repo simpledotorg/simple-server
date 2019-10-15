@@ -54,7 +54,12 @@ module Permissions
       slug: :view_adherence_follow_up_list,
       description: 'View adherence follow up list',
       resource_priority: [:facility_group, :organization, :global]
-    }
+    },
+    download_patient_line_list: {
+      slug: :download_patient_line_list,
+      description: 'Download patient line list',
+      resource_priority: [:facility_group, :organization, :global]
+    },
   }
 
   ACCESS_LEVELS = [
@@ -68,7 +73,8 @@ module Permissions
         :view_cohort_reports,
         :manage_admins,
         :view_health_worker_activity,
-        :download_overdue_list
+        :download_overdue_list,
+        :download_patient_line_list
       ]
     },
     { name: :counsellor,
@@ -116,7 +122,8 @@ module Permissions
         :view_cohort_reports,
         :manage_admins,
         :view_health_worker_activity,
-        :download_overdue_list
+        :download_overdue_list,
+        :download_patient_line_list
       ]
     },
     { name: :custom,

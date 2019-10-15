@@ -21,6 +21,8 @@ class OrganizationDistrictPolicy < ApplicationPolicy
   end
 
   def patient_list?
-    whatsapp_graphics?
+    user_has_any_permissions?(
+      [:download_patient_line_list, nil],
+      [:download_patient_line_list, record.organization])
   end
 end

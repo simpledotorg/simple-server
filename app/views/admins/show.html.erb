@@ -1,6 +1,6 @@
 <div class="page-header">
   <h1 class="page-title">
-    <% if policy(User).index? %>
+    <% if policy(:admin).index? %>
       <%= link_to "Admins", admins_path, class: "#{active_controller?("email_authentications")}" %>
       <i class="fas fa-angle-right light"></i>
     <% end %>
@@ -8,7 +8,7 @@
     Admin
   </h1>
   <nav class="page-nav">
-    <% if policy(@admin).edit? %>
+    <% if policy(:admin).edit_admin?(@admin) %>
       <%= link_to 'Edit admin', edit_admin_path(@admin), class: "btn btn-sm btn-primary" %>
     <% end %>
   </nav>

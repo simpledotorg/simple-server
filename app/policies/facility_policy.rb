@@ -22,7 +22,11 @@ class FacilityPolicy < ApplicationPolicy
   end
 
   def patient_list?
-    whatsapp_graphics?
+    user_has_any_permissions?(
+      [:download_patient_line_list, nil],
+      [:download_patient_line_list, record.organization],
+      [:download_patient_line_list, record.facility_group],
+      )
   end
 
   def create?
