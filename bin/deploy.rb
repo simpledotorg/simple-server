@@ -22,7 +22,7 @@ class Deploy
       acc[file_path.basename.to_s] = file_path.children.map { |f| f.basename('.rb') }.map(&:to_s)
       acc
     end
-  COUNTRIES_SUPPORTED = COUNTRY_TO_ENVIRONMENT.keys
+  COUNTRIES_SUPPORTED = COUNTRY_TO_ENVIRONMENT.keys.sort
   DIRS_WITH_CRITICAL_CHANGES = {
     'db/' => 'Holds all the database migrations',
     'lib/' => "Holds all the rake tasks for data migrations",
@@ -37,7 +37,7 @@ class Deploy
               :last_deployed_sha
 
   def initialize(current_environment:, tag_to_deploy:, country_to_deploy:)
-    # print_usage_and_exit unless check_current_git_branch == 'master'
+    print_usage_and_exit unless check_current_git_branch == 'master'
     print_usage_and_exit if current_environment.nil? || current_environment == 'help'
 
     unless COUNTRIES_SUPPORTED.include?(country_to_deploy)
@@ -141,7 +141,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
         puts "Putting up a release tag #{generate_release_tag_value(date)} with a CHANGELOG..."
         generate_release_tag_value(date)
       else
-        puts "Release tag for current date already exists: #{existing_tag}. Creating an incremental release..."
+        puts "Release tag for current date already exists: #{existing_tag}... Creating an incremental release..."
 
         new_release_number = extract_release_tag_info(existing_tag)[:release_num] += 1
         generate_release_tag_value(date, new_release_number)
@@ -270,14 +270,11 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 end
 
-countries_to_deploy = ARGV[0] == 'all' ? Deploy::COUNTRIES_SUPPORTED : [ARGV[0]]
-countries_to_deploy.each do |country|
-  Deploy
-    .new(country_to_deploy:
-           country,
-         current_environment:
-           ARGV[1],
-         tag_to_deploy:
-           ARGV[2]
-    ).start
-end
+Deploy
+  .new(country_to_deploy:
+         ARGV[0],
+       current_environment:
+         ARGV[1],
+       tag_to_deploy:
+         ARGV[2]
+  ).start

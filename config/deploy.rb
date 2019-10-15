@@ -29,6 +29,11 @@ set :whenever_roles, [:cron, :whitelist_phone_numbers, :seed]
 set :enable_confirmation, ENV['CONFIRM'] || 'true'
 set :envs_for_confirmation_step, ["production", "staging"]
 
+set :default_env, {
+  path: '/home/deploy/.rbenv/plugins/ruby-build/bin:/home/deploy/.rbenv/shims:/home/deploy/.rbenv/bin:$PATH',
+  rbenv_root: '/home/deploy/.rbenv'
+}
+
 Capistrano::DSL.stages.each do |stage|
   # For each stage that requires confirmation load the `deploy:confirmation` task
   # Use the `envs_for_confirmation_step` var to set the appropriate stages
