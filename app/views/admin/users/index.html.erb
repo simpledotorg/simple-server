@@ -9,10 +9,10 @@
            per_page: @per_page %>
 
 <% @users.group_by(&:facility).each do |facility, users| %>
-  <h2 class="mt-3"><%= facility.name %></h2>
+  <h2 class="mt-3"  id="facility_name"><%= facility.name %></h2>
   <% users.sort_by(&:full_name).each do |user| %>
-    <div class="card">
-      <div class="row">
+    <div class="card" name="<%= facility.name %>">
+      <div class="row" name="<%= user.full_name %>">
         <div class="col-md-7">
           <h5 class="mb-1">
             <%= link_to user.full_name, [:admin, user] %>
