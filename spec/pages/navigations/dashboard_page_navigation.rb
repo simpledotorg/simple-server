@@ -1,7 +1,6 @@
 module Navigations
   class DashboardPageNavigation < ApplicationPage
     LOGOUT_BUTTON = { css: 'a.logout' }.freeze
-    MANAGE_OPTION = { xpath: "//li/div/a" }.freeze
     MAIN_MENU_TABS = { css: "ul.mr-auto>li>a" }.freeze
     PROFILE_DROPDOWN = { id: 'navbarDropdown2' }.freeze
 
@@ -10,12 +9,13 @@ module Navigations
     end
 
     def select_main_menu_tab(option)
-      mainMenuTabs = all_elements(MAIN_MENU_TABS)
-      mainMenuTabs.each do |tab|
-        if tab.text.include? option
-          tab.click
-        end
-      end
+      find(:xpath,"//a[contains(text(),'"+option+"')]").click
+      # mainMenuTabs = all_elements(MAIN_MENU_TABS)
+      # mainMenuTabs.each do |tab|
+      #   if tab.text.include? option
+      #     tab.click
+      #   end
+      # end
     end
 
     def validate_owners_home_page
@@ -27,12 +27,7 @@ module Navigations
 
     def select_manage_option(option)
       select_main_menu_tab("Manage")
-      manage_option = all_elements(MANAGE_OPTION)
-      manage_option.each do |tab|
-        if tab.text.include? option
-          tab.click
-        end
-      end
+      find(:xpath,"//a[text()='"+option+"']").click
     end
 
     def click_logout_button
