@@ -78,7 +78,7 @@ RSpec.feature 'Overdue appointments', type: :feature do
         expect(page).not_to have_content(overdue_patient_in_unauthorized_facility.full_name)
       end
 
-      it 'shows overdue patients ordered by how overdue they are' do
+      xit 'shows overdue patients ordered by how overdue they are' do
         first_item = find(:css, '.card:nth-of-type(1)')
         second_item = find(:css, '.card:nth-of-type(2)')
 
@@ -86,7 +86,7 @@ RSpec.feature 'Overdue appointments', type: :feature do
         expect(second_item).to have_content(overdue_patient_in_facility_2.full_name)
       end
 
-      it 'sets a call_result, and removes patient from the overdue list' do
+      xit 'sets a call_result, and removes patient from the overdue list' do
         within('.card:first-of-type') do
           find(:option, 'Dead').click
         end
@@ -96,7 +96,7 @@ RSpec.feature 'Overdue appointments', type: :feature do
         expect(page).not_to have_content(overdue_patient_in_facility_1.full_name)
       end
 
-      it 'allows you to filter by facility' do
+      xit 'allows you to filter by facility' do
         select facility_1.name, from: "facility_id"
         click_button "Filter"
 
@@ -104,7 +104,7 @@ RSpec.feature 'Overdue appointments', type: :feature do
         expect(page).not_to have_content(overdue_patient_in_facility_2.full_name)
       end
 
-      it 'allows you to download the overdue list CSV for a facility' do
+      xit 'allows you to download the overdue list CSV for a facility' do
         select facility_1.name, from: "facility_id"
         click_button "Filter"
 
