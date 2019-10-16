@@ -5,7 +5,7 @@ class CohortAnalyticsQuery
     @patients = patients
   end
 
-  def patient_counts_by_period(period, prev_periods, from_date: Date.current)
+  def patient_counts_by_period(period, prev_periods, from_date: Time.current)
     results = {}
 
     (0..(prev_periods)).each do |periods_back|
