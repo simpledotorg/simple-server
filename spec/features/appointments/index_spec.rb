@@ -161,15 +161,15 @@ RSpec.feature 'To test overdue appointment functionality', type: :feature do
 
         nav_page.click_main_menu_tab("Overdue patients")
 
-        # selecting first facility and asserting it's result
+        # selecting first facility and asserting its result
         appoint_page.select_facility(test_facility.name)
         expect(appoint_page.get_all_patient_count.size).to eq(3)
 
-        # selecting second facility and asserting it's result
+        # selecting second facility and asserting its result
         appoint_page.select_facility(var_path_facility.name)
         expect(appoint_page.get_all_patient_count.size).to eq(2)
 
-        # selecting All facility and asserting it's result
+        # selecting All facility and asserting its result
         appoint_page.select_facility("All facilities")
         expect(appoint_page.get_all_patient_count.size).to eq(5)
       end
