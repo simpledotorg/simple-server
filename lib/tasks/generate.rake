@@ -25,7 +25,14 @@ namespace :generate do
       create_protocols_and_protocol_drugs(config)
       create_organizations(number_of_months.months.ago, config)
 
-      FactoryBot.create(:admin, email: "admin@simple.org", password: 123456, role: 'owner', organization: Organization.first)
+      FactoryBot.create(:admin,
+                        :owner,
+                        full_name: "Super Admin",
+                        email: "admin@simple.org",
+                        password: 123456,
+                        role: 'owner',
+                        organization: Organization.first)
+
       Rails.logger.info("Created login admin (admin@simple.org/123456)")
 
       number_of_months.downto(1) do |month_number|
