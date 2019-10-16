@@ -35,7 +35,7 @@ RSpec.describe Api::Current::LoginsController, type: :controller do
 
     describe 'request with valid phone number, password and otp, but otp is expired' do
       let(:db_user) do
-        Timecop.freeze(Date.today - 3) { FactoryBot.create(:user, password: password) }
+        Timecop.freeze(Date.current - 3) { FactoryBot.create(:user, password: password) }
       end
       let(:request_params) do
         { user:

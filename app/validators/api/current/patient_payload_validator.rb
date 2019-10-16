@@ -32,7 +32,7 @@ class Api::Current::PatientPayloadValidator < Api::Current::PayloadValidator
   end
 
   def past_date_of_birth
-    if date_of_birth.present? && date_of_birth.to_s.to_time > Date.today
+    if date_of_birth.present? && date_of_birth.to_s.to_time > Date.current
       errors.add(:date_of_birth, "can't be in the future")
     end
   end
