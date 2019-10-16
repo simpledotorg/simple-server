@@ -132,7 +132,7 @@ RSpec.describe Api::V2::LoginsController, type: :controller do
                                       auditable_type: 'User',
                                       auditable_id: db_user.id,
                                       action: 'login',
-                                      time: Time.now }.to_json)
+                                      time: Time.current }.to_json)
 
           post :login_user, params: request_params
         end

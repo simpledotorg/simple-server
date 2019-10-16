@@ -26,14 +26,14 @@ class PhoneNumberAuthentication < ApplicationRecord
   end
 
   def mark_as_logged_in
-    now = Time.now
+    now = Time.current
     self.otp_valid_until = now
     self.logged_in_at = now
     save
   end
 
   def otp_valid?
-    otp_valid_until >= Time.now
+    otp_valid_until >= Time.current
   end
 
   def set_access_token
@@ -52,7 +52,7 @@ class PhoneNumberAuthentication < ApplicationRecord
     6.times do
       otp += digits.sample.to_s
     end
-    otp_valid_until = Time.now + ENV['USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES'].to_i.minutes
+    otp_valid_until = Time.current + ENV['USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES'].to_i.minutes
 
     { otp: otp, otp_valid_until: otp_valid_until }
   end

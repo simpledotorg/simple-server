@@ -60,7 +60,7 @@ RSpec.describe UpdatePhoneNumberDetailsWorker, type: :job do
   describe '#perform' do
     it 'updates the patient phone number details with the values return from exotel apis' do
       UpdatePhoneNumberDetailsWorker.perform_async(patient_phone_number.id, account_sid, token)
-      time = Time.now
+      time = Time.current
       Timecop.freeze(time) do
         UpdatePhoneNumberDetailsWorker.drain
       end

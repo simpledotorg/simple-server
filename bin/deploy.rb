@@ -186,7 +186,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 
   def current_date
-    Time.now.strftime("%Y-%m-%d")
+    Time.current.strftime("%Y-%m-%d")
   end
 
   def deploy
