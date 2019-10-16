@@ -22,11 +22,11 @@ namespace :generate do
       truncate_db
       Rails.logger.info("Truncated database")
 
-      FactoryBot.create(:admin, email: "admin@simple.org", password: 123456, role: 'owner')
-      Rails.logger.info("Created login admin (admin@simple.org/123456)")
-
       create_protocols_and_protocol_drugs(config)
       create_organizations(number_of_months.months.ago, config)
+
+      FactoryBot.create(:admin, email: "admin@simple.org", password: 123456, role: 'owner', organization: Organization.first)
+      Rails.logger.info("Created login admin (admin@simple.org/123456)")
 
       number_of_months.downto(1) do |month_number|
         creation_date = month_number.months.ago
@@ -46,7 +46,7 @@ namespace :generate do
     number_of_months.downto(1) do |month_number|
       creation_date = month_number.months.ago
 
-      Organization.all.flat_map(&:users).each do |user|
+      Organization.all.flat_map(&:users).select { |u| u.role.blank? }.each do |user|
         create_patients(user, creation_date, config)
       end
     end
@@ -74,7 +74,7 @@ namespace :generate do
     end
 
     number_of_patients = config.dig('patients', 'count')
-    facility_groups.flat_map(&:users).each do |user|
+    facility_groups.flat_map(&:users).select { |u| u.role.blank? }.each do |user|
       number_of_patients.times do
         create_patients(user, date, config)
       end
@@ -86,7 +86,8 @@ namespace :generate do
 
     number_of_patients.times do
       time = time_entropy(creation_date)
-      patient = FactoryBot.create(:patient, registration_facility: user.registration_facility,
+      patient = FactoryBot.create(:patient,
+                                  registration_facility: user.registration_facility,
                                   registration_user: user,
                                   created_at: time,
                                   updated_at: time,
@@ -104,11 +105,10 @@ namespace :generate do
       is_overdue = patient_traits.include?('overdue')
       is_hypertensive = patient_traits.include?('hypertensive')
 
-      create_medical_history(patient, time, config)
-      create_prescription_drugs(patient, time, config)
+      create_medical_history(user, patient, time, config)
+      create_prescription_drugs(user, patient, time, config)
       create_blood_pressures(patient, time, config, is_hypertensive)
-      create_appointments(patient, time, config, is_overdue)
-
+      create_appointments(user, patient, time, config, is_overdue)
       create_call_logs(patient, time)
       create_exotel_phone_number_detail(patient, time)
     end
@@ -116,19 +116,23 @@ namespace :generate do
     Rails.logger.info("Created patients for date #{creation_date}")
   end
 
-  def create_medical_history(patient, creation_date, config)
+  def create_medical_history(user, patient, creation_date, config)
     number_of_medical_histories = config.dig('patients', 'medical_histories')
 
     number_of_medical_histories.times do
       time1 = time_entropy(creation_date)
 
-      FactoryBot.create(:medical_history, :unknown,
+      FactoryBot.create(:medical_history,
+                        :unknown,
+                        user: user,
                         patient: patient,
                         created_at: time1,
                         updated_at: time1)
 
       time2 = time_entropy(creation_date)
-      FactoryBot.create(:medical_history, :prior_risk_history,
+      FactoryBot.create(:medical_history,
+                        :prior_risk_history,
+                        user: user,
                         patient: patient,
                         created_at: time2,
                         updated_at: time2)
@@ -137,13 +141,15 @@ namespace :generate do
     Rails.logger.info("Created medical histories for date #{creation_date}")
   end
 
-  def create_prescription_drugs(patient, creation_date, config)
+  def create_prescription_drugs(user, patient, creation_date, config)
     number_of_prescription_drugs = config.dig('patients', 'prescription_drugs')
 
     number_of_prescription_drugs.times do
       time = time_entropy(creation_date)
 
-      FactoryBot.create(:prescription_drug, patient: patient,
+      FactoryBot.create(:prescription_drug,
+                        user: user,
+                        patient: patient,
                         facility: patient.registration_facility,
                         created_at: time,
                         updated_at: time)
@@ -168,18 +174,22 @@ namespace :generate do
     Rails.logger.info("Created blood pressures for date #{creation_date}")
   end
 
-  def create_appointments(patient, creation_date, config, is_overdue)
+  def create_appointments(user, patient, creation_date, config, is_overdue)
     number_of_appointments = config.dig('patients', 'appointments')
 
     number_of_appointments.times do
       time1 = time_entropy(creation_date)
-      FactoryBot.create(:appointment, patient: patient,
+      FactoryBot.create(:appointment,
+                        user: user,
+                        patient: patient,
                         facility: patient.registration_facility,
                         created_at: time1,
                         updated_at: time1)
 
       time2 = time_entropy(creation_date)
-      FactoryBot.create(:appointment, :overdue,
+      FactoryBot.create(:appointment,
+                        :overdue,
+                        user: user,
                         patient: patient,
                         facility: patient.registration_facility,
                         created_at: time2,
@@ -325,21 +335,26 @@ namespace :generate do
     ]
   end
 
-  def create_users(facilities, creation_date, config)
+  def create_users(organization, facilities, creation_date, config)
     facilities.each do |f|
       config.dig('users', 'count').times do
-        FactoryBot.create(:user, registration_facility: f, created_at: creation_date, updated_at: creation_date)
+        FactoryBot.create(:user,
+                          organization: organization,
+                          registration_facility: f,
+                          created_at: creation_date,
+                          updated_at: creation_date)
 
-        create_sync_requested_users(f, creation_date)
-        create_sync_denied_users(f, creation_date)
+        create_sync_requested_users(organization, f, creation_date)
+        create_sync_denied_users(organization, f, creation_date)
       end
     end
 
     Rails.logger.info("Created users for date #{creation_date}")
   end
 
-  def create_sync_requested_users(facility, creation_date)
+  def create_sync_requested_users(organization, facility, creation_date)
     user = FactoryBot.create(:user,
+                             organization: organization,
                              registration_facility: facility,
                              created_at: creation_date,
                              updated_at: creation_date)
@@ -349,8 +364,9 @@ namespace :generate do
     user.save
   end
 
-  def create_sync_denied_users(facility, creation_date)
+  def create_sync_denied_users(organization, facility, creation_date)
     user = FactoryBot.create(:user,
+                             organization: organization,
                              registration_facility: facility,
                              created_at: creation_date,
                              updated_at: creation_date)
@@ -375,25 +391,26 @@ namespace :generate do
 
   def create_facility_groups(organization, facility_groups, creation_date, config)
     facility_groups.each do |fac_group|
-      facility_group = FactoryBot.create(:facility_group, name: fac_group[:name],
+      facility_group = FactoryBot.create(:facility_group,
+                                         name: fac_group[:name],
                                          organization: organization,
                                          created_at: creation_date,
                                          updated_at: creation_date)
 
       facilities = create_and_return_facilities(facility_group, fac_group[:facilities], creation_date)
-      create_users(facilities, creation_date, config)
+      create_users(organization, facilities, creation_date, config)
     end
-
     Rails.logger.info("Created facility groups for date #{creation_date}")
   end
 
   def create_admins(organization)
     facility_group = organization.facility_groups.first
 
-    FactoryBot.create(:admin, :counsellor, facility_group: facility_group)
-    FactoryBot.create(:admin, :analyst, facility_group: facility_group)
-    FactoryBot.create(:admin, :supervisor)
+    FactoryBot.create(:admin, :counsellor, facility_group: facility_group, organization: organization)
+    FactoryBot.create(:admin, :analyst, facility_group: facility_group, organization: organization)
+    FactoryBot.create(:admin, :supervisor, facility_group: facility_group, organization: organization)
     FactoryBot.create(:admin, :organization_owner, organization: organization)
+    FactoryBot.create(:admin, :owner, organization: organization)
 
     Rails.logger.info("Created admins for organization #{organization.name}")
   end
@@ -402,20 +419,21 @@ namespace :generate do
     facility_records = []
 
     facilities.each do |fac|
-      facility_records << FactoryBot.create(:facility, facility_group: facility_group,
+      facility_records << FactoryBot.create(:facility,
+                                            facility_group: facility_group,
                                             name: fac[:name],
                                             district: fac[:district],
                                             state: fac[:state],
                                             created_at: creation_date,
                                             updated_at: creation_date)
     end
-
-    Rails.logger.info("Created facilities for facility groyp #{facility_group.name} for date #{creation_date}")
+    Rails.logger.info("Created facilities for facility group #{facility_group.name} for date #{creation_date}")
     facility_records
   end
 
   def create_blood_pressure(bp_type, creation_date, patient)
-    FactoryBot.create(:blood_pressure, bp_type,
+    FactoryBot.create(:blood_pressure,
+                      bp_type,
                       patient: patient,
                       facility: patient.registration_facility,
                       user: patient.registration_user,
