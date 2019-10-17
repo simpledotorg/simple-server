@@ -80,7 +80,7 @@
                   <% if policy([:manage, Facility]).index? %>
                     <%= link_to "Facilities", admin_facilities_path, class: "dropdown-item #{active_controller?("admin/facilities")}" %>
                   <% end %>
-                  <% if policy(Protocol).index? %>
+                  <% if policy([:manage, Protocol]).index? %>
                     <%= link_to "Protocols", admin_protocols_path, class: "dropdown-item #{active_controller?("admin/protocols")}" %>
                   <% end %>
                   <% if policy(Admin).index? %>

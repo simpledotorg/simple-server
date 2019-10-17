@@ -1,10 +1,10 @@
-class ProtocolPolicy < ApplicationPolicy
+class Manage::ProtocolDrugPolicy < ApplicationPolicy
   def index?
     user_has_any_permissions?([:manage_protocols, nil])
   end
 
   def show?
-    index?
+    user_has_any_permissions?([:manage_protocols, nil])
   end
 
   def create?
@@ -27,6 +27,8 @@ class ProtocolPolicy < ApplicationPolicy
     user_has_any_permissions?([:manage_protocols, nil])
   end
 
+  private
+
   class Scope < Scope
     attr_reader :user, :scope
 
@@ -37,6 +39,7 @@ class ProtocolPolicy < ApplicationPolicy
 
     def resolve
       return scope.none unless user.has_permission?(:manage_protocols)
+
       scope.all
     end
   end
