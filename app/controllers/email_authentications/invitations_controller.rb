@@ -10,8 +10,12 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
     user = User.new(user_params)
     authorize user, policy_class: UserPolicy
 
+    existing_email = EmailAuthentication.find_by(invite_params)
+    return render json: nil, status: :bad_request if existing_email.present?
+
     User.transaction do
       super do |resource|
+
         user.email_authentications = [resource]
         user.save!
 
