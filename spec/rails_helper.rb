@@ -5,6 +5,9 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 require 'rspec/rails'
 require 'capybara/rails'
 require 'pundit/rspec'
+require 'factory_bot_rails'
+require 'faker'
+require 'timecop'
 
 Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 Dir[Rails.root.join('spec/pages/application_page.rb')].each { |f| require f }
