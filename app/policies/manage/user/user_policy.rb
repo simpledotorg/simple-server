@@ -1,4 +1,4 @@
-class UserPolicy < ApplicationPolicy
+class Manage::User::UserPolicy < ApplicationPolicy
   def index?
     user.user_permissions
       .where(permission_slug: :approve_health_workers)
@@ -50,22 +50,14 @@ class UserPolicy < ApplicationPolicy
     def resolve
       return scope.none unless user.has_permission?(:approve_health_workers)
 
-      facility_ids = facility_ids_for_slug(:approve_health_workers)
+      facility_ids = facility_ids_for_permission(:approve_health_workers)
       user_scope = scope.joins(:phone_number_authentications)
                      .where.not(phone_number_authentications: { id: nil })
 
       return user_scope.all if facility_ids.blank?
 
       user_scope.where(phone_number_authentications:
-                         { registration_facility_id: facility_ids_for_slug(:approve_health_workers) })
-    end
-
-    def facility_ids_for_slug(slug)
-      resources = resources_for_permission(slug)
-
-      resources.flat_map do |resource|
-        resource.facilities.map(&:id)
-      end.uniq.compact
+                         { registration_facility_id: facility_ids })
     end
   end
 end

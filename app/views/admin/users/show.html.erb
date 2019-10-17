@@ -5,16 +5,16 @@
 <div class="page-header">
     <h1 class="page-title"><%= @user.full_name %></h1>
     <nav class="page-nav">
-        <% if policy(@user).edit? %>
+        <% if policy([:manage, :user, @user]).edit? %>
             <%= link_to 'Edit user', edit_admin_user_path(@user), class: 'btn btn-primary btn-sm' %>
         <% end %>
         <% unless @user.sync_approval_status == 'denied' %>
-          <% if policy(@user).disable_access? %>
+          <% if policy([:manage, :user, @user]).disable_access? %>
             <%= link_to 'Deny access', '#deny-access-modal-' + @user.id , 'data-toggle' => 'modal', class: 'btn btn-danger btn-sm' %>
           <% end %>
         <% end %>
         <% unless @user.sync_approval_status == 'allowed' %>
-          <% if policy(@user).enable_access? %>
+          <% if policy([:manage, :user, @user]).enable_access? %>
             <%= link_to 'Allow access', admin_user_enable_access_path(@user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') }, class: 'btn btn-success btn-sm' %>
           <% end %>
         <% end %>
@@ -51,7 +51,7 @@
     </div>
 </div>
 
-<% if policy(@user.registration_facility).view_health_worker_activity? %>
+<% if policy([:cohort_report, @user.registration_facility]).view_health_worker_activity? %>
 <%= render 'shared/recent_bp_log',
            blood_pressures: @recent_blood_pressures,
            display_model: :user %>

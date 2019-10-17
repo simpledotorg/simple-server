@@ -6,7 +6,7 @@
            current_admin: current_admin,
            facility_id: @facility_id,
            per_page: @per_page,
-           scope_namespace: :overdue_list) %>
+           scope_namespace: [:overdue_list, Facility]) %>
 
 <% if @appointments.present? && policy([:overdue_list, @appointments.first]).download? %>
   <h2 name="download_text">Downloads</h2>

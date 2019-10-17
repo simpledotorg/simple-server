@@ -3,8 +3,8 @@ class AdminsController < AdminController
   after_action :verify_policy_scoped, only: :index
 
   def index
-    authorize User, policy_class: AdminPolicy
-    @admins = policy_scope(User, policy_scope_class: AdminPolicy::Scope).sort_by(&:email)
+    authorize([:manage, :admin, User])
+    @admins = policy_scope([:manage, :admin, User]).sort_by(&:email)
   end
 
   def show
@@ -38,7 +38,7 @@ class AdminsController < AdminController
 
   def set_admin
     @admin = User.find(params[:id])
-    authorize @admin, policy_class: AdminPolicy
+    authorize([:manage, :admin, @admin])
   end
 
   def permission_params

@@ -9,9 +9,6 @@
   </nav>
 </div>
 
-
-
-
 <% @admins.each do |admin| %>
     <div class="card" title="<%= admin.email %>">
         <div class="row">
@@ -25,10 +22,10 @@
                 <% if admin.invited_to_sign_up? %>
                     <span class="badge badge-success badge-pill mr-4 mt-1" style="font-size: 90%; font-weight: normal;">Invite sent</span>
                 <% end %>
-                <% if policy(:admin).edit_admin?(admin) %>
+                <% if policy([:manage, :admin, admin]).edit? %>
                   <%= link_to 'Edit', edit_admin_path(admin), class: "btn btn-sm btn-outline-primary" %>
                 <% end %>
-                <% if policy(:admin).destroy_admin?(admin) %>
+                <% if policy([:manage, :admin, admin]).destroy? %>
                   <%= link_to '<i class="fas fa-trash-alt"></i>' .html_safe, admin_path(admin), method: :delete, data: { confirm: "Are you sure you want to delete #{admin.email}?" }, class: "btn btn-sm btn-outline-danger" %>
                 <% end %>
             </div>

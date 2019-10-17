@@ -1,7 +1,7 @@
 class DashboardPolicy < Struct.new(:user, :dashboard)
 
   def show?
-    Pundit.policy(user, [:cohort_report, Organization]).index? || Pundit.policy(user, User).index?
+    Pundit.policy(user, [:cohort_report, Organization]).index? || Pundit.policy(user, [:manage, User]).index?
   end
 
   def overdue_list?

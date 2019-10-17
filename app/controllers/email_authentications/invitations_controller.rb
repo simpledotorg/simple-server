@@ -2,13 +2,13 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   helper_method :current_admin
 
   def new
-    authorize current_admin, policy_class: AdminPolicy
+    authorize current_admin, policy_class: UserPolicy
     super
   end
 
   def create
     user = User.new(user_params)
-    authorize user, policy_class: AdminPolicy
+    authorize user, policy_class: UserPolicy
 
     User.transaction do
       super do |resource|

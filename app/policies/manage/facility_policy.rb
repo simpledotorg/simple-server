@@ -17,18 +17,6 @@ class Manage::FacilityPolicy < ApplicationPolicy
     user_has_any_permissions?([:manage_organizations, nil])
   end
 
-  def whatsapp_graphics?
-    show?
-  end
-
-  def patient_list?
-    user_has_any_permissions?(
-      [:download_patient_line_list, nil],
-      [:download_patient_line_list, record.organization],
-      [:download_patient_line_list, record.facility_group],
-    )
-  end
-
   def create?
     user_has_any_permissions?(
       [:manage_organizations, nil],
@@ -61,14 +49,6 @@ class Manage::FacilityPolicy < ApplicationPolicy
     user.user_permissions
       .where(permission_slug: [:manage_organizations, :manage_facility_groups, :manage_facilities])
       .present?
-  end
-
-  def view_health_worker_activity?
-    user_has_any_permissions?(
-      [:view_health_worker_activity, nil],
-      [:view_health_worker_activity, record.organization],
-      [:view_health_worker_activity, record.facility_group],
-    )
   end
 
   def destroyable?

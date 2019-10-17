@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe UserPolicy do
+RSpec.describe Manage::UserPolicy do
   subject { described_class }
 
   let!(:organization) { create(:organization) }
@@ -76,7 +76,7 @@ RSpec.describe UserPolicy do
   end
 end
 
-RSpec.describe UserPolicy::Scope do
+RSpec.describe Manage::UserPolicy::Scope do
   let(:subject) { described_class }
   let!(:organization) { create(:organization) }
   let!(:facility_group_1) { create(:facility_group, organization: organization) }

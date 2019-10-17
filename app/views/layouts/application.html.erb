@@ -83,10 +83,10 @@
                   <% if policy([:manage, Protocol]).index? %>
                     <%= link_to "Protocols", admin_protocols_path, class: "dropdown-item #{active_controller?("admin/protocols")}" %>
                   <% end %>
-                  <% if policy(Admin).index? %>
+                  <% if policy([:manage, :admin, User]).index? %>
                     <%= link_to "Admins", admins_path, class: "dropdown-item #{active_controller?("email_authentications")}" %>
                   <% end %>
-                  <% if policy(User).index? %>
+                  <% if policy([:manage, :user, User]).index? %>
                     <%= link_to "Users", admin_users_path, class: "dropdown-item #{active_controller?("users")}" %>
                   <% end %>
                 </div>
