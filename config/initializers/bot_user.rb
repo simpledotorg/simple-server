@@ -6,7 +6,7 @@ module BotUser
   def find_or_create_bot_user(id, name)
     bot_user = find_bot_user(id)
     return bot_user if bot_user.present?
-    current_time = Time.now
+    current_time = Time.current
     User.find_or_initialize_by(
         id: id,
         full_name: name,

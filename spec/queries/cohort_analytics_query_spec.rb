@@ -4,12 +4,12 @@ RSpec.describe CohortAnalyticsQuery do
   let!(:facility) { create(:facility) }
   let(:analytics) { CohortAnalyticsQuery.new(facility.registered_patients) }
 
-  let(:jan)   { Date.new(2019, 1, 1) }
-  let(:feb)   { Date.new(2019, 2, 1) }
-  let(:march) { Date.new(2019, 3, 1) }
-  let(:april) { Date.new(2019, 4, 1) }
-  let(:may)   { Date.new(2019, 5, 1) }
-  let(:june)  { Date.new(2019, 6, 1) }
+  let(:jan)   { DateTime.new(2019, 1, 1) }
+  let(:feb)   { DateTime.new(2019, 2, 1) }
+  let(:march) { DateTime.new(2019, 3, 1) }
+  let(:april) { DateTime.new(2019, 4, 1) }
+  let(:may)   { DateTime.new(2019, 5, 1) }
+  let(:june)  { DateTime.new(2019, 6, 1) }
 
   describe "#patient_counts_by_period" do
     before do
@@ -48,8 +48,8 @@ RSpec.describe CohortAnalyticsQuery do
       # Q2 report: registered in Q1, visited in Q2
       # Q1 report: registered in Q4, visited in Q1
 
-      let(:oct_prev) { Date.new(2018, 10, 1) }
-      let(:dec_prev) { Date.new(2018, 12, 1) }
+      let(:oct_prev) { DateTime.new(2018, 10, 1) }
+      let(:dec_prev) { DateTime.new(2018, 12, 1) }
 
       it "correctly calculates the dates of quarterly cohort reports" do
         travel_to(june) do

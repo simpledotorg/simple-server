@@ -8,8 +8,8 @@ FactoryBot.define do
     receiving_treatment_for_hypertension { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:no] }
     diabetes { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:no] }
     diagnosed_with_hypertension { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:no] }
-    device_created_at { Time.now }
-    device_updated_at { Time.now }
+    device_created_at { Time.current }
+    device_updated_at { Time.current }
     user
 
     trait :unknown do

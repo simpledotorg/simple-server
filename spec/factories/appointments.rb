@@ -6,8 +6,8 @@ FactoryBot.define do
     scheduled_date { 30.days.from_now }
     status :scheduled
     cancel_reason nil
-    device_created_at { Time.now }
-    device_updated_at { Time.now }
+    device_created_at { Time.current }
+    device_updated_at { Time.current }
     agreed_to_visit nil
     remind_on nil
     appointment_type { Appointment.appointment_types.keys.sample }

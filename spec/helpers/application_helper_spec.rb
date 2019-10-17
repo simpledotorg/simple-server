@@ -3,7 +3,7 @@ require 'rails_helper'
 describe ApplicationHelper, type: :helper do
   context '#rounded_time_ago_in_words' do
     it 'should return Today if date is less than 24 hours' do
-      date = Date.today
+      date = Date.current
       expect(helper.rounded_time_ago_in_words(date)).to eq("Today")
     end
 
@@ -55,7 +55,7 @@ describe ApplicationHelper, type: :helper do
         appointment1 = FactoryBot.create(:appointment, :overdue, patient_id: patient.id)
         appointment1.status = 'visited'
         appointment1.agreed_to_visit = false
-        appointment1.remind_on = Date.today
+        appointment1.remind_on = Date.current
         appointment1.save
 
         appointment2 = FactoryBot.create(:appointment, :overdue, patient_id: patient.id)

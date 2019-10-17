@@ -7,8 +7,8 @@ FactoryBot.define do
     is_protocol_drug { [true, false].sample }
     is_deleted { [true, false].sample }
     rxnorm_code { Faker::Code.npi }
-    device_created_at { Time.now }
-    device_updated_at { Time.now }
+    device_created_at { Time.current }
+    device_updated_at { Time.current }
     association :facility, strategy: :build
     association :patient, strategy: :build
     user
