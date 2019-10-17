@@ -1,37 +1,36 @@
 <div class="page-header">
   <h1 class="page-title">All facilities</h1>
   <nav class="page-nav">
-    <% if policy(Facility).upload? %>
+    <% if policy([:manage, Facility]).upload? %>
       <%= link_to '+ Upload facilities CSV', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
     <% end %>
-    <% if policy(FacilityGroup).new? %>
+    <% if policy([:manage, FacilityGroup]).new? %>
       <%= link_to 'New facility group', new_admin_facility_group_path, class: "btn btn-sm btn-primary" %>
     <% end %>
   </nav>
 </div>
 
-
-<% @display_facilities.sort_by { |o, _| o.name }.each do |organization, facility_groups| %>
-  <% if facility_groups.size > 1 %><h2 class="mt-5"><%= organization.name %></h2>
+<% @organizations.order(:name).each do |organization| %>
+  <% if @organizations.size > 1 %><h2 class="mt-5"><%= organization.name %></h2>
   <% end %>
 
-  <% facility_groups.sort_by{ |fg, _| fg.name }.each do |facility_group, facilities| %>
+  <% policy_scope([:manage, organization.facility_groups]).order(:name).each do |facility_group| %>
     <div class="card">
       <div class="row">
         <div class="col-6">
           <h3><%= facility_group.name %></h3>
         </div>
         <div class="col-6 text-right">
-          <% if policy(facility_group).edit? %>
+          <% if policy([:manage, facility_group]).edit? %>
             <%= link_to 'Edit', edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %>
           <% end %>
-          <% if policy(facility_group).edit? %>
+          <% if policy([:manage, facility_group]).new? %>
             <%= link_to "New Facility", new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-outline-success" %>
           <% end %>
         </div>
       </div>
 
-      <% facilities.sort_by(&:name).each do |facility| %>
+      <% policy_scope([:manage, facility_group.facilities]).order(:name).each do |facility| %>
 
         <div class="row card-row">
           <div class="col-md-4">

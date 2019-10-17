@@ -1,4 +1,4 @@
-class FacilityPolicy < ApplicationPolicy
+class Manage::FacilityPolicy < ApplicationPolicy
   def index?
     user.user_permissions
       .where(permission_slug: [:manage_organizations, :manage_facility_groups, :manage_facilities])
@@ -26,7 +26,7 @@ class FacilityPolicy < ApplicationPolicy
       [:download_patient_line_list, nil],
       [:download_patient_line_list, record.organization],
       [:download_patient_line_list, record.facility_group],
-      )
+    )
   end
 
   def create?
@@ -84,30 +84,23 @@ class FacilityPolicy < ApplicationPolicy
     end
 
     def resolve
-      if user.has_permission?(:manage_organizations)
-        return scope.all
-      elsif user.has_permission?(:manage_facility_groups)
-        facility_groups = facility_groups_for_permission(:manage_facility_groups)
-        return scope.where(facility_group: facility_groups)
-      elsif user.has_permission?(:approve_health_workers)
-        facility_groups = facility_groups_for_permission(:approve_health_workers)
-        return scope.where(facility_group: facility_groups)
+      return scope.none unless user.user_permissions.where(permission_slug: [
+        :manage_organizations,
+        :manage_facility_groups,
+        :manage_facilities
+      ])
+
+      return scope.all if user.has_permission?(:manage_organizations)
+
+      facility_group_ids = []
+
+      if user.has_permission?(:manage_facility_groups)
+        facility_group_ids = facility_group_ids_for_permission(:manage_facility_groups)
       elsif user.has_permission?(:manage_facilities)
-        return scope.where(facility_group: resources_for_permission(:manage_facilities))
+        facility_group_ids = facility_group_ids_for_permission(:manage_facilities)
       end
 
-      scope.none
-    end
-
-    def facility_groups_for_permission(slug)
-      resources = resources_for_permission(slug)
-      resources.flat_map do |resource|
-        if resource.is_a? Organization
-          resource.facility_groups
-        elsif resource.is_a? FacilityGroup
-          resource
-        end
-      end
+      scope.where(facility_group_id: facility_group_ids)
     end
   end
 end

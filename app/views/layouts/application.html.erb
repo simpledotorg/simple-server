@@ -74,10 +74,10 @@
                   Manage
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <% if policy(Organization).index? %>
+                  <% if policy([:manage, Organization]).index? %>
                     <%= link_to "Organizations", admin_organizations_path, class: "dropdown-item #{active_controller?("admin/organizations")}" %>
                   <% end %>
-                  <% if policy(Facility).index? %>
+                  <% if policy([:manage, Facility]).index? %>
                     <%= link_to "Facilities", admin_facilities_path, class: "dropdown-item #{active_controller?("admin/facilities")}" %>
                   <% end %>
                   <% if policy(Protocol).index? %>

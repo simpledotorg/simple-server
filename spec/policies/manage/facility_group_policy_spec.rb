@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe FacilityGroupPolicy do
+RSpec.describe Manage::FacilityGroupPolicy do
   subject { described_class }
 
   context 'user can manage all organizations' do
@@ -54,7 +54,7 @@ RSpec.describe FacilityGroupPolicy do
   end
 end
 
-RSpec.describe FacilityGroupPolicy::Scope do
+RSpec.describe Manage::FacilityGroupPolicy::Scope do
   let(:subject) { described_class }
   let(:organization) { create(:organization) }
   let!(:facility_group_1) { create(:facility_group, organization: organization) }
