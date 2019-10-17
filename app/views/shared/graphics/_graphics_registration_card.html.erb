@@ -9,7 +9,6 @@
     </tr>
     </thead>
     <tbody>
-      <%= console %>
     <% dates_for_periods(:quarter, 3, from_date: quarter_datetime(@year.to_i, @quarter.to_i)).reverse.each do |quarter| %>
       <tr>
         <td class="snapshot-quarter"><%= format_period(:quarter, quarter) %></td>
