@@ -54,23 +54,9 @@ class OrganizationPolicy < ApplicationPolicy
         scope.all
       elsif user.has_permission?(:manage_facility_groups)
         scope.where(id: organization_ids_for_permission(:manage_facility_groups))
-      elsif user.has_permission?(:view_cohort_reports)
-        scope.where(id: organization_ids_for_permission(:view_cohort_reports))
       else
         scope.none
       end
-    end
-
-
-    def organization_ids_for_permission(slug)
-      resources = resources_for_permission(slug)
-      resources.map do |resource|
-        if resource.is_a? Organization
-          resource.id
-        else
-          resource.organization.id
-        end
-      end.uniq.compact
     end
   end
 end

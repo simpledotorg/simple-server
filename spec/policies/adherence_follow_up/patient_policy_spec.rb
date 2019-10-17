@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe PatientPolicy do
+RSpec.describe AdherenceFollowUp::PatientPolicy do
   subject { described_class }
 
   let(:facility1) { build(:facility) }
@@ -106,7 +106,7 @@ RSpec.describe PatientPolicy do
   end
 end
 
-RSpec.describe PatientPolicy::Scope do
+RSpec.describe AdherenceFollowUp::PatientPolicy::Scope do
   let(:subject) { described_class }
 
   let(:organization) { create(:organization) }

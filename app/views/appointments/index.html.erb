@@ -7,7 +7,7 @@
            facility_id: @facility_id,
            per_page: @per_page) %>
 
-<% if @appointments.present? && policy(@appointments.first).download? %>
+<% if @appointments.present? && policy([:overdue_list, @appointments.first]).download? %>
   <h2 name="download_text">Downloads</h2>
 
   <div class="mb-5 mt-3">
@@ -15,7 +15,7 @@
       <div class="text-grey">
         <i class="far fa-file-excel mr-2"></i> Select a facility to download Overdue Patients list
       </div>
-    <% elsif policy(current_facility).download_overdue_list? && @appointments.present? %>
+    <% elsif policy([:overdue_list, current_facility]).download? && @appointments.present? %>
       <%= link_to "<i class='far fa-file-excel mr-2'></i> Download overdue list".html_safe, appointments_path(facility_id: @facility_id, format: "csv"), class: "", data: { confirm: I18n.t('admin.phi_download_alert') } %>
     <% end %>
 

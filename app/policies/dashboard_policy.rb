@@ -1,10 +1,11 @@
 class DashboardPolicy < Struct.new(:user, :dashboard)
-  def index?
-    user.has_permission?(:view_cohort_reports)
-  end
 
   def show?
-    user.has_permission?(:view_cohort_reports)
+    Pundit.policy(user, [:cohort_report, Organization]).index? || Pundit.policy(user, User).index?
+  end
+
+  def overdue_list?
+    Pundit.policy(user, [:overdue_list, Appointment]).index?
   end
 
   def manage?

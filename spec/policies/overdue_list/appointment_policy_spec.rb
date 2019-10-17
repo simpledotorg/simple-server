@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe AppointmentPolicy do
+RSpec.describe OverdueList::AppointmentPolicy do
   subject { described_class }
 
   let(:facility1) { build(:facility) }
@@ -120,7 +120,7 @@ RSpec.describe AppointmentPolicy do
   end
 end
 
-RSpec.describe AppointmentPolicy::Scope do
+RSpec.describe OverdueList::AppointmentPolicy::Scope do
   let(:subject) { described_class }
 
   let(:organization) { create(:organization) }

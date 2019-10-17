@@ -5,9 +5,9 @@ class AppointmentsController < AdminController
   before_action :set_appointment, only: [:update]
 
   def index
-    authorize Appointment, :index?
+    authorize [:overdue_list, Appointment], :index?
 
-    @appointments = policy_scope(Appointment)
+    @appointments = policy_scope([:overdue_list, Appointment])
                       .joins(patient: { latest_blood_pressures: :facility })
                       .includes(patient: [:address, :phone_numbers, :medical_history, { latest_blood_pressures: :facility }])
                       .overdue

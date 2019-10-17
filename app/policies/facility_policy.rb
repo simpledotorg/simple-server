@@ -63,14 +63,6 @@ class FacilityPolicy < ApplicationPolicy
       .present?
   end
 
-  def download_overdue_list?
-    user_has_any_permissions?(
-      [:download_overdue_list, nil],
-      [:download_overdue_list, record.organization],
-      [:download_overdue_list, record.facility_group],
-    )
-  end
-
   def view_health_worker_activity?
     user_has_any_permissions?(
       [:view_health_worker_activity, nil],
@@ -96,9 +88,6 @@ class FacilityPolicy < ApplicationPolicy
         return scope.all
       elsif user.has_permission?(:manage_facility_groups)
         facility_groups = facility_groups_for_permission(:manage_facility_groups)
-        return scope.where(facility_group: facility_groups)
-      elsif user.has_permission?(:view_overdue_list)
-        facility_groups = facility_groups_for_permission(:view_overdue_list)
         return scope.where(facility_group: facility_groups)
       elsif user.has_permission?(:approve_health_workers)
         facility_groups = facility_groups_for_permission(:approve_health_workers)

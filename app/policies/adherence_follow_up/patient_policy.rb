@@ -1,4 +1,4 @@
-class PatientPolicy < ApplicationPolicy
+class AdherenceFollowUp::PatientPolicy < ApplicationPolicy
   def index?
     user.user_permissions
       .where(permission_slug: :view_adherence_follow_up_list)
@@ -28,18 +28,10 @@ class PatientPolicy < ApplicationPolicy
     def resolve
       return scope.none unless user.has_permission?(:view_adherence_follow_up_list)
 
-      facility_ids = facility_ids_for_slug(:view_adherence_follow_up_lists)
+      facility_ids = facility_ids_for_permission(:view_adherence_follow_up_list)
       return scope.all unless facility_ids.present?
 
       scope.where(registration_facility_id: facility_ids)
-    end
-
-    def facility_ids_for_slug(slug)
-      resources = resources_for_permission(slug)
-
-      resources.flat_map do |resource|
-        resource.facilities.map(&:id)
-      end.uniq.compact
     end
   end
 end
