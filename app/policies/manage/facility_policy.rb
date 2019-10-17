@@ -71,17 +71,18 @@ class Manage::FacilityPolicy < ApplicationPolicy
         :manage_organizations,
         :manage_facility_groups,
         :manage_facilities
-      ])
+      ]).present?
 
-      return scope.all if user.has_permission?(:manage_organizations)
 
-      facility_group_ids = []
-
-      if user.has_permission?(:manage_facility_groups)
+      if user.has_permission?(:manage_organizations)
+        facility_group_ids = facility_group_ids_for_permission(:manage_organizations)
+      elsif user.has_permission?(:manage_facility_groups)
         facility_group_ids = facility_group_ids_for_permission(:manage_facility_groups)
       elsif user.has_permission?(:manage_facilities)
         facility_group_ids = facility_group_ids_for_permission(:manage_facilities)
       end
+
+      return scope.all unless facility_group_ids.present?
 
       scope.where(facility_group_id: facility_group_ids)
     end

@@ -54,6 +54,8 @@ class Manage::OrganizationPolicy < ApplicationPolicy
         scope.all
       elsif user.has_permission?(:manage_facility_groups)
         scope.where(id: organization_ids_for_permission(:manage_facility_groups))
+      elsif user.has_permission?(:manage_facilities)
+        scope.where(id: organization_ids_for_permission(:manage_facilities))
       else
         scope.none
       end
