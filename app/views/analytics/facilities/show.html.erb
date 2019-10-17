@@ -17,7 +17,7 @@
 
 <%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics %>
 
-<% if policy(@facility).view_health_worker_activity? %>
+<% if policy([:cohort_report, @facility]).view_health_worker_activity? %>
   <%= render 'shared/analytics_table',
              dashboard_analytics: @dashboard_analytics,
              row_resource: User.order(:full_name),
@@ -34,7 +34,7 @@
   <div class="downloads">
     <h4>Downloads</h4>
 
-    <% if policy(@facility).patient_list? %>
+    <% if policy([:cohort_report, @facility]).patient_list? %>
       <p>
         <%= link_to analytics_facility_patient_list_path(@facility) do %>
           <i class='fas fa-camera mr-2'></i>
@@ -43,7 +43,7 @@
       </p>
     <% end %>
 
-    <% if policy(@facility).whatsapp_graphics? %>
+    <% if policy([:cohort_report, @facility]).whatsapp_graphics? %>
       <%=
         render "shared/graphics/graphics_download_links",
                graphics_path: -> (options) { analytics_facility_graphics_path(options) },

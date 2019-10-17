@@ -1,5 +1,13 @@
 class CohortReport::FacilityPolicy < ApplicationPolicy
 
+  def show?
+    user_has_any_permissions?(
+      [:view_cohort_reports, nil],
+      [:view_cohort_reports, record.organization],
+      [:view_cohort_reports, record.facility_group],
+      )
+  end
+
   def view_health_worker_activity?
     user_has_any_permissions?(
       [:view_health_worker_activity, nil],
