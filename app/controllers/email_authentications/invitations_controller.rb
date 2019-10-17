@@ -2,13 +2,13 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   helper_method :current_admin
 
   def new
-    authorize current_admin, policy_class: UserPolicy
+    authorize([:manage, :admin, current_admin])
     super
   end
 
   def create
     user = User.new(user_params)
-    authorize user, policy_class: UserPolicy
+    authorize([:manage, :admin, user])
 
     existing_email = EmailAuthentication.find_by(invite_params)
     if existing_email.present?

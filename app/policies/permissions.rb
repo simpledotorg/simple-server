@@ -7,7 +7,7 @@ module Permissions
     },
     manage_admins: {
       slug: :manage_admins,
-      description: 'Manage Admins',
+      description: 'Manage admins',
       resource_priority: [:organization, :global]
     },
     manage_organizations: {
@@ -92,7 +92,10 @@ module Permissions
         :download_overdue_list,
         :view_adherence_follow_up_list,
         :approve_health_workers,
-        :view_cohort_reports
+        :view_cohort_reports,
+        :view_health_worker_activity,
+        :download_patient_line_list,
+        :manage_admins,
       ]
     },
     { name: :analyst,
@@ -108,7 +111,10 @@ module Permissions
         :view_overdue_list,
         :download_overdue_list,
         :view_adherence_follow_up_list,
-        :approve_health_workers
+        :approve_health_workers,
+        :view_health_worker_activity,
+        :download_patient_line_list,
+        :view_cohort_reports
       ]
     },
     { name: :owner,
