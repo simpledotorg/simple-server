@@ -4,8 +4,8 @@ FactoryBot.define do
     number { Faker::PhoneNumber.phone_number }
     phone_type { 'mobile' }
     active { [true, false].sample }
-    device_created_at { Time.now }
-    device_updated_at { Time.now }
+    device_created_at { Time.current }
+    device_updated_at { Time.current }
     dnd_status { true }
     patient
   end

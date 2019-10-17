@@ -124,7 +124,7 @@ describe Patient, type: :model do
       it "returns age based on date of birth year if present" do
         patient.date_of_birth = Date.parse("1980-01-01")
 
-        expect(patient.current_age).to eq(Date.today.year - 1980)
+        expect(patient.current_age).to eq(Date.current.year - 1980)
       end
 
       it "returns age based on age_updated_at if date of birth is not present" do
