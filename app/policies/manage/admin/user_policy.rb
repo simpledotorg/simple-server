@@ -1,4 +1,5 @@
 class Manage::Admin::UserPolicy < ApplicationPolicy
+
   def index?
     user.user_permissions
       .where(permission_slug: :manage_admins)

@@ -1,4 +1,4 @@
-class Manage:: ProtocolPolicy < ApplicationPolicy
+class Manage::ProtocolPolicy < ApplicationPolicy
   def index?
     user_has_any_permissions?([:manage_protocols, nil])
   end
