@@ -30,7 +30,7 @@ class PatientsController < AdminController
 
   def set_patient
     @patient = Patient.find(params[:id] || params[:patient_id])
-    authorize @patient
+    authorize([:adherence_follow_up, @patient])
   end
 
   def patient_params

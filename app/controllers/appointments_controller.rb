@@ -41,7 +41,7 @@ class AppointmentsController < AdminController
 
   def set_appointment
     @appointment = Appointment.find(params[:id] || params[:appointment_id])
-    authorize @appointment
+    authorize([:overdue_list, @appointment])
   end
 
   def appointment_params

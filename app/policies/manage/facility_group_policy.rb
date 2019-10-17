@@ -1,4 +1,5 @@
 class Manage::FacilityGroupPolicy < ApplicationPolicy
+
   def index?
     user.user_permissions
       .where(permission_slug: [:manage_organizations, :manage_facility_groups])
@@ -8,19 +9,20 @@ class Manage::FacilityGroupPolicy < ApplicationPolicy
   def show?
     user_has_any_permissions?(
       [:manage_organizations, nil],
-      [:manage_facility_groups, record.organization]
+      [:manage_facility_groups, record.organization],
+      [:manage_facility_groups, record],
+      [:manage_facilities, record]
     )
   end
 
   def create?
-    user_has_any_permissions?(
-      [:manage_organizations, nil],
-      [:manage_facility_groups, record.organization]
-    )
+    user.user_permissions
+      .where(permission_slug: [:manage_organizations, :manage_facility_groups])
+      .present?
   end
 
   def new?
-    index?
+    create?
   end
 
   def update?

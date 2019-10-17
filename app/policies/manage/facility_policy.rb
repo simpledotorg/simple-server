@@ -6,9 +6,10 @@ class Manage::FacilityPolicy < ApplicationPolicy
   end
 
   def show?
-    user.has_permission?(:view_cohort_reports) || user_has_any_permissions?(
+    user_has_any_permissions?(
       [:manage_organizations, nil],
       [:manage_facility_groups, record.organization],
+      [:manage_facility_groups, record.facility_group],
       [:manage_facilities, record.facility_group]
     )
   end
@@ -21,6 +22,7 @@ class Manage::FacilityPolicy < ApplicationPolicy
     user_has_any_permissions?(
       [:manage_organizations, nil],
       [:manage_facility_groups, record.organization],
+      [:manage_facility_groups, record.facility_group],
       [:manage_facilities, record.facility_group]
     )
   end
@@ -33,6 +35,7 @@ class Manage::FacilityPolicy < ApplicationPolicy
     user_has_any_permissions?(
       [:manage_organizations, nil],
       [:manage_facility_groups, record.organization],
+      [:manage_facility_groups, record.facility_group],
       [:manage_facilities, record.facility_group]
     )
   end
