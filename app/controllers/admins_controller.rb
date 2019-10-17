@@ -56,6 +56,6 @@ class AdminsController < AdminController
     { full_name: params.require(:full_name),
       role: params.require(:role),
       organization_id: params[:organization_id],
-      device_updated_at: Time.now }
+      device_updated_at: Time.current }
   end
 end

@@ -3,11 +3,11 @@ FactoryBot.define do
     id { Faker::Number.unique.number }
     session_id { SecureRandom.uuid }
     result { CallLog.results.keys.sample }
-    created_at { Time.now }
-    updated_at { Time.now }
+    created_at { Time.current }
+    updated_at { Time.current }
     duration { 60 }
     start_time { 1.minute.ago }
-    end_time { Time.now }
+    end_time { Time.current }
     callee_phone_number { Faker::PhoneNumber }
     caller_phone_number { Faker::PhoneNumber }
   end
