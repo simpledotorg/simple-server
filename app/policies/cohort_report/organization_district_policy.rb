@@ -1,4 +1,4 @@
-class OrganizationDistrictPolicy < ApplicationPolicy
+class CohortReport::OrganizationDistrictPolicy < ApplicationPolicy
   def index?
     user.user_permissions
       .where(permission_slug: [:manage_organizations, :manage_facility_groups])
