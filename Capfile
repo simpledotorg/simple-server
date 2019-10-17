@@ -5,11 +5,11 @@ require 'capistrano/rails/console'
 require "capistrano/scm/git"
 install_plugin Capistrano::SCM::Git
 
+require "capistrano/multiconfig"
 require "capistrano/rbenv"
 require "capistrano/rails"
 require "capistrano/passenger"
 require "capistrano/sidekiq"
-require "capistrano/multiconfig"
 require 'capistrano-db-tasks'
 
 require "whenever/capistrano"

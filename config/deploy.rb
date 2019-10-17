@@ -21,6 +21,7 @@ set :db_local_clean, false
 set :db_remote_clean, true
 set :disallow_pushing, true
 
+append :linked_dirs, '.bundle'
 append :linked_files, ".env.production"
 append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
 
