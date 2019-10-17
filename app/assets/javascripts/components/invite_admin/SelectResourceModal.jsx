@@ -67,7 +67,7 @@ var SelectResourceModal = createReactClass({
                 <div className="modal-dialog modal-dialog-scrollable" role="document">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h3 className="modal-title" id="exampleModalLabel">Select {this.props.resourceDisplayName}</h3>
+                            <h3 className="modal-title" id="exampleModalLabel">Select {this.props.displayName}</h3>
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -76,7 +76,7 @@ var SelectResourceModal = createReactClass({
                             <div className="input-group mb-3">
                                 <input type="text"
                                        className="form-control"
-                                       placeholder={"Search " + this.props.resourceDisplayName}
+                                       placeholder={"Search " + this.props.displayName}
                                        value={this.state.searchText}
                                        onChange={(e) => this.updateSearchInput(e.target.value)}
                                 />
@@ -87,7 +87,7 @@ var SelectResourceModal = createReactClass({
                         </div>
                         <div className="modal-footer justify-content-between">
                             <button type="button" className="btn btn-outline-success" onClick={this.selectAllResources}>
-                                Give access to all {this.props.resourceDisplayName}
+                                Give access to all {this.props.displayName}
                             </button>
                             <button type="button" className="btn btn-primary" data-dismiss="modal" aria-label="Done"
                                     onClick={() => this.props.updateResources(this.state.selectedResources)}>

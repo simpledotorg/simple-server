@@ -12,6 +12,7 @@ class AccessLevelComponent extends React.Component {
                                             updateOrganization={this.props.updateOrganization}/>
 
                     <SelectResource resourceType='FacilityGroup'
+                                    displayName='Facility groups'
                                     resources={this.props.facility_groups}
                                     updateResources={this.props.updateResources}
                                     organization_id={this.props.organization_id}

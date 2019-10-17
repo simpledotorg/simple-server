@@ -1,7 +1,5 @@
 {
   "name": "simple-server",
   "private": true,
-  "dependencies": {
-    "pluralize": "^8.0.0"
-  }
+  "dependencies": {}
 }
