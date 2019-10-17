@@ -16,7 +16,7 @@ class OverdueList::AppointmentPolicy < ApplicationPolicy
   end
 
   def download?
-    update?
+    user.has_permission?(:download_overdue_list)
   end
 
   class Scope < Scope

@@ -19,10 +19,10 @@ class OverdueList::FacilityPolicy < ApplicationPolicy
     def resolve
       return scope.none unless user.has_permission?(:view_overdue_list)
 
-      facility_groups = facility_groups_for_permission(:view_overdue_list)
-      return scope unless facility_groups.present?
+      facility_group_ids = facility_group_ids_for_permission(:view_overdue_list)
+      return scope.all unless facility_group_ids.present?
 
-      scope.where(facility_group: facility_groups)
+      scope.where(facility_group_id: facility_group_ids)
     end
   end
 end
