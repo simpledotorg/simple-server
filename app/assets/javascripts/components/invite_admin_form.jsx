@@ -19,7 +19,9 @@ window.InviteAdminForm = createReactClass({
             resource_type: 'Organization',
             resource_id: _.get(this.props, ['admin', 'organization_id'])
         } : null;
+
         return {
+            errors: undefined,
             full_name: _.get(this.props, ['admin', 'full_name'], ''),
             email: _.get(this.props, ['email'], ''),
             role: _.get(this.props, ['admin', 'role'], ''),
@@ -27,6 +29,10 @@ window.InviteAdminForm = createReactClass({
             selected_permissions: _.get(this.props, ['selected_permissions'], []),
             selected_facility_groups: _.get(this.props, ['selected_facility_groups'], [])
         }
+    },
+
+    updateErrors: function(errors) {
+        this.setState({errors: errors})
     },
 
     resourcePriority: function () {
@@ -121,7 +127,8 @@ window.InviteAdminForm = createReactClass({
             data: JSON.stringify(request_payload),
             success: () => {
                 window.location.replace("/admins");
-            }
+            },
+            error: (response) => this.updateErrors(_.get(response.responseJSON, 'errors'))
         });
     },
 
@@ -141,8 +148,14 @@ window.InviteAdminForm = createReactClass({
 
 
     render: function () {
+        var errors = _.map(this.state.errors, (error, idx) => {
+           return <ErrorMessage message={error} key={idx}/>;
+        });
         return (
             <div>
+                <div className='error-messages'>
+                    {errors}
+                </div>
                 <TextInputField name="full_name" title="Full Name" value={this.state.full_name}
                                 updateInput={this.updateInput}/>
                 <TextInputField name="email" title="Email" value={this.state.email} updateInput={this.updateInput}/>

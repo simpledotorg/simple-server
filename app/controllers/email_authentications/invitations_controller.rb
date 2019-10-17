@@ -11,7 +11,9 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
     authorize user, policy_class: UserPolicy
 
     existing_email = EmailAuthentication.find_by(invite_params)
-    return render json: nil, status: :bad_request if existing_email.present?
+    if existing_email.present?
+      return render json: { errors: ['Email already invited'] }, status: :bad_request
+    end
 
     User.transaction do
       super do |resource|
