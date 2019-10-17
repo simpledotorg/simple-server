@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Manage::UserPolicy do
+RSpec.describe Manage::User::UserPolicy do
   subject { described_class }
 
   let!(:organization) { create(:organization) }
@@ -76,7 +76,7 @@ RSpec.describe Manage::UserPolicy do
   end
 end
 
-RSpec.describe Manage::UserPolicy::Scope do
+RSpec.describe Manage::User::UserPolicy::Scope do
   let(:subject) { described_class }
   let!(:organization) { create(:organization) }
   let!(:facility_group_1) { create(:facility_group, organization: organization) }
@@ -93,7 +93,9 @@ RSpec.describe Manage::UserPolicy::Scope do
     end
     it "resolves all users" do
       resolved_records = subject.new(user_with_permission, User.all).resolve
-      expect(resolved_records.to_a).to match_array(User.all.to_a)
+
+      users = PhoneNumberAuthentication.all.map(&:user)
+      expect(resolved_records.to_a).to match_array(users)
     end
   end
 

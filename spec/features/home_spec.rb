@@ -84,8 +84,8 @@ RSpec.feature "Home page", type: :feature do
   end
 
   context 'user has permission to approve health care workers' do
-    let!(:user1) { create(:user, :with_phone_number_authentication, sync_approval_status: :requested)}
-    let!(:user2) { create(:user, :with_phone_number_authentication, sync_approval_status: :requested)}
+    let!(:user1) { create(:user, :with_phone_number_authentication, sync_approval_status: :requested) }
+    let!(:user2) { create(:user, :with_phone_number_authentication, sync_approval_status: :requested) }
 
     before do
       user1.sync_approval_status = :requested

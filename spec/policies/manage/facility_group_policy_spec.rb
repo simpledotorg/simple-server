@@ -42,13 +42,19 @@ RSpec.describe Manage::FacilityGroupPolicy do
       end
     end
 
-    permissions :show?, :create?, :edit?, :update?, :destroy? do
+    permissions :show?, :edit?, :update?, :destroy? do
       it 'allows the user for facility groups in their organization' do
         expect(subject).to permit(user_with_permission, facility_group_1)
       end
 
       it 'denies the user for facility groups outside their organization' do
         expect(subject).not_to permit(user_with_permission, facility_group_2)
+      end
+    end
+
+    permissions :create? do
+      it 'allows the user to create facility groups in their organization' do
+        expect(subject).to permit(user_with_permission, facility_group_1)
       end
     end
   end

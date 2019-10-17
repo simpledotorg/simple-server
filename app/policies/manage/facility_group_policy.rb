@@ -26,7 +26,7 @@ class Manage::FacilityGroupPolicy < ApplicationPolicy
   end
 
   def update?
-    create?
+    show?
   end
 
   def edit?
@@ -34,7 +34,7 @@ class Manage::FacilityGroupPolicy < ApplicationPolicy
   end
 
   def destroy?
-    destroyable? && create?
+    destroyable? && update?
   end
 
   def whatsapp_graphics?

@@ -2,9 +2,9 @@ class OrganizationsController < AdminController
   include Pagination
 
   def index
-    authorize([:cohort_report, Organization])
+    authorize(:dashboard, :show?)
 
-    @users_requesting_approval = policy_scope(User)
+    @users_requesting_approval = policy_scope([:manage, :user, User])
                                    .requested_sync_approval
                                    .order(updated_at: :desc)
 
