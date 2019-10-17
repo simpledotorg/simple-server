@@ -32,19 +32,19 @@
     display_model: :facility
 %>
 
-<% if FeatureToggle.enabled?('DASHBOARD_SNAPSHOT') %>
-  <div class="downloads">
-    <h4>Downloads</h4>
+<div class="downloads">
+  <h4>Downloads</h4>
 
-    <% if policy(@facility).patient_list? %>
-      <p>
-        <%= link_to analytics_facility_patient_list_path(@facility) do %>
-          <i class='fas fa-camera mr-2'></i>
-          Patient line list
-        <% end %>
-      </p>
-    <% end %>
+  <% if policy(@facility).patient_list? %>
+    <p>
+      <%= link_to analytics_facility_patient_list_path(@facility) do %>
+        <i class='fas fa-camera mr-2'></i>
+        Patient line list
+      <% end %>
+    </p>
+  <% end %>
 
+  <% if FeatureToggle.enabled?('DASHBOARD_SNAPSHOT') %>
     <% if policy(@facility).whatsapp_graphics? %>
       <%=
         render "shared/graphics/graphics_download_links",
@@ -52,5 +52,5 @@
           options: { facility_id: @facility.id }
       %>
     <% end %>
-  </div>
-<% end %>
+  <% end %>
+</div>
