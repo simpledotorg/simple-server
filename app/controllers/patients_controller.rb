@@ -5,9 +5,9 @@ class PatientsController < AdminController
   before_action :set_patient, only: [:update]
 
   def index
-    authorize Patient, :index?
+    authorize([:adherence_follow_up, Patient])
 
-    @patients = policy_scope(Patient)
+    @patients = policy_scope([:adherence_follow_up, Patient])
                   .not_contacted
                   .order(device_created_at: :asc)
 

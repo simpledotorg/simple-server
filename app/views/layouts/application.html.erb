@@ -61,7 +61,7 @@
                     <%= link_to "Overdue patients", appointments_path, class: "nav-link #{active_controller?("appointments")}" %>
                   </li>
                 <% end %>
-                <% if policy(Patient).index? %>
+                <% if policy(:dashboard).adherence_follow_up? %>
                   <li class="nav-item">
                     <%= link_to "Adherence follow-ups", patients_path, class: "nav-link #{active_controller?("patients")}" %>
                   </li>
