@@ -27,8 +27,14 @@ var SelectResourceModal = createReactClass({
         this.setState({selectedResources: newResources})
     },
 
+    displayResources: function() {
+        return _.filter(this.state.matchingResources, (resource) => {
+            return resource.organization_id == this.props.organization_id;
+        });
+    },
+
     selectAllResources: function () {
-        var newResources = _.map(this.state.matchingResources, (resource) => {
+        var newResources = _.map(this.displayResources(), (resource) => {
             return {
                 resource_type: this.props.resourceType,
                 resource_id: resource.id,
@@ -36,12 +42,6 @@ var SelectResourceModal = createReactClass({
             };
         });
         this.setState({selectedResources: newResources});
-    },
-
-    displayResources: function() {
-        return _.filter(this.state.matchingResources, (resource) => {
-            return resource.organization_id == this.props.organization_id;
-        });
     },
 
     renderResources: function() {
@@ -67,7 +67,7 @@ var SelectResourceModal = createReactClass({
                 <div className="modal-dialog modal-dialog-scrollable" role="document">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h3 className="modal-title" id="exampleModalLabel">Select facilities or districts</h3>
+                            <h3 className="modal-title" id="exampleModalLabel">Select {this.props.displayName}</h3>
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -76,7 +76,7 @@ var SelectResourceModal = createReactClass({
                             <div className="input-group mb-3">
                                 <input type="text"
                                        className="form-control"
-                                       placeholder="Search by district or facility name..."
+                                       placeholder={"Search " + this.props.displayName}
                                        value={this.state.searchText}
                                        onChange={(e) => this.updateSearchInput(e.target.value)}
                                 />
@@ -87,7 +87,7 @@ var SelectResourceModal = createReactClass({
                         </div>
                         <div className="modal-footer justify-content-between">
                             <button type="button" className="btn btn-outline-success" onClick={this.selectAllResources}>
-                                Give access to all facilities
+                                Give access to all {this.props.displayName}
                             </button>
                             <button type="button" className="btn btn-primary" data-dismiss="modal" aria-label="Done"
                                     onClick={() => this.props.updateResources(this.state.selectedResources)}>
