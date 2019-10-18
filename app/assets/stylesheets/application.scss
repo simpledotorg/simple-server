@@ -615,6 +615,11 @@ Dashboard UI
     line-height: 1.2;
     font-family: $font-condensed;
     vertical-align: bottom;
+
+    &.sort-label {
+      color: $blue;
+      text-transform: uppercase;
+    }
 }
 
 .table-compact .row-control {
