@@ -6,10 +6,10 @@ env :PATH, ENV['PATH']
 DEFAULT_CRON_TIME_ZONE = 'Asia/Kolkata'
 
 def local(time)
-  TZInfo::Timezone.get(DEFAULT_CRON_TIME_ZONE).local_to_utc(Time.parse(time))
+  ActiveSupport::TimeZone[DEFAULT_CRON_TIME_ZONE].parse(time).utc
 end
 
-every :day, at: local('11:00 pm').utc, roles: [:cron] do
+every :day, at: local('11:00 pm'), roles: [:cron] do
   rake 'appointment_notification:three_days_after_missed_visit'
 end
 

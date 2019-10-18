@@ -41,16 +41,16 @@ class Appointment < ApplicationRecord
 
   def self.overdue
     where(status: 'scheduled')
-      .where('scheduled_date <= ?', Date.today)
-      .where('remind_on IS NULL OR remind_on <= ?', Date.today)
+      .where('scheduled_date <= ?', Date.current)
+      .where('remind_on IS NULL OR remind_on <= ?', Date.current)
   end
 
   def self.overdue_by(number_of_days)
-    overdue.where('scheduled_date <= ?', Date.today - number_of_days.days)
+    overdue.where('scheduled_date <= ?', Date.current - number_of_days.days)
   end
 
   def days_overdue
-    (Date.today - scheduled_date).to_i
+    (Date.current - scheduled_date).to_i
   end
 
   def scheduled?
@@ -58,7 +58,7 @@ class Appointment < ApplicationRecord
   end
 
   def overdue?
-    scheduled? && scheduled_date <= Date.today
+    scheduled? && scheduled_date <= Date.current
   end
 
   def overdue_for_over_a_year?

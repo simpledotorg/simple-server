@@ -15,7 +15,7 @@ describe AuditLog, type: :model do
                                     auditable_type: record.class.to_s,
                                     auditable_id: record.id,
                                     action: 'create',
-                                    time: Time.now }.to_json)
+                                    time: Time.current }.to_json)
 
         AuditLog.merge_log(user, record)
       end
@@ -30,7 +30,7 @@ describe AuditLog, type: :model do
                                     auditable_type: record.class.to_s,
                                     auditable_id: record.id,
                                     action: 'fetch',
-                                    time: Time.now }.to_json)
+                                    time: Time.current }.to_json)
 
         AuditLog.fetch_log(user, record)
       end
@@ -45,7 +45,7 @@ describe AuditLog, type: :model do
                                     auditable_type: 'User',
                                     auditable_id: user.id,
                                     action: 'login',
-                                    time: Time.now }.to_json)
+                                    time: Time.current }.to_json)
 
         AuditLog.login_log(user)
       end
@@ -59,7 +59,7 @@ describe AuditLog, type: :model do
 
     it 'schedules a job to create audit logs in the background' do
       expect {
-        AuditLog.create_logs_async(user, records, action, Time.now)
+        AuditLog.create_logs_async(user, records, action, Time.current)
       }.to change(CreateAuditLogsWorker.jobs, :size).by(1)
       CreateAuditLogsWorker.clear
     end
@@ -74,11 +74,11 @@ describe AuditLog, type: :model do
                                         auditable_type: 'Patient',
                                         auditable_id: record.id,
                                         action: 'fetch',
-                                        time: Time.now}.to_json)
+                                        time: Time.current}.to_json)
           end
         end
 
-        AuditLog.create_logs_async(user, records, action, Time.now)
+        AuditLog.create_logs_async(user, records, action, Time.current)
         CreateAuditLogsWorker.drain
       end
     end
