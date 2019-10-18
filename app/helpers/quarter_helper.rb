@@ -4,7 +4,7 @@ module QuarterHelper
   end
 
   def current_quarter
-    quarter(Date.today)
+    quarter(Date.current)
   end
 
   def previous_quarter_and_year
@@ -27,7 +27,7 @@ module QuarterHelper
   end
 
   def current_year
-    Date.today.year
+    Date.current.year
   end
 
   def quarter_datetime(year, quarter)

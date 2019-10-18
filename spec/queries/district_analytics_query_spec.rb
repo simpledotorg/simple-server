@@ -6,7 +6,7 @@ RSpec.describe DistrictAnalyticsQuery do
   let!(:district_name) { "Bathinda" }
   let!(:facility) { create(:facility, facility_group: facility_group, district: district_name) }
   let!(:analytics) { DistrictAnalyticsQuery.new(district_name, facility, :month, 5) }
-  let!(:current_month) { Date.today.beginning_of_month }
+  let!(:current_month) { Date.current.beginning_of_month }
 
   let(:four_months_back) { current_month - 4.months }
   let(:three_months_back) { current_month - 3.months }

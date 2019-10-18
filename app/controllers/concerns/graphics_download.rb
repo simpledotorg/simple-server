@@ -14,7 +14,7 @@ module GraphicsDownload
             quarter_string(quarter_start(@year, @quarter)).split.join('_'),
             organization_name,
             name,
-            Date.today)
+            Date.current)
 
           render_as_png('/shared/graphics/image_template', filename)
         end

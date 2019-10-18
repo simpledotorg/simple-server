@@ -4,8 +4,8 @@ FactoryBot.define do
     appointment
     user
     communication_type { :manual_call }
-    device_created_at { Time.now }
-    device_updated_at { Time.now }
+    device_created_at { Time.current }
+    device_updated_at { Time.current }
 
     trait(:missed_visit_sms_reminder) { communication_type { :missed_visit_sms_reminder } }
   end
