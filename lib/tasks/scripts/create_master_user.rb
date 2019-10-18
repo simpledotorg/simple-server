@@ -67,14 +67,14 @@ module CreateMasterUser
 
       throw "#{permission_slug} is an unknown permission" unless permission.present?
 
-      if !resources.present? && permission[:resource_types].include?(:global)
+      if !resources.present? && permission[:resource_priority].include?(:global)
         user.user_permissions.create!(permission_slug: permission_slug)
         next
       end
 
       resources.map(&:access_controllable).each do |resource|
         resource_type = resource.class.to_s.underscore.to_sym
-        if permission[:resource_types].include?(resource_type)
+        if permission[:resource_priority].include?(resource_type)
           user.user_permissions.create!(permission_slug: permission_slug, resource: resource)
         end
       end
