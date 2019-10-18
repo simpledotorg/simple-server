@@ -1,6 +1,6 @@
 <div class="card pr-0 pr-md-3">
-      <div class="table-responsive table-compact">
-        <table>
+    <div class="table-responsive table-compact">
+        <table id="analytics-table">
           <colgroup>
               <col>
               <col style="border-left: 1px solid #dce4e8;">
@@ -16,37 +16,38 @@
           </colgroup>
           <thead>
           <tr>
-            <th rowspan="2"><h3 class="ml-n2"><%= row_resource_description %></h3></th>
+            <th><h3 class="ml-n2"><%= row_resource_description %></h3></th>
             <th class="row-label"><strong>Registered patients</strong></th>
             <th class="row-label" colspan="3"><strong>Follow-up patients</strong></th>
             <th class="row-label" colspan="3"><strong>New registrations</strong></th>
             <th class="row-label" colspan="3"><strong>Patients called</strong></th>
           </tr>
 
-          <tr>
+          <tr data-sort-method="thead">
+            <th class="row-label" style="text-align: left; padding: 8px 4px;" data-sort-default>Name</th>
             <!--Registered patients-->
-            <th class="row-label" style="padding: 8px 4px;">Total</th>
+            <th class="row-label" style="padding: 8px 4px;" data-sort-method="number">Total</th>
 
             <!--Follow-up patients-->
             <% dates_for_periods(@period, 3).each do |period| %>
-              <th class="row-label" style="padding: 8px 4px;"><%= format_period(@period, period) %></th>
+              <th class="row-label" style="padding: 8px 4px;" data-sort-method="number"><%= format_period(@period, period) %></th>
             <% end %>
 
             <!--New registrations-->
             <% dates_for_periods(@period, 3).each do |period| %>
-              <th class="row-label" style="padding: 8px 4px;"><%= format_period(@period, period) %></th>
+              <th class="row-label" style="padding: 8px 4px;" data-sort-method="number"><%= format_period(@period, period) %></th>
             <% end %>
 
             <!--Calls made -->
             <% dates_for_periods(@period, 3).each do |period| %>
-              <th class="row-label" style="padding: 8px 4px;"><%= format_period(@period, period) %></th>
+              <th class="row-label" style="padding: 8px 4px;" data-sort-method="number"><%= format_period(@period, period) %></th>
             <% end %>
           </tr>
 
           </thead>
           <tbody>
 
-          <tr class="row-total">
+          <tr class="row-total" data-sort-method="none">
             <td class="row-title row-total">All</td>
 
             <!--Registered patients-->
@@ -76,7 +77,7 @@
             <% end %>
           </tr>
 
-          <% policy_scope(row_resource).each do |resource| %>
+          <% policy_scope([:cohort_report, row_resource]).each do |resource| %>
             <% if dashboard_analytics[resource.id].present? %>
               <tr>
 

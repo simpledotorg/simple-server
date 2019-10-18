@@ -17,7 +17,8 @@ class Api::Current::PatientPayloadValidator < Api::Current::PayloadValidator
     :business_identifiers,
     :contacted_by_counsellor,
     :could_not_contact_reason,
-    :call_result
+    :call_result,
+    :reminder_consent
   )
 
   validate :validate_schema
@@ -31,7 +32,7 @@ class Api::Current::PatientPayloadValidator < Api::Current::PayloadValidator
   end
 
   def past_date_of_birth
-    if date_of_birth.present? && date_of_birth.to_s.to_time > Date.today
+    if date_of_birth.present? && date_of_birth.to_s.to_time > Date.current
       errors.add(:date_of_birth, "can't be in the future")
     end
   end

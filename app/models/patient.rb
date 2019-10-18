@@ -3,6 +3,11 @@ class Patient < ApplicationRecord
   include Mergeable
   include Hashable
 
+  enum reminder_consent: {
+    granted: 'granted',
+    denied: 'denied'
+  }, _prefix: true
+
   GENDERS = %w[male female transgender].freeze
   STATUSES = %w[active dead migrated unresponsive inactive].freeze
   RISK_PRIORITIES = {
@@ -52,7 +57,7 @@ class Patient < ApplicationRecord
   validates_associated :phone_numbers, if: :phone_numbers
 
   def past_date_of_birth
-    if date_of_birth.present? && date_of_birth > Date.today
+    if date_of_birth.present? && date_of_birth > Date.current
       errors.add(:date_of_birth, "can't be in the future")
     end
   end
@@ -120,11 +125,11 @@ class Patient < ApplicationRecord
 
   def current_age
     if date_of_birth.present?
-      Date.today.year - date_of_birth.year
+      Date.current.year - date_of_birth.year
     elsif age.present?
       return 0 if age == 0
 
-      years_since_update = Date.today.year - age_updated_at.year
+      years_since_update = Date.current.year - age_updated_at.year
       age + years_since_update
     end
   end

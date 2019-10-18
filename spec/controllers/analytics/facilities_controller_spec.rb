@@ -2,36 +2,49 @@ require 'rails_helper'
 
 RSpec.describe Analytics::FacilitiesController, type: :controller do
   let(:user) { create(:user) }
-  let(:admin) { create(:admin) }
+  let(:admin) { create(:admin, :owner) }
 
   let(:district_name) { 'Bathinda' }
   let(:organization) { create(:organization) }
   let(:facility_group) { create(:facility_group, organization: organization) }
   let(:facility) { create(:facility, facility_group: facility_group, district: district_name) }
 
+  let(:may_2019) { Date.new(2019, 5, 1) }
+  let(:apr_2019) { Date.new(2019, 4, 1) }
+  let(:mar_2019) { Date.new(2019, 3, 1) }
+  let(:feb_2019) { Date.new(2019, 2, 1) }
+  let(:jan_2019) { Date.new(2019, 1, 1) }
+  let(:dec_2018) { Date.new(2018, 12, 1) }
+  let(:nov_2018) { Date.new(2018, 11, 1) }
+  let(:oct_2018) { Date.new(2018, 10, 1) }
+  let(:sep_2018) { Date.new(2018, 9, 1) }
+
+  let(:analytics_cohort_cache_key) { "analytics/facilities/#{facility.id}/cohort/month" }
+  let(:analytics_dashboard_cache_key) { "analytics/facilities/#{facility.id}/dashboard/month" }
+
   before do
     #
     # register patients
     #
-    registered_patients = Timecop.travel(Date.new(2019, 3, 1)) do
+    registered_patients = travel_to(mar_2019) do
       create_list(:patient, 3, registration_facility: facility, registration_user: user)
     end
 
     #
     # add blood_pressures next month
     #
-    Timecop.travel(Date.new(2019, 4, 1)) do
+    travel_to(apr_2019) do
       registered_patients.each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility, user: user) }
     end
 
     Patient.where(id: registered_patients.map(&:id))
   end
 
-  describe '#show' do
-    before do
-      sign_in(admin)
-    end
+  before do
+    sign_in(admin.email_authentication)
+  end
 
+  describe '#show' do
     render_views
 
     context 'dashboard analytics' do
@@ -62,43 +75,34 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
 
     context 'analytics caching for facilities' do
       before do
-        Rails.cache.clear
-        Timecop.travel(Date.new(2019, 5, 1))
+        Rails.cache.delete(analytics_cohort_cache_key)
+        Rails.cache.delete(analytics_dashboard_cache_key)
+        travel_to(may_2019)
       end
 
       after do
-        Timecop.return
+        travel_back
       end
 
-      let(:today) { Date.new(2019, 5, 1) }
-      let(:cohort_date1) { today.beginning_of_month }
-      let(:cohort_date2) { (today - 1.months).beginning_of_month }
-      let(:cohort_date3) { (today - 2.months).beginning_of_month }
-      let(:cohort_date4) { (today - 3.months).beginning_of_month }
-      let(:cohort_date5) { (today - 4.months).beginning_of_month }
-      let(:cohort_date6) { (today - 5.months).beginning_of_month }
-      let(:cohort_date7) { (today - 6.months).beginning_of_month }
-
       it 'caches the facility correctly' do
-        analytics_cohort_cache_key = "analytics/facilities/#{facility.id}/cohort/month"
-        analytics_dashboard_cache_key = "analytics/facilities/#{facility.id}/dashboard/month"
+
 
         expected_cache_value =
           {
             cohort: {
-              [cohort_date1.prev_month, cohort_date1] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
-              [cohort_date2.prev_month, cohort_date2] => { :registered => 3, :followed_up => 3, :defaulted => 0, :controlled => 3, :uncontrolled => 0 },
-              [cohort_date3.prev_month, cohort_date3] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
-              [cohort_date4.prev_month, cohort_date4] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
-              [cohort_date5.prev_month, cohort_date5] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
-              [cohort_date6.prev_month, cohort_date6] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
-              [cohort_date7.prev_month, cohort_date7] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 }
+              [mar_2019, apr_2019] => { :registered => 3, :followed_up => 3, :defaulted => 0, :controlled => 3, :uncontrolled => 0 },
+              [feb_2019, mar_2019] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
+              [jan_2019, feb_2019] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
+              [dec_2018, jan_2019] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
+              [nov_2018, dec_2018] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
+              [oct_2018, nov_2018] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
+              [sep_2018, oct_2018] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
             },
             dashboard: {
               user.id => {
-                registered_patients_by_period: { Date.new(2019, 3, 1) => 3 },
+                registered_patients_by_period: { mar_2019 => 3 },
                 total_registered_patients: 3,
-                follow_up_patients_by_period: { Date.new(2019, 4, 1) => 3 }
+                follow_up_patients_by_period: { apr_2019 => 3 }
               }
             }
           }
@@ -115,12 +119,6 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
   end
 
   describe '#whatsapp_graphics' do
-    before do
-      admin = create(:admin, :supervisor)
-      sign_in(admin)
-      create(:admin_access_control, access_controllable: facility_group, admin: admin)
-    end
-
     render_views
 
     context 'html requested' do

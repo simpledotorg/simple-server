@@ -1,6 +1,8 @@
 namespace :cohort_reports do
   desc 'Generate cohort report CSV for each state'
   task :generate, [:year, :quarter, :organization_name] => :environment do |_t, args|
+    include QuarterHelper
+
     abort 'Requires [year, quarter] arguments' unless args[:year].present? && args[:quarter].present?
     abort 'Requires [organization_name]' unless args[:organization_name].present?
 
@@ -8,12 +10,20 @@ namespace :cohort_reports do
     quarter = args[:quarter].to_i
     organization_name = args[:organization_name]
 
-    states = Organization.find_by(name: organization_name).facilities.pluck(:state).uniq
+    Time.zone = 'Asia/Kolkata'
+
+    report_start = quarter_start(year, quarter)
+    report_end   = report_start.end_of_quarter
+    cohort_start = (report_start - 3.months).beginning_of_quarter
+    cohort_end   = cohort_start.end_of_quarter
+
+    organization = Organization.find_by(name: organization_name)
+    states = organization.facilities.pluck(:state).uniq
 
     states.each do |state|
       file = File.join(Dir.home, "#{year}-q#{quarter}-#{state.downcase}.csv")
 
-      facilities = Facility.where(state: state)
+      facilities = organization.facilities.where(state: state).order(:district, :name)
 
       headers = [
         "Facility", "Type", "District", "State",
@@ -27,7 +37,7 @@ namespace :cohort_reports do
           query = CohortAnalyticsQuery.new(facility.registered_patients)
 
           # 3-6 month cohort
-          patient_counts = query.patient_counts(year: year, quarter: quarter)
+          patient_counts = query.patient_counts(cohort_start, cohort_end, report_start, report_end)
 
           csv << [
             facility.name.strip, facility.facility_type.strip, facility.district.strip, facility.state.strip,

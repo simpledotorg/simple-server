@@ -4,7 +4,7 @@
     <% if @period == :quarter %>
       Outcomes for patients registered 3-6 months previously:
     <% else %>
-      Outcomes for patients registered 1 month previously:
+      Outcomes for patients registered 2-3 months previously:
     <% end %>
     <div class="key desktop">
       <div class="key-definition didntattend">Didn't attend for<br class="mobile"> follow-up visit</div>
@@ -32,7 +32,7 @@
         report_period = quarter_string(report_start)
         cohort_period = quarter_string(cohort_start)
       else
-        report_period = report_start.strftime("%b %Y")
+        report_period = [report_start.strftime("%b %-d"), (report_start + 1.month).end_of_month.strftime("%b %-d")].join("–")
         cohort_period = cohort_start.strftime("%b %Y")
       end
 

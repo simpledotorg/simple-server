@@ -6,10 +6,10 @@ class Admin::UsersController < AdminController
   around_action :set_time_zone, only: [:show]
 
   def index
-    authorize User
-    @users = policy_scope(User)
+    authorize([:manage, :user, User])
+    @users = policy_scope([:manage, :user, User])
                .joins(phone_number_authentications: :facility)
-               .where('phone_number_authentications.registration_facility_id IN (?)', selected_district_facilities.map(&:id))
+               .where('phone_number_authentications.registration_facility_id IN (?)', selected_district_facilities([:manage, :user]).map(&:id))
                .order('facilities.name', 'master_users.full_name', 'master_users.device_created_at')
 
     @users = paginate(@users)
@@ -68,7 +68,7 @@ class Admin::UsersController < AdminController
 
   def set_user
     @user = User.find(params[:id] || params[:user_id])
-    authorize @user
+    authorize([:manage, :user, @user])
   end
 
   def set_time_zone
