@@ -22,7 +22,7 @@ module ApplicationHelper
   end
 
   def rounded_time_ago_in_words(date)
-    if date == Date.today
+    if date == Date.current
       "Today"
     elsif date == Date.yesterday
       "Yesterday"

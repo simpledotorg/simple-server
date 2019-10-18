@@ -7,11 +7,8 @@ RSpec.describe Api::Current::UsersController, type: :controller do
   let(:organization_owner) { FactoryBot.create(:admin, :organization_owner) }
   let(:facility) { FactoryBot.create(:facility) }
   let!(:owner) { FactoryBot.create(:admin, :owner) }
-
-  before :each do
-    FactoryBot.create(:admin_access_control, admin: supervisor, access_controllable: facility.facility_group)
-    FactoryBot.create(:admin_access_control, admin: organization_owner, access_controllable: facility.organization)
-  end
+  let!(:supervisor) { FactoryBot.create(:admin, :supervisor, facility_group: facility.facility_group) }
+  let!(:organization_owner) { FactoryBot.create(:admin, :organization_owner, organization: facility.organization) }
 
   describe '#register' do
     describe 'registration payload is invalid' do
@@ -43,6 +40,8 @@ RSpec.describe Api::Current::UsersController, type: :controller do
                                               'facility_ids').with_int_timestamps)
           .to eq(created_user.attributes
                    .except(
+                     'role',
+                     'organization_id',
                      'device_updated_at',
                      'device_created_at',
                      'created_at',
@@ -158,8 +157,10 @@ RSpec.describe Api::Current::UsersController, type: :controller do
   end
 
   describe '#reset_password' do
-    let(:user) { FactoryBot.create(:user) }
-    let(:facility) { FactoryBot.create(:facility, facility_group: user.facility.facility_group) }
+    let(:facility_group) { FactoryBot.create(:facility_group) }
+    let(:facility) { FactoryBot.create(:facility, facility_group: facility_group) }
+    let(:user) { FactoryBot.create(:user, registration_facility: facility, organization: facility.organization) }
+
 
     before(:each) do
       request.env['HTTP_X_USER_ID'] = user.id

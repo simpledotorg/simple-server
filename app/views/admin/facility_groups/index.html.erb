@@ -1,7 +1,7 @@
 <h1>Facility Groups</h1>
 
 <div class="top-buttons">
-<% if policy(Organization).new? %>
+<% if policy([:manage, Organization]).new? %>
   <%= link_to 'New organization', new_admin_facility_path, class: "btn btn-sm btn-primary" %>
 <% end %>
 </div>
@@ -24,10 +24,10 @@
         <td><%= organization.description %></td>
         <td><%= organization.facility_groups.count %></td>
         <td><%= organization.facility_groups.flat_map(&:facilities).count %></td>
-        <% if policy(organization).edit? %>
+        <% if policy([:manage, organization]).edit? %>
           <td><%= link_to 'Edit', edit_admin_facility_path(organization) %></td>
         <% end %>
-        <% if policy(organization).destroy? %>
+        <% if policy([:manage, organization]).destroy? %>
           <td><%= link_to 'Delete', [:admin, organization], method: :delete, data: { confirm: "Are you sure you want to delete #{organization.name}?" } %></td>
         <% end %>
       </tr>

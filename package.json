@@ -1,5 +1,7 @@
 {
   "name": "simple-server",
   "private": true,
-  "dependencies": {}
+  "dependencies": {
+    "tablesort": "^5.1.0"
+  }
 }

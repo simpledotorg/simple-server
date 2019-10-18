@@ -24,4 +24,3 @@ RSpec.configure do |config|
   Capybara.default_max_wait_time = 5
   Webdrivers::Chromedriver.required_version = '2.46'
 end
-

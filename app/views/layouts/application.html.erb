@@ -50,43 +50,43 @@
         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
           <% if email_authentication_signed_in? %>
             <ul class="navbar-nav mr-auto">
-              <% unless current_admin.has_role?(:counsellor) %>
+              <% if policy(:dashboard).show? %>
                 <li class="nav-item">
                   <%= link_to "Dashboard", email_authentication_root_path, class: "nav-link #{active_controller?("organizations", "facility_groups")}" %>
                 </li>
               <% end %>
               <% if FeatureToggle.enabled?('PATIENT_FOLLOWUPS') %>
-                <% if policy(Appointment).index? %>
+                <% if policy(:dashboard).overdue_list? %>
                   <li class="nav-item">
                     <%= link_to "Overdue patients", appointments_path, class: "nav-link #{active_controller?("appointments")}" %>
                   </li>
                 <% end %>
-                <% if policy(Patient).index? %>
+                <% if policy(:dashboard).adherence_follow_up? %>
                   <li class="nav-item">
                     <%= link_to "Adherence follow-ups", patients_path, class: "nav-link #{active_controller?("patients")}" %>
                   </li>
                 <% end %>
 
               <% end %>
-              <% unless current_admin.has_role?(:counsellor, :analyst) %>
+              <% if policy(:dashboard).manage? %>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle dropdown-more" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   Manage
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <% if policy(Organization).index? %>
+                  <% if policy([:manage, Organization]).index? %>
                     <%= link_to "Organizations", admin_organizations_path, class: "dropdown-item #{active_controller?("admin/organizations")}" %>
                   <% end %>
-                  <% if policy(Facility).index? %>
+                  <% if policy([:manage, Facility]).index? %>
                     <%= link_to "Facilities", admin_facilities_path, class: "dropdown-item #{active_controller?("admin/facilities")}" %>
                   <% end %>
-                  <% if policy(Protocol).index? %>
+                  <% if policy([:manage, Protocol]).index? %>
                     <%= link_to "Protocols", admin_protocols_path, class: "dropdown-item #{active_controller?("admin/protocols")}" %>
                   <% end %>
-                  <% if policy(Admin).index? %>
+                  <% if policy([:manage, :admin, User]).index? %>
                     <%= link_to "Admins", admins_path, class: "dropdown-item #{active_controller?("email_authentications")}" %>
                   <% end %>
-                  <% if policy(User).index? %>
+                  <% if policy([:manage, :user, User]).index? %>
                     <%= link_to "Users", admin_users_path, class: "dropdown-item #{active_controller?("users")}" %>
                   <% end %>
                 </div>

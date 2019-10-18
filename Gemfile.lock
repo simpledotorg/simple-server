@@ -47,6 +47,10 @@ GEM
     arel (8.0.0)
     autoprefixer-rails (9.4.9)
       execjs
+    babel-source (5.8.35)
+    babel-transpiler (0.7.0)
+      babel-source (>= 4.0, < 6)
+      execjs (~> 2.0)
     bcrypt (3.1.13)
     bindex (0.5.0)
     bootstrap (4.3.1)
@@ -163,8 +167,9 @@ GEM
     http-cookie (1.0.3)
       domain_name (~> 0.5)
     http-form_data (2.1.1)
+    http_accept_language (2.1.1)
     http_parser.rb (0.6.0)
-    i18n (1.6.0)
+    i18n (1.7.0)
       concurrent-ruby (~> 1.0)
     imgkit (1.6.2)
     jbuilder (2.7.0)
@@ -196,6 +201,8 @@ GEM
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
       ruby_dep (~> 1.2)
+    lodash-rails (4.17.14)
+      railties (>= 3.1)
     loofah (2.2.3)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -204,7 +211,7 @@ GEM
     method_source (0.9.2)
     mini_mime (1.0.2)
     mini_portile2 (2.4.0)
-    minitest (5.11.3)
+    minitest (5.12.2)
     multi_json (1.13.1)
     multipart-post (2.0.0)
     net-scp (1.2.1)
@@ -234,7 +241,7 @@ GEM
     public_suffix (4.0.1)
     puma (4.1.1)
       nio4r (~> 2.0)
-    pundit (1.1.0)
+    pundit (2.1.0)
       activesupport (>= 3.0.0)
     rack (2.0.7)
     rack-protection (2.0.5)
@@ -278,6 +285,12 @@ GEM
     rb-inotify (0.9.10)
       ffi (>= 0.5.0, < 2)
     rb-readline (0.5.5)
+    react-rails (2.6.0)
+      babel-transpiler (>= 0.7.0)
+      connection_pool
+      execjs
+      railties (>= 3.2)
+      tilt
     redis (4.1.0)
     redis-actionpack (5.0.2)
       actionpack (>= 4.0, < 6)
@@ -459,12 +472,14 @@ DEPENDENCIES
   generator_spec
   groupdate
   http
+  http_accept_language
   imgkit
   jbuilder (~> 2.5)
   jquery-rails
   kaminari
   launchy
   listen (>= 3.0.5, < 3.2)
+  lodash-rails
   newrelic_rpm
   parallel_tests
   passenger
@@ -477,6 +492,7 @@ DEPENDENCIES
   rails-controller-testing
   rails-erd
   rb-readline
+  react-rails
   redis
   redis-rails
   roo (~> 2.8.0)

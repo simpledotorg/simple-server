@@ -47,7 +47,7 @@ RSpec.describe Api::Current::PatientsController, type: :controller do
       end
 
       it 'sets the recorded_at sent in the params' do
-        time = Time.now
+        time = Time.current
         patient = FactoryBot.build(:patient, recorded_at: time)
         patient_payload = build_patient_payload(patient)
         post(:sync_from_user, params: { patients: [patient_payload] }, as: :json)
@@ -157,7 +157,7 @@ RSpec.describe Api::Current::PatientsController, type: :controller do
 
       it 'with only updated phone numbers' do
         patients_payload = updated_patients_payload.map { |patient| patient.except('address') }
-        sync_time = Time.now
+        sync_time = Time.current
         post :sync_from_user, params: { patients: patients_payload }, as: :json
 
         expect(PatientPhoneNumber.updated_on_server_since(sync_time).count).to eq 3
@@ -171,7 +171,7 @@ RSpec.describe Api::Current::PatientsController, type: :controller do
 
       describe 'with all attributes and associations updated' do
         let!(:patients_payload) { updated_patients_payload }
-        let!(:sync_time) { Time.now }
+        let!(:sync_time) { Time.current }
 
         before do
           post :sync_from_user, params: { patients: patients_payload }, as: :json
