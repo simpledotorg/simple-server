@@ -24,23 +24,23 @@
           </tr>
 
           <tr data-sort-method="thead">
-            <th class="row-label" style="text-align: left; padding: 8px 4px;" data-sort-default>Name</th>
+            <th class="row-label sort-label" style="text-align: left; padding: 8px 4px;">Name</th>
             <!--Registered patients-->
-            <th class="row-label" style="padding: 8px 4px;" data-sort-method="number">Total</th>
+            <th class="row-label sort-label" style="padding: 8px 4px;" data-sort-method="number">Total</th>
 
             <!--Follow-up patients-->
             <% dates_for_periods(@period, 3).each do |period| %>
-              <th class="row-label" style="padding: 8px 4px;" data-sort-method="number"><%= format_period(@period, period) %></th>
+              <th class="row-label sort-label" style="padding: 8px 4px;" data-sort-method="number"><%= format_period(@period, period) %></th>
             <% end %>
 
             <!--New registrations-->
             <% dates_for_periods(@period, 3).each do |period| %>
-              <th class="row-label" style="padding: 8px 4px;" data-sort-method="number"><%= format_period(@period, period) %></th>
+              <th class="row-label sort-label" style="padding: 8px 4px;" data-sort-method="number"><%= format_period(@period, period) %></th>
             <% end %>
 
             <!--Calls made -->
             <% dates_for_periods(@period, 3).each do |period| %>
-              <th class="row-label" style="padding: 8px 4px;" data-sort-method="number"><%= format_period(@period, period) %></th>
+              <th class="row-label sort-label" style="padding: 8px 4px;" data-sort-method="number"><%= format_period(@period, period) %></th>
             <% end %>
           </tr>
 
