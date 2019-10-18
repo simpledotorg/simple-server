@@ -22,7 +22,7 @@ class AppointmentsController < AdminController
       format.html { @appointments = paginate(@appointments) }
       format.csv do
         facility_name = current_facility.present? ? current_facility.name.parameterize : 'all'
-        send_data @appointments.to_csv, filename: "overdue-patients_#{facility_name}_#{Date.today}.csv"
+        send_data @appointments.to_csv, filename: "overdue-patients_#{facility_name}_#{Date.current}.csv"
       end
     end
   end

@@ -47,7 +47,7 @@ class ExotelAPIService
 
   def parse_exotel_whitelist_expiry(expiry_time)
     return if expiry_time.blank? || expiry_time < 0
-    Time.now + expiry_time.seconds
+    Time.current + expiry_time.seconds
   end
 
   private
