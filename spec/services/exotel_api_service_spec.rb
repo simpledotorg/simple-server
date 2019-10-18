@@ -122,7 +122,7 @@ describe ExotelAPIService, type: :model do
     end
 
     it 'return the time at which the expiry will happen if expiry time is greater than 0' do
-      Timecop.freeze(Time.now) do
+      Timecop.freeze(Time.current) do
         expected_time = 1.hour.from_now
         expect(service.parse_exotel_whitelist_expiry(3600)).to eq(expected_time)
       end
@@ -173,7 +173,7 @@ describe ExotelAPIService, type: :model do
           .to eq(dnd_status: true,
                  phone_type: :mobile,
                  whitelist_status: :whitelist,
-                 whitelist_status_valid_until: Time.now + 3600.seconds)
+                 whitelist_status_valid_until: Time.current + 3600.seconds)
       end
     end
   end

@@ -1,10 +1,10 @@
 require 'rails_helper'
 
 RSpec.feature 'To test overdue appointment functionality', type: :feature do
-  let!(:owner) { create(:admin) }
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:ihmi_facility_group) { create(:facility_group, organization: ihmi, name: "Bathinda") }
   let!(:test_facility) { create(:facility, facility_group: ihmi_facility_group, name: "test_facility") }
+  let!(:owner) { create(:admin, :owner) }
 
   login = AdminPage::Sessions::New.new
   appoint_page = AppointmentsPage::Index.new

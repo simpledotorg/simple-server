@@ -11,7 +11,7 @@ class Api::Current::TwilioSmsDeliveryController < ApplicationController
 
   def update_params
     details = { result: delivery_status }
-    details.merge!(delivered_on: DateTime.now) if delivery_status == TwilioSmsDeliveryDetail.results[:delivered]
+    details.merge!(delivered_on: DateTime.current) if delivery_status == TwilioSmsDeliveryDetail.results[:delivered]
 
     details
   end
