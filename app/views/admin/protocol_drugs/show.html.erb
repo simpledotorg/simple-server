@@ -18,6 +18,6 @@
   <%= @protocol_drug.protocol %>
 </p>
 
-<% if policy(@protocol_drug).edit? %>
+<% if policy([:manage, @protocol_drug]).edit? %>
   <%= link_to 'Edit', edit_protocol_drug_path(@protocol_drug) %> |
 <% end %>
