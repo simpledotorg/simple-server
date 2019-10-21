@@ -14,7 +14,6 @@ set :sidekiq_processes, 2
 set :bundler_path, "/home/deploy/.rbenv/shims/bundle"
 set :init_system, :systemd
 set :pty, false
-set :service_unit_name, -> { File.join(current_path, 'config', 'sidekiq.service') }
 
 set :sidekiq_config, -> { File.join(shared_path, 'config', 'sidekiq.yml') }
 
