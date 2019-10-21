@@ -42,7 +42,7 @@ class BloodPressure < ApplicationRecord
   end
 
   def recorded_days_ago
-    (Date.today - device_created_at.to_date).to_i
+    (Date.current - device_created_at.to_date).to_i
   end
 
   def to_s

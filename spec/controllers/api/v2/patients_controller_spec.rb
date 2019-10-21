@@ -138,7 +138,7 @@ RSpec.describe Api::V2::PatientsController, type: :controller do
 
       it 'with only updated phone numbers' do
         patients_payload = updated_patients_payload.map { |patient| patient.except('address') }
-        sync_time = Time.now
+        sync_time = Time.current
         post :sync_from_user, params: { patients: patients_payload }, as: :json
 
         expect(PatientPhoneNumber.updated_on_server_since(sync_time).count).to eq 3
@@ -152,7 +152,7 @@ RSpec.describe Api::V2::PatientsController, type: :controller do
 
       it 'with all attributes and associations updated' do
         patients_payload = updated_patients_payload
-        sync_time = Time.now
+        sync_time = Time.current
         post :sync_from_user, params: { patients: patients_payload }, as: :json
 
         patients_payload.each do |updated_patient|

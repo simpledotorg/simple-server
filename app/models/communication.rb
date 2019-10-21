@@ -43,8 +43,8 @@ class Communication < ApplicationRecord
                             detailable: sms_delivery_details,
                             appointment: appointment,
                             user: user,
-                            device_created_at: DateTime.now,
-                            device_updated_at: DateTime.now)
+                            device_created_at: DateTime.current,
+                            device_updated_at: DateTime.current)
     end
   end
 

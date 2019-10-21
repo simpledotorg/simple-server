@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Analytics::FacilitiesController, type: :controller do
   let(:user) { create(:user) }
-  let(:admin) { create(:admin) }
+  let(:admin) { create(:admin, :owner) }
 
   let(:district_name) { 'Bathinda' }
   let(:organization) { create(:organization) }
@@ -18,6 +18,9 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
   let(:nov_2018) { Date.new(2018, 11, 1) }
   let(:oct_2018) { Date.new(2018, 10, 1) }
   let(:sep_2018) { Date.new(2018, 9, 1) }
+
+  let(:analytics_cohort_cache_key) { "analytics/facilities/#{facility.id}/cohort/month" }
+  let(:analytics_dashboard_cache_key) { "analytics/facilities/#{facility.id}/dashboard/month" }
 
   before do
     #
@@ -37,11 +40,11 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
     Patient.where(id: registered_patients.map(&:id))
   end
 
-  describe '#show' do
-    before do
-      sign_in(admin)
-    end
+  before do
+    sign_in(admin.email_authentication)
+  end
 
+  describe '#show' do
     render_views
 
     context 'dashboard analytics' do
@@ -72,7 +75,8 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
 
     context 'analytics caching for facilities' do
       before do
-        Rails.cache.clear
+        Rails.cache.delete(analytics_cohort_cache_key)
+        Rails.cache.delete(analytics_dashboard_cache_key)
         travel_to(may_2019)
       end
 
@@ -81,8 +85,7 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
       end
 
       it 'caches the facility correctly' do
-        analytics_cohort_cache_key = "analytics/facilities/#{facility.id}/cohort/month"
-        analytics_dashboard_cache_key = "analytics/facilities/#{facility.id}/dashboard/month"
+
 
         expected_cache_value =
           {
@@ -116,12 +119,6 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
   end
 
   describe '#whatsapp_graphics' do
-    before do
-      admin = create(:admin, :supervisor)
-      sign_in(admin)
-      create(:admin_access_control, access_controllable: facility_group, admin: admin)
-    end
-
     render_views
 
     context 'html requested' do

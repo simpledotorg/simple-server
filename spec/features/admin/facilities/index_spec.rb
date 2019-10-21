@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.feature 'Facility page functionality', type: :feature do
-  let(:owner) { create(:admin) }
+  let(:owner) { create(:admin, :owner) }
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:another_organization) { create(:organization) }
   let!(:ihmi_group_bathinda) { create(:facility_group, organization: ihmi, name: "Bathinda") }
@@ -15,7 +15,7 @@ RSpec.feature 'Facility page functionality', type: :feature do
 
   before(:each) do
     visit root_path
-    sign_in(owner)
+    sign_in(owner.email_authentication)
     visit admin_facilities_path
   end
 

@@ -1,57 +1,50 @@
 <h1>Overdue patients</h1>
 <p class="info"><i class="fas fa-question-circle"></i> Patients that are overdue for follow-up BP measure.</p>
+<%= render('shared/paginate_and_filter_by_facility',
+           form_url: appointments_path,
+           current_admin: current_admin,
+           facility_id: @facility_id,
+           per_page: @per_page,
+           scope_namespace: [:overdue_list, Facility]) %>
 
+<% if @appointments.present? && policy([:overdue_list, @appointments.first]).download? %>
+  <h2 name="download_text">Downloads</h2>
 
-        <%= render(
-          'shared/paginate_and_filter_by_facility',
-          form_url: appointments_path,
-          current_admin: current_admin,
-          facility_id: @facility_id,
-          per_page: @per_page
-        ) %>
-    
-<% if policy(Appointment).download? && @appointments.present? %>
-<h2 name="download_text">Downloads</h2>
-<div class="mb-5 mt-3">
-      
-  
-          <% if @facility_id == "All" %>
-            <div class="text-grey">
-              <i class="far fa-file-excel mr-2"></i> Select a facility to download Overdue Patients list
-            </div>
-          <% else %>
-             <%= link_to "<i class='far fa-file-excel mr-2'></i> Download overdue list".html_safe, appointments_path(facility_id: @facility_id, format: "csv"), class: "", data: { confirm: I18n.t('admin.phi_download_alert') } %>
-          <% end %>
-    
-</div>
-<% end %>    
-
-
-    
-  <% if @appointments.present? %>
-    <h2>Patient list</h2>
-    <% call_result_options = {
-        'Patient responded' => [['Agreed to visit', 'agreed_to_visit'], ['Patient has already visited', 'patient_has_already_visited']],
-        'No response' => [['Remind to call later', 'remind_to_call_later']],
-        'Remove from overdue list' => Appointment.cancel_reasons.map { |key, value| [key.humanize, value] }
-    } %>
-
-    <% @appointments.sort_by { |a| a.patient.risk_priority }.each do |appointment| %>
-      <%= render(
-        'shared/followup_patient_card',
-        patient: appointment.patient,
-        high_risk: appointment.patient.high_risk?,
-        call_result_options: call_result_options,
-        days_overdue: appointment.days_overdue,
-        show_last_interaction: true,
-        show_registration_date: true,
-        form_model: appointment
-      ) %>
+  <div class="mb-5 mt-3">
+    <% if @facility_id == "All" %>
+      <div class="text-grey">
+        <i class="far fa-file-excel mr-2"></i> Select a facility to download Overdue Patients list
+      </div>
+    <% elsif policy([:overdue_list, current_facility]).download? && @appointments.present? %>
+      <%= link_to "<i class='far fa-file-excel mr-2'></i> Download overdue list".html_safe, appointments_path(facility_id: @facility_id, format: "csv"), class: "", data: { confirm: I18n.t('admin.phi_download_alert') } %>
     <% end %>
-  <% else %>
-    <div class="card" title="no overdue patient">
-      <p>No overdue patients found</p>
-    </div>
+
+  </div>
+<% end %>
+
+<% if @appointments.present? %>
+  <h2>Patient list</h2>
+  <% call_result_options = {
+      'Patient responded' => [['Agreed to visit', 'agreed_to_visit'], ['Patient has already visited', 'patient_has_already_visited']],
+      'No response' => [['Remind to call later', 'remind_to_call_later']],
+      'Remove from overdue list' => Appointment.cancel_reasons.map { |key, value| [key.humanize, value] }
+  } %>
+
+
+  <% @appointments.sort_by { |a| a.patient.risk_priority }.each do |appointment| %>
+    <%= render('shared/followup_patient_card',
+               patient: appointment.patient,
+               high_risk: appointment.patient.high_risk?,
+               call_result_options: call_result_options,
+               days_overdue: appointment.days_overdue,
+               show_last_interaction: true,
+               show_registration_date: true,
+               form_model: appointment) %>
   <% end %>
+<% else %>
+  <div class="card" title="no overdue patient">
+    <p>No overdue patients found</p>
+  </div>
+<% end %>
 
 <%= paginate @appointments %>
