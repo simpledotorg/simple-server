@@ -1,13 +1,17 @@
 class BloodPressure < ApplicationRecord
   include Mergeable
   include Hashable
+  include Observeable
 
   ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at bp_date registration_facility_name user_id
                               bp_systolic bp_diastolic]
 
-  belongs_to :facility, optional: true
   belongs_to :patient, optional: true
   belongs_to :user, optional: true
+  belongs_to :facility, optional: true
+
+  has_one :observation, as: :observable
+  has_one :encounter, through: :observation
 
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
