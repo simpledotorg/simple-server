@@ -9,7 +9,6 @@ en:
       invalid_password: 'Your password does not match. Try again?'
   sms:
     country_code: '+91'
-    notification: 'You are now registered as a user for the Simple app. Please login using this link: https://simple.org/register?otp=%{otp}'
     request_otp: '<#> %{otp} is your Simple verification code\n%{app_signature}'
     appointment_reminders:
       missed_visit_sms_reminder: 'We missed you for your scheduled BP check-up at %{facility_name} on %{appointment_date}. Please come between 9.30 AM and 2 PM.'
