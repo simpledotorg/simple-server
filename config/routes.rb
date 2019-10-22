@@ -121,6 +121,15 @@ Rails.application.routes.draw do
 
         concerns :sync_routes
 
+        scope '/encounters' do
+          get 'sync', to: 'encounters#sync_to_user'
+          post 'sync', to: 'encounters#sync_from_user'
+
+          if FeatureToggle.enabled?('GENERATE_ENCOUNTER_ID_ENDPOINT')
+            get 'generate_id', to: 'encounters#generate_id'
+          end
+        end
+
         resource :help, only: [:show], controller: "help"
 
         if FeatureToggle.enabled?('USER_ANALYTICS')

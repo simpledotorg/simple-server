@@ -14,7 +14,7 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
   let(:build_payload) { lambda { build_blood_pressure_payload } }
   let(:build_invalid_payload) { lambda { build_invalid_blood_pressure_payload } }
   let(:invalid_record) { build_invalid_payload.call }
-  let(:update_payload) { lambda { |blood_pressure| updated_blood_pressure_payload blood_pressure } }
+  let(:update_payload) { lambda { |blood_pressure| updated_blood_pressure_payload(blood_pressure) } }
   let(:number_of_schema_errors_in_invalid_payload) { 3 }
 
   def create_record(options = {})
@@ -144,6 +144,91 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
           expect(patient.recorded_at.to_i).to eq(three_months_ago.to_i)
         end
       end
+
+      context 'creates encounters' do
+        it 'assumes the same encounter for the blood_pressures recorded on the same day' do
+          patient = FactoryBot.create(:patient)
+
+          blood_pressure_recording = Time.new(2019, 1, 1, 1, 1).utc
+          encountered_on = blood_pressure_recording.to_date
+
+          blood_pressures = (1..3).map do
+            FactoryBot.build(:blood_pressure,
+                             facility: request_facility,
+                             patient: patient,
+                             recorded_at: blood_pressure_recording)
+          end
+
+          blood_pressures_payload = blood_pressures.map(&method(:build_blood_pressure_payload))
+
+          expect { post(:sync_from_user, params: { blood_pressures: blood_pressures_payload }, as: :json)
+          }.to change { Encounter.count }.by(1)
+          expect(response).to have_http_status(200)
+          expect(Encounter.pluck(:encountered_on)).to contain_exactly(encountered_on)
+          expected_bps_thru_encounters = Encounter.all.flat_map(&:blood_pressures)
+          expect(expected_bps_thru_encounters).to match_array(BloodPressure.where(id: blood_pressures.pluck(:id)))
+        end
+
+        it 'should create different encounters for blood_pressures recorded on different days' do
+          patient = FactoryBot.create(:patient)
+
+          day_1 = Time.new(2019, 1, 1, 1, 1).utc
+          day_2 = Time.new(2019, 1, 2, 1, 1).utc
+          day_3 = Time.new(2019, 1, 3, 1, 1).utc
+
+          encountered_on_1 = day_1.to_date
+          encountered_on_2 = day_2.to_date
+          encountered_on_3 = day_3.to_date
+
+          blood_pressures = [day_1, day_2, day_3].map do |date|
+            FactoryBot.build(:blood_pressure,
+                             facility: request_facility,
+                             patient: patient,
+                             recorded_at: date)
+          end
+
+          _add_random_bps = create_list(:blood_pressure, 5)
+
+          blood_pressures_payload = blood_pressures.map(&method(:build_blood_pressure_payload))
+
+          expect { post(:sync_from_user, params: { blood_pressures: blood_pressures_payload }, as: :json)
+          }.to change { Encounter.count }.by(3)
+          expect(response).to have_http_status(200)
+          expect(Encounter.pluck(:encountered_on)).to contain_exactly(encountered_on_1,
+                                                                      encountered_on_2,
+                                                                      encountered_on_3)
+          expected_bps_thru_encounters = Encounter.all.flat_map(&:blood_pressures)
+          expect(expected_bps_thru_encounters).to match_array(BloodPressure.where(id: blood_pressures.pluck(:id)))
+        end
+
+        it 'should create different encounters for BPs recorded against different date, patient or facility' do
+          day_1 = Time.new(2019, 1, 1, 1, 1).utc
+          day_2 = Time.new(2019, 1, 2, 1, 1).utc
+          day_3 = Time.new(2019, 1, 3, 1, 1).utc
+
+          range_of_possible_observations = (0..rand * 10).to_a
+
+          blood_pressures = [day_1, day_2, day_3].flat_map do |date|
+            patient = create(:patient)
+            facility = create(:facility)
+
+            range_of_possible_observations.map do
+              build(:blood_pressure,
+                    facility: facility,
+                    patient: patient,
+                    recorded_at: date)
+
+            end
+          end
+
+          blood_pressures_payload = blood_pressures.map(&method(:build_blood_pressure_payload))
+
+          expect { post(:sync_from_user, params: { blood_pressures: blood_pressures_payload }, as: :json)
+          }.to change { Encounter.count }.by(3)
+          expect(response).to have_http_status(200)
+          expect(Encounter.all.flat_map(&:blood_pressures).count).to eq(range_of_possible_observations.count * 3)
+        end
+      end
     end
   end
 
@@ -153,10 +238,23 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
     describe 'current facility prioritisation' do
       it "syncs request facility's records first" do
         request_2_facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
-        FactoryBot.create_list(:blood_pressure, 2, facility: request_facility, updated_at: 3.minutes.ago)
-        FactoryBot.create_list(:blood_pressure, 2, facility: request_facility, updated_at: 5.minutes.ago)
-        FactoryBot.create_list(:blood_pressure, 2, facility: request_2_facility, updated_at: 7.minutes.ago)
-        FactoryBot.create_list(:blood_pressure, 2, facility: request_2_facility, updated_at: 10.minutes.ago)
+
+        FactoryBot.create_list(:blood_pressure,
+                               2,
+                               facility: request_facility,
+                               updated_at: 3.minutes.ago)
+        FactoryBot.create_list(:blood_pressure,
+                               2,
+                               facility: request_facility,
+                               updated_at: 5.minutes.ago)
+        FactoryBot.create_list(:blood_pressure,
+                               2,
+                               facility: request_2_facility,
+                               updated_at: 7.minutes.ago)
+        FactoryBot.create_list(:blood_pressure,
+                               2,
+                               facility: request_2_facility,
+                               updated_at: 10.minutes.ago)
 
         # GET request 1
         set_authentication_headers
@@ -185,9 +283,19 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
 
       before :each do
         set_authentication_headers
-        FactoryBot.create_list(:blood_pressure, 2, facility: facility_in_another_group, updated_at: 3.minutes.ago)
-        FactoryBot.create_list(:blood_pressure, 2, facility: facility_in_same_group, updated_at: 5.minutes.ago)
-        FactoryBot.create_list(:blood_pressure, 2, facility: request_facility, updated_at: 7.minutes.ago)
+
+        FactoryBot.create_list(:blood_pressure,
+                               2,
+                               facility: facility_in_another_group,
+                               updated_at: 3.minutes.ago)
+        FactoryBot.create_list(:blood_pressure,
+                               2,
+                               facility: facility_in_same_group,
+                               updated_at: 5.minutes.ago)
+        FactoryBot.create_list(:blood_pressure,
+                               2,
+                               facility: request_facility,
+                               updated_at: 7.minutes.ago)
       end
 
       it "only sends data for facilities belonging in the sync group of user's registration facility" do
