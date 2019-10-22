@@ -29,3 +29,4 @@ en:
     bps_recorded: "How many patients have a BP recorded at %{facility_name}?"
     patients_enrolled: "How many new patients are enrolled at %{facility_name}?"
     all_time_patients: "All time: %{count} patients"
+    updated_at: "Updated at %{time}"
