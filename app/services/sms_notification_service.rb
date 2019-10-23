@@ -1,5 +1,4 @@
 class SmsNotificationService
-  include SmsHelper
   DEFAULT_LOCALE = :en
 
   def initialize(recipient_number, sender_phone_number, client = Twilio::REST::Client.new)
