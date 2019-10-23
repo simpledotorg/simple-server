@@ -19,7 +19,18 @@ class AnalyticsController < AdminController
   end
 
   def set_period
-    @period = params[:period].present? ? params[:period].to_sym : :month
+    # Store the period in the session for consistency across views.
+    # Explicit 'period=X' param overrides the session variable.
+    @period = if params[:period].present?
+      params[:period].to_sym
+    elsif session[:period].present?
+      session[:period].to_sym
+    else
+      :month
+    end
+
+    session[:period] = @period
+
     @prev_periods = (@period == :quarter) ? 2 : 6
   end
 

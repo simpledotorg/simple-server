@@ -150,5 +150,6 @@ th[aria-sort=descending]:not(.no-sort):after {
 }
 
 th[aria-sort=ascending]:not(.no-sort):after {
-	border-width: 0 4px 4px;
+  border-bottom: 4px solid;
+  border-width: 0 4px 4px;
 }
