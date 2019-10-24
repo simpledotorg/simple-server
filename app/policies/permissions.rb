@@ -60,11 +60,6 @@ module Permissions
       description: 'Download patient line list',
       resource_priority: [:facility_group, :organization, :global]
     },
-    view_sidekiq_ui: {
-      slug: :view_sidekiq_ui,
-      description: 'View sidekiq UI',
-      resource_priority: [:global]
-    },
   }
 
   ACCESS_LEVELS = [
