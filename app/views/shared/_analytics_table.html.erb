@@ -77,7 +77,7 @@
             <% end %>
           </tr>
 
-          <% policy_scope([:cohort_report, row_resource]).each do |resource| %>
+          <% policy_scope(row_resource).each do |resource| %>
             <% if dashboard_analytics[resource.id].present? %>
               <tr>
 

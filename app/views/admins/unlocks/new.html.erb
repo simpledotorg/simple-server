@@ -1,0 +1,15 @@
+<div class="col-md-6 mx-auto">
+    <div class="card">
+        <h1>Resend unlock instructions</h1>
+
+        <%= bootstrap_form_for(resource, as: resource_name, url: unlock_path(resource_name), html: { method: :post }, label_errors: true) do |f| %>
+          <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+
+        <div class="card-footer text-right">
+            <%= f.primary "Resend unlock instructions" %><% end %>
+        </div>
+  </div>
+  <div class="actions mt-4" style="line-height: 2.5;">
+    <%= render "admins/shared/links" %>
+  </div>
+</div>

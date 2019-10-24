@@ -2,7 +2,7 @@
 class AnonymizedDataDownloadMailerPreview < ActionMailer::Preview
   def mail_anonymized_data
     recipient_name = 'test_admin'
-    recipient_email = 'test_admin@email_authentications.org'
+    recipient_email = 'test_admin@admins.org'
 
     AnonymizedDataDownloadMailer
       .with(recipient_name: recipient_name,

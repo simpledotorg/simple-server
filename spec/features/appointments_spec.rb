@@ -3,14 +3,20 @@ require 'rails_helper'
 RSpec.feature 'Overdue appointments', type: :feature do
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:ihmi_group) { create(:facility_group, organization: ihmi) }
-  let!(:supervisor) { create(:admin, :supervisor, facility_group: ihmi_group) }
+  let!(:supervisor) {
+    create(
+      :admin,
+      :supervisor,
+      admin_access_controls: [AdminAccessControl.new(access_controllable: ihmi_group)]
+    )
+  }
 
   before do
     ENV['IHCI_ORGANIZATION_UUID'] = ihmi.id
   end
 
   describe 'index' do
-    before { sign_in(supervisor.email_authentication) }
+    before { sign_in(supervisor) }
 
     it 'shows Overdue tab' do
       visit root_path
