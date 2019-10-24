@@ -6,7 +6,7 @@
                     organizations: policy_scope([:manage, :admin, Organization.all]),
                     facility_groups: policy_scope([:manage, :admin, FacilityGroup.all]),
                     facilities: policy_scope([:manage, :admin, Facility.all]),
-                    permissions: Permissions::ALL_PERMISSIONS.values,
+                    permissions: Permissions::ALL_PERMISSIONS.select { |k, _v| user_permissions.include?(k.to_s) }.values,
                     access_levels: Permissions::ACCESS_LEVELS,
                     submit_route: admin_path(admin),
                     submit_text: 'Update Admin',
