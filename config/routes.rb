@@ -204,7 +204,7 @@ Rails.application.routes.draw do
     end
   end
 
-  authenticate :admin, lambda(&:owner?) do
+  authenticate :email_authentication, -> (a) { a.user.has_permission?(:view_sidekiq_ui)} do
     require 'sidekiq/web'
     mount Sidekiq::Web => '/sidekiq'
   end
