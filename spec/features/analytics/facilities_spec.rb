@@ -8,7 +8,7 @@ RSpec.feature "Facility analytics", type: :feature do
   let!(:bp_2) { create(:blood_pressure, facility: facility, systolic: 115, diastolic: 75, recorded_at: Time.zone.parse("2019-03-15 2:15pm +05:30")) }
 
   before do
-    sign_in(owner.email_authentication)
+    sign_in(owner)
   end
 
   describe "show a facility" do

@@ -1,5 +1,4 @@
 class User < ApplicationRecord
-  include HasAdminAccessControls
 
   self.table_name = 'master_users'
 
@@ -14,30 +13,10 @@ class User < ApplicationRecord
     denied: 'denied'
   }, _prefix: true
 
-  enum role: {
-    owner: 'owner',
-    supervisor: 'supervisor',
-    analyst: 'analyst',
-    organization_owner: 'organization_owner',
-    counsellor: 'counsellor'
-  }
-
-  belongs_to :organization, optional: true
-
   has_many :user_authentications
   has_many :blood_pressures
   has_many :patients, -> { distinct }, through: :blood_pressures
-
-  has_many :phone_number_authentications,
-           through: :user_authentications,
-           source: :authenticatable,
-           source_type: 'PhoneNumberAuthentication'
-
-  has_many :email_authentications,
-           through: :user_authentications,
-           source: :authenticatable,
-           source_type: 'EmailAuthentication'
-
+  has_many :phone_number_authentications, through: :user_authentications, source: :authenticatable, source_type: 'PhoneNumberAuthentication'
   has_many :audit_logs, as: :auditable
   has_many :appointments
   has_many :medical_histories
@@ -62,31 +41,8 @@ class User < ApplicationRecord
            :organization,
            :password_digest, to: :phone_number_authentication, allow_nil: true
 
-  delegate :email,
-           :password,
-           :authenticatable_salt,
-           :invited_to_sign_up?, to: :email_authentication, allow_nil: true
-
-  def self.invite!(options = {})
-    transaction do
-      now = Time.now
-      User.create(
-        options
-          .slice(:full_name, :role)
-          .merge(device_created_at: now,
-                 device_updated_at: now,
-                 sync_approval_status: sync_approval_statuses[:denied]))
-
-      EmailAuthentication.invite!(nil, options.slice(:email))
-    end
-  end
-
   def phone_number_authentication
     phone_number_authentications.first
-  end
-
-  def email_authentication
-    email_authentications.first
   end
 
   def registration_facility_id

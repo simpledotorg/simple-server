@@ -4,9 +4,9 @@ module AdminPage
       RESET_PASSWORD_BUTTON = { css: "div.text-right>input" }.freeze
       MESSAGE = { css: 'div.alert-primary' }.freeze
       MESSAGE_CROSS_BUTTON = { css: "button.close" }.freeze
-      LOGIN = { css: "a[href='/email_authentications/sign_in']" }.freeze
-      EMAIL_TEXT_BOX = { id: 'email_authentication_email' }.freeze
-      UNLOCK_INSTRUCTION_LINK = { css: "a[href='/email_authentications/unlock/new']" }.freeze
+      LOGIN = { css: "a[href='/admins/sign_in']" }.freeze
+      EMAIL_TEXT_BOX = { id: 'admin_email' }.freeze
+      UNLOCK_INSTRUCTION_LINK = { css: "a[href='/admins/unlock/new']" }.freeze
 
       def do_reset_password(email)
         type(EMAIL_TEXT_BOX, email)

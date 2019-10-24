@@ -4,7 +4,7 @@ RSpec.feature 'Adherence follow-ups', type: :feature do
   let!(:counsellor) { create(:admin, :counsellor) }
 
   describe 'index' do
-    before { sign_in(counsellor.email_authentication) }
+    before { sign_in(counsellor) }
 
     it 'shows Overdue tab' do
       visit root_path
