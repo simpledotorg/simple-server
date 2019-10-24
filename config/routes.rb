@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
   devise_scope :email_authentication do
     { :show? => "organizations#index",
-      :overdue_list? => "appointments#index",
       :adherence_follow_up? => "patients#index",
+      :overdue_list? => "appointments#index",
       :manage_organizations? => "admin/organizations#index",
       :manage_facilities? => "admin/facilities#index",
       :manage_protocols? => "admin/protocols#index",
