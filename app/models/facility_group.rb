@@ -13,7 +13,7 @@ class FacilityGroup < ApplicationRecord
 
   has_many :patients, through: :facilities, source: :registered_patients
   has_many :blood_pressures, through: :facilities
-  has_many :encounters, through: :patients
+  has_many :encounters, through: :facilities
   has_many :prescription_drugs, through: :facilities
   has_many :appointments, through: :facilities
 
