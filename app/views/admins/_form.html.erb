@@ -1,3 +1,5 @@
+<% user_permissions = current_admin.user_permissions.pluck(:permission_slug) %>
+
 <%= react_component "InviteAdminForm",
                     admin: admin,
                     email: admin.email,
