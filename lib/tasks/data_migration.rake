@@ -17,9 +17,10 @@ namespace :data_migration do
     EmailAuthentication.all.each do |email_authentication|
       email_authentication.transaction do
         admin = Admin.find_by(email: email_authentication.email)
+        next unless admin.present? && admin.invited_by.present?
         invited_by = EmailAuthentication.find_by(email: admin.invited_by.email)
 
-        email_authentication.invited_by = invited_by.master_user
+        email_authentication.invited_by = invited_by.user
         email_authentication.save
       end
     end
