@@ -1,4 +1,7 @@
 bn-BD:
+  date:
+    formats:
+      default: "%d-%^b-%Y"
   registration: 'New registration'
   reset_password: 'Reset PIN'
   login:
