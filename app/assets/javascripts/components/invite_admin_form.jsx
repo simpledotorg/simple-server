@@ -15,46 +15,18 @@ window.InviteAdminForm = createReactClass({
     displayName: 'InviteAdminForm',
 
     getInitialState: function () {
-        var organization = _.get(this.props, ['admin', 'organization_id']) ? {
-            resource_type: 'Organization',
-            resource_id: _.get(this.props, ['admin', 'organization_id'])
-        } : null;
-
         return {
-            errors: undefined,
             full_name: _.get(this.props, ['admin', 'full_name'], ''),
             email: _.get(this.props, ['email'], ''),
             role: _.get(this.props, ['admin', 'role'], ''),
-            organization: organization,
+            organization_id: _.get(this.props, ['admin', 'organization_id']),
             selected_permissions: _.get(this.props, ['selected_permissions'], []),
-            selected_facility_groups: _.get(this.props, ['selected_facility_groups'], [])
+            selected_resources: _.get(this.props, ['selected_resources'], [])
         }
-    },
-
-    updateErrors: function(errors) {
-        this.setState({errors: errors})
-    },
-
-    resourcePriority: function () {
-        return {
-            'facility_group': 'selected_facility_groups',
-            'organization': 'organization',
-            'global': null
-        };
     },
 
     updateInput: function (key, value) {
         this.setState({[key]: value})
-    },
-
-    updateOrganization: function (organization_id) {
-        this.setState({
-            organization: {
-                resource_type: 'Organization',
-                resource_id: organization_id,
-            },
-            selected_facility_groups: []
-        });
     },
 
     updateAccessLevel: function (access_level) {
@@ -73,36 +45,29 @@ window.InviteAdminForm = createReactClass({
     },
 
     updateResources: function (resources) {
-        this.setState({selected_facility_groups: _.uniq(resources)});
-    },
-
-    getPriortyResources: function (resourcePriority) {
-        if (_.isEmpty(resourcePriority)) {
-            return null;
-        }
-
-        var resources = _.get(this.state, this.resourcePriority()[_.head(resourcePriority)]);
-        if (_.isEmpty(resources)) {
-            return this.getPriortyResources(_.tail(resourcePriority));
-        }
-
-        return _.flatMap([resources]);
+        this.setState({selected_resources: _.uniq(resources)});
     },
 
     getPermissionsPayload: function () {
         return _.flatMap(this.state.selected_permissions, (permission) => {
-            var resources = this.getPriortyResources(permission.resource_priority);
-            if (resources == null) {
-                return {permission_slug: permission.slug}
-            }
-
-            return _.map(resources, (resource) => {
+            if (permission.resource_type == 'Organization') {
                 return {
                     permission_slug: permission.slug,
-                    resource_type: resource.resource_type,
-                    resource_id: resource.resource_id
+                    resource_type: 'Organization',
+                    resource_id: this.state.organization_id
                 }
-            });
+            } else if (permission.resource_type) {
+                return _.chain(this.state.selected_resources)
+                    .filter((resource) => resource.resource_type == permission.resource_type)
+                    .map((resource) => {
+                        return {
+                            permission_slug: permission.slug,
+                            resource_type: resource.resource_type,
+                            resource_id: resource.resource_id
+                        }
+                    }).value();
+            }
+            return {permission_slug: permission.slug}
         });
     },
 
@@ -110,11 +75,8 @@ window.InviteAdminForm = createReactClass({
         var permissions_payload = this.getPermissionsPayload();
         var request_payload =
             _.chain(this.state)
-                .pick(['full_name', 'email', 'role', 'mobile', 'location'])
-                .merge({
-                    permissions: permissions_payload,
-                    organization_id: _.get(this.state.organization, 'resource_id')
-                })
+                .pick(['full_name', 'email', 'role', 'mobile', 'location', 'organization_id'])
+                .merge({permissions: permissions_payload})
                 .value();
 
         $.ajax({
@@ -127,55 +89,48 @@ window.InviteAdminForm = createReactClass({
             data: JSON.stringify(request_payload),
             success: () => {
                 window.location.replace("/admins");
-            },
-            error: (response) => this.updateErrors(_.get(response.responseJSON, 'errors'))
+            }
         });
     },
 
-    requiredResource: function () {
-        return _.get(this.access_level(), 'resource_type');
+    requiredResources: function () {
+        return _.chain(this.state.selected_permissions)
+            .map('resource_type')
+            .uniq()
+            .value();
     },
 
     access_level: function () {
-        if (_.isEmpty(this.state.selected_permissions)) {
-            return;
-        }
         return _.chain(this.props.access_levels)
-            .find((al) => comparePermissionArrays(_.uniq(_.map(this.state.selected_permissions, 'slug')), al.default_permissions))
+            .find((al) => comparePermissionArrays(_.map(this.state.selected_permissions, 'slug'), al.default_permissions))
             .get('name', 'custom')
             .value();
     },
 
 
     render: function () {
-        var errors = _.map(this.state.errors, (error, idx) => {
-           return <ErrorMessage message={error} key={idx}/>;
-        });
         return (
             <div>
-                <div className='error-messages'>
-                    {errors}
-                </div>
                 <TextInputField name="full_name" title="Full Name" value={this.state.full_name}
-                                updateInput={this.updateInput}/>
+                                updateInput={this.updateInput.bind(this)}/>
                 <TextInputField name="email" title="Email" value={this.state.email} updateInput={this.updateInput}/>
                 <TextInputField name="role" title="Role" value={this.state.role} updateInput={this.updateInput}/>
-
+                <CollectionRadioButtons name="organization_id" title="Organization"
+                                        organizations={this.props.organizations}
+                                        checked_id={this.state.organization_id}
+                                        updateInput={this.updateInput}/>
                 <AccessLevelComponent permissions={this.props.permissions}
                                       access_levels={this.props.access_levels}
                                       selected_level={this.access_level()}
                                       selected_permissions={this.state.selected_permissions}
-                                      selected_resources={this.state.selected_facility_groups}
-                                      required_resource={this.requiredResource()}
+                                      selected_resources={this.state.selected_resources}
+                                      required_resources={this.requiredResources()}
                                       updateAccessLevel={this.updateAccessLevel}
                                       updatePermissions={this.updatePermissions}
                                       updateResources={this.updateResources}
-                                      organization_id={_.get(this.state, ['organization', 'resource_id'])}
+                                      organization_id={this.state.organization_id}
                                       facility_groups={this.props.facility_groups}
-                                      facilities={this.props.facilities}
-                                      organizations={this.props.organizations}
-                                      checked_id={_.get(this.state, ['organization', 'resource_id'])}
-                                      updateOrganization={this.updateOrganization}/>
+                                      facilities={this.props.facilities}/>
                 <button className="btn btn-primary" onClick={this.submitForm}>
                     {this.props.submit_text}
                 </button>

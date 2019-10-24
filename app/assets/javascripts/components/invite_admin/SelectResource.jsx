@@ -14,7 +14,7 @@ class SelectResource extends React.Component {
             <div>
                 <div className="form-group row">
                     <label htmlFor="facilities-input"
-                           className="col-md-2 col-form-label">{this.props.displayName}</label>
+                           className="col-md-2 col-form-label">{this.props.resourceType}</label>
                     <div className="col-md-10">
                         <input className="form-control"
                                type="text"
@@ -25,7 +25,7 @@ class SelectResource extends React.Component {
                     </div>
                 </div>
 
-                <SelectResourceModal {...this.props} displayName={this.props.displayName}/>
+                <SelectResourceModal {...this.props} />
             </div>
         );
     }

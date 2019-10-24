@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe AdherenceFollowUp::PatientPolicy do
+RSpec.describe PatientPolicy do
   subject { described_class }
 
   let(:facility1) { build(:facility) }
@@ -8,7 +8,7 @@ RSpec.describe AdherenceFollowUp::PatientPolicy do
 
   context 'user with permission to access patient information for all organizations' do
     let(:user_with_permission) do
-      create(:admin, user_permissions: [build(:user_permission, permission_slug: :view_adherence_follow_up_list)])
+      create(:admin, user_permissions: [build(:user_permission, permission_slug: :view_adherence_follow_up_list_for_all_organizations)])
     end
 
     permissions :index? do
@@ -31,7 +31,7 @@ RSpec.describe AdherenceFollowUp::PatientPolicy do
   context 'user with permission to access patient information for an organization' do
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :view_adherence_follow_up_list, resource: facility1.organization)
+        build(:user_permission, permission_slug: :view_adherence_follow_up_list_for_organization, resource: facility1.organization)
       ])
     end
 
@@ -59,7 +59,7 @@ RSpec.describe AdherenceFollowUp::PatientPolicy do
   context 'user with permission to access patient information for a facility group' do
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :view_adherence_follow_up_list, resource: facility1.facility_group)
+        build(:user_permission, permission_slug: :view_adherence_follow_up_list_for_facility_group, resource: facility1.facility_group)
       ])
     end
 
@@ -106,7 +106,7 @@ RSpec.describe AdherenceFollowUp::PatientPolicy do
   end
 end
 
-RSpec.describe AdherenceFollowUp::PatientPolicy::Scope do
+RSpec.describe PatientPolicy::Scope do
   let(:subject) { described_class }
 
   let(:organization) { create(:organization) }
@@ -119,7 +119,7 @@ RSpec.describe AdherenceFollowUp::PatientPolicy::Scope do
   let!(:patient2) { create(:patient, registration_facility: facility2) }
 
   context 'user with permission to access patient information for all organizations' do
-    let(:user) { create(:admin, user_permissions: [build(:user_permission, permission_slug: :view_adherence_follow_up_list)]) }
+    let(:user) { create(:admin, user_permissions: [build(:user_permission, permission_slug: :view_adherence_follow_up_list_for_all_organizations)]) }
 
     it 'resolves all patients for users who can access patient information for all organizations' do
       resolved_records = subject.new(user, Patient.all).resolve
@@ -129,7 +129,7 @@ RSpec.describe AdherenceFollowUp::PatientPolicy::Scope do
 
   context 'user with permission to access patient information for an organization' do
     let(:user) { create(:admin, user_permissions: [
-      build(:user_permission, permission_slug: :view_adherence_follow_up_list, resource: organization)
+      build(:user_permission, permission_slug: :view_adherence_follow_up_list_for_organization, resource: organization)
     ]) }
 
     it 'resolves all patients in the organization' do
@@ -140,7 +140,7 @@ RSpec.describe AdherenceFollowUp::PatientPolicy::Scope do
 
   context 'user with permission to access patient information for a facility group' do
     let(:user) { create(:admin, user_permissions: [
-      build(:user_permission, permission_slug: :view_adherence_follow_up_list, resource: facility_group)
+      build(:user_permission, permission_slug: :view_adherence_follow_up_list_for_facility_group, resource: facility_group)
     ]) }
 
     it 'resolves all patients in the facility group' do

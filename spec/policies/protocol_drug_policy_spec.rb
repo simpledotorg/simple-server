@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Manage::ProtocolDrugPolicy do
+RSpec.describe ProtocolDrugPolicy do
   subject { described_class }
 
   let(:protocol_drug) { build(:protocol_drug) }
@@ -41,7 +41,7 @@ RSpec.describe Manage::ProtocolDrugPolicy do
   end
 end
 
-RSpec.describe Manage::ProtocolDrugPolicy::Scope do
+RSpec.describe ProtocolDrugPolicy::Scope do
   let(:subject) { described_class }
   let(:organization) { create(:organization) }
 

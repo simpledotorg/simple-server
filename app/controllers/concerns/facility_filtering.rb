@@ -15,5 +15,13 @@ module FacilityFiltering
     def current_facility
       @facility_id == 'All' ? nil : Facility.find(@facility_id)
     end
+
+    def selected_facilities
+      if @facility_id == 'All'
+        policy_scope(Facility.all)
+      else
+        policy_scope(Facility.where(id: @facility_id))
+      end
+    end
   end
 end

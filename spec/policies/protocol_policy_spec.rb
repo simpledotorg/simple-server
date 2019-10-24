@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Manage::ProtocolPolicy do
+RSpec.describe ProtocolPolicy do
   subject { described_class }
 
   let(:protocol) { build(:protocol) }
@@ -41,7 +41,7 @@ RSpec.describe Manage::ProtocolPolicy do
   end
 end
 
-RSpec.describe Manage::ProtocolPolicy::Scope do
+RSpec.describe ProtocolPolicy::Scope do
   let(:subject) { described_class }
   let(:organization) { create(:organization) }
 

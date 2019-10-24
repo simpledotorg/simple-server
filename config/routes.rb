@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   devise_scope :email_authentication do
-    authenticated :email_authentication, -> (a) { !DashboardPolicy.new(a.user, :dashboard).show? } do
+    authenticated :email_authentication, ->(a) { a.user.has_role?(:counsellor) } do
       root to: "patients#index", as: :counsellor_root
     end
 

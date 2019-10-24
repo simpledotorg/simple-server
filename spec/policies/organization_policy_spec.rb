@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Manage::OrganizationPolicy do
+RSpec.describe OrganizationPolicy do
   subject { described_class }
 
   let(:organization_1) { create(:organization) }
@@ -28,7 +28,7 @@ RSpec.describe Manage::OrganizationPolicy do
   context 'user can manage an organization' do
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :manage_facility_groups, resource: organization_1)
+        build(:user_permission, permission_slug: :manage_facility_groups_for_organization, resource: organization_1)
       ])
     end
 
@@ -57,7 +57,7 @@ RSpec.describe Manage::OrganizationPolicy do
   end
 end
 
-RSpec.describe Manage::OrganizationPolicy::Scope do
+RSpec.describe OrganizationPolicy::Scope do
   let(:subject) { described_class }
   let(:organization_1) { create(:organization) }
   let(:organization_2) { create(:organization) }
@@ -76,7 +76,7 @@ RSpec.describe Manage::OrganizationPolicy::Scope do
   context 'user can manage an organization' do
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :manage_facility_groups, resource: organization_1)
+        build(:user_permission, permission_slug: :manage_facility_groups_for_organization, resource: organization_1)
       ])
     end
 

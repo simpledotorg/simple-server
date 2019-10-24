@@ -32,7 +32,7 @@ module CreateMasterUser
     user_attributes =
       admin_attributes
         .slice(:role, :created_at, :updated_at, :deleted_at)
-        .merge(id:  master_user_id(admin.email),
+        .merge(id: master_user_id(admin.email),
                full_name: admin.email.split('@').first,
                organization: get_organization(admin),
                sync_approval_status: 'denied',
@@ -62,21 +62,19 @@ module CreateMasterUser
     user_permissions = access_level[:default_permissions]
     resources = admin.admin_access_controls
     user_permissions.each do |permission_slug|
-
       permission = Permissions::ALL_PERMISSIONS[permission_slug]
 
       throw "#{permission_slug} is an unknown permission" unless permission.present?
 
-      if !resources.present? && permission[:resource_priority].include?(:global)
+      if permission[:type] == :global
         user.user_permissions.create!(permission_slug: permission_slug)
         next
       end
 
-      resources.map(&:access_controllable).each do |resource|
-        resource_type = resource.class.to_s.underscore.to_sym
-        if permission[:resource_priority].include?(resource_type)
-          user.user_permissions.create!(permission_slug: permission_slug, resource: resource)
-        end
+      resources.where(access_controllable_type: permission[:resource_type]).each do |admin_access_control|
+        user.user_permissions.create!(
+          permission_slug: permission_slug,
+          resource: admin_access_control.access_controllable)
       end
     end
   end

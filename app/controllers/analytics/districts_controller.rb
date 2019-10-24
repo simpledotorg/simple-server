@@ -53,7 +53,7 @@ class Analytics::DistrictsController < AnalyticsController
     district_name = params[:id] || params[:district_id]
     organization = Organization.find_by(id: params[:organization_id])
     @organization_district = OrganizationDistrict.new(district_name, organization)
-    authorize([:cohort_report, @organization_district])
+    authorize(@organization_district)
   end
 
   def set_cohort_analytics(period, prev_periods)

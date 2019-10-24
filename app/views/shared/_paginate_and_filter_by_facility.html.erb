@@ -2,7 +2,7 @@
   <div class="form-row">
     <div id="facility-selector" class="form-group col-md-6">
       <%= form.select :facility_id,
-                      policy_scope(scope_namespace).sort_by(&:name).map { |facility| [facility.name, facility.id] },
+                      policy_scope(Facility).sort_by(&:name).map { |facility| [facility.name, facility.id] },
                       {
                           hide_label: true,
                           include_blank: "All facilities",

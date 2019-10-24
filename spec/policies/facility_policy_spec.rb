@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Manage::FacilityPolicy do
+RSpec.describe FacilityPolicy do
   subject { described_class }
 
   let(:organization) { create(:organization) }
@@ -31,7 +31,7 @@ RSpec.describe Manage::FacilityPolicy do
   context 'user can manage an organization' do
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :manage_facility_groups, resource: organization)
+        build(:user_permission, permission_slug: :manage_facility_groups_for_organization, resource: organization)
       ])
     end
 
@@ -58,7 +58,7 @@ RSpec.describe Manage::FacilityPolicy do
 
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :manage_facilities, resource: facility_group)
+        build(:user_permission, permission_slug: :manage_facilities_for_facility_group, resource: facility_group)
       ])
     end
 
@@ -81,7 +81,7 @@ RSpec.describe Manage::FacilityPolicy do
   end
 end
 
-RSpec.describe Manage::FacilityPolicy::Scope do
+RSpec.describe FacilityPolicy::Scope do
   let(:subject) { described_class }
   let(:organization) { create(:organization) }
   let(:facility_group_1) { create(:facility_group, organization: organization) }
@@ -104,7 +104,7 @@ RSpec.describe Manage::FacilityPolicy::Scope do
   context 'user can manage an organization' do
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :manage_facility_groups, resource: organization)
+        build(:user_permission, permission_slug: :manage_facility_groups_for_organization, resource: organization)
       ])
     end
 
@@ -117,7 +117,7 @@ RSpec.describe Manage::FacilityPolicy::Scope do
   context 'user can manage a facility group' do
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :manage_facilities, resource: facility_group_1)
+        build(:user_permission, permission_slug: :manage_facilities_for_facility_group, resource: facility_group_1)
       ])
     end
 

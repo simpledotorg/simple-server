@@ -1,28 +1,16 @@
 class AccessLevelComponent extends React.Component {
 
     render() {
-        var selectResources = null;
-
-        if(this.props.selected_level != 'owner') {
-            selectResources =
-                <div>
-                    <CollectionRadioButtons name="organization_id" title="Organization"
-                                            organizations={this.props.organizations}
-                                            checked_id={this.props.checked_id}
-                                            updateOrganization={this.props.updateOrganization}/>
-
-                    <SelectResource resourceType='FacilityGroup'
-                                    displayName='Facility groups'
-                                    resources={this.props.facility_groups}
-                                    updateResources={this.props.updateResources}
-                                    organization_id={this.props.organization_id}
-                                    selected_resources={this.props.selected_resources}/>
-                </div>
-        }
+        var selectFacilityGroups = this.props.required_resources.includes('FacilityGroup')
+            ? <SelectResource resourceType='FacilityGroup'
+                              resources={this.props.facility_groups}
+                              updateResources={this.props.updateResources}
+                              organization_id={this.props.organization_id}
+                              selected_resources={this.props.selected_resources}/>
+            : null;
 
         return (
             <div>
-
                 <div className="form-group row">
                     <label htmlFor="access-input" className="col-md-2 col-form-label">Access level</label>
                     <div className="col-md-10">
@@ -35,9 +23,7 @@ class AccessLevelComponent extends React.Component {
                                               updatePermissions={this.props.updatePermissions}/>
                     </div>
                 </div>
-
-                {selectResources}
-
+                {selectFacilityGroups}
             </div>
         )
     }

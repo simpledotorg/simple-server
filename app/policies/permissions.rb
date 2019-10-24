@@ -1,120 +1,165 @@
 module Permissions
   ALL_PERMISSIONS = {
-    approve_health_workers: {
-      slug: :approve_health_workers,
-      description: 'Approve health workers',
-      resource_priority: [:facility_group, :organization, :global]
+    approve_health_workers_for_all_organizations: {
+      type: :global,
+      slug: :approve_health_workers_for_all_organizations,
+      description: 'Approve all health workers'
     },
-    manage_admins: {
-      slug: :manage_admins,
-      description: 'Manage admins',
-      resource_priority: [:organization, :global]
+    approve_health_workers_for_organization: {
+      type: :resource,
+      slug: :approve_health_workers_for_organization,
+      resource_type: 'Organization',
+      description: 'Approve health workers for an organization'
+    },
+    approve_health_workers_for_facility_group: {
+      type: :resource,
+      slug: :approve_health_workers_for_facility_group,
+      resource_type: 'FacilityGroup',
+      description: 'Approve health workers for an facility group'
+    },
+    manage_admins_for_all_organizations: {
+      type: :global,
+      slug: :manage_admins_for_all_organizations,
+      description: 'Manage admins for all organizations'
+    },
+    manage_admins_for_organization: {
+      type: :resource,
+      slug: :manage_admins_for_organization,
+      resource_type: 'Organization',
+      description: 'Manage admins for an organization'
     },
     manage_organizations: {
+      type: :global,
       slug: :manage_organizations,
-      description: 'Manage organizations',
-      resource_priority: [:global]
+      description: 'Manage organizations'
     },
     manage_protocols: {
+      type: :global,
       slug: :manage_protocols,
-      description: 'Manage protocols',
-      resource_priority: [:global]
+      description: 'Manage protocols'
     },
-    manage_facility_groups: {
-      slug: :manage_facility_groups,
-      description: 'Manage facility groups',
-      resource_priority: [:facility_group, :organization, :global]
+    manage_facility_groups_for_organization: {
+      type: :resource,
+      slug: :manage_facility_groups_for_organization,
+      resource_type: 'Organization',
+      description: 'Manage facility groups for an organization'
     },
-    manage_facilities: {
-      slug: :manage_facilities,
-      description: 'Manage facilities',
-      resource_priority: [:facility_group, :organization, :global]
+    manage_facilities_for_facility_group: {
+      type: :resource,
+      slug: :manage_facilities_for_facility_group,
+      resource_type: 'FacilityGroup',
+      description: 'Manage facilities for a facility group'
     },
-    view_cohort_reports: {
-      slug: :view_cohort_reports,
-      description: 'View cohort reports',
-      resource_priority: [:facility_group, :organization, :global],
+    view_cohort_reports_for_organization: {
+      type: :resource,
+      slug: :view_cohort_reports_for_organization,
+      resource_type: 'Organization',
+      description: 'View cohort reports for an organization'
     },
-    view_health_worker_activity: {
-      slug: :view_health_worker_activity,
-      description: 'View health worker activity',
-      resource_priority: [:facility_group, :organization, :global],
+    view_cohort_reports_for_facility_group: {
+      type: :resource,
+      slug: :view_cohort_reports_for_facility_group,
+      resource_type: 'Organization',
+      description: 'View cohort reports for a facility group'
     },
-    view_overdue_list: {
-      slug: :view_overdue_list,
-      description: 'View overdue list',
-      resource_priority: [:facility_group, :organization, :global]
+    view_health_worker_activity_for_organization: {
+      type: :resource,
+      slug: :view_health_worker_activity_for_organization,
+      resource_type: 'Organization',
+      description: 'View health worker activity for organization'
     },
-    download_overdue_list: {
-      slug: :download_overdue_list,
-      description: 'Download overdue list',
-      resource_priority: [:facility_group, :organization, :global]
+    view_health_worker_activity_for_facility_group: {
+      type: :resource,
+      slug: :view_health_worker_activity_for_facility_group,
+      resource_type: 'FacilityGroup',
+      description: 'View health worker activity for facility group'
     },
-    view_adherence_follow_up_list: {
-      slug: :view_adherence_follow_up_list,
-      description: 'View adherence follow up list',
-      resource_priority: [:facility_group, :organization, :global]
+    view_overdue_list_for_all_organizations: {
+      type: :global,
+      slug: :view_overdue_list_for_all_organizations,
+      description: 'View overdue list for all organizations'
     },
-    download_patient_line_list: {
-      slug: :download_patient_line_list,
-      description: 'Download patient line list',
-      resource_priority: [:facility_group, :organization, :global]
+    view_overdue_list_for_organization: {
+      type: :resource,
+      slug: :view_overdue_list_for_organization,
+      resource_type: 'Organization',
+      description: 'View overdue list for organization'
+    },
+    view_overdue_list_for_facility_group: {
+      type: :resource,
+      slug: :view_overdue_list_for_facility_group,
+      resource_type: 'FacilityGroup',
+      description: 'View overdue list for a facility group'
+    },
+    download_overdue_list_for_organization: {
+      type: :resource,
+      slug: :download_overdue_list_for_organization,
+      resource_type: 'Organization',
+      description: 'View overdue list for organization'
+    },
+    download_overdue_list_for_facility_group: {
+      type: :resource,
+      slug: :download_overdue_list_for_facility_group,
+      resource_type: 'FacilityGroup',
+      description: 'View overdue list for a facility group'
+    },
+    view_adherence_follow_up_list_for_all_organizations: {
+      type: :global,
+      slug: :view_adherence_follow_up_list_for_all_organizations,
+      description: 'View adherence follow up list for all organizations'
+    },
+    view_adherence_follow_up_list_for_organization: {
+      type: :resource,
+      slug: :view_adherence_follow_up_list_for_organization,
+      resource_type: 'Organization',
+      description: 'View adherence follow up list for organization'
+    },
+    view_adherence_follow_up_list_for_facility_group: {
+      type: :resource,
+      slug: :view_adherence_follow_up_list_for_facility_group,
+      resource_type: 'FacilityGroup',
+      description: 'View adherence follow up list for a facility group'
+    },
+    view_audit_logs: {
+      type: :global,
+      slug: :view_audit_logs,
+      description: 'View audit logs'
     },
   }
 
   ACCESS_LEVELS = [
-    { name: :organization_owner,
-      description: "Admin for an organization",
-      default_permissions: [
-        :manage_facility_groups,
-        :approve_health_workers,
-        :view_overdue_list,
-        :view_adherence_follow_up_list,
-        :view_cohort_reports,
-        :manage_admins,
-        :view_health_worker_activity,
-        :download_overdue_list,
-        :download_patient_line_list
-      ]
-    },
     { name: :counsellor,
-      description: "Call center staff",
+      description: "Call center staff (access to PHI)",
       default_permissions: [
-        :view_overdue_list,
-        :view_adherence_follow_up_list
+        :manage_facilities_for_facility_group,
+        :view_overdue_list_for_facility_group,
+        :view_adherence_follow_up_list_for_facility_group
       ]
     },
-    { name: :supervisor,
-      description: "CVHO: Cardiovascular Health Officer",
+    { name: :organization_owner,
+      description: "CVHO: Cardiovascular Health Officer (access to PHI)",
       default_permissions: [
-        :manage_facilities,
-        :view_overdue_list,
-        :download_overdue_list,
-        :view_adherence_follow_up_list,
-        :approve_health_workers,
-        :view_cohort_reports,
-        :view_health_worker_activity,
-        :download_patient_line_list,
-        :manage_admins,
+        :manage_facility_groups_for_organization,
+        :view_overdue_list_for_facility_group,
+        :view_adherence_follow_up_list_for_facility_group,
+        :approve_health_workers_for_organization
       ]
     },
     { name: :analyst,
       description: "Data analyst",
       default_permissions: [
-        :view_cohort_reports
+        :view_cohort_reports_for_facility_group,
+        :manage_facilities_for_facility_group
       ]
     },
-    { name: :sts,
-      description: "STS: Senior Treatment Supervisor",
+    { name: :supervisor,
+      description: "STS: Senior Treatment Supervisor (access to PHI)",
       default_permissions: [
-        :manage_facilities,
-        :view_overdue_list,
-        :download_overdue_list,
-        :view_adherence_follow_up_list,
-        :approve_health_workers,
-        :view_health_worker_activity,
-        :download_patient_line_list,
-        :view_cohort_reports
+        :manage_facilities_for_facility_group,
+        :view_overdue_list_for_facility_group,
+        :download_overdue_list_for_facility_group,
+        :view_adherence_follow_up_list_for_facility_group,
+        :approve_health_workers_for_facility_group
       ]
     },
     { name: :owner,
@@ -122,14 +167,11 @@ module Permissions
       default_permissions: [
         :manage_organizations,
         :manage_protocols,
-        :approve_health_workers,
-        :view_overdue_list,
-        :view_adherence_follow_up_list,
-        :view_cohort_reports,
-        :manage_admins,
-        :view_health_worker_activity,
-        :download_overdue_list,
-        :download_patient_line_list
+        :view_audit_logs,
+        :approve_health_workers_for_all_organizations,
+        :view_overdue_list_for_all_organizations,
+        :view_adherence_follow_up_list_for_all_organizations,
+        :manage_admins_for_all_organizations
       ]
     },
     { name: :custom,

@@ -5,15 +5,12 @@ class PatientsController < AdminController
   before_action :set_patient, only: [:update]
 
   def index
-    authorize([:adherence_follow_up, Patient])
+    authorize Patient, :index?
 
-    @patients = policy_scope([:adherence_follow_up, Patient])
+    @patients = policy_scope(Patient)
                   .not_contacted
+                  .where(registration_facility: selected_facilities)
                   .order(device_created_at: :asc)
-
-    if current_facility.present?
-      @patients = @patients.where(registration_facility: current_facility)
-    end
 
     @patients = paginate(@patients)
   end
@@ -30,7 +27,7 @@ class PatientsController < AdminController
 
   def set_patient
     @patient = Patient.find(params[:id] || params[:patient_id])
-    authorize([:adherence_follow_up, @patient])
+    authorize @patient
   end
 
   def patient_params
