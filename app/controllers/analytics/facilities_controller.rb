@@ -42,7 +42,7 @@ class Analytics::FacilitiesController < AnalyticsController
 
   def whatsapp_graphics
     set_cohort_analytics(:quarter, 3)
-    set_dashboard_analytics(:quarter, 4)
+    set_dashboard_analytics(:quarter, 3)
 
     whatsapp_graphics_handler(
       @facility.organization.name,
