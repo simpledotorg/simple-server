@@ -53,7 +53,7 @@ namespace :generate do
     number_of_months.downto(1) do |month_number|
       creation_date = month_number.months.ago
 
-      Organization.all.flat_map(&:users).select { |u| u.role.blank? }.each do |user|
+      Organization.all.flat_map(&:users).each do |user|
         create_patients(user, creation_date, config)
       end
     end
@@ -81,7 +81,7 @@ namespace :generate do
     end
 
     number_of_patients = config.dig('patients', 'count')
-    facility_groups.flat_map(&:users).select { |u| u.role.blank? }.each do |user|
+    facility_groups.flat_map(&:users).each do |user|
       number_of_patients.times do
         create_patients(user, date, config)
       end

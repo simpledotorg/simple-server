@@ -6,7 +6,7 @@
 
       <%= form.password_field :password, id: :user_password, pattern: "[0-9]{4}", label: "PIN", help: "4 digits only", optional: true %>
       <%= form.password_field :password_confirmation, id: :user_password_confirmation, pattern: "[0-9]{4}", label: "PIN confirmation", optional: true %>
-      <%= form.select :registration_facility_id, policy_scope([:manage, :user, Facility]) \
+      <%= form.select :registration_facility_id, policy_scope(Facility) \
           .sort_by { |facility| facility.name.sub /^Dr(.?)(\s*)/, '' } \
           .collect { |facility| [ facility.name, facility.id ] } %>
       <%= form.primary %>
