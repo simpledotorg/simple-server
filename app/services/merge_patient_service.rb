@@ -1,5 +1,4 @@
 class MergePatientService
-
   def initialize(payload)
     @payload = payload
   end

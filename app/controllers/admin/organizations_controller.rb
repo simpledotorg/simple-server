@@ -2,13 +2,13 @@ class Admin::OrganizationsController < AdminController
   before_action :set_organization, only: [:edit, :update, :destroy]
 
   def index
-    authorize Organization
-    @organizations = policy_scope(Organization).order(:name)
+    authorize([:manage, Organization])
+    @organizations = policy_scope([:manage, Organization]).order(:name)
   end
 
   def new
     @organization = Organization.new
-    authorize @organization
+    authorize([:manage, @organization])
   end
 
   def edit
@@ -16,7 +16,7 @@ class Admin::OrganizationsController < AdminController
 
   def create
     @organization = Organization.new(organization_params)
-    authorize @organization
+    authorize([:manage, @organization])
 
     if @organization.save
       redirect_to admin_organizations_url, notice: 'Organization was successfully created.'
@@ -42,7 +42,7 @@ class Admin::OrganizationsController < AdminController
 
   def set_organization
     @organization = Organization.friendly.find(params[:id])
-    authorize @organization
+    authorize([:manage, @organization])
   end
 
   def organization_params

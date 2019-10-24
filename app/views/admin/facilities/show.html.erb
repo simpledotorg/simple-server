@@ -6,7 +6,7 @@
     <%= @facility.name %>
   </h1>
   <nav class="page-nav">
-    <% if policy(@facility).edit? %>
+    <% if policy([:manage, @facility]).edit? %>
       <%= link_to 'Edit facility', edit_admin_facility_group_facility_path(@facility_group, @facility), class: "btn btn-sm btn-primary" %>
     <% end %>
   </nav>
@@ -58,11 +58,11 @@
                 </div>
             </div>
             <div class="col text-right">
-              <% if policy(user).edit? %>
+              <% if policy([:manage, :user, user]).edit? %>
                 <%= link_to 'Edit', edit_admin_user_path(user), class: "btn btn-sm btn-outline-primary" %>
               <% end %>
               
-              <% if policy(user).destroy? %>
+              <% if policy([:manage, :user, user]).destroy? %>
                 <%= link_to 'Delete', [:admin, user], method: :delete, data: { confirm: "Are you sure you want to delete #{user.full_name}?" }, class: "btn btn-sm btn-outline-danger" %>
               <% end %>
               

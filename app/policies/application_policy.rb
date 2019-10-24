@@ -37,5 +37,36 @@ class ApplicationPolicy
         .map(&:resource)
         .compact
     end
+
+
+    def organization_ids_for_permission(slug)
+      resources = resources_for_permission(slug)
+      resources.map do |resource|
+        if resource.is_a? Organization
+          resource.id
+        else
+          resource.organization.id
+        end
+      end.uniq.compact
+    end
+
+    def facility_group_ids_for_permission(slug)
+      resources = resources_for_permission(slug)
+      resources.flat_map do |resource|
+        if resource.is_a? Organization
+          resource.facility_groups.map(&:id)
+        elsif resource.is_a? FacilityGroup
+          resource.id
+        end
+      end
+    end
+
+    def facility_ids_for_permission(slug)
+      resources = resources_for_permission(slug)
+
+      resources.flat_map do |resource|
+        resource.facilities.map(&:id)
+      end.uniq.compact
+    end
   end
 end

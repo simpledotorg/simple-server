@@ -20,8 +20,12 @@
 //= require react_ujs
 //= require lodash
 //= require components
+//= require tablesort
+//= require tablesort/dist/sorts/tablesort.number.min
 //= require_tree .
 
 $(function () {
-    $('[data-toggle="tooltip"]').tooltip()
+  $('[data-toggle="tooltip"]').tooltip()
+
+  new Tablesort(document.getElementById('analytics-table'), { descending: true })
 });

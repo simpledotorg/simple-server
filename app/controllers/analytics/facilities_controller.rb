@@ -54,7 +54,7 @@ class Analytics::FacilitiesController < AnalyticsController
   def set_facility
     facility_id = params[:id] || params[:facility_id]
     @facility = Facility.friendly.find(facility_id)
-    authorize(@facility)
+    authorize([:cohort_report, @facility])
   end
 
   def set_cohort_analytics(period, prev_periods)

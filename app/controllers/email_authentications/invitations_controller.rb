@@ -2,15 +2,22 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   helper_method :current_admin
 
   def new
-    authorize current_admin, :new_user_for_invitation?
+    authorize([:manage, :admin, current_admin])
     super
   end
 
   def create
-    authorize current_admin, :create_user_for_invitation?
+    user = User.new(user_params)
+    authorize([:manage, :admin, user])
+
+    existing_email = EmailAuthentication.find_by(invite_params)
+    if existing_email.present?
+      return render json: { errors: ['Email already invited'] }, status: :bad_request
+    end
+
     User.transaction do
       super do |resource|
-        user = User.new(user_params)
+
         user.email_authentications = [resource]
         user.save!
 
@@ -39,7 +46,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   def user_params
     { full_name: params.require(:full_name),
       role: params.require(:role),
-      organization_id: params.require(:organization_id),
+      organization_id: params[:organization_id],
       device_created_at: Time.current,
       device_updated_at: Time.current,
       sync_approval_status: :denied }
