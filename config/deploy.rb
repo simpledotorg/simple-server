@@ -5,6 +5,10 @@ set :application, "simple-server"
 set :repo_url, "https://github.com/simpledotorg/simple-server.git"
 set :deploy_to, -> { "/home/deploy/apps/#{fetch(:application)}" }
 set :rbenv_ruby, '2.5.1'
+set :default_env, {
+  path: '/home/deploy/.rbenv/plugins/ruby-build/bin:/home/deploy/.rbenv/shims:/home/deploy/.rbenv/bin:$PATH',
+  rbenv_root: '/home/deploy/.rbenv'
+}
 set :rails_env, 'production'
 set :branch, ENV["BRANCH"] || "master"
 
