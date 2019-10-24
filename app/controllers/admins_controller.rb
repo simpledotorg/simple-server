@@ -2,11 +2,9 @@ class AdminsController < AdminController
   before_action :set_admin, only: [:show, :edit, :update, :destroy]
   after_action :verify_policy_scoped, only: :index
 
-  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
-
   def index
-    authorize User, :index_admins?
-    @admins = policy_scope(User.where.not(role: :nurse)).sort_by(&:email)
+    authorize([:manage, :admin, User])
+    @admins = policy_scope([:manage, :admin, User]).sort_by(&:email)
   end
 
   def show
@@ -38,14 +36,9 @@ class AdminsController < AdminController
 
   private
 
-  def user_not_authorized
-    flash[:alert] = "You are not authorized to perform this action."
-    redirect_to(request.referrer || root_path)
-  end
-
   def set_admin
     @admin = User.find(params[:id])
-    authorize @admin
+    authorize([:manage, :admin, @admin])
   end
 
   def permission_params
@@ -56,6 +49,6 @@ class AdminsController < AdminController
     { full_name: params.require(:full_name),
       role: params.require(:role),
       organization_id: params[:organization_id],
-      device_updated_at: Time.now }
+      device_updated_at: Time.current }
   end
 end

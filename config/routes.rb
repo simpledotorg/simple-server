@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   devise_scope :email_authentication do
-    authenticated :email_authentication, ->(a) { a.user.has_role?(:counsellor) } do
+    authenticated :email_authentication, -> (a) { !DashboardPolicy.new(a.user, :dashboard).show? } do
       root to: "patients#index", as: :counsellor_root
     end
 
@@ -120,6 +120,15 @@ Rails.application.routes.draw do
         end
 
         concerns :sync_routes
+
+        scope '/encounters' do
+          get 'sync', to: 'encounters#sync_to_user'
+          post 'sync', to: 'encounters#sync_from_user'
+
+          if FeatureToggle.enabled?('GENERATE_ENCOUNTER_ID_ENDPOINT')
+            get 'generate_id', to: 'encounters#generate_id'
+          end
+        end
 
         resource :help, only: [:show], controller: "help"
 

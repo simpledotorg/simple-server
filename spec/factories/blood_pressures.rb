@@ -3,12 +3,13 @@ FactoryBot.define do
     id { SecureRandom.uuid }
     systolic { rand(80..240) }
     diastolic { rand(60..140) }
-    device_created_at { Time.now }
-    device_updated_at { Time.now }
+    device_created_at { Time.current }
+    device_updated_at { Time.current }
     recorded_at { device_created_at }
-    association :facility, strategy: :build
-    association :patient, strategy: :build
-    user
+
+    association :facility, strategy: :create
+    association :user, strategy: :create
+    association :patient, strategy: :create
 
     trait :critical do
       systolic 181

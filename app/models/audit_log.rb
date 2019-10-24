@@ -21,7 +21,7 @@ class AuditLog < ApplicationRecord
         auditable_type: record.class.to_s,
         auditable_id: record.id,
         action: MERGE_STATUS_TO_ACTION[record.merge_status],
-        time: Time.now }
+        time: Time.current }
     )
   end
 
@@ -32,7 +32,7 @@ class AuditLog < ApplicationRecord
         auditable_type: record.class.to_s,
         auditable_id: record.id,
         action: 'fetch',
-        time: Time.now }
+        time: Time.current }
     )
   end
 
@@ -43,7 +43,7 @@ class AuditLog < ApplicationRecord
         auditable_type: 'User',
         auditable_id: user.id,
         action: 'login',
-        time: Time.now }
+        time: Time.current }
     )
   end
 

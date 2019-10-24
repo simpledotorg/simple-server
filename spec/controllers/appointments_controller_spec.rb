@@ -108,7 +108,7 @@ RSpec.describe AppointmentsController, type: :controller do
     end
 
     it 'remind_to_call_later updates remind_on' do
-      new_remind_date = Date.today + 7.days
+      new_remind_date = Date.current + 7.days
 
       put :update, params: {
         id: overdue_appointment.id,
@@ -124,7 +124,7 @@ RSpec.describe AppointmentsController, type: :controller do
     end
 
     it 'agreed_to_visit updates agreed_to_visit and remind_on' do
-      new_remind_date = Date.today + 30.days
+      new_remind_date = Date.current + 30.days
 
       put :update, params: {
         id: overdue_appointment.id,

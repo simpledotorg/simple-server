@@ -2,7 +2,7 @@
   <div class="form-row">
     <div id="district-selector" class="form-group col-md-6">
       <%= form.select :district,
-                      policy_scope(Facility).sort_by(&:district).map { |facility| [facility.district, facility.district] }.uniq,
+                      policy_scope(scope_namespace).sort_by(&:district).map { |facility| [facility.district, facility.district] }.uniq,
                       {
                           hide_label: true,
                           include_blank: "All districts",

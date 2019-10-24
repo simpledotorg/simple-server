@@ -3,8 +3,9 @@ require "rails_helper"
 RSpec.feature "Facility analytics", type: :feature do
   let!(:owner) { create(:admin, :owner) }
   let!(:facility) { create(:facility) }
-  let!(:bp_1) { create(:blood_pressure, facility: facility, systolic: 145, diastolic: 95, recorded_at: Time.parse("2019-03-15 8:00am +05:30")) }
-  let!(:bp_2) { create(:blood_pressure, facility: facility, systolic: 115, diastolic: 75, recorded_at: Time.parse("2019-03-15 2:15pm +05:30")) }
+  let!(:other_facility) { create(:facility) }
+  let!(:bp_1) { create(:blood_pressure, facility: facility, systolic: 145, diastolic: 95, recorded_at: Time.zone.parse("2019-03-15 8:00am +05:30")) }
+  let!(:bp_2) { create(:blood_pressure, facility: facility, systolic: 115, diastolic: 75, recorded_at: Time.zone.parse("2019-03-15 2:15pm +05:30")) }
 
   before do
     sign_in(owner.email_authentication)
@@ -31,6 +32,22 @@ RSpec.feature "Facility analytics", type: :feature do
           expect(page).to have_content("2:15 PM")
         end
       end
+    end
+  end
+
+  describe "allows period switching" do
+    before do
+      visit analytics_facility_path(facility)
+      click_link "Quarterly report"
+    end
+
+    it "shows quarterly metrics" do
+      expect(page).to have_content("registered 3-6 months previously")
+    end
+
+    it "persists period selection across views" do
+      visit analytics_facility_path(other_facility)
+      expect(page).to have_content("registered 3-6 months previously")
     end
   end
 end

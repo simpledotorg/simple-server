@@ -52,7 +52,7 @@ RSpec.shared_examples 'a sync controller that authenticates user requests' do
 
 
     it 'sets user logged_in_at on successful authentication' do
-      now = Time.now
+      now = Time.current
       Timecop.freeze(now) do
         get :sync_to_user, params: empty_payload
 
@@ -423,7 +423,7 @@ RSpec.shared_examples 'a sync controller that audits the data access' do
                                     auditable_type: auditable_type,
                                     auditable_id: record[:id],
                                     action: 'create',
-                                    time: Time.now }.to_json)
+                                    time: Time.current }.to_json)
 
         post :sync_from_user, params: payload, as: :json
       end
@@ -439,7 +439,7 @@ RSpec.shared_examples 'a sync controller that audits the data access' do
                                     auditable_type: auditable_type,
                                     auditable_id: record[:id],
                                     action: 'update',
-                                    time: Time.now }.to_json)
+                                    time: Time.current }.to_json)
 
         post :sync_from_user, params: payload, as: :json
       end
@@ -456,7 +456,7 @@ RSpec.shared_examples 'a sync controller that audits the data access' do
                                     auditable_type: auditable_type,
                                     auditable_id: record[:id],
                                     action: 'touch',
-                                    time: Time.now }.to_json)
+                                    time: Time.current }.to_json)
 
         post :sync_from_user, params: payload, as: :json
       end
@@ -474,7 +474,7 @@ RSpec.shared_examples 'a sync controller that audits the data access' do
                                         auditable_type: auditable_type,
                                         auditable_id: record[:id],
                                         action: 'fetch',
-                                        time: Time.now }.to_json)
+                                        time: Time.current }.to_json)
           end
           get :sync_to_user, params: {
             processed_since: 20.minutes.ago,
