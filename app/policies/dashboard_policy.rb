@@ -12,31 +12,16 @@ class DashboardPolicy < Struct.new(:user, :dashboard)
     Pundit.policy(user, [:adherence_follow_up, Patient]).index?
   end
 
-  def manage_organizations?
-    Pundit.policy(user, [:manage, Organization]).index?
-  end
-
-  def manage_facilities?
-    Pundit.policy(user, [:manage, Facility]).index?
-  end
-
-  def manage_protocols?
-    Pundit.policy(user, [:manage, Protocol]).index?
-  end
-
-  def manage_admins?
-    Pundit.policy(user, [:manage, :admin, User]).index?
-  end
-
-  def manage_users?
-    Pundit.policy(user, [:manage, :user, User]).index?
-  end
-
   def manage?
-    [manage_organizations?,
-     manage_facilities?,
-     manage_protocols?,
-     manage_admins?,
-     manage_users?].any?
+    management_permissions = [
+      :approve_health_workers,
+      :manage_facilities,
+      :manage_facility_groups,
+      :manage_protocols,
+      :manage_organizations,
+      :manage_admins
+    ]
+
+    user.user_permissions.where(permission_slug: management_permissions).present?
   end
 end

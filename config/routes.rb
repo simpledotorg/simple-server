@@ -1,17 +1,11 @@
 Rails.application.routes.draw do
   devise_scope :email_authentication do
-    { :show? => "organizations#index",
-      :adherence_follow_up? => "patients#index",
-      :overdue_list? => "appointments#index",
-      :manage_organizations? => "admin/organizations#index",
-      :manage_facilities? => "admin/facilities#index",
-      :manage_protocols? => "admin/protocols#index",
-      :manage_admins? => "admins#index",
-      :manage_users? => "admin/users#index"
-    }.each do |feature, controller|
-      authenticated :email_authentication, -> (a) { DashboardPolicy.new(a.user, :dashboard).send(feature) } do
-        root to: controller
-      end
+    authenticated :email_authentication, -> (a) { !DashboardPolicy.new(a.user, :dashboard).show? } do
+      root to: "patients#index", as: :counsellor_root
+    end
+
+    authenticated :email_authentication do
+      root to: "organizations#index", as: :email_authentication_root
     end
 
     unauthenticated :email_authentication do
