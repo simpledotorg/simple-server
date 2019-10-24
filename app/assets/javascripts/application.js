@@ -16,10 +16,6 @@
 //= require bootstrap-sprockets
 //= require bs-custom-file-input.js
 //= require bs-file-input-init.js
-//= require react
-//= require react_ujs
-//= require lodash
-//= require components
 //= require tablesort
 //= require tablesort/dist/sorts/tablesort.number.min
 //= require_tree .

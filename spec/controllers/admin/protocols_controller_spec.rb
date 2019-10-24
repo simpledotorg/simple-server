@@ -11,7 +11,7 @@ RSpec.describe Admin::ProtocolsController, type: :controller do
   }
 
   before do
-    sign_in(create(:admin, :owner).email_authentication)
+    sign_in(create(:admin).email_authentication)
   end
 
   describe "GET #index" do
@@ -55,7 +55,7 @@ RSpec.describe Admin::ProtocolsController, type: :controller do
 
       it "redirects to the created protocol" do
         post :create, params: {protocol: valid_attributes}
-        expect(response).to redirect_to([:admin, Protocol.find_by(name: valid_attributes[:name])])
+        expect(response).to redirect_to([:admin, Protocol.last])
       end
     end
 

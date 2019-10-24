@@ -3,6 +3,8 @@ FactoryBot.define do
     transient do
       password { '1234' }
       registration_facility { create(:facility) }
+      facility { registration_facility }
+      registration_facility_id { registration_facility.id }
       phone_number { Faker::PhoneNumber.phone_number }
     end
 
@@ -18,7 +20,7 @@ FactoryBot.define do
         :phone_number_authentication,
         phone_number: options.phone_number,
         password: options.password,
-        facility: options.registration_facility
+        facility: options.registration_facility || options.facility,
       )
       user.user_authentications = [
         UserAuthentication.new(authenticatable: phone_number_authentication)
@@ -55,68 +57,37 @@ FactoryBot.define do
     transient do
       email { Faker::Internet.email(full_name) }
       password { Faker::Internet.password(6) }
-      facility_group { build(:facility_group) }
     end
 
     full_name { Faker::Name.name }
     device_created_at { Time.current }
     device_updated_at { Time.current }
     sync_approval_status { User.sync_approval_statuses[:denied] }
-    email_authentications { build_list(:email_authentication, 1, email: email, password: password) }
-    user_permissions { [] }
-    organization
+    email_authentications { create_list(:email_authentication, 1, email: email, password: password) }
 
     role :owner
 
     trait(:owner) do
       role :owner
-
-      after :create do |user, _options|
-        access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
-        access_level[:default_permissions].each do |slug|
-          user.user_permissions.create(permission_slug: slug)
-        end
-      end
     end
 
     trait(:supervisor) do
       role :supervisor
-      after :create do |user, options|
-        access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
-        access_level[:default_permissions].each do |slug|
-          user.user_permissions.create(permission_slug: slug, resource: options.facility_group)
-        end
-      end
     end
 
     trait(:analyst) do
       role :analyst
-      after :create do |user, options|
-        access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
-        access_level[:default_permissions].each do |slug|
-          user.user_permissions.create(permission_slug: slug, resource: options.facility_group)
-        end
-      end
+      admin_access_controls { FactoryBot.create_list(:admin_access_control, 1, access_controllable: FactoryBot.create(:facility_group))}
     end
 
     trait(:counsellor) do
       role :counsellor
-      after :create do |user, options|
-        access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
-        access_level[:default_permissions].each do |slug|
-          user.user_permissions.create(permission_slug: slug, resource: options.facility_group)
-        end
-      end
+      admin_access_controls { FactoryBot.create_list(:admin_access_control, 1, access_controllable: FactoryBot.create(:facility_group))}
     end
 
     trait(:organization_owner) do
       role :organization_owner
-      after :create do |user, options|
-        access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
-        access_level[:default_permissions].each do |slug|
-          user.user_permissions.create(permission_slug: slug, resource: options.organization)
-        end
-      end
+      admin_access_controls { FactoryBot.create_list(:admin_access_control, 1, access_controllable: FactoryBot.create(:organization))}
     end
   end
 end

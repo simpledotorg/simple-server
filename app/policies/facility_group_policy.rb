@@ -1,39 +1,22 @@
 class FacilityGroupPolicy < ApplicationPolicy
   def index?
-    user_permission_slugs = user.user_permissions.pluck(:permission_slug).map(&:to_sym)
-    [:manage_organizations,
-     :manage_facility_groups_for_organization,
-     :manage_facilities_for_facility_group
-    ].any? { |slug| user_permission_slugs.include? slug }
+    user.owner? || user.organization_owner?
   end
 
   def show?
-    user_has_any_permissions?(
-      :manage_organizations,
-      [:manage_facility_groups_for_organization, record.organization],
-      [:manage_facilities_for_facility_group, record]
-    )
+    user.owner? || [:organization_owner, :supervisor, :analyst].map { |role| admin_can_access?(role) }.any?
   end
 
   def create?
-    user_has_any_permissions?(
-      :manage_organizations,
-      [:manage_facility_groups_for_organization, record.organization]
-    )
+    user.owner? || user.organization_owner?
   end
 
   def new?
-    user_permission_slugs = user.user_permissions.pluck(:permission_slug).map(&:to_sym)
-    [:manage_organizations,
-     :manage_facility_groups_for_organization
-    ].any? { |slug| user_permission_slugs.include? slug }
+    create?
   end
 
   def update?
-    user_has_any_permissions?(
-      :manage_organizations,
-      [:manage_facility_groups_for_organization, record.organization]
-    )
+    user.owner? || admin_can_access?(:organization_owner)
   end
 
   def edit?
@@ -41,13 +24,10 @@ class FacilityGroupPolicy < ApplicationPolicy
   end
 
   def destroy?
-    destroyable? && user_has_any_permissions?(
-      :manage_organizations,
-      [:manage_facility_groups_for_organization, record.organization]
-    )
+    destroyable? && (user.owner? || admin_can_access?(:organization_owner))
   end
 
-  def whatsapp_graphics?
+  def graphics?
     show?
   end
 
@@ -61,7 +41,7 @@ class FacilityGroupPolicy < ApplicationPolicy
     user.role == role.to_s && user.facility_groups.include?(record)
   end
 
-  class Scope < Scope
+  class Scope
     attr_reader :user, :scope
 
     def initialize(user, scope)
@@ -70,15 +50,7 @@ class FacilityGroupPolicy < ApplicationPolicy
     end
 
     def resolve
-      if user.has_permission?(:manage_organizations)
-        scope.all
-      elsif user.has_permission?(:manage_facility_groups_for_organization)
-        scope.where(organization: resources_for_permission(:manage_facility_groups_for_organization))
-      elsif user.has_permission?(:manage_facilities_for_facility_group)
-        scope.where(id: resources_for_permission(:manage_facilities_for_facility_group).map(&:id))
-      else
-        scope.none
-      end
+      scope.where(id: @user.facility_groups.map(&:id))
     end
   end
 end

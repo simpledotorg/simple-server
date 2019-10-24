@@ -6,14 +6,32 @@ class ApplicationPolicy
     @record = record
   end
 
-  def user_has_any_permissions?(*permissions)
-    permissions.any? do |permission|
-      if permission.is_a?(Array)
-        user.authorized?(permission.first, resource: permission.second)
-      else
-        user.authorized?(permission)
-      end
-    end
+  def index?
+    user.owner?
+  end
+
+  def show?
+    user.owner?
+  end
+
+  def create?
+    user.owner?
+  end
+
+  def new?
+    create?
+  end
+
+  def update?
+    user.owner?
+  end
+
+  def edit?
+    update?
+  end
+
+  def destroy?
+    user.owner?
   end
 
   class Scope
@@ -26,16 +44,6 @@ class ApplicationPolicy
 
     def resolve
       scope.all
-    end
-
-    private
-
-    def resources_for_permission(permission_slug)
-      user.user_permissions
-        .where(permission_slug: permission_slug)
-        .includes(:resource)
-        .map(&:resource)
-        .compact
     end
   end
 end

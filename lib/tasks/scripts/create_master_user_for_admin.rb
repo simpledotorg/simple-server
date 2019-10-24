@@ -13,7 +13,7 @@ module CreateMasterUser
       email_authentication = EmailAuthentication.new(admin_attributes.except(:id, :role))
       email_authentication.save!(validate: false)
       master_user.user_authentications.create!(authenticatable: email_authentication)
-      assign_permissions!(master_user, admin)
+      update_admin_access_controls(admin, master_user)
     end
   end
 
@@ -54,29 +54,6 @@ module CreateMasterUser
 
     throw "#{admin.email} belongs to more than one organization" if organizations.length != 1
     organizations.first
-  end
-
-  #@todo: User should be enough here
-  def self.assign_permissions!(user, admin)
-    access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
-    user_permissions = access_level[:default_permissions]
-    resources = admin.admin_access_controls
-    user_permissions.each do |permission_slug|
-      permission = Permissions::ALL_PERMISSIONS[permission_slug]
-
-      throw "#{permission_slug} is an unknown permission" unless permission.present?
-
-      if permission[:type] == :global
-        user.user_permissions.create!(permission_slug: permission_slug)
-        next
-      end
-
-      resources.where(access_controllable_type: permission[:resource_type]).each do |admin_access_control|
-        user.user_permissions.create!(
-          permission_slug: permission_slug,
-          resource: admin_access_control.access_controllable)
-      end
-    end
   end
 
   def self.update_admin_access_controls(admin, master_user)

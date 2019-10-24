@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.xdescribe Admin, type: :model do
+RSpec.describe Admin, type: :model do
   describe 'Associations' do
     it { should have_many(:admin_access_controls) }
 

@@ -1,7 +1,6 @@
 require 'rails_helper'
 
-RSpec.xfeature "Admins", type: :feature do
-  let(:full_name) { Faker::Name.name }
+RSpec.feature "Admins", type: :feature do
   let!(:owner) { create(:admin, :owner, email: "owner@example.com") }
   let!(:supervisor) { create(:admin, :supervisor, email: "supervisor@example.com") }
 
@@ -37,8 +36,8 @@ RSpec.xfeature "Admins", type: :feature do
       check "CHC Buccho"
       click_button "Update Admin"
 
-      expect(counsellor.reload.resources).to include(facility_group)
-      expect(counsellor.resources).not_to include(other_facility_group)
+      expect(counsellor.reload.facility_groups).to include(facility_group)
+      expect(counsellor.facility_groups).not_to include(other_facility_group)
     end
   end
 
@@ -126,6 +125,7 @@ RSpec.xfeature "Admins", type: :feature do
     end
   end
 
+
   describe "association email_authentications with their access control groups" do
     let(:full_name) { Faker::Name.name }
     let(:email) { "new@example.com" }
@@ -150,9 +150,9 @@ RSpec.xfeature "Admins", type: :feature do
       end
 
       it "associates new supervisors to facility groups" do
-        expect(new_supervisor.user_permissions.count).to eq(4)
-        expect(new_supervisor.user_permissions.first.resource_type).to eq('FacilityGroup')
-        expect(new_supervisor.user_permissions.first.resource_id).to eq(facility_groups.first.id)
+        expect(new_supervisor.admin_access_controls.count).to eq(1)
+        expect(new_supervisor.admin_access_controls.first.access_controllable_type).to eq('FacilityGroup')
+        expect(new_supervisor.admin_access_controls.first.access_controllable_id).to eq(facility_groups.first.id)
       end
     end
 
@@ -170,9 +170,9 @@ RSpec.xfeature "Admins", type: :feature do
       end
 
       it "associates new analysts to facility groups" do
-        expect(new_supervisor.user_permissions.count).to eq(1)
-        expect(new_supervisor.user_permissions.first.resource_type).to eq('FacilityGroup')
-        expect(new_supervisor.user_permissions.first.resource_id).to eq(facility_groups.first.id)
+        expect(new_supervisor.admin_access_controls.count).to eq(1)
+        expect(new_supervisor.admin_access_controls.first.access_controllable_type).to eq('FacilityGroup')
+        expect(new_supervisor.admin_access_controls.first.access_controllable_id).to eq(facility_groups.first.id)
       end
     end
 
@@ -190,9 +190,9 @@ RSpec.xfeature "Admins", type: :feature do
       end
 
       it "associates new supervisors to facility groups" do
-        expect(new_supervisor.user_permissions.count).to eq(4)
-        expect(new_supervisor.user_permissions.first.resource_type).to eq('Organization')
-        expect(new_supervisor.user_permissions.first.resource_id).to eq(organizations.first.id)
+        expect(new_supervisor.admin_access_controls.count).to eq(1)
+        expect(new_supervisor.admin_access_controls.first.access_controllable_type).to eq('Organization')
+        expect(new_supervisor.admin_access_controls.first.access_controllable_id).to eq(organizations.first.id)
       end
 
     end
@@ -200,7 +200,7 @@ RSpec.xfeature "Admins", type: :feature do
 
   describe 'inviting Counsellors' do
     let!(:organization_owner) { create(:admin, :organization_owner) }
-    let!(:organization) { organization_owner.resources.first }
+    let!(:organization) { organization_owner.organizations.first }
     let!(:facility_group) { create(:facility_group, organization: organization) }
     let(:full_name) { Faker::Name.name }
     let!(:email) { 'new_counsellor@example.com' }
@@ -223,26 +223,25 @@ RSpec.xfeature "Admins", type: :feature do
     it 'associates new counsellor to facility group' do
       new_counsellor = User.joins(:email_authentications).find_by(email_authentications: { email: email })
 
-      expect(new_counsellor.user_permissions.count).to eq(3)
-      expect(new_counsellor.user_permissions.first.resource_type).to eq('FacilityGroup')
-      expect(new_counsellor.user_permissions.first.resource_id).to eq(facility_group.id)
+      expect(new_counsellor.admin_access_controls.count).to eq(1)
+      expect(new_counsellor.admin_access_controls.first.access_controllable_type).to eq('FacilityGroup')
+      expect(new_counsellor.admin_access_controls.first.access_controllable_id).to eq(facility_group.id)
     end
   end
 
   describe "accepting invitations" do
     let(:email) { "new@example.com" }
-    let(:new_supervisor) { create(:admin, :supervisor)}
-    let(:email_authentication) { EmailAuthentication.invite!(email: email, user: new_supervisor) }
+    let(:new_supervisor) { User.invite!(email: email, role: :supervisor) }
 
-    it "allows the user to set a password" do
-      visit accept_email_authentication_invitation_path(invitation_token: email_authentication.raw_invitation_token)
+    xit "allows the user to set a password" do
+      visit accept_admin_invitation_path(invitation_token: new_supervisor.raw_invitation_token)
 
       fill_in "Password", with: "new_password"
       fill_in "Password confirmation", with: "new_password"
 
       click_button "Set my password"
 
-      expect(email_authentication.reload.invited_to_sign_up?).to eq(false)
+      expect(new_supervisor.reload.invited_to_sign_up?).to eq(false)
     end
   end
 end

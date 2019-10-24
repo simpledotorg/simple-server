@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 RSpec.feature 'Verify Dashboard', type: :feature do
+  let!(:owner) { create(:admin) }
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:path) { create(:organization, name: "PATH") }
-  let!(:owner) { create(:admin, :owner) }
 
   login_page = AdminPage::Sessions::New.new
   dashboard = OrganizationsPage::Index.new
@@ -11,7 +11,7 @@ RSpec.feature 'Verify Dashboard', type: :feature do
   org_page = AdminPage::Organizations::Index.new
 
 
-  xit 'Verify organization is displayed in dashboard' do
+  it 'Verify organization is displayed in dashboard' do
     visit root_path
     login_page.do_login(owner.email, owner.password)
 

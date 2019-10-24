@@ -3,40 +3,25 @@ require "rails_helper"
 RSpec.describe ProtocolDrugPolicy do
   subject { described_class }
 
-  let(:protocol_drug) { build(:protocol_drug) }
-  context 'user can manage all protocols' do
-    let(:user_with_permission) do
-      create(:admin, user_permissions: [build(:user_permission, permission_slug: :manage_protocols)])
+  let(:owner) { create(:admin, :owner) }
+  let(:supervisor) { create(:admin, :supervisor) }
+  let(:analyst) { create(:admin, :analyst) }
+
+  permissions :index?, :show?, :new?, :create?, :update?, :edit?, :destroy? do
+    it "permits owners" do
+      expect(subject).to permit(owner, ProtocolDrug)
     end
 
-    permissions :index? do
-      it 'permits the user' do
-        expect(subject).to permit(user_with_permission, ProtocolDrug)
-      end
+    it "permits organization owners" do
+      expect(subject).to permit(owner, ProtocolDrug)
     end
 
-    permissions :show?, :new?, :create?, :update?, :edit?, :destroy? do
-      it 'permits the user' do
-        expect(subject).to permit(user_with_permission, protocol_drug)
-      end
-    end
-  end
-
-  context 'other users' do
-    let(:other_user) do
-      create(:admin, user_permissions: [])
+    it "denies supervisors" do
+      expect(subject).not_to permit(supervisor, ProtocolDrug)
     end
 
-    permissions :index? do
-      it 'denies the user' do
-        expect(subject).not_to permit(other_user, ProtocolDrug)
-      end
-    end
-
-    permissions :show?, :new?, :create?, :update?, :edit?, :destroy? do
-      it 'denies the user' do
-        expect(subject).not_to permit(other_user, ProtocolDrug)
-      end
+    it "denies analysts" do
+      expect(subject).not_to permit(analyst, ProtocolDrug)
     end
   end
 end
@@ -50,26 +35,50 @@ RSpec.describe ProtocolDrugPolicy::Scope do
   let!(:protocol_drugs_1) { create_list(:protocol_drug, 5, protocol: protocol_1) }
   let!(:protocol_drugs_2) { create_list(:protocol_drug, 5, protocol: protocol_2) }
 
+  let!(:facility_group_1) { create(:facility_group, organization: organization, protocol: protocol_1) }
+  let!(:facility_group_2) { create(:facility_group, organization: organization, protocol: protocol_2) }
 
-  context 'user can manage all protocols' do
-    let(:user_with_permission) do
-      create(:admin, user_permissions: [build(:user_permission, permission_slug: :manage_protocols)])
-    end
-
-    it 'resolves all the protocol durgs' do
-      resolved_records = subject.new(user_with_permission, ProtocolDrug.all).resolve
-      expect(resolved_records).to match_array(ProtocolDrug.all)
+  describe "owner" do
+    let(:owner) { create(:admin, :owner) }
+    it "resolves all protocol drugs" do
+      resolved_records = subject.new(owner, ProtocolDrug.all).resolve
+      expect(resolved_records.to_a).to match_array(ProtocolDrug.all.to_a)
     end
   end
 
-  context 'other users' do
-    let(:other_user) do
-      create(:admin, user_permissions: [])
+  describe "organization owner" do
+    let(:organization_owner) {
+      create(:admin,
+             :organization_owner,
+             admin_access_controls: [AdminAccessControl.new(access_controllable: organization)]
+      ) }
+    it "resolves all protocol drugs their organizations" do
+      resolved_records = subject.new(organization_owner, ProtocolDrug.all).resolve
+      expect(resolved_records).to match_array(protocol_drugs_1 + protocol_drugs_2)
     end
+  end
 
-    it 'resolves no protocol drugs' do
-      resolved_records = subject.new(other_user, ProtocolDrug.all).resolve
-      expect(resolved_records).to be_empty
+  describe "supervisor" do
+    let(:supervisor) {
+      create(:admin,
+             :supervisor,
+             admin_access_controls: [AdminAccessControl.new(access_controllable: facility_group_1)])
+    }
+    it "resolves all protocol drugs their facility groups" do
+      resolved_records = subject.new(supervisor, ProtocolDrug.all).resolve
+      expect(resolved_records).to match_array(protocol_drugs_1)
+    end
+  end
+
+  describe "analyst" do
+    let(:analyst) {
+      create(:admin,
+             :analyst,
+             admin_access_controls: [AdminAccessControl.new(access_controllable: facility_group_1)])
+    }
+    it "resolves all protocol drugs in their facility groups" do
+      resolved_records = subject.new(analyst, ProtocolDrug.all).resolve
+      expect(resolved_records).to match_array(protocol_drugs_1)
     end
   end
 end

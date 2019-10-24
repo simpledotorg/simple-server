@@ -1,12 +1,4 @@
 class AuditLogPolicy < ApplicationPolicy
-  def index?
-    user_has_any_permissions?(:view_audit_logs)
-  end
-
-  def show?
-    user_has_any_permissions?(:view_audit_logs)
-  end
-
   class Scope
     attr_reader :user, :scope
 
@@ -16,7 +8,7 @@ class AuditLogPolicy < ApplicationPolicy
     end
 
     def resolve
-      if user.authorized?(:view_audit_logs)
+      if user.owner?
         scope.all
       else
         scope.none

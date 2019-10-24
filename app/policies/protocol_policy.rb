@@ -1,33 +1,13 @@
 class ProtocolPolicy < ApplicationPolicy
   def index?
-    user_has_any_permissions?(:manage_protocols)
+    user.owner? || user.organization_owner?
   end
 
   def show?
     index?
   end
 
-  def create?
-    user_has_any_permissions?(:manage_protocols)
-  end
-
-  def new?
-    create?
-  end
-
-  def update?
-    user_has_any_permissions?(:manage_protocols)
-  end
-
-  def edit?
-    update?
-  end
-
-  def destroy?
-    user_has_any_permissions?(:manage_protocols)
-  end
-
-  class Scope < Scope
+  class Scope
     attr_reader :user, :scope
 
     def initialize(user, scope)
@@ -36,11 +16,7 @@ class ProtocolPolicy < ApplicationPolicy
     end
 
     def resolve
-      if user.has_permission?(:manage_protocols)
-        scope.all
-      else
-        scope.none
-      end
+      scope.where(id: @user.protocols.map(&:id))
     end
   end
 end

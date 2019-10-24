@@ -1,26 +1,18 @@
 class FacilityPolicy < ApplicationPolicy
   def index?
-    user_permission_slugs = user.user_permissions.pluck(:permission_slug).map(&:to_sym)
-    [:manage_organizations,
-     :manage_facility_groups_for_organization,
-     :manage_facilities_for_facility_group
-    ].any? { |slug| user_permission_slugs.include? slug }
+    user.has_role?(:owner, :organization_owner, :supervisor, :analyst)
   end
 
   def show?
-    user_has_any_permissions?(
-      :manage_organizations,
-      [:manage_facility_groups_for_organization, record.organization],
-      [:manage_facilities_for_facility_group, record.facility_group]
-    )
+    user.owner? || (user.has_role?(:organization_owner, :analyst, :supervisor) && belongs_to_admin?)
   end
 
   def share_anonymized_data?
-    user_has_any_permissions?(:manage_organizations)
+    user.owner?
   end
 
   def whatsapp_graphics?
-    show?
+    user.owner? || user.has_role?(:organization_owner, :supervisor) && belongs_to_admin?
   end
 
   def patient_list?
@@ -28,11 +20,7 @@ class FacilityPolicy < ApplicationPolicy
   end
 
   def create?
-    user_has_any_permissions?(
-      :manage_organizations,
-      [:manage_facility_groups_for_organization, record.organization],
-      [:manage_facilities_for_facility_group, record.facility_group]
-    )
+    user.owner? || user.organization_owner?
   end
 
   def new?
@@ -40,11 +28,7 @@ class FacilityPolicy < ApplicationPolicy
   end
 
   def update?
-    user_has_any_permissions?(
-      :manage_organizations,
-      [:manage_facility_groups_for_organization, record.organization],
-      [:manage_facilities_for_facility_group, record.facility_group]
-    )
+    user.owner? || (user.organization_owner? && belongs_to_admin?)
   end
 
   def edit?
@@ -52,26 +36,14 @@ class FacilityPolicy < ApplicationPolicy
   end
 
   def destroy?
-    destroyable? && create?
+    destroyable? && (user.owner? || (user.organization_owner? && belongs_to_admin?))
   end
 
   def upload?
-    user_permission_slugs = user.user_permissions.pluck(:permission_slug).map(&:to_sym)
-    [:manage_organizations,
-     :manage_facility_groups_for_organization,
-     :manage_facilities_for_facility_group
-    ].any? { |slug| user_permission_slugs.include? slug }
+    user.owner?
   end
 
-  def download_overdue_list?
-    user_has_any_permissions?(
-      :download_overdue_list_for_all_organizations,
-      [:download_overdue_list_for_organization, record.organization],
-      [:download_overdue_list_for_facility_group, record.facility_group],
-    )
-  end
-
-  class Scope < Scope
+  class Scope
     attr_reader :user, :scope
 
     def initialize(user, scope)
@@ -80,22 +52,7 @@ class FacilityPolicy < ApplicationPolicy
     end
 
     def resolve
-      if user.has_permission?(:manage_organizations)
-        return scope.all
-      elsif user.has_permission?(:manage_facility_groups_for_organization)
-        facility_groups = resources_for_permission(:manage_facility_groups_for_organization).flat_map(&:facility_groups)
-        return scope.where(facility_group: facility_groups)
-      elsif user.has_permission?(:manage_facilities_for_facility_group)
-        return scope.where(facility_group: resources_for_permission(:manage_facilities_for_facility_group))
-      elsif user.has_permission?(:view_overdue_list_for_facility_group)
-        return scope.where(facility_group: resources_for_permission(:view_overdue_list_for_facility_group))
-      elsif user.has_permission?(:view_adherence_follow_up_list_for_facility_group)
-        return scope.where(facility_group: resources_for_permission(:view_adherence_follow_up_list_for_facility_group))
-      elsif user.has_permission?(:view_overdue_list_for_organization)
-        return scope.where(organization: resources_for_permission(:view_overdue_list_for_organization))
-      end
-
-      scope.none
+      scope.where(facility_group: user.facility_groups)
     end
   end
 
@@ -103,5 +60,9 @@ class FacilityPolicy < ApplicationPolicy
 
   def destroyable?
     record.registered_patients.none? && record.blood_pressures.none?
+  end
+
+  def belongs_to_admin?
+    user.facilities.include?(record)
   end
 end

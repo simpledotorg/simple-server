@@ -10,8 +10,7 @@ RSpec.describe Admin::OrganizationsController, type: :controller do
   }
 
   before do
-    admin = create(:admin, :owner)
-    sign_in(admin.email_authentication)
+    sign_in(create(:admin).email_authentication)
   end
 
   describe 'GET #index' do

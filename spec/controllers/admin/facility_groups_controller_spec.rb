@@ -20,8 +20,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
   }
 
   before do
-    admin = create(:admin, :organization_owner, organization: organization)
-    sign_in(admin.email_authentication)
+    sign_in(create(:admin).email_authentication)
   end
 
   describe 'GET #index' do

@@ -88,7 +88,6 @@ class Api::Current::UsersController < APIController
 
   def user_from_request
     Api::Current::Transformer.from_request(registration_params)
-      .merge(organization_id: registration_organization.id)
   end
 
   def user_to_response(user)
@@ -125,9 +124,5 @@ class Api::Current::UsersController < APIController
 
   def reset_password_digest
     params.require(:password_digest)
-  end
-
-  def registration_organization
-    Facility.find(registration_params[:registration_facility_id]).organization
   end
 end

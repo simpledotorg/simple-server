@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.feature "Facility analytics", type: :feature do
-  let!(:owner) { create(:admin, :owner) }
+  let!(:owner) { create(:admin) }
   let!(:facility) { create(:facility) }
   let!(:other_facility) { create(:facility) }
   let!(:bp_1) { create(:blood_pressure, facility: facility, systolic: 145, diastolic: 95, recorded_at: Time.zone.parse("2019-03-15 8:00am +05:30")) }

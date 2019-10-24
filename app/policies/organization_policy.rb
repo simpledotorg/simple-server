@@ -1,31 +1,14 @@
 class OrganizationPolicy < ApplicationPolicy
   def index?
-    user_permission_slugs = user.user_permissions.pluck(:permission_slug).map(&:to_sym)
-    [:manage_organizations,
-     :manage_facility_groups_for_organization,
-    ].any? { |slug| user_permission_slugs.include? slug }
+    user.owner? || user.organization_owner?
   end
 
   def show?
-    user_has_any_permissions?(
-      :manage_organizations,
-      [:manage_facility_groups_for_organization, record]
-    )
-  end
-
-  def create?
-    user_has_any_permissions?(:manage_organizations)
-  end
-
-  def new?
-    create?
+    user.owner? || admin_can_access?(:organization_owner)
   end
 
   def update?
-    user_has_any_permissions?(
-      :manage_organizations,
-      [:manage_facility_groups_for_organization, record]
-    )
+    show?
   end
 
   def edit?
@@ -33,16 +16,20 @@ class OrganizationPolicy < ApplicationPolicy
   end
 
   def destroy?
-    destroyable? && user_has_any_permissions?(:manage_organizations)
+    destroyable? && user.owner?
   end
-  
+
   private
 
   def destroyable?
     record.facility_groups.none?
   end
 
-  class Scope < Scope
+  def admin_can_access?(role)
+    user.role == role.to_s && user.organizations.include?(record)
+  end
+
+  class Scope
     attr_reader :user, :scope
 
     def initialize(user, scope)
@@ -51,15 +38,7 @@ class OrganizationPolicy < ApplicationPolicy
     end
 
     def resolve
-      if user.has_permission?(:manage_organizations)
-        scope.all
-      elsif user.has_permission?(:manage_facility_groups_for_organization)
-        scope.where(id: resources_for_permission(:manage_facility_groups_for_organization).map(&:id))
-      elsif user.has_permission?(:manage_facilities_for_facility_group)
-        scope.where(id: resources_for_permission(:manage_facilities_for_facility_group).map(&:organization_id))
-      else
-        scope.none
-      end
+      scope.where(id: @user.organizations.map(&:id))
     end
   end
 end
