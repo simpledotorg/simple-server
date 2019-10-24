@@ -52,7 +52,7 @@
             <ul class="navbar-nav mr-auto">
               <% if policy(:dashboard).show? %>
                 <li class="nav-item">
-                  <%= link_to "Dashboard", email_authentication_root_path, class: "nav-link #{active_controller?("organizations", "facility_groups")}" %>
+                  <%= link_to "Dashboard", root_path, class: "nav-link #{active_controller?("organizations", "facility_groups")}" %>
                 </li>
               <% end %>
               <% if FeatureToggle.enabled?('PATIENT_FOLLOWUPS') %>
@@ -74,19 +74,19 @@
                   Manage
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <% if policy([:manage, Organization]).index? %>
+                  <% if policy([:dashboard]).manage_organizations? %>
                     <%= link_to "Organizations", admin_organizations_path, class: "dropdown-item #{active_controller?("admin/organizations")}" %>
                   <% end %>
-                  <% if policy([:manage, Facility]).index? %>
+                  <% if policy([:dashboard]).manage_facilities? %>
                     <%= link_to "Facilities", admin_facilities_path, class: "dropdown-item #{active_controller?("admin/facilities")}" %>
                   <% end %>
-                  <% if policy([:manage, Protocol]).index? %>
+                  <% if policy([:dashboard]).manage_protocols? %>
                     <%= link_to "Protocols", admin_protocols_path, class: "dropdown-item #{active_controller?("admin/protocols")}" %>
                   <% end %>
-                  <% if policy([:manage, :admin, User]).index? %>
+                  <% if policy([:dashboard]).manage_admins? %>
                     <%= link_to "Admins", admins_path, class: "dropdown-item #{active_controller?("email_authentications")}" %>
                   <% end %>
-                  <% if policy([:manage, :user, User]).index? %>
+                  <% if policy([:dashboard]).manage_users? %>
                     <%= link_to "Users", admin_users_path, class: "dropdown-item #{active_controller?("users")}" %>
                   <% end %>
                 </div>

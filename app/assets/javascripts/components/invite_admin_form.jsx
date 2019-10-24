@@ -31,7 +31,7 @@ window.InviteAdminForm = createReactClass({
         }
     },
 
-    updateErrors: function(errors) {
+    updateErrors: function (errors) {
         this.setState({errors: errors})
     },
 
@@ -90,6 +90,11 @@ window.InviteAdminForm = createReactClass({
     },
 
     getPermissionsPayload: function () {
+        if (_.isEmpty(this.state.selected_permissions)) {
+            this.setState({errors: ["Admin must be assigned at least one permission"]});
+            return;
+        }
+
         return _.flatMap(this.state.selected_permissions, (permission) => {
             var resources = this.getPriortyResources(permission.resource_priority);
             if (resources == null) {
@@ -108,6 +113,11 @@ window.InviteAdminForm = createReactClass({
 
     submitForm: function () {
         var permissions_payload = this.getPermissionsPayload();
+
+        if(_.isEmpty(permissions_payload)) {
+            return;
+        }
+
         var request_payload =
             _.chain(this.state)
                 .pick(['full_name', 'email', 'role', 'mobile', 'location'])
@@ -149,7 +159,7 @@ window.InviteAdminForm = createReactClass({
 
     render: function () {
         var errors = _.map(this.state.errors, (error, idx) => {
-           return <ErrorMessage message={error} key={idx}/>;
+            return <ErrorMessage message={error} key={idx}/>;
         });
         return (
             <div>
