@@ -45,6 +45,7 @@ RSpec.describe Api::V2::UsersController, type: :controller do
           .to eq(created_user.attributes
                    .except(
                      'role',
+                     'organization_id',
                      'device_updated_at',
                      'device_created_at',
                      'created_at',
