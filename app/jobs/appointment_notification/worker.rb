@@ -4,14 +4,13 @@ class AppointmentNotification::Worker
 
   sidekiq_options queue: 'high'
 
-  def perform(user_id, appointments, communication_type)
+  def perform(appointments, communication_type)
     Appointment.where(id: appointments).each do |appointment|
       next if appointment.previously_communicated_via?(communication_type)
 
       begin
         sms_response = send_sms(appointment, communication_type)
-        Communication.create_with_twilio_details!(user: User.find(user_id),
-                                                  appointment: appointment,
+        Communication.create_with_twilio_details!(appointment: appointment,
                                                   twilio_sid: sms_response.sid,
                                                   twilio_msg_status: sms_response.status,
                                                   communication_type: communication_type)
