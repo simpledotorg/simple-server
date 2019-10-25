@@ -22,8 +22,8 @@ module DashboardHelper
     period == :month ? value.strftime("%b %Y") : quarter_string(value)
   end
 
-  def analytics_totals(analytics, metric, period)
-    dash_if_zero(analytics.sum { |_, row| row.dig(metric, period) || 0 })
+  def analytics_totals(analytics, metric, date)
+    analytics.sum { |_, row| row.dig(metric, date) || 0 }
   end
 
   def calculate_percentage_for_analytics(analytics)
