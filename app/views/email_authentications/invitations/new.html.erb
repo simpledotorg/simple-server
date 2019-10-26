@@ -1,0 +1,12 @@
+<h1><%= t "devise.invitations.new.header" %></h1>
+
+<% user_permissions = current_admin.user_permissions.pluck(:permission_slug) %>
+<%= react_component "InviteAdminForm",
+                    organizations: policy_scope([:manage, :admin, Organization.all]),
+                    facility_groups: policy_scope([:manage, :admin, FacilityGroup.all]),
+                    facilities: policy_scope([:manage, :admin, Facility.all]).pluck(:id, :name),
+                    permissions: Permissions::ALL_PERMISSIONS.select { |k, _v| user_permissions.include?(k.to_s) }.values,
+                    access_levels: Permissions::ACCESS_LEVELS,
+                    submit_route: '/email_authentications/invitation',
+                    submit_text: 'Invite Admin',
+                    submit_method: 'POST' %>

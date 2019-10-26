@@ -10,7 +10,7 @@ en:
       no_invitations_remaining: "No invitations remaining"
       invitation_removed: "Your invitation was removed."
       new:
-        header: "Send invitation to %{role_title}"
+        header: "Send invitation to new admin"
         submit_button: "Send an invitation"
       edit:
         header: "Set your password"
