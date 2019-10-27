@@ -72,6 +72,7 @@ module Permissions
       description: "Admin for an organization",
       default_permissions: [
         :manage_facility_groups,
+        :manage_facilities,
         :approve_health_workers,
         :view_overdue_list,
         :view_adherence_follow_up_list,
@@ -126,6 +127,8 @@ module Permissions
       description: "Super admin",
       default_permissions: [
         :manage_organizations,
+        :manage_facility_groups,
+        :manage_facilities,
         :manage_protocols,
         :approve_health_workers,
         :view_overdue_list,
