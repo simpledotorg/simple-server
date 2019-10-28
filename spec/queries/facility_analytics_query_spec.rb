@@ -4,7 +4,7 @@ RSpec.describe FacilityAnalyticsQuery do
   let!(:users) { create_list(:user, 2) }
   let!(:facility) { create(:facility) }
   let!(:analytics) { FacilityAnalyticsQuery.new(facility, :month, 6) }
-  let!(:current_month) { Date.today.beginning_of_month }
+  let!(:current_month) { Date.current.beginning_of_month }
 
   let(:five_months_back) { current_month - 5.months }
   let(:four_months_back) { current_month - 4.months }

@@ -16,7 +16,7 @@ RSpec.feature 'Overdue appointments', type: :feature do
   end
 
   describe 'index' do
-    before { sign_in(supervisor.email_authentication) }
+    before { sign_in(supervisor) }
 
     it 'shows Overdue tab' do
       visit root_path

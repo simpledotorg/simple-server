@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191009085236) do
+ActiveRecord::Schema.define(version: 20191022080653) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -37,7 +37,6 @@ ActiveRecord::Schema.define(version: 20191009085236) do
     t.string "access_controllable_type", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.uuid "user_id"
     t.index ["access_controllable_id", "access_controllable_type"], name: "index_access_controls_on_controllable_id_and_type"
     t.index ["admin_id"], name: "index_admin_access_controls_on_admin_id"
   end
@@ -193,6 +192,22 @@ ActiveRecord::Schema.define(version: 20191009085236) do
     t.index ["unlock_token"], name: "index_email_authentications_on_unlock_token", unique: true
   end
 
+  create_table "encounters", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "facility_id", null: false
+    t.uuid "patient_id", null: false
+    t.date "encountered_on", null: false
+    t.integer "timezone_offset", null: false
+    t.text "notes"
+    t.jsonb "metadata"
+    t.datetime "device_created_at", null: false
+    t.datetime "device_updated_at", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["facility_id"], name: "index_encounters_on_facility_id"
+    t.index ["patient_id"], name: "index_encounters_on_patient_id"
+  end
+
   create_table "exotel_phone_number_details", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "patient_phone_number_id", null: false
     t.string "whitelist_status"
@@ -249,9 +264,6 @@ ActiveRecord::Schema.define(version: 20191009085236) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
-    t.string "role"
-    t.uuid "organization_id"
-    t.index ["organization_id"], name: "index_master_users_on_organization_id"
   end
 
   create_table "medical_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -276,6 +288,18 @@ ActiveRecord::Schema.define(version: 20191009085236) do
     t.uuid "user_id"
     t.index ["deleted_at"], name: "index_medical_histories_on_deleted_at"
     t.index ["patient_id"], name: "index_medical_histories_on_patient_id"
+  end
+
+  create_table "observations", force: :cascade do |t|
+    t.uuid "encounter_id", null: false
+    t.uuid "user_id", null: false
+    t.string "observable_type"
+    t.uuid "observable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["encounter_id"], name: "index_observations_on_encounter_id"
+    t.index ["observable_type", "observable_id"], name: "idx_observations_on_observable_type_and_id", unique: true
+    t.index ["user_id"], name: "index_observations_on_user_id"
   end
 
   create_table "organizations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -418,9 +442,12 @@ ActiveRecord::Schema.define(version: 20191009085236) do
   end
 
   add_foreign_key "appointments", "facilities"
+  add_foreign_key "encounters", "facilities"
   add_foreign_key "exotel_phone_number_details", "patient_phone_numbers"
   add_foreign_key "facilities", "facility_groups"
   add_foreign_key "facility_groups", "organizations"
+  add_foreign_key "observations", "encounters"
+  add_foreign_key "observations", "master_users", column: "user_id"
   add_foreign_key "patient_phone_numbers", "patients"
   add_foreign_key "patients", "addresses"
   add_foreign_key "protocol_drugs", "protocols"
@@ -434,9 +461,7 @@ ActiveRecord::Schema.define(version: 20191009085236) do
       master_users.device_created_at,
       master_users.created_at,
       master_users.updated_at,
-      master_users.deleted_at,
-      master_users.role,
-      master_users.organization_id
+      master_users.deleted_at
      FROM master_users;
   SQL
   create_view "bp_drugs_views", sql_definition: <<-SQL

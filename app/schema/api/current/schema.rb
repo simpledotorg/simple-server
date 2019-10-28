@@ -71,6 +71,10 @@ class Api::Current::Schema
       sync_from_user_request(:medical_histories)
     end
 
+    def encounter_sync_from_user_request
+      sync_from_user_request(:encounters)
+    end
+
     def patient_sync_to_user_response
       sync_to_user_response(:patients, 'nested_patients')
     end
@@ -102,6 +106,10 @@ class Api::Current::Schema
 
     def medical_history_sync_to_user_response
       sync_to_user_response(:medical_histories)
+    end
+
+    def encounter_sync_to_user_response
+      sync_to_user_response(:encounters)
     end
 
     def user_login_request

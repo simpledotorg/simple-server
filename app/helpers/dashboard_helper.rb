@@ -7,7 +7,7 @@ module DashboardHelper
     value.nil? || value.zero?
   end
 
-  def dates_for_periods(period, previous_periods, from_date: Time.now)
+  def dates_for_periods(period, previous_periods, from_date: Time.current)
     period_range = (0..(previous_periods - 1)).to_a.reverse
 
     if period == :month

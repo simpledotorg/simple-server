@@ -3,7 +3,7 @@
   <p>
     <%= link_to graphics_path.call(options.merge( quarter: previous_quarter, year: previous_quarter_year, format: "png")), class: "download" do %>
       <i class='fas fa-camera mr-2'></i>
-      <%= "#{quarter_string(Date.today.prev_quarter)} snapshot (PNG)" %>
+      <%= "#{quarter_string(Date.current.prev_quarter)} snapshot (PNG)" %>
     <% end %>
 
      and

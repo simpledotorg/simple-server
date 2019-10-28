@@ -30,7 +30,7 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
   end
 
   def first_of_current_month
-    Date.today.at_beginning_of_month
+    Date.current.at_beginning_of_month
   end
 
   def first_patient_at_facility

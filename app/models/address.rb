@@ -2,8 +2,8 @@ class Address < ApplicationRecord
   include Mergeable
 
   STATE_TO_LOCALE = {
-    punjab: :pa_Guru_IN,
-    maharashtra: :mr_IN,
+    punjab: 'pa-Guru-IN',
+    maharashtra: 'mr-IN',
   }
 
   validates :device_created_at, presence: true

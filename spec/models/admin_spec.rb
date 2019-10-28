@@ -15,7 +15,7 @@ RSpec.describe Admin, type: :model do
         expect(owner.protocols).to eq(Protocol.all)
       end
 
-      it 'lists all protocols scoped by facility groups for other email_authentications' do
+      it 'lists all protocols scoped by facility groups for other admins' do
         protocol = Protocol.first
         facility_group = create :facility_group, protocol: protocol
 
@@ -44,7 +44,7 @@ RSpec.describe Admin, type: :model do
         expect(owner.facilities).to eq(Facility.all)
       end
 
-      it 'lists admin facility groups for all other email_authentications' do
+      it 'lists admin facility groups for all other admins' do
         facility = Facility.first
 
         admin = create :admin, role: :organization_owner
@@ -72,7 +72,7 @@ RSpec.describe Admin, type: :model do
         expect(owner.users).to eq(User.all)
       end
 
-      it 'lists all users scoped by facility groups for other email_authentications' do
+      it 'lists all users scoped by facility groups for other admins' do
         facility_group = FacilityGroup.first
         users = facility_group.users
 

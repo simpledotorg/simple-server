@@ -1,5 +1,5 @@
 require 'rails_helper'
-require 'tasks/scripts/move_user_recorded_data_to_registration_facility'
+require 'tasks/data_clean_up/move_user_recorded_data_to_registration_facility'
 
 RSpec.describe MoveUserRecordedDataToRegistrationFacility do
   let(:source_facility) { create(:facility) }
