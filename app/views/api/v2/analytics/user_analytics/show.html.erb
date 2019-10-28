@@ -28,7 +28,7 @@
 
   <div class="card">
     <%= inline_svg('icon_enroll.svg', classname: 'icon-float') %>
-    <h3>How many new patients are registered at <%= @current_facility.name %>?</h3>
+    <h3>How many new patients registered at <%= @current_facility.name %>?</h3>
     <h5>All time: <%= @statistics[:total_patients_count] %> patients</h5>
     <div class="bar-chart">
       <%= render 'graph',
