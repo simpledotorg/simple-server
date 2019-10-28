@@ -1,4 +1,6 @@
 class Api::Current::EncountersController < Api::Current::SyncController
+  include Api::Current::PrioritisableByFacility
+
   def sync_from_user
     __sync_from_user__(encounter_params)
   end
@@ -28,6 +30,7 @@ class Api::Current::EncountersController < Api::Current::SyncController
       transformed_params = Api::Current::EncounterTransformer.from_nested_request(encounter_params)
       { record: MergeEncounterService.new(transformed_params,
                                           current_facility,
+                                          current_user,
                                           current_timezone_offset).merge[:encounter] }
     end
   end

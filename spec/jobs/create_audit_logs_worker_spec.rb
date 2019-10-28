@@ -17,7 +17,7 @@ RSpec.describe CreateAuditLogsWorker, type: :job do
                                               record_class: record_class,
                                               record_ids: record_ids,
                                               action: action,
-                                              time: Time.now }.to_json)
+                                              time: Time.current }.to_json)
       }.to change(Sidekiq::Queues['audit_log_queue'], :size).by(1)
       CreateAuditLogsWorker.clear
     end
@@ -31,14 +31,14 @@ RSpec.describe CreateAuditLogsWorker, type: :job do
                                         auditable_type: 'Patient',
                                         auditable_id: record.id,
                                         action: 'fetch',
-                                        time: Time.now }.to_json)
+                                        time: Time.current }.to_json)
           end
         end
         CreateAuditLogsWorker.perform_async({ user_id: user.id,
                                               record_class: record_class,
                                               record_ids: record_ids,
                                               action: action,
-                                              time: Time.now }.to_json)
+                                              time: Time.current }.to_json)
 
 
         CreateAuditLogsWorker.drain

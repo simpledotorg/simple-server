@@ -53,7 +53,7 @@ RSpec.describe AutomaticPhoneNumberWhitelistingWorker, type: :job do
         AutomaticPhoneNumberWhitelistingWorker.perform_async(phones_numbers_need_whitelisting.map(&:id), virtual_number, account_sid, token)
         AutomaticPhoneNumberWhitelistingWorker.drain
         phones_numbers_need_whitelisting.each do |phone_number|
-          expect(phone_number.exotel_phone_number_detail.whitelist_requested_at.to_i).to eq(Time.now.to_i)
+          expect(phone_number.exotel_phone_number_detail.whitelist_requested_at.to_i).to eq(Time.current.to_i)
         end
       end
     end

@@ -16,6 +16,12 @@
 //= require bootstrap-sprockets
 //= require bs-custom-file-input.js
 //= require bs-file-input-init.js
+//= require tablesort
+//= require tablesort/dist/sorts/tablesort.number.min
 //= require_tree .
 
-$(function () { $('[data-toggle="tooltip"]').tooltip() })
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+
+  new Tablesort(document.getElementById('analytics-table'), { descending: true })
+});

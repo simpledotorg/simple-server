@@ -33,6 +33,7 @@ $font-small: 11px;
 
 // Third-party imports
 @import "bootstrap";
+@import "tablesort/tablesort";
 
 // Local imports
 @import "dashboard";
@@ -598,6 +599,11 @@ Dashboard UI
     line-height: 1.2;
     font-family: $font-condensed;
     vertical-align: bottom;
+
+    &.sort-label {
+      color: $blue;
+      text-transform: uppercase;
+    }
 }
 
 .table-compact .row-control {

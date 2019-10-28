@@ -21,7 +21,7 @@ describe 'Login Current API', swagger_doc: 'current/swagger.json' do
 
       response '401', 'user is not logged in with expired otp' do
         let(:db_user) do
-          Timecop.freeze(Date.today - 30) { FactoryBot.create(:user, password: '1234') }
+          Timecop.freeze(Date.current - 30) { FactoryBot.create(:user, password: '1234') }
         end
         let(:user) do
           { user: { phone_number: db_user.phone_number,

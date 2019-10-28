@@ -12,11 +12,11 @@ FactoryBot.define do
     gender { Patient::GENDERS.sample }
     full_name { common_names[gender].sample + " " + common_names[gender].sample }
     status { Patient::STATUSES[0] }
-    date_of_birth { Date.today if has_date_of_birth? }
+    date_of_birth { Date.current if has_date_of_birth? }
     age { rand(18..100) unless has_date_of_birth? }
-    age_updated_at { Time.now - rand(10).days if age.present? }
-    device_created_at { Time.now }
-    device_updated_at { Time.now }
+    age_updated_at { Time.current - rand(10).days if age.present? }
+    device_created_at { Time.current }
+    device_updated_at { Time.current }
     recorded_at { device_created_at }
     association :address, strategy: :build
     phone_numbers { build_list(:patient_phone_number, 1, patient_id: id) }

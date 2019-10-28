@@ -10,6 +10,8 @@ namespace :cohort_reports do
     quarter = args[:quarter].to_i
     organization_name = args[:organization_name]
 
+    Time.zone = 'Asia/Kolkata'
+
     report_start = quarter_start(year, quarter)
     report_end   = report_start.end_of_quarter
     cohort_start = (report_start - 3.months).beginning_of_quarter

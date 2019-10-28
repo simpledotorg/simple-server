@@ -1,7 +1,7 @@
 class Encounter < ApplicationRecord
   include Mergeable
 
-  belongs_to :patient
+  belongs_to :patient, optional: true
   belongs_to :facility
 
   has_many :observations

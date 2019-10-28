@@ -9,9 +9,8 @@ FactoryBot.define do
     end
 
     full_name { Faker::Name.name }
-
-    device_created_at { Time.now }
-    device_updated_at { Time.now }
+    device_created_at { Time.current }
+    device_updated_at { Time.current }
 
     sync_allowed
 
@@ -62,7 +61,7 @@ def register_user_request_params(arguments = {})
     phone_number: Faker::PhoneNumber.phone_number,
     password_digest: BCrypt::Password.create("1234"),
     registration_facility_id: SecureRandom.uuid,
-    created_at: Time.now.iso8601,
-    updated_at: Time.now.iso8601
+    created_at: Time.current.iso8601,
+    updated_at: Time.current.iso8601
   }.merge(arguments)
 end
