@@ -1,6 +1,6 @@
 class OverdueList::AppointmentPolicy < ApplicationPolicy
   def index?
-    user.has_permission?(:view_overdue_list)
+    user.has_permission?(:view_overdue_list) || user.has_permission?(:download_overdue_list)
   end
 
   def update?
