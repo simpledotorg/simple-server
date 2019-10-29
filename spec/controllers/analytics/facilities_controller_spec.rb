@@ -99,7 +99,7 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
             },
             dashboard: {
               user.id => {
-                registered_patients_by_period: {},
+                registered_patients_by_period: { feb_2019 => 3 },
                 total_registered_patients: 3,
                 follow_up_patients_by_period: { mar_2019 => 3 }
               }
