@@ -135,7 +135,7 @@ class User < ApplicationRecord
   end
 
   def has_permission?(permission_slug)
-    user_permissions.find_by(permission_slug: permission_slug).present?
+    user_permissions.where(permission_slug: permission_slug).present?
   end
 
   def reset_phone_number_authentication_password!(password_digest)
