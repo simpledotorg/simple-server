@@ -1,5 +1,7 @@
 class AdminsController < AdminController
   before_action :set_admin, only: [:show, :edit, :update, :destroy]
+  before_action :verify_role_is_present, only: [:update]
+
   after_action :verify_policy_scoped, only: :index
 
   def index
@@ -35,6 +37,12 @@ class AdminsController < AdminController
   end
 
   private
+
+  def verify_role_is_present
+    if params[:role].blank?
+      render json: { errors: ['Admin role is missing'] }, status: :bad_request
+    end
+  end
 
   def set_admin
     @admin = User.find(params[:id])

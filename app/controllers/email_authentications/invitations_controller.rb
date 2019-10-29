@@ -1,4 +1,5 @@
 class EmailAuthentications::InvitationsController < Devise::InvitationsController
+  before_action :verify_role_is_present, only: [:create]
   helper_method :current_admin
 
   def new
@@ -34,6 +35,12 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   end
 
   protected
+
+  def verify_role_is_present
+    if params[:role].blank?
+      render json: { errors: ['Admin role is missing'] }, status: :bad_request
+    end
+  end
 
   def current_admin
     current_inviter.user
