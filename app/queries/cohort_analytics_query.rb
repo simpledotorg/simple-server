@@ -5,18 +5,18 @@ class CohortAnalyticsQuery
     @patients = patients
   end
 
-  def patient_counts_by_period(period, prev_periods, from_date: Time.current)
+  def patient_counts_by_period(period, prev_periods, from_time: Time.current)
     results = {}
 
     (0..(prev_periods - 1)).each do |periods_back|
       if period == :month
-        offset_date = from_date - periods_back.months
+        offset_date = from_time - periods_back.months
         cohort_start = (offset_date - 3.months).beginning_of_month
         cohort_end = cohort_start.end_of_month
         report_start = (cohort_start + 1.month).beginning_of_month
         report_end = (report_start + 1.month).end_of_month
       else
-        offset_date = from_date - (periods_back * 3).months
+        offset_date = from_time - (periods_back * 3).months
         cohort_start = (offset_date - 6.months).beginning_of_quarter
         cohort_end = cohort_start.end_of_quarter
         report_start = (cohort_start + 3.months).beginning_of_quarter

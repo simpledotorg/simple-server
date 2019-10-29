@@ -9,8 +9,7 @@
     </tr>
     </thead>
     <tbody>
-    <% dates_for_periods(:quarter, 3, from_date: quarter_datetime(@year.to_i,
-                                                                  @quarter.to_i)).reverse.each do |quarter| %>
+    <% dates_for_periods(:quarter, 3, from_time: quarter_datetime(@year.to_i, @quarter.to_i)).reverse.each do |quarter| %>
       <tr>
         <td class="snapshot-quarter"><%= format_period(:quarter, quarter) %></td>
         <td class="green text-right pr-3" style="border-right: 1px solid #dce4e8;"><%= analytics_totals(dashboard_analytics, :registered_patients_by_period, quarter) %></td>
