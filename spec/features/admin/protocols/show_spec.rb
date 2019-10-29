@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.feature 'test protocol detail page functionality', type: :feature do
-  let(:owner) { create(:admin, :owner) }
+  let(:owner) { create(:admin) }
   let!(:var_protocol) { create(:protocol, name: "PunjabTestProtocol", follow_up_days: "20") }
   let!(:var_protocol_drug) { create(:protocol_drug, name: "test_Drug_01", dosage: "10mg", rxnorm_code: "code", protocol: var_protocol) }
 
@@ -12,7 +12,7 @@ RSpec.feature 'test protocol detail page functionality', type: :feature do
 
   before(:each) do
     visit root_path
-    sign_in(owner.email_authentication)
+    sign_in(owner)
     visit admin_protocols_path
   end
 

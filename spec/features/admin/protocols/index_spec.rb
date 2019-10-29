@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.feature 'test protocol screen functionality', type: :feature do
-  let(:owner) { create(:admin, :owner) }
+  let(:owner) { create(:admin) }
   let!(:var_protocol) { create(:protocol, name: "PunjabTestProtocol", follow_up_days: "20") }
 
   protocol_new = AdminPage::Protocols::New.new
@@ -10,7 +10,7 @@ RSpec.feature 'test protocol screen functionality', type: :feature do
 
   before(:each) do
     visit root_path
-    sign_in(owner.email_authentication)
+    sign_in(owner)
     visit admin_protocols_path
   end
 

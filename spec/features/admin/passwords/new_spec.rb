@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.feature 'To test Forgot password functionality', type: :feature do
-  let(:owner) { create(:admin, :owner) }
+  let(:owner) { create(:admin) }
   login_page = AdminPage::Sessions::New.new
   forgot_password = AdminPage::Passwords::New.new
 
