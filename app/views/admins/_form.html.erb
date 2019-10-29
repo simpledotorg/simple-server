@@ -3,7 +3,7 @@
 <%= react_component "InviteAdminForm",
                     admin: admin,
                     email: admin.email,
-                    selected_permissions: admin.user_permissions.map { |permission| Permissions::ALL_PERMISSIONS[permission.permission_slug.to_sym] },
+                    selected_permissions: admin.user_permissions.map { |permission| Permissions::ALL_PERMISSIONS[permission.permission_slug.to_sym] }.uniq,
                     selected_facility_groups: admin.user_permissions.where(resource_type: 'FacilityGroup').map { |permission| { resource_id: permission.resource.id, resource_type: permission.resource_type, resource_name: permission.resource.name } if permission.resource.present? }.compact.uniq,
                     organizations: policy_scope([:manage, :admin, Organization.all]),
                     facility_groups: policy_scope([:manage, :admin, FacilityGroup.all]),
