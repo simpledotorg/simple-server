@@ -50,14 +50,15 @@ class Manage::User::UserPolicy < ApplicationPolicy
     def resolve
       return scope.none unless user.has_permission?(:approve_health_workers)
 
-      facility_ids = facility_ids_for_permission(:approve_health_workers)
+      facility_group_ids = facility_group_ids_for_permission(:approve_health_workers)
       user_scope = scope.joins(:phone_number_authentications)
                      .where.not(phone_number_authentications: { id: nil })
 
-      return user_scope.all if facility_ids.blank?
+      return user_scope.all if facility_group_ids.blank?
 
+      facilities = Facility.where(facility_group_id: facility_group_ids)
       user_scope.where(phone_number_authentications:
-                         { registration_facility_id: facility_ids })
+                         { registration_facility_id: facilities })
     end
   end
 end
