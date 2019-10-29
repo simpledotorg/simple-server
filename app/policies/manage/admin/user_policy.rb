@@ -44,6 +44,14 @@ class Manage::Admin::UserPolicy < ApplicationPolicy
     edit_admin?(record)
   end
 
+  def allowed_access_levels
+    Permissions::ACCESS_LEVELS.select { |al| (al[:default_permissions] - user_permissions).blank? }
+  end
+
+  def allowed_permissions
+    Permissions::ALL_PERMISSIONS.select { |k, v| user_permissions.include?(k) }.values
+  end
+
   class Scope < Scope
     attr_reader :user, :scope
 
@@ -62,5 +70,11 @@ class Manage::Admin::UserPolicy < ApplicationPolicy
 
       admin_scope.where(organization: resources)
     end
+  end
+
+  private
+
+  def user_permissions
+    user.user_permissions.pluck(:permission_slug).map(&:to_sym)
   end
 end
