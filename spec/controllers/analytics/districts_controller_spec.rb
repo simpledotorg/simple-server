@@ -16,14 +16,14 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
     #
     # register patients
     #
-    registered_patients = Timecop.travel(Date.new(2019, 3, 1)) do
+    registered_patients = Timecop.travel(Date.new(2018, 11, 1)) do
       create_list(:patient, 3, registration_facility: facility)
     end
 
     #
     # add blood_pressures next month
     #
-    Timecop.travel(Date.new(2019, 4, 1)) do
+    Timecop.travel(Date.new(2019, 2, 1)) do
       registered_patients.each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility) }
     end
 
@@ -65,9 +65,9 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
       end
 
       let(:today) { Date.new(2019, 5, 1) }
-      let(:cohort_date1) { today.beginning_of_quarter }
-      let(:cohort_date2) { (today - (1 * 3).months).beginning_of_quarter }
-      let(:cohort_date3) { (today - (2 * 3).months).beginning_of_quarter }
+      let(:cohort_date1) { (today - (1 * 3).months).beginning_of_quarter }
+      let(:cohort_date2) { (today - (2 * 3).months).beginning_of_quarter }
+      let(:cohort_date3) { (today - (3 * 3).months).beginning_of_quarter }
 
       it 'caches the district correctly' do
         expected_cache_value =
