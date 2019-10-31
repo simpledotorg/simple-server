@@ -3,12 +3,16 @@ require 'csv'
 module PatientsExporter
   extend QuarterHelper
 
+  BATCH_SIZE = 1000
+
   def self.csv(patients)
     CSV.generate(headers: true) do |csv|
       csv << csv_headers
 
-      patients.each do |patient|
-        csv << csv_fields(patient)
+      patients.in_batches(of: BATCH_SIZE).each do |batch|
+        batch.each do |patient|
+          csv << csv_fields(patient)
+        end
       end
     end
   end

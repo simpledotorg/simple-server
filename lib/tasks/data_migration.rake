@@ -113,4 +113,9 @@ namespace :data_migration do
       end
     end
   end
+
+  desc 'Make all occurrences of the SMS Reminder Bot User nil'
+  task remove_bot_user_usages: :environment do
+    Communication.where(user: ENV['APPOINTMENT_NOTIFICATION_BOT_USER_UUID']).update_all(user_id: nil)
+  end
 end
