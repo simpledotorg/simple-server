@@ -83,8 +83,11 @@ bundle exec rake "generate:seed[6]"
 
 will generate seed data for 6 months.
 
-Note: For the `development` environment, this will truncate existing data and seed the database
+Note: 
+
+* For the `development` environment, this will truncate existing data and seed the database
 from scratch.
+* Please refer to `config/seed.yml` to set the multiplier values to control the volume of seed data generated.
 
 ## Documentation
 
