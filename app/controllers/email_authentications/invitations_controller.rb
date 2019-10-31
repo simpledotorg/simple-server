@@ -1,5 +1,4 @@
 class EmailAuthentications::InvitationsController < Devise::InvitationsController
-  before_action :verify_params, only: [:create]
   helper_method :current_admin
 
   def new
@@ -18,8 +17,13 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
     User.transaction do
       super do |resource|
-        return render json: { errors: resource.errors.full_messages },
-                      status: :bad_request if resource.invalid?
+        errors = []
+
+        errors.append(resource.errors.full_messages) if resource.invalid?
+        errors.append(user_param_errors)
+
+        return render json: { errors: errors.flatten },
+                      status: :bad_request if errors.present?
 
         user.email_authentications = [resource]
         user.save!
@@ -38,12 +42,11 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
   protected
 
-  def verify_params
+  def user_param_errors
     user = User.new(user_params)
+    return user.errors.full_messages if user.invalid?
 
-    unless user.valid?
-      return render json: { errors: user.errors.full_messages }, status: :bad_request
-    end
+    []
   end
 
   def current_admin

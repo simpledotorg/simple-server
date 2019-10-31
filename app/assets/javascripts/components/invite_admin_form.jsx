@@ -158,14 +158,9 @@ window.InviteAdminForm = createReactClass({
 
 
     render: function () {
-        var errors = _.map(this.state.errors, (error, idx) => {
-            return <ErrorMessage message={error} key={idx}/>;
-        });
         return (
             <div>
-                <div className='error-messages'>
-                    {errors}
-                </div>
+                <ErrorMessages messages={this.state.errors}/>
                 <TextInputField name="full_name" title="Full Name" value={this.state.full_name}
                                 updateInput={this.updateInput}/>
                 <TextInputField name="email" title="Email" value={this.state.email} updateInput={this.updateInput}/>
