@@ -31,12 +31,13 @@ class AnalyticsController < AdminController
 
     session[:period] = @period
 
-    @prev_periods = (@period == :quarter) ? 2 : 6
+    @prev_periods = (@period == :quarter) ? 3 : 6
   end
 
   def set_quarter
-    @quarter = params[:quarter].present? ? params[:quarter].to_i : current_quarter
-    @year = params[:year].present? ? params[:year].to_i : current_year
+    @quarter, @year = previous_quarter_and_year
+    @quarter = params[:quarter].to_i if params[:quarter].present?
+    @year = params[:year].to_i if params[:year].present?
   end
 
   def set_analytics_cache(key, data)
