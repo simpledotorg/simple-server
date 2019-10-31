@@ -2,7 +2,12 @@ require 'rails_helper'
 
 RSpec.describe Api::ManifestsController, type: :controller do
   describe 'GET #show' do
-    ['production', 'sandbox', 'demo', 'qa', 'development'].each do |env|
+    ENVS = Dir
+             .glob('config/deploy/*.rb')
+             .map { |file| Pathname.new(file).basename('.rb').to_s }
+             .append('development')
+
+    ENVS.each do |env|
       it "return 200 for #{env}" do
         expect(ENV).to receive(:[]).with('SIMPLE_SERVER_ENV').and_return(env)
         get :show
