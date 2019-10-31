@@ -1,10 +1,11 @@
 class FacilityAnalyticsQuery
   include DashboardHelper
 
-  def initialize(facility, period = :month, prev_periods = 3)
+  def initialize(facility, period = :month, prev_periods = 3, from_time = Time.current)
     @facility = facility
     @period = period
     @prev_periods = prev_periods
+    @from_time = from_time
   end
 
   def total_registered_patients
@@ -77,7 +78,7 @@ class FacilityAnalyticsQuery
   end
 
   def group_by_user_and_date(query_results, key)
-    valid_dates = dates_for_periods(@period, @prev_periods)
+    valid_dates = dates_for_periods(@period, @prev_periods, from_time: @from_time)
 
     query_results.map do |(user_id, date), value|
       { user_id => { key => { date => value }.slice(*valid_dates) } }

@@ -19,9 +19,6 @@
     <%
       cohort_start, report_start = report_dates
 
-      # Skip the current month if monthly (it's too soon to measure)
-      next if @period == :month && index == 0
-
       registered = analytics[:registered]
       followed_up = analytics[:followed_up]
       defaulted = analytics[:defaulted]
@@ -35,8 +32,6 @@
         report_period = [report_start.strftime("%b %-d"), (report_start + 1.month).end_of_month.strftime("%b %-d")].join("–")
         cohort_period = cohort_start.strftime("%b %Y")
       end
-
-      is_current_period = (index == 0)
     %>
 
     <div class="split-row">
@@ -45,7 +40,7 @@
           <div class="bar-total float-right float-lg-none mb-n4">Outcomes for <%= registered %> patients reg. <%= "#{cohort_period}" %></div>
         </div>
         <div class="col-lg-1 nowrap order-lg-1 pt-lg-2">
-          <h6 data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title=""><%= is_current_period ? "This #{@period}" : "#{report_period}" %></h6>
+          <h6 data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title=""><%= report_period %></h6>
         </div>
         <div class="col-lg-8 order-lg-2 pr-lg-0">
           <table class="split-bars">

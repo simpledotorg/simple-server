@@ -10,6 +10,7 @@ RSpec.describe CohortAnalyticsQuery do
   let(:april) { DateTime.new(2019, 4, 1) }
   let(:may)   { DateTime.new(2019, 5, 1) }
   let(:june)  { DateTime.new(2019, 6, 1) }
+  let(:july)  { DateTime.new(2019, 7, 1) }
 
   describe "#patient_counts_by_period" do
     before do
@@ -17,44 +18,33 @@ RSpec.describe CohortAnalyticsQuery do
     end
 
     context "monthly" do
-      # June report: registered in April, visited in May-June
-      # May report: registered in March, visited in April-May
-      # April report: registered in Feb, visited in Mar-April
-
       it "correctly calculates the dates of monthly cohort reports" do
-        travel_to(june) do
-          analytics.patient_counts_by_period(:month, 2)
-        end
+        analytics.patient_counts_by_period(:month, 3, from_time: june)
 
-        expect(analytics).to have_received(:patient_counts).with(april, april.end_of_month, may, june.end_of_month)
         expect(analytics).to have_received(:patient_counts).with(march, march.end_of_month, april, may.end_of_month)
         expect(analytics).to have_received(:patient_counts).with(feb, feb.end_of_month, march, april.end_of_month)
+        expect(analytics).to have_received(:patient_counts).with(jan, jan.end_of_month, feb, march.end_of_month)
       end
 
       it "returns patient counts for the last 3 monthly cohorts" do
         expected_result = {
-          [april, may] => {},
           [march, april] => {},
-          [feb, march] => {}
+          [feb, march] => {},
+          [jan, feb] => {}
         }
 
         travel_to(june) do
-          expect(analytics.patient_counts_by_period(:month, 2)).to eq(expected_result)
+          expect(analytics.patient_counts_by_period(:month, 3, from_time: june)).to eq(expected_result)
         end
       end
     end
 
     context "quarterly" do
-      # Q2 report: registered in Q1, visited in Q2
-      # Q1 report: registered in Q4, visited in Q1
-
       let(:oct_prev) { DateTime.new(2018, 10, 1) }
       let(:dec_prev) { DateTime.new(2018, 12, 1) }
 
       it "correctly calculates the dates of quarterly cohort reports" do
-        travel_to(june) do
-          analytics.patient_counts_by_period(:quarter, 1)
-        end
+        analytics.patient_counts_by_period(:quarter, 2, from_time: july)
 
         expect(analytics).to have_received(:patient_counts).with(jan, march.end_of_quarter, april, june.end_of_quarter)
         expect(analytics).to have_received(:patient_counts).with(oct_prev, dec_prev.end_of_quarter, jan, march.end_of_quarter)
@@ -67,7 +57,7 @@ RSpec.describe CohortAnalyticsQuery do
         }
 
         travel_to(june) do
-          expect(analytics.patient_counts_by_period(:quarter, 1)).to eq(expected_result)
+          expect(analytics.patient_counts_by_period(:quarter, 2, from_time: july)).to eq(expected_result)
         end
       end
     end
