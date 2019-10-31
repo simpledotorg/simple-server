@@ -18,7 +18,6 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
     User.transaction do
       super do |resource|
         errors = []
-
         errors.append(resource.errors.full_messages) if resource.invalid?
         errors.append(user_param_errors)
 
@@ -71,9 +70,6 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   end
 
   def invite_params
-    email = params[:email]
-
-
-    { email: email }
+    { email: params[:email] }
   end
 end

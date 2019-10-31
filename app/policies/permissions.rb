@@ -3,67 +3,80 @@ module Permissions
     approve_health_workers: {
       slug: :approve_health_workers,
       description: 'Approve health workers',
-      resource_priority: [:facility_group, :organization, :global]
+      resource_priority: [:facility_group, :organization, :global],
+      required_permissions: []
     },
     manage_admins: {
       slug: :manage_admins,
       description: 'Manage admins',
-      resource_priority: [:organization, :global]
+      resource_priority: [:organization, :global],
+      required_permissions: []
     },
     manage_organizations: {
       slug: :manage_organizations,
       description: 'Manage organizations',
-      resource_priority: [:global]
+      resource_priority: [:global],
+      required_permissions: []
     },
     manage_protocols: {
       slug: :manage_protocols,
       description: 'Manage protocols',
-      resource_priority: [:global]
+      resource_priority: [:global],
+      required_permissions: []
     },
     manage_facility_groups: {
       slug: :manage_facility_groups,
       description: 'Manage facility groups',
-      resource_priority: [:facility_group, :organization, :global]
+      resource_priority: [:facility_group, :organization, :global],
+      required_permissions: []
     },
     manage_facilities: {
       slug: :manage_facilities,
       description: 'Manage facilities',
-      resource_priority: [:facility_group, :organization, :global]
+      resource_priority: [:facility_group, :organization, :global],
+      required_permissions: []
     },
     view_cohort_reports: {
       slug: :view_cohort_reports,
       description: 'View cohort reports',
       resource_priority: [:facility_group, :organization, :global],
+      required_permissions: []
     },
     view_health_worker_activity: {
       slug: :view_health_worker_activity,
       description: 'View health worker activity',
       resource_priority: [:facility_group, :organization, :global],
+      required_permissions: [:view_cohort_reports]
     },
     view_overdue_list: {
       slug: :view_overdue_list,
       description: 'View overdue list',
-      resource_priority: [:facility_group, :organization, :global]
+      resource_priority: [:facility_group, :organization, :global],
+      required_permissions: []
     },
     download_overdue_list: {
       slug: :download_overdue_list,
       description: 'Download overdue list',
-      resource_priority: [:facility_group, :organization, :global]
+      resource_priority: [:facility_group, :organization, :global],
+      required_permissions: [:view_overdue_list]
     },
     view_adherence_follow_up_list: {
       slug: :view_adherence_follow_up_list,
       description: 'View adherence follow up list',
-      resource_priority: [:facility_group, :organization, :global]
+      resource_priority: [:facility_group, :organization, :global],
+      required_permissions: []
     },
     download_patient_line_list: {
       slug: :download_patient_line_list,
       description: 'Download patient line list',
-      resource_priority: [:facility_group, :organization, :global]
+      resource_priority: [:facility_group, :organization, :global],
+      required_permissions: [:view_cohort_reports]
     },
     view_sidekiq_ui: {
       slug: :view_sidekiq_ui,
       description: 'View sidekiq UI',
-      resource_priority: [:global]
+      resource_priority: [:global],
+      required_permissions: []
     },
   }
 

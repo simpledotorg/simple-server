@@ -89,9 +89,28 @@ window.InviteAdminForm = createReactClass({
         return _.flatMap([resources]);
     },
 
-    getPermissionsPayload: function () {
+    permissionsPayloadErrors: function () {
         if (_.isEmpty(this.state.selected_permissions)) {
-            this.setState({errors: ["Admin must be assigned at least one permission"]});
+            return ["Admin must be assigned at least one permission"];
+        }
+
+        var selected_slugs = _.map(this.state.selected_permissions, 'slug');
+        var errors = _.flatMap(this.state.selected_permissions, (permission) => {
+            return _.map(permission.required_permissions, (required_slug) => {
+                var required_permission = _.find(this.props.permissions, {slug: required_slug});
+                if (!_.includes(selected_slugs, required_slug)) {
+                    return (permission.description + " requires " + required_permission.description);
+                }
+            });
+        });
+
+        return _.compact(errors);
+    },
+
+    getPermissionsPayload: function () {
+        var errors = this.permissionsPayloadErrors();
+        if (!_.isEmpty(errors)) {
+            this.setState({errors: errors});
             return;
         }
 
@@ -114,7 +133,7 @@ window.InviteAdminForm = createReactClass({
     submitForm: function () {
         var permissions_payload = this.getPermissionsPayload();
 
-        if(_.isEmpty(permissions_payload)) {
+        if (_.isEmpty(permissions_payload)) {
             return;
         }
 
