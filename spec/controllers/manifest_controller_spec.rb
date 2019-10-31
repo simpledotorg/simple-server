@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe ManifestsController, type: :controller do
+RSpec.describe Api::ManifestsController, type: :controller do
   describe 'GET #show' do
     ['production', 'sandbox', 'demo', 'qa', 'development'].each do |env|
       it "return 200 for #{env}" do
