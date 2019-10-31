@@ -1,5 +1,5 @@
 class EmailAuthentications::InvitationsController < Devise::InvitationsController
-  before_action :verify_role_is_present, only: [:create]
+  before_action :verify_params, only: [:create]
   helper_method :current_admin
 
   def new
@@ -18,6 +18,8 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
     User.transaction do
       super do |resource|
+        return render json: { errors: resource.errors.full_messages },
+                      status: :bad_request if resource.invalid?
 
         user.email_authentications = [resource]
         user.save!
@@ -36,9 +38,11 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
   protected
 
-  def verify_role_is_present
-    if params[:role].blank?
-      render json: { errors: ['Admin role is missing'] }, status: :bad_request
+  def verify_params
+    user = User.new(user_params)
+
+    unless user.valid?
+      return render json: { errors: user.errors.full_messages }, status: :bad_request
     end
   end
 
@@ -51,8 +55,8 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   end
 
   def user_params
-    { full_name: params.require(:full_name),
-      role: params.require(:role),
+    { full_name: params[:full_name],
+      role: params[:role],
       organization_id: params[:organization_id],
       device_created_at: Time.current,
       device_updated_at: Time.current,
@@ -64,6 +68,9 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   end
 
   def invite_params
-    { email: params.require(:email) }
+    email = params[:email]
+
+
+    { email: email }
   end
 end

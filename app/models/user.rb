@@ -41,6 +41,7 @@ class User < ApplicationRecord
   has_many :audit_logs, as: :auditable
 
   validates :full_name, presence: true
+  validates :role, presence: true
 
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
