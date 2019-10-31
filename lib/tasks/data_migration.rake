@@ -90,7 +90,7 @@ namespace :data_migration do
   desc 'Backport all BloodPressures to have Encounters and appropriate Observations'
   task :add_encounters_to_existing_blood_pressures => :environment do |_t, _args|
     batch_size = ENV['BACKFILL_ENCOUNTERS_FOR_BPS_BATCH_SIZE'].to_i || 1000
-    timezone_offset = 19800 # For 'Asia/Kolkata'
+    timezone_offset = ENV['BACKFILL_ENCOUNTERS_FOR_BPS_TIMEZONE_OFFSET'] # For 'Asia/Kolkata'
 
     # migrate all blood_pressures in batches
     BloodPressure.in_batches(of: batch_size) do |batch|
