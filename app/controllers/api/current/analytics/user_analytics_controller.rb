@@ -48,7 +48,7 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
                   .follow_up_patients_by_period || {}
 
     dates_for_periods(:month, MONTHS_TO_REPORT).map do |date|
-      [date, analytics_totals(analytics,:follow_up_patients_by_period, date)]
+      [date, analytics_totals(analytics, :follow_up_patients_by_period, date)]
     end.reverse.to_h
   end
 
