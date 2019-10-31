@@ -17,32 +17,16 @@ describe Communication, type: :model do
   end
 
   describe '.create_with_twilio_details!' do
-    let(:user) { create(:user) }
     let(:appointment) { create(:appointment) }
 
     it 'creates a communication with a TwilioSmsDeliveryDetail' do
       expect {
-        Communication.create_with_twilio_details!(user: user,
-                                                  appointment: appointment,
+        Communication.create_with_twilio_details!(appointment: appointment,
                                                   twilio_sid: SecureRandom.uuid,
                                                   twilio_msg_status: 'sent',
                                                   communication_type: :missed_visit_sms_reminder)
       }.to change { Communication.count }.by(1)
              .and change { TwilioSmsDeliveryDetail.count }.by(1)
-    end
-
-    it 'does not create a TwilioSmsDeliveryDetail if Communication fails to save' do
-      user_not_present = nil
-
-      expect {
-        Communication.create_with_twilio_details!(user: user_not_present,
-                                                  appointment: appointment,
-                                                  twilio_sid: SecureRandom.uuid,
-                                                  twilio_msg_status: 'sent',
-                                                  communication_type: :missed_visit_sms_reminder)
-      }.to raise_error(StandardError)
-             .and change { Communication.count }.by(0)
-                    .and change { TwilioSmsDeliveryDetail.count }.by(0)
     end
   end
 
