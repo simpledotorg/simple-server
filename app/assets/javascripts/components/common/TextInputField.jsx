@@ -7,7 +7,8 @@ class TextInputField extends React.Component {
                     <input className="form-control"
                            type="text"
                            value={this.props.value}
-                           placeholder="" id={this.props.name}
+                           id={this.props.name}
+                           readOnly={this.props.readOnly}
                            onChange={(e) => this.props.updateInput(this.props.name, e.target.value)}/>
                 </div>
             </div>

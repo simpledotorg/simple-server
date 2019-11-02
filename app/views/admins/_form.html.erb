@@ -11,5 +11,6 @@
                     permissions: policy([:manage, :admin, User]).allowed_permissions,
                     access_levels: policy([:manage, :admin, User]).allowed_access_levels,
                     submit_route: admin_path(admin),
+                    allow_email_edit: false,
                     submit_text: 'Update Admin',
                     submit_method: 'PATCH' %>

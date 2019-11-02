@@ -182,7 +182,7 @@ window.InviteAdminForm = createReactClass({
                 <ErrorMessages messages={this.state.errors}/>
                 <TextInputField name="full_name" title="Full Name" value={this.state.full_name}
                                 updateInput={this.updateInput}/>
-                <TextInputField name="email" title="Email" value={this.state.email} updateInput={this.updateInput}/>
+                <TextInputField readOnly={!this.props.allow_email_edit} name="email" title="Email" value={this.state.email} updateInput={this.updateInput}/>
                 <TextInputField name="role" title="Role" value={this.state.role} updateInput={this.updateInput}/>
 
                 <AccessLevelComponent permissions={this.props.permissions}
