@@ -19,7 +19,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
       super do |resource|
         errors = []
         errors.append(resource.errors.full_messages) if resource.invalid?
-        errors.append(user_param_errors)
+        errors.append(user_param_errors) if user_param_errors.present?
 
         return render json: { errors: errors.flatten },
                       status: :bad_request if errors.present?

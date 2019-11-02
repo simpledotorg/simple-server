@@ -58,7 +58,7 @@ RSpec.shared_examples 'current API sync requests' do
     response_process_token = parse_process_token(response_body)
     expect(response.status).to eq 200
     expect(response_body[response_key]).to eq([])
-    expect(response_process_token[:current_facility_processed_since].to_time).to eq(Time.new(0))
+    expect(response_process_token[:current_facility_processed_since].to_time.to_s).to eq(Time.new(0).to_s)
   end
 
   it 'pushes a new valid record and pull first time' do

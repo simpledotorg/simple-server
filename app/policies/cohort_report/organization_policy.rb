@@ -1,7 +1,7 @@
 class CohortReport::OrganizationPolicy < ApplicationPolicy
 
   def index?
-    user.has_permission?(:view_cohort_reports) || user.has_permission?(:download_patient_line_list)
+    user.has_permission?(:view_cohort_reports)
   end
 
   class Scope < Scope
@@ -13,8 +13,8 @@ class CohortReport::OrganizationPolicy < ApplicationPolicy
     end
 
     def resolve
-      return scope.none unless user.has_permission?([:view_cohort_reports, :download_patient_line_list])
-      organization_ids = organization_ids_for_permission([:view_cohort_reports, :download_patient_line_list])
+      return scope.none unless user.has_permission?(:view_cohort_reports)
+      organization_ids = organization_ids_for_permission(:view_cohort_reports)
       return scope.all if organization_ids.blank?
 
       scope.where(id: organization_ids)

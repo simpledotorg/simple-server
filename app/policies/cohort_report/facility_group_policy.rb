@@ -9,8 +9,8 @@ class CohortReport::FacilityGroupPolicy < ApplicationPolicy
     end
 
     def resolve
-      return scope.none unless user.has_permission?([:view_cohort_reports, :download_patient_line_list])
-      facility_group_ids = facility_group_ids_for_permission([:view_cohort_reports, :download_patient_line_list])
+      return scope.none unless user.has_permission?(:view_cohort_reports)
+      facility_group_ids = facility_group_ids_for_permission(:view_cohort_reports)
       return scope.all if facility_group_ids.blank?
 
       scope.where(id: facility_group_ids)
