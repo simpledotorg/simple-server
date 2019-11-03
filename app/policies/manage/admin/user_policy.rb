@@ -49,7 +49,7 @@ class Manage::Admin::UserPolicy < ApplicationPolicy
   end
 
   def allowed_permissions
-    Permissions::ALL_PERMISSIONS.select { |k, v| user_permissions.include?(k) }.values
+    Permissions::ALL_PERMISSIONS.slice(*user_permissions).values
   end
 
   class Scope < Scope
