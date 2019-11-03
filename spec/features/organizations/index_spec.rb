@@ -3,7 +3,12 @@ require 'rails_helper'
 RSpec.feature 'Verify Dashboard', type: :feature do
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:path) { create(:organization, name: "PATH") }
-  let!(:owner) { create(:admin, :owner) }
+  let!(:owner) { create(:admin) }
+  let!(:permissions) { [
+    create(:user_permission, user: owner, permission_slug: :view_cohort_reports),
+    create(:user_permission, user: owner, permission_slug: :approve_health_workers),
+    create(:user_permission, user: owner, permission_slug: :manage_organizations)
+  ]}
 
   login_page = AdminPage::Sessions::New.new
   dashboard = OrganizationsPage::Index.new

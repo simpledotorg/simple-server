@@ -1,7 +1,8 @@
 require 'rails_helper'
 
 RSpec.feature 'test protocol detail page functionality', type: :feature do
-  let(:owner) { create(:admin, :owner) }
+  let(:owner) { create(:admin) }
+  let!(:permissions) { create(:user_permission, user: owner, permission_slug: :manage_protocols) }
   let!(:var_protocol) { create(:protocol, name: "PunjabTestProtocol", follow_up_days: "20") }
   let!(:var_protocol_drug) { create(:protocol_drug, name: "test_Drug_01", dosage: "10mg", rxnorm_code: "code", protocol: var_protocol) }
 

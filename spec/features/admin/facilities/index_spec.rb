@@ -1,7 +1,8 @@
 require 'rails_helper'
 
 RSpec.feature 'Facility page functionality', type: :feature do
-  let(:owner) { create(:admin, :owner) }
+  let(:owner) { create(:admin) }
+  let!(:permissions) { create(:user_permission, user: owner, permission_slug: :manage_organizations) }
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:another_organization) { create(:organization) }
   let!(:ihmi_group_bathinda) { create(:facility_group, organization: ihmi, name: "Bathinda") }

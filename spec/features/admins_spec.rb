@@ -2,7 +2,9 @@ require 'rails_helper'
 
 RSpec.xfeature "Admins", type: :feature do
   let(:full_name) { Faker::Name.name }
-  let!(:owner) { create(:admin, :owner, email: "owner@example.com") }
+let!(:owner) { create(:admin, role: 'owner', email: "owner@example.com") }
+  let!(:manage_admins_permission) { create(:user_permission, user: owner, permission_slug: :manage_admins) }
+
   let!(:supervisor) { create(:admin, :supervisor, email: "supervisor@example.com") }
 
   describe "index" do

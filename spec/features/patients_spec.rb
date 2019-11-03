@@ -2,8 +2,13 @@ require 'rails_helper'
 
 RSpec.feature 'Adherence follow-ups', type: :feature do
   let(:facility_group) { create(:facility_group) }
-  let!(:counsellor) { create(:admin, :counsellor, facility_group: facility_group) }
-
+  let!(:counsellor) { create(:admin, role: 'counsellor') }
+  let!(:permissions) { create(:user_permission,
+                              user: counsellor,
+                              permission_slug: :view_adherence_follow_up_list,
+                              resource: facility_group)
+  }
+ 
   describe 'index' do
     before { sign_in(counsellor.email_authentication) }
 
