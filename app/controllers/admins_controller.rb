@@ -1,6 +1,6 @@
 class AdminsController < AdminController
   before_action :set_admin, only: [:show, :edit, :update, :destroy]
-  before_action :verify_role_is_present, only: [:update]
+  before_action :verify_params, only: [:update]
 
   after_action :verify_policy_scoped, only: :index
 
@@ -28,7 +28,7 @@ class AdminsController < AdminController
           :resource_type))
       end
     end
-    render json: {}, status: :accepted
+    render json: {}, status: :ok
   end
 
   def destroy
@@ -38,9 +38,12 @@ class AdminsController < AdminController
 
   private
 
-  def verify_role_is_present
-    if params[:role].blank?
-      render json: { errors: ['Admin role is missing'] }, status: :bad_request
+  def verify_params
+    user = User.new(@admin.attributes.merge(user_params))
+
+    if user.invalid?
+      render json: { errors: user.errors.full_messages },
+             status: :bad_request
     end
   end
 
@@ -50,13 +53,13 @@ class AdminsController < AdminController
   end
 
   def permission_params
-    params.require(:permissions)
+    params[:permissions]
   end
 
   def user_params
-    { full_name: params.require(:full_name),
-      role: params.require(:role),
+    { full_name: params[:full_name],
+      role: params[:role],
       organization_id: params[:organization_id],
-      device_updated_at: Time.current }
+      device_updated_at: Time.current }.compact
   end
 end

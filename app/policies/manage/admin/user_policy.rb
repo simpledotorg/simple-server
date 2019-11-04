@@ -27,21 +27,11 @@ class Manage::Admin::UserPolicy < ApplicationPolicy
   end
 
   def edit?
-    edit_admin?(record)
+    update?
   end
 
   def destroy?
-    destroy_admin?(record)
-  end
-
-  def edit_admin?(record)
-    user_has_any_permissions?(
-      [:manage_admins, nil],
-      [:manage_admins, record.organization])
-  end
-
-  def destroy_admin?(record)
-    edit_admin?(record)
+    edit?
   end
 
   def allowed_access_levels
