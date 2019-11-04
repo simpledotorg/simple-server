@@ -1,4 +1,5 @@
 class EmailAuthentications::InvitationsController < Devise::InvitationsController
+  before_action :verify_params, only: [:create]
   helper_method :current_admin
 
   def new
@@ -10,20 +11,8 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
     user = User.new(user_params)
     authorize([:manage, :admin, user])
 
-    existing_email = EmailAuthentication.find_by(invite_params)
-    if existing_email.present?
-      return render json: { errors: ['Email already invited'] }, status: :bad_request
-    end
-
     User.transaction do
       super do |resource|
-        errors = []
-        errors.append(resource.errors.full_messages) if resource.invalid?
-        errors.append(user_param_errors) if user_param_errors.present?
-
-        return render json: { errors: errors.flatten },
-                      status: :bad_request if errors.present?
-
         user.email_authentications = [resource]
         user.save!
 
@@ -40,6 +29,16 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   end
 
   protected
+
+  def verify_params
+    user = User.new(user_params)
+    email_authentication = user.email_authentications.new(invite_params.merge(password: temporary_password))
+
+    unless user.valid? && email_authentication.valid?
+      render json: { errors: user.errors.full_messages + email_authentication.errors.full_messages },
+             status: :bad_request
+    end
+  end
 
   def user_param_errors
     user = User.new(user_params)
@@ -71,5 +70,9 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
   def invite_params
     { email: params[:email] }
+  end
+
+  def temporary_password
+    SecureRandom.base64(8)
   end
 end

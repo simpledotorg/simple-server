@@ -1,6 +1,6 @@
 class EmailAuthentication < ApplicationRecord
   devise :database_authenticatable, :invitable, :lockable, :recoverable,
-         :rememberable, :timeoutable, :trackable, :validatable
+         :rememberable, :timeoutable, :trackable, :validatable, validate_on_invite: true
 
   has_one :user_authentication, as: :authenticatable
   has_one :user, through: :user_authentication

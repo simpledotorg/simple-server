@@ -39,35 +39,90 @@ RSpec.describe EmailAuthentications::InvitationsController, type: :controller do
          resource_id: facility_group.id }]
     end
 
-    it 'creates an email authentication for invited email' do
-      expect {
+    context 'invitation params are valid' do
+      it 'creates an email authentication for invited email' do
+        expect {
+          post :create, params: params
+        }.to change(EmailAuthentication, :count).by(1)
+
+        expect(EmailAuthentication.find_by(email: email)).to be_present
+      end
+
+      it 'creates a user record for the invited admin' do
+        expect {
+          post :create, params: params
+        }.to change(User, :count).by(1)
+
+        expect(User.find_by(full_name: full_name)).to be_present
+      end
+
+      it 'sends an email to the invited admin' do
         post :create, params: params
-      }.to change(EmailAuthentication, :count).by(1)
+        invitation_email = ActionMailer::Base.deliveries.last
+        expect(invitation_email.to).to include(email)
+      end
 
-      expect(EmailAuthentication.find_by(email: email)).to be_present
+      it 'assigns the selected permissions to the user' do
+        expect {
+          post :create, params: params.merge(permissions: permissions)
+        }.to change(UserPermission, :count).by(permissions.length)
+
+        user = EmailAuthentication.find_by(email: email).user
+        expect(user.user_permissions.count).to eq(3)
+      end
     end
 
-    it 'creates a user record for the invited admin' do
-      expect {
+
+    context 'invitation params are not valid' do
+      it 'responds with bad request if full name is not present' do
+        post :create, params: params.except(:full_name)
+
+        expect(response).to be_bad_request
+        expect(JSON(response.body)).to eq("errors" => ["Full name can't be blank"])
+      end
+
+      it 'responds with bad request if role is not present' do
+        post :create, params: params.except(:role)
+
+        expect(response).to be_bad_request
+        expect(JSON(response.body)).to eq("errors" => ["Role can't be blank"])
+      end
+
+      it 'responds with bad request if email is not present' do
+        post :create, params: params.except(:email)
+
+        expect(response).to be_bad_request
+        expect(JSON(response.body)).to eq("errors" => ["Email can't be blank"])
+      end
+
+      it 'responds with bad request if email is invalid' do
+        post :create, params: params.merge(email: 'invalid email')
+
+        expect(response).to be_bad_request
+        expect(JSON(response.body)).to eq("errors" => ["Email is invalid"])
+      end
+
+      it 'responds with bad request email already exists' do
+        EmailAuthentication.create!(email: email, password: Faker::Internet.password)
         post :create, params: params
-      }.to change(User, :count).by(1)
 
-      expect(User.find_by(full_name: full_name)).to be_present
-    end
+        expect(response).to be_bad_request
+        expect(JSON(response.body)).to eq("errors" => ["Email has already been taken"])
+      end
 
-    it 'sends an email to the invited admin' do
-      post :create, params: params
-      invitation_email = ActionMailer::Base.deliveries.last
-      expect(invitation_email.to).to include(email)
-    end
+      it 'does not send an invitation email if the email is already taken' do
+        EmailAuthentication.create!(email: email, password: Faker::Internet.password)
+        expect {
+          post :create, params: params
+        }.not_to change(ActionMailer::Base.deliveries, :count)
+      end
 
-    it 'assigns the selected permissions to the user' do
-      expect {
-        post :create, params: params.merge(permissions: permissions)
-      }.to change(UserPermission, :count).by(permissions.length)
-
-      user = EmailAuthentication.find_by(email: email).user
-      expect(user.user_permissions.count).to eq(3)
+      it 'does not send an invitation email params are invalid' do
+        EmailAuthentication.create!(email: email, password: Faker::Internet.password)
+        expect {
+          post :create, params: params.except(:full_name)
+        }.not_to change(ActionMailer::Base.deliveries, :count)
+      end
     end
   end
 end
