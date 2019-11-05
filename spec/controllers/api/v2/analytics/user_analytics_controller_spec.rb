@@ -31,7 +31,7 @@ RSpec.describe Api::V2::Analytics::UserAnalyticsController, type: :controller do
           expect(response_body.keys.map(&:to_sym))
             .to include(:first_of_current_month,
                         :total_patients_count,
-                        :unique_patients_per_month,
+                        :follow_up_patients_per_month,
                         :patients_enrolled_per_month)
         end
       end

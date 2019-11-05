@@ -7,14 +7,16 @@ module DashboardHelper
     value.nil? || value.zero?
   end
 
-  def dates_for_periods(period, previous_periods, from_date: Time.current)
-    period_range = (0..(previous_periods - 1)).to_a.reverse
+  def dates_for_periods(period, previous_periods, from_time: Time.current, include_current_period: false)
+    period_range = (include_current_period ?
+                      (0..previous_periods - 1) :
+                      (1..previous_periods)).to_a.reverse
 
     if period == :month
-      period_range.map { |n| n.months.ago.at_beginning_of_month.to_date }
+      period_range.map { |n| (from_time - n.months).at_beginning_of_month.to_date }
     else
       # default to quarters
-      period_range.map { |num_of_quarter| (from_date - (3 * num_of_quarter.months)).beginning_of_quarter.to_date }
+      period_range.map { |num_of_quarter| (from_time - (3 * num_of_quarter.months)).beginning_of_quarter.to_date }
     end
   end
 
@@ -22,8 +24,8 @@ module DashboardHelper
     period == :month ? value.strftime("%b %Y") : quarter_string(value)
   end
 
-  def analytics_totals(analytics, metric, period)
-    dash_if_zero(analytics.sum { |_, row| row.dig(metric, period) || 0 })
+  def analytics_totals(analytics, metric, date)
+    analytics.sum { |_, row| row.dig(metric, date) || 0 }
   end
 
   def calculate_percentage_for_analytics(analytics)
