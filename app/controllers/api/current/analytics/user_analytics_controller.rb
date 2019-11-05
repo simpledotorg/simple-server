@@ -44,7 +44,7 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
 
   def follow_up_patients_per_month
     analytics = FacilityAnalyticsQuery
-                  .new(current_facility, :month, MONTHS_TO_REPORT)
+                  .new(current_facility, :month, MONTHS_TO_REPORT, include_current_period: true)
                   .follow_up_patients_by_period || {}
 
     dates_for_periods(:month, MONTHS_TO_REPORT, include_current_period: true).map do |date|
