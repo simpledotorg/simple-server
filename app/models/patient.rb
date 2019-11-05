@@ -24,9 +24,13 @@ class Patient < ApplicationRecord
   belongs_to :address, optional: true
   has_many :phone_numbers, class_name: 'PatientPhoneNumber'
   has_many :business_identifiers, class_name: 'PatientBusinessIdentifier'
+
+  has_many :encounters
+  has_many :observations, through: :encounters
+
   has_many :blood_pressures, inverse_of: :patient
-  has_many :latest_blood_pressures, -> { order(recorded_at: :desc) }, class_name: 'BloodPressure'
   has_many :prescription_drugs
+  has_many :latest_blood_pressures, -> { order(recorded_at: :desc) }, class_name: 'BloodPressure'
   has_many :facilities, -> { distinct }, through: :blood_pressures
   has_many :users, -> { distinct }, through: :blood_pressures
 
@@ -57,7 +61,7 @@ class Patient < ApplicationRecord
   validates_associated :phone_numbers, if: :phone_numbers
 
   def past_date_of_birth
-    if date_of_birth.present? && date_of_birth > Date.today
+    if date_of_birth.present? && date_of_birth > Date.current
       errors.add(:date_of_birth, "can't be in the future")
     end
   end
@@ -125,11 +129,11 @@ class Patient < ApplicationRecord
 
   def current_age
     if date_of_birth.present?
-      Date.today.year - date_of_birth.year
+      Date.current.year - date_of_birth.year
     elsif age.present?
       return 0 if age == 0
 
-      years_since_update = Date.today.year - age_updated_at.year
+      years_since_update = Date.current.year - age_updated_at.year
       age + years_since_update
     end
   end

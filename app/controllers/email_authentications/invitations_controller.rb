@@ -47,6 +47,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
     current_admin
   end
 
+
   def access_controllable_ids
     params.require(:email_authentication).require(:access_controllable_ids)
   end

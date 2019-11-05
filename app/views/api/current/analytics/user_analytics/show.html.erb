@@ -17,18 +17,18 @@
 <% else %>
   <div class="card">
     <%= inline_svg('icon_new_bp.svg', classname: 'icon-float') %>
-    <h3>How many patients have a BP recorded at <%= @current_facility.name %>?</h3>
+    <h3>How many follow-up patients visited <%= @current_facility.name %>?</h3>
     <%= render 'graph',
                id: 'return-patients',
-               statistics: @statistics[:unique_patients_per_month],
+               statistics: @statistics[:follow_up_patients_per_month],
                first_of_current_month: @statistics[:first_of_current_month],
-               max_value: @statistics[:unique_patients_per_month].values.max,
+               max_value: @statistics[:follow_up_patients_per_month].values.max,
                max_height: 120 %>
   </div>
 
   <div class="card">
     <%= inline_svg('icon_enroll.svg', classname: 'icon-float') %>
-    <h3>How many new patients are enrolled at <%= @current_facility.name %>?</h3>
+    <h3>How many new patients were registered at <%= @current_facility.name %>?</h3>
     <h5>All time: <%= @statistics[:total_patients_count] %> patients</h5>
     <div class="bar-chart">
       <%= render 'graph',
@@ -41,7 +41,7 @@
   </div>
 
   <footer>
-    <small class="text-muted">Updated at <%= l(Time.now) %></small>
+    <small class="text-muted">Updated at <%= l(Time.current) %></small>
   </footer>
 <% end %>
 </body>

@@ -1,18 +1,42 @@
 namespace :data_migration do
   desc "Create master users for admins"
   task create_master_users_for_admins: :environment do
-    require 'tasks/scripts/create_master_user'
-
     Admin.all.each do |admin|
-      begin
-        CreateMasterUser.from_admin(admin)
-      rescue StandardError => e
-        puts "Skipping #{admin.email}: #{e.message}"
+      master_user_id = UUIDTools::UUID.md5_create(
+        UUIDTools::UUID_DNS_NAMESPACE,
+        { email: admin.email }.to_s
+      ).to_s
+
+      master_user_full_name = admin.email.split('@').first
+
+      next if User.find_by(id: master_user_id).present?
+      admin.transaction do
+        admin_attributes = admin.attributes.with_indifferent_access
+
+        master_user = User.create(
+          id: master_user_id,
+          full_name: master_user_full_name,
+          sync_approval_status: 'denied',
+          sync_approval_status_reason: 'User is an admin',
+          device_created_at: admin.created_at,
+          device_updated_at: admin.updated_at,
+          created_at: admin.created_at,
+          updated_at: admin.updated_at,
+          deleted_at: admin.deleted_at,
+        )
+
+        email_authentication = EmailAuthentication.new(admin_attributes.except(:id, :role))
+
+        email_authentication.save(validate: false)
+
+        master_user.user_authentications.create(
+          authenticatable: email_authentication
+        )
       end
     end
   end
 
-  desc "Fix null invited_by for email authentications when migrating from email_authentications"
+  desc "Fix null invited_by for email authentications when migrating from admins"
   task fix_invited_by_for_email_authentications: :environment do
     EmailAuthentication.all.each do |email_authentication|
       email_authentication.transaction do
@@ -61,5 +85,37 @@ namespace :data_migration do
   desc 'Set reminder_consent to granted for all patients'
   task grant_reminder_consent_for_all_patients: :environment do
     Patient.update_all(reminder_consent: Patient.reminder_consents[:granted])
+  end
+
+  desc 'Backport all BloodPressures to have Encounters and appropriate Observations'
+  task :add_encounters_to_existing_blood_pressures => :environment do |_t, _args|
+    batch_size = ENV['BACKFILL_ENCOUNTERS_FOR_BPS_BATCH_SIZE'].to_i || 1000
+    timezone_offset = ENV['BACKFILL_ENCOUNTERS_FOR_BPS_TIMEZONE_OFFSET'] # For 'Asia/Kolkata'
+
+    # migrate all blood_pressures in batches
+    BloodPressure.in_batches(of: batch_size) do |batch|
+      batch.map do |blood_pressure|
+        encountered_on = Encounter.generate_encountered_on(blood_pressure.recorded_at, timezone_offset)
+
+        encounter_merge_params = {
+          id: Encounter.generate_id(blood_pressure.facility.id, blood_pressure.patient.id, encountered_on),
+          patient_id: blood_pressure.patient.id,
+          device_created_at: blood_pressure.device_created_at,
+          device_updated_at: blood_pressure.device_updated_at,
+          encountered_on: encountered_on,
+          timezone_offset: timezone_offset,
+          observations: {
+            blood_pressures: [blood_pressure.attributes.except(:created_at, :updated_at)],
+          }
+        }.with_indifferent_access
+
+        MergeEncounterService.new(encounter_merge_params, blood_pressure.facility, blood_pressure.user, timezone_offset).merge
+      end
+    end
+  end
+
+  desc 'Make all occurrences of the SMS Reminder Bot User nil'
+  task remove_bot_user_usages: :environment do
+    Communication.where(user: ENV['APPOINTMENT_NOTIFICATION_BOT_USER_UUID']).update_all(user_id: nil)
   end
 end

@@ -3,7 +3,7 @@ class Communication < ApplicationRecord
   include Hashable
 
   belongs_to :appointment
-  belongs_to :user
+  belongs_to :user, optional: true
   belongs_to :detailable, polymorphic: true, optional: true
 
   delegate :unsuccessful?, :successful?, :in_progress?, to: :detailable
@@ -33,7 +33,7 @@ class Communication < ApplicationRecord
     send(communication_type).order(device_created_at: :desc).first
   end
 
-  def self.create_with_twilio_details!(user:, appointment:, twilio_sid:, twilio_msg_status:, communication_type:)
+  def self.create_with_twilio_details!(appointment:, twilio_sid:, twilio_msg_status:, communication_type:)
     transaction do
       sms_delivery_details =
         TwilioSmsDeliveryDetail.create!(session_id: twilio_sid,
@@ -42,9 +42,8 @@ class Communication < ApplicationRecord
       Communication.create!(communication_type: communication_type,
                             detailable: sms_delivery_details,
                             appointment: appointment,
-                            user: user,
-                            device_created_at: DateTime.now,
-                            device_updated_at: DateTime.now)
+                            device_created_at: DateTime.current,
+                            device_updated_at: DateTime.current)
     end
   end
 

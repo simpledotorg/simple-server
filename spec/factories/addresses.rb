@@ -7,8 +7,8 @@ FactoryBot.define do
     state { Faker::Address.state }
     country { Faker::Address.country }
     pin { Faker::Address.zip }
-    device_created_at { Time.now }
-    device_updated_at { Time.now }
+    device_created_at { Time.current }
+    device_updated_at { Time.current }
 
     trait(:no_street_address) do
       street_address { nil }

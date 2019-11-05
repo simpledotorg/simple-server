@@ -67,6 +67,28 @@ RAILS_ENV=development bundle exec rails server
 RAILS_ENV=test bundle exec rspec
 ```
 
+## Generating seed data
+
+To generate seed data for the local environment, execute the following command from the project root:
+
+```bash
+bundle exec rake "generate:seed[N]"
+```
+
+where `N` is the number of months to generate seed data for. For example,
+
+```shell
+bundle exec rake "generate:seed[6]"
+```
+
+will generate seed data for 6 months.
+
+Note: 
+
+* For the `development` environment, this will truncate existing data and seed the database
+from scratch.
+* Please refer to `config/seed.yml` to set the multiplier values to control the volume of seed data generated.
+
 ## Documentation
 
 ### API

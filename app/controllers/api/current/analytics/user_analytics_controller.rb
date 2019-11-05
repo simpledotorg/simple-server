@@ -1,4 +1,5 @@
 class Api::Current::Analytics::UserAnalyticsController < Api::Current::AnalyticsController
+  include DashboardHelper
   layout false
 
   MONTHS_TO_REPORT = 6
@@ -13,7 +14,7 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
     @statistics = {
       first_of_current_month: first_of_current_month,
       total_patients_count: total_patients_count,
-      unique_patients_per_month: unique_patients_recorded_per_month,
+      follow_up_patients_per_month: follow_up_patients_per_month,
       patients_enrolled_per_month: patients_enrolled_per_month
     }
 
@@ -30,7 +31,7 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
   end
 
   def first_of_current_month
-    Date.today.at_beginning_of_month
+    Date.current.at_beginning_of_month
   end
 
   def first_patient_at_facility
@@ -41,11 +42,14 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
     Patient.where(registration_facility_id: current_facility.id).count
   end
 
-  def unique_patients_recorded_per_month
-    BloodPressure.where(facility: current_facility)
-      .group_by_month(:recorded_at, last: MONTHS_TO_REPORT, reverse: true)
-      .count('distinct patient_id')
-      .select { |k, v| k >= first_patient_at_facility.recorded_at.at_beginning_of_month }
+  def follow_up_patients_per_month
+    analytics = FacilityAnalyticsQuery
+                  .new(current_facility, :month, MONTHS_TO_REPORT, include_current_period: true)
+                  .follow_up_patients_by_period || {}
+
+    dates_for_periods(:month, MONTHS_TO_REPORT, include_current_period: true).map do |date|
+      [date, analytics_totals(analytics, :follow_up_patients_by_period, date)]
+    end.reverse.to_h
   end
 
   def patients_enrolled_per_month

@@ -1,11 +1,10 @@
 <div class="page-header">
   <h1 class="page-title">
     <% if policy(Admin).index? %>
-      <%= link_to "Admins", admins_path, class: "#{active_controller?("email_authentications")}" %>
-      <i class="fas fa-angle-right light"></i>
-    <% end %>
-
-    Admin
+        <%= link_to "Admins", admins_path, class: "#{active_controller?("admins")}" %>  <i class="fas fa-angle-right light"></i> 
+      <% end %>
+      
+      Admin
   </h1>
   <nav class="page-nav">
     <% if policy(@admin).edit? %>

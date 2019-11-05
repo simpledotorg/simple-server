@@ -1,14 +1,14 @@
 Rails.application.routes.draw do
-  devise_scope :email_authentication do
-    authenticated :email_authentication, ->(a) { a.user.has_role?(:counsellor) } do
+  devise_scope :admin do
+    authenticated :admin, ->(a) { a.has_role?(:counsellor) } do
       root to: "patients#index", as: :counsellor_root
     end
 
-    authenticated :email_authentication do
-      root to: "organizations#index", as: :email_authentication_root
+    authenticated :admin do
+      root to: "organizations#index", as: :admin_root
     end
 
-    unauthenticated :email_authentication do
+    unauthenticated :admin do
       root to: "devise/sessions#new"
     end
   end
@@ -52,6 +52,7 @@ Rails.application.routes.draw do
   end
 
   namespace :api, defaults: { format: 'json' } do
+    get 'manifest.json', to: 'manifests#show'
 
     # Returning HTTP Status `410` for deprecated API version `v1`
     namespace :v1 do
@@ -121,6 +122,15 @@ Rails.application.routes.draw do
 
         concerns :sync_routes
 
+        scope '/encounters' do
+          get 'sync', to: 'encounters#sync_to_user'
+          post 'sync', to: 'encounters#sync_from_user'
+
+          if FeatureToggle.enabled?('GENERATE_ENCOUNTER_ID_ENDPOINT')
+            get 'generate_id', to: 'encounters#generate_id'
+          end
+        end
+
         resource :help, only: [:show], controller: "help"
 
         if FeatureToggle.enabled?('USER_ANALYTICS')
@@ -132,8 +142,7 @@ Rails.application.routes.draw do
     end
   end
 
-  # devise_for :email_authentications, controllers: { invitations: 'email_authentications/invitations' }
-  devise_for :email_authentications, path: 'email_authentications', controllers: { invitations: 'email_authentications/invitations' }
+  devise_for :admins, controllers: { invitations: 'admins/invitations' }
   resources :admins
 
   namespace :analytics do
