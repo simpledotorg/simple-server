@@ -1327,6 +1327,9 @@
         "village_or_colony": {
           "type": "string"
         },
+        "zone": {
+          "type": "string"
+        },
         "district": {
           "type": "string"
         },

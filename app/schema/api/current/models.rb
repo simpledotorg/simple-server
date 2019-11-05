@@ -58,6 +58,7 @@ class Api::Current::Models
           id: { '$ref' => '#/definitions/uuid' },
           street_address: { type: :string },
           village_or_colony: { type: :string },
+          zone: { type: :string },
           district: { type: :string },
           state: { type: :string },
           country: { type: :string },
