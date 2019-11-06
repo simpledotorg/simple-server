@@ -39,10 +39,10 @@ class AdminsController < AdminController
   private
 
   def verify_params
-    user = User.new(@admin.attributes.merge(user_params))
+    @admin.assign_attributes(user_params)
 
-    if user.invalid?
-      render json: { errors: user.errors.full_messages },
+    if @admin.invalid?
+      render json: { errors: @admin.errors.full_messages },
              status: :bad_request
     end
   end

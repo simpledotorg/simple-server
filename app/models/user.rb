@@ -29,8 +29,6 @@ class User < ApplicationRecord
            source: :authenticatable,
            source_type: 'EmailAuthentication'
 
-  accepts_nested_attributes_for :email_authentications, reject_if: :all_blank
-
   has_many :audit_logs, as: :auditable
   has_many :appointments
   has_many :medical_histories
@@ -161,5 +159,4 @@ class User < ApplicationRecord
   def resources
     user_permissions.map(&:resource)
   end
-
 end

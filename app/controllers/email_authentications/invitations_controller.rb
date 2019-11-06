@@ -35,6 +35,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
     email_authentication = user.email_authentications.new(invite_params.merge(password: temporary_password))
 
     unless user.valid? && email_authentication.valid?
+      user.errors.delete(:email_authentications)
       render json: { errors: user.errors.full_messages + email_authentication.errors.full_messages },
              status: :bad_request
     end
