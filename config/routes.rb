@@ -58,6 +58,7 @@ Rails.application.routes.draw do
   end
 
   namespace :api, defaults: { format: 'json' } do
+    get 'manifest.json', to: 'manifests#show'
 
     # Returning HTTP Status `410` for deprecated API version `v1`
     namespace :v1 do

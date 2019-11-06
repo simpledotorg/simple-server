@@ -71,6 +71,8 @@ GEM
       sshkit (~> 1.2)
     capistrano-db-tasks (0.6)
       capistrano (>= 3.0.0)
+    capistrano-multiconfig (3.1.0)
+      capistrano (>= 3.7.0)
     capistrano-passenger (0.2.0)
       capistrano (~> 3.0)
     capistrano-rails (1.4.0)
@@ -450,6 +452,7 @@ DEPENDENCIES
   byebug
   capistrano (~> 3.10)
   capistrano-db-tasks
+  capistrano-multiconfig
   capistrano-passenger
   capistrano-rails
   capistrano-rails-console

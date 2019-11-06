@@ -3,12 +3,16 @@ require 'csv'
 module PatientsExporter
   extend QuarterHelper
 
+  BATCH_SIZE = 1000
+
   def self.csv(patients)
     CSV.generate(headers: true) do |csv|
       csv << csv_headers
 
-      patients.each do |patient|
-        csv << csv_fields(patient)
+      patients.in_batches(of: BATCH_SIZE).each do |batch|
+        batch.each do |patient|
+          csv << csv_fields(patient)
+        end
       end
     end
   end
@@ -46,6 +50,10 @@ module PatientsExporter
   end
 
   def self.csv_fields(patient)
+    registration_facility = patient.registration_facility
+    latest_bp = patient.latest_blood_pressure
+    latest_bp_facility = latest_bp&.facility
+
     [
       patient.id,
       patient.latest_bp_passport&.shortcode,
@@ -58,18 +66,18 @@ module PatientsExporter
       patient.phone_numbers.last&.number,
       patient.recorded_at.presence && I18n.l(patient.recorded_at),
       patient.recorded_at.presence && quarter_string(patient.recorded_at),
-      patient.registration_facility&.name,
-      patient.registration_facility&.facility_type,
-      patient.registration_facility&.district,
-      patient.registration_facility&.state,
-      patient.latest_blood_pressure&.systolic,
-      patient.latest_blood_pressure&.diastolic,
-      patient.latest_blood_pressure&.recorded_at.presence && I18n.l(patient.latest_blood_pressure&.recorded_at),
-      patient.latest_blood_pressure&.recorded_at.presence && quarter_string(patient.latest_blood_pressure&.recorded_at),
-      patient.latest_blood_pressure&.facility&.name,
-      patient.latest_blood_pressure&.facility&.facility_type,
-      patient.latest_blood_pressure&.facility&.district,
-      patient.latest_blood_pressure&.facility&.state,
+      registration_facility&.name,
+      registration_facility&.facility_type,
+      registration_facility&.district,
+      registration_facility&.state,
+      latest_bp&.systolic,
+      latest_bp&.diastolic,
+      latest_bp&.recorded_at.presence && I18n.l(latest_bp&.recorded_at),
+      latest_bp&.recorded_at.presence && quarter_string(latest_bp&.recorded_at),
+      latest_bp_facility&.name,
+      latest_bp_facility&.facility_type,
+      latest_bp_facility&.district,
+      latest_bp_facility&.state,
       patient.latest_scheduled_appointment&.days_overdue,
       patient.risk_priority_label
     ]

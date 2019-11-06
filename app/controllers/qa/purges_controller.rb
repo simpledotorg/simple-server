@@ -17,6 +17,8 @@ class Qa::PurgesController < APIController
     MedicalHistory.delete_all
     Patient.delete_all
     Address.delete_all
+    Observation.delete_all
+    Encounter.delete_all
 
     head :ok
   end

@@ -28,12 +28,12 @@
   <a href="<%= ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL'] %>" class="video" style="display: block; margin: 8px 0 4px 0;">
     <%= inline_svg('thumb_demo.svg') %>
   </a>
-  <div><a href="<%= ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL'] %>" style="text-align: center; display: block; font-weight: bold;">How to use the Simple app</a></div>
+  <div><a href="<%= ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL'] %>" style="text-align: center; display: block; font-weight: bold; font-size: 110%;">How to use Simple: हिन्दी</a></div>
     
   <a href="<%= ENV['HELP_SCREEN_YOUTUBE_PASSPORT_URL'] %>" class="video" style="display: block; margin: 32px 0 4px 0;">
     <%= inline_svg('thumb_passport.svg') %>
   </a>
-    <div><a href="<%= ENV['HELP_SCREEN_YOUTUBE_PASSPORT_URL'] %>" style="text-align: center; display: block; font-weight: bold;">How to use BP Passports</a></div>
+    <div><a href="<%= ENV['HELP_SCREEN_YOUTUBE_PASSPORT_URL'] %>" style="text-align: center; display: block; font-weight: bold; font-size: 110%;">How to use BP Passports</a></div>
   <div id="howto"></div>
 </div>
 
@@ -41,19 +41,13 @@
   <h3>Instructions</h3>
 
   <h6>Getting started</h6>
-  <p>Each person in your facility who will be recording patient’s BPs should install the Simple app on their own Android
-    phone.</p>
+  <p>Each person in your facility who will be recording patient’s BPs should install the Simple app on their own Android phone.</p>
 
   <h6>Which patients should you record?</h6>
-  <p>Use the app to record every patient who has hypertension or who is taking medicines for high BP. The next time that
-    the patient comes back to your facility, search for that patient and enter a new BP.</p>
+  <p>Use the app to record every patient who has hypertension or who is taking medicines for high BP. The next time that the patient comes back to your facility, search for that patient and enter a new BP.</p>
 
   <h6>Searching for a patient</h6>
   <p>It is really important to do your best to find the right patient when entering a BP.</p>
-
-  <div style="margin: 1em 0;">
-    <%= inline_svg('icon_search.svg') %>
-  </div>
 
   <p>Type <span class="code">first name</span> and <span class="code">last name</span> into the search. Tap
     <span class="code">NEXT</span> and the phone will check to see if that patient might have been entered into the
@@ -118,9 +112,8 @@
   </div>
 
   <h3>Ask for help</h3>
-  <p>We want to help you to be successful. If you run into problems or you just want to ask questions, please ask in the
+  <p>If you run into problems or you just want to ask questions, please ask in the
     WhatsApp support group where our team can help you.</p>
-  <p>We welcome your suggestions on how we can make the app more useful for you.</p>
   <p>WhatsApp message support at:</p>
   <a href="<%= ENV['HELP_SCREEN_WHATSAPP_SUPPORT_GROUP_URL'] %>" class="whatsapp-button">
     <%= inline_svg('icon_whatsapp_icon.svg') %> <%= ENV['HELP_SCREEN_WHATSAPP_SUPPORT_NUMBER'] %>

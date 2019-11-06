@@ -58,21 +58,21 @@
             <!--Follow-up patients-->
             <% dates_for_periods(@period, 3).each do |period| %>
               <td class="row-total" style="text-align: center;">
-                <%= analytics_totals(dashboard_analytics, :follow_up_patients_by_period, period) %>
+                <%= dash_if_zero(analytics_totals(dashboard_analytics, :follow_up_patients_by_period, period)) %>
               </td>
             <% end %>
 
             <!--New registrations-->
             <% dates_for_periods(@period, 3).each do |period| %>
               <td class="row-total" style="text-align: center;">
-                <%= analytics_totals(dashboard_analytics, :registered_patients_by_period, period) %>
+                <%= dash_if_zero(analytics_totals(dashboard_analytics, :registered_patients_by_period, period)) %>
               </td>
             <% end %>
 
             <!--Calls made -->
             <% dates_for_periods(@period, 3).each do |period| %>
               <td class="row-total" style="text-align: center;">
-                <%= analytics_totals(dashboard_analytics, :total_calls_made_by_period, period) %>
+                <%= dash_if_zero(analytics_totals(dashboard_analytics, :total_calls_made_by_period, period)) %>
               </td>
             <% end %>
           </tr>

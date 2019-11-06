@@ -9,6 +9,7 @@ namespace :generate do
     sleep 0.01; time + SecureRandom.rand * (entropy_factor)
   end
 
+  desc 'Generate seed data for environment; Example: rake "generate:seed[number_of_months_to_generate_data_for]"'
   task :seed, [:number_of_months] => :environment do |_t, args|
     number_of_months = args.fetch(:number_of_months) { 3 }.to_i
     environment = ENV.fetch('SIMPLE_SERVER_ENV') { 'development' }
@@ -27,7 +28,6 @@ namespace :generate do
 
       FactoryBot.create(:admin,
                         :owner,
-                        full_name: "Super Admin",
                         email: "admin@simple.org",
                         password: 123456,
                         role: 'owner',
@@ -346,7 +346,7 @@ namespace :generate do
     facilities.each do |f|
       config.dig('users', 'count').times do
         FactoryBot.create(:user,
-                          organization: organization,
+                          organization_id: organization.id,
                           registration_facility: f,
                           created_at: creation_date,
                           updated_at: creation_date)
@@ -361,7 +361,7 @@ namespace :generate do
 
   def create_sync_requested_users(organization, facility, creation_date)
     user = FactoryBot.create(:user,
-                             organization: organization,
+                             organization_id: organization.id,
                              registration_facility: facility,
                              created_at: creation_date,
                              updated_at: creation_date)
@@ -373,7 +373,7 @@ namespace :generate do
 
   def create_sync_denied_users(organization, facility, creation_date)
     user = FactoryBot.create(:user,
-                             organization: organization,
+                             organization_id: organization.id,
                              registration_facility: facility,
                              created_at: creation_date,
                              updated_at: creation_date)

@@ -1,4 +1,4 @@
-class AppointmentNotificationService < Struct.new(:user)
+class AppointmentNotificationService
   include TargetedReleasable
 
   FAN_OUT_BATCH_SIZE = 250
@@ -28,7 +28,6 @@ class AppointmentNotificationService < Struct.new(:user)
 
     sampled_appointments.each_slice(FAN_OUT_BATCH_SIZE) do |appointments_batch|
       AppointmentNotification::Worker.perform_at(schedule_at,
-                                                 user.id,
                                                  appointments_batch.map(&:id),
                                                  communication_type)
     end

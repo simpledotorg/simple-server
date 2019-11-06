@@ -15,6 +15,160 @@
 ### Removed
 ### Security
 
+# 2019-11-04-1
+### Added
+- Add trailing slashes to manifest URLs
+- Delete Observations and Encounters when purging data on QA
+- dates_for_periods helper optionally honors the current period (for progress tab)
+### Removed
+- Remove automerge github action
+### Fixed
+### Deprecated
+### Removed
+### Security
+
+# 2019-10-31-1
+### Added
+- Host a manifest file to keep country-specific info
+- Add data migration for existing BloodPressures to have Encounters
+- Use batch API when exporting patients to CSV
+- Describe the seed generation rake task in README
+- Update the HELP screen (new SVGs and copy changes)
+### Changed
+- Replace the unique patients graph with follow up patients for progress tab
+- Stagger nightly sidekiq jobs
+### Fixed
+### Deprecated
+### Removed
+- Remove role, organization_id from the user response payload
+- Remove current quarter from analytics
+- Remove all usage of SMS reminder Bot User
+### Security
+
+# 2019-10-24-4
+### Added
+- Enable patient line list
+- Period persistence across dashboard views
+- Add the Encounters API (turned off)
+- Add Bengali help screen template
+- I18n progress tab bengali
+- Update seed generation scripts
+- Use tablesort to sort analytics table
+- De-duplicate gem dependencies
+- Report in India time 
+- Add i18n login api messages for Bangla
+- Add messages to audit_log data jobs to indicate progress
+### Changed
+- Use timestamps instead of dates
+- Update Time parsing to use app timezone
+### Fixed
+### Deprecated
+### Removed
+- Remove the foreign-key constraint between encounters and patients
+### Security
+
+# 2019-10-09-1
+### Added
+- Add reminder_consent to patient model and APIs
+### Changed
+- Update sidekiq instance DNS
+- Update copy in monthly cohort reports
+### Fixed
+### Deprecated
+### Removed
+### Security
+
+# 2019-10-08-1
+### Added
+- Patient line list download
+- Add a task to backfill user_ids for prescription_drugs and medical_histories using existing audit logs
+- Add a task to export audit logs to files
+### Changed
+- Update the cohort report script to use CohortAnalyticsQuery
+- Update monthly cohort calculation
+- Move audit logs from the DB to a file
+### Fixed
+### Deprecated
+### Removed
+- Remove audit log search from dashboard
+### Security
+
+# 2019-10-03-1
+### Added
+- Alias master_users to users
+- Add feature specs for Protocol screens
+- Add feature specs for Adherence list screens
+- Time travel during sandbox data generation
+### Changed
+- Updating Sidekiq box IP post reboot
+### Fixed
+- Fixed typo in cohort description
+### Deprecated
+### Removed
+### Security
+
+# 2019-10-01-1
+### Added
+-  Support switching between monthly and quarterly cohort charts 
+### Changed
+### Fixed
+### Deprecated
+### Removed
+### Security
+
+# 2019-09-16-1
+### Added
+- Add updated at timestamp to progress tab
+### Changed
+### Fixed
+### Deprecated
+### Removed
+### Security
+
+# 2019-09-13-1
+### Added
+- Send user approval emails using sidekiq
+- Add instrumentation for merge_if_valid
+### Changed
+- Update devise gem
+### Fixed
+### Deprecated
+### Removed
+### Security
+
+# 2019-09-12-1
+### Added
+- Add custom instrumentation to measure time taken to merge records
+- Purge Patient Business Identifiers on QA
+- Feature toggle downloads for analytics > facilities page
+- Add a script for generating seed data; Adding  factory_bot, faker and Timecop to production group
+### Changed
+- Allow 'Reset PIN' reason for users with requested access
+### Fixed
+### Deprecated
+### Removed
+- Remove obsolete rake tasks
+- Removed FontAwesome symbols for greater/equal and less than in the WhatsApp graphics.
+### Security
+
+# 2019-09-09-1
+### Added
+- Allow max limit to be set per controller
+### Changed
+### Fixed
+### Deprecated
+### Removed
+### Security
+
+# 2019-09-04-2
+### Added
+- Fix feature toggle to enable downloading dashboard snapshots
+### Changed
+### Fixed
+### Deprecated
+### Removed
+### Security
+
 # 2019-09-04-1
 ### Added
 - Add managed SQL views to the repo
