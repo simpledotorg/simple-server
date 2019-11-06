@@ -22,6 +22,7 @@ class Deploy
       acc[file_path.basename.to_s] = file_path.children.map { |f| f.basename('.rb') }.map(&:to_s)
       acc
     end
+  
   COUNTRIES_SUPPORTED = COUNTRY_TO_ENVIRONMENT.keys.sort
   DIRS_WITH_CRITICAL_CHANGES = {
     'db/' => 'Holds all the database migrations',
