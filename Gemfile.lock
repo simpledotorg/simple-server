@@ -67,6 +67,8 @@ GEM
       sshkit (~> 1.2)
     capistrano-db-tasks (0.6)
       capistrano (>= 3.0.0)
+    capistrano-multiconfig (3.1.0)
+      capistrano (>= 3.7.0)
     capistrano-passenger (0.2.0)
       capistrano (~> 3.0)
     capistrano-rails (1.4.0)
@@ -99,7 +101,7 @@ GEM
     connection_pool (2.2.2)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
-    crass (1.0.4)
+    crass (1.0.5)
     data-anonymization (0.8.2)
       activerecord (~> 5.1)
       activesupport (~> 5.1)
@@ -195,7 +197,7 @@ GEM
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
       ruby_dep (~> 1.2)
-    loofah (2.2.3)
+    loofah (2.3.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mail (2.7.1)
@@ -211,7 +213,7 @@ GEM
     net-ssh (5.0.1)
     newrelic_rpm (5.1.0.344)
     nio4r (2.3.1)
-    nokogiri (1.10.4)
+    nokogiri (1.10.5)
       mini_portile2 (~> 2.4.0)
     orm_adapter (0.5.0)
     parallel (1.12.1)
@@ -438,6 +440,7 @@ DEPENDENCIES
   byebug
   capistrano (~> 3.10)
   capistrano-db-tasks
+  capistrano-multiconfig
   capistrano-passenger
   capistrano-rails
   capistrano-rails-console
