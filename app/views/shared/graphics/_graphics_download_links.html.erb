@@ -13,10 +13,4 @@
       HTML
     <% end %>
   </p>
-  <p>
-    <%= link_to graphics_path.call( options.merge( quarter: current_quarter, year: current_year, format: "png")), class: "download" do %>
-      <i class='fas fa-camera mr-2'></i>
-      Current quarter snapshot (PNG)
-    <% end %>
-  </p>
 </div>
