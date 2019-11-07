@@ -3,6 +3,7 @@ FactoryBot.define do
     id { SecureRandom.uuid }
     street_address { Faker::Address.street_address }
     village_or_colony { Faker::Address.community }
+    zone { Faker::Address.community }
     district { Faker::Address.city }
     state { Faker::Address.state }
     country { Faker::Address.country }
