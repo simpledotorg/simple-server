@@ -4,7 +4,8 @@ class PatientBusinessIdentifier < ApplicationRecord
   belongs_to :patient
 
   enum identifier_type: {
-    simple_bp_passport: 'simple_bp_passport'
+    simple_bp_passport: 'simple_bp_passport',
+    bangladesh_national_id: 'bangladesh_national_id'
   }
 
   validates :identifier, presence: true
