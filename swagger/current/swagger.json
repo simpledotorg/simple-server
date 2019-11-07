@@ -2130,7 +2130,8 @@
         "identifier_type": {
           "type": "string",
           "enum": [
-            "simple_bp_passport"
+            "simple_bp_passport",
+            "bangladesh_national_id"
           ]
         },
         "metadata_version": {
