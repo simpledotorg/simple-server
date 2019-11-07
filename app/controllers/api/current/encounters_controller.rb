@@ -2,11 +2,24 @@ class Api::Current::EncountersController < Api::Current::SyncController
   include Api::Current::PrioritisableByFacility
 
   def sync_from_user
-    __sync_from_user__(encounter_params)
+    if FeatureToggle.enabled?('SYNC_ENCOUNTERS')
+      __sync_from_user__(encounter_params)
+    else
+      render json: { errors: nil }, status: :ok
+    end
   end
 
   def sync_to_user
-    __sync_to_user__('encounters')
+    response_key = 'encounters'
+
+    if FeatureToggle.enabled?('SYNC_ENCOUNTERS')
+      __sync_to_user__(response_key)
+    else
+      render(
+        json: { response_key => [], 'process_token' => Time.new(0) },
+        status: :ok
+      )
+    end
   end
 
   def generate_id
