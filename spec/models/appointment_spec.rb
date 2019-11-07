@@ -89,6 +89,18 @@ describe Appointment, type: :model do
   end
 
   context 'Overdue' do
+    describe "#days_overdue" do
+      it "returns the number of days overdue" do
+        appointment = create(:appointment, scheduled_date: 60.days.ago, status: :scheduled)
+        expect(appointment.days_overdue).to eq(60)
+      end
+
+      it "returns zero if the appointment is not overdue" do
+        appointment = create(:appointment, scheduled_date: 10.days.from_now, status: :scheduled)
+        expect(appointment.days_overdue).to eq(0)
+      end
+    end
+
     describe '#overdue_for_over_a_year?' do
       it 'should return true if appointment is overdue for over a year' do
         appointment = create(:appointment, scheduled_date: 2.years.ago, status: :scheduled)
