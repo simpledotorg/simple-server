@@ -251,7 +251,7 @@ RSpec.describe Api::V2::PatientsController, type: :controller do
         get :sync_to_user, params: { limit: 15 }
 
         response_patients = JSON(response.body)['patients']
-        response_ids = response_patients.map { |patient| patient['id']}.to_set
+        response_ids = response_patients.map { |patient| patient['id'] }.to_set
 
         expect(response_ids.count).to eq 4
         patients_in_another_group.map(&:id).each do |patient_in_another_group_id|

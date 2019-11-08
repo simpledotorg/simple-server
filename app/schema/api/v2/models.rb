@@ -14,6 +14,10 @@ class Api::V2::Models < Api::Current::Models
         .tap { |d| d[:properties].delete(:recorded_at) }
     end
 
+    def address
+      super.tap { |d| d[:properties].delete(:zone) }
+    end
+
     def nested_patient
       patient.deep_merge(
         properties: {
