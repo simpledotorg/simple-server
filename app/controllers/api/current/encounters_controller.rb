@@ -1,25 +1,15 @@
 class Api::Current::EncountersController < Api::Current::SyncController
   include Api::Current::PrioritisableByFacility
 
+  before_action :stub_syncing_from_user, only: [:sync_from_user]
+  before_action :stub_syncing_to_user, only: [:sync_to_user]
+
   def sync_from_user
-    if FeatureToggle.enabled?('SYNC_ENCOUNTERS')
-      __sync_from_user__(encounter_params)
-    else
-      render json: { errors: nil }, status: :ok
-    end
+    __sync_from_user__(encounter_params)
   end
 
   def sync_to_user
-    response_key = 'encounters'
-
-    if FeatureToggle.enabled?('SYNC_ENCOUNTERS')
-      __sync_to_user__(response_key)
-    else
-      render(
-        json: { response_key => [], 'process_token' => Time.new(0) },
-        status: :ok
-      )
-    end
+    __sync_to_user__('encounters')
   end
 
   def generate_id
@@ -68,5 +58,16 @@ class Api::Current::EncountersController < Api::Current::SyncController
         observations: [:"blood_pressures" => [permitted_bp_params]],
       )
     end
+  end
+
+  def stub_syncing_from_user
+    render(json: { errors: nil }, status: :ok) unless FeatureToggle.enabled?('SYNC_ENCOUNTERS')
+  end
+
+  def stub_syncing_to_user
+    render(
+      json: { 'encounters' => [], 'process_token' => Time.new(0) },
+      status: :ok
+    ) unless FeatureToggle.enabled?('SYNC_ENCOUNTERS')
   end
 end
