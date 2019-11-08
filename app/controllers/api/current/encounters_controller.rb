@@ -1,6 +1,7 @@
 class Api::Current::EncountersController < Api::Current::SyncController
   include Api::Current::PrioritisableByFacility
 
+  skip_before_action :instrument_process_token
   before_action :stub_syncing_from_user, only: [:sync_from_user]
   before_action :stub_syncing_to_user, only: [:sync_to_user]
 
@@ -66,7 +67,7 @@ class Api::Current::EncountersController < Api::Current::SyncController
 
   def stub_syncing_to_user
     render(
-      json: { 'encounters' => [], 'process_token' => Time.new(0) },
+      json: { 'encounters' => [], 'process_token' => encode_process_token({}) },
       status: :ok
     ) unless FeatureToggle.enabled?('SYNC_ENCOUNTERS')
   end
