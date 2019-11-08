@@ -22,7 +22,7 @@ class Api::Current::BloodPressuresController < Api::Current::SyncController
         set_patient_recorded_at(bp_params)
         transformed_params = Api::Current::BloodPressureTransformer.from_request(bp_params)
 
-        if FeatureToggle.enabled?('CREATE_ENCOUNTERS_FROM_BPS')
+        if FeatureToggle.enabled?('SYNC_ENCOUNTERS')
           # this will always return a single blood_pressure
           add_encounter_and_merge_bp(transformed_params)[:observations][:blood_pressures][0]
         else
