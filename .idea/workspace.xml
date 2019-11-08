@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5d7c3c57-43e4-4284-b178-aa5ed198f28b" name="Default Changelist" comment="" />
+    <list default="true" id="5d7c3c57-43e4-4284-b178-aa5ed198f28b" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/spec/spec_helper.rb" beforeDir="false" afterPath="$PROJECT_DIR$/spec/spec_helper.rb" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/.bundle/" />
     <ignored path="$PROJECT_DIR$/components/" />
     <ignored path="$PROJECT_DIR$/log/" />
@@ -22,69 +24,42 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/spec/rails_helper.rb">
+        <entry file="file://$PROJECT_DIR$/spec/features/admin/users/index_spec.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="8" column="67" selection-start-line="8" selection-start-column="67" selection-end-line="8" selection-end-column="67" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/spec/factories/appointments.rb">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="15">
-              <caret line="1" column="10" selection-start-line="1" selection-start-column="10" selection-end-line="1" selection-end-column="10" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/spec/pages/appointments/index.rb">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/spec/features/appointments/index_spec.rb">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2130">
-              <caret line="142" column="34" selection-start-line="142" selection-start-column="34" selection-end-line="142" selection-end-column="34" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/spec/spec_helper.rb">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="178">
-              <caret line="41" column="3" selection-start-line="41" selection-start-column="3" selection-end-line="41" selection-end-column="3" />
+            <state relative-caret-position="165">
+              <caret line="11" column="116" selection-start-line="11" selection-start-column="116" selection-end-line="11" selection-end-column="116" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/spec/features/admin/users/index_spec.rb">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-229">
-              <caret column="18" selection-start-column="18" selection-end-column="18" />
-            </state>
-          </provider>
+        <entry file="file://$PROJECT_DIR$/spec/spec_helper.rb">
+          <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/spec/pages/navigations/dashboard_page_navigation.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="509">
-              <caret line="35" column="7" selection-start-line="35" selection-start-column="7" selection-end-line="35" selection-end-column="7" />
+            <state relative-caret-position="270">
+              <caret line="18" column="7" selection-start-line="18" selection-start-column="7" selection-end-line="18" selection-end-column="7" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/spec/features/admin/organizations/index_spec.rb">
+        <entry file="file://$PROJECT_DIR$/spec/features/appointments/index_spec.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="8" column="34" selection-start-line="8" selection-start-column="34" selection-end-line="8" selection-end-column="34" />
+            <state relative-caret-position="-541">
+              <caret line="12" column="32" selection-start-line="12" selection-start-column="32" selection-end-line="12" selection-end-column="32" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/spec/features/appointments_spec.rb">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-207">
+              <caret line="93" column="19" selection-start-line="93" selection-start-column="19" selection-end-line="93" selection-end-column="19" />
             </state>
           </provider>
         </entry>
@@ -196,21 +171,6 @@
               <item name="simple-server" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
               <item name="~/nilensoWork/simple-server" type="442cc68d:ScopeViewTreeModel$RootNode" />
               <item name="spec" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="features" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="admin" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-            </path>
-            <path>
-              <item name="simple-server" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="~/nilensoWork/simple-server" type="442cc68d:ScopeViewTreeModel$RootNode" />
-              <item name="spec" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="features" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="admin" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="users" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-            </path>
-            <path>
-              <item name="simple-server" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="~/nilensoWork/simple-server" type="442cc68d:ScopeViewTreeModel$RootNode" />
-              <item name="spec" type="9f88c78c:ScopeViewTreeModel$FileNode" />
               <item name="pages" type="9f88c78c:ScopeViewTreeModel$FileNode" />
             </path>
             <path>
@@ -258,7 +218,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="RSpec.Admin User page functionality protocol landing page Verify User landing page: simple-server">
+  <component name="RunManager" selected="RSpec.To test overdue appointment functionality: simple-server">
     <configuration name="Admin User page functionality protocol landing page Verify User landing page: simple-server" type="RSpecRunConfigurationType" factoryName="RSpec" temporary="true">
       <module name="simple-server" />
       <predefined_log_file enabled="true" id="RUBY_RSPEC" />
@@ -395,7 +355,7 @@
       <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="FULL_BACKTRACE" VALUE="false" />
       <method v="2" />
     </configuration>
-    <configuration name="To test district analytics page test facility info section verify registered patient count for a facility: simple-server" type="RSpecRunConfigurationType" factoryName="RSpec" temporary="true">
+    <configuration name="To test overdue appointment functionality: simple-server" type="RSpecRunConfigurationType" factoryName="RSpec" temporary="true">
       <module name="simple-server" />
       <predefined_log_file enabled="true" id="RUBY_RSPEC" />
       <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="RUBY_ARGS" VALUE="" />
@@ -415,10 +375,10 @@
         </COVERAGE_PATTERN>
       </EXTENSION>
       <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TESTS_FOLDER_PATH" VALUE="" />
-      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_SCRIPT_PATH" VALUE="$MODULE_DIR$/spec/features/analytics/districts/show_spec.rb" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_SCRIPT_PATH" VALUE="$MODULE_DIR$/spec/features/appointments/index_spec.rb" />
       <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_RUNNER_PATH" VALUE="" />
       <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_FILE_MASK" VALUE="'**/*_spec.rb'" />
-      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_EXAMPLE_NAME" VALUE="To test district analytics page test facility info section verify registered patient count for a facility" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_EXAMPLE_NAME" VALUE="To test overdue appointment functionality" />
       <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_TEST_TYPE" VALUE="TEST_SCRIPT" />
       <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_ARGS" VALUE="--no-color" />
       <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="RUNNER_VERSION" VALUE="" />
@@ -531,17 +491,17 @@
       <item itemvalue="Rake.spec: simple-server" />
       <item itemvalue="RSpec.To test district analytics page test facility info section should display followup patient: simple-server" />
       <item itemvalue="RSpec.To test district analytics page test facility info section verify follow up patient count for different facility: simple-server" />
-      <item itemvalue="RSpec.To test district analytics page test facility info section verify registered patient count for a facility: simple-server" />
       <item itemvalue="RSpec.Admin User page functionality: simple-server" />
       <item itemvalue="RSpec.Admin User page functionality protocol landing page Verify User landing page: simple-server" />
+      <item itemvalue="RSpec.To test overdue appointment functionality: simple-server" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="RSpec.To test overdue appointment functionality: simple-server" />
         <item itemvalue="RSpec.Admin User page functionality protocol landing page Verify User landing page: simple-server" />
         <item itemvalue="RSpec.Admin User page functionality: simple-server" />
         <item itemvalue="RSpec.To test district analytics page test facility info section should display followup patient: simple-server" />
         <item itemvalue="RSpec.To test district analytics page test facility info section verify follow up patient count for different facility: simple-server" />
-        <item itemvalue="RSpec.To test district analytics page test facility info section verify registered patient count for a facility: simple-server" />
       </list>
     </recent_temporary>
   </component>
@@ -672,12 +632,13 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="113032000" />
+    <option name="totallyTimeSpent" value="113037000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="786" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4973638" visible="true" weight="0.24606581" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4973638" visible="true" weight="0.26037195" />
       <window_info id="Structure" order="1" sideWeight="0.5026362" side_tool="true" weight="0.2015625" />
       <window_info id="Favorites" order="2" sideWeight="0.50268817" side_tool="true" weight="0.30253622" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -825,15 +786,15 @@
     <SUITE FILE_PATH="coverage/simple_server@Verify_Dashboard_Verify_organisation_name_count_get_updated_in_dashboard_when_new_org_is_added_via_manage_section__simple_server.rcov" NAME="Verify Dashboard Verify organisation name/count get updated in dashboard when new org is added via manage section: simple-server Coverage Results" MODIFIED="1571209014906" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@test_protocol_detail_page_functionality_protocol_detail_page_should_create_new_protocol_drug___simple_server.rcov" NAME="test protocol detail page functionality protocol detail page should create new protocol drug : simple-server Coverage Results" MODIFIED="1569218080013" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@Admin_Management_Manage_Admin_Section_Supervisor__simple_server.rcov" NAME="Admin Management Manage Admin Section Supervisor: simple-server Coverage Results" MODIFIED="1566984424092" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
-    <SUITE FILE_PATH="coverage/simple_server@To_test_district_analytics_page_test_facility_info_section_should_only_display_facilities_with_patients__simple_server.rcov" NAME="To test district analytics page test facility info section should only display facilities with patients: simple-server Coverage Results" MODIFIED="1572940303419" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
+    <SUITE FILE_PATH="coverage/simple_server@To_test_district_analytics_page_test_facility_info_section_should_only_display_facilities_with_patients__simple_server.rcov" NAME="To test district analytics page test facility info section should only display facilities with patients: simple-server Coverage Results" MODIFIED="1573199207050" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@To_test_district_analytics_page_test_facility_info_section_should_only_display_facilities_with_patients__simple_server__2_.rcov" NAME="To test district analytics page test facility info section should only display facilities with patients: simple-server (2) Coverage Results" MODIFIED="1572944786561" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@Owner_Login_as_Admin_owners_login_and_logout_log_Out__simple_server.rcov" NAME="Owner Login as Admin owners login and logout log Out: simple-server Coverage Results" MODIFIED="1563785715811" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@To_test_overdue_appointment_functionality_Javascript_based_tests_should_be_able_to_download_overdue_patient_list__simple_server.rcov" NAME="To test overdue appointment functionality Javascript based tests should be able to download overdue patient list: simple-server Coverage Results" MODIFIED="1568274359127" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@Rails_console__simple_server.rcov" NAME="Rails console: simple-server Coverage Results" MODIFIED="1569482212046" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@Admin_Management_Manage_Admin_Section_Organization_owner_send_invitation_with_invalid_emailId__simple_server.rcov" NAME="Admin Management Manage Admin Section Organization owner send invitation with invalid emailId: simple-server Coverage Results" MODIFIED="1566977728869" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@test_protocol_detail_page_functionality__simple_server.rcov" NAME="test protocol detail page functionality: simple-server Coverage Results" MODIFIED="1564643543397" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
-    <SUITE FILE_PATH="coverage/simple_server@To_test_overdue_appointment_functionality_Page_verification_landing_page__with_no_overdue_patient__simple_server.rcov" NAME="To test overdue appointment functionality Page verification landing page -with no overdue patient: simple-server Coverage Results" MODIFIED="1571208148051" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@To_test_district_analytics_page_test_facility_info_section_should_display_followup_patient__simple_server__1_.rcov" NAME="To test district analytics page test facility info section should display followup patient: simple-server (1) Coverage Results" MODIFIED="1572947342102" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
+    <SUITE FILE_PATH="coverage/simple_server@To_test_overdue_appointment_functionality_Page_verification_landing_page__with_no_overdue_patient__simple_server.rcov" NAME="To test overdue appointment functionality Page verification landing page -with no overdue patient: simple-server Coverage Results" MODIFIED="1573213975501" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@Admin_Management_Manage_Admin_Section_Organization_owner_send_invitation__simple_server.rcov" NAME="Admin Management Manage Admin Section Organization owner send invitation: simple-server Coverage Results" MODIFIED="1566977509278" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@To_test_Forgot_password_functionality_verify_Facility_and_page_dropdown___simple_server.rcov" NAME="To test Forgot password functionality verify Facility and page dropdown : simple-server Coverage Results" MODIFIED="1567583961014" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@Verify_Dashboard_Verify_Dashboard_Verify_all_organization__simple_server.rcov" NAME="Verify Dashboard Verify Dashboard Verify all organization: simple-server Coverage Results" MODIFIED="1558341898946" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
@@ -842,10 +803,10 @@
     <SUITE FILE_PATH="coverage/simple_server@All_tests_in_organization_owner__simple_server.rcov" NAME="All tests in organization_owner: simple-server Coverage Results" MODIFIED="1558341126816" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@Manage_Section__User_Management_check_should_be_able_to_view_all_users__simple_server.rcov" NAME="Manage Section: User Management check should be able to view all users: simple-server Coverage Results" MODIFIED="1558339321054" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@test_protocol_detail_page_functionality_protocol_detail_page__simple_server.rcov" NAME="test protocol detail page functionality protocol detail page: simple-server Coverage Results" MODIFIED="1569224888470" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
-    <SUITE FILE_PATH="coverage/simple_server@To_test_overdue_appointment_functionality__simple_server.rcov" NAME="To test overdue appointment functionality: simple-server Coverage Results" MODIFIED="1571210458831" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
+    <SUITE FILE_PATH="coverage/simple_server@To_test_overdue_appointment_functionality__simple_server.rcov" NAME="To test overdue appointment functionality: simple-server Coverage Results" MODIFIED="1573216045670" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@Verify_Dashboard__simple_server.rcov" NAME="Verify Dashboard: simple-server Coverage Results" MODIFIED="1564643523756" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@SUPERVISOR__Manage_Section__Facility_Management_Flow_verify_facility_landing_page__simple_server.rcov" NAME="SUPERVISOR -Manage Section: Facility Management Flow verify facility landing page: simple-server Coverage Results" MODIFIED="1558348318373" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
-    <SUITE FILE_PATH="coverage/simple_server@To_test_district_analytics_page_test_facility_info_section_should_only_display_facilities_with_patients__simple_server__1_.rcov" NAME="To test district analytics page test facility info section should only display facilities with patients: simple-server (1) Coverage Results" MODIFIED="1572945335869" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
+    <SUITE FILE_PATH="coverage/simple_server@To_test_district_analytics_page_test_facility_info_section_should_only_display_facilities_with_patients__simple_server__1_.rcov" NAME="To test district analytics page test facility info section should only display facilities with patients: simple-server (1) Coverage Results" MODIFIED="1573206325325" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@To_test_overdue_appointment_functionality_verify_Facility_and_page_dropdown___simple_server.rcov" NAME="To test overdue appointment functionality verify Facility and page dropdown : simple-server Coverage Results" MODIFIED="1568192506480" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@_javascript_based_test_should_be_able_to_edit_User_facility__simple_server__1_.rcov" NAME=" javascript based test should be able to edit User facility: simple-server (1) Coverage Results" MODIFIED="1570693934267" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@Admin_User_page_functionality_protocol_landing_page_verify_all_district_should_be_displayed_in_alphabetical_order_in_facility_dropdown__simple_server__1_.rcov" NAME="Admin User page functionality protocol landing page verify all district should be displayed in alphabetical order in facility dropdown: simple-server (1) Coverage Results" MODIFIED="1571132705584" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
@@ -861,7 +822,7 @@
     <SUITE FILE_PATH="coverage/simple_server@_javascript_based_test__simple_server.rcov" NAME=" javascript based test: simple-server Coverage Results" MODIFIED="1570694254447" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@Admin_Management_Manage_Admin_Section_Owner_send_invitation__simple_server.rcov" NAME="Admin Management Manage Admin Section Owner send invitation: simple-server Coverage Results" MODIFIED="1566976346443" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@dashboard_spec.rcov" NAME="dashboard_spec Coverage Results" MODIFIED="1558091406255" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spec/features/admin" MODULE_NAME="simple-server" />
-    <SUITE FILE_PATH="coverage/simple_server@Admin_User_page_functionality__simple_server.rcov" NAME="Admin User page functionality: simple-server Coverage Results" MODIFIED="1573125180169" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
+    <SUITE FILE_PATH="coverage/simple_server@Admin_User_page_functionality__simple_server.rcov" NAME="Admin User page functionality: simple-server Coverage Results" MODIFIED="1573214394023" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@Manage_Section__User_Management__simple_server.rcov" NAME="Manage Section: User Management: simple-server Coverage Results" MODIFIED="1558343405092" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@Login_as_Supervisor_create_user_for_same_facility_group_and_verify_approval_request_in_dashboard__simple_server.rcov" NAME="Login as Supervisor create user for same facility group and verify approval request in dashboard: simple-server Coverage Results" MODIFIED="1558347172206" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@To_test_overdue_appointment_functionality___simple_server.rcov" NAME="To test overdue appointment functionality : simple-server Coverage Results" MODIFIED="1568271854111" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
@@ -878,7 +839,7 @@
     <SUITE FILE_PATH="coverage/simple_server@To_test_adherence_followup_patient_functionality_Javascript_based_tests_should_display_list___for_different_page_selection__simple_server.rcov" NAME="To test adherence followup patient functionality Javascript based tests should display list - for different page selection: simple-server Coverage Results" MODIFIED="1568788901521" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@Facility_page_functionality_create_new_facility_group_without_assigning_any_facility__simple_server__1_.rcov" NAME="Facility page functionality create new facility group without assigning any facility: simple-server (1) Coverage Results" MODIFIED="1563775501689" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@To_test_district_analytics_page_test_cohort_report_show__simple_server__1_.rcov" NAME="To test district analytics page test cohort report show: simple-server (1) Coverage Results" MODIFIED="1572349284275" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
-    <SUITE FILE_PATH="coverage/simple_server@Overdue_appointments__simple_server.rcov" NAME="Overdue appointments: simple-server Coverage Results" MODIFIED="1571209363531" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
+    <SUITE FILE_PATH="coverage/simple_server@Overdue_appointments__simple_server.rcov" NAME="Overdue appointments: simple-server Coverage Results" MODIFIED="1573214804508" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@test_protocol_screen_functionality_protocol_landing_page__delete_protocol__simple_server.rcov" NAME="test protocol screen functionality protocol landing page  delete protocol: simple-server Coverage Results" MODIFIED="1568964645474" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@To_test_overdue_appointment_functionality__check_verify_overdue_patient_list___for_different_facility__simple_server.rcov" NAME="To test overdue appointment functionality  check verify overdue patient list - for different facility: simple-server Coverage Results" MODIFIED="1568269282058" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@Verify_Dashboard_Verify_district_should_be_displayed_in_alphabetical_order__simple_server.rcov" NAME="Verify Dashboard Verify district should be displayed in alphabetical order: simple-server Coverage Results" MODIFIED="1566900901220" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
@@ -951,8 +912,8 @@
     <SUITE FILE_PATH="coverage/simple_server@Facility_page_functionality_Verify_facility_landing_page___simple_server.rcov" NAME="Facility page functionality Verify facility landing page : simple-server Coverage Results" MODIFIED="1564124542217" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@Admin_User_page_functionality_verify_all_district_should_be_displayed_in_alphabetical_order_in_facility_dropdown__simple_server.rcov" NAME="Admin User page functionality verify all district should be displayed in alphabetical order in facility dropdown: simple-server Coverage Results" MODIFIED="1569323031849" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@Login_as_Supervisor_SignIn_as_Owner_and_verify_approval_request_in_dashboard__simple_server.rcov" NAME="Login as Supervisor SignIn as Owner and verify approval request in dashboard: simple-server Coverage Results" MODIFIED="1558346978138" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
-    <SUITE FILE_PATH="coverage/simple_server@Admin_User_page_functionality_protocol_landing_page_Verify_User_landing_page__simple_server.rcov" NAME="Admin User page functionality protocol landing page Verify User landing page: simple-server Coverage Results" MODIFIED="1573198417978" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
-    <SUITE FILE_PATH="coverage/simple_server@Facility_page_functionality_Verify_facility_landing_page__simple_server.rcov" NAME="Facility page functionality Verify facility landing page: simple-server Coverage Results" MODIFIED="1571117615091" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
+    <SUITE FILE_PATH="coverage/simple_server@Admin_User_page_functionality_protocol_landing_page_Verify_User_landing_page__simple_server.rcov" NAME="Admin User page functionality protocol landing page Verify User landing page: simple-server Coverage Results" MODIFIED="1573198801741" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
+    <SUITE FILE_PATH="coverage/simple_server@Facility_page_functionality_Verify_facility_landing_page__simple_server.rcov" NAME="Facility page functionality Verify facility landing page: simple-server Coverage Results" MODIFIED="1573213731780" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@All_specs_in_admin__simple_server.rcov" NAME="All specs in admin: simple-server Coverage Results" MODIFIED="1565329321225" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@To_test_overdue_appointment_functionality__check__simple_server.rcov" NAME="To test overdue appointment functionality  check: simple-server Coverage Results" MODIFIED="1568269319366" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
     <SUITE FILE_PATH="coverage/simple_server@Admin_User_page_functionality__javascript_based_test__should_display_user_list_for___Path_Dr_Amir_Sen__simple_server.rcov" NAME="Admin User page functionality  javascript based test  should display user list for - Path Dr Amir Sen: simple-server Coverage Results" MODIFIED="1571123501092" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="simple-server" />
@@ -1000,8 +961,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/spec/features/appointments_spec.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="585">
-          <caret line="99" selection-start-line="99" selection-end-line="99" />
+        <state relative-caret-position="-207">
+          <caret line="93" column="19" selection-start-line="93" selection-start-column="19" selection-end-line="93" selection-end-column="19" />
         </state>
       </provider>
     </entry>
@@ -1208,8 +1169,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/spec/features/appointments/index_spec.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2130">
-          <caret line="142" column="34" selection-start-line="142" selection-start-column="34" selection-end-line="142" selection-end-column="34" />
+        <state relative-caret-position="-541">
+          <caret line="12" column="32" selection-start-line="12" selection-start-column="32" selection-end-line="12" selection-end-column="32" />
         </state>
       </provider>
     </entry>
@@ -1222,17 +1183,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/spec/pages/navigations/dashboard_page_navigation.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="509">
-          <caret line="35" column="7" selection-start-line="35" selection-start-column="7" selection-end-line="35" selection-end-column="7" />
+        <state relative-caret-position="270">
+          <caret line="18" column="7" selection-start-line="18" selection-start-column="7" selection-end-line="18" selection-end-column="7" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/spec/spec_helper.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="178">
-          <caret line="41" column="3" selection-start-line="41" selection-start-column="3" selection-end-line="41" selection-end-column="3" />
-        </state>
-      </provider>
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/spec/rails_helper.rb">
       <provider selected="true" editor-type-id="text-editor">
@@ -1243,8 +1200,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/spec/features/admin/users/index_spec.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-229">
-          <caret column="18" selection-start-column="18" selection-end-column="18" />
+        <state relative-caret-position="165">
+          <caret line="11" column="116" selection-start-line="11" selection-start-column="116" selection-end-line="11" selection-end-column="116" />
         </state>
       </provider>
     </entry>
