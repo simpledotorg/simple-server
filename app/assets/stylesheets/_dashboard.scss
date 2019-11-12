@@ -26,7 +26,9 @@ Dashboard UI
 .split-bars .bar-3 { background: $green-mid; border-radius: 0 3px 3px 0; color: $green-dark; }
 
 .split-row {
-    margin-top: 16px;
+    margin-top: 4px;
+    border-top:  1px solid $grey-lightest;
+    padding-top: 8px;
 }
 
 .bar-total {

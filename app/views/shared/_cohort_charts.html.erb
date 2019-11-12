@@ -1,18 +1,17 @@
 <div class="card pb-4">
-  <h3>Cohort report</h3>
-  <div class="desc">
-    <% if @period == :quarter %>
-      Outcomes for patients registered 3-6 months previously:
-    <% else %>
-      Outcomes for patients registered 2-3 months previously:
-    <% end %>
-    <div class="key desktop">
-      <div class="key-definition didntattend">Didn't attend for<br class="mobile"> follow-up visit</div>
-      &nbsp;
-      <div class="key-definition uncontrolled">Visited and <br class="mobile">BP &ge;&nbsp;140/90</div>
-      &nbsp;
-      <div class="key-definition controlled">Visited and <br class="mobile">BP &lt;&nbsp;140/90</div>
-    </div>
+  <div class="row">
+      <div class="col-lg-3">
+            <h3>Cohort report</h3>
+      </div>
+      <div class="desc col-lg-9">
+        <div class="key desktop">
+          <div class="key-definition didntattend">Didn't attend for<br class="mobile"> follow-up visit</div>
+          &nbsp;
+          <div class="key-definition uncontrolled">Visited and <br class="mobile">BP &ge;&nbsp;140/90</div>
+          &nbsp;
+          <div class="key-definition controlled">Visited and <br class="mobile">BP &lt;&nbsp;140/90</div>
+        </div>
+      </div>
   </div>
 
   <% cohort_analytics.each_with_index do |(report_dates, analytics), index| %>
@@ -29,20 +28,18 @@
         report_period = quarter_string(report_start)
         cohort_period = quarter_string(cohort_start)
       else
-        report_period = [report_start.strftime("%b %-d"), (report_start + 1.month).end_of_month.strftime("%b %-d")].join("–")
-        cohort_period = cohort_start.strftime("%b %Y")
+        report_period = [report_start.strftime("%b"), (report_start + 1.month).end_of_month.strftime("%b")].join("/")
+        cohort_period = cohort_start.strftime("%b-%Y")
       end
     %>
 
     <div class="split-row">
       <div class="row px-lg-0">
-        <div class="col-lg-3 nowrap order-lg-3">
-          <div class="bar-total float-right float-lg-none mb-n4">Outcomes for <%= registered %> patients reg. <%= "#{cohort_period}" %></div>
+        <div class="col-lg-3 nowrap order-lg-1">
+          <h6><%= registered %> patients registered in <%= "#{cohort_period}" %></h6>
+          <div class="small light">Result from last visit in <%= report_period %></div>
         </div>
-        <div class="col-lg-1 nowrap order-lg-1 pt-lg-2">
-          <h6 data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title=""><%= report_period %></h6>
-        </div>
-        <div class="col-lg-8 order-lg-2 pr-lg-0">
+        <div class="col-lg-9 order-lg-2">
           <table class="split-bars">
             <tr>
               <% if registered > 0 %>
