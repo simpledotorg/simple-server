@@ -12,6 +12,7 @@ FactoryBot.define do
     state "Punjab"
     country "India"
     pin "123456"
+    zone "Block ABC"
     facility_type "PHC"
     facility_group { fac_group }
   end

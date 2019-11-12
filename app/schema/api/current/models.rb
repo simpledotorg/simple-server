@@ -162,6 +162,7 @@ class Api::Current::Models
           street_address: { type: :string },
           village_or_colony: { type: :string },
           district: { '$ref' => '#/definitions/non_empty_string' },
+          zone: { type: [:string, 'null'] },
           state: { '$ref' => '#/definitions/non_empty_string' },
           country: { '$ref' => '#/definitions/non_empty_string' },
           pin: { type: :string },
