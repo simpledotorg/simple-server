@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.feature 'Owner Login as Admin', type: :feature do
-  let(:owner) { create(:admin, :owner) }
+  let(:owner) { create(:admin) }
   let(:counsellor) { create(:admin, :counsellor) }
   login_page = AdminPage::Sessions::New.new
   dashboard_navigation = Navigations::DashboardPageNavigation.new

@@ -7,16 +7,16 @@ class Admin::FacilitiesController < AdminController
                 :if => :file_exists?, only: [:upload]
 
   def index
-    authorize([:manage, Facility])
-    @organizations = policy_scope([:manage, Organization])
+    authorize Facility
+    @organizations = policy_scope(Organization)
   end
 
   def show
   end
 
   def new
-    @facility = @facility_group.facilities.new
-    authorize([:manage, @facility])
+    @facility = Facility.new
+    authorize @facility
   end
 
   def edit
@@ -24,7 +24,7 @@ class Admin::FacilitiesController < AdminController
 
   def create
     @facility = @facility_group.facilities.new(facility_params)
-    authorize([:manage, @facility])
+    authorize @facility
 
     if @facility.save
       redirect_to [:admin, @facility_group, @facility], notice: 'Facility was successfully created.'
@@ -47,7 +47,7 @@ class Admin::FacilitiesController < AdminController
   end
 
   def upload
-    authorize([:manage, Facility])
+    authorize Facility
     return render :upload, :status => :bad_request if @errors.present?
 
     if @facilities.present?
@@ -61,7 +61,7 @@ class Admin::FacilitiesController < AdminController
 
   def set_facility
     @facility = Facility.friendly.find(params[:id])
-    authorize([:manage, @facility])
+    authorize @facility
   end
 
   def set_facility_group

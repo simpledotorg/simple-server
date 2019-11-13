@@ -5,8 +5,7 @@ namespace :appointment_notification do
   desc 'Send automatic SMS reminder to patients who missed their scheduled visit by three days'
   task three_days_after_missed_visit: :environment do
     AppointmentNotification::MissedVisitJob
-      .perform_async(SMS_REMINDER_BOT_USER.id,
-                     Config.get_int(
+      .perform_async(Config.get_int(
                        'APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_START', DEFAULT_TIME_WINDOW_START),
                      Config.get_int(
                        'APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_FINISH', DEFAULT_TIME_WINDOW_FINISH))

@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 RSpec.feature 'Verify Dashboard', type: :feature do
+  let!(:owner) { create(:admin) }
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:path) { create(:organization, name: "PATH") }
-  let!(:owner) { create(:admin, :owner) }
 
   login_page = AdminPage::Sessions::New.new
   dashboard = OrganizationsPage::Index.new
@@ -11,7 +11,7 @@ RSpec.feature 'Verify Dashboard', type: :feature do
   org_page = AdminPage::Organizations::Index.new
 
 
-  xit 'Verify organization is displayed in dashboard' do
+  it 'Verify organization is displayed in dashboard' do
     visit root_path
     login_page.do_login(owner.email, owner.password)
 
@@ -45,9 +45,9 @@ RSpec.feature 'Verify Dashboard', type: :feature do
   end
 
   it 'SignIn as Owner and verify approval request in dashboard' do
-    user = create(:user, :with_phone_number_authentication)
+    user = build(:user)
     user.sync_approval_status = User.sync_approval_statuses[:requested]
-    user.save!
+    user.save
 
     visit root_path
     login_page.do_login(owner.email, owner.password)

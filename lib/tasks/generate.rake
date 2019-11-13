@@ -9,6 +9,7 @@ namespace :generate do
     sleep 0.01; time + SecureRandom.rand * (entropy_factor)
   end
 
+  desc 'Generate seed data for environment; Example: rake "generate:seed[number_of_months_to_generate_data_for]"'
   task :seed, [:number_of_months] => :environment do |_t, args|
     number_of_months = args.fetch(:number_of_months) { 3 }.to_i
     environment = ENV.fetch('SIMPLE_SERVER_ENV') { 'development' }
@@ -27,7 +28,6 @@ namespace :generate do
 
       FactoryBot.create(:admin,
                         :owner,
-                        full_name: "Super Admin",
                         email: "admin@simple.org",
                         password: 123456,
                         role: 'owner',
@@ -53,7 +53,7 @@ namespace :generate do
     number_of_months.downto(1) do |month_number|
       creation_date = month_number.months.ago
 
-      Organization.all.flat_map(&:users).select { |u| u.role.blank? }.each do |user|
+      Organization.all.flat_map(&:users).each do |user|
         create_patients(user, creation_date, config)
       end
     end
@@ -81,7 +81,7 @@ namespace :generate do
     end
 
     number_of_patients = config.dig('patients', 'count')
-    facility_groups.flat_map(&:users).select { |u| u.role.blank? }.each do |user|
+    facility_groups.flat_map(&:users).each do |user|
       number_of_patients.times do
         create_patients(user, date, config)
       end
@@ -346,7 +346,7 @@ namespace :generate do
     facilities.each do |f|
       config.dig('users', 'count').times do
         FactoryBot.create(:user,
-                          organization: organization,
+                          organization_id: organization.id,
                           registration_facility: f,
                           created_at: creation_date,
                           updated_at: creation_date)
@@ -361,7 +361,7 @@ namespace :generate do
 
   def create_sync_requested_users(organization, facility, creation_date)
     user = FactoryBot.create(:user,
-                             organization: organization,
+                             organization_id: organization.id,
                              registration_facility: facility,
                              created_at: creation_date,
                              updated_at: creation_date)
@@ -373,7 +373,7 @@ namespace :generate do
 
   def create_sync_denied_users(organization, facility, creation_date)
     user = FactoryBot.create(:user,
-                             organization: organization,
+                             organization_id: organization.id,
                              registration_facility: facility,
                              created_at: creation_date,
                              updated_at: creation_date)

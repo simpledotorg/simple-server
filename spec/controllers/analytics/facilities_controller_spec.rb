@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Analytics::FacilitiesController, type: :controller do
   let(:user) { create(:user) }
-  let(:admin) { create(:admin, :owner) }
+  let(:admin) { create(:admin) }
 
   let(:district_name) { 'Bathinda' }
   let(:organization) { create(:organization) }
@@ -26,25 +26,25 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
     #
     # register patients
     #
-    registered_patients = travel_to(mar_2019) do
+    registered_patients = travel_to(feb_2019) do
       create_list(:patient, 3, registration_facility: facility, registration_user: user)
     end
 
     #
     # add blood_pressures next month
     #
-    travel_to(apr_2019) do
+    travel_to(mar_2019) do
       registered_patients.each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility, user: user) }
     end
 
     Patient.where(id: registered_patients.map(&:id))
   end
 
-  before do
-    sign_in(admin.email_authentication)
-  end
-
   describe '#show' do
+    before do
+      sign_in(admin)
+    end
+
     render_views
 
     context 'dashboard analytics' do
@@ -90,19 +90,18 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
         expected_cache_value =
           {
             cohort: {
-              [mar_2019, apr_2019] => { :registered => 3, :followed_up => 3, :defaulted => 0, :controlled => 3, :uncontrolled => 0 },
-              [feb_2019, mar_2019] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
+              [feb_2019, mar_2019] => { :registered => 3, :followed_up => 3, :defaulted => 0, :controlled => 3, :uncontrolled => 0 },
               [jan_2019, feb_2019] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
               [dec_2018, jan_2019] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
               [nov_2018, dec_2018] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
               [oct_2018, nov_2018] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
-              [sep_2018, oct_2018] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
+              [sep_2018, oct_2018] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 }
             },
             dashboard: {
               user.id => {
-                registered_patients_by_period: { mar_2019 => 3 },
+                registered_patients_by_period: { feb_2019 => 3 },
                 total_registered_patients: 3,
-                follow_up_patients_by_period: { apr_2019 => 3 }
+                follow_up_patients_by_period: { mar_2019 => 3 }
               }
             }
           }
@@ -119,6 +118,12 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
   end
 
   describe '#whatsapp_graphics' do
+    before do
+      admin = create(:admin, :supervisor)
+      sign_in(admin)
+      create(:admin_access_control, access_controllable: facility_group, admin: admin)
+    end
+
     render_views
 
     context 'html requested' do

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Analytics::DistrictsController, type: :controller do
-  let(:admin) { create(:admin, :owner) }
+  let(:admin) { create(:admin) }
 
   let(:district_name) { 'Bathinda' }
   let(:organization) { create(:organization) }
@@ -16,25 +16,25 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
     #
     # register patients
     #
-    registered_patients = Timecop.travel(Date.new(2019, 3, 1)) do
+    registered_patients = Timecop.travel(Date.new(2018, 11, 1)) do
       create_list(:patient, 3, registration_facility: facility)
     end
 
     #
     # add blood_pressures next month
     #
-    Timecop.travel(Date.new(2019, 4, 1)) do
+    Timecop.travel(Date.new(2019, 2, 1)) do
       registered_patients.each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility) }
     end
 
     Patient.where(id: registered_patients.map(&:id))
   end
 
-  before do
-    sign_in(admin.email_authentication)
-  end
-
   describe '#show' do
+    before do
+      sign_in(admin)
+    end
+
     render_views
 
     context 'dashboard analytics' do
@@ -65,9 +65,9 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
       end
 
       let(:today) { Date.new(2019, 5, 1) }
-      let(:cohort_date1) { today.beginning_of_quarter }
-      let(:cohort_date2) { (today - (1 * 3).months).beginning_of_quarter }
-      let(:cohort_date3) { (today - (2 * 3).months).beginning_of_quarter }
+      let(:cohort_date1) { (today - (1 * 3).months).beginning_of_quarter }
+      let(:cohort_date2) { (today - (2 * 3).months).beginning_of_quarter }
+      let(:cohort_date3) { (today - (3 * 3).months).beginning_of_quarter }
 
       it 'caches the district correctly' do
         expected_cache_value =
@@ -99,6 +99,12 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
   end
 
   describe '#whatsapp_graphics' do
+    before do
+      admin = create(:admin, :supervisor)
+      sign_in(admin)
+      create(:admin_access_control, access_controllable: facility_group, admin: admin)
+    end
+
     render_views
 
     context 'html requested' do
@@ -113,6 +119,7 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
     context 'png requested' do
       it 'renders the image template for downloading' do
         get :whatsapp_graphics, format: :png, params: { organization_id: organization.id, district_id: district_name }
+
 
         expect(response).to be_ok
         expect(response).to render_template('shared/graphics/image_template')

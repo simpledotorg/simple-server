@@ -10,24 +10,13 @@ bn-BD:
       invalid_otp: 'আপনার OTP মিলছে না। আবার চেষ্টা করবেন?'
       expired_otp: 'আপনার একটি ফ্রেশ OTP লাগবে। একটি নতুনের অনুরোধ করুন।'
       invalid_password: 'আপনার পাসওয়ার্ড মিলছে না। আবার চেষ্টা করবেন?'
+  month_names: [~, 'জানুয়ারী', 'ফেব্রুয়ারী', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'অগাস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর']
+  abbr_month_names: [~, 'জানুয়ারী', 'ফেব্রুয়ারী', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'অগাস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর']
   sms:
     country_code: '+880'
     request_otp: '<#> %{otp} হল আপনার সিম্পিল যাচাইকরণের কোড\n%{app_signature}'
     appointment_reminders:
       missed_visit_sms_reminder: 'আমরা %{appointment_date} %{facility_name} তে আপনাকে আপনার নির্ধারিত বিপি পরীক্ষায় দেখতে পাইনি। অনুগ্রহ করে সকাল <9:30টা> থেকে দুপুর <2টোর> মধ্যে আসবেন।'
-  months:
-    1: 'জানুয়ারী'
-    2: 'ফেব্রুয়ারী'
-    3: 'মার্চ'
-    4: 'এপ্রিল'
-    5: 'মে'
-    6: 'জুন'
-    7: 'জুলাই'
-    8: 'অগাস্ট'
-    9: 'সেপ্টেম্বর'
-    10: 'অক্টোবর'
-    11: 'নভেম্বর'
-    12: 'ডিসেম্বর'
   analytics:
     bps_recorded: "How many patients have a BP recorded at %{facility_name}?"
     patients_enrolled: "How many new patients are enrolled at %{facility_name}?"

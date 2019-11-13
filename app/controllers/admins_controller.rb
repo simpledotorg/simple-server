@@ -2,9 +2,11 @@ class AdminsController < AdminController
   before_action :set_admin, only: [:show, :edit, :update, :destroy]
   after_action :verify_policy_scoped, only: :index
 
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+
   def index
-    authorize([:manage, :admin, User])
-    @admins = policy_scope([:manage, :admin, User]).sort_by(&:email)
+    authorize Admin
+    @admins = policy_scope(Admin).order(:email)
   end
 
   def show
@@ -14,19 +16,16 @@ class AdminsController < AdminController
   end
 
   def update
-    User.transaction do
-      @admin.update!(user_params)
-      next unless permission_params.present?
-
-      @admin.user_permissions.delete_all
-      permission_params.each do |attributes|
-        @admin.user_permissions.create!(attributes.permit(
-          :permission_slug,
-          :resource_id,
-          :resource_type))
-      end
+    admin_access_controls = access_controllable_ids.reject(&:empty?).map do |access_controllable_id|
+      AdminAccessControl.new(
+        access_controllable_type: access_controllable_type,
+        access_controllable_id: access_controllable_id)
     end
-    render json: {}, status: :accepted
+    if @admin.update(admin_params.merge(admin_access_controls: admin_access_controls))
+      redirect_to @admin, notice: 'Admin was successfully updated.'
+    else
+      render :edit
+    end
   end
 
   def destroy
@@ -36,19 +35,25 @@ class AdminsController < AdminController
 
   private
 
+  def user_not_authorized
+    flash[:alert] = "You are not authorized to perform this action."
+    redirect_to(request.referrer || root_path)
+  end
+
   def set_admin
-    @admin = User.find(params[:id])
-    authorize([:manage, :admin, @admin])
+    @admin = Admin.find(params[:id])
+    authorize @admin
   end
 
-  def permission_params
-    params.require(:permissions)
+  def access_controllable_ids
+    params.require(:admin).require(:access_controllable_ids)
   end
 
-  def user_params
-    { full_name: params.require(:full_name),
-      role: params.require(:role),
-      organization_id: params[:organization_id],
-      device_updated_at: Time.current }
+  def access_controllable_type
+    params.require(:admin).require(:access_controllable_type)
+  end
+
+  def admin_params
+    params.require(:admin).permit(:email)
   end
 end

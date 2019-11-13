@@ -32,7 +32,7 @@ class APIController < ApplicationController
   end
 
   def current_timezone_offset
-    request.headers['HTTP_X_TIMEZONE_OFFSET'] || 0
+    request.headers['HTTP_X_TIMEZONE_OFFSET'].to_i || 0
   end
 
   def validate_facility
