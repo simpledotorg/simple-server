@@ -1,6 +1,10 @@
 class Api::Current::EncountersController < Api::Current::SyncController
   include Api::Current::PrioritisableByFacility
 
+  skip_before_action :instrument_process_token
+  before_action :stub_syncing_from_user, only: [:sync_from_user]
+  before_action :stub_syncing_to_user, only: [:sync_to_user]
+
   def sync_from_user
     __sync_from_user__(encounter_params)
   end
@@ -55,5 +59,16 @@ class Api::Current::EncountersController < Api::Current::SyncController
         observations: [:"blood_pressures" => [permitted_bp_params]],
       )
     end
+  end
+
+  def stub_syncing_from_user
+    render(json: { errors: nil }, status: :ok) unless FeatureToggle.enabled?('SYNC_ENCOUNTERS')
+  end
+
+  def stub_syncing_to_user
+    render(
+      json: { 'encounters' => [], 'process_token' => encode_process_token({}) },
+      status: :ok
+    ) unless FeatureToggle.enabled?('SYNC_ENCOUNTERS')
   end
 end

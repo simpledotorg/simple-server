@@ -50,7 +50,7 @@ class Appointment < ApplicationRecord
   end
 
   def days_overdue
-    (Date.current - scheduled_date).to_i
+    [0, (Date.current - scheduled_date).to_i].max
   end
 
   def scheduled?

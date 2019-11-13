@@ -1330,6 +1330,9 @@
         "village_or_colony": {
           "type": "string"
         },
+        "zone": {
+          "type": "string"
+        },
         "district": {
           "type": "string"
         },
@@ -2130,7 +2133,8 @@
         "identifier_type": {
           "type": "string",
           "enum": [
-            "simple_bp_passport"
+            "simple_bp_passport",
+            "bangladesh_national_id"
           ]
         },
         "metadata_version": {

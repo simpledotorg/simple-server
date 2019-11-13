@@ -52,7 +52,7 @@ class Api::Current::PatientsController < Api::Current::SyncController
   end
 
   def patients_params
-    permitted_address_params = %i[id street_address village_or_colony district state country pin created_at updated_at]
+    permitted_address_params = %i[id street_address village_or_colony zone district state country pin created_at updated_at]
     permitted_phone_number_params = %i[id number phone_type active created_at updated_at]
     permitted_business_identifier_params = %i[id identifier identifier_type metadata metadata_version created_at updated_at]
 

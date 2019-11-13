@@ -6,13 +6,17 @@
 ### Removed
 ### Security
 
-# 2019-09-04-2
+# 2019-11-07-1
 ### Added
+- Add zone field to Address model
+- Add support for Bangladesh national ID as a business identifier
+- Add support for Bangladesh deployments
 ### Changed
+- Update pending CHANGELOGs from the last 9 releases
 ### Fixed
-- Feature toggle to enable downloading dashboard graphics
 ### Deprecated
 ### Removed
+- Remove current quarter whatsapp graphic download link
 ### Security
 
 # 2019-11-04-1
