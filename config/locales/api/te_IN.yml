@@ -1,0 +1,28 @@
+en:
+  login:
+    error_messages:
+      unknown_user: "ఆ వినియోగదారు మాకు తెలియదు. తనిఖీ చేసిన తర్వాత మళ్లీ ప్రయత్నించండి."
+      invalid_otp: 'మీ OTP సరిపోలలేదు. మళ్లీ ప్రయత్నించాలా?'
+      expired_otp: 'మీకు తాజా OTP అవసరం. తాజా దానిని అభ్యర్థించండి.'
+      invalid_password: 'మీ పాస్‌వర్డ్ సరిపోలలేదు. మళ్లీ ప్రయత్నించాలా?'
+  sms:
+    country_code: '+91'
+    request_otp: 'మీ సింపుల్ ధృవీకరణ కోడ్ <#> %{otp}\n%{app_signature}'
+  months:
+    1: 'జన'
+    2: 'ఫిబ్ర'
+    3: 'మార్చి'
+    4: 'ఏప్రిల్'
+    5: 'మే'
+    6: 'జూన్'
+    7: 'జూలై'
+    8: 'ఆగ'
+    9: 'సెప్టెం'
+    10: 'అక్టో'
+    11: 'నవం'
+    12: 'డిసెం'
+  analytics:
+    followup_patients: "%{facility_name} లోఎంతమందిరోగులబిపిరికార్డ్అయింది?"
+    patients_enrolled: "%{facility_name} లోఎంతమందిరోగులునమోదుచేసుకున్నారు?"
+    all_time_patients: "మొత్తంసమయం: %{count} మందిరోగులు"
+    updated_at: "Updated at %{time}"
