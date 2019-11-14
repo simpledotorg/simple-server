@@ -17,7 +17,7 @@
 <% else %>
   <div class="card">
     <%= inline_svg('icon_new_bp.svg', classname: 'icon-float') %>
-    <h3><%= t('analytics.bps_recorded', facility_name: @current_facility.name) %></h3>
+    <h3><%= t('analytics.followup_patients', facility_name: @current_facility.name) %></h3>
     <%= render 'graph',
                id: 'return-patients',
                statistics: @statistics[:follow_up_patients_per_month],

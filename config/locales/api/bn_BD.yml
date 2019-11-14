@@ -18,7 +18,7 @@ bn-BD:
     appointment_reminders:
       missed_visit_sms_reminder: 'আমরা %{appointment_date} %{facility_name} তে আপনাকে আপনার নির্ধারিত বিপি পরীক্ষায় দেখতে পাইনি। অনুগ্রহ করে সকাল <9:30টা> থেকে দুপুর <2টোর> মধ্যে আসবেন।'
   analytics:
-    bps_recorded: "How many patients have a BP recorded at %{facility_name}?"
+    followup_patients: "How many patients have a BP recorded at %{facility_name}?"
     patients_enrolled: "How many new patients are enrolled at %{facility_name}?"
     all_time_patients: "All time: %{count} patients"
   dashboard:

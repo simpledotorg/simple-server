@@ -7,7 +7,7 @@ class Api::Current::HelpController < APIController
   skip_before_action :validate_facility, only: [:show]
   skip_before_action :validate_current_facility_belongs_to_users_facility_group, only: [:show]
 
-  HTML_TRANSLATIONS_DIR = 'config/locales/api/help/*.html'
+  HELP_TRANSLATIONS_GLOB = 'config/locales/api/help/*.html'
   before_action :set_html_translations
 
   def show
@@ -16,7 +16,7 @@ class Api::Current::HelpController < APIController
   private
 
   def set_html_translations
-    Dir.glob(HTML_TRANSLATIONS_DIR)
+    Dir.glob(HELP_TRANSLATIONS_GLOB)
         .each do |translation_file|
       locale = Pathname.new(translation_file).basename('.html').to_s.dasherize.to_sym
       unless I18n.backend.translations.dig(locale, :api, :help, :body_html).present?
