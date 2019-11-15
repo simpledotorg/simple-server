@@ -2,13 +2,13 @@
   "v1": [
     {
       "country_code": "IN",
-      "endpoint": "https://api-sandbox.simple.org/",
+      "endpoint": "https://api-sandbox.simple.org/api/",
       "display_name": "India",
       "isd_code": "91"
     },
     {
       "country_code": "BD",
-      "endpoint": "https://api-sandbox.simple.org/",
+      "endpoint": "https://api-sandbox.simple.org/api/",
       "display_name": "Bangladesh",
       "isd_code": "880"
     }

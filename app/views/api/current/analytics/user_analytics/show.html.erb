@@ -17,7 +17,7 @@
 <% else %>
   <div class="card">
     <%= inline_svg('icon_new_bp.svg', classname: 'icon-float') %>
-    <h3>How many follow-up patients visited <%= @current_facility.name %>?</h3>
+    <h3><%= t('analytics.followup_patients', facility_name: @current_facility.name) %></h3>
     <%= render 'graph',
                id: 'return-patients',
                statistics: @statistics[:follow_up_patients_per_month],
@@ -28,8 +28,8 @@
 
   <div class="card">
     <%= inline_svg('icon_enroll.svg', classname: 'icon-float') %>
-    <h3>How many new patients were registered at <%= @current_facility.name %>?</h3>
-    <h5>All time: <%= @statistics[:total_patients_count] %> patients</h5>
+    <h3><%= t('analytics.patients_enrolled', facility_name: @current_facility.name) %></h3>
+    <h5><%= t('analytics.all_time_patients', count: @statistics[:total_patients_count]) %></h5>
     <div class="bar-chart">
       <%= render 'graph',
                  id: '',
@@ -41,7 +41,7 @@
   </div>
 
   <footer>
-    <small class="text-muted">Updated at <%= l(Time.current) %></small>
+    <small class="text-muted"><%= t('analytics.updated_at', time: l(Time.current)) %></small>
   </footer>
 <% end %>
 </body>
