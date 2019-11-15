@@ -1,0 +1,42 @@
+en:
+  registration: 'New registration'
+  reset_password: 'Reset PIN'
+  login:
+    error_messages:
+      unknown_user: "We don't recognize that user. Please check and try again."
+      invalid_otp: 'Your OTP does not match. Try again?'
+      expired_otp: 'You need a fresh OTP. Request a new one.'
+      invalid_password: 'Your password does not match. Try again?'
+  sms:
+    country_code: '+91'
+    request_otp: '<#> %{otp} is your Simple verification code\n%{app_signature}'
+    appointment_reminders:
+      missed_visit_sms_reminder: 'We missed you for your scheduled BP check-up at %{facility_name} on %{appointment_date}. Please come between 9.30 AM and 2 PM.'
+  months:
+    1: 'January'
+    2: 'February'
+    3: 'March'
+    4: 'April'
+    5: 'May'
+    6: 'June'
+    7: 'July'
+    8: 'August'
+    9: 'September'
+    10: 'October'
+    11: 'November'
+    12: 'December'
+  analytics:
+    followup_patients: "How many patients have a BP recorded at %{facility_name}?"
+    patients_enrolled: "How many new patients are enrolled at %{facility_name}?"
+    all_time_patients: "All time: %{count} patients"
+    updated_at: "Updated at %{time}"
+  dashboard:
+    graphics:
+      graphics_title_html: "What happened in <b>%{current_quarter_string}</b> to the %{patients_in_previous_quarter} patients registered during <b>%{previous_quarter_string}</b>?"
+      report_name: "Hypertension Report"
+      patients_controlled_in_quarter_html: "patients visited with BP &lt;"
+      patients_uncontrolled_in_quarter_html: "patients visited with BP &ge;"
+      patients_defaulted_in_quarter_html: "patients didn't attend for an expected follow-up visit"
+      new_patients_registered: "New registrations"
+      patients_called_for_followup: "Follow-up patients"
+      patients_called_for_missed_followup: "Patients called"
