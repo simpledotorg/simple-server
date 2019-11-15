@@ -103,4 +103,7 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+
+  # The application.rb will take care of fallbacks in case DEFAULT_LOCALE is not present
+  config.i18n.default_locale = ENV["DEFAULT_LOCALE"].to_sym
 end
