@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191025120438) do
+ActiveRecord::Schema.define(version: 20191105114448) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,6 +28,7 @@ ActiveRecord::Schema.define(version: 20191025120438) do
     t.datetime "device_created_at", null: false
     t.datetime "device_updated_at", null: false
     t.datetime "deleted_at"
+    t.string "zone"
     t.index ["deleted_at"], name: "index_addresses_on_deleted_at"
   end
 

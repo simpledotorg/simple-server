@@ -1,14 +1,16 @@
-[
-  {
-    "country_code": "IN",
-    "endpoint": "https://api-qa.simple.org/",
-    "display_name": "India",
-    "isd_code": "91"
-  },
-  {
-    "country_code": "BD",
-    "endpoint": "https://api-qa.simple.org/",
-    "display_name": "Bangladesh",
-    "isd_code": "880"
-  }
-]
+{
+  "v1": [
+    {
+      "country_code": "IN",
+      "endpoint": "https://api-qa.simple.org/api/",
+      "display_name": "India",
+      "isd_code": "91"
+    },
+    {
+      "country_code": "BD",
+      "endpoint": "https://api-qa.simple.org/api/",
+      "display_name": "Bangladesh",
+      "isd_code": "880"
+    }
+  ]
+}

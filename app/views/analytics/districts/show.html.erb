@@ -15,7 +15,6 @@
 
 <% if policy([:cohort_report, @organization_district]).view_cohort_reports? %>
   <%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics, quarter: current_quarter, year: current_year %>
-
   <%= render 'shared/analytics_table',
              dashboard_analytics: @dashboard_analytics,
              row_resource: Facility.order(:name),

@@ -12,113 +12,14 @@
   <%= inline_stylesheet('help.css') %>
 
 </head>
-
-<body>
-
-<div class="anchors">
-  <a href="#watch" style="border-top: none;">VIDEOS</a>
-  <a href="#howto">INSTRUCTIONS</a>
-  <a href="#bp">HOW TO MEASURE BPs</a>
-  <a href="#support">ASK FOR HELP</a>
-</div>
-
-<div id="watch"></div>
-<div class="card">
-  <h3>Videos</h3>
-  <a href="<%= ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL'] %>" class="video" style="display: block; margin: 8px 0 4px 0;">
-    <%= inline_svg('thumb_demo.svg') %>
-  </a>
-  <div><a href="<%= ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL'] %>" style="text-align: center; display: block; font-weight: bold; font-size: 110%;">How to use Simple: हिन्दी</a></div>
-    
-  <a href="<%= ENV['HELP_SCREEN_YOUTUBE_PASSPORT_URL'] %>" class="video" style="display: block; margin: 32px 0 4px 0;">
-    <%= inline_svg('thumb_passport.svg') %>
-  </a>
-    <div><a href="<%= ENV['HELP_SCREEN_YOUTUBE_PASSPORT_URL'] %>" style="text-align: center; display: block; font-weight: bold; font-size: 110%;">How to use BP Passports</a></div>
-  <div id="howto"></div>
-</div>
-
-<div class="card">
-  <h3>Instructions</h3>
-
-  <h6>Getting started</h6>
-  <p>Each person in your facility who will be recording patient’s BPs should install the Simple app on their own Android phone.</p>
-
-  <h6>Which patients should you record?</h6>
-  <p>Use the app to record every patient who has hypertension or who is taking medicines for high BP. The next time that the patient comes back to your facility, search for that patient and enter a new BP.</p>
-
-  <h6>Searching for a patient</h6>
-  <p>It is really important to do your best to find the right patient when entering a BP.</p>
-
-  <p>Type <span class="code">first name</span> and <span class="code">last name</span> into the search. Tap
-    <span class="code">NEXT</span> and the phone will check to see if that patient might have been entered into the
-    system already by someone.</p>
-
-  <h6>Does your patient match a search result?</h6>
-  <p>After searching, look carefully at the list of patients. Does one have the same <span class="code">address</span>,
-    <span class="code">birthday</span>, or <span class="code">phone number</span> as your patient? Tap on a matching
-    patient.</p>
-  <p>To be sure, ask the patient about their:</p>
-  <ul class="big-list">
-    <li>Name and gender</li>
-    <li>Home address</li>
-    <li>Last BP date and clinic
-      <div class="note">If they have never visited the clinic where last BP was taken, this patient is not a match</div>
-    </li>
-    <li>Phone number
-      <div class="note">Ask if last 3 digits match</div>
-    </li>
-    <li>Age or date of birth
-      <div class="note">For older patients, the age may only be a guess, so it’s okay if the age is not precise</div>
-    </li>
-  </ul>
-  <p>If you’re confident that your patient is a match, tap on the patient card and do not register as a new patient.</p>
-  <div id="bp"></div>
-</div>
-
-<div class="card">
-  <h3>Tips for taking accurate BPs</h3>
-  <p>Failure to follow these instructions will cause the BP reading to be off by several millimeters of mercury.</p>
-
-  <div style="margin: 2em 0;">
-    <%= inline_svg('thumb_bp_measure.svg') %>
-  </div>
-
-  <h6>Measure BP of all adults ≥ 18 years</h6>
-  <ol>
-    <li>No talking during and between measurements</li>
-    <li>Use correct cuff size and positioning. Cuff is on bare arm or over thin layer of clothing. Avoid bunching of
-      clothes under cuff.
-    </li>
-    <li>Back supported</li>
-    <li>Arm supported, so that cuff is at heart level</li>
-    <li>Record exact BP reading. Don’t round.</li>
-    <li>Legs uncrossed, feet supported</li>
-  </ol>
-  <p>Ensure patient avoids exercise, tea, coffee, and smoking in the last 30 min. Patient should rest comfortably and
-    quietly for 5 min before the reading.</p>
-  <h6>Cuff sizing and use for accurate readings</h6>
-  <ul>
-    <li>Ideal cuff bladder length is at least 80% of the patient's arm circumference.</li>
-    <li>Cuff width should cover at least 40% of the patient’s upper arm.</li>
-    <li>Ensure cuff is on bare arm or over thin layer of clothing. Avoid bunching of clothes under cuff.</li>
-    <li>Empty bladder before each reading.</li>
-  </ul>
-  <div id="support"></div>
-</div>
-
-<div class="card">
-  <div style="width: 100px; height: 100px; margin: -8px -8px 16px 16px; float: right;">
-    <%= inline_svg('icon_whatsapp_icon.svg') %>
-  </div>
-
-  <h3>Ask for help</h3>
-  <p>If you run into problems or you just want to ask questions, please ask in the
-    WhatsApp support group where our team can help you.</p>
-  <p>WhatsApp message support at:</p>
-  <a href="<%= ENV['HELP_SCREEN_WHATSAPP_SUPPORT_GROUP_URL'] %>" class="whatsapp-button">
-    <%= inline_svg('icon_whatsapp_icon.svg') %> <%= ENV['HELP_SCREEN_WHATSAPP_SUPPORT_NUMBER'] %>
-  </a>
-</div>
-<footer></footer>
-</body>
+<%= t('api.help.body_html',
+      help_screen_youtube_video_url: ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL'],
+      thumb_demo_svg: inline_svg('thumb_demo.svg'),
+      help_screen_youtube_passport_url: ENV['HELP_SCREEN_YOUTUBE_PASSPORT_URL'],
+      thumb_passport_svg: inline_svg('thumb_passport.svg'),
+      icon_search_svg: inline_svg('icon_search.svg'),
+      thumb_bp_measure_svg: inline_svg('thumb_bp_measure.svg'),
+      icon_whatsapp_icon_svg: inline_svg('icon_whatsapp_icon.svg'),
+      help_screen_whatsapp_support_group_url: ENV['HELP_SCREEN_WHATSAPP_SUPPORT_GROUP_URL'],
+      help_screen_whatsapp_support_number: ENV['HELP_SCREEN_WHATSAPP_SUPPORT_NUMBER']) %>
 </html>

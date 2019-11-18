@@ -102,8 +102,8 @@ h6.bold {
     font-weight: bold;
 }
 
-label.required:after {
-  content:"*";
+.light {
+    color: $grey-mid !important;
 }
 
 .bp-uncontrolled {

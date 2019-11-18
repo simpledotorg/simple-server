@@ -46,12 +46,14 @@ RSpec.feature "Facility analytics", type: :feature do
     end
 
     it "shows quarterly metrics" do
-      expect(page).to have_content("registered 3-6 months previously")
+      expect(page).to have_content("patients registered in")
+      expect(page).to have_content("Result from last visit in")
     end
 
     it "persists period selection across views" do
       visit analytics_facility_path(other_facility)
-      expect(page).to have_content("registered 3-6 months previously")
+      expect(page).to have_content("patients registered in")
+      expect(page).to have_content("Result from last visit in")
     end
   end
 end
