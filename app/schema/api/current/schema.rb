@@ -55,6 +55,10 @@ class Api::Current::Schema
       sync_from_user_request(:blood_pressures)
     end
 
+    def diabetes_observation_sync_from_user_request
+      sync_from_user_request(:diabetes_observations)
+    end
+
     def prescription_drug_sync_from_user_request
       sync_from_user_request(:prescription_drugs)
     end
@@ -81,6 +85,10 @@ class Api::Current::Schema
 
     def blood_pressure_sync_to_user_response
       sync_to_user_response(:blood_pressures)
+    end
+
+    def diabetes_observation_sync_to_user_response
+      sync_to_user_response(:diabetes_observations)
     end
 
     def prescription_drug_sync_to_user_response

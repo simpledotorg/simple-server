@@ -333,6 +333,125 @@
         }
       }
     },
+    "/diabetes_observations/sync": {
+      "post": {
+        "summary": "Syncs diabetes observation data from device to server.",
+        "tags": [
+          "Diabetes Observation"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "diabetes_observations",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "diabetes_observations": {
+                  "$ref": "#/definitions/diabetes_observations"
+                }
+              },
+              "required": [
+                "diabetes_observations"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs diabetes observation data from server to device.",
+        "tags": [
+          "Diabetes Observations"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "process_token",
+            "type": "string",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "diabetes observation received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "diabetes_observations": {
+                  "$ref": "#/definitions/diabetes_observations"
+                },
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
+                }
+              },
+              "required": [
+                "diabetes_observations",
+                "process_token"
+              ]
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      }
+    },
     "/encounters/sync": {
       "post": {
         "summary": "Syncs encounters data from device to server.",
@@ -2189,6 +2308,51 @@
       ],
       "items": {
         "$ref": "#/definitions/patient_business_identifier"
+      }
+    },
+    "diabetes_observation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "observation_type": {
+          "type": "string"
+        },
+        "observation_value": {
+          "type": "number",
+          "format": "double"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "facility_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "user_id": {
+          "$ref": "#/definitions/uuid"
+        }
+      }
+    },
+    "diabetes_observations": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/diabetes_observation"
       }
     }
   },

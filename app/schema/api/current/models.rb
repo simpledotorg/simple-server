@@ -150,6 +150,23 @@ class Api::Current::Models
       }
     end
 
+    def diabetes_observation
+      { type: :object,
+        properties: {
+          id: { '$ref' => '#/definitions/uuid' },
+          observation_type: { type: :string },
+          observation_value: { type: :number, format: :double },
+          deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
+          created_at: { '$ref' => '#/definitions/timestamp' },
+          updated_at: { '$ref' => '#/definitions/timestamp' },
+          recorded_at: { '$ref' => '#/definitions/timestamp' },
+          patient_id: { '$ref' => '#/definitions/uuid' },
+          facility_id: { '$ref' => '#/definitions/uuid' },
+          user_id: { '$ref' => '#/definitions/uuid' }
+        }
+      }
+    end
+
     def facility
       {
         type: :object,
@@ -340,6 +357,8 @@ class Api::Current::Models
         medical_histories: array_of('medical_history'),
         patient_business_identifier: patient_business_identifier,
         patient_business_identifiers: array_of('patient_business_identifier'),
+        diabetes_observation: diabetes_observation,
+        diabetes_observations: array_of('diabetes_observation')
       }
     end
   end

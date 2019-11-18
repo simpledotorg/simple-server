@@ -37,6 +37,8 @@ class Api::V2::Models < Api::Current::Models
       super.except(
         :patient_business_identifier,
         :patient_business_identifiers,
+        :diabetes_observation,
+        :diabetes_observations
       )
     end
 
