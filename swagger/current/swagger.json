@@ -1325,25 +1325,46 @@
           "$ref": "#/definitions/uuid"
         },
         "street_address": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "village_or_colony": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "zone": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "district": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "state": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "country": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "pin": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "deleted_at": {
           "$ref": "#/definitions/nullable_timestamp"
