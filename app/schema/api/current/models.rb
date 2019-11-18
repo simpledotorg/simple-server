@@ -155,7 +155,7 @@ class Api::Current::Models
         properties: {
           id: { '$ref' => '#/definitions/uuid' },
           observation_type: { type: :string },
-          observation_value: { type: :number, format: :double },
+          observation_value: { type: :integer },
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' },
