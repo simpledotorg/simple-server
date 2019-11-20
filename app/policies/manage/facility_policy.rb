@@ -1,16 +1,15 @@
 class Manage::FacilityPolicy < ApplicationPolicy
   def index?
     user.user_permissions
-      .where(permission_slug: [:manage_organizations, :manage_facility_groups, :manage_facilities])
+      .where(permission_slug: [:manage_facilities])
       .present?
   end
 
   def show?
     user_has_any_permissions?(
-      [:manage_organizations, nil],
-      [:manage_facility_groups, record.organization],
-      [:manage_facility_groups, record.facility_group],
-      [:manage_facilities, record.facility_group]
+      [:manage_facilities, nil],
+      [:manage_facilities, record.organization],
+      [:manage_facilities, record.facility_group],
     )
   end
 
@@ -20,10 +19,9 @@ class Manage::FacilityPolicy < ApplicationPolicy
 
   def create?
     user_has_any_permissions?(
-      [:manage_organizations, nil],
-      [:manage_facility_groups, record.organization],
-      [:manage_facility_groups, record.facility_group],
-      [:manage_facilities, record.facility_group]
+      [:manage_facilities, nil],
+      [:manage_facilities, record.organization],
+      [:manage_facilities, record.facility_group],
     )
   end
 
@@ -32,12 +30,7 @@ class Manage::FacilityPolicy < ApplicationPolicy
   end
 
   def update?
-    user_has_any_permissions?(
-      [:manage_organizations, nil],
-      [:manage_facility_groups, record.organization],
-      [:manage_facility_groups, record.facility_group],
-      [:manage_facilities, record.facility_group]
-    )
+    create?
   end
 
   def edit?
@@ -50,7 +43,7 @@ class Manage::FacilityPolicy < ApplicationPolicy
 
   def upload?
     user.user_permissions
-      .where(permission_slug: [:manage_organizations, :manage_facility_groups, :manage_facilities])
+      .where(permission_slug: [:manage_facilities])
       .present?
   end
 
@@ -67,24 +60,12 @@ class Manage::FacilityPolicy < ApplicationPolicy
     end
 
     def resolve
-      return scope.none unless user.user_permissions.where(permission_slug: [
-        :manage_organizations,
-        :manage_facility_groups,
-        :manage_facilities
-      ]).present?
+      return scope.none unless user.has_permission?(:manage_facilities)
 
+      facility_ids = facility_ids_for_permission(:manage_facilities)
+      return scope.all if facility_ids.empty?
 
-      if user.has_permission?(:manage_organizations)
-        facility_group_ids = facility_group_ids_for_permission(:manage_organizations)
-      elsif user.has_permission?(:manage_facility_groups)
-        facility_group_ids = facility_group_ids_for_permission(:manage_facility_groups)
-      elsif user.has_permission?(:manage_facilities)
-        facility_group_ids = facility_group_ids_for_permission(:manage_facilities)
-      end
-
-      return scope.all unless facility_group_ids.present?
-
-      scope.where(facility_group_id: facility_group_ids)
+      scope.where(id: facility_ids)
     end
   end
 end

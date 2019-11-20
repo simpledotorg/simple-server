@@ -1,14 +1,14 @@
 class Manage::OrganizationPolicy < ApplicationPolicy
   def index?
     user.user_permissions
-      .where(permission_slug: [:manage_organizations, :manage_facility_groups])
+      .where(permission_slug: [:manage_organizations])
       .present?
   end
 
   def show?
     user_has_any_permissions?(
       [:manage_organizations, nil],
-      [:manage_facility_groups, record]
+      [:manage_organizations, record]
     )
   end
 
@@ -23,7 +23,7 @@ class Manage::OrganizationPolicy < ApplicationPolicy
   def update?
     user_has_any_permissions?(
       [:manage_organizations, nil],
-      [:manage_facility_groups, record]
+      [:manage_organizations, record]
     )
   end
 
@@ -50,15 +50,12 @@ class Manage::OrganizationPolicy < ApplicationPolicy
     end
 
     def resolve
-      if user.has_permission?(:manage_organizations)
-        scope.all
-      elsif user.has_permission?(:manage_facility_groups)
-        scope.where(id: organization_ids_for_permission(:manage_facility_groups))
-      elsif user.has_permission?(:manage_facilities)
-        scope.where(id: organization_ids_for_permission(:manage_facilities))
-      else
-        scope.none
-      end
+      return scope.none unless user.has_permission?(:manage_organizations)
+
+      organization_ids = organization_ids_for_permission(:manage_organizations)
+      return scope.all if organization_ids.empty?
+
+      scope.where(id: organization_ids)
     end
   end
 end

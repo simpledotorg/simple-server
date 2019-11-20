@@ -28,7 +28,7 @@ RSpec.describe Manage::OrganizationPolicy do
   context 'user can manage an organization' do
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :manage_facility_groups, resource: organization_1)
+        build(:user_permission, permission_slug: :manage_organizations, resource: organization_1)
       ])
     end
 
@@ -76,7 +76,7 @@ RSpec.describe Manage::OrganizationPolicy::Scope do
   context 'user can manage an organization' do
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :manage_facility_groups, resource: organization_1)
+        build(:user_permission, permission_slug: :manage_organizations, resource: organization_1)
       ])
     end
 

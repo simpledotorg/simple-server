@@ -2,22 +2,21 @@ class Manage::FacilityGroupPolicy < ApplicationPolicy
 
   def index?
     user.user_permissions
-      .where(permission_slug: [:manage_organizations, :manage_facility_groups])
+      .where(permission_slug: [:manage_facility_groups])
       .present?
   end
 
   def show?
     user_has_any_permissions?(
-      [:manage_organizations, nil],
+      [:manage_facility_groups, nil],
       [:manage_facility_groups, record.organization],
-      [:manage_facility_groups, record],
-      [:manage_facilities, record]
+      [:manage_facility_groups, record]
     )
   end
 
   def create?
     user.user_permissions
-      .where(permission_slug: [:manage_organizations, :manage_facility_groups])
+      .where(permission_slug: [:manage_facility_groups])
       .present?
   end
 
@@ -56,15 +55,12 @@ class Manage::FacilityGroupPolicy < ApplicationPolicy
     end
 
     def resolve
-      if user.has_permission?(:manage_organizations)
-        scope.all
-      elsif user.has_permission?(:manage_facility_groups)
-        scope.where(id: facility_group_ids_for_permission(:manage_facility_groups))
-      elsif user.has_permission?(:manage_facilities)
-        scope.where(id: facility_group_ids_for_permission(:manage_facilities))
-      else
-        scope.none
-      end
+      return scope.none unless user.has_permission?(:manage_facility_groups)
+
+      facility_group_ids = facility_group_ids_for_permission(:manage_facility_groups)
+      return scope.all if facility_group_ids.empty?
+
+      scope.where(id: facility_group_ids)
     end
   end
 end

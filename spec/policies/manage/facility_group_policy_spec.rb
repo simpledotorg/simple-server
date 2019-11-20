@@ -3,9 +3,9 @@ require "rails_helper"
 RSpec.describe Manage::FacilityGroupPolicy do
   subject { described_class }
 
-  context 'user can manage all organizations' do
+  context 'user can manage all facility_groups' do
     let(:user_with_permission) do
-      create(:admin, user_permissions: [build(:user_permission, permission_slug: :manage_organizations)])
+      create(:admin, user_permissions: [build(:user_permission, permission_slug: :manage_facility_groups)])
     end
 
     let(:facility_group_1) { build(:facility_group) }
@@ -25,7 +25,7 @@ RSpec.describe Manage::FacilityGroupPolicy do
     end
   end
 
-  context 'user can manage an organization' do
+  context 'user can manage facility_groups for an organization' do
     let(:organization) { create(:organization) }
     let(:user_with_permission) do
       create(:admin, user_permissions: [
@@ -67,9 +67,9 @@ RSpec.describe Manage::FacilityGroupPolicy::Scope do
   let!(:facility_group_2) { create(:facility_group, organization: organization) }
   let!(:facility_group_3) { create(:facility_group) }
 
-  context 'user can manage all organizations' do
+  context 'user can manage all facility groups' do
     let(:user_with_permission) do
-      create(:admin, user_permissions: [build(:user_permission, permission_slug: :manage_organizations)])
+      create(:admin, user_permissions: [build(:user_permission, permission_slug: :manage_facility_groups)])
     end
 
     it 'resolve all facility groups' do
@@ -78,7 +78,7 @@ RSpec.describe Manage::FacilityGroupPolicy::Scope do
     end
   end
 
-  context 'user can manage an organization' do
+  context 'user can manage facility groups for an organization' do
     let(:user_with_permission) do
       create(:admin, user_permissions: [
         build(:user_permission, permission_slug: :manage_facility_groups, resource: organization)
