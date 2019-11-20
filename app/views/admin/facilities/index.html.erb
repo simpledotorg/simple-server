@@ -1,7 +1,7 @@
 <div class="page-header">
   <h1 class="page-title">All facilities</h1>
   <nav class="page-nav">
-    <% if policy([:manage, Facility]).upload? %>
+    <% if policy([:manage, :facility, Facility]).upload? %>
       <%= link_to '+ Upload facilities CSV', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
     <% end %>
     <% if policy([:manage, FacilityGroup]).new? %>
@@ -14,7 +14,7 @@
   <% if @organizations.size > 1 %><h2 class="mt-5"><%= organization.name %></h2>
   <% end %>
 
-  <% policy_scope([:manage, organization.facility_groups]).order(:name).each do |facility_group| %>
+  <% policy_scope([:manage, :facility, organization.facility_groups]).order(:name).each do |facility_group| %>
     <div class="card">
       <div class="row">
         <div class="col-6">
@@ -30,7 +30,7 @@
         </div>
       </div>
 
-      <% policy_scope([:manage, facility_group.facilities]).order(:name).each do |facility| %>
+      <% policy_scope([:manage, :facility, facility_group.facilities]).order(:name).each do |facility| %>
 
         <div class="row card-row">
           <div class="col-md-4">

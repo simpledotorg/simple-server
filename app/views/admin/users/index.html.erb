@@ -30,7 +30,7 @@
               Registration facility:
               <% facility = user.registration_facility %>
 
-              <% if policy([:manage, facility]).show? %>
+              <% if policy([:manage, :facility, facility]).show? %>
                 <%= link_to facility.name, [:admin, facility.facility_group, facility], class: "text-dark" %>
               <% else %>
                 <%= user.registration_facility.name %>

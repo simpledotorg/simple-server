@@ -1,4 +1,4 @@
-class Manage::FacilityPolicy < ApplicationPolicy
+class Manage::Facility::FacilityPolicy < ApplicationPolicy
   def index?
     user.user_permissions
       .where(permission_slug: [:manage_facilities])
