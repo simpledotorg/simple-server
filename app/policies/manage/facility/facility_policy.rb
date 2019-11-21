@@ -1,7 +1,7 @@
 class Manage::Facility::FacilityPolicy < ApplicationPolicy
   def index?
     user.user_permissions
-      .where(permission_slug: [:manage_facilities])
+      .where(permission_slug: [:manage_facilities, :manage_facility_groups])
       .present?
   end
 
@@ -60,9 +60,9 @@ class Manage::Facility::FacilityPolicy < ApplicationPolicy
     end
 
     def resolve
-      return scope.none unless user.has_permission?(:manage_facilities)
+      return scope.none unless user.has_permission?([:manage_facilities, :manage_facility_groups])
 
-      facility_ids = facility_ids_for_permission(:manage_facilities)
+      facility_ids = facility_ids_for_permission([:manage_facilities, :manage_facility_groups])
       return scope.all if facility_ids.empty?
 
       scope.where(id: facility_ids)

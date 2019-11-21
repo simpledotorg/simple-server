@@ -34,7 +34,13 @@
 
         <div class="row card-row">
           <div class="col-md-4">
-            <h5><%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %></h5>
+            <h5>
+              <% if policy([:manage, :facility, facility]).show? %>
+                <%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %>
+              <% else %>
+                <%= facility.name %>
+              <% end %>
+            </h5>
           </div>
           <div class="col-md-5">
             <div class="card-details">

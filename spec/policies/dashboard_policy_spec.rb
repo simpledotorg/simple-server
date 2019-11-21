@@ -53,7 +53,7 @@ RSpec.describe DashboardPolicy do
   end
 
   permissions :manage_facilities? do
-    allowed_permissions = [:manage_facilities]
+    allowed_permissions = [:manage_facilities, :manage_facility_groups]
     other_permissions = Permissions::ALL_PERMISSIONS.keys - allowed_permissions
 
     allowed_permissions.each { |slug| include_examples "grant permission", slug }
@@ -88,6 +88,7 @@ RSpec.describe DashboardPolicy do
     allowed_permissions = [
       :manage_admins,
       :manage_organizations,
+      :manage_facility_groups,
       :manage_facilities,
       :manage_protocols,
       :approve_health_workers

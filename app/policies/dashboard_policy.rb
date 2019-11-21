@@ -18,7 +18,8 @@ class DashboardPolicy < Struct.new(:user, :dashboard)
   end
 
   def manage_facilities?
-    Pundit.policy(user, [:manage, :facility, Facility]).index?
+    Pundit.policy(user, [:manage, :facility, Facility]).index? ||
+      Pundit.policy(user, [:manage, :facility, FacilityGroup]).index?
   end
 
   def manage_protocols?
