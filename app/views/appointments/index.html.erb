@@ -1,5 +1,8 @@
 <h1>Overdue patients</h1>
-<p class="info"><i class="fas fa-question-circle"></i> Patients that are overdue for follow-up BP measure.</p>
+<p class="info">
+  <i class="fas fa-question-circle"></i> Patients that are overdue for follow-up BP measure.
+</p>
+
 
 
         <%= render(
@@ -9,12 +12,12 @@
           facility_id: @facility_id,
           per_page: @per_page
         ) %>
-    
+
 <% if policy(Appointment).download? && @appointments.present? %>
 <h2 name="download_text">Downloads</h2>
 <div class="mb-5 mt-3">
-      
-  
+
+
           <% if @facility_id == "All" %>
             <div class="text-grey">
               <i class="far fa-file-excel mr-2"></i> Select a facility to download Overdue Patients list
@@ -22,21 +25,23 @@
           <% else %>
              <%= link_to "<i class='far fa-file-excel mr-2'></i> Download overdue list".html_safe, appointments_path(facility_id: @facility_id, format: "csv"), class: "", data: { confirm: I18n.t('admin.phi_download_alert') } %>
           <% end %>
-    
+
 </div>
-<% end %>    
+<% end %>
 
 
-    
+
   <% if @appointments.present? %>
     <h2>Patient list</h2>
+    <p class="text-muted">Excludes patients more than 12 months overdue.</p>
+
     <% call_result_options = {
         'Patient responded' => [['Agreed to visit', 'agreed_to_visit'], ['Patient has already visited', 'patient_has_already_visited']],
         'No response' => [['Remind to call later', 'remind_to_call_later']],
         'Remove from overdue list' => Appointment.cancel_reasons.map { |key, value| [key.humanize, value] }
     } %>
 
-    <% @appointments.sort_by { |a| a.patient.risk_priority }.each do |appointment| %>
+    <% @appointments.each do |appointment| %>
       <%= render(
         'shared/followup_patient_card',
         patient: appointment.patient,
