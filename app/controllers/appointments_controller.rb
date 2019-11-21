@@ -11,12 +11,13 @@ class AppointmentsController < AdminController
                       .joins(patient: { latest_blood_pressures: :facility })
                       .includes(patient: [:address, :phone_numbers, :medical_history, { latest_blood_pressures: :facility }])
                       .overdue
+                      .where("scheduled_date >= ?", 12.months.ago)
                       .where(facility: selected_facilities)
                       .distinct
-                      .order(scheduled_date: :asc)
+                      .sort_by { |a| [a.patient.risk_priority, a.days_overdue] }
 
     respond_to do |format|
-      format.html { @appointments = paginate(@appointments) }
+      format.html { @appointments = Kaminari.paginate_array(@appointments).page(@page).per(@per_page) }
       format.csv do
         facility_name = selected_facilities.size > 1 ? "all" : selected_facilities.first.name.parameterize
         send_data @appointments.to_csv, filename: "overdue-patients_#{facility_name}_#{Date.current}.csv"
