@@ -1,38 +1,37 @@
 <div class="page-header">
   <h1 class="page-title">Organizations</h1>
   <nav class="page-nav">
-    <% if policy(Organization).new? %>
+    <% if policy([:manage, Organization]).new? %>
       <%= link_to 'Add Organization', new_admin_organization_path, class: "btn btn-sm btn-primary" %>
     <% end %>
   </nav>
 </div>
 
-   
-
-    
-        <% @organizations.each do |organization| %>
-        <div class="card">
-            <div class="row">
-                <div class="col-10">
-                    <h5 class="mb-1">
-                      <% if policy(organization).edit? %>
-                        <%= link_to organization.name, edit_admin_organization_path(organization) %>
-                      <% else %>
-                        <%= organization.name %>
-                      <% end %>
-                    </h5>
-                    <div class="desc"><%= organization.description %>.</div>
-                    <div class="text-secondary mt-2">
-                        <i class="fas fa-network-wired mr-1 light"></i>&nbsp;<%= organization.facility_groups.count %>&nbsp;facility groups
-                        <i class="fas fa-hospital mr-1 ml-2 light"></i>&nbsp;<%= organization.facilities.count %>&nbsp;facilities
-                        <i class="fas fa-user-friends mr-1 ml-2 light"></i>&nbsp;<%= organization.users.count %>&nbsp;users</div>
-                </div>
-                <div class="col-2 text-right">
-                    <% if policy(organization).destroy? %>
-                      <%= link_to '<i class="fas fa-trash-alt"></i>' .html_safe, [:admin, organization], method: :delete, class: "btn btn-outline-danger btn-sm", data: { confirm: "Are you sure you want to delete #{organization.name}?" } %>
-                    <% end %>
-                </div>
-            </div>   
+<% @organizations.each do |organization| %>
+  <div class="card">
+    <div class="row">
+      <div class="col-10">
+        <h5 class="mb-1">
+          <% if policy([:manage, organization]).edit? %>
+            <%= link_to organization.name, edit_admin_organization_path(organization) %>
+          <% else %>
+            <%= organization.name %>
+          <% end %>
+        </h5>
+        <div class="desc"><%= organization.description %>.</div>
+        <div class="text-secondary mt-2">
+          <i class="fas fa-network-wired mr-1 light"></i>&nbsp;<%= organization.facility_groups.count %>&nbsp;facility
+          groups
+          <i class="fas fa-hospital mr-1 ml-2 light"></i>&nbsp;<%= organization.facilities.count %>&nbsp;facilities
+          <i class="fas fa-user-friends mr-1 ml-2 light"></i>&nbsp;<%= organization.users.count %>&nbsp;users
         </div>
+      </div>
+      <div class="col-2 text-right">
+        <% if policy([:manage, organization]).destroy? %>
+          <%= link_to '<i class="fas fa-trash-alt"></i>'.html_safe, [:admin, organization], method: :delete, class: "btn btn-outline-danger btn-sm", data: { confirm: "Are you sure you want to delete #{organization.name}?" } %>
         <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
       

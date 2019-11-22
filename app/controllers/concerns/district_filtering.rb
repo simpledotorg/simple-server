@@ -10,11 +10,11 @@ module DistrictFiltering
       @district = params[:district].present? ? params[:district] : 'All'
     end
 
-    def selected_district_facilities
+    def selected_district_facilities(scope_namespace = [])
       if @district == 'All'
-        policy_scope(Facility.all)
+        policy_scope(scope_namespace.concat([Facility.all]))
       else
-        policy_scope(Facility.where(district: @district))
+        policy_scope(scope_namespace.concat([Facility.where(district: @district)]))
       end
     end
   end
