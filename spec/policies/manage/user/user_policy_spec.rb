@@ -21,7 +21,7 @@ RSpec.describe Manage::User::UserPolicy do
       end
     end
 
-    permissions :show?, :edit?, :update?, :destroy?, :disable_access?, :enable_access?, :reset_otp? do
+    permissions :show?, :edit?, :update?, :disable_access?, :enable_access?, :reset_otp? do
       it 'allows the user for all users' do
         expect(subject).to permit(user_with_permission, user_1)
         expect(subject).to permit(user_with_permission, user_2)
@@ -41,7 +41,7 @@ RSpec.describe Manage::User::UserPolicy do
       end
     end
 
-    permissions :show?, :edit?, :update?, :destroy?, :disable_access?, :enable_access?, :reset_otp? do
+    permissions :show?, :edit?, :update?, :disable_access?, :enable_access?, :reset_otp? do
       it 'allows the user for all users in the permitted organization' do
         expect(subject).to permit(user_with_permission, user_1)
       end
@@ -64,7 +64,7 @@ RSpec.describe Manage::User::UserPolicy do
       end
     end
 
-    permissions :show?, :edit?, :update?, :destroy?, :disable_access?, :enable_access?, :reset_otp? do
+    permissions :show?, :edit?, :update?, :disable_access?, :enable_access?, :reset_otp? do
       it 'allows the user for all users in the permitted facility group' do
         expect(subject).to permit(user_with_permission, user_1)
       end
