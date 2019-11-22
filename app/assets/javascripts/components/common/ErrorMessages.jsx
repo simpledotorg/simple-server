@@ -9,9 +9,6 @@ class ErrorMessages extends React.Component {
         });
         return (
             <div className='error-messages alert alert-danger alert-dismissable fade show'>
-                <button type="button" className="close" data-dismiss="alert" aria-label="Close">
-                    <i className="fas fa-times"></i>
-                </button>
                 <ul className='m-0'>{messages}</ul>
             </div>
         );
