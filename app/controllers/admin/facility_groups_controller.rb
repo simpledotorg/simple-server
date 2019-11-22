@@ -51,7 +51,7 @@ class Admin::FacilityGroupsController < AdminController
   private
 
   def set_organizations
-    @organizations = policy_scope([:manage, Organization])
+    @organizations = policy_scope([:manage, :facility, Organization])
   end
 
   def set_protocols
