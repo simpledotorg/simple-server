@@ -4,7 +4,7 @@
     <%= @facility_group.name %>
   </h1>
   <nav class="page-nav">
-    <% if policy(@facility_group).edit? %>
+    <% if policy([:manage, @facility_group]).edit? %>
       <%= link_to 'Edit facility group', edit_admin_facility_group_path(@facility_group), class: "btn btn-sm btn-primary" %>
     <% end %>
   </nav>
@@ -41,10 +41,10 @@
           <td><%= facility.country %></td>
           <td><%= facility.pin %></td>
           <td><%= facility.facility_type %></td>
-          <% if policy(facility).edit? %>
+          <% if policy([:manage, :facility, facility]).edit? %>
             <td><%= link_to 'Edit', edit_admin_facility_group_facility_path(@facility_group, facility) %></td>
           <% end %>
-          <% if policy(facility).destroy? %>
+          <% if policy([:manage, :facility, facility]).destroy? %>
             <td><%= link_to 'Delete', [:admin, @facility_group, facility], method: :delete, data: { confirm: "Are you sure you want to delete #{facility.name}?" } %></td>
           <% end %>
         </tr>

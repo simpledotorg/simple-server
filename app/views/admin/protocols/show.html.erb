@@ -11,10 +11,10 @@
     </p>
   </div>
   <nav class="page-nav">
-    <% if policy(@protocol).edit? %>
+    <% if policy([:manage, @protocol]).edit? %>
       <%= link_to "Edit protocol", edit_admin_protocol_path(@protocol), class: "btn btn-sm btn-primary" ,id: "Edit protocol" %>
     <% end %>
-    <% if policy(ProtocolDrug).new? %>
+    <% if policy([:manage, ProtocolDrug]).new? %>
       <%= link_to 'New protocol drug', new_admin_protocol_protocol_drug_path(@protocol), class: "btn btn-sm btn-primary", id: "New protocol drug" %>
     <% end %>
   </nav>
@@ -35,10 +35,10 @@
                     <% end %>
                 </div>
             <div class="col-5 text-md-right">
-                <% if policy(protocol_drug).edit? %>
+                <% if policy([:manage, protocol_drug]).edit? %>
                   <%= link_to 'Edit', edit_admin_protocol_protocol_drug_path(@protocol, protocol_drug), class: "btn btn-sm btn-outline-primary" %>
                 <% end %>
-                <% if policy(protocol_drug).destroy? %>
+                <% if policy([:manage, protocol_drug]).destroy? %>
                   <%= link_to '<i class="fas fa-trash-alt"></i>' .html_safe, [:admin, @protocol, protocol_drug], method: :delete, data: { confirm: "Are you sure you want to delete #{protocol_drug.name}?" }, class: "btn btn-sm btn-outline-danger" %>
                 <% end %>
             </div>

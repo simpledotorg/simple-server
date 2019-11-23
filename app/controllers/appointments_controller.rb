@@ -5,21 +5,24 @@ class AppointmentsController < AdminController
   before_action :set_appointment, only: [:update]
 
   def index
-    authorize Appointment, :index?
+    authorize [:overdue_list, Appointment], :index?
 
-    @appointments = policy_scope(Appointment)
+    @appointments = policy_scope([:overdue_list, Appointment])
                       .joins(patient: { latest_blood_pressures: :facility })
                       .includes(patient: [:address, :phone_numbers, :medical_history, { latest_blood_pressures: :facility }])
                       .overdue
                       .where("scheduled_date >= ?", 12.months.ago)
-                      .where(facility: selected_facilities)
                       .distinct
                       .sort_by { |a| [a.patient.risk_priority, a.days_overdue] }
+
+    if current_facility
+      @appointments = @appointments.where(facility: current_facility)
+    end
 
     respond_to do |format|
       format.html { @appointments = Kaminari.paginate_array(@appointments).page(@page).per(@per_page) }
       format.csv do
-        facility_name = selected_facilities.size > 1 ? "all" : selected_facilities.first.name.parameterize
+        facility_name = current_facility.present? ? current_facility.name.parameterize : 'all'
         send_data AppointmentsExporter.csv(@appointments), filename: "overdue-patients_#{facility_name}_#{Date.current}.csv"
       end
     end
@@ -39,7 +42,7 @@ class AppointmentsController < AdminController
 
   def set_appointment
     @appointment = Appointment.find(params[:id] || params[:appointment_id])
-    authorize @appointment
+    authorize([:overdue_list, @appointment])
   end
 
   def appointment_params

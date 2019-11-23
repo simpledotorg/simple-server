@@ -54,5 +54,3 @@ module PatientPage
     end
   end
 end
-
-

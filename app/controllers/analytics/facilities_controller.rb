@@ -42,7 +42,7 @@ class Analytics::FacilitiesController < AnalyticsController
 
   def whatsapp_graphics
     set_cohort_analytics(:quarter, 3)
-    set_dashboard_analytics(:quarter, 3)
+    set_dashboard_analytics(:quarter, 4)
 
     whatsapp_graphics_handler(
       @facility.organization.name,
@@ -54,7 +54,7 @@ class Analytics::FacilitiesController < AnalyticsController
   def set_facility
     facility_id = params[:id] || params[:facility_id]
     @facility = Facility.friendly.find(facility_id)
-    authorize(@facility)
+    authorize([:cohort_report, @facility])
   end
 
   def set_cohort_analytics(period, prev_periods)
