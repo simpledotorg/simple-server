@@ -10,17 +10,15 @@ RSpec.describe PatientsExporter do
 
   let(:headers) do
     [
-      "Simple Patient ID",
-      "BP Passport ID",
+      "Registration Date",
+      "Registration Quarter",
       "Patient Name",
-      "Patient Gender",
       "Patient Age",
+      "Patient Gender",
+      "Patient Phone Number",
       "Patient Village/Colony",
       "Patient District",
       "Patient State",
-      "Patient Phone Number",
-      "Registration Date",
-      "Registration Quarter",
       "Registration Facility Name",
       "Registration Facility Type",
       "Registration Facility District",
@@ -34,23 +32,23 @@ RSpec.describe PatientsExporter do
       "Latest BP Facility District",
       "Latest BP Facility State",
       "Days Overdue",
-      "Risk Level"
+      "Risk Level",
+      "BP Passport ID",
+      "Simple Patient ID"
     ]
   end
 
   let(:fields) do
     [
-      patient.id,
-      patient.latest_bp_passport&.shortcode,
+      I18n.l(patient.recorded_at),
+      quarter_string(patient.recorded_at),
       patient.full_name,
-      patient.gender.capitalize,
       patient.current_age,
+      patient.gender.capitalize,
+      patient.phone_numbers.last&.number,
       patient.address.village_or_colony,
       patient.address.district,
       patient.address.state,
-      patient.phone_numbers.last&.number,
-      I18n.l(patient.recorded_at),
-      quarter_string(patient.recorded_at),
       facility.name,
       facility.facility_type,
       facility.district,
@@ -64,7 +62,9 @@ RSpec.describe PatientsExporter do
       blood_pressure.facility.district,
       blood_pressure.facility.state,
       appointment.days_overdue,
-      patient.risk_priority_label
+      patient.risk_priority_label,
+      patient.latest_bp_passport&.shortcode,
+      patient.id
     ]
   end
 
@@ -75,13 +75,6 @@ RSpec.describe PatientsExporter do
 
     it "generates a blank CSV (only headers) if no patients exist" do
       expect(subject.csv(Patient.none)).to eq(headers.to_csv)
-    end
-
-    it "uses fetches patients in batches" do
-      expect_any_instance_of(facility.registered_patients.class)
-        .to receive(:in_batches).and_return([[patient]])
-
-      subject.csv(facility.registered_patients)
     end
   end
 end
