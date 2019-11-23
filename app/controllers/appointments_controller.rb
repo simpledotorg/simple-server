@@ -13,11 +13,12 @@ class AppointmentsController < AdminController
                       .overdue
                       .where("scheduled_date >= ?", 12.months.ago)
                       .distinct
-                      .sort_by { |a| [a.patient.risk_priority, a.days_overdue] }
 
     if current_facility
       @appointments = @appointments.where(facility: current_facility)
     end
+
+    @appointments = @appointments.sort_by { |a| [a.patient.risk_priority, a.days_overdue] }
 
     respond_to do |format|
       format.html { @appointments = Kaminari.paginate_array(@appointments).page(@page).per(@per_page) }
