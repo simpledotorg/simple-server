@@ -4,6 +4,7 @@ RSpec.describe Facility, type: :model do
   describe 'Associations' do
     it { should have_many(:users) }
     it { should have_many(:blood_pressures) }
+    it { should have_many(:blood_sugars) }
     it { should have_many(:prescription_drugs) }
     it { should have_many(:patients).through(:blood_pressures) }
     it { should have_many(:appointments) }

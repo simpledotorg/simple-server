@@ -15,6 +15,7 @@ class Facility < ApplicationRecord
   has_many :users, through: :phone_number_authentications
 
   has_many :blood_pressures
+  has_many :blood_sugars
   has_many :patients, -> { distinct }, through: :blood_pressures
   has_many :prescription_drugs
   has_many :encounters
