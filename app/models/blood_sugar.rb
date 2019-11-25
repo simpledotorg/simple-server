@@ -4,6 +4,9 @@ class BloodSugar < ApplicationRecord
   belongs_to :patient, optional: true
   belongs_to :user, optional: true
   belongs_to :facility, optional: true
+  
+  has_one :observation, as: :observable
+  has_one :encounter, through: :observation
 
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true

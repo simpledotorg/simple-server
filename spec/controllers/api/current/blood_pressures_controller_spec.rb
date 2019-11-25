@@ -19,12 +19,16 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
 
   def create_record(options = {})
     facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
-    FactoryBot.create(:blood_pressure, options.merge(facility: facility))
+    blood_pressure = FactoryBot.create(:blood_pressure, options.merge(facility: facility))
+    create(:encounter, :with_observables, observable: record)
+    blood_pressure
   end
 
   def create_record_list(n, options = {})
     facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
-    FactoryBot.create_list(:blood_pressure, n, options.merge(facility: facility))
+    blood_pressures = create_list(:blood_pressure, n, options.merge(facility: facility))
+    blood_pressures.each {|record| create(:encounter, :with_observables, observable: record)}
+    blood_pressures
   end
 
   it_behaves_like 'a sync controller that authenticates user requests'

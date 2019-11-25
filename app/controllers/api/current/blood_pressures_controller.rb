@@ -43,6 +43,7 @@ class Api::Current::BloodPressuresController < Api::Current::SyncController
       device_updated_at: bp_params[:device_updated_at],
       encountered_on: encountered_on,
       timezone_offset: current_timezone_offset,
+      facility_id: bp_params[:facility_id],
       observations: {
         blood_pressures: [bp_params],
       }
