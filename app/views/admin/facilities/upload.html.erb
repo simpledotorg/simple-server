@@ -14,12 +14,12 @@
 <ol>
   <li>Download and fill in <%= link_to 'this template', '/documents/upload_facilities.csv'%> to create multiple facilities via file upload.</li>
   <li>Organizations for the facilities must already exist.
-    <% if policy(Organization).new? %>
+    <% if policy([:manage, Organization]).new? %>
       Click here to create an organization:
       <%= link_to '+ Organization', new_admin_organization_path, class: "btn btn-sm btn-outline-primary" %>
     <% end %></li>
   <li>Facility Groups for the facilities must already exist.
-    <% if policy(FacilityGroup).new? %>
+    <% if policy([:manage, FacilityGroup]).new? %>
       Click here to create a facility group:
       <%= link_to '+ Facility group', new_admin_facility_group_path, class: "btn btn-sm btn-outline-primary" %>
     <% end %></li>
