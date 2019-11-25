@@ -154,7 +154,7 @@ class Api::Current::Models
       { type: :object,
         properties: {
           id: { '$ref' => '#/definitions/uuid' },
-          blood_sugar_type: { type: :string },
+          blood_sugar_type: { type: :string, enum: BloodSugar.blood_sugar_types.keys },
           blood_sugar_value: { type: :integer },
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
@@ -162,8 +162,8 @@ class Api::Current::Models
           recorded_at: { '$ref' => '#/definitions/timestamp' },
           patient_id: { '$ref' => '#/definitions/uuid' },
           facility_id: { '$ref' => '#/definitions/uuid' },
-          user_id: { '$ref' => '#/definitions/uuid' }
-        }
+          user_id: { '$ref' => '#/definitions/uuid' } },
+        required: %w[blood_sugar_type blood_sugar_value created_at updated_at patient_id facility_id user_id]
       }
     end
 
