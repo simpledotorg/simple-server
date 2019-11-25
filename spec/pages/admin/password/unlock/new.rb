@@ -1,7 +1,7 @@
 module AdminPage
   module Unlock
     class New < ApplicationPage
-      EMAIL_TEXT_BOX = { id: 'admin_email' }.freeze
+      EMAIL_TEXT_BOX = { id: 'email_authentication_email' }.freeze
       RESET_PASSWORD_BUTTON = { css: "div.text-right>input" }.freeze
       MESSAGE = { css: 'div.alert-primary' }.freeze
       MESSAGE_CROSS_BUTTON = { css: "button.close" }.freeze
