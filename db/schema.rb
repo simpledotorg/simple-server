@@ -130,6 +130,25 @@ ActiveRecord::Schema.define(version: 20191118113108) do
     t.index ["user_id"], name: "index_blood_pressures_on_user_id"
   end
 
+  create_table "blood_sugars", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "blood_sugar_type", null: false
+    t.integer "blood_sugar_value", null: false
+    t.uuid "patient_id", null: false
+    t.uuid "user_id", null: false
+    t.uuid "facility_id", null: false
+    t.datetime "device_created_at", null: false
+    t.datetime "device_updated_at", null: false
+    t.datetime "deleted_at"
+    t.datetime "recorded_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["blood_sugar_type"], name: "index_blood_sugars_on_blood_sugar_type"
+    t.index ["blood_sugar_value"], name: "index_blood_sugars_on_blood_sugar_value"
+    t.index ["facility_id"], name: "index_blood_sugars_on_facility_id"
+    t.index ["patient_id"], name: "index_blood_sugars_on_patient_id"
+    t.index ["user_id"], name: "index_blood_sugars_on_user_id"
+  end
+
   create_table "call_logs", force: :cascade do |t|
     t.string "session_id"
     t.string "result"
@@ -157,25 +176,6 @@ ActiveRecord::Schema.define(version: 20191118113108) do
     t.index ["deleted_at"], name: "index_communications_on_deleted_at"
     t.index ["detailable_type", "detailable_id"], name: "index_communications_on_detailable_type_and_detailable_id"
     t.index ["user_id"], name: "index_communications_on_user_id"
-  end
-
-  create_table "diabetes_observations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "observation_type", null: false
-    t.integer "observation_value", null: false
-    t.uuid "patient_id", null: false
-    t.uuid "user_id", null: false
-    t.uuid "facility_id", null: false
-    t.datetime "device_created_at", null: false
-    t.datetime "device_updated_at", null: false
-    t.datetime "deleted_at"
-    t.datetime "recorded_at", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["facility_id"], name: "index_diabetes_observations_on_facility_id"
-    t.index ["observation_type"], name: "index_diabetes_observations_on_observation_type"
-    t.index ["observation_value"], name: "index_diabetes_observations_on_observation_value"
-    t.index ["patient_id"], name: "index_diabetes_observations_on_patient_id"
-    t.index ["user_id"], name: "index_diabetes_observations_on_user_id"
   end
 
   create_table "email_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -477,8 +477,8 @@ ActiveRecord::Schema.define(version: 20191118113108) do
   end
 
   add_foreign_key "appointments", "facilities"
-  add_foreign_key "diabetes_observations", "facilities"
-  add_foreign_key "diabetes_observations", "master_users", column: "user_id"
+  add_foreign_key "blood_sugars", "facilities"
+  add_foreign_key "blood_sugars", "master_users", column: "user_id"
   add_foreign_key "encounters", "facilities"
   add_foreign_key "exotel_phone_number_details", "patient_phone_numbers"
   add_foreign_key "facilities", "facility_groups"
