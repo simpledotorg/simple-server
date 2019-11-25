@@ -150,7 +150,7 @@ class Api::Current::Models
       }
     end
 
-    def diabetes_observation
+    def blood_sugar
       { type: :object,
         properties: {
           id: { '$ref' => '#/definitions/uuid' },
@@ -357,8 +357,8 @@ class Api::Current::Models
         medical_histories: array_of('medical_history'),
         patient_business_identifier: patient_business_identifier,
         patient_business_identifiers: array_of('patient_business_identifier'),
-        diabetes_observation: diabetes_observation,
-        diabetes_observations: array_of('diabetes_observation')
+        blood_sugar: blood_sugar,
+        blood_sugars: array_of('blood_sugar')
       }
     end
   end

@@ -1,22 +1,22 @@
 require 'swagger_helper'
 
-describe 'DiabetesObservations Current API', swagger_doc: 'current/swagger.json' do
-  path '/diabetes_observations/sync' do
-    post 'Syncs diabetes observation data from device to server.' do
-      tags 'Diabetes Observation'
+describe 'BloodSugars Current API', swagger_doc: 'current/swagger.json' do
+  path '/blood_sugars/sync' do
+    post 'Syncs blood sugar data from device to server.' do
+      tags 'Blood Sugar'
       security [basic: []]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
-      parameter name: :diabetes_observations, in: :body, schema: Api::Current::Schema.diabetes_observation_sync_from_user_request
+      parameter name: :blood_sugars, in: :body, schema: Api::Current::Schema.blood_sugar_sync_from_user_request
 
-      response '200', 'diabetes observations created' do
+      response '200', 'blood sugars created' do
         let(:request_user) { FactoryBot.create(:user) }
         let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:HTTP_X_FACILITY_ID) { request_facility.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
-        let(:diabetes_observations) { { diabetes_observations: [] } }
+        let(:blood_sugars) { { blood_sugars: [] } }
 
         run_test!
       end
@@ -29,15 +29,15 @@ describe 'DiabetesObservations Current API', swagger_doc: 'current/swagger.json'
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
         schema Api::Current::Schema.sync_from_user_errors
-        let(:diabetes_observations) { { diabetes_observations: [] } }
+        let(:blood_sugars) { { blood_sugars: [] } }
         run_test!
       end
 
-      include_examples 'returns 403 for post requests for forbidden users', :diabetes_observations
+      include_examples 'returns 403 for post requests for forbidden users', :blood_sugars
     end
 
-    get 'Syncs diabetes observation data from server to device.' do
-      tags 'Diabetes Observations'
+    get 'Syncs blood sugar data from server to device.' do
+      tags 'Blood Sugar'
       security [basic: []]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
@@ -47,18 +47,18 @@ describe 'DiabetesObservations Current API', swagger_doc: 'current/swagger.json'
 
       # before :each do
       #   Timecop.travel(10.minutes.ago) do
-      #     FactoryBot.create_list(:diabetes_observation, 3)
+      #     FactoryBot.create_list(:blood_sugar, 3)
       #   end
       # end
 
-      response '200', 'diabetes observation received' do
+      response '200', 'blood sugar received' do
         let(:request_user) { FactoryBot.create(:user) }
         let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:HTTP_X_FACILITY_ID) { request_facility.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
-        schema Api::Current::Schema.diabetes_observation_sync_to_user_response
+        schema Api::Current::Schema.blood_sugar_sync_to_user_response
         let(:process_token) { Base64.encode64({ other_facilities_processed_since: 10.minutes.ago }.to_json) }
         let(:limit) { 10 }
         run_test!

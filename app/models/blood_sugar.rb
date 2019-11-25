@@ -1,4 +1,4 @@
-class DiabetesObservation < ApplicationRecord
+class BloodSugar < ApplicationRecord
 
   enum observation_type: {
     random: 'random',

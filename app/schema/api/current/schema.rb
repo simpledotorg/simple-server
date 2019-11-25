@@ -87,8 +87,8 @@ class Api::Current::Schema
       sync_to_user_response(:blood_pressures)
     end
 
-    def diabetes_observation_sync_to_user_response
-      sync_to_user_response(:diabetes_observations)
+    def blood_sugar_sync_to_user_response
+      sync_to_user_response(:blood_sugars)
     end
 
     def prescription_drug_sync_to_user_response
