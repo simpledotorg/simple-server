@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :BloodSugar do
+  factory :blood_sugar do
     id { SecureRandom.uuid }
     blood_sugar_type { 'random' }
     blood_sugar_value { 150 }
