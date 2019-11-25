@@ -8,7 +8,7 @@ class BloodSugar < ApplicationRecord
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
-  enum observation_type: {
+  enum blood_sugar_type: {
     random: 'random',
     post_prandial: 'post_prandial',
     fasting: 'fasting'

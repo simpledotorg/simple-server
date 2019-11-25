@@ -55,8 +55,8 @@ class Api::Current::Schema
       sync_from_user_request(:blood_pressures)
     end
 
-    def diabetes_observation_sync_from_user_request
-      sync_from_user_request(:diabetes_observations)
+    def blood_sugar_sync_from_user_request
+      sync_from_user_request(:blood_sugars)
     end
 
     def prescription_drug_sync_from_user_request

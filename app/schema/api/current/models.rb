@@ -154,8 +154,8 @@ class Api::Current::Models
       { type: :object,
         properties: {
           id: { '$ref' => '#/definitions/uuid' },
-          observation_type: { type: :string },
-          observation_value: { type: :integer },
+          blood_sugar_type: { type: :string },
+          blood_sugar_value: { type: :integer },
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' },
