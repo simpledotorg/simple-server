@@ -393,7 +393,7 @@
       "get": {
         "summary": "Syncs blood sugar data from server to device.",
         "tags": [
-          "Blood Sugars"
+          "Blood Sugar"
         ],
         "security": [
           {
@@ -2316,10 +2316,10 @@
         "id": {
           "$ref": "#/definitions/uuid"
         },
-        "observation_type": {
+        "blood_sugar_type": {
           "type": "string"
         },
-        "observation_value": {
+        "blood_sugar_value": {
           "type": "integer"
         },
         "deleted_at": {

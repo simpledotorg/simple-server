@@ -1,6 +1,6 @@
 class BloodSugar < ApplicationRecord
 
-  enum observation_type: {
+  enum blood_sugar_type: {
     random: 'random',
     post_prandial: 'post_prandial',
     fasting: 'fasting'
