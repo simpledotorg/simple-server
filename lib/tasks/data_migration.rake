@@ -43,7 +43,6 @@ namespace :data_migration do
     end
   end
 
-
   desc 'Backfill user_ids for a model from audit_logs (Appointment, PrescriptionDrug and MedicalHistory)'
   task :backfill_user_ids_for_model, [:model] => :environment do |_t, args|
     model = args.model
@@ -89,6 +88,11 @@ namespace :data_migration do
         MergeEncounterService.new(encounter_merge_params, blood_pressure.facility, blood_pressure.user, timezone_offset).merge
       end
     end
+  end
+
+  desc 'Backfill creation_facility for all existing Appointments'
+  task backfill_creation_facility_in_appointments: :environment do
+    Appointment.in_batches.update_all('creation_facility_id = facility_id')
   end
 
   desc 'Make all occurrences of the SMS Reminder Bot User nil'
