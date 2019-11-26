@@ -11,7 +11,7 @@ RSpec.describe Api::Current::AppointmentsController, type: :controller do
 
   let(:model) { Appointment }
 
-  let(:build_payload) { lambda { build_appointment_payload } }
+  let(:build_payload) { lambda { build_appointment_payload_v2 } }
   let(:build_invalid_payload) { lambda { build_invalid_appointment_payload } }
   let(:invalid_record) { build_invalid_payload.call }
   let(:update_payload) { lambda { |appointment| updated_appointment_payload appointment } }

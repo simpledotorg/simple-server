@@ -25,8 +25,7 @@ def build_appointment_payload(appointment = FactoryBot.build(:appointment))
 end
 
 def build_appointment_payload_v2(appointment = FactoryBot.build(:appointment))
-  build_appointment_payload
-    .except(appointment)
+  build_appointment_payload(appointment)
     .except('creation_facility_id')
 end
 
