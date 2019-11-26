@@ -248,6 +248,7 @@ class Api::Current::Models
           id: { '$ref' => '#/definitions/uuid' },
           patient_id: { '$ref' => '#/definitions/uuid' },
           facility_id: { '$ref' => '#/definitions/uuid' },
+          creation_facility_id: { '$ref' => '#/definitions/uuid' },
           scheduled_date: { type: :string, format: :date },
           status: { type: :string, enum: Appointment.statuses.keys },
           cancel_reason: { type: ['null', :string], enum: Appointment.cancel_reasons.keys + [nil] },

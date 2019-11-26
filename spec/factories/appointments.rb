@@ -2,6 +2,7 @@ FactoryBot.define do
   factory :appointment do
     id { SecureRandom.uuid }
     facility
+    association :creation_facility, factory: :facility
     association :patient, strategy: :build
     scheduled_date { 30.days.from_now }
     status :scheduled
@@ -21,6 +22,12 @@ end
 
 def build_appointment_payload(appointment = FactoryBot.build(:appointment))
   appointment.attributes.with_payload_keys
+end
+
+def build_appointment_payload_v2(appointment = FactoryBot.build(:appointment))
+  build_appointment_payload
+    .except(appointment)
+    .except('creation_facility_id')
 end
 
 def build_invalid_appointment_payload
