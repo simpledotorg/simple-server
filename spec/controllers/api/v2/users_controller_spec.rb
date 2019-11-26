@@ -6,12 +6,9 @@ RSpec.describe Api::V2::UsersController, type: :controller do
   let(:supervisor) { FactoryBot.create(:admin, :supervisor) }
   let(:organization_owner) { FactoryBot.create(:admin, :organization_owner) }
   let(:facility) { FactoryBot.create(:facility) }
+  let!(:supervisor) { FactoryBot.create(:admin, :supervisor, facility_group:  facility.facility_group) }
+  let!(:organization_owner) { FactoryBot.create(:admin, :organization_owner, organization:  facility.organization) }
   let!(:owner) { FactoryBot.create(:admin, :owner) }
-
-  before :each do
-    FactoryBot.create(:admin_access_control, admin: supervisor, access_controllable: facility.facility_group)
-    FactoryBot.create(:admin_access_control, admin: organization_owner, access_controllable: facility.organization)
-  end
 
   describe '#register' do
     describe 'registration payload is invalid' do
@@ -108,8 +105,8 @@ RSpec.describe Api::V2::UsersController, type: :controller do
   describe '#find' do
     let(:phone_number) { Faker::PhoneNumber.phone_number }
     let(:facility) { FactoryBot.create(:facility) }
-    let!(:db_users) { FactoryBot.create_list(:user, 3, registration_facility_id: facility.id) }
-    let!(:user) { FactoryBot.create(:user, phone_number: phone_number, registration_facility_id: facility.id) }
+    let!(:db_users) { FactoryBot.create_list(:user, 3, registration_facility: facility) }
+    let!(:user) { FactoryBot.create(:user, phone_number: phone_number, registration_facility: facility) }
 
     it 'lists the users with the given phone number' do
       get :find, params: { phone_number: phone_number }
@@ -153,8 +150,9 @@ RSpec.describe Api::V2::UsersController, type: :controller do
   end
 
   describe '#reset_password' do
-    let(:user) { FactoryBot.create(:user) }
-    let(:facility) { FactoryBot.create(:facility, facility_group: user.facility.facility_group) }
+    let(:facility_group) { FactoryBot.create(:facility_group)}
+    let(:facility) { FactoryBot.create(:facility, facility_group: facility_group) }
+    let(:user) { FactoryBot.create(:user, organization: facility.organization, registration_facility: facility) }
 
     before(:each) do
       request.env['HTTP_X_USER_ID'] = user.id

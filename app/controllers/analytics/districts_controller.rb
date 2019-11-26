@@ -4,6 +4,8 @@ class Analytics::DistrictsController < AnalyticsController
 
   before_action :set_organization_district
 
+  skip_after_action :verify_authorized
+
   def show
     set_cohort_analytics(@period, @prev_periods)
     set_dashboard_analytics(@period, 3)
@@ -40,7 +42,7 @@ class Analytics::DistrictsController < AnalyticsController
 
   def whatsapp_graphics
     set_cohort_analytics(:quarter, 3)
-    set_dashboard_analytics(:quarter, 3)
+    set_dashboard_analytics(:quarter, 4)
 
     whatsapp_graphics_handler(
       @organization_district.organization.name,
@@ -53,7 +55,6 @@ class Analytics::DistrictsController < AnalyticsController
     district_name = params[:id] || params[:district_id]
     organization = Organization.find_by(id: params[:organization_id])
     @organization_district = OrganizationDistrict.new(district_name, organization)
-    authorize(@organization_district)
   end
 
   def set_cohort_analytics(period, prev_periods)

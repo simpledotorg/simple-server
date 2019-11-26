@@ -1,10 +1,16 @@
 require 'rails_helper'
 
 RSpec.feature 'Adherence follow-ups', type: :feature do
-  let!(:counsellor) { create(:admin, :counsellor) }
-
+  let(:facility_group) { create(:facility_group) }
+  let!(:counsellor) { create(:admin, role: 'counsellor') }
+  let!(:permissions) { create(:user_permission,
+                              user: counsellor,
+                              permission_slug: :view_adherence_follow_up_list,
+                              resource: facility_group)
+  }
+ 
   describe 'index' do
-    before { sign_in(counsellor) }
+    before { sign_in(counsellor.email_authentication) }
 
     it 'shows Overdue tab' do
       visit root_path
@@ -13,7 +19,7 @@ RSpec.feature 'Adherence follow-ups', type: :feature do
     end
 
     describe 'Adherence follow-ups tab' do
-      let!(:authorized_facility_group) { counsellor.facility_groups.first }
+      let!(:authorized_facility_group) { facility_group }
 
       let!(:facility_1) { create(:facility, facility_group: authorized_facility_group) }
 

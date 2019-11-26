@@ -1,14 +1,20 @@
 Rails.application.routes.draw do
-  devise_scope :admin do
-    authenticated :admin, ->(a) { a.has_role?(:counsellor) } do
-      root to: "patients#index", as: :counsellor_root
+  devise_scope :email_authentication do
+    { :show? => "organizations#index",
+      :adherence_follow_up? => "patients#index",
+      :overdue_list? => "appointments#index",
+      :manage_organizations? => "admin/organizations#index",
+      :manage_facilities? => "admin/facilities#index",
+      :manage_protocols? => "admin/protocols#index",
+      :manage_admins? => "admins#index",
+      :manage_users? => "admin/users#index"
+    }.each do |feature, controller|
+      authenticated :email_authentication, -> (a) { DashboardPolicy.new(a.user, :dashboard).send(feature) } do
+        root to: controller
+      end
     end
 
-    authenticated :admin do
-      root to: "organizations#index", as: :admin_root
-    end
-
-    unauthenticated :admin do
+    unauthenticated :email_authentication do
       root to: "devise/sessions#new"
     end
   end
@@ -142,7 +148,8 @@ Rails.application.routes.draw do
     end
   end
 
-  devise_for :admins, controllers: { invitations: 'admins/invitations' }
+  # devise_for :email_authentications, controllers: { invitations: 'email_authentications/invitations' }
+  devise_for :email_authentications, path: 'email_authentications', controllers: { invitations: 'email_authentications/invitations' }
   resources :admins
 
   namespace :analytics do
@@ -198,7 +205,7 @@ Rails.application.routes.draw do
     end
   end
 
-  authenticate :admin, lambda(&:owner?) do
+  authenticate :email_authentication, -> (a) { a.user.has_permission?(:view_sidekiq_ui)} do
     require 'sidekiq/web'
     mount Sidekiq::Web => '/sidekiq'
   end

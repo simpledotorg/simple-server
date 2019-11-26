@@ -37,7 +37,7 @@
   </head>
 
   <body>
-    <% if admin_signed_in? %>
+    <% if email_authentication_signed_in? %>
     <nav class="<%= style_class_for_environment %>">
       <div class="container">
         <%= link_to root_path, class: "navbar-brand" do %>
@@ -48,45 +48,45 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-          <% if admin_signed_in? %>
+          <% if email_authentication_signed_in? %>
             <ul class="navbar-nav mr-auto">
-              <% unless current_admin.has_role?(:counsellor) %>
+              <% if policy(:dashboard).show? %>
                 <li class="nav-item">
-                  <%= link_to "Dashboard", admin_root_path, class: "nav-link #{active_controller?("organizations", "facility_groups")}" %>
+                  <%= link_to "Dashboard", root_path, class: "nav-link #{active_controller?("organizations", "facility_groups")}" %>
                 </li>
               <% end %>
               <% if FeatureToggle.enabled?('PATIENT_FOLLOWUPS') %>
-                <% if policy(Appointment).index? %>
+                <% if policy(:dashboard).overdue_list? %>
                   <li class="nav-item">
                     <%= link_to "Overdue patients", appointments_path, class: "nav-link #{active_controller?("appointments")}" %>
                   </li>
                 <% end %>
-                <% if policy(Patient).index? %>
+                <% if policy(:dashboard).adherence_follow_up? %>
                   <li class="nav-item">
                     <%= link_to "Adherence follow-ups", patients_path, class: "nav-link #{active_controller?("patients")}" %>
                   </li>
                 <% end %>
 
               <% end %>
-              <% unless current_admin.has_role?(:counsellor, :analyst) %>
+              <% if policy(:dashboard).manage? %>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle dropdown-more" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   Manage
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <% if policy(Organization).index? %>
+                  <% if policy([:dashboard]).manage_organizations? %>
                     <%= link_to "Organizations", admin_organizations_path, class: "dropdown-item #{active_controller?("admin/organizations")}" %>
                   <% end %>
-                  <% if policy(Facility).index? %>
+                  <% if policy([:dashboard]).manage_facilities? %>
                     <%= link_to "Facilities", admin_facilities_path, class: "dropdown-item #{active_controller?("admin/facilities")}" %>
                   <% end %>
-                  <% if policy(Protocol).index? %>
+                  <% if policy([:dashboard]).manage_protocols? %>
                     <%= link_to "Protocols", admin_protocols_path, class: "dropdown-item #{active_controller?("admin/protocols")}" %>
                   <% end %>
-                  <% if policy(Admin).index? %>
-                    <%= link_to "Admins", admins_path, class: "dropdown-item #{active_controller?("admins")}" %>
+                  <% if policy([:dashboard]).manage_admins? %>
+                    <%= link_to "Admins", admins_path, class: "dropdown-item #{active_controller?("email_authentications")}" %>
                   <% end %>
-                  <% if policy(User).index? %>
+                  <% if policy([:dashboard]).manage_users? %>
                     <%= link_to "Users", admin_users_path, class: "dropdown-item #{active_controller?("users")}" %>
                   <% end %>
                 </div>
@@ -100,7 +100,7 @@
                   <%= current_admin.email %>
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <%= link_to('Logout', destroy_admin_session_path, method: :delete, class: "dropdown-item") %>
+                  <%= link_to('Logout', destroy_email_authentication_session_path, method: :delete, class: "dropdown-item logout") %>
                   <div class="dropdown-divider"></div>
                   <a href="https://www.simple.org/privacy/" class="dropdown-item">Privacy Policy</a>
                   <a href="https://opensource.org/licenses/MIT" class="dropdown-item">License</a>
@@ -123,7 +123,7 @@
       <% flash.each do |type, message| %>
         <% next unless message.is_a? String %>
 
-        <div class="<% if !admin_signed_in? %>col-md-6 mx-auto<% end %> alert <%= bootstrap_class_for_flash(type) %> alert-dismissable fade show">
+        <div class="<% if !email_authentication_signed_in? %>col-md-6 mx-auto<% end %> alert <%= bootstrap_class_for_flash(type) %> alert-dismissable fade show">
           <%= message %>
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <i class="fas fa-times" style="font-size: 85%; position: relative; bottom: 2px;"></i>
