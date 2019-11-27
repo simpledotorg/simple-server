@@ -1,4 +1,5 @@
 require 'rails_helper'
+
 RSpec.describe BloodSugar, type: :model do
   describe 'Validations' do
     it_behaves_like 'a record that validates device timestamps'
