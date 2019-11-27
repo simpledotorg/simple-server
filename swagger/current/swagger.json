@@ -2317,7 +2317,12 @@
           "$ref": "#/definitions/uuid"
         },
         "blood_sugar_type": {
-          "type": "string"
+          "type": "string",
+          "enum": [
+            "random",
+            "post_prandial",
+            "fasting"
+          ]
         },
         "blood_sugar_value": {
           "type": "integer"
@@ -2343,7 +2348,17 @@
         "user_id": {
           "$ref": "#/definitions/uuid"
         }
-      }
+      },
+      "required": [
+        "id",
+        "blood_sugar_type",
+        "blood_sugar_value",
+        "created_at",
+        "updated_at",
+        "patient_id",
+        "facility_id",
+        "user_id"
+      ]
     },
     "blood_sugars": {
       "type": [
