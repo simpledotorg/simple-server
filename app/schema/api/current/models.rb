@@ -163,7 +163,7 @@ class Api::Current::Models
           patient_id: { '$ref' => '#/definitions/uuid' },
           facility_id: { '$ref' => '#/definitions/uuid' },
           user_id: { '$ref' => '#/definitions/uuid' } },
-        required: %w[blood_sugar_type blood_sugar_value created_at updated_at patient_id facility_id user_id]
+        required: %w[id blood_sugar_type blood_sugar_value created_at updated_at patient_id facility_id user_id]
       }
     end
 
