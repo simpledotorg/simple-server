@@ -6,10 +6,13 @@ class Analytics::FacilitiesController < AnalyticsController
   before_action :set_facility
 
   def show
-    set_cohort_analytics(@period, @prev_periods)
-    set_dashboard_analytics(@period, 3)
+    @show_current_month = (@period == :month)
 
-    @recent_blood_pressures = @facility.blood_pressures
+    set_dashboard_analytics(@period, 3)
+    set_cohort_analytics(@period, @prev_periods)
+
+    @recent_blood_pressures = @facility
+                                .blood_pressures
                                 .includes(:patient, :user)
                                 .order("DATE(recorded_at) DESC, recorded_at ASC")
 
@@ -60,15 +63,15 @@ class Analytics::FacilitiesController < AnalyticsController
   def set_cohort_analytics(period, prev_periods)
     @cohort_analytics = set_analytics_cache(
       analytics_cache_key_cohort(period),
-      @facility.cohort_analytics(period, prev_periods)
-    )
+      @facility.cohort_analytics(period, prev_periods))
   end
 
   def set_dashboard_analytics(period, prev_periods)
     @dashboard_analytics = set_analytics_cache(
       analytics_cache_key_dashboard(period),
-      @facility.dashboard_analytics(period: period, prev_periods: prev_periods)
-    )
+      @facility.dashboard_analytics(period: period,
+                                    prev_periods: prev_periods,
+                                    include_current_period: @show_current_month))
   end
 
   def analytics_cache_key

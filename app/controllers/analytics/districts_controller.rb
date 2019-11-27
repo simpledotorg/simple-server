@@ -3,12 +3,13 @@ class Analytics::DistrictsController < AnalyticsController
   include GraphicsDownload
 
   before_action :set_organization_district
-
   skip_after_action :verify_authorized
 
   def show
-    set_cohort_analytics(@period, @prev_periods)
+    @show_current_month = (@period == :month)
+
     set_dashboard_analytics(@period, 3)
+    set_cohort_analytics(@period, @prev_periods)
   end
 
   def share_anonymized_data
@@ -60,15 +61,15 @@ class Analytics::DistrictsController < AnalyticsController
   def set_cohort_analytics(period, prev_periods)
     @cohort_analytics = set_analytics_cache(
       analytics_cache_key_cohort(period),
-      @organization_district.cohort_analytics(period, prev_periods)
-    )
+      @organization_district.cohort_analytics(period, prev_periods))
   end
 
   def set_dashboard_analytics(period, prev_periods)
     @dashboard_analytics = set_analytics_cache(
       analytics_cache_key_dashboard(period),
-      @organization_district.dashboard_analytics(period: period, prev_periods: prev_periods)
-    )
+      @organization_district.dashboard_analytics(period: period,
+                                                 prev_periods: prev_periods,
+                                                 include_current_period: @show_current_month))
   end
 
   def analytics_cache_key
