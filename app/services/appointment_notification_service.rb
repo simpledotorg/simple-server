@@ -1,5 +1,5 @@
 class AppointmentNotificationService < Struct.new(:organization)
-  FAN_OUT_BATCH_SIZE = 250
+  FAN_OUT_BATCH_SIZE = (ENV['APPOINTMENT_NOTIFICATION_FAN_OUT_BATCH_SIZE'].presence || 250).to_i
 
   def send_after_missed_visit(days_overdue: 3, schedule_at:)
     fan_out_reminders(Appointment.overdue_by(days_overdue)
