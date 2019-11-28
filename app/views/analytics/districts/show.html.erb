@@ -6,22 +6,18 @@
     <%= @organization_district.district_name %>
   </nav>
 
-  <% if policy([:cohort_report, @organization_district]).view_cohort_reports? %>
-    <%= render "period_dropdown" %>
-  <% end %>
+  <%= render "period_dropdown" %>
 
   <h1><%= @organization_district.district_name %></h1>
 </div>
 
-<% if policy([:cohort_report, @organization_district]).view_cohort_reports? %>
-  <%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics, quarter: current_quarter, year: current_year %>
-  <%= render 'shared/analytics_table',
-             dashboard_analytics: @dashboard_analytics,
-             row_resource: Facility.order(:name),
-             row_resource_description: "Facilities",
-             row_resource_display_field: :name,
-             row_resource_link: :analytics_facility_path %>
-<% end %>
+<%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics, quarter: current_quarter, year: current_year %>
+<%= render 'shared/analytics_table',
+  dashboard_analytics: @dashboard_analytics,
+  row_resource: Facility.order(:name),
+  row_resource_description: "Facilities",
+  row_resource_display_field: :name,
+  row_resource_link: :analytics_facility_path %>
 
 <div class="downloads">
   <h4>Downloads</h4>
