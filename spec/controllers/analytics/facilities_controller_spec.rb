@@ -34,7 +34,8 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
     # add blood_pressures next month
     #
     travel_to(mar_2019) do
-      registered_patients.each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility, user: user) }
+      registered_patients.each { |patient|
+        create(:blood_pressure, :under_control, patient: patient, facility: facility, user: user) }
     end
 
     Patient.where(id: registered_patients.map(&:id))
@@ -85,22 +86,29 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
       end
 
       it 'caches the facility correctly' do
-
+        create_list(:patient, 3, registration_facility: facility, registration_user: user, recorded_at: mar_2019)
 
         expected_cache_value =
           {
             cohort: {
-              [feb_2019, mar_2019] => { :registered => 3, :followed_up => 3, :defaulted => 0, :controlled => 3, :uncontrolled => 0 },
-              [jan_2019, feb_2019] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
-              [dec_2018, jan_2019] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
-              [nov_2018, dec_2018] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
-              [oct_2018, nov_2018] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
-              [sep_2018, oct_2018] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 }
+              [feb_2019, mar_2019] =>
+                { :registered => 3, :followed_up => 3, :defaulted => 0, :controlled => 3, :uncontrolled => 0 },
+              [jan_2019, feb_2019] =>
+                { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
+              [dec_2018, jan_2019] =>
+                { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
+              [nov_2018, dec_2018] =>
+                { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
+              [oct_2018, nov_2018] =>
+                { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
+              [sep_2018, oct_2018] =>
+                { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 }
             },
+
             dashboard: {
               user.id => {
-                registered_patients_by_period: { feb_2019 => 3 },
-                total_registered_patients: 3,
+                registered_patients_by_period: { mar_2019 => 3 },
+                total_registered_patients: 6,
                 follow_up_patients_by_period: { mar_2019 => 3 }
               }
             }

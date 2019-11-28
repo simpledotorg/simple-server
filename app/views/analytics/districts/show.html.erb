@@ -24,7 +24,8 @@
 
   <% if policy([:cohort_report, @organization_district]).patient_list? %>
     <p>
-      <%= link_to analytics_organization_district_patient_list_path(organization_id: @organization_district.organization.id, district_id: @organization_district.district_name) do %>
+      <%= link_to analytics_organization_district_patient_list_path(organization_id: @organization_district.organization.id,
+                                                                    district_id: @organization_district.district_name) do %>
         <i class='fas fa-camera mr-2'></i>
         Patient line list
       <% end %>
