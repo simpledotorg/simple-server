@@ -17,14 +17,14 @@
 
 <%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics %>
 
-<% if policy([:cohort_report, @facility]).view_health_worker_activity? %>
-  <%= render 'shared/analytics_table',
-             dashboard_analytics: @dashboard_analytics,
-             row_resource: User.order(:full_name),
-             row_resource_description: "Users",
-             row_resource_display_field: :full_name,
-             row_resource_link: :admin_user_path %>
+<%= render 'shared/analytics_table',
+  dashboard_analytics: @dashboard_analytics,
+  row_resource: User.order(:full_name),
+  row_resource_description: "Users",
+  row_resource_display_field: :full_name,
+  row_resource_link: :admin_user_path %>
 
+<% if policy([:cohort_report, @facility]).view_health_worker_activity? %>
   <%= render 'shared/recent_bp_log',
              blood_pressures: @recent_blood_pressures,
              display_model: :facility %>
