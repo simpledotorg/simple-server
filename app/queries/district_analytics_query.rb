@@ -51,6 +51,7 @@ class DistrictAnalyticsQuery
         .left_outer_joins(:patient)
         .joins(:facility)
         .where(facilities: { id: facilities })
+        .where(deleted_at: nil)
         .group('facilities.id', date_truncate_string)
         .where("patients.recorded_at < #{date_truncate_string}")
         .order('facilities.id')
