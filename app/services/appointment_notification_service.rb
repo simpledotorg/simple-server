@@ -16,7 +16,6 @@ class AppointmentNotificationService
   attr_reader :appointments, :schedule_at
 
   def fan_out_reminders(appointments, communication_type, schedule_at)
-
     eligible_appointments = appointments.select do |appointment|
       eligible_for_sending_sms?(appointment,
                                 communication_type)
