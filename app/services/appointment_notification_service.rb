@@ -4,7 +4,9 @@ class AppointmentNotificationService
   FAN_OUT_BATCH_SIZE = 250
 
   def send_after_missed_visit(days_overdue: 3, schedule_at:)
-    fan_out_reminders(Appointment.overdue_by(days_overdue).includes(patient: [:phone_numbers]),
+    fan_out_reminders(Appointment.overdue_by(days_overdue)
+                          .includes(patient: [:phone_numbers])
+                          .where(patients: {reminder_consent: "granted"}),
                       Communication.communication_types[:missed_visit_sms_reminder],
                       schedule_at)
   end
