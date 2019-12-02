@@ -5,7 +5,7 @@ class AppointmentNotificationService < Struct.new(:organization)
     fan_out_reminders(Appointment.overdue_by(days_overdue)
                           .includes(patient: [:phone_numbers], facility: { facility_group: :organization })
                           .where(facility: { facility_groups: { organization: organization } })
-                          .where(patients: { reminder_consent: :granted }),
+                          .where(patients: { reminder_consent: 'granted' }),
                       Communication.communication_types[:missed_visit_sms_reminder],
                       schedule_at)
   end
