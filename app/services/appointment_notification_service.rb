@@ -5,7 +5,7 @@ class AppointmentNotificationService
 
   def send_after_missed_visit(days_overdue: 3, schedule_at:)
     fan_out_reminders(Appointment.overdue_by(days_overdue)
-                          .joins(patient: [:phone_numbers])
+                          .includes(patient: [:phone_numbers])
                           .where(patients: {reminder_consent: "granted"}),
                       Communication.communication_types[:missed_visit_sms_reminder],
                       schedule_at)
