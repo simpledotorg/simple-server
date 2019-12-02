@@ -1,7 +1,8 @@
 require 'rails_helper'
 
 RSpec.feature 'Organization management', type: :feature do
-  let!(:owner) { create(:admin, :owner) }
+  let!(:owner) { create(:admin) }
+  let!(:permissions) { create(:user_permission, user: owner, permission_slug: :manage_organizations) }
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:path) { create(:organization, name: "PATH") }
 
@@ -13,6 +14,9 @@ RSpec.feature 'Organization management', type: :feature do
     it 'Verify organisation is displayed in ManageOrganisation' do
       visit root_path
       login.do_login(owner.email, owner.password)
+
+      dashboard_navigation.select_main_menu_tab("Manage")
+      expect(page).to have_content("Organizations")
 
       dashboard_navigation.select_manage_option('Organizations')
       expect(page).to have_content("IHMI")

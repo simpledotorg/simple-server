@@ -37,4 +37,3 @@ module AdminPage
     end
   end
 end
-

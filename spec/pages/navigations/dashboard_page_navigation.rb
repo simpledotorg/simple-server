@@ -1,6 +1,7 @@
 module Navigations
   class DashboardPageNavigation < ApplicationPage
-    LOGOUT_BUTTON = { css: 'a.logout' }.freeze
+    LOGOUT_BUTTON = { css: 'a.logout' }.freeze  
+    MANAGE_OPTION = { xpath: "//li/div/a" }.freeze
     MAIN_MENU_TABS = { css: "ul.mr-auto>li>a" }.freeze
     PROFILE_DROPDOWN = { id: 'navbarDropdown2' }.freeze
 

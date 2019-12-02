@@ -1,14 +1,9 @@
 require 'swagger_helper'
 
 describe 'Users V2 API', swagger_doc: 'v2/swagger.json' do
-  let(:supervisor) { FactoryBot.create(:admin, :supervisor) }
-  let(:organization_owner) { FactoryBot.create(:admin, :organization_owner) }
   let(:facility) { FactoryBot.create(:facility) }
-
-  before :each do
-    FactoryBot.create(:admin_access_control, admin: supervisor)
-    FactoryBot.create(:admin_access_control, admin: organization_owner, access_controllable: facility.facility_group)
-  end
+  let!(:supervisor) { FactoryBot.create(:admin, :supervisor, facility_group: facility.facility_group) }
+  let!(:organization_owner) { FactoryBot.create(:admin, :organization_owner, organization: facility.organization) }
 
   path '/users/find' do
     get 'Find a existing user' do
@@ -17,7 +12,7 @@ describe 'Users V2 API', swagger_doc: 'v2/swagger.json' do
       parameter name: :id, in: :query, type: :string, description: 'User UUID'
 
       let(:known_phone_number) { Faker::PhoneNumber.phone_number }
-      let!(:user) { FactoryBot.create(:user, phone_number: known_phone_number, registration_facility_id: facility.id) }
+      let!(:user) { FactoryBot.create(:user, phone_number: known_phone_number, registration_facility: facility) }
       let(:id) { user.id }
 
       response '200', 'user is found' do
@@ -73,7 +68,7 @@ describe 'Users V2 API', swagger_doc: 'v2/swagger.json' do
       tags 'User'
       parameter name: :id, in: :path, description: 'User UUID', type: :string
 
-      let!(:user) { FactoryBot.create(:user, registration_facility_id: facility.id) }
+      let!(:user) { FactoryBot.create(:user, registration_facility: facility) }
 
       before :each do
         sms_notification_service = double(SmsNotificationService.new(nil, nil))

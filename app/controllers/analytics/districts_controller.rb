@@ -3,10 +3,13 @@ class Analytics::DistrictsController < AnalyticsController
   include GraphicsDownload
 
   before_action :set_organization_district
+  skip_after_action :verify_authorized
 
   def show
-    set_cohort_analytics(@period, @prev_periods)
+    @show_current_month = (@period == :month)
+
     set_dashboard_analytics(@period, 3)
+    set_cohort_analytics(@period, @prev_periods)
   end
 
   def share_anonymized_data
@@ -34,13 +37,14 @@ class Analytics::DistrictsController < AnalyticsController
 
     redirect_to(
       analytics_organization_district_path(id: @organization_district.district_name),
-      notice: I18n.t('patient_list_email.notice', model_type: "district", model_name: @organization_district.district_name)
-    )
+      notice: I18n.t('patient_list_email.notice',
+                     model_type: "district",
+                     model_name: @organization_district.district_name))
   end
 
   def whatsapp_graphics
     set_cohort_analytics(:quarter, 3)
-    set_dashboard_analytics(:quarter, 3)
+    set_dashboard_analytics(:quarter, 4)
 
     whatsapp_graphics_handler(
       @organization_district.organization.name,
@@ -53,21 +57,20 @@ class Analytics::DistrictsController < AnalyticsController
     district_name = params[:id] || params[:district_id]
     organization = Organization.find_by(id: params[:organization_id])
     @organization_district = OrganizationDistrict.new(district_name, organization)
-    authorize(@organization_district)
   end
 
   def set_cohort_analytics(period, prev_periods)
     @cohort_analytics = set_analytics_cache(
       analytics_cache_key_cohort(period),
-      @organization_district.cohort_analytics(period, prev_periods)
-    )
+      @organization_district.cohort_analytics(period, prev_periods))
   end
 
   def set_dashboard_analytics(period, prev_periods)
     @dashboard_analytics = set_analytics_cache(
       analytics_cache_key_dashboard(period),
-      @organization_district.dashboard_analytics(period: period, prev_periods: prev_periods)
-    )
+      @organization_district.dashboard_analytics(period: period,
+                                                 prev_periods: prev_periods,
+                                                 include_current_period: @show_current_month))
   end
 
   def analytics_cache_key
