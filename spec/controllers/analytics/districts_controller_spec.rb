@@ -73,9 +73,12 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
         expected_cache_value =
           {
             cohort: {
-              [cohort_date1.prev_quarter, cohort_date1] => { :registered => 3, :followed_up => 3, :defaulted => 0, :controlled => 3, :uncontrolled => 0 },
-              [cohort_date2.prev_quarter, cohort_date2] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
-              [cohort_date3.prev_quarter, cohort_date3] => { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 }
+              [cohort_date1.prev_quarter, cohort_date1] =>
+                { :registered => 3, :followed_up => 3, :defaulted => 0, :controlled => 3, :uncontrolled => 0 },
+              [cohort_date2.prev_quarter, cohort_date2] =>
+                { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
+              [cohort_date3.prev_quarter, cohort_date3] =>
+                { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 }
             },
 
             dashboard: {
