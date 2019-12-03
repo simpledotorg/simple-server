@@ -19,14 +19,14 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
 
   def create_record(options = {})
     facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
-    blood_pressure = FactoryBot.create(:blood_pressure, options.merge(facility: facility))
-    create(:encounter, :with_observables, observable: record)
+    blood_pressure = FactoryBot.create(:blood_pressure, { facility: facility }.merge(options))
+    create(:encounter, :with_observables, observable: blood_pressure)
     blood_pressure
   end
 
   def create_record_list(n, options = {})
     facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
-    blood_pressures = create_list(:blood_pressure, n, options.merge(facility: facility))
+    blood_pressures = create_list(:blood_pressure, n, { facility: facility }.merge(options))
     blood_pressures.each {|record| create(:encounter, :with_observables, observable: record)}
     blood_pressures
   end
@@ -243,22 +243,10 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
       it "syncs request facility's records first" do
         request_2_facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
 
-        FactoryBot.create_list(:blood_pressure,
-                               2,
-                               facility: request_facility,
-                               updated_at: 3.minutes.ago)
-        FactoryBot.create_list(:blood_pressure,
-                               2,
-                               facility: request_facility,
-                               updated_at: 5.minutes.ago)
-        FactoryBot.create_list(:blood_pressure,
-                               2,
-                               facility: request_2_facility,
-                               updated_at: 7.minutes.ago)
-        FactoryBot.create_list(:blood_pressure,
-                               2,
-                               facility: request_2_facility,
-                               updated_at: 10.minutes.ago)
+        create_record_list(2, facility: request_facility, updated_at: 3.minutes.ago)
+        create_record_list(2, facility: request_facility, updated_at: 5.minutes.ago)
+        create_record_list(2, facility: request_2_facility, updated_at: 7.minutes.ago)
+        create_record_list(2, facility: request_2_facility, updated_at: 10.minutes.ago)
 
         # GET request 1
         set_authentication_headers
@@ -288,18 +276,9 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
       before :each do
         set_authentication_headers
 
-        FactoryBot.create_list(:blood_pressure,
-                               2,
-                               facility: facility_in_another_group,
-                               updated_at: 3.minutes.ago)
-        FactoryBot.create_list(:blood_pressure,
-                               2,
-                               facility: facility_in_same_group,
-                               updated_at: 5.minutes.ago)
-        FactoryBot.create_list(:blood_pressure,
-                               2,
-                               facility: request_facility,
-                               updated_at: 7.minutes.ago)
+        create_record_list(2, facility: facility_in_another_group, updated_at: 3.minutes.ago)
+        create_record_list(2, facility: facility_in_same_group, updated_at: 5.minutes.ago)
+        create_record_list(2, facility: request_facility, updated_at: 7.minutes.ago)
       end
 
       it "only sends data for facilities belonging in the sync group of user's registration facility" do

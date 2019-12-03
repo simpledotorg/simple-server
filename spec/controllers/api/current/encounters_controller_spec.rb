@@ -97,6 +97,11 @@ RSpec.describe Api::Current::EncountersController, type: :controller do
         expect(response).to have_http_status(200)
         expect(Encounter.find(encounter[:id]).patient).to eq patient
       end
+
+      context 'encounter contains observations from more than one facility' do
+
+
+      end
     end
   end
 
