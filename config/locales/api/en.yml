@@ -26,7 +26,7 @@ en:
     11: 'November'
     12: 'December'
   analytics:
-    followup_patients: "How many patients have a BP recorded at %{facility_name}?"
+    followup_patients: "How many follow-up patients visited %{facility_name}?"
     patients_enrolled: "How many new patients are enrolled at %{facility_name}?"
     all_time_patients: "All time: %{count} patients"
     updated_at: "Updated at %{time}"
