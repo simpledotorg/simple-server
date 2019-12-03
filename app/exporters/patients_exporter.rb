@@ -15,8 +15,6 @@ module PatientsExporter
     end
   end
 
-  private
-
   def self.csv_headers
     [
       "Registration Date",
