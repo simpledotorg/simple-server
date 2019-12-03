@@ -1,11 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe AppointmentsController, type: :controller do
-  let(:counsellor) { create(:admin, :counsellor) }
-  let(:facility_group) { counsellor.facility_groups.first }
+  let(:facility_group) { create(:facility_group) }
+  let(:counsellor) { create(:admin, :counsellor, facility_group: facility_group) }
 
   before do
-    sign_in(counsellor)
+    sign_in(counsellor.email_authentication)
   end
 
   describe 'GET #index' do
@@ -120,7 +120,7 @@ RSpec.describe AppointmentsController, type: :controller do
       overdue_appointment.reload
 
       expect(overdue_appointment.remind_on).to eq(new_remind_date)
-      expect(response).to redirect_to(action: 'index')
+      expect(response).to redirect_to(appointments_path)
     end
 
     it 'agreed_to_visit updates agreed_to_visit and remind_on' do
@@ -137,7 +137,7 @@ RSpec.describe AppointmentsController, type: :controller do
 
       expect(overdue_appointment.agreed_to_visit).to eq(true)
       expect(overdue_appointment.remind_on).to eq(new_remind_date)
-      expect(response).to redirect_to(action: 'index')
+      expect(response).to redirect_to(appointments_path)
     end
 
     it 'patient_has_already_visited updates appointment status to visited' do
@@ -151,7 +151,7 @@ RSpec.describe AppointmentsController, type: :controller do
       overdue_appointment.reload
 
       expect(overdue_appointment.status).to eq 'visited'
-      expect(response).to redirect_to(action: 'index')
+      expect(response).to redirect_to(appointments_path)
     end
 
     it 'patient_has_already_visited updates agreed_to_visit and remind_on to nil' do
@@ -166,7 +166,7 @@ RSpec.describe AppointmentsController, type: :controller do
 
       expect(overdue_appointment.agreed_to_visit).to be nil
       expect(overdue_appointment.remind_on).to be nil
-      expect(response).to redirect_to(action: 'index')
+      expect(response).to redirect_to(appointments_path)
     end
 
     it 'marking the appointment as cancelled updates the relevant fields' do
@@ -184,7 +184,7 @@ RSpec.describe AppointmentsController, type: :controller do
         expect(overdue_appointment.remind_on).to be nil
         expect(overdue_appointment.cancel_reason).to eq cancel_reason
         expect(overdue_appointment.status).to eq 'cancelled'
-        expect(response).to redirect_to(action: 'index')
+        expect(response).to redirect_to(appointments_path)
       end
     end
   end

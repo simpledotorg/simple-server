@@ -2,12 +2,17 @@ require "rails_helper"
 
 RSpec.feature "User admin", type: :feature do
   let!(:owner) { create(:admin) }
+  let!(:permissions) { [
+    create(:user_permission, user: owner, permission_slug: :approve_health_workers),
+    create(:user_permission, user: owner, permission_slug: :view_health_worker_activity)
+
+  ] }
   let!(:user) { create(:user) }
   let!(:bp_1) { create(:blood_pressure, user: user, systolic: 145, diastolic: 95, recorded_at: Time.zone.parse("2019-03-15 8:00am +05:30")) }
   let!(:bp_2) { create(:blood_pressure, user: user, systolic: 115, diastolic: 75, recorded_at: Time.zone.parse("2019-03-15 2:15pm +05:30")) }
 
   before do
-    sign_in(owner)
+    sign_in(owner.email_authentication)
   end
 
   describe "show a user" do

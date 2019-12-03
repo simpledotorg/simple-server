@@ -4,8 +4,8 @@ class Admin::FacilityGroupsController < AdminController
   before_action :set_protocols, only: [:new, :edit]
 
   def index
-    authorize FacilityGroup
-    @facility_groups = policy_scope(FacilityGroup).order(:name)
+    authorize([:manage, FacilityGroup])
+    @facility_groups = policy_scope([:manage, FacilityGroup]).order(:name)
   end
 
   def show
@@ -15,7 +15,7 @@ class Admin::FacilityGroupsController < AdminController
 
   def new
     @facility_group = FacilityGroup.new
-    authorize @facility_group
+    authorize([:manage, @facility_group])
   end
 
   def edit
@@ -23,7 +23,7 @@ class Admin::FacilityGroupsController < AdminController
 
   def create
     @facility_group = FacilityGroup.new(facility_group_params)
-    authorize @facility_group
+    authorize([:manage, @facility_group])
 
     if @facility_group.save
       redirect_to admin_facilities_url, notice: 'FacilityGroup was successfully created.'
@@ -51,7 +51,7 @@ class Admin::FacilityGroupsController < AdminController
   private
 
   def set_organizations
-    @organizations = policy_scope(Organization)
+    @organizations = policy_scope([:manage, :facility, Organization])
   end
 
   def set_protocols
@@ -60,7 +60,7 @@ class Admin::FacilityGroupsController < AdminController
 
   def set_facility_group
     @facility_group = FacilityGroup.friendly.find(params[:id])
-    authorize @facility_group
+    authorize([:manage, @facility_group])
   end
 
   def facility_group_params

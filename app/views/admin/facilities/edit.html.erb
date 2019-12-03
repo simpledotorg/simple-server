@@ -1,7 +1,7 @@
 <div class="page-header">
   <h1 class="page-title">Edit facility</h1>
   <nav class="page-nav">
-    <% if policy(@facility).destroy? %>
+    <% if policy([:manage, :facility, @facility]).destroy? %>
       <%= link_to 'Delete facility', [:admin, @facility_group, @facility], method: :delete, data: { confirm: "Are you sure you want to delete #{@facility.name}?" }, class: "btn btn-outline-danger ml-4" %>
     <% end %>
   </nav>

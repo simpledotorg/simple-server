@@ -1,5 +1,5 @@
 class AdminController < ApplicationController
-  before_action :authenticate_admin!
+  before_action :authenticate_email_authentication!
   after_action :verify_authorized
   after_action :verify_policy_scoped, only: :index
 
@@ -22,7 +22,17 @@ class AdminController < ApplicationController
     I18n.with_locale(locale, &action)
   end
 
+  helper_method :current_admin
+
   private
+
+  def current_admin
+    current_email_authentication.user
+  end
+
+  def pundit_user
+    current_admin
+  end
 
   def user_not_authorized
     flash[:alert] = "You are not authorized to perform this action."
