@@ -10,6 +10,6 @@ class AppointmentNotification::MissedVisitJob
     AppointmentNotificationService
       .new
       .send_after_missed_visit(schedule_at:
-                                 schedule_now_or_tomorrow(schedule_hour_start, schedule_hour_finish))
+                                 schedule_today_or_tomorrow(schedule_hour_start, schedule_hour_finish))
   end
 end
