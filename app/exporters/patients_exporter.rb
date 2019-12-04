@@ -9,23 +9,29 @@ module PatientsExporter
     CSV.generate(headers: true) do |csv|
       csv << csv_headers
 
-      patients.each do |patient|
-        csv << csv_fields(patient)
+      patients.in_batches(of: BATCH_SIZE).each do |batch|
+        batch.each do |patient|
+          csv << csv_fields(patient)
+        end
       end
     end
   end
 
+  private
+
   def self.csv_headers
     [
-      "Registration Date",
-      "Registration Quarter",
+      "Simple Patient ID",
+      "BP Passport ID",
       "Patient Name",
-      "Patient Age",
       "Patient Gender",
-      "Patient Phone Number",
+      "Patient Age",
       "Patient Village/Colony",
       "Patient District",
       "Patient State",
+      "Patient Phone Number",
+      "Registration Date",
+      "Registration Quarter",
       "Registration Facility Name",
       "Registration Facility Type",
       "Registration Facility District",
@@ -39,9 +45,7 @@ module PatientsExporter
       "Latest BP Facility District",
       "Latest BP Facility State",
       "Days Overdue",
-      "Risk Level",
-      "BP Passport ID",
-      "Simple Patient ID"
+      "Risk Level"
     ]
   end
 
@@ -51,15 +55,17 @@ module PatientsExporter
     latest_bp_facility = latest_bp&.facility
 
     [
-      patient.recorded_at.presence && I18n.l(patient.recorded_at),
-      patient.recorded_at.presence && quarter_string(patient.recorded_at),
+      patient.id,
+      patient.latest_bp_passport&.shortcode,
       patient.full_name,
-      patient.current_age,
       patient.gender.capitalize,
-      patient.phone_numbers.last&.number,
+      patient.current_age,
       patient.address.village_or_colony,
       patient.address.district,
       patient.address.state,
+      patient.phone_numbers.last&.number,
+      patient.recorded_at.presence && I18n.l(patient.recorded_at),
+      patient.recorded_at.presence && quarter_string(patient.recorded_at),
       registration_facility&.name,
       registration_facility&.facility_type,
       registration_facility&.district,
@@ -73,9 +79,7 @@ module PatientsExporter
       latest_bp_facility&.district,
       latest_bp_facility&.state,
       patient.latest_scheduled_appointment&.days_overdue,
-      patient.risk_priority_label,
-      patient.latest_bp_passport&.shortcode,
-      patient.id
+      patient.risk_priority_label
     ]
   end
 end
