@@ -86,21 +86,105 @@ RSpec.describe Api::Current::BloodSugarsController, type: :controller do
 
           post(:sync_from_user, params: { blood_sugars: [blood_sugar] }, as: :json)
 
-          bp = BloodSugar.find(blood_sugar['id'])
-          expect(bp.recorded_at.to_i).to eq(recorded_at.to_i)
+          blood_sugar = BloodSugar.find(blood_sugar['id'])
+          expect(blood_sugar.recorded_at.to_i).to eq(recorded_at.to_i)
         end
 
         it 'does not modify the recorded_at for a patient if params have recorded_at' do
           patient_recorded_at = 4.months.ago
           patient = create(:patient, recorded_at: patient_recorded_at)
-          older_bp_recording_date = 5.months.ago
+          older_blood_sugar_recording_date = 5.months.ago
           blood_sugar = build_blood_sugar_payload(build(:blood_sugar,
                                                         patient: patient,
-                                                        recorded_at: older_bp_recording_date))
+                                                        recorded_at: older_blood_sugar_recording_date))
           post(:sync_from_user, params: { blood_sugars: [blood_sugar] }, as: :json)
 
           patient.reload
           expect(patient.recorded_at.to_i).to eq(patient_recorded_at.to_i)
+        end
+      end
+      context 'creates encounters' do
+        it 'assumes the same encounter for the blood_sugars recorded on the same day' do
+          patient = FactoryBot.create(:patient)
+
+          blood_sugar_recording = Time.new(2019, 1, 1, 1, 1).utc
+          encountered_on = blood_sugar_recording.to_date
+
+          blood_sugars = (1..3).map do
+            FactoryBot.build(:blood_sugar,
+                             facility: request_facility,
+                             patient: patient,
+                             recorded_at: blood_sugar_recording)
+          end
+
+          blood_sugars_payload = blood_sugars.map(&method(:build_blood_sugar_payload))
+
+          expect { post(:sync_from_user, params: { blood_sugars: blood_sugars_payload }, as: :json)
+          }.to change { Encounter.count }.by(1)
+          expect(response).to have_http_status(200)
+          expect(Encounter.pluck(:encountered_on)).to contain_exactly(encountered_on)
+          expected_blood_sugars_thru_encounters = Encounter.all.flat_map(&:blood_sugars)
+          expect(expected_blood_sugars_thru_encounters).to match_array(BloodSugar.where(id: blood_sugars.pluck(:id)))
+        end
+
+        it 'should create different encounters for blood_sugars recorded on different days' do
+          patient = FactoryBot.create(:patient)
+
+          day_1 = Time.new(2019, 1, 1, 1, 1).utc
+          day_2 = Time.new(2019, 1, 2, 1, 1).utc
+          day_3 = Time.new(2019, 1, 3, 1, 1).utc
+
+          encountered_on_1 = day_1.to_date
+          encountered_on_2 = day_2.to_date
+          encountered_on_3 = day_3.to_date
+
+          blood_sugars = [day_1, day_2, day_3].map do |date|
+            FactoryBot.build(:blood_sugar,
+                             facility: request_facility,
+                             patient: patient,
+                             recorded_at: date)
+          end
+
+          _add_blood_sugars = create_list(:blood_sugar, 5)
+
+          blood_sugars_payload = blood_sugars.map(&method(:build_blood_sugar_payload))
+
+          expect { post(:sync_from_user, params: { blood_sugars: blood_sugars_payload }, as: :json)
+          }.to change { Encounter.count }.by(3)
+          expect(response).to have_http_status(200)
+          expect(Encounter.pluck(:encountered_on)).to contain_exactly(encountered_on_1,
+                                                                      encountered_on_2,
+                                                                      encountered_on_3)
+          expected_blood_sugars_thru_encounters = Encounter.all.flat_map(&:blood_sugars)
+          expect(expected_blood_sugars_thru_encounters).to match_array(BloodSugar.where(id: blood_sugars.pluck(:id)))
+        end
+
+        it 'should create different encounters for Blood Sugars recorded against different date, patient or facility' do
+          day_1 = Time.new(2019, 1, 1, 1, 1).utc
+          day_2 = Time.new(2019, 1, 2, 1, 1).utc
+          day_3 = Time.new(2019, 1, 3, 1, 1).utc
+
+          range_of_possible_observations = (0..rand * 10).to_a
+
+          blood_sugars = [day_1, day_2, day_3].flat_map do |date|
+            patient = create(:patient)
+            facility = create(:facility)
+
+            range_of_possible_observations.map do
+              build(:blood_sugar,
+                    facility: facility,
+                    patient: patient,
+                    recorded_at: date)
+
+            end
+          end
+
+          blood_sugars_payload = blood_sugars.map(&method(:build_blood_sugar_payload))
+
+          expect { post(:sync_from_user, params: { blood_sugars: blood_sugars_payload }, as: :json)
+          }.to change { Encounter.count }.by(3)
+          expect(response).to have_http_status(200)
+          expect(Encounter.all.flat_map(&:blood_sugars).count).to eq(range_of_possible_observations.count * 3)
         end
       end
     end
