@@ -18,8 +18,10 @@ class Deploy
   DEPLOY_DIR = 'config/deploy/*'
   COUNTRY_TO_ENVIRONMENT =
     Dir.glob(DEPLOY_DIR).inject({}) do |acc, file|
-      file_path = Pathname.new(file)
-      acc[file_path.basename.to_s] = file_path.children.map { |f| f.basename('.rb') }.map(&:to_s)
+      if File.directory?(file)
+        file_path = Pathname.new(file)
+        acc[file_path.basename.to_s] = file_path.children.map { |f| f.basename('.rb') }.map(&:to_s)
+      end
       acc
     end
   
