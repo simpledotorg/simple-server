@@ -1,10 +1,8 @@
-class AppointmentNotificationService < Struct.new(:organization)
+class AppointmentNotificationService
   FAN_OUT_BATCH_SIZE = (ENV['APPOINTMENT_NOTIFICATION_FAN_OUT_BATCH_SIZE'].presence || 250).to_i
 
-  def send_after_missed_visit(days_overdue: 3, schedule_at:)
-    fan_out_reminders(Appointment.overdue_by(days_overdue)
-                          .includes(patient: [:phone_numbers], facility: { facility_group: :organization })
-                          .where(facility: { facility_groups: { organization: organization } })
+  def send_after_missed_visit(appointments:, days_overdue: 3, schedule_at:)
+    fan_out_reminders(appointments.overdue_by(days_overdue)
                           .where(patients: { reminder_consent: 'granted' }),
                       Communication.communication_types[:missed_visit_sms_reminder],
                       schedule_at)
