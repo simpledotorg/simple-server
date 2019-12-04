@@ -95,8 +95,8 @@ RSpec.describe Api::Current::BloodSugarsController, type: :controller do
           patient = create(:patient, recorded_at: patient_recorded_at)
           older_bp_recording_date = 5.months.ago
           blood_sugar = build_blood_sugar_payload(build(:blood_sugar,
-                                                                         patient: patient,
-                                                                         recorded_at: older_bp_recording_date))
+                                                        patient: patient,
+                                                        recorded_at: older_bp_recording_date))
           post(:sync_from_user, params: { blood_sugars: [blood_sugar] }, as: :json)
 
           patient.reload
