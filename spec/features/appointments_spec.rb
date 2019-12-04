@@ -30,18 +30,18 @@ RSpec.feature 'Overdue appointments', type: :feature do
       let!(:facility_1) { create(:facility, facility_group: authorized_facility_group) }
 
       let!(:overdue_patient_in_facility_1) do
-        patient = create(:patient, full_name: 'patient_1', registration_facility: facility_1)
+        patient = create(:patient, full_name: 'Overdue Patient 1', registration_facility: facility_1)
         create(:appointment, :overdue, facility: facility_1, patient: patient, scheduled_date: 10.days.ago)
         create(:blood_pressure, :critical, facility: facility_1, patient: patient)
         patient
       end
 
-      let!(:non_overdue_patient_in_facility_1) { create(:patient, full_name: 'patient_2', registration_facility: facility_1) }
+      let!(:non_overdue_patient_in_facility_1) { create(:patient, full_name: 'Non-overdue Patient', registration_facility: facility_1) }
 
       let!(:facility_2) { create(:facility, facility_group: authorized_facility_group) }
 
       let!(:overdue_patient_in_facility_2) do
-        patient = create(:patient, full_name: 'patient_3', registration_facility: facility_2)
+        patient = create(:patient, full_name: 'Overdue Patient 2', registration_facility: facility_2)
         create(:appointment, :overdue, facility: facility_2, patient: patient, scheduled_date: 5.days.ago)
         create(:blood_pressure, :high, facility: facility_2, patient: patient)
         patient
@@ -52,7 +52,7 @@ RSpec.feature 'Overdue appointments', type: :feature do
       let!(:unauthorized_facility) { create(:facility, facility_group: unauthorized_facility_group) }
 
       let!(:overdue_patient_in_unauthorized_facility) do
-        patient = create(:patient, full_name: 'patient_4', registration_facility: unauthorized_facility)
+        patient = create(:patient, full_name: 'Overdue Patient 3', registration_facility: unauthorized_facility)
         create(:appointment, :overdue, facility: unauthorized_facility, patient: patient)
         patient
       end
@@ -78,12 +78,12 @@ RSpec.feature 'Overdue appointments', type: :feature do
         expect(page).not_to have_content(overdue_patient_in_unauthorized_facility.full_name)
       end
 
-      it 'shows overdue patients ordered by how overdue they are' do
+      it 'shows overdue patients ordered by least overdue' do
         first_item = find(:css, '.card:nth-of-type(1)')
         second_item = find(:css, '.card:nth-of-type(2)')
 
-        expect(first_item).to have_content(overdue_patient_in_facility_1.full_name)
-        expect(second_item).to have_content(overdue_patient_in_facility_2.full_name)
+        expect(first_item).to have_content(overdue_patient_in_facility_2.full_name)
+        expect(second_item).to have_content(overdue_patient_in_facility_1.full_name)
       end
 
       it 'sets a call_result, and removes patient from the overdue list' do
@@ -110,10 +110,8 @@ RSpec.feature 'Overdue appointments', type: :feature do
 
         click_link "Download overdue list"
 
-        expect(page).to have_content(Appointment.csv_headers.to_csv.strip)
-
         appointment = overdue_patient_in_facility_1.appointments.first
-        expect(page).to have_content(appointment.csv_fields.to_csv.strip)
+        expect(page).to have_content(PatientsExporter.csv_fields(appointment.patient).to_csv.strip)
       end
 
       it 'does not allow you to download the overdue list for all facilities' do
