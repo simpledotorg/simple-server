@@ -13,6 +13,7 @@ FactoryBot.define do
     remind_on nil
     appointment_type { Appointment.appointment_types.keys.sample }
     user
+
     trait :overdue do
       scheduled_date { rand(30..90).days.ago }
       status :scheduled
@@ -25,8 +26,7 @@ def build_appointment_payload(appointment = FactoryBot.build(:appointment))
 end
 
 def build_appointment_payload_v2(appointment = FactoryBot.build(:appointment))
-  build_appointment_payload(appointment)
-    .except('creation_facility_id')
+  build_appointment_payload(appointment).except('creation_facility_id')
 end
 
 def build_invalid_appointment_payload
@@ -47,4 +47,9 @@ def updated_appointment_payload(existing_appointment)
     'updated_at' => update_time,
     'status' => updated_status
   )
+end
+
+def updated_appointment_payload_v2(existing_appointment)
+  updated_appointment_payload(existing_appointment)
+    .except('creation_facility_id')
 end

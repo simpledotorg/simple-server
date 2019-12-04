@@ -11,7 +11,7 @@ RSpec.describe Api::Current::AppointmentsController, type: :controller do
 
   let(:model) { Appointment }
 
-  let(:build_payload) { lambda { build_appointment_payload_v2 } }
+  let(:build_payload) { lambda { build_appointment_payload } }
   let(:build_invalid_payload) { lambda { build_invalid_appointment_payload } }
   let(:invalid_record) { build_invalid_payload.call }
   let(:update_payload) { lambda { |appointment| updated_appointment_payload appointment } }
@@ -69,6 +69,18 @@ RSpec.describe Api::Current::AppointmentsController, type: :controller do
           errors = JSON(response.body)['errors']
           errors.each do |error|
             expect(error['schema'].first).to match(/did not contain a required property of 'appointment_type' in schema/)
+          end
+        end
+
+        it 'defaults the creation_facility to the facility_id if creation_facility is not a part of the payload' do
+          records_with_no_creation_facility = (1..3).map { build_payload.call.except(:creation_facility_id) }
+          records_payload_with_no_creation_facility = Hash[request_key, records_with_no_creation_facility]
+
+          post(:sync_from_user, params: records_payload_with_no_creation_facility, as: :json)
+          expect(response).to have_http_status(200)
+
+          Appointment.all.each do |a|
+            expect(a.creation_facility_id).to eq(a.facility_id)
           end
         end
 
@@ -138,7 +150,7 @@ RSpec.describe Api::Current::AppointmentsController, type: :controller do
         get :sync_to_user, params: { limit: 15 }
 
         response_appointments = JSON(response.body)['appointments']
-        response_facilities = response_appointments.map { |appointment| appointment['facility_id']}.to_set
+        response_facilities = response_appointments.map { |appointment| appointment['facility_id'] }.to_set
 
         expect(response_facilities).to match_array([request_facility.id, facility_in_same_group.id])
         expect(response_facilities).not_to include(facility_in_another_group.id)
