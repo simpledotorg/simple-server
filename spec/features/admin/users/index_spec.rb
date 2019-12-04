@@ -18,7 +18,7 @@ RSpec.feature 'Admin User page functionality', type: :feature do
   navigation = Navigations::DashboardPageNavigation.new
 
 
-  context "protocol landing page" do
+  context "Admin User landing page" do
     before(:each) do
       visit root_path
       login_page.do_login(owner.email, owner.password)

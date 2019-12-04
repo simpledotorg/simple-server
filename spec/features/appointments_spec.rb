@@ -78,44 +78,6 @@ RSpec.feature 'Overdue appointments', type: :feature do
         expect(page).not_to have_content(overdue_patient_in_unauthorized_facility.full_name)
       end
 
-      xit 'shows overdue patients ordered by how overdue they are' do
-        first_item = find(:css, '.card:nth-of-type(1)')
-        second_item = find(:css, '.card:nth-of-type(2)')
-
-        expect(first_item).to have_content(overdue_patient_in_facility_1.full_name)
-        expect(second_item).to have_content(overdue_patient_in_facility_2.full_name)
-      end
-
-      xit 'sets a call_result, and removes patient from the overdue list' do
-        within('.card:first-of-type') do
-          find(:option, 'Dead').click
-        end
-
-        page.reset!
-        visit appointments_path
-        expect(page).not_to have_content(overdue_patient_in_facility_1.full_name)
-      end
-
-      xit 'allows you to filter by facility' do
-        select facility_1.name, from: "facility_id"
-        click_button "Filter"
-
-        expect(page).to have_content(overdue_patient_in_facility_1.full_name)
-        expect(page).not_to have_content(overdue_patient_in_facility_2.full_name)
-      end
-
-      xit 'allows you to download the overdue list CSV for a facility' do
-        select facility_1.name, from: "facility_id"
-        click_button "Filter"
-
-        click_link "Download overdue list"
-
-        expect(page).to have_content(Appointment.csv_headers.to_csv.strip)
-
-        appointment = overdue_patient_in_facility_1.appointments.first
-        expect(page).to have_content(appointment.csv_fields.to_csv.strip)
-      end
-
       it 'does not allow you to download the overdue list for all facilities' do
         expect(page).to have_content("Select a facility to download Overdue Patients list")
         expect(page).not_to have_selector("a", text: "Download Overdue List")

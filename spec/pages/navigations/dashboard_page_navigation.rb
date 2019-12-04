@@ -11,12 +11,6 @@ module Navigations
 
     def select_main_menu_tab(option)
       find(:xpath,"//a[contains(text(),'"+option+"')]").click
-      # mainMenuTabs = all_elements(MAIN_MENU_TABS)
-      # mainMenuTabs.each do |tab|
-      #   if tab.text.include? option
-      #     tab.click
-      #   end
-      # end
     end
 
     def validate_owners_home_page
