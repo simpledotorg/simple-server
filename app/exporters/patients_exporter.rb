@@ -17,21 +17,17 @@ module PatientsExporter
     end
   end
 
-  private
-
   def self.csv_headers
     [
-      "Simple Patient ID",
-      "BP Passport ID",
+      "Registration Date",
+      "Registration Quarter",
       "Patient Name",
-      "Patient Gender",
       "Patient Age",
+      "Patient Gender",
+      "Patient Phone Number",
       "Patient Village/Colony",
       "Patient District",
       "Patient State",
-      "Patient Phone Number",
-      "Registration Date",
-      "Registration Quarter",
       "Registration Facility Name",
       "Registration Facility Type",
       "Registration Facility District",
@@ -45,7 +41,9 @@ module PatientsExporter
       "Latest BP Facility District",
       "Latest BP Facility State",
       "Days Overdue",
-      "Risk Level"
+      "Risk Level",
+      "BP Passport ID",
+      "Simple Patient ID"
     ]
   end
 
@@ -55,17 +53,15 @@ module PatientsExporter
     latest_bp_facility = latest_bp&.facility
 
     [
-      patient.id,
-      patient.latest_bp_passport&.shortcode,
+      patient.recorded_at.presence && I18n.l(patient.recorded_at),
+      patient.recorded_at.presence && quarter_string(patient.recorded_at),
       patient.full_name,
-      patient.gender.capitalize,
       patient.current_age,
+      patient.gender.capitalize,
+      patient.phone_numbers.last&.number,
       patient.address.village_or_colony,
       patient.address.district,
       patient.address.state,
-      patient.phone_numbers.last&.number,
-      patient.recorded_at.presence && I18n.l(patient.recorded_at),
-      patient.recorded_at.presence && quarter_string(patient.recorded_at),
       registration_facility&.name,
       registration_facility&.facility_type,
       registration_facility&.district,
@@ -79,7 +75,9 @@ module PatientsExporter
       latest_bp_facility&.district,
       latest_bp_facility&.state,
       patient.latest_scheduled_appointment&.days_overdue,
-      patient.risk_priority_label
+      patient.risk_priority_label,
+      patient.latest_bp_passport&.shortcode,
+      patient.id
     ]
   end
 end
