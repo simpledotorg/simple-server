@@ -85,13 +85,4 @@ JOIN (
     ORDER BY patient_id, scheduled_date DESC
 ) as next_appointment
 ON next_appointment.patient_id = p.id
-JOIN facilities next_appointment_facility ON next_appointment_facility.id = next_appointment.facility_id
-
-WHERE reg_facility.district = {{district}}
-
-ORDER BY (
-    reg_facility.state,
-    reg_facility.district,
-    reg_facility.name,
-    p.recorded_at
-)
+JOIN facilities next_appointment_facility ON next_appointment_facility.id = next_appointment.facility_id;
