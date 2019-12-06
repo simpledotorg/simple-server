@@ -20,8 +20,6 @@ class CohortReport::OrganizationDistrictPolicy < ApplicationPolicy
   end
 
   def patient_list?
-    user_has_any_permissions?(
-      [:download_patient_line_list, nil],
-      [:download_patient_line_list, record.organization])
+    user.user_permissions.where(permission_slug: :download_patient_line_list).present?
   end
 end
