@@ -14,7 +14,12 @@ class PatientListDownloadJob < ApplicationJob
       model_name = model.name
     end
 
-    patients_csv = PatientsExporter.csv(model.registered_patients)
+    patients_csv = PatientsExporter.csv(
+      model
+        .registered_patients
+        .joins(:registration_facility)
+        .order("facilities.state, facilities.district, facilities.name, patients.recorded_at ASC")
+    )
 
     PatientListDownloadMailer.patient_list(recipient_email, model_type, model_name, patients_csv).deliver_later
   end

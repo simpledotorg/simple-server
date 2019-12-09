@@ -257,6 +257,7 @@ ActiveRecord::Schema.define(version: 20191118113108) do
     t.datetime "deleted_at"
     t.uuid "facility_group_id"
     t.string "slug"
+    t.string "zone"
     t.index ["deleted_at"], name: "index_facilities_on_deleted_at"
     t.index ["facility_group_id"], name: "index_facilities_on_facility_group_id"
     t.index ["slug"], name: "index_facilities_on_slug", unique: true

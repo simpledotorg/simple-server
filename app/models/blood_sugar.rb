@@ -17,5 +17,4 @@ class BloodSugar < ApplicationRecord
     post_prandial: 'post_prandial',
     fasting: 'fasting'
   }, _prefix: true
-
 end

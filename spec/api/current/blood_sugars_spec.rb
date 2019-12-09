@@ -15,9 +15,8 @@ describe 'BloodSugars Current API', swagger_doc: 'current/swagger.json' do
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:HTTP_X_FACILITY_ID) { request_facility.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
-
         let(:blood_sugars) { { blood_sugars: (1..3).map { build_blood_sugar_payload } } }
-
+        
         run_test!
       end
 
@@ -30,6 +29,7 @@ describe 'BloodSugars Current API', swagger_doc: 'current/swagger.json' do
 
         schema Api::Current::Schema.sync_from_user_errors
         let(:blood_sugars) { { blood_sugars: (1..3).map { build_invalid_blood_sugar_payload } } }
+
         run_test!
       end
 
@@ -44,7 +44,7 @@ describe 'BloodSugars Current API', swagger_doc: 'current/swagger.json' do
       Api::Current::Schema.sync_to_user_request.each do |param|
         parameter param
       end
-
+      
       before :each do
         Timecop.travel(10.minutes.ago) do
           FactoryBot.create_list(:blood_sugar, 3)

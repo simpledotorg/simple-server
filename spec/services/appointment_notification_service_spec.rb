@@ -14,6 +14,9 @@ RSpec.describe AppointmentNotificationService do
                   scheduled_date: 1.day.ago,
                   status: :scheduled)
     end
+    let!(:patient_1) { create(:patient, reminder_consent: "granted") }
+    let!(:patient_2) { create(:patient, reminder_consent: "denied") }
+    let!(:patients) { [patient_1, patient_2] }
 
     before do
       allow(ENV).to receive(:[]).and_call_original
@@ -91,6 +94,18 @@ RSpec.describe AppointmentNotificationService do
 
       eligible_appointments = overdue_appointments.select { |a| a.communications.present? }
       expect(eligible_appointments.count).to eq(2)
+    end
+
+    it 'should only send reminders to patients who have granted consent' do
+      overdue_appointments = patients.map do |patient|
+        create(:appointment, :overdue, patient: patient)
+      end
+
+      AppointmentNotificationService.new.send_after_missed_visit(schedule_at: Time.current)
+      AppointmentNotification::Worker.drain
+
+      eligible_appointments = overdue_appointments.select { |a| a.communications.present? }
+      expect(eligible_appointments.count).to eq(1)
     end
   end
 end

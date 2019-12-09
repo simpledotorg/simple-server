@@ -13,6 +13,15 @@ class AdminController < ApplicationController
     head :bad_request
   end
 
+  def switch_locale(&action)
+    locale =
+      ENV['DEFAULT_PREFERRED_DASHBOARD_LOCALE'].presence ||
+        http_accept_language.compatible_language_from(I18n.available_locales) ||
+        I18n.default_locale
+
+    I18n.with_locale(locale, &action)
+  end
+
   helper_method :current_admin
 
   private
