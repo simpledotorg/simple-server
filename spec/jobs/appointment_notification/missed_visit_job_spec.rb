@@ -19,16 +19,14 @@ RSpec::describe AppointmentNotification::MissedVisitJob, type: :job do
     allow(@sms_response_double).to receive(:status).and_return('queued')
 
     allow(FeatureToggle).to receive(:enabled?).with('SMS_REMINDERS').and_return(true)
-
-    @appointment_notification_service = double('AppointmentNotificationService')
-    allow(AppointmentNotificationService).to receive(:new).and_return(@appointment_notification_service)
+    allow(ENV).to receive(:[]).with('APPOINTMENT_NOTIFICATION_FAN_OUT_BATCH_SIZE').and_return(250)
   end
 
   it 'should send reminders to enabled organizations in env' do
     enabled_organizations = [ihci, path]
     allow(ENV).to receive(:[]).with('APPOINTMENT_NOTIFICATION_ORG_IDS').and_return(enabled_organizations.map(&:id))
 
-    expect(@appointment_notification_service).to receive(:send_after_missed_visit)
+    expect(AppointmentNotificationService).to receive(:send_after_missed_visit)
                                                      .exactly(enabled_organizations.count).times do |appointments|
       expect(appointments.count).to eq(2)
     end

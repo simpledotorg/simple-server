@@ -12,7 +12,6 @@ class AppointmentNotification::MissedVisitJob
                          .where(facility: { facility_groups: { organization: organization } })
 
       AppointmentNotificationService
-          .new()
           .send_after_missed_visit(appointments: appointments,
                                    schedule_at: schedule_now_or_tomorrow(schedule_hour_start, schedule_hour_finish))
     end
