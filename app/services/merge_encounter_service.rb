@@ -19,13 +19,16 @@ class MergeEncounterService
   attr_reader :payload, :facility, :user, :timezone_offset
 
   def add_observations(encounter, observation_params)
-    {
-      :blood_pressures =>
-        observation_params[:blood_pressures].map do |params|
-          blood_pressure = BloodPressure.merge(params)
-          blood_pressure.find_or_update_observation!(encounter, user)
-          blood_pressure
-        end
-    }
+    n = [:blood_pressures, :blood_sugars].map do |key|
+      next nil if observation_params[key].blank?
+
+      observations = observation_params[key].map do |params|
+        record = key.to_s.classify.constantize.merge(params)
+        record.find_or_update_observation!(encounter, user)
+        record
+      end
+      [key, observations]
+    end
+    n.compact.to_h
   end
 end

@@ -1,5 +1,6 @@
 class BloodSugar < ApplicationRecord
   include Mergeable
+  include Observeable
 
   belongs_to :patient, optional: true
   belongs_to :user, optional: true
