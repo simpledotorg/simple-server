@@ -1,5 +1,6 @@
 class Api::Current::BloodSugarsController < Api::Current::SyncController
   include Api::Current::PrioritisableByFacility
+  include Api::Current::SyncEncounter
 
   def sync_from_user
     __sync_from_user__(blood_sugars_params)
@@ -29,8 +30,7 @@ class Api::Current::BloodSugarsController < Api::Current::SyncController
 
         if FeatureToggle.enabled?('SYNC_ENCOUNTERS')
           # this will always return a single blood_sugar
-          a = add_encounter_and_merge_record(transformed_params)
-          a[:observations][:blood_sugars][0]
+          add_encounter_and_merge_record(:blood_sugars, transformed_params)[:observations][:blood_sugars][0]
         else
           BloodSugar.merge(transformed_params)
         end
@@ -56,24 +56,7 @@ class Api::Current::BloodSugarsController < Api::Current::SyncController
     end
   end
 
-  def add_encounter_and_merge_record(params)
-    encountered_on = Encounter.generate_encountered_on(params[:recorded_at], current_timezone_offset)
 
-    encounter_merge_params = {
-      id: Encounter.generate_id(params[:facility_id], params[:patient_id], encountered_on),
-      patient_id: params[:patient_id],
-      device_created_at: params[:device_created_at],
-      device_updated_at: params[:device_updated_at],
-      encountered_on: encountered_on,
-      timezone_offset: current_timezone_offset,
-      facility_id: params[:facility_id],
-      observations: {
-        blood_sugars: [params]
-      }
-    }.with_indifferent_access
-
-    MergeEncounterService.new(encounter_merge_params, current_facility, current_user, current_timezone_offset).merge
-  end
 
   def set_patient_recorded_at(params)
     # We don't set the patient recorded if retroactive data-entry is supported by the app
