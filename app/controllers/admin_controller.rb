@@ -24,8 +24,8 @@ class AdminController < ApplicationController
   end
 
   def root
-    redirect_to default_root_paths.find { |feature, _|
-      DashboardPolicy.new(pundit_user, :dashboard).send(feature) }.second
+    redirect_to default_root_paths.find { |policy, _path|
+      DashboardPolicy.new(pundit_user, :dashboard).send(policy) }.second
   end
 
   helper_method :current_admin
