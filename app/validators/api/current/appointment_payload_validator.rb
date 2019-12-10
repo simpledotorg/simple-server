@@ -4,6 +4,7 @@ class Api::Current::AppointmentPayloadValidator < Api::Current::PayloadValidator
     :id,
     :patient_id,
     :facility_id,
+    :creation_facility_id,
     :scheduled_date,
     :status,
     :cancel_reason,

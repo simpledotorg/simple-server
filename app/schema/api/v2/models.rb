@@ -30,6 +30,7 @@ class Api::V2::Models < Api::Current::Models
     def appointment
       super
         .tap { |d| d[:properties].delete(:appointment_type) }
+        .tap { |d| d[:properties].delete(:creation_facility_id) }
         .tap { |d| d[:required] -= %w(appointment_type) }
     end
 
