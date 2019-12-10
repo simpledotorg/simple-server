@@ -76,6 +76,13 @@ RSpec.describe PatientsExporter do
     it "generates a blank CSV (only headers) if no patients exist" do
       expect(subject.csv(Patient.none)).to eq(headers.to_csv)
     end
+
+    it "uses fetches patients in batches" do
+      expect_any_instance_of(facility.registered_patients.class)
+        .to receive(:in_batches).and_return([[patient]])
+
+      subject.csv(facility.registered_patients)
+    end
   end
 end
 

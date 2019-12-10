@@ -17,7 +17,7 @@ describe 'Appointment V2 API', swagger_doc: 'v2/swagger.json' do
         let(:HTTP_X_FACILITY_ID) { request_facility.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
-        let(:appointments) { { appointments: (1..3).map { build_appointment_payload } } }
+        let(:appointments) { { appointments: (1..3).map { build_appointment_payload_v2 } } }
 
         run_test!
       end
