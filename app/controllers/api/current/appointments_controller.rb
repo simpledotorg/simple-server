@@ -41,6 +41,7 @@ class Api::Current::AppointmentsController < Api::Current::SyncController
         :id,
         :patient_id,
         :facility_id,
+        :creation_facility_id,
         :scheduled_date,
         :status,
         :cancel_reason,
