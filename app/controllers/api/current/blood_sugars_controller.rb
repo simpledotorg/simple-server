@@ -1,6 +1,7 @@
 class Api::Current::BloodSugarsController < Api::Current::SyncController
   include Api::Current::PrioritisableByFacility
   include Api::Current::SyncEncounterObservation
+  include Api::Current::RetroactiveDataEntry
 
   def sync_from_user
     __sync_from_user__(blood_sugars_params)

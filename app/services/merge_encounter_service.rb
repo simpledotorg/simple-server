@@ -1,7 +1,8 @@
 class MergeEncounterService
-  def initialize(payload, facility, user, timezone_offset)
+  OBSERVATION_NAMES = [:blood_pressures, :blood_sugars].freeze
+
+  def initialize(payload, user, timezone_offset)
     @payload = payload
-    @facility = facility
     @user = user
     @timezone_offset = timezone_offset
   end
@@ -16,10 +17,10 @@ class MergeEncounterService
 
   private
 
-  attr_reader :payload, :facility, :user, :timezone_offset
+  attr_reader :payload, :user, :timezone_offset
 
   def add_observations(encounter, observation_params)
-    n = [:blood_pressures, :blood_sugars].map do |key|
+    OBSERVATION_NAMES.map do |key|
       next nil if observation_params[key].blank?
 
       observations = observation_params[key].map do |params|
@@ -28,7 +29,6 @@ class MergeEncounterService
         record
       end
       [key, observations]
-    end
-    n.compact.to_h
+    end.compact.to_h
   end
 end

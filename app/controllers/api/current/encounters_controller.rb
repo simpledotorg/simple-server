@@ -25,9 +25,8 @@ class Api::Current::EncountersController < Api::Current::SyncController
   private
 
   def encounter_facility_id(encounter_params)
-    if encounter_params['observations'].values.flatten.empty?
-      return current_facility.id
-    end
+    return current_facility.id if encounter_params['observations'].values.flatten.empty?
+
     encounter_params['observations'].values.flatten.first[:facility_id]
   end
 
@@ -40,7 +39,6 @@ class Api::Current::EncountersController < Api::Current::SyncController
     else
       transformed_params = Api::Current::EncounterTransformer.from_nested_request(encounter_params).merge(facility_id: encounter_facility_id(encounter_params))
       { record: MergeEncounterService.new(transformed_params,
-                                          current_facility,
                                           current_user,
                                           current_timezone_offset).merge[:encounter] }
     end
