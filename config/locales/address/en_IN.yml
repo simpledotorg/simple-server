@@ -1,0 +1,10 @@
+en_IN:
+  helpers:
+    label:
+      facility:
+        name: "Name"
+        facility_type: "Facility Type"
+        street_address: "House Number and Street"
+        village_or_colony: "Colony, Village or Ward"
+        district: "District"
+        state: "State"

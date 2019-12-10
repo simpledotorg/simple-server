@@ -2094,6 +2094,9 @@
         "facility_id": {
           "$ref": "#/definitions/uuid"
         },
+        "creation_facility_id": {
+          "$ref": "#/definitions/uuid"
+        },
         "scheduled_date": {
           "type": "string",
           "format": "date"
