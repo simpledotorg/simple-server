@@ -7,9 +7,13 @@ class AppointmentNotification::MissedVisitJob
   def perform(schedule_hour_start, schedule_hour_finish)
     return unless FeatureToggle.enabled?('SMS_REMINDERS')
 
-    AppointmentNotificationService
-      .new
-      .send_after_missed_visit(schedule_at:
-                                 schedule_today_or_tomorrow(schedule_hour_start, schedule_hour_finish))
+    Organization.where(id: ENV['APPOINTMENT_NOTIFICATION_ORG_IDS'].split(',')).each do |organization|
+      appointments = Appointment.includes(patient: [:phone_numbers], facility: { facility_group: :organization })
+                         .where(facility: { facility_groups: { organization: organization } })
+
+      AppointmentNotificationService
+          .send_after_missed_visit(appointments: appointments,
+                                   schedule_at: schedule_today_or_tomorrow(schedule_hour_start, schedule_hour_finish))
+    end
   end
 end
