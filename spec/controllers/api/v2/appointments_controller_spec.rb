@@ -3,18 +3,18 @@ require 'rails_helper'
 RSpec.describe Api::V2::AppointmentsController, type: :controller do
   let(:request_user) { FactoryBot.create(:user) }
   let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
+
   before :each do
-    request.env['X_USER_ID'] = request_user.id
-    request.env['X_FACILITY_ID'] = request_facility.id
+    request.env['HTTP_X_USER_ID'] = request_user.id
+    request.env['HTTP_X_FACILITY_ID'] = request_facility.id
     request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
   end
 
   let(:model) { Appointment }
-
-  let(:build_payload) { lambda { build_appointment_payload } }
+  let(:build_payload) { lambda { build_appointment_payload_v2 } }
   let(:build_invalid_payload) { lambda { build_invalid_appointment_payload } }
   let(:invalid_record) { build_invalid_payload.call }
-  let(:update_payload) { lambda { |appointment| updated_appointment_payload appointment } }
+  let(:update_payload) { lambda { |appointment| updated_appointment_payload_v2(appointment) } }
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
   def create_record(options = {})
@@ -33,13 +33,29 @@ RSpec.describe Api::V2::AppointmentsController, type: :controller do
 
   describe 'POST sync: send data from device to server;' do
     it_behaves_like 'a working sync controller creating records'
-    it_behaves_like 'a working sync controller updating records'
 
-    context 'appointment_type' do
-      before :each do
-        set_authentication_headers
+    context 'updates records' do
+      let(:request_key) { model.to_s.underscore.pluralize }
+      let(:existing_appointments) { FactoryBot.create_list(:appointment, 3) }
+      let(:updated_appointments_payload) do
+        existing_appointments.map { |appointment| updated_appointment_payload_v2(appointment) }
       end
 
+      it 'with only updated appointment attributes' do
+        post :sync_from_user, params: Hash[request_key, updated_appointments_payload], as: :json
+
+        expect(response).to have_http_status(200)
+
+        updated_appointments_payload.each do |updated_appointment|
+          db_appointment = Appointment.find(updated_appointment['id'])
+          expect(db_appointment.attributes.with_payload_keys.with_int_timestamps
+                   .except('creation_facility_id'))
+            .to eq(updated_appointment.with_int_timestamps)
+        end
+      end
+    end
+
+    context 'appointment_type' do
       describe 'Appointments without appointment_type are compatible with v2' do
         let(:request_key) { model.to_s.underscore.pluralize }
 
@@ -96,7 +112,6 @@ RSpec.describe Api::V2::AppointmentsController, type: :controller do
         FactoryBot.create_list(:appointment, 2, facility: request_facility, updated_at: 10.minutes.ago)
 
         # GET request 1
-        set_authentication_headers
         get :sync_to_user, params: { limit: 4 }
         response_1_body = JSON(response.body)
 
@@ -121,7 +136,6 @@ RSpec.describe Api::V2::AppointmentsController, type: :controller do
       let(:facility_in_another_group) { FactoryBot.create(:facility) }
 
       before :each do
-        set_authentication_headers
         FactoryBot.create_list(:appointment, 2, facility: facility_in_another_group, updated_at: 3.minutes.ago)
         FactoryBot.create_list(:appointment, 2, facility: facility_in_same_group, updated_at: 5.minutes.ago)
         FactoryBot.create_list(:appointment, 2, facility: request_facility, updated_at: 7.minutes.ago)
@@ -131,7 +145,7 @@ RSpec.describe Api::V2::AppointmentsController, type: :controller do
         get :sync_to_user, params: { limit: 15 }
 
         response_appointments = JSON(response.body)['appointments']
-        response_facilities = response_appointments.map { |appointment| appointment['facility_id']}.to_set
+        response_facilities = response_appointments.map { |appointment| appointment['facility_id'] }.to_set
 
         expect(response_appointments.count).to eq 4
         expect(response_facilities).to match_array([request_facility.id, facility_in_same_group.id])
