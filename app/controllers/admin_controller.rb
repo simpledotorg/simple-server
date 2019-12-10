@@ -1,6 +1,7 @@
 class AdminController < ApplicationController
   before_action :authenticate_email_authentication!
-  after_action :verify_authorized
+
+  after_action :verify_authorized, except: [:root]
   after_action :verify_policy_scoped, only: :index
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
@@ -22,9 +23,25 @@ class AdminController < ApplicationController
     I18n.with_locale(locale, &action)
   end
 
+  def root
+    redirect_to default_root_paths.find { |feature, _|
+      DashboardPolicy.new(pundit_user, :dashboard).send(feature) }.second
+  end
+
   helper_method :current_admin
 
   private
+
+  def default_root_paths
+    { :show? => organizations_path,
+      :adherence_follow_up? => patients_path,
+      :overdue_list? => appointments_path,
+      :manage_organizations? => admin_organizations_path,
+      :manage_facilities? => admin_facilities_path,
+      :manage_protocols? => admin_protocols_path,
+      :manage_admins? => admins_path,
+      :manage_users? => admin_users_path }
+  end
 
   def current_admin
     current_email_authentication.user
