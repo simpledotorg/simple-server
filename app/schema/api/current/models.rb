@@ -186,6 +186,12 @@ class Api::Current::Models
           facility_type: { type: :string },
           facility_group_id: { '$ref' => '#/definitions/uuid' },
           protocol_id: { '$ref' => '#/definitions/uuid' },
+          config: {
+            type: :object,
+            properties: {
+              enable_diabetes_management: { type: :boolean } }
+          },
+          required: %w[enable_diabetes_management]
         },
         required: %w[id name district state country facility_group_id protocol_id]
       }

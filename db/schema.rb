@@ -259,7 +259,7 @@ ActiveRecord::Schema.define(version: 20191210131121) do
     t.uuid "facility_group_id"
     t.string "slug"
     t.string "zone"
-    t.boolean "enable_diabetes_management", default: false
+    t.boolean "enable_diabetes_management", default: false, null: false
     t.index ["deleted_at"], name: "index_facilities_on_deleted_at"
     t.index ["enable_diabetes_management"], name: "index_facilities_on_enable_diabetes_management"
     t.index ["facility_group_id"], name: "index_facilities_on_facility_group_id"

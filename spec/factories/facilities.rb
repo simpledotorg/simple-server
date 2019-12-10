@@ -15,5 +15,6 @@ FactoryBot.define do
     zone "Block ABC"
     facility_type "PHC"
     facility_group { fac_group }
+    enable_diabetes_management { true }
   end
 end
