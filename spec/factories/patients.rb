@@ -25,6 +25,10 @@ FactoryBot.define do
     business_identifiers { build_list(:patient_business_identifier, 1, patient_id: id) }
     reminder_consent { Patient.reminder_consents[:granted] }
 
+    trait :denied do
+      reminder_consent { Patient.reminder_consents[:denied] }
+    end
+
     trait(:with_sanitized_phone_number) do
       phone_numbers { build_list(:patient_phone_number, 1, patient_id: id, number: '9876543210') }
     end
