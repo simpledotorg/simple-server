@@ -3,7 +3,7 @@
   <nav class="page-nav">
     <% if FeatureToggle.enabled?("INVITE_ADMINS") %>
       <div class="dropdown">
-        <%= link_to "Add new admin",
+        <%= link_to "Add new Admin",
                     new_email_authentication_invitation_path,
                     class: "btn btn-sm btn-primary" %>
       </div>
