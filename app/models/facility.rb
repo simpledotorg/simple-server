@@ -51,8 +51,11 @@ class Facility < ApplicationRecord
     query.patient_counts_by_period(period, prev_periods)
   end
 
-  def dashboard_analytics(period: :month, prev_periods: 3)
-    query = FacilityAnalyticsQuery.new(self, period, prev_periods)
+  def dashboard_analytics(period: :month, prev_periods: 3, include_current_period: false)
+    query = FacilityAnalyticsQuery.new(self,
+                                       period,
+                                       prev_periods,
+                                       include_current_period: include_current_period)
 
     results = [
       query.registered_patients_by_period,

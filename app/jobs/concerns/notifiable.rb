@@ -1,12 +1,17 @@
 module Notifiable
-  def schedule_now_or_tomorrow(start, finish)
+  def schedule_today_or_tomorrow(start, finish)
     now = DateTime
             .now
             .in_time_zone(ENV.fetch('DEFAULT_TIME_ZONE'))
 
-    now_within_time_window?(now, start, finish) ?
-      now :
+    case
+    when now_within_time_window?(now, start, finish)
+      now
+    when now.hour <= start
+      now.change(hour: start)
+    else
       now.change(hour: start) + 1.day
+    end
   end
 
   def now_within_time_window?(now, start, finish)

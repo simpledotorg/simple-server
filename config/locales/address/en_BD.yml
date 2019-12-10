@@ -1,0 +1,11 @@
+en_BD:
+  helpers:
+    label:
+      facility:
+        name: "Name"
+        facility_type: "Facility Type"
+        street_address: "House and road number"
+        village_or_colony: "Village or Ward"
+        zone: "Union"
+        district: "Upazila"
+        state: "District"

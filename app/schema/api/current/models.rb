@@ -150,6 +150,23 @@ class Api::Current::Models
       }
     end
 
+    def blood_sugar
+      { type: :object,
+        properties: {
+          id: { '$ref' => '#/definitions/uuid' },
+          blood_sugar_type: { type: :string, enum: BloodSugar.blood_sugar_types.keys },
+          blood_sugar_value: { type: :integer },
+          deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
+          created_at: { '$ref' => '#/definitions/timestamp' },
+          updated_at: { '$ref' => '#/definitions/timestamp' },
+          recorded_at: { '$ref' => '#/definitions/timestamp' },
+          patient_id: { '$ref' => '#/definitions/uuid' },
+          facility_id: { '$ref' => '#/definitions/uuid' },
+          user_id: { '$ref' => '#/definitions/uuid' } },
+        required: %w[id blood_sugar_type blood_sugar_value created_at updated_at patient_id facility_id user_id]
+      }
+    end
+
     def facility
       {
         type: :object,
@@ -162,6 +179,7 @@ class Api::Current::Models
           street_address: { type: :string },
           village_or_colony: { type: :string },
           district: { '$ref' => '#/definitions/non_empty_string' },
+          zone: { type: [:string, 'null'] },
           state: { '$ref' => '#/definitions/non_empty_string' },
           country: { '$ref' => '#/definitions/non_empty_string' },
           pin: { type: :string },
@@ -341,6 +359,8 @@ class Api::Current::Models
         medical_histories: array_of('medical_history'),
         patient_business_identifier: patient_business_identifier,
         patient_business_identifiers: array_of('patient_business_identifier'),
+        blood_sugar: blood_sugar,
+        blood_sugars: array_of('blood_sugar')
       }
     end
   end
