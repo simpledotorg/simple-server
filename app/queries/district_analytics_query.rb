@@ -33,7 +33,8 @@ class DistrictAnalyticsQuery
       Patient
         .joins(:registration_facility)
         .where(facilities: { id: facilities })
-        .group('facilities.id', date_truncate_sql('patients', 'recorded_at', @period))
+        .group('facilities.id')
+        .group_by_period(@period, :recorded_at)
         .count
 
     group_by_facility_and_date(@registered_patients_by_period, :registered_patients_by_period)
@@ -68,7 +69,8 @@ class DistrictAnalyticsQuery
         .joins('INNER JOIN phone_number_authentications ON phone_number_authentications.phone_number = call_logs.caller_phone_number')
         .joins('INNER JOIN facilities ON facilities.id = phone_number_authentications.registration_facility_id')
         .where(phone_number_authentications: { registration_facility_id: facilities })
-        .group('facilities.id::uuid', date_truncate_sql('call_logs', 'end_time', @period))
+        .group('facilities.id::uuid')
+        .group_by_period(@period, :end_time)
         .count
 
     group_by_facility_and_date(@total_calls_made_by_period, :total_calls_made_by_period)

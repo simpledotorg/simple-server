@@ -28,7 +28,8 @@ class FacilityAnalyticsQuery
     @registered_patients_by_period ||=
       @facility
         .registered_patients
-        .group('registration_user_id', date_truncate_sql('patients', 'recorded_at', @period))
+        .group('registration_user_id')
+        .group_by_period(@period, :recorded_at)
         .distinct('patients.id')
         .count
 
@@ -66,7 +67,8 @@ class FacilityAnalyticsQuery
         .joins('INNER JOIN facilities ON facilities.id = phone_number_authentications.registration_facility_id')
         .joins('INNER JOIN user_authentications ON user_authentications.authenticatable_id = phone_number_authentications.id')
         .where(phone_number_authentications: { registration_facility_id: @facility.id })
-        .group('user_authentications.user_id::uuid', date_truncate_sql('call_logs', 'end_time', @period))
+        .group('user_authentications.user_id::uuid')
+        .group_by_period(@period, :end_time)
         .count
 
     group_by_user_and_date(@total_calls_made_by_period, :total_calls_made_by_period)
