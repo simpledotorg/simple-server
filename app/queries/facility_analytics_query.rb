@@ -55,7 +55,7 @@ class FacilityAnalyticsQuery
         .where(facility: @facility)
         .where(deleted_at: nil)
         .group('master_users.id')
-        .group_by_period(@period, :recorded_at)
+        .group_by_period(@period, 'blood_pressures.recorded_at')
         .where("patients.recorded_at < #{date_truncate_string}")
         .order('master_users.id')
         .distinct
