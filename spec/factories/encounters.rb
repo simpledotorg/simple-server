@@ -16,6 +16,7 @@ FactoryBot.define do
                             user: observable.user)] }
       facility { observable.facility }
       patient { observable.patient }
+      encountered_on { observable.recorded_at.to_date }
     end
 
     encountered_on "2019-09-11"

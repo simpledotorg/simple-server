@@ -103,6 +103,7 @@ RSpec.describe Api::Current::BloodSugarsController, type: :controller do
           expect(patient.recorded_at.to_i).to eq(patient_recorded_at.to_i)
         end
       end
+
       context 'creates encounters' do
         it 'assumes the same encounter for the blood_sugars recorded on the same day' do
           patient = FactoryBot.create(:patient)
@@ -185,6 +186,30 @@ RSpec.describe Api::Current::BloodSugarsController, type: :controller do
           }.to change { Encounter.count }.by(3)
           expect(response).to have_http_status(200)
           expect(Encounter.all.flat_map(&:blood_sugars).count).to eq(range_of_possible_observations.count * 3)
+        end
+      end
+
+      context 'existing encounter' do
+        let!(:blood_pressure) { create(:blood_pressure) }
+        let!(:encounter_id) { Encounter.generate_id(blood_pressure.facility_id, blood_pressure.patient_id, blood_pressure.recorded_at.to_date)}
+        let!(:encounter) { create(:encounter, :with_observables, id: encounter_id, observable: blood_pressure) }
+        let!(:blood_sugar_payload) do
+          build_blood_sugar_payload(
+            build(:blood_sugar,
+                  patient: blood_pressure.patient,
+                  facility: blood_pressure.facility,
+                  recorded_at: blood_pressure.recorded_at
+            ))
+        end
+
+        it 'adds the blood sugar to an existing encounter' do
+          expect {
+            post(:sync_from_user, params: { blood_sugars: [blood_sugar_payload] }, as: :json)
+          }.not_to change { Encounter.count }
+
+          encounter.reload
+
+          expect(encounter.blood_sugars.first.id).to eq(blood_sugar_payload[:id])
         end
       end
     end

@@ -233,6 +233,31 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
           expect(Encounter.all.flat_map(&:blood_pressures).count).to eq(range_of_possible_observations.count * 3)
         end
       end
+
+      context 'existing encounter' do
+        let!(:blood_sugar) { create(:blood_sugar) }
+        let!(:encounter_id) { Encounter.generate_id(blood_sugar.facility_id, blood_sugar.patient_id, blood_sugar.recorded_at.to_date)}
+        let!(:encounter) { create(:encounter, :with_observables, id: encounter_id, observable: blood_sugar) }
+        let!(:blood_pressure_payload) do
+          build_blood_pressure_payload(
+            build(:blood_pressure,
+                  patient: blood_sugar.patient,
+                  facility: blood_sugar.facility,
+                  recorded_at: blood_sugar.recorded_at
+            ))
+        end
+
+        it 'adds the blood sugar to an existing encounter' do
+          expect {
+            post(:sync_from_user, params: { blood_pressures: [blood_pressure_payload] }, as: :json)
+          }.not_to change { Encounter.count }
+
+          encounter.reload
+
+          expect(encounter.blood_pressures.first.id).to eq(blood_pressure_payload[:id])
+        end
+
+      end
     end
   end
 
