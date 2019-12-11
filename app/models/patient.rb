@@ -79,7 +79,7 @@ class Patient < ApplicationRecord
   end
 
   def latest_mobile_number
-    phone_numbers.where(phone_type: 'mobile').last&.number
+    phone_numbers.mobiles.last&.number
   end
 
   def latest_bp_passport
