@@ -1,6 +1,6 @@
 SELECT
 p.recorded_at,
-CONCAT(date_part('year', p.recorded_at), ' Q', EXTRACT(QUARTER FROM p.recorded_at)) AS quarter,
+CONCAT(date_part('year', p.recorded_at), ' Q', EXTRACT(QUARTER FROM p.recorded_at)) AS registration_quarter,
 p.full_name,
 (
     CASE
@@ -9,7 +9,7 @@ p.full_name,
     END
 ) AS current_age,
 p.gender,
-latest_phone_number.number,
+latest_phone_number.number AS latest_phone_number,
 addresses.village_or_colony,
 addresses.district,
 addresses.state,
@@ -35,14 +35,14 @@ next_appointment_facility.state AS next_appointment_state,
 (
     CASE
       WHEN (latest_bp.systolic >= 180 OR latest_bp.diastolic >= 110) THEN 0
-      WHEN mh.prior_heart_attack = 'yes'
-        OR mh.prior_stroke = 'yes'
-        OR mh.diabetes = 'yes'
-        OR mh.chronic_kidney_disease = 'yes'
-        THEN 1
+      WHEN (mh.prior_heart_attack = 'yes'
+         OR mh.prior_stroke = 'yes'
+         OR mh.diabetes = 'yes'
+         OR mh.chronic_kidney_disease = 'yes'
+      ) THEN 1
       WHEN (latest_bp.systolic BETWEEN 160 AND 179) OR (latest_bp.diastolic BETWEEN 100 AND 109) THEN 2
       WHEN (latest_bp.systolic BETWEEN 140 AND 159) OR (latest_bp.diastolic BETWEEN 90 AND 99) THEN 3
-      WHEN (latest_bp.systolic <= 140 AND latest_bp.diastolic <= 90) THEN 4
+      WHEN (latest_bp.systolic < 140 AND latest_bp.diastolic < 90) THEN 4
       ELSE 5
     END
 ) AS risk_level,

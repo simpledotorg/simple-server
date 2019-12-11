@@ -707,14 +707,14 @@ ActiveRecord::Schema.define(version: 20191206165546) do
   SQL
   create_view "patient_summaries", sql_definition: <<-SQL
       SELECT p.recorded_at,
-      concat(date_part('year'::text, p.recorded_at), ' Q', date_part('quarter'::text, p.recorded_at)) AS quarter,
+      concat(date_part('year'::text, p.recorded_at), ' Q', date_part('quarter'::text, p.recorded_at)) AS registration_quarter,
       p.full_name,
           CASE
               WHEN (p.date_of_birth IS NOT NULL) THEN date_part('year'::text, age((p.date_of_birth)::timestamp with time zone))
               ELSE (((p.age)::double precision + date_part('year'::text, now())) - date_part('year'::text, p.age_updated_at))
           END AS current_age,
       p.gender,
-      latest_phone_number.number,
+      latest_phone_number.number AS latest_phone_number,
       addresses.village_or_colony,
       addresses.district,
       addresses.state,
