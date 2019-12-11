@@ -1,4 +1,4 @@
-class PatientLineList < ActiveRecord::Base
+class PatientSummary < ActiveRecord::Base
   self.primary_key = :id
 
   def readonly?

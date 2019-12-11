@@ -705,7 +705,7 @@ ActiveRecord::Schema.define(version: 20191206165546) do
       users
     WHERE ((blood_pressures.patient_id = patients.id) AND (blood_pressures.facility_id = facilities.id) AND (blood_pressures.user_id = users.id));
   SQL
-  create_view "patient_line_lists", sql_definition: <<-SQL
+  create_view "patient_summaries", sql_definition: <<-SQL
       SELECT p.recorded_at,
       concat(date_part('year'::text, p.recorded_at), ' Q', date_part('quarter'::text, p.recorded_at)) AS quarter,
       p.full_name,
