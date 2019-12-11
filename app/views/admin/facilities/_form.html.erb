@@ -12,8 +12,7 @@
       <%= form.text_field :pin, id: :facility_pin %>
       <%= form.text_field :latitude, id: :facility_latitude %>
       <%= form.text_field :longitude, id: :facility_longitude %>
-      <%= form.check_box :enable_diabetes_management, id: :facility_enable_diabetes_management %>
-
+      <%= form.check_box :enable_diabetes_management, id: :facility_enable_diabetes_management, wrapper_class: 'pad-bottom' %>
       <%= form.primary %>
     <% end %>
   </div>
