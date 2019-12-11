@@ -1,17 +1,7 @@
 Rails.application.routes.draw do
   devise_scope :email_authentication do
-    { :show? => "organizations#index",
-      :adherence_follow_up? => "patients#index",
-      :overdue_list? => "appointments#index",
-      :manage_organizations? => "admin/organizations#index",
-      :manage_facilities? => "admin/facilities#index",
-      :manage_protocols? => "admin/protocols#index",
-      :manage_admins? => "admins#index",
-      :manage_users? => "admin/users#index"
-    }.each do |feature, controller|
-      authenticated :email_authentication, -> (a) { DashboardPolicy.new(a.user, :dashboard).send(feature) } do
-        root to: controller
-      end
+    authenticated :email_authentication do
+      root to: "admin#root"
     end
 
     unauthenticated :email_authentication do
@@ -74,13 +64,11 @@ Rails.application.routes.draw do
       get 'ping', to: 'pings#show'
       post 'login', to: 'logins#login_user'
 
-      if FeatureToggle.enabled?('PHONE_NUMBER_MASKING')
-        # Exotel requires all endpoints to be GET
-        scope :exotel_call_sessions do
-          get 'fetch', to: 'exotel_call_sessions#fetch'
-          get 'create', to: 'exotel_call_sessions#create'
-          get 'terminate', to: 'exotel_call_sessions#terminate'
-        end
+      # Exotel requires all endpoints to be GET
+      scope :exotel_call_sessions do
+        get 'fetch', to: 'exotel_call_sessions#fetch'
+        get 'create', to: 'exotel_call_sessions#create'
+        get 'terminate', to: 'exotel_call_sessions#terminate'
       end
 
       scope :users do
@@ -99,62 +87,54 @@ Rails.application.routes.draw do
 
       resource :help, only: [:show], controller: "help"
 
-      if FeatureToggle.enabled?('USER_ANALYTICS')
-        namespace :analytics do
-          resource :user_analytics, only: [:show]
-        end
+      namespace :analytics do
+        resource :user_analytics, only: [:show]
       end
     end
 
-    if FeatureToggle.enabled?('API_V3')
-      namespace :current, path: 'v3' do
-        get 'ping', to: 'pings#show'
-        post 'login', to: 'logins#login_user'
+    namespace :current, path: 'v3' do
+      get 'ping', to: 'pings#show'
+      post 'login', to: 'logins#login_user'
 
-        if FeatureToggle.enabled?('PHONE_NUMBER_MASKING')
-          # Exotel requires all endpoints to be GET
-          scope :exotel_call_sessions do
-            get 'fetch', to: 'exotel_call_sessions#fetch'
-            get 'create', to: 'exotel_call_sessions#create'
-            get 'terminate', to: 'exotel_call_sessions#terminate'
-          end
+      # Exotel requires all endpoints to be GET
+      scope :exotel_call_sessions do
+        get 'fetch', to: 'exotel_call_sessions#fetch'
+        get 'create', to: 'exotel_call_sessions#create'
+        get 'terminate', to: 'exotel_call_sessions#terminate'
+      end
+
+      resource :twilio_sms_delivery, only: [:create], controller: :twilio_sms_delivery
+
+      scope :users do
+        get 'find', to: 'users#find'
+        post 'register', to: 'users#register'
+        post '/:id/request_otp', to: 'users#request_otp'
+        post '/me/reset_password', to: 'users#reset_password'
+      end
+
+      concerns :sync_routes
+
+      scope '/encounters' do
+        get 'sync', to: 'encounters#sync_to_user'
+        post 'sync', to: 'encounters#sync_from_user'
+
+        if FeatureToggle.enabled?('GENERATE_ENCOUNTER_ID_ENDPOINT')
+          get 'generate_id', to: 'encounters#generate_id'
         end
+      end
 
-        if FeatureToggle.enabled?('SMS_REMINDERS')
-          resource :twilio_sms_delivery, only: [:create], controller: :twilio_sms_delivery
-        end
+      resource :help, only: [:show], controller: "help"
 
-        scope :users do
-          get 'find', to: 'users#find'
-          post 'register', to: 'users#register'
-          post '/:id/request_otp', to: 'users#request_otp'
-          post '/me/reset_password', to: 'users#reset_password'
-        end
-
-        concerns :sync_routes
-
-        scope '/encounters' do
-          get 'sync', to: 'encounters#sync_to_user'
-          post 'sync', to: 'encounters#sync_from_user'
-
-          if FeatureToggle.enabled?('GENERATE_ENCOUNTER_ID_ENDPOINT')
-            get 'generate_id', to: 'encounters#generate_id'
-          end
-        end
-
-        resource :help, only: [:show], controller: "help"
-
-        if FeatureToggle.enabled?('USER_ANALYTICS')
-          namespace :analytics do
-            resource :user_analytics, only: [:show]
-          end
-        end
+      namespace :analytics do
+        resource :user_analytics, only: [:show]
       end
     end
   end
 
-  # devise_for :email_authentications, controllers: { invitations: 'email_authentications/invitations' }
-  devise_for :email_authentications, path: 'email_authentications', controllers: { invitations: 'email_authentications/invitations' }
+  devise_for :email_authentications,
+             path: 'email_authentications',
+             controllers: { invitations: 'email_authentications/invitations' }
+
   resources :admins
 
   namespace :analytics do
@@ -173,12 +153,9 @@ Rails.application.routes.draw do
     end
   end
 
-  if FeatureToggle.enabled?('PATIENT_FOLLOWUPS')
-    resources :appointments, only: [:index, :update]
-    resources :patients, only: [:index, :update]
-  end
-
-  get "admin", to: redirect("/")
+  resources :appointments, only: [:index, :update]
+  resources :patients, only: [:index, :update]
+  resources :organizations, only: [:index], path: 'dashboard'
 
   namespace :admin do
     resources :organizations
@@ -210,7 +187,7 @@ Rails.application.routes.draw do
     end
   end
 
-  authenticate :email_authentication, -> (a) { a.user.has_permission?(:view_sidekiq_ui)} do
+  authenticate :email_authentication, -> (a) { a.user.has_permission?(:view_sidekiq_ui) } do
     require 'sidekiq/web'
     mount Sidekiq::Web => '/sidekiq'
   end
