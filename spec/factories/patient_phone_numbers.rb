@@ -8,15 +8,6 @@ FactoryBot.define do
     device_updated_at { Time.current }
     dnd_status { true }
     patient
-
-    trait :landline do
-      phone_type { 'landline' }
-    end
-
-    trait :invalid do
-      phone_type { 'invalid' }
-    end
-
   end
 end
 

@@ -78,8 +78,8 @@ RSpec.describe AppointmentNotificationService do
     end
 
     context 'when a patient has just landline or invalid numbers' do
-      let!(:landline_number) { create(:patient_phone_number, :landline) }
-      let!(:invalid_number)  { create(:patient_phone_number, :invalid) }
+      let!(:landline_number) { create(:patient_phone_number, phone_type: :landline) }
+      let!(:invalid_number)  { create(:patient_phone_number, phone_type: :invalid) }
       let!(:patient) { create(:patient, phone_numbers: [landline_number, invalid_number]) }
 
       let!(:overdue_appointments) do

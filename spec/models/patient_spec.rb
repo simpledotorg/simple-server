@@ -156,8 +156,8 @@ describe Patient, type: :model do
       it 'returns the last mobile number for the patient' do
         patient = create(:patient)
         number_1 = create(:patient_phone_number, patient: patient)
-        _number_2 = create(:patient_phone_number, :landline, patient: patient)
-        _number_3 = create(:patient_phone_number, :invalid, patient: patient)
+        _number_2 = create(:patient_phone_number, phone_type: :landline, patient: patient)
+        _number_3 = create(:patient_phone_number, phone_type: :invalid, patient: patient)
 
         expect(patient.reload.latest_mobile_number).to eq(number_1.number)
       end
