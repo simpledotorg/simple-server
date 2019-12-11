@@ -41,4 +41,8 @@ class DashboardPolicy < Struct.new(:user, :dashboard)
      manage_admins?,
      manage_users?].any?
   end
+
+  def view_my_facilities?
+    user.has_permission?(:view_my_facilities)
+  end
 end

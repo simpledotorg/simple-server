@@ -78,6 +78,12 @@ module Permissions
       resource_priority: [:global],
       required_permissions: []
     },
+    view_my_facilities: {
+      slug: :view_my_facilities,
+      description: 'View My Facilities Dashboard',
+      resource_priority: [:global],
+      required_permissions: []
+    }
   }
 
   ACCESS_LEVELS = [
@@ -115,6 +121,7 @@ module Permissions
         :view_health_worker_activity,
         :download_patient_line_list,
         :manage_admins,
+        :view_my_facilities
       ]
     },
     { name: :analyst,
@@ -133,7 +140,8 @@ module Permissions
         :approve_health_workers,
         :view_health_worker_activity,
         :download_patient_line_list,
-        :view_cohort_reports
+        :view_cohort_reports,
+        :view_my_facilities
       ]
     },
     { name: :owner,
@@ -150,7 +158,8 @@ module Permissions
         :manage_admins,
         :view_health_worker_activity,
         :download_overdue_list,
-        :download_patient_line_list
+        :download_patient_line_list,
+        :view_my_facilities
       ]
     },
     { name: :custom,
