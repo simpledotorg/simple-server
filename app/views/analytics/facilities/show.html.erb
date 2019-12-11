@@ -1,6 +1,6 @@
 <div class="dashboard">
   <nav class="breadcrumb">
-    <%= link_to 'All districts', admin_root_path %>
+    <%= link_to 'All districts', root_path %>
 
     <i class="fas fa-chevron-right"></i>
     <%= link_to @facility.district,
@@ -17,40 +17,38 @@
 
 <%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics %>
 
-<%=
-  render 'shared/analytics_table',
-    dashboard_analytics: @dashboard_analytics,
-    row_resource: User.order(:full_name),
-    row_resource_description: "Users",
-    row_resource_display_field: :full_name,
-    row_resource_link: :admin_user_path
-%>
+<%= render 'shared/analytics_table',
+  dashboard_analytics: @dashboard_analytics,
+  row_resource: User.order(:full_name),
+  row_resource_description: "Users",
+  row_resource_display_field: :full_name,
+  row_resource_link: :admin_user_path %>
 
-<%=
-  render 'shared/recent_bp_log',
-    blood_pressures: @recent_blood_pressures,
-    display_model: :facility
-%>
+<% if policy([:cohort_report, @facility]).view_health_worker_activity? %>
+  <%= render 'shared/recent_bp_log',
+             blood_pressures: @recent_blood_pressures,
+             display_model: :facility %>
+<% end %>
 
-<% if FeatureToggle.enabled?('DASHBOARD_SNAPSHOT') %>
-  <div class="downloads">
-    <h4>Downloads</h4>
+<div class="downloads">
+  <h4>Downloads</h4>
 
-    <% if policy(@facility).patient_list? %>
-      <p>
-        <%= link_to analytics_facility_patient_list_path(@facility) do %>
-          <i class='fas fa-camera mr-2'></i>
-          Patient line list
-        <% end %>
-      </p>
-    <% end %>
+  <% if policy([:cohort_report, @facility]).patient_list? %>
+    <p>
+      <%= link_to analytics_facility_patient_list_path(@facility) do %>
+        <i class='fas fa-camera mr-2'></i>
+        Patient line list
+      <% end %>
+    </p>
+  <% end %>
 
-    <% if policy(@facility).whatsapp_graphics? %>
+  <% if FeatureToggle.enabled?('DASHBOARD_SNAPSHOT') %>
+    <% if policy([:cohort_report, @facility]).whatsapp_graphics? %>
       <%=
         render "shared/graphics/graphics_download_links",
-          graphics_path: -> (options) { analytics_facility_graphics_path(options) },
-          options: { facility_id: @facility.id }
+               graphics_path: -> (options) { analytics_facility_graphics_path(options) },
+               options: { facility_id: @facility.id }
       %>
     <% end %>
-  </div>
-<% end %>
+  <% end %>
+</div>

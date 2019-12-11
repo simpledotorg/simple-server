@@ -1,0 +1,12 @@
+<h1><%= t "devise.invitations.new.header" %></h1>
+
+<%= react_component "InviteAdminForm",
+                    organizations: policy_scope([:manage, :admin, Organization.all]),
+                    facility_groups: policy_scope([:manage, :admin, FacilityGroup.all]).order(:name),
+                    facilities: policy_scope([:manage, :admin, Facility.all]).pluck(:id, :name),
+                    permissions: policy([:manage, :admin, User]).allowed_permissions,
+                    access_levels: policy([:manage, :admin, User]).allowed_access_levels,
+                    submit_route: '/email_authentications/invitation',
+                    allow_email_edit: true,
+                    submit_text: 'Invite Admin',
+                    submit_method: 'POST' %>

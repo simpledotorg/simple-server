@@ -1,123 +1,129 @@
 <div class="card pr-0 pr-md-3">
-    <div class="table-responsive table-compact">
-        <table id="analytics-table">
-          <colgroup>
-              <col>
-              <col style="border-left: 1px solid #dce4e8;">
-              <col style="border-left: 1px solid #dce4e8;">
-              <col>
-              <col>
-              <col style="border-left: 1px solid #dce4e8;">
-              <col>
-              <col>
-              <col style="border-left: 1px solid #dce4e8;">
-              <col>
-              <col>
-          </colgroup>
-          <thead>
+  <div class="table-responsive table-compact">
+    <table id="analytics-table">
+      <colgroup>
+        <col>
+        <col style="border-left: 1px solid #dce4e8;">
+        <col style="border-left: 1px solid #dce4e8;">
+        <col>
+        <col>
+        <col style="border-left: 1px solid #dce4e8;">
+        <col>
+        <col>
+        <col style="border-left: 1px solid #dce4e8;">
+        <col>
+        <col>
+      </colgroup>
+      <thead>
+      <tr>
+        <th><h3 class="ml-n2"><%= row_resource_description %></h3></th>
+        <th class="row-label"><strong>Registered patients</strong></th>
+        <th class="row-label" colspan="3"><strong>Follow-up patients</strong></th>
+        <th class="row-label" colspan="3"><strong>New registrations</strong></th>
+        <th class="row-label" colspan="3"><strong>Patients called</strong></th>
+      </tr>
+
+      <tr data-sort-method="thead">
+        <th class="row-label sort-label" style="text-align: left; padding: 8px 4px;">Name</th>
+        <!--Registered patients-->
+        <th class="row-label sort-label" style="padding: 8px 4px;" data-sort-method="number">Total</th>
+
+        <!--Follow-up patients-->
+        <% dates_for_periods(@period, 3, include_current_period: @show_current_month).each do |date| %>
+          <th class="row-label sort-label" style="padding: 8px 4px;" data-sort-method="number">
+            <%= format_period(@period, date) %>
+          </th>
+        <% end %>
+
+        <!--New registrations-->
+        <% dates_for_periods(@period, 3, include_current_period: @show_current_month).each do |date| %>
+          <th class="row-label sort-label" style="padding: 8px 4px;" data-sort-method="number">
+            <%= format_period(@period, date) %>
+          </th>
+        <% end %>
+
+        <!--Calls made -->
+        <% dates_for_periods(@period, 3, include_current_period: @show_current_month).each do |date| %>
+          <th class="row-label sort-label" style="padding: 8px 4px;" data-sort-method="number">
+            <%= format_period(@period, date) %>
+          </th>
+        <% end %>
+      </tr>
+
+      </thead>
+      <tbody>
+
+      <tr class="row-total" data-sort-method="none">
+        <td class="row-title row-total">All</td>
+
+        <!--Registered patients-->
+        <td class="row-total" style="text-align: center;">
+          <%= dash_if_zero(dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 }) %>
+        </td>
+
+        <!--Follow-up patients-->
+        <% dates_for_periods(@period, 3, include_current_period: @show_current_month).each do |date| %>
+          <td class="row-total" style="text-align: center;">
+            <%= dash_if_zero(analytics_totals(dashboard_analytics, :follow_up_patients_by_period, date)) %>
+          </td>
+        <% end %>
+
+        <!--New registrations-->
+        <% dates_for_periods(@period, 3, include_current_period: @show_current_month).each do |date| %>
+          <td class="row-total" style="text-align: center;">
+            <%= dash_if_zero(analytics_totals(dashboard_analytics, :registered_patients_by_period, date)) %>
+          </td>
+        <% end %>
+
+        <!--Calls made -->
+        <% dates_for_periods(@period, 3, include_current_period: @show_current_month).each do |date| %>
+          <td class="row-total" style="text-align: center;">
+            <%= dash_if_zero(analytics_totals(dashboard_analytics, :total_calls_made_by_period, date)) %>
+          </td>
+        <% end %>
+      </tr>
+
+      <% policy_scope([:cohort_report, row_resource]).each do |resource| %>
+        <% if dashboard_analytics[resource.id].present? %>
           <tr>
-            <th><h3 class="ml-n2"><%= row_resource_description %></h3></th>
-            <th class="row-label"><strong>Registered patients</strong></th>
-            <th class="row-label" colspan="3"><strong>Follow-up patients</strong></th>
-            <th class="row-label" colspan="3"><strong>New registrations</strong></th>
-            <th class="row-label" colspan="3"><strong>Patients called</strong></th>
-          </tr>
-
-          <tr data-sort-method="thead">
-            <th class="row-label sort-label" style="text-align: left; padding: 8px 4px;">Name</th>
-            <!--Registered patients-->
-            <th class="row-label sort-label" style="padding: 8px 4px;" data-sort-method="number">Total</th>
-
-            <!--Follow-up patients-->
-            <% dates_for_periods(@period, 3).each do |period| %>
-              <th class="row-label sort-label" style="padding: 8px 4px;" data-sort-method="number"><%= format_period(@period, period) %></th>
-            <% end %>
-
-            <!--New registrations-->
-            <% dates_for_periods(@period, 3).each do |period| %>
-              <th class="row-label sort-label" style="padding: 8px 4px;" data-sort-method="number"><%= format_period(@period, period) %></th>
-            <% end %>
-
-            <!--Calls made -->
-            <% dates_for_periods(@period, 3).each do |period| %>
-              <th class="row-label sort-label" style="padding: 8px 4px;" data-sort-method="number"><%= format_period(@period, period) %></th>
-            <% end %>
-          </tr>
-
-          </thead>
-          <tbody>
-
-          <tr class="row-total" data-sort-method="none">
-            <td class="row-title row-total">All</td>
+            <td class="row-title">
+              <% if row_resource_link == :analytics_facility_path %>
+                <%= link_to resource.send(row_resource_display_field),
+                            send(row_resource_link, resource, period: @period) %>
+              <% else %>
+                <%= link_to resource.send(row_resource_display_field), send(row_resource_link, resource) %>
+              <% end %>
+            </td>
 
             <!--Registered patients-->
-            <td class="row-total" style="text-align: center;">
-              <%= dash_if_zero(dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 }) %>
+            <td style="text-align: center;">
+              <%= dash_if_zero(dashboard_analytics.dig(resource.id, :total_registered_patients)) %>
             </td>
 
             <!--Follow-up patients-->
-            <% dates_for_periods(@period, 3).each do |period| %>
-              <td class="row-total" style="text-align: center;">
-                <%= dash_if_zero(analytics_totals(dashboard_analytics, :follow_up_patients_by_period, period)) %>
+            <% dates_for_periods(@period, 3, include_current_period: @show_current_month).each do |date| %>
+              <td style="text-align: center;">
+                <%= dash_if_zero(dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, date)) %>
               </td>
             <% end %>
 
             <!--New registrations-->
-            <% dates_for_periods(@period, 3).each do |period| %>
-              <td class="row-total" style="text-align: center;">
-                <%= dash_if_zero(analytics_totals(dashboard_analytics, :registered_patients_by_period, period)) %>
+            <% dates_for_periods(@period, 3, include_current_period: @show_current_month).each do |date| %>
+              <td style="text-align: center;">
+                <%= dash_if_zero(dashboard_analytics.dig(resource.id, :registered_patients_by_period, date)) %>
               </td>
             <% end %>
 
             <!--Calls made -->
-            <% dates_for_periods(@period, 3).each do |period| %>
-              <td class="row-total" style="text-align: center;">
-                <%= dash_if_zero(analytics_totals(dashboard_analytics, :total_calls_made_by_period, period)) %>
+            <% dates_for_periods(@period, 3, include_current_period: @show_current_month).each do |date| %>
+              <td style="text-align: center;">
+                <%= dash_if_zero(dashboard_analytics.dig(resource.id, :total_calls_made_by_period, date)) %>
               </td>
             <% end %>
           </tr>
-
-          <% policy_scope(row_resource).each do |resource| %>
-            <% if dashboard_analytics[resource.id].present? %>
-              <tr>
-
-                <td class="row-title">
-                  <% if row_resource_link == :analytics_facility_path %>
-                    <%= link_to resource.send(row_resource_display_field), send(row_resource_link, resource, period: @period) %>
-                  <% else %>
-                    <%= link_to resource.send(row_resource_display_field), send(row_resource_link, resource) %>
-                  <% end %>
-                </td>
-
-                <!--Registered patients-->
-                <td style="text-align: center;">
-                  <%= dash_if_zero(dashboard_analytics.dig(resource.id, :total_registered_patients)) %>
-                </td>
-
-                <!--Follow-up patients-->
-                <% dates_for_periods(@period, 3).each do |period| %>
-                  <td style="text-align: center;">
-                    <%= dash_if_zero(dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, period)) %>
-                  </td>
-                <% end %>
-
-                <!--New registrations-->
-                <% dates_for_periods(@period, 3).each do |period| %>
-                  <td style="text-align: center;">
-                    <%= dash_if_zero(dashboard_analytics.dig(resource.id, :registered_patients_by_period, period)) %>
-                  </td>
-                <% end %>
-
-                <!--Calls made -->
-                <% dates_for_periods(@period, 3).each do |period| %>
-                  <td style="text-align: center;">
-                    <%= dash_if_zero(dashboard_analytics.dig(resource.id, :total_calls_made_by_period, period)) %>
-                  </td>
-                <% end %>
-              </tr>
-            <% end %>
-          <% end %>
-          </tbody>
-        </table>
-      </div>
+        <% end %>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
 </div>

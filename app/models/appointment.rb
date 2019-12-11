@@ -6,8 +6,9 @@ class Appointment < ApplicationRecord
   include Hashable
 
   belongs_to :patient, optional: true
-  belongs_to :facility
   belongs_to :user, optional: true
+  belongs_to :facility
+  belongs_to :creation_facility, class_name: 'Facility', optional: true
 
   has_many :communications
 

@@ -1,17 +1,16 @@
 require 'rails_helper'
 
 RSpec.feature 'To test adherence followup patient functionality', type: :feature do
-
-  let!(:owner) {create(:admin)}
   let!(:ihmi) {create(:organization, name: "IHMI")}
   let!(:ihmi_facility_group) {create(:facility_group, organization: ihmi, name: "Bathinda")}
+  let!(:owner) { create(:admin) }
+  let!(:permissions) { create(:user_permission, user: owner, permission_slug: :view_adherence_follow_up_list) }
 
   login = AdminPage::Sessions::New.new
   adherence_page = PatientPage::Index.new
   nav_page = Navigations::DashboardPageNavigation.new
 
   context "Page verification" do
-
     before(:each) do
       visit root_path
       login.do_login(owner.email, owner.password)
@@ -130,4 +129,3 @@ RSpec.feature 'To test adherence followup patient functionality', type: :feature
     end
   end
 end
-
