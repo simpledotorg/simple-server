@@ -25,7 +25,7 @@ class AppointmentNotificationService
     end
 
     def eligible_for_sending_sms?(appointment, communication_type)
-      (not appointment.previously_communicated_via?(communication_type)) && appointment.patient&.phone_number?
+      (not appointment.previously_communicated_via?(communication_type)) && appointment.patient&.mobile_number?
     end
   end
 

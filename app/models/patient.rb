@@ -78,12 +78,20 @@ class Patient < ApplicationRecord
     phone_numbers.last&.number
   end
 
+  def latest_mobile_number
+    phone_numbers.where(phone_type: 'mobile').last&.number
+  end
+
   def latest_bp_passport
     business_identifiers.simple_bp_passport.order(:device_created_at).last
   end
 
   def phone_number?
     latest_phone_number.present?
+  end
+
+  def mobile_number?
+    latest_mobile_number.present?
   end
 
   def registration_date
