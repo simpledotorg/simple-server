@@ -156,6 +156,7 @@ Rails.application.routes.draw do
   resources :appointments, only: [:index, :update]
   resources :patients, only: [:index, :update]
   resources :organizations, only: [:index], path: 'dashboard'
+  resources :my_facilities, only: [:index]
 
   namespace :admin do
     resources :organizations
