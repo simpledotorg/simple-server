@@ -11,6 +11,9 @@ RSpec.feature "Facility analytics", type: :feature do
   let!(:bp_1) { create(:blood_pressure, facility: facility, systolic: 145, diastolic: 95, recorded_at: Time.zone.parse("2019-03-15 8:00am +05:30")) }
   let!(:bp_2) { create(:blood_pressure, facility: facility, systolic: 115, diastolic: 75, recorded_at: Time.zone.parse("2019-03-15 2:15pm +05:30")) }
 
+  let!(:encounter_1) { create(:encounter, :with_observables, observable: bp_1) }
+  let!(:encounter_2) { create(:encounter, :with_observables, observable: bp_2) }
+
   before do
     sign_in(owner.email_authentication)
   end
@@ -42,6 +45,7 @@ RSpec.feature "Facility analytics", type: :feature do
   describe "allows period switching" do
     before do
       visit analytics_facility_path(facility)
+      click_link "Monthly report"
       click_link "Quarterly report"
     end
 
