@@ -15,9 +15,6 @@ RSpec.feature 'Organization management', type: :feature do
       visit root_path
       login.do_login(owner.email, owner.password)
 
-      dashboard_navigation.select_main_menu_tab("Manage")
-      expect(page).to have_content("Organizations")
-
       dashboard_navigation.select_manage_option('Organizations')
       expect(page).to have_content("IHMI")
       expect(page).to have_content("PATH")

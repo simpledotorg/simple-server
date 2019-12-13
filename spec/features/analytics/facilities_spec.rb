@@ -45,6 +45,7 @@ RSpec.feature "Facility analytics", type: :feature do
   describe "allows period switching" do
     before do
       visit analytics_facility_path(facility)
+      click_link "Monthly report"
       click_link "Quarterly report"
     end
 
