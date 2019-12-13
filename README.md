@@ -89,6 +89,13 @@ Note:
 from scratch.
 * Please refer to `config/seed.yml` to set the multiplier values to control the volume of seed data generated.
 
+## Creating an admin user
+
+Run the following command from the project root to create a new dashboard admin:
+```bash
+bundle exec rake create_admin_user["<name>","<email>","<password>"]
+```
+
 ## Documentation
 
 ### API
