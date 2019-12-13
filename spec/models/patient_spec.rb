@@ -8,6 +8,7 @@ describe Patient, type: :model do
     it { should belong_to(:address) }
     it { should have_many(:phone_numbers) }
     it { should have_many(:blood_pressures) }
+    it { should have_many(:blood_sugars) }
     it { should have_many(:prescription_drugs) }
     it { should have_many(:facilities).through(:blood_pressures) }
     it { should have_many(:appointments) }

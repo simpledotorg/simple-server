@@ -19,12 +19,16 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
 
   def create_record(options = {})
     facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
-    FactoryBot.create(:blood_pressure, options.merge(facility: facility))
+    blood_pressure = FactoryBot.create(:blood_pressure, { facility: facility }.merge(options))
+    create(:encounter, :with_observables, observable: blood_pressure)
+    blood_pressure
   end
 
   def create_record_list(n, options = {})
     facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
-    FactoryBot.create_list(:blood_pressure, n, options.merge(facility: facility))
+    blood_pressures = create_list(:blood_pressure, n, { facility: facility }.merge(options))
+    blood_pressures.each {|record| create(:encounter, :with_observables, observable: record)}
+    blood_pressures
   end
 
   it_behaves_like 'a sync controller that authenticates user requests'
@@ -229,6 +233,31 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
           expect(Encounter.all.flat_map(&:blood_pressures).count).to eq(range_of_possible_observations.count * 3)
         end
       end
+
+      context 'existing encounter' do
+        let!(:blood_sugar) { create(:blood_sugar) }
+        let!(:encounter_id) { Encounter.generate_id(blood_sugar.facility_id, blood_sugar.patient_id, blood_sugar.recorded_at.to_date)}
+        let!(:encounter) { create(:encounter, :with_observables, id: encounter_id, observable: blood_sugar) }
+        let!(:blood_pressure_payload) do
+          build_blood_pressure_payload(
+            build(:blood_pressure,
+                  patient: blood_sugar.patient,
+                  facility: blood_sugar.facility,
+                  recorded_at: blood_sugar.recorded_at
+            ))
+        end
+
+        it 'adds the blood sugar to an existing encounter' do
+          expect {
+            post(:sync_from_user, params: { blood_pressures: [blood_pressure_payload] }, as: :json)
+          }.not_to change { Encounter.count }
+
+          encounter.reload
+
+          expect(encounter.blood_pressures.first.id).to eq(blood_pressure_payload[:id])
+        end
+
+      end
     end
   end
 
@@ -239,22 +268,10 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
       it "syncs request facility's records first" do
         request_2_facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
 
-        FactoryBot.create_list(:blood_pressure,
-                               2,
-                               facility: request_facility,
-                               updated_at: 3.minutes.ago)
-        FactoryBot.create_list(:blood_pressure,
-                               2,
-                               facility: request_facility,
-                               updated_at: 5.minutes.ago)
-        FactoryBot.create_list(:blood_pressure,
-                               2,
-                               facility: request_2_facility,
-                               updated_at: 7.minutes.ago)
-        FactoryBot.create_list(:blood_pressure,
-                               2,
-                               facility: request_2_facility,
-                               updated_at: 10.minutes.ago)
+        create_record_list(2, facility: request_facility, updated_at: 3.minutes.ago)
+        create_record_list(2, facility: request_facility, updated_at: 5.minutes.ago)
+        create_record_list(2, facility: request_2_facility, updated_at: 7.minutes.ago)
+        create_record_list(2, facility: request_2_facility, updated_at: 10.minutes.ago)
 
         # GET request 1
         set_authentication_headers
@@ -284,18 +301,9 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
       before :each do
         set_authentication_headers
 
-        FactoryBot.create_list(:blood_pressure,
-                               2,
-                               facility: facility_in_another_group,
-                               updated_at: 3.minutes.ago)
-        FactoryBot.create_list(:blood_pressure,
-                               2,
-                               facility: facility_in_same_group,
-                               updated_at: 5.minutes.ago)
-        FactoryBot.create_list(:blood_pressure,
-                               2,
-                               facility: request_facility,
-                               updated_at: 7.minutes.ago)
+        create_record_list(2, facility: facility_in_another_group, updated_at: 3.minutes.ago)
+        create_record_list(2, facility: facility_in_same_group, updated_at: 5.minutes.ago)
+        create_record_list(2, facility: request_facility, updated_at: 7.minutes.ago)
       end
 
       it "only sends data for facilities belonging in the sync group of user's registration facility" do
