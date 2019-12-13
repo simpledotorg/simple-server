@@ -6,17 +6,14 @@ FactoryBot.define do
     association :facility, strategy: :create
 
     transient do
-      observable { create(:blood_pressure) }
+      blood_pressure { create(:blood_pressure) }
     end
 
     trait(:with_observables) do
       observations { [build(:observation,
                             encounter_id: id,
-                            observable: observable,
-                            user: observable.user)] }
-      facility { observable.facility }
-      patient { observable.patient }
-      encountered_on { observable.recorded_at.to_date }
+                            observable: blood_pressure,
+                            user: blood_pressure.user)] }
     end
 
     encountered_on "2019-09-11"
