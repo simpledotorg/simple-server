@@ -33,26 +33,32 @@ class DistrictAnalyticsQuery
       Patient
         .joins(:registration_facility)
         .where(facilities: { id: facilities })
-        .group('facilities.id', date_truncate_sql('patients', 'recorded_at', @period))
+        .group('facilities.id')
+        .group_by_period(@period, :recorded_at)
         .count
 
     group_by_facility_and_date(@registered_patients_by_period, :registered_patients_by_period)
   end
 
   def follow_up_patients_by_period
-    date_truncate_string = date_truncate_sql('blood_pressures', 'recorded_at', @period)
+    #
+    # this is similar to what the group_by_period query already gives us,
+    # however, groupdate does not allow us to use these "groups" in a where clause
+    # hence, we've replicated its grouping behaviour in order to remove the patients
+    # that were registered prior to the period bucket
+    #
+    date_truncate_string =
+      "(DATE_TRUNC('#{@period}', blood_pressures.recorded_at::timestamptz AT TIME ZONE '#{Groupdate.time_zone || 'Etc/UTC'}'))"
 
     @follow_up_patients_by_period ||=
       BloodPressure
-        .select('facilities.id AS facility_id',
-                date_truncate_string,
-                'count(blood_pressures.id) AS blood_pressures_count')
         .left_outer_joins(:user)
         .left_outer_joins(:patient)
         .joins(:facility)
         .where(facilities: { id: facilities })
         .where(deleted_at: nil)
-        .group('facilities.id', date_truncate_string)
+        .group('facilities.id')
+        .group_by_period(@period, 'blood_pressures.recorded_at')
         .where("patients.recorded_at < #{date_truncate_string}")
         .order('facilities.id')
         .distinct
@@ -68,17 +74,14 @@ class DistrictAnalyticsQuery
         .joins('INNER JOIN phone_number_authentications ON phone_number_authentications.phone_number = call_logs.caller_phone_number')
         .joins('INNER JOIN facilities ON facilities.id = phone_number_authentications.registration_facility_id')
         .where(phone_number_authentications: { registration_facility_id: facilities })
-        .group('facilities.id::uuid', date_truncate_sql('call_logs', 'end_time', @period))
+        .group('facilities.id::uuid')
+        .group_by_period(@period, :end_time)
         .count
 
     group_by_facility_and_date(@total_calls_made_by_period, :total_calls_made_by_period)
   end
 
   private
-
-  def date_truncate_sql(table, column, period)
-    "(DATE_TRUNC('#{period}', #{table}.#{column}))::date"
-  end
 
   def group_by_facility_and_date(query_results, key)
     valid_dates = dates_for_periods(@period,
