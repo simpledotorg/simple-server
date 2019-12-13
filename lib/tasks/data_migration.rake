@@ -99,4 +99,32 @@ namespace :data_migration do
   task remove_bot_user_usages: :environment do
     Communication.where(user: ENV['APPOINTMENT_NOTIFICATION_BOT_USER_UUID']).update_all(user_id: nil)
   end
+
+  desc "Add facility sizes based on facility type"
+  task add_facility_sizes: :environment do
+    size_map = {
+      "CH" => :large,
+      "DH" => :large,
+      "Hospital" => :large,
+      "RH" => :large,
+      "SDH" => :large,
+
+      "CHC" => :medium,
+
+      "MPHC" => :small,
+      "PHC" => :small,
+      "SAD" => :small,
+      "Standalone" => :small,
+      "UHC" => :small,
+      "UPHC" => :small,
+      "USAD" => :small,
+
+      "HWC" => :community,
+      "Village" => :community
+    }
+
+    size_map.each do |facility_type, facility_size|
+      Facility.where(facility_type: facility_type).update_all(facility_size: facility_size)
+    end
+  end
 end
