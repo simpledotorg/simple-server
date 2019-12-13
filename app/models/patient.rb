@@ -91,10 +91,6 @@ class Patient < ApplicationRecord
     latest_phone_number.present?
   end
 
-  def mobile_number?
-    latest_mobile_number.present?
-  end
-
   def registration_date
     handle_impossible_registration_date(recorded_at)
   end
