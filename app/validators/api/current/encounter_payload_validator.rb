@@ -11,8 +11,16 @@ class Api::Current::EncounterPayloadValidator < Api::Current::PayloadValidator
   )
 
   validate :validate_schema
+  validate :observables_belong_to_single_facility
 
   def schema
     Api::Current::Models.encounter
+  end
+
+  def observables_belong_to_single_facility
+    observation_facility_ids = observations.values.flatten.map { |r| r[:facility_id] }.uniq
+    if observation_facility_ids.count > 1
+      errors.add(:schema, "Encounter observations belong to more than one facility")
+    end
   end
 end
