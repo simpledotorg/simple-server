@@ -4,7 +4,8 @@ module SidekiqConfig
   Sidekiq::Extensions.enable_delay!
 
   def self.connection_pool
-    ConnectionPool.new(size: Config.get_int('SIDEKIQ_REDIS_POOL_SIZE', DEFAULT_REDIS_POOL_SIZE)) do
+    ConnectionPool.new(size: Config.get_int('SIDEKIQ_REDIS_POOL_SIZE',
+                                            DEFAULT_REDIS_POOL_SIZE)) do
       Redis.new(host: ENV['SIDEKIQ_REDIS_HOST'])
     end
   end
@@ -15,7 +16,6 @@ Sidekiq.configure_client do |config|
 end
 
 Sidekiq.configure_server do |config|
-  config.server_middleware { |chain| chain.add(Sidekiq::Middleware::Server::SetLocalTimezone) }
   config.redis = SidekiqConfig.connection_pool
 end
 
