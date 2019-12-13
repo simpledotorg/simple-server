@@ -14,10 +14,11 @@ class Facility < ApplicationRecord
   has_many :phone_number_authentications, foreign_key: 'registration_facility_id'
   has_many :users, through: :phone_number_authentications
 
-  has_many :blood_pressures
-  has_many :patients, -> { distinct }, through: :blood_pressures
-  has_many :prescription_drugs
   has_many :encounters
+  has_many :blood_pressures, through: :encounters, source: :blood_pressures
+  has_many :blood_sugars, through: :encounters, source: :blood_sugars
+  has_many :patients, -> { distinct }, through: :encounters
+  has_many :prescription_drugs
 
   has_many :registered_patients, class_name: "Patient", foreign_key: "registration_facility_id"
 
