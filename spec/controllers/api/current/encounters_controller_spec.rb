@@ -97,6 +97,28 @@ RSpec.describe Api::Current::EncountersController, type: :controller do
         expect(response).to have_http_status(200)
         expect(Encounter.find(encounter[:id]).patient).to eq patient
       end
+
+      context 'encounter contains observations from more than one facility' do
+        let(:encounter) { build_encounters_payload(build_record) }
+        before do
+          # Adding two observations from separate facilities
+          encounter[:observations][:blood_pressures].append(build_blood_pressure_payload)
+          encounter[:observations][:blood_pressures].append(build_blood_pressure_payload)
+
+        end
+        it 'does not create an encounter' do
+          expect {
+            post(:sync_from_user, params: { encounters: [encounter] }, as: :json)
+          }.to_not change { Encounter.count }
+        end
+
+        it 'returns an error in the response' do
+          post(:sync_from_user, params: { encounters: [encounter] }, as: :json)
+          expect(JSON(response.body)['errors']).to eq(['schema' => ['Encounter observations belong to more than one facility'],
+                                                       'id' => encounter['id']])
+        end
+
+      end
     end
   end
 
