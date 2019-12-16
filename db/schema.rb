@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191210103929) do
-
+ActiveRecord::Schema.define(version: 20191210131121) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "pgcrypto"
@@ -261,7 +260,9 @@ ActiveRecord::Schema.define(version: 20191210103929) do
     t.uuid "facility_group_id"
     t.string "slug"
     t.string "zone"
+    t.boolean "enable_diabetes_management", default: false, null: false
     t.index ["deleted_at"], name: "index_facilities_on_deleted_at"
+    t.index ["enable_diabetes_management"], name: "index_facilities_on_enable_diabetes_management"
     t.index ["facility_group_id"], name: "index_facilities_on_facility_group_id"
     t.index ["slug"], name: "index_facilities_on_slug", unique: true
   end
