@@ -10,6 +10,7 @@ It is recommended to use rbenv to manage ruby versions: https://github.com/rbenv
 ```bash
 gem install bundler
 bundle install
+rake yarn:install
 rake db:create db:setup db:migrate
 ```
 
