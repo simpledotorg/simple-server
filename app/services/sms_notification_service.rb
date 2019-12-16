@@ -17,7 +17,6 @@ class SmsNotificationService
   def send_reminder_sms(reminder_type, appointment, callback_url, locale = DEFAULT_LOCALE)
     body = I18n.t("sms.appointment_reminders.#{reminder_type}",
                   facility_name: appointment.facility.name,
-                  appointment_date: I18n.l(appointment.scheduled_date, locale: locale, format: "%-e %B, %Y"),
                   locale: locale)
 
     send_sms(body, callback_url)
