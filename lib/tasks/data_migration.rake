@@ -76,7 +76,6 @@ namespace :data_migration do
         encounter_merge_params = {
           id: Encounter.generate_id(blood_pressure.facility.id, blood_pressure.patient.id, encountered_on),
           patient_id: blood_pressure.patient.id,
-          facility_id: blood_pressure.facility_id,
           device_created_at: blood_pressure.device_created_at,
           device_updated_at: blood_pressure.device_updated_at,
           encountered_on: encountered_on,
@@ -86,7 +85,7 @@ namespace :data_migration do
           }
         }.with_indifferent_access
 
-        MergeEncounterService.new(encounter_merge_params, blood_pressure.user, timezone_offset).merge
+        MergeEncounterService.new(encounter_merge_params, blood_pressure.facility, blood_pressure.user, timezone_offset).merge
       end
     end
   end
