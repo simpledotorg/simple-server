@@ -7,7 +7,6 @@ RSpec.describe FacilityGroup, type: :model do
 
     it { have_many(:patients).through(:facilities) }
     it { have_many(:blood_pressures).through(:facilities) }
-    it { have_many(:blood_sugars).through(:facilities) }
     it { have_many(:prescription_drugs).through(:facilities) }
     it { have_many(:appointments).through(:facilities) }
     it { have_many(:medical_histories).through(:patients) }

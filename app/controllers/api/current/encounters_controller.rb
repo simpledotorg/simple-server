@@ -24,12 +24,6 @@ class Api::Current::EncountersController < Api::Current::SyncController
 
   private
 
-  def encounter_facility_id(encounter_params)
-    return current_facility.id if encounter_params['observations'].values.flatten.empty?
-
-    encounter_params['observations'].values.flatten.first[:facility_id]
-  end
-
   def merge_if_valid(encounter_params)
     validator = Api::Current::EncounterPayloadValidator.new(encounter_params)
     logger.debug "Encounter had errors: #{validator.errors_hash}" if validator.invalid?
@@ -37,8 +31,9 @@ class Api::Current::EncountersController < Api::Current::SyncController
       NewRelic::Agent.increment_metric('Merge/Encounter/schema_invalid')
       { errors_hash: validator.errors_hash }
     else
-      transformed_params = Api::Current::EncounterTransformer.from_nested_request(encounter_params).merge(facility_id: encounter_facility_id(encounter_params))
+      transformed_params = Api::Current::EncounterTransformer.from_nested_request(encounter_params)
       { record: MergeEncounterService.new(transformed_params,
+                                          current_facility,
                                           current_user,
                                           current_timezone_offset).merge[:encounter] }
     end
