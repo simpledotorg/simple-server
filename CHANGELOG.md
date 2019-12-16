@@ -6,6 +6,56 @@
 ### Removed
 ### Security
 
+# 2019-12-03-1
+### Added
+### Changed
+- Update follow up patients string in en.yml
+- Remove bangladesh from manifest for sandbox and production
+- Send SMS reminders only to patients who have provided reminder consent
+### Fixed
+### Deprecated
+### Removed
+### Security
+
+# 2019-11-28-2
+### Added
+- Add diabetes model
+- Added schema and scaffolding for Diabetes / BloodSugars API
+### Changed
+- Show the current month for the Analytics dashboards
+### Fixed
+- Hotfix district analytics views
+### Deprecated
+### Removed
+### Security
+
+
+# 2019-11-26-1
+### Added
+- Add support to easily translate API strings using transifex
+- Add translations for other languages (hindi, tamil, telegu)
+- Support for permissions and updated admin invite UI
+### Changed
+- Update api docs with address changes
+- Re-format the cohort charts
+- Update manifest file
+### Fixed
+### Deprecated
+### Removed
+### Security
+- Bump loofah from 2.2.3 to 2.3.1 (security vulnerability)
+
+# 2019-11-08-1
+### Added
+- Add a feature toggle for encounters sync
+### Changed
+- Accept null values for patient address string fields
+### Fixed
+- 'days_overdue' returns 0 if appointment is not overdue
+### Deprecated
+### Removed
+### Security
+
 # 2019-11-07-1
 ### Added
 - Add zone field to Address model
