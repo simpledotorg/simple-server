@@ -5,7 +5,7 @@ class Api::Current::AnalyticsController < APIController
   private
 
   def set_timezone_to_IST
-    Groupdate.time_zone = "New Delhi"
+    Groupdate.time_zone = "Asia/Kolkata"
   end
 
   def set_timezone_to_UTC
