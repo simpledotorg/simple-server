@@ -1,55 +1,278 @@
 <div class="container">
 
   <div class="row">
-
-    <div class="col-sm-5 col-lg-7">
-      <div class="card">
-        <h2>Facilities</h2>
-        <section id="facilities-by-size">
-          <table class="table-compact">
-            <thead>
-            <tr>
-              <th></th>
-              <th>All facilities</th>
-              <th>Inactive</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-              <td>All</td>
-              <td><%= @facilities.count %></td>
-              <td><%= @facilities.count - @active_facilities.count %></td>
-            </tr>
-            </tbody>
-          </table>
-        </section>
-        <section id="facility-activity-by-week">
-          <table class="table-compact">
-            <thead>
-            <tr>
-              <th>Facility</th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            </tbody>
-          </table>
-        </section>
-
-      </div>
+    <div class="col-lg-2 pl-lg-0">
+            <nav class="secondary-nav">
+                <a class="nav-link active" href="#">Overview</a>
+                <a class="nav-link" href="#">Ranked facilities</a>
+                <a class="nav-link" href="#">BP control</a>
+                <a class="nav-link" href="#">Missed visit</a>
+                <a class="nav-link" href="#">Registrations</a>
+                <a class="nav-link" href="#">Medication supply</a>
+                <a class="nav-link" href="#">Terminal digit pref.</a>
+                <a class="nav-link" href="#">Treatment inertia</a>
+                <a class="nav-link" href="#">Downloads</a>
+            </nav>
     </div>
-    <div class="col-sm-7 col-lg-5 mt-3">
-      <%= render "shared/user_approvals" %>
-    </div>
+    <div class="col-lg-10 pr-lg-0">
+        <div class="row">
+          <div class="col-lg-6 mb-lg-3 pr-lg-0">
+              <div class="card h-100">
+                <h2>Facilities</h2>
+                <section id="facilities-by-size">
+                  <table class="table-compact">
+                    <thead>
+                    <tr>
+                      <th></th>
+                      <th>Total</th>
+                      <th>Inactive*</th>
+                    </tr>
+                    </thead>
+                    <tbody class="text-small">
+                    <tr class="row-total">
+                      <td>All</td>
+                      <td class="text-right"><%= @facilities.count %></td>
+                      <td class="text-right"><%= @facilities.count - @active_facilities.count %></td>
+                    </tr>
+                    <tr>
+                      <td>Large</td>
+                      <td class="text-right"><%= @facilities.count %></td>
+                      <td class="text-right"><%= @facilities.count - @active_facilities.count %></td>
+                    </tr>
+                    <tr>
+                      <td>Medium</td>
+                      <td class="text-right"><%= @facilities.count %></td>
+                      <td class="text-right"><%= @facilities.count - @active_facilities.count %></td>
+                    </tr>
+                    <tr>
+                      <td>Small</td>
+                      <td class="text-right"><%= @facilities.count %></td>
+                      <td class="text-right"><%= @facilities.count - @active_facilities.count %></td>
+                    </tr>
+                    <tr>
+                      <td>Community</td>
+                      <td class="text-right"><%= @facilities.count %></td>
+                      <td class="text-right"><%= @facilities.count - @active_facilities.count %></td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </section>
+                <h4 class="pt-4">Inactive facilities</h4>
+                <section id="facility-activity-by-week">
+                  <table class="table-compact">
+                    <thead>
+                    <tr>
+                      <th>Facility</th>
+                      <th>Week of <span>Nov 5</span></th>
+                      <th>Week of <span>Nov 12</span></th>
+                      <th>Week of <span>Nov 19</span></th>
+                      <th>Week of <span>Nov 26</span></th>
+                    </tr>
+                    </thead>
+                    <tbody class="text-small">
+                    <tr>
+                      <td class="nowrap"><a href="#">PHC Placename Village</a></td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                    </tr>
+                    <tr>
+                      <td class="nowrap"><a href="#">PHC Placename Village</a></td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                    </tr>
+                    <tr>
+                      <td class="nowrap"><a href="#">PHC Placename Village</a></td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                    </tr>
+                    <tr>
+                      <td class="nowrap"><a href="#">PHC Placename Village</a></td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                    </tr>
+                    <tr>
+                      <td class="nowrap"><a href="#">PHC Placename Village</a></td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                    </tr>
+                    <tr>
+                      <td class="nowrap"><a href="#">PHC Placename Village</a></td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                    </tr>
+                    <tr>
+                      <td class="nowrap"><a href="#">PHC Placename Village</a></td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                    </tr>
+                    <tr>
+                      <td class="nowrap"><a href="#">PHC Placename Village</a></td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                    </tr>
+                    <tr>
+                      <td class="nowrap"><a href="#">PHC Placename Village</a></td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                    </tr>
+                    <tr>
+                      <td class="nowrap"><a href="#">PHC Placename Village</a></td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                    </tr>
+                    <tr>
+                      <td class="nowrap"><a href="#">PHC Placename Village</a></td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                    </tr>
+                    <tr>
+                      <td class="nowrap"><a href="#">PHC Placename Village</a></td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                    </tr>
+                    <tr>
+                      <td class="nowrap"><a href="#">PHC Placename Village</a></td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                    </tr>
+                    <tr>
+                      <td class="nowrap"><a href="#">PHC Placename Village</a></td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                      <td class="text-right">-</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </section>
+
+              </div>
+            </div>
+            <div class="col-lg-6 mb-lg-3 pr-lg-0">
+                <div class="card h-100">
+                  <%= render "shared/user_approvals" %>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 pr-lg-0">
+                <div class="card">
+                    <h3>Ranked facilities</h3>
+                    <p>Ranking by a weighted algorithm of factors below.<sup>1</sup></p>
+                    
+                    <table class="table-compact">
+                        <thead>
+                            <tr>
+                              <th></th>
+                              <th></th>
+                              <th>BP control<sup>2</sup></th>
+                              <th colspan="2">Registrations</th>
+                              <th>OPD load</th>
+                              <th>Missed visits</th>
+                              <th></th>
+                            </tr>
+                            <tr class="sorts">
+                              <th><a href="#">Rank</a></th>
+                              <th><a href="#">Facilities</a></th>
+                              <th><a href="#">Oct-2019</a></th>
+                              <th><a href="#">Oct-2019</a></th>
+                              <th><a href="#">All-time</a></th>
+                              <th><a href="#">Monthly</a></th>
+                              <th><a href="#">Oct-2019</a></th>
+                              <th><a href="#">Rank last month</a></th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-small">
+                            <tr>
+                                <td>1</td>
+                                <td><a href="#">CHC Nameplace Two</a></td>
+                                <td><em>56%</em></td>
+                                <td>345</td>
+                                <td>987</td>
+                                <td>4230</td>
+                                <td>143</td>
+                                <td>3 UP</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td><a href="#">CHC Nameplace Two</a></td>
+                                <td><em>56%</em></td>
+                                <td>345</td>
+                                <td>987</td>
+                                <td>4230</td>
+                                <td>143</td>
+                                <td>3 UP</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td><a href="#">CHC Nameplace Two</a></td>
+                                <td><em>56%</em></td>
+                                <td>345</td>
+                                <td>987</td>
+                                <td>4230</td>
+                                <td>143</td>
+                                <td>3 UP</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td><a href="#">CHC Nameplace Two</a></td>
+                                <td><em>56%</em></td>
+                                <td>345</td>
+                                <td>987</td>
+                                <td>4230</td>
+                                <td>143</td>
+                                <td>3 UP</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td><a href="#">CHC Nameplace Two</a></td>
+                                <td><em>56%</em></td>
+                                <td>345</td>
+                                <td>987</td>
+                                <td>4230</td>
+                                <td>143</td>
+                                <td>3 UP</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td><a href="#">CHC Nameplace Two</a></td>
+                                <td><em>56%</em></td>
+                                <td>345</td>
+                                <td>987</td>
+                                <td>4230</td>
+                                <td>143</td>
+                                <td>3 UP</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
   </div>
 </div>

@@ -102,6 +102,19 @@ h6.bold {
     font-weight: bold;
 }
 
+nav.secondary-nav a {
+    color: $grey-dark;
+    border-bottom: 1px solid $grey-light;
+}
+
+nav.secondary-nav a:last-child {
+    border: none;
+}
+
+nav.secondary-nav a.active {
+    font-weight: bold;
+}
+
 .light {
     color: $grey-mid !important;
 }
@@ -556,18 +569,45 @@ Dashboard UI
 
 .table-compact {
     clear: both;
+    
+    tr.sorts th {
+        height: 4em;
+    }
+    
+    tr.sorts a {
+        background: $grey-lightest;
+        border-right: 1px solid $grey-light;
+        display: block;
+        width: 100%;
+        height: 100%;
+        padding: 8px 8px 8px 4px;
+        vertical-align: middle;
+    }
 }
 
 .table-compact th {
     vertical-align: middle;
     border: none;
-    padding: 2px 8px;
+    padding: 0 0 4px 0;
+    font-size: 12px;
+    
+    span {
+        white-space: nowrap;
+    }
+}
+
+.table-compact .text-small td {
+    font-size: 12px;
 }
 
 .table-compact td {
     padding: 8px 4px;
     vertical-align: middle;
     border-top: 1px solid $grey-lightest;
+}
+
+.table-compact td.text-right {
+    padding-right: 2em;
 }
 
 .table-compact .row-month {
@@ -627,7 +667,7 @@ Dashboard UI
 }
 
 .table-compact .row-total {
-    background: #fff;
+    background: $blue-light;
     border-top: 1px solid $grey-light;
     border-bottom: 1px solid $grey-light;
     font-weight: bold;
