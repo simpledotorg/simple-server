@@ -551,6 +551,12 @@ Dashboard UI
     background: #fff;
 }
 
+sup {
+    font-size: 10px;
+    font-weight: normal;
+    padding-left: 3px;
+}
+
 .downloads {
     margin: 32px 0;
 }
@@ -570,40 +576,63 @@ Dashboard UI
 .table-compact {
     clear: both;
     
-    tr.sorts th {
-        height: 4em;
+    tr.sorts {
+        
+        a {
+            background: $grey-lightest;
+            display: block;
+            width: 100%;
+            height: 100%;
+            padding: 16px 8px;
+            vertical-align: middle;
+            text-align: left;
+            margin: 0 -8px -8px -8px;
+            box-sizing: content-box;
+        }
+        
+        a:hover {
+            background: $grey-light;
+        }
+        
+        th {
+            border-color: $grey-light;
+        }
     }
     
-    tr.sorts a {
-        background: $grey-lightest;
-        border-right: 1px solid $grey-light;
-        display: block;
-        width: 100%;
-        height: 100%;
-        padding: 8px 8px 8px 4px;
+    th {
         vertical-align: middle;
+        border: none;
+        padding: 0 8px 4px 8px;
+        font-size: 12px;
+        border-left: 1px solid $grey-lightest;
+        text-align: center;
+
+        span {
+            white-space: nowrap;
+        }
     }
+    
+    td {
+        padding: 8px;
+        vertical-align: middle;
+        border-top: 1px solid $grey-lightest;
+        border-left: 1px solid $grey-lightest;
+        font-size: 14px;
+    }
+    
+    td.type-rank { text-align: center; }
+    td.type-number { text-align: right; padding-right: 16px; }
+    td.type-percent { text-align: center; }
+    td.type-percent em { font-style: normal; background: #F1DBFF; color: #BE72E3; border-radius: 100px; padding: 2px 10px; }
 }
 
-.table-compact th {
-    vertical-align: middle;
-    border: none;
-    padding: 0 0 4px 0;
-    font-size: 12px;
-    
-    span {
-        white-space: nowrap;
-    }
+.table-compact th:first-child,
+.table-compact td:first-child {
+    border-left: none;
 }
 
 .table-compact .text-small td {
     font-size: 12px;
-}
-
-.table-compact td {
-    padding: 8px 4px;
-    vertical-align: middle;
-    border-top: 1px solid $grey-lightest;
 }
 
 .table-compact td.text-right {

@@ -28,7 +28,7 @@
                       <th>Inactive*</th>
                     </tr>
                     </thead>
-                    <tbody class="text-small">
+                    <tbody>
                     <tr class="row-total">
                       <td>All</td>
                       <td class="text-right"><%= @facilities.count %></td>
@@ -62,14 +62,14 @@
                   <table class="table-compact">
                     <thead>
                     <tr>
-                      <th>Facility</th>
+                      <th></th>
                       <th>Week of <span>Nov 5</span></th>
                       <th>Week of <span>Nov 12</span></th>
                       <th>Week of <span>Nov 19</span></th>
                       <th>Week of <span>Nov 26</span></th>
                     </tr>
                     </thead>
-                    <tbody class="text-small">
+                    <tbody>
                     <tr>
                       <td class="nowrap"><a href="#">PHC Placename Village</a></td>
                       <td class="text-right">-</td>
@@ -208,66 +208,206 @@
                               <th><a href="#">Rank last month</a></th>
                             </tr>
                         </thead>
-                        <tbody class="text-small">
+                        <tbody>
                             <tr>
-                                <td>1</td>
-                                <td><a href="#">CHC Nameplace Two</a></td>
-                                <td><em>56%</em></td>
-                                <td>345</td>
-                                <td>987</td>
-                                <td>4230</td>
-                                <td>143</td>
-                                <td>3 UP</td>
+                                <td class="type-rank">1</td>
+                                <td class="type-title"><a href="#">CHC Nameplace Two</a></td>
+                                <td class="type-percent"><em>56%</em></td>
+                                <td class="type-number">345</td>
+                                <td class="type-number">987</td>
+                                <td class="type-number">4230</td>
+                                <td class="type-number">143</td>
+                                <td class="type-rank">3 UP</td>
                             </tr>
                             <tr>
-                                <td>2</td>
-                                <td><a href="#">CHC Nameplace Two</a></td>
-                                <td><em>56%</em></td>
-                                <td>345</td>
-                                <td>987</td>
-                                <td>4230</td>
-                                <td>143</td>
-                                <td>3 UP</td>
+                                <td class="type-rank">1</td>
+                                <td class="type-title"><a href="#">CHC Nameplace Two</a></td>
+                                <td class="type-percent"><em>56%</em></td>
+                                <td class="type-number">345</td>
+                                <td class="type-number">987</td>
+                                <td class="type-number">4230</td>
+                                <td class="type-number">143</td>
+                                <td class="type-rank">3 UP</td>
                             </tr>
                             <tr>
-                                <td>3</td>
-                                <td><a href="#">CHC Nameplace Two</a></td>
-                                <td><em>56%</em></td>
-                                <td>345</td>
-                                <td>987</td>
-                                <td>4230</td>
-                                <td>143</td>
-                                <td>3 UP</td>
+                                <td class="type-rank">1</td>
+                                <td class="type-title"><a href="#">CHC Nameplace Two</a></td>
+                                <td class="type-percent"><em>56%</em></td>
+                                <td class="type-number">345</td>
+                                <td class="type-number">987</td>
+                                <td class="type-number">4230</td>
+                                <td class="type-number">143</td>
+                                <td class="type-rank">3 UP</td>
                             </tr>
                             <tr>
-                                <td>4</td>
-                                <td><a href="#">CHC Nameplace Two</a></td>
-                                <td><em>56%</em></td>
-                                <td>345</td>
-                                <td>987</td>
-                                <td>4230</td>
-                                <td>143</td>
-                                <td>3 UP</td>
+                                <td class="type-rank">1</td>
+                                <td class="type-title"><a href="#">CHC Nameplace Two</a></td>
+                                <td class="type-percent"><em>56%</em></td>
+                                <td class="type-number">345</td>
+                                <td class="type-number">987</td>
+                                <td class="type-number">4230</td>
+                                <td class="type-number">143</td>
+                                <td class="type-rank">3 UP</td>
                             </tr>
                             <tr>
-                                <td>5</td>
-                                <td><a href="#">CHC Nameplace Two</a></td>
-                                <td><em>56%</em></td>
-                                <td>345</td>
-                                <td>987</td>
-                                <td>4230</td>
-                                <td>143</td>
-                                <td>3 UP</td>
+                                <td class="type-rank">1</td>
+                                <td class="type-title"><a href="#">CHC Nameplace Two</a></td>
+                                <td class="type-percent"><em>56%</em></td>
+                                <td class="type-number">345</td>
+                                <td class="type-number">987</td>
+                                <td class="type-number">4230</td>
+                                <td class="type-number">143</td>
+                                <td class="type-rank">3 UP</td>
                             </tr>
                             <tr>
-                                <td>6</td>
-                                <td><a href="#">CHC Nameplace Two</a></td>
-                                <td><em>56%</em></td>
-                                <td>345</td>
-                                <td>987</td>
-                                <td>4230</td>
-                                <td>143</td>
-                                <td>3 UP</td>
+                                <td class="type-rank">1</td>
+                                <td class="type-title"><a href="#">CHC Nameplace Two</a></td>
+                                <td class="type-percent"><em>56%</em></td>
+                                <td class="type-number">345</td>
+                                <td class="type-number">987</td>
+                                <td class="type-number">4230</td>
+                                <td class="type-number">143</td>
+                                <td class="type-rank">3 UP</td>
+                            </tr>
+                            <tr>
+                                <td class="type-rank">1</td>
+                                <td class="type-title"><a href="#">CHC Nameplace Two</a></td>
+                                <td class="type-percent"><em>56%</em></td>
+                                <td class="type-number">345</td>
+                                <td class="type-number">987</td>
+                                <td class="type-number">4230</td>
+                                <td class="type-number">143</td>
+                                <td class="type-rank">3 UP</td>
+                            </tr>
+                            <tr>
+                                <td class="type-rank">1</td>
+                                <td class="type-title"><a href="#">CHC Nameplace Two</a></td>
+                                <td class="type-percent"><em>56%</em></td>
+                                <td class="type-number">345</td>
+                                <td class="type-number">987</td>
+                                <td class="type-number">4230</td>
+                                <td class="type-number">143</td>
+                                <td class="type-rank">3 UP</td>
+                            </tr>
+                            <tr>
+                                <td class="type-rank">1</td>
+                                <td class="type-title"><a href="#">CHC Nameplace Two</a></td>
+                                <td class="type-percent"><em>56%</em></td>
+                                <td class="type-number">345</td>
+                                <td class="type-number">987</td>
+                                <td class="type-number">4230</td>
+                                <td class="type-number">143</td>
+                                <td class="type-rank">3 UP</td>
+                            </tr>
+                            <tr>
+                                <td class="type-rank">1</td>
+                                <td class="type-title"><a href="#">CHC Nameplace Two</a></td>
+                                <td class="type-percent"><em>56%</em></td>
+                                <td class="type-number">345</td>
+                                <td class="type-number">987</td>
+                                <td class="type-number">4230</td>
+                                <td class="type-number">143</td>
+                                <td class="type-rank">3 UP</td>
+                            </tr>
+                            <tr>
+                                <td class="type-rank">1</td>
+                                <td class="type-title"><a href="#">CHC Nameplace Two</a></td>
+                                <td class="type-percent"><em>56%</em></td>
+                                <td class="type-number">345</td>
+                                <td class="type-number">987</td>
+                                <td class="type-number">4230</td>
+                                <td class="type-number">143</td>
+                                <td class="type-rank">3 UP</td>
+                            </tr>
+                            <tr>
+                                <td class="type-rank">1</td>
+                                <td class="type-title"><a href="#">CHC Nameplace Two</a></td>
+                                <td class="type-percent"><em>56%</em></td>
+                                <td class="type-number">345</td>
+                                <td class="type-number">987</td>
+                                <td class="type-number">4230</td>
+                                <td class="type-number">143</td>
+                                <td class="type-rank">3 UP</td>
+                            </tr>
+                            <tr>
+                                <td class="type-rank">1</td>
+                                <td class="type-title"><a href="#">CHC Nameplace Two</a></td>
+                                <td class="type-percent"><em>56%</em></td>
+                                <td class="type-number">345</td>
+                                <td class="type-number">987</td>
+                                <td class="type-number">4230</td>
+                                <td class="type-number">143</td>
+                                <td class="type-rank">3 UP</td>
+                            </tr>
+                            <tr>
+                                <td class="type-rank">1</td>
+                                <td class="type-title"><a href="#">CHC Nameplace Two</a></td>
+                                <td class="type-percent"><em>56%</em></td>
+                                <td class="type-number">345</td>
+                                <td class="type-number">987</td>
+                                <td class="type-number">4230</td>
+                                <td class="type-number">143</td>
+                                <td class="type-rank">3 UP</td>
+                            </tr>
+                            <tr>
+                                <td class="type-rank">1</td>
+                                <td class="type-title"><a href="#">CHC Nameplace Two</a></td>
+                                <td class="type-percent"><em>56%</em></td>
+                                <td class="type-number">345</td>
+                                <td class="type-number">987</td>
+                                <td class="type-number">4230</td>
+                                <td class="type-number">143</td>
+                                <td class="type-rank">3 UP</td>
+                            </tr>
+                            <tr>
+                                <td class="type-rank">1</td>
+                                <td class="type-title"><a href="#">CHC Nameplace Two</a></td>
+                                <td class="type-percent"><em>56%</em></td>
+                                <td class="type-number">345</td>
+                                <td class="type-number">987</td>
+                                <td class="type-number">4230</td>
+                                <td class="type-number">143</td>
+                                <td class="type-rank">3 UP</td>
+                            </tr>
+                            <tr>
+                                <td class="type-rank">1</td>
+                                <td class="type-title"><a href="#">CHC Nameplace Two</a></td>
+                                <td class="type-percent"><em>56%</em></td>
+                                <td class="type-number">345</td>
+                                <td class="type-number">987</td>
+                                <td class="type-number">4230</td>
+                                <td class="type-number">143</td>
+                                <td class="type-rank">3 UP</td>
+                            </tr>
+                            <tr>
+                                <td class="type-rank">1</td>
+                                <td class="type-title"><a href="#">CHC Nameplace Two</a></td>
+                                <td class="type-percent"><em>56%</em></td>
+                                <td class="type-number">345</td>
+                                <td class="type-number">987</td>
+                                <td class="type-number">4230</td>
+                                <td class="type-number">143</td>
+                                <td class="type-rank">3 UP</td>
+                            </tr>
+                            <tr>
+                                <td class="type-rank">1</td>
+                                <td class="type-title"><a href="#">CHC Nameplace Two</a></td>
+                                <td class="type-percent"><em>56%</em></td>
+                                <td class="type-number">345</td>
+                                <td class="type-number">987</td>
+                                <td class="type-number">4230</td>
+                                <td class="type-number">143</td>
+                                <td class="type-rank">3 UP</td>
+                            </tr>
+                            <tr>
+                                <td class="type-rank">1</td>
+                                <td class="type-title"><a href="#">CHC Nameplace Two</a></td>
+                                <td class="type-percent"><em>56%</em></td>
+                                <td class="type-number">345</td>
+                                <td class="type-number">987</td>
+                                <td class="type-number">4230</td>
+                                <td class="type-number">143</td>
+                                <td class="type-rank">3 UP</td>
                             </tr>
                         </tbody>
                     </table>
