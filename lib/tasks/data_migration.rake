@@ -100,4 +100,14 @@ namespace :data_migration do
   task remove_bot_user_usages: :environment do
     Communication.where(user: ENV['APPOINTMENT_NOTIFICATION_BOT_USER_UUID']).update_all(user_id: nil)
   end
+
+  desc 'Assign organization to users from registration facility'
+  task assign_organization_to_users: :environment do
+    User.where(organization: nil)
+      .select { |u| u.registration_facility.present? }
+      .each do |user|
+      user.organization = user.registration_facility.organization
+      user.save!
+    end
+  end
 end
