@@ -19,9 +19,7 @@ RSpec.describe SmsNotificationService do
       it 'should have the SMS body in the default locale' do
         sms = SmsNotificationService.new(recipient_phone_number, sender_phone_number, twilio_client)
 
-        expected_msg_default = 'We missed you for your scheduled BP check-up at Simple Facility on 1 January, 2018.'\
-        ' Please come between 9.30 AM and 2 PM.'
-
+        expected_msg_default =  'Our staff at Simple Facility are thinking of you and your heart health. Our health team is always here if you have any follow-up questions or concerns.'
         expect(twilio_client).to receive_message_chain('messages.create').with(from: '+15005550006',
                                                                                to: expected_sms_recipient_phone_number,
                                                                                status_callback: '',
@@ -33,8 +31,7 @@ RSpec.describe SmsNotificationService do
       it 'should have the SMS body in Marathi' do
         sms = SmsNotificationService.new(recipient_phone_number, sender_phone_number, twilio_client)
 
-        expected_msg_marathi = 'दि. 1 जानेवारी, 2018 रोजी या दवाखान्यात Simple Facility ठरल्यानुसार बी. पी. चेक अप करून एक महिन्याचे औषध'\
-        ' नेल्याचे दिसत नाही. कृपया सकाळी 9 ते दुपारी 12 या वेळेत येऊन बी. पी. चे औषध घेऊन जावे.'
+        expected_msg_marathi = 'आमचे Simple Facility चे कर्मचारी तुमचा आणि तुमच्या हृदयाच्या आरोग्याचा विचार करत आहेत. तुमच्या प्रश्नांची किंवा समस्यांची उत्तरे देण्यास आमची हेल्थ टीम सदैव तत्पर आहे.'
         expect(twilio_client).to receive_message_chain('messages.create').with(from: '+15005550006',
                                                                                to: expected_sms_recipient_phone_number,
                                                                                status_callback: '',
@@ -46,8 +43,7 @@ RSpec.describe SmsNotificationService do
       it 'should have the SMS body in Punjabi' do
         sms = SmsNotificationService.new(recipient_phone_number, sender_phone_number, twilio_client)
 
-        expected_msg_punjabi = 'ਸਰਕਾਰੀ ਹਸਪਤਾਲ Simple Facility ਵਿੱਚ 1 ਜਨਵਰੀ, 2018 ਨੂੰ  ਤੁਹਾਡੇ ਬੀ.ਪੀ ਦੀ ਜਾਂਚ ਹੋਣੀ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ'\
-        ' 9:30 ਤੋਂ 2 ਵਜੇ ਦੇ ਵਿੱਚ ਆਉ।'
+        expected_msg_punjabi = 'Simple Facility ਵਿੱਚ ਸਾਡੇ ਕਰਮਚਾਰੀ ਤੁਹਾਡੇ ਅਤੇ ਤੁਹਾਡੇ ਦਿਲ ਦੀ ਸਿਹਤ ਬਾਰੇ ਸੋਚ ਰਹੇ ਹਨ । ਜੇ ਤੁਹਾਡੇ ਮਨ ਵਿੱਚ ਕੋਈ ਪ੍ਰਸ਼ਨ ਜਾਂ ਚਿੰਤਾ ਹੈ ਤਾਂ ਸਾਡੀ ਸਿਹਤ ਟੀਮ ਹਮੇਸ਼ਾ ਤੁਹਾਡੇ ਲਈ ਇੱਥੇ ਹੈ ।'
         expect(twilio_client).to receive_message_chain('messages.create').with(from: '+15005550006',
                                                                                to: expected_sms_recipient_phone_number,
                                                                                status_callback: '',

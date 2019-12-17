@@ -16,8 +16,7 @@ class Api::Current::FacilitiesController < Api::Current::SyncController
   end
 
   def transform_to_response(facility)
-    facility.as_json
-      .merge(protocol_id: facility.protocol.try(:id))
+    Api::Current::FacilityTransformer.to_response(facility)
   end
 
   def response_process_token
