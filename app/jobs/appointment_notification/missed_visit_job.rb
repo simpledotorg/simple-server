@@ -8,7 +8,7 @@ class AppointmentNotification::MissedVisitJob
     return unless FeatureToggle.enabled?('SMS_REMINDERS')
 
     Organization.where(id: ENV['APPOINTMENT_NOTIFICATION_ORG_IDS'].split(',')).each do |organization|
-      appointments = Appointment.includes(patient: [:phone_numbers], facility: { facility_group: :organization })
+      appointments = Appointment.includes(facility: { facility_group: :organization })
                          .where(facility: { facility_groups: { organization: organization } })
 
       AppointmentNotificationService
