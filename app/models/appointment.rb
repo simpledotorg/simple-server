@@ -42,7 +42,7 @@ class Appointment < ApplicationRecord
 
   def self.overdue
     where(status: 'scheduled')
-      .where('scheduled_date <= ?', Date.current)
+      .where('scheduled_date < ?', Date.current)
       .where('remind_on IS NULL OR remind_on <= ?', Date.current)
   end
 
