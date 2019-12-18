@@ -49,6 +49,7 @@
         <div class="col-md-4 mt-2">
             <%= bootstrap_form_with(model: form_model) do |form| %>
                 <%= form.hidden_field :selected_facility_id, value: @facility_id %>
+                <%= form.hidden_field :page, value: @page %>
                 <%= form.select :call_result,
                     call_result_options,
                     {
