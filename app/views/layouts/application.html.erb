@@ -50,7 +50,7 @@
         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
           <% if email_authentication_signed_in? %>
             <ul class="navbar-nav mr-auto">
-              <% if policy(:dashboard).view_my_facilities? %>
+              <% if policy(:dashboard).view_my_facilities? && FeatureToggle.enabled?("MY_FACILITIES")%>
                 <li class="nav-item">
                   <%= link_to "My Facilities", my_facilities_path, class: "nav-link #{active_controller?("my_facilities")}" %>
                 </li>
