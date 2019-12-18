@@ -6,7 +6,7 @@ class MyFacilitiesQuery < Struct.new(:facilities)
                      .where('blood_pressures.recorded_at > ?', 1.week.ago)
                      .count(:blood_pressures)
                      .select { |_, count| count >= 10}
-                     .map { |facility_id, _| facility_id }
+                     .keys
 
     facilities.where(id: facility_ids)
   end
