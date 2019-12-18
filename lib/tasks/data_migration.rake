@@ -125,7 +125,10 @@ namespace :data_migration do
     }
 
     size_map.each do |facility_type, facility_size|
-      Facility.where(facility_type: facility_type, facility_size: nil).update_all(facility_size: facility_size)
+      Facility.where(facility_type: facility_type, facility_size: nil).each do |facility|
+        puts "Updating #{facility.name}: #{facility.facility_type} --> #{facility_size}"
+        facility.update(facility_size: facility_size)
+      end
     end
   end
 
