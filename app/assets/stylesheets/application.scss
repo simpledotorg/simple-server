@@ -372,26 +372,6 @@ nav.navbar {
     background: #fff !important;
 }
 
-.table thead.thead-light th {
-    //background: #fff;
-    font-size: 12px;
-    color: $grey-dark;
-}
-
-.table thead.thead-light th small {
-    font-size: 12px;
-}
-
-.table thead.thead-light th {
-    //background: #fff;
-    font-size: 12px;
-    color: $grey-dark;
-}
-
-.table thead.thead-light th small {
-    font-size: 12px;
-}
-
 span.inactive {
   text-decoration: line-through;
 }
@@ -446,44 +426,6 @@ span.inactive {
   color: #ddd;
 }
 
-.table {
-    font-size: 14px;
-    margin-top: 1.5em;
-}
-
-.table td.row-title,
-.table h3 {
-    white-space: nowrap;
-}
-
-.table thead.thead-light th {
-    background: #fff;
-    border: none;
-}
-
-.table thead.thead-light .holiday {
-  background-color: #f6f6f6;
-}
-
-
-.table td {
-    vertical-align: middle;
-}
-
-.table-row-small > td {
-  font-size: 80%;
-  font-weight: 400;
-
-  &.holiday {
-    background-color: #f6f6f6;
-  }
-}
-
-.card .row.tight {
-    margin-top: 0.2em !important;
-    margin-bottom: 0.2em !important;
-}
-
 .card {
     border: none;
     background: #fff;
@@ -491,6 +433,12 @@ span.inactive {
     padding: 16px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     position: relative;
+}
+
+@include media-breakpoint-down(lg) {
+  .card {
+    height: auto !important;
+  }
 }
 
 .card-footer {
@@ -586,25 +534,41 @@ sup {
             padding: 16px 8px;
             vertical-align: middle;
             text-align: left;
-            margin: 0 -8px -8px -8px;
-            box-sizing: content-box;
+            margin: 0;
+            white-space: nowrap;
+            
+            i {
+                opacity: 0.3;
+            }
         }
         
         a:hover {
             background: $grey-light;
         }
         
+        a.current {
+            background: $blue;
+            color: #fff;
+            
+            i {
+                opacity: 1;
+            }
+        }
+        
         th {
             border-color: $grey-light;
+            border-top: 0;
+            border-bottom: 0;
+            padding: 0;
         }
     }
     
     th {
         vertical-align: middle;
         border: none;
-        padding: 0 8px 4px 8px;
-        font-size: 12px;
-        border-left: 1px solid $grey-lightest;
+        padding: 4px 8px 8px 8px;
+        font-size: 13px;
+        border-left: 1px solid $grey-light;
         text-align: center;
 
         span {
@@ -624,6 +588,15 @@ sup {
     td.type-number { text-align: right; padding-right: 16px; }
     td.type-percent { text-align: center; }
     td.type-percent em { font-style: normal; background: #F1DBFF; color: #BE72E3; border-radius: 100px; padding: 2px 10px; }
+    
+    td.type-rank i { margin-left: 0.5em; color: $green; }
+    td.type-rank i.fa-long-arrow-alt-down { color: $red; }
+}
+
+@include media-breakpoint-down(sm) {
+    .card-responsive {
+        padding-right: 0;
+    }
 }
 
 .table-compact th:first-child,
@@ -669,7 +642,7 @@ sup {
 
 .table-compact .row-title a {
     width: 10em;
-    white-space: nowrap;
+    white-xspace: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
     display: block;
@@ -695,11 +668,10 @@ sup {
     text-align: center;
 }
 
-.table-compact .row-total {
-    background: $blue-light;
-    border-top: 1px solid $grey-light;
-    border-bottom: 1px solid $grey-light;
+.table-compact .row-total td {
+    background: #FFFAE3;
     font-weight: bold;
+    border-left-color: #E2DBBB;
 }
 
 /******************
