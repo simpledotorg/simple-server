@@ -115,6 +115,31 @@ nav.secondary-nav a.active {
     font-weight: bold;
 }
 
+.secondary-nav-filters {
+    .dropdown-toggle {
+        width: 100%;
+        border-top: 1px solid $grey-light;
+        text-align: left;
+        padding: 8px 16px 8px 16px;
+    }
+    
+    h4 {
+        margin: 24px 0 8px 0;
+    }
+    
+    input {
+        margin-right: 8px;
+    }
+    
+    label {
+        display: block;
+        border-top: 1px solid $grey-light;
+        padding: 8px 16px 4px 16px;
+        font-weight: normal;
+        line-height: 1;
+    }
+}
+
 .light {
     color: $grey-mid !important;
 }
