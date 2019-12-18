@@ -102,6 +102,12 @@ h6.bold {
     font-weight: bold;
 }
 
+.btn-outline.dropdown-toggle {
+    border: 1px solid $blue-mid !important;
+    background: #fff !important;
+    color: $blue !important;
+}
+
 nav.secondary-nav a {
     color: $grey-dark;
     border-bottom: 1px solid $grey-light;
