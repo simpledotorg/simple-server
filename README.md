@@ -10,6 +10,7 @@ It is recommended to use rbenv to manage ruby versions: https://github.com/rbenv
 ```bash
 gem install bundler
 bundle install
+rake yarn:install
 rake db:create db:setup db:migrate
 ```
 
@@ -88,6 +89,13 @@ Note:
 * For the `development` environment, this will truncate existing data and seed the database
 from scratch.
 * Please refer to `config/seed.yml` to set the multiplier values to control the volume of seed data generated.
+
+## Creating an admin user
+
+Run the following command from the project root to create a new dashboard admin:
+```bash
+bundle exec rake create_admin_user["<name>","<email>","<password>"]
+```
 
 ## Documentation
 

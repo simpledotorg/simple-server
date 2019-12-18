@@ -1640,6 +1640,12 @@
         "district": {
           "$ref": "#/definitions/non_empty_string"
         },
+        "zone": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "state": {
           "$ref": "#/definitions/non_empty_string"
         },
@@ -1657,7 +1663,18 @@
         },
         "protocol_id": {
           "$ref": "#/definitions/uuid"
-        }
+        },
+        "config": {
+          "type": "object",
+          "properties": {
+            "enable_diabetes_management": {
+              "type": "boolean"
+            }
+          }
+        },
+        "required": [
+          "enable_diabetes_management"
+        ]
       },
       "required": [
         "id",
