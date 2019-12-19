@@ -20,7 +20,7 @@ RSpec.describe Facility, type: :model do
       expect(facility.patients.count).to eq(1)
     end
 
-    it { should belong_to(:facility_group) }
+    it { should belong_to(:facility_group).optional }
   end
 
   describe 'Validations' do
