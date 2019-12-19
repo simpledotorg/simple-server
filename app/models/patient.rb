@@ -80,7 +80,7 @@ class Patient < ApplicationRecord
   end
 
   def latest_mobile_number
-    phone_numbers.mobiles.last&.number
+    phone_numbers.phone_type_mobile.last&.number
   end
 
   def latest_bp_passport
