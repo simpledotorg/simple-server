@@ -5,7 +5,7 @@ describe Patient, type: :model do
   subject(:patient) { build(:patient) }
 
   describe 'Associations' do
-    it { should belong_to(:address) }
+    it { should belong_to(:address).optional }
     it { should have_many(:phone_numbers) }
     it { should have_many(:blood_pressures) }
     it { should have_many(:blood_sugars) }
@@ -21,7 +21,7 @@ describe Patient, type: :model do
       expect(patient.facilities.count).to eq(1)
     end
 
-    it { should belong_to(:registration_facility).class_name("Facility") }
+    it { should belong_to(:registration_facility).class_name("Facility").optional }
     it { should belong_to(:registration_user).class_name("User") }
   end
 
