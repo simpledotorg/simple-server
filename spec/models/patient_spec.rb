@@ -233,7 +233,9 @@ describe Patient, type: :model do
       expect { patient.discard_data }.to change { patient.encounters.count }.from(4).to(0)
     end
     it "should discard a patient's medical history" do
-      expect { patient.discard_data }.to change { patient.medical_history.count }.from(1).to(0)
+      patient.discard_data
+      expect(patient.medical_history.discarded?).to be true
+      expect(MedicalHistory.find_by(id: patient.medical_history.id)).to be nil
     end
     it "should discard a patient's phone numbers" do
       expect { patient.discard_data }.to change { patient.phone_numbers.count }.from(1).to(0)
