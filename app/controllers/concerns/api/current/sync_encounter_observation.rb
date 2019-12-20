@@ -4,11 +4,7 @@ module Api::Current::SyncEncounterObservation
 
     def merge_encounter_observation(observation_name, params)
       ActiveRecord::Base.transaction do
-        if FeatureToggle.enabled?('CREATE_ENCOUNTERS')
-          add_encounter_and_merge_record(observation_name, params)
-        else
-          observation_name.to_s.classify.constantize.merge(params)
-        end
+        add_encounter_and_merge_record(observation_name, params)
       end
     end
 
