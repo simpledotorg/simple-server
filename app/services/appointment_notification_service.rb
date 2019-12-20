@@ -11,7 +11,7 @@ class AppointmentNotificationService
                           .overdue_by(days_overdue)
                           .includes(patient: [:phone_numbers])
                           .where(patients: { reminder_consent: 'granted' })
-                          .where(patients: { patient_phone_numbers: { phone_type: 'mobile' } }),
+                          .merge(PatientPhoneNumber.phone_type_mobile),
                         Communication.communication_types[:missed_visit_sms_reminder],
                         schedule_at)
     end
