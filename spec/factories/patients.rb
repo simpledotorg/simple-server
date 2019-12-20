@@ -32,6 +32,8 @@ FactoryBot.define do
     trait(:with_sanitized_phone_number) do
       phone_numbers { build_list(:patient_phone_number, 1, patient_id: id, number: '9876543210') }
     end
+
+    trait(:with_)
   end
 end
 
