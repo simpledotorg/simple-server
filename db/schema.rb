@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191213151620) do
+ActiveRecord::Schema.define(version: 20191220103935) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -40,8 +40,10 @@ ActiveRecord::Schema.define(version: 20191213151620) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id"
+    t.datetime "deleted_at"
     t.index ["access_controllable_id", "access_controllable_type"], name: "index_access_controls_on_controllable_id_and_type"
     t.index ["admin_id"], name: "index_admin_access_controls_on_admin_id"
+    t.index ["deleted_at"], name: "index_admin_access_controls_on_deleted_at"
   end
 
   create_table "admins", force: :cascade do |t|
@@ -110,6 +112,7 @@ ActiveRecord::Schema.define(version: 20191213151620) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
+    t.datetime "deleted_at"
     t.index ["action", "auditable_type"], name: "index_audit_logs_on_action_and_auditable_type"
     t.index ["auditable_type", "auditable_id"], name: "index_audit_logs_on_auditable_type_and_auditable_id"
     t.index ["user_id"], name: "index_audit_logs_on_user_id"
@@ -162,6 +165,8 @@ ActiveRecord::Schema.define(version: 20191213151620) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "caller_phone_number", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_call_logs_on_deleted_at"
   end
 
   create_table "communications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -239,6 +244,8 @@ ActiveRecord::Schema.define(version: 20191213151620) do
     t.datetime "whitelist_status_valid_until"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_exotel_phone_number_details_on_deleted_at"
     t.index ["patient_phone_number_id"], name: "index_exotel_phone_number_details_on_patient_phone_number_id"
     t.index ["patient_phone_number_id"], name: "index_unique_exotel_phone_number_details_on_phone_number_id", unique: true
     t.index ["whitelist_status"], name: "index_exotel_phone_number_details_on_whitelist_status"
@@ -261,8 +268,8 @@ ActiveRecord::Schema.define(version: 20191213151620) do
     t.uuid "facility_group_id"
     t.string "slug"
     t.string "zone"
-    t.string "facility_size"
     t.boolean "enable_diabetes_management", default: false, null: false
+    t.string "facility_size"
     t.index ["deleted_at"], name: "index_facilities_on_deleted_at"
     t.index ["enable_diabetes_management"], name: "index_facilities_on_enable_diabetes_management"
     t.index ["facility_group_id"], name: "index_facilities_on_facility_group_id"
@@ -330,6 +337,8 @@ ActiveRecord::Schema.define(version: 20191213151620) do
     t.uuid "observable_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_observations_on_deleted_at"
     t.index ["encounter_id"], name: "index_observations_on_encounter_id"
     t.index ["observable_type", "observable_id"], name: "idx_observations_on_observable_type_and_id", unique: true
     t.index ["user_id"], name: "index_observations_on_user_id"
@@ -463,6 +472,8 @@ ActiveRecord::Schema.define(version: 20191213151620) do
     t.datetime "delivered_on"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_twilio_sms_delivery_details_on_deleted_at"
   end
 
   create_table "user_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
