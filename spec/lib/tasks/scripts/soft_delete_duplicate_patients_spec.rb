@@ -22,32 +22,18 @@ RSpec.describe SoftDeleteDuplicatePatients do
     end
   end
 
-  context 'Soft delete records' do
-
+  context '.discard_patients' do
     let!(:patient_ids) do
       patients_csv = open(file_path)
       CSV.parse(patients_csv, headers: true)
         .map { |patient| patient['Simple Patient ID'] }
     end
-    let!(:patient_ids_to_delete) do
-      SoftDeleteDuplicatePatients
-        .parse(file_path)
-    end
-    let!(:patients) do
-      patient_ids.map do |id|
-        create(:patient, id: id)
-      end
-    end
+    let!(:patient_ids_to_delete) { described_class.parse(file_path) }
+    let!(:patients) { patient_ids.map { |id| create(:patient, id: id) } }
 
-    context '.discard_patient_records' do
-      it "should soft delete a patient and it's associated records" do
-        patient_id = patient_ids_to_delete.first
-        patient = Patient.find(patient_id)
-
-        described_class.discard_patient_records(patient)
-        expect(patient.address.discarded?).to be true
-        expect(Address.find_by(id: patient.address.id)).to be_nil
-      end
+    it 'should discard all patients given their ids' do
+      expect { described_class.discard_patients(patient_ids_to_delete) }.to change { Patient.count }.from(9).to(6)
+      expect(Patient.unscoped.count).to eq(9)
     end
   end
 end
