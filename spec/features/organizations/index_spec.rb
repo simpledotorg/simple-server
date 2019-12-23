@@ -64,4 +64,21 @@ RSpec.feature 'Verify Dashboard', type: :feature do
     expect(page).to have_content(user.full_name)
     expect(page).to have_content(user.phone_number)
   end
+
+  it "verify manage section overlay for given permission" do
+    visit root_path
+    login_page.do_login(owner.email, owner.password)
+    expect(page).to have_content("Dashboard")
+
+    dashboard_navigation.select_main_menu_tab("Manage")
+
+    expect(page).to have_content("Users")
+    expect(page).to have_content("Organizations")
+
+    headings = ['Admins','Protocols', 'Facilities']
+    headings.each do |heading|
+      expect(page).not_to have_content(heading)
+    end
+  end
+
 end

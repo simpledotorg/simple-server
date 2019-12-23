@@ -100,6 +100,14 @@ RSpec.feature 'To test overdue appointment functionality', type: :feature do
         expect(appoint_page.get_overdue_days).to eq(var_appointment.days_overdue.to_s + " days overdue")
       end
     end
+
+    it "landing page -verify navigation bar"do
+      headings = ['Manage','Dashboard', 'Adherence follow-ups']
+      headings.each do |heading|
+        expect(page).not_to have_content(heading)
+      end
+    end
+
   end
 
   skip 'JS specs are currently disabled' do

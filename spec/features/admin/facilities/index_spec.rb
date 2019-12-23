@@ -17,6 +17,7 @@ RSpec.feature 'Facility page functionality', type: :feature do
 
   facility_page = AdminPage::Facilities::Show.new
   facility_group = AdminPage::FacilityGroups::New.new
+  navigation = Navigations::DashboardPageNavigation.new
 
   before(:each) do
     visit root_path
@@ -72,5 +73,16 @@ RSpec.feature 'Facility page functionality', type: :feature do
     facility_group.click_on_update_facility_group_button
 
     expect(page).to have_content(unassociated_facility02.name)
+  end
+
+  it "verify manage section overlay for the given permission" do
+    navigation.select_main_menu_tab("Manage")
+
+    expect(page).to have_content("Facilities")
+
+    headings = ['Admins', 'Protocols', 'Users']
+    headings.each do |heading|
+      expect(page).not_to have_content(heading)
+    end
   end
 end

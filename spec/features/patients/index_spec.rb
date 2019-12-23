@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.feature 'To test adherence followup patient functionality', type: :feature do
   let!(:ihmi) {create(:organization, name: "IHMI")}
   let!(:ihmi_facility_group) {create(:facility_group, organization: ihmi, name: "Bathinda")}
-  let!(:owner) { create(:admin) }
-  let!(:permissions) { create(:user_permission, user: owner, permission_slug: :view_adherence_follow_up_list) }
+  let!(:owner) {create(:admin)}
+  let!(:permissions) {create(:user_permission, user: owner, permission_slug: :view_adherence_follow_up_list)}
 
   login = AdminPage::Sessions::New.new
   adherence_page = PatientPage::Index.new
@@ -37,7 +37,7 @@ RSpec.feature 'To test adherence followup patient functionality', type: :feature
 
     it "landing page - adherence follow up patient card detail -without bp" do
       chc_bagta_facility = create(:facility, facility_group: ihmi_facility_group, name: "bagta")
-      var_patient=create(:patient ,registration_facility: chc_bagta_facility, device_created_at: 2.day.ago)
+      var_patient = create(:patient, registration_facility: chc_bagta_facility, device_created_at: 2.day.ago)
       nav_page.select_main_menu_tab("Adherence follow-ups")
 
       within(".card") do
@@ -52,8 +52,8 @@ RSpec.feature 'To test adherence followup patient functionality', type: :feature
 
     it "landing page - adherence follow up patient card detail- with bp" do
       chc_bagta_facility = create(:facility, facility_group: ihmi_facility_group, name: "bagta")
-      var_patient=create(:patient ,registration_facility: chc_bagta_facility, device_created_at: 2.day.ago)
-      var_bp=create(:blood_pressure, :critical, facility: chc_bagta_facility, patient: var_patient)
+      var_patient = create(:patient, registration_facility: chc_bagta_facility, device_created_at: 2.day.ago)
+      var_bp = create(:blood_pressure, :critical, facility: chc_bagta_facility, patient: var_patient)
       nav_page.select_main_menu_tab("Adherence follow-ups")
 
       within(".card") do
@@ -67,6 +67,13 @@ RSpec.feature 'To test adherence followup patient functionality', type: :feature
         expect(page).to have_content(var_patient.address.street_address)
         expect(page).to have_content("Call result")
         expect(find("a.btn-phone").text).to eq(var_patient.phone_numbers.first.number)
+      end
+    end
+
+    it "landing page -verify navigation bar" do
+      headings = ['Manage', 'Dashboard', 'Overdue Patients']
+      headings.each do |heading|
+        expect(page).not_to have_content(heading)
       end
     end
   end
@@ -105,7 +112,7 @@ RSpec.feature 'To test adherence followup patient functionality', type: :feature
       end
 
       it "should be able to select result of follow up" do
-        var_patients=create(:patient ,registration_facility: chc_bagta_facility, device_created_at: 2.day.ago)
+        var_patients = create(:patient, registration_facility: chc_bagta_facility, device_created_at: 2.day.ago)
         nav_page.select_main_menu_tab("Adherence follow-ups")
         within(".card") do
           select "Contacted", from: "patient[call_result]"

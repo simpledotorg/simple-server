@@ -8,6 +8,7 @@ RSpec.feature 'test protocol screen functionality', type: :feature do
   protocol_new = AdminPage::Protocols::New.new
   protocol_page = AdminPage::Protocols::Index.new
   protocol_show = AdminPage::Protocols::Show.new
+  navigation =Navigations::DashboardPageNavigation.new
 
   before(:each) do
     visit root_path
@@ -45,6 +46,17 @@ RSpec.feature 'test protocol screen functionality', type: :feature do
       it "delete protocol", js: true do
         protocol_page.delete_protocol(var_protocol.name)
         protocol_page.click_on_message_close_button
+      end
+    end
+
+    it "verify manage section overlay for manage_protocols permission" do
+      navigation.select_main_menu_tab("Manage")
+
+      expect(page).to have_content("Protocols")
+
+      headings = ['Admins','Users','Facilities']
+      headings.each do |heading|
+        expect(page).not_to have_content(heading)
       end
     end
   end
