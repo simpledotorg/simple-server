@@ -48,6 +48,18 @@ describe Appointment, type: :model do
     end
   end
 
+  context 'For discarded patients' do
+    let(:overdue_appointment_1) { create(:appointment, :overdue) }
+    let(:overdue_appointment_2) { create(:appointment, :overdue) }
+
+    it "shouldn't include discarded patients' appointments " do
+      overdue_appointment_1.patient.discard_data
+
+      expect(Appointment.overdue).not_to include(overdue_appointment_1)
+      expect(Appointment.overdue).to include(overdue_appointment_2)
+    end
+  end
+
   context "Result of follow-up" do
     describe "For each category in the follow-up options" do
       it "correctly records agreed to visit" do

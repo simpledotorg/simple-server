@@ -218,19 +218,19 @@ describe Patient, type: :model do
       expect(Address.find_by(id: patient.address.id)).to be nil
     end
     it "should discard a patient's appointments" do
-      expect { patient.discard_data }.to change { patient.appointments.count }.from(2).to(0)
+      expect { patient.discard_data }.to change { patient.appointments.count }.by(-2)
     end
     it "should discard a patient's blood pressures" do
-      expect { patient.discard_data }.to change { patient.blood_pressures.count }.from(2).to(0)
+      expect { patient.discard_data }.to change { patient.blood_pressures.count }.by(-2)
     end
     it "should discard a patient's blood sugars" do
-      expect { patient.discard_data }.to change { patient.blood_sugars.count }.from(2).to(0)
+      expect { patient.discard_data }.to change { patient.blood_sugars.count }.by(-2)
     end
     it "should discard a patient's business identifiers" do
-      expect { patient.discard_data }.to change { patient.business_identifiers.count }.from(1).to(0)
+      expect { patient.discard_data }.to change { patient.business_identifiers.count }.by(-1)
     end
     it "should discard a patient's encounters" do
-      expect { patient.discard_data }.to change { patient.encounters.count }.from(4).to(0)
+      expect { patient.discard_data }.to change { patient.encounters.count }.by(-4)
     end
     it "should discard a patient's medical history" do
       patient.discard_data
@@ -238,13 +238,16 @@ describe Patient, type: :model do
       expect(MedicalHistory.find_by(id: patient.medical_history.id)).to be nil
     end
     it "should discard a patient's phone numbers" do
-      expect { patient.discard_data }.to change { patient.phone_numbers.count }.from(1).to(0)
+      expect { patient.discard_data }.to change { patient.phone_numbers.count }.by(-1)
     end
     it "should discard a patient's observations" do
-      expect { patient.discard_data }.to change { patient.observations.count }.from(4).to(0)
+      expect { patient.discard_data }.to change { patient.observations.count }.by(-4)
     end
     it "should discard a patient's prescription drugs" do
-      expect { patient.discard_data }.to change { patient.prescription_drugs.count }.from(2).to(0)
+      expect { patient.discard_data }.to change { patient.prescription_drugs.count }.by(-2)
+    end
+    it "should discard the patient" do
+      expect { patient.discard_data }.to change { Patient.count }.by(-1)
     end
   end
 end
