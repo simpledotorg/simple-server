@@ -1,6 +1,6 @@
 module AdminPage
   module Facilities
-    class Show < ApplicationPage
+    class Index < ApplicationPage
       FACILITY_PAGE_HEADING = {css: 'h1.page-title'}.freeze
       UPLOAD_FACILITY_CSV_LINK={css: "nav.page-nav>a.btn-default"}
       ADD_FACILITY_GROUP_BUTTON = {css: 'nav.page-nav>a.btn-primary'}.freeze

@@ -15,7 +15,7 @@ RSpec.feature 'Facility page functionality', type: :feature do
 
   let!(:protocol_01) { create(:protocol, name: "testProtocol") }
 
-  facility_page = AdminPage::Facilities::Show.new
+  facility_page = AdminPage::Facilities::Index.new
   facility_group = AdminPage::FacilityGroups::New.new
   navigation = Navigations::DashboardPageNavigation.new
 
