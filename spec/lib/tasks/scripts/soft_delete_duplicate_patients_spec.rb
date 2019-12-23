@@ -18,7 +18,7 @@ RSpec.describe SoftDeleteDuplicatePatients do
     end
 
     it 'should return a filtered set of patients to be soft deleted' do
-      expect(SoftDeleteDuplicatePatients.parse(file_path).size).to eq(3)
+      expect(SoftDeleteDuplicatePatients.parse(file_path).size).to eq(2)
     end
   end
 
@@ -32,8 +32,8 @@ RSpec.describe SoftDeleteDuplicatePatients do
     let!(:patients) { patient_ids.map { |id| create(:patient, id: id) } }
 
     it 'should discard all patients given their ids' do
-      expect { described_class.discard_patients(patient_ids_to_delete) }.to change { Patient.count }.from(9).to(6)
-      expect(Patient.unscoped.count).to eq(9)
+      expect { described_class.discard_patients(patient_ids_to_delete) }.to change { Patient.count }.from(5).to(3)
+      expect(Patient.unscoped.count).to eq(5)
     end
   end
 end
