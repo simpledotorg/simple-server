@@ -13,6 +13,8 @@ RSpec.describe SoftDeleteDuplicatePatients do
     end
 
     it "should fail if Duplicate? or Simple Patient ID column doesn't exist" do
+      allow($stderr).to receive(:write)
+
       expect { SoftDeleteDuplicatePatients.parse(invalid_csv_path) }
         .to raise_error('Missing columns, Duplicate? and Simple Patient ID must both be present.')
     end
