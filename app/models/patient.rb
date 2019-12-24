@@ -21,9 +21,9 @@ class Patient < ApplicationRecord
 
   ANONYMIZED_DATA_FIELDS = %w[id created_at registration_date registration_facility_name user_id age gender]
 
-  belongs_to :address, -> { unscope(where: :deleted_at) }, optional: true
-  has_many :phone_numbers, -> { unscope(where: :deleted_at) }, class_name: 'PatientPhoneNumber'
-  has_many :business_identifiers, -> { unscope(where: :deleted_at) }, class_name: 'PatientBusinessIdentifier'
+  belongs_to :address, optional: true
+  has_many :phone_numbers, class_name: 'PatientPhoneNumber'
+  has_many :business_identifiers, class_name: 'PatientBusinessIdentifier'
 
   has_many :encounters
   has_many :observations, through: :encounters
