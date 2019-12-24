@@ -574,6 +574,22 @@ sup {
             }
         }
         
+        [aria-sort] {
+            background: $blue;
+            color: #fff;
+        }
+        
+        th[role="columnheader"]:not(.no-sort)::after {
+            content: "⇣";
+            border: none;
+            background: none;
+            font-weight: bold;
+        }
+        
+        th[aria-sort="ascending"]:not(.no-sort)::after {
+            content: "⇡";
+        }
+        
         a {
             display: block;
         }
