@@ -156,7 +156,11 @@ Rails.application.routes.draw do
   resources :appointments, only: [:index, :update]
   resources :patients, only: [:index, :update]
   resources :organizations, only: [:index], path: 'dashboard'
-  resources :my_facilities, only: [:index]
+
+  scope :my_facilities do
+    get '/', to: 'my_facilities#index', as: 'my_facilities_overview'
+    get 'ranked_facilities', to: 'my_facilities#ranked_facilities', as: 'my_facilities_ranked_facilities'
+  end
 
   namespace :admin do
     resources :organizations

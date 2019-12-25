@@ -13,4 +13,8 @@ class MyFacilitiesController < AdminController
     @facilities = policy_scope([:manage, :facility, Facility])
     @active_facilities = MyFacilitiesQuery.new(@facilities).active_facilities
   end
+
+  def ranked_facilities
+    authorize(:dashboard, :show?)
+  end
 end
