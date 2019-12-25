@@ -7,8 +7,8 @@ RSpec.describe PrescriptionDrug, type: :model do
   end
 
   describe 'Associations' do
-    it { should belong_to(:facility) }
-    it { should belong_to(:patient) }
+    it { should belong_to(:facility).optional }
+    it { should belong_to(:patient).optional }
   end
 
   describe 'Behavior' do

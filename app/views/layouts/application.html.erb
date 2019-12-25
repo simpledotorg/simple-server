@@ -60,19 +60,18 @@
                   <%= link_to "Dashboard", root_path, class: "nav-link #{active_controller?("organizations", "facility_groups")}" %>
                 </li>
               <% end %>
-              <% if FeatureToggle.enabled?('PATIENT_FOLLOWUPS') %>
-                <% if policy(:dashboard).overdue_list? %>
-                  <li class="nav-item">
-                    <%= link_to "Overdue patients", appointments_path, class: "nav-link #{active_controller?("appointments")}" %>
-                  </li>
-                <% end %>
-                <% if policy(:dashboard).adherence_follow_up? %>
-                  <li class="nav-item">
-                    <%= link_to "Adherence follow-ups", patients_path, class: "nav-link #{active_controller?("patients")}" %>
-                  </li>
-                <% end %>
 
+              <% if policy(:dashboard).overdue_list? %>
+                <li class="nav-item">
+                  <%= link_to "Overdue patients", appointments_path, class: "nav-link #{active_controller?("appointments")}" %>
+                </li>
               <% end %>
+              <% if policy(:dashboard).adherence_follow_up? %>
+                <li class="nav-item">
+                  <%= link_to "Adherence follow-ups", patients_path, class: "nav-link #{active_controller?("patients")}" %>
+                </li>
+              <% end %>
+
               <% if policy(:dashboard).manage? %>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle dropdown-more" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
