@@ -24,6 +24,8 @@ class Facility < ApplicationRecord
 
   has_many :appointments
 
+  scope :inactive,  MyFacilitiesQuery::InactiveFacilitiesQuery
+
   enum facility_size: {
     community: "community",
     small: "small",
