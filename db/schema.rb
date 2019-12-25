@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191225171020) do
+ActiveRecord::Schema.define(version: 20191225171641) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -214,8 +214,8 @@ ActiveRecord::Schema.define(version: 20191225171020) do
     t.uuid "facility_group_id"
     t.string "slug"
     t.string "zone"
-    t.string "facility_size"
     t.boolean "enable_diabetes_management", default: false, null: false
+    t.string "facility_size"
     t.index ["deleted_at"], name: "index_facilities_on_deleted_at"
     t.index ["enable_diabetes_management"], name: "index_facilities_on_enable_diabetes_management"
     t.index ["facility_group_id"], name: "index_facilities_on_facility_group_id"
@@ -235,20 +235,6 @@ ActiveRecord::Schema.define(version: 20191225171020) do
     t.index ["organization_id"], name: "index_facility_groups_on_organization_id"
     t.index ["protocol_id"], name: "index_facility_groups_on_protocol_id"
     t.index ["slug"], name: "index_facility_groups_on_slug", unique: true
-  end
-
-  create_table "master_users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "full_name"
-    t.string "sync_approval_status", null: false
-    t.string "sync_approval_status_reason"
-    t.datetime "device_updated_at", null: false
-    t.datetime "device_created_at", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "deleted_at"
-    t.string "role"
-    t.uuid "organization_id"
-    t.index ["organization_id"], name: "index_master_users_on_organization_id"
   end
 
   create_table "medical_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -440,31 +426,33 @@ ActiveRecord::Schema.define(version: 20191225171020) do
     t.index ["resource_type", "resource_id"], name: "index_user_permissions_on_resource_type_and_resource_id"
   end
 
+  create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "full_name"
+    t.string "sync_approval_status", null: false
+    t.string "sync_approval_status_reason"
+    t.datetime "device_updated_at", null: false
+    t.datetime "device_created_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.string "role"
+    t.uuid "organization_id"
+    t.index ["organization_id"], name: "index_users_on_organization_id"
+  end
+
   add_foreign_key "appointments", "facilities"
   add_foreign_key "blood_sugars", "facilities"
-  add_foreign_key "blood_sugars", "master_users", column: "user_id"
+  add_foreign_key "blood_sugars", "users"
   add_foreign_key "encounters", "facilities"
   add_foreign_key "exotel_phone_number_details", "patient_phone_numbers"
   add_foreign_key "facilities", "facility_groups"
   add_foreign_key "facility_groups", "organizations"
   add_foreign_key "observations", "encounters"
-  add_foreign_key "observations", "master_users", column: "user_id"
+  add_foreign_key "observations", "users"
   add_foreign_key "patient_phone_numbers", "patients"
   add_foreign_key "patients", "addresses"
   add_foreign_key "protocol_drugs", "protocols"
 
-  create_view "users", sql_definition: <<-SQL
-      SELECT master_users.id,
-      master_users.full_name,
-      master_users.sync_approval_status,
-      master_users.sync_approval_status_reason,
-      master_users.device_updated_at,
-      master_users.device_created_at,
-      master_users.created_at,
-      master_users.updated_at,
-      master_users.deleted_at
-     FROM master_users;
-  SQL
   create_view "bp_drugs_views", sql_definition: <<-SQL
       SELECT bp.id AS bp_id,
       bp.systolic,
