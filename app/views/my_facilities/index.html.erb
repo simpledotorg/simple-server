@@ -6,10 +6,10 @@
                 <a class="nav-link active" href="#">Overview</a>
                 <a class="nav-link" href="#">Ranked facilities</a>
                 <a class="nav-link" href="#">BP control</a>
-                <a class="nav-link" href="#">Missed visit</a>
+                <a class="nav-link" href="#">Missed visits</a>
                 <a class="nav-link" href="#">Registrations</a>
-                <a class="nav-link" href="#">Medication supply</a>
-                <a class="nav-link" href="#">Terminal digit pref.</a>
+                <a class="nav-link" href="#">Drug supply</a>
+                <a class="nav-link" href="#">Digit prefereence</a>
                 <a class="nav-link" href="#">Treatment inertia</a>
                 <a class="nav-link" href="#">Downloads</a>
             </nav>
@@ -21,9 +21,14 @@
                   </a>
 
                   <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                    <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
-                    <a class="dropdown-item" href="#">Something else here</a>
+                    <a class="dropdown-item" href="#">Block: Aadhari</a>
+                    <a class="dropdown-item" href="#">Block: Bangalore</a>
+                    <a class="dropdown-item" href="#">Block: Bengaluru</a>
+                    <a class="dropdown-item" href="#">Block: Cava</a>
+                    <a class="dropdown-item" href="#">Block: Durban</a>
+                    <a class="dropdown-item" href="#">Block: England</a>
+                    <a class="dropdown-item" href="#">Block: Far Enough</a>
+                    <a class="dropdown-item" href="#">Block: Gurgaon</a>
                   </div>
                 </div>
                 <form>
@@ -153,7 +158,7 @@
                         </div>
                     </div>
                     
-                    <table class="table table-compact table-responsive-md table-hover">
+                    <table class="table table-compact table-responsive-md" id="analytics-table">
                         <thead>
                             <tr>
                               <th></th>
@@ -164,15 +169,15 @@
                               <th>Missed visits</th>
                               <th></th>
                             </tr>
-                            <tr class="sorts">
-                              <th><a href="#" class="current current-down">Rank <i class="fas fa-angle-down"></i></a></th>
-                              <th><a href="#">Name <i class="fas fa-angle-down"></i></a></th>
-                              <th><a href="#">Oct-2019 <i class="fas fa-angle-down"></i></a></th>
-                              <th><a href="#">Oct-2019 <i class="fas fa-angle-down"></i></a></th>
-                              <th><a href="#">All-time <i class="fas fa-angle-down"></i></a></th>
-                              <th><a href="#">Monthly <i class="fas fa-angle-down"></i></a></th>
-                              <th><a href="#">Oct-2019 <i class="fas fa-angle-down"></i></a></th>
-                              <th><a href="#">Rank last month <i class="fas fa-angle-down"></i></a></th>
+                            <tr class="sorts" data-sort-method="thead">
+                              <th class="row-label sort-label" data-sort-method="number">Rank</th>
+                              <th class="row-label sort-label">Name</th>
+                              <th class="row-label sort-label" data-sort-method="number">Oct-2019</th>
+                              <th class="row-label sort-label" data-sort-method="number">Oct-2019</th>
+                              <th class="row-label sort-label" data-sort-method="number">All-time</th>
+                              <th class="row-label sort-label" data-sort-method="number">Monthly</th>
+                              <th class="row-label sort-label" data-sort-method="number">Oct-2019</th>
+                              <th class="row-label sort-label" data-sort-method="number">Rank last month</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -199,21 +204,21 @@
                             <tr>
                                 <td class="type-rank">2</td>
                                 <td class="type-title"><a href="#">CHC Nameplace Two</a></td>
-                                <td class="type-percent"><em>56%</em></td>
-                                <td class="type-number">345</td>
-                                <td class="type-number">987</td>
-                                <td class="type-number">4230</td>
-                                <td class="type-number">143</td>
+                                <td class="type-percent"><em>48%</em></td>
+                                <td class="type-number">322</td>
+                                <td class="type-number">1023</td>
+                                <td class="type-number">5435</td>
+                                <td class="type-number">164</td>
                                 <td class="type-rank">1 <i class="fas fa-long-arrow-alt-down"></i></td>
                             </tr>
                             <tr>
                                 <td class="type-rank">3</td>
                                 <td class="type-title"><a href="#">CHC Nameplace Two</a></td>
-                                <td class="type-percent"><em>56%</em></td>
-                                <td class="type-number">345</td>
-                                <td class="type-number">987</td>
-                                <td class="type-number">4230</td>
-                                <td class="type-number">143</td>
+                                <td class="type-percent"><em>23%</em></td>
+                                <td class="type-number">156</td>
+                                <td class="type-number">234</td>
+                                <td class="type-number">909</td>
+                                <td class="type-number">64</td>
                                 <td class="type-rank">3 <i class="fas fa-long-arrow-alt-up"></i></td>
                             </tr>
                             <tr>
