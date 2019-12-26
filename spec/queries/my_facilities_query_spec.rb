@@ -11,9 +11,9 @@ RSpec.describe MyFacilitiesQuery do
         create(:encounter, :with_observables, patient: record.patient, observable: record, facility: record.facility) }
     end
 
-    describe ".active_facilities" do
+    describe "InactiveFacilitiesQuery.call" do
       it 'should only return active facilities' do
-        expect(MyFacilitiesQuery.new(Facility.all).active_facilities).to match_array(active_facility)
+        expect(MyFacilitiesQuery::InactiveFacilitiesQuery.call(Facility.all)).to match_array(inactive_facility)
       end
     end
   end
