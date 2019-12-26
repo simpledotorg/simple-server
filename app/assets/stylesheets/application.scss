@@ -608,7 +608,6 @@ sup {
         }
         
         th {
-            border-color: $grey-light;
             border-top: 0;
             border-bottom: 0;
             padding: 0;
@@ -620,7 +619,6 @@ sup {
         border: none;
         padding: 4px 8px 8px 8px;
         font-size: 13px;
-        border-left: 1px solid $grey-light;
         text-align: center;
 
         span {
@@ -632,8 +630,19 @@ sup {
         padding: 8px;
         vertical-align: middle;
         border-top: 1px solid $grey-lightest;
-        border-left: 1px solid $grey-lightest;
         font-size: 14px;
+    }
+    
+    col {
+        border-left: 1px solid $grey-lightest;
+    }
+    
+    col:first-of-type {
+        border-left: none;
+    }
+    
+    col.table-divider {
+        border-left: 1px solid $grey-mid;
     }
     
     td.type-rank { text-align: center; }

@@ -21,7 +21,17 @@
     </div>
   </div>
 
-  <table class="table table-compact table-responsive-md table-hover">
+  <table class="table table-compact table-responsive-md" id="analytics-table">
+    <colgroup>
+        <col>
+        <col class="table-divider">
+        <col class="table-divider">
+        <col class="table-divider">
+        <col>
+        <col class="table-divider">
+        <col class="table-divider">
+        <col class="table-divider">
+    </colgroup>
     <thead>
     <tr>
       <th></th>
@@ -32,19 +42,19 @@
       <th>Missed visits</th>
       <th></th>
     </tr>
-    <tr class="sorts">
-      <th><a href="#" class="current current-down">Rank <i class="fas fa-angle-down"></i></a></th>
-      <th><a href="#">Name <i class="fas fa-angle-down"></i></a></th>
-      <th><a href="#">Oct-2019 <i class="fas fa-angle-down"></i></a></th>
-      <th><a href="#">Oct-2019 <i class="fas fa-angle-down"></i></a></th>
-      <th><a href="#">All-time <i class="fas fa-angle-down"></i></a></th>
-      <th><a href="#">Monthly <i class="fas fa-angle-down"></i></a></th>
-      <th><a href="#">Oct-2019 <i class="fas fa-angle-down"></i></a></th>
-      <th><a href="#">Rank last month <i class="fas fa-angle-down"></i></a></th>
+    <tr data-sort-method="thead" class="sorts">
+      <th class="row-label sort-label" data-sort-method="number">Rank</th>
+      <th class="row-label sort-label">Name</th>
+      <th class="row-label sort-label" data-sort-method="number">Oct-2019</th>
+      <th class="row-label sort-label" data-sort-method="number">Oct-2019</th>
+      <th class="row-label sort-label" data-sort-method="number">All-time</th>
+      <th class="row-label sort-label" data-sort-method="number">Monthly</th>
+      <th class="row-label sort-label" data-sort-method="number">Oct-2019</th>
+      <th class="row-label sort-label" data-sort-method="number">Rank last month</th>
     </tr>
     </thead>
     <tbody>
-    <tr class="row-total">
+    <tr class="row-total" data-sort-method="none">
       <td class="type-rank"></td>
       <td class="type-title">All</td>
       <td class="type-percent"><em>100%</em></td>
