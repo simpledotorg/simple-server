@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe Encounter, type: :model do
   describe 'Associations' do
-    it { should belong_to(:patient) }
+    it { should belong_to(:patient).optional }
     it { should belong_to(:facility) }
     it { should have_many(:observations) }
     it { should have_many(:blood_pressures) }

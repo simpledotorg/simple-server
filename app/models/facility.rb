@@ -24,6 +24,15 @@ class Facility < ApplicationRecord
 
   has_many :appointments
 
+  scope :inactive,  MyFacilitiesQuery::InactiveFacilitiesQuery
+
+  enum facility_size: {
+    community: "community",
+    small: "small",
+    medium: "medium",
+    large: "large"
+  }
+
   with_options if: :import do |facility|
     facility.validates :organization_name, presence: true
     facility.validates :facility_group_name, presence: true

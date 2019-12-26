@@ -1,0 +1,42 @@
+<% content_for(:content) do %>
+  <div class="row">
+    <div class="col-lg-2 pl-lg-0">
+      <nav class="secondary-nav">
+        <%= link_to 'Overview', my_facilities_overview_path, class: "nav-link" %>
+        <%= link_to 'Ranked facilities', my_facilities_ranked_facilities_path, class: "nav-link" %>
+        <a class="nav-link" href="#">BP control</a>
+        <a class="nav-link" href="#">Missed visit</a>
+        <a class="nav-link" href="#">Registrations</a>
+        <a class="nav-link" href="#">Medication supply</a>
+        <a class="nav-link" href="#">Terminal digit pref.</a>
+        <a class="nav-link" href="#">Treatment inertia</a>
+        <a class="nav-link" href="#">Downloads</a>
+      </nav>
+      <section id="facility-filters" class="secondary-nav-filters">
+        <h4>Facility Filters</h4>
+        <div class="dropdown show">
+          <a class="btn btn-sm dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            All areas
+          </a>
+
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            <a class="dropdown-item" href="#">Action</a>
+            <a class="dropdown-item" href="#">Another action</a>
+            <a class="dropdown-item" href="#">Something else here</a>
+          </div>
+        </div>
+        <form>
+          <div><label for="facility-large"><input type="checkbox" id="facility-large" checked> Large</label></div>
+          <div><label for="facility-medium"><input type="checkbox" id="facility-medium" checked> Medium</label></div>
+          <div><label for="facility-small"><input type="checkbox" id="facility-small" checked> Small</label></div>
+          <div><label for="facility-community"><input type="checkbox" id="facility-community" checked> Community</label>
+          </div>
+        </form>
+      </section>
+    </div>
+    <div class="col-lg-10 pr-lg-0">
+      <%= yield %>
+    </div>
+  </div>
+<% end %>
+<%= render template: "layouts/application" %>

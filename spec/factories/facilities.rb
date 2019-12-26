@@ -14,6 +14,7 @@ FactoryBot.define do
     pin "123456"
     zone "Block ABC"
     facility_type "PHC"
+    facility_size { Facility.facility_sizes[:small] }
     facility_group { fac_group }
     enable_diabetes_management { true }
   end

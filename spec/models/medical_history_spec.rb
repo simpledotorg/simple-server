@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe MedicalHistory, type: :model do
   describe 'Associations' do
-    it { should belong_to(:patient) }
+    it { should belong_to(:patient).optional }
   end
 
   describe 'Validations' do

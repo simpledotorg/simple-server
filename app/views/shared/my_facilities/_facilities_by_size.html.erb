@@ -1,0 +1,47 @@
+<div class="card mb-3">
+  <h2>Facilities</h2>
+  <p>Facilities where Simple is deployed</p>
+  <section id="facilities-by-size">
+    <table class="table-compact">
+      <thead>
+      <tr>
+        <th></th>
+        <th>Total</th>
+        <th>Inactive*</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="row-total">
+        <td>All</td>
+        <td class="text-right"><%= @facilities.count %></td>
+        <td class="text-right"><%= @inactive_facilities.count %></td>
+      </tr>
+      <tr>
+        <td>Large</td>
+        <td class="text-right"><%= @facility_count_by_size[:total]["large"].to_i %></td>
+        <td class="text-right"><%= @facility_count_by_size[:inactive]["large"].to_i %></td>
+      </tr>
+      <tr>
+        <td>Medium</td>
+        <td class="text-right"><%= @facility_count_by_size[:total]["medium"].to_i %></td>
+        <td class="text-right"><%= @facility_count_by_size[:inactive]["medium"].to_i %></td>
+      </tr>
+      <tr>
+        <td>Small</td>
+        <td class="text-right"><%= @facility_count_by_size[:total]["small"].to_i %></td>
+        <td class="text-right"><%= @facility_count_by_size[:inactive]["small"].to_i %></td>
+      </tr>
+      <tr>
+        <td>Community</td>
+        <td class="text-right"><%= @facility_count_by_size[:total]["community"].to_i %></td>
+        <td class="text-right"><%= @facility_count_by_size[:inactive]["community"].to_i %></td>
+      </tr>
+      <tr>
+        <td>Unknown</td>
+        <td class="text-right"><%= @facility_count_by_size[:total][nil].to_i %></td>
+        <td class="text-right"><%= @facility_count_by_size[:inactive][nil].to_i %></td>
+      </tr>
+      </tbody>
+    </table>
+  </section>
+</div>

@@ -1,0 +1,24 @@
+<div class="card">
+  <h2>Inactive facilities</h2>
+  <p>Facilities with &lt;10 patients with BPs recorded in the last 7 days</p>
+  <section id="facilities-inactive">
+    <table class="table-compact">
+      <thead>
+      <tr>
+        <th></th>
+        <th>Last 7 days</th>
+        <th>Last 30 days</th>
+      </tr>
+      </thead>
+      <tbody>
+      <% @inactive_facilities.each do |facility| %>
+        <tr>
+          <td><%= link_to facility.name, analytics_facility_path(facility) %></td>
+          <td class="text-right"><%= @bp_count_last_week[facility.id] %></td>
+          <td class="text-right"><%= @bp_count_last_month[facility.id] %></td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </section>
+</div>
