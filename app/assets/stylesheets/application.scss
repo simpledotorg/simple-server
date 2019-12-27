@@ -531,9 +531,14 @@ Dashboard UI
 }
 
 sup {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: normal;
     padding-left: 3px;
+    color: $grey-dark;
+}
+
+th sup {
+    padding-left: 0;
 }
 
 .downloads {
