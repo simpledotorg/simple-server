@@ -616,10 +616,12 @@ sup {
     
     th {
         vertical-align: middle;
-        border: none;
+        border: none !important;
         padding: 4px 8px 8px 8px;
-        font-size: 13px;
+        font-size: 11px;
         text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 2px;
 
         span {
             white-space: nowrap;
@@ -629,8 +631,12 @@ sup {
     td {
         padding: 8px;
         vertical-align: middle;
-        border-top: 1px solid $grey-lightest;
+        border-color: $grey-lightest;
         font-size: 14px;
+        
+        a {
+            display: block;
+        }
     }
     
     col {
@@ -685,31 +691,6 @@ sup {
     border-right: 1px solid $grey-lightest;
 }
 
-.link-row {
-    display: block;
-    padding: 8px 0;
-    border-top: 1px solid $grey-lightest;
-    position: relative;
-    
-    i {
-        position: absolute;
-        top: 10px;
-        right: 8px;
-        font-size: 120%;
-        color: $grey-light;
-        
-    }
-}
-
-.table-compact .row-title a {
-    width: 10em;
-    white-xspace: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    display: block;
-    font-weight: normal;
-}
-
 .table-compact .row-control {
     text-align: center;
 }
@@ -717,7 +698,7 @@ sup {
 .table-compact .row-total td {
     background: #FFFAE3;
     font-weight: bold;
-    border-left-color: #E2DBBB;
+    border-color: #E2DBBB;
 }
 
 /******************
