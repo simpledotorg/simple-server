@@ -1,9 +1,37 @@
 <% content_for(:content) do %>
   <div class="row">
-    <div class="col-lg-2 pl-lg-0">
+    
+    <!---------------------
+    MOBILE NAV
+    --------------------->  
+      
+    <div class="mobile">
+      <div class="dropdown show">
+
+            <h2 style="font-size: 28px; font-weight: bold; padding-left: 16px;" class="btn btn-sm dropdown-toggle" role="button" id="dropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ranked facilities</h2>
+
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink2">
+            <%= link_to 'Overview', my_facilities_overview_path, class: "dropdown-item" %>
+            <%= link_to 'Ranked facilities', my_facilities_ranked_facilities_path, class: "dropdown-item" %>
+            <a class="dropdown-item" href="#">BP control</a>
+            <a class="dropdown-item" href="#">Missed visit</a>
+            <a class="dropdown-item" href="#">Registrations</a>
+            <a class="dropdown-item" href="#">Medication supply</a>
+            <a class="dropdown-item" href="#">Terminal digit pref.</a>
+            <a class="dropdown-item" href="#">Treatment inertia</a>
+            <a class="dropdown-item" href="#">Downloads</a>
+          </div>
+      </div>
+    </div>  
+      
+    <!---------------------
+    DESKTOP NAV
+    --------------------->
+    
+    <div class="col-lg-2 pl-lg-0 desktop">
       <nav class="secondary-nav">
         <%= link_to 'Overview', my_facilities_overview_path, class: "nav-link" %>
-        <%= link_to 'Ranked facilities', my_facilities_ranked_facilities_path, class: "nav-link" %>
+        <%= link_to 'Ranked facilities', my_facilities_ranked_facilities_path, class: "nav-link current" %>
         <a class="nav-link" href="#">BP control</a>
         <a class="nav-link" href="#">Missed visit</a>
         <a class="nav-link" href="#">Registrations</a>

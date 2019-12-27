@@ -163,7 +163,7 @@ nav.secondary-nav a.active {
 }
 
 .desktop {
-    display: inherit;
+    display: block;
 }
 
 .none {
@@ -241,7 +241,7 @@ footer {
     color: $grey-light  ;
 }
 
-@include media-breakpoint-down(sm) {
+@include media-breakpoint-down(md) {
     body {
         padding-top: 4.5rem;
     }
@@ -572,6 +572,9 @@ th sup {
             text-align: left;
             margin: 0;
             white-space: nowrap;
+            text-transform: none;
+            letter-spacing: 0;
+            font-size: 12px;
             
             i {
                 margin-left: 4px;
@@ -597,6 +600,7 @@ th sup {
         
         a {
             display: block;
+            white-space: nowrap;
         }
         
         a:hover {
@@ -641,6 +645,10 @@ th sup {
         
         a {
             display: block;
+            white-space: nowrap;
+            max-width: 14em;
+            text-overflow: ellipsis;
+            overflow: hidden;
         }
     }
     
@@ -668,6 +676,9 @@ th sup {
 @include media-breakpoint-down(sm) {
     .card-responsive {
         padding-right: 0;
+    }
+    .table-compact td a {
+        max-width: 10em;
     }
 }
 

@@ -28,7 +28,7 @@
       <tr data-sort-method="thead" class="sorts">
         <th class="row-label sort-label">Name</th>
         <!--Registered patients-->
-        <th class="row-label sort-label" data-sort-method="number">Total patients</th>
+        <th class="row-label sort-label" data-sort-default data-sort-method="number">Total</th>
 
         <!--Follow-up patients-->
         <% dates_for_periods(@period, 3, include_current_period: @show_current_month).each do |date| %>
