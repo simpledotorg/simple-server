@@ -1,15 +1,14 @@
 <% content_for(:content) do %>
-  <div class="row">
     
     <!---------------------
     MOBILE NAV
     --------------------->  
       
     <div class="mobile">
-      <div class="dropdown show">
+      <div class="dropdown">
 
-            <h2 style="font-size: 28px; font-weight: bold; padding-left: 16px;" class="btn btn-sm dropdown-toggle" role="button" id="dropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ranked facilities</h2>
-
+          <h1 class="btn btn-sm dropdown-toggle pl-0" role="button" id="dropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ranked facilities</h1>
+          
           <div class="dropdown-menu" aria-labelledby="dropdownMenuLink2">
             <%= link_to 'Overview', my_facilities_overview_path, class: "dropdown-item" %>
             <%= link_to 'Ranked facilities', my_facilities_ranked_facilities_path, class: "dropdown-item" %>
@@ -22,12 +21,15 @@
             <a class="dropdown-item" href="#">Downloads</a>
           </div>
       </div>
-    </div>  
+      <div class="mt-0 mb-4" style="text-align: center; display: block; border-radius: 3px; background: rgba(0,0,0,0.02); padding: 10px 16px;">
+        <a href="#" style="display: block; text-transform: uppercase; letter-spacing: 0.3em; font-size: 12px; font-weight: bold;">Filter Facilities</a>
+      </div>
+    </div>
       
     <!---------------------
     DESKTOP NAV
     --------------------->
-    
+    <div class="row">
     <div class="col-lg-2 pl-lg-0 desktop">
       <nav class="secondary-nav">
         <%= link_to 'Overview', my_facilities_overview_path, class: "nav-link" %>

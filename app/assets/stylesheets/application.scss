@@ -47,7 +47,7 @@ body {
     background: $grey-lightest;
 }
 
-h1 {
+h1, h1.btn {
     font-size: 28px;
     font-family: "Roboto", sans-serif;
     font-weight: bold;
@@ -261,13 +261,6 @@ footer {
     .navbar {
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
         border-bottom: 1px solid rgba(0,0,0,0.07);
-    }
-    .navbar-nav {
-        margin-top: 8px;
-    }
-    .navbar-nav li > a {
-        padding: 1em 0;
-        border-top: 1px solid rgba(0,0,0,0.05);
     }
     button.navbar-toggler {
         font-size: 15px;
@@ -673,7 +666,7 @@ th sup {
     td.type-rank i.fa-long-arrow-alt-down { color: $red; }
 }
 
-@include media-breakpoint-down(sm) {
+@include media-breakpoint-down(md) {
     .card-responsive {
         padding-right: 0;
     }
