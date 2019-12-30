@@ -5,7 +5,7 @@ describe Appointment, type: :model do
   subject(:appointment) { create(:appointment) }
 
   describe 'Associations' do
-    it { should belong_to(:patient) }
+    it { should belong_to(:patient).optional }
     it { should belong_to(:facility) }
     it { should have_many(:communications) }
   end
