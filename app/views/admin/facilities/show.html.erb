@@ -24,13 +24,23 @@
     <div><%= @facility.country %></div>
   </div>
 </div>
-<div class="card">
-  <h3>Latitude/Longitude</h3>
-  <% if @facility.latitude.present? && @facility.longitude.present? %>
-    <div><i class="fas fa-map-marker-alt light mr-2"></i> <%= @facility.latitude %>, <%= @facility.longitude %></div>
-  <% else %>
-    <div><i class="fas fa-angle-left light"></i> None entered <i class="fas fa-angle-right light"></i></div>
-  <% end %>
+<div class="row">
+  <div class="col-md-6">
+    <div class="card">
+      <h3>Latitude/Longitude</h3>
+      <% if @facility.latitude.present? && @facility.longitude.present? %>
+        <div><i class="fas fa-map-marker-alt light mr-2"></i> <%= @facility.latitude %>, <%= @facility.longitude %></div>
+      <% else %>
+        <div><i class="fas fa-angle-left light"></i> None entered <i class="fas fa-angle-right light"></i></div>
+      <% end %>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card">
+      <h3>Facility Type &amp; Size</h3>
+      <%= @facility.facility_type || "(No type set)" %> (<%= @facility.facility_size&.capitalize || "No size set" %>)
+    </div>
+  </div>
 </div>
 
 <% if policy([:manage, :user, User]).index? %>
