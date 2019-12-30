@@ -63,8 +63,7 @@ RSpec.describe Api::V2::FacilitiesController, type: :controller do
         expect(response_process_token[:other_facilities_processed_since].to_time.to_i).to eq sync_time.to_i
       end
 
-      # Skipping specs to due hotfix to return all facilities records in a single batch
-      xdescribe 'batching' do
+      describe 'batching' do
         it 'returns the number of records requested with limit' do
           get :sync_to_user, params: {
             process_token: make_process_token({ other_facilities_processed_since: 20.minutes.ago }),
