@@ -14,7 +14,7 @@ class PatientPhoneNumber < ApplicationRecord
 
   has_one :exotel_phone_number_detail
 
-  default_scope -> { order("device_created_at ASC") }
+  default_scope -> { order(device_created_at: :asc) }
 
   EXOTEL_RE_REQUEST_WHITELIST_MONTHS = ENV['EXOTEL_RE_REQUEST_WHITELIST_MONTHS'].to_i.months || 6.months
 
