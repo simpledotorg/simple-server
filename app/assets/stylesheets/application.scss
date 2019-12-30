@@ -465,6 +465,13 @@ span.inactive {
   }
 }
 
+@include media-breakpoint-up(lg) {
+  .card {
+    padding: 24px;
+  }
+}
+
+
 .card-footer {
     margin: 0 -16px -16px -16px;
     background: $offwhite;
@@ -481,6 +488,14 @@ span.inactive {
 .user-row {
     border-top: 1px solid rgba(0,0,0,0.05);
     padding: 8px 0;
+}
+
+.footnotes {
+    margin-top: 2em;
+    
+    li {
+        margin-top: 0.5em;
+    }
 }
 
 /*****************
