@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191225171641) do
+ActiveRecord::Schema.define(version: 20191230103921) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -663,5 +663,19 @@ ActiveRecord::Schema.define(version: 20191225171641) do
       facilities,
       users
     WHERE ((blood_pressures.patient_id = patients.id) AND (blood_pressures.facility_id = facilities.id) AND (blood_pressures.user_id = users.id));
+  SQL
+  create_view "latest_blood_pressures_per_patient_per_months", materialized: true, sql_definition: <<-SQL
+      SELECT DISTINCT ON (blood_pressures.patient_id, (date_part('year'::text, blood_pressures.recorded_at))::text, (date_part('month'::text, blood_pressures.recorded_at))::text) blood_pressures.id,
+      blood_pressures.patient_id,
+      blood_pressures.facility_id,
+      blood_pressures.recorded_at,
+      blood_pressures.systolic,
+      blood_pressures.diastolic,
+      blood_pressures.deleted_at,
+      (date_part('month'::text, blood_pressures.recorded_at))::text AS month,
+      (date_part('quarter'::text, blood_pressures.recorded_at))::text AS quarter,
+      (date_part('year'::text, blood_pressures.recorded_at))::text AS year
+     FROM blood_pressures
+    ORDER BY blood_pressures.patient_id, (date_part('year'::text, blood_pressures.recorded_at))::text, (date_part('month'::text, blood_pressures.recorded_at))::text, blood_pressures.recorded_at DESC, blood_pressures.id;
   SQL
 end
