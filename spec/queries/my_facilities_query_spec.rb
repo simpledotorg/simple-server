@@ -12,10 +12,10 @@ RSpec.describe MyFacilitiesQuery do
         create(:encounter, :with_observables, patient: record.patient, observable: record, facility: record.facility) }
     end
 
-    describe "InactiveFacilitiesQuery.call" do
+    describe ".inactive_facilities" do
       it 'should return only inactive facilities' do
         facility_ids = [active_facility.id, inactive_facility.id, inactive_facility_with_zero_bps.id]
-        expect(MyFacilitiesQuery::InactiveFacilitiesQuery.call(Facility.where(id: facility_ids))).to match_array([inactive_facility, inactive_facility_with_zero_bps])
+        expect(MyFacilitiesQuery.inactive_facilities(Facility.where(id: facility_ids))).to match_array([inactive_facility, inactive_facility_with_zero_bps])
       end
     end
   end

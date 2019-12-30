@@ -11,7 +11,7 @@ class MyFacilitiesController < AdminController
     @users_requesting_approval = paginate(@users_requesting_approval)
 
     @facilities = policy_scope([:manage, :facility, Facility])
-    @inactive_facilities = @facilities.inactive
+    @inactive_facilities = MyFacilitiesQuery.inactive_facilities(@facilities)
 
     @facility_count_by_size = { total: @facilities.group(:facility_size).count,
                                 inactive: @inactive_facilities.group(:facility_size).count }
