@@ -23,8 +23,50 @@
       </div>
       <div class="mt-0 mb-4" style="text-align: center; display: block; border-radius: 3px; background: rgba(0,0,0,0.02); padding: 10px 16px;">
         <div style="margin: 0 0 16px 0; font-size: 24px;"><span class="badge badge-pill badge-secondary">Large</span> <span class="badge badge-pill badge-secondary">Block Fourteen</span></div>
-        <a href="#" style="display: block; text-transform: uppercase; letter-spacing: 0.3em; font-size: 12px; font-weight: bold;"><i class="fas fa-filter"></i> Filter facilities</a>
+        <a data-toggle="modal" data-target="#facility-filter-modal" href="#" style="display: block; text-transform: uppercase; letter-spacing: 0.3em; font-size: 12px; font-weight: bold;"><i class="fas fa-filter"></i> Filter facilities</a>
       </div>
+        
+      <!-- Filter Modal -->
+        <div class="modal fade" id="facility-filter-modal" tabindex="-1" role="dialog" aria-labelledby="facility-filter-modal" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h2 class="modal-title" id="exampleModalCenterTitle">Facility filters</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                  <div class="row">
+                    <div class="col-6 mb-3">
+                      <h4>Facility sizes</h4>
+                      <div class="checkbox-row"><label for="facility-large"><input type="checkbox" id="facility-large" checked> Large</label></div>
+                      <div class="checkbox-row"><label for="facility-medium"><input type="checkbox" id="facility-medium" checked> Medium</label></div>
+                      <div class="checkbox-row"><label for="facility-small"><input type="checkbox" id="facility-small" checked> Small</label></div>
+                      <div class="checkbox-row"><label for="facility-community"><input type="checkbox" id="facility-community" checked> Community</label></div>
+                    </div>
+                    <div class="col-6 mb-3">
+                      <h4>Areas</h4>
+                      <div class="checkbox-row"><label for="all-blocks"><input type="checkbox" id="all-blocks" checked> All blocks</label></div>
+                      <div class="checkbox-row"><label for="block-Bathinda"><input type="checkbox" id="block-Bathinda"> Bathinda</label></div>
+                      <div class="checkbox-row"><label for="block-Bhagta"><input type="checkbox" id="block-Bhagta"> Bhagta</label></div>
+                      <div class="checkbox-row"><label for="block-Goniana"><input type="checkbox" id="block-Goniana"> Goniana</label></div>
+                      <div class="checkbox-row"><label for="block-Maur"><input type="checkbox" id="block-Maur"> Maur</label></div>
+                      <div class="checkbox-row"><label for="block-Nathana"><input type="checkbox" id="block-Nathana"> Nathana</label></div>
+                      <div class="checkbox-row"><label for="block-Phul"><input type="checkbox" id="block-Phul"> Phul</label></div>
+                      <div class="checkbox-row"><label for="block-Rampura"><input type="checkbox" id="block-Rampura"> Rampura</label></div>
+                      <div class="checkbox-row"><label for="block-Sangat"><input type="checkbox" id="block-Sangat"> Sangat</label></div>
+                      <div class="checkbox-row"><label for="block-TalwandiSabo"><input type="checkbox" id="block-TalwandiSabo"> Talwandi Sabo</label></div>
+                    </div>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Clear all</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">DONE</button>
+              </div>
+            </div>
+          </div>
+        </div>
     </div>
       
     <!---------------------

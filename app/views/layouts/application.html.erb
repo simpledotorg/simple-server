@@ -47,7 +47,7 @@
          <i class="fas fa-bars mr-1"></i> Menu
         </button>
 
-        <div class="collapse navbar-collapse" id="navbars-mobile-menu">
+        <div class="collapse navbar-collapse" id="navbars-menu">
           <% if email_authentication_signed_in? %>
             <ul class="navbar-nav mr-auto">
               <% if policy(:dashboard).view_my_facilities? && FeatureToggle.enabled?("MY_FACILITIES")%>

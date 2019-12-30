@@ -498,14 +498,15 @@ Subnav
     color: $grey-dark;
 }
 
-#navbars-mobile-menu .nav-link {
-    border-top: 1px solid $grey-lightest;
-    padding: 16px 0;
-    font-size: 16px;
-}
-
-#navbars-mobile-menu {
-    margin-top: 8px;
+@include media-breakpoint-down(sm) {
+    #navbars-menu {
+        margin-top: 8px;
+            .nav-link {
+                border-top: 1px solid $grey-lightest;
+                padding: 16px 0;
+                font-size: 16px;
+        }
+    }
 }
 
 /*****************
@@ -553,6 +554,18 @@ sup {
         font-size: 120%;
         color: $grey-light;
         
+    }
+}
+
+.checkbox-row {
+    label {
+        display: block;
+        padding: 6px 0 0 0;
+        font-weight: normal;
+        border-top: 1px solid $grey-lightest;
+    }
+    input {
+        margin-right: 4px;
     }
 }
 
@@ -694,7 +707,9 @@ th sup {
 
 @include media-breakpoint-down(md) {
     .card-responsive {
-        padding-right: 0;
+        padding: 1em 0 1em 1em;
+        margin: 0 -1em;
+        border-radius: 0;
     }
     .table-compact td a {
         max-width: 10em;
