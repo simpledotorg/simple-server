@@ -1,78 +1,102 @@
 <% content_for(:content) do %>
-    
-    <!---------------------
-    MOBILE NAV
-    --------------------->  
-      
-    <div class="mobile">
-      <div class="dropdown">
 
-          <h1 class="btn btn-sm dropdown-toggle pl-0" role="button" id="dropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ranked facilities</h1>
-          
-          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink2">
-            <%= link_to 'Overview', my_facilities_overview_path, class: "dropdown-item" %>
-            <%= link_to 'Ranked facilities', my_facilities_ranked_facilities_path, class: "dropdown-item" %>
-            <a class="dropdown-item" href="#">BP control</a>
-            <a class="dropdown-item" href="#">Missed visit</a>
-            <a class="dropdown-item" href="#">Registrations</a>
-            <a class="dropdown-item" href="#">Medication supply</a>
-            <a class="dropdown-item" href="#">Terminal digit pref.</a>
-            <a class="dropdown-item" href="#">Treatment inertia</a>
-            <a class="dropdown-item" href="#">Downloads</a>
+  <!---------------------
+  MOBILE NAV
+  --------------------->
+
+  <div class="mobile">
+    <div class="dropdown">
+
+      <h1 class="btn btn-sm dropdown-toggle pl-0" role="button" id="dropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ranked
+        facilities</h1>
+
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink2">
+        <%= link_to 'Overview', my_facilities_overview_path, class: "dropdown-item" %>
+        <%= link_to 'Ranked facilities', my_facilities_ranked_facilities_path, class: "dropdown-item" %>
+        <a class="dropdown-item" href="#">BP control</a>
+        <a class="dropdown-item" href="#">Missed visit</a>
+        <a class="dropdown-item" href="#">Registrations</a>
+        <a class="dropdown-item" href="#">Medication supply</a>
+        <a class="dropdown-item" href="#">Terminal digit pref.</a>
+        <a class="dropdown-item" href="#">Treatment inertia</a>
+        <a class="dropdown-item" href="#">Downloads</a>
+      </div>
+    </div>
+    <div class="mt-0 mb-4" style="text-align: center; display: block; border-radius: 3px; background: rgba(0,0,0,0.02); padding: 10px 16px;">
+      <!--div style="margin: 0 0 16px 0; font-size: 24px;"><span class="badge badge-pill badge-secondary">Large</span> <span class="badge badge-pill badge-secondary">Block Fourteen</span></div-->
+      <a data-toggle="modal" data-target="#facility-filter-modal" href="#" style="display: block; text-transform: uppercase; letter-spacing: 0.3em; font-size: 12px; font-weight: bold;"><i class="fas fa-filter"></i>
+        Filter facilities</a>
+    </div>
+
+    <!-- Filter Modal -->
+    <div class="modal fade" id="facility-filter-modal" tabindex="-1" role="dialog" aria-labelledby="facility-filter-modal" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title" id="exampleModalCenterTitle">Facility filters</h2>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
           </div>
-      </div>
-      <div class="mt-0 mb-4" style="text-align: center; display: block; border-radius: 3px; background: rgba(0,0,0,0.02); padding: 10px 16px;">
-        <!--div style="margin: 0 0 16px 0; font-size: 24px;"><span class="badge badge-pill badge-secondary">Large</span> <span class="badge badge-pill badge-secondary">Block Fourteen</span></div-->
-        <a data-toggle="modal" data-target="#facility-filter-modal" href="#" style="display: block; text-transform: uppercase; letter-spacing: 0.3em; font-size: 12px; font-weight: bold;"><i class="fas fa-filter"></i> Filter facilities</a>
-      </div>
-        
-      <!-- Filter Modal -->
-        <div class="modal fade" id="facility-filter-modal" tabindex="-1" role="dialog" aria-labelledby="facility-filter-modal" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h2 class="modal-title" id="exampleModalCenterTitle">Facility filters</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                  <div class="row">
-                    <div class="col-6 mb-3">
-                      <h4>Facility sizes</h4>
-                      <div class="checkbox-row"><label for="facility-large-mobile"><input type="checkbox" id="facility-large-mobile" checked> Large</label></div>
-                      <div class="checkbox-row"><label for="facility-medium-mobile"><input type="checkbox" id="facility-medium-mobile" checked> Medium</label></div>
-                      <div class="checkbox-row"><label for="facility-small-mobile"><input type="checkbox" id="facility-small-mobile" checked> Small</label></div>
-                      <div class="checkbox-row"><label for="facility-community-mobile"><input type="checkbox" id="facility-community-mobile" checked> Community</label></div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-6 mb-3">
+                <h4>Facility sizes</h4>
+                <form id="facility-size-filter-mobile">
+                  <% @facility_sizes.each do |size| %>
+                    <div class="checkbox-row">
+                      <label for=<%= "facility-#{size}-mobile" %>>
+                        <input type="checkbox" id=<%= "facility-#{size}-mobile" %> name="size[]" value=<%= size %>
+                              <% if session[:facility_size_filter].include?(size) %>checked
+                               <% end %>>
+                        <%= size.capitalize %>
+                      </label>
                     </div>
-                    <div class="col-6 mb-3">
-                      <h4>Areas</h4>
-                      <div class="checkbox-row"><label for="all-blocks"><input type="checkbox" id="all-blocks" checked> All blocks</label></div>
-                      <div class="checkbox-row"><label for="block-Bathinda"><input type="checkbox" id="block-Bathinda"> Bathinda</label></div>
-                      <div class="checkbox-row"><label for="block-Bhagta"><input type="checkbox" id="block-Bhagta"> Bhagta</label></div>
-                      <div class="checkbox-row"><label for="block-Goniana"><input type="checkbox" id="block-Goniana"> Goniana</label></div>
-                      <div class="checkbox-row"><label for="block-Maur"><input type="checkbox" id="block-Maur"> Maur</label></div>
-                      <div class="checkbox-row"><label for="block-Nathana"><input type="checkbox" id="block-Nathana"> Nathana</label></div>
-                      <div class="checkbox-row"><label for="block-Phul"><input type="checkbox" id="block-Phul"> Phul</label></div>
-                      <div class="checkbox-row"><label for="block-Rampura"><input type="checkbox" id="block-Rampura"> Rampura</label></div>
-                      <div class="checkbox-row"><label for="block-Sangat"><input type="checkbox" id="block-Sangat"> Sangat</label></div>
-                      <div class="checkbox-row"><label for="block-TalwandiSabo"><input type="checkbox" id="block-TalwandiSabo"> Talwandi Sabo</label></div>
-                    </div>
-                  </div>
+                  <% end %>
+                </form>
               </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Clear all</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">DONE</button>
+              <div class="col-6 mb-3">
+                <h4>Areas</h4>
+                <div class="checkbox-row">
+                  <label for="all-blocks"><input type="checkbox" id="all-blocks" checked> All blocks</label></div>
+                <div class="checkbox-row">
+                  <label for="block-Bathinda"><input type="checkbox" id="block-Bathinda"> Bathinda</label></div>
+                <div class="checkbox-row">
+                  <label for="block-Bhagta"><input type="checkbox" id="block-Bhagta"> Bhagta</label></div>
+                <div class="checkbox-row">
+                  <label for="block-Goniana"><input type="checkbox" id="block-Goniana"> Goniana</label></div>
+                <div class="checkbox-row"><label for="block-Maur"><input type="checkbox" id="block-Maur"> Maur</label>
+                </div>
+                <div class="checkbox-row">
+                  <label for="block-Nathana"><input type="checkbox" id="block-Nathana"> Nathana</label></div>
+                <div class="checkbox-row"><label for="block-Phul"><input type="checkbox" id="block-Phul"> Phul</label>
+                </div>
+                <div class="checkbox-row">
+                  <label for="block-Rampura"><input type="checkbox" id="block-Rampura"> Rampura</label></div>
+                <div class="checkbox-row">
+                  <label for="block-Sangat"><input type="checkbox" id="block-Sangat"> Sangat</label></div>
+                <div class="checkbox-row">
+                  <label for="block-TalwandiSabo"><input type="checkbox" id="block-TalwandiSabo"> Talwandi
+                    Sabo</label>
+                </div>
               </div>
             </div>
           </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Clear all</button>
+            <button type="submit" form="facility-size-filter-mobile" class="btn btn-primary">DONE</button>
+          </div>
+
         </div>
+      </div>
     </div>
-      
-    <!---------------------
-    DESKTOP NAV
-    --------------------->
-    <div class="row">
+  </div>
+
+  <!---------------------
+  DESKTOP NAV
+  --------------------->
+  <div class="row">
     <div class="col-lg-2 pl-lg-0 desktop">
       <nav class="secondary-nav">
         <%= link_to 'Overview', my_facilities_overview_path, class: "nav-link" %>
@@ -107,11 +131,19 @@
           </div>
         </div>
         <form>
-          <div><label for="facility-large"><input type="checkbox" id="facility-large" checked> Large</label></div>
-          <div><label for="facility-medium"><input type="checkbox" id="facility-medium" checked> Medium</label></div>
-          <div><label for="facility-small"><input type="checkbox" id="facility-small" checked> Small</label></div>
-          <div><label for="facility-community"><input type="checkbox" id="facility-community" checked> Community</label>
-          </div>
+          <% @facility_sizes.each do |size| %>
+            <div>
+              <label for=<%= "facility-#{size}" %>>
+                <input type="checkbox" id=<%= "facility-#{size}" %> name="size[]" value=<%= size %>
+                      <% if session[:facility_size_filter].include?(size) %>checked
+                       <% end %>>
+                <%= size.capitalize %>
+              </label>
+            </div>
+          <% end %>
+          <label>
+            <button type="submit" class="btn-sm btn-outline-primary">Apply filters</button>
+          </label>
         </form>
       </section>
     </div>
