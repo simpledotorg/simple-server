@@ -6,16 +6,16 @@ namespace :dell_demo do
         and push them to the Dell NCD staging server through the Enrollment API'
 
   task :push_patient_data_to_enrollment_api,
-       [:number_of_patients, :simple_org_name, :enrollment_api_auth_token] => :environment do |_t, _args|
+       [:simple_org_name, :number_of_patients] => :environment do |_t, args|
 
     #
     # Parse args
     #
     abort 'Requires <number_of_patients>' unless args[:number_of_patients].present?
-    abort 'Requires <enrollment_api_auth_token>' unless args[:email].present? && args[:password].present?
-    number_of_patients = args[:number_of_patients]
+    # abort 'Requires <enrollment_api_auth_token>' unless args[:enrollment_api_auth_token].present?
+    number_of_patients = Integer(args[:number_of_patients])
+    enrollment_api_auth_token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJkb2NfMTA4MDExNSIsInNjb3BlIjpbInJlYWQiLCJ3cml0ZSJdLCJpc0xvY2FsUG9ydGFsIjoiZmFsc2UiLCJleHAiOjE1Nzc4MTY3OTEsInVzZXIiOiJkb2NfMTA4MDExNSIsImF1dGhvcml0aWVzIjpbIlNBVkVfTEFCX1JFUVVFU1QiLCJWSUVXX1BIQ19EQVNIQk9BUkRTIiwiQVVUSE9SSVRZX0lOQ0VOVElWRSIsIlZJRVdfQ0FOQ0VSX1BBVElFTlRTIiwiQUREX1BIQ19SRUZFUlJBTCJdLCJqdGkiOiJlZTU0NWZhMy0yMjc5LTQ2MzUtYmEyZC02NjM3YzAzZTEyMWQiLCJjbGllbnRfaWQiOiJOQ0RCcm93c2VyIn0.BpkJQ1gkkxiqn7SLABfBnNESi4T4irk3ZJIyTf1sQizaaiVLcnE0gOKKQWHFaUfpWpOV9MUB_3tHoaaimm6PZe6Lp2Cw5uF9wVvHEQgo9aJ4xPFZkOFQSU_a9Ou0_M6yI58NRPiIPIdLgVdWrDWXsVQlF-8E4g8nfvyS2tQwAtpyRZXEUrr_F1UCwUrIp8zRqw-ULL6d1xvasYqJ08Nml6qRgjjk1t-aL7zTwiC0eemhCI87glLdO3K6bc6_Dkypm-2j01DjncI_PcNJvxgabykrfV5gf6aT3TpBxQTbRA8sW-ae8zWYj4ZhzAiM7mWPMl8BTYCFokD6zzRkLWfmpQ"
     simple_org_name = args[:simple_org_name].presence || 'IHCI'
-    enrollment_api_auth_token = args[:enrollment_api_auth_token]
 
     #
     # Pull relevant Simple data
@@ -39,14 +39,21 @@ namespace :dell_demo do
       #
       assumed_defaults = {
         marital_status: 'Single',
+
         sms_consent_mprog: patient.reminder_consent_granted?,
         sms_consent_ncd: patient.reminder_consent_granted?,
-        :sub_center_name => "SimpleSubcenter",
-        :sub_center_id => 10814114,
-        :village => "SimpleVillage",
-        :village_id => 108000502,
-        :phc => "SimplePHC",
-        :phc_id => "1080195",
+
+        sub_center_name: "SimpleSubcenter",
+        sub_center_id: 10814114,
+        village_name: "SimpleVillage",
+        village_id: 108000502,
+        phc_name: "SimplePHC",
+        phc_id: "1080195",
+      }
+
+      assumed_default_headers = {
+        facility_type: 'PHC',
+        facility_type_id: '3200'
       }
 
       #
@@ -57,7 +64,7 @@ namespace :dell_demo do
         "individualInfo" =>
           { "name" => patient.full_name,
             "age" => patient.age,
-            "gender" => patient.gender,
+            "gender" => patient.gender.capitalize,
             "mobileNumber" => patient.phone_numbers.where(phone_type: 'mobile').first,
             "maritalStatus" => assumed_defaults[:marital_status],
 
@@ -92,12 +99,12 @@ namespace :dell_demo do
 
         "familyInfo" =>
           { "addressInfo" =>
-              { "subcenterName" => "SimpleSubcenter",
-                "subcenterId" => 10814114,
-                "village" => "SimpleVillage",
-                "villageId" => 108000502,
-                "phc" => "SimplePHC",
-                "phcId" => "1080195",
+              { "subcenterName" => assumed_defaults[:sub_center_name],
+                "subcenterId" => assumed_defaults[:sub_center_id],
+                "village" => assumed_defaults[:village_name],
+                "villageId" => assumed_defaults[:village_id],
+                "phc" => assumed_defaults[:phc_name],
+                "phcId" => assumed_defaults[:phc_id],
                 "landmark" => nil,
                 "addressDetails" => nil,
                 "villageOther" => nil },
@@ -126,17 +133,21 @@ namespace :dell_demo do
                 "idOtherVal" => nil },
 
             "familyHeadName" => nil,
-            "contactDetail" => nil }
+            "contactDetail" => nil
+          }
       }
 
       # fire the enrollment API call
       begin
-        HTTP
-          .auth("Bearer #{enrollment_api_auth_token}")
-          .post(NCD_STAGING_URL, form: enrollment_payload)
+        response = HTTP
+                     .headers(assumed_default_headers)
+                     .auth("Bearer #{enrollment_api_auth_token}")
+                     .post(NCD_STAGING_ENROLLMENT_API, json: enrollment_payload)
+
+        puts response.body
       rescue HTTP::Error => _err
         Rails.logger.info "Could not push patient: #{patient.id} | #{patient.full_name}"
-        raise HTTPError
+        raise _err
       end
     end
   end
