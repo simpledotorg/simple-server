@@ -6,7 +6,7 @@ class Analytics::DistrictsController < AnalyticsController
   skip_after_action :verify_authorized
 
   def show
-    @show_current_month = (@period == :month)
+    @show_current_period = true
 
     set_dashboard_analytics(@period, 3)
     set_cohort_analytics(@period, @prev_periods)
@@ -70,7 +70,7 @@ class Analytics::DistrictsController < AnalyticsController
       analytics_cache_key_dashboard(period),
       @organization_district.dashboard_analytics(period: period,
                                                  prev_periods: prev_periods,
-                                                 include_current_period: @show_current_month))
+                                                 include_current_period: @show_current_period))
   end
 
   def analytics_cache_key
