@@ -1,25 +1,18 @@
 <% content_for(:content) do %>
-
   <!---------------------
   MOBILE NAV
   --------------------->
-
   <div class="mobile">
     <div class="dropdown">
-
-      <h1 class="btn btn-sm dropdown-toggle pl-0" role="button" id="dropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ranked
-        facilities</h1>
-
+      <% my_facilities_pages = { my_facilities_overview_path => 'Overview',
+                                 my_facilities_ranked_facilities_path => 'Ranked facilities' }  %>
+      <h1 class="btn btn-sm dropdown-toggle pl-0" role="button" id="dropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <%= my_facilities_pages[request.path] %>
+      </h1>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink2">
-        <%= link_to 'Overview', my_facilities_overview_path, class: "dropdown-item" %>
-        <%= link_to 'Ranked facilities', my_facilities_ranked_facilities_path, class: "dropdown-item" %>
-        <a class="dropdown-item" href="#">BP control</a>
-        <a class="dropdown-item" href="#">Missed visit</a>
-        <a class="dropdown-item" href="#">Registrations</a>
-        <a class="dropdown-item" href="#">Medication supply</a>
-        <a class="dropdown-item" href="#">Terminal digit pref.</a>
-        <a class="dropdown-item" href="#">Treatment inertia</a>
-        <a class="dropdown-item" href="#">Downloads</a>
+        <% my_facilities_pages.each do |path, page_name| %>
+          <%= link_to page_name, path, class: "dropdown-item" %>
+        <% end %>
       </div>
     </div>
     <div class="mt-0 mb-4" style="text-align: center; display: block; border-radius: 3px; background: rgba(0,0,0,0.02); padding: 10px 16px;">

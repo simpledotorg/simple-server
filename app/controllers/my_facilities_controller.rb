@@ -1,6 +1,7 @@
 class MyFacilitiesController < AdminController
-  include SizeFiltering
+  include DistrictFiltering
   include Pagination
+  include SizeFiltering
 
   def index
     authorize(:dashboard, :show?)
