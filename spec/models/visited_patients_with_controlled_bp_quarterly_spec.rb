@@ -25,20 +25,25 @@ RSpec.describe VisitedPatientsWithControlledBpQuarterly, type: :model do
         create(:blood_pressure, patient: patient, facility: patient.registration_facility, recorded_at: (patient.recorded_at + 3.months), systolic: 120, diastolic: 70)
       end
     end
-
-    let!(:query_results) do
-      VisitedPatientsWithControlledBpQuarterly.refresh
-      VisitedPatientsWithControlledBpQuarterly.all
+    let!(:encounters) do
+      blood_pressures.each {|record| create(:encounter, :with_observables, patient: record.patient, observable: record, facility: record.facility)}
     end
+    let!(:query_results) { VisitedPatientsWithControlledBpQuarterly.all }
   end
 
   it 'should return a row per facility per quarter' do
+    # puts facilities
+    # puts quarters
+    # puts patients
+    # puts blood_pressures
+    # puts encounters.count
     expect(query_results.count).to eq(8)
   end
   it 'should return at least one row per facility' do
-    expect(query_results.pluck(:facility_id).uniq).to match_array(facilities.map(&:id))
+    expect { query_results.pluck(:facility_id).uniq }.to match_array(facilities.map(&:id))
   end
   it 'should return 1 blood_pressure per facility per quarter' do
-    expect(query_results.pluck(:count).uniq).to eq([1])
+    expect { query_results.pluck(:count).uniq }.to eq([1])
   end
+
 end

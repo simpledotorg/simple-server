@@ -257,8 +257,8 @@ ActiveRecord::Schema.define(version: 20191227110011) do
     t.datetime "updated_at", null: false
     t.float "latitude"
     t.float "longitude"
-    t.datetime "deleted_at"
     t.uuid "facility_group_id"
+    t.datetime "deleted_at"
     t.string "slug"
     t.string "zone"
     t.boolean "enable_diabetes_management", default: false, null: false
@@ -727,12 +727,12 @@ ActiveRecord::Schema.define(version: 20191227110011) do
             ORDER BY blood_pressures_1.patient_id, (date_part('year'::text, blood_pressures_1.recorded_at)), (date_part('quarter'::text, blood_pressures_1.recorded_at)), blood_pressures_1.recorded_at DESC
           )
    SELECT blood_pressures.facility_id,
-      (blood_pressures.visited_in_quarter)::text AS visited_in_quarter,
-      (blood_pressures.visited_in_year)::text AS visited_in_year,
+      blood_pressures.visited_in_quarter,
+      blood_pressures.visited_in_year,
       count(*) AS count
      FROM (last_bps_per_patient_per_quarter blood_pressures
        JOIN patients ON ((patients.id = blood_pressures.patient_id)))
-    WHERE ((patients.deleted_at IS NULL) AND ((blood_pressures.systolic < 140) AND (blood_pressures.diastolic < 90)) AND (date_trunc('quarter'::text, blood_pressures.recorded_at) = (date_trunc('quarter'::text, patients.recorded_at) + '3 mons'::interval)))
+    WHERE (patients.deleted_at IS NULL)
     GROUP BY blood_pressures.facility_id, blood_pressures.visited_in_quarter, blood_pressures.visited_in_year;
   SQL
 end
