@@ -10,8 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191206165546) do
 
+ActiveRecord::Schema.define(version: 20191213151620) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "pgcrypto"
@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 20191206165546) do
     t.datetime "deleted_at"
     t.string "zone"
     t.index ["deleted_at"], name: "index_addresses_on_deleted_at"
+    t.index ["zone"], name: "index_addresses_on_zone"
   end
 
   create_table "admin_access_controls", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -99,6 +100,7 @@ ActiveRecord::Schema.define(version: 20191206165546) do
     t.index ["deleted_at"], name: "index_appointments_on_deleted_at"
     t.index ["facility_id"], name: "index_appointments_on_facility_id"
     t.index ["patient_id"], name: "index_appointments_on_patient_id"
+    t.index ["user_id"], name: "index_appointments_on_user_id"
   end
 
   create_table "audit_logs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -259,7 +261,10 @@ ActiveRecord::Schema.define(version: 20191206165546) do
     t.uuid "facility_group_id"
     t.string "slug"
     t.string "zone"
+    t.string "facility_size"
+    t.boolean "enable_diabetes_management", default: false, null: false
     t.index ["deleted_at"], name: "index_facilities_on_deleted_at"
+    t.index ["enable_diabetes_management"], name: "index_facilities_on_enable_diabetes_management"
     t.index ["facility_group_id"], name: "index_facilities_on_facility_group_id"
     t.index ["slug"], name: "index_facilities_on_slug", unique: true
   end
@@ -275,6 +280,7 @@ ActiveRecord::Schema.define(version: 20191206165546) do
     t.string "slug"
     t.index ["deleted_at"], name: "index_facility_groups_on_deleted_at"
     t.index ["organization_id"], name: "index_facility_groups_on_organization_id"
+    t.index ["protocol_id"], name: "index_facility_groups_on_protocol_id"
     t.index ["slug"], name: "index_facility_groups_on_slug", unique: true
   end
 
@@ -314,6 +320,7 @@ ActiveRecord::Schema.define(version: 20191206165546) do
     t.uuid "user_id"
     t.index ["deleted_at"], name: "index_medical_histories_on_deleted_at"
     t.index ["patient_id"], name: "index_medical_histories_on_patient_id"
+    t.index ["user_id"], name: "index_medical_histories_on_user_id"
   end
 
   create_table "observations", force: :cascade do |t|
@@ -394,6 +401,7 @@ ActiveRecord::Schema.define(version: 20191206165546) do
     t.index ["recorded_at"], name: "index_patients_on_recorded_at"
     t.index ["registration_facility_id"], name: "index_patients_on_registration_facility_id"
     t.index ["registration_user_id"], name: "index_patients_on_registration_user_id"
+    t.index ["reminder_consent"], name: "index_patients_on_reminder_consent"
   end
 
   create_table "phone_number_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -425,6 +433,7 @@ ActiveRecord::Schema.define(version: 20191206165546) do
     t.uuid "user_id"
     t.index ["deleted_at"], name: "index_prescription_drugs_on_deleted_at"
     t.index ["patient_id"], name: "index_prescription_drugs_on_patient_id"
+    t.index ["user_id"], name: "index_prescription_drugs_on_user_id"
   end
 
   create_table "protocol_drugs", id: :uuid, default: nil, force: :cascade do |t|

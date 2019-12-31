@@ -33,6 +33,7 @@ class Patient < ApplicationRecord
   has_many :latest_blood_pressures, -> { order(recorded_at: :desc) }, class_name: 'BloodPressure'
   has_many :facilities, -> { distinct }, through: :blood_pressures
   has_many :users, -> { distinct }, through: :blood_pressures
+  has_many :blood_sugars
 
   belongs_to :registration_facility, class_name: "Facility", optional: true
   belongs_to :registration_user, class_name: "User"
@@ -76,6 +77,10 @@ class Patient < ApplicationRecord
 
   def latest_phone_number
     phone_numbers.last&.number
+  end
+
+  def latest_mobile_number
+    phone_numbers.phone_type_mobile.last&.number
   end
 
   def latest_bp_passport

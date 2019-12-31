@@ -76,6 +76,7 @@ namespace :data_migration do
         encounter_merge_params = {
           id: Encounter.generate_id(blood_pressure.facility.id, blood_pressure.patient.id, encountered_on),
           patient_id: blood_pressure.patient.id,
+          facility_id: blood_pressure.facility_id,
           device_created_at: blood_pressure.device_created_at,
           device_updated_at: blood_pressure.device_updated_at,
           encountered_on: encountered_on,
@@ -85,7 +86,7 @@ namespace :data_migration do
           }
         }.with_indifferent_access
 
-        MergeEncounterService.new(encounter_merge_params, blood_pressure.facility, blood_pressure.user, timezone_offset).merge
+        MergeEncounterService.new(encounter_merge_params, blood_pressure.user, timezone_offset).merge
       end
     end
   end
@@ -98,5 +99,46 @@ namespace :data_migration do
   desc 'Make all occurrences of the SMS Reminder Bot User nil'
   task remove_bot_user_usages: :environment do
     Communication.where(user: ENV['APPOINTMENT_NOTIFICATION_BOT_USER_UUID']).update_all(user_id: nil)
+  end
+
+  desc "Add facility sizes based on facility type"
+  task add_facility_sizes: :environment do
+    size_map = {
+      "CH" => :large,
+      "DH" => :large,
+      "Hospital" => :large,
+      "RH" => :large,
+      "SDH" => :large,
+
+      "CHC" => :medium,
+
+      "MPHC" => :small,
+      "PHC" => :small,
+      "SAD" => :small,
+      "Standalone" => :small,
+      "UHC" => :small,
+      "UPHC" => :small,
+      "USAD" => :small,
+
+      "HWC" => :community,
+      "Village" => :community
+    }
+
+    size_map.each do |facility_type, facility_size|
+      Facility.where(facility_type: facility_type, facility_size: nil).each do |facility|
+        puts "Updating #{facility.name}: #{facility.facility_type} --> #{facility_size}"
+        facility.update(facility_size: facility_size)
+      end
+    end
+  end
+
+  desc 'Assign organization to users from registration facility'
+  task assign_organization_to_users: :environment do
+    User.where(organization: nil)
+      .select { |u| u.registration_facility.present? }
+      .each do |user|
+      user.organization = user.registration_facility.organization
+      user.save!
+    end
   end
 end

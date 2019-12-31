@@ -78,8 +78,10 @@ class Admin::FacilitiesController < AdminController
       :country,
       :pin,
       :facility_type,
+      :facility_size,
       :latitude,
-      :longitude
+      :longitude,
+      :enable_diabetes_management
     )
   end
 

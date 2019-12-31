@@ -14,14 +14,22 @@ class Facility < ApplicationRecord
   has_many :phone_number_authentications, foreign_key: 'registration_facility_id'
   has_many :users, through: :phone_number_authentications
 
-  has_many :blood_pressures
-  has_many :patients, -> { distinct }, through: :blood_pressures
-  has_many :prescription_drugs
   has_many :encounters
+  has_many :blood_pressures, through: :encounters, source: :blood_pressures
+  has_many :blood_sugars, through: :encounters, source: :blood_sugars
+  has_many :patients, -> { distinct }, through: :encounters
+  has_many :prescription_drugs
 
   has_many :registered_patients, class_name: "Patient", foreign_key: "registration_facility_id"
 
   has_many :appointments
+
+  enum facility_size: {
+    community: "community",
+    small: "small",
+    medium: "medium",
+    large: "large"
+  }
 
   with_options if: :import do |facility|
     facility.validates :organization_name, presence: true
@@ -47,7 +55,7 @@ class Facility < ApplicationRecord
   friendly_id :name, use: :slugged
 
   def cohort_analytics(period, prev_periods)
-    query = CohortAnalyticsQuery.new(self.registered_patients)
+    query = CohortAnalyticsQuery.new(self.registered_patients, include_current_period: true)
     query.patient_counts_by_period(period, prev_periods)
   end
 
