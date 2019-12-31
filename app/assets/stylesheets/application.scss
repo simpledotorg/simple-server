@@ -465,12 +465,6 @@ span.inactive {
   }
 }
 
-@include media-breakpoint-up(lg) {
-  .card {
-    padding: 24px;
-  }
-}
-
 
 .card-footer {
     margin: 0 -16px -16px -16px;
@@ -492,6 +486,7 @@ span.inactive {
 
 .footnotes {
     margin-top: 2em;
+    padding-right: 40px;
     
     li {
         margin-top: 0.5em;
