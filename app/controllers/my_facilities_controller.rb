@@ -28,4 +28,8 @@ class MyFacilitiesController < AdminController
   def ranked_facilities
     authorize(:dashboard, :show?)
   end
+    
+  def blood_pressure_control
+    authorize(:dashboard, :show?)
+  end
 end

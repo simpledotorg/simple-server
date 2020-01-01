@@ -5,7 +5,8 @@
   <div class="mobile">
     <div class="dropdown">
       <% my_facilities_pages = { my_facilities_overview_path => 'Overview',
-                                 my_facilities_ranked_facilities_path => 'Ranked facilities' }  %>
+                                 my_facilities_ranked_facilities_path => 'Ranked facilities',
+                                 my_facilities_blood_pressure_control_path => 'BP control'}  %>
       <h1 class="btn btn-sm dropdown-toggle pl-0" role="button" id="dropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <%= my_facilities_pages[request.path] %>
       </h1>
@@ -94,7 +95,7 @@
       <nav class="secondary-nav">
         <%= link_to 'Overview', my_facilities_overview_path, class: "nav-link" %>
         <%= link_to 'Ranked facilities', my_facilities_ranked_facilities_path, class: "nav-link current" %>
-        <a class="nav-link" href="#">BP control</a>
+        <%= link_to 'BP control', my_facilities_blood_pressure_control_path, class: "nav-link current" %>
         <a class="nav-link" href="#">Missed visit</a>
         <a class="nav-link" href="#">Registrations</a>
         <a class="nav-link" href="#">Medication supply</a>
