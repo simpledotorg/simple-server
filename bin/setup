@@ -126,31 +126,23 @@ verify_yarn_packages (){
   bundle exec yarn install 2>&1
 }
 
-verify_database_configuration (){
-  if [ -f config/database.yml ]
-  then
-    bundle exec rake db:create:all
-
-    if [ $? -ne 0 ]
-    then
-      echo 'Unable to create the databases for you. Please ensure your database.yml is configured for your system and run rake db:create:all'
-      exit 0
-    fi
-  else
-    echo 'The config/database.yml file does not exist. Please create it.'
-    exit 1
-  fi
+verify_database_migrations (){
+  migrate_existing_database || setup_database
 }
 
-verify_database_migrations (){
-  verify_database_configuration
+migrate_existing_database (){
+  echo 'migrate existing database'
+  bundle exec rails db:migrate
+}
 
-  bundle exec rake db:abort_if_pending_migrations > /dev/null 2>&1
-  if [ $? -eq 1 ]
+setup_database (){
+  echo 'setup database'
+  bundle exec rails db:setup
+
+  if [ $? -ne 0 ]
   then
-    echo 'Running migrations...'
-    bundle exec rake db:migrate db:test:prepare
-    bundle exec rake db:seed
+    echo 'Unable to create the databases for you. Please ensure your database.yml is configured for your system and run rake db:create:all'
+    exit 0
   fi
 }
 
