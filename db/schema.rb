@@ -509,7 +509,9 @@ ActiveRecord::Schema.define(version: 20191213151620) do
       master_users.device_created_at,
       master_users.created_at,
       master_users.updated_at,
-      master_users.deleted_at
+      master_users.deleted_at,
+      master_users.role,
+      master_users.organization_id
      FROM master_users;
   SQL
   create_view "bp_drugs_views", sql_definition: <<-SQL
