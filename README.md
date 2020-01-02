@@ -29,7 +29,7 @@ versions.
 gem install bundler
 bundle install
 rake yarn:install
-rake db:create db:setup db:migrate
+rails db:setup
 ```
 
 #### Developing with the Android app
