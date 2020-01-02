@@ -25,7 +25,7 @@
     <% unless request.path == my_facilities_overview_path %>
       <div class="mt-0 mb-4" style="text-align: center; display: block; border-radius: 3px; background: rgba(0,0,0,0.02); padding: 10px 16px;">
         <div style="margin: 0 0 16px 0; font-size: 20px;">
-          <% request.query_parameters["size"].each do |size| %>
+          <% Array(request.query_parameters[:size]).each do |size| %>
             <span class="badge badge-pill badge-secondary" style="font-weight: normal"><%= size.capitalize %></span>
           <% end %>
         </div>
@@ -54,7 +54,7 @@
                     <div class="checkbox-row">
                       <label for=<%= "facility-#{size}-mobile" %>>
                         <input type="checkbox" id=<%= "facility-#{size}-mobile" %> name="size[]" value=<%= size %>
-                              <% if request.query_parameters["size"].nil? || request.query_parameters["size"]&.include?(size) %>checked
+                              <% if request.query_parameters[:size].nil? || request.query_parameters[:size]&.include?(size) %>checked
                                <% end %>>
                         <%= size.capitalize %>
                       </label>
@@ -145,7 +145,7 @@
               <div>
                 <label for=<%= "facility-#{size}" %>>
                   <input type="checkbox" id=<%= "facility-#{size}" %> name="size[]" value=<%= size %>
-                        <% if request.query_parameters["size"].nil? || request.query_parameters["size"]&.include?(size) %>checked
+                        <% if request.query_parameters[:size].nil? || request.query_parameters[:size]&.include?(size) %>checked
                          <% end %>>
                   <%= size.capitalize %>
                 </label>
