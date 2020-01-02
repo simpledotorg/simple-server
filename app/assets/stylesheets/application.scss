@@ -519,6 +519,18 @@ Subnav
     }
 }
 
+.filter-tags:not(:empty) {
+    font-size: 22px;
+    text-transform: none;
+    letter-spacing: normal;
+    display: block;
+    
+    .badge-pill.badge-secondary {
+        background: $blue;
+        margin-bottom: 12px;
+    }
+}
+
 /*****************
 Dashboard UI
 *****************/

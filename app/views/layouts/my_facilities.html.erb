@@ -13,7 +13,7 @@
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink2">
         <%= link_to "Overview", my_facilities_overview_path(request.query_parameters), class: "dropdown-item" %>
         <%= link_to "Ranked facilities", my_facilities_ranked_facilities_path(request.query_parameters), class: "dropdown-item" %>
-        <%= link_to "BP control", "#", class: 'dropdown-item' %>
+        <%= link_to "BP control", my_facilities_blood_pressure_control_path(request.query_parameters), class: "dropdown-item" %>
         <%= link_to "Missed visit", "#", class: 'dropdown-item' %>
         <%= link_to "Registrations", "#", class: 'dropdown-item' %>
         <%= link_to "Medication supply", "#", class: 'dropdown-item' %>
@@ -24,13 +24,15 @@
     </div>
     <% unless request.path == my_facilities_overview_path %>
       <div class="mt-0 mb-4" style="text-align: center; display: block; border-radius: 3px; background: rgba(0,0,0,0.02); padding: 10px 16px;">
-        <div style="margin: 0 0 16px 0; font-size: 20px;">
-          <% Array(request.query_parameters[:size]).each do |size| %>
-            <span class="badge badge-pill badge-secondary" style="font-weight: normal"><%= size.capitalize %></span>
-          <% end %>
-        </div>
-        <a data-toggle="modal" data-target="#facility-filter-modal" href="#" style="display: block; text-transform: uppercase; letter-spacing: 0.3em; font-size: 12px; font-weight: bold;"><i class="fas fa-filter"></i>
-          Filter facilities</a>
+        <a data-toggle="modal" data-target="#facility-filter-modal" href="#" style="display: block; text-transform: uppercase; letter-spacing: 0.3em; font-size: 12px; font-weight: bold;">
+            <span class="filter-tags">
+              <% Array(request.query_parameters[:size]).each do |size| %>
+                <span class="badge badge-pill badge-secondary" style="font-weight: normal"><%= size.capitalize %></span>
+              <% end %>
+            </span>
+            
+            <i class="fas fa-filter"></i> Filter facilities
+        </a>
       </div>
     <% end %>
 
