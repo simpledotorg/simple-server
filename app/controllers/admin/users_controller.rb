@@ -10,7 +10,7 @@ class Admin::UsersController < AdminController
     @users = policy_scope([:manage, :user, User])
                .joins(phone_number_authentications: :facility)
                .where('phone_number_authentications.registration_facility_id IN (?)', selected_district_facilities([:manage, :user]).map(&:id))
-               .order('facilities.name', 'master_users.full_name', 'master_users.device_created_at')
+               .order('facilities.name', 'users.full_name', 'users.device_created_at')
 
     @users = paginate(@users)
   end
