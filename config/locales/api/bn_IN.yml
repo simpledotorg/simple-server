@@ -15,3 +15,7 @@ bn-IN:
     request_otp: '<#> %{otp} হল আপনার সিম্পিল যাচাইকরণের কোড\n%{app_signature}'
     appointment_reminders:
       missed_visit_sms_reminder: 'আমরা %{appointment_date} %{facility_name} তে আপনাকে আপনার নির্ধারিত বিপি পরীক্ষায় দেখতে পাইনি। অনুগ্রহ করে সকাল <9:30টা> থেকে দুপুর <2টোর> মধ্যে আসবেন।'
+  analytics:
+    followup_patients: "কতজনরোগী %{facility_name}-এবিপিরেকর্ডকরেছে?"
+    patients_enrolled: "কতজনরোগী %{facility_name}-নথিভুক্তকরেছে?"
+    all_time_patients: "সবসময়: %{count} জনরোগী"

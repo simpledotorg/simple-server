@@ -52,7 +52,7 @@
               <%= facility.pin %>
             </div>
           </div>
-          <div class="col-md-3"><i class="fas fa-hospital light mr-2"></i> <%= facility.facility_type %></div>
+          <div class="col-md-3"><i class="fas fa-hospital light mr-2"></i> <%= facility.facility_type %> <span class="text-muted">(<%= facility.facility_size&.capitalize || "No size set" %>)</span></div>
         </div>
 
       <% end %>

@@ -1,13 +1,11 @@
 <div class="page-header">
   <h1 class="page-title">Admins</h1>
   <nav class="page-nav">
-    <% if FeatureToggle.enabled?("INVITE_ADMINS") %>
-      <div class="dropdown">
-        <%= link_to "Add new Admin",
-                    new_email_authentication_invitation_path,
-                    class: "btn btn-sm btn-primary" %>
-      </div>
-    <% end %>
+    <div class="dropdown">
+      <%= link_to "Add new Admin",
+                  new_email_authentication_invitation_path,
+                  class: "btn btn-sm btn-primary" %>
+    </div>
   </nav>
 </div>
 
@@ -24,11 +22,11 @@
         <% if admin.invited_to_sign_up? %>
           <span class="badge badge-success badge-pill mr-4 mt-1" style="font-size: 90%; font-weight: normal;">Invite sent</span>
         <% end %>
-        <% if FeatureToggle.enabled?("INVITE_ADMINS") %>
-          <% if policy([:manage, :admin, admin]).edit? %>
-            <%= link_to 'Edit', edit_admin_path(admin), class: "btn btn-sm btn-outline-primary" %>
-          <% end %>
+
+        <% if policy([:manage, :admin, admin]).edit? %>
+          <%= link_to 'Edit', edit_admin_path(admin), class: "btn btn-sm btn-outline-primary" %>
         <% end %>
+
         <% if policy([:manage, :admin, admin]).destroy? %>
           <%= link_to '<i class="fas fa-trash-alt"></i>'.html_safe, admin_path(admin), method: :delete, data: { confirm: "Are you sure you want to delete #{admin.email}?" }, class: "btn btn-sm btn-outline-danger" %>
         <% end %>
