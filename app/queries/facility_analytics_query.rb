@@ -36,7 +36,6 @@ class FacilityAnalyticsQuery
     group_by_user_and_date(@registered_patients_by_period, :registered_patients_by_period)
   end
 
-  # NOTE: temporary usage of master_users (instead of users table) until users migration is finished
   def follow_up_patients_by_period
     #
     # this is similar to what the group_by_period query already gives us,
@@ -54,10 +53,10 @@ class FacilityAnalyticsQuery
         .joins(:facility)
         .where(facility: @facility)
         .where(deleted_at: nil)
-        .group('master_users.id')
+        .group('users.id')
         .group_by_period(@period, 'blood_pressures.recorded_at')
         .where("patients.recorded_at < #{date_truncate_string}")
-        .order('master_users.id')
+        .order('users.id')
         .distinct
         .count('patients.id')
 
