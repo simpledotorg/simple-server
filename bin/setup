@@ -143,7 +143,7 @@ verify_database_configuration (){
 verify_database_migrations (){
   verify_database_configuration
 
-  bundle exec rake db:abort_if_pending_migrations
+  bundle exec rake db:abort_if_pending_migrations > /dev/null 2>&1
   if [ $? -eq 1 ]
   then
     echo 'Running migrations...'
