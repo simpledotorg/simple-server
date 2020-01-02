@@ -78,23 +78,6 @@ RSpec.describe OverdueList::AppointmentPolicy do
         expect(subject).not_to permit(user_with_permission, appointment2)
       end
     end
-
-    # TODO: Fix this
-    # permissions :download? do
-    #   let(:user_with_permission) do
-    #     create(:user, user_permissions: [
-    #       build(:user_permission, permission_slug: :view_overdue_list, resource: facility1.facility_group)])
-    #   end
-    #
-    #   before do
-    #     ENV['IHCI_ORGANIZATION_UUID'] = ihmi.id
-    #   end
-    #
-    #   it 'permits supervisors in IHMI' do
-    #     supervisor.admin_access_controls = [AdminAccessControl.new(access_controllable: ihmi_group)]
-    #     expect(subject).to permit(supervisor, User)
-    #   end
-    # end
   end
 
   context 'other users' do
