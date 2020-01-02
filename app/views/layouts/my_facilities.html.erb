@@ -24,7 +24,11 @@
     </div>
     <% unless request.path == my_facilities_overview_path %>
       <div class="mt-0 mb-4" style="text-align: center; display: block; border-radius: 3px; background: rgba(0,0,0,0.02); padding: 10px 16px;">
-        <!--div style="margin: 0 0 16px 0; font-size: 24px;"><span class="badge badge-pill badge-secondary">Large</span> <span class="badge badge-pill badge-secondary">Block Fourteen</span></div-->
+        <div style="margin: 0 0 16px 0; font-size: 20px;">
+          <% request.query_parameters["size"].each do |size| %>
+            <span class="badge badge-pill badge-secondary" style="font-weight: normal"><%= size.capitalize %></span>
+          <% end %>
+        </div>
         <a data-toggle="modal" data-target="#facility-filter-modal" href="#" style="display: block; text-transform: uppercase; letter-spacing: 0.3em; font-size: 12px; font-weight: bold;"><i class="fas fa-filter"></i>
           Filter facilities</a>
       </div>
