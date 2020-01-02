@@ -628,7 +628,7 @@ th sup {
             white-space: nowrap;
             text-transform: none;
             letter-spacing: 0;
-            font-size: 12px;
+            font-size: 14px;
             
             i {
                 margin-left: 4px;
@@ -650,6 +650,14 @@ th sup {
         
         th[aria-sort="ascending"]:not(.no-sort)::after {
             content: "⇡";
+        }
+        
+        th.sort-label {
+            border-left: 1px solid $grey-mid !important;
+        }
+        
+        th.sort-label:first-of-type {
+            border: none !important;
         }
         
         a {
