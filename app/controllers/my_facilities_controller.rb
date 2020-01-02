@@ -29,4 +29,8 @@ class MyFacilitiesController < AdminController
     filtered_facilities = facilities_by_size([:manage, :facility])
     @filtered_inactive_facilities = MyFacilitiesQuery.inactive_facilities(filtered_facilities)
   end
+    
+  def blood_pressure_control
+    authorize(:dashboard, :show?)
+  end
 end
