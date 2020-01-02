@@ -127,21 +127,20 @@ verify_yarn_packages (){
 }
 
 verify_database_migrations (){
+  echo 'Setting up database...'
   migrate_existing_database || setup_database
 }
 
 migrate_existing_database (){
-  echo 'migrate existing database'
-  bundle exec rails db:migrate
+  bundle exec rails db:migrate 2>/dev/null
 }
 
 setup_database (){
-  echo 'setup database'
   bundle exec rails db:setup
 
   if [ $? -ne 0 ]
   then
-    echo 'Unable to create the databases for you. Please ensure your database.yml is configured for your system and run rake db:create:all'
+    echo 'Unable to create the databases for you. Please ensure your database.yml is configured for your system and try again.'
     exit 0
   fi
 }
