@@ -52,7 +52,7 @@ RSpec.feature 'To test adherence followup patient functionality', type: :feature
 
     it "landing page - adherence follow up patient card detail- with bp" do
       chc_bagta_facility = create(:facility, facility_group: ihmi_facility_group, name: "bagta")
-      var_patient=create(:patient ,registration_facility: chc_bagta_facility, device_created_at: 2.day.ago)
+      var_patient=create(:patient, age: 50, registration_facility: chc_bagta_facility, device_created_at: 2.day.ago)
       var_bp=create(:blood_pressure, :critical, facility: chc_bagta_facility, patient: var_patient)
       nav_page.select_main_menu_tab("Adherence follow-ups")
 
