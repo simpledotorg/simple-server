@@ -120,10 +120,6 @@ verify_bundled_gems (){
   } 2>&1
 }
 
-postgres_is_running (){
-  echo 'Checking that postgres is running'
-}
-
 verify_database_configuration (){
   if [ -f config/database.yml ]
   then
