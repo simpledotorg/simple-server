@@ -2,17 +2,19 @@ module SizeFiltering
   extend ActiveSupport::Concern
 
   included do
-    before_action :set_size
+    before_action :set_size, :set_facility_sizes
 
     private
 
     def set_size
       @size = params[:size].present? ? params[:size] : 'All'
-      session[:facility_size_filter] = @size
+    end
+
+    def set_facility_sizes
       @facility_sizes = Facility.facility_sizes.keys.reverse.append('unknown')
     end
 
-    def selected_size_facilities(scope_namespace = [])
+    def facilities_by_size(scope_namespace = [])
       if @size == 'All'
         policy_scope(scope_namespace.concat([Facility.all]))
       else
