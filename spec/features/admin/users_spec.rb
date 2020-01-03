@@ -29,7 +29,7 @@ RSpec.feature "User admin", type: :feature do
     context "recent BP log" do
       it "displays the user's recent BPs", :aggregate_failures do
         within("#recent-bps") do
-          expect(page).to have_selector("th", text: "Facility")
+          expect(page).to have_selector("th", text: "FACILITY")
           expect(page).to have_content("145/95")
           expect(page).to have_content("115/75")
         end
