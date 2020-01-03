@@ -1,9 +1,9 @@
 class CohortAnalyticsQuery
   include QuarterHelper
 
-  def initialize(patients, period = :month, include_current_period = false)
+  def initialize(patients, period = :month)
     @patients = patients
-    @include_current_period = include_current_period
+    @include_current_period = true
   end
 
   def patient_counts_by_period(period, prev_periods, from_time: Time.current)
