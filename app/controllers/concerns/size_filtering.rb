@@ -11,16 +11,12 @@ module SizeFiltering
     end
 
     def set_facility_sizes
-      @facility_sizes = Facility.facility_sizes.keys.reverse.append('unknown')
+      @facility_sizes = Facility.facility_sizes.keys.reverse
     end
 
     def facilities_by_size(scope_namespace = [])
-      if @size == 'All'
-        policy_scope(scope_namespace.concat([Facility.all]))
-      else
-        @size = @size.map { |size| size == 'unknown'? nil : size } if @size.is_a? Array
-        policy_scope(scope_namespace.concat([Facility.where(facility_size: @size)]))
-      end
+      @facilities = (@size == 'All') ? Facility.all : Facility.where(facility_size: @size)
+      policy_scope(scope_namespace.concat([@facilities]))
     end
   end
 end
