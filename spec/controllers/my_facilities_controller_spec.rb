@@ -28,7 +28,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
 
       expect(response).to be_success
     end
-    
+
     it 'returns a success response' do
       get :registrations, params: {}
 
