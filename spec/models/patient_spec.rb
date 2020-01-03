@@ -5,7 +5,7 @@ describe Patient, type: :model do
   subject(:patient) { build(:patient) }
 
   describe 'Associations' do
-    it { should belong_to(:address) }
+    it { should belong_to(:address).optional }
     it { should have_many(:phone_numbers) }
     it { should have_many(:blood_pressures) }
     it { should have_many(:blood_sugars) }
@@ -21,7 +21,7 @@ describe Patient, type: :model do
       expect(patient.facilities.count).to eq(1)
     end
 
-    it { should belong_to(:registration_facility).class_name("Facility") }
+    it { should belong_to(:registration_facility).class_name("Facility").optional }
     it { should belong_to(:registration_user).class_name("User") }
   end
 
@@ -150,6 +150,17 @@ describe Patient, type: :model do
         number_3 = create(:patient_phone_number, patient: patient)
 
         expect(patient.reload.latest_phone_number).to eq(number_3.number)
+      end
+    end
+
+    describe "#latest_mobile_number" do
+      it 'returns the last mobile number for the patient' do
+        patient = create(:patient)
+        number_1 = create(:patient_phone_number, patient: patient)
+        _number_2 = create(:patient_phone_number, phone_type: :landline, patient: patient)
+        _number_3 = create(:patient_phone_number, phone_type: :invalid, patient: patient)
+
+        expect(patient.reload.latest_mobile_number).to eq(number_1.number)
       end
     end
   end

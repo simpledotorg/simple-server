@@ -16,12 +16,12 @@ class Api::Current::FacilitiesController < Api::Current::SyncController
   end
 
   def transform_to_response(facility)
-    facility.as_json
-      .merge(protocol_id: facility.protocol.try(:id))
+    Api::Current::FacilityTransformer.to_response(facility)
   end
 
   def response_process_token
-    { other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since }
+    { other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
+      resync_token: resync_token }
   end
 
   def records_to_sync

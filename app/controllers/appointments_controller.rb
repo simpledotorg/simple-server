@@ -11,7 +11,6 @@ class AppointmentsController < AdminController
                       .joins(patient: { latest_blood_pressures: :facility })
                       .includes(patient: [:address, :phone_numbers, :medical_history, { latest_blood_pressures: :facility }])
                       .overdue
-                      .where("scheduled_date >= ?", 12.months.ago)
                       .distinct
                       .order(scheduled_date: :asc)
 
@@ -32,7 +31,7 @@ class AppointmentsController < AdminController
     call_result = appointment_params[:call_result].to_sym
 
     if set_appointment_status_from_call_result(@appointment, call_result)
-      redirect_to appointments_url(params: { facility_id: selected_facility_id }), notice: "Saved. #{@appointment.patient.full_name} marked as \"#{call_result.to_s.humanize}\""
+      redirect_to appointments_url(params: { facility_id: selected_facility_id, page: page}), notice: "Saved. #{@appointment.patient.full_name} marked as \"#{call_result.to_s.humanize}\""
     else
       redirect_back fallback_location: root_path, alert: 'Something went wrong!'
     end
@@ -69,5 +68,9 @@ class AppointmentsController < AdminController
 
   def selected_facility_id
     params[:appointment][:selected_facility_id]
+  end
+
+  def page
+    params[:appointment][:page]
   end
 end

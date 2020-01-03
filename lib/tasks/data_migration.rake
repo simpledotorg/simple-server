@@ -100,4 +100,45 @@ namespace :data_migration do
   task remove_bot_user_usages: :environment do
     Communication.where(user: ENV['APPOINTMENT_NOTIFICATION_BOT_USER_UUID']).update_all(user_id: nil)
   end
+
+  desc "Add facility sizes based on facility type"
+  task add_facility_sizes: :environment do
+    size_map = {
+      "CH" => :large,
+      "DH" => :large,
+      "Hospital" => :large,
+      "RH" => :large,
+      "SDH" => :large,
+
+      "CHC" => :medium,
+
+      "MPHC" => :small,
+      "PHC" => :small,
+      "SAD" => :small,
+      "Standalone" => :small,
+      "UHC" => :small,
+      "UPHC" => :small,
+      "USAD" => :small,
+
+      "HWC" => :community,
+      "Village" => :community
+    }
+
+    size_map.each do |facility_type, facility_size|
+      Facility.where(facility_type: facility_type, facility_size: nil).each do |facility|
+        puts "Updating #{facility.name}: #{facility.facility_type} --> #{facility_size}"
+        facility.update(facility_size: facility_size)
+      end
+    end
+  end
+
+  desc 'Assign organization to users from registration facility'
+  task assign_organization_to_users: :environment do
+    User.where(organization: nil)
+      .select { |u| u.registration_facility.present? }
+      .each do |user|
+      user.organization = user.registration_facility.organization
+      user.save!
+    end
+  end
 end

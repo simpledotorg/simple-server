@@ -3,9 +3,9 @@ include Hashable
 
 describe Communication, type: :model do
   context 'Associations' do
-    it { should belong_to(:user) }
+    it { should belong_to(:user).optional }
     it { should belong_to(:appointment) }
-    it { should belong_to(:detailable) }
+    it { should belong_to(:detailable).optional }
   end
 
   context 'Validations' do

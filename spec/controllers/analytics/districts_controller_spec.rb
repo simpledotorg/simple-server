@@ -65,30 +65,30 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
       end
 
       let(:today) { Date.new(2019, 5, 1) }
-      let(:cohort_date1) { (today - (1 * 3).months).beginning_of_quarter }
-      let(:cohort_date2) { (today - (2 * 3).months).beginning_of_quarter }
-      let(:cohort_date3) { (today - (3 * 3).months).beginning_of_quarter }
+      let(:cohort_date1) { (today - (0 * 3).months).beginning_of_quarter }
+      let(:cohort_date2) { (today - (1 * 3).months).beginning_of_quarter }
+      let(:cohort_date3) { (today - (2 * 3).months).beginning_of_quarter }
 
       it 'caches the district correctly' do
         expected_cache_value =
-          {
-            cohort: {
-              [cohort_date1.prev_quarter, cohort_date1] =>
-                { :registered => 3, :followed_up => 3, :defaulted => 0, :controlled => 3, :uncontrolled => 0 },
-              [cohort_date2.prev_quarter, cohort_date2] =>
-                { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
-              [cohort_date3.prev_quarter, cohort_date3] =>
-                { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 }
-            },
+            {
+                cohort: {
+                    [cohort_date1.prev_quarter, cohort_date1] =>
+                        { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
+                    [cohort_date2.prev_quarter, cohort_date2] =>
+                        { :registered => 3, :followed_up => 3, :defaulted => 0, :controlled => 3, :uncontrolled => 0 },
+                    [cohort_date3.prev_quarter, cohort_date3] =>
+                        { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 }
+                },
 
-            dashboard: {
-              facility.id => {
-                registered_patients_by_period: { cohort_date2 => 3 },
-                total_registered_patients: 3,
-                follow_up_patients_by_period: { cohort_date1 => 3 }
-              }
+                dashboard: {
+                    facility.id => {
+                        registered_patients_by_period: { cohort_date3 => 3 },
+                        total_registered_patients: 3,
+                        follow_up_patients_by_period: { cohort_date2 => 3 }
+                    }
+                }
             }
-          }
 
         get :show, params: { organization_id: organization.id, id: district_name, period: :quarter }
 
