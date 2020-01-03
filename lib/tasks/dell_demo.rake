@@ -9,12 +9,31 @@ namespace :dell_demo do
        [:simple_org_name, :number_of_patients] => :environment do |_t, args|
 
     #
+    # Only print on console
+    #
+    logger = Logger.new(STDOUT)
+
+    #
     # Parse args
     #
     abort 'Requires <number_of_patients>' unless args[:number_of_patients].present?
-    # abort 'Requires <enrollment_api_auth_token>' unless args[:enrollment_api_auth_token].present?
+    unless ENV['AUTH_TOKEN'].present?
+      abort <<-NOTE
+Requires ENV['AUTH_TOKEN']
+
+This auth-token is currently not straightforward to acquire:
+
+* Login to https://ncd-staging.nhp.gov.in/#/portal/enrollment
+* Enroll dummy patient
+* Check the network tab and look at the request headers for the `addScreening` POST request
+* Note down the Authorization header (bearer token)
+* Pass that into the ENV variable.
+      NOTE
+
+    end
+
     number_of_patients = Integer(args[:number_of_patients])
-    enrollment_api_auth_token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJkb2NfMTA4MDExNSIsInNjb3BlIjpbInJlYWQiLCJ3cml0ZSJdLCJpc0xvY2FsUG9ydGFsIjoiZmFsc2UiLCJleHAiOjE1Nzc4MTY3OTEsInVzZXIiOiJkb2NfMTA4MDExNSIsImF1dGhvcml0aWVzIjpbIlNBVkVfTEFCX1JFUVVFU1QiLCJWSUVXX1BIQ19EQVNIQk9BUkRTIiwiQVVUSE9SSVRZX0lOQ0VOVElWRSIsIlZJRVdfQ0FOQ0VSX1BBVElFTlRTIiwiQUREX1BIQ19SRUZFUlJBTCJdLCJqdGkiOiJlZTU0NWZhMy0yMjc5LTQ2MzUtYmEyZC02NjM3YzAzZTEyMWQiLCJjbGllbnRfaWQiOiJOQ0RCcm93c2VyIn0.BpkJQ1gkkxiqn7SLABfBnNESi4T4irk3ZJIyTf1sQizaaiVLcnE0gOKKQWHFaUfpWpOV9MUB_3tHoaaimm6PZe6Lp2Cw5uF9wVvHEQgo9aJ4xPFZkOFQSU_a9Ou0_M6yI58NRPiIPIdLgVdWrDWXsVQlF-8E4g8nfvyS2tQwAtpyRZXEUrr_F1UCwUrIp8zRqw-ULL6d1xvasYqJ08Nml6qRgjjk1t-aL7zTwiC0eemhCI87glLdO3K6bc6_Dkypm-2j01DjncI_PcNJvxgabykrfV5gf6aT3TpBxQTbRA8sW-ae8zWYj4ZhzAiM7mWPMl8BTYCFokD6zzRkLWfmpQ"
+    enrollment_api_auth_token = ENV['AUTH_TOKEN']
     simple_org_name = args[:simple_org_name].presence || 'IHCI'
 
     #
@@ -30,9 +49,11 @@ namespace :dell_demo do
     #
     # For each patient, fire off the enrollment API calls
     #
-    Rails.logger.info "Batch of patients selected..."
+    logger.info "Batch of patients selected..."
+    logger.info "[Patient details] ==> Individual Enrollment ID (Dell ID)"
+
     selected_batch_of_patients.each do |patient|
-      Rails.logger.info "#{patient.full_name} | #{patient.age} | #{patient.recorded_at}"
+      log_patient = "[#{patient.full_name} | #{patient.age} | #{patient.recorded_at}]"
 
       #
       # these are educated guesses, but by no means indisputable
@@ -52,8 +73,8 @@ namespace :dell_demo do
       }
 
       assumed_default_headers = {
-        facility_type: 'PHC',
-        facility_type_id: '3200'
+        'facilityType' => 'PHC',
+        'facilityTypeId' => '3200'
       }
 
       #
@@ -144,9 +165,10 @@ namespace :dell_demo do
                      .auth("Bearer #{enrollment_api_auth_token}")
                      .post(NCD_STAGING_ENROLLMENT_API, json: enrollment_payload)
 
-        puts response.body
+        response_body = JSON.parse(response.body, symbolize_names: true)
+        logger.info "#{log_patient} ==> #{response_body[:individualId]}"
       rescue HTTP::Error => _err
-        Rails.logger.info "Could not push patient: #{patient.id} | #{patient.full_name}"
+        logger.info "Could not push patient: #{patient.id} | #{patient.full_name}"
         raise _err
       end
     end
