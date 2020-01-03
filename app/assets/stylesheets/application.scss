@@ -622,7 +622,6 @@ th sup {
         a, .sort-label {
             background: $grey-lightest;
             color: $blue;
-            //width: 100%;
             height: 100%;
             padding: 16px 8px;
             vertical-align: middle;
@@ -656,7 +655,7 @@ th sup {
         }
         
         th.sort-label {
-            border-left: 1px solid $grey-mid !important;
+            border-left: 1px solid #C9D3D8;
         }
         
         th.sort-label:first-of-type {
@@ -690,7 +689,6 @@ th sup {
     
     th {
         vertical-align: middle;
-        border: none !important;
         padding: 4px 8px 8px 8px;
         font-size: 11px;
         text-align: center;
@@ -705,7 +703,7 @@ th sup {
     td {
         padding: 8px;
         vertical-align: middle;
-        border-color: $grey-lightest;
+        border-top: 1px solid $grey-lightest;
         font-size: 14px;
         
         a {

@@ -1,21 +1,24 @@
 <div class="card" id="recent-bps">
   <h3>Recent BPs</h3>
-
+  <p> A log of the BPs recorded
+        <% if display_model == :facility %>
+          at this facility.
+        <% elsif display_model == :user %>
+          by this user.
+        <% end %></p>
   <% if blood_pressures.any? %>
     <div class="table-responsive table-compact pb-3">
       <table>
+        <colgroup>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col class="table-divider">
+        </colgroup>
         <thead>
         <tr>
-          <th colspan="2" class="pl-0 pb-3" style="font-weight: normal;">
-            A log of the BPs recorded
-            <% if display_model == :facility %>
-              at this facility.
-            <% elsif display_model == :user %>
-              by this user.
-            <% end %>
-          </th>
-          <th class="pl-1 pb-3">BP</th>
-          <th class="pl-1 pb-3">Patient</th>
+          <th colspan="4"></th>
           <% if display_model == :facility %>
             <th class="pl-1 pb-3">Recorded by</th>
           <% end %>
