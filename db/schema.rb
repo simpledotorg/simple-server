@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191230103921) do
+ActiveRecord::Schema.define(version: 20200103112932) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -677,5 +677,20 @@ ActiveRecord::Schema.define(version: 20191230103921) do
       (date_part('year'::text, blood_pressures.recorded_at))::text AS year
      FROM blood_pressures
     ORDER BY blood_pressures.patient_id, (date_part('year'::text, blood_pressures.recorded_at))::text, (date_part('month'::text, blood_pressures.recorded_at))::text, blood_pressures.recorded_at DESC, blood_pressures.id;
+  SQL
+  create_view "patients_registered_per_month_per_facilities", materialized: true, sql_definition: <<-SQL
+      SELECT count(patients.id) AS count,
+      patients.registration_facility_id AS facility_id,
+      facilities.facility_size,
+      facilities.created_at AS facility_created_at,
+      facilities.district AS facility_district,
+      facilities.zone AS facility_zone,
+      (date_part('month'::text, patients.recorded_at))::text AS month,
+      (date_part('quarter'::text, patients.recorded_at))::text AS quarter,
+      (date_part('year'::text, patients.recorded_at))::text AS year
+     FROM (patients
+       JOIN facilities ON ((patients.registration_facility_id = facilities.id)))
+    WHERE (((patients.status)::text = 'active'::text) AND (patients.deleted_at IS NULL))
+    GROUP BY (date_part('month'::text, patients.recorded_at))::text, (date_part('quarter'::text, patients.recorded_at))::text, (date_part('year'::text, patients.recorded_at))::text, patients.registration_facility_id, facilities.facility_size, facilities.created_at, facilities.district, facilities.zone;
   SQL
 end
