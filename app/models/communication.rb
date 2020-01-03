@@ -38,7 +38,7 @@ class Communication < ApplicationRecord
       sms_delivery_details =
         TwilioSmsDeliveryDetail.create!(session_id: twilio_sid,
                                         result: twilio_msg_status,
-                                        callee_phone_number: appointment.patient.latest_phone_number)
+                                        callee_phone_number: appointment.patient.latest_mobile_number)
       Communication.create!(communication_type: communication_type,
                             detailable: sms_delivery_details,
                             appointment: appointment,

@@ -21,16 +21,16 @@ RSpec.describe CohortAnalyticsQuery do
       it "correctly calculates the dates of monthly cohort reports" do
         analytics.patient_counts_by_period(:month, 3, from_time: june)
 
-        expect(analytics).to have_received(:patient_counts).with(march, march.end_of_month, april, may.end_of_month)
         expect(analytics).to have_received(:patient_counts).with(feb, feb.end_of_month, march, april.end_of_month)
-        expect(analytics).to have_received(:patient_counts).with(jan, jan.end_of_month, feb, march.end_of_month)
+        expect(analytics).to have_received(:patient_counts).with(march, march.end_of_month, april, may.end_of_month)
+        expect(analytics).to have_received(:patient_counts).with(april, april.end_of_month, may, june.end_of_month)
       end
 
       it "returns patient counts for the last 3 monthly cohorts" do
         expected_result = {
-          [march, april] => {},
-          [feb, march] => {},
-          [jan, feb] => {}
+            [april, may] => {},
+            [march, april] => {},
+            [feb, march] => {},
         }
 
         travel_to(june) do
@@ -46,14 +46,14 @@ RSpec.describe CohortAnalyticsQuery do
       it "correctly calculates the dates of quarterly cohort reports" do
         analytics.patient_counts_by_period(:quarter, 2, from_time: july)
 
-        expect(analytics).to have_received(:patient_counts).with(jan, march.end_of_quarter, april, june.end_of_quarter)
-        expect(analytics).to have_received(:patient_counts).with(oct_prev, dec_prev.end_of_quarter, jan, march.end_of_quarter)
+        expect(analytics).to have_received(:patient_counts).with(april, april.end_of_quarter, july, july.end_of_quarter)
+        expect(analytics).to have_received(:patient_counts).with(jan, jan.end_of_quarter, april, april.end_of_quarter)
       end
 
       it "returns patient counts for the last 3 quarterly cohorts" do
         expected_result = {
-          [jan, april] => {},
-          [oct_prev, jan] => {}
+            [april, july] => {},
+            [jan, april] => {},
         }
 
         travel_to(june) do
@@ -73,16 +73,16 @@ RSpec.describe CohortAnalyticsQuery do
     it "calculates return and control patient counts in Q2 for patients registered in Q1" do
       travel_to(april) do
         # 2 patients under control, 3 not controlled
-        jan_registered_patients[0..1].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility,) }
+        jan_registered_patients[0..1].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility) }
         jan_registered_patients[2..4].each { |patient| create(:blood_pressure, :very_high, patient: patient, facility: facility) }
       end
 
       expected_result = {
-        registered: 15,
-        followed_up: 5,
-        defaulted: 10,
-        controlled: 2,
-        uncontrolled: 3
+          registered: 15,
+          followed_up: 5,
+          defaulted: 10,
+          controlled: 2,
+          uncontrolled: 3
       }
 
       cohort_start = DateTime.new(2019, 1, 1).beginning_of_quarter
@@ -102,11 +102,11 @@ RSpec.describe CohortAnalyticsQuery do
       end
 
       expected_result = {
-        registered: 15,
-        followed_up: 8,
-        defaulted: 7,
-        controlled: 3,
-        uncontrolled: 5
+          registered: 15,
+          followed_up: 8,
+          defaulted: 7,
+          controlled: 3,
+          uncontrolled: 5
       }
 
       cohort_start = DateTime.new(2019, 1, 1).beginning_of_month
