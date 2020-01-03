@@ -53,7 +53,7 @@ gem 'lodash-rails'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
-  gem 'shoulda-matchers', '~> 3.1'
+  gem 'shoulda-matchers', '~> 4.1.2'
   gem 'capistrano', '~> 3.10'
   gem 'capistrano-rails'
   gem 'capistrano-rbenv'

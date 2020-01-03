@@ -125,6 +125,9 @@ RSpec.feature 'Admin User page functionality', type: :feature do
 
     it "deny user access" do
       user = create(:user)
+      user.sync_approval_status = User.sync_approval_statuses[:requested]
+      user.save
+      
       visit root_path
       login_page.do_login(owner.email, owner.password)
       navigation.select_manage_option("Users")

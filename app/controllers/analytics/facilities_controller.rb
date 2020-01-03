@@ -6,7 +6,7 @@ class Analytics::FacilitiesController < AnalyticsController
   before_action :set_facility
 
   def show
-    @show_current_month = (@period == :month)
+    @show_current_period = true
 
     set_dashboard_analytics(@period, 3)
     set_cohort_analytics(@period, @prev_periods)
@@ -71,7 +71,7 @@ class Analytics::FacilitiesController < AnalyticsController
       analytics_cache_key_dashboard(period),
       @facility.dashboard_analytics(period: period,
                                     prev_periods: prev_periods,
-                                    include_current_period: @show_current_month))
+                                    include_current_period: @show_current_period))
   end
 
   def analytics_cache_key
