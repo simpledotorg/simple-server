@@ -679,12 +679,6 @@ th sup {
                 opacity: 1;
             }
         }
-        
-        th {
-            border-top: 0;
-            border-bottom: 0;
-            padding: 0;
-        }
     }
     
     th {
@@ -694,6 +688,8 @@ th sup {
         text-align: center;
         text-transform: uppercase;
         letter-spacing: 2px;
+        border-top: none !important;
+        border-bottom: none !important;
 
         span {
             white-space: nowrap;
