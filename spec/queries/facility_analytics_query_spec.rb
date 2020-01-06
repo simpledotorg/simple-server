@@ -206,29 +206,31 @@ RSpec.describe FacilityAnalyticsQuery do
     end
 
     describe '#follow_up_patients_by_period' do
-      it "shouldn't count discarded patients" do
-        expected_result =
-          { users.first.id =>
-              { :follow_up_patients_by_period =>
-                  {
-                    three_months_back => 1
-                  }
-              }
-          }
+      let!(:expected_result) do
+        { users.first.id =>
+            { :follow_up_patients_by_period =>
+                {
+                  three_months_back => 1
+                }
+            }
+        }
+      end
 
+      it "shouldn't count discarded patients" do
         expect(analytics.follow_up_patients_by_period).to eq(expected_result)
       end
     end
 
     describe '#total_registered_patients' do
-      it "shouldn't count discarded patients" do
-        expected_result =
-          { users.first.id =>
-              {
-                :total_registered_patients => 1
-              }
-          }
+      let!(:expected_result) do
+        { users.first.id =>
+            {
+              :total_registered_patients => 1
+            }
+        }
+      end
 
+      it "shouldn't count discarded patients" do
         expect(analytics.total_registered_patients).to eq(expected_result)
       end
     end

@@ -22,25 +22,22 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
   let(:analytics_cohort_cache_key) { "analytics/facilities/#{facility.id}/cohort/month" }
   let(:analytics_dashboard_cache_key) { "analytics/facilities/#{facility.id}/dashboard/month" }
 
-  before do
-    #
-    # register patients
-    #
-    @registered_patients = travel_to(feb_2019) do
-      create_list(:patient, 3, registration_facility: facility, registration_user: user)
-    end
+  let!(:registered_patients) do
+    travel_to(feb_2019) { create_list(:patient, 3, registration_facility: facility, registration_user: user) }
+  end
 
+  before do
     #
     # add blood_pressures next month
     #
     travel_to(mar_2019) do
-      @registered_patients.each do |patient|
+      registered_patients.each do |patient|
         blood_pressure = create(:blood_pressure, :under_control, patient: patient, facility: facility, user: user)
         create(:encounter, :with_observables, patient: patient, observable: blood_pressure, facility: facility)
       end
     end
 
-    Patient.where(id: @registered_patients.map(&:id))
+    Patient.where(id: registered_patients.map(&:id))
   end
 
   before do
@@ -128,7 +125,7 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
 
     context "Recent bps" do
       it "shouldn't include discarded patient's blood pressures" do
-        @registered_patients.first.discard_data
+        registered_patients.first.discard_data
         
         get :show, params: { id: facility.id }
         expect(assigns(:recent_blood_pressures).count).to eq(2)
