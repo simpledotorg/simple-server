@@ -36,7 +36,7 @@
   <% if policy([:cohort_report, @facility]).patient_list? %>
     <p>
       <%= link_to analytics_facility_patient_list_path(@facility) do %>
-        <i class='fas fa-camera mr-2'></i>
+        <i class="far fa-file-excel mr-2"></i>
         Patient line list
       <% end %>
     </p>

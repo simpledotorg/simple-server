@@ -1,6 +1,4 @@
 class User < ApplicationRecord
-  self.table_name = 'master_users'
-
   AUTHENTICATION_TYPES = {
     email_authentication: 'EmailAuthentication',
     phone_number_authentication: 'PhoneNumberAuthentication'
