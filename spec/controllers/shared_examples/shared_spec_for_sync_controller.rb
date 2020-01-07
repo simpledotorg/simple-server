@@ -14,10 +14,6 @@ def parse_process_token(response_body)
   JSON.parse(Base64.decode64(response_body['process_token'])).with_indifferent_access
 end
 
-def discard_patient(record)
-  record.class == Patient ? record.discard_data : record.patient.discard_data
-end
-
 RSpec.shared_examples 'a sync controller that authenticates user requests' do
   describe 'user api authentication' do
     let(:request_key) { model.to_s.underscore.pluralize }
@@ -319,20 +315,6 @@ RSpec.shared_examples 'a working V2 sync controller sending records' do
           .to eq(model.all.pluck(:id).to_set)
       end
     end
-
-    it 'Returns discarded records' do
-      expected_records = create_record_list(5, updated_at: 5.minutes.ago)
-      discard_record = expected_records.first
-      discard_patient(discard_record)
-
-      get :sync_to_user
-
-      response_body = JSON(response.body)
-      expect(response_body[response_key].count).to eq 15
-
-      expect(response_body[response_key].map { |record| record['id'] })
-        .to include(discard_record.id)
-    end
   end
 end
 
@@ -415,20 +397,6 @@ RSpec.shared_examples 'a working Current sync controller sending records' do
         expect(received_records.map { |record| record['id'] }.to_set)
           .to eq(model.all.pluck(:id).to_set)
       end
-    end
-
-    it 'Returns discarded records' do
-      expected_records = create_record_list(5, updated_at: 5.minutes.ago)
-      discard_record = expected_records.first
-      discard_patient(discard_record)
-
-      get :sync_to_user
-
-      response_body = JSON(response.body)
-      expect(response_body[response_key].count).to eq 15
-
-      expect(response_body[response_key].map { |record| record['id'] })
-        .to include(discard_record.id)
     end
   end
 end

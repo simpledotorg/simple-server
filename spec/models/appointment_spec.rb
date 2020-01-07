@@ -38,26 +38,13 @@ describe Appointment, type: :model do
       let(:upcoming_appointment) { create(:appointment) }
 
       it "includes overdue appointments that are overdue by 3 or more days" do
-        expect(Appointment.overdue_by(3)).not_to include(recently_overdue_appointment)
+        expect(Appointment.overdue_by(3)).to_not include(recently_overdue_appointment)
         expect(Appointment.overdue_by(3)).to include(overdue_appointment)
       end
 
       it "excludes non-overdue appointments" do
         expect(Appointment.overdue).not_to include(upcoming_appointment)
       end
-    end
-  end
-
-  context 'For discarded patients' do
-    let!(:discard_patient) { create(:patient) }
-    let!(:overdue_appointment) { create(:appointment, :overdue) }
-    let!(:discarded_overdue_appointment) { create(:appointment, :overdue, patient: discard_patient) }
-
-    it "shouldn't include discarded patients' appointments " do
-      discard_patient.discard_data
-
-      expect(Appointment.overdue).to include(overdue_appointment)
-      expect(Appointment.overdue).not_to include(discarded_overdue_appointment)
     end
   end
 
