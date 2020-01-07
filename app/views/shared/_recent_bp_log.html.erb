@@ -1,20 +1,20 @@
 <div class="card" id="recent-bps">
   <h3>Recent BPs</h3>
   <p> A log of the BPs recorded
-        <% if display_model == :facility %>
-          at this facility.
-        <% elsif display_model == :user %>
-          by this user.
-        <% end %></p>
+    <% if display_model == :facility %>
+      at this facility.
+    <% elsif display_model == :user %>
+      by this user.
+    <% end %></p>
   <% if blood_pressures.any? %>
     <div class="table-responsive table-compact pb-3">
       <table>
         <colgroup>
-            <col>
-            <col>
-            <col>
-            <col>
-            <col class="table-divider">
+          <col>
+          <col>
+          <col>
+          <col>
+          <col class="table-divider">
         </colgroup>
         <thead>
         <tr>

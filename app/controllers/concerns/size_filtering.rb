@@ -15,7 +15,7 @@ module SizeFiltering
     end
 
     def facilities_by_size(scope_namespace = [])
-      @facilities = (@size == 'All') ? Facility.all : Facility.where(facility_size: @size)
+      @facilities = @size == 'All' ? Facility.all : Facility.where(facility_size: @size)
       policy_scope(scope_namespace.concat([@facilities]))
     end
   end
