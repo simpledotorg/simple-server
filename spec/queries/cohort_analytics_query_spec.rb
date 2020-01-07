@@ -117,19 +117,5 @@ RSpec.describe CohortAnalyticsQuery do
 
       expect(analytics.patient_counts(cohort_start, cohort_end, report_start, report_end)).to eq(expected_result)
     end
-
-    context 'with discarded patients' do
-      let!(:cohort_start) { DateTime.new(2019, 1, 1).beginning_of_month }
-      let!(:cohort_end) { cohort_start.end_of_month }
-
-      let!(:report_start) { DateTime.new(2019, 2, 1).beginning_of_month }
-      let!(:report_end) { DateTime.new(2019, 3, 1).end_of_month }
-
-      it 'does not count discarded patients' do
-        jan_registered_patients[0..2].each(&:discard_data)
-
-        expect(analytics.patient_counts(cohort_start, cohort_end, report_start, report_end)[:registered]).to eq(12)
-      end
-    end
   end
 end
