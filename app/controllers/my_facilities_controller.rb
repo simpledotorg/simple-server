@@ -15,8 +15,7 @@ class MyFacilitiesController < AdminController
     @facilities = policy_scope([:manage, :facility, Facility])
     @inactive_facilities = MyFacilitiesQuery.inactive_facilities(@facilities)
 
-
-    @facility_count_by_size = { total: @facilities.group(:facility_size).count,
+    @facility_counts_by_size = { total: @facilities.group(:facility_size).count,
                                 inactive: @inactive_facilities.group(:facility_size).count }
 
     @bp_counts_last_week = @inactive_facilities.bp_counts_in_period(1.week.ago, Time.current)

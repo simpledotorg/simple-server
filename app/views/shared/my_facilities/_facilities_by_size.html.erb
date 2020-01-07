@@ -23,28 +23,28 @@
       </tr>
       <tr>
         <td>Large</td>
-        <td class="text-right"><%= @facility_count_by_size[:total]["large"].to_i %></td>
-        <td class="text-right"><%= @facility_count_by_size[:inactive]["large"].to_i %></td>
+        <td class="text-right"><%= @facility_counts_by_size[:total]["large"].to_i %></td>
+        <td class="text-right"><%= @facility_counts_by_size[:inactive]["large"].to_i %></td>
       </tr>
       <tr>
         <td>Medium</td>
-        <td class="text-right"><%= @facility_count_by_size[:total]["medium"].to_i %></td>
-        <td class="text-right"><%= @facility_count_by_size[:inactive]["medium"].to_i %></td>
+        <td class="text-right"><%= @facility_counts_by_size[:total]["medium"].to_i %></td>
+        <td class="text-right"><%= @facility_counts_by_size[:inactive]["medium"].to_i %></td>
       </tr>
       <tr>
         <td>Small</td>
-        <td class="text-right"><%= @facility_count_by_size[:total]["small"].to_i %></td>
-        <td class="text-right"><%= @facility_count_by_size[:inactive]["small"].to_i %></td>
+        <td class="text-right"><%= @facility_counts_by_size[:total]["small"].to_i %></td>
+        <td class="text-right"><%= @facility_counts_by_size[:inactive]["small"].to_i %></td>
       </tr>
       <tr>
         <td>Community</td>
-        <td class="text-right"><%= @facility_count_by_size[:total]["community"].to_i %></td>
-        <td class="text-right"><%= @facility_count_by_size[:inactive]["community"].to_i %></td>
+        <td class="text-right"><%= @facility_counts_by_size[:total]["community"].to_i %></td>
+        <td class="text-right"><%= @facility_counts_by_size[:inactive]["community"].to_i %></td>
       </tr>
       <tr>
         <td>Unknown</td>
-        <td class="text-right"><%= @facility_count_by_size[:total][nil].to_i %></td>
-        <td class="text-right"><%= @facility_count_by_size[:inactive][nil].to_i %></td>
+        <td class="text-right"><%= @facility_counts_by_size[:total][nil].to_i %></td>
+        <td class="text-right"><%= @facility_counts_by_size[:inactive][nil].to_i %></td>
       </tr>
       </tbody>
     </table>

@@ -11,7 +11,7 @@ RSpec.describe MyFacilitiesQuery do
       (blood_pressures_for_active_facility + blood_pressures_for_inactive_facility).each { |record|
         create(:encounter, :with_observables, patient: record.patient, observable: record, facility: record.facility) }
     end
-    
+
     describe ".inactive_facilities" do
       it 'should return only inactive facilities' do
         facility_ids = [active_facility.id, inactive_facility.id, inactive_facility_with_zero_bps.id]
