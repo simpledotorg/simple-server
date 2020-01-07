@@ -9,8 +9,8 @@ RSpec.describe OverdueList::AppointmentPolicy do
   context 'user with permission to access appointment information for all organizations' do
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :view_overdue_list)
-      ])
+               build(:user_permission, permission_slug: :view_overdue_list)
+             ])
     end
 
     permissions :index? do
@@ -33,8 +33,8 @@ RSpec.describe OverdueList::AppointmentPolicy do
   context 'user with permission to access appointment information for an organization' do
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :view_overdue_list, resource: facility1.organization)
-      ])
+               build(:user_permission, permission_slug: :view_overdue_list, resource: facility1.organization)
+             ])
     end
 
     permissions :index? do
@@ -57,11 +57,11 @@ RSpec.describe OverdueList::AppointmentPolicy do
     end
   end
 
-
   context 'user with permission to access appointment information for a facility group' do
     let(:user_with_permission) do
       create(:user, user_permissions: [
-        build(:user_permission, permission_slug: :view_overdue_list, resource: facility1.facility_group)])
+               build(:user_permission, permission_slug: :view_overdue_list, resource: facility1.facility_group)
+             ])
     end
 
     permissions :index? do
@@ -109,7 +109,6 @@ RSpec.describe OverdueList::AppointmentPolicy::Scope do
   let(:organization) { create(:organization) }
   let(:facility_group) { create(:facility_group, organization: organization) }
 
-
   let(:facility1) { create(:facility, facility_group: facility_group) }
   let(:facility2) { create(:facility) }
   let(:appointment1) { create(:appointment, :overdue, facility: facility1) }
@@ -118,8 +117,8 @@ RSpec.describe OverdueList::AppointmentPolicy::Scope do
   context 'user with permission to access appointment information for all organizations' do
     let(:user) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :view_overdue_list)
-      ])
+               build(:user_permission, permission_slug: :view_overdue_list)
+             ])
     end
 
     it 'resolves all appointments for users who can access appointment information for all organizations' do
@@ -129,9 +128,11 @@ RSpec.describe OverdueList::AppointmentPolicy::Scope do
   end
 
   context 'user with permission to access appointment information for an organization' do
-    let(:user) { create(:admin, user_permissions: [
-      build(:user_permission, permission_slug: :view_overdue_list, resource: organization)
-    ]) }
+    let(:user) do
+      create(:admin, user_permissions: [
+               build(:user_permission, permission_slug: :view_overdue_list, resource: organization)
+             ])
+    end
 
     it 'resolves all appointments in the organization' do
       resolved_records = subject.new(user, Appointment.all).resolve
@@ -140,9 +141,11 @@ RSpec.describe OverdueList::AppointmentPolicy::Scope do
   end
 
   context 'user with permission to access appointment information for a facility group' do
-    let(:user) { create(:admin, user_permissions: [
-      build(:user_permission, permission_slug: :view_overdue_list, resource: facility_group)
-    ]) }
+    let(:user) do
+      create(:admin, user_permissions: [
+               build(:user_permission, permission_slug: :view_overdue_list, resource: facility_group)
+             ])
+    end
 
     it 'resolves all appointments in the facility group' do
       resolved_records = subject.new(user, Appointment.all).resolve

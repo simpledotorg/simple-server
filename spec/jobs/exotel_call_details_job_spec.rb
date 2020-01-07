@@ -11,12 +11,12 @@ RSpec.describe ExotelCallDetailsJob, type: :job do
   let!(:stubbed_call_duration) { 10 }
   let!(:stubbed_call_start_time) { '2017-02-17 14:16:03' }
   let!(:stubbed_call_end_time) { '2017-02-17 14:16:20' }
-  let!(:stubbed_call_details) {
+  let!(:stubbed_call_details) do
     { Call: { Sid: call_id,
               Duration: stubbed_call_duration,
               StartTime: stubbed_call_start_time,
               EndTime: stubbed_call_end_time } }
-  }
+  end
 
   it 'should populate a call log' do
     allow_any_instance_of(ExotelAPIService).to receive(:call_details).with(call_id).and_return(stubbed_call_details)
@@ -40,12 +40,12 @@ RSpec.describe ExotelCallDetailsJob, type: :job do
                                       'callee_phone_number',
                                       'caller_phone_number',
                                       'start_time',
-                                      'end_time')).to eq({ 'result' => stubbed_call_result,
-                                                           'duration' => stubbed_call_duration,
-                                                           'callee_phone_number' => callee_phone_number,
-                                                           'caller_phone_number' => user_phone_number,
-                                                           'start_time' => Time.zone.parse(stubbed_call_start_time),
-                                                           'end_time' => Time.zone.parse(stubbed_call_end_time) })
+                                      'end_time')).to eq('result' => stubbed_call_result,
+                                                         'duration' => stubbed_call_duration,
+                                                         'callee_phone_number' => callee_phone_number,
+                                                         'caller_phone_number' => user_phone_number,
+                                                         'start_time' => Time.zone.parse(stubbed_call_start_time),
+                                                         'end_time' => Time.zone.parse(stubbed_call_end_time))
   end
 
   it 'should not populate a call log if exotel api is unable to return call details' do

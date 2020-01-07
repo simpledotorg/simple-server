@@ -20,13 +20,13 @@ describe Communication, type: :model do
     let(:appointment) { create(:appointment) }
 
     it 'creates a communication with a TwilioSmsDeliveryDetail' do
-      expect {
+      expect do
         Communication.create_with_twilio_details!(appointment: appointment,
                                                   twilio_sid: SecureRandom.uuid,
                                                   twilio_msg_status: 'sent',
                                                   communication_type: :missed_visit_sms_reminder)
-      }.to change { Communication.count }.by(1)
-             .and change { TwilioSmsDeliveryDetail.count }.by(1)
+      end.to change { Communication.count }.by(1)
+                                           .and change { TwilioSmsDeliveryDetail.count }.by(1)
     end
   end
 
@@ -45,7 +45,6 @@ describe Communication, type: :model do
                              detailable: create(:twilio_sms_delivery_detail, :failed))
 
       expect(communication.communication_result).to eq('unsuccessful')
-
     end
 
     it 'is in_progress if detailable is in_progress' do
@@ -75,8 +74,7 @@ describe Communication, type: :model do
             user_id: hash_uuid(communication.user_id),
             created_at: communication.created_at,
             communication_type: communication.communication_type,
-            communication_result: communication.communication_result,
-          }
+            communication_result: communication.communication_result }
 
         expect(communication.anonymized_data).to eq anonymised_data
       end

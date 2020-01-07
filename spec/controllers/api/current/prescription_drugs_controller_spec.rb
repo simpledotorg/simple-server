@@ -5,10 +5,10 @@ RSpec.describe Api::Current::PrescriptionDrugsController, type: :controller do
   let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
   let(:model) { PrescriptionDrug }
 
-  let(:build_payload) { lambda { build_prescription_drug_payload } }
-  let(:build_invalid_payload) { lambda { build_invalid_prescription_drug_payload } }
+  let(:build_payload) { -> { build_prescription_drug_payload } }
+  let(:build_invalid_payload) { -> { build_invalid_prescription_drug_payload } }
   let(:invalid_record) { build_invalid_payload.call }
-  let(:update_payload) { lambda { |prescription_drug| updated_prescription_drug_payload prescription_drug } }
+  let(:update_payload) { ->(prescription_drug) { updated_prescription_drug_payload prescription_drug } }
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
   def create_record(options = {})
@@ -98,7 +98,7 @@ RSpec.describe Api::Current::PrescriptionDrugsController, type: :controller do
         get :sync_to_user, params: { limit: 15 }
 
         response_prescription_drugs = JSON(response.body)['prescription_drugs']
-        response_facilities = response_prescription_drugs.map { |prescription_drug| prescription_drug['facility_id']}.to_set
+        response_facilities = response_prescription_drugs.map { |prescription_drug| prescription_drug['facility_id'] }.to_set
 
         expect(response_prescription_drugs.count).to eq 4
         expect(response_facilities).to match_array([request_facility.id, facility_in_same_group.id])

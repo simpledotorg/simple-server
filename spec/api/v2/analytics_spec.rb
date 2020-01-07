@@ -4,7 +4,7 @@ describe 'Analytics V2 API', swagger_doc: 'v2/swagger.json' do
   path '/analytics/user_analytics' do
     get 'Sends JSON containing analytics for User' do
       tags 'analytics'
-      security [ basic: [] ]
+      security [basic: []]
       produces 'application/json'
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
@@ -35,7 +35,7 @@ describe 'Analytics V2 API', swagger_doc: 'v2/swagger.json' do
   path '/analytics/user_analytics.html' do
     get 'Sends a static HTML containing analytics for user' do
       tags 'analytics'
-      security [ basic: [] ]
+      security [basic: []]
       produces 'text/html'
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid

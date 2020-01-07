@@ -64,14 +64,14 @@ RSpec.describe AppointmentsController, type: :controller do
 
     describe 'pagination' do
       it 'shows "Pagination::DEFAULT_PAGE_SIZE" records per page' do
-        stub_const("Pagination::DEFAULT_PAGE_SIZE", 5)
+        stub_const('Pagination::DEFAULT_PAGE_SIZE', 5)
         get :index, params: {}
 
         expect(response.body.scan(/recorded at/).length).to be(5)
       end
 
       it 'shows the selected number of records per page' do
-        stub_const("Pagination::DEFAULT_PAGE_SIZE", 5)
+        stub_const('Pagination::DEFAULT_PAGE_SIZE', 5)
         get :index, params: { per_page: 50 }
 
         expect(response.body.scan(/recorded at/).length).to be(6)

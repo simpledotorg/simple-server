@@ -10,7 +10,7 @@ FactoryBot.define do
 
     id { SecureRandom.uuid }
     gender { Patient::GENDERS.sample }
-    full_name { common_names[gender].sample + " " + common_names[gender].sample }
+    full_name { common_names[gender].sample + ' ' + common_names[gender].sample }
     status { Patient::STATUSES[0] }
     date_of_birth { Date.current if has_date_of_birth? }
     age { rand(18..100) unless has_date_of_birth? }
@@ -42,14 +42,14 @@ def build_patient_payload(patient = FactoryBot.build(:patient))
          .except('registration_facility_id')
          .except('test_data')
          .merge(
-      'address' => patient.address.attributes.with_payload_keys,
-      'phone_numbers' => patient.phone_numbers.map { |phno| phno.attributes.with_payload_keys.except('patient_id', 'dnd_status') },
-      'business_identifiers' => patient.business_identifiers.map do |bid|
-        bid.attributes.with_payload_keys
-          .except('patient_id')
-          .merge('metadata' => bid.metadata&.to_json)
-      end
-    )
+           'address' => patient.address.attributes.with_payload_keys,
+           'phone_numbers' => patient.phone_numbers.map { |phno| phno.attributes.with_payload_keys.except('patient_id', 'dnd_status') },
+           'business_identifiers' => patient.business_identifiers.map do |bid|
+             bid.attributes.with_payload_keys
+               .except('patient_id')
+               .merge('metadata' => bid.metadata&.to_json)
+           end
+         )
 end
 
 def build_patient_payload_v2(patient = FactoryBot.build(:patient))
@@ -80,11 +80,13 @@ def updated_patient_payload(existing_patient)
                    'street_address' => Faker::Address.street_address },
     'phone_numbers' => [phone_number.attributes.with_payload_keys.merge(
       'updated_at' => update_time,
-      'number' => Faker::PhoneNumber.phone_number)],
+      'number' => Faker::PhoneNumber.phone_number
+    )],
     'business_identifiers' => [business_identifier.attributes.with_payload_keys.merge(
       'updated_at' => update_time,
       'identifier' => SecureRandom.uuid,
-      'metadata' => business_identifier.metadata&.to_json)]
+      'metadata' => business_identifier.metadata&.to_json
+    )]
   )
 end
 

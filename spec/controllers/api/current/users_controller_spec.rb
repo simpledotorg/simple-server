@@ -45,7 +45,8 @@ RSpec.describe Api::Current::UsersController, type: :controller do
                      'device_updated_at',
                      'device_created_at',
                      'created_at',
-                     'updated_at')
+                     'updated_at'
+                   )
                    .merge('registration_facility_id' => facility.id, 'phone_number' => phone_number, 'password_digest' => password_digest)
                    .as_json
                    .with_int_timestamps)
@@ -101,9 +102,9 @@ RSpec.describe Api::Current::UsersController, type: :controller do
 
       it 'sends an email using sidekiq' do
         Sidekiq::Testing.fake! do
-          expect {
+          expect do
             post :register, params: { user: user_params }
-          }.to change(Sidekiq::Extensions::DelayedMailer.jobs, :size).by(1)
+          end.to change(Sidekiq::Extensions::DelayedMailer.jobs, :size).by(1)
         end
       end
     end
@@ -161,7 +162,6 @@ RSpec.describe Api::Current::UsersController, type: :controller do
     let(:facility) { FactoryBot.create(:facility, facility_group: facility_group) }
     let(:user) { FactoryBot.create(:user, registration_facility: facility, organization: facility.organization) }
 
-
     before(:each) do
       request.env['HTTP_X_USER_ID'] = user.id
       request.env['HTTP_X_FACILITY_ID'] = facility.id
@@ -199,14 +199,14 @@ RSpec.describe Api::Current::UsersController, type: :controller do
       expect(approval_email.to).to include(supervisor.email)
       expect(approval_email.cc).to include(organization_owner.email)
       expect(approval_email.body.to_s).to match(Regexp.quote(user.phone_number))
-      expect(approval_email.body.to_s).to match("reset")
+      expect(approval_email.body.to_s).to match('reset')
     end
 
     it 'sends an email using sidekiq' do
       Sidekiq::Testing.fake! do
-        expect {
+        expect do
           post :reset_password, params: { id: user.id, password_digest: BCrypt::Password.create('1234').to_s }
-        }.to change(Sidekiq::Extensions::DelayedMailer.jobs, :size).by(1)
+        end.to change(Sidekiq::Extensions::DelayedMailer.jobs, :size).by(1)
       end
     end
   end

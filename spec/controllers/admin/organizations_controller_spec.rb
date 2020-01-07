@@ -1,13 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe Admin::OrganizationsController, type: :controller do
-  let(:valid_attributes) {
+  let(:valid_attributes) do
     FactoryBot.attributes_for(:organization)
-  }
+  end
 
-  let(:invalid_attributes) {
+  let(:invalid_attributes) do
     FactoryBot.attributes_for(:organization, name: nil)
-  }
+  end
 
   before do
     admin = create(:admin, :owner)
@@ -40,9 +40,9 @@ RSpec.describe Admin::OrganizationsController, type: :controller do
   describe 'POST #create' do
     context 'with valid params' do
       it 'creates a new Organization' do
-        expect {
+        expect do
           post :create, params: { organization: valid_attributes }
-        }.to change(Organization, :count).by(1)
+        end.to change(Organization, :count).by(1)
       end
 
       it 'redirects to the created organization' do
@@ -57,14 +57,13 @@ RSpec.describe Admin::OrganizationsController, type: :controller do
         expect(response).to be_success
       end
     end
-
   end
 
   describe 'PUT #update' do
     context 'with valid params' do
-      let(:new_attributes) {
+      let(:new_attributes) do
         FactoryBot.attributes_for(:organization).except(:id)
-      }
+      end
 
       it 'updates the requested organization' do
         organization = Organization.create! valid_attributes
@@ -93,9 +92,9 @@ RSpec.describe Admin::OrganizationsController, type: :controller do
   describe 'DELETE #destroy' do
     it 'destroys the requested organization' do
       organization = Organization.create! valid_attributes
-      expect {
+      expect do
         delete :destroy, params: { id: organization.to_param }
-      }.to change(Organization, :count).by(-1)
+      end.to change(Organization, :count).by(-1)
     end
 
     it 'redirects to the organizations list' do
