@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191225171641) do
+ActiveRecord::Schema.define(version: 20191227110011) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -453,6 +453,27 @@ ActiveRecord::Schema.define(version: 20191225171641) do
   add_foreign_key "patients", "addresses"
   add_foreign_key "protocol_drugs", "protocols"
 
+  create_view "visited_patients_with_controlled_bp_quarterlies", materialized: true, sql_definition: <<-SQL
+      WITH last_bps_per_patient_per_quarter AS (
+           SELECT DISTINCT ON (blood_pressures_1.patient_id, (date_part('year'::text, blood_pressures_1.recorded_at)), (date_part('quarter'::text, blood_pressures_1.recorded_at))) date_part('quarter'::text, blood_pressures_1.recorded_at) AS visited_in_quarter,
+              date_part('year'::text, blood_pressures_1.recorded_at) AS visited_in_year,
+              blood_pressures_1.patient_id,
+              blood_pressures_1.facility_id,
+              blood_pressures_1.recorded_at,
+              blood_pressures_1.systolic,
+              blood_pressures_1.diastolic
+             FROM blood_pressures blood_pressures_1
+            ORDER BY blood_pressures_1.patient_id, (date_part('year'::text, blood_pressures_1.recorded_at)), (date_part('quarter'::text, blood_pressures_1.recorded_at)), blood_pressures_1.recorded_at DESC
+          )
+   SELECT blood_pressures.facility_id,
+      blood_pressures.visited_in_quarter,
+      blood_pressures.visited_in_year,
+      count(*) AS count
+     FROM (last_bps_per_patient_per_quarter blood_pressures
+       JOIN patients ON ((patients.id = blood_pressures.patient_id)))
+    WHERE (patients.deleted_at IS NULL)
+    GROUP BY blood_pressures.facility_id, blood_pressures.visited_in_quarter, blood_pressures.visited_in_year;
+  SQL
   create_view "bp_drugs_views", sql_definition: <<-SQL
       SELECT bp.id AS bp_id,
       bp.systolic,
