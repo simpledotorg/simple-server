@@ -176,4 +176,63 @@ RSpec.describe FacilityAnalyticsQuery do
       expect(analytics.follow_up_patients_by_period).to eq(nil)
     end
   end
+
+  context 'for discarded patients' do
+    let!(:patients) do
+      Timecop.travel(four_months_back) { create_list(:patient, 2, registration_facility: facility, registration_user: users.first) }
+    end
+
+    before do
+      Timecop.travel(three_months_back) do
+        create(:blood_pressure, patient: patients.first, facility: facility, user: users.first)
+        create(:blood_pressure, patient: patients.second, facility: facility, user: users.first)
+      end
+      patients.first.discard_data
+    end
+
+    describe '#registered_patients_by_period' do
+      it "shouldn't count discarded patients" do
+        expected_result =
+          { users.first.id =>
+              { :registered_patients_by_period =>
+                  {
+                    four_months_back => 1
+                  }
+              },
+          }
+
+        expect(analytics.registered_patients_by_period).to eq(expected_result)
+      end
+    end
+
+    describe '#follow_up_patients_by_period' do
+      let!(:expected_result) do
+        { users.first.id =>
+            { :follow_up_patients_by_period =>
+                {
+                  three_months_back => 1
+                }
+            }
+        }
+      end
+
+      it "shouldn't count discarded patients" do
+        expect(analytics.follow_up_patients_by_period).to eq(expected_result)
+      end
+    end
+
+    describe '#total_registered_patients' do
+      let!(:expected_result) do
+        { users.first.id =>
+            {
+              :total_registered_patients => 1
+            }
+        }
+      end
+
+      it "shouldn't count discarded patients" do
+        expect(analytics.total_registered_patients).to eq(expected_result)
+      end
+    end
+  end
 end
