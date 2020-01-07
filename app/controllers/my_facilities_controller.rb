@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class MyFacilitiesController < AdminController
   include DistrictFiltering
   include Pagination
@@ -6,9 +7,7 @@ class MyFacilitiesController < AdminController
   def index
     authorize(:dashboard, :show?)
 
-    @users_requesting_approval = policy_scope([:manage, :user, User])
-                                 .requested_sync_approval
-                                 .order(updated_at: :desc)
+    @users_requesting_approval = policy_scope([:manage, :user, User]).requested_sync_approval.order(updated_at: :desc)
 
     @users_requesting_approval = paginate(@users_requesting_approval)
 
@@ -25,7 +24,7 @@ class MyFacilitiesController < AdminController
   def ranked_facilities
     authorize(:dashboard, :show?)
 
-    filtered_facilities = facilities_by_size([:manage, :facility])
+    filtered_facilities = facilities_by_size(%i[manage facility])
     @filtered_inactive_facilities = MyFacilitiesQuery.inactive_facilities(filtered_facilities)
   end
 

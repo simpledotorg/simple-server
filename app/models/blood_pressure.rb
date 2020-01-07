@@ -26,12 +26,12 @@ class BloodPressure < ApplicationRecord
 
   def very_high?
     (160..179).cover?(systolic) ||
-        (100..109).cover?(diastolic)
+      (100..109).cover?(diastolic)
   end
 
   def high?
     (140..159).cover?(systolic) ||
-        (90..99).cover?(diastolic)
+      (90..99).cover?(diastolic)
   end
 
   def under_control?
