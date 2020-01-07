@@ -1,8 +1,5 @@
 class AddDeletedAtColumnToAllModels < ActiveRecord::Migration[5.1]
   def change
-    add_column :admin_access_controls, :deleted_at, :datetime
-    add_index :admin_access_controls, :deleted_at
-
     add_column :call_logs, :deleted_at, :datetime
     add_index :call_logs, :deleted_at
 
