@@ -16,7 +16,7 @@ RSpec.describe SoftDeleteDuplicatePatients do
       allow($stderr).to receive(:write)
 
       expect { SoftDeleteDuplicatePatients.parse(invalid_csv_path) }
-        .to raise_error('Missing columns, Duplicate? and Simple Patient ID must both be present.')
+        .to raise_error('Duplicate? and Simple Patient ID columns must both be present.')
     end
 
     it 'should return a filtered set of patients to be soft deleted' do
