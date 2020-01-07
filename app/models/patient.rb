@@ -189,7 +189,6 @@ class Patient < ApplicationRecord
     discard
   end
 
-
   private
 
   def low_priority?

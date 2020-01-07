@@ -3,7 +3,9 @@ module Api::Current::SyncToUser
   included do
 
     def facility_group_records
-      current_facility_group.send(model_name.name.underscore.pluralize.to_sym).with_discarded
+      current_facility_group
+        .send(model_name.name.underscore.pluralize.to_sym)
+        .with_discarded
     end
 
     def current_facility_records
