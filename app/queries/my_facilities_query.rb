@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # Contains queries required for the My Facilities Dashboards
 module MyFacilitiesQuery
   def self.inactive_facilities(facilities = Facility.all)
