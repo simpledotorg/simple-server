@@ -13,4 +13,11 @@ module MyFacilitiesQuery
 
     facilities.where(id: facility_ids)
   end
+
+  def self.latest_blood_pressures_per_patient_per_quarter
+    LatestBloodPressuresPerPatientPerMonth
+      .select("distinct on (patient_id, year, quarter) " \
+        "patient_id, facility_id, recorded_at, systolic, diastolic, quarter, year")
+      .order("patient_id, year, quarter, recorded_at DESC, id")
+  end
 end
