@@ -5,9 +5,9 @@ class MyFacilitiesController < AdminController
   include Pagination
   include SizeFiltering
 
-  def index
-    authorize(:dashboard, :show?)
+  before_action :authorize_my_facilities, only: %i[index ranked_facilities blood_pressure_control]
 
+  def index
     @users_requesting_approval = policy_scope([:manage, :user, User])
                                  .requested_sync_approval
                                  .order(updated_at: :desc)
@@ -20,18 +20,17 @@ class MyFacilitiesController < AdminController
     @facility_counts_by_size = { total: @facilities.group(:facility_size).count,
                                  inactive: @inactive_facilities.group(:facility_size).count }
 
-    @bp_counts_last_week = @inactive_facilities.bp_counts_in_period(1.week.ago, Time.current)
-    @bp_counts_last_month = @inactive_facilities.bp_counts_in_period(1.month.ago, Time.current)
+    @bp_counts = { last_week: @inactive_facilities.bp_counts_in_period(1.week.ago, Time.current),
+                   last_month: @inactive_facilities.bp_counts_in_period(1.month.ago, Time.current) }
   end
 
-  def ranked_facilities
-    authorize(:dashboard, :show?)
+  def ranked_facilities; end
 
-    filtered_facilities = facilities_by_size(%i[manage facility])
-    @filtered_inactive_facilities = MyFacilitiesQuery.inactive_facilities(filtered_facilities)
-  end
+  def blood_pressure_control; end
 
-  def blood_pressure_control
+  private
+
+  def authorize_my_facilities
     authorize(:dashboard, :show?)
   end
 end
