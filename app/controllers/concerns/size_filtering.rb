@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # Filters facilities by size
 module SizeFiltering
   extend ActiveSupport::Concern

@@ -21,7 +21,7 @@ module Permissions
     manage_protocols: {
       slug: :manage_protocols,
       description: 'Manage protocols',
-      resource_priority: [global],
+      resource_priority: %i[global],
       required_permissions: []
     },
     manage_facility_groups: {
@@ -85,7 +85,6 @@ module Permissions
       required_permissions: []
     }
   }.freeze
-
 
   ACCESS_LEVELS = [
     { name: :organization_owner,
