@@ -1,3 +1,9 @@
+AllCops:
+  Exclude:
+    - 'bin/**/*'
+    - 'bundle/**/*'
+    - 'config/**/*'
+    - 'db/**/*'
 Layout/LineLength:
   Max: 120
 Style/Documentation:
