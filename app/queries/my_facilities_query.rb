@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-# Contains queries required for the My Facilities Dashboards
 module MyFacilitiesQuery
-
   INACTIVITY_THRESHOLD_PERIOD = 1.week.ago
   INACTIVITY_THRESHOLD_BPS = 10
 
