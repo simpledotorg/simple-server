@@ -19,8 +19,8 @@
       <% @inactive_facilities.sort_by(&:name).each do |facility| %>
         <tr>
           <td><%= link_to facility.name, analytics_facility_path(facility) %></td>
-          <td class="text-right"><%= @bp_counts[:last_week][facility.id] %></td>
-          <td class="text-right"><%= @bp_counts[:last_month][facility.id] %></td>
+          <td class="text-right"><%= @inactive_facilities_bp_counts[:last_week][facility.id] %></td>
+          <td class="text-right"><%= @inactive_facilities_bp_counts[:last_month][facility.id] %></td>
         </tr>
       <% end %>
       </tbody>
