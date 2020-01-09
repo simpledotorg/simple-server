@@ -3,7 +3,9 @@ module Api::Current::SyncToUser
   included do
 
     def facility_group_records
-      current_facility_group.send(model_name.name.underscore.pluralize.to_sym)
+      current_facility_group
+        .send(model_name.name.underscore.pluralize.to_sym)
+        .with_discarded
     end
 
     def current_facility_records
@@ -13,6 +15,7 @@ module Api::Current::SyncToUser
     def other_facility_records
       other_facilities_limit = limit - current_facility_records.count
       model_name
+        .with_discarded
         .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
     end
 

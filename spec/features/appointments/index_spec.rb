@@ -203,4 +203,41 @@ RSpec.feature 'To test overdue appointment functionality', type: :feature do
       end
     end
   end
+
+
+  context "verify overdue patient list to exclude patients > 12 months overdue" do
+
+    before(:each) do
+      visit root_path
+      login.do_login(owner.email, owner.password)
+    end
+
+    it 'patient is exact 365 days overdue' do
+      var_patients = create(:patient, registration_facility: test_facility)
+      create(:blood_pressure, :critical, facility: test_facility, patient: var_patients)
+      create(:appointment, :overdue, facility: test_facility, patient: var_patients, scheduled_date: 365.days.ago)
+
+      nav_page.click_main_menu_tab("Overdue patients")
+      expect(page).to have_content(var_patients.full_name)
+    end
+
+    it '366 days overdue' do
+      var_patients = create(:patient, registration_facility: test_facility)
+      create(:blood_pressure, :critical, facility: test_facility, patient: var_patients)
+      create(:appointment, :overdue, facility: test_facility, patient: var_patients, scheduled_date: 366.days.ago)
+
+      nav_page.click_main_menu_tab("Overdue patients")
+      expect(page).not_to have_content(var_patients.full_name)
+
+    end
+
+    it '0 days overdue' do
+      var_patients = create(:patient, registration_facility: test_facility)
+      create(:blood_pressure, :critical, facility: test_facility, patient: var_patients)
+      create(:appointment, :overdue, facility: test_facility, patient: var_patients, scheduled_date: 0.days.ago)
+
+      nav_page.click_main_menu_tab("Overdue patients")
+      expect(page).not_to have_content(var_patients.full_name)
+    end
+  end
 end

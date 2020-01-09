@@ -4,7 +4,9 @@ class Api::Current::PatientsController < Api::Current::SyncController
   end
 
   def sync_to_user
-    __sync_to_user__('patients')
+    unscope_associations do
+      __sync_to_user__('patients')
+    end
   end
 
   def metadata
@@ -31,6 +33,16 @@ class Api::Current::PatientsController < Api::Current::SyncController
 
   def max_limit
     500
+  end
+
+  def unscope_associations
+    Address.unscoped do
+      PatientPhoneNumber.unscoped do
+        PatientBusinessIdentifier.unscoped do
+          yield
+        end
+      end
+    end
   end
 
   def merge_if_valid(single_patient_params)

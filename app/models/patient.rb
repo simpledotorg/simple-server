@@ -79,6 +79,10 @@ class Patient < ApplicationRecord
     phone_numbers.last&.number
   end
 
+  def latest_mobile_number
+    phone_numbers.phone_type_mobile.last&.number
+  end
+
   def latest_bp_passport
     business_identifiers.simple_bp_passport.order(:device_created_at).last
   end
@@ -169,6 +173,20 @@ class Patient < ApplicationRecord
       age: age,
       gender: gender
     }
+  end
+
+  def discard_data
+    address&.discard
+    appointments.discard_all
+    blood_pressures.discard_all
+    blood_sugars.discard_all
+    business_identifiers.discard_all
+    encounters.discard_all
+    medical_history&.discard
+    observations.discard_all
+    phone_numbers.discard_all
+    prescription_drugs.discard_all
+    discard
   end
 
   private

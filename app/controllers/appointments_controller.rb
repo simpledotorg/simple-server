@@ -11,7 +11,6 @@ class AppointmentsController < AdminController
                       .joins(patient: { latest_blood_pressures: :facility })
                       .includes(patient: [:address, :phone_numbers, :medical_history, { latest_blood_pressures: :facility }])
                       .overdue
-                      .where("scheduled_date >= ?", 12.months.ago)
                       .distinct
                       .order(scheduled_date: :asc)
 
