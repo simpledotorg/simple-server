@@ -1,0 +1,41 @@
+* How to leave AWS
+
+*Goal*: Support deploying to standalone, self-maintained (physically / cloud) infrastructure (GoI, Ethiopia)
+
+** 1. Infra
+*** 1.1 VM-sizing tiers
+
+|---------+--------------+--------+-------------+---------|
+| Tier    | CPUs (vCPUs) | Memory | Disk (SSDs) | Network |
+|---------+--------------+--------+-------------+---------|
+| Medium  |            2 | 4GB    |          20 |         |
+| Large   |            2 | 8GB    |          40 |         |
+| Storage |            2 | 4GB    |         100 |         |
+|---------+--------------+--------+-------------+---------|
+
+*** 1.2 Tools to be installed on the infra
+
+|---------------------------------------+-------------+------------------------------+-----+------------------+-------------------------|
+| Tool                                  | Currently   | Migrate by setting up        | VMs | Current AWS tier | New Tier (refer to 1.1) |
+|---------------------------------------+-------------+------------------------------+-----+------------------+-------------------------|
+| Master Postgres DB                    | RDS         | postgres 10 on a VM          |   1 | N/A              | Medium                  |
+| Secondary Postgres DB (hot-standby)   | RDS         | hot-standby postgres on a VM |   1 | N/A              | Medium                  |
+| Redis Server (master-only)            | ElastiCache | standalone redis on a VM     |   1 | N/A              | Medium                  |
+| Load-balancing server                 | ELB         | haproxy on a VM              |   1 | N/A              | Medium                  |
+| App server (simple-server)            | EC2         | ubuntu 16.04 VMs             |   3 | t3.medium        | Large                   |
+| Job processing server (simple-server) | EC2         | ubuntu 16.04 VMs             |   2 | t3.medium        | Large                   |
+| System-level monitoring               | CloudWatch  | ubuntu 16.04 VMs             |   1 | N/A              | Storage                 |
+| File Object Storage                   | S3          | ubuntu 16.04 VMs (+backups)  |   2 | N/A              | Storage                 |
+|---------------------------------------+-------------+------------------------------+-----+------------------+-------------------------|
+| Total VMs                             | -           | -                            |  12 |                  |                         |
+|---------------------------------------+-------------+------------------------------+-----+------------------+-------------------------|
+
+** 2. Third-party things
+*** 2.1 services we continue to use live in production
+
+| Tool     | Purpose         |
+|----------+-----------------|
+| Sentry   | Error-reporting |
+| NewRelic | APM             |
+| Exotel   | Phone Masking   |
+| Twilio   | SMS             |
