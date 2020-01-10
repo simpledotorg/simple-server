@@ -5,7 +5,7 @@
 } > /dev/null 2>&1
 
 init (){
-  verify_ruby_version && verify_bundled_gems
+  verify_ruby_version && verify_bundled_gems && verify_yarn_packages
   verify_postgres && verify_database_migrations
   configure_parallel_testing
 }
@@ -120,35 +120,28 @@ verify_bundled_gems (){
   } 2>&1
 }
 
-postgres_is_running (){
-  echo 'Checking that postgres is running'
-}
+verify_yarn_packages (){
+  echo 'Updating Yarn packages...'
 
-verify_database_configuration (){
-  if [ -f config/database.yml ]
-  then
-    bundle exec rake db:create:all
-
-    if [ $? -ne 0 ]
-    then
-      echo 'Unable to create the databases for you. Please ensure your database.yml is configured for your system and run rake db:create:all'
-      exit 0
-    fi
-  else
-    echo 'The config/database.yml file does not exist. Please create it.'
-    exit 1
-  fi
+  bundle exec yarn install 2>&1
 }
 
 verify_database_migrations (){
-  verify_database_configuration
+  echo 'Setting up database...'
+  migrate_existing_database || setup_database
+}
 
-  bundle exec rake db:abort_if_pending_migrations
-  if [ $? -eq 1 ]
+migrate_existing_database (){
+  bundle exec rails db:migrate 2>/dev/null
+}
+
+setup_database (){
+  bundle exec rails db:setup
+
+  if [ $? -ne 0 ]
   then
-    echo 'Running migrations...'
-    bundle exec rake db:migrate db:test:prepare
-    bundle exec rake db:seed
+    echo 'Unable to create the databases for you. Please ensure your database.yml is configured for your system and try again.'
+    exit 0
   fi
 }
 
