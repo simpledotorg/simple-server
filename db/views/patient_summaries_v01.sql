@@ -5,7 +5,7 @@ p.full_name,
 (
     CASE
       WHEN p.date_of_birth IS NOT NULL THEN date_part('year', age(p.date_of_birth))
-      ELSE p.age + date_part('year', NOW()) - date_part('year', p.age_updated_at)
+      ELSE p.age + date_part('years', age(NOW(), p.age_updated_at))
     END
 ) AS current_age,
 p.gender,

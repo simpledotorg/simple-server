@@ -10,9 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-
 ActiveRecord::Schema.define(version: 20191225171641) do
-  
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "pgcrypto"
@@ -671,7 +670,7 @@ ActiveRecord::Schema.define(version: 20191225171641) do
       p.full_name,
           CASE
               WHEN (p.date_of_birth IS NOT NULL) THEN date_part('year'::text, age((p.date_of_birth)::timestamp with time zone))
-              ELSE (((p.age)::double precision + date_part('year'::text, now())) - date_part('year'::text, p.age_updated_at))
+              ELSE ((p.age)::double precision + date_part('years'::text, age(now(), (p.age_updated_at)::timestamp with time zone)))
           END AS current_age,
       p.gender,
       latest_phone_number.number AS latest_phone_number,
@@ -701,7 +700,7 @@ ActiveRecord::Schema.define(version: 20191225171641) do
               WHEN ((mh.prior_heart_attack = 'yes'::text) OR (mh.prior_stroke = 'yes'::text) OR (mh.diabetes = 'yes'::text) OR (mh.chronic_kidney_disease = 'yes'::text)) THEN 1
               WHEN (((latest_bp.systolic >= 160) AND (latest_bp.systolic <= 179)) OR ((latest_bp.diastolic >= 100) AND (latest_bp.diastolic <= 109))) THEN 2
               WHEN (((latest_bp.systolic >= 140) AND (latest_bp.systolic <= 159)) OR ((latest_bp.diastolic >= 90) AND (latest_bp.diastolic <= 99))) THEN 3
-              WHEN ((latest_bp.systolic <= 140) AND (latest_bp.diastolic <= 90)) THEN 4
+              WHEN ((latest_bp.systolic < 140) AND (latest_bp.diastolic < 90)) THEN 4
               ELSE 5
           END AS risk_level,
       latest_bp_passport.identifier AS latest_bp_passport,
