@@ -85,6 +85,7 @@ class Facility < ApplicationRecord
                    facility_type: row['facility_type'],
                    street_address: row['street_address (optional)'],
                    village_or_colony: row['village_or_colony (optional)'],
+                   zone: row['zone_or_block (optional)'],
                    district: row['district'],
                    state: row['state'],
                    country: row['country'],
