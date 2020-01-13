@@ -5,37 +5,42 @@
 ** 1. Infra
 *** 1.1 VM-sizing tiers
 
-|---------+--------------+--------+-------------+---------|
-| Tier    | CPUs (vCPUs) | Memory | Disk (SSDs) | Network |
-|---------+--------------+--------+-------------+---------|
-| Medium  |            2 | 4GB    |          20 |         |
-| Large   |            2 | 8GB    |          40 |         |
-| Storage |            2 | 4GB    |         100 |         |
-|---------+--------------+--------+-------------+---------|
+|---------+--------------+--------+------------|
+| Tier    | CPUs (vCPUs) | Memory | Network    |
+|---------+--------------+--------+------------|
+| Medium  |            2 | 4GB    | 1 GbPS I/O |
+| Large   |            4 | 8GB    | 1 GbPS I/O |
+| Storage |            4 | 8GB    | 1 GbPS I/O |
+|---------+--------------+--------+------------|
 
 *** 1.2 Tools to be installed on the infra
 
-|---------------------------------------+-------------+------------------------------+-----+------------------+-------------------------|
-| Tool                                  | Currently   | Migrate by setting up        | VMs | Current AWS tier | New Tier (refer to 1.1) |
-|---------------------------------------+-------------+------------------------------+-----+------------------+-------------------------|
-| Master Postgres DB                    | RDS         | postgres 10 on a VM          |   1 | N/A              | Medium                  |
-| Secondary Postgres DB (hot-standby)   | RDS         | hot-standby postgres on a VM |   1 | N/A              | Medium                  |
-| Redis Server (master-only)            | ElastiCache | standalone redis on a VM     |   1 | N/A              | Medium                  |
-| Load-balancing server                 | ELB         | haproxy on a VM              |   1 | N/A              | Medium                  |
-| App server (simple-server)            | EC2         | ubuntu 16.04 VMs             |   3 | t3.medium        | Large                   |
-| Job processing server (simple-server) | EC2         | ubuntu 16.04 VMs             |   2 | t3.medium        | Large                   |
-| System-level monitoring               | CloudWatch  | ubuntu 16.04 VMs             |   1 | N/A              | Storage                 |
-| File Object Storage                   | S3          | ubuntu 16.04 VMs (+backups)  |   2 | N/A              | Storage                 |
-|---------------------------------------+-------------+------------------------------+-----+------------------+-------------------------|
-| Total VMs                             | -           | -                            |  12 |                  |                         |
-|---------------------------------------+-------------+------------------------------+-----+------------------+-------------------------|
+|---------------------------------------+-------------+------------------------------+------------------+-----+-------------------------+------------------|
+| Tool                                  | Currently   | Migrate by setting up        | Current AWS tier | VMs | New Tier (refer to 1.1) | Disk Size (SSDs) |
+|---------------------------------------+-------------+------------------------------+------------------+-----+-------------------------+------------------|
+| Master Postgres DB                    | RDS         | postgres 10 on a VM          | t2.medium        |   1 | Large                   | 100 GB           |
+| Secondary Postgres DB (hot-standby)   | RDS         | hot-standby postgres on a VM | t2.medium        |   1 | Large                   | 110 GB           |
+| Redis Server (master-only)            | ElastiCache | standalone redis on a VM     | t2.small         |   1 | Medium                  | 20 GB            |
+| Load-balancing server                 | ELB         | haproxy on a VM              | N/A              |   1 | Medium                  | 10 GB            |
+| App server (simple-server)            | EC2         | ubuntu 16.04 VMs             | t3.medium        |   3 | Large                   | 30 GB            |
+| Job processing server (simple-server) | EC2         | ubuntu 16.04 VMs             | t3.medium        |   2 | Large                   | 30 GB            |
+| System-level monitoring               | CloudWatch  | ubuntu 16.04 VMs             | N/A              |   1 | Storage                 | 1 TB             |
+| File Object Storage + mirror          | S3          | ubuntu 16.04 VMs             | N/A              |   2 | Storage                 | 1 TB             |
+|---------------------------------------+-------------+------------------------------+------------------+-----+-------------------------+------------------|
+| Total VMs                             | -           | -                            |                  |  12 |                         |                  |
+|---------------------------------------+-------------+------------------------------+------------------+-----+-------------------------+------------------|
 
 ** 2. Third-party things
 *** 2.1 services we continue to use live in production
 
-| Tool     | Purpose         |
-|----------+-----------------|
-| Sentry   | Error-reporting |
-| NewRelic | APM             |
-| Exotel   | Phone Masking   |
-| Twilio   | SMS             |
+We do not need to move off of these for the time-being, there are replacements for them available if required
+
+|----------+-----------------+--------------------------------------------------------------------|
+| Tool     | Purpose         | Potential replacements                                             |
+|----------+-----------------+--------------------------------------------------------------------|
+| Sentry   | Error-reporting | Self-host Sentry (open-source)                                     |
+| NewRelic | APM             | N/A                                                                |
+| Exotel   | Phone Masking   | N/A                                                                |
+| Twilio   | SMS             | N/A                                                                |
+| SendGrid | Emails          | https://github.com/postalhq/postal, cuttlefish, custom SMTP server |
+|----------+-----------------+--------------------------------------------------------------------|
