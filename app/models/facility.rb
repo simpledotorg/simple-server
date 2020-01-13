@@ -99,9 +99,9 @@ class Facility < ApplicationRecord
     facilities
   end
 
-  def self.bp_counts_in_period(period_start, period_end)
+  def self.bp_counts_in_period(start:, finish:)
     left_outer_joins(:blood_pressures)
-      .where('recorded_at IS NULL OR (recorded_at > ? AND recorded_at < ?)', period_start, period_end)
+      .where('recorded_at IS NULL OR (recorded_at >= ? AND recorded_at < ?)', start, finish)
       .group('facilities.id')
       .count(:blood_pressures)
   end

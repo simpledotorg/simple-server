@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-# Filters facilities by size
-module SizeFiltering
+module FacilitySizeFiltering
   extend ActiveSupport::Concern
 
   included do
