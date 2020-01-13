@@ -11,7 +11,8 @@
 # It's strongly recommended that you check this file into your version control system.
 
 
-ActiveRecord::Schema.define(version: 20191213151620) do
+ActiveRecord::Schema.define(version: 20191225171641) do
+  
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "pgcrypto"
@@ -31,53 +32,6 @@ ActiveRecord::Schema.define(version: 20191213151620) do
     t.string "zone"
     t.index ["deleted_at"], name: "index_addresses_on_deleted_at"
     t.index ["zone"], name: "index_addresses_on_zone"
-  end
-
-  create_table "admin_access_controls", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.bigint "admin_id"
-    t.uuid "access_controllable_id", null: false
-    t.string "access_controllable_type", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.uuid "user_id"
-    t.index ["access_controllable_id", "access_controllable_type"], name: "index_access_controls_on_controllable_id_and_type"
-    t.index ["admin_id"], name: "index_admin_access_controls_on_admin_id"
-  end
-
-  create_table "admins", force: :cascade do |t|
-    t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
-    t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
-    t.integer "sign_in_count", default: 0, null: false
-    t.datetime "current_sign_in_at"
-    t.datetime "last_sign_in_at"
-    t.inet "current_sign_in_ip"
-    t.inet "last_sign_in_ip"
-    t.integer "failed_attempts", default: 0, null: false
-    t.string "unlock_token"
-    t.datetime "locked_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "role", default: 0, null: false
-    t.string "invitation_token"
-    t.datetime "invitation_created_at"
-    t.datetime "invitation_sent_at"
-    t.datetime "invitation_accepted_at"
-    t.integer "invitation_limit"
-    t.string "invited_by_type"
-    t.bigint "invited_by_id"
-    t.integer "invitations_count", default: 0
-    t.datetime "deleted_at"
-    t.index ["deleted_at"], name: "index_admins_on_deleted_at"
-    t.index ["email"], name: "index_admins_on_email", unique: true
-    t.index ["invitation_token"], name: "index_admins_on_invitation_token", unique: true
-    t.index ["invitations_count"], name: "index_admins_on_invitations_count"
-    t.index ["invited_by_id"], name: "index_admins_on_invited_by_id"
-    t.index ["invited_by_type", "invited_by_id"], name: "index_admins_on_invited_by_type_and_invited_by_id"
-    t.index ["reset_password_token"], name: "index_admins_on_reset_password_token", unique: true
-    t.index ["unlock_token"], name: "index_admins_on_unlock_token", unique: true
   end
 
   create_table "appointments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -110,6 +64,7 @@ ActiveRecord::Schema.define(version: 20191213151620) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
+    t.datetime "deleted_at"
     t.index ["action", "auditable_type"], name: "index_audit_logs_on_action_and_auditable_type"
     t.index ["auditable_type", "auditable_id"], name: "index_audit_logs_on_auditable_type_and_auditable_id"
     t.index ["user_id"], name: "index_audit_logs_on_user_id"
@@ -162,6 +117,8 @@ ActiveRecord::Schema.define(version: 20191213151620) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "caller_phone_number", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_call_logs_on_deleted_at"
   end
 
   create_table "communications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -239,6 +196,8 @@ ActiveRecord::Schema.define(version: 20191213151620) do
     t.datetime "whitelist_status_valid_until"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_exotel_phone_number_details_on_deleted_at"
     t.index ["patient_phone_number_id"], name: "index_exotel_phone_number_details_on_patient_phone_number_id"
     t.index ["patient_phone_number_id"], name: "index_unique_exotel_phone_number_details_on_phone_number_id", unique: true
     t.index ["whitelist_status"], name: "index_exotel_phone_number_details_on_whitelist_status"
@@ -261,8 +220,8 @@ ActiveRecord::Schema.define(version: 20191213151620) do
     t.uuid "facility_group_id"
     t.string "slug"
     t.string "zone"
-    t.string "facility_size"
     t.boolean "enable_diabetes_management", default: false, null: false
+    t.string "facility_size"
     t.index ["deleted_at"], name: "index_facilities_on_deleted_at"
     t.index ["enable_diabetes_management"], name: "index_facilities_on_enable_diabetes_management"
     t.index ["facility_group_id"], name: "index_facilities_on_facility_group_id"
@@ -282,20 +241,6 @@ ActiveRecord::Schema.define(version: 20191213151620) do
     t.index ["organization_id"], name: "index_facility_groups_on_organization_id"
     t.index ["protocol_id"], name: "index_facility_groups_on_protocol_id"
     t.index ["slug"], name: "index_facility_groups_on_slug", unique: true
-  end
-
-  create_table "master_users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "full_name"
-    t.string "sync_approval_status", null: false
-    t.string "sync_approval_status_reason"
-    t.datetime "device_updated_at", null: false
-    t.datetime "device_created_at", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "deleted_at"
-    t.string "role"
-    t.uuid "organization_id"
-    t.index ["organization_id"], name: "index_master_users_on_organization_id"
   end
 
   create_table "medical_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -330,6 +275,8 @@ ActiveRecord::Schema.define(version: 20191213151620) do
     t.uuid "observable_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_observations_on_deleted_at"
     t.index ["encounter_id"], name: "index_observations_on_encounter_id"
     t.index ["observable_type", "observable_id"], name: "idx_observations_on_observable_type_and_id", unique: true
     t.index ["user_id"], name: "index_observations_on_user_id"
@@ -463,6 +410,8 @@ ActiveRecord::Schema.define(version: 20191213151620) do
     t.datetime "delivered_on"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_twilio_sms_delivery_details_on_deleted_at"
   end
 
   create_table "user_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -487,31 +436,33 @@ ActiveRecord::Schema.define(version: 20191213151620) do
     t.index ["resource_type", "resource_id"], name: "index_user_permissions_on_resource_type_and_resource_id"
   end
 
+  create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "full_name"
+    t.string "sync_approval_status", null: false
+    t.string "sync_approval_status_reason"
+    t.datetime "device_updated_at", null: false
+    t.datetime "device_created_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.string "role"
+    t.uuid "organization_id"
+    t.index ["organization_id"], name: "index_users_on_organization_id"
+  end
+
   add_foreign_key "appointments", "facilities"
   add_foreign_key "blood_sugars", "facilities"
-  add_foreign_key "blood_sugars", "master_users", column: "user_id"
+  add_foreign_key "blood_sugars", "users"
   add_foreign_key "encounters", "facilities"
   add_foreign_key "exotel_phone_number_details", "patient_phone_numbers"
   add_foreign_key "facilities", "facility_groups"
   add_foreign_key "facility_groups", "organizations"
   add_foreign_key "observations", "encounters"
-  add_foreign_key "observations", "master_users", column: "user_id"
+  add_foreign_key "observations", "users"
   add_foreign_key "patient_phone_numbers", "patients"
   add_foreign_key "patients", "addresses"
   add_foreign_key "protocol_drugs", "protocols"
 
-  create_view "users", sql_definition: <<-SQL
-      SELECT master_users.id,
-      master_users.full_name,
-      master_users.sync_approval_status,
-      master_users.sync_approval_status_reason,
-      master_users.device_updated_at,
-      master_users.device_created_at,
-      master_users.created_at,
-      master_users.updated_at,
-      master_users.deleted_at
-     FROM master_users;
-  SQL
   create_view "bp_drugs_views", sql_definition: <<-SQL
       SELECT bp.id AS bp_id,
       bp.systolic,
