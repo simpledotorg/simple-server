@@ -1,23 +1,23 @@
 require 'rails_helper'
 
 RSpec.describe Admin::FacilityGroupsController, type: :controller do
-
   let(:organization) { FactoryBot.create(:organization) }
   let(:protocol) { FactoryBot.create(:protocol) }
-  let(:valid_attributes) {
+  let(:valid_attributes) do
     FactoryBot.attributes_for(
       :facility_group,
       organization_id: organization.id,
       protocol_id: protocol.id
     )
-  }
+  end
 
-  let(:invalid_attributes) {
+  let(:invalid_attributes) do
     FactoryBot.attributes_for(
       :facility_group,
       name: nil,
-      organization_id: organization.id)
-  }
+      organization_id: organization.id
+    )
+  end
 
   before do
     admin = create(:admin, :organization_owner, organization: organization)
@@ -58,9 +58,9 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
   describe 'POST #create' do
     context 'with valid params' do
       it 'creates a new FacilityGroup' do
-        expect {
+        expect do
           post :create, params: { facility_group: valid_attributes, organization_id: organization.id }
-        }.to change(FacilityGroup, :count).by(1)
+        end.to change(FacilityGroup, :count).by(1)
       end
 
       it 'redirects to the facilities' do
@@ -79,13 +79,13 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
 
   describe 'PUT #update' do
     context 'with valid params' do
-      let(:new_attributes) {
+      let(:new_attributes) do
         FactoryBot.attributes_for(
           :facility_group,
           organization_id: organization.id,
           protocol_id: protocol.id
         ).except(:id)
-      }
+      end
 
       it 'updates the requested facility_group' do
         facility_group = FacilityGroup.create! valid_attributes
@@ -114,9 +114,9 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
   describe 'DELETE #destroy' do
     it 'destroys the requested facility_group' do
       facility_group = FacilityGroup.create! valid_attributes
-      expect {
+      expect do
         delete :destroy, params: { id: facility_group.to_param, organization_id: organization.id }
-      }.to change(FacilityGroup, :count).by(-1)
+      end.to change(FacilityGroup, :count).by(-1)
     end
 
     it 'redirects to the facilities list' do

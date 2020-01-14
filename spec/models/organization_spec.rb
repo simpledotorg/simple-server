@@ -15,7 +15,7 @@ RSpec.describe Organization, type: :model do
     it 'nullifies facility_group_id in facilities of the organization' do
       organization = FactoryBot.create(:organization)
       facility_groups = FactoryBot.create_list(:facility_group, 5, organization: organization)
-      facility_groups.each { |facility_group| FactoryBot.create_list(:facility, 5, facility_group: facility_group)}
+      facility_groups.each { |facility_group| FactoryBot.create_list(:facility, 5, facility_group: facility_group) }
       expect { organization.destroy }.not_to change { Facility.count }
       expect(Facility.where(facility_group: facility_groups)).to be_empty
     end

@@ -27,8 +27,7 @@ RSpec.describe PrescriptionDrug, type: :model do
             registration_facility_name: prescription_drug.facility.name,
             user_id: hash_uuid(prescription_drug.patient.registration_user.id),
             medicine_name: prescription_drug.name,
-            dosage: prescription_drug.dosage,
-          }
+            dosage: prescription_drug.dosage }
 
         expect(prescription_drug.anonymized_data).to eq anonymised_data
       end

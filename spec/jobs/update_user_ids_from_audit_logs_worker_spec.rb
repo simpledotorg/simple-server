@@ -18,7 +18,7 @@ RSpec.describe UpdateUserIdsFromAuditLogsWorker, type: :job do
   end
   let!(:appointments_without_user_ids) do
     appointments.each do |appointment|
-      appointment.update({ user: nil })
+      appointment.update(user: nil)
       appointment.save
     end
     Appointment.all
@@ -38,7 +38,7 @@ RSpec.describe UpdateUserIdsFromAuditLogsWorker, type: :job do
   end
   let!(:medical_histories_without_user_ids) do
     medical_histories.each do |medical_history|
-      medical_history.update({ user: nil })
+      medical_history.update(user: nil)
       medical_history.save
     end
     MedicalHistory.all
@@ -58,7 +58,7 @@ RSpec.describe UpdateUserIdsFromAuditLogsWorker, type: :job do
   end
   let!(:prescription_drugs_without_user_ids) do
     prescription_drugs.each do |prescription_drug|
-      prescription_drug.update({ user: nil })
+      prescription_drug.update(user: nil)
       prescription_drug.save
     end
     PrescriptionDrug.all
@@ -66,9 +66,9 @@ RSpec.describe UpdateUserIdsFromAuditLogsWorker, type: :job do
 
   describe '#perform_async' do
     it 'queues the job on the audit_log_data_queue' do
-      expect {
-        UpdateUserIdsFromAuditLogsWorker.perform_async(Appointment, [{id: appointment_log_1.auditable_id, user_id: appointment_log_1.user_id}])
-      }.to change(Sidekiq::Queues['audit_log_data_queue'], :size).by(1)
+      expect do
+        UpdateUserIdsFromAuditLogsWorker.perform_async(Appointment, [{ id: appointment_log_1.auditable_id, user_id: appointment_log_1.user_id }])
+      end.to change(Sidekiq::Queues['audit_log_data_queue'], :size).by(1)
       UpdateUserIdsFromAuditLogsWorker.clear
     end
   end

@@ -4,7 +4,7 @@ describe 'Facilities Current API', swagger_doc: 'current/swagger.json' do
   path '/facilities/sync' do
     get 'Syncs facilities data from server to device.' do
       tags 'facility'
-      security [ basic: [] ]
+      security [basic: []]
 
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
@@ -25,7 +25,7 @@ describe 'Facilities Current API', swagger_doc: 'current/swagger.json' do
         let(:HTTP_X_FACILITY_ID) { request_facility.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
         schema Api::Current::Schema.facility_sync_to_user_response
-        let(:process_token) { Base64.encode64({other_facilities_processed_since: 10.minutes.ago}.to_json) }
+        let(:process_token) { Base64.encode64({ other_facilities_processed_since: 10.minutes.ago }.to_json) }
         let(:limit) { 10 }
 
         run_test!
@@ -33,4 +33,3 @@ describe 'Facilities Current API', swagger_doc: 'current/swagger.json' do
     end
   end
 end
-

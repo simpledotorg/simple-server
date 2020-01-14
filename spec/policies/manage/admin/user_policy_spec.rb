@@ -1,4 +1,4 @@
-require "rails_helper"
+require 'rails_helper'
 
 RSpec.describe Manage::Admin::UserPolicy do
   subject { described_class }
@@ -53,7 +53,7 @@ RSpec.describe Manage::Admin::UserPolicy do
     let(:other_permissions) { Permissions::ALL_PERMISSIONS.keys - [:manage_admins] }
 
     before do
-      other_permissions.each do |slug| 
+      other_permissions.each do |slug|
         user.user_permissions.create(permission_slug: slug)
       end
     end

@@ -8,14 +8,14 @@ RSpec.describe 'Encounters sync', type: :request do
 
   let(:model) { Encounter }
 
-  let(:build_payload) {
+  let(:build_payload) do
     lambda {
       build_encounters_payload(build(:encounter, facility: patient.registration_facility, patient: patient))
     }
-  }
+  end
 
-  let(:build_invalid_payload) { lambda { build_invalid_encounters_payload } }
-  let(:update_payload) { lambda { |encounter| updated_encounters_payload(encounter) } }
+  let(:build_invalid_payload) { -> { build_invalid_encounters_payload } }
+  let(:update_payload) { ->(encounter) { updated_encounters_payload(encounter) } }
 
   def to_response(encounter)
     Api::Current::EncounterTransformer.to_response(encounter)

@@ -2,10 +2,9 @@ require 'swagger_helper'
 
 describe 'BloodPressures Current API', swagger_doc: 'current/swagger.json' do
   path '/blood_pressures/sync' do
-
     post 'Syncs blood pressure data from device to server.' do
       tags 'Blood Pressure'
-      security [ basic: [] ]
+      security [basic: []]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
       parameter name: :blood_pressures, in: :body, schema: Api::Current::Schema.blood_pressure_sync_from_user_request
@@ -39,7 +38,7 @@ describe 'BloodPressures Current API', swagger_doc: 'current/swagger.json' do
 
     get 'Syncs blood pressure data from server to device.' do
       tags 'Blood Pressure'
-      security [ basic: [] ]
+      security [basic: []]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
       Api::Current::Schema.sync_to_user_request.each do |param|
@@ -60,7 +59,7 @@ describe 'BloodPressures Current API', swagger_doc: 'current/swagger.json' do
         let(:Authorization) { "Bearer #{request_user.access_token}" }
 
         schema Api::Current::Schema.blood_pressure_sync_to_user_response
-        let(:process_token) { Base64.encode64({other_facilities_processed_since: 10.minutes.ago}.to_json) }
+        let(:process_token) { Base64.encode64({ other_facilities_processed_since: 10.minutes.ago }.to_json) }
         let(:limit) { 10 }
         run_test!
       end

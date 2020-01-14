@@ -1,4 +1,4 @@
-require "rails_helper"
+require 'rails_helper'
 
 RSpec.describe Manage::FacilityGroupPolicy do
   subject { described_class }
@@ -29,8 +29,8 @@ RSpec.describe Manage::FacilityGroupPolicy do
     let(:organization) { create(:organization) }
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :manage_facility_groups, resource: organization)
-      ])
+               build(:user_permission, permission_slug: :manage_facility_groups, resource: organization)
+             ])
     end
 
     let(:facility_group_1) { build(:facility_group, organization: organization) }
@@ -81,8 +81,8 @@ RSpec.describe Manage::FacilityGroupPolicy::Scope do
   context 'user can manage facility groups for an organization' do
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :manage_facility_groups, resource: organization)
-      ])
+               build(:user_permission, permission_slug: :manage_facility_groups, resource: organization)
+             ])
     end
 
     it 'resolve all facility groups in their organization' do

@@ -9,7 +9,12 @@ class AppointmentsController < AdminController
 
     @appointments = policy_scope([:overdue_list, Appointment])
                       .joins(patient: { latest_blood_pressures: :facility })
-                      .includes(patient: [:address, :phone_numbers, :medical_history, { latest_blood_pressures: :facility }])
+                      .includes(patient: [
+                        :address,
+                        :phone_numbers,
+                        :medical_history,
+                        { latest_blood_pressures: :facility }
+                      ])
                       .overdue
                       .distinct
                       .order(scheduled_date: :asc)
@@ -31,7 +36,8 @@ class AppointmentsController < AdminController
     call_result = appointment_params[:call_result].to_sym
 
     if set_appointment_status_from_call_result(@appointment, call_result)
-      redirect_to appointments_url(params: { facility_id: selected_facility_id, page: page}), notice: "Saved. #{@appointment.patient.full_name} marked as \"#{call_result.to_s.humanize}\""
+      redirect_to appointments_url(params: { facility_id: selected_facility_id, page: page}),
+                  notice: "Saved. #{@appointment.patient.full_name} marked as \"#{call_result.to_s.humanize}\""
     else
       redirect_back fallback_location: root_path, alert: 'Something went wrong!'
     end

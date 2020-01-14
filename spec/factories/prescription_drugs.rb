@@ -1,6 +1,5 @@
 FactoryBot.define do
   factory :prescription_drug do
-
     id { SecureRandom.uuid }
     name { Faker::Dessert.topping }
     dosage { rand(1..10).to_s + ' mg' }
@@ -22,7 +21,7 @@ end
 def build_invalid_prescription_drug_payload
   build_prescription_drug_payload.merge(
     'created_at' => nil,
-    'name'       => nil
+    'name' => nil
   )
 end
 
@@ -30,6 +29,6 @@ def updated_prescription_drug_payload(existing_prescription_drug)
   update_time = 10.days.from_now
   build_prescription_drug_payload(existing_prescription_drug).merge(
     'updated_at' => update_time,
-    'name'       => Faker::Dessert.topping
+    'name' => Faker::Dessert.topping
   )
 end

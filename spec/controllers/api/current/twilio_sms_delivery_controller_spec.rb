@@ -9,14 +9,14 @@ RSpec.describe Api::Current::TwilioSmsDeliveryController, type: :controller do
   describe '#create' do
     let!(:callback_url) { api_current_twilio_sms_delivery_url(host: request.host) }
     let!(:base_callback_params) do
-      { "SmsSid" => SecureRandom.uuid,
-        "SmsStatus" => "delivered",
-        "MessageStatus" => "delivered",
-        "To" => Faker::PhoneNumber.phone_number,
-        "MessageSid" => SecureRandom.uuid,
-        "AccountSid" => SecureRandom.uuid,
-        "From" => '+15005550006',
-        "ApiVersion" => "2010-04-01" }
+      { 'SmsSid' => SecureRandom.uuid,
+        'SmsStatus' => 'delivered',
+        'MessageStatus' => 'delivered',
+        'To' => Faker::PhoneNumber.phone_number,
+        'MessageSid' => SecureRandom.uuid,
+        'AccountSid' => SecureRandom.uuid,
+        'From' => '+15005550006',
+        'ApiVersion' => '2010-04-01' }
     end
 
     context ':ok' do

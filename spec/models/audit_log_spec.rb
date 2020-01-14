@@ -58,23 +58,22 @@ describe AuditLog, type: :model do
     let(:action) { 'fetch' }
 
     it 'schedules a job to create audit logs in the background' do
-      expect {
+      expect do
         AuditLog.create_logs_async(user, records, action, Time.current)
-      }.to change(CreateAuditLogsWorker.jobs, :size).by(1)
+      end.to change(CreateAuditLogsWorker.jobs, :size).by(1)
       CreateAuditLogsWorker.clear
     end
 
     it 'creates audit logs for user and records when the job is completed' do
       Timecop.freeze do
         Sidekiq::Testing.inline! do
-
           records.each do |record|
             expect(AuditLogger)
               .to receive(:info).with({ user: user.id,
                                         auditable_type: 'Patient',
                                         auditable_id: record.id,
                                         action: 'fetch',
-                                        time: Time.current}.to_json)
+                                        time: Time.current }.to_json)
           end
         end
 
