@@ -1,49 +1,50 @@
 <div class="card card-responsive">
-    <div class="row">
-        <div class="col-lg-9 pr-5 pr-md-0">
-          <h3>BP control (All data on this page is fake)</h3>
-          <p>Q2-2019 cohort is the outcomes for 37,000 patients registered in Q2-2019 at their last visit in Q3-2019. Patients with ‘missed visit’ had no BP recorded.</p>
-        </div>
-
-        <div class="mt-1 mb-3 col-lg-3">
-          <div class="dropdown show">
-            <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">
-              Nov-2019
-            </a>
-
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <h6 class="dropdown-header">Quarterly</h6>
-              <a class="dropdown-item" href="#">Q4-2019</a>
-              <a class="dropdown-item" href="#">Q3-2019</a>
-              <a class="dropdown-item" href="#">Q2-2019</a>
-              <a class="dropdown-item" href="#">Q1-2019</a>
-              <a class="dropdown-item" href="#">Q4-2018</a>
-              <a class="dropdown-item" href="#">Q3-2018</a>
-              <div class="dropdown-divider"></div>
-              <h6 class="dropdown-header">Monthly</h6>
-              <a class="dropdown-item" href="#">Nov-2019</a>
-              <a class="dropdown-item" href="#">Oct-2019</a>
-              <a class="dropdown-item" href="#">Sep-2019</a>
-              <a class="dropdown-item" href="#">Aug-2019</a>
-              <a class="dropdown-item" href="#">Jul-2019</a>
-              <a class="dropdown-item" href="#">Jun-2019</a>
-            </div>
-          </div>
-        </div>
+  <div class="row">
+    <div class="col-lg-9 pr-5 pr-md-0">
+      <h3>BP control (All data on this page is fake)</h3>
+      <p>Q2-2019 cohort is the outcomes for 37,000 patients registered in Q2-2019 at their last visit in Q3-2019.
+        Patients with ‘missed visit’ had no BP recorded.</p>
     </div>
+
+    <div class="mt-1 mb-3 col-lg-3">
+      <div class="dropdown show">
+        <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">
+          Nov-2019
+        </a>
+
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+          <h6 class="dropdown-header">Quarterly</h6>
+          <a class="dropdown-item" href="#">Q4-2019</a>
+          <a class="dropdown-item" href="#">Q3-2019</a>
+          <a class="dropdown-item" href="#">Q2-2019</a>
+          <a class="dropdown-item" href="#">Q1-2019</a>
+          <a class="dropdown-item" href="#">Q4-2018</a>
+          <a class="dropdown-item" href="#">Q3-2018</a>
+          <div class="dropdown-divider"></div>
+          <h6 class="dropdown-header">Monthly</h6>
+          <a class="dropdown-item" href="#">Nov-2019</a>
+          <a class="dropdown-item" href="#">Oct-2019</a>
+          <a class="dropdown-item" href="#">Sep-2019</a>
+          <a class="dropdown-item" href="#">Aug-2019</a>
+          <a class="dropdown-item" href="#">Jul-2019</a>
+          <a class="dropdown-item" href="#">Jun-2019</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover" id="analytics-table">
     <colgroup>
-        <col>
-        <col class="table-divider">
-        <col>
-        <col class="table-divider">
-        <col>
-        <col class="table-divider">
-        <col>
-        <col class="table-divider">
-        <col>
-        <col class="mobile">
+      <col>
+      <col class="table-divider">
+      <col>
+      <col class="table-divider">
+      <col>
+      <col class="table-divider">
+      <col>
+      <col class="table-divider">
+      <col>
+      <col class="mobile">
     </colgroup>
     <thead>
     <tr>
@@ -54,98 +55,61 @@
     </tr>
     <tr data-sort-method="thead" class="sorts">
       <th class="row-label sort-label">Facilities</th>
-      <th class="row-label sort-label" data-sort-method="number" colspan="2"  data-sort-default>Visited with controlled<br>BP in Q3-2019</th>
-      <th class="row-label sort-label" data-sort-method="number" colspan="2">Visited with uncontrolled<br>BP in Q3-2019</th>
+      <th class="row-label sort-label" data-sort-method="number" colspan="2" data-sort-default>Visited with
+        controlled<br>BP in Q3-2019
+      </th>
+      <th class="row-label sort-label" data-sort-method="number" colspan="2">Visited with uncontrolled<br>BP in Q3-2019
+      </th>
       <th class="row-label sort-label" data-sort-method="number" colspan="2">Missed visit<br>in Q3-2019</th>
-      <th class="row-label sort-label" data-sort-method="number" colspan="2">All registered patients<br>with controlled BP<sup>1</sup></th>
+      <th class="row-label sort-label" data-sort-method="number" colspan="2">All registered patients<br>with controlled
+        BP<sup>1</sup></th>
       <th class="mobile"></th>
     </tr>
     </thead>
     <tbody>
     <tr class="row-total" data-sort-method="none">
       <td class="type-title">All</td>
-      <td class="type-percent"><em>40%</em></td>
-      <td class="type-number">4002</td>
-      <td class="type-percent"><em>20%</em></td>
-      <td class="type-number">2021</td>
-      <td class="type-percent"><em>40%</em></td>
-      <td class="type-number">4011</td>
+      <td class="type-percent"><em><%= percentage(@totals[:controlled], @totals[:registered]) %></em></td>
+      <td class="type-number"><%= @totals[:controlled] %></td>
+      <td class="type-percent"><em><%= percentage(@totals[:uncontrolled], @totals[:registered]) %></em></td>
+      <td class="type-number"><%= @totals[:uncontrolled] %></td>
+      <td class="type-percent">
+        <em><%= percentage((@totals[:registered] - @totals[:controlled] - @totals[:uncontrolled]), @totals[:registered]) %></em>
+      </td>
+      <td class="type-number"><%= @totals[:registered] - @totals[:controlled] - @totals[:uncontrolled] %></td>
       <td class="type-percent"><em>22%</em></td>
-      <td class="type-number">42,098</td>  
+      <td class="type-number">42,098</td>
     </tr>
-    <tr>
-      <td class="type-title"><a href="#">CHC Ball Place Two</a></td>
-      <td class="type-percent"><em>30%</em></td>
-      <td class="type-number">30</td>
-      <td class="type-percent"><em>50%</em></td>
-      <td class="type-number">50</td>
-      <td class="type-percent"><em>20%</em></td>
-      <td class="type-number">20</td>
-      <td class="type-percent"><em>18%</em></td>
-      <td class="type-number">456</td> 
-    </tr>
-    <tr>
-      <td class="type-title"><a href="#">CHC Cat Location</a></td>
-      <td class="type-percent"><em>30%</em></td>
-      <td class="type-number">300</td>
-      <td class="type-percent"><em>30%</em></td>
-      <td class="type-number">300</td>
-      <td class="type-percent"><em>40%</em></td>
-      <td class="type-number">400</td>
-      <td class="type-percent"><em>21%</em></td>
-      <td class="type-number">123</td> 
-      
-    </tr>
-    <tr>
-      <td class="type-title"><a href="#">CHC Dog House</a></td>
-      <td class="type-percent"><em>20%</em></td>
-      <td class="type-number">200</td>
-      <td class="type-percent"><em>10%</em></td>
-      <td class="type-number">100</td>
-      <td class="type-percent"><em>70%</em></td>
-      <td class="type-number">700</td>
-      <td class="type-percent"><em>22%</em></td>
-      <td class="type-number">2,000</td> 
-      
-    </tr>
-    <tr>
-      <td class="type-title"><a href="#">PHC Animal House</a></td>
-      <td class="type-percent"><em>30%</em></td>
-      <td class="type-number">300</td>
-      <td class="type-percent"><em>45%</em></td>
-      <td class="type-number">450</td>
-      <td class="type-percent"><em>25%</em></td>
-      <td class="type-number">250</td>
-      <td class="type-percent"><em>34%</em></td>
-      <td class="type-number">9076</td> 
-    </tr>
-    <tr>
-      <td class="type-title"><a href="#">DH Giraffe Area</a></td>
-      <td class="type-percent"><em>35%</em></td>
-      <td class="type-number">350</td>
-      <td class="type-percent"><em>15%</em></td>
-      <td class="type-number">150</td>
-      <td class="type-percent"><em>50%</em></td>
-      <td class="type-number">500</td>
-      <td class="type-percent"><em>15%</em></td>
-      <td class="type-number">10,867</td> 
-    </tr>
-    <tr>
-      <td class="type-title"><a href="#">SDH Cow Palace</a></td>
-      <td class="type-percent"><em>35%</em></td>
-      <td class="type-number">350</td>
-      <td class="type-percent"><em>20%</em></td>
-      <td class="type-number">200</td>
-      <td class="type-percent"><em>45%</em></td>
-      <td class="type-number">450</td>
-      <td class="type-percent"><em>22%</em></td>
-      <td class="type-number">1,098</td> 
-    </tr>
+    <% @facilities.each do |facility| %>
+      <% bp_stats = { registered: @bp_control_by_facility[facility.id][:registered],
+                      controlled: @bp_control_by_facility[facility.id][:controlled],
+                      uncontrolled: @bp_control_by_facility[facility.id][:uncontrolled] } %>
+      <tr>
+        <td class="type-title"><a href="#"><%= facility.name %></a></td>
+        <td class="type-percent">
+          <em><%= percentage(bp_stats[:controlled], bp_stats[:registered]) %></em>
+        </td>
+        <td class="type-number"><%= bp_stats[:controlled] %></td>
+        <td class="type-percent">
+          <em><%= percentage(bp_stats[:uncontrolled], bp_stats[:registered]) %></em>
+        </td>
+        <td class="type-number"><%= bp_stats[:uncontrolled] %></td>
+        <td class="type-percent">
+          <em><%= percentage((bp_stats[:registered] - bp_stats[:controlled] - bp_stats[:uncontrolled]),
+                             bp_stats[:registered]) %></em>
+        </td>
+        <td class="type-number"><%= bp_stats[:registered] - bp_stats[:controlled] - bp_stats[:uncontrolled] %></td>
+        <td class="type-percent"><em>22%</em></td>
+        <td class="type-number">42,098</td>
+      </tr>
+    <% end %>
     </tbody>
   </table>
 </div>
 <section class="footnotes">
-    <ol>
-        <li><strong>Controlled BP:</strong> Patient had at least 1 BP recorded in the previous 90 days and BP &lt;140/90 at last visit.</li>
-    </ol>
+  <ol>
+    <li><strong>Controlled BP:</strong> Patient had at least 1 BP recorded in the previous 90 days and BP &lt;140/90 at
+      last visit.
+    </li>
+  </ol>
 </section>
