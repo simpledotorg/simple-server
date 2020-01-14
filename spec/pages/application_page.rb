@@ -10,7 +10,7 @@ class ApplicationPage
   end
 
   def wait_until(condition, timeout = 60)
-    WaitUtil.wait_for_condition('page wait condition', :timeout_sec => timeout) do
+    WaitUtil.wait_for_condition('page wait condition', timeout_sec: timeout) do
       condition
     end
   end

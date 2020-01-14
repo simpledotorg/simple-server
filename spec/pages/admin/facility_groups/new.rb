@@ -4,11 +4,11 @@ module AdminPage
       CREATE_FACILITY_GROUP_BUTTON = { css: "input[value='Create Facility group']" }.freeze
       FACILITY_NAME = { id: 'facility_name' }.freeze
       FACILITY_DESCRIPTION = { id: 'facility_description' }.freeze
-      DELETE_FACILITY_GROUP_BUTTON = { css: "a.ml-4" }.freeze
+      DELETE_FACILITY_GROUP_BUTTON = { css: 'a.ml-4' }.freeze
       PROTOCOL_DROPDOWN = { xpath: "//select[@name='facility_group[protocol_id]']" }.freeze
       UNASSOCIATED_FACILITY_CHECKBOX = { css: "input[type='checkbox']" }.freeze
       SUCCESSFUL_MESSAGE = { css: 'div.alert-primary' }.freeze
-      MESSAGE_CROSS_BUTTON = { css: "button.close" }.freeze
+      MESSAGE_CROSS_BUTTON = { css: 'button.close' }.freeze
       UPDATE_FACILITY_GROUP_BUTTON = { css: "input[value='Update Facility group']" }.freeze
 
       def select_organisation_name_dropdown(value)
@@ -20,7 +20,6 @@ module AdminPage
       end
 
       def add_new_facility_group_without_assigningfacility(org_name, name, description, protocol_name)
-
         select_organisation_name_dropdown(org_name)
         type(FACILITY_NAME, name)
         type(FACILITY_DESCRIPTION, description)

@@ -54,7 +54,6 @@ RSpec.shared_examples 'a sync controller that authenticates user requests' do
       expect(response.status).to eq(403)
     end
 
-
     it 'sets user logged_in_at on successful authentication' do
       now = Time.current
       Timecop.freeze(now) do
@@ -89,7 +88,6 @@ RSpec.shared_examples 'a working sync controller creating records' do
 
   let(:new_records) { (1..10).map { build_payload.call } }
   let(:new_records_payload) { Hash[request_key, new_records] }
-
 
   let(:invalid_payload) { Hash[request_key, [invalid_record]] }
 
@@ -155,8 +153,8 @@ RSpec.shared_examples 'a working sync controller updating records' do
 
       updated_records.each do |record|
         db_record = model.find(record['id'])
-        expect(db_record.attributes.to_json_and_back.except("user_id").with_payload_keys.with_int_timestamps)
-          .to eq(record.to_json_and_back.except("user_id").with_int_timestamps)
+        expect(db_record.attributes.to_json_and_back.except('user_id').with_payload_keys.with_int_timestamps)
+          .to eq(record.to_json_and_back.except('user_id').with_int_timestamps)
       end
     end
   end
@@ -266,7 +264,7 @@ RSpec.shared_examples 'a working V2 sync controller sending records' do
 
     it 'Returns new records added since last sync' do
       expected_records = create_record_list(5, updated_at: 5.minutes.ago)
-      get :sync_to_user, params: { process_token: make_process_token({ other_facilities_processed_since: 10.minutes.ago }) }
+      get :sync_to_user, params: { process_token: make_process_token(other_facilities_processed_since: 10.minutes.ago) }
 
       response_body = JSON(response.body)
       expect(response_body[response_key].count).to eq 5
@@ -281,7 +279,7 @@ RSpec.shared_examples 'a working V2 sync controller sending records' do
 
     it 'Returns an empty list when there is nothing to sync' do
       sync_time = 10.minutes.ago
-      get :sync_to_user, params: { process_token: make_process_token({ other_facilities_processed_since: sync_time }) }
+      get :sync_to_user, params: { process_token: make_process_token(other_facilities_processed_since: sync_time) }
       response_body = JSON(response.body)
       response_process_token = parse_process_token(response_body)
       expect(response_body[response_key].count).to eq 0
@@ -291,7 +289,7 @@ RSpec.shared_examples 'a working V2 sync controller sending records' do
     describe 'batching' do
       it 'returns the number of records requested with limit' do
         get :sync_to_user, params: {
-          process_token: make_process_token({ other_facilities_processed_since: 20.minutes.ago }),
+          process_token: make_process_token(other_facilities_processed_since: 20.minutes.ago),
           limit: 2
         }
         response_body = JSON(response.body)
@@ -300,7 +298,7 @@ RSpec.shared_examples 'a working V2 sync controller sending records' do
 
       it 'Returns all the records on server over multiple small batches' do
         get :sync_to_user, params: {
-          process_token: make_process_token({ other_facilities_processed_since: 20.minutes.ago }),
+          process_token: make_process_token(other_facilities_processed_since: 20.minutes.ago),
           limit: 7
         }
 
@@ -363,7 +361,7 @@ RSpec.shared_examples 'a working Current sync controller sending records' do
 
     it 'Returns new records added since last sync' do
       expected_records = create_record_list(5, updated_at: 5.minutes.ago)
-      get :sync_to_user, params: { process_token: make_process_token({ other_facilities_processed_since: 10.minutes.ago }) }
+      get :sync_to_user, params: { process_token: make_process_token(other_facilities_processed_since: 10.minutes.ago) }
 
       response_body = JSON(response.body)
       expect(response_body[response_key].count).to eq 5
@@ -378,7 +376,7 @@ RSpec.shared_examples 'a working Current sync controller sending records' do
 
     it 'Returns an empty list when there is nothing to sync' do
       sync_time = 10.minutes.ago
-      get :sync_to_user, params: { process_token: make_process_token({ other_facilities_processed_since: sync_time }) }
+      get :sync_to_user, params: { process_token: make_process_token(other_facilities_processed_since: sync_time) }
       response_body = JSON(response.body)
       response_process_token = parse_process_token(response_body)
       expect(response_body[response_key].count).to eq 0
@@ -388,7 +386,7 @@ RSpec.shared_examples 'a working Current sync controller sending records' do
     describe 'batching' do
       it 'returns the number of records requested with limit' do
         get :sync_to_user, params: {
-          process_token: make_process_token({ other_facilities_processed_since: 20.minutes.ago }),
+          process_token: make_process_token(other_facilities_processed_since: 20.minutes.ago),
           limit: 2
         }
         response_body = JSON(response.body)
@@ -397,7 +395,7 @@ RSpec.shared_examples 'a working Current sync controller sending records' do
 
       it 'Returns all the records on server over multiple small batches' do
         get :sync_to_user, params: {
-          process_token: make_process_token({ other_facilities_processed_since: 20.minutes.ago }),
+          process_token: make_process_token(other_facilities_processed_since: 20.minutes.ago),
           limit: 7
         }
 

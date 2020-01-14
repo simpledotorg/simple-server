@@ -1,25 +1,24 @@
 require 'rails_helper'
 
 def login_user
-  @request.env["devise.mapping"] = Devise.mappings[:admin]
+  @request.env['devise.mapping'] = Devise.mappings[:admin]
   admin = FactoryBot.create(:admin, :owner)
   sign_in admin.email_authentication
 end
 
 RSpec.describe Admin::UsersController, type: :controller do
-
   # This should return the minimal set of attributes required to create a valid
   # User. As you add validations to User, be sure to
   # adjust the attributes here as well.
 
   let(:facility) { FactoryBot.create(:facility) }
-  let(:valid_attributes) {
+  let(:valid_attributes) do
     FactoryBot.attributes_for(:user).merge(registration_facility_id: facility.id)
-  }
+  end
 
-  let(:invalid_attributes) {
+  let(:invalid_attributes) do
     FactoryBot.attributes_for(:user, facility_id: facility.id).merge(full_name: nil)
-  }
+  end
   before(:each) do
     login_user
   end
@@ -55,10 +54,10 @@ RSpec.describe Admin::UsersController, type: :controller do
 
   describe 'PUT #update' do
     context 'with valid params' do
-      let(:new_attributes) {
+      let(:new_attributes) do
         register_user_request_params(registration_facility_id: facility.id)
           .except(:id, :password_digest)
-      }
+      end
 
       it 'updates the requested user' do
         user = create(:user)
@@ -109,8 +108,8 @@ RSpec.describe Admin::UsersController, type: :controller do
     before :each do
       sms_notification_service = double(SmsNotificationService.new(nil, nil))
       allow(SmsNotificationService).to receive(:new)
-                                         .with(user.phone_number, ENV['TWILIO_PHONE_NUMBER'])
-                                         .and_return(sms_notification_service)
+        .with(user.phone_number, ENV['TWILIO_PHONE_NUMBER'])
+        .and_return(sms_notification_service)
       expect(sms_notification_service).to receive(:send_request_otp_sms)
     end
 

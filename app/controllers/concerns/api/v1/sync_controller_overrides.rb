@@ -8,7 +8,8 @@ module Api::V1::SyncControllerOverrides
       render(
         json: {
           response_key => records_to_sync.map { |record| transform_to_response(record) },
-          'processed_since' => most_recent_record_timestamp(records_to_sync).strftime(APIController::TIME_WITHOUT_TIMEZONE_FORMAT)
+          'processed_since' => most_recent_record_timestamp(records_to_sync)
+                                 .strftime(APIController::TIME_WITHOUT_TIMEZONE_FORMAT)
         },
         status: :ok
       )

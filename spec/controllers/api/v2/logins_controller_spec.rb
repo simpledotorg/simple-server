@@ -9,9 +9,7 @@ RSpec.describe Api::V2::LoginsController, type: :controller do
         { user:
             { phone_number: db_user.phone_number,
               password: password,
-              otp: db_user.otp
-            }
-        }
+              otp: db_user.otp } }
       end
 
       it 'should respond with access token for the user' do
@@ -41,17 +39,15 @@ RSpec.describe Api::V2::LoginsController, type: :controller do
         { user:
             { phone_number: db_user.phone_number,
               password: password,
-              otp: db_user.otp
-            }
-        }
+              otp: db_user.otp } }
       end
       it 'should respond with http status 401' do
         post :login_user, params: request_params
         expect(response.status).to eq(401)
         expect(JSON(response.body))
           .to eq('errors' => {
-            'user' => [I18n.t('login.error_messages.expired_otp')]
-          })
+                   'user' => [I18n.t('login.error_messages.expired_otp')]
+                 })
       end
     end
 
@@ -60,17 +56,15 @@ RSpec.describe Api::V2::LoginsController, type: :controller do
         { user:
             { phone_number: db_user.phone_number,
               password: '1234',
-              otp: 'wrong otp'
-            }
-        }
+              otp: 'wrong otp' } }
       end
       it 'should respond with http status 401' do
         post :login_user, params: request_params
         expect(response.status).to eq(401)
         expect(JSON(response.body))
           .to eq('errors' => {
-            'user' => [I18n.t('login.error_messages.invalid_otp')]
-          })
+                   'user' => [I18n.t('login.error_messages.invalid_otp')]
+                 })
       end
     end
 
@@ -79,17 +73,15 @@ RSpec.describe Api::V2::LoginsController, type: :controller do
         { user:
             { phone_number: db_user.phone_number,
               password: 'wrong password',
-              otp: db_user.otp
-            }
-        }
+              otp: db_user.otp } }
       end
       it 'should respond with http status 401' do
         post :login_user, params: request_params
         expect(response.status).to eq(401)
         expect(JSON(response.body))
           .to eq('errors' => {
-            'user' => [I18n.t('login.error_messages.invalid_password')]
-          })
+                   'user' => [I18n.t('login.error_messages.invalid_password')]
+                 })
       end
     end
 
@@ -98,17 +90,15 @@ RSpec.describe Api::V2::LoginsController, type: :controller do
         { user:
             { phone_number: 'wrong phone number',
               password: '1234',
-              otp: db_user.otp
-            }
-        }
+              otp: db_user.otp } }
       end
       it 'should respond with http status 401' do
         post :login_user, params: request_params
         expect(response.status).to eq(401)
         expect(JSON(response.body))
           .to eq('errors' => {
-            'user' => [I18n.t('login.error_messages.unknown_user')]
-          })
+                   'user' => [I18n.t('login.error_messages.unknown_user')]
+                 })
       end
     end
 
@@ -120,9 +110,7 @@ RSpec.describe Api::V2::LoginsController, type: :controller do
         { user:
             { phone_number: db_user.phone_number,
               password: password,
-              otp: db_user.otp
-            }
-        }
+              otp: db_user.otp } }
       end
 
       it 'creates an audit log of the user login' do

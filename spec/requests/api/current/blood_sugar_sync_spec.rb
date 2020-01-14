@@ -6,9 +6,9 @@ RSpec.describe 'BloodSugars sync', type: :request do
 
   let(:model) { BloodSugar }
 
-  let(:build_payload) { lambda { build_blood_sugar_payload(FactoryBot.build(:blood_sugar, facility: request_user.facility)) } }
-  let(:build_invalid_payload) { lambda { build_invalid_blood_sugar_payload } }
-  let(:update_payload) { lambda { |blood_sugar| updated_blood_sugar_payload blood_sugar } }
+  let(:build_payload) { -> { build_blood_sugar_payload(FactoryBot.build(:blood_sugar, facility: request_user.facility)) } }
+  let(:build_invalid_payload) { -> { build_invalid_blood_sugar_payload } }
+  let(:update_payload) { ->(blood_sugar) { updated_blood_sugar_payload blood_sugar } }
 
   def to_response(blood_sugar)
     Api::Current::Transformer.to_response(blood_sugar)

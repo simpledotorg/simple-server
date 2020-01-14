@@ -30,7 +30,7 @@ RSpec.shared_examples 'returns 403 for get requests for forbidden users' do
     let(:HTTP_X_FACILITY_ID) { request_facility.id }
     let(:Authorization) { "Bearer #{request_user.access_token}" }
 
-    let(:process_token) { Base64.encode64({other_facilities_processed_since: 10.minutes.ago}.to_json) }
+    let(:process_token) { Base64.encode64({ other_facilities_processed_since: 10.minutes.ago }.to_json) }
     let(:limit) { 10 }
     run_test!
   end

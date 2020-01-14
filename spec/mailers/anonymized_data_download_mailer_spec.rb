@@ -1,13 +1,15 @@
-require "rails_helper"
+require 'rails_helper'
 include ActiveJob::TestHelper
 
 RSpec.describe AnonymizedDataDownloadMailer, type: :mailer do
   let (:sender_email) { 'help@simple.org' }
   let (:recipient_name) { 'Example User' }
   let (:recipient_email) { 'user@example.com' }
-  let (:attachment_file_names) { %w[patients.csv blood_pressures.csv medicines.csv appointments.csv
-                                    sms_reminders.csv phone_calls.csv] }
-  let (:empty_attachment_data) { Hash.new }
+  let (:attachment_file_names) do
+    %w[patients.csv blood_pressures.csv medicines.csv appointments.csv
+       sms_reminders.csv phone_calls.csv]
+  end
+  let (:empty_attachment_data) { {} }
   let (:attachment_data) { JSON.parse(File.read('spec/support/fixtures/anonymised_attachment_data.json')) }
   let(:sent_email) { ActionMailer::Base.deliveries.last }
 
@@ -16,25 +18,25 @@ RSpec.describe AnonymizedDataDownloadMailer, type: :mailer do
   end
 
   it 'anonymised data mailer job is created' do
-    expect {
+    expect do
       AnonymizedDataDownloadMailer.with(recipient_name: recipient_name,
                                         recipient_email: recipient_email,
                                         anonymized_data: empty_attachment_data)
-        .mail_anonymized_data.deliver_later
-    }.to have_enqueued_job.on_queue('mailers')
+                                  .mail_anonymized_data.deliver_later
+    end.to have_enqueued_job.on_queue('mailers')
   end
 
   it 'email with anonymised data attachments is sent' do
-    expect {
+    expect do
       perform_enqueued_jobs do
         AnonymizedDataDownloadMailer.with(recipient_name: recipient_name,
                                           recipient_email: recipient_email,
                                           anonymized_data: empty_attachment_data,
                                           resource: { district_name: 'Sample District',
                                                       facilities: ['Sample Facility'] })
-          .mail_anonymized_data.deliver_later
+                                    .mail_anonymized_data.deliver_later
       end
-    }.to change { ActionMailer::Base.deliveries.size }.by(1)
+    end.to change { ActionMailer::Base.deliveries.size }.by(1)
   end
 
   describe 'email with anonymised data attachments has the correct data' do
@@ -45,7 +47,7 @@ RSpec.describe AnonymizedDataDownloadMailer, type: :mailer do
                                           anonymized_data: attachment_data,
                                           resource: { district_name: 'Sample District',
                                                       facilities: ['Sample Facility'] })
-          .mail_anonymized_data.deliver_later
+                                    .mail_anonymized_data.deliver_later
       end
     end
 

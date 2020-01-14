@@ -6,9 +6,9 @@ RSpec.describe 'Patients sync', type: :request do
 
   let(:sync_route) { '/api/v3/patients/sync' }
 
-  let(:build_payload) { lambda { build_patient_payload(FactoryBot.build(:patient, registration_facility: request_user.facility)) } }
-  let(:build_invalid_payload) { lambda { build_invalid_patient_payload } }
-  let(:update_payload) { lambda { |record| updated_patient_payload record } }
+  let(:build_payload) { -> { build_patient_payload(FactoryBot.build(:patient, registration_facility: request_user.facility)) } }
+  let(:build_invalid_payload) { -> { build_invalid_patient_payload } }
+  let(:update_payload) { ->(record) { updated_patient_payload record } }
 
   def to_response(patient)
     Api::Current::PatientTransformer.to_nested_response(patient)
@@ -25,7 +25,7 @@ RSpec.describe 'Patients sync', type: :request do
     created_patients         = Patient.find(first_patients_payload.map { |patient| patient['id'] })
     updated_patients_payload = created_patients.map do |patient|
       updated_patient_payload(patient)
-        .except(%w(address phone_numbers business_identifiers).sample)
+        .except(%w[address phone_numbers business_identifiers].sample)
     end
 
     post sync_route, params: { patients: updated_patients_payload }.to_json, headers: headers

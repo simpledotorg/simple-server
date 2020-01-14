@@ -11,10 +11,10 @@ RSpec.describe Api::Current::BloodSugarsController, type: :controller do
 
   let(:model) { BloodSugar }
 
-  let(:build_payload) { lambda { build_blood_sugar_payload } }
-  let(:build_invalid_payload) { lambda { build_invalid_blood_sugar_payload } }
+  let(:build_payload) { -> { build_blood_sugar_payload } }
+  let(:build_invalid_payload) { -> { build_invalid_blood_sugar_payload } }
   let(:invalid_record) { build_invalid_payload.call }
-  let(:update_payload) { lambda { |blood_sugar| updated_blood_sugar_payload(blood_sugar) } }
+  let(:update_payload) { ->(blood_sugar) { updated_blood_sugar_payload(blood_sugar) } }
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
   def create_record(options = {})
@@ -120,8 +120,9 @@ RSpec.describe Api::Current::BloodSugarsController, type: :controller do
 
           blood_sugars_payload = blood_sugars.map(&method(:build_blood_sugar_payload))
 
-          expect { post(:sync_from_user, params: { blood_sugars: blood_sugars_payload }, as: :json)
-          }.to change { Encounter.count }.by(1)
+          expect do
+            post(:sync_from_user, params: { blood_sugars: blood_sugars_payload }, as: :json)
+          end.to change { Encounter.count }.by(1)
           expect(response).to have_http_status(200)
           expect(Encounter.pluck(:encountered_on)).to contain_exactly(encountered_on)
           expected_blood_sugars_thru_encounters = Encounter.all.flat_map(&:blood_sugars)
@@ -150,8 +151,9 @@ RSpec.describe Api::Current::BloodSugarsController, type: :controller do
 
           blood_sugars_payload = blood_sugars.map(&method(:build_blood_sugar_payload))
 
-          expect { post(:sync_from_user, params: { blood_sugars: blood_sugars_payload }, as: :json)
-          }.to change { Encounter.count }.by(3)
+          expect do
+            post(:sync_from_user, params: { blood_sugars: blood_sugars_payload }, as: :json)
+          end.to change { Encounter.count }.by(3)
           expect(response).to have_http_status(200)
           expect(Encounter.pluck(:encountered_on)).to contain_exactly(encountered_on_1,
                                                                       encountered_on_2,
@@ -176,14 +178,14 @@ RSpec.describe Api::Current::BloodSugarsController, type: :controller do
                     facility: facility,
                     patient: patient,
                     recorded_at: date)
-
             end
           end
 
           blood_sugars_payload = blood_sugars.map(&method(:build_blood_sugar_payload))
 
-          expect { post(:sync_from_user, params: { blood_sugars: blood_sugars_payload }, as: :json)
-          }.to change { Encounter.count }.by(3)
+          expect do
+            post(:sync_from_user, params: { blood_sugars: blood_sugars_payload }, as: :json)
+          end.to change { Encounter.count }.by(3)
           expect(response).to have_http_status(200)
           expect(Encounter.all.flat_map(&:blood_sugars).count).to eq(range_of_possible_observations.count * 3)
         end
@@ -191,21 +193,21 @@ RSpec.describe Api::Current::BloodSugarsController, type: :controller do
 
       context 'existing encounter' do
         let!(:blood_pressure) { create(:blood_pressure) }
-        let!(:encounter_id) { Encounter.generate_id(blood_pressure.facility_id, blood_pressure.patient_id, blood_pressure.recorded_at.to_date)}
+        let!(:encounter_id) { Encounter.generate_id(blood_pressure.facility_id, blood_pressure.patient_id, blood_pressure.recorded_at.to_date) }
         let!(:encounter) { create(:encounter, :with_observables, id: encounter_id, observable: blood_pressure) }
         let!(:blood_sugar_payload) do
           build_blood_sugar_payload(
             build(:blood_sugar,
                   patient: blood_pressure.patient,
                   facility: blood_pressure.facility,
-                  recorded_at: blood_pressure.recorded_at
-            ))
+                  recorded_at: blood_pressure.recorded_at)
+          )
         end
 
         it 'adds the blood sugar to an existing encounter' do
-          expect {
+          expect do
             post(:sync_from_user, params: { blood_sugars: [blood_sugar_payload] }, as: :json)
-          }.not_to change { Encounter.count }
+          end.not_to change { Encounter.count }
 
           encounter.reload
 

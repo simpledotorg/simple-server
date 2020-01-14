@@ -1,9 +1,9 @@
 module AdminPage
   module Passwords
     class New < ApplicationPage
-      RESET_PASSWORD_BUTTON = { css: "div.text-right>input" }.freeze
+      RESET_PASSWORD_BUTTON = { css: 'div.text-right>input' }.freeze
       MESSAGE = { css: 'div.alert-primary' }.freeze
-      MESSAGE_CROSS_BUTTON = { css: "button.close" }.freeze
+      MESSAGE_CROSS_BUTTON = { css: 'button.close' }.freeze
       LOGIN = { css: "a[href='/email_authentications/sign_in']" }.freeze
       EMAIL_TEXT_BOX = { id: 'email_authentication_email' }.freeze
       UNLOCK_INSTRUCTION_LINK = { css: "a[href='/email_authentications/unlock/new']" }.freeze

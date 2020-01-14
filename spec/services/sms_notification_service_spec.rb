@@ -19,7 +19,7 @@ RSpec.describe SmsNotificationService do
       it 'should have the SMS body in the default locale' do
         sms = SmsNotificationService.new(recipient_phone_number, sender_phone_number, twilio_client)
 
-        expected_msg_default =  'Our staff at Simple Facility are thinking of you and your heart health. Our health team is always here if you have any follow-up questions or concerns.'
+        expected_msg_default = 'Our staff at Simple Facility are thinking of you and your heart health. Our health team is always here if you have any follow-up questions or concerns.'
         expect(twilio_client).to receive_message_chain('messages.create').with(from: '+15005550006',
                                                                                to: expected_sms_recipient_phone_number,
                                                                                status_callback: '',
@@ -55,9 +55,9 @@ RSpec.describe SmsNotificationService do
       it 'should raise an error if the locale for the SMS body is unsupported' do
         sms = SmsNotificationService.new(recipient_phone_number, sender_phone_number, twilio_client)
 
-        expect {
+        expect do
           sms.send_reminder_sms('missed_visit_sms_reminder', appointment, ' ', 'gu-IN')
-        }.to raise_error(StandardError)
+        end.to raise_error(StandardError)
       end
     end
   end

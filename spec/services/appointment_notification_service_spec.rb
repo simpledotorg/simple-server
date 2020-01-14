@@ -5,13 +5,13 @@ RSpec.describe AppointmentNotificationService do
     let!(:overdue_appointments) do
       overdue_appointment_ids = create_list(:appointment, 4, :overdue).map(&:id)
       Appointment.where(id: overdue_appointment_ids)
-          .includes(patient: [:phone_numbers], facility: { facility_group: :organization })
+                 .includes(patient: [:phone_numbers], facility: { facility_group: :organization })
     end
 
     let!(:recently_overdue_appointments) do
       recently_overdue_appointment_ids = create_list(:appointment, 2, scheduled_date: 1.day.ago, status: :scheduled).map(&:id)
       Appointment.where(id: recently_overdue_appointment_ids)
-          .includes(patient: [:phone_numbers], facility: { facility_group: :organization })
+                 .includes(patient: [:phone_numbers], facility: { facility_group: :organization })
     end
 
     before do
@@ -22,9 +22,9 @@ RSpec.describe AppointmentNotificationService do
     end
 
     it 'should spawn sms reminder jobs' do
-      expect {
+      expect do
         AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
-      }.to change(AppointmentNotification::Worker.jobs, :size).by(1)
+      end.to change(AppointmentNotification::Worker.jobs, :size).by(1)
     end
 
     it 'should ignore appointments which are recently overdue (< 3 days)' do
@@ -42,9 +42,9 @@ RSpec.describe AppointmentNotificationService do
       appointments_with_reminders_sent = overdue_appointments.select { |a| a.communications.present? }
       expect(appointments_with_reminders_sent.count).to eq(4)
 
-      expect {
+      expect do
         AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
-      }.to change(AppointmentNotification::Worker.jobs, :size).by(0)
+      end.to change(AppointmentNotification::Worker.jobs, :size).by(0)
     end
 
     it 'should send reminders for appointments for which previous reminders failed' do
@@ -56,19 +56,19 @@ RSpec.describe AppointmentNotificationService do
       appointments_with_reminders_failed = overdue_appointments.select { |a| a.communications.any?(&:unsuccessful?) }
       expect(appointments_with_reminders_failed.count).to eq(4)
 
-      expect {
+      expect do
         AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
-      }.to change(AppointmentNotification::Worker.jobs, :size).by(1)
+      end.to change(AppointmentNotification::Worker.jobs, :size).by(1)
     end
 
     it 'should only send reminders to patients who have granted consent' do
       overdue_appointment_ids =
-          [create(:patient), create(:patient, :denied)].map do |patient|
-            create(:appointment, :overdue, patient: patient).id
-          end
+        [create(:patient), create(:patient, :denied)].map do |patient|
+          create(:appointment, :overdue, patient: patient).id
+        end
 
       overdue_appointments = Appointment.where(id: overdue_appointment_ids)
-                                 .includes(patient: [:phone_numbers], facility: { facility_group: :organization })
+                                        .includes(patient: [:phone_numbers], facility: { facility_group: :organization })
 
       AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
       AppointmentNotification::Worker.drain
@@ -85,7 +85,7 @@ RSpec.describe AppointmentNotificationService do
       let!(:overdue_appointments) do
         overdue_appointment_id = create(:appointment, :overdue, patient: patient)[:id]
         Appointment.where(id: overdue_appointment_id)
-             .includes(patient: [:phone_numbers], facility: { facility_group: :organization })
+                   .includes(patient: [:phone_numbers], facility: { facility_group: :organization })
       end
 
       it 'should skip sending reminders' do

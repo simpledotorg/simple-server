@@ -10,9 +10,8 @@ describe 'Login Current API', swagger_doc: 'current/swagger.json' do
         let(:db_user) { FactoryBot.create(:user, password: '1234') }
         let(:user) do
           { user: { phone_number: db_user.phone_number,
-                    password:     '1234',
-                    otp:          db_user.otp
-          } }
+                    password: '1234',
+                    otp: db_user.otp } }
         end
 
         schema Api::Current::Schema.user_login_success_response
@@ -25,9 +24,8 @@ describe 'Login Current API', swagger_doc: 'current/swagger.json' do
         end
         let(:user) do
           { user: { phone_number: db_user.phone_number,
-                    password:     '1234',
-                    otp:          db_user.otp
-          } }
+                    password: '1234',
+                    otp: db_user.otp } }
         end
 
         schema Api::Current::Schema.error
@@ -38,9 +36,8 @@ describe 'Login Current API', swagger_doc: 'current/swagger.json' do
         let(:db_user) { FactoryBot.create(:user) }
         let(:user) do
           { user: { phone_number: db_user.phone_number,
-                    password:     'wrong_password',
-                    otp:          db_user.otp
-          } }
+                    password: 'wrong_password',
+                    otp: db_user.otp } }
         end
 
         schema Api::Current::Schema.error
@@ -51,9 +48,8 @@ describe 'Login Current API', swagger_doc: 'current/swagger.json' do
         let(:db_user) { FactoryBot.create(:user) }
         let(:user) do
           { user: { phone_number: db_user.phone_number,
-                    password:     'wrong_password',
-                    otp:          db_user.otp
-          } }
+                    password: 'wrong_password',
+                    otp: db_user.otp } }
         end
 
         schema Api::Current::Schema.error

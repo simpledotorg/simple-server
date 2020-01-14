@@ -16,7 +16,7 @@ RSpec.describe User, type: :model do
       let(:id) { SecureRandom.uuid }
       let(:full_name) { Faker::Name.name }
       let(:phone_number) { Faker::PhoneNumber.phone_number }
-      let(:password_digest) { BCrypt::Password.create("1234") }
+      let(:password_digest) { BCrypt::Password.create('1234') }
       let(:params) do
         { id: id,
           full_name: full_name,
@@ -25,8 +25,7 @@ RSpec.describe User, type: :model do
           registration_facility_id: registration_facility.id,
           organization_id: registration_facility.organization.id,
           device_created_at: Time.current.iso8601,
-          device_updated_at: Time.current.iso8601
-        }
+          device_updated_at: Time.current.iso8601 }
       end
 
       let(:user) { User.build_with_phone_number_authentication(params) }
@@ -65,6 +64,5 @@ RSpec.describe User, type: :model do
   end
 
   xdescribe '.update_with_phone_number_authentication' do
-
   end
 end

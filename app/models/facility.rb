@@ -85,6 +85,7 @@ class Facility < ApplicationRecord
                    facility_type: row['facility_type'],
                    street_address: row['street_address (optional)'],
                    village_or_colony: row['village_or_colony (optional)'],
+                   zone: row['zone_or_block (optional)'],
                    district: row['district'],
                    state: row['state'],
                    country: row['country'],
@@ -97,6 +98,13 @@ class Facility < ApplicationRecord
       facilities << facility
     end
     facilities
+  end
+
+  def self.bp_counts_in_period(start:, finish:)
+    left_outer_joins(:blood_pressures)
+      .where('recorded_at IS NULL OR (recorded_at >= ? AND recorded_at < ?)', start, finish)
+      .group('facilities.id')
+      .count(:blood_pressures)
   end
 
   def organization_exists

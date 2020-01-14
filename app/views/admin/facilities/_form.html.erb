@@ -6,8 +6,8 @@
       <%= form.select :facility_size, Facility.facility_sizes.map { |key, value| [key.capitalize, value] }, id: :facility_type, required: true %>
       <%= form.text_field :street_address, id: :facility_street_address %>
       <%= form.text_field :village_or_colony, id: :facility_village_or_colony %>
+      <%= form.text_field :zone, id: :facility_zone %>
       <%= form.text_field :district, id: :facility_district, required: true %>
-      <%= form.text_field :zone, id: :facility_district, required: true if I18n.locale.eql?(:en_BD) || I18n.locale.eql?(:bn_BD)%>
       <%= form.text_field :state, id: :facility_state, required: true %>
       <%= form.text_field :country, id: :facility_country, required: true, value: "India" %>
       <%= form.text_field :pin, id: :facility_pin %>
