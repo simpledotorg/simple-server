@@ -10,16 +10,18 @@ FactoryBot.define do
     end
 
     trait(:with_observables) do
-      observations { [build(:observation,
-                            encounter_id: id,
-                            observable: observable,
-                            user: observable.user)] }
+      observations do
+        [build(:observation,
+               encounter_id: id,
+               observable: observable,
+               user: observable.user)]
+      end
       facility { observable.facility }
       patient { observable.patient }
       encountered_on { observable.recorded_at.to_date }
     end
 
-    encountered_on "2019-09-11"
+    encountered_on '2019-09-11'
 
     timezone_offset 0
     metadata nil
@@ -32,9 +34,9 @@ end
 
 def build_encounters_payload(encounter = FactoryBot.build(:encounter))
   encounter.attributes.with_payload_keys
-    .merge({ :observations =>
-               { :blood_pressures => encounter.blood_pressures.map { |bp|
-                 bp.attributes.with_payload_keys } } }.with_indifferent_access)
+           .merge({ observations: { blood_pressures: encounter.blood_pressures.map do |bp|
+                                                       bp.attributes.with_payload_keys
+                                                     end } }.with_indifferent_access)
 end
 
 def build_invalid_encounters_payload
@@ -51,5 +53,3 @@ def updated_encounters_payload(existing_encounter)
     'systolic' => rand(80..240)
   )
 end
-
-

@@ -5,14 +5,14 @@ describe ExotelAPIService, type: :model do
   let(:token) { SecureRandom.base64 }
   let(:service) { ExotelAPIService.new(account_sid, token) }
   let(:auth_token) { Base64.strict_encode64([account_sid, token].join(':')) }
-  let(:request_headers) {
+  let(:request_headers) do
     {
       'Authorization' => "Basic #{auth_token}",
       'Connection' => 'close',
       'Host' => 'api.exotel.com',
       'User-Agent' => 'http.rb/4.1.1'
     }
-  }
+  end
 
   describe '#call_details' do
     let!(:call_details_200) { File.read('spec/support/fixtures/call_details_200.json') }
@@ -22,14 +22,14 @@ describe ExotelAPIService, type: :model do
     let!(:token) { 'token' }
     let!(:auth_token) { Base64.strict_encode64([sid, token].join(':')) }
     let!(:request_url) { "https://api.exotel.com/v1/Accounts/sid/Calls/#{call_sid}.json" }
-    let!(:request_headers) {
+    let!(:request_headers) do
       {
         'Authorization' => "Basic #{auth_token}",
         'Connection' => 'close',
         'Host' => 'api.exotel.com',
         'User-Agent' => 'http.rb/4.1.1'
       }
-    }
+    end
 
     it 'should return call details for a session id in json when status is 200' do
       stub_request(:get, request_url).with(headers: request_headers).to_return(status: 200,
@@ -38,25 +38,25 @@ describe ExotelAPIService, type: :model do
 
       expected_call_details_response = described_class.new(sid, token).call_details(call_sid)
 
-      expect(expected_call_details_response[:Call].keys).to eq([:Sid,
-                                                                :ParentCallSid,
-                                                                :DateCreated,
-                                                                :DateUpdated,
-                                                                :AccountSid,
-                                                                :To,
-                                                                :From,
-                                                                :PhoneNumberSid,
-                                                                :Status,
-                                                                :StartTime,
-                                                                :EndTime,
-                                                                :Duration,
-                                                                :Price,
-                                                                :Direction,
-                                                                :AnsweredBy,
-                                                                :ForwardedFrom,
-                                                                :CallerName,
-                                                                :Uri,
-                                                                :RecordingUrl])
+      expect(expected_call_details_response[:Call].keys).to eq(%i[Sid
+                                                                  ParentCallSid
+                                                                  DateCreated
+                                                                  DateUpdated
+                                                                  AccountSid
+                                                                  To
+                                                                  From
+                                                                  PhoneNumberSid
+                                                                  Status
+                                                                  StartTime
+                                                                  EndTime
+                                                                  Duration
+                                                                  Price
+                                                                  Direction
+                                                                  AnsweredBy
+                                                                  ForwardedFrom
+                                                                  CallerName
+                                                                  Uri
+                                                                  RecordingUrl])
     end
 
     it 'should not return a response for a session that does not exist' do
@@ -83,9 +83,9 @@ describe ExotelAPIService, type: :model do
 
       expect(Raven).to receive(:capture_message).and_return(true)
 
-      expect {
+      expect do
         described_class.new(sid, token).call_details(call_sid)
-      }.to raise_error(ExotelAPIService::HTTPError)
+      end.to raise_error(ExotelAPIService::HTTPError)
     end
   end
 
@@ -95,16 +95,19 @@ describe ExotelAPIService, type: :model do
     let(:phone_numbers) { (0..3).map { Faker::PhoneNumber.phone_number } }
     let!(:auth_token) { Base64.strict_encode64([account_sid, token].join(':')) }
 
-    let(:request_body) { {
-      :Language => 'en',
-      :VirtualNumber => virtual_number,
-      :Number => phone_numbers.join(',')
-    } }
+    let(:request_body) do
+      {
+        Language: 'en',
+        VirtualNumber: virtual_number,
+        Number: phone_numbers.join(',')
+      }
+    end
 
     it 'calls the exotel whitelist api for given virtual number and phone number list' do
       stub = stub_request(:post, request_url).with(
         headers: request_headers,
-        body: request_body)
+        body: request_body
+      )
 
       service.whitelist_phone_numbers(virtual_number, phone_numbers)
       expect(stub).to have_been_requested
@@ -115,7 +118,6 @@ describe ExotelAPIService, type: :model do
     it 'returns nil if expiry time is nil' do
       expect(service.parse_exotel_whitelist_expiry(nil)).to be_nil
     end
-
 
     it 'returns nil if expiry time is less than 0' do
       expect(service.parse_exotel_whitelist_expiry(-1)).to be_nil
@@ -136,29 +138,33 @@ describe ExotelAPIService, type: :model do
 
     let!(:whitelist_details_stub) do
       stub_request(:get, whitelist_details_url).with(headers: request_headers)
-        .to_return(
-          status: 200,
-          headers: {},
-          body: JSON(
-            { "Result" =>
-                { "Status" => "Whitelist",
-                  "Type" => "API",
-                  "Expiry" => 3600 } }))
+                                               .to_return(
+                                                 status: 200,
+                                                 headers: {},
+                                                 body: JSON(
+                                                   'Result' =>
+                                                      { 'Status' => 'Whitelist',
+                                                        'Type' => 'API',
+                                                        'Expiry' => 3600 }
+                                                 )
+                                               )
     end
     let!(:numbers_metadata_stub) do
       stub_request(:get, numbers_metadata_url).with(headers: request_headers)
-        .to_return(
-          status: 200,
-          headers: {},
-          body: JSON(
-            { "Numbers" =>
-                { "PhoneNumber" => phone_number,
-                  "Circle" => "KA",
-                  "CircleName" => "Karnataka",
-                  "Type" => "Mobile",
-                  "Operator" => "V",
-                  "OperatorName" => "Vodafone",
-                  "DND" => "Yes" } }))
+                                              .to_return(
+                                                status: 200,
+                                                headers: {},
+                                                body: JSON(
+                                                  'Numbers' =>
+                                                     { 'PhoneNumber' => phone_number,
+                                                       'Circle' => 'KA',
+                                                       'CircleName' => 'Karnataka',
+                                                       'Type' => 'Mobile',
+                                                       'Operator' => 'V',
+                                                       'OperatorName' => 'Vodafone',
+                                                       'DND' => 'Yes' }
+                                                )
+                                              )
     end
 
     it 'makes a request to exotel number metadata and whitelist details api' do

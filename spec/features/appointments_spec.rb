@@ -1,15 +1,19 @@
 require 'rails_helper'
 
 RSpec.feature 'Overdue appointments', type: :feature do
-  let!(:ihmi) { create(:organization, name: "IHMI") }
+  let!(:ihmi) { create(:organization, name: 'IHMI') }
   let!(:ihmi_group) { create(:facility_group, organization: ihmi) }
   let!(:supervisor) { create(:admin, role: 'supervisor') }
-  let!(:view_overdue_permission) { create(:user_permission, user: supervisor,
-                                          permission_slug: :view_overdue_list,
-                                          resource: ihmi_group) }
-  let!(:download_overdue_permission) { create(:user_permission, user: supervisor,
-                                              permission_slug: :download_overdue_list,
-                                              resource: ihmi_group) }
+  let!(:view_overdue_permission) do
+    create(:user_permission, user: supervisor,
+                             permission_slug: :view_overdue_list,
+                             resource: ihmi_group)
+  end
+  let!(:download_overdue_permission) do
+    create(:user_permission, user: supervisor,
+                             permission_slug: :download_overdue_list,
+                             resource: ihmi_group)
+  end
 
   before do
     ENV['IHCI_ORGANIZATION_UUID'] = ihmi.id
@@ -79,8 +83,8 @@ RSpec.feature 'Overdue appointments', type: :feature do
       end
 
       it 'does not allow you to download the overdue list for all facilities' do
-        expect(page).to have_content("Select a facility to download Overdue Patients list")
-        expect(page).not_to have_selector("a", text: "Download Overdue List")
+        expect(page).to have_content('Select a facility to download Overdue Patients list')
+        expect(page).not_to have_selector('a', text: 'Download Overdue List')
       end
     end
   end

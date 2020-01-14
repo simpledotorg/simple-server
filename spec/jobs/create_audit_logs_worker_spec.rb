@@ -12,13 +12,13 @@ RSpec.describe CreateAuditLogsWorker, type: :job do
     let(:action) { 'fetch' }
 
     it 'queues the job on audit_log_queue' do
-      expect {
+      expect do
         CreateAuditLogsWorker.perform_async({ user_id: user.id,
                                               record_class: record_class,
                                               record_ids: record_ids,
                                               action: action,
                                               time: Time.current }.to_json)
-      }.to change(Sidekiq::Queues['audit_log_queue'], :size).by(1)
+      end.to change(Sidekiq::Queues['audit_log_queue'], :size).by(1)
       CreateAuditLogsWorker.clear
     end
 
@@ -39,7 +39,6 @@ RSpec.describe CreateAuditLogsWorker, type: :job do
                                               record_ids: record_ids,
                                               action: action,
                                               time: Time.current }.to_json)
-
 
         CreateAuditLogsWorker.drain
       end

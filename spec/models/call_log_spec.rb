@@ -18,8 +18,7 @@ RSpec.describe CallLog, type: :model do
             result: call_log.result,
             duration: call_log.duration,
             start_time: call_log.start_time,
-            end_time: call_log.end_time
-          }
+            end_time: call_log.end_time }
 
         expect(call_log.anonymized_data).to eq anonymised_data
       end

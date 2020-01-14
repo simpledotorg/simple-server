@@ -28,7 +28,7 @@ RSpec.feature 'To test Forgot password functionality', type: :feature do
     visit root_path
     login_page.click_forgot_password_link
     forgot_password.click_login_link
-    expect(page).to have_content("Login")
+    expect(page).to have_content('Login')
   end
 
   it 'verify unlock instruction link in Forgot Password Page' do
@@ -38,4 +38,3 @@ RSpec.feature 'To test Forgot password functionality', type: :feature do
     AdminPage::Unlock::New.new.resend_unlock_instruction(owner.email)
   end
 end
-

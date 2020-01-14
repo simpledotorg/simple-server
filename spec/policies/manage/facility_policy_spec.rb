@@ -1,4 +1,4 @@
-require "rails_helper"
+require 'rails_helper'
 
 RSpec.describe Manage::Facility::FacilityPolicy do
   subject { described_class }
@@ -31,8 +31,8 @@ RSpec.describe Manage::Facility::FacilityPolicy do
   context 'user can manage facilities for an organization' do
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :manage_facilities, resource: organization)
-      ])
+               build(:user_permission, permission_slug: :manage_facilities, resource: organization)
+             ])
     end
 
     permissions :index? do
@@ -58,8 +58,8 @@ RSpec.describe Manage::Facility::FacilityPolicy do
 
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :manage_facilities, resource: facility_group)
-      ])
+               build(:user_permission, permission_slug: :manage_facilities, resource: facility_group)
+             ])
     end
 
     permissions :index? do
@@ -72,7 +72,6 @@ RSpec.describe Manage::Facility::FacilityPolicy do
       it 'allows the user for facilities in their facility groups' do
         expect(subject).to permit(user_with_permission, facility_1)
       end
-
 
       it 'denies the user for facilities outside facility groups' do
         expect(subject).not_to permit(user_with_permission, facility_2)
@@ -104,8 +103,8 @@ RSpec.describe Manage::Facility::FacilityPolicy::Scope do
   context 'user can manage facilities for an organization' do
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :manage_facilities, resource: organization)
-      ])
+               build(:user_permission, permission_slug: :manage_facilities, resource: organization)
+             ])
     end
 
     it 'resolve all facilities in their organization' do
@@ -117,8 +116,8 @@ RSpec.describe Manage::Facility::FacilityPolicy::Scope do
   context 'user can manage facilities for a facility group' do
     let(:user_with_permission) do
       create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :manage_facilities, resource: facility_group_1)
-      ])
+               build(:user_permission, permission_slug: :manage_facilities, resource: facility_group_1)
+             ])
     end
 
     it 'resolve to their facilities in their facility group' do

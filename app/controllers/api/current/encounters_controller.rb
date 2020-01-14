@@ -37,7 +37,9 @@ class Api::Current::EncountersController < Api::Current::SyncController
       NewRelic::Agent.increment_metric('Merge/Encounter/schema_invalid')
       { errors_hash: validator.errors_hash }
     else
-      transformed_params = Api::Current::EncounterTransformer.from_nested_request(encounter_params).merge(facility_id: encounter_facility_id(encounter_params))
+      transformed_params = Api::Current::EncounterTransformer
+                             .from_nested_request(encounter_params)
+                             .merge(facility_id: encounter_facility_id(encounter_params))
       { record: MergeEncounterService.new(transformed_params,
                                           current_user,
                                           current_timezone_offset).merge[:encounter] }

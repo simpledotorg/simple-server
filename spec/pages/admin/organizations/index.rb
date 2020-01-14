@@ -2,7 +2,7 @@ module AdminPage
   module Organizations
     class Index < ApplicationPage
       ADD_NEW_ORGANIZATION_BUTTON = { css: 'nav.page-nav>a' }.freeze
-      ORGANIZATION_NAME = {css: "div.card" }.freeze
+      ORGANIZATION_NAME = { css: 'div.card' }.freeze
 
       def is_organization_name_present(orgName)
         org_name = all_elements(ORGANIZATION_NAME)
@@ -12,8 +12,8 @@ module AdminPage
       end
 
       def delete_organization(org_name)
-        within(:xpath ,"//a[text()='#{org_name}']/../../..") do
-          find(:css ,'i.fa-trash-alt').click
+        within(:xpath, "//a[text()='#{org_name}']/../../..") do
+          find(:css, 'i.fa-trash-alt').click
         end
       end
 

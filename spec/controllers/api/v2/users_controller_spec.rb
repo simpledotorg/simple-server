@@ -6,8 +6,8 @@ RSpec.describe Api::V2::UsersController, type: :controller do
   let(:supervisor) { FactoryBot.create(:admin, :supervisor) }
   let(:organization_owner) { FactoryBot.create(:admin, :organization_owner) }
   let(:facility) { FactoryBot.create(:facility) }
-  let!(:supervisor) { FactoryBot.create(:admin, :supervisor, facility_group:  facility.facility_group) }
-  let!(:organization_owner) { FactoryBot.create(:admin, :organization_owner, organization:  facility.organization) }
+  let!(:supervisor) { FactoryBot.create(:admin, :supervisor, facility_group: facility.facility_group) }
+  let!(:organization_owner) { FactoryBot.create(:admin, :organization_owner, organization: facility.organization) }
   let!(:owner) { FactoryBot.create(:admin, :owner) }
 
   describe '#register' do
@@ -35,7 +35,6 @@ RSpec.describe Api::V2::UsersController, type: :controller do
         expect(created_user.phone_number_authentication).to be_present
         expect(created_user.phone_number_authentication.phone_number).to eq(user_params[:phone_number])
 
-
         expect(parsed_response['user'].except('created_at',
                                               'updated_at',
                                               'facility_ids').with_int_timestamps)
@@ -46,7 +45,8 @@ RSpec.describe Api::V2::UsersController, type: :controller do
                      'device_updated_at',
                      'device_created_at',
                      'created_at',
-                     'updated_at')
+                     'updated_at'
+                   )
                    .merge('registration_facility_id' => facility.id, 'phone_number' => phone_number, 'password_digest' => password_digest)
                    .as_json
                    .with_int_timestamps)
@@ -150,7 +150,7 @@ RSpec.describe Api::V2::UsersController, type: :controller do
   end
 
   describe '#reset_password' do
-    let(:facility_group) { FactoryBot.create(:facility_group)}
+    let(:facility_group) { FactoryBot.create(:facility_group) }
     let(:facility) { FactoryBot.create(:facility, facility_group: facility_group) }
     let(:user) { FactoryBot.create(:user, organization: facility.organization, registration_facility: facility) }
 
@@ -191,7 +191,7 @@ RSpec.describe Api::V2::UsersController, type: :controller do
       expect(approval_email.to).to include(supervisor.email)
       expect(approval_email.cc).to include(organization_owner.email)
       expect(approval_email.body.to_s).to match(Regexp.quote(user.phone_number))
-      expect(approval_email.body.to_s).to match("reset")
+      expect(approval_email.body.to_s).to match('reset')
     end
   end
 end

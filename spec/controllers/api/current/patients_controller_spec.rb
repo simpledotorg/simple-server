@@ -6,8 +6,8 @@ RSpec.describe Api::Current::PatientsController, type: :controller do
 
   let(:model) { Patient }
 
-  let(:build_payload) { lambda { build_patient_payload } }
-  let(:build_invalid_payload) { lambda { build_invalid_patient_payload } }
+  let(:build_payload) { -> { build_patient_payload } }
+  let(:build_invalid_payload) { -> { build_invalid_patient_payload } }
   let(:update_payload) { lamda { |record| updated_patient_payload record } }
   let(:invalid_record) { build_invalid_payload.call }
 
@@ -219,7 +219,9 @@ RSpec.describe Api::Current::PatientsController, type: :controller do
           patients_payload.each do |updated_patient|
             updated_patient.with_int_timestamps
             updated_business_identifier = updated_patient['business_identifiers'].first
-            updated_business_identifier_metadata = JSON.parse(updated_business_identifier[:metadata]) if updated_business_identifier[:metadata].present?
+            if updated_business_identifier[:metadata].present?
+              updated_business_identifier_metadata = JSON.parse(updated_business_identifier[:metadata])
+            end
             db_business_identifier = PatientBusinessIdentifier.find(updated_business_identifier['id'])
 
             expect(db_business_identifier.attributes.with_payload_keys.with_int_timestamps)
