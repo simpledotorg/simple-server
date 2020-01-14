@@ -27,10 +27,10 @@ RSpec.feature 'Facility analytics', type: :feature do
 
     context 'recent BP log' do
       it "displays the facility's recent BPs", :aggregate_failures do
-        within('#recent-bps') do
-          expect(page).to have_selector('th', text: 'Recorded by')
-          expect(page).to have_content('145/95')
-          expect(page).to have_content('115/75')
+        within("#recent-bps") do
+          expect(page).to have_selector("th", text: /recorded by/i)
+          expect(page).to have_content("145/95")
+          expect(page).to have_content("115/75")
         end
       end
 

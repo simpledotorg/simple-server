@@ -1,6 +1,6 @@
 <% if @users_requesting_approval.any? && policy([:manage, :user, @users_requesting_approval.first]).enable_access? %>
   <% if @users_requesting_approval.any? %>
-    <h2><i class="far fa-bell"></i> Users to review</h2>
+    <h2>Users to review</h2>
     <p>Contact these users promptly. Check that they are approved to access patient data at their facility.</p>
 
     <% @users_requesting_approval.each do |user| %>

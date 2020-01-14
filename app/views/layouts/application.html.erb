@@ -43,13 +43,18 @@
         <%= link_to root_path, class: "navbar-brand" do %>
           <%= logo_for_environment %>
         <% end %>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbars-menu" aria-controls="navbars-menu" aria-expanded="false" aria-label="Toggle navigation">
          <i class="fas fa-bars mr-1"></i> Menu
         </button>
 
-        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <div class="collapse navbar-collapse" id="navbars-menu">
           <% if email_authentication_signed_in? %>
             <ul class="navbar-nav mr-auto">
+              <% if policy(:dashboard).view_my_facilities? && FeatureToggle.enabled?("MY_FACILITIES")%>
+                <li class="nav-item">
+                  <%= link_to "My Facilities", my_facilities_path, class: "nav-link #{active_controller?("my_facilities")}" %>
+                </li>
+              <% end %>
               <% if policy(:dashboard).show? %>
                 <li class="nav-item">
                   <%= link_to "Dashboard", root_path, class: "nav-link #{active_controller?("organizations", "facility_groups")}" %>
@@ -130,7 +135,7 @@
         </div>
       <% end %>
 
-      <%= yield %>
+      <%= content_for?(:content) ? yield(:content) : yield %>
     </main>
 
   </body>
