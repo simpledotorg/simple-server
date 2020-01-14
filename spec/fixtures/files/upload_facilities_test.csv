@@ -1,3 +1,3 @@
-organization,facility_group,facility_name,facility_type,street_address (optional),village_or_colony (optional),district,state,country,pin (optional),longitude (optional),latitude (optional)
-OrgOne,FGTwo,Test Facility,CHC,,,Bhatinda,Punjab,India,,,
-OrgOne,FGTwo,Test Facility 2,CHC,,,Bhatinda,Punjab,India,,,
+organization,facility_group,facility_name,facility_type,street_address (optional),village_or_colony (optional),zone_or_block (optional),district,state,country,pin (optional),longitude (optional),latitude (optional)
+OrgOne,FGTwo,Test Facility,CHC,,,,Bhatinda,Punjab,India,,,
+OrgOne,FGTwo,Test Facility 2,CHC,,,,Bhatinda,Punjab,India,,,
