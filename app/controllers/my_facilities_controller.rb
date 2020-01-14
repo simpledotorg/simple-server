@@ -18,17 +18,14 @@ class MyFacilitiesController < AdminController
     @facility_counts_by_size = { total: @facilities.group(:facility_size).count,
                                  inactive: @inactive_facilities.group(:facility_size).count }
 
-    @inactive_facilities_bp_counts = { last_week: @inactive_facilities
-                                                    .bp_counts_in_period(start: 1.week.ago, finish: Time.current),
-                                       last_month: @inactive_facilities
-                                                     .bp_counts_in_period(start: 1.month.ago, finish: Time.current) }
+    @inactive_facilities_bp_counts =
+      { last_week: @inactive_facilities.bp_counts_in_period(start: 1.week.ago, finish: Time.current),
+        last_month: @inactive_facilities.bp_counts_in_period(start: 1.month.ago, finish: Time.current) }
   end
 
-  def ranked_facilities;
-  end
+  def ranked_facilities; end
 
-  def blood_pressure_control;
-  end
+  def blood_pressure_control; end
 
   private
 
