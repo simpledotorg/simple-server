@@ -5,7 +5,7 @@ RSpec.describe Api::Current::FacilitiesController, type: :controller do
 
   let(:model) { Facility }
 
-  def create_record_list(n, options = {})
+  def create_record_list(n, _options = {})
     FactoryBot.create_list(:facility, n, facility_group: request_user.facility.facility_group)
   end
 
@@ -41,7 +41,7 @@ RSpec.describe Api::Current::FacilitiesController, type: :controller do
 
       it 'Returns new records added since last sync' do
         expected_records = create_record_list(2, updated_at: 5.minutes.ago)
-        get :sync_to_user, params: { process_token: make_process_token({ other_facilities_processed_since: 10.minutes.ago }) }
+        get :sync_to_user, params: { process_token: make_process_token(other_facilities_processed_since: 10.minutes.ago) }
 
         response_body = JSON(response.body)
         expect(response_body[response_key].count).to eq 2
@@ -56,7 +56,7 @@ RSpec.describe Api::Current::FacilitiesController, type: :controller do
 
       it 'Returns an empty list when there is nothing to sync' do
         sync_time = 10.minutes.ago
-        get :sync_to_user, params: { process_token: make_process_token({ other_facilities_processed_since: sync_time }) }
+        get :sync_to_user, params: { process_token: make_process_token(other_facilities_processed_since: sync_time) }
         response_body = JSON(response.body)
         response_process_token = parse_process_token(response_body)
         expect(response_body[response_key].count).to eq 0
@@ -66,7 +66,7 @@ RSpec.describe Api::Current::FacilitiesController, type: :controller do
       describe 'batching' do
         it 'returns the number of records requested with limit' do
           get :sync_to_user, params: {
-            process_token: make_process_token({ other_facilities_processed_since: 20.minutes.ago }),
+            process_token: make_process_token(other_facilities_processed_since: 20.minutes.ago),
             limit: 2
           }
           response_body = JSON(response.body)
@@ -75,7 +75,7 @@ RSpec.describe Api::Current::FacilitiesController, type: :controller do
 
         it 'Returns all the records on server over multiple small batches' do
           get :sync_to_user, params: {
-            process_token: make_process_token({ other_facilities_processed_since: 20.minutes.ago }),
+            process_token: make_process_token(other_facilities_processed_since: 20.minutes.ago),
             limit: 2
           }
 

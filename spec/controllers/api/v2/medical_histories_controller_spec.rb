@@ -11,10 +11,10 @@ RSpec.describe Api::V2::MedicalHistoriesController, type: :controller do
 
   let(:model) { MedicalHistory }
 
-  let(:build_payload) { lambda { build_medical_history_payload_v2 } }
-  let(:build_invalid_payload) { lambda { build_invalid_medical_history_payload_v2 } }
+  let(:build_payload) { -> { build_medical_history_payload_v2 } }
+  let(:build_invalid_payload) { -> { build_invalid_medical_history_payload_v2 } }
   let(:invalid_record) { build_invalid_payload.call }
-  let(:update_payload) { lambda { |medical_history| updated_medical_history_payload_v2 medical_history } }
+  let(:update_payload) { ->(medical_history) { updated_medical_history_payload_v2 medical_history } }
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
   def create_record(options = {})

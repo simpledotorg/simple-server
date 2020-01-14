@@ -6,8 +6,8 @@ RSpec.describe ProtocolDrug, type: :model do
   end
 
   describe 'Validations' do
-    it { should validate_presence_of(:name)}
-    it { should validate_presence_of(:dosage)}
+    it { should validate_presence_of(:name) }
+    it { should validate_presence_of(:dosage) }
   end
 
   describe 'Behavior' do

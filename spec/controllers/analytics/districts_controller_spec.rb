@@ -42,9 +42,9 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
         get :show, params: { organization_id: organization.id, id: district_name }
 
         expect(response.status).to eq(200)
-        expect(assigns(:dashboard_analytics)[facility.id].keys).to match_array([:follow_up_patients_by_period,
-                                                                                :registered_patients_by_period,
-                                                                                :total_registered_patients])
+        expect(assigns(:dashboard_analytics)[facility.id].keys).to match_array(%i[follow_up_patients_by_period
+                                                                                  registered_patients_by_period
+                                                                                  total_registered_patients])
       end
     end
 
@@ -71,24 +71,24 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
 
       it 'caches the district correctly' do
         expected_cache_value =
-            {
-                cohort: {
-                    [cohort_date1.prev_quarter, cohort_date1] =>
-                        { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 },
-                    [cohort_date2.prev_quarter, cohort_date2] =>
-                        { :registered => 3, :followed_up => 3, :defaulted => 0, :controlled => 3, :uncontrolled => 0 },
-                    [cohort_date3.prev_quarter, cohort_date3] =>
-                        { :registered => 0, :followed_up => 0, :defaulted => 0, :controlled => 0, :uncontrolled => 0 }
-                },
+          {
+            cohort: {
+              [cohort_date1.prev_quarter, cohort_date1] =>
+                    { registered: 0, followed_up: 0, defaulted: 0, controlled: 0, uncontrolled: 0 },
+              [cohort_date2.prev_quarter, cohort_date2] =>
+                      { registered: 3, followed_up: 3, defaulted: 0, controlled: 3, uncontrolled: 0 },
+              [cohort_date3.prev_quarter, cohort_date3] =>
+                      { registered: 0, followed_up: 0, defaulted: 0, controlled: 0, uncontrolled: 0 }
+            },
 
-                dashboard: {
-                    facility.id => {
-                        registered_patients_by_period: { cohort_date3 => 3 },
-                        total_registered_patients: 3,
-                        follow_up_patients_by_period: { cohort_date2 => 3 }
-                    }
-                }
+            dashboard: {
+              facility.id => {
+                registered_patients_by_period: { cohort_date3 => 3 },
+                total_registered_patients: 3,
+                follow_up_patients_by_period: { cohort_date2 => 3 }
+              }
             }
+          }
 
         get :show, params: { organization_id: organization.id, id: district_name, period: :quarter }
 

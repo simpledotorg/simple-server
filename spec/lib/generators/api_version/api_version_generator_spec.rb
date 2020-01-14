@@ -4,8 +4,8 @@ require 'generator_spec'
 require 'generators/api_version/api_version_generator'
 
 RSpec.describe ApiVersionGenerator, type: :generator do
-  CURRENT_VERSION = 'v2'
-  NEW_VERSION = 'v3'
+  CURRENT_VERSION = 'v2'.freeze
+  NEW_VERSION = 'v3'.freeze
 
   let(:spec_root) { Rails.root.join('spec') }
 
@@ -31,14 +31,12 @@ RSpec.describe ApiVersionGenerator, type: :generator do
       it 'api specs' do
         current_spec_files = files_in_directory(spec_root.join('api', 'current'))
 
-
         current_spec_files.each do |path|
           new_file_path = path.sub('current', CURRENT_VERSION)
           assert_file(destination_root.to_s + new_file_path, Regexp.new("#{CURRENT_VERSION}/swagger.json"))
           assert_file(destination_root.to_s + new_file_path, Regexp.new(CURRENT_VERSION.capitalize))
         end
       end
-
 
       it 'controller specs' do
         current_spec_files = files_in_directory(spec_root.join('controllers', 'api', 'current'))
@@ -97,7 +95,7 @@ RSpec.describe ApiVersionGenerator, type: :generator do
                                   .map { |path| path.remove(controllers_root.to_s).sub('current', CURRENT_VERSION) }
 
         expected_controllers = expected_relative_paths.map do |relative_path|
-          [relative_path, relative_path.sub('.rb', '').split('/').reject(&:empty?).map { |name| name.camelcase }.join('::')]
+          [relative_path, relative_path.sub('.rb', '').split('/').reject(&:empty?).map(&:camelcase).join('::')]
         end.to_h
 
         expected_controllers.each do |file, controller_name|
@@ -116,10 +114,10 @@ RSpec.describe ApiVersionGenerator, type: :generator do
       it 'creates template transformers for the given current version' do
         transformers_root = Rails.root.join('app', 'transformers')
         expected_relative_paths = Dir[transformers_root.join('api', 'current', '**', '*.rb')]
-                                    .map { |path| path.remove(transformers_root.to_s).sub('current', CURRENT_VERSION) }
+                                  .map { |path| path.remove(transformers_root.to_s).sub('current', CURRENT_VERSION) }
 
         expected_transformers = expected_relative_paths.map do |relative_path|
-          [relative_path, relative_path.sub('.rb', '').split('/').reject(&:empty?).map { |name| name.camelcase }.join('::')]
+          [relative_path, relative_path.sub('.rb', '').split('/').reject(&:empty?).map(&:camelcase).join('::')]
         end.to_h
 
         expected_transformers.each do |file, transformer_name|
@@ -138,10 +136,10 @@ RSpec.describe ApiVersionGenerator, type: :generator do
       it 'creates template validators for the given current version' do
         validators_root = Rails.root.join('app', 'validators')
         expected_relative_paths = Dir[validators_root.join('api', 'current', '**', '*.rb')]
-                                    .map { |path| path.remove(validators_root.to_s).sub('current', CURRENT_VERSION) }
+                                  .map { |path| path.remove(validators_root.to_s).sub('current', CURRENT_VERSION) }
 
         expected_validators = expected_relative_paths.map do |relative_path|
-          [relative_path, relative_path.sub('.rb', '').split('/').reject(&:empty?).map { |name| name.camelcase }.join('::')]
+          [relative_path, relative_path.sub('.rb', '').split('/').reject(&:empty?).map(&:camelcase).join('::')]
         end.to_h
 
         expected_validators.each do |file, validator_name|

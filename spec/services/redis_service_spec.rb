@@ -29,9 +29,9 @@ RSpec.describe RedisService do
       expected_exception = Redis::CannotConnectError.new
       expect(connection).to receive(:hmset).and_raise(expected_exception)
 
-      expect {
+      expect do
         described_class.new(connection).hmset_with_expiry(key, { user: 'margaret' }, expire_key_in_one_day)
-      }.to raise_error(expected_exception)
+      end.to raise_error(expected_exception)
     end
   end
 
@@ -41,16 +41,16 @@ RSpec.describe RedisService do
 
       result = described_class.new(connection).hgetall(key)
 
-      expect(result).to eq({ user: 'margaret' })
+      expect(result).to eq(user: 'margaret')
     end
 
     it 'should throw an exception if there is a connection error' do
       expected_exception = Redis::CannotConnectError.new
       expect(connection).to receive(:hgetall).and_raise(expected_exception)
 
-      expect {
+      expect do
         described_class.new(connection).hgetall(key)
-      }.to raise_error(expected_exception)
+      end.to raise_error(expected_exception)
     end
   end
 end

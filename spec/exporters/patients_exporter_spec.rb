@@ -1,4 +1,4 @@
-require "rails_helper"
+require 'rails_helper'
 
 RSpec.describe PatientsExporter do
   include QuarterHelper
@@ -10,31 +10,31 @@ RSpec.describe PatientsExporter do
 
   let(:headers) do
     [
-      "Registration Date",
-      "Registration Quarter",
-      "Patient Name",
-      "Patient Age",
-      "Patient Gender",
-      "Patient Phone Number",
-      "Patient Village/Colony",
-      "Patient District",
-      "Patient State",
-      "Registration Facility Name",
-      "Registration Facility Type",
-      "Registration Facility District",
-      "Registration Facility State",
-      "Latest BP Systolic",
-      "Latest BP Diastolic",
-      "Latest BP Date",
-      "Latest BP Quarter",
-      "Latest BP Facility Name",
-      "Latest BP Facility Type",
-      "Latest BP Facility District",
-      "Latest BP Facility State",
-      "Days Overdue",
-      "Risk Level",
-      "BP Passport ID",
-      "Simple Patient ID"
+      'Registration Date',
+      'Registration Quarter',
+      'Patient Name',
+      'Patient Age',
+      'Patient Gender',
+      'Patient Phone Number',
+      'Patient Village/Colony',
+      'Patient District',
+      'Patient State',
+      'Registration Facility Name',
+      'Registration Facility Type',
+      'Registration Facility District',
+      'Registration Facility State',
+      'Latest BP Systolic',
+      'Latest BP Diastolic',
+      'Latest BP Date',
+      'Latest BP Quarter',
+      'Latest BP Facility Name',
+      'Latest BP Facility Type',
+      'Latest BP Facility District',
+      'Latest BP Facility State',
+      'Days Overdue',
+      'Risk Level',
+      'BP Passport ID',
+      'Simple Patient ID'
     ]
   end
 
@@ -68,16 +68,16 @@ RSpec.describe PatientsExporter do
     ]
   end
 
-  describe "#csv" do
-    it "generates a CSV of patient records" do
+  describe '#csv' do
+    it 'generates a CSV of patient records' do
       expect(subject.csv(Patient.all)).to eq(headers.to_csv + fields.to_csv)
     end
 
-    it "generates a blank CSV (only headers) if no patients exist" do
+    it 'generates a blank CSV (only headers) if no patients exist' do
       expect(subject.csv(Patient.none)).to eq(headers.to_csv)
     end
 
-    it "uses fetches patients in batches" do
+    it 'uses fetches patients in batches' do
       expect_any_instance_of(facility.registered_patients.class)
         .to receive(:in_batches).and_return([[patient]])
 
@@ -85,4 +85,3 @@ RSpec.describe PatientsExporter do
     end
   end
 end
-
