@@ -61,13 +61,27 @@ We do not need to move off of these for the time-being, there are replacements f
 |-----------------+----------------------+--------------------------------------------------------------------|
 | Tool            | Purpose              | Potential replacements                                             |
 |-----------------+----------------------+--------------------------------------------------------------------|
+|                 |                      |                                                                    |
+| 1. Monitoring   |                      |                                                                    |
+|                 |                      |                                                                    |
+|-----------------+----------------------+--------------------------------------------------------------------|
 | Sentry          | Error-reporting      | Self-host Sentry (open-source)                                     |
 | NewRelic        | APM                  | N/A                                                                |
+| Mixpanel        | Analytics            | N/A                                                                |
+|-----------------+----------------------+--------------------------------------------------------------------|
+|                 |                      |                                                                    |
+| 2. Features     |                      |                                                                    |
+|                 |                      |                                                                    |
+|-----------------+----------------------+--------------------------------------------------------------------|
 | Exotel          | Phone Masking        | N/A                                                                |
 | Twilio          | SMS                  | N/A                                                                |
 | SendGrid        | Emails               | https://github.com/postalhq/postal, cuttlefish, custom SMTP server |
 | Metabase        | Data Reporting       | Self-hostable                                                      |
-| Mixpanel        | Analytics            | N/A                                                                |
+|-----------------+----------------------+--------------------------------------------------------------------|
+|                 |                      |                                                                    |
+| 3. Development  |                      |                                                                    |
+|                 |                      |                                                                    |
+|-----------------+----------------------+--------------------------------------------------------------------|
 | GitHub          | Source Code          | GitLab can be self-hosted, openforge.gov.in                        |
 | Semaphore       | CI                   | Jenkins can be self-hosted                                         |
 | GitBook         | Docs                 | GitBook can be self-hosted                                         |
