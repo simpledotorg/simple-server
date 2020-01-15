@@ -57,38 +57,43 @@ Suggestions:
 *** 2.1 services we continue to use
 
 We do not need to move off of these for the time-being, there are replacements for some of them if absolutely necessary,
+|-----------------+----------------------+--------------------------------------------------------------------|
+| Tool            | Purpose              | Potential replacements                                             |
+|-----------------+----------------------+--------------------------------------------------------------------|
+|                 |                      |                                                                    |
+| 1. Monitoring   |                      |                                                                    |
+|                 |                      |                                                                    |
+|-----------------+----------------------+--------------------------------------------------------------------|
+| Sentry          | Error-reporting      | Self-host Sentry (open-source)                                     |
+| NewRelic        | APM                  | N/A                                                                |
+|-----------------+----------------------+--------------------------------------------------------------------|
+|                 |                      |                                                                    |
+| 2. Analytics    |                      |                                                                    |
+|                 |                      |                                                                    |
+|-----------------+----------------------+--------------------------------------------------------------------|
+| Mixpanel        | Analytics            | N/A                                                                |
+| Metabase        | Data Reporting       | Self-hostable                                                      |
+|-----------------+----------------------+--------------------------------------------------------------------|
+|                 |                      |                                                                    |
+| 3. Features     |                      |                                                                    |
+|                 |                      |                                                                    |
+|-----------------+----------------------+--------------------------------------------------------------------|
+| Exotel          | Phone Masking        | N/A                                                                |
+| Twilio          | SMS                  | N/A                                                                |
+| SendGrid        | Emails               | https://github.com/postalhq/postal, cuttlefish, custom SMTP server |
+|-----------------+----------------------+--------------------------------------------------------------------|
+|                 |                      |                                                                    |
+| 4. Development  |                      |                                                                    |
+|                 |                      |                                                                    |
+|-----------------+----------------------+--------------------------------------------------------------------|
+| GitHub          | Source Code          | GitLab can be self-hosted, openforge.gov.in                        |
+| Semaphore       | CI                   | Jenkins can be self-hosted                                         |
+| GitBook         | Docs                 | GitBook can be self-hosted                                         |
+| Pivotal Tracker | Ticketing            | GitLab project board                                               |
+| Play Store      | Publish android apps | N/A                                                                |
+| Bitrise         | Android CI           | Jenkins can be self-hosted                                         |
+| Figma           | Design tools         | N/A                                                                |
+| Zeplin          | Design tools         | N/A                                                                |
+|-----------------+----------------------+--------------------------------------------------------------------|
 
-|---------------------------+----------------------+--------------------------------------------------------------------|
-| Tool                      | Purpose              | Potential replacements                                             |
-|---------------------------+----------------------+--------------------------------------------------------------------|
-|                           |                      |                                                                    |
-| 1. Monitoring / Analytics |                      |                                                                    |
-|                           |                      |                                                                    |
-|---------------------------+----------------------+--------------------------------------------------------------------|
-| Sentry                    | Error-reporting      | Self-host Sentry (open-source)                                     |
-| NewRelic                  | APM                  | N/A                                                                |
-| Mixpanel                  | Analytics            | N/A                                                                |
-| Metabase                  | Data Reporting       | Self-hostable                                                      |
-|---------------------------+----------------------+--------------------------------------------------------------------|
-|                           |                      |                                                                    |
-| 2. Features               |                      |                                                                    |
-|                           |                      |                                                                    |
-|---------------------------+----------------------+--------------------------------------------------------------------|
-| Exotel                    | Phone Masking        | N/A                                                                |
-| Twilio                    | SMS                  | N/A                                                                |
-| SendGrid                  | Emails               | https://github.com/postalhq/postal, cuttlefish, custom SMTP server |
-|---------------------------+----------------------+--------------------------------------------------------------------|
-|                           |                      |                                                                    |
-| 3. Development            |                      |                                                                    |
-|                           |                      |                                                                    |
-|---------------------------+----------------------+--------------------------------------------------------------------|
-| GitHub                    | Source Code          | GitLab can be self-hosted, openforge.gov.in                        |
-| Semaphore                 | CI                   | Jenkins can be self-hosted                                         |
-| GitBook                   | Docs                 | GitBook can be self-hosted                                         |
-| Pivotal Tracker           | Ticketing            | GitLab project board                                               |
-| Play Store                | Publish android apps | N/A                                                                |
-| Bitrise                   | Android CI           | Jenkins can be self-hosted                                         |
-| Figma                     | Design tools         | N/A                                                                |
-| Zeplin                    | Design tools         | N/A                                                                |
-|---------------------------+----------------------+--------------------------------------------------------------------|
 
