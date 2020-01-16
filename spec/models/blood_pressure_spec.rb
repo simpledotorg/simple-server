@@ -70,26 +70,10 @@ RSpec.describe BloodPressure, type: :model do
       end
     end
 
-    describe '#very_high?' do
+    describe '#high?' do
       [{ systolic: 140, diastolic: 80 },
        { systolic: 120, diastolic: 110 },
        { systolic: 180, diastolic: 120 }].each do |row|
-        it 'returns true if bp is high' do
-          bp = create(:blood_pressure, systolic: row[:systolic], diastolic: row[:diastolic])
-          expect(bp).to be_very_high
-        end
-      end
-
-      it 'returns false if bp is not very high' do
-        bp = create(:blood_pressure, systolic: 139, diastolic: 109)
-        expect(bp).not_to be_very_high
-      end
-    end
-
-    describe '#high?' do
-      [{ systolic: 140, diastolic: 80 },
-       { systolic: 120, diastolic: 90 },
-       { systolic: 180, diastolic: 110 }].each do |row|
         it 'returns true if bp is high' do
           bp = create(:blood_pressure, systolic: row[:systolic], diastolic: row[:diastolic])
           expect(bp).to be_high
@@ -97,8 +81,24 @@ RSpec.describe BloodPressure, type: :model do
       end
 
       it 'returns false if bp is not high' do
-        bp = create(:blood_pressure, systolic: 139, diastolic: 89)
+        bp = create(:blood_pressure, systolic: 139, diastolic: 109)
         expect(bp).not_to be_high
+      end
+    end
+
+    describe '#hypertensive?' do
+      [{ systolic: 140, diastolic: 80 },
+       { systolic: 120, diastolic: 90 },
+       { systolic: 180, diastolic: 120 }].each do |row|
+        it 'returns true if bp is high' do
+          bp = create(:blood_pressure, systolic: row[:systolic], diastolic: row[:diastolic])
+          expect(bp).to be_hypertensive
+        end
+      end
+
+      it 'returns false if bp is not high' do
+        bp = create(:blood_pressure, systolic: 139, diastolic: 89)
+        expect(bp).not_to be_hypertensive
       end
     end
 

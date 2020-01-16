@@ -23,20 +23,16 @@ class BloodPressure < ApplicationRecord
     systolic >= 180 || diastolic >= 110
   end
 
-  def very_high?
+  def high?
     systolic >= 140 || diastolic >= 110
   end
 
-  def high?
-    hypertensive?
+  def hypertensive?
+    systolic >= 140 || diastolic >= 90
   end
 
   def under_control?
-    systolic < 140 && diastolic < 90
-  end
-
-  def hypertensive?
-    !under_control?
+    !hypertensive?
   end
 
   def recorded_days_ago
