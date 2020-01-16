@@ -35,4 +35,8 @@ class MedicalHistory < ApplicationRecord
       diabetes_boolean ||
       chronic_kidney_disease_boolean
   end
+
+  def indicates_hypertension_risk?
+    prior_heart_attack_boolean || prior_stroke_boolean
+  end
 end
