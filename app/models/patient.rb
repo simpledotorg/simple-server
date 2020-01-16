@@ -102,7 +102,7 @@ class Patient < ApplicationRecord
       RISK_PRIORITIES[:HIGH]
     elsif medical_history&.indicates_risk? && latest_blood_pressure&.high?
       RISK_PRIORITIES[:HIGH]
-    elsif latest_blood_pressure&.high?
+    elsif latest_blood_pressure&.hypertensive?
       RISK_PRIORITIES[:REGULAR]
     elsif low_priority?
       RISK_PRIORITIES[:LOW]

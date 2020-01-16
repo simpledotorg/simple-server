@@ -16,12 +16,12 @@ FactoryBot.define do
       diastolic 111
     end
 
-    trait :very_high do
+    trait :high do
       systolic 160
       diastolic 100
     end
 
-    trait :high do
+    trait :hypertensive do
       systolic 140
       diastolic 90
     end

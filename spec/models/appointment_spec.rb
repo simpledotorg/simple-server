@@ -166,7 +166,7 @@ describe Appointment, type: :model do
 
     describe '#csv_fields' do
       before do
-        create(:blood_pressure, :high, patient: appointment.patient)
+        create(:blood_pressure, :hypertensive, patient: appointment.patient)
       end
 
       it 'returns the correct fields' do

@@ -85,18 +85,16 @@ describe Patient, type: :model do
         expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:HIGH])
       end
 
-      it 'returns high priority for very high bp patients with medical history risks' do
-        create(:blood_pressure, :very_high, patient: patient)
+      it 'returns high priority for high bp patients with medical history risks' do
+        create(:blood_pressure, :high, patient: patient)
         create(:medical_history, :prior_risk_history, patient: patient)
         create(:appointment, :overdue, patient: patient)
-
-        # binding.pry
 
         expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:HIGH])
       end
 
-      it 'returns regular priority for patients overdue with very high bp' do
-        create(:blood_pressure, :very_high, patient: patient)
+      it 'returns regular priority for patients overdue with only high bp' do
+        create(:blood_pressure, :high, patient: patient)
         create(:appointment, :overdue, patient: patient)
 
         expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:REGULAR])
@@ -109,8 +107,8 @@ describe Patient, type: :model do
         expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:NONE])
       end
 
-      it 'returns regular priority for patients overdue with high bp' do
-        create(:blood_pressure, :high, patient: patient)
+      it 'returns regular priority for patients overdue with hypertension' do
+        create(:blood_pressure, :hypertensive, patient: patient)
         create(:appointment, :overdue, patient: patient)
 
         expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:REGULAR])
