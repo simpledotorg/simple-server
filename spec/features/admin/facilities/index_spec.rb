@@ -19,7 +19,7 @@ RSpec.feature 'Facility page functionality', type: :feature do
   facility_group = AdminPage::FacilityGroups::New.new
   navigation = Navigations::DashboardPageNavigation.new
 
-  before(:each) do
+  before() do
     visit root_path
     sign_in(owner.email_authentication)
     visit admin_facilities_path
@@ -75,10 +75,10 @@ RSpec.feature 'Facility page functionality', type: :feature do
     expect(page).to have_content(unassociated_facility02.name)
   end
 
-  it "verify manage section overlay for the given permission" do
-    navigation.select_main_menu_tab("Manage")
+  it "renders only allowed tabs for the given permissions" do
+    navigation.select_main_menu_tab('Manage')
 
-    expect(page).to have_content("Facilities")
+    expect(page).to have_content('Facilities')
 
     headings = ['Admins', 'Protocols', 'Users']
     headings.each do |heading|

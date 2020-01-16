@@ -1,17 +1,17 @@
 require 'rails_helper'
 
 RSpec.feature 'Organization management', type: :feature do
-  let!(:owner) {create(:admin)}
-  let!(:permissions) {create(:user_permission, user: owner, permission_slug: :manage_organizations)}
-  let!(:ihmi) {create(:organization, name: "IHMI")}
-  let!(:path) {create(:organization, name: "PATH")}
+  let!(:owner) { create(:admin) }
+  let!(:permissions) { create(:user_permission, user: owner, permission_slug: :manage_organizations) }
+  let!(:ihmi) { create(:organization, name: "IHMI") }
+  let!(:path) { create(:organization, name: "PATH") }
 
-  login = AdminPage::Sessions::New.new
+  login                = AdminPage::Sessions::New.new
   dashboard_navigation = Navigations::DashboardPageNavigation.new
-  organization_page = AdminPage::Organizations::Index.new
+  organization_page    = AdminPage::Organizations::Index.new
 
   describe "test organization screen" do
-    before(:each) do
+    before() do
       visit root_path
       login.do_login(owner.email, owner.password)
     end
@@ -30,10 +30,10 @@ RSpec.feature 'Organization management', type: :feature do
       organization_page.delete_organization("test")
     end
 
-    it "verify manage section overlay" do
-      dashboard_navigation.select_main_menu_tab("Manage")
+    it "renders only allowed tabs for the given permissions" do
+      dashboard_navigation.select_main_menu_tab('Manage')
 
-      expect(page).to have_content("Organizations")
+      expect(page).to have_content('Organizations')
 
       headings = ['Admins', 'Protocols', 'Users', 'Facilities']
       headings.each do |heading|

@@ -1,17 +1,17 @@
 require 'rails_helper'
 
 RSpec.feature 'To test adherence followup patient functionality', type: :feature do
-  let!(:ihmi) {create(:organization, name: "IHMI")}
-  let!(:ihmi_facility_group) {create(:facility_group, organization: ihmi, name: "Bathinda")}
-  let!(:owner) {create(:admin)}
-  let!(:permissions) {create(:user_permission, user: owner, permission_slug: :view_adherence_follow_up_list)}
+  let!(:ihmi) { create(:organization, name: "IHMI") }
+  let!(:ihmi_facility_group) { create(:facility_group, organization: ihmi, name: "Bathinda") }
+  let!(:owner) { create(:admin) }
+  let!(:permissions) { create(:user_permission, user: owner, permission_slug: :view_adherence_follow_up_list) }
 
-  login = AdminPage::Sessions::New.new
+  login          = AdminPage::Sessions::New.new
   adherence_page = PatientPage::Index.new
-  nav_page = Navigations::DashboardPageNavigation.new
+  nav_page       = Navigations::DashboardPageNavigation.new
 
   context "Page verification" do
-    before(:each) do
+    before() do
       visit root_path
       login.do_login(owner.email, owner.password)
     end
@@ -37,7 +37,7 @@ RSpec.feature 'To test adherence followup patient functionality', type: :feature
 
     it "landing page - adherence follow up patient card detail -without bp" do
       chc_bagta_facility = create(:facility, facility_group: ihmi_facility_group, name: "bagta")
-      var_patient = create(:patient, registration_facility: chc_bagta_facility, device_created_at: 2.day.ago)
+      var_patient        = create(:patient, registration_facility: chc_bagta_facility, device_created_at: 2.day.ago)
       nav_page.select_main_menu_tab("Adherence follow-ups")
 
       within(".card") do
@@ -52,8 +52,8 @@ RSpec.feature 'To test adherence followup patient functionality', type: :feature
 
     it "landing page - adherence follow up patient card detail- with bp" do
       chc_bagta_facility = create(:facility, facility_group: ihmi_facility_group, name: "bagta")
-      var_patient = create(:patient, registration_facility: chc_bagta_facility, device_created_at: 2.day.ago)
-      var_bp = create(:blood_pressure, :critical, facility: chc_bagta_facility, patient: var_patient)
+      var_patient        = create(:patient, registration_facility: chc_bagta_facility, device_created_at: 2.day.ago)
+      var_bp             = create(:blood_pressure, :critical, facility: chc_bagta_facility, patient: var_patient)
       nav_page.select_main_menu_tab("Adherence follow-ups")
 
       within(".card") do
@@ -70,7 +70,7 @@ RSpec.feature 'To test adherence followup patient functionality', type: :feature
       end
     end
 
-    it "landing page -verify navigation bar" do
+    it "renders only allowed tabs for the given permissions" do
       headings = ['Manage', 'Dashboard', 'Overdue Patients']
       headings.each do |heading|
         expect(page).not_to have_content(heading)
@@ -81,9 +81,9 @@ RSpec.feature 'To test adherence followup patient functionality', type: :feature
 
   skip 'JS specs are currently disabled' do
     describe "Javascript based tests", :js => true do
-      let!(:chc_bagta_facility) {create(:facility, facility_group: ihmi_facility_group, name: "bagta")}
-      let!(:path) {create(:facility, facility_group: ihmi_facility_group, name: "test_facility")}
-      let!(:chc_buccho_facility) {create(:facility, facility_group: ihmi_facility_group, name: "buccho")}
+      let!(:chc_bagta_facility) { create(:facility, facility_group: ihmi_facility_group, name: "bagta") }
+      let!(:path) { create(:facility, facility_group: ihmi_facility_group, name: "test_facility") }
+      let!(:chc_buccho_facility) { create(:facility, facility_group: ihmi_facility_group, name: "buccho") }
 
       before(:each) do
         visit root_path

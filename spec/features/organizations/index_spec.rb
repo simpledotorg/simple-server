@@ -65,7 +65,7 @@ RSpec.feature 'Verify Dashboard', type: :feature do
     expect(page).to have_content(user.phone_number)
   end
 
-  it "verify manage section overlay for given permission" do
+  it "renders only allowed tabs for the given permissions" do
     visit root_path
     login_page.do_login(owner.email, owner.password)
     expect(page).to have_content("Dashboard")

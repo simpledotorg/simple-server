@@ -15,7 +15,7 @@ RSpec.feature 'To test overdue appointment functionality', type: :feature do
   nav_page = Navigations::DashboardPageNavigation.new
 
   context "Page verification" do
-    before(:each) do
+    before() do
       visit root_path
       login.do_login(owner.email, owner.password)
     end
@@ -101,7 +101,7 @@ RSpec.feature 'To test overdue appointment functionality', type: :feature do
       end
     end
 
-    it "landing page -verify navigation bar"do
+    it "renders only allowed tabs for the given permissions"do
       headings = ['Manage','Dashboard', 'Adherence follow-ups']
       headings.each do |heading|
         expect(page).not_to have_content(heading)
