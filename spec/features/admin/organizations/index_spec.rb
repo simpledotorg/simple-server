@@ -11,7 +11,7 @@ RSpec.feature 'Organization management', type: :feature do
   organization_page    = AdminPage::Organizations::Index.new
 
   describe "test organization screen" do
-    before() do
+    before do
       visit root_path
       login.do_login(owner.email, owner.password)
     end

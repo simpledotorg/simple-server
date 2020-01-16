@@ -11,7 +11,7 @@ RSpec.feature 'To test adherence followup patient functionality', type: :feature
   nav_page       = Navigations::DashboardPageNavigation.new
 
   context "Page verification" do
-    before() do
+    before do
       visit root_path
       login.do_login(owner.email, owner.password)
     end

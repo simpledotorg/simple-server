@@ -10,7 +10,7 @@ RSpec.feature 'test protocol screen functionality', type: :feature do
   protocol_show = AdminPage::Protocols::Show.new
   navigation    = Navigations::DashboardPageNavigation.new
 
-  before() do
+  before do
     visit root_path
     sign_in(owner.email_authentication)
     visit admin_protocols_path

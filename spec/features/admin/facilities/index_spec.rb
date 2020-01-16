@@ -19,7 +19,7 @@ RSpec.feature 'Facility page functionality', type: :feature do
   facility_group = AdminPage::FacilityGroups::New.new
   navigation = Navigations::DashboardPageNavigation.new
 
-  before() do
+  before do
     visit root_path
     sign_in(owner.email_authentication)
     visit admin_facilities_path
