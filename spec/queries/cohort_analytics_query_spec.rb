@@ -74,7 +74,7 @@ RSpec.describe CohortAnalyticsQuery do
       travel_to(april) do
         # 2 patients under control, 3 not controlled
         jan_registered_patients[0..1].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility) }
-        jan_registered_patients[2..4].each { |patient| create(:blood_pressure, :high, patient: patient, facility: facility) }
+        jan_registered_patients[2..4].each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility) }
       end
 
       expected_result = {
@@ -98,7 +98,7 @@ RSpec.describe CohortAnalyticsQuery do
       travel_to(march) do
         # 3 patients under control, 5 not controlled
         jan_registered_patients[0..2].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility) }
-        jan_registered_patients[3..7].each { |patient| create(:blood_pressure, :high, patient: patient, facility: facility) }
+        jan_registered_patients[3..7].each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility) }
       end
 
       expected_result = {

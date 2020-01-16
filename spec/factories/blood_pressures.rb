@@ -16,11 +16,6 @@ FactoryBot.define do
       diastolic 111
     end
 
-    trait :high do
-      systolic 160
-      diastolic 100
-    end
-
     trait :hypertensive do
       systolic 140
       diastolic 90

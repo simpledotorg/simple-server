@@ -8,7 +8,6 @@ class BloodPressure < ApplicationRecord
 
   THRESHOLDS = {
     critical:     { systolic: 180, diastolic: 110 },
-    high:         { systolic: 140, diastolic: 110 },
     hypertensive: { systolic: 140, diastolic: 90 }
   }.freeze
 
@@ -35,10 +34,6 @@ class BloodPressure < ApplicationRecord
 
   def critical?
     systolic >= THRESHOLDS[:critical][:systolic] || diastolic >= THRESHOLDS[:critical][:diastolic]
-  end
-
-  def high?
-    systolic >= THRESHOLDS[:high][:systolic] || diastolic >= THRESHOLDS[:high][:diastolic]
   end
 
   def hypertensive?
