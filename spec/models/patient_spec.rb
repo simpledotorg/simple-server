@@ -72,41 +72,51 @@ describe Patient, type: :model do
     let(:patient) { create(:patient) }
 
     describe '#risk_priority' do
-      it 'should return no priority for patients recently overdue' do
+      it 'returns no priority for patients recently overdue' do
         create(:appointment, scheduled_date: 29.days.ago, status: :scheduled, patient: patient)
 
         expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:NONE])
       end
 
-      it 'should return highest priority for patients overdue with critical bp' do
+      it 'returns high priority for patients overdue with critical bp' do
         create(:blood_pressure, :critical, patient: patient)
         create(:appointment, scheduled_date: 31.days.ago, status: :scheduled, patient: patient)
-
-        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:HIGHEST])
-      end
-
-      it 'should return very high priority for patients overdue with medical risk history' do
-        create(:medical_history, :prior_risk_history, patient: patient)
-        create(:appointment, :overdue, patient: patient)
-
-        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:VERY_HIGH])
-      end
-
-      it 'should return high priority for patients overdue with very high bp' do
-        create(:blood_pressure, :very_high, patient: patient)
-        create(:appointment, :overdue, patient: patient)
 
         expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:HIGH])
       end
 
-      it 'should return regular priority for patients overdue with high bp' do
+      it 'returns high priority for very high bp patients with medical history risks' do
+        create(:blood_pressure, :very_high, patient: patient)
+        create(:medical_history, :prior_risk_history, patient: patient)
+        create(:appointment, :overdue, patient: patient)
+
+        # binding.pry
+
+        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:HIGH])
+      end
+
+      it 'returns regular priority for patients overdue with very high bp' do
+        create(:blood_pressure, :very_high, patient: patient)
+        create(:appointment, :overdue, patient: patient)
+
+        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:REGULAR])
+      end
+
+      it 'returns no priority for patients overdue with only medical risk history' do
+        create(:medical_history, :prior_risk_history, patient: patient)
+        create(:appointment, :overdue, patient: patient)
+
+        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:NONE])
+      end
+
+      it 'returns regular priority for patients overdue with high bp' do
         create(:blood_pressure, :high, patient: patient)
         create(:appointment, :overdue, patient: patient)
 
         expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:REGULAR])
       end
 
-      it 'should return low priority for patients overdue with low risk' do
+      it 'returns low priority for patients overdue with low risk' do
         create(:blood_pressure, :under_control, patient: patient)
         create(:appointment, scheduled_date: 2.years.ago, status: :scheduled, patient: patient)
 
@@ -115,9 +125,24 @@ describe Patient, type: :model do
     end
 
     describe '#risk_priority_label' do
-      it 'returns critical for HIGHEST risk' do
-        allow(patient).to receive(:risk_priority).and_return(Patient::RISK_PRIORITIES[:HIGHEST])
-        expect(patient.risk_priority_label).to eq('Critical')
+      it 'returns "High" for HIGH risk' do
+        allow(patient).to receive(:risk_priority).and_return(Patient::RISK_PRIORITIES[:HIGH])
+        expect(patient.risk_priority_label).to eq('High')
+      end
+
+      it 'returns nothing for REGULAR risk' do
+        allow(patient).to receive(:risk_priority).and_return(Patient::RISK_PRIORITIES[:REGULAR])
+        expect(patient.risk_priority_label).to be_nil
+      end
+
+      it 'returns nothing for LOW risk' do
+        allow(patient).to receive(:risk_priority).and_return(Patient::RISK_PRIORITIES[:LOW])
+        expect(patient.risk_priority_label).to be_nil
+      end
+
+      it 'returns nothing for NONE risk' do
+        allow(patient).to receive(:risk_priority).and_return(Patient::RISK_PRIORITIES[:NONE])
+        expect(patient.risk_priority_label).to be_nil
       end
     end
 
