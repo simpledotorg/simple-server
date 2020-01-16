@@ -1,21 +1,22 @@
-require "rails_helper"
+require 'rails_helper'
 
-RSpec.feature "User admin", type: :feature do
+RSpec.feature 'User admin', type: :feature do
   let!(:owner) { create(:admin) }
-  let!(:permissions) { [
-    create(:user_permission, user: owner, permission_slug: :approve_health_workers),
-    create(:user_permission, user: owner, permission_slug: :view_health_worker_activity)
-
-  ] }
+  let!(:permissions) do
+    [
+      create(:user_permission, user: owner, permission_slug: :approve_health_workers),
+      create(:user_permission, user: owner, permission_slug: :view_health_worker_activity)
+    ]
+  end
   let!(:user) { create(:user) }
-  let!(:bp_1) { create(:blood_pressure, user: user, systolic: 145, diastolic: 95, recorded_at: Time.zone.parse("2019-03-15 8:00am +05:30")) }
-  let!(:bp_2) { create(:blood_pressure, user: user, systolic: 115, diastolic: 75, recorded_at: Time.zone.parse("2019-03-15 2:15pm +05:30")) }
+  let!(:bp_1) { create(:blood_pressure, user: user, systolic: 145, diastolic: 95, recorded_at: Time.zone.parse('2019-03-15 8:00am +05:30')) }
+  let!(:bp_2) { create(:blood_pressure, user: user, systolic: 115, diastolic: 75, recorded_at: Time.zone.parse('2019-03-15 2:15pm +05:30')) }
 
   before do
     sign_in(owner.email_authentication)
   end
 
-  describe "show a user" do
+  describe 'show a user' do
     before do
       visit admin_user_path(user)
     end
@@ -26,7 +27,7 @@ RSpec.feature "User admin", type: :feature do
       expect(page).to have_content(user.registration_facility.name)
     end
 
-    context "recent BP log" do
+    context 'recent BP log' do
       it "displays the user's recent BPs", :aggregate_failures do
         within("#recent-bps") do
           expect(page).to have_selector("th", text: /facility/i)
@@ -35,11 +36,11 @@ RSpec.feature "User admin", type: :feature do
         end
       end
 
-      it "only displays one date per day, but multiple times", :aggregate_failures do
-        within("#recent-bps") do
-          expect(page).to have_content("15-MAR-2019", count: 1)
-          expect(page).to have_content("8:00 AM")
-          expect(page).to have_content("2:15 PM")
+      it 'only displays one date per day, but multiple times', :aggregate_failures do
+        within('#recent-bps') do
+          expect(page).to have_content('15-MAR-2019', count: 1)
+          expect(page).to have_content('8:00 AM')
+          expect(page).to have_content('2:15 PM')
         end
       end
     end

@@ -11,7 +11,6 @@ RSpec.describe ExportAuditLogsWorker, type: :job do
   end
 
   let(:gzip_size) do
-
   end
 
   let(:file_path) { "#{Rails.root}/log/audit.log-#{date.tr('-', '')}" }
@@ -19,9 +18,9 @@ RSpec.describe ExportAuditLogsWorker, type: :job do
 
   describe '#perform_async' do
     it 'queues the job on the audit_log_data_queue' do
-      expect {
+      expect do
         ExportAuditLogsWorker.perform_async(date)
-      }.to change(Sidekiq::Queues['audit_log_data_queue'], :size).by(1)
+      end.to change(Sidekiq::Queues['audit_log_data_queue'], :size).by(1)
       ExportAuditLogsWorker.clear
     end
   end
@@ -35,7 +34,6 @@ RSpec.describe ExportAuditLogsWorker, type: :job do
     it 'exports the audit logs to a file' do
       ExportAuditLogsWorker.perform_async(date)
       ExportAuditLogsWorker.drain
-
 
       expect(File).to exist(gzipped_file_path)
     end

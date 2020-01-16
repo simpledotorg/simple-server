@@ -18,9 +18,7 @@ RSpec.shared_examples 'sync requests' do
   let(:expected_response) do
     valid_payload[response_key.to_sym].map do |payload|
       response = payload
-      if defined? keys_not_expected_in_response.present?
-        response = payload.except(*keys_not_expected_in_response)
-      end
+      response = payload.except(*keys_not_expected_in_response) if defined? keys_not_expected_in_response.present?
       response.with_int_timestamps.to_json_and_back
     end
   end
@@ -32,7 +30,6 @@ RSpec.shared_examples 'sync requests' do
   end
   let(:updated_payload) { Hash[response_key.to_sym, updated_records] }
 
-
   def assert_sync_success(response, processed_since)
     received_records = JSON(response.body)[response_key]
 
@@ -42,8 +39,8 @@ RSpec.shared_examples 'sync requests' do
 
     expect(received_records.to_set)
       .to include model.updated_on_server_since(processed_since.to_time)
-                    .map { |record| to_response(record) }
-                    .to_set
+                       .map { |record| to_response(record) }
+                       .to_set
   end
 
   it 'pushes nothing, pulls nothing' do

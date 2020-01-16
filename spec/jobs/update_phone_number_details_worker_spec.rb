@@ -11,48 +11,52 @@ RSpec.describe UpdatePhoneNumberDetailsWorker, type: :job do
   let(:whitelist_details_url) { URI.parse("https://api.exotel.com/v1/Accounts/#{account_sid}/CustomerWhitelist/#{URI.encode(phone_number)}.json") }
   let(:numbers_metadata_url) { URI.parse("https://api.exotel.com/v1/Accounts/#{account_sid}/Numbers/#{URI.encode(phone_number)}.json") }
 
-  let(:request_headers) {
+  let(:request_headers) do
     {
       'Authorization' => "Basic #{auth_token}",
       'Connection' => 'close',
       'Host' => 'api.exotel.com',
       'User-Agent' => 'http.rb/4.1.1'
     }
-  }
+  end
 
   let!(:whitelist_details_stub) do
     stub_request(:get, whitelist_details_url).with(headers: request_headers)
-      .to_return(
-        status: 200,
-        headers: {},
-        body: JSON(
-          { "Result" =>
-              { "Status" => "Whitelist",
-                "Type" => "API",
-                "Expiry" => 3600 } }))
+                                             .to_return(
+                                               status: 200,
+                                               headers: {},
+                                               body: JSON(
+                                                 'Result' =>
+                                                    { 'Status' => 'Whitelist',
+                                                      'Type' => 'API',
+                                                      'Expiry' => 3600 }
+                                               )
+                                             )
   end
 
   let!(:numbers_metadata_stub) do
     stub_request(:get, numbers_metadata_url).with(headers: request_headers)
-      .to_return(
-        status: 200,
-        headers: {},
-        body: JSON(
-          { "Numbers" =>
-              { "PhoneNumber" => phone_number,
-                "Circle" => "KA",
-                "CircleName" => "Karnataka",
-                "Type" => "Mobile",
-                "Operator" => "V",
-                "OperatorName" => "Vodafone",
-                "DND" => "Yes" } }))
+                                            .to_return(
+                                              status: 200,
+                                              headers: {},
+                                              body: JSON(
+                                                'Numbers' =>
+                                                   { 'PhoneNumber' => phone_number,
+                                                     'Circle' => 'KA',
+                                                     'CircleName' => 'Karnataka',
+                                                     'Type' => 'Mobile',
+                                                     'Operator' => 'V',
+                                                     'OperatorName' => 'Vodafone',
+                                                     'DND' => 'Yes' }
+                                              )
+                                            )
   end
 
   describe '#perform_async' do
     it 'queues the job on the phone_number_details_queue queue' do
-      expect {
+      expect do
         UpdatePhoneNumberDetailsWorker.perform_async(patient_phone_number.id, account_sid, token)
-      }.to change(Sidekiq::Queues['phone_number_details_queue'], :size).by(1)
+      end.to change(Sidekiq::Queues['phone_number_details_queue'], :size).by(1)
       UpdatePhoneNumberDetailsWorker.clear
     end
   end

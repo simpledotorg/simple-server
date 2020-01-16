@@ -125,9 +125,8 @@ def register_user_request_params(arguments = {})
   { id: SecureRandom.uuid,
     full_name: Faker::Name.name,
     phone_number: Faker::PhoneNumber.phone_number,
-    password_digest: BCrypt::Password.create("1234"),
+    password_digest: BCrypt::Password.create('1234'),
     registration_facility_id: SecureRandom.uuid,
     created_at: Time.current.iso8601,
-    updated_at: Time.current.iso8601
-  }.merge(arguments)
+    updated_at: Time.current.iso8601 }.merge(arguments)
 end

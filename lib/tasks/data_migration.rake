@@ -93,7 +93,7 @@ namespace :data_migration do
 
   desc 'Backfill creation_facility for all existing Appointments'
   task backfill_creation_facility_in_appointments: :environment do
-    Appointment.in_batches.update_all('creation_facility_id = facility_id')
+    Appointment.where(creation_facility_id: nil).in_batches.update_all('creation_facility_id = facility_id')
   end
 
   desc 'Make all occurrences of the SMS Reminder Bot User nil'

@@ -33,7 +33,7 @@ module MyFacilitiesQuery
     patients.where('recorded_at > ? AND recorded_at <= ?', cohort_start, cohort_end)
   end
 
-  def self.cohort_controlled_bps(facilities: Facility.all, period: :quarter, )
+  def self.cohort_controlled_bps(facilities = Facility.all)
     cohort_registrations = cohort_registrations(facilities)
     LatestBloodPressuresPerPatientPerMonth
       .from(latest_bps_per_patient_per_quarter(facilities),

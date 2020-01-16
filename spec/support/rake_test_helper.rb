@@ -4,7 +4,7 @@ module RakeTestHelper
   end
 
   def task_path
-    "lib/tasks/#{task_name.split(":").first}"
+    "lib/tasks/#{task_name.split(':').first}"
   end
 
   def invoke_task(name)
@@ -17,6 +17,6 @@ module RakeTestHelper
   end
 
   def loaded_files_excluding_current_rake_file
-    $".reject { |file| file == Rails.root.join("#{task_path}.rake").to_s }
+    $LOADED_FEATURES.reject { |file| file == Rails.root.join("#{task_path}.rake").to_s }
   end
 end

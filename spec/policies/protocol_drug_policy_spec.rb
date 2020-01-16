@@ -1,4 +1,4 @@
-require "rails_helper"
+require 'rails_helper'
 
 RSpec.describe Manage::ProtocolDrugPolicy do
   subject { described_class }
@@ -49,7 +49,6 @@ RSpec.describe Manage::ProtocolDrugPolicy::Scope do
   let(:protocol_2) { create(:protocol) }
   let!(:protocol_drugs_1) { create_list(:protocol_drug, 5, protocol: protocol_1) }
   let!(:protocol_drugs_2) { create_list(:protocol_drug, 5, protocol: protocol_2) }
-
 
   context 'user can manage all protocols' do
     let(:user_with_permission) do

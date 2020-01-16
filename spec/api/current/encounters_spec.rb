@@ -2,7 +2,6 @@ require 'swagger_helper'
 
 describe 'Encounters Current API', swagger_doc: 'current/swagger.json' do
   path '/encounters/sync' do
-
     post 'Syncs encounters data from device to server.' do
       tags 'Encounters'
       security [basic: []]
