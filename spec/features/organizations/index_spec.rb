@@ -68,12 +68,12 @@ RSpec.feature 'Verify Dashboard', type: :feature do
   it "renders only allowed tabs for the given permissions" do
     visit root_path
     login_page.do_login(owner.email, owner.password)
-    expect(page).to have_content("Dashboard")
+    expect(page).to have_content('Dashboard')
 
-    dashboard_navigation.select_main_menu_tab("Manage")
+    dashboard_navigation.select_main_menu_tab('Manage')
 
-    expect(page).to have_content("Users")
-    expect(page).to have_content("Organizations")
+    expect(page).to have_content('Users')
+    expect(page).to have_content('Organizations')
 
     headings = ['Admins','Protocols', 'Facilities']
     headings.each do |heading|
