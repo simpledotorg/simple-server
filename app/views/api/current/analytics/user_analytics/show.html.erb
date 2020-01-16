@@ -15,28 +15,216 @@
 <% if @statistics.blank? %>
   <%= render 'empty_reports' %>
 <% else %>
+    
+  <div class="updated-date">Last updated <span><%= l(Time.current) %></span></div>
+    
   <div class="card">
-    <%= inline_svg('icon_new_bp.svg', classname: 'icon-float') %>
-    <h3><%= t('analytics.followup_patients', facility_name: @current_facility.name) %></h3>
-    <%= render 'graph',
-               id: 'return-patients',
-               statistics: @statistics[:follow_up_patients_per_month],
-               first_of_current_month: @statistics[:first_of_current_month],
-               max_value: @statistics[:follow_up_patients_per_month].values.max,
-               max_height: 120 %>
+    <div class="next-prev">
+      <a href="#"><span style="display: block; float: left; padding: 0 16px;"><%= inline_svg('icon_arrow_back.svg') %></span></a>
+      <a href="#"><span style="display: block; float: right; padding: 0 10px 0 16px; border-left:  1px solid #F0F2F5;"><%= inline_svg('icon_arrow_forward.svg') %></span></a>
+    </div>
+    <h3>16-Jan-2020</h3>
+    <div class="counts">
+      <div class="count" style="background: #EEF7FF; color: #77A6D2;">
+        <div class="big-number">34</div>
+        Patients<br>registered
+      </div>
+      <div class="count" style="background: #E4FFEF; color: #00A541;">
+        <div class="big-number">43</div>
+        Follow-up<br>patients
+      </div>
+      <div class="count" style="background: #E4FFEF; color: #00A541;">
+        <div class="big-number">3</div>
+        Follow-up with<br>controlled BP
+      </div>
+    </div>
+    <div class="count-empty" id="count-empty" style="display: none;">
+      <%= inline_svg('icon_sync_cloud.svg') %>
+      <p><strong>Sync needed</strong><br>Tap "Sync pending" on the home screen, for current data.</p>
+    </div>
   </div>
 
   <div class="card">
-    <%= inline_svg('icon_enroll.svg', classname: 'icon-float') %>
-    <h3><%= t('analytics.patients_enrolled', facility_name: @current_facility.name) %></h3>
-    <h5><%= t('analytics.all_time_patients', count: @statistics[:total_patients_count]) %></h5>
-    <div class="bar-chart">
-      <%= render 'graph',
-                 id: '',
-                 statistics: @statistics[:patients_enrolled_per_month],
-                 first_of_current_month: @statistics[:first_of_current_month],
-                 max_value: @statistics[:patients_enrolled_per_month].values.max,
-                 max_height: 120 %>
+    <h3>Registered patients</h3>
+    
+    <form>
+        <select class="card-dropdown">
+            <option>All registered patients</option>
+            <optgroup label="Hypertension">
+                <option>All hypertension patients</option>
+                <option>Female hypertension patients</option>
+                <option>Male hypertension patients</option>
+                <option>Transgender hypertension patients</option>
+            </optgroup>
+            <optgroup label="Diabetes">
+                <option>All diabetes patients</option>
+                <option>Female diabetes patients</option>
+                <option>Male diabetes patients</option>
+                <option>Transgender diabetes patients</option>
+            </optgroup>
+        </select>
+    </form>
+    
+    <table class="progress-table">
+      <tr class="total">
+        <td class="row-label">All-time</td>
+        <td>2410</td>
+      </tr>
+      <tr>
+        <td class="row-label no-padding">January</td>
+        <td>14</td>
+      </tr>
+      <tr>
+        <td class="row-label no-padding">December</td>
+        <td>109</td>
+      </tr>
+      <tr>
+        <td class="row-label no-padding">November</td>
+        <td>104</td>
+      </tr>
+      <tr>
+        <td class="row-label no-padding">October</td>
+        <td>98</td>
+      </tr>
+      <tr>
+        <td class="row-label no-padding">September</td>
+        <td>87</td>
+      </tr>
+      <tr>
+        <td class="row-label no-padding">August</td>
+        <td>90</td>
+      </tr>
+    </table>
+  </div>
+    
+  <div class="card">
+    <h3>Follow-up patients</h3>
+    
+    <form>
+        <select class="card-dropdown">
+            <option>All follow-up patients</option>
+            <optgroup label="Hypertension">
+                <option>All hypertension patients</option>
+                <option>Female</option>
+                <option>Male</option>
+                <option>Transgender</option>
+            </optgroup>
+            <optgroup label="Diabetes">
+                <option>All diabetes patients</option>
+                <option>Female</option>
+                <option>Male</option>
+                <option>Transgender</option>
+            </optgroup>
+        </select>
+    </form>
+    
+    <table class="progress-table">
+      <tr class="total">
+        <td class="row-label" style="background: #E4FFEF; color: #00A541; border-color: #00A541;">All-time</td>
+        <td style="background: #E4FFEF; color: #00A541; border-color: #00A541;">2410</td>
+      </tr>
+      <tr>
+        <td class="row-label no-padding">January</td>
+        <td>14</td>
+      </tr>
+      <tr>
+        <td class="row-label no-padding">December</td>
+        <td>109</td>
+      </tr>
+      <tr>
+        <td class="row-label no-padding">November</td>
+        <td>104</td>
+      </tr>
+      <tr>
+        <td class="row-label no-padding">October</td>
+        <td>98</td>
+      </tr>
+      <tr>
+        <td class="row-label no-padding">September</td>
+        <td>87</td>
+      </tr>
+      <tr>
+        <td class="row-label no-padding">August</td>
+        <td>90</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="trophies">
+    <h4>Achievements</h4>
+    <!--
+    10
+    25
+    50
+    100
+    250
+    500
+    1000
+    2000
+    3000
+    4000
+    5000
+    10000
+    20000
+    30000
+    30000
+    40000
+    50000
+    etc...
+    -->
+    <div class="trophy trophy-10">
+      <%= inline_svg('ribbon.svg') %>
+      <em></em>
+      <span>10</span>
+      10 follow-up<br>hypertension patients
+    </div>
+    <div class="trophy trophy-25">
+      <%= inline_svg('ribbon.svg') %>
+      <em></em>
+      <span>25</span>
+      25 follow-up<br>hypertension patients
+    </div>
+    <div class="trophy trophy-50">
+      <%= inline_svg('ribbon.svg') %>
+      <em></em>
+      <span>50</span>
+      50 follow-up<br>hypertension patients
+    </div>
+    <div class="trophy trophy-100">
+      <%= inline_svg('ribbon.svg') %>
+      <em></em>
+      <span>100</span>
+      100 follow-up<br>hypertension patients
+    </div>
+    <div class="trophy trophy-250">
+      <%= inline_svg('ribbon.svg') %>
+      <em></em>
+      <span>250</span>
+      250 follow-up<br>hypertension patients
+    </div>
+    <div class="trophy trophy-500">
+      <%= inline_svg('ribbon.svg') %>
+      <em></em>
+      <span>500</span>
+      500 follow-up<br>hypertension patients
+    </div>
+    <div class="trophy trophy-1000">
+      <%= inline_svg('ribbon.svg') %>
+      <em></em>
+      <span>1k</span>
+      1000 follow-up<br>hypertension patients
+    </div>
+    <div class="trophy trophy-2000">
+      <%= inline_svg('ribbon.svg') %>
+      <em></em>
+      <span>2k</span>
+      2000 follow-up<br>hypertension patients
+    </div>
+    <div class="trophy trophy-3000 trophy-upcoming">
+      <%= inline_svg('ribbon.svg') %>
+      <em></em>
+      <span><%= inline_svg('icon_lock.svg') %></span>
+      3000 follow-up<br>hypertension patients
     </div>
   </div>
 
