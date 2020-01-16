@@ -152,6 +152,17 @@ describe Patient, type: :model do
         expect(patient.reload.latest_phone_number).to eq(number_3.number)
       end
     end
+
+    describe "#latest_mobile_number" do
+      it 'returns the last mobile number for the patient' do
+        patient = create(:patient)
+        number_1 = create(:patient_phone_number, patient: patient)
+        _number_2 = create(:patient_phone_number, phone_type: :landline, patient: patient)
+        _number_3 = create(:patient_phone_number, phone_type: :invalid, patient: patient)
+
+        expect(patient.reload.latest_mobile_number).to eq(number_1.number)
+      end
+    end
   end
 
   context 'Virtual params' do
@@ -194,6 +205,45 @@ describe Patient, type: :model do
         expect(patient.anonymized_data).to eq anonymised_data
       end
     end
+  end
+
+  context '.discard_data' do
+    before do
+      create_list(:prescription_drug, 2, patient: patient)
+      create(:medical_history, patient: patient)
+      create_list(:appointment, 2, patient: patient)
+      bps = create_list(:blood_pressure, 2, patient: patient)
+      sugars = create_list(:blood_sugar, 2, patient: patient)
+      (bps + sugars).each do |record|
+        create(:encounter,
+               :with_observables,
+               patient: patient,
+               observable: record,
+               facility: patient.registration_facility)
+      end
+    end
+
+    it "should discard a patient's address" do
+      patient.discard_data
+      expect(patient.address).to be_discarded
+      expect(Address.find_by(id: patient.address.id)).to be nil
+    end
+
+    it "should discard a patient's medical history" do
+      patient.discard_data
+      expect(patient.medical_history).to be_discarded
+      expect(MedicalHistory.find_by(id: patient.medical_history.id)).to be nil
+    end
+
+    specify { expect { patient.discard_data }.to change { patient.appointments.count }.by(-2) }
+    specify { expect { patient.discard_data }.to change { patient.blood_pressures.count }.by(-2) }
+    specify { expect { patient.discard_data }.to change { patient.blood_sugars.count }.by(-2) }
+    specify { expect { patient.discard_data }.to change { patient.business_identifiers.count }.by(-1) }
+    specify { expect { patient.discard_data }.to change { patient.encounters.count }.by(-4) }
+    specify { expect { patient.discard_data }.to change { patient.phone_numbers.count }.by(-1) }
+    specify { expect { patient.discard_data }.to change { patient.observations.count }.by(-4) }
+    specify { expect { patient.discard_data }.to change { patient.prescription_drugs.count }.by(-2) }
+    specify { expect { patient.discard_data }.to change { Patient.count }.by(-1) }
   end
 end
 
