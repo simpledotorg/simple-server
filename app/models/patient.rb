@@ -11,12 +11,10 @@ class Patient < ApplicationRecord
   GENDERS = %w[male female transgender].freeze
   STATUSES = %w[active dead migrated unresponsive inactive].freeze
   RISK_PRIORITIES = {
-    HIGHEST: 0,
-    VERY_HIGH: 1,
-    HIGH: 2,
-    REGULAR: 3,
-    LOW: 4,
-    NONE: 5
+    HIGH: 0,
+    REGULAR: 1,
+    LOW: 2,
+    NONE: 3
   }.freeze
 
   ANONYMIZED_DATA_FIELDS = %w[id created_at registration_date registration_facility_name user_id age gender]
