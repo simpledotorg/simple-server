@@ -99,10 +99,8 @@ class Patient < ApplicationRecord
     return RISK_PRIORITIES[:NONE] if latest_scheduled_appointment&.overdue_for_under_a_month?
 
     if latest_blood_pressure&.critical?
-      RISK_PRIORITIES[:HIGHEST]
-    elsif medical_history&.indicates_risk?
-      RISK_PRIORITIES[:VERY_HIGH]
-    elsif latest_blood_pressure&.very_high?
+      RISK_PRIORITIES[:HIGH]
+    elsif medical_history&.indicates_risk? && latest_blood_pressure&.very_high?
       RISK_PRIORITIES[:HIGH]
     elsif latest_blood_pressure&.high?
       RISK_PRIORITIES[:REGULAR]
@@ -115,10 +113,6 @@ class Patient < ApplicationRecord
 
   def risk_priority_label
     case risk_priority
-    when RISK_PRIORITIES[:HIGHEST] then
-      "Critical"
-    when RISK_PRIORITIES[:VERY_HIGH] then
-      "Very high"
     when RISK_PRIORITIES[:HIGH] then
       "High"
     else
@@ -127,9 +121,7 @@ class Patient < ApplicationRecord
   end
 
   def high_risk?
-    [RISK_PRIORITIES[:HIGHEST],
-     RISK_PRIORITIES[:VERY_HIGH],
-     RISK_PRIORITIES[:HIGH]].include?(risk_priority)
+    risk_priority == RISK_PRIORITIES[:HIGH]
   end
 
   def current_age
