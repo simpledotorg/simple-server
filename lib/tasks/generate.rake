@@ -172,7 +172,7 @@ namespace :generate do
       time1 = time_entropy(creation_date)
       create_blood_pressure(:under_control, time1, patient)
 
-      [:hypertensive, :critical].each do |bp_type|
+      %i[hypertensive critical].each do |bp_type|
         time2 = time_entropy(creation_date)
         create_blood_pressure(bp_type, time2, patient) if is_hypertensive
       end
