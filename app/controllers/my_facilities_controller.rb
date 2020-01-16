@@ -26,7 +26,7 @@ class MyFacilitiesController < AdminController
   def ranked_facilities; end
 
   def blood_pressure_control
-    @facilities = policy_scope([:manage, :facility, Facility])
+    @facilities = facilities_by_size([:manage, :facility])
 
     registered_patients = MyFacilitiesQuery.cohort_registrations(@facilities)
     controlled_bps = MyFacilitiesQuery.cohort_controlled_bps(@facilities)
