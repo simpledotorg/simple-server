@@ -9,7 +9,7 @@ module Mergeable
   class_methods do
     def compute_merge_status(attributes)
       new_record = new(attributes)
-      existing_record = find_by(id: attributes['id'])
+      existing_record = with_discarded.find_by(id: attributes['id'])
 
       if new_record.invalid?
         :invalid
