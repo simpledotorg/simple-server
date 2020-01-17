@@ -1,11 +1,18 @@
 # frozen_string_literal: true
 include QuarterHelper
 
-module MyFacilitiesQuery
+class MyFacilitiesQuery
   INACTIVITY_THRESHOLD_PERIOD = 1.week.ago
   INACTIVITY_THRESHOLD_BPS = 10
 
-  def self.inactive_facilities(facilities = Facility.all)
+  def initialize(period: :quarter, quarter: quarter(Time.current), month: Time.current.month, year: Time.current.year)
+    @period = period
+    @month = month
+    @quarter = quarter
+    @year = year
+  end
+
+  def inactive_facilities(facilities = Facility.all)
     facility_ids = facilities.left_outer_joins(:blood_pressures)
                              .where('blood_pressures.recorded_at IS NULL OR blood_pressures.recorded_at > ?',
                                     INACTIVITY_THRESHOLD_PERIOD)
@@ -17,39 +24,59 @@ module MyFacilitiesQuery
     facilities.where(id: facility_ids)
   end
 
-  def self.latest_bps_per_patient_per_quarter(facilities = Facility.all)
-    LatestBloodPressuresPerPatientPerMonth
-      .select("distinct on (patient_id, year, quarter) " \
-        "id, patient_id, facility_id, recorded_at, deleted_at, systolic, diastolic, quarter, year")
-      .order("patient_id, year, quarter, recorded_at DESC, id")
-      .where(facility_id: facilities)
+  def cohort_registrations(facilities = Facility.all)
+    quarterly_registrations(facilities)
   end
 
-  def self.cohort_registrations(facilities = Facility.all)
+  def cohort_controlled_bps(facilities = Facility.all)
+    quarterly_controlled_bps(facilities)
+  end
+
+  def cohort_uncontrolled_bps(facilities = Facility.all)
+    quarterly_uncontrolled_bps(facilities)
+  end
+
+  private
+
+  def latest_bps_per_patient_per_quarter(facilities = Facility.all)
+    LatestBloodPressuresPerPatientPerMonth
+        .select("distinct on (patient_id, year, quarter)
+         id, patient_id, facility_id, recorded_at, deleted_at, systolic, diastolic, quarter, year")
+        .order("patient_id, year, quarter, recorded_at DESC, id")
+        .where(facility_id: facilities)
+  end
+
+  def latest_bps_per_patient_per_quarter_cte(facilities = Facility.all)
+    # Using the quarterly table as a CTE(nested query) is a workaround
+    # for ActiveRecord's inability to compose a `COUNT` with a `DISTINCT ON`.
+    LatestBloodPressuresPerPatientPerMonth
+        .from(latest_bps_per_patient_per_quarter(facilities),
+              'latest_blood_pressures_per_patient_per_months')
+  end
+
+  def quarterly_registrations(facilities)
     patients = Patient.where(registration_facility: facilities)
-    cohort_start = quarter_start(2019, 3)
-    cohort_end = quarter_end(2019, 3)
+
+    cohort = previous_year_and_quarter(@year, @quarter)
+    cohort_start = quarter_start(*cohort)
+    cohort_end = quarter_end(*cohort)
 
     patients.where('recorded_at > ? AND recorded_at <= ?', cohort_start, cohort_end)
   end
 
-  def self.cohort_controlled_bps(facilities = Facility.all)
-    cohort_registrations = cohort_registrations(facilities)
-    LatestBloodPressuresPerPatientPerMonth
-      .from(latest_bps_per_patient_per_quarter(facilities),
-            'latest_blood_pressures_per_patient_per_months')
-      .where(patient_id: cohort_registrations.map(&:id))
-      .where("year = '2019' AND quarter = '4'")
-      .where('systolic < 140 AND diastolic < 90')
+  def quarterly_controlled_bps(facilities)
+    cohort_registrations = quarterly_registrations(facilities)
+    latest_bps_per_patient_per_quarter_cte
+        .where(patient_id: cohort_registrations.map(&:id))
+        .where(year: @year, quarter: @quarter)
+        .where('systolic < 140 AND diastolic < 90')
   end
 
-  def self.cohort_uncontrolled_bps(facilities = Facility.all)
-    cohort_registrations = cohort_registrations(facilities)
-    LatestBloodPressuresPerPatientPerMonth
-      .from(latest_bps_per_patient_per_quarter(facilities),
-            'latest_blood_pressures_per_patient_per_months')
+  def quarterly_uncontrolled_bps(facilities)
+    cohort_registrations = quarterly_registrations(facilities)
+    latest_bps_per_patient_per_quarter_cte
       .where(patient_id: cohort_registrations.map(&:id))
-      .where("year = '2019' AND quarter = '4'")
+      .where(year: @year, quarter: @quarter)
       .where('systolic >= 140 AND diastolic >= 90')
   end
 end

@@ -13,7 +13,7 @@ class MyFacilitiesController < AdminController
                                             .order(updated_at: :desc))
 
     @facilities = policy_scope([:manage, :facility, Facility])
-    @inactive_facilities = MyFacilitiesQuery.inactive_facilities(@facilities)
+    @inactive_facilities = MyFacilitiesQuery.new.inactive_facilities(@facilities)
 
     @facility_counts_by_size = { total: @facilities.group(:facility_size).count,
                                  inactive: @inactive_facilities.group(:facility_size).count }
@@ -28,9 +28,9 @@ class MyFacilitiesController < AdminController
   def blood_pressure_control
     @facilities = facilities_by_size([:manage, :facility])
 
-    registered_patients = MyFacilitiesQuery.cohort_registrations(@facilities)
-    controlled_bps = MyFacilitiesQuery.cohort_controlled_bps(@facilities)
-    uncontrolled_bps = MyFacilitiesQuery.cohort_uncontrolled_bps(@facilities)
+    registered_patients = MyFacilitiesQuery.new.cohort_registrations(@facilities)
+    controlled_bps = MyFacilitiesQuery.new.cohort_controlled_bps(@facilities)
+    uncontrolled_bps = MyFacilitiesQuery.new.cohort_uncontrolled_bps(@facilities)
 
     @totals = { registered: registered_patients.count,
                 controlled: controlled_bps.count,
