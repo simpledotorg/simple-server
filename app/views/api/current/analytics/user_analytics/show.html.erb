@@ -17,30 +17,72 @@
 <% else %>
     
   <div class="updated-date">Last updated <span><%= l(Time.current) %></span></div>
-    
-  <div class="card">
+  
+  <div class="card" style="min-height: 210px;">
     <div class="next-prev">
-      <a href="#"><span style="display: block; float: left; padding: 0 16px;"><%= inline_svg('icon_arrow_back.svg') %></span></a>
-      <a href="#"><span style="display: block; float: right; padding: 0 10px 0 16px; border-left:  1px solid #F0F2F5;"><%= inline_svg('icon_arrow_forward.svg') %></span></a>
+      <a href="#" onclick="plusDivs(-1)" class="button-next"><span><%= inline_svg('icon_arrow_back.svg') %></span></a>
+      <a href="#" onclick="plusDivs(+1)" class="button-prev"><span><%= inline_svg('icon_arrow_forward.svg') %></span></a>
     </div>
-    <h3>16-Jan-2020</h3>
-    <div class="counts">
-      <div class="count" style="background: #EEF7FF; color: #77A6D2;">
-        <div class="big-number">34</div>
-        Patients<br>registered
-      </div>
-      <div class="count" style="background: #E4FFEF; color: #00A541;">
-        <div class="big-number">43</div>
-        Follow-up<br>patients
-      </div>
-      <div class="count" style="background: #E4FFEF; color: #00A541;">
-        <div class="big-number">3</div>
-        Follow-up with<br>controlled BP
-      </div>
+    <div class="day">
+        <h3>14-Jan-2020</h3>
+        <div class="counts">
+          <div class="count" style="background: #EEF7FF; color: #43617D;">
+            <div class="big-number">6</div>
+            Patients<br>registered
+          </div>
+          <div class="count" style="background: #E4FFEF; color: #00A541;">
+            <div class="big-number">102</div>
+            Total follow-up<br>patients
+          </div>
+          <div class="count" style="background: #E4FFEF; color: #00A541;">
+            <div class="big-number">21</div>
+            Follow-up patients with controlled BP
+          </div>
+        </div>
     </div>
-    <div class="count-empty" id="count-empty" style="display: none;">
+    <div class="day">
+        <h3>15-Jan-2020</h3>
+        <div class="counts">
+          <div class="count" style="background: #EEF7FF; color: #43617D;">
+            <div class="big-number">0</div>
+            Patients<br>registered
+          </div>
+          <div class="count" style="background: #E4FFEF; color: #00A541;">
+            <div class="big-number">0</div>
+            Total follow-up<br>patients
+          </div>
+          <div class="count" style="background: #E4FFEF; color: #00A541;">
+            <div class="big-number">0</div>
+            Follow-up patients with controlled BP
+          </div>
+        </div>
+    </div>  
+    <div class="day">
+        <h3>16-Jan-2020</h3>
+        <div class="counts">
+          <div class="count" style="background: #EEF7FF; color: #43617D;">
+            <div class="big-number">35</div>
+            Patients<br>registered
+          </div>
+          <div class="count" style="background: #E4FFEF; color: #00A541;">
+            <div class="big-number">43</div>
+            Total follow-up<br>patients
+          </div>
+          <div class="count" style="background: #E4FFEF; color: #00A541;">
+            <div class="big-number">3</div>
+            Follow-up patients with controlled BP
+          </div>
+        </div>
+    </div>
+    <div class="day count-empty">
+      <h3>17-Jan-2020</h3>
       <%= inline_svg('icon_sync_cloud.svg') %>
-      <p><strong>Sync needed</strong><br>Tap "Sync pending" on the home screen, for current data.</p>
+      <p>Tap "Sync" on the home screen for new data.</p>
+    </div>
+    <div class="day count-empty">
+      <h3>Today</h3>
+      <%= inline_svg('icon_moon.svg') %>
+      <p>Today is not available yet.<br>Data is updated at midnight each day.</p>
     </div>
   </div>
 
@@ -49,7 +91,8 @@
     
     <form>
         <select class="card-dropdown">
-            <option>All registered patients</option>
+            <optgroup label="All patients">
+                <option>All registered patients</option>
             <optgroup label="Hypertension">
                 <option>All hypertension patients</option>
                 <option>Female hypertension patients</option>
@@ -102,26 +145,27 @@
     
     <form>
         <select class="card-dropdown">
-            <option>All follow-up patients</option>
+            <optgroup label="All patients">
+                <option>All follow-up patients</option>
             <optgroup label="Hypertension">
                 <option>All hypertension patients</option>
-                <option>Female</option>
-                <option>Male</option>
-                <option>Transgender</option>
+                <option>Female follow-up patients</option>
+                <option>Male follow-up patients</option>
+                <option>Transgender follow-up patients</option>
             </optgroup>
             <optgroup label="Diabetes">
                 <option>All diabetes patients</option>
-                <option>Female</option>
-                <option>Male</option>
-                <option>Transgender</option>
+                <option>Female follow-up patients</option>
+                <option>Male follow-up patients</option>
+                <option>Transgender follow-up patients</option>
             </optgroup>
         </select>
     </form>
     
     <table class="progress-table">
-      <tr class="total">
-        <td class="row-label" style="background: #E4FFEF; color: #00A541; border-color: #00A541;">All-time</td>
-        <td style="background: #E4FFEF; color: #00A541; border-color: #00A541;">2410</td>
+      <tr class="total green">
+        <td class="row-label">All-time</td>
+        <td>2410</td>
       </tr>
       <tr>
         <td class="row-label no-padding">January</td>
@@ -146,6 +190,44 @@
       <tr>
         <td class="row-label no-padding">August</td>
         <td>90</td>
+      </tr>
+    </table>
+  </div>
+  
+  <div class="card">
+    <h3>Hypertension control</h3>
+    <p class="desc">How many follow-up patients with hypertension had BP below 140/90 at his or her last follow-up visit?</p>
+    
+    <table class="progress-table">
+      <tr>
+        <td class="row-label no-padding">January</td>
+        <td><span class="percent">100%</span></td>
+        <td>14 of 14</td>
+      </tr>
+      <tr>
+        <td class="row-label no-padding">December</td>
+        <td><span class="percent">45%</span></td>
+        <td>52 of 109</td>
+      </tr>
+      <tr>
+        <td class="row-label no-padding">November</td>
+        <td><span class="percent">42%</span></td>
+        <td>49 of 104</td>
+      </tr>
+      <tr>
+        <td class="row-label no-padding">October</td>
+        <td><span class="percent">38%</span></td>
+        <td>37 of 98</td>
+      </tr>
+      <tr>
+        <td class="row-label no-padding">September</td>
+        <td><span class="percent">36%</span></td>
+        <td>16 of 87</td>
+      </tr>
+      <tr>
+        <td class="row-label no-padding">August</td>
+        <td><span class="percent">32%</span></td>
+        <td>31 of 90</td>
       </tr>
     </table>
   </div>
@@ -227,10 +309,41 @@
       3000 follow-up<br>hypertension patients
     </div>
   </div>
-
   <footer>
-    <small class="text-muted"><%= t('analytics.updated_at', time: l(Time.current)) %></small>
+      <h4 style="padding-top: 60px;">Notes</h4>
+      <p>Data is for all activity at <%= @current_facility.name %>. If data appears out of date, tap the "Sync pending" link
+        on the home screen, then check again.</p>
+      <p>Follow-up patients are counted once-per-month. If a patient follows up multiple times in a month, they are only
+        counted once.</p>
+      <h4 style="padding-top: 60px;">Thank you</h4>
+      <p>Thank you for all of your hard work treating patients with hypertension. Your work saves lives from heart attacks
+        and strokes.</p>
+      <div style="height: 100px;"></div>
   </footer>
 <% end %>
+
+    
+<script>
+    
+    var slideIndex = 1;
+    showDivs(slideIndex);
+
+    function plusDivs(n) {
+      showDivs(slideIndex += n);
+    }
+
+    function showDivs(n) {
+      var i;
+      var x = document.getElementsByClassName("day");
+      if (n > x.length) {slideIndex = 1}
+      if (n < 1) {slideIndex = x.length} ;
+      for (i = 0; i < x.length; i++) {
+        x[i].style.display = "none";
+      }
+      x[slideIndex-1].style.display = "block";
+    }
+
+</script>
+
 </body>
 </html>

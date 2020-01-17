@@ -67,11 +67,16 @@ sup {
 .card-dropdown {
     width: 100%;
     border: 1px solid $blue;
-    font-size: 16px;
+    color: $blue;
+    font-weight: bold;
+    font-size: 18px;
     padding: 8px;
     height: 42px;
-    background: #fff;
+    background: #fff url(data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0Ljk1IDEwIj48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6I2ZmZjt9LmNscy0ye2ZpbGw6IzQ0NDt9PC9zdHlsZT48L2RlZnM+PHRpdGxlPmFycm93czwvdGl0bGU+PHJlY3QgY2xhc3M9ImNscy0xIiB3aWR0aD0iNC45NSIgaGVpZ2h0PSIxMCIvPjxwb2x5Z29uIGNsYXNzPSJjbHMtMiIgcG9pbnRzPSIxLjQxIDQuNjcgMi40OCAzLjE4IDMuNTQgNC42NyAxLjQxIDQuNjciLz48cG9seWdvbiBjbGFzcz0iY2xzLTIiIHBvaW50cz0iMy41NCA1LjMzIDIuNDggNi44MiAxLjQxIDUuMzMgMy41NCA1LjMzIi8+PC9zdmc+) no-repeat 97% 50%;
     margin: 16px 0 8px 0;
+    border-radius: 5px;
+    position: relative;
+    -webkit-appearance: none;
 }
 
 h4 {
@@ -83,20 +88,29 @@ h4 {
     clear: both;
 }
 
-.bar-chart {
-  clear: both;
-  //overflow: scroll;
-  //margin-left: -16px;
-  min-width: 100%;
-  direction: rtl;
+p {
+    text-align: center;
+    font-size: 16px;
+    padding: 0 8px;
 }
 
-.bar-chart table {
-  font-size: 14px;
-  margin-top: 8px;
-  width: 100%;
-  text-align: center;
-  border-collapse: collapse;
+p.desc {
+    text-align: left;
+    font-size: 16px;
+    padding: 8px 0 8px 0;
+}
+
+.progress-table {
+    margin-top: 16px;
+    font-size: 16px;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.progress-table td {
+    padding: 8px 16px 8px 0;
+    border-top: 1px solid #EFECDF;
+    text-align: right;
 }
 
 .bar-chart td {
@@ -122,17 +136,31 @@ h4 {
   min-height: 6px;
 }
 
-.bar-chart-column {
-  background: #C4F0D5;
-  color: #6c737a;
+.progress-table .total.green td {
+    background: #E4FFEF;
+    color: #00A541;
 }
 
-.bar-chart .active-column {
-  background: #00B849;
+.progress-table .total td,
+.progress-table .total + tr td {
+    border-color: #77A6D2;
 }
 
-.column-value {
-  color: #007A31;
+.progress-table .total.green td,
+.progress-table .total.green + tr td {
+    border-color: #00A541;
+}
+
+span.percent {
+    font-size: 14px;
+    display: inline-block;
+    background: #E4FFEF;
+    color: #00A541;
+    border-radius: 100px;
+    padding: 5px 6px;
+    text-align: center;
+    min-width: 3em;
+    margin: -3px 0;
 }
 
 .updated-date {
@@ -151,6 +179,11 @@ h4 {
 }
 
 .trophies {
+    text-align: center;
+    padding-top: 30px;
+}
+
+footer p {
     text-align: center;
 }
 
@@ -228,11 +261,11 @@ h4 {
 .card .count {
     display: block;
     width: 100%;
-    padding: 30px 0 30px 0;
+    padding: 30px 8px 30px 8px;
     text-align: center;
     font-size: 14px;
     background: #EEF7FF;
-    margin: 4px 4px 4px 0;
+    margin: 10px 4px 4px 0;
     border-radius: 10px;
 }
 
@@ -240,12 +273,35 @@ h4 {
   margin-top: 60px;
 }
 
-.empty-reports h1 {
-  color: #6c737a;
-  font-size: 20px;
+.card .count-empty svg {
+    height: 160px;
+    margin-top: 0;
 }
 
-.empty-reports h3 {
-  color: #6c737a;
-  font-size: 16px;
+.big-number {
+    font-weight: 500;
+    font-size: 52px;
+    padding-bottom: 16px;
+}
+
+.next-prev {
+    float: right;
+    margin-top: -8px;
+}
+
+.button-next {
+    display: block;
+    float: left;
+    padding: 6px 24px 6px 16px;
+}
+
+.button-prev {
+    display: block;
+    float: right;
+    padding: 6px 10px 6px 16px;
+    //border-left: 1px solid #F0F2F5;
+}
+
+.day {
+    min-height: 250px;
 }
