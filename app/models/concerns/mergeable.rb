@@ -24,7 +24,7 @@ module Mergeable
 
     def merge(attributes)
       new_record = new(attributes)
-      existing_record = find_by(id: attributes['id'])
+      existing_record = with_discarded.find_by(id: attributes['id'])
 
       case compute_merge_status(attributes)
       when :invalid
