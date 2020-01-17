@@ -4,6 +4,7 @@ class MyFacilitiesController < AdminController
   include DistrictFiltering
   include Pagination
   include FacilitySizeFiltering
+  include CohortPeriodSelection
 
   before_action :authorize_my_facilities
 
@@ -28,9 +29,9 @@ class MyFacilitiesController < AdminController
   def blood_pressure_control
     @facilities = facilities_by_size([:manage, :facility])
 
-    registered_patients = MyFacilitiesQuery.new.cohort_registrations(@facilities)
-    controlled_bps = MyFacilitiesQuery.new.cohort_controlled_bps(@facilities)
-    uncontrolled_bps = MyFacilitiesQuery.new.cohort_uncontrolled_bps(@facilities)
+    registered_patients = MyFacilitiesQuery.new(selected_cohort_period).cohort_registrations(@facilities)
+    controlled_bps = MyFacilitiesQuery.new(selected_cohort_period).cohort_controlled_bps(@facilities)
+    uncontrolled_bps = MyFacilitiesQuery.new(selected_cohort_period).cohort_uncontrolled_bps(@facilities)
 
     @totals = { registered: registered_patients.count,
                 controlled: controlled_bps.count,

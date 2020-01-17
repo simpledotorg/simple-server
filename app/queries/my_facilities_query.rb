@@ -56,12 +56,11 @@ class MyFacilitiesQuery
 
   def quarterly_registrations(facilities)
     patients = Patient.where(registration_facility: facilities)
+    previous_cohort = previous_year_and_quarter(@year, @quarter)
 
-    cohort = previous_year_and_quarter(@year, @quarter)
-    cohort_start = quarter_start(*cohort)
-    cohort_end = quarter_end(*cohort)
-
-    patients.where('recorded_at > ? AND recorded_at <= ?', cohort_start, cohort_end)
+    patients.where('recorded_at > ? AND recorded_at <= ?',
+                   quarter_start(*previous_cohort),
+                   quarter_end(*previous_cohort))
   end
 
   def quarterly_bps(facilities)
