@@ -64,19 +64,18 @@ class MyFacilitiesQuery
     patients.where('recorded_at > ? AND recorded_at <= ?', cohort_start, cohort_end)
   end
 
-  def quarterly_controlled_bps(facilities)
+  def quarterly_bps(facilities)
     cohort_registrations = quarterly_registrations(facilities)
     latest_bps_per_patient_per_quarter_cte
         .where(patient_id: cohort_registrations.map(&:id))
         .where(year: @year, quarter: @quarter)
-        .where('systolic < 140 AND diastolic < 90')
+  end
+
+  def quarterly_controlled_bps(facilities)
+    quarterly_bps(facilities).where('systolic < 140 AND diastolic < 90')
   end
 
   def quarterly_uncontrolled_bps(facilities)
-    cohort_registrations = quarterly_registrations(facilities)
-    latest_bps_per_patient_per_quarter_cte
-      .where(patient_id: cohort_registrations.map(&:id))
-      .where(year: @year, quarter: @quarter)
-      .where('systolic >= 140 AND diastolic >= 90')
+    quarterly_bps(facilities).where('systolic >= 140 AND diastolic >= 90')
   end
 end

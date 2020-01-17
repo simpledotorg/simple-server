@@ -34,16 +34,16 @@ class MyFacilitiesController < AdminController
 
     @totals = { registered: registered_patients.count,
                 controlled: controlled_bps.count,
-                uncontrolled: uncontrolled_bps.count }
+                uncontrolled: uncontrolled_bps.count,
+                missed: missed_visits(registered_patients.count, controlled_bps.count, uncontrolled_bps.count) }
 
-    registered_patients_per_facility = registered_patients.group(:registration_facility_id).count
-    controlled_bps_per_facility = controlled_bps.group(:facility_id).count
-    uncontrolled_bps_per_facility = uncontrolled_bps.group(:facility_id).count
-
-    @bp_control_by_facility = @facilities.map do |f|
-      [f.id, { registered: registered_patients_per_facility[f.id] || 0,
-               controlled: controlled_bps_per_facility[f.id] || 0,
-               uncontrolled: uncontrolled_bps_per_facility[f.id] || 0 }]
+    @registered_patients_per_facility = registered_patients.group(:registration_facility_id).count
+    @controlled_bps_per_facility = controlled_bps.group(:facility_id).count
+    @uncontrolled_bps_per_facility = uncontrolled_bps.group(:facility_id).count
+    @missed_visits_by_facility = @facilities.map do |f|
+      [f.id, missed_visits(@registered_patients_per_facility[f.id].to_i,
+                           @controlled_bps_per_facility[f.id].to_i,
+                           @uncontrolled_bps_per_facility[f.id].to_i)]
     end.to_h
   end
 
@@ -51,5 +51,9 @@ class MyFacilitiesController < AdminController
 
   def authorize_my_facilities
     authorize(:dashboard, :show?)
+  end
+
+  def missed_visits(registered_patients, controlled_bps, uncontrolled_bps)
+    registered_patients - controlled_bps - uncontrolled_bps
   end
 end

@@ -73,17 +73,16 @@
       <td class="type-number"><%= @totals[:controlled] %></td>
       <td class="type-percent"><em><%= percentage(@totals[:uncontrolled], @totals[:registered]) %></em></td>
       <td class="type-number"><%= @totals[:uncontrolled] %></td>
-      <td class="type-percent">
-        <em><%= percentage((@totals[:registered] - @totals[:controlled] - @totals[:uncontrolled]), @totals[:registered]) %></em>
-      </td>
-      <td class="type-number"><%= @totals[:registered] - @totals[:controlled] - @totals[:uncontrolled] %></td>
+      <td class="type-percent"><em><%= percentage(@totals[:missed], @totals[:registered]) %></em></td>
+      <td class="type-number"><%= @totals[:missed] %></td>
       <td class="type-percent"><em>22%</em></td>
       <td class="type-number">42,098</td>
     </tr>
     <% @facilities.each do |facility| %>
-      <% bp_stats = { registered: @bp_control_by_facility[facility.id][:registered],
-                      controlled: @bp_control_by_facility[facility.id][:controlled],
-                      uncontrolled: @bp_control_by_facility[facility.id][:uncontrolled] } %>
+      <% bp_stats = { registered: @registered_patients_per_facility[facility.id].to_i,
+                      controlled: @controlled_bps_per_facility[facility.id].to_i,
+                      uncontrolled: @uncontrolled_bps_per_facility[facility.id].to_i,
+                      missed: @missed_visits_by_facility[facility.id].to_i } %>
       <tr>
         <td class="type-title"><a href="#"><%= facility.name %></a></td>
         <td class="type-percent">
@@ -95,10 +94,9 @@
         </td>
         <td class="type-number"><%= bp_stats[:uncontrolled] %></td>
         <td class="type-percent">
-          <em><%= percentage((bp_stats[:registered] - bp_stats[:controlled] - bp_stats[:uncontrolled]),
-                             bp_stats[:registered]) %></em>
+          <em><%= percentage(bp_stats[:missed], bp_stats[:registered]) %></em>
         </td>
-        <td class="type-number"><%= bp_stats[:registered] - bp_stats[:controlled] - bp_stats[:uncontrolled] %></td>
+        <td class="type-number"><%= bp_stats[:missed] %></td>
         <td class="type-percent"><em>22%</em></td>
         <td class="type-number">42,098</td>
       </tr>
