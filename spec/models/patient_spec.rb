@@ -122,28 +122,6 @@ describe Patient, type: :model do
       end
     end
 
-    describe '#risk_priority_label' do
-      it 'returns "High" for HIGH risk' do
-        allow(patient).to receive(:risk_priority).and_return(Patient::RISK_PRIORITIES[:HIGH])
-        expect(patient.risk_priority_label).to eq('High')
-      end
-
-      it 'returns nothing for REGULAR risk' do
-        allow(patient).to receive(:risk_priority).and_return(Patient::RISK_PRIORITIES[:REGULAR])
-        expect(patient.risk_priority_label).to be_nil
-      end
-
-      it 'returns nothing for LOW risk' do
-        allow(patient).to receive(:risk_priority).and_return(Patient::RISK_PRIORITIES[:LOW])
-        expect(patient.risk_priority_label).to be_nil
-      end
-
-      it 'returns nothing for NONE risk' do
-        allow(patient).to receive(:risk_priority).and_return(Patient::RISK_PRIORITIES[:NONE])
-        expect(patient.risk_priority_label).to be_nil
-      end
-    end
-
     describe '#current_age' do
       it 'returns age based on date of birth year if present' do
         patient.date_of_birth = Date.parse('1980-01-01')
