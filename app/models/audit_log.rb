@@ -1,6 +1,6 @@
 class AuditLog < ApplicationRecord
   MERGE_STATUS_TO_ACTION = {
-      discarded: 'no-op',
+      discarded: 'update_on_discarded',
       invalid: 'invalid',
       new: 'create',
       updated: 'update',
