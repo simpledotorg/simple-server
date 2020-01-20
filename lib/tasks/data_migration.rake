@@ -70,9 +70,9 @@ namespace :data_migration do
 
     # migrate all blood_pressures in batches
     BloodPressure
-      .left_outer_joins(:encounter, :facility)
+      .left_outer_joins(:encounter, :facility, :user)
       .where(encounters: { id: nil })
-      .where.not(facilities: { id: nil })
+      .where.not(facilities: { id: nil }, users: { id: nil })
       .in_batches(of: batch_size) do |batch|
       batch.map do |blood_pressure|
         encountered_on = Encounter.generate_encountered_on(blood_pressure.recorded_at, timezone_offset)
