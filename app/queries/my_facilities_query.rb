@@ -75,6 +75,6 @@ class MyFacilitiesQuery
   end
 
   def quarterly_uncontrolled_bps(facilities)
-    quarterly_bps(facilities).where('systolic >= 140 AND diastolic >= 90')
+    quarterly_bps(facilities).where('systolic >= 140 OR diastolic >= 90')
   end
 end
