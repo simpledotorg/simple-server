@@ -9,17 +9,19 @@
     <div class="mt-1 mb-3 col-lg-3">
       <div class="dropdown show">
         <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">
-          Patients registered Q2-2019
+          <% previous_year, previous_quarter = previous_year_and_quarter(@year, @quarter) %>
+          Patients registered Q<%= previous_quarter %>-<%= previous_year %>
         </a>
 
         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
           <h6 class="dropdown-header">Quarterly</h6>
-          <a class="dropdown-item" href="#">Q4-2019</a>
-          <a class="dropdown-item" href="#">Q3-2019</a>
-          <a class="dropdown-item" href="#">Q2-2019</a>
-          <a class="dropdown-item" href="#">Q1-2019</a>
-          <a class="dropdown-item" href="#">Q4-2018</a>
-          <a class="dropdown-item" href="#">Q3-2018</a>
+          <% last_n_quarters(6).each do |year, quarter| %>
+            <% selected = (year == @year && quarter == @quarter)%>
+            <button class="dropdown-item query-filter-cohort-period <%= 'active' if selected %>"
+                    type="submit" data-quarter="<%= quarter %>" data-year="<%= year %>" form="query-filters">
+              <%= "Q#{quarter}-#{year}" %>
+            </button>
+          <% end %>
           <div class="dropdown-divider"></div>
           <h6 class="dropdown-header">Monthly</h6>
           <a class="dropdown-item" href="#">Nov-2019</a>
@@ -28,6 +30,10 @@
           <a class="dropdown-item" href="#">Aug-2019</a>
           <a class="dropdown-item" href="#">Jul-2019</a>
           <a class="dropdown-item" href="#">Jun-2019</a>
+          <input id="query-filter-quarter" name="quarter" value="<%= @quarter %>" form="query-filters" hidden>
+          <input id="query-filter-year" name="year" value="<%= @year %>" form="query-filters" hidden>
+          <input id="query-filter-quarter-mobile" name="quarter" value="<%= @quarter %>" form="query-filters-mobile" hidden>
+          <input id="query-filter-year-mobile" name="year" value="<%= @year %>" form="query-filters-mobile" hidden>
         </div>
       </div>
     </div>
@@ -112,3 +118,11 @@
           the all-time BP control shows how many patients had controlled BP as of 31-Nov-2019.</li>
     </ol>
 </section>
+<script>
+    $('.query-filter-cohort-period').click(function() {
+        $('#query-filter-quarter').val($(this).data('quarter'))
+        $('#query-filter-year').val($(this).data('year'))
+        $('#query-filter-quarter-mobile').val($(this).data('quarter'))
+        $('#query-filter-year-mobile').val($(this).data('year'))
+    })
+</script>

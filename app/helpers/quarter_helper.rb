@@ -13,6 +13,10 @@ module QuarterHelper
     [year, quarter - 1]
   end
 
+  def current_year_and_quarter
+    [current_year, current_quarter]
+  end
+
   def quarter_string(date)
     year = date.year
     quarter = quarter(date)
@@ -41,5 +45,15 @@ module QuarterHelper
 
   def quarter_end(year, quarter)
     quarter_datetime(year, quarter).end_of_quarter
+  end
+
+  def last_n_quarters(n)
+    year = current_year
+    quarter = current_quarter
+
+    [current_year_and_quarter] + (0..(n-2)).map do |_|
+      year, quarter = previous_year_and_quarter(year, quarter)
+      [year, quarter]
+    end
   end
 end

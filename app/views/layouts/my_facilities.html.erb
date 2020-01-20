@@ -51,7 +51,7 @@
             <div class="row">
               <div class="col-6 mb-3">
                 <h4>Facility sizes</h4>
-                <form id="facility-size-filter-mobile">
+                <form id="query-filters-mobile">
                   <% @facility_sizes.each do |size| %>
                     <div class="checkbox-row">
                       <label for=<%= "facility-#{size}-mobile" %>>
@@ -93,7 +93,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Clear all</button>
-            <button type="submit" form="facility-size-filter-mobile" class="btn btn-primary">DONE</button>
+            <button type="submit" form="query-filters-mobile" class="btn btn-primary">DONE</button>
           </div>
 
         </div>
@@ -142,7 +142,7 @@
               <a class="dropdown-item" href="#">Talwandi Sabo</a>
             </div>
           </div>
-          <form>
+          <form id="query-filters">
             <% @facility_sizes.each do |size| %>
               <div>
                 <label for=<%= "facility-#{size}" %>>

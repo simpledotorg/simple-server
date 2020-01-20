@@ -5,12 +5,26 @@ module CohortPeriodSelection
 
   included do
     def selected_cohort_period
-      period = params[:period] == 'month' ? :month : :quarter
-      quarter = params[:quarter] ? params[:quarter].to_i : quarter(Time.current)
-      month = params[:month] ? params[:month].to_i : Time.current.month
-      year = params[:year] ? params[:year].to_i : Time.current.year
+      @period = params[:period] == 'month' ? :month : :quarter
+      @quarter = validate_quarter(params[:quarter])
+      @month = validate_month(params[:month])
+      @year = validate_year(params[:year])
 
-      { period: period, quarter: quarter, month: month, year: year }
+      { period: @period, quarter: @quarter, month: @month, year: @year }
+    end
+
+    private
+
+    def validate_quarter(quarter_param)
+      quarter_param.to_i.between?(1, 4) ? quarter_param.to_i : quarter(Time.current)
+    end
+
+    def validate_year(year)
+      year.to_i > 0 ? year.to_i : Time.current.year
+    end
+
+    def validate_month(month)
+      month.to_i.between?(1, 12) ? month.to_i : Time.current.month
     end
   end
 end
