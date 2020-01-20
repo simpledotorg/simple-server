@@ -1,10 +1,10 @@
 class AuditLog < ApplicationRecord
-  ACTIONS = %w[fetch create update login invalid touch].freeze
   MERGE_STATUS_TO_ACTION = {
-    invalid: 'invalid',
-    new: 'create',
-    updated: 'update',
-    old: 'touch'
+      discarded: 'no-op',
+      invalid: 'invalid',
+      new: 'create',
+      updated: 'update',
+      old: 'touch'
   }.freeze
 
   belongs_to :user
@@ -17,33 +17,33 @@ class AuditLog < ApplicationRecord
   def self.merge_log(user, record)
     return unless user.present?
     write_audit_log(
-      { user: user.id,
+        user: user.id,
         auditable_type: record.class.to_s,
         auditable_id: record.id,
         action: MERGE_STATUS_TO_ACTION[record.merge_status],
-        time: Time.current }
+        time: Time.current
     )
   end
 
   def self.fetch_log(user, record)
     return unless user.present?
     write_audit_log(
-      { user: user.id,
+        user: user.id,
         auditable_type: record.class.to_s,
         auditable_id: record.id,
         action: 'fetch',
-        time: Time.current }
+        time: Time.current
     )
   end
 
   def self.login_log(user)
     return unless user.present?
     write_audit_log(
-      { user: user.id,
+        user: user.id,
         auditable_type: 'User',
         auditable_id: user.id,
         action: 'login',
-        time: Time.current }
+        time: Time.current
     )
   end
 
@@ -52,11 +52,14 @@ class AuditLog < ApplicationRecord
     records_by_class = records.group_by { |record| record.class.to_s }
 
     records_by_class.each do |record_class, records_for_class|
-      CreateAuditLogsWorker.perform_async({ user_id: user.id,
-                                            record_class: record_class,
-                                            record_ids: records_for_class.map(&:id),
-                                            action: action,
-                                            time: time }.to_json)
+      log_data = {
+          user_id: user.id,
+          record_class: record_class,
+          record_ids: records_for_class.map(&:id),
+          action: action,
+          time: time
+      }.to_json
+      CreateAuditLogsWorker.perform_async(log_data)
     end
   end
 
