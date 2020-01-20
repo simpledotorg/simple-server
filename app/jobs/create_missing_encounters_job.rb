@@ -4,9 +4,7 @@ class CreateMissingEncountersJob
   sidekiq_options queue: :default
 
   def perform(blood_pressure_ids, timezone_offset)
-    blood_pressure_ids.each do |id|
-      blood_pressure = BloodPressure.find_by(id: id)
-
+    BloodPressure.where(id: blood_pressure_ids).each do |blood_pressure|
       encountered_on = Encounter.generate_encountered_on(blood_pressure.recorded_at, timezone_offset)
 
       encounter_merge_params = {
