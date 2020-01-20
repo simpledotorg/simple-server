@@ -24,7 +24,7 @@
           <% if policy([:manage, facility_group]).edit? %>
             <%= link_to 'Edit', edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %>
           <% end %>
-          <% if policy([:manage, facility_group]).new? %>
+          <% if policy([:manage, :facility, facility_group.facilities.new]).new? %>
             <%= link_to "New Facility", new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-outline-success" %>
           <% end %>
         </div>
