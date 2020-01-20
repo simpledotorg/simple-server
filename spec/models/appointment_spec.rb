@@ -182,7 +182,7 @@ describe Appointment, type: :model do
           ApplicationController.helpers.display_date(
             appointment.patient.latest_blood_pressure.recorded_at
           ),
-          "High",
+          'High',
           appointment.patient.address.street_address,
           appointment.patient.address.village_or_colony,
           appointment.patient.phone_numbers.first&.number

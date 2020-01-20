@@ -62,10 +62,14 @@ RSpec.describe PatientsExporter do
       blood_pressure.facility.district,
       blood_pressure.facility.state,
       appointment.days_overdue,
-      patient.risk_priority_label,
+      'High',
       patient.latest_bp_passport&.shortcode,
       patient.id
     ]
+  end
+
+  before do
+    allow(patient).to receive(:high_risk?).and_return(true)
   end
 
   describe '#csv' do
