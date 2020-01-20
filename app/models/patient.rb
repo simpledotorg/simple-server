@@ -109,15 +109,6 @@ class Patient < ApplicationRecord
     end
   end
 
-  def risk_priority_label
-    case risk_priority
-    when RISK_PRIORITIES[:HIGH] then
-      "High"
-    else
-      nil
-    end
-  end
-
   def high_risk?
     risk_priority == RISK_PRIORITIES[:HIGH]
   end
