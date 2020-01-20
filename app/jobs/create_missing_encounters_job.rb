@@ -1,7 +1,7 @@
 class CreateMissingEncountersJob
   include Sidekiq::Worker
 
-  sidekiq_options queue: :audit_log_queue
+  sidekiq_options queue: :default
 
   def perform(blood_pressure_ids, timezone_offset)
     blood_pressure_ids.each do |id|
