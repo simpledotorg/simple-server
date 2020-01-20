@@ -162,7 +162,7 @@ class Appointment < ApplicationRecord
       patient.latest_blood_pressure.to_s,
       patient.latest_blood_pressure.facility.name,
       display_date(patient.latest_blood_pressure.recorded_at),
-      (patient.high_risk? ? "High" : nil),
+      ("High" if patient.high_risk?),
       patient.address.street_address,
       patient.address.village_or_colony,
       patient.phone_numbers.first&.number
