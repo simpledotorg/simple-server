@@ -111,6 +111,7 @@ p.desc {
     padding: 8px 16px 8px 0;
     border-top: 1px solid #EFECDF;
     text-align: right;
+    font-size: 18px;
 }
 
 .bar-chart td {
@@ -190,10 +191,10 @@ footer p {
 .trophy {
     display: inline-block;
     text-align: center;
-    margin: 0 0 30px 0;
+    margin: 0 8px 30px 8px;
     font-size: 16px;
     position: relative;
-    padding: 140px 16px 0 16px;
+    padding: 140px 0 0 0;
 }
 
 #return-patients .column-value {
@@ -205,8 +206,74 @@ footer p {
   background: #DADDE0 !important;
 }
 
-.value-0 .column-value {
-  color: #ADB2B8 !important;
+.trophy span {
+    display: block;
+    border-radius: 400px;
+    width: 94px;
+    height: 94px;
+    position: absolute;
+    top: 19px;
+    left: 50%;
+    margin-left: -47px;
+    line-height: 94px;
+    font-size: 42px;
+    box-sizing: border-box;
+    background: #8672F3;
+    color: #5844C3;
+    font-weight: 900;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.2);
+    letter-spacing: -0.03em;
+}
+
+.trophy em {
+    position: absolute;
+    top: 22px;
+    left: 50%;
+    width: 86px;
+    height: 86px;
+    margin-left: -44px;
+    border-radius: 400px;
+    border: 1px solid #fff;
+    z-index: 5000;
+}
+
+.trophy div {
+    font-size: 90%;
+}
+
+.trophy-10 span {
+    background: #E8F8EF;
+    color: #30BB67;
+    text-indent: -3px;
+}
+
+.trophy-25 span {
+    background: #F1D8FD;
+    color: #AA61CF;
+}
+
+.trophy-50 span {
+    background: #D7E8F8;
+    color: #77A6D2;
+}
+
+.trophy-100 span,
+.trophy-250 span,
+.trophy-500 span {
+    background: #FFC800;
+    color: #A38310;
+    font-size: 38px;
+}
+
+.trophy-1000 span,
+.trophy-2000 span {
+    background: #FF3355;
+    color: #B00C35;
+}
+
+.trophy-upcoming span {
+    color: rgba(0,0,0,0.3);
+    background: #eee;
 }
 
 .graph-label {
@@ -260,13 +327,30 @@ footer p {
 
 .card .count {
     display: block;
-    width: 100%;
-    padding: 30px 8px 30px 8px;
+    padding: 24px 0 24px 0;
     text-align: center;
     font-size: 14px;
     background: #EEF7FF;
     margin: 10px 4px 4px 0;
     border-radius: 10px;
+    
+    strong {
+        display: block;
+        padding-bottom: 8px;
+        font-size: 20px;
+    }
+}
+
+.card .count-1 {
+    background: #EEF7FF;
+    color: #43617D;
+    flex: 1;
+}
+
+.card .count-2 {
+    flex: 1;
+    background: #E4FFEF;
+    color: #00A541;
 }
 
 .empty-reports .svg-container {
@@ -280,13 +364,21 @@ footer p {
 
 .big-number {
     font-weight: 500;
-    font-size: 52px;
-    padding-bottom: 16px;
+    font-size: 64px;
+    padding-bottom: 8px;
+    letter-spacing: -0.03em;
 }
 
 .next-prev {
     float: right;
     margin-top: -8px;
+}
+
+.button-next:active,
+.button-prev:active {
+    background: #EEF7FF;
+    border-radius: 4px;
+    outline: none;
 }
 
 .button-next {
@@ -298,8 +390,8 @@ footer p {
 .button-prev {
     display: block;
     float: right;
-    padding: 6px 10px 6px 16px;
-    //border-left: 1px solid #F0F2F5;
+    padding: 6px 24px 6px 16px;
+    margin-right: -6px;
 }
 
 .day {

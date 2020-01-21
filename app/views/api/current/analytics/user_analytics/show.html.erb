@@ -26,51 +26,45 @@
     <div class="day">
         <h3>14-Jan-2020</h3>
         <div class="counts">
-          <div class="count" style="background: #EEF7FF; color: #43617D;">
+          <div class="count count-1">
+            <strong>Registered</strong>
             <div class="big-number">6</div>
-            Patients<br>registered
+            New patients
           </div>
-          <div class="count" style="background: #E4FFEF; color: #00A541;">
-            <div class="big-number">102</div>
-            Total follow-up<br>patients
-          </div>
-          <div class="count" style="background: #E4FFEF; color: #00A541;">
-            <div class="big-number">21</div>
-            Follow-up patients with controlled BP
+          <div class="count count-2">
+            <strong>Follow-up</strong>
+            <div class="big-number">6</div>
+            Follow-up patients
           </div>
         </div>
     </div>
     <div class="day">
         <h3>15-Jan-2020</h3>
         <div class="counts">
-          <div class="count" style="background: #EEF7FF; color: #43617D;">
-            <div class="big-number">0</div>
-            Patients<br>registered
+          <div class="count count-1">
+            <strong>Registered</strong>
+            <div class="big-number">14</div>
+            New patients
           </div>
-          <div class="count" style="background: #E4FFEF; color: #00A541;">
-            <div class="big-number">0</div>
-            Total follow-up<br>patients
-          </div>
-          <div class="count" style="background: #E4FFEF; color: #00A541;">
-            <div class="big-number">0</div>
-            Follow-up patients with controlled BP
+          <div class="count count-2">
+            <strong>Follow-up</strong>
+            <div class="big-number">101</div>
+            Follow-up patients
           </div>
         </div>
     </div>  
     <div class="day">
         <h3>16-Jan-2020</h3>
         <div class="counts">
-          <div class="count" style="background: #EEF7FF; color: #43617D;">
-            <div class="big-number">35</div>
-            Patients<br>registered
+          <div class="count count-1">
+            <strong>Registered</strong>
+            <div class="big-number">0</div>
+            New patients
           </div>
-          <div class="count" style="background: #E4FFEF; color: #00A541;">
-            <div class="big-number">43</div>
-            Total follow-up<br>patients
-          </div>
-          <div class="count" style="background: #E4FFEF; color: #00A541;">
-            <div class="big-number">3</div>
-            Follow-up patients with controlled BP
+          <div class="count count-2">
+            <strong>Follow-up</strong>
+            <div class="big-number">0</div>
+            Follow-up patients
           </div>
         </div>
     </div>
@@ -93,17 +87,18 @@
         <select class="card-dropdown">
             <optgroup label="All patients">
                 <option>All registered patients</option>
+            </optgroup>
             <optgroup label="Hypertension">
-                <option>All hypertension patients</option>
-                <option>Female hypertension patients</option>
-                <option>Male hypertension patients</option>
-                <option>Transgender hypertension patients</option>
+                <option>All</option>
+                <option>Female</option>
+                <option>Male</option>
+                <option>Transgender</option>
             </optgroup>
             <optgroup label="Diabetes">
-                <option>All diabetes patients</option>
-                <option>Female diabetes patients</option>
-                <option>Male diabetes patients</option>
-                <option>Transgender diabetes patients</option>
+                <option>All</option>
+                <option>Female</option>
+                <option>Male</option>
+                <option>Transgender</option>
             </optgroup>
         </select>
     </form>
@@ -147,17 +142,18 @@
         <select class="card-dropdown">
             <optgroup label="All patients">
                 <option>All follow-up patients</option>
+            </optgroup>
             <optgroup label="Hypertension">
-                <option>All hypertension patients</option>
-                <option>Female follow-up patients</option>
-                <option>Male follow-up patients</option>
-                <option>Transgender follow-up patients</option>
+                <option>All</option>
+                <option>Female</option>
+                <option>Male</option>
+                <option>Transgender</option>
             </optgroup>
             <optgroup label="Diabetes">
-                <option>All diabetes patients</option>
-                <option>Female follow-up patients</option>
-                <option>Male follow-up patients</option>
-                <option>Transgender follow-up patients</option>
+                <option>All</option>
+                <option>Female</option>
+                <option>Male</option>
+                <option>Transgender</option>
             </optgroup>
         </select>
     </form>
@@ -196,7 +192,7 @@
   
   <div class="card">
     <h3>Hypertension control</h3>
-    <p class="desc">How many follow-up patients with hypertension had BP below 140/90 at his or her last follow-up visit?</p>
+    <p class="desc">How many patients with hypertension had BP below 140/90 at their last follow-up visit?</p>
     
     <table class="progress-table">
       <tr>
@@ -258,55 +254,55 @@
       <%= inline_svg('ribbon.svg') %>
       <em></em>
       <span>10</span>
-      10 follow-up<br>hypertension patients
+      <div>10 follow-up<br>hypertension patients</div>
     </div>
     <div class="trophy trophy-25">
       <%= inline_svg('ribbon.svg') %>
       <em></em>
       <span>25</span>
-      25 follow-up<br>hypertension patients
+      <div>25 follow-up<br>hypertension patients</div>
     </div>
     <div class="trophy trophy-50">
       <%= inline_svg('ribbon.svg') %>
       <em></em>
       <span>50</span>
-      50 follow-up<br>hypertension patients
+      <div>50 follow-up<br>hypertension patients</div>
     </div>
     <div class="trophy trophy-100">
       <%= inline_svg('ribbon.svg') %>
       <em></em>
       <span>100</span>
-      100 follow-up<br>hypertension patients
+      <div>100 follow-up<br>hypertension patients</div>
     </div>
     <div class="trophy trophy-250">
       <%= inline_svg('ribbon.svg') %>
       <em></em>
       <span>250</span>
-      250 follow-up<br>hypertension patients
+      <div>250 follow-up<br>hypertension patients</div>
     </div>
     <div class="trophy trophy-500">
       <%= inline_svg('ribbon.svg') %>
       <em></em>
       <span>500</span>
-      500 follow-up<br>hypertension patients
+      <div>500 follow-up<br>hypertension patients</div>
     </div>
     <div class="trophy trophy-1000">
       <%= inline_svg('ribbon.svg') %>
       <em></em>
       <span>1k</span>
-      1000 follow-up<br>hypertension patients
+      <div>1000 follow-up<br>hypertension patients</div>
     </div>
     <div class="trophy trophy-2000">
       <%= inline_svg('ribbon.svg') %>
       <em></em>
       <span>2k</span>
-      2000 follow-up<br>hypertension patients
+      <div>2000 follow-up<br>hypertension patients</div>
     </div>
     <div class="trophy trophy-3000 trophy-upcoming">
       <%= inline_svg('ribbon.svg') %>
       <em></em>
       <span><%= inline_svg('icon_lock.svg') %></span>
-      3000 follow-up<br>hypertension patients
+      <div>3000 follow-up<br>hypertension patients</div>
     </div>
   </div>
   <footer>
