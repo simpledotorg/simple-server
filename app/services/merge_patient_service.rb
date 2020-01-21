@@ -17,6 +17,17 @@ class MergePatientService
 
     if (merged_address.present? && merged_address.merged?) || merged_phone_numbers.any?(&:merged?) || merged_business_identifiers.any?(&:merged?)
       merged_patient.touch
+
+      #
+      # This is a rare scenario that might be possible in the future.
+      # If the client allows the user to update the patient's address or phone_number,
+      # there might be a case where the address or phone_number for a patient is updated for a discarded patient.
+      #
+      # These updates should not ideally be made at all because they will be invisible to the user.
+      #
+      # We can fix this issue, but it requires re-working the merge function, so we'll currently just
+      # track the incidence rate, so we can plan for a fix if necessary.
+      log_update_discarded_patient(merged_patient)
     end
 
     merged_patient
@@ -53,5 +64,9 @@ class MergePatientService
     business_identifier_params.map do |single_business_identifier_params|
       PatientBusinessIdentifier.merge(single_business_identifier_params.merge(patient: patient))
     end
+  end
+
+  def log_update_discarded_patient(merged_patient)
+    NewRelic::Agent.increment_metric("MergePatientService/update_discarded_patient") if merged_patient.discarded?
   end
 end
