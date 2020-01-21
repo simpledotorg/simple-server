@@ -1,8 +1,13 @@
 <div class="card card-responsive">
-  <% selected_period = @period == :month ? month_short_name_and_year(@year, @month) : "Q#{@quarter}-#{@year}" %>
+  <% selected_period = case @period %>
+  <% when :month %>
+    <% month_short_name(*previous_year_and_month(@year, @month)) + '/' + month_short_name_and_year(@year, @month) %>
+  <% when :quarter %>
+    <%  "Q#{@quarter}-#{@year}" %>
+  <% end %>
   <% registration_period = case @period %>
     <% when :month %>
-      <% month_short_name(*previous_year_and_month(@year, @month, 2))+ '/' + month_short_name(*previous_year_and_month(@year, @month)) %>
+      <% month_short_name(*previous_year_and_month(@year, @month, 2)) %>
     <% when :quarter %>
       <% registration_year, registration_quarter = previous_year_and_quarter(@year, @quarter) %>
       <% "Q#{registration_quarter}-#{registration_year}" %>
