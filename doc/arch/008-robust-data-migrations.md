@@ -78,13 +78,11 @@ down and background jobs are lost), we should be able to re-run the data migrati
 
 ```ruby
 # good
-
 BloodPressure.where(recorded_at: nil).each do |bp|
   bp.touch(:recorded_at)
 end
 
 # bad - not idempotent
-
 BloodPressure.where(id: affected_ids).each do |bp|
   bp.update(systolic: bp.systolic + 10)
 end
