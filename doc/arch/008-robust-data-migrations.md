@@ -70,6 +70,26 @@ Using atomic background jobs will have several advantages.
 
 We will need to take care of our Sidekiq queues. [See below](#consequences).
 
+### Other beneficial traits
+
+**Idempotence:** Ideally, the data migration task should be repeatable indefinitely without changing the end result.
+Idempotent tasks will ensure that even if we have to abandon the migration in a half-finished state (eg. Redis falls
+down and background jobs are lost), we should be able to re-run the data migration without requiring any code changes.
+
+```ruby
+# good
+
+BloodPressure.where(recorded_at: nil).each do |bp|
+  bp.touch(:recorded_at)
+end
+
+# bad - not idempotent
+
+BloodPressure.where(id: affected_ids).each do |bp|
+  bp.update(systolic: bp.systolic + 10)
+end
+```
+
 ## Status
 
 Accepted
