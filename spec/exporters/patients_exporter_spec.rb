@@ -5,7 +5,7 @@ RSpec.describe PatientsExporter do
 
   let!(:facility) { create(:facility) }
   let!(:patient) { create(:patient, registration_facility: facility) }
-  let!(:blood_pressure) { create(:blood_pressure, facility: facility, patient: patient) }
+  let!(:blood_pressure) { create(:blood_pressure, :critical, facility: facility, patient: patient) }
   let!(:appointment) { create(:appointment, :overdue, facility: facility, patient: patient) }
 
   let(:headers) do
