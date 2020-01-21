@@ -67,6 +67,6 @@ class MergePatientService
   end
 
   def log_update_discarded_patient(merged_patient)
-    NewRelic::Agent.increment_metric("MergePatientService/update_discarded_patient") if merged_patient.discarded?
+    NewRelic::Agent.increment_metric('MergePatientService/update_discarded_patient') if merged_patient.discarded?
   end
 end
