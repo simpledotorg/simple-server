@@ -1,4 +1,12 @@
 <div class="card card-responsive">
+  <% selected_period = @period == :month ? month_short_name_and_year(@year, @month) : "Q#{@quarter}-#{@year}" %>
+  <% registration_period = case @period %>
+    <% when :month %>
+      <% month_short_name(*previous_year_and_month(@year, @month, 2))+ '/' + month_short_name(*previous_year_and_month(@year, @month)) %>
+    <% when :quarter %>
+      <% registration_year, registration_quarter = previous_year_and_quarter(@year, @quarter) %>
+      <% "Q#{registration_quarter}-#{registration_year}" %>
+  <% end %>
   <div class="row">
     <div class="col-lg-9 pr-5 pr-md-0">
       <h3>BP control (All data on this page is fake)</h3>
@@ -8,19 +16,11 @@
 
     <div class="mt-1 mb-3 col-lg-3">
       <div class="dropdown show">
-        <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">
-          <% case @period %>
-          <% when :quarter %>
-            <% year, quarter = previous_year_and_quarter(@year, @quarter) %>
-            Patients registered in Q<%= quarter %>-<%= year %>
-          <% when :month %>
-            <% year, month = previous_year_and_month(@year, @month) %>
-            Patients registered in <%= month_short_string(year, month) %>
-          <% end %>
+        <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">
+            Patients registered in <%= registration_period %>
         </a>
-
         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-
           <h6 class="dropdown-header">Quarterly</h6>
           <% last_n_quarters(6).each do |year, quarter| %>
             <% selected = (year == @year && quarter == @quarter && @period == :quarter) %>
@@ -29,15 +29,13 @@
               <%= "Q#{quarter}-#{year}" %>
             </button>
           <% end %>
-
           <div class="dropdown-divider"></div>
-
           <h6 class="dropdown-header">Monthly</h6>
           <% last_n_months(6).each do |year, month| %>
             <% selected = (year == @year && month == @month && @period == :month) %>
             <button class="dropdown-item query-filter-month <%= 'active' if selected %>"
                     type="submit" data-month="<%= month %>" data-year="<%= year %>" form="query-filters">
-              <%= month_short_string(year, month) %>
+              <%= month_short_name_and_year(year, month) %>
             </button>
           <% end %>
 
@@ -70,18 +68,20 @@
     <thead>
     <tr>
       <th></th>
-      <th colspan="6">Cohort of patients registered in Q2-2019</th>
+      <th colspan="6">Cohort of patients registered in <%= registration_period %></th>
       <th colspan="2">All-time</th>
       <th class="mobile">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
     </tr>
     <tr data-sort-method="thead" class="sorts">
       <th class="row-label sort-label">Facilities</th>
-      <th class="row-label sort-label" data-sort-method="number" colspan="2" data-sort-default>Visited with
-        controlled<br>BP in Q3-2019
+      <th class="row-label sort-label" data-sort-method="number" colspan="2" data-sort-default>Visited with controlled
+        <br>BP in <%= selected_period %>
       </th>
-      <th class="row-label sort-label" data-sort-method="number" colspan="2">Visited with uncontrolled<br>BP in Q3-2019
+      <th class="row-label sort-label" data-sort-method="number" colspan="2">Visited with uncontrolled<br>BP
+        in <%= selected_period %>
       </th>
-      <th class="row-label sort-label" data-sort-method="number" colspan="2">Missed visit<br>in Q3-2019</th>
+      <th class="row-label sort-label" data-sort-method="number" colspan="2">Missed visit<br>in <%= selected_period %>
+      </th>
       <th class="row-label sort-label" data-sort-method="number" colspan="2">All registered patients<br>with controlled
         BP<sup>1</sup></th>
       <th class="mobile"></th>

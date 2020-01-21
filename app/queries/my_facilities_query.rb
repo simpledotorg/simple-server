@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 include QuarterHelper
+include MonthHelper
 
 class MyFacilitiesQuery
   INACTIVITY_THRESHOLD_PERIOD = 1.week.ago
@@ -25,15 +26,15 @@ class MyFacilitiesQuery
   end
 
   def cohort_registrations(facilities = Facility.all)
-    quarterly_registrations(facilities)
+    @period == :month ? monthly_registrations(facilities) : quarterly_registrations(facilities)
   end
 
   def cohort_controlled_bps(facilities = Facility.all)
-    quarterly_controlled_bps(facilities)
+    @period == :month ? monthly_controlled_bps(facilities) : quarterly_controlled_bps(facilities)
   end
 
   def cohort_uncontrolled_bps(facilities = Facility.all)
-    quarterly_uncontrolled_bps(facilities)
+    @period == :month ? monthly_uncontrolled_bps(facilities) : quarterly_uncontrolled_bps(facilities)
   end
 
   private
@@ -76,5 +77,32 @@ class MyFacilitiesQuery
 
   def quarterly_uncontrolled_bps(facilities)
     quarterly_bps(facilities).where('systolic >= 140 OR diastolic >= 90')
+  end
+
+  def monthly_registrations(facilities)
+    patients = Patient.where(registration_facility: facilities)
+    registration_month_start = month_start(@year, @month) - 2.months
+    registration_month_end = registration_month_start.end_of_month
+
+    patients.where('recorded_at > ? AND recorded_at <= ?',
+                   registration_month_start,
+                   registration_month_end)
+  end
+
+  def monthly_bps(facilities)
+    cohort_registrations = monthly_registrations(facilities)
+    LatestBloodPressuresPerPatientPerMonth
+        .where(patient_id: cohort_registrations.map(&:id))
+        .where('(year = ? AND month = ?) OR (year = ? AND month = ?)',
+               @year.to_s, @month.to_s,
+               *(previous_year_and_month(@year, @month).map(&:to_s)))
+  end
+
+  def monthly_controlled_bps(facilities)
+    monthly_bps(facilities).where('systolic < 140 AND diastolic < 90')
+  end
+
+  def monthly_uncontrolled_bps(facilities)
+    monthly_bps(facilities).where('systolic >= 140 OR diastolic >= 90')
   end
 end
