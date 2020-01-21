@@ -110,7 +110,7 @@
                       uncontrolled: @uncontrolled_bps_per_facility[facility.id].to_i,
                       missed: @missed_visits_by_facility[facility.id].to_i } %>
       <tr>
-        <td class="type-title"><a href="#"><%= facility.name %></a></td>
+        <td class="type-title"><%= link_to facility.name, analytics_facility_path(facility) %></td>
         <td class="type-percent">
           <em><%= percentage(bp_stats[:controlled], bp_stats[:registered]) %></em>
         </td>
