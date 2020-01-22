@@ -75,7 +75,7 @@ module PatientsExporter
       latest_bp_facility&.district,
       latest_bp_facility&.state,
       patient.latest_scheduled_appointment&.days_overdue,
-      patient.risk_priority_label,
+      ('High' if patient.high_risk?),
       patient.latest_bp_passport&.shortcode,
       patient.id
     ]
