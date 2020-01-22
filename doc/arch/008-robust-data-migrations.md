@@ -22,9 +22,10 @@ The problems that this ADR aims to tackle are the following:
 
 ### Enforcing data migration execution
 
-In order to better enforce the execution of data migrations, we will invoke them through Rails database migration files.
-This will ensure that data migrations are run with the same reliability as database migrations. For example, we may ship
-a migration that looks like this.
+In order to better enforce the execution of data migrations, we will invoke them using the
+[`data-migrate`](https://github.com/ilyakatz/data-migrate) gem. This will ensure that data migrations are run with the
+same reliability as database migrations, while still allowing database migrations to be run or rolled back independently
+if necessary. For example, we may ship a data migration that looks like this.
 
 ```ruby
 class UpdateNilensoBPs < ActiveRecord::Migration[5.1]
@@ -33,7 +34,7 @@ class UpdateNilensoBPs < ActiveRecord::Migration[5.1]
   end
 
   def down
-    Rails.logger.info("This data migration cannot be reversed. Good luck!")
+    Rails.logger.info("This data migration will not be reversed. Good luck!")
   end
 end
 ```
