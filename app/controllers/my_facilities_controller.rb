@@ -27,6 +27,10 @@ class MyFacilitiesController < AdminController
 
   def blood_pressure_control; end
 
+  def missed_visit; end
+
+  def registrations; end
+
   private
 
   def authorize_my_facilities
