@@ -110,7 +110,7 @@
                       controlled: @controlled_bps_per_facility[facility.id].to_i,
                       uncontrolled: @uncontrolled_bps_per_facility[facility.id].to_i,
                       missed: @missed_visits_by_facility[facility.id].to_i,
-                      all_time_patients: @all_time_patients_per_facility[facility.id].to_i,
+                      all_time_bps: @all_time_bps_per_facility[facility.id].to_i,
                       all_time_controlled_bps: @all_time_controlled_bps_per_facility[facility.id].to_i } %>
       <tr>
         <td class="type-title"><%= link_to facility.name, analytics_facility_path(facility) %></td>
@@ -126,8 +126,8 @@
           <em><%= percentage(bp_stats[:missed], bp_stats[:registered]) %></em>
         </td>
         <td class="type-number"><%= bp_stats[:missed] %></td>
-        <td class="type-percent"><em>22%</em></td>
-        <td class="type-number">42,098</td>
+        <td class="type-percent"><em><%= percentage(bp_stats[:all_time_controlled_bps], bp_stats[:all_time_bps]) %></em></td>
+        <td class="type-number"><%= bp_stats[:all_time_controlled_bps] %></td>
       </tr>
     <% end %>
     </tbody>

@@ -37,12 +37,14 @@ class MyFacilitiesQuery
     @period == :month ? monthly_uncontrolled_bps(facilities) : quarterly_uncontrolled_bps(facilities)
   end
 
-  def cohort_all_time_patients(facilities = Facility.all)
-    @period == :month ? monthly_all_time_patients(facilities) : quarterly_all_time_patients(facilities)
+  def all_time_bps(facilities = Facility.all)
+    latest_bps_per_patient_cte
+        .where(bp_facility_id: facilities)
   end
 
-  def cohort_all_time_controlled_bps(facilities = Facility.all)
-    @period == :month ? monthly_all_time_controlled_bps(facilities) : quarterly_all_time_controlled_bps(facilities)
+  def all_time_controlled_bps(facilities = Facility.all)
+    all_time_bps(facilities)
+        .where('systolic < 140 AND diastolic < 90')
   end
 
   private
@@ -58,7 +60,7 @@ class MyFacilitiesQuery
   def latest_bps_per_patient(facilities = Facility.all)
     LatestBloodPressuresPerPatientPerMonth
       .select("distinct on (patient_id)
-         bp_id, patient_id, bp_facility_id, bp_recorded_at, patient_recorded_at, deleted_at, systolic, diastolic, quarter, year")
+         bp_id, patient_id, bp_facility_id, bp_recorded_at, patient_recorded_at, deleted_at, systolic, diastolic, month, quarter, year")
       .order("patient_id, bp_recorded_at DESC, bp_id")
       .where(bp_facility_id: facilities)
   end
@@ -103,21 +105,6 @@ class MyFacilitiesQuery
     quarterly_bps(facilities).where('systolic >= 140 OR diastolic >= 90')
   end
 
-  def quarterly_all_time_patients(facilities = Facility.all)
-    registration_cutoff = quarter_start(@year, @quarter) - 2.months
-    latest_bps_per_patient_cte
-      .where('patient_recorded_at <= ?', registration_cutoff)
-      .where(bp_facility_id: facilities)
-  end
-
-  def quarterly_all_time_controlled_bps(facilities)
-    registration_cutoff = quarter_start(@year, @quarter) - 2.months
-    bp_cutoff = quarter_start(@year, @quarter).end_of_quarter
-    quarterly_all_time_patients
-      .where('bp_recorded_at > ? AND bp_recorded_at < ?', registration_cutoff, bp_cutoff)
-      .where('systolic < 140 AND diastolic < 90')
-  end
-
   def monthly_registrations(facilities)
     patients = Patient.where(registration_facility: facilities)
     registration_month_start = month_start(@year, @month) - 2.months
@@ -130,7 +117,7 @@ class MyFacilitiesQuery
 
   def monthly_bps(facilities)
     cohort_registrations = monthly_registrations(facilities)
-    LatestBloodPressuresPerPatientPerMonth
+    latest_bps_per_patient_cte
       .where(patient_id: cohort_registrations.map(&:id))
       .where('(year = ? AND month = ?) OR (year = ? AND month = ?)',
              @year.to_s, @month.to_s,
@@ -143,20 +130,5 @@ class MyFacilitiesQuery
 
   def monthly_uncontrolled_bps(facilities)
     monthly_bps(facilities).where('systolic >= 140 OR diastolic >= 90')
-  end
-
-  def monthly_all_time_patients(facilities = Facility.all)
-    registration_cutoff = month_start(@year, @month) - 2.months
-    latest_bps_per_patient_cte
-      .where('patient_recorded_at < ?', registration_cutoff)
-      .where(bp_facility_id: facilities)
-  end
-
-  def monthly_all_time_controlled_bps(facilities)
-    registration_cutoff = month_start(@year, @month) - 2.months
-    bp_cutoff = month_start(@year, @month).end_of_month
-    monthly_all_time_patients
-      .where('bp_recorded_at > ? AND bp_recorded_at < ?', registration_cutoff, bp_cutoff)
-      .where('systolic < 140 AND diastolic < 90')
   end
 end
