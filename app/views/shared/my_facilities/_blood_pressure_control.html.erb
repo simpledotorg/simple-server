@@ -96,14 +96,17 @@
       <td class="type-number"><%= @totals[:uncontrolled] %></td>
       <td class="type-percent"><em><%= percentage(@totals[:missed], @totals[:registered]) %></em></td>
       <td class="type-number"><%= @totals[:missed] %></td>
-      <td class="type-percent"><em>22%</em></td>
-      <td class="type-number">42,098</td>
+      <td class="type-percent">
+        <em><%= percentage(@totals[:all_time_controlled_bps], @totals[:all_time_patients]) %></em></td>
+      <td class="type-number"><%= @totals[:all_time_controlled_bps] %></td>
     </tr>
     <% @facilities.each do |facility| %>
       <% bp_stats = { registered: @registered_patients_per_facility[facility.id].to_i,
                       controlled: @controlled_bps_per_facility[facility.id].to_i,
                       uncontrolled: @uncontrolled_bps_per_facility[facility.id].to_i,
-                      missed: @missed_visits_by_facility[facility.id].to_i } %>
+                      missed: @missed_visits_by_facility[facility.id].to_i,
+                      all_time_patients: @all_time_patients_per_facility[facility.id].to_i,
+                      all_time_controlled_bps: @all_time_controlled_bps_per_facility[facility.id].to_i } %>
       <tr>
         <td class="type-title"><a href="#"><%= facility.name %></a></td>
         <td class="type-percent">

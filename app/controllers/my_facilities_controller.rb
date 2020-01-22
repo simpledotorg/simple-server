@@ -32,20 +32,26 @@ class MyFacilitiesController < AdminController
     registered_patients = MyFacilitiesQuery.new(selected_cohort_period).cohort_registrations(@facilities)
     controlled_bps = MyFacilitiesQuery.new(selected_cohort_period).cohort_controlled_bps(@facilities)
     uncontrolled_bps = MyFacilitiesQuery.new(selected_cohort_period).cohort_uncontrolled_bps(@facilities)
+    all_time_patients = MyFacilitiesQuery.new(selected_cohort_period).cohort_all_time_patients(@facilities)
+    all_time_controlled_bps = MyFacilitiesQuery.new(selected_cohort_period).cohort_all_time_controlled_bps(@facilities)
 
     @totals = { registered: registered_patients.count,
                 controlled: controlled_bps.count,
                 uncontrolled: uncontrolled_bps.count,
-                missed: missed_visits(registered_patients.count, controlled_bps.count, uncontrolled_bps.count) }
+                missed: missed_visits(registered_patients.count, controlled_bps.count, uncontrolled_bps.count),
+                all_time_patients: all_time_patients.count,
+                all_time_controlled_bps: all_time_controlled_bps.count }
 
     @registered_patients_per_facility = registered_patients.group(:registration_facility_id).count
-    @controlled_bps_per_facility = controlled_bps.group(:facility_id).count
-    @uncontrolled_bps_per_facility = uncontrolled_bps.group(:facility_id).count
+    @controlled_bps_per_facility = controlled_bps.group(:bp_facility_id).count
+    @uncontrolled_bps_per_facility = uncontrolled_bps.group(:bp_facility_id).count
     @missed_visits_by_facility = @facilities.map do |f|
       [f.id, missed_visits(@registered_patients_per_facility[f.id].to_i,
                            @controlled_bps_per_facility[f.id].to_i,
                            @uncontrolled_bps_per_facility[f.id].to_i)]
     end.to_h
+    @all_time_patients_per_facility = all_time_patients.group(:bp_facility_id).count
+    @all_time_controlled_bps_per_facility = all_time_controlled_bps.group(:bp_facility_id).count
   end
 
   private

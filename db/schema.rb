@@ -664,35 +664,6 @@ ActiveRecord::Schema.define(version: 20200103112932) do
       users
     WHERE ((blood_pressures.patient_id = patients.id) AND (blood_pressures.facility_id = facilities.id) AND (blood_pressures.user_id = users.id));
   SQL
-  create_view "latest_blood_pressures_per_patient_per_months", materialized: true, sql_definition: <<-SQL
-      SELECT DISTINCT ON (blood_pressures.patient_id, (date_part('year'::text, blood_pressures.recorded_at))::text, (date_part('month'::text, blood_pressures.recorded_at))::text) blood_pressures.id,
-      blood_pressures.patient_id,
-      blood_pressures.facility_id,
-      blood_pressures.recorded_at,
-      blood_pressures.systolic,
-      blood_pressures.diastolic,
-      blood_pressures.deleted_at,
-      (date_part('month'::text, blood_pressures.recorded_at))::text AS month,
-      (date_part('quarter'::text, blood_pressures.recorded_at))::text AS quarter,
-      (date_part('year'::text, blood_pressures.recorded_at))::text AS year
-     FROM blood_pressures
-    ORDER BY blood_pressures.patient_id, (date_part('year'::text, blood_pressures.recorded_at))::text, (date_part('month'::text, blood_pressures.recorded_at))::text, blood_pressures.recorded_at DESC, blood_pressures.id;
-  SQL
-  create_view "patients_registered_per_month_per_facilities", materialized: true, sql_definition: <<-SQL
-      SELECT count(patients.id) AS count,
-      patients.registration_facility_id AS facility_id,
-      facilities.facility_size,
-      facilities.created_at AS facility_created_at,
-      facilities.district AS facility_district,
-      facilities.zone AS facility_zone,
-      (date_part('month'::text, patients.recorded_at))::text AS month,
-      (date_part('quarter'::text, patients.recorded_at))::text AS quarter,
-      (date_part('year'::text, patients.recorded_at))::text AS year
-     FROM (patients
-       JOIN facilities ON ((patients.registration_facility_id = facilities.id)))
-    WHERE (((patients.status)::text = 'active'::text) AND (patients.deleted_at IS NULL))
-    GROUP BY (date_part('month'::text, patients.recorded_at))::text, (date_part('quarter'::text, patients.recorded_at))::text, (date_part('year'::text, patients.recorded_at))::text, patients.registration_facility_id, facilities.facility_size, facilities.created_at, facilities.district, facilities.zone;
-  SQL
   create_view "patient_summaries", sql_definition: <<-SQL
       SELECT p.recorded_at,
       concat(date_part('year'::text, p.recorded_at), ' Q', date_part('quarter'::text, p.recorded_at)) AS registration_quarter,
@@ -799,5 +770,37 @@ ActiveRecord::Schema.define(version: 20200103112932) do
              FROM appointments
             ORDER BY appointments.patient_id, appointments.scheduled_date DESC) next_appointment ON ((next_appointment.patient_id = p.id)))
        LEFT JOIN facilities next_appointment_facility ON ((next_appointment_facility.id = next_appointment.facility_id)));
+  SQL
+  create_view "latest_blood_pressures_per_patient_per_months", materialized: true, sql_definition: <<-SQL
+      SELECT DISTINCT ON (blood_pressures.patient_id, (date_part('year'::text, blood_pressures.recorded_at))::text, (date_part('month'::text, blood_pressures.recorded_at))::text) blood_pressures.id AS bp_id,
+      blood_pressures.patient_id,
+      patients.registration_facility_id,
+      blood_pressures.facility_id AS bp_facility_id,
+      blood_pressures.recorded_at AS bp_recorded_at,
+      patients.recorded_at AS patient_recorded_at,
+      blood_pressures.systolic,
+      blood_pressures.diastolic,
+      blood_pressures.deleted_at,
+      (date_part('month'::text, blood_pressures.recorded_at))::text AS month,
+      (date_part('quarter'::text, blood_pressures.recorded_at))::text AS quarter,
+      (date_part('year'::text, blood_pressures.recorded_at))::text AS year
+     FROM (blood_pressures
+       JOIN patients ON ((patients.id = blood_pressures.patient_id)))
+    ORDER BY blood_pressures.patient_id, (date_part('year'::text, blood_pressures.recorded_at))::text, (date_part('month'::text, blood_pressures.recorded_at))::text, blood_pressures.recorded_at DESC, blood_pressures.id;
+  SQL
+  create_view "patients_registered_per_month_per_facilities", materialized: true, sql_definition: <<-SQL
+      SELECT count(patients.id) AS count,
+      patients.registration_facility_id AS facility_id,
+      facilities.facility_size,
+      facilities.created_at AS facility_created_at,
+      facilities.district AS facility_district,
+      facilities.zone AS facility_zone,
+      (date_part('month'::text, patients.recorded_at))::text AS month,
+      (date_part('quarter'::text, patients.recorded_at))::text AS quarter,
+      (date_part('year'::text, patients.recorded_at))::text AS year
+     FROM (patients
+       JOIN facilities ON ((patients.registration_facility_id = facilities.id)))
+    WHERE (((patients.status)::text = 'active'::text) AND (patients.deleted_at IS NULL))
+    GROUP BY (date_part('month'::text, patients.recorded_at))::text, (date_part('quarter'::text, patients.recorded_at))::text, (date_part('year'::text, patients.recorded_at))::text, patients.registration_facility_id, facilities.facility_size, facilities.created_at, facilities.district, facilities.zone;
   SQL
 end
