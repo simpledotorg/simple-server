@@ -1,8 +1,13 @@
 <div class="card card-responsive">
-  <% selected_period = @period == :month ? month_short_name_and_year(@year, @month) : "Q#{@quarter}-#{@year}" %>
+  <% selected_period = case @period %>
+  <% when :month %>
+    <% month_short_name(*previous_year_and_month(@year, @month)) + '/' + month_short_name_and_year(@year, @month) %>
+  <% when :quarter %>
+    <%  "Q#{@quarter}-#{@year}" %>
+  <% end %>
   <% registration_period = case @period %>
     <% when :month %>
-      <% month_short_name(*previous_year_and_month(@year, @month, 2))+ '/' + month_short_name(*previous_year_and_month(@year, @month)) %>
+      <% month_short_name(*previous_year_and_month(@year, @month, 2)) %>
     <% when :quarter %>
       <% registration_year, registration_quarter = previous_year_and_quarter(@year, @quarter) %>
       <% "Q#{registration_quarter}-#{registration_year}" %>
@@ -108,7 +113,7 @@
                       all_time_patients: @all_time_patients_per_facility[facility.id].to_i,
                       all_time_controlled_bps: @all_time_controlled_bps_per_facility[facility.id].to_i } %>
       <tr>
-        <td class="type-title"><a href="#"><%= facility.name %></a></td>
+        <td class="type-title"><%= link_to facility.name, analytics_facility_path(facility) %></td>
         <td class="type-percent">
           <em><%= percentage(bp_stats[:controlled], bp_stats[:registered]) %></em>
         </td>
