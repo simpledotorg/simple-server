@@ -38,47 +38,13 @@ class MyFacilitiesQuery
   end
 
   def all_time_bps(facilities = Facility.all)
-    latest_bps_per_patient_cte
+    LatestBloodPressuresPerPatient
         .where(bp_facility_id: facilities)
   end
 
   def all_time_controlled_bps(facilities = Facility.all)
     all_time_bps(facilities)
         .where('systolic < 140 AND diastolic < 90')
-  end
-
-  private
-
-  def latest_bps_per_patient_per_quarter(facilities = Facility.all)
-    LatestBloodPressuresPerPatientPerMonth
-      .select("distinct on (patient_id, year, quarter)
-         bp_id, patient_id, bp_facility_id, bp_recorded_at, deleted_at, systolic, diastolic, quarter, year")
-      .order("patient_id, year, quarter, bp_recorded_at DESC, bp_id")
-      .where(bp_facility_id: facilities)
-  end
-
-  def latest_bps_per_patient(facilities = Facility.all)
-    LatestBloodPressuresPerPatientPerMonth
-      .select("distinct on (patient_id)
-         bp_id, patient_id, bp_facility_id, bp_recorded_at, patient_recorded_at, deleted_at, systolic, diastolic, month, quarter, year")
-      .order("patient_id, bp_recorded_at DESC, bp_id")
-      .where(bp_facility_id: facilities)
-  end
-
-  def latest_bps_per_patient_per_quarter_cte(facilities = Facility.all)
-    # Using the quarterly table as a CTE(nested query) is a workaround
-    # for ActiveRecord's inability to compose a `COUNT` with a `DISTINCT ON`.
-    LatestBloodPressuresPerPatientPerMonth
-      .from(latest_bps_per_patient_per_quarter(facilities),
-            'latest_blood_pressures_per_patient_per_months')
-  end
-
-  def latest_bps_per_patient_cte(facilities = Facility.all)
-    # Using the quarterly table as a CTE(nested query) is a workaround
-    # for ActiveRecord's inability to compose a `COUNT` with a `DISTINCT ON`.
-    LatestBloodPressuresPerPatientPerMonth
-      .from(latest_bps_per_patient(facilities),
-            'latest_blood_pressures_per_patient_per_months')
   end
 
   def quarterly_registrations(facilities)
@@ -92,8 +58,8 @@ class MyFacilitiesQuery
 
   def quarterly_bps(facilities)
     cohort_registrations = quarterly_registrations(facilities)
-    latest_bps_per_patient_per_quarter_cte
-      .where(patient_id: cohort_registrations.map(&:id))
+    LatestBloodPressuresPerPatientPerQuarter
+      .where(patient: cohort_registrations)
       .where(year: @year, quarter: @quarter)
   end
 
@@ -117,18 +83,29 @@ class MyFacilitiesQuery
 
   def monthly_bps(facilities)
     cohort_registrations = monthly_registrations(facilities)
-    latest_bps_per_patient_cte
-      .where(patient_id: cohort_registrations.map(&:id))
+    LatestBloodPressuresPerPatientPerMonth
+      .select("distinct on (patient_id)
+       bp_id, patient_id, bp_facility_id, bp_recorded_at, deleted_at, systolic, diastolic, quarter, year")
+      .order("patient_id, bp_recorded_at DESC, bp_id")
+      .where(patient: cohort_registrations)
       .where('(year = ? AND month = ?) OR (year = ? AND month = ?)',
              @year.to_s, @month.to_s,
              *(previous_year_and_month(@year, @month).map(&:to_s)))
   end
 
+  def monthly_bps_cte(facilities)
+    # Using the table as a CTE(nested query) is a workaround
+    # for ActiveRecord's inability to compose a `COUNT` with a `DISTINCT ON`.
+    LatestBloodPressuresPerPatientPerMonth
+        .from(monthly_bps(facilities),
+              'latest_blood_pressures_per_patient_per_months')
+  end
+
   def monthly_controlled_bps(facilities)
-    monthly_bps(facilities).where('systolic < 140 AND diastolic < 90')
+    monthly_bps_cte(facilities).where('systolic < 140 AND diastolic < 90')
   end
 
   def monthly_uncontrolled_bps(facilities)
-    monthly_bps(facilities).where('systolic >= 140 OR diastolic >= 90')
+    monthly_bps_cte(facilities).where('systolic >= 140 OR diastolic >= 90')
   end
 end

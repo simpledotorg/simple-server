@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200103112932) do
+ActiveRecord::Schema.define(version: 20200123123144) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -802,5 +802,37 @@ ActiveRecord::Schema.define(version: 20200103112932) do
        JOIN facilities ON ((patients.registration_facility_id = facilities.id)))
     WHERE (((patients.status)::text = 'active'::text) AND (patients.deleted_at IS NULL))
     GROUP BY (date_part('month'::text, patients.recorded_at))::text, (date_part('quarter'::text, patients.recorded_at))::text, (date_part('year'::text, patients.recorded_at))::text, patients.registration_facility_id, facilities.facility_size, facilities.created_at, facilities.district, facilities.zone;
+  SQL
+  create_view "latest_blood_pressures_per_patients", materialized: true, sql_definition: <<-SQL
+      SELECT DISTINCT ON (latest_blood_pressures_per_patient_per_months.patient_id) latest_blood_pressures_per_patient_per_months.bp_id,
+      latest_blood_pressures_per_patient_per_months.patient_id,
+      latest_blood_pressures_per_patient_per_months.registration_facility_id,
+      latest_blood_pressures_per_patient_per_months.bp_facility_id,
+      latest_blood_pressures_per_patient_per_months.bp_recorded_at,
+      latest_blood_pressures_per_patient_per_months.patient_recorded_at,
+      latest_blood_pressures_per_patient_per_months.systolic,
+      latest_blood_pressures_per_patient_per_months.diastolic,
+      latest_blood_pressures_per_patient_per_months.deleted_at,
+      latest_blood_pressures_per_patient_per_months.month,
+      latest_blood_pressures_per_patient_per_months.quarter,
+      latest_blood_pressures_per_patient_per_months.year
+     FROM latest_blood_pressures_per_patient_per_months
+    ORDER BY latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.bp_recorded_at DESC, latest_blood_pressures_per_patient_per_months.bp_id;
+  SQL
+  create_view "latest_blood_pressures_per_patient_per_quarters", materialized: true, sql_definition: <<-SQL
+      SELECT DISTINCT ON (latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.year, latest_blood_pressures_per_patient_per_months.quarter) latest_blood_pressures_per_patient_per_months.bp_id,
+      latest_blood_pressures_per_patient_per_months.patient_id,
+      latest_blood_pressures_per_patient_per_months.registration_facility_id,
+      latest_blood_pressures_per_patient_per_months.bp_facility_id,
+      latest_blood_pressures_per_patient_per_months.bp_recorded_at,
+      latest_blood_pressures_per_patient_per_months.patient_recorded_at,
+      latest_blood_pressures_per_patient_per_months.systolic,
+      latest_blood_pressures_per_patient_per_months.diastolic,
+      latest_blood_pressures_per_patient_per_months.deleted_at,
+      latest_blood_pressures_per_patient_per_months.month,
+      latest_blood_pressures_per_patient_per_months.quarter,
+      latest_blood_pressures_per_patient_per_months.year
+     FROM latest_blood_pressures_per_patient_per_months
+    ORDER BY latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.year, latest_blood_pressures_per_patient_per_months.quarter, latest_blood_pressures_per_patient_per_months.bp_recorded_at DESC, latest_blood_pressures_per_patient_per_months.bp_id;
   SQL
 end

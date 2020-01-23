@@ -33,6 +33,7 @@ RSpec.describe MyFacilitiesQuery do
 
     before do
       LatestBloodPressuresPerPatientPerMonth.refresh
+      LatestBloodPressuresPerPatientPerQuarter.refresh
     end
 
     describe '#cohort_registrations' do
@@ -52,27 +53,72 @@ RSpec.describe MyFacilitiesQuery do
     let!(:cohort_month) { Time.current.month }
     let!(:cohort_year) { Time.current.year }
     let!(:facility) { create(:facility) }
-    let!(:bp_recorded_at) { Time.current - 2.months }
-    let!(:patient_with_controlled_bp) { create(:patient, recorded_at: bp_recorded_at, registration_facility: facility) }
-    let!(:patient_with_uncontrolled_bp) { create(:patient, recorded_at: bp_recorded_at, registration_facility: facility) }
-    let!(:patient_with_missed_visit) { create(:patient, recorded_at: bp_recorded_at, registration_facility: facility) }
-    let!(:controlled_blood_pressure) { create(:blood_pressure, :under_control, facility: facility, patient: patient_with_controlled_bp, recorded_at: Time.current) }
-    let!(:uncontrolled_blood_pressure) { create(:blood_pressure, :high, facility: facility, patient: patient_with_uncontrolled_bp, recorded_at: Time.current) }
+
+    let!(:cohort_month_start) { Time.current.beginning_of_month }
+    let!(:user) { create(:user) }
+    let!(:patient_recorded_range) do
+      ((cohort_month_start - 2.months).to_date..(cohort_month_start - 2.months).end_of_month.to_date).to_a
+    end
+
+    let!(:bp_recorded_range) do
+      ((cohort_month_start - 1.months).to_date..Time.current.to_date).to_a
+    end
+
+    let!(:current_month_range) do
+      ((cohort_month_start - 1.months).to_date..Time.current.to_date).to_a
+    end
+
+    let!(:previous_month_range) do
+      ((cohort_month_start - 1.months).to_date..Time.current.to_date).to_a
+    end
+
+    let!(:patients_with_controlled_bp) do
+      (1..2).map do
+        create(:patient, recorded_at: patient_recorded_range.sample, registration_facility: facility, registration_user: user)
+      end
+    end
+
+    let!(:patients_with_uncontrolled_bp) do
+      (1..2).map do
+        create(:patient, recorded_at: patient_recorded_range.sample, registration_facility: facility, registration_user: user)
+      end
+    end
+
+    let!(:patients_with_missed_visit) do
+      (1..2).map do
+        create(:patient, recorded_at: patient_recorded_range.sample, registration_facility: facility, registration_user: user)
+      end
+    end
+
+    let!(:controlled_blood_pressures) do
+      patients_with_controlled_bp.map do |patient|
+        create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: current_month_range.sample, user: user)
+        create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: previous_month_range.sample, user: user)
+      end
+    end
+
+    let!(:uncontrolled_blood_pressures) do
+      patients_with_uncontrolled_bp.map do |patient|
+        create(:blood_pressure, :high, facility: facility, patient: patient, recorded_at: bp_recorded_range.sample, user: user)
+      end
+    end
 
     before do
       LatestBloodPressuresPerPatientPerMonth.refresh
     end
 
     describe '#cohort_registrations' do
-      specify { expect(MyFacilitiesQuery.new(quarter: cohort_month, year: cohort_year).cohort_registrations(Facility.all).count).to eq(3) }
+      specify { expect(MyFacilitiesQuery.new(month: cohort_month, year: cohort_year).cohort_registrations(Facility.all).count).to eq(6) }
     end
 
     describe '#cohort_controlled_bps' do
-      specify { expect(MyFacilitiesQuery.new(quarter: cohort_month, year: cohort_year).cohort_controlled_bps(Facility.all).count).to eq(1) }
+      it 'should do abc' do
+        expect(MyFacilitiesQuery.new(month: cohort_month, year: cohort_year, period: :month).cohort_controlled_bps(Facility.all).count).to eq(2)
+      end
     end
 
     describe '#cohort_uncontrolled_bps' do
-      specify { expect(MyFacilitiesQuery.new(quarter: cohort_month, year: cohort_year).cohort_uncontrolled_bps(Facility.all).count).to eq(1) }
+      specify { expect(MyFacilitiesQuery.new(month: cohort_month, year: cohort_year, period: :month).cohort_uncontrolled_bps(Facility.all).count).to eq(2) }
     end
   end
 end
