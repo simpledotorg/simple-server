@@ -70,6 +70,7 @@ class Admin::FacilitiesController < AdminController
 
   def facility_params
     params.require(:facility).permit(
+      :facility_group_id,
       :name,
       :street_address,
       :village_or_colony,
