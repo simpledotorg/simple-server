@@ -1,13 +1,21 @@
 <div class="page-header">
   <h1 class="page-title">All facilities</h1>
-  <nav class="page-nav">
+
+  <div>
     <% if policy([:manage, :facility, Facility]).upload? %>
       <%= link_to '+ Upload facilities CSV', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
     <% end %>
     <% if policy([:manage, FacilityGroup]).new? %>
-      <%= link_to 'New facility group', new_admin_facility_group_path, class: "btn btn-sm btn-primary" %>
+      <%= link_to '<i class="fas fa-plus mr-1"></i> New facility group' .html_safe, new_admin_facility_group_path, class: "btn btn-sm btn-primary" %>
     <% end %>
-  </nav>
+  </div>
+</div>
+
+<div class="alert alert-info alert-dismissible fade show" role="alert">
+    <i class="far fa-question-circle mr-2"></i> A <span class="term">Facility Group</span> is usually a <span class="term">District</span>. First, add a new facility group and then add facilities inside it.
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true"><i class="fas fa-times"></i></span>
+  </button>
 </div>
 
 <% @organizations.order(:name).each do |organization| %>
@@ -22,10 +30,10 @@
         </div>
         <div class="col-6 text-right">
           <% if policy([:manage, facility_group]).edit? %>
-            <%= link_to 'Edit', edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %>
+            <%= link_to 'Edit group', edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %>
           <% end %>
           <% if policy([:manage, :facility, facility_group.facilities.new]).new? %>
-            <%= link_to "New Facility", new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-outline-success" %>
+            <%= link_to '<i class="fas fa-plus mr-1"></i> Add a facility' .html_safe, new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-primary" %>
           <% end %>
         </div>
       </div>
