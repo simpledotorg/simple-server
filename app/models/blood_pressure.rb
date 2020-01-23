@@ -6,6 +6,11 @@ class BloodPressure < ApplicationRecord
   ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at bp_date registration_facility_name user_id
                               bp_systolic bp_diastolic]
 
+  THRESHOLDS = {
+    critical:     { systolic: 180, diastolic: 110 },
+    hypertensive: { systolic: 140, diastolic: 90 }
+  }.freeze
+
   belongs_to :patient, optional: true
   belongs_to :user, optional: true
   belongs_to :facility, optional: true
@@ -16,29 +21,28 @@ class BloodPressure < ApplicationRecord
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
-  scope :hypertensive, -> { where("systolic >= 140 OR diastolic >= 90") }
-  scope :under_control, -> { where("systolic < 140 AND diastolic < 90") }
+  scope :hypertensive, (lambda do
+    where('systolic >= ? OR diastolic >= ?',
+          THRESHOLDS[:hypertensive][:systolic],
+          THRESHOLDS[:hypertensive][:diastolic])
+  end)
+
+  scope :under_control, (lambda do
+    where('systolic < ? AND diastolic < ?',
+          THRESHOLDS[:hypertensive][:systolic],
+          THRESHOLDS[:hypertensive][:diastolic])
+  end)
 
   def critical?
-    systolic > 180 || diastolic > 110
-  end
-
-  def very_high?
-    (160..179).cover?(systolic) ||
-      (100..109).cover?(diastolic)
-  end
-
-  def high?
-    (140..159).cover?(systolic) ||
-      (90..99).cover?(diastolic)
-  end
-
-  def under_control?
-    systolic < 140 && diastolic < 90
+    systolic >= THRESHOLDS[:critical][:systolic] || diastolic >= THRESHOLDS[:critical][:diastolic]
   end
 
   def hypertensive?
-    !under_control?
+    systolic >= THRESHOLDS[:hypertensive][:systolic] || diastolic >= THRESHOLDS[:hypertensive][:diastolic]
+  end
+
+  def under_control?
+    !hypertensive?
   end
 
   def recorded_days_ago
