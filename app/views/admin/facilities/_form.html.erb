@@ -1,19 +1,29 @@
 <div class="row">
   <div class="col-md-6">
     <%= bootstrap_form_with(model: [:admin, facility_group, facility], local: true, autocomplete: "off", label_errors: true) do |form| %>
-      <%= form.text_field :name, id: :facility_name, required: true, autocomplete: "off" %>
-      <%= form.text_field :facility_type, id: :facility_type, required: true %>
-      <%= form.select :facility_size, Facility.facility_sizes.map { |key, value| [key.capitalize, value] }, id: :facility_type, required: true %>
-      <%= form.text_field :street_address, id: :facility_street_address %>
-      <%= form.text_field :village_or_colony, id: :facility_village_or_colony %>
+      <%= form.text_field :name, id: :facility_name, required: true, autocomplete: "off", help: "Include the facility type in the name. Example: PHC Brooklyn", label: "Facility name *" %>
+      <%= form.text_field :facility_type, id: :facility_type, help: "Examples: DH, SDH, CHC, PHC, UPHC, HWC, SC", label: "Facility type *", required: true %>
+      <%= form.select :facility_size, Facility.facility_sizes.map { |key, value| [key.capitalize, value] }, id: :facility_type, label: "Size *", help: "Select the closest relative size", required: true %>
+      <h3 class="mt-5">Address</h3>
+      <%= form.text_field :street_address, id: :facility_street_address, label: "House number and street" %>
+      <%= form.text_field :village_or_colony, id: :facility_village_or_colony, label: "Colony, village, or ward" %>
       <%= form.text_field :zone, id: :facility_zone %>
-      <%= form.text_field :district, id: :facility_district, required: true %>
-      <%= form.text_field :state, id: :facility_state, required: true %>
-      <%= form.text_field :country, id: :facility_country, required: true, value: "India" %>
+      <%= form.text_field :district, id: :facility_district, label: "District *", required: true %>
+      <%= form.text_field :state, id: :facility_state, label: "State *", required: true %>
+      <%= form.text_field :country, id: :facility_country, label: "Country *", required: true, value: "India" %>
       <%= form.text_field :pin, id: :facility_pin %>
-      <%= form.text_field :latitude, id: :facility_latitude %>
-      <%= form.text_field :longitude, id: :facility_longitude %>
+      <div class="row">
+        <div class="col">
+          <%= form.text_field :latitude, id: :facility_latitude %>
+        </div>
+        <div class="col">
+          <%= form.text_field :longitude, id: :facility_longitude %>
+        </div>
+      </div>
+      <h3 class="mt-5">Diabetes enabled?</h3>
+      <div class="mb-3">
       <%= form.check_box :enable_diabetes_management, id: :facility_enable_diabetes_management, wrapper_class: 'pad-bottom' %>
+      </div>
       <%= form.primary %>
     <% end %>
   </div>
