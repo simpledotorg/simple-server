@@ -31,7 +31,7 @@ module Mergeable
 
       case compute_merge_status(attributes)
       when :discarded
-        discarded_record(new_record)
+        discarded_record(existing_record)
       when :invalid
         invalid_record(new_record)
       when :new
