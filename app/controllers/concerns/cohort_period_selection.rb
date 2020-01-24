@@ -4,6 +4,8 @@ module CohortPeriodSelection
   extend ActiveSupport::Concern
 
   included do
+    include QuarterHelper
+
     def selected_cohort_period
       @period = params[:period] == 'month' ? :month : :quarter
       @quarter = sanitize_quarter(params[:quarter])
