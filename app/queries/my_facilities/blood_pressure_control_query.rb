@@ -5,14 +5,14 @@ class MyFacilities::BloodPressureControlQuery
   include MonthHelper
 
   def initialize(period: :quarter,
-                 quarter: quarter(Time.current),
-                 month: Time.current.month,
-                 year: Time.current.year,
+                 registration_quarter: previous_year_and_quarter(Time.current.year, quarter(Time.current)).second,
+                 registration_month: (Time.current.beginning_of_month - 1.month).month,
+                 registration_year: previous_year_and_quarter(Time.current.year, quarter(Time.current)).first,
                  facilities: Facility.all)
     @period = period
-    @month = month
-    @quarter = quarter
-    @year = year
+    @registration_month = registration_month
+    @registration_quarter = registration_quarter
+    @registration_year = registration_year
     @facilities = facilities
   end
 
@@ -43,18 +43,18 @@ class MyFacilities::BloodPressureControlQuery
 
   def quarterly_registrations
     patients = Patient.where(registration_facility: @facilities)
-    previous_cohort = previous_year_and_quarter(@year, @quarter)
 
     patients.where('recorded_at > ? AND recorded_at <= ?',
-                   quarter_start(*previous_cohort),
-                   quarter_end(*previous_cohort))
+                   quarter_start(@registration_year, @registration_quarter),
+                   quarter_end(@registration_year, @registration_quarter))
   end
 
   def quarterly_bps
     cohort_registrations = quarterly_registrations
+    visit_quarter = next_year_and_quarter(@registration_year, @registration_quarter)
     LatestBloodPressuresPerPatientPerQuarter
       .where(patient: cohort_registrations)
-      .where(year: @year, quarter: @quarter)
+      .where(year: visit_quarter.first, quarter: visit_quarter.second)
   end
 
   def quarterly_controlled_bps
@@ -67,7 +67,7 @@ class MyFacilities::BloodPressureControlQuery
 
   def monthly_registrations
     patients = Patient.where(registration_facility: @facilities)
-    registration_month_start = month_start(@year, @month) - 2.months
+    registration_month_start = month_start(@registration_year, @registration_month)
     registration_month_end = registration_month_start.end_of_month
 
     patients.where('recorded_at > ? AND recorded_at <= ?',
@@ -77,14 +77,19 @@ class MyFacilities::BloodPressureControlQuery
 
   def monthly_bps
     cohort_registrations = monthly_registrations
+    visited_in_months = [month_start(@registration_year, @registration_month) + 1.month,
+                         month_start(@registration_year, @registration_month) + 2.months]
+
     LatestBloodPressuresPerPatientPerMonth
       .select("distinct on (patient_id)
        bp_id, patient_id, bp_facility_id, bp_recorded_at, deleted_at, systolic, diastolic, quarter, year")
       .order('patient_id, bp_recorded_at DESC, bp_id')
       .where(patient: cohort_registrations)
       .where('(year = ? AND month = ?) OR (year = ? AND month = ?)',
-             @year.to_s, @month.to_s,
-             *(previous_year_and_month(@year, @month).map(&:to_s)))
+             visited_in_months.first.year.to_s,
+             visited_in_months.first.month.to_s,
+             visited_in_months.second.year.to_s,
+             visited_in_months.second.month.to_s)
   end
 
   def monthly_bps_cte

@@ -13,6 +13,12 @@ module QuarterHelper
     [year, quarter - 1]
   end
 
+  def next_year_and_quarter(year = Time.current.year, quarter = quarter(Time.current))
+    return [year + 1, 1] if quarter == 4
+
+    [year, quarter + 1]
+  end
+
   def current_year_and_quarter
     [current_year, current_quarter]
   end
@@ -51,7 +57,7 @@ module QuarterHelper
     year = current_year
     quarter = current_quarter
 
-    [current_year_and_quarter] + (0..(n - 2)).map do |_|
+    (1..n).map do |_|
       year, quarter = previous_year_and_quarter(year, quarter)
       [year, quarter]
     end
