@@ -1,7 +1,7 @@
 <div class="page-header">
   <h1 class="page-title">All facilities</h1>
 
-  <div>
+  <nav class="page-nav">
     <% if policy([:manage, :facility, Facility]).upload? %>
       <%= link_to '+ Upload facilities CSV', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
     <% end %>
@@ -9,7 +9,7 @@
       <%= link_to '<i class="fas fa-plus mr-1"></i> New facility group' .html_safe, new_admin_facility_group_path, class: "btn btn-sm btn-primary" %>
     <% end %>
   </div>
-</div>
+</nav>
 
 <div class="alert alert-info alert-dismissible fade show" role="alert">
     <i class="far fa-question-circle mr-2"></i> A <span class="term">Facility Group</span> is usually a <span class="term">District</span>. First, add a new facility group and then add facilities inside it.
