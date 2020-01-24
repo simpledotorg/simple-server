@@ -8,8 +8,8 @@ class MyFacilities::OverviewQuery
     @facilities = facilities
   end
 
-  def inactive_facilities(facilities = Facility.all)
-    facilities = facilities.left_outer_joins(:blood_pressures)
+  def inactive_facilities
+    facilities = @facilities.left_outer_joins(:blood_pressures)
                             .where('blood_pressures.recorded_at IS NULL OR blood_pressures.recorded_at > ?',
                               INACTIVITY_THRESHOLD_PERIOD)
                             .having('COUNT(blood_pressures) < ? ', INACTIVITY_THRESHOLD_BPS)
