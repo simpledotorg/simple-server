@@ -79,15 +79,15 @@
     </tr>
     <tr data-sort-method="thead" class="sorts">
       <th class="row-label sort-label">Facilities</th>
-      <th class="row-label sort-label" data-sort-method="number" colspan="2" data-sort-default>Visited with controlled
+      <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="controlled" colspan="2" data-sort-default>Visited with controlled
         <br>BP in <%= selected_period %>
       </th>
-      <th class="row-label sort-label" data-sort-method="number" colspan="2">Visited with uncontrolled<br>BP
+      <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="uncontrolled" colspan="2">Visited with uncontrolled<br>BP
         in <%= selected_period %>
       </th>
-      <th class="row-label sort-label" data-sort-method="number" colspan="2">Missed visit<br>in <%= selected_period %>
+      <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="missed" colspan="2">Missed visit<br>in <%= selected_period %>
       </th>
-      <th class="row-label sort-label" data-sort-method="number" colspan="2">All registered patients<br>with controlled
+      <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="all-time-controlled" colspan="2">All registered patients<br>with controlled
         BP<sup>1</sup></th>
       <th class="mobile"></th>
     </tr>
@@ -114,19 +114,20 @@
                       all_time_controlled_bps: @all_time_controlled_bps_per_facility[facility.id].to_i } %>
       <tr>
         <td class="type-title"><%= link_to facility.name, analytics_facility_path(facility) %></td>
-        <td class="type-percent">
+        <td class="type-percent" data-sort-column-key="controlled">
           <em><%= percentage(bp_stats[:controlled], bp_stats[:registered]) %></em>
         </td>
         <td class="type-number"><%= bp_stats[:controlled] %></td>
-        <td class="type-percent">
+        <td class="type-percent" data-sort-column-key="uncontrolled">
           <em><%= percentage(bp_stats[:uncontrolled], bp_stats[:registered]) %></em>
         </td>
         <td class="type-number"><%= bp_stats[:uncontrolled] %></td>
-        <td class="type-percent">
+        <td class="type-percent" data-sort-column-key="missed">
           <em><%= percentage(bp_stats[:missed], bp_stats[:registered]) %></em>
         </td>
         <td class="type-number"><%= bp_stats[:missed] %></td>
-        <td class="type-percent"><em><%= percentage(bp_stats[:all_time_controlled_bps], bp_stats[:all_time_bps]) %></em></td>
+        <td class="type-percent" data-sort-column-key="all-time-controlled">
+          <em><%= percentage(bp_stats[:all_time_controlled_bps], bp_stats[:all_time_bps]) %></em></td>
         <td class="type-number"><%= bp_stats[:all_time_controlled_bps] %></td>
       </tr>
     <% end %>
