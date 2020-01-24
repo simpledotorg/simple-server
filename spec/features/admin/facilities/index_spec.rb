@@ -7,8 +7,6 @@ RSpec.feature 'Facility page functionality', type: :feature do
   let!(:ihmi) { create(:organization, name: 'IHMI') }
   let!(:another_organization) { create(:organization) }
   let!(:ihmi_group_bathinda) { create(:facility_group, organization: ihmi, name: 'Bathinda') }
-  let!(:unassociated_facility) { create(:facility, facility_group: nil, name: 'testfacility') }
-  let!(:unassociated_facility02) { create(:facility, facility_group: nil, name: 'testfacility_02') }
 
   let!(:protocol_01) { create(:protocol, name: 'testProtocol') }
 
@@ -33,21 +31,11 @@ RSpec.feature 'Facility page functionality', type: :feature do
         expect(page).to have_content('Bathinda')
       end
 
-      it 'create new facility group without assigning any facility' do
-        facility_page.click_add_facility_group_button
-
-        expect(page).to have_content('New facility group')
-        facility_group.add_new_facility_group_without_assigningfacility('IHMI', 'testfacilitygroup', 'testDescription', protocol_01.name)
-
-        expect(page).to have_content('Bathinda')
-        expect(page).to have_content('testfacilitygroup')
-      end
-
       it 'create new facility group with facility' do
         facility_page.click_add_facility_group_button
 
         expect(page).to have_content('New facility group')
-        facility_group.add_new_facility_group('IHMI', 'testfacilitygroup', 'testDescription', unassociated_facility.name, protocol_01.name)
+        facility_group.add_new_facility_group('IHMI', 'testfacilitygroup', protocol_01.name)
 
         expect(page).to have_content('Bathinda')
         expect(page).to have_content('testfacilitygroup')
@@ -58,21 +46,6 @@ RSpec.feature 'Facility page functionality', type: :feature do
         facility_page.click_edit_button_present_for_facilitygroup(ihmi_group_bathinda.name)
         expect(page).to have_content('Edit facility group')
         facility_group.click_on_delete_facility_group_button
-      end
-
-      it 'admin should be able to edit facility group info ' do
-        facility_page.click_add_facility_group_button
-        facility_group.add_new_facility_group('IHMI', 'testfacilitygroup', 'testDescription', unassociated_facility.name, protocol_01.name)
-        facility_page.click_edit_button_present_for_facilitygroup('testfacilitygroup')
-
-        # deselecting previously selected facility
-        facility_group.select_unassociated_facility(unassociated_facility.name)
-
-        # select new unassigned facility
-        facility_group.select_unassociated_facility(unassociated_facility02.name)
-        facility_group.click_on_update_facility_group_button
-
-        expect(page).to have_content(unassociated_facility02.name)
       end
     end
   end
@@ -90,7 +63,7 @@ RSpec.feature 'Facility page functionality', type: :feature do
       end
 
       it 'displays a new facility link' do
-        expect(page).to have_link('New Facility', href: new_admin_facility_group_facility_path(ihmi_group_bathinda))
+        expect(page).to have_link('Add a facility', href: new_admin_facility_group_facility_path(ihmi_group_bathinda))
       end
     end
 
