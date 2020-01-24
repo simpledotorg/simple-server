@@ -39,12 +39,14 @@ class MyFacilitiesQuery
 
   def all_time_bps(facilities = Facility.all)
     LatestBloodPressuresPerPatient
-        .where(bp_facility_id: facilities)
+      .where(bp_facility_id: facilities)
   end
 
   def all_time_controlled_bps(facilities = Facility.all)
     all_time_bps(facilities)
-        .where('systolic < 140 AND diastolic < 90')
+      .where('bp_recorded_at > ?', Date.current - 90.days)
+      .where('systolic < 140 AND diastolic < 90')
+
   end
 
   def quarterly_registrations(facilities)
