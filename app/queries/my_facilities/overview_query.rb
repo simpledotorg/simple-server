@@ -9,14 +9,12 @@ class MyFacilities::OverviewQuery
   end
 
   def inactive_facilities(facilities = Facility.all)
-    facility_ids = facilities.left_outer_joins(:blood_pressures)
-                     .where('blood_pressures.recorded_at IS NULL OR blood_pressures.recorded_at > ?',
-                            INACTIVITY_THRESHOLD_PERIOD)
-                     .group('facilities.id')
-                     .count(:blood_pressures)
-                     .select { |_, count| count < INACTIVITY_THRESHOLD_BPS }
-                     .keys
+    facilities = facilities.left_outer_joins(:blood_pressures)
+                            .where('blood_pressures.recorded_at IS NULL OR blood_pressures.recorded_at > ?',
+                              INACTIVITY_THRESHOLD_PERIOD)
+                            .having('COUNT(blood_pressures) < ? ', INACTIVITY_THRESHOLD_BPS)
+                            .group('facilities.id')
 
-    facilities.where(id: facility_ids)
+    Facility.where(id: facilities.pluck(:id))
   end
 end
