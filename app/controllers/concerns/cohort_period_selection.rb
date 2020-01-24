@@ -22,7 +22,7 @@ module CohortPeriodSelection
     end
 
     def sanitize_year(year)
-      year.to_i > 0 ? year.to_i : Time.current.year
+      year.to_i.positive? ? year.to_i : Time.current.year
     end
 
     def sanitize_month(month)

@@ -51,7 +51,7 @@ module QuarterHelper
     year = current_year
     quarter = current_quarter
 
-    [current_year_and_quarter] + (0..(n-2)).map do |_|
+    [current_year_and_quarter] + (0..(n - 2)).map do |_|
       year, quarter = previous_year_and_quarter(year, quarter)
       [year, quarter]
     end
