@@ -27,6 +27,8 @@ class MyFacilitiesController < AdminController
         last_month: @inactive_facilities.bp_counts_in_period(start: 1.month.ago, finish: Time.current) }
   end
 
+  def registrations; end
+
   def blood_pressure_control
     @facilities = filter_facilities([:manage, :facility])
 
