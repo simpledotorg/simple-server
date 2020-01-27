@@ -30,6 +30,8 @@ class MyFacilitiesController < AdminController
   def registrations
     @facilities = facilities_by_size([:manage, :facility])
 
+    @selected_periods = []
+    @registrations =  MyFacilities::RegistrationsQuery.new(facilities: @facilities).registrations.group(:facility_id, :quarter, :year).sum(registration_count)
   end
 
   def blood_pressure_control
