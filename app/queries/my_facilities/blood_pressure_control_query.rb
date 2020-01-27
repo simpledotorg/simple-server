@@ -29,9 +29,9 @@ class MyFacilities::BloodPressureControlQuery
   end
 
   def all_time_bps
-    LatestBloodPressuresPerPatient
-      .where('patient_recorded_at < ?', Date.current - 2.months)
-      .where(bp_facility_id: @facilities)
+    @all_time_bps ||= LatestBloodPressuresPerPatient
+                      .where('patient_recorded_at < ?', Date.current - 2.months)
+                      .where(bp_facility_id: @facilities)
   end
 
   def all_time_controlled_bps
@@ -52,9 +52,9 @@ class MyFacilities::BloodPressureControlQuery
 
   def quarterly_bps
     visited_in_quarter = next_year_and_quarter(@registration_year, @registration_quarter)
-    LatestBloodPressuresPerPatientPerQuarter
-      .where(patient: quarterly_registrations)
-      .where(year: visited_in_quarter.first, quarter: visited_in_quarter.second)
+    @quarterly_bps ||= LatestBloodPressuresPerPatientPerQuarter
+                       .where(patient: quarterly_registrations)
+                       .where(year: visited_in_quarter.first, quarter: visited_in_quarter.second)
   end
 
   def quarterly_controlled_bps
@@ -92,9 +92,9 @@ class MyFacilities::BloodPressureControlQuery
   def monthly_bps_cte
     # Using the table as a CTE(nested query) is a workaround
     # for ActiveRecord's inability to compose a `COUNT` with a `DISTINCT ON`.
-    LatestBloodPressuresPerPatientPerMonth
-      .from(monthly_bps,
-            'latest_blood_pressures_per_patient_per_months')
+    @monthly_bps_cte ||= LatestBloodPressuresPerPatientPerMonth
+                         .from(monthly_bps,
+                               'latest_blood_pressures_per_patient_per_months')
   end
 
   def monthly_controlled_bps
