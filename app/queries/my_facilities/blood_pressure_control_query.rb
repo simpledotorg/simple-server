@@ -51,10 +51,10 @@ class MyFacilities::BloodPressureControlQuery
 
   def quarterly_bps
     cohort_registrations = quarterly_registrations
-    visit_quarter = next_year_and_quarter(@registration_year, @registration_quarter)
+    visited_in_quarter = next_year_and_quarter(@registration_year, @registration_quarter)
     LatestBloodPressuresPerPatientPerQuarter
       .where(patient: cohort_registrations)
-      .where(year: visit_quarter.first, quarter: visit_quarter.second)
+      .where(year: visited_in_quarter.first, quarter: visited_in_quarter.second)
   end
 
   def quarterly_controlled_bps

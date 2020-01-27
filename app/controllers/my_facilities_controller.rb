@@ -6,6 +6,9 @@ class MyFacilitiesController < AdminController
   include FacilitySizeFiltering
   include CohortPeriodSelection
 
+  DEFAULT_ANALYTICS_TIME_ZONE = 'Asia/Kolkata'
+
+  around_action :set_time_zone
   before_action :authorize_my_facilities
 
   def index
@@ -51,6 +54,12 @@ class MyFacilitiesController < AdminController
   end
 
   private
+
+  def set_time_zone
+    time_zone = ENV['ANALYTICS_TIME_ZONE'] || DEFAULT_ANALYTICS_TIME_ZONE
+
+    Time.use_zone(time_zone) { yield }
+  end
 
   def authorize_my_facilities
     authorize(:dashboard, :show?)
