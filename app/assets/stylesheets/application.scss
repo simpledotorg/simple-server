@@ -743,7 +743,8 @@ th sup {
     td.type-number { text-align: right; padding-right: 16px; }
     td.type-percent { text-align: center; }
     td.type-percent em { font-style: normal; background: #F1DBFF; color: #BE72E3; border-radius: 100px; padding: 2px 10px; }
-    
+    .row-total td.type-percent em { background: rgba(0,0,0,0.1); color: rgba(0,0,0,0.6); }
+
     td.type-rank i { margin-left: 0.5em; color: $green; }
     td.type-rank i.fa-long-arrow-alt-down { color: $red; }
 }
