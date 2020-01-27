@@ -51,10 +51,9 @@ class MyFacilities::BloodPressureControlQuery
   end
 
   def quarterly_bps
-    cohort_registrations = quarterly_registrations
     visited_in_quarter = next_year_and_quarter(@registration_year, @registration_quarter)
     LatestBloodPressuresPerPatientPerQuarter
-      .where(patient: cohort_registrations)
+      .where(patient: quarterly_registrations)
       .where(year: visited_in_quarter.first, quarter: visited_in_quarter.second)
   end
 
@@ -77,7 +76,6 @@ class MyFacilities::BloodPressureControlQuery
   end
 
   def monthly_bps
-    cohort_registrations = monthly_registrations
     visited_in_months = [month_start(@registration_year, @registration_month) + 1.month,
                          month_start(@registration_year, @registration_month) + 2.months]
 
@@ -85,12 +83,10 @@ class MyFacilities::BloodPressureControlQuery
       .select("distinct on (patient_id)
        bp_id, patient_id, bp_facility_id, bp_recorded_at, deleted_at, systolic, diastolic, quarter, year")
       .order('patient_id, bp_recorded_at DESC, bp_id')
-      .where(patient: cohort_registrations)
+      .where(patient: monthly_registrations)
       .where('(year = ? AND month = ?) OR (year = ? AND month = ?)',
-             visited_in_months.first.year.to_s,
-             visited_in_months.first.month.to_s,
-             visited_in_months.second.year.to_s,
-             visited_in_months.second.month.to_s)
+             visited_in_months.first.year.to_s, visited_in_months.first.month.to_s,
+             visited_in_months.second.year.to_s, visited_in_months.second.month.to_s)
   end
 
   def monthly_bps_cte

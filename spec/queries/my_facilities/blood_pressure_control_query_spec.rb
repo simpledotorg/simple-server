@@ -157,7 +157,7 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       end
 
       describe '#cohort_controlled_bps' do
-        it 'should do abc' do
+        specify do
           expect(described_class.new(registration_month: registration_month,
                                      registration_year: registration_year,
                                      period: :month,

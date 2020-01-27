@@ -21,14 +21,16 @@ module CohortPeriodSelection
     private
 
     def sanitize_registration_quarter(quarter_param)
-      quarter_param.to_i.between?(1, 4) ? quarter_param.to_i : previous_year_and_quarter(Time.current.year, quarter(Time.current)).second
+      return quarter_param.to_i if quarter_param.to_i.between?(1, 4)
+
+      previous_year_and_quarter(Time.current.year, quarter(Time.current)).second
     end
 
     def sanitize_registration_year(year)
       return year.to_i if year.to_i.positive?
-
       return (Time.current.beginning_of_month - 1.month).year if @period == :month
-      return previous_year_and_quarter(Time.current.year, quarter(Time.current)).first if @period == :quarter
+
+      previous_year_and_quarter(Time.current.year, quarter(Time.current)).first
     end
 
     def sanitize_registration_month(month)
