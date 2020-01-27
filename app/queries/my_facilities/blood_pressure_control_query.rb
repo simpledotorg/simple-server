@@ -30,6 +30,7 @@ class MyFacilities::BloodPressureControlQuery
 
   def all_time_bps
     LatestBloodPressuresPerPatient
+      .where('patient_recorded_at < ?', Date.current - 2.months)
       .where(bp_facility_id: @facilities)
   end
 
