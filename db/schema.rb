@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200123123144) do
+ActiveRecord::Schema.define(version: 20200127123121) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -221,6 +221,7 @@ ActiveRecord::Schema.define(version: 20200123123144) do
     t.string "zone"
     t.boolean "enable_diabetes_management", default: false, null: false
     t.string "facility_size"
+    t.integer "monthly_opd_load"
     t.index ["deleted_at"], name: "index_facilities_on_deleted_at"
     t.index ["enable_diabetes_management"], name: "index_facilities_on_enable_diabetes_management"
     t.index ["facility_group_id"], name: "index_facilities_on_facility_group_id"
@@ -788,6 +789,22 @@ ActiveRecord::Schema.define(version: 20200123123144) do
        JOIN patients ON ((patients.id = blood_pressures.patient_id)))
     WHERE (blood_pressures.deleted_at IS NULL)
     ORDER BY blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, blood_pressures.recorded_at DESC, blood_pressures.id;
+  SQL
+  create_view "patient_registrations_per_day_per_facilities", materialized: true, sql_definition: <<-SQL
+      SELECT count(patients.id) AS count,
+      patients.registration_facility_id AS facility_id,
+      facilities.facility_size,
+      facilities.created_at AS facility_created_at,
+      facilities.district AS facility_district,
+      facilities.zone AS facility_zone,
+      (date_part('day'::text, patients.recorded_at))::text AS day,
+      (date_part('month'::text, patients.recorded_at))::text AS month,
+      (date_part('quarter'::text, patients.recorded_at))::text AS quarter,
+      (date_part('year'::text, patients.recorded_at))::text AS year
+     FROM (patients
+       JOIN facilities ON ((patients.registration_facility_id = facilities.id)))
+    WHERE (patients.deleted_at IS NULL)
+    GROUP BY (date_part('day'::text, patients.recorded_at))::text, (date_part('month'::text, patients.recorded_at))::text, (date_part('quarter'::text, patients.recorded_at))::text, (date_part('year'::text, patients.recorded_at))::text, patients.registration_facility_id, facilities.facility_size, facilities.created_at, facilities.district, facilities.zone;
   SQL
   create_view "latest_blood_pressures_per_patients", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (latest_blood_pressures_per_patient_per_months.patient_id) latest_blood_pressures_per_patient_per_months.bp_id,
