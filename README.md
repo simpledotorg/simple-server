@@ -138,6 +138,12 @@ bundle exec rake create_admin_user["<name>","<email>","<password>"]
 
 API Documentation can be accessed at `/api-docs` on local server and hosted at https://api.simple.org/api-docs
 
+To regenerate the Swagger API documentation, run the following command.
+
+```
+$ bundle exec rake rswag:specs:swaggerize
+```
+
 ### ADRs
 
 Architecture decisions are captured in ADR format and are available in `/doc/arch`
