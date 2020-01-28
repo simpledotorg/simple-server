@@ -12,4 +12,5 @@ SELECT DISTINCT ON (patient_id, year, month)
     cast(EXTRACT(QUARTER FROM blood_pressures.recorded_at) as text) AS quarter,
     cast(EXTRACT(YEAR FROM blood_pressures.recorded_at) as text) AS year
 FROM blood_pressures JOIN patients ON patients.id = blood_pressures.patient_id
+WHERE blood_pressures.deleted_at IS NULL
 ORDER BY patient_id, year, month, blood_pressures.recorded_at DESC, bp_id;

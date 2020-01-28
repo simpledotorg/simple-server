@@ -3,7 +3,7 @@
 class MyFacilitiesController < AdminController
   include DistrictFiltering
   include Pagination
-  include FacilitySizeFiltering
+  include MyFacilitiesFiltering
   include CohortPeriodSelection
 
   DEFAULT_ANALYTICS_TIME_ZONE = 'Asia/Kolkata'
@@ -28,7 +28,7 @@ class MyFacilitiesController < AdminController
   end
 
   def blood_pressure_control
-    @facilities = facilities_by_size([:manage, :facility])
+    @facilities = filter_facilities([:manage, :facility])
 
     bp_query = MyFacilities::BloodPressureControlQuery.new(selected_cohort_period.merge(facilities: @facilities))
 
