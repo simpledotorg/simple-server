@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191225171641) do
+ActiveRecord::Schema.define(version: 20200128102802) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -262,6 +262,7 @@ ActiveRecord::Schema.define(version: 20191225171641) do
     t.text "diagnosed_with_hypertension"
     t.datetime "deleted_at"
     t.uuid "user_id"
+    t.text "hypertension"
     t.index ["deleted_at"], name: "index_medical_histories_on_deleted_at"
     t.index ["patient_id"], name: "index_medical_histories_on_patient_id"
     t.index ["user_id"], name: "index_medical_histories_on_user_id"
