@@ -10,6 +10,15 @@ patients = {}
 patient_key = nil
 blood_pressure = {}
 
+def history(value)
+  case value.to_i
+  when 0
+    "unknown"
+  when 1
+    "yes"
+  end
+end
+
 data.each_with_index do |row, index|
   key = row[0]
   value = row[1]
@@ -40,6 +49,11 @@ data.each_with_index do |row, index|
   patients[patient_key][:full_name] = value                if key == 'Name of Patient'
   patients[patient_key][:business_identifiers].push(value) if key == 'NID'
   patients[patient_key][:phone_numbers].push(value)        if key == 'Mobile Number (patient)'
+
+  patients[patient_key][:medical_history][:prior_heart_attack] = history(value)     if key == 'Past History of Heart Attack'
+  patients[patient_key][:medical_history][:prior_stroke] = history(value)           if key == 'Past History of Brain Stroke'
+  patients[patient_key][:medical_history][:chronic_kidney_disease] = history(value) if key == 'Past History of Chronic Kidney Disease'
+  patients[patient_key][:medical_history][:diabetes] = history(value)               if key == 'Past History Of Diabaties'
 
   if key =~ /SBP/
     date = data[index - 1][1]
