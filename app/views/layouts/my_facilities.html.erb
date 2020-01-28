@@ -107,7 +107,7 @@
   <div class="row">
     <div class="col-lg-2 pl-lg-0 desktop">
       <nav class="secondary-nav">
-        <%= link_to 'Overview', my_facilities_overview_path(request.query_parameters),
+        <%= link_to 'Overview', my_facilities_overview_path,
                     class: request.path == my_facilities_overview_path ? "nav-link active" : "nav-link" %>
         <%= link_to 'Ranked facilities', my_facilities_ranked_facilities_path(request.query_parameters),
                     class: request.path == my_facilities_ranked_facilities_path ? "nav-link active" : "nav-link" %>
