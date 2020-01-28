@@ -47,7 +47,7 @@ RSpec.feature 'Overdue appointments', type: :feature do
       let!(:overdue_patient_in_facility_2) do
         patient = create(:patient, full_name: 'patient_3', registration_facility: facility_2)
         create(:appointment, :overdue, facility: facility_2, patient: patient, scheduled_date: 5.days.ago)
-        create(:blood_pressure, :high, facility: facility_2, patient: patient)
+        create(:blood_pressure, :hypertensive, facility: facility_2, patient: patient)
         patient
       end
 
