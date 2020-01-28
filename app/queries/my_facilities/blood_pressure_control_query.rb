@@ -35,7 +35,8 @@ class MyFacilities::BloodPressureControlQuery
   end
 
   def all_time_controlled_bps
-    all_time_bps
+    @all_time_controlled_bps ||=
+      all_time_bps
       .where('bp_recorded_at > ?', Date.current - 90.days)
       .where('systolic < 140 AND diastolic < 90')
   end
@@ -45,24 +46,26 @@ class MyFacilities::BloodPressureControlQuery
   def quarterly_registrations
     patients = Patient.where(registration_facility: @facilities)
 
-    patients.where('recorded_at > ? AND recorded_at <= ?',
-                   quarter_start(@registration_year, @registration_quarter),
-                   quarter_end(@registration_year, @registration_quarter))
+    @quarterly_registrations ||=
+      patients.where('recorded_at > ? AND recorded_at <= ?',
+                      quarter_start(@registration_year, @registration_quarter),
+                      quarter_end(@registration_year, @registration_quarter))
   end
 
   def quarterly_bps
     visited_in_quarter = next_year_and_quarter(@registration_year, @registration_quarter)
-    @quarterly_bps ||= LatestBloodPressuresPerPatientPerQuarter
-                       .where(patient: quarterly_registrations)
-                       .where(year: visited_in_quarter.first, quarter: visited_in_quarter.second)
+    @quarterly_bps ||=
+      LatestBloodPressuresPerPatientPerQuarter
+      .where(patient: quarterly_registrations)
+      .where(year: visited_in_quarter.first, quarter: visited_in_quarter.second)
   end
 
   def quarterly_controlled_bps
-    quarterly_bps.where('systolic < 140 AND diastolic < 90')
+    @quarterly_controlled_bps ||= quarterly_bps.where('systolic < 140 AND diastolic < 90')
   end
 
   def quarterly_uncontrolled_bps
-    quarterly_bps.where('systolic >= 140 OR diastolic >= 90')
+    @quarterly_uncontrolled_bps ||= quarterly_bps.where('systolic >= 140 OR diastolic >= 90')
   end
 
   def monthly_registrations
@@ -70,16 +73,18 @@ class MyFacilities::BloodPressureControlQuery
     registration_month_start = month_start(@registration_year, @registration_month)
     registration_month_end = registration_month_start.end_of_month
 
-    patients.where('recorded_at > ? AND recorded_at <= ?',
-                   registration_month_start,
-                   registration_month_end)
+    @monthly_registrations ||=
+      patients.where('recorded_at > ? AND recorded_at <= ?',
+                      registration_month_start,
+                      registration_month_end)
   end
 
   def monthly_bps
     visited_in_months = [month_start(@registration_year, @registration_month) + 1.month,
                          month_start(@registration_year, @registration_month) + 2.months]
 
-    LatestBloodPressuresPerPatientPerMonth
+    @monthly_bps ||=
+      LatestBloodPressuresPerPatientPerMonth
       .select("distinct on (patient_id)
        bp_id, patient_id, bp_facility_id, bp_recorded_at, deleted_at, systolic, diastolic, quarter, year")
       .order('patient_id, bp_recorded_at DESC, bp_id')
@@ -92,16 +97,17 @@ class MyFacilities::BloodPressureControlQuery
   def monthly_bps_cte
     # Using the table as a CTE(nested query) is a workaround
     # for ActiveRecord's inability to compose a `COUNT` with a `DISTINCT ON`.
-    @monthly_bps_cte ||= LatestBloodPressuresPerPatientPerMonth
-                         .from(monthly_bps,
-                               'latest_blood_pressures_per_patient_per_months')
+    @monthly_bps_cte ||=
+      LatestBloodPressuresPerPatientPerMonth
+      .from(monthly_bps,
+           'latest_blood_pressures_per_patient_per_months')
   end
 
   def monthly_controlled_bps
-    monthly_bps_cte.where('systolic < 140 AND diastolic < 90')
+    @monthly_controlled_bps ||= monthly_bps_cte.where('systolic < 140 AND diastolic < 90')
   end
 
   def monthly_uncontrolled_bps
-    monthly_bps_cte.where('systolic >= 140 OR diastolic >= 90')
+    @monthly_uncontrolled_bps ||=  monthly_bps_cte.where('systolic >= 140 OR diastolic >= 90')
   end
 end
