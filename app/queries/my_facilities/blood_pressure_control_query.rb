@@ -4,6 +4,8 @@ class MyFacilities::BloodPressureControlQuery
   include QuarterHelper
   include MonthHelper
 
+  attr_reader :facilities
+
   def initialize(period: :quarter,
                  registration_quarter: previous_year_and_quarter(Time.current.year, quarter(Time.current)).second,
                  registration_month: (Time.current.beginning_of_month - 1.month).month,
@@ -31,7 +33,7 @@ class MyFacilities::BloodPressureControlQuery
   def all_time_bps
     @all_time_bps ||= LatestBloodPressuresPerPatient
                       .where('patient_recorded_at < ?', Date.current - 2.months)
-                      .where(bp_facility_id: @facilities)
+                      .where(bp_facility_id: facilities)
   end
 
   def all_time_controlled_bps
@@ -44,7 +46,7 @@ class MyFacilities::BloodPressureControlQuery
   private
 
   def quarterly_registrations
-    patients = Patient.where(registration_facility: @facilities)
+    patients = Patient.where(registration_facility: facilities)
 
     @quarterly_registrations ||=
       patients.where('recorded_at > ? AND recorded_at <= ?',
@@ -69,7 +71,7 @@ class MyFacilities::BloodPressureControlQuery
   end
 
   def monthly_registrations
-    patients = Patient.where(registration_facility: @facilities)
+    patients = Patient.where(registration_facility: facilities)
     registration_month_start = month_start(@registration_year, @registration_month)
     registration_month_end = registration_month_start.end_of_month
 
