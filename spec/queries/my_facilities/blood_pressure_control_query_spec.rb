@@ -50,7 +50,7 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
 
       let!(:uncontrolled_blood_pressures) do
         patients_with_uncontrolled_bp.map do |patient|
-          create(:blood_pressure, :high, facility: facility, patient: patient, recorded_at: current_quarter_range.sample, user: user)
+          create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: current_quarter_range.sample, user: user)
         end
       end
 
@@ -139,7 +139,7 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
 
       let!(:uncontrolled_blood_pressures) do
         patients_with_uncontrolled_bp.map do |patient|
-          create(:blood_pressure, :high, facility: facility, patient: patient, recorded_at: bp_recorded_range.sample, user: user)
+          create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: bp_recorded_range.sample, user: user)
         end
       end
 
