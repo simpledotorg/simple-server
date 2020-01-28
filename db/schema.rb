@@ -793,10 +793,6 @@ ActiveRecord::Schema.define(version: 20200127123121) do
   create_view "patient_registrations_per_day_per_facilities", materialized: true, sql_definition: <<-SQL
       SELECT count(patients.id) AS registration_count,
       patients.registration_facility_id AS facility_id,
-      facilities.facility_size,
-      facilities.created_at AS facility_created_at,
-      facilities.district AS facility_district,
-      facilities.zone AS facility_zone,
       patients.deleted_at,
       (date_part('day'::text, patients.recorded_at))::text AS day,
       (date_part('month'::text, patients.recorded_at))::text AS month,
@@ -805,7 +801,7 @@ ActiveRecord::Schema.define(version: 20200127123121) do
      FROM (patients
        JOIN facilities ON ((patients.registration_facility_id = facilities.id)))
     WHERE (patients.deleted_at IS NULL)
-    GROUP BY (date_part('day'::text, patients.recorded_at))::text, (date_part('month'::text, patients.recorded_at))::text, (date_part('quarter'::text, patients.recorded_at))::text, (date_part('year'::text, patients.recorded_at))::text, patients.registration_facility_id, facilities.facility_size, facilities.created_at, facilities.district, facilities.zone, patients.deleted_at;
+    GROUP BY (date_part('day'::text, patients.recorded_at))::text, (date_part('month'::text, patients.recorded_at))::text, (date_part('quarter'::text, patients.recorded_at))::text, (date_part('year'::text, patients.recorded_at))::text, patients.registration_facility_id, patients.deleted_at;
   SQL
   create_view "latest_blood_pressures_per_patients", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (latest_blood_pressures_per_patient_per_months.patient_id) latest_blood_pressures_per_patient_per_months.bp_id,
