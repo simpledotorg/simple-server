@@ -8,30 +8,27 @@ class MyFacilities::BloodPressureControlQuery
   include QuarterHelper
   include MonthHelper
 
-  attr_reader :facilities
-
-  def initialize(period: :quarter,
-                 registration_quarter: previous_year_and_quarter(Time.current.year, quarter(Time.current)).second,
-                 registration_month: (Time.current.beginning_of_month - 1.month).month,
-                 registration_year: previous_year_and_quarter(Time.current.year, quarter(Time.current)).first,
-                 facilities: Facility.all)
-    @period = period
-    @registration_month = registration_month
-    @registration_quarter = registration_quarter
-    @registration_year = registration_year
-    @facilities = facilities
+  def initialize(selected_cohort_period, facilities)
+    @cohort_period = selected_cohort_period[:cohort_period] || :quarter
+    @registration_quarter = selected_cohort_period[:registration_quarter] ||
+                            previous_year_and_quarter(Time.current.year, quarter(Time.current)).second
+    @registration_month = selected_cohort_period[:registration_month] ||
+                          (Time.current.beginning_of_month - 1.month).month
+    @registration_year = selected_cohort_period[:registration_year] ||
+                         previous_year_and_quarter(Time.current.year, quarter(Time.current)).first
+    @facilities = facilities || Facility.all
   end
 
   def cohort_registrations
-    @period == :month ? monthly_registrations : quarterly_registrations
+    @cohort_period == :month ? monthly_registrations : quarterly_registrations
   end
 
   def cohort_controlled_bps
-    @period == :month ? monthly_controlled_bps : quarterly_controlled_bps
+    @cohort_period == :month ? monthly_controlled_bps : quarterly_controlled_bps
   end
 
   def cohort_uncontrolled_bps
-    @period == :month ? monthly_uncontrolled_bps : quarterly_uncontrolled_bps
+    @cohort_period == :month ? monthly_uncontrolled_bps : quarterly_uncontrolled_bps
   end
 
   def all_time_bps
@@ -48,6 +45,7 @@ class MyFacilities::BloodPressureControlQuery
   end
 
   private
+  attr_reader :facilities
 
   def quarterly_registrations
     patients = Patient.where(registration_facility: facilities)

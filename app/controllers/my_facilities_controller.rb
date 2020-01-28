@@ -5,11 +5,13 @@ class MyFacilitiesController < AdminController
   include Pagination
   include MyFacilitiesFiltering
   include CohortPeriodSelection
+  include PeriodSelection
 
   DEFAULT_ANALYTICS_TIME_ZONE = 'Asia/Kolkata'
 
   around_action :set_time_zone
   before_action :authorize_my_facilities
+  before_action :set_selected_cohort_period, only: [:blood_pressure_control]
 
   def index
     @users_requesting_approval = paginate(policy_scope([:manage, :user, User])
@@ -37,7 +39,7 @@ class MyFacilitiesController < AdminController
   def blood_pressure_control
     @facilities = filter_facilities([:manage, :facility])
 
-    bp_query = MyFacilities::BloodPressureControlQuery.new(selected_cohort_period.merge(facilities: @facilities))
+    bp_query = MyFacilities::BloodPressureControlQuery.new(@selected_cohort_period, @facilities)
 
     @totals = { registered: bp_query.cohort_registrations.count,
                 controlled: bp_query.cohort_controlled_bps.count,

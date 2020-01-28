@@ -14,7 +14,6 @@
         <%= link_to "Overview", my_facilities_overview_path(request.query_parameters), class: "dropdown-item" %>
         <%= link_to "BP control", my_facilities_blood_pressure_control_path(request.query_parameters), class: "dropdown-item" %>
         <%= link_to "Registrations", my_facilities_registrations_path(request.query_parameters), class: "dropdown-item" %>
-        <%= link_to "Downloads", "#", class: 'dropdown-item' %>
       </div>
     </div>
     <% unless request.path == my_facilities_overview_path %>
@@ -97,11 +96,9 @@
       <nav class="secondary-nav">
         <%= link_to 'Overview', my_facilities_overview_path,
                     class: request.path == my_facilities_overview_path ? "nav-link active" : "nav-link" %>
-        <%= link_to 'Ranked facilities', my_facilities_ranked_facilities_path(request.query_parameters),
-                    class: request.path == my_facilities_ranked_facilities_path ? "nav-link active" : "nav-link" %>
         <%= link_to 'BP control', my_facilities_blood_pressure_control_path(preserve_query_params(request.query_parameters, ["size"])),
                     class: request.path == my_facilities_blood_pressure_control_path ? "nav-link active" : "nav-link" %>
-        <%= link_to 'Registrations', my_facilities_registrations_path,
+        <%= link_to 'Registrations', my_facilities_registrations_path(preserve_query_params(request.query_parameters, ["size", "period"])),
                     class: request.path == my_facilities_registrations_path ? "nav-link active" : "nav-link" %>
       </nav>
       <% unless request.path == my_facilities_overview_path %>

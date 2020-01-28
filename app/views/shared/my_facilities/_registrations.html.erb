@@ -8,16 +8,15 @@
 
     <div class="mt-1 mb-3 col-lg-3">
       <div class="dropdown show">
-        <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">
-          Quarterly
+        <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#"
+           role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">
+          <%= @periods[@selected_period] %>
         </a>
 
         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-
-          <a class="dropdown-item" href="#">Daily</a>
-          <a class="dropdown-item" href="#">Monthly</a>
-          <a class="dropdown-item" href="#">Quarterly</a>
-
+          <% @periods.each do |period, period_name| %>
+            <button type="submit" name="period" value=<%= period %> class="dropdown-item" form="query-filters"><%= period_name %></button>
+          <% end %>
         </div>
       </div>
     </div>
@@ -57,6 +56,16 @@
     </thead>
     <tbody>
     <tr class="row-total" data-sort-method="none">
+      <td class="type-title">All</td>
+      <td class="type-percent"><em>100%</em></td>
+      <td class="type-number">12,345</td>
+      <td class="type-percent"><em>100%</em></td>
+      <td class="type-number">12,345</td>
+      <td class="type-percent"><em>100%</em></td>
+      <td class="type-number">12,345</td>
+      <td class="type-number">43,346</td>
+    </tr>
+    <tr data-sort-method="none">
       <td class="type-title">All</td>
       <td class="type-percent"><em>100%</em></td>
       <td class="type-number">12,345</td>
