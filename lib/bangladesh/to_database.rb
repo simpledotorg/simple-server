@@ -24,6 +24,15 @@ data.each_with_index do |row, index|
   value = row[1]
 
   if key == 'patient_key'
+    if patient_key
+      puts "Patient complete"
+      puts "---------------"
+      puts YAML.dump(patients[patient_key])
+
+      puts "Press enter to continue"
+      gets.chomp
+    end
+
     patient_key = value
     patients[patient_key] ||= {
       blood_pressures: [],
@@ -32,15 +41,7 @@ data.each_with_index do |row, index|
       address: {},
       medical_history: {}
     }
-
-    puts "Patients so far"
-    puts "---------------"
-    puts YAML.dump(patients)
-
-    puts "Press enter to continue"
-    gets.chomp
   end
-
 
   patients[patient_key][:full_name] = value                if key == 'Name of Patient'
   patients[patient_key][:gender] = value                   if key == 'Sex'
@@ -54,6 +55,10 @@ data.each_with_index do |row, index|
   patients[patient_key][:medical_history][:prior_stroke] = history(value)           if key == 'Past History of Brain Stroke'
   patients[patient_key][:medical_history][:chronic_kidney_disease] = history(value) if key == 'Past History of Chronic Kidney Disease'
   patients[patient_key][:medical_history][:diabetes] = history(value)               if key == 'Past History Of Diabaties'
+
+  patients[patient_key][:address][:village_or_colony] = value  if key == 'Village'
+  patients[patient_key][:address][:district] = value           if key == 'Thana'
+  patients[patient_key][:address][:pin] = value                if key == 'Post Code'
 
   if key =~ /SBP/
     date = data[index - 1][1]
