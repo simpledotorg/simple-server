@@ -22,3 +22,5 @@
 coverage
 .env
 .env.production
+
+/lib/bangladesh/data/*
