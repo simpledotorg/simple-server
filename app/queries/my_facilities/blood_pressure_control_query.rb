@@ -38,7 +38,7 @@ class MyFacilities::BloodPressureControlQuery
     @all_time_controlled_bps ||=
       all_time_bps
       .where('bp_recorded_at > ?', Date.current - 90.days)
-      .where('systolic < 140 AND diastolic < 90')
+      .under_control
   end
 
   private
@@ -61,11 +61,11 @@ class MyFacilities::BloodPressureControlQuery
   end
 
   def quarterly_controlled_bps
-    @quarterly_controlled_bps ||= quarterly_bps.where('systolic < 140 AND diastolic < 90')
+    @quarterly_controlled_bps ||= quarterly_bps.under_control
   end
 
   def quarterly_uncontrolled_bps
-    @quarterly_uncontrolled_bps ||= quarterly_bps.where('systolic >= 140 OR diastolic >= 90')
+    @quarterly_uncontrolled_bps ||= quarterly_bps.hypertensive
   end
 
   def monthly_registrations
@@ -104,10 +104,10 @@ class MyFacilities::BloodPressureControlQuery
   end
 
   def monthly_controlled_bps
-    @monthly_controlled_bps ||= monthly_bps_cte.where('systolic < 140 AND diastolic < 90')
+    @monthly_controlled_bps ||= monthly_bps_cte.under_control
   end
 
   def monthly_uncontrolled_bps
-    @monthly_uncontrolled_bps ||=  monthly_bps_cte.where('systolic >= 140 OR diastolic >= 90')
+    @monthly_uncontrolled_bps ||=  monthly_bps_cte.hypertensive
   end
 end
