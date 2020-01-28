@@ -40,10 +40,4 @@ module DashboardHelper
 
     "#{percentage.round(0)}%"
   end
-
-  def percentage(numerator, denominator)
-    return percentage_string(0) if denominator.zero?
-
-    percentage_string((numerator * 100) / denominator)
-  end
 end
