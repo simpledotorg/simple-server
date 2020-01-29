@@ -16,9 +16,13 @@ class MedicalHistory < ApplicationRecord
     :diagnosed_with_hypertension
   ].freeze
 
-  MEDICAL_HISTORY_ANSWERS = {
+  MEDICAL_HISTORY_DEFINITIVE_ANSWERS = {
     yes: 'yes',
-    no: 'no',
+    no: 'no'
+  }.freeze
+
+  MEDICAL_HISTORY_ANSWERS = {
+    **MEDICAL_HISTORY_DEFINITIVE_ANSWERS,
     unknown: 'unknown'
   }.freeze
 

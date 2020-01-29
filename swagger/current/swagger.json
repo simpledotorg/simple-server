@@ -2245,8 +2245,7 @@
           "type": "string",
           "enum": [
             "yes",
-            "no",
-            "unknown"
+            "no"
           ]
         },
         "diagnosed_with_hypertension": {
