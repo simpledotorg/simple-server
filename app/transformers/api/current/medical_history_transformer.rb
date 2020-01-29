@@ -9,7 +9,10 @@ class Api::Current::MedicalHistoryTransformer
 
     def from_request(medical_history_payload)
       Api::Current::Transformer.from_request(medical_history_payload).tap do |params|
-        params[:diagnosed_with_hypertension] = params[:hypertension] ? params[:hypertension] : 'yes'
+        if params[:hypertension].blank?
+          params[:hypertension] = 'yes'
+          params[:diagnosed_with_hypertension] = 'yes'
+        end
       end
     end
   end

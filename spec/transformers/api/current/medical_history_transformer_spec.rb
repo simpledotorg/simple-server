@@ -28,8 +28,9 @@ describe Api::Current::MedicalHistoryTransformer do
         }
       end
 
-      it 'matches diagnosed_with_hypertension to hypertension' do
-        expect(transformed_params[:diagnosed_with_hypertension]).to eq('no')
+      it 'passes along the received hypertension values' do
+        expect(transformed_params[:hypertension]).to eq('no')
+        expect(transformed_params[:diagnosed_with_hypertension]).to eq('unknown')
       end
     end
 
@@ -42,7 +43,8 @@ describe Api::Current::MedicalHistoryTransformer do
         }
       end
 
-      it 'sets diagnosed_with_hypertension to yes' do
+      it 'sets hypertension fields to yes' do
+        expect(transformed_params[:hypertension]).to eq('yes')
         expect(transformed_params[:diagnosed_with_hypertension]).to eq('yes')
       end
     end
