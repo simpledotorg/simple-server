@@ -4,13 +4,13 @@ class MyFacilities::BloodPressureControlQuery
   include QuarterHelper
   include MonthHelper
 
-  def initialize(cohort_period:, facilities: Facility.all)
-    @cohort_period = cohort_period[:cohort_period] || :quarter
-    @registration_quarter = cohort_period[:registration_quarter] ||
+  def initialize(selected_cohort_period: {}, facilities: Facility.all)
+    @cohort_period = selected_cohort_period[:cohort_period] || :quarter
+    @registration_quarter = selected_cohort_period[:registration_quarter] ||
                             previous_year_and_quarter(Time.current.year, quarter(Time.current)).second
-    @registration_month = cohort_period[:registration_month] ||
+    @registration_month = selected_cohort_period[:registration_month] ||
                           (Time.current.beginning_of_month - 1.month).month
-    @registration_year = cohort_period[:registration_year] ||
+    @registration_year = selected_cohort_period[:registration_year] ||
                          previous_year_and_quarter(Time.current.year, quarter(Time.current)).first
     @facilities = facilities
   end
