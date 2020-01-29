@@ -196,8 +196,11 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       end
 
       before do
-        LatestBloodPressuresPerPatientPerMonth.refresh
-        LatestBloodPressuresPerPatient.refresh
+        ActiveRecord::Base.transaction do
+          ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{ENV['ANALYTICS_TIME_ZONE']}'")
+          LatestBloodPressuresPerPatientPerMonth.refresh
+          LatestBloodPressuresPerPatient.refresh
+        end
       end
 
       describe '#all_time_bps' do
