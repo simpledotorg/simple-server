@@ -72,6 +72,7 @@ class MyFacilities::BloodPressureControlQuery
 
   def monthly_registrations
     patients = Patient.where(registration_facility: facilities)
+
     registration_month_start = analytics_tz_month_start(@registration_year, @registration_month)
     registration_month_end = registration_month_start.end_of_month
 
