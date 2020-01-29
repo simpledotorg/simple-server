@@ -1,33 +1,54 @@
 class MyFacilities::RegistrationsQuery
   include QuarterHelper
+  include MonthHelper
+  include DayHelper
 
-  NO_OF_QUARTERS = 3
-  NO_OF_MONTHS = 3
-  NO_OF_DAYS = 3
+  attr_reader :periods
 
-  def initialize(period: :quarterly,
-                 facilities: Facility.all)
+  def initialize(period: :quarter, facilities: Facility.all, include_quarters: 3, include_months: 3, include_days: 7)
     @facilities = facilities
     @period = period
+    @periods = case period
+               when :quarter then last_n_quarters(n: include_quarters, include_current_quarter: true)
+               when :month then
+                 last_n_months(n: include_months, include_current_month: true)
+                 .map { |month| [month.year, month.month]}
+               when :day then last_n_days(n: include_days)
+               end
   end
 
   def registrations
     case @period
-    when :quarterly
-      quarterly_registrations
-    when :monthly
-      monthly_registrations
-    when :daily
-      daily_registrations
+    when :quarter then quarterly_registrations
+    when :month then monthly_registrations
+    when :day then daily_registrations
     end
   end
 
-
   def quarterly_registrations
-    query_string = last_n_quarters(NO_OF_QUARTERS).map { |quarter| "('#{quarter.first}', '#{quarter.second}')" }.join(',')
+    year_quarter_tuples = @periods
+                               .map { |(year, quarter)| "('#{year}', '#{quarter}')" }.join(',')
 
     PatientRegistrationsPerDayPerFacility
       .where(facility: @facilities)
-      .where("(year, quarter) IN (#{query_string})")
+      .where("(year, quarter) IN (#{year_quarter_tuples})")
+  end
+
+  def monthly_registrations
+    year_month_tuples = @periods
+                             .map { |(year, month)| "('#{year}', '#{month}')" }.join(',')
+
+    PatientRegistrationsPerDayPerFacility
+        .where(facility: @facilities)
+        .where("(year, month) IN (#{year_month_tuples})")
+  end
+
+  def daily_registrations
+    year_day_tuples = @periods
+                      .map { |(year, day)| "('#{year}', '#{day}')" }.join(',')
+
+    PatientRegistrationsPerDayPerFacility
+        .where(facility: @facilities)
+        .where("(year, day) IN (#{year_day_tuples})")
   end
 end

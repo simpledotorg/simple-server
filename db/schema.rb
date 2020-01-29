@@ -773,22 +773,35 @@ ActiveRecord::Schema.define(version: 20200127123121) do
     WHERE ((blood_pressures.patient_id = patients.id) AND (blood_pressures.facility_id = facilities.id) AND (blood_pressures.user_id = users.id));
   SQL
   create_view "latest_blood_pressures_per_patient_per_months", materialized: true, sql_definition: <<-SQL
-      SELECT DISTINCT ON (blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text) blood_pressures.id AS bp_id,
+      SELECT DISTINCT ON (blood_pressures.patient_id, (date_part('year'::text, blood_pressures.recorded_at))::text, (date_part('month'::text, blood_pressures.recorded_at))::text) blood_pressures.id AS bp_id,
       blood_pressures.patient_id,
       patients.registration_facility_id,
       blood_pressures.facility_id AS bp_facility_id,
-      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at)) AS bp_recorded_at,
+      blood_pressures.recorded_at AS bp_recorded_at,
       patients.recorded_at AS patient_recorded_at,
       blood_pressures.systolic,
       blood_pressures.diastolic,
       blood_pressures.deleted_at,
-      (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS month,
-      (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS quarter,
-      (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS year
+      (date_part('month'::text, blood_pressures.recorded_at))::text AS month,
+      (date_part('quarter'::text, blood_pressures.recorded_at))::text AS quarter,
+      (date_part('year'::text, blood_pressures.recorded_at))::text AS year
      FROM (blood_pressures
        JOIN patients ON ((patients.id = blood_pressures.patient_id)))
     WHERE (blood_pressures.deleted_at IS NULL)
-    ORDER BY blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, blood_pressures.recorded_at DESC, blood_pressures.id;
+    ORDER BY blood_pressures.patient_id, (date_part('year'::text, blood_pressures.recorded_at))::text, (date_part('month'::text, blood_pressures.recorded_at))::text, blood_pressures.recorded_at DESC, blood_pressures.id;
+  SQL
+  create_view "patient_registrations_per_day_per_facilities", materialized: true, sql_definition: <<-SQL
+      SELECT count(patients.id) AS registration_count,
+      patients.registration_facility_id AS facility_id,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.deleted_at)) AS deleted_at,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at)) AS recorded_at,
+      (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS day,
+      (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS month,
+      (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS quarter,
+      (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS year
+     FROM patients
+    WHERE (patients.deleted_at IS NULL)
+    GROUP BY (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, patients.registration_facility_id, patients.deleted_at, patients.recorded_at;
   SQL
   create_view "latest_blood_pressures_per_patients", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (latest_blood_pressures_per_patient_per_months.patient_id) latest_blood_pressures_per_patient_per_months.bp_id,
@@ -821,18 +834,5 @@ ActiveRecord::Schema.define(version: 20200127123121) do
       latest_blood_pressures_per_patient_per_months.year
      FROM latest_blood_pressures_per_patient_per_months
     ORDER BY latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.year, latest_blood_pressures_per_patient_per_months.quarter, latest_blood_pressures_per_patient_per_months.bp_recorded_at DESC, latest_blood_pressures_per_patient_per_months.bp_id;
-  SQL
-  create_view "patient_registrations_per_day_per_facilities", materialized: true, sql_definition: <<-SQL
-      SELECT count(patients.id) AS registration_count,
-      patients.registration_facility_id AS facility_id,
-      patients.deleted_at,
-      (date_part('day'::text, patients.recorded_at))::text AS day,
-      (date_part('month'::text, patients.recorded_at))::text AS month,
-      (date_part('quarter'::text, patients.recorded_at))::text AS quarter,
-      (date_part('year'::text, patients.recorded_at))::text AS year
-     FROM (patients
-       JOIN facilities ON ((patients.registration_facility_id = facilities.id)))
-    WHERE (patients.deleted_at IS NULL)
-    GROUP BY (date_part('day'::text, patients.recorded_at))::text, (date_part('month'::text, patients.recorded_at))::text, (date_part('quarter'::text, patients.recorded_at))::text, (date_part('year'::text, patients.recorded_at))::text, patients.registration_facility_id, patients.deleted_at;
   SQL
 end
