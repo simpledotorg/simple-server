@@ -49,7 +49,7 @@ class MyFacilities::BloodPressureControlQuery
     patients = Patient.where(registration_facility: facilities)
 
     @quarterly_registrations ||=
-      patients.where('recorded_at > ? AND recorded_at <= ?',
+      patients.where('recorded_at >= ? AND recorded_at <= ?',
                      analytics_tz_quarter_start(@registration_year, @registration_quarter),
                      analytics_tz_quarter_end(@registration_year, @registration_quarter))
   end
@@ -77,7 +77,7 @@ class MyFacilities::BloodPressureControlQuery
     registration_month_end = registration_month_start.end_of_month
 
     @monthly_registrations ||=
-      patients.where('recorded_at > ? AND recorded_at <= ?',
+      patients.where('recorded_at >= ? AND recorded_at <= ?',
                      registration_month_start,
                      registration_month_end)
   end
