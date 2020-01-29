@@ -13,7 +13,9 @@ class MyFacilitiesController < AdminController
   around_action :set_time_zone
   before_action :authorize_my_facilities
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]
-  before_action :set_selected_period, only: [:registrations]
+  before_action :populate_all_periods, only: [:registrations]
+  before_action :set_selected_period, only: [:registrations, :missed_visits]
+
 
   def index
     @users_requesting_approval = paginate(policy_scope([:manage, :user, User])
@@ -42,15 +44,15 @@ class MyFacilitiesController < AdminController
                 uncontrolled: bp_query.cohort_uncontrolled_bps.count,
                 all_time_patients: bp_query.all_time_bps.count,
                 all_time_controlled_bps: bp_query.all_time_controlled_bps.count }
-    @totals[:missed] = missed_visits(@totals[:registered], @totals[:controlled], @totals[:uncontrolled])
+    @totals[:missed] = calculate_missed_visits(@totals[:registered], @totals[:controlled], @totals[:uncontrolled])
 
     @registered_patients_per_facility = bp_query.cohort_registrations.group(:registration_facility_id).count
     @controlled_bps_per_facility = bp_query.cohort_controlled_bps.group(:bp_facility_id).count
     @uncontrolled_bps_per_facility = bp_query.cohort_uncontrolled_bps.group(:bp_facility_id).count
     @missed_visits_by_facility = @facilities.map do |f|
-      [f.id, missed_visits(@registered_patients_per_facility[f.id].to_i,
-                           @controlled_bps_per_facility[f.id].to_i,
-                           @uncontrolled_bps_per_facility[f.id].to_i)]
+      [f.id, calculate_missed_visits(@registered_patients_per_facility[f.id].to_i,
+                                     @controlled_bps_per_facility[f.id].to_i,
+                                     @uncontrolled_bps_per_facility[f.id].to_i)]
     end.to_h
     @all_time_bps_per_facility = bp_query.all_time_bps.group(:bp_facility_id).count
     @all_time_controlled_bps_per_facility = bp_query.all_time_controlled_bps.group(:bp_facility_id).count
@@ -64,8 +66,8 @@ class MyFacilitiesController < AdminController
                                                                last_n: PERIODS_TO_DISPLAY[@selected_period])
 
     @registrations = registrations_query.registrations
-                                        .group(:facility_id, :year, @selected_period)
-                                        .sum(:registration_count)
+                       .group(:facility_id, :year, @selected_period)
+                       .sum(:registration_count)
 
     @all_time_registrations = registrations_query.all_time_registrations.group(:bp_facility_id).count
     @total_registrations_by_period =
@@ -75,6 +77,21 @@ class MyFacilitiesController < AdminController
         total_registrations_by_period[period] += registrations
       end
     @display_periods = registrations_query.periods
+  end
+
+  def missed_visits
+    @facilities = filter_facilities([:manage, :facility])
+    populate_periods([:quarter, :month])
+
+    missed_visits_query = MyFacilities::MissedVisitsQuery.new(facilities: @facilities,
+                                                              period: @selected_period,
+                                                              last_n: PERIODS_TO_DISPLAY[@selected_period])
+
+    @display_periods = missed_visits_query.periods
+    @missed_visits_by_facility = missed_visits_by_facility(missed_visits_query)
+    @calls_made = missed_visits_query.calls_made.count
+    @all_time_registrations = missed_visits_query.all_time_registrations.group(:bp_facility_id).count
+    @totals_by_period = missed_visit_totals(missed_visits_query)
   end
 
   private
@@ -89,7 +106,35 @@ class MyFacilitiesController < AdminController
     authorize(:dashboard, :show?)
   end
 
-  def missed_visits(registered_patients, controlled_bps, uncontrolled_bps)
+  def calculate_missed_visits(registered_patients, controlled_bps, uncontrolled_bps)
     registered_patients - controlled_bps - uncontrolled_bps
   end
+
+  def missed_visits_by_facility(missed_visits_query)
+    patients_by_period = missed_visits_query.patients_by_period
+    visits_by_period = missed_visits_query.visits_by_period
+    facility_patients = patients_by_period.map { |key, patients| [key, patients.group(:bp_facility_id).count] }.to_h
+    facility_patients.map do |period_key, facilities|
+      visited_patients = visits_by_period[period_key].pluck(:patient_id).to_set
+      facilities.map do |facility_id, patient_count|
+        responsible_patients = patients_by_period[period_key].where(bp_facility_id: facility_id).pluck(:patient_id).to_set
+
+        [[facility_id, period_key.first, period_key.second],
+         { patients: patient_count,
+           missed: (responsible_patients - visited_patients).count }]
+      end.to_h
+    end.reduce(:merge)
+  end
+
+  def missed_visit_totals(missed_visits_query)
+    patients_by_period = missed_visits_query.patients_by_period
+    visits_by_period = missed_visits_query.visits_by_period
+    missed_visits_query.periods.map do |period_key|
+      patients =  patients_by_period[period_key].pluck(:patient_id).to_set
+      [period_key,
+       {patients: patients.count,
+        missed: (patients - visits_by_period[period_key].pluck(:patient_id).to_set).count}]
+    end.to_h
+  end
+
 end

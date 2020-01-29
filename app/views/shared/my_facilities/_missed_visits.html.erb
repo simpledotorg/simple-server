@@ -1,0 +1,128 @@
+<div class="card card-responsive">
+  <div class="row">
+    <div class="col-lg-9 pr-5 pr-md-0">
+      <h3>Missed visit</h3>
+      <p>Patients who had no BP recorded during the quarter as a pecentage of all-time registered patients (patients
+        with no visit in > 1 year are excluded).</p>
+    </div>
+
+    <div class="mt-1 mb-3 col-lg-3">
+      <div class="dropdown show">
+        <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">
+          <%= @periods[@selected_period] %>
+        </a>
+
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+          <% @periods.each do |period, period_name| %>
+            <button type="submit" name="period" value=<%= period %> class="dropdown-item" form="query-filters"><%= period_name %></button>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover" id="analytics-table">
+    <colgroup>
+      <col>
+      <col class="table-divider">
+      <col>
+      <col class="table-divider">
+      <col>
+      <col class="table-divider">
+      <col>
+      <col class="table-divider">
+      <col class="table-divider">
+      <col class="mobile">
+    </colgroup>
+    <thead>
+    <tr>
+      <th></th>
+      <% case @selected_period %>
+      <% when :quarter %>
+        <% @display_periods.reverse.each do |(year, quarter)| %>
+          <th colspan="2"><%= "Q#{quarter}-#{year}" %></th>
+        <% end %>
+      <% when :month %>
+        <% @display_periods.reverse.each do |(year, month)| %>
+          <th colspan="2"><%= month_short_name_and_year(local_month_start(year, month)) %></th>
+        <% end %>
+      <% end %>
+      <th>Calls made <sup>1</sup></th>
+      <th>ALL-TIME</th>
+    </tr>
+    <tr data-sort-method="thead" class="sorts">
+      <th class="row-label sort-label">Facilities</th>
+      <th class="row-label sort-label">Percent</th>
+      <th class="row-label sort-label">Missed</th>
+      <th class="row-label sort-label">Percent</th>
+      <th class="row-label sort-label">Missed</th>
+      <th class="row-label sort-label" data-sort-default data-sort-method="number">Percent</th>
+      <th class="row-label sort-label">Missed</th>
+      <th class="row-label sort-label">
+        <% case @selected_period %>
+        <% when :quarter %>
+          <%= "Q#{@display_periods.first.second}-#{@display_periods.first.first}" %>
+        <% when :month %>
+          <%= month_short_name_and_year(local_month_start(@display_periods.first.first,
+                                                                           @display_periods.first.second)) %>
+        <% end %>
+      </th>
+      <th class="row-label sort-label">Registered patients <sup>2</sup></th>
+      <th class="mobile">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="row-total" data-sort-method="none">
+      <td class="type-title">All</td>
+
+      <% @display_periods.reverse.each do |period| %>
+        <td class="type-percent" data-sort-column-key="<%= period.join %>">
+          <em><%=
+            percentage(@totals_by_period.dig([period.first, period.second], :missed),
+                       @totals_by_period.dig([period.first, period.second], :patients))
+          %></em>
+        </td>
+
+        <td class="type-number">
+         <%= @totals_by_period.dig([period.first, period.second], :missed).to_i %>
+        </td>
+      <% end %>
+
+      <td class="type-number">346</td>
+      <td class="type-number">64,230</td>
+    </tr>
+
+    <% @facilities.each do |facility| %>
+      <tr>
+        <td class="type-title"><%= link_to facility.name, analytics_facility_path(facility) %></td>
+        <% @display_periods.reverse.each do |period| %>
+          <td class="type-percent" data-sort-column-key="<%= period.join %>">
+            <em><%=
+              percentage(@missed_visits_by_facility.dig([facility.id, period.first, period.second], :missed),
+                         @missed_visits_by_facility.dig([facility.id, period.first, period.second], :patients))
+            %></em>
+          </td>
+
+          <td class="type-number">
+            <%= @missed_visits_by_facility.dig([facility.id, period.first, period.second], :missed).to_i %>
+          </td>
+        <% end %>
+        <td class="type-number"><%= @calls_made.dig(facility.id) || 0 %></td>
+        <td class="type-number"><%=  @all_time_registrations[facility.id].to_i %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>
+<section class="footnotes">
+  <ol>
+    <li><strong>Calls made:</strong> The number of calls made anonymously through the Simple app that connected to the
+      patient. Note that this may significantly undercount calls made, if the user used another phone or called using
+      their personal phone number.
+    </li>
+
+    <li><strong>All registered patients:</strong> All registered patients with exclusions for: lost to follow-up,
+      transferred to another public facility, and died.
+    </li>
+  </ol>
+</section>

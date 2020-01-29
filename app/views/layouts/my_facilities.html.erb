@@ -14,6 +14,7 @@
         <%= link_to "Overview", my_facilities_overview_path(request.query_parameters), class: "dropdown-item" %>
         <%= link_to "BP control", my_facilities_blood_pressure_control_path(request.query_parameters), class: "dropdown-item" %>
         <%= link_to "Registrations", my_facilities_registrations_path(request.query_parameters), class: "dropdown-item" %>
+        <%= link_to "Missed Visits", my_facilities_missed_visits_path(request.query_parameters), class: "dropdown-item" %>
       </div>
     </div>
     <% unless request.path == my_facilities_overview_path %>
@@ -100,6 +101,8 @@
                     class: request.path == my_facilities_blood_pressure_control_path ? "nav-link active" : "nav-link" %>
         <%= link_to 'Registrations', my_facilities_registrations_path(preserve_query_params(request.query_parameters, ["size", "period"])),
                     class: request.path == my_facilities_registrations_path ? "nav-link active" : "nav-link" %>
+        <%= link_to 'Missed Visits', my_facilities_missed_visits_path(preserve_query_params(request.query_parameters, ["size", "period"])),
+                    class: request.path == my_facilities_missed_visits_path ? "nav-link active" : "nav-link" %>
       </nav>
       <% unless request.path == my_facilities_overview_path %>
         <section id="facility-filters" class="secondary-nav-filters">
