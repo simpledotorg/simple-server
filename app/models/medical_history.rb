@@ -16,14 +16,15 @@ class MedicalHistory < ApplicationRecord
     :diagnosed_with_hypertension
   ].freeze
 
+  MEDICAL_HISTORY_ANSWERS = {
+    yes: 'yes',
+    no: 'no',
+    unknown: 'unknown'
+  }.freeze
+
   MEDICAL_HISTORY_DEFINITIVE_ANSWERS = {
     yes: 'yes',
     no: 'no'
-  }.freeze
-
-  MEDICAL_HISTORY_ANSWERS = {
-    **MEDICAL_HISTORY_DEFINITIVE_ANSWERS,
-    unknown: 'unknown'
   }.freeze
 
   enum prior_heart_attack: MEDICAL_HISTORY_ANSWERS, _prefix: true
