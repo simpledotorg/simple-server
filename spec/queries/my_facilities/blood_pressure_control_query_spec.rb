@@ -31,9 +31,8 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       end
 
       let!(:patients_with_uncontrolled_bp) do
-        (1..2).map do
-          create(:patient, recorded_at: cohort_range.sample, registration_facility: facility, registration_user: user)
-        end
+        [create(:patient, recorded_at: cohort_range.sample, registration_facility: facility, registration_user: user),
+         create(:patient, recorded_at: registration_quarter_start, registration_facility: facility, registration_user: user)]
       end
 
       let!(:patients_with_missed_visit) do
@@ -54,32 +53,35 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
         end
       end
 
+      let!(:query) do
+        described_class.new(registration_quarter: registration_quarter,
+                            registration_year: registration_quarter_year,
+                            facilities: Facility.all)
+      end
+
       before do
-        LatestBloodPressuresPerPatientPerMonth.refresh
-        LatestBloodPressuresPerPatientPerQuarter.refresh
+        ActiveRecord::Base.transaction do
+          ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{ENV['ANALYTICS_TIME_ZONE']}'")
+          LatestBloodPressuresPerPatientPerMonth.refresh
+          LatestBloodPressuresPerPatientPerQuarter.refresh
+        end
       end
 
       describe '#cohort_registrations' do
         specify do
-          expect(described_class.new(registration_quarter: registration_quarter,
-                                     registration_year: registration_quarter_year,
-                                     facilities: Facility.all).cohort_registrations.count).to eq(6)
+          expect(query.cohort_registrations.count).to eq(6)
         end
       end
 
       describe '#cohort_controlled_bps' do
         specify do
-          expect(described_class.new(registration_quarter: registration_quarter,
-                                     registration_year: registration_quarter_year,
-                                     facilities: Facility.all).cohort_controlled_bps.count).to eq(2)
+          expect(query.cohort_controlled_bps.count).to eq(2)
         end
       end
 
       describe '#cohort_uncontrolled_bps' do
         specify do
-          expect(described_class.new(registration_quarter: registration_quarter,
-                                     registration_year: registration_quarter_year,
-                                     facilities: Facility.all).cohort_uncontrolled_bps.count).to eq(2)
+          expect(query.cohort_uncontrolled_bps.count).to eq(2)
         end
       end
     end
@@ -119,9 +121,8 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       end
 
       let!(:patients_with_uncontrolled_bp) do
-        (1..2).map do
-          create(:patient, recorded_at: cohort_range.sample, registration_facility: facility, registration_user: user)
-        end
+        [create(:patient, recorded_at: registration_month_start, registration_facility: facility, registration_user: user),
+         create(:patient, recorded_at: cohort_range.sample, registration_facility: facility, registration_user: user)]
       end
 
       let!(:patients_with_missed_visit) do
@@ -143,34 +144,35 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
         end
       end
 
+      let!(:query) do
+        described_class.new(registration_month: registration_month,
+                            registration_year: registration_year,
+                            period: :month,
+                            facilities: Facility.all)
+      end
+
       before do
-        LatestBloodPressuresPerPatientPerMonth.refresh
+        ActiveRecord::Base.transaction do
+          ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{ENV['ANALYTICS_TIME_ZONE']}'")
+          LatestBloodPressuresPerPatientPerMonth.refresh
+        end
       end
 
       describe '#cohort_registrations' do
         specify do
-          expect(described_class.new(registration_month: registration_month,
-                                     registration_year: registration_year,
-                                     period: :month,
-                                     facilities: Facility.all).cohort_registrations.count).to eq(6)
+          expect(query.cohort_registrations.count).to eq(6)
         end
       end
 
       describe '#cohort_controlled_bps' do
         specify do
-          expect(described_class.new(registration_month: registration_month,
-                                     registration_year: registration_year,
-                                     period: :month,
-                                     facilities: Facility.all).cohort_controlled_bps.count).to eq(2)
+          expect(query.cohort_controlled_bps.count).to eq(2)
         end
       end
 
       describe '#cohort_uncontrolled_bps' do
         specify do
-          expect(described_class.new(registration_month: registration_month,
-                                     registration_year: registration_year,
-                                     period: :month,
-                                     facilities: Facility.all).cohort_uncontrolled_bps.count).to eq(2)
+          expect(query.cohort_uncontrolled_bps.count).to eq(2)
         end
       end
     end

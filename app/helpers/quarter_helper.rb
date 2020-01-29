@@ -53,6 +53,14 @@ module QuarterHelper
     quarter_datetime(year, quarter).end_of_quarter
   end
 
+  def analytics_tz_quarter_start(year, quarter)
+    quarter_datetime(year, quarter).in_time_zone(ENV['ANALYTICS_TIME_ZONE']).beginning_of_quarter
+  end
+
+  def analytics_tz_quarter_end(year, quarter)
+    quarter_datetime(year, quarter).in_time_zone(ENV['ANALYTICS_TIME_ZONE']).end_of_quarter
+  end
+
   def last_n_quarters(n)
     year = current_year
     quarter = current_quarter
