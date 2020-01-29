@@ -19,8 +19,10 @@ module MonthHelper
     month_start.strftime('%b-%Y')
   end
 
-  def last_n_months(n)
-    (1..n).map do |i|
+  def last_n_months(n:, include_current_month: false)
+    range = include_current_month ? (0..(n-1)) : (1..n)
+
+    range.map do |i|
       Time.current.beginning_of_month - i.months
     end
   end

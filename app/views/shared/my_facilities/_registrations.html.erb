@@ -1,5 +1,4 @@
 <div class="card card-responsive">
-
   <div class="row">
     <div class="col-lg-9 pr-5 pr-md-0">
       <h3>New patient registrations</h3>
@@ -37,19 +36,28 @@
     <thead>
     <tr>
       <th></th>
-      <th colspan="2">Q3-2019</th>
-      <th colspan="2">Q4-2019</th>
-      <th colspan="2">Q1-2020</th>
+      <% case @selected_period %>
+      <% when :quarter %>
+        <% @display_periods.reverse.each do |(year, quarter)| %>
+          <th colspan="2"><%= "Q#{quarter}-#{year}" %></th>
+        <% end %>
+      <% when :month %>
+        <% @display_periods.reverse.each do |(year, month)| %>
+          <th colspan="2"><%= month_short_name_and_year(analytics_tz_month_start(year, month)) %></th>
+        <% end %>
+      <% when :day %>
+        <% @display_periods.reverse.each do |(year, doy)| %>
+          <th colspan="2"><%= doy_to_date(year, doy) %></th>
+        <% end %>
+      <% end %>
       <th>ALL-TIME</th>
     </tr>
     <tr data-sort-method="thead" class="sorts">
       <th class="row-label sort-label">Facilities</th>
-      <th class="row-label sort-label">% of OPD</th>
-      <th class="row-label sort-label">Registered</th>
-      <th class="row-label sort-label">% of OPD</th>
-      <th class="row-label sort-label">Registered</th>
-      <th class="row-label sort-label" data-sort-default data-sort-method="number">% of OPD</th>
-      <th class="row-label sort-label">Registered</th>
+      <% @display_periods.each do |_|%>
+        <th class="row-label sort-label" data-sort-default data-sort-method="number">% of OPD</th>
+        <th class="row-label sort-label">Registered</th>
+      <% end %>
       <th class="row-label sort-label">Registered patients <sup>1</sup></th>
       <th class="mobile">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
     </tr>
@@ -63,18 +71,20 @@
       <td class="type-number">12,345</td>
       <td class="type-percent"><em>100%</em></td>
       <td class="type-number">12,345</td>
-      <td class="type-number">43,346</td>
+      <td class="type-number"></td>
     </tr>
-    <tr data-sort-method="none">
-      <td class="type-title">All</td>
-      <td class="type-percent"><em>100%</em></td>
-      <td class="type-number">12,345</td>
-      <td class="type-percent"><em>100%</em></td>
-      <td class="type-number">12,345</td>
-      <td class="type-percent"><em>100%</em></td>
-      <td class="type-number">12,345</td>
-      <td class="type-number">43,346</td>
-    </tr>
+    <% @facilities.each do |facility| %>
+      <tr data-sort-method="none">
+        <td class="type-title"><%= facility.name %></td>
+        <% @display_periods.reverse.each do |period| %>
+          <td class="type-percent">
+            <em><%= percentage(@registrations[[facility.id, period.first.to_s, period.second.to_s]], facility.monthly_opd_load) %></em>
+          </td>
+          <td class="type-number"><%= @registrations[[facility.id, period.first.to_s, period.second.to_s]].to_i %></td>
+        <% end %>
+        <td class="type-number">43,346</td>
+      </tr>
+    <% end %>
     </tbody>
   </table>
 </div>

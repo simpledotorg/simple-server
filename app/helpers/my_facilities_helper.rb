@@ -4,8 +4,8 @@ module MyFacilitiesHelper
   end
 
   def percentage(numerator, denominator)
-    return 'NA' if denominator.zero?
+    return 'NA' if denominator.nil? || denominator.zero? || numerator.nil?
 
-    percentage_string((numerator * 100) / denominator)
+    percentage_string(((numerator * 100) / denominator).to_i)
   end
 end

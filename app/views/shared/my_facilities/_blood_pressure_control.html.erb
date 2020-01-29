@@ -31,7 +31,7 @@
         </a>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
           <h6 class="dropdown-header">Quarterly</h6>
-          <% last_n_quarters(6).each do |year, quarter| %>
+          <% last_n_quarters(n: 6).each do |year, quarter| %>
             <% selected = (year == registration_year && quarter == registration_quarter && cohort_period == :quarter) %>
             <button class="dropdown-item query-filter-quarter <%= 'active' if selected %>"
                     type="submit" data-quarter="<%= quarter %>" data-year="<%= year %>" form="query-filters">
@@ -40,7 +40,7 @@
           <% end %>
           <div class="dropdown-divider"></div>
           <h6 class="dropdown-header">Monthly</h6>
-          <% last_n_months(6).each do |month| %>
+          <% last_n_months(n: 6).each do |month| %>
             <% selected = (month.year == registration_year && month.month == registration_month && cohort_period == :month) %>
             <button class="dropdown-item query-filter-month <%= 'active' if selected %>"
                     type="submit" data-month="<%= month.month %>" data-year="<%= month.year %>" form="query-filters">

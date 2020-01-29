@@ -12,6 +12,7 @@ class MyFacilitiesController < AdminController
   around_action :set_time_zone
   before_action :authorize_my_facilities
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]
+  before_action :populate_periods, :set_selected_period, only: [:registrations]
 
   def index
     @users_requesting_approval = paginate(policy_scope([:manage, :user, User])
@@ -32,14 +33,21 @@ class MyFacilitiesController < AdminController
   def registrations
     @facilities = filter_facilities([:manage, :facility])
 
-    @selected_periods = []
-    @registrations =  MyFacilities::RegistrationsQuery.new(facilities: @facilities).registrations.group(:facility_id, :quarter, :year).sum(:registration_count)
+    registrations_query = MyFacilities::RegistrationsQuery.new(period: @selected_period,
+                                                               include_quarters: 3,
+                                                               include_months: 3,
+                                                               include_days: 3,
+                                                               facilities: @facilities)
+
+    @registrations = registrations_query.registrations.group(:facility_id, :year, @selected_period).sum(:registration_count)
+    @display_periods = registrations_query.periods
   end
 
   def blood_pressure_control
     @facilities = filter_facilities([:manage, :facility])
 
-    bp_query = MyFacilities::BloodPressureControlQuery.new(@selected_cohort_period, @facilities)
+    bp_query = MyFacilities::BloodPressureControlQuery.new(cohort_period: @selected_cohort_period,
+                                                           facilities: @facilities)
 
     @totals = { registered: bp_query.cohort_registrations.count,
                 controlled: bp_query.cohort_controlled_bps.count,
