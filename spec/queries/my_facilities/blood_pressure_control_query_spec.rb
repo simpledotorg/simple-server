@@ -72,8 +72,9 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       end
 
       let!(:query) do
-        described_class.new(registration_quarter: registration_quarter,
-                            registration_year: registration_quarter_year,
+        described_class.new(selected_cohort_period: { cohort_period: :quarter,
+                                                      registration_quarter: registration_quarter,
+                                                      registration_year: registration_quarter_year },
                             facilities: Facility.all)
       end
 
@@ -187,9 +188,9 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       end
 
       let!(:query) do
-        described_class.new(registration_month: registration_month,
-                            registration_year: registration_year,
-                            period: :month,
+        described_class.new(selected_cohort_period: { cohort_period: :month,
+                                                      registration_month: registration_month,
+                                                      registration_year: registration_year },
                             facilities: Facility.all)
       end
 
