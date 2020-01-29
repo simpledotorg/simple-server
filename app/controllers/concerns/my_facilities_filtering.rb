@@ -5,12 +5,13 @@ module MyFacilitiesFiltering
   NEW_FACILITY_THRESHOLD = 3.months.ago
 
   included do
-    before_action :populate_facility_sizes, :populate_zones, :set_selected_sizes, :set_selected_zones, :set_only_new_facilities
+    before_action :populate_facility_sizes, :populate_zones,
+                  :set_selected_sizes, :set_selected_zones, :set_only_new_facilities
 
     def filter_facilities(scope_namespace = [])
       facilities = policy_scope(scope_namespace.concat([Facility]))
-      facilities = facilities_by_size(facilities)
-      facilities_by_zone(facilities)
+      filtered_facilities = facilities_by_size(facilities)
+      facilities_by_zone(filtered_facilities)
     end
 
     private

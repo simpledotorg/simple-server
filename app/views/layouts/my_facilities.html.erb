@@ -23,11 +23,11 @@
       </div>
     </div>
     <% unless request.path == my_facilities_overview_path %>
-      <div class="mt-0 mb-4" style="text-align: center; display: block; border-radius: 3px; background: rgba(0,0,0,0.02); padding: 10px 16px;">
-        <a data-toggle="modal" data-target="#facility-filter-modal" style="display: block; text-transform: uppercase; letter-spacing: 0.3em; font-size: 12px; font-weight: bold; cursor: pointer">
+      <div class="mt-0 mb-4 active-filters-mobile">
+        <a class="filters-modal-toggle" data-toggle="modal" data-target="#facility-filter-modal">
             <span class="filter-tags">
               <% (Array(@selected_sizes) + Array(params[:zone])).each do |size| %>
-                <span class="badge badge-pill badge-secondary" style="font-weight: normal"><%= size.capitalize %></span>
+                <span class="badge badge-pill badge-secondary"><%= size.capitalize %></span>
               <% end %>
             </span>
 

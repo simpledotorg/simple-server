@@ -77,8 +77,8 @@ class MyFacilities::BloodPressureControlQuery
 
     @monthly_registrations ||=
       patients.where('recorded_at > ? AND recorded_at <= ?',
-                      registration_month_start,
-                      registration_month_end)
+                     registration_month_start,
+                     registration_month_end)
   end
 
   def monthly_bps
@@ -102,7 +102,7 @@ class MyFacilities::BloodPressureControlQuery
     @monthly_bps_cte ||=
       LatestBloodPressuresPerPatientPerMonth
       .from(monthly_bps,
-           'latest_blood_pressures_per_patient_per_months')
+            'latest_blood_pressures_per_patient_per_months')
   end
 
   def monthly_controlled_bps
@@ -110,6 +110,6 @@ class MyFacilities::BloodPressureControlQuery
   end
 
   def monthly_uncontrolled_bps
-    @monthly_uncontrolled_bps ||=  monthly_bps_cte.hypertensive
+    @monthly_uncontrolled_bps ||= monthly_bps_cte.hypertensive
   end
 end
