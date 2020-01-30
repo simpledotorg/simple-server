@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 class MyFacilities::BloodPressureControlQuery
+  # Wrap query method calls with the appropriate timezone in which the reports will be consumed
+  # This is probably the ENV['ANALYTICS_TIME_ZONE']
+  # Example: `Time.use_zone('timezone string') { bp_control_query_object.cohort_registrations }`
+
   include QuarterHelper
   include MonthHelper
 
@@ -32,14 +36,14 @@ class MyFacilities::BloodPressureControlQuery
 
   def all_time_bps
     @all_time_bps ||= LatestBloodPressuresPerPatient
-                      .where('patient_recorded_at < ?', Date.current - 2.months)
+                      .where('patient_recorded_at < ?', Time.current.beginning_of_day - 2.months)
                       .where(bp_facility_id: facilities)
   end
 
   def all_time_controlled_bps
     @all_time_controlled_bps ||=
       all_time_bps
-      .where('bp_recorded_at > ?', Date.current - 90.days)
+      .where('bp_recorded_at > ?', Time.current.beginning_of_day - 90.days)
       .under_control
   end
 
@@ -50,8 +54,8 @@ class MyFacilities::BloodPressureControlQuery
 
     @quarterly_registrations ||=
       patients.where('recorded_at >= ? AND recorded_at <= ?',
-                     analytics_tz_quarter_start(@registration_year, @registration_quarter),
-                     analytics_tz_quarter_end(@registration_year, @registration_quarter))
+                     local_quarter_start(@registration_year, @registration_quarter),
+                     local_quarter_end(@registration_year, @registration_quarter))
   end
 
   def quarterly_bps
@@ -73,18 +77,15 @@ class MyFacilities::BloodPressureControlQuery
   def monthly_registrations
     patients = Patient.where(registration_facility: facilities)
 
-    registration_month_start = analytics_tz_month_start(@registration_year, @registration_month)
-    registration_month_end = registration_month_start.end_of_month
-
     @monthly_registrations ||=
       patients.where('recorded_at >= ? AND recorded_at <= ?',
-                     registration_month_start,
-                     registration_month_end)
+                     local_month_start(@registration_year, @registration_month),
+                     local_month_end(@registration_year, @registration_month))
   end
 
   def monthly_bps
-    visited_in_months = [analytics_tz_month_start(@registration_year, @registration_month) + 1.month,
-                         analytics_tz_month_start(@registration_year, @registration_month) + 2.months]
+    visited_in_months = [local_month_start(@registration_year, @registration_month) + 1.month,
+                         local_month_start(@registration_year, @registration_month) + 2.months]
 
     @monthly_bps ||=
       LatestBloodPressuresPerPatientPerMonth

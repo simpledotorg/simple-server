@@ -42,7 +42,7 @@ module QuarterHelper
 
   def quarter_datetime(year, quarter)
     quarter_month = ((quarter - 1) * 3) + 1
-    DateTime.new(year, quarter_month, 1)
+    Date.new(year, quarter_month).beginning_of_month
   end
 
   def quarter_start(year, quarter)
@@ -53,12 +53,13 @@ module QuarterHelper
     quarter_datetime(year, quarter).end_of_quarter
   end
 
-  def analytics_tz_quarter_start(year, quarter)
-    quarter_datetime(year, quarter).in_time_zone(ENV['ANALYTICS_TIME_ZONE']).beginning_of_quarter
+  def local_quarter_start(year, quarter)
+    quarter_month = ((quarter - 1) * 3) + 1
+    Time.zone.local(year, quarter_month).beginning_of_quarter
   end
 
-  def analytics_tz_quarter_end(year, quarter)
-    quarter_datetime(year, quarter).in_time_zone(ENV['ANALYTICS_TIME_ZONE']).end_of_quarter
+  def local_quarter_end(year, quarter)
+    local_quarter_start(year, quarter).end_of_quarter
   end
 
   def last_n_quarters(n)

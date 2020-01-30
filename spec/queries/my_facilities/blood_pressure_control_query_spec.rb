@@ -39,7 +39,7 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
                 registration_facility: facility,
                 registration_user: user),
          create(:patient,
-                recorded_at: registration_quarter_start.in_time_zone(ENV['ANALYTICS_TIME_ZONE']).end_of_quarter,
+                recorded_at: registration_quarter_start.end_of_quarter,
                 registration_facility: facility, registration_user: user)]
       end
 
@@ -148,7 +148,7 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
                 registration_facility: facility,
                 registration_user: user),
          create(:patient,
-                recorded_at: registration_month_start.in_time_zone(ENV['ANALYTICS_TIME_ZONE']).end_of_month,
+                recorded_at: registration_month_start.end_of_month,
                 registration_facility: facility, registration_user: user)]
       end
 

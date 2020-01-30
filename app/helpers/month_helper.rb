@@ -1,6 +1,10 @@
 module MonthHelper
-  def analytics_tz_month_start(year, month)
-    DateTime.new(year, month).in_time_zone(ENV['ANALYTICS_TIME_ZONE'])
+  def local_month_start(year, month)
+    Time.zone.local(year, month)
+  end
+
+  def local_month_end(year, month)
+    local_month_start(year, month).end_of_month
   end
 
   def month_short_name(month_start)
