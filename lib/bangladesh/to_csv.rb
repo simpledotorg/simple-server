@@ -1,8 +1,8 @@
-require File.expand_path('../../../config/boot',  __FILE__)
+require File.expand_path('../../config/boot', __dir__)
 require 'roo'
 
-from = File.expand_path('../data/bangladesh.xlsx',  __FILE__)
-to = File.expand_path('../data/bangladesh.csv',  __FILE__)
+from = File.expand_path('data/bangladesh.xlsx', __dir__)
+to = File.expand_path('data/bangladesh.csv', __dir__)
 
 spreadsheet = Roo::Spreadsheet.open(from)
 sheet = spreadsheet.sheet(spreadsheet.sheets.first)
