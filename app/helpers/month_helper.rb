@@ -1,4 +1,8 @@
 module MonthHelper
+  def month_start(year, month)
+    Time.new(year, month)
+  end
+
   def local_month_start(year, month)
     Time.zone.local(year, month)
   end
