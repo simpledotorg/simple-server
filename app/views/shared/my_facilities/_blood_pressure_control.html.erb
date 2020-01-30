@@ -3,16 +3,16 @@
   <% registration_quarter =  @selected_cohort_period[:registration_quarter] %>
   <% registration_month = @selected_cohort_period[:registration_month] %>
   <% registration_year = @selected_cohort_period[:registration_year] %>
-  <% visited_in_period = case @cohort_period %>
+  <% visited_in_period = case cohort_period %>
   <% when :month %>
-    <% month_short_name(month_start(registration_year, registration_month) + 1.months) + '/' + month_short_name(month_start(registration_year, registration_month) + 2.months) %>
+    <% month_short_name(analytics_tz_month_start(registration_year, registration_month) + 1.months) + '/' + month_short_name(analytics_tz_month_start(registration_year, registration_month) + 2.months) %>
   <% when :quarter %>
     <% visited_in_year, visited_in_quarter = next_year_and_quarter(registration_year, registration_quarter) %>
     <% "Q#{visited_in_quarter}-#{visited_in_year}" %>
   <% end %>
   <% registration_period = case cohort_period %>
     <% when :month %>
-      <% month_short_name_and_year(month_start(registration_year, registration_month)) %>
+      <% month_short_name_and_year(analytics_tz_month_start(registration_year, registration_month)) %>
     <% when :quarter %>
       <%  "Q#{registration_quarter}-#{registration_year}" %>
     <% end %>
@@ -51,11 +51,11 @@
           <input class="selected-quarter" name="registration_quarter" value="<%= registration_quarter %>" form="query-filters" hidden>
           <input class="selected-month" name="registration_month" value="<%= registration_month %>" form="query-filters" hidden>
           <input class="selected-year" name="registration_year" value="<%= registration_year %>" form="query-filters" hidden>
-          <input class="selected-period" name="period" value="<%= cohort_period %>" form="query-filters" hidden>
+          <input class="selected-cohort-period" name="cohort_period" value="<%= cohort_period %>" form="query-filters" hidden>
           <input class="selected-quarter" name="registration_quarter" value="<%= registration_quarter %>" form="query-filters-mobile" hidden>
           <input class="selected-month" name="registration_month" value="<%= registration_month %>" form="query-filters-mobile" hidden>
           <input class="selected-year" name="registration_year" value="<%= registration_year %>" form="query-filters-mobile" hidden>
-          <input class="selected-period" name="period" value="<%= cohort_period %>" form="query-filters-mobile" hidden>
+          <input class="selected-cohort-period" name="cohort_period" value="<%= cohort_period %>" form="query-filters-mobile" hidden>
         </div>
       </div>
     </div>
@@ -148,14 +148,14 @@
     function setSelectedQuarter(quarter, year) {
         $('.selected-quarter').val(quarter);
         $('.selected-year').val(year);
-        $('.selected-period').val('quarter');
+        $('.selected-cohort-period').val('quarter');
         $('.selected-month').remove();
     }
 
     function setSelectedMonth(month, year) {
         $('.selected-month').val(month);
         $('.selected-year').val(year);
-        $('.selected-period').val('month');
+        $('.selected-cohort-period').val('month');
         $('.selected-quarter').remove();
     }
 
