@@ -43,7 +43,7 @@
         <% end %>
       <% when :month %>
         <% @display_periods.reverse.each do |(year, month)| %>
-          <th colspan="2"><%= month_short_name_and_year(analytics_tz_month_start(year, month)) %></th>
+          <th colspan="2"><%= month_short_name_and_year(month_start(year, month)) %></th>
         <% end %>
       <% when :day %>
         <% @display_periods.reverse.each do |(year, doy)| %>
