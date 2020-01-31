@@ -83,6 +83,7 @@ class Admin::FacilitiesController < AdminController
       :longitude,
       :enable_diabetes_management,
       :monthly_opd_load
+      :zone
     )
   end
 

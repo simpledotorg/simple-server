@@ -37,6 +37,7 @@ $font-small: 11px;
 
 // Local imports
 @import "dashboard";
+@import "resources";
 @import "graphs";
 @import "snapshots";
 
@@ -52,7 +53,7 @@ h1, h1.btn {
     font-family: "Roboto", sans-serif;
     font-weight: bold;
     padding-bottom: 8px;
-    
+
     .fa-chevron-right {
         position: relative;
         top: -3px;
@@ -128,15 +129,15 @@ nav.secondary-nav a.active {
         text-align: left;
         padding: 8px 16px 8px 16px;
     }
-    
+
     h4 {
         margin: 24px 0 8px 0;
     }
-    
+
     input {
         margin-right: 8px;
     }
-    
+
     label {
         display: block;
         border-top: 1px solid $grey-light;
@@ -490,7 +491,7 @@ span.inactive {
 .footnotes {
     margin-top: 2em;
     padding-right: 40px;
-    
+
     li {
         margin-top: 0.5em;
     }
@@ -587,14 +588,14 @@ sup {
     padding: 8px 0;
     border-top: 1px solid $grey-lightest;
     position: relative;
-    
+
     i {
         position: absolute;
         top: 10px;
         right: 8px;
         font-size: 120%;
         color: $grey-light;
-        
+
     }
 }
 
@@ -632,9 +633,9 @@ th sup {
 
 .table-compact {
     clear: both;
-    
+
     tr.sorts {
-        
+
         a, .sort-label {
             background: $grey-lightest;
             color: $blue;
@@ -647,56 +648,56 @@ th sup {
             text-transform: none;
             letter-spacing: 0;
             font-size: 14px;
-            
+
             i {
                 margin-left: 4px;
                 opacity: 0.3;
             }
         }
-        
+
         [aria-sort] {
             background: $blue;
             color: #fff;
         }
-        
+
         th[role="columnheader"]:not(.no-sort)::after {
             content: "⇣";
             border: none;
             background: none;
             font-weight: bold;
         }
-        
+
         th[aria-sort="ascending"]:not(.no-sort)::after {
             content: "⇡";
         }
-        
+
         th.sort-label {
             border-left: 1px solid #C9D3D8;
         }
-        
+
         th.sort-label:first-of-type {
             border: none !important;
         }
-        
+
         a {
             display: block;
             white-space: nowrap;
         }
-        
+
         a:hover {
             background: $grey-light;
         }
-        
+
         a.current {
             background: $blue;
             color: #fff;
-            
+
             i {
                 opacity: 1;
             }
         }
     }
-    
+
     th {
         vertical-align: middle;
         padding: 4px 8px 8px 8px;
@@ -711,13 +712,13 @@ th sup {
             white-space: nowrap;
         }
     }
-    
+
     td {
         padding: 8px;
         vertical-align: middle;
         border-top: 1px solid $grey-lightest;
         font-size: 14px;
-        
+
         a {
             display: block;
             white-space: nowrap;
@@ -726,19 +727,19 @@ th sup {
             overflow: hidden;
         }
     }
-    
+
     col {
         border-left: 1px solid $grey-lightest;
     }
-    
+
     col:first-of-type {
         border-left: none;
     }
-    
+
     col.table-divider {
         border-left: 1px solid $grey-mid;
     }
-    
+
     td.type-rank { text-align: right; }
     td.type-number { text-align: right; padding-right: 16px; }
     td.type-percent { text-align: center; }

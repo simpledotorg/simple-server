@@ -2241,6 +2241,13 @@
             "unknown"
           ]
         },
+        "hypertension": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no"
+          ]
+        },
         "diagnosed_with_hypertension": {
           "type": "string",
           "enum": [

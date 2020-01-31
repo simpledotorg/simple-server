@@ -50,6 +50,7 @@ Rails.application.routes.draw do
       get 'sync', to: 'medical_histories#sync_to_user'
       post 'sync', to: 'medical_histories#sync_from_user'
     end
+
   end
 
   namespace :api, defaults: { format: 'json' } do
@@ -162,6 +163,10 @@ Rails.application.routes.draw do
     get 'ranked_facilities', to: 'my_facilities#ranked_facilities', as: 'my_facilities_ranked_facilities'
     get 'blood_pressure_control', to: 'my_facilities#blood_pressure_control', as: 'my_facilities_blood_pressure_control'
     get 'registrations', to: 'my_facilities#registrations', as: 'my_facilities_registrations'
+  end
+
+  scope :resources do
+    get '/', to: 'resources#index', as: 'resources'
   end
 
   namespace :admin do
