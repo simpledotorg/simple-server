@@ -34,6 +34,10 @@ class Api::V2::Models < Api::Current::Models
         .tap { |d| d[:required] -= %w(appointment_type) }
     end
 
+    def medical_history
+      super.tap { |d| d[:properties].delete(:hypertension) }
+    end
+
     def definitions
       super.except(
         :patient_business_identifier,

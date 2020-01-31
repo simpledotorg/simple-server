@@ -26,6 +26,7 @@ gem 'bootstrap', '~> 4.3.1'
 gem 'jquery-rails'
 gem 'bootstrap_form', '>= 4.1.0'
 gem 'groupdate'
+gem 'data_migrate'
 gem 'data-anonymization', require: false
 gem 'uuidtools', require: false
 gem 'discard', '~> 1.0'
