@@ -83,7 +83,7 @@
       <% @display_periods.reverse.each do |period| %>
         <td class="type-number" <% unless @selected_period == :day %>colspan="2"<% end %>><%= total_registrations_by_period[period].to_i %></td>
       <% end %>
-      <td class="type-number">43,346</td>
+      <td class="type-number"><%= @all_time_registrations.values.sum %></td>
     </tr>
     <% @facilities.each do |facility| %>
       <tr>
@@ -98,7 +98,7 @@
             <%= @registrations[[facility.id, period.first.to_s, period.second.to_s]].to_i %>
           </td>
         <% end %>
-        <td class="type-number">43,346</td>
+        <td class="type-number"><%= @all_time_registrations[facility.id].to_i %></td>
       </tr>
     <% end %>
     </tbody>

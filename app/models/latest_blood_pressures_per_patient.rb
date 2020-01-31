@@ -3,6 +3,8 @@ class LatestBloodPressuresPerPatient < ApplicationRecord
     Scenic.database.refresh_materialized_view(table_name, concurrently: false, cascade: false)
   end
 
+  belongs_to :facility, foreign_key: :bp_facility_id
+
   THRESHOLDS = BloodPressure::THRESHOLDS
 
   scope :hypertensive, (lambda do

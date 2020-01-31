@@ -40,6 +40,7 @@ class MyFacilitiesController < AdminController
                                                                facilities: @facilities)
 
     @registrations = registrations_query.registrations.group(:facility_id, :year, @selected_period).sum(:registration_count)
+    @all_time_registrations = registrations_query.all_time_registrations.group(:bp_facility_id).count
     @display_periods = registrations_query.periods
   end
 
