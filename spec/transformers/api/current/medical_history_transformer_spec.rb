@@ -21,8 +21,8 @@ describe Api::Current::MedicalHistoryTransformer do
     context "when hypertension is provided" do
       let(:medical_history_params) do
         {
-          id: 'uuuuuuuu-uuuu-uuuu-iiii-ddddddddddd1',
-          patient_id: 'uuuuuuuu-uuuu-uuuu-iiii-ddddddddddd2',
+          id: SecureRandom.uuid,
+          patient_id: SecureRandom.uuid,
           hypertension: 'no',
           diagnosed_with_hypertension: 'unknown'
         }
@@ -37,8 +37,8 @@ describe Api::Current::MedicalHistoryTransformer do
     context "when hypertension is not provided" do
       let(:medical_history_params) do
         {
-          id: 'uuuuuuuu-uuuu-uuuu-iiii-ddddddddddd1',
-          patient_id: 'uuuuuuuu-uuuu-uuuu-iiii-ddddddddddd2',
+          id: SecureRandom.uuid,
+          patient_id: SecureRandom.uuid,
           diagnosed_with_hypertension: 'unknown'
         }
       end
