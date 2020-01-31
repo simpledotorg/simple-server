@@ -7,17 +7,19 @@ describe AuditLog, type: :model do
 
   describe '.merge_log' do
     it 'creates a merge log for the user and record' do
-      record.merge_status = :new
+      AuditLog::MERGE_STATUS_TO_ACTION.each do |status, action|
+        record.merge_status = status
 
-      Timecop.freeze do
-        expect(AuditLogger)
-          .to receive(:info).with({ user: user.id,
-                                    auditable_type: record.class.to_s,
-                                    auditable_id: record.id,
-                                    action: 'create',
-                                    time: Time.current }.to_json)
+        Timecop.freeze do
+          expect(AuditLogger)
+              .to receive(:info).with({ user: user.id,
+                                        auditable_type: record.class.to_s,
+                                        auditable_id: record.id,
+                                        action: action,
+                                        time: Time.current }.to_json)
 
-        AuditLog.merge_log(user, record)
+          AuditLog.merge_log(user, record)
+        end
       end
     end
   end
@@ -58,23 +60,22 @@ describe AuditLog, type: :model do
     let(:action) { 'fetch' }
 
     it 'schedules a job to create audit logs in the background' do
-      expect {
+      expect do
         AuditLog.create_logs_async(user, records, action, Time.current)
-      }.to change(CreateAuditLogsWorker.jobs, :size).by(1)
+      end.to change(CreateAuditLogsWorker.jobs, :size).by(1)
       CreateAuditLogsWorker.clear
     end
 
     it 'creates audit logs for user and records when the job is completed' do
       Timecop.freeze do
         Sidekiq::Testing.inline! do
-
           records.each do |record|
             expect(AuditLogger)
               .to receive(:info).with({ user: user.id,
                                         auditable_type: 'Patient',
                                         auditable_id: record.id,
                                         action: 'fetch',
-                                        time: Time.current}.to_json)
+                                        time: Time.current }.to_json)
           end
         end
 

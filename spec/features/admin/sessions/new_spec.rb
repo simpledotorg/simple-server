@@ -6,7 +6,7 @@ RSpec.feature 'Owner Login as Admin', type: :feature do
   login_page = AdminPage::Sessions::New.new
   dashboard_navigation = Navigations::DashboardPageNavigation.new
 
-  context "owners login and logout" do
+  context 'owners login and logout' do
     before(:each) do
       visit root_path
       login_page.do_login(owner.email, owner.password)
@@ -23,7 +23,7 @@ RSpec.feature 'Owner Login as Admin', type: :feature do
       login_page.click_successful_message_cross_button
     end
   end
-  context "counsellors login and logout" do
+  context 'counsellors login and logout' do
     before(:each) do
       visit root_path
       login_page.do_login(counsellor.email, counsellor.password)
@@ -42,7 +42,7 @@ RSpec.feature 'Owner Login as Admin', type: :feature do
   end
   it 'login with Invalid data' do
     visit root_path
-    login_page.do_login(owner.email, "")
+    login_page.do_login(owner.email, '')
     login_page.is_errormessage_present
     login_page.click_errormessage_cross_button
   end

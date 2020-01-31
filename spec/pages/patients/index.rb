@@ -1,11 +1,10 @@
 module PatientPage
   class Index < ApplicationPage
-
-    INFORMATION = {css: 'p.info'}.freeze
-    FACILITY_DROPDOWN = {css: "select[name='facility_id']"}.freeze
-    PAGE_DROPDOWN = {css: "select[name='per_page']"}.freeze
-    PATIENT_CARD = {css: "div.card"}.freeze
-    PAGE_LINK={css: "a.page-link"}.freeze
+    INFORMATION = { css: 'p.info' }.freeze
+    FACILITY_DROPDOWN = { css: "select[name='facility_id']" }.freeze
+    PAGE_DROPDOWN = { css: "select[name='per_page']" }.freeze
+    PATIENT_CARD = { css: 'div.card' }.freeze
+    PAGE_LINK = { css: 'a.page-link' }.freeze
 
     def verify_adherence_follow_up_landing_page
       present?(INFORMATION)
@@ -19,7 +18,7 @@ module PatientPage
 
     def get_all_facility_count
       click(FACILITY_DROPDOWN)
-      all_option = find(:css, "select[name='facility_id']").all("option").collect(&:text)
+      all_option = find(:css, "select[name='facility_id']").all('option').collect(&:text)
       all_option.length
     end
 
@@ -29,13 +28,13 @@ module PatientPage
 
     def get_all_page_dropdown
       click(PAGE_DROPDOWN)
-      all_option = find(:css, "select[name='per_page']").all("option").collect(&:text)
+      all_option = find(:css, "select[name='per_page']").all('option').collect(&:text)
       all_option.length
     end
 
     def select_facility(value)
-      within("#facility-selector") do
-        select value, from: "facility_id"
+      within('#facility-selector') do
+        select value, from: 'facility_id'
       end
     end
 
@@ -48,8 +47,8 @@ module PatientPage
     end
 
     def select_page_dropdown(value)
-      within("#limit-selector") do
-        select value, from: "per_page"
+      within('#limit-selector') do
+        select value, from: 'per_page'
       end
     end
   end

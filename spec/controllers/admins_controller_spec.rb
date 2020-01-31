@@ -105,9 +105,9 @@ RSpec.describe AdminsController, type: :controller do
        { permission_slug: :manage_facility_groups,
          resource_type: 'Organization',
          resource_id: organization.id },
-         { permission_slug: :manage_facilities,
-           resource_type: 'FacilityGroup',
-           resource_id: facility_group.id }]
+       { permission_slug: :manage_facilities,
+         resource_type: 'FacilityGroup',
+         resource_id: facility_group.id }]
     end
 
     let(:existing_admin) { create(:admin, params) }
@@ -126,7 +126,7 @@ RSpec.describe AdminsController, type: :controller do
       context 'update params are valid' do
         it 'allows updating user full name' do
           new_name = Faker::Name.name
-          put :update, params: params.merge({ id: existing_admin.id, full_name: new_name })
+          put :update, params: params.merge(id: existing_admin.id, full_name: new_name)
 
           existing_admin.reload
 
@@ -136,7 +136,7 @@ RSpec.describe AdminsController, type: :controller do
 
         it 'allows updating user role' do
           new_role = 'New user role'
-          put :update, params: params.merge({ id: existing_admin.id, role: new_role })
+          put :update, params: params.merge(id: existing_admin.id, role: new_role)
 
           existing_admin.reload
 
@@ -146,7 +146,7 @@ RSpec.describe AdminsController, type: :controller do
 
         it 'does not allow updating user email' do
           new_email = Faker::Internet.email
-          put :update, params: params.merge({ id: existing_admin.id, email: new_email })
+          put :update, params: params.merge(id: existing_admin.id, email: new_email)
 
           existing_admin.reload
 
@@ -155,7 +155,7 @@ RSpec.describe AdminsController, type: :controller do
         end
 
         it 'updates user permissions' do
-          put :update, params: params.merge({ id: existing_admin.id, permissions: permission_params })
+          put :update, params: params.merge(id: existing_admin.id, permissions: permission_params)
 
           existing_admin.reload
           expect(existing_admin.user_permissions.pluck(:permission_slug))
@@ -165,17 +165,17 @@ RSpec.describe AdminsController, type: :controller do
 
       context 'update params are invalid' do
         it 'responds with bad request if full name is missing' do
-          put :update, params: params.merge({ id: existing_admin.id, full_name: nil })
+          put :update, params: params.merge(id: existing_admin.id, full_name: nil)
 
           expect(response).to be_bad_request
-          expect(JSON(response.body)).to eq("errors" => ["Full name can't be blank"])
+          expect(JSON(response.body)).to eq('errors' => ["Full name can't be blank"])
         end
 
         it 'responds with bad request if role is missing' do
-          put :update, params: params.merge({ id: existing_admin.id, role: nil })
+          put :update, params: params.merge(id: existing_admin.id, role: nil)
 
           expect(response).to be_bad_request
-          expect(JSON(response.body)).to eq("errors" => ["Role can't be blank"])
+          expect(JSON(response.body)).to eq('errors' => ["Role can't be blank"])
         end
       end
     end

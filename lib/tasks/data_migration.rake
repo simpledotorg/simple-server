@@ -65,17 +65,21 @@ namespace :data_migration do
 
   desc 'Backport all BloodPressures to have Encounters and appropriate Observations'
   task :add_encounters_to_existing_blood_pressures => :environment do |_t, _args|
-    batch_size = ENV['BACKFILL_ENCOUNTERS_FOR_BPS_BATCH_SIZE'].to_i || 1000
-    timezone_offset = ENV['BACKFILL_ENCOUNTERS_FOR_BPS_TIMEZONE_OFFSET'] # For 'Asia/Kolkata'
+    batch_size = (ENV['BACKFILL_ENCOUNTERS_FOR_BPS_BATCH_SIZE'] || 1000).to_i
+    timezone_offset = ENV['BACKFILL_ENCOUNTERS_FOR_BPS_TIMEZONE_OFFSET'].to_i # For 'Asia/Kolkata'
 
     # migrate all blood_pressures in batches
-    BloodPressure.in_batches(of: batch_size) do |batch|
+    BloodPressure
+      .left_outer_joins(:encounter, :facility, :user)
+      .where(encounters: { id: nil })
+      .where.not(facilities: { id: nil }, users: { id: nil })
+      .in_batches(of: batch_size) do |batch|
       batch.map do |blood_pressure|
         encountered_on = Encounter.generate_encountered_on(blood_pressure.recorded_at, timezone_offset)
 
         encounter_merge_params = {
-          id: Encounter.generate_id(blood_pressure.facility.id, blood_pressure.patient.id, encountered_on),
-          patient_id: blood_pressure.patient.id,
+          id: Encounter.generate_id(blood_pressure.facility_id, blood_pressure.patient_id, encountered_on),
+          patient_id: blood_pressure.patient_id,
           facility_id: blood_pressure.facility_id,
           device_created_at: blood_pressure.device_created_at,
           device_updated_at: blood_pressure.device_updated_at,
@@ -93,7 +97,7 @@ namespace :data_migration do
 
   desc 'Backfill creation_facility for all existing Appointments'
   task backfill_creation_facility_in_appointments: :environment do
-    Appointment.in_batches.update_all('creation_facility_id = facility_id')
+    Appointment.where(creation_facility_id: nil).in_batches.update_all('creation_facility_id = facility_id')
   end
 
   desc 'Make all occurrences of the SMS Reminder Bot User nil'

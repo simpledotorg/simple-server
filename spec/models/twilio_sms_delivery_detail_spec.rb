@@ -7,4 +7,3 @@ describe TwilioSmsDeliveryDetail, type: :model do
     it { should have_one(:communication) }
   end
 end
-

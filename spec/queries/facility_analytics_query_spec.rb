@@ -33,10 +33,12 @@ RSpec.describe FacilityAnalyticsQuery do
         #
         Timecop.travel(month + 1.month) do
           users.each do |u|
-            registered_patients.each { |patient| create(:blood_pressure,
-                                                        patient: patient,
-                                                        facility: facility,
-                                                        user: u) }
+            registered_patients.each do |patient|
+              create(:blood_pressure,
+                     patient: patient,
+                     facility: facility,
+                     user: u)
+            end
           end
         end
 
@@ -45,10 +47,12 @@ RSpec.describe FacilityAnalyticsQuery do
         #
         Timecop.travel(month + 2.months) do
           users.each do |u|
-            registered_patients.each { |patient| create(:blood_pressure,
-                                                        patient: patient,
-                                                        facility: facility,
-                                                        user: u) }
+            registered_patients.each do |patient|
+              create(:blood_pressure,
+                     patient: patient,
+                     facility: facility,
+                     user: u)
+            end
           end
         end
       end
@@ -58,19 +62,12 @@ RSpec.describe FacilityAnalyticsQuery do
       it 'groups the registered patients by facility and beginning of month' do
         expected_result =
           { users.first.id =>
-              { :registered_patients_by_period =>
-                  { five_months_back => 3,
-                    four_months_back => 3,
-                  }
-              },
+              { registered_patients_by_period: { five_months_back => 3,
+                                                 four_months_back => 3 } },
 
             users.second.id =>
-              { :registered_patients_by_period =>
-                  { five_months_back => 3,
-                    four_months_back => 3,
-                  }
-              }
-          }
+              { registered_patients_by_period: { five_months_back => 3,
+                                                 four_months_back => 3 } } }
 
         expect(analytics.registered_patients_by_period).to eq(expected_result)
       end
@@ -81,13 +78,12 @@ RSpec.describe FacilityAnalyticsQuery do
         expected_result =
           { users.first.id =>
               {
-                :total_registered_patients => 6
+                total_registered_patients: 6
               },
             users.second.id =>
               {
-                :total_registered_patients => 6
-              }
-          }
+                total_registered_patients: 6
+              } }
 
         expect(analytics.total_registered_patients).to eq(expected_result)
       end
@@ -97,21 +93,14 @@ RSpec.describe FacilityAnalyticsQuery do
       it 'groups the follow up patients by facility and beginning of month' do
         expected_result =
           { users.first.id =>
-              { :follow_up_patients_by_period =>
-                  { four_months_back => 6,
-                    three_months_back => 12,
-                    two_months_back => 6
-                  }
-              },
+              { follow_up_patients_by_period: { four_months_back => 6,
+                                                three_months_back => 12,
+                                                two_months_back => 6 } },
 
             users.second.id =>
-              { :follow_up_patients_by_period =>
-                  { four_months_back => 6,
-                    three_months_back => 12,
-                    two_months_back => 6
-                  }
-              }
-          }
+              { follow_up_patients_by_period: { four_months_back => 6,
+                                                three_months_back => 12,
+                                                two_months_back => 6 } } }
 
         expect(analytics.follow_up_patients_by_period).to eq(expected_result)
       end
@@ -138,12 +127,9 @@ RSpec.describe FacilityAnalyticsQuery do
 
         expected_result =
           { users.first.id =>
-              { :follow_up_patients_by_period =>
-                  {
-                    three_months_back => 1
-                  }
-              }
-          }
+              { follow_up_patients_by_period: {
+                three_months_back => 1
+              } } }
 
         expect(analytics.follow_up_patients_by_period).to eq(expected_result)
       end
@@ -157,12 +143,9 @@ RSpec.describe FacilityAnalyticsQuery do
 
         expected_result =
           { users.first.id =>
-              { :registered_patients_by_period =>
-                  {
-                    one_month_back => 3
-                  }
-              }
-          }
+              { registered_patients_by_period: {
+                one_month_back => 3
+              } } }
 
         expect(analytics.registered_patients_by_period).to eq(expected_result)
       end
@@ -194,12 +177,9 @@ RSpec.describe FacilityAnalyticsQuery do
       it "shouldn't count discarded patients" do
         expected_result =
           { users.first.id =>
-              { :registered_patients_by_period =>
-                  {
-                    four_months_back => 1
-                  }
-              },
-          }
+              { registered_patients_by_period: {
+                four_months_back => 1
+              } } }
 
         expect(analytics.registered_patients_by_period).to eq(expected_result)
       end
@@ -208,12 +188,9 @@ RSpec.describe FacilityAnalyticsQuery do
     describe '#follow_up_patients_by_period' do
       let!(:expected_result) do
         { users.first.id =>
-            { :follow_up_patients_by_period =>
-                {
-                  three_months_back => 1
-                }
-            }
-        }
+            { follow_up_patients_by_period: {
+              three_months_back => 1
+            } } }
       end
 
       it "shouldn't count discarded patients" do
@@ -225,9 +202,8 @@ RSpec.describe FacilityAnalyticsQuery do
       let!(:expected_result) do
         { users.first.id =>
             {
-              :total_registered_patients => 1
-            }
-        }
+              total_registered_patients: 1
+            } }
       end
 
       it "shouldn't count discarded patients" do

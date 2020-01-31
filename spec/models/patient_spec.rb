@@ -21,8 +21,8 @@ describe Patient, type: :model do
       expect(patient.facilities.count).to eq(1)
     end
 
-    it { should belong_to(:registration_facility).class_name("Facility").optional }
-    it { should belong_to(:registration_user).class_name("User") }
+    it { should belong_to(:registration_facility).class_name('Facility').optional }
+    it { should belong_to(:registration_user).class_name('User') }
   end
 
   describe 'Associations' do
@@ -43,7 +43,7 @@ describe Patient, type: :model do
     it_behaves_like 'a record that is deletable'
   end
 
-  context "Scopes" do
+  context 'Scopes' do
     describe '.not_contacted' do
       let(:patient_to_followup) { create(:patient, device_created_at: 5.days.ago) }
       let(:patient_to_not_followup) { create(:patient, device_created_at: 1.day.ago) }
@@ -68,45 +68,53 @@ describe Patient, type: :model do
     end
   end
 
-  context "Utility methods" do
+  context 'Utility methods' do
     let(:patient) { create(:patient) }
 
     describe '#risk_priority' do
-      it 'should return no priority for patients recently overdue' do
+      it 'returns no priority for patients recently overdue' do
         create(:appointment, scheduled_date: 29.days.ago, status: :scheduled, patient: patient)
 
         expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:NONE])
       end
 
-      it 'should return highest priority for patients overdue with critical bp' do
+      it 'returns high priority for patients overdue with critical bp' do
         create(:blood_pressure, :critical, patient: patient)
         create(:appointment, scheduled_date: 31.days.ago, status: :scheduled, patient: patient)
 
-        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:HIGHEST])
+        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:HIGH])
       end
 
-      it 'should return very high priority for patients overdue with medical risk history' do
+      it 'returns high priority for hypertensive bp patients with medical history risks' do
+        create(:blood_pressure, :hypertensive, patient: patient)
         create(:medical_history, :prior_risk_history, patient: patient)
-        create(:appointment, :overdue, patient: patient)
-
-        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:VERY_HIGH])
-      end
-
-      it 'should return high priority for patients overdue with very high bp' do
-        create(:blood_pressure, :very_high, patient: patient)
         create(:appointment, :overdue, patient: patient)
 
         expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:HIGH])
       end
 
-      it 'should return regular priority for patients overdue with high bp' do
-        create(:blood_pressure, :high, patient: patient)
+      it 'returns regular priority for patients overdue with only hypertensive bp' do
+        create(:blood_pressure, :hypertensive, patient: patient)
         create(:appointment, :overdue, patient: patient)
 
         expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:REGULAR])
       end
 
-      it 'should return low priority for patients overdue with low risk' do
+      it 'returns no priority for patients overdue with only medical risk history' do
+        create(:medical_history, :prior_risk_history, patient: patient)
+        create(:appointment, :overdue, patient: patient)
+
+        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:NONE])
+      end
+
+      it 'returns regular priority for patients overdue with hypertension' do
+        create(:blood_pressure, :hypertensive, patient: patient)
+        create(:appointment, :overdue, patient: patient)
+
+        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:REGULAR])
+      end
+
+      it 'returns low priority for patients overdue with low risk' do
         create(:blood_pressure, :under_control, patient: patient)
         create(:appointment, scheduled_date: 2.years.ago, status: :scheduled, patient: patient)
 
@@ -114,27 +122,20 @@ describe Patient, type: :model do
       end
     end
 
-    describe "#risk_priority_label" do
-      it "returns critical for HIGHEST risk" do
-        allow(patient).to receive(:risk_priority).and_return(Patient::RISK_PRIORITIES[:HIGHEST])
-        expect(patient.risk_priority_label).to eq("Critical")
-      end
-    end
-
-    describe "#current_age" do
-      it "returns age based on date of birth year if present" do
-        patient.date_of_birth = Date.parse("1980-01-01")
+    describe '#current_age' do
+      it 'returns age based on date of birth year if present' do
+        patient.date_of_birth = Date.parse('1980-01-01')
 
         expect(patient.current_age).to eq(Date.current.year - 1980)
       end
 
-      it "returns age based on age_updated_at if date of birth is not present" do
-        patient = create(:patient, age: 30, age_updated_at: 2.years.ago, date_of_birth: nil)
+      it 'returns age based on age_updated_at if date of birth is not present' do
+        patient = create(:patient, age: 30, age_updated_at: 25.months.ago, date_of_birth: nil)
 
         expect(patient.current_age).to eq(32)
       end
 
-      it "returns 0 if age is 0" do
+      it 'returns 0 if age is 0' do
         patient.age = 0
         patient.age_updated_at = 2.years.ago
 
@@ -142,7 +143,7 @@ describe Patient, type: :model do
       end
     end
 
-    describe "#latest_phone_number" do
+    describe '#latest_phone_number' do
       it 'returns the last phone number for the patient' do
         patient = create(:patient)
         _number_1 = create(:patient_phone_number, patient: patient)
@@ -153,7 +154,7 @@ describe Patient, type: :model do
       end
     end
 
-    describe "#latest_mobile_number" do
+    describe '#latest_mobile_number' do
       it 'returns the last mobile number for the patient' do
         patient = create(:patient)
         number_1 = create(:patient_phone_number, patient: patient)
@@ -199,8 +200,7 @@ describe Patient, type: :model do
             registration_facility_name: patient.registration_facility.name,
             user_id: hash_uuid(patient.registration_user.id),
             age: patient.age,
-            gender: patient.gender
-          }
+            gender: patient.gender }
 
         expect(patient.anonymized_data).to eq anonymised_data
       end
@@ -246,4 +246,3 @@ describe Patient, type: :model do
     specify { expect { patient.discard_data }.to change { Patient.count }.by(-1) }
   end
 end
-

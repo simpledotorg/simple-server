@@ -1,17 +1,17 @@
 require 'rails_helper'
 
-RSpec.feature "Home page", type: :feature do
-  let!(:ihmi) { create(:organization, name: "IHMI") }
-  let!(:path) { create(:organization, name: "PATH") }
+RSpec.feature 'Home page', type: :feature do
+  let!(:ihmi) { create(:organization, name: 'IHMI') }
+  let!(:path) { create(:organization, name: 'PATH') }
 
-  let!(:ihmi_group_bathinda) { create(:facility_group, organization: ihmi, name: "Bathinda") }
-  let!(:ihmi_group_mansa) { create(:facility_group, organization: ihmi, name: "Mansa") }
-  let!(:path_group) { create(:facility_group, organization: path, name: "Amir Singh Facility Group") }
+  let!(:ihmi_group_bathinda) { create(:facility_group, organization: ihmi, name: 'Bathinda') }
+  let!(:ihmi_group_mansa) { create(:facility_group, organization: ihmi, name: 'Mansa') }
+  let!(:path_group) { create(:facility_group, organization: path, name: 'Amir Singh Facility Group') }
 
-  let!(:bathinda_chc) { create(:facility, facility_group: ihmi_group_bathinda, name: "CHC Buccho") }
-  let!(:bathinda_phc) { create(:facility, facility_group: ihmi_group_bathinda, name: "PHC Batala") }
-  let!(:mansa_phc) { create(:facility, facility_group: ihmi_group_mansa, name: "PHC Joga") }
-  let!(:path_clinic) { create(:facility, facility_group: path_group, name: "Dr. Amir Singh") }
+  let!(:bathinda_chc) { create(:facility, facility_group: ihmi_group_bathinda, name: 'CHC Buccho') }
+  let!(:bathinda_phc) { create(:facility, facility_group: ihmi_group_bathinda, name: 'PHC Batala') }
+  let!(:mansa_phc) { create(:facility, facility_group: ihmi_group_mansa, name: 'PHC Joga') }
+  let!(:path_clinic) { create(:facility, facility_group: path_group, name: 'Dr. Amir Singh') }
 
   before do
     sign_in(admin.email_authentication)
@@ -20,16 +20,18 @@ RSpec.feature "Home page", type: :feature do
 
   context 'owner has permission to view cohort reports' do
     context 'for all organizations' do
-      let(:admin) { create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :view_cohort_reports, resource: nil)
-      ]) }
-
-      it "shows all organizations" do
-        expect(page).to have_content("IHMI")
-        expect(page).to have_content("PATH")
+      let(:admin) do
+        create(:admin, user_permissions: [
+                 build(:user_permission, permission_slug: :view_cohort_reports, resource: nil)
+               ])
       end
 
-      it "shows all the districts" do
+      it 'shows all organizations' do
+        expect(page).to have_content('IHMI')
+        expect(page).to have_content('PATH')
+      end
+
+      it 'shows all the districts' do
         districts = Facility.all.pluck(:district).uniq
 
         districts.each do |district|
@@ -39,16 +41,18 @@ RSpec.feature "Home page", type: :feature do
     end
 
     context 'for a specific organization' do
-      let(:admin) { create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :view_cohort_reports, resource: ihmi)
-      ]) }
+      let(:admin) do
+        create(:admin, user_permissions: [
+                 build(:user_permission, permission_slug: :view_cohort_reports, resource: ihmi)
+               ])
+      end
 
-      it "shows the authorized organization" do
-        expect(page).to have_content("IHMI")
+      it 'shows the authorized organization' do
+        expect(page).to have_content('IHMI')
       end
 
       it "doesn't show other organizations" do
-        expect(page).not_to have_content("PATH")
+        expect(page).not_to have_content('PATH')
       end
 
       it 'shows districts for facilities in the organization' do
@@ -61,16 +65,18 @@ RSpec.feature "Home page", type: :feature do
     end
 
     context 'for a specific facility group' do
-      let(:admin) { create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :view_cohort_reports, resource: ihmi_group_bathinda)
-      ]) }
+      let(:admin) do
+        create(:admin, user_permissions: [
+                 build(:user_permission, permission_slug: :view_cohort_reports, resource: ihmi_group_bathinda)
+               ])
+      end
 
-      it "shows the organization of the facility group" do
-        expect(page).to have_content("IHMI")
+      it 'shows the organization of the facility group' do
+        expect(page).to have_content('IHMI')
       end
 
       it "doesn't show other organizations" do
-        expect(page).not_to have_content("PATH")
+        expect(page).not_to have_content('PATH')
       end
 
       it 'shows districts for facilities in the organization' do
@@ -96,9 +102,11 @@ RSpec.feature "Home page", type: :feature do
     end
 
     context 'for all organizations' do
-      let(:admin) { create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :approve_health_workers, resource: nil)
-      ]) }
+      let(:admin) do
+        create(:admin, user_permissions: [
+                 build(:user_permission, permission_slug: :approve_health_workers, resource: nil)
+               ])
+      end
 
       it 'lists all users requesting approval' do
         visit root_path
@@ -108,9 +116,11 @@ RSpec.feature "Home page", type: :feature do
     end
 
     context 'for a specific facility group' do
-      let(:admin) { create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :approve_health_workers, resource: user1.registration_facility.facility_group)
-      ]) }
+      let(:admin) do
+        create(:admin, user_permissions: [
+                 build(:user_permission, permission_slug: :approve_health_workers, resource: user1.registration_facility.facility_group)
+               ])
+      end
 
       it 'lists all users requesting approval in authorized facility group' do
         expect(page).to have_content(user1.full_name)
@@ -122,9 +132,11 @@ RSpec.feature "Home page", type: :feature do
     end
 
     context 'for a specific organization' do
-      let(:admin) { create(:admin, user_permissions: [
-        build(:user_permission, permission_slug: :approve_health_workers, resource: user1.organization)
-      ]) }
+      let(:admin) do
+        create(:admin, user_permissions: [
+                 build(:user_permission, permission_slug: :approve_health_workers, resource: user1.organization)
+               ])
+      end
 
       it 'lists all users requesting approval in authorized organization' do
         expect(page).to have_content(user1.full_name)
