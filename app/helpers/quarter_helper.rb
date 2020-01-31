@@ -68,7 +68,7 @@ module QuarterHelper
                        previous_year_and_quarter(current_year, current_quarter)
 
     (1...n).reduce([initial_quarter]) do |quarter_list, _|
-      quarter_list <<  previous_year_and_quarter(*quarter_list.last)
+      quarter_list << previous_year_and_quarter(*quarter_list.last)
     end
   end
 end

@@ -45,6 +45,7 @@ class MyFacilities::BloodPressureControlQuery
   end
 
   private
+
   attr_reader :facilities
 
   def quarterly_registrations

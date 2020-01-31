@@ -12,7 +12,7 @@ class MyFacilities::RegistrationsQuery
                when :quarter then last_n_quarters(n: include_quarters, include_current_quarter: true)
                when :month then
                  last_n_months(n: include_months, include_current_month: true)
-                 .map { |month| [month.year, month.month]}
+                 .map { |month| [month.year, month.month] }
                when :day then last_n_days(n: include_days)
                end
   end
@@ -25,9 +25,10 @@ class MyFacilities::RegistrationsQuery
     end
   end
 
+  private
+
   def quarterly_registrations
-    year_quarter_tuples = @periods
-                               .map { |(year, quarter)| "('#{year}', '#{quarter}')" }.join(',')
+    year_quarter_tuples = @periods.map { |(year, quarter)| "('#{year}', '#{quarter}')" }.join(',')
 
     PatientRegistrationsPerDayPerFacility
       .where(facility: @facilities)
@@ -35,20 +36,18 @@ class MyFacilities::RegistrationsQuery
   end
 
   def monthly_registrations
-    year_month_tuples = @periods
-                             .map { |(year, month)| "('#{year}', '#{month}')" }.join(',')
+    year_month_tuples = @periods.map { |(year, month)| "('#{year}', '#{month}')" }.join(',')
 
     PatientRegistrationsPerDayPerFacility
-        .where(facility: @facilities)
-        .where("(year, month) IN (#{year_month_tuples})")
+      .where(facility: @facilities)
+      .where("(year, month) IN (#{year_month_tuples})")
   end
 
   def daily_registrations
-    year_day_tuples = @periods
-                      .map { |(year, day)| "('#{year}', '#{day}')" }.join(',')
+    year_day_tuples = @periods.map { |(year, day)| "('#{year}', '#{day}')" }.join(',')
 
     PatientRegistrationsPerDayPerFacility
-        .where(facility: @facilities)
-        .where("(year, day) IN (#{year_day_tuples})")
+      .where(facility: @facilities)
+      .where("(year, day) IN (#{year_day_tuples})")
   end
 end
