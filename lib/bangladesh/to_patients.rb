@@ -62,7 +62,12 @@ def history(value)
 end
 
 def dosage(value)
-  value.scan(/\d/).join.to_i
+  dosage_value = value.scan(/(\d|\.)/).join.to_f
+  if dosage_value.to_i == dosage_value
+    "#{dosage_value.to_i} mg"     # 50.0 -> "50 mg"
+  else
+    "#{dosage_value} mg"          # 12.5 -> "12.5 mg"
+  end
 end
 
 def create_patient(params)
@@ -72,96 +77,112 @@ def create_patient(params)
   )
     puts "Skipping patient: #{params[:business_identifier]}"
   else
-    # Patient.transaction do
-      begin
-        now = DateTime.current
+    Patient.transaction do
+      now = DateTime.current
 
-        address = Address.create!(
-          id: SecureRandom.uuid,
-          **params[:address],
-          district: 'Sylhet',
-          country: 'Bangladesh',
-          device_created_at: now,
-          device_updated_at: now
-        )
+      address = Address.create!(
+        id: SecureRandom.uuid,
+        **params[:address],
+        district: 'Sylhet',
+        country: 'Bangladesh',
+        device_created_at: now,
+        device_updated_at: now
+      )
 
-        patient = Patient.create!(
-          id: SecureRandom.uuid,
-          full_name: params[:full_name],
-          gender: params[:gender],
-          age: params[:age],
-          date_of_birth: params[:date_of_birth],
-          registration_facility: $registration_facility,
-          registration_user: $registration_user,
-          address: address,
-          recorded_at: params[:blood_pressures].map { |bp| bp[:recorded_at] }.min,
-          device_created_at: now,
-          device_updated_at: now
-        )
+      patient = Patient.create!(
+        id: SecureRandom.uuid,
+        full_name: params[:full_name],
+        gender: params[:gender],
+        age: params[:age],
+        date_of_birth: params[:date_of_birth],
+        registration_facility: $registration_facility,
+        registration_user: $registration_user,
+        address: address,
+        recorded_at: params[:blood_pressures].map { |bp| bp[:recorded_at] }.min,
+        device_created_at: now,
+        device_updated_at: now
+      )
 
-        PatientBusinessIdentifier.create!(
-          identifier_type: 'bangladesh_national_id',
-          identifier: params[:business_identifier],
+      PatientBusinessIdentifier.create!(
+        identifier_type: 'bangladesh_national_id',
+        identifier: params[:business_identifier],
+        patient: patient,
+        device_created_at: now,
+        device_updated_at: now
+      ) unless params[:business_identifier].blank?
+
+      PatientPhoneNumber.create!(
+        id: SecureRandom.uuid,
+        patient: patient,
+        number: params[:phone_number],
+        phone_type: 'mobile',
+        device_created_at: now,
+        device_updated_at: now
+      )
+
+      MedicalHistory.create!(
+        id: SecureRandom.uuid,
+        patient: patient,
+        user: $registration_user,
+        **params[:medical_history],
+        device_created_at: now,
+        device_updated_at: now
+      )
+
+      params[:blood_pressures].each do |bp|
+        encounter = Encounter.create!(
           patient: patient,
-          device_created_at: now,
-          device_updated_at: now
-        ) unless params[:business_identifier].blank?
-
-        PatientPhoneNumber.create!(
-          id: SecureRandom.uuid,
-          patient: patient,
-          number: params[:phone_number],
-          phone_type: 'mobile',
+          facility: $registration_facility,
+          encountered_on: bp[:recorded_at],
+          timezone_offset: 21600,
           device_created_at: now,
           device_updated_at: now
         )
 
-        MedicalHistory.create!(
+        blood_pressure = BloodPressure.create!(
           id: SecureRandom.uuid,
+          systolic: bp[:systolic],
+          diastolic: bp[:diastolic],
+          recorded_at: bp[:recorded_at],
           patient: patient,
           user: $registration_user,
-          **params[:medical_history],
+          facility: $registration_facility,
           device_created_at: now,
           device_updated_at: now
         )
 
-        params[:blood_pressures].each do |bp|
-          encounter = Encounter.create!(
-            patient: patient,
-            facility: $registration_facility,
-            encountered_on: bp[:recorded_at],
-            timezone_offset: 21600,
-            device_created_at: now,
-            device_updated_at: now
-          )
+        Observation.create!(
+          encounter: encounter,
+          observable: blood_pressure,
+          user: $registration_user
+        )
+      end
 
-          blood_pressure = BloodPressure.create!(
-            id: SecureRandom.uuid,
-            systolic: bp[:systolic],
-            diastolic: bp[:diastolic],
-            recorded_at: bp[:recorded_at],
-            patient: patient,
-            user: $registration_user,
-            facility: $registration_facility,
-            device_created_at: now,
-            device_updated_at: now
-          )
-
-          Observation.create!(
-            encounter: encounter,
-            observable: blood_pressure,
-            user: $registration_user
-          )
+      params[:prescription_drugs].each do |name, dosage|
+        # Default dosage if only one
+        if !dosage && ProtocolDrug.where(name: name).count ==1
+          dosage = ProtocolDrug.find_by(name: name).dosage
         end
 
-        puts "Creating patient: #{params[:business_identifier]}"
-        # puts "Continue? (y/n)"
-        # exit(0) if gets.chomp != 'y'
-      rescue ActiveRecord::NotNullViolation
-        binding.pry
+        is_protocol_drug = ProtocolDrug.exists?(name: name, dosage: dosage)
+
+        PrescriptionDrug.create!(
+          id: SecureRandom.uuid,
+          name: name,
+          dosage: dosage,
+          is_protocol_drug: is_protocol_drug,
+          is_deleted: false,
+          patient: patient,
+          user: $registration_user,
+          facility: $registration_facility,
+          device_created_at: now,
+          device_updated_at: now
+        )
       end
+
+      puts "Creating patient: #{params[:business_identifier]}"
     end
-  # end
+  end
 end
 
 patient_data.each_with_index do |row, index|
@@ -237,16 +258,16 @@ patient_data.each_with_index do |row, index|
   end
 
   # Medications
-  visit_medications["Amlodipine"] = dosage(value)         if /^Amlodipine/.match?(key)
-  visit_medications["Losartan"] = dosage(value)           if /^Losartan/.match?(key) || /^Losrtan/.match?(key)
-  visit_medications["Hydrocholothiazide"] = dosage(value) if /^Hydrocholothiazide/.match?(key)
-  visit_medications["Beta Blocker"] = dosage(value)       if /^Beta Blocker/.match?(key)
-  visit_medications["Aspirin"] = dosage(value)            if /^Aspirin/.match?(key)
-  visit_medications["Statin"] = dosage(value)             if /^Statin/.match?(key)
-  visit_medications[value] = dosage(value)                if /^Other/.match?(key)
-  visit_medications[value] = dosage(value)                if /^Other 2/.match?(key)
-  visit_medications[value] = dosage(value)                if /^Other 2-1/.match?(key)
-  visit_medications[value] = dosage(value)                if /^Other 2-2/.match?(key)
-  visit_medications[value] = dosage(value)                if /^Other 2-3/.match?(key)
-  visit_medications[value] = dosage(value)                if /^Other 2-4/.match?(key)
+  visit_medications["Amlodipine"] = dosage(value)          if /^Amlodipine/.match?(key)
+  visit_medications["Losartan Potassium"] = dosage(value)  if /^Losartan/.match?(key) || /^Losrtan/.match?(key)
+  visit_medications["Hydrochlorothiazide"] = dosage(value) if /^Hydrocholothiazide/.match?(key)
+  visit_medications["Atenolol"] = dosage(value)            if /^Beta Blocker/.match?(key)
+  visit_medications["Aspirin"] = dosage(value)             if /^Aspirin/.match?(key)
+  visit_medications["Rosuvastatin"] = dosage(value)        if /^Statin/.match?(key)
+  visit_medications[value] = dosage(value)                 if /^Other/.match?(key)
+  visit_medications[value] = dosage(value)                 if /^Other 2/.match?(key)
+  visit_medications[value] = dosage(value)                 if /^Other 2-1/.match?(key)
+  visit_medications[value] = dosage(value)                 if /^Other 2-2/.match?(key)
+  visit_medications[value] = dosage(value)                 if /^Other 2-3/.match?(key)
+  visit_medications[value] = dosage(value)                 if /^Other 2-4/.match?(key)
 end
