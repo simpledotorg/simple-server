@@ -34,6 +34,14 @@ blood_pressure = {}
 visit_medications = {}
 patient_medications = {}
 
+$registration_facility = Facility.find_by(name: 'UHC Golapganj')
+$registration_user = User.create_with(
+  sync_approval_status: "denied",
+  sync_approval_status_reason: "User is a robot",
+  device_created_at: DateTime.current,
+  device_updated_at: DateTime.current
+).find_or_create_by!(full_name: 'bangladesh-import-user')
+
 def nid(value)
   # scientific notation
   if /e\+/.match?(value)
@@ -64,26 +72,60 @@ def create_patient(params)
   )
     puts "Skipping patient: #{params[:business_identifier]}"
     gets.chomp
-  end
+  else
+    Patient.transaction do
+      now = DateTime.current
 
-  Patient.transaction do
-    patient = Patient.create!(
-      full_name: params[:full_name],
-      gender: params[:gender],
-      age: params[:age],
-      date_of_birth: params[:date_of_birth],
-      device_created_at: DateTime.current,
-      device_updated_at: DateTime.current,
-    )
+      address = Address.create!(
+        id: SecureRandom.uuid,
+        **params[:address],
+        device_created_at: now,
+        device_updated_at: now
+      )
 
-    PatientBusinessIdentifier.create!(
-      identifier_type: 'bangladesh_national_id',
-      identifier: params[:business_identifier],
-      patient: patient
-    )
+      patient = Patient.create!(
+        id: SecureRandom.uuid,
+        full_name: params[:full_name],
+        gender: params[:gender],
+        age: params[:age],
+        date_of_birth: params[:date_of_birth],
+        registration_facility: $registration_facility,
+        registration_user: $registration_user,
+        address: address,
+        device_created_at: now,
+        device_updated_at: now
+      )
 
-    puts "Created patient: #{params[:business_identifier]}"
-    gets.chomp
+      PatientBusinessIdentifier.create!(
+        identifier_type: 'bangladesh_national_id',
+        identifier: params[:business_identifier],
+        patient: patient,
+        device_created_at: now,
+        device_updated_at: now
+      )
+
+      PatientPhoneNumber.create!(
+        id: SecureRandom.uuid,
+        patient: patient,
+        number: params[:phone_number],
+        phone_type: 'mobile',
+        device_created_at: now,
+        device_updated_at: now
+      )
+
+      MedicalHistory.create!(
+        id: SecureRandom.uuid,
+        patient: patient,
+        user: $registration_user,
+        **params[:medical_history],
+        device_created_at: now,
+        device_updated_at: now
+      )
+
+      puts "Creating patient: #{params[:business_identifier]}"
+      puts "Continue? (y/n)"
+      exit(0) if gets.chomp != 'y'
+    end
   end
 end
 
@@ -105,7 +147,6 @@ patient_data.each_with_index do |row, index|
     patient_key = value
     patients[patient_key] ||= {
       blood_pressures: [],
-      phone_numbers: [],
       address: {},
       medical_history: {},
       prescription_drugs: {}
@@ -118,7 +159,7 @@ patient_data.each_with_index do |row, index|
   patients[patient_key][:age] = value                     if key == 'Age (years)'
   patients[patient_key][:date_of_birth] = value           if key == 'Date of Birth'
   patients[patient_key][:business_identifier]= nid(value) if key == 'NID'
-  patients[patient_key][:phone_numbers].push(value)       if key == 'Mobile Number (patient)'
+  patients[patient_key][:phone_number] = value            if key == 'Mobile Number (patient)'
 
   # Medical History
   patients[patient_key][:medical_history][:prior_heart_attack] = history(value) if key == 'Past History of Heart Attack'
