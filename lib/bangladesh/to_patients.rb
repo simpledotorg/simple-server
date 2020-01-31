@@ -1,29 +1,25 @@
 require File.expand_path('../../config/environment', __dir__)
 require 'csv'
-require 'yaml'
 require 'pry'
 
 ############################
 # Convert CSV to easily readable row-based format
 ############################
-from = File.expand_path('data/bangladesh.csv', __dir__)
-to = File.expand_path('data/patients.csv', __dir__)
+from = ARGV.shift
 
-data = CSV.parse(File.open(from), headers: true)
+data = CSV.parse(open(from).read, headers: true)
 
 patient_data = []
 
-CSV.open(to, 'w') do |csv|
-  (0...data.length).each do |row|
-    csv << ['patient_key', row]
-    patient_data << ['patient_key', row]
-    data[row].headers.each_with_index do |header, index|
-      value = data[row][index]
-      csv << [header, value] if value
-      patient_data << [header, value] if value
-    end
+(0...data.length).each do |row|
+  patient_data << ['patient_key', row]
+  data[row].headers.each_with_index do |header, index|
+    value = data[row][index]
+    patient_data << [header, value] if value
   end
 end
+
+binding.pry
 
 ############################
 # Read rows one-by-one to assemble and persist patients
