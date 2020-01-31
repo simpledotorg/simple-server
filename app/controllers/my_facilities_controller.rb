@@ -36,7 +36,7 @@ class MyFacilitiesController < AdminController
     registrations_query = MyFacilities::RegistrationsQuery.new(period: @selected_period,
                                                                include_quarters: 3,
                                                                include_months: 3,
-                                                               include_days: 3,
+                                                               include_days: 7,
                                                                facilities: @facilities)
 
     @registrations = registrations_query.registrations.group(:facility_id, :year, @selected_period).sum(:registration_count)
