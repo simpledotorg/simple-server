@@ -17,8 +17,8 @@ RSpec.feature 'To test adherence followup patient functionality', type: :feature
     end
 
     it 'landing page -with no follow-up patient' do
-      expect(page).to have_content('Adherence follow-ups')
-      nav_page.select_main_menu_tab('Adherence follow-ups')
+      expect(page).to have_content('Adherence patients')
+      nav_page.select_main_menu_tab('Adherence patients')
       adherence_page.verify_adherence_follow_up_landing_page
       expect(page).to have_content('All facilities')
       expect(page).to have_content('20 per page')
@@ -27,7 +27,7 @@ RSpec.feature 'To test adherence followup patient functionality', type: :feature
 
     it 'landing page -Facility and page dropdown ' do
       create_list(:facility, 5)
-      nav_page.select_main_menu_tab('Adherence follow-ups')
+      nav_page.select_main_menu_tab('Adherence patients')
       adherence_page.click_facility_drop_down
       expect(adherence_page.get_all_facility_count).to eq(6)
 
@@ -38,7 +38,7 @@ RSpec.feature 'To test adherence followup patient functionality', type: :feature
     it 'landing page - adherence follow up patient card detail -without bp' do
       chc_bagta_facility = create(:facility, facility_group: ihmi_facility_group, name: 'bagta')
       var_patient = create(:patient, registration_facility: chc_bagta_facility, device_created_at: 2.day.ago)
-      nav_page.select_main_menu_tab('Adherence follow-ups')
+      nav_page.select_main_menu_tab('Adherence patients')
 
       within('.card') do
         expect(page).to have_content(var_patient.full_name)
@@ -54,7 +54,7 @@ RSpec.feature 'To test adherence followup patient functionality', type: :feature
       chc_bagta_facility = create(:facility, facility_group: ihmi_facility_group, name: 'bagta')
       var_patient = create(:patient, registration_facility: chc_bagta_facility, device_created_at: 2.day.ago)
       var_bp = create(:blood_pressure, :critical, facility: chc_bagta_facility, patient: var_patient)
-      nav_page.select_main_menu_tab('Adherence follow-ups')
+      nav_page.select_main_menu_tab('Adherence patients')
 
       within('.card') do
         expect(page).to have_content(var_patient.full_name)
@@ -87,7 +87,7 @@ RSpec.feature 'To test adherence followup patient functionality', type: :feature
         create_list(:patient, 4, registration_facility: path, device_created_at: 2.day.ago)
         create_list(:patient, 9, registration_facility: chc_buccho_facility, device_created_at: 2.day.ago)
 
-        nav_page.select_main_menu_tab('Adherence follow-ups')
+        nav_page.select_main_menu_tab('Adherence patients')
 
         adherence_page.select_facility(chc_buccho_facility.name)
         expect(adherence_page.get_all_patient_count.size).to eq(9)
@@ -104,7 +104,7 @@ RSpec.feature 'To test adherence followup patient functionality', type: :feature
 
       it 'should be able to select result of follow up' do
         var_patients = create(:patient, registration_facility: chc_bagta_facility, device_created_at: 2.day.ago)
-        nav_page.select_main_menu_tab('Adherence follow-ups')
+        nav_page.select_main_menu_tab('Adherence patients')
         within('.card') do
           select 'Contacted', from: 'patient[call_result]'
         end
@@ -115,7 +115,7 @@ RSpec.feature 'To test adherence followup patient functionality', type: :feature
       it 'should display list - for different page selection' do
         create_list(:patient, 25, registration_facility: chc_bagta_facility, device_created_at: 2.day.ago)
 
-        nav_page.select_main_menu_tab('Adherence follow-ups')
+        nav_page.select_main_menu_tab('Adherence patients')
         expect(adherence_page.get_all_patient_count.size).to eq(20)
         expect(adherence_page.get_page_link.size).to eq(4)
         expect(page).to have_content('Next')

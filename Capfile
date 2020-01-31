@@ -11,6 +11,7 @@ require "capistrano/rails"
 require "capistrano/passenger"
 require "capistrano/sidekiq"
 require 'capistrano-db-tasks'
+require 'capistrano/data_migrate'
 
 require "whenever/capistrano"
 

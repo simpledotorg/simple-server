@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200123123144) do
+ActiveRecord::Schema.define(version: 20200128102802) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -135,6 +135,11 @@ ActiveRecord::Schema.define(version: 20200123123144) do
     t.index ["deleted_at"], name: "index_communications_on_deleted_at"
     t.index ["detailable_type", "detailable_id"], name: "index_communications_on_detailable_type_and_detailable_id"
     t.index ["user_id"], name: "index_communications_on_user_id"
+  end
+
+  create_table "data_migrations", id: false, force: :cascade do |t|
+    t.string "version", null: false
+    t.index ["version"], name: "unique_data_migrations", unique: true
   end
 
   create_table "email_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -262,6 +267,7 @@ ActiveRecord::Schema.define(version: 20200123123144) do
     t.text "diagnosed_with_hypertension"
     t.datetime "deleted_at"
     t.uuid "user_id"
+    t.text "hypertension"
     t.index ["deleted_at"], name: "index_medical_histories_on_deleted_at"
     t.index ["patient_id"], name: "index_medical_histories_on_patient_id"
     t.index ["user_id"], name: "index_medical_histories_on_user_id"
