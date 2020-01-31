@@ -65,7 +65,8 @@ module QuarterHelper
   def last_n_quarters(n:, include_current_quarter: false)
     initial_quarter = if include_current_quarter
                         [current_year, current_quarter]
-                      else previous_year_and_quarter(current_year, current_quarter) end
+                      else previous_year_and_quarter(current_year, current_quarter)
+                      end
 
     (1...n).reduce([initial_quarter]) do |quarter_list, _|
       quarter_list << previous_year_and_quarter(*quarter_list.last)

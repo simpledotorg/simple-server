@@ -50,7 +50,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
       context 'monthly' do
         let!(:registrations_query) { described_class.new(period: :month, include_months: 3) }
 
-        let!(:patient_registration_timestamps) { [1.month.ago, 3.months.ago, 1.year.ago] }
+        let!(:patient_registration_timestamps) { [1.month.ago, 2.months.ago, 1.year.ago] }
         let!(:patients) do
           patient_registration_timestamps.map { |recorded_at| create(:patient, recorded_at: recorded_at) }
         end
@@ -86,7 +86,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
           end
         end
 
-        specify { expect(registrations_query.registrations.count).to eq(3) }
+        specify { expect(registrations_query.registrations.count).to eq(2) }
       end
     end
   end
