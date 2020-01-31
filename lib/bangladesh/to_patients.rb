@@ -7,7 +7,11 @@ require 'pry'
 ############################
 from = ARGV.shift
 
-data = CSV.parse(open(from).read, headers: true)
+encrypted_message = open(from).read
+key = ActiveSupport::KeyGenerator.new(ENV['BD_IMPORT_KEY']).generate_key(ENV['BD_IMPORT_SALT'], 32)
+crypt = ActiveSupport::MessageEncryptor.new(key)
+message = crypt.decrypt_and_verify(encrypted_message)
+data = CSV.parse(message, headers: true)
 
 patient_data = []
 
