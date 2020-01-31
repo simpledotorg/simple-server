@@ -27,7 +27,7 @@ class MyFacilities::RegistrationsQuery
 
   def all_time_registrations
     LatestBloodPressuresPerPatient
-        .where(facility: @facilities)
+      .where(facility: @facilities)
   end
 
   private

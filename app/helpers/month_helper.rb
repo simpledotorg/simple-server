@@ -20,7 +20,7 @@ module MonthHelper
   end
 
   def last_n_months(n:, include_current_month: false)
-    range = include_current_month ? (0..(n-1)) : (1..n)
+    range = include_current_month ? (0..(n - 1)) : (1..n)
 
     range.map do |i|
       Time.current.beginning_of_month - i.months

@@ -8,6 +8,6 @@ module DayHelper
   end
 
   def doy_to_date(year, doy)
-    Date.ordinal(year, doy).strftime("%d-%b")
+    Date.ordinal(year, doy).strftime('%d-%b')
   end
 end
