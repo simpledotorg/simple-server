@@ -81,7 +81,8 @@ class Admin::FacilitiesController < AdminController
       :facility_size,
       :latitude,
       :longitude,
-      :enable_diabetes_management
+      :enable_diabetes_management,
+      :zone
     )
   end
 

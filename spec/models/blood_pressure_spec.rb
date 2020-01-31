@@ -29,7 +29,7 @@ RSpec.describe BloodPressure, type: :model do
       end
     end
 
-    describe '.hypertensive' do
+    describe '.under_control' do
       it 'only includes BPs under control' do
         expect(BloodPressure.under_control).to include(bp_normal)
         expect(BloodPressure.under_control).not_to include(bp_high_systolic, bp_high_diastolic, bp_high_both)
@@ -38,19 +38,19 @@ RSpec.describe BloodPressure, type: :model do
 
     describe '#under_control?' do
       it 'returns true if both systolic and diastolic are under control' do
-        expect(bp_normal.under_control?).to eq(true)
+        expect(bp_normal).to be_under_control
       end
 
       it 'returns false if systolic is high' do
-        expect(bp_high_systolic.under_control?).to eq(false)
+        expect(bp_high_systolic).not_to be_under_control
       end
 
       it 'returns false if diastolic is high' do
-        expect(bp_high_diastolic.under_control?).to eq(false)
+        expect(bp_high_diastolic).not_to be_under_control
       end
 
       it 'returns false if both systolic and diastolic are high' do
-        expect(bp_high_both.under_control?).to eq(false)
+        expect(bp_high_both).not_to be_under_control
       end
     end
 
@@ -60,27 +60,29 @@ RSpec.describe BloodPressure, type: :model do
        { systolic: 179, diastolic: 111 }].each do |row|
         it 'returns true if bp is in a critical state' do
           bp = create(:blood_pressure, systolic: row[:systolic], diastolic: row[:diastolic])
-          expect(bp.critical?).to eq(true)
+          expect(bp).to be_critical
         end
       end
 
       it 'returns false if bp is not in a critical state' do
         bp = create(:blood_pressure, systolic: 179, diastolic: 109)
-        expect(bp.critical?).to eq(false)
+        expect(bp).not_to be_critical
       end
     end
 
-    describe '#very_high?' do
-      it 'returns true if bp is very high' do
-        bp = create(:blood_pressure, systolic: rand(160..179), diastolic: rand(100..109))
-        expect(bp.very_high?).to eq(true)
+    describe '#hypertensive?' do
+      [{ systolic: 140, diastolic: 80 },
+       { systolic: 120, diastolic: 90 },
+       { systolic: 180, diastolic: 120 }].each do |row|
+        it 'returns true if bp is high' do
+          bp = create(:blood_pressure, systolic: row[:systolic], diastolic: row[:diastolic])
+          expect(bp).to be_hypertensive
+        end
       end
-    end
 
-    describe '#high?' do
-      it 'returns true if the bp is high' do
-        bp = create(:blood_pressure, systolic: rand(140..159), diastolic: rand(90..99))
-        expect(bp.high?).to eq(true)
+      it 'returns false if bp is not high' do
+        bp = create(:blood_pressure, systolic: 139, diastolic: 89)
+        expect(bp).not_to be_hypertensive
       end
     end
 

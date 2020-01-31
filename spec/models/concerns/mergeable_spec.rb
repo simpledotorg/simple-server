@@ -3,10 +3,19 @@ require 'rails_helper'
 describe Mergeable do
   it 'returns record with errors if invalid, and does not merge' do
     invalid_patient = FactoryBot.build(:patient, device_created_at: nil)
-    patient         = Patient.merge(invalid_patient.attributes)
+    patient = Patient.merge(invalid_patient.attributes)
     expect(patient).to be_invalid
     expect(Patient.count).to eq 0
     expect(Patient).to_not receive(:create)
+  end
+
+  it 'does not update a discarded record' do
+    discarded_patient = FactoryBot.create(:patient, deleted_at: Time.now)
+    update_attributes = discarded_patient.attributes.merge(age: discarded_patient.current_age + 3,
+                                                           updated_at: 3.years.from_now)
+
+    expect(Patient.merge(update_attributes).attributes.with_int_timestamps)
+      .to eq(discarded_patient.attributes.with_int_timestamps)
   end
 
   it 'creates a new record if there is no existing record' do
@@ -17,10 +26,10 @@ describe Mergeable do
   end
 
   it 'updates the existing record, if it exists' do
-    existing_patient           = FactoryBot.create(:patient, address: FactoryBot.create(:address))
-    updated_patient            = Patient.find(existing_patient.id)
+    existing_patient = FactoryBot.create(:patient, address: FactoryBot.create(:address))
+    updated_patient = Patient.find(existing_patient.id)
     updated_patient.updated_at = 10.minutes.from_now
-    patient                    = Patient.merge(updated_patient.attributes)
+    patient = Patient.merge(updated_patient.attributes)
     expect(patient).to_not have_changes_to_save
     expect(Patient.find(existing_patient.id).attributes.with_int_timestamps.except('updated_at'))
       .to eq(updated_patient.attributes.with_int_timestamps.except('updated_at'))
@@ -28,8 +37,8 @@ describe Mergeable do
   end
 
   it 'returns the existing record if input record is older' do
-    existing_patient           = FactoryBot.create(:patient, address: FactoryBot.create(:address))
-    updated_patient            = Patient.find(existing_patient.id)
+    existing_patient = FactoryBot.create(:patient, address: FactoryBot.create(:address))
+    updated_patient = Patient.find(existing_patient.id)
     updated_patient.updated_at = 10.minutes.ago
     Patient.merge(updated_patient.attributes)
     expect(Patient.find(existing_patient.id).updated_at.to_i).to_not eq updated_patient.updated_at.to_i
@@ -42,7 +51,7 @@ describe Mergeable do
     expect(Address.first.attributes.except('updated_at', 'created_at').with_int_timestamps)
       .to eq(new_address.attributes.except('updated_at', 'created_at').with_int_timestamps)
 
-    new_patient      = FactoryBot.create(:patient, phone_numbers: [])
+    new_patient = FactoryBot.create(:patient, phone_numbers: [])
     new_phone_number = FactoryBot.build(:patient_phone_number, patient: new_patient)
     PatientPhoneNumber.merge(new_phone_number.attributes)
     expect(PatientPhoneNumber.first.attributes.except('updated_at', 'created_at').with_int_timestamps)

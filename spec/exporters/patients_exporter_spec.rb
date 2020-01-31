@@ -5,7 +5,7 @@ RSpec.describe PatientsExporter do
 
   let!(:facility) { create(:facility) }
   let!(:patient) { create(:patient, registration_facility: facility) }
-  let!(:blood_pressure) { create(:blood_pressure, facility: facility, patient: patient) }
+  let!(:blood_pressure) { create(:blood_pressure, :critical, facility: facility, patient: patient) }
   let!(:appointment) { create(:appointment, :overdue, facility: facility, patient: patient) }
 
   let(:headers) do
@@ -62,10 +62,14 @@ RSpec.describe PatientsExporter do
       blood_pressure.facility.district,
       blood_pressure.facility.state,
       appointment.days_overdue,
-      patient.risk_priority_label,
+      'High',
       patient.latest_bp_passport&.shortcode,
       patient.id
     ]
+  end
+
+  before do
+    allow(patient).to receive(:high_risk?).and_return(true)
   end
 
   describe '#csv' do

@@ -51,7 +51,9 @@ Suggestions:
 | PowerEdge R7425 | https://www.dell.com/en-us/work/shop/productdetailstxn/poweredge-r7425 | 2-socket   | 1 TB       |        32 | AMD EPYC   | ~$3.5k |
 | PowerEdge R7415 | https://www.dell.com/en-us/work/shop/productdetailstxn/poweredge-r7415 | 1-socket   | 512 GB     |        32 | AMD EPYC   | ~$3k   |
 | PowerEdge R640  | https://www.dell.com/en-us/work/shop/povw/poweredge-r640               | 2-socket   | 1.5 TB     |        24 | Intel Xeon | ~$4.5k |
+| PowerEdge R440  | https://www.dell.com/en-us/work/shop/povw/poweredge-r440               | 2-socket   | 1 TB       |        24 | Intel Xeon | ~$3k   |
 |-----------------+------------------------------------------------------------------------+------------+------------+-----------+------------+--------|
+
 
 ** 2. Third-party things
 *** 2.1 services we continue to use

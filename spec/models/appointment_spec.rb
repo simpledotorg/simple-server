@@ -166,7 +166,8 @@ describe Appointment, type: :model do
 
     describe '#csv_fields' do
       before do
-        create(:blood_pressure, :high, patient: appointment.patient)
+        create(:blood_pressure, :hypertensive, patient: appointment.patient)
+        allow(appointment.patient).to receive(:high_risk?).and_return(true)
       end
 
       it 'returns the correct fields' do
@@ -181,7 +182,7 @@ describe Appointment, type: :model do
           ApplicationController.helpers.display_date(
             appointment.patient.latest_blood_pressure.recorded_at
           ),
-          appointment.patient.risk_priority_label,
+          'High',
           appointment.patient.address.street_address,
           appointment.patient.address.village_or_colony,
           appointment.patient.phone_numbers.first&.number
