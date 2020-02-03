@@ -28,6 +28,7 @@ class MyFacilities::RegistrationsQuery
   def all_time_registrations
     LatestBloodPressuresPerPatient
       .where(facility: @facilities)
+      .where('patient_recorded_at < ?', Time.current.beginning_of_day - 2.months)
   end
 
   private

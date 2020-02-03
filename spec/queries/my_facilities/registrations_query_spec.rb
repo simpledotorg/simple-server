@@ -5,9 +5,12 @@ RSpec.describe MyFacilities::RegistrationsQuery do
     describe '#all_time_registrations' do
       let!(:registrations_query) { described_class.new }
 
-      let!(:patient_registration_timestamps) { [1.day.ago, 1.month.ago, 1.year.ago, 2.years.ago] }
+      let!(:included_timestamps) { [1.year.ago, 2.years.ago] }
+      let!(:excluded_timestamps) { [1.day.ago, 1.months.ago] }
       let!(:patients) do
-        patient_registration_timestamps.map { |recorded_at| create(:patient, recorded_at: recorded_at) }
+        (included_timestamps + excluded_timestamps).map do
+            |recorded_at| create(:patient, recorded_at: recorded_at)
+        end
       end
       let!(:blood_pressures) do
         patients.map { |patient| create(:blood_pressure, patient: patient, facility: patient.registration_facility) }
@@ -21,7 +24,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
         end
       end
 
-      specify { expect(registrations_query.all_time_registrations.count).to eq(patients.count) }
+      specify { expect(registrations_query.all_time_registrations.count).to eq(included_timestamps.count) }
     end
 
     describe '#cohort_registrations' do
