@@ -36,7 +36,7 @@ class MyFacilitiesController < AdminController
     registrations_query = MyFacilities::RegistrationsQuery.new(period: @selected_period,
                                                                include_quarters: 3,
                                                                include_months: 3,
-                                                               include_days: 7,
+                                                               include_days: 14,
                                                                facilities: @facilities)
 
     @registrations = registrations_query.registrations

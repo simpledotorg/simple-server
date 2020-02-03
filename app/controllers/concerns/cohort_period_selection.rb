@@ -23,7 +23,7 @@ module CohortPeriodSelection
 
     def sanitize_registration_year(year)
       return year.to_i if year.to_i.positive?
-      return (Time.current.beginning_of_month - 1.month).year if @cohort_period == :month
+      return (Time.current.beginning_of_month - 1.month).year if @selected_cohort_period == :month
 
       previous_year_and_quarter(Time.current.year, quarter(Time.current)).first
     end
