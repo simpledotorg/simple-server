@@ -79,7 +79,8 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
         attributes_for(
           :facility,
           facility_group_id: facility_group.id,
-          pin: '999999'
+          pin: '999999',
+          monthly_opd_load: 500
         ).except(:id)
       end
 
@@ -89,7 +90,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
         facility.reload
         expect(facility.attributes.except('id', 'created_at', 'updated_at', 'deleted_at', 'slug',
                                           'facility_group_name', 'import', 'latitude', 'longitude',
-                                          'organization_name', 'monthly_opd_load'))
+                                          'organization_name'))
           .to eq new_attributes.with_indifferent_access
       end
 
