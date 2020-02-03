@@ -1,6 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe LatestBloodPressuresPerPatientPerMonth, type: :model do
+  describe 'Associations' do
+    it { should belong_to(:patient) }
+  end
+
   Timecop.travel('1 Oct 2019') do
     let!(:facilities) { create_list(:facility, 2) }
     let!(:months) do
