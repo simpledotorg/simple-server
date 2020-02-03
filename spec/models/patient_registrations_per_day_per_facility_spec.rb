@@ -10,14 +10,11 @@ RSpec.describe PatientRegistrationsPerDayPerFacility, type: :model do
     let!(:days) do
       [1, 10, 365].map { |n| n.days.ago }
     end
-    let!(:patients) { create_list(:patient, 2) }
 
     let!(:blood_pressures) do
       facilities.map do |facility|
         days.map do |day|
-          patients.map do |patient|
-            create_list(:blood_pressure, 2, facility: facility, recorded_at: day, patient: patient)
-          end
+          create(:patient, registration_facility: facility, recorded_at: day)
         end
       end.flatten
     end
