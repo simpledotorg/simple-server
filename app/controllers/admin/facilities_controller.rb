@@ -59,7 +59,7 @@ class Admin::FacilitiesController < AdminController
 
   private
 
-  def new_facility(attributes=nil)
+  def new_facility(attributes = nil)
     @facility_group.facilities.new(attributes).tap do |facility|
       facility.country ||= Rails.application.config.country[:name]
     end
