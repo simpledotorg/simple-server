@@ -204,7 +204,6 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
 
       describe '#cohort_registrations' do
         specify do
-          pp Patient.all.to_set - query.cohort_registrations.to_set
           expect(query.cohort_registrations.count).to eq(7)
         end
       end
