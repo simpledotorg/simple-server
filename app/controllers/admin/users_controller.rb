@@ -77,7 +77,7 @@ class Admin::UsersController < AdminController
   end
 
   def set_time_zone
-    time_zone = ENV['DEFAULT_TIME_ZONE'] || AnalyticsController::DEFAULT_ANALYTICS_TIME_ZONE
+    time_zone = Rails.application.config.country[:time_zone] || AnalyticsController::DEFAULT_ANALYTICS_TIME_ZONE
     Time.use_zone(time_zone) { yield }
   end
 
