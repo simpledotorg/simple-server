@@ -123,6 +123,8 @@ def create_patient(params)
         id: SecureRandom.uuid,
         patient: patient,
         user: $registration_user,
+        diagnosed_with_hypertension: 'yes',
+        hypertension: 'yes',
         **params[:medical_history],
         device_created_at: now,
         device_updated_at: now
