@@ -7,10 +7,20 @@ module QuarterHelper
     quarter(Date.current)
   end
 
-  def previous_quarter_and_year
-    return [4, current_year - 1] if current_quarter == 1
+  def previous_year_and_quarter(year = Time.current.year, quarter = quarter(Time.current))
+    return [year - 1, 4] if quarter == 1
 
-    [current_quarter - 1, current_year]
+    [year, quarter - 1]
+  end
+
+  def next_year_and_quarter(year = Time.current.year, quarter = quarter(Time.current))
+    return [year + 1, 1] if quarter == 4
+
+    [year, quarter + 1]
+  end
+
+  def current_year_and_quarter
+    [current_year, current_quarter]
   end
 
   def quarter_string(date)
@@ -32,7 +42,7 @@ module QuarterHelper
 
   def quarter_datetime(year, quarter)
     quarter_month = ((quarter - 1) * 3) + 1
-    DateTime.new(year, quarter_month, 1)
+    Date.new(year, quarter_month).beginning_of_month
   end
 
   def quarter_start(year, quarter)
@@ -41,5 +51,24 @@ module QuarterHelper
 
   def quarter_end(year, quarter)
     quarter_datetime(year, quarter).end_of_quarter
+  end
+
+  def local_quarter_start(year, quarter)
+    quarter_month = ((quarter - 1) * 3) + 1
+    Time.zone.local(year, quarter_month).beginning_of_quarter
+  end
+
+  def local_quarter_end(year, quarter)
+    local_quarter_start(year, quarter).end_of_quarter
+  end
+
+  def last_n_quarters(n)
+    year = current_year
+    quarter = current_quarter
+
+    (1..n).map do |_|
+      year, quarter = previous_year_and_quarter(year, quarter)
+      [year, quarter]
+    end
   end
 end

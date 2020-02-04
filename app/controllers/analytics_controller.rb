@@ -35,7 +35,7 @@ class AnalyticsController < AdminController
   end
 
   def set_quarter
-    @quarter, @year = previous_quarter_and_year
+    @year, @quarter = previous_year_and_quarter
     @quarter = params[:quarter].to_i if params[:quarter].present?
     @year = params[:year].to_i if params[:year].present?
   end
