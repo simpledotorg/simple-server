@@ -80,7 +80,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
           :facility,
           facility_group_id: facility_group.id,
           pin: '999999',
-          monthly_opd_load: 500
+          monthly_estimated_opd_load: 500
         ).except(:id)
       end
 

@@ -13,7 +13,7 @@
       <%= form.text_field :pin, id: :facility_pin %>
       <%= form.text_field :latitude, id: :facility_latitude %>
       <%= form.text_field :longitude, id: :facility_longitude %>
-      <%= form.number_field :monthly_opd_load, id: :facility_monthly_opd_load, label: "Estimated OPD load (monthly)", help: "Leave blank if you don't know. Estimate the number of patients seen in the outpatient dept each month." %>
+      <%= form.number_field :monthly_estimated_opd_load, id: :facility_monthly_estimated_opd_load, label: "Estimated OPD load (monthly)", help: "Leave blank if you don't know. Estimate the number of patients seen in the outpatient dept each month." %>
       <%= form.check_box :enable_diabetes_management, id: :facility_enable_diabetes_management, wrapper_class: 'pad-bottom' %>
       <%= form.primary %>
     <% end %>

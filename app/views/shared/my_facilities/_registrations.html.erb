@@ -91,7 +91,7 @@
         <% @display_periods.reverse.each do |period| %>
           <% unless @selected_period == :day %>
           <td class="type-percent" data-sort-column-key="<%= period.join %>">
-            <em><%= percentage(@registrations[[facility.id, period.first.to_s, period.second.to_s]], facility.monthly_opd_load) %></em>
+            <em><%= percentage(@registrations[[facility.id, period.first.to_s, period.second.to_s]], facility.monthly_estimated_opd_load) %></em>
           </td>
           <% end %>
           <td class="type-number" <% if @selected_period == :day %>data-sort-column-key="<%= period.join %>"<% end %>>
