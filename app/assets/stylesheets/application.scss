@@ -532,9 +532,25 @@ Subnav
     .badge-pill.badge-secondary {
         background: $blue;
         margin-bottom: 12px;
+        font-weight: normal;
     }
 }
 
+.active-filters-mobile {
+  text-align: center;
+  border-radius: 3px;
+  background: rgba(0,0,0,0.02);
+  padding: 10px 16px;
+}
+
+.filters-modal-toggle {
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
 /*****************
 Dashboard UI
 *****************/

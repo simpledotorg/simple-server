@@ -41,11 +41,6 @@
         <td class="text-right"><%= @facility_counts_by_size[:total]["community"].to_i %></td>
         <td class="text-right"><%= @facility_counts_by_size[:inactive]["community"].to_i %></td>
       </tr>
-      <tr>
-        <td>Unknown</td>
-        <td class="text-right"><%= @facility_counts_by_size[:total][nil].to_i %></td>
-        <td class="text-right"><%= @facility_counts_by_size[:inactive][nil].to_i %></td>
-      </tr>
       </tbody>
     </table>
   </section>
