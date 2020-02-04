@@ -72,6 +72,7 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       end
 
       let!(:query) do
+
         described_class.new(cohort_period: { cohort_period: :quarter,
                                              registration_quarter: registration_quarter,
                                              registration_year: registration_quarter_year },
