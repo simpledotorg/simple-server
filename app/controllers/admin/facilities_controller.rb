@@ -61,7 +61,7 @@ class Admin::FacilitiesController < AdminController
 
   def new_facility(attributes=nil)
     @facility_group.facilities.new(attributes).tap do |facility|
-      facility.country ||= default_country
+      facility.country ||= Rails.application.config.country[:name]
     end
   end
 
@@ -145,12 +145,5 @@ class Admin::FacilitiesController < AdminController
       grouped_errors << "Row(s) #{rows.join(', ')}: #{error}"
     end
     grouped_errors
-  end
-
-  def default_country
-    case ENV['DEFAULT_COUNTRY']
-    when 'IN'; 'India'
-    when 'BD'; 'Bangladesh'
-    end
   end
 end
