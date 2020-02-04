@@ -30,22 +30,6 @@ class MyFacilitiesController < AdminController
         last_month: @inactive_facilities.bp_counts_in_period(start: 1.month.ago, finish: Time.current) }
   end
 
-  def registrations
-    @facilities = filter_facilities([:manage, :facility])
-
-    registrations_query = MyFacilities::RegistrationsQuery.new(period: @selected_period,
-                                                               include_quarters: 3,
-                                                               include_months: 3,
-                                                               include_days: 14,
-                                                               facilities: @facilities)
-
-    @registrations = registrations_query.registrations
-                                        .group(:facility_id, :year, @selected_period)
-                                        .sum(:registration_count)
-    @all_time_registrations = registrations_query.all_time_registrations.group(:bp_facility_id).count
-    @display_periods = registrations_query.periods
-  end
-
   def blood_pressure_control
     @facilities = filter_facilities([:manage, :facility])
 
@@ -69,6 +53,23 @@ class MyFacilitiesController < AdminController
     end.to_h
     @all_time_bps_per_facility = bp_query.all_time_bps.group(:bp_facility_id).count
     @all_time_controlled_bps_per_facility = bp_query.all_time_controlled_bps.group(:bp_facility_id).count
+  end
+
+  def registrations
+    @facilities = filter_facilities([:manage, :facility])
+
+    registrations_query = MyFacilities::RegistrationsQuery.new(period: @selected_period,
+                                                               include_quarters: 3,
+                                                               include_months: 3,
+                                                               include_days: 14,
+                                                               facilities: @facilities)
+
+    @registrations = registrations_query.registrations
+                         .group(:facility_id, :year, @selected_period)
+                         .sum(:registration_count)
+
+    @all_time_registrations = registrations_query.all_time_registrations.group(:bp_facility_id).count
+    @display_periods = registrations_query.periods
   end
 
   private
