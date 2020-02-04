@@ -4,6 +4,8 @@ AllCops:
     - 'bundle/**/*'
     - 'config/**/*'
     - 'db/**/*'
+Bundler/OrderedGems:
+  Enabled: false
 Layout/LineLength:
   Max: 120
 Style/Documentation:

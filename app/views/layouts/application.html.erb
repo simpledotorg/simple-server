@@ -50,11 +50,13 @@
         <div class="collapse navbar-collapse" id="navbars-menu">
           <% if email_authentication_signed_in? %>
             <ul class="navbar-nav mr-auto">
+                
               <% if policy(:dashboard).view_my_facilities? && FeatureToggle.enabled?("MY_FACILITIES")%>
                 <li class="nav-item">
                   <%= link_to "My Facilities", my_facilities_path, class: "nav-link #{active_controller?("my_facilities")}" %>
                 </li>
               <% end %>
+                
               <% if policy(:dashboard).show? %>
                 <li class="nav-item">
                   <%= link_to "Dashboard", root_path, class: "nav-link #{active_controller?("organizations", "facility_groups")}" %>
@@ -66,11 +68,16 @@
                   <%= link_to "Overdue patients", appointments_path, class: "nav-link #{active_controller?("appointments")}" %>
                 </li>
               <% end %>
+                
               <% if policy(:dashboard).adherence_follow_up? %>
                 <li class="nav-item">
-                  <%= link_to "Adherence follow-ups", patients_path, class: "nav-link #{active_controller?("patients")}" %>
+                  <%= link_to "Adherence patients", patients_path, class: "nav-link #{active_controller?("patients")}" %>
                 </li>
               <% end %>
+            
+              <li class="nav-item">
+                <%= link_to "Resources", resources_path, class: "nav-link #{active_controller?("resources")}" %>
+              </li>
 
               <% if policy(:dashboard).manage? %>
               <li class="nav-item dropdown">

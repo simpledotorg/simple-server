@@ -55,6 +55,7 @@ class Api::Current::MedicalHistoriesController < Api::Current::SyncController
         :chronic_kidney_disease,
         :receiving_treatment_for_hypertension,
         :diabetes,
+        :hypertension,
         :diagnosed_with_hypertension,
         :created_at,
         :updated_at)
