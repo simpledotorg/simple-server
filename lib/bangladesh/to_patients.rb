@@ -23,8 +23,6 @@ patient_data = []
   end
 end
 
-binding.pry
-
 ############################
 # Read rows one-by-one to assemble and persist patients
 ############################
@@ -83,7 +81,8 @@ def create_patient(params)
       address = Address.create!(
         id: SecureRandom.uuid,
         **params[:address],
-        district: 'Sylhet',
+        district: 'Golapganj',
+        state: 'Sylhet',
         country: 'Bangladesh',
         device_created_at: now,
         device_updated_at: now
@@ -226,9 +225,10 @@ patient_data.each_with_index do |row, index|
   end
 
   # Address
+  patients[patient_key][:address][:street_address]    = value  if key == 'Address'
   patients[patient_key][:address][:village_or_colony] = value  if key == 'Village'
   patients[patient_key][:address][:pin] = value                if key == 'Post Code'
-  patients[patient_key][:address][:zone] = value               if key == 'Thana'
+  patients[patient_key][:address][:zone] = value               if key == 'Union/Pouroshava'
 
   # BP Reading
   if /SBP/.match?(key)
