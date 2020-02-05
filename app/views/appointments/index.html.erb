@@ -1,5 +1,6 @@
 <h1>Overdue patients</h1>
 <p class="info"><i class="fas fa-question-circle"></i> Patients that are overdue for follow-up BP measure.</p>
+
 <%= render('shared/paginate_and_filter_by_facility',
            form_url: appointments_path,
            current_admin: current_admin,
@@ -21,7 +22,6 @@
         Download overdue list
       <% end %>
     <% end %>
-
   </div>
 <% end %>
 
@@ -32,7 +32,6 @@
       'No response' => [['Remind to call later', 'remind_to_call_later']],
       'Remove from overdue list' => Appointment.cancel_reasons.map { |key, value| [key.humanize, value] }
   } %>
-
 
   <% @appointments.sort_by { |a| a.patient.risk_priority }.each do |appointment| %>
     <%= render('shared/followup_patient_card',

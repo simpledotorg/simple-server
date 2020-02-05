@@ -15,7 +15,12 @@ class PatientsController < AdminController
       @patients = @patients.where(registration_facility: current_facility)
     end
 
-    @patients = paginate(@patients)
+    respond_to do |format|
+      format.html { @patients = paginate(@patients) }
+      format.csv do
+        send_data(render_to_string('index.csv.erb'), filename: download_filename)
+      end
+    end
   end
 
   def update
@@ -44,5 +49,10 @@ class PatientsController < AdminController
 
   def page
     params[:patient][:page]
+  end
+
+  def download_filename
+    facility_name = current_facility.present? ? current_facility.name.parameterize : 'all'
+    "adherence-follow-up-patients_#{facility_name}_#{Date.current}.csv"
   end
 end
