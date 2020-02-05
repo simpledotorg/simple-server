@@ -7,7 +7,7 @@ class MyFacilities::BloodPressureControlQuery
 
   include QuarterHelper
   include MonthHelper
-  
+
   def initialize(facilities: Facility.all, cohort_period: {})
     # cohort_period is map that contains
     # - :cohort_period (:quarter/:month),
@@ -46,7 +46,7 @@ class MyFacilities::BloodPressureControlQuery
   end
 
   private
-  
+
   attr_reader :facilities
 
   def quarterly_registrations

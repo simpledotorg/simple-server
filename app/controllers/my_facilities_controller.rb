@@ -8,7 +8,7 @@ class MyFacilitiesController < AdminController
   include PeriodSelection
 
   DEFAULT_ANALYTICS_TIME_ZONE = 'Asia/Kolkata'
-  PERIODS_TO_DISPLAY = { quarter: 3, month: 3, day: 14 }
+  PERIODS_TO_DISPLAY = { quarter: 3, month: 3, day: 14 }.freeze
 
   around_action :set_time_zone
   before_action :authorize_my_facilities
@@ -64,16 +64,16 @@ class MyFacilitiesController < AdminController
                                                                last_n: PERIODS_TO_DISPLAY[@selected_period])
 
     @registrations = registrations_query.registrations
-                         .group(:facility_id, :year, @selected_period)
-                         .sum(:registration_count)
+                                        .group(:facility_id, :year, @selected_period)
+                                        .sum(:registration_count)
 
     @all_time_registrations = registrations_query.all_time_registrations.group(:bp_facility_id).count
-    @total_registrations_by_period = @registrations.reduce({}) do |total_registrations_by_period, (key, registrations)|
-      period = [key.second.to_i, key.third.to_i]
-      total_registrations_by_period[period] ||= 0
-      total_registrations_by_period[period] += registrations
-      total_registrations_by_period
-    end
+    @total_registrations_by_period =
+      @registrations.each_with_object({}) do |(key, registrations), total_registrations_by_period|
+        period = [key.second.to_i, key.third.to_i]
+        total_registrations_by_period[period] ||= 0
+        total_registrations_by_period[period] += registrations
+      end
     @display_periods = registrations_query.periods
   end
 

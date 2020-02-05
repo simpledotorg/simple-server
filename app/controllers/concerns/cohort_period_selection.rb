@@ -8,10 +8,11 @@ module CohortPeriodSelection
 
     def set_selected_cohort_period
       cohort_period = params[:cohort_period] == 'month' ? :month : :quarter
-      @selected_cohort_period = { cohort_period: cohort_period,
-                                  registration_quarter: sanitize_registration_quarter(params[:registration_quarter]),
-                                  registration_month: sanitize_registration_month(params[:registration_month]),
-                                  registration_year: sanitize_registration_year(params[:registration_year], cohort_period) }
+      @selected_cohort_period =
+        { cohort_period: cohort_period,
+          registration_quarter: sanitize_registration_quarter(params[:registration_quarter]),
+          registration_month: sanitize_registration_month(params[:registration_month]),
+          registration_year: sanitize_registration_year(params[:registration_year], cohort_period) }
     end
 
     private
