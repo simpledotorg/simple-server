@@ -62,8 +62,8 @@ module QuarterHelper
     local_quarter_start(year, quarter).end_of_quarter
   end
 
-  def last_n_quarters(n:, include_current_quarter: false)
-    initial_quarter = if include_current_quarter
+  def last_n_quarters(n:, inclusive: false)
+    initial_quarter = if inclusive
                         [current_year, current_quarter]
                       else previous_year_and_quarter(current_year, current_quarter)
                       end

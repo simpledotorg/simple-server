@@ -9,9 +9,9 @@ class MyFacilities::RegistrationsQuery
     @facilities = facilities
     @period = period
     @periods = case period
-               when :quarter then last_n_quarters(n: include_quarters, include_current_quarter: true)
+               when :quarter then last_n_quarters(n: include_quarters, inclusive: true)
                when :month then
-                 last_n_months(n: include_months, include_current_month: true)
+                 last_n_months(n: include_months, inclusive: true)
                  .map { |month| [month.year, month.month] }
                when :day then last_n_days(n: include_days)
                end
