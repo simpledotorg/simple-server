@@ -19,9 +19,7 @@ class AppointmentsController < AdminController
                       .distinct
                       .order(scheduled_date: :asc)
 
-    if current_facility
-      @appointments = @appointments.where(facility: current_facility)
-    end
+    @appointments = @appointments.where(facility: current_facility) if current_facility
 
     respond_to do |format|
       format.html { @appointments = paginate(@appointments) }

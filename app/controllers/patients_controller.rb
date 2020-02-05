@@ -7,13 +7,8 @@ class PatientsController < AdminController
   def index
     authorize([:adherence_follow_up, Patient])
 
-    @patients = policy_scope([:adherence_follow_up, Patient])
-                  .not_contacted
-                  .order(device_created_at: :asc)
-
-    if current_facility.present?
-      @patients = @patients.where(registration_facility: current_facility)
-    end
+    @patients = policy_scope([:adherence_follow_up, Patient]).not_contacted.order(device_created_at: :asc)    
+    @patients = @patients.where(registration_facility: current_facility) if current_facility.present?
 
     respond_to do |format|
       format.html { @patients = paginate(@patients) }
