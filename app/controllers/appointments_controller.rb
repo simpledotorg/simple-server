@@ -26,8 +26,7 @@ class AppointmentsController < AdminController
     respond_to do |format|
       format.html { @appointments = paginate(@appointments) }
       format.csv do
-        facility_name = current_facility.present? ? current_facility.name.parameterize : 'all'
-        send_data @appointments.to_csv, filename: "overdue-patients_#{facility_name}_#{Date.current}.csv"
+        send_data render_to_string('index.csv.erb'), filename: download_filename
       end
     end
   end
@@ -78,5 +77,10 @@ class AppointmentsController < AdminController
 
   def page
     params[:appointment][:page]
+  end
+
+  def download_filename
+    facility_name = current_facility.present? ? current_facility.name.parameterize : 'all'
+    "overdue-patients_#{facility_name}_#{Date.current}.csv"
   end
 end
