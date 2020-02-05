@@ -16,7 +16,10 @@
         <i class="far fa-file-excel mr-2"></i> Select a facility to download Overdue Patients list
       </div>
     <% elsif policy([:overdue_list, current_facility]).download? && @appointments.present? %>
-      <%= link_to "<i class='far fa-file-excel mr-2'></i> Download overdue list".html_safe, appointments_path(facility_id: @facility_id, format: "csv"), class: "", data: { confirm: I18n.t('admin.phi_download_alert') } %>
+      <%= link_to(appointments_path(facility_id: @facility_id, format: "csv"), class: "", data: { confirm: I18n.t('admin.phi_download_alert') }) do %>
+        <i class='far fa-file-excel mr-2'></i>
+        Download overdue list
+      <% end %>
     <% end %>
 
   </div>

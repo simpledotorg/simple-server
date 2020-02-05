@@ -82,6 +82,46 @@ RSpec.describe AdherenceFollowUp::PatientPolicy do
     end
   end
 
+  context 'user with permission to download patient information for all organizations' do
+    let(:user_with_permission) do
+      create(:admin, user_permissions: [build(:user_permission, permission_slug: :download_adherence_follow_up_list)])
+    end
+
+    permissions :download? do
+      it 'permits the user' do
+        expect(subject).to permit(user_with_permission, Patient)
+      end
+    end
+  end
+
+  context 'user with permission to access patient information for an organization' do
+    let(:user_with_permission) do
+      create(:admin, user_permissions: [
+               build(:user_permission, permission_slug: :download_adherence_follow_up_list, resource: facility1.organization)
+             ])
+    end
+
+    permissions :download? do
+      it 'permits the user' do
+        expect(subject).to permit(user_with_permission, Patient)
+      end
+    end
+  end
+
+  context 'user with permission to access patient information for a facility group' do
+    let(:user_with_permission) do
+      create(:admin, user_permissions: [
+               build(:user_permission, permission_slug: :download_adherence_follow_up_list, resource: facility1.facility_group)
+             ])
+    end
+
+    permissions :download? do
+      it 'permits the user' do
+        expect(subject).to permit(user_with_permission, Patient)
+      end
+    end
+  end
+
   context 'other users' do
     let(:user_without_necessary_permissions) do
       create(:admin, user_permissions: [])
