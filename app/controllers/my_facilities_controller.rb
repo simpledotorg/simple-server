@@ -34,8 +34,8 @@ class MyFacilitiesController < AdminController
   def blood_pressure_control
     @facilities = filter_facilities([:manage, :facility])
 
-    bp_query = MyFacilities::BloodPressureControlQuery.new(cohort_period: @selected_cohort_period,
-                                                           facilities: @facilities)
+    bp_query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
+                                                           cohort_period: @selected_cohort_period)
 
     @totals = { registered: bp_query.cohort_registrations.count,
                 controlled: bp_query.cohort_controlled_bps.count,
