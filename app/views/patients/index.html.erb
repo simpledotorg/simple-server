@@ -10,7 +10,7 @@
   scope_namespace: [:adherence_follow_up, Facility]
 ) %>
 
-<% if @patients.present? && true # policy([:overdue_list, @appointments.first]).download? %>
+<% if @patients.present? && policy([:adherence_follow_up, @patient.first]).download? %>
   <h2 name="download_text">Downloads</h2>
 
   <div class="mb-5 mt-3">
@@ -18,7 +18,7 @@
       <div class="text-grey">
         <i class="far fa-file-excel mr-2"></i> Select a facility to download Adherence Patients list
       </div>
-    <% else %>
+    <% elsif policy([:adherence_follow_up, current_facility]).download? && @patients.present? %>
       <%= link_to "<i class='far fa-file-excel mr-2'></i> Download adherence follow-ups list".html_safe, patients_path(facility_id: @facility_id, format: "csv"), class: "", data: { confirm: I18n.t('admin.phi_download_alert') } %>
     <% end %>
   </div>
