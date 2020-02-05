@@ -58,7 +58,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
       query_object = MyFacilities::RegistrationsQuery.new
       allow(MyFacilities::RegistrationsQuery).to receive(:new).with(hash_including(params))
       allow(MyFacilities::RegistrationsQuery).to receive(:new)
-                                                     .with(hash_including(include_quarters: 3, include_months: 3, include_days: 14))
+                                                     .with(hash_including(last_n: 3))
                                                      .and_return(query_object)
       allow(MyFacilities::RegistrationsQuery).to receive(:new)
                                                      .with(hash_including(facilities(Facility.where(id: facility_under_supervisor))))

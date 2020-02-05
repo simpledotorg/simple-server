@@ -8,6 +8,7 @@ class MyFacilitiesController < AdminController
   include PeriodSelection
 
   DEFAULT_ANALYTICS_TIME_ZONE = 'Asia/Kolkata'
+  PERIODS_TO_DISPLAY = { quarter: 3, month: 3, day: 14 }
 
   around_action :set_time_zone
   before_action :authorize_my_facilities
@@ -58,11 +59,9 @@ class MyFacilitiesController < AdminController
   def registrations
     @facilities = filter_facilities([:manage, :facility])
 
-    registrations_query = MyFacilities::RegistrationsQuery.new(period: @selected_period,
-                                                               include_quarters: 3,
-                                                               include_months: 3,
-                                                               include_days: 14,
-                                                               facilities: @facilities)
+    registrations_query = MyFacilities::RegistrationsQuery.new(facilities: @facilities,
+                                                               period: @selected_period,
+                                                               last_n: PERIODS_TO_DISPLAY[@selected_period])
 
     @registrations = registrations_query.registrations
                          .group(:facility_id, :year, @selected_period)

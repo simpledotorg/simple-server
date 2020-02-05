@@ -29,7 +29,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
 
     describe '#cohort_registrations' do
       context 'quarterly' do
-        let!(:registrations_query) { described_class.new(period: :quarter, include_quarters: 3) }
+        let!(:registrations_query) { described_class.new(period: :quarter, last_n: 3) }
 
         let!(:included_timestamps) { [1.month.ago, 4.months.ago] }
         let!(:excluded_timestamps) { [11.months.ago] }
@@ -53,7 +53,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
       end
 
       context 'monthly' do
-        let!(:registrations_query) { described_class.new(period: :month, include_months: 3) }
+        let!(:registrations_query) { described_class.new(period: :month, last_n: 3) }
 
         let!(:included_timestamps) { [1.month.ago, 2.months.ago] }
         let!(:excluded_timestamps) { [12.months.ago] }
@@ -77,7 +77,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
       end
 
       context 'daily' do
-        let!(:registrations_query) { described_class.new(period: :day, include_days: 7) }
+        let!(:registrations_query) { described_class.new(period: :day, last_n: 7) }
 
         let!(:included_timestamps) { [1.day.ago, 7.days.ago] }
         let!(:excluded_timestamps) { [8.days.ago] }
