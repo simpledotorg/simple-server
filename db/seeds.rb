@@ -8,6 +8,7 @@
 require_relative '../lib/tasks/scripts/create_admin_user'
 
 NUMBER_OF_USERS_PER_FACILITY = 2
+GENERATED_USER_ROLE = 'Seeded'
 
 org = {:name => "IHCI"}
 
@@ -69,12 +70,18 @@ organization = Organization.find_by(org) || FactoryBot.create(:organization, org
 
 facilities.each do |facility_data|
   facility_group_params = {name: facility_data[:district], organization: organization}
-  facility_group = FacilityGroup.find_by(facility_group_params) || FactoryBot.create(:facility_group, facility_group_params)
+  facility_group =
+    FacilityGroup.find_by(facility_group_params) || FactoryBot.create(:facility_group, facility_group_params)
 
   facility_params = facility_data.merge(facility_group_id: facility_group.id)
   facility = Facility.find_by(facility_data.merge(facility_params)) || FactoryBot.create(:facility, facility_params)
 
-  FactoryBot.create_list(:user, NUMBER_OF_USERS_PER_FACILITY, :with_phone_number_authentication, registration_facility: facility, organization: organization) if facility.users.size < NUMBER_OF_USERS_PER_FACILITY
+  FactoryBot.create_list(:user,
+                         NUMBER_OF_USERS_PER_FACILITY,
+                         :with_phone_number_authentication,
+                         registration_facility: facility,
+                         organization: organization,
+                         role: GENERATED_USER_ROLE) if facility.users.size < NUMBER_OF_USERS_PER_FACILITY
 end
 
 protocol = Protocol.find_or_create_by(protocol_data)
