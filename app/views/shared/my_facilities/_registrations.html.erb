@@ -14,10 +14,10 @@
       <div class="dropdown show">
         <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#"
            role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">
-          <%= @periods[@selected_period] %>
+          <%= PeriodSelection::PERIODS[@selected_period] %>
         </a>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-          <% @periods.each do |period, period_name| %>
+          <% PeriodSelection::PERIODS.each do |period, period_name| %>
             <button type="submit" name="period" value=<%= period %> class="dropdown-item" form="query-filters"><%= period_name %></button>
           <% end %>
         </div>

@@ -12,7 +12,7 @@ class MyFacilitiesController < AdminController
   around_action :set_time_zone
   before_action :authorize_my_facilities
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]
-  before_action :populate_periods, :set_selected_period, only: [:registrations]
+  before_action :set_selected_period, only: [:registrations]
 
   def index
     @users_requesting_approval = paginate(policy_scope([:manage, :user, User])
