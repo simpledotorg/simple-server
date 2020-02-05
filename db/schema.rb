@@ -221,7 +221,7 @@ ActiveRecord::Schema.define(version: 20200128102802) do
     t.string "zone"
     t.boolean "enable_diabetes_management", default: false, null: false
     t.string "facility_size"
-    t.integer "monthly_opd_load"
+    t.integer "monthly_estimated_opd_load"
     t.index ["deleted_at"], name: "index_facilities_on_deleted_at"
     t.index ["enable_diabetes_management"], name: "index_facilities_on_enable_diabetes_management"
     t.index ["facility_group_id"], name: "index_facilities_on_facility_group_id"
