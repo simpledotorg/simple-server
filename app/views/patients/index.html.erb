@@ -1,40 +1,53 @@
 <h1>Adherence follow-ups</h1>
 <p class="info"><i class="fas fa-question-circle"></i> Patients that are newly registered and need 48-hour adherence follow-up.</p>
-  
-    <%= render(
-      'shared/paginate_and_filter_by_facility',
-      form_url: patients_path,
-      current_admin: current_admin,
-      facility_id: @facility_id,
-      per_page: @per_page,
-      scope_namespace: [:adherence_follow_up, Facility]
-    ) %>
 
+<%= render(
+  'shared/paginate_and_filter_by_facility',
+  form_url: patients_path,
+  current_admin: current_admin,
+  facility_id: @facility_id,
+  per_page: @per_page,
+  scope_namespace: [:adherence_follow_up, Facility]
+) %>
 
-    <div id="patients-to-followup">
-      <% if @patients.present? %>
-        <% @patients.each do |patient| %>
-          <% call_result_options = {
-              'Patient contacted' => [['Contacted', 'contacted']],
-              'Remove from list' => Patient.could_not_contact_reasons.map { |key, value| [key.humanize, value] }
-          } %>
+<% if @patients.present? && true # policy([:overdue_list, @appointments.first]).download? %>
+  <h2 name="download_text">Downloads</h2>
 
-          <%= render(
-            'shared/followup_patient_card',
-            patient: patient,
-            call_result_options: call_result_options,
-            days_overdue: nil,
-            show_registration_date: true,
-            show_last_interaction: false,
-            form_model: patient
-          ) %>
-        <% end %>
-      <% else %>
-        <div class="overdue-patient">
-          <p class="overdue-title" style="color: #999;">No patients found for follow up</p>
-        </div>
-      <% end %>
+  <div class="mb-5 mt-3">
+    <% if @facility_id == "All" %>
+      <div class="text-grey">
+        <i class="far fa-file-excel mr-2"></i> Select a facility to download Adherence Patients list
+      </div>
+    <% else %>
+      <%= link_to "<i class='far fa-file-excel mr-2'></i> Download adherence follow-ups list".html_safe, patients_path(facility_id: @facility_id, format: "csv"), class: "", data: { confirm: I18n.t('admin.phi_download_alert') } %>
+    <% end %>
+  </div>
+<% end %>
+
+<div id="patients-to-followup">
+  <% if @patients.present? %>
+    <% @patients.each do |patient| %>
+      <% call_result_options = {
+          'Patient contacted' => [['Contacted', 'contacted']],
+          'Remove from list' => Patient.could_not_contact_reasons.map { |key, value| [key.humanize, value] }
+      } %>
+
+      <%= render(
+        'shared/followup_patient_card',
+        patient: patient,
+        call_result_options: call_result_options,
+        days_overdue: nil,
+        show_registration_date: true,
+        show_last_interaction: false,
+        form_model: patient
+      ) %>
+    <% end %>
+  <% else %>
+    <div class="overdue-patient">
+      <p class="overdue-title" style="color: #999;">No patients found for follow up</p>
     </div>
+  <% end %>
+</div>
 
 
 <%= paginate @patients %>
