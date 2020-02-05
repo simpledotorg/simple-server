@@ -1,9 +1,3 @@
-<% total_registrations_by_period = @registrations.keys.reduce({}) do |total_registrations_by_period, key| %>
-  <% period = [key.second.to_i, key.third.to_i] %>
-  <% count = total_registrations_by_period[period].to_i %>
-  <% total_registrations_by_period[period] = count + @registrations[key].to_i %>
-  <% total_registrations_by_period %>
-<% end %>
 <div class="card card-responsive">
   <div class="row">
     <div class="col-lg-9 pr-5 pr-md-0">
@@ -81,7 +75,7 @@
     <tr class="row-total" data-sort-method="none">
       <td class="type-title">All</td>
       <% @display_periods.reverse.each do |period| %>
-        <td class="type-number" <% unless @selected_period == :day %>colspan="2"<% end %>><%= total_registrations_by_period[period].to_i %></td>
+        <td class="type-number" <% unless @selected_period == :day %>colspan="2"<% end %>><%= @total_registrations_by_period[period].to_i %></td>
       <% end %>
       <td class="type-number"><%= @all_time_registrations.values.sum %></td>
     </tr>

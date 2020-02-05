@@ -68,6 +68,12 @@ class MyFacilitiesController < AdminController
                          .sum(:registration_count)
 
     @all_time_registrations = registrations_query.all_time_registrations.group(:bp_facility_id).count
+    @total_registrations_by_period = @registrations.reduce({}) do |total_registrations_by_period, (key, registrations)|
+      period = [key.second.to_i, key.third.to_i]
+      total_registrations_by_period[period] ||= 0
+      total_registrations_by_period[period] += registrations
+      total_registrations_by_period
+    end
     @display_periods = registrations_query.periods
   end
 
