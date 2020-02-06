@@ -67,11 +67,15 @@ protocol_drugs_data = [
 ]
 
 organization = Organization.find_by(org) || FactoryBot.create(:organization, org)
+protocol = Protocol.find_or_create_by(protocol_data)
+protocol_drugs_data.each { |drug_data| ProtocolDrug.find_or_create_by(drug_data.merge(protocol_id: protocol.id)) }
+
 
 facilities.each do |facility_data|
   facility_group_params = {name: facility_data[:district], organization: organization}
   facility_group =
-    FacilityGroup.find_by(facility_group_params) || FactoryBot.create(:facility_group, facility_group_params)
+    FacilityGroup.find_by(facility_group_params) || FactoryBot.create(:facility_group,
+                                                                      facility_group_params.merge(protocol: protocol))
 
   facility_params = facility_data.merge(facility_group_id: facility_group.id)
   facility = Facility.find_by(facility_data.merge(facility_params)) || FactoryBot.create(:facility, facility_params)
@@ -81,10 +85,7 @@ facilities.each do |facility_data|
                          :with_phone_number_authentication,
                          registration_facility: facility,
                          organization: organization,
-                         role: GENERATED_USER_ROLE) if facility.users.size < NUMBER_OF_USERS_PER_FACILITY
+                         role: PopulateFakeDataJob::FAKE_DATA_USER_ROLE) if facility.users.size < NUMBER_OF_USERS_PER_FACILITY
 end
-
-protocol = Protocol.find_or_create_by(protocol_data)
-protocol_drugs_data.each { |drug_data| ProtocolDrug.find_or_create_by(drug_data.merge(protocol_id: protocol.id)) }
 
 CreateAdminUser.create_owner('Admin User', 'admin@simple.org', 'password')
