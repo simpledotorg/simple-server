@@ -2,7 +2,7 @@ module Notifiable
   def schedule_today_or_tomorrow(start, finish)
     now = DateTime
             .now
-            .in_time_zone(ENV.fetch('DEFAULT_TIME_ZONE'))
+            .in_time_zone(Rails.application.config.country[:time_zone])
 
     case
     when now_within_time_window?(now, start, finish)
