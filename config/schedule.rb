@@ -6,7 +6,7 @@ env :PATH, ENV['PATH']
 DEFAULT_CRON_TIME_ZONE = 'Asia/Kolkata'
 
 def local(time)
-  TZInfo::Timezone.get(Rails.application.config.country[:time_zone] || DEFAULT_CRON_TIME_ZONE)
+  TZInfo::Timezone.get(DEFAULT_CRON_TIME_ZONE)
                   .local_to_utc(Time.parse(time))
 end
 
