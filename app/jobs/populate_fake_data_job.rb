@@ -106,20 +106,20 @@ class PopulateFakeDataJob
     create_api_resource(:patients,
                         :newly_registered_patients,
                         user,
-                        time_range: Faker::Date.between(1.month.ago, Date.today),
+                        time_range: Faker::Time.between(1.month.ago, Date.today),
                         sample_range: rand(50..100))
 
     create_api_resource(:blood_pressures,
                         :ongoing_bps,
                         user,
                         sample_range: rand(1..3),
-                        time_range: Faker::Date.between(1.month.ago, Date.today))
+                        time_range: Faker::Time.between(1.month.ago, Date.today))
 
     create_api_resource(:blood_pressures,
                         :retroactive_bps,
                         user,
                         sample_range: rand(3..10),
-                        time_range: Faker::Date.between(12.months.ago, 1.month.ago.beginning_of_month))
+                        time_range: Faker::Time.between(12.months.ago, 1.month.ago.beginning_of_month))
 
     create_api_resource(:appointments, :overdue_appointments, user)
     create_api_resource(:appointments, :scheduled_appointments, user)
@@ -127,7 +127,7 @@ class PopulateFakeDataJob
     create_resource(:completed_phone_calls,
                     user,
                     sample_range: rand(1..10),
-                    time_range: Faker::Date.between(6.months.ago, Date.today))
+                    time_range: Faker::Time.between(6.months.ago, Date.today))
 
   end
 
