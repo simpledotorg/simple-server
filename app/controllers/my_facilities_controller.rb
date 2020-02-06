@@ -54,7 +54,7 @@ class MyFacilitiesController < AdminController
   private
 
   def set_time_zone
-    time_zone = ENV['ANALYTICS_TIME_ZONE'] || DEFAULT_ANALYTICS_TIME_ZONE
+    time_zone = Rails.application.config.country[:time_zone] || DEFAULT_ANALYTICS_TIME_ZONE
 
     Time.use_zone(time_zone) { yield }
   end
