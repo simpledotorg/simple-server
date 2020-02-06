@@ -20,8 +20,9 @@
 
 .byebug_history
 coverage
-.env
+.env.development.local
 .env.production
+.env
 
 /lib/bangladesh/data/*.csv
 /lib/bangladesh/data/*.csv.encrypted
