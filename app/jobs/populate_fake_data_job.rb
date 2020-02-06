@@ -7,95 +7,94 @@ class PopulateFakeDataJob
   include Sidekiq::Throttled::Worker
 
   sidekiq_options queue: :low
-  sidekiq_throttle threshold: { limit: 20, period: 1.minute }
-
+  sidekiq_throttle threshold: {limit: 20, period: 1.minute}
 
   FAKE_DATA_USER_ROLE = 'Seeded'
   HOST = URI.parse(ENV['SIMPLE_SERVER_HOST_PROTOCOL'] + "://" + ENV['SIMPLE_SERVER_HOST']).to_s
   DEFAULT_HEADERS = {'Content-Type' => 'application/json', 'ACCEPT' => 'application/json'}
   DATA_CONCERNS = {
     newly_registered_patients:
-      -> (user, sample_range:, time_range:) {
-        ::FactoryBot
-          .build_list(:patient,
-                      sample_range,
-                      recorded_at: time_range,
-                      registration_user: user,
-                      registration_facility: user.facility)
-          .map(&method(:build_patient_payload)) },
+      -> (user, time_range_fn) {
+        build_patient_payload(
+          ::FactoryBot
+            .build(:patient,
+                   recorded_at: time_range_fn.call,
+                   registration_user: user,
+                   registration_facility: user.facility)
+        )
+      },
 
     ongoing_bps:
-      -> (user, sample_range:, time_range:) {
-        PopulateFakeDataJob.sample(user.registered_patients, 0.85).flat_map do |patient|
-          ::FactoryBot
-            .build_list(:blood_pressure,
-                        sample_range,
-                        patient: patient,
-                        user: user,
-                        recorded_at: time_range,
-                        facility: user.facility)
-            .map(&method(:build_blood_pressure_payload))
+      -> (user, time_range_fn) {
+        PopulateFakeDataJob.sample(user.registered_patients, 0.40).flat_map do |patient|
+          build_blood_pressure_payload(
+            ::FactoryBot
+              .build(:blood_pressure,
+                     patient: patient,
+                     user: user,
+                     recorded_at: time_range_fn.call,
+                     facility: user.facility)
+          )
         end
       },
 
     retroactive_bps:
-      -> (user, sample_range:, time_range:) {
-        PopulateFakeDataJob.sample(user.registered_patients, 0.85).flat_map do |patient|
-          ::FactoryBot
-            .build_list(:blood_pressure,
-                        sample_range,
-                        patient: patient,
-                        user: user,
-                        device_created_at: time_range,
-                        device_updated_at: time_range,
-                        facility: user.facility)
-            .map { |bp| build_blood_pressure_payload(bp).except(:recorded_at) }
+      -> (user, time_range_fn) {
+        PopulateFakeDataJob.sample(user.registered_patients, 0.40).flat_map do |patient|
+          build_blood_pressure_payload(
+            ::FactoryBot
+              .build(:blood_pressure,
+                     patient: patient,
+                     user: user,
+                     device_created_at: time_range_fn.call,
+                     device_updated_at: time_range_fn.call,
+                     facility: user.facility)
+          ).except(:recorded_at)
         end
       },
 
     scheduled_appointments:
-      -> (user, _range_args) {
-        PopulateFakeDataJob.sample(user.registered_patients, 0.5).flat_map do |patient|
+      -> (user, _time_range_fn) {
+        PopulateFakeDataJob.sample(user.registered_patients, 0.50).flat_map do |patient|
           next if patient.latest_scheduled_appointment.present?
 
-          appointment = ::FactoryBot
-                          .build(:appointment,
-                                 patient: patient,
-                                 user: user,
-                                 creation_facility: user.facility,
-                                 facility: user.facility)
-
-          build_appointment_payload(appointment)
+          build_appointment_payload(
+            ::FactoryBot
+              .build(:appointment,
+                     patient: patient,
+                     user: user,
+                     creation_facility: user.facility,
+                     facility: user.facility)
+          )
         end
       },
 
     overdue_appointments:
-      -> (user, _range_args) {
-        PopulateFakeDataJob.sample(user.registered_patients, 0.5).flat_map do |patient|
+      -> (user, _time_range_fn) {
+        PopulateFakeDataJob.sample(user.registered_patients, 0.50).flat_map do |patient|
           next if patient.latest_scheduled_appointment.present?
 
-          appointment = ::FactoryBot
-                          .build(:appointment,
-                                 :overdue,
-                                 patient: patient,
-                                 user: user,
-                                 creation_facility: user.facility,
-                                 facility: user.facility)
-
-          build_appointment_payload(appointment)
+          build_appointment_payload(
+            ::FactoryBot
+              .build(:appointment,
+                     :overdue,
+                     patient: patient,
+                     user: user,
+                     creation_facility: user.facility,
+                     facility: user.facility)
+          )
         end
       },
 
     completed_phone_calls:
-      -> (user, sample_range:, time_range:) {
-        PopulateFakeDataJob.sample(user.registered_patients, 0.4).each do |patient|
+      -> (user, time_range_fn) {
+        PopulateFakeDataJob.sample(user.registered_patients, 0.20).each do |patient|
           ::FactoryBot
-            .create_list(:call_log,
-                         sample_range,
-                         result: 'completed',
-                         caller_phone_number: user.phone_number,
-                         callee_phone_number: patient.latest_phone_number,
-                         end_time: time_range)
+            .create(:call_log,
+                    result: 'completed',
+                    caller_phone_number: user.phone_number,
+                    callee_phone_number: patient.latest_phone_number,
+                    end_time: time_range_fn.call)
         end
       }
   }
@@ -106,36 +105,35 @@ class PopulateFakeDataJob
     create_api_resource(:patients,
                         :newly_registered_patients,
                         user,
-                        time_range: Faker::Time.between(1.month.ago, Date.today),
-                        sample_range: rand(50..100))
+                        time_range_fn: -> { Faker::Time.between(1.month.ago, Date.today) },
+                        sample_range_fn: -> { rand(50..200) })
 
     create_api_resource(:blood_pressures,
                         :ongoing_bps,
                         user,
-                        sample_range: rand(1..3),
-                        time_range: Faker::Time.between(1.month.ago, Date.today))
+                        time_range_fn: -> { Faker::Time.between(1.month.ago, Date.today) },
+                        sample_range_fn: -> { rand(1..3) })
 
     create_api_resource(:blood_pressures,
                         :retroactive_bps,
                         user,
-                        sample_range: rand(3..10),
-                        time_range: Faker::Time.between(12.months.ago, 1.month.ago.beginning_of_month))
+                        time_range_fn: -> { Faker::Time.between(12.months.ago, 1.month.ago.beginning_of_month) },
+                        sample_range_fn: -> { rand(2..5) })
 
     create_api_resource(:appointments, :overdue_appointments, user)
     create_api_resource(:appointments, :scheduled_appointments, user)
 
     create_resource(:completed_phone_calls,
                     user,
-                    sample_range: rand(1..10),
-                    time_range: Faker::Time.between(6.months.ago, Date.today))
-
+                    time_range_fn: -> { Faker::Time.between(6.months.ago, Date.today) },
+                    sample_range_fn: -> { rand(1..10) })
   end
 
   private
 
-  def create_resource(data_key, user, range_args = {})
+  def create_resource(data_key, user, time_range_fn: -> { Time.now }, sample_range_fn: -> { 1 })
     puts "Creating #{data_key} for #{user.full_name}..."
-    DATA_CONCERNS[data_key].call(user, range_args).compact
+    (0..sample_range_fn.call).flat_map { DATA_CONCERNS[data_key].call(user, time_range_fn).compact }
   end
 
   def create_api_resource(request_key, data_key, user, range_args = {})
