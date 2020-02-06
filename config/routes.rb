@@ -50,7 +50,6 @@ Rails.application.routes.draw do
       get 'sync', to: 'medical_histories#sync_to_user'
       post 'sync', to: 'medical_histories#sync_from_user'
     end
-
   end
 
   namespace :api, defaults: { format: 'json' } do

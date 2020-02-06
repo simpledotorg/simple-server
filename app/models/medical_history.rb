@@ -22,11 +22,6 @@ class MedicalHistory < ApplicationRecord
     unknown: 'unknown'
   }.freeze
 
-  MEDICAL_HISTORY_DEFINITIVE_ANSWERS = {
-    yes: 'yes',
-    no: 'no'
-  }.freeze
-
   enum prior_heart_attack: MEDICAL_HISTORY_ANSWERS, _prefix: true
   enum prior_stroke: MEDICAL_HISTORY_ANSWERS, _prefix: true
   enum chronic_kidney_disease: MEDICAL_HISTORY_ANSWERS, _prefix: true
