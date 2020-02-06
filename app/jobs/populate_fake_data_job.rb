@@ -15,10 +15,11 @@ class PopulateFakeDataJob
   DEFAULT_HEADERS = {'Content-Type' => 'application/json', 'ACCEPT' => 'application/json'}
   DATA_CONCERNS = {
     newly_registered_patients:
-      -> (user, sample_range:) {
+      -> (user, sample_range:, time_range:) {
         ::FactoryBot
           .build_list(:patient,
                       sample_range,
+                      recorded_at: time_range,
                       registration_user: user,
                       registration_facility: user.facility)
           .map(&method(:build_patient_payload)) },
@@ -105,6 +106,7 @@ class PopulateFakeDataJob
     create_api_resource(:patients,
                         :newly_registered_patients,
                         user,
+                        time_range: Faker::Date.between(1.month.ago, Date.today),
                         sample_range: rand(50..100))
 
     create_api_resource(:blood_pressures,
