@@ -88,7 +88,10 @@ Now you should be able to see test emails at http://localhost:1080
 
 ### Configuration
 
-The app can be configured using a .env file. Look at .env.development for sample configuration
+The app uses a base development configuration using `.env.development`. To add or override any configurations during
+local development, create a `.env.development.local` file and add your necessary configurations there. If a
+configuration change is applicable to all dev environments, ensure that it is added to `.env.development` and checked
+into the codebase.
 
 ### Running the application locally
 
