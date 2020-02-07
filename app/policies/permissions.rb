@@ -170,6 +170,7 @@ module Permissions
         download_adherence_follow_up_list
         download_patient_line_list
         view_my_facilities
+        view_sidekiq_ui
       ]
     },
     { name: :custom,
