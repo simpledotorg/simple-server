@@ -6,6 +6,7 @@
 
 init (){
   verify_ruby_version && verify_bundled_gems && verify_yarn_packages
+  verify_foreman
   verify_postgres && verify_database_migrations
   configure_parallel_testing
 }
@@ -124,6 +125,11 @@ verify_yarn_packages (){
   echo 'Updating Yarn packages...'
 
   bundle exec yarn install 2>&1
+}
+
+verify_foreman(){
+  echo 'Installing foreman...'
+  gem list -i foreman || gem install foreman
 }
 
 verify_database_migrations (){
