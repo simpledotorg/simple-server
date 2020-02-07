@@ -7,14 +7,14 @@ class PopulateFakeDataJob
   include Sidekiq::Throttled::Worker
 
   sidekiq_options queue: :low
-  sidekiq_throttle threshold: {limit: 20, period: 1.minute}
+  sidekiq_throttle threshold: { limit: 20, period: 1.minute }
 
-  FAKE_DATA_USER_ROLE = 'Seeded'
-  HOST = URI.parse(ENV['SIMPLE_SERVER_HOST_PROTOCOL'] + "://" + ENV['SIMPLE_SERVER_HOST']).to_s
-  DEFAULT_HEADERS = {'Content-Type' => 'application/json', 'ACCEPT' => 'application/json'}
+  FAKE_DATA_USER_ROLE = 'Seeded'.freeze
+  HOST = URI.parse("#{ENV['SIMPLE_SERVER_HOST_PROTOCOL']}://#{ENV['SIMPLE_SERVER_HOST']}").to_s
+  DEFAULT_HEADERS = { 'Content-Type' => 'application/json', 'ACCEPT' => 'application/json' }.freeze
   DATA_CONCERNS = {
     newly_registered_patients:
-      -> (user, time_range_fn) {
+      lambda { |user, time_range_fn|
         build_patient_payload(
           ::FactoryBot
             .build(:patient,
@@ -25,7 +25,7 @@ class PopulateFakeDataJob
       },
 
     ongoing_bps:
-      -> (user, time_range_fn) {
+      lambda { |user, time_range_fn|
         PopulateFakeDataJob.sample(user.registered_patients, 0.40).flat_map do |patient|
           build_blood_pressure_payload(
             ::FactoryBot
@@ -39,7 +39,7 @@ class PopulateFakeDataJob
       },
 
     retroactive_bps:
-      -> (user, time_range_fn) {
+      lambda { |user, time_range_fn|
         PopulateFakeDataJob.sample(user.registered_patients, 0.40).flat_map do |patient|
           build_blood_pressure_payload(
             ::FactoryBot
@@ -54,7 +54,7 @@ class PopulateFakeDataJob
       },
 
     scheduled_appointments:
-      -> (user, _time_range_fn) {
+      lambda { |user, _time_range_fn|
         PopulateFakeDataJob.sample(user.registered_patients, 0.50).flat_map do |patient|
           next if patient.latest_scheduled_appointment.present?
 
@@ -70,7 +70,7 @@ class PopulateFakeDataJob
       },
 
     overdue_appointments:
-      -> (user, _time_range_fn) {
+      lambda { |user, _time_range_fn|
         PopulateFakeDataJob.sample(user.registered_patients, 0.50).flat_map do |patient|
           next if patient.latest_scheduled_appointment.present?
 
@@ -87,7 +87,7 @@ class PopulateFakeDataJob
       },
 
     completed_phone_calls:
-      -> (user, time_range_fn) {
+      lambda { |user, time_range_fn|
         PopulateFakeDataJob.sample(user.registered_patients, 0.20).each do |patient|
           ::FactoryBot
             .create(:call_log,
@@ -97,7 +97,7 @@ class PopulateFakeDataJob
                     end_time: time_range_fn.call)
         end
       }
-  }
+  }.freeze
 
   def perform(user_id)
     user = User.find(user_id)
@@ -155,5 +155,3 @@ class PopulateFakeDataJob
     data.sample([factor * data.size, 1].max)
   end
 end
-
-
