@@ -16,7 +16,7 @@ class AdminController < ApplicationController
 
   def switch_locale(&action)
     locale =
-      ENV['DEFAULT_PREFERRED_DASHBOARD_LOCALE'].presence ||
+      Rails.application.config.country[:dashboard_locale].presence ||
         http_accept_language.compatible_language_from(I18n.available_locales) ||
         I18n.default_locale
 

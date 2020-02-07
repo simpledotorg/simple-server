@@ -15,54 +15,61 @@ class PopulateFakeDataJob
   HOST = URI.parse("#{ENV['SIMPLE_SERVER_HOST_PROTOCOL']}://#{ENV['SIMPLE_SERVER_HOST']}").to_s
   DEFAULT_HEADERS = { 'Content-Type' => 'application/json', 'ACCEPT' => 'application/json' }.freeze
 
-  GENERATION_SCRIPT = {
-    newly_registered_patients: {
+  TRAITS = {
+    newly_registered_patient: {
       time_fn: -> { Faker::Time.between(1.month.ago, Date.today) },
       size_fn: -> { rand(50..200) },
       request_key: :patients
     },
-    ongoing_bps: {
+    ongoing_bp: {
       time_fn: -> { Faker::Time.between(1.month.ago, Date.today) },
       size_fn: -> { rand(1..3) },
-      request_key: :blood_pressures
+      request_key: :blood_pressures,
+      patient_sample_size: 0.5
     },
-    retroactive_bps: {
+    retroactive_bp: {
       time_fn: -> { Faker::Time.between(12.months.ago, 1.month.ago.beginning_of_month) },
       size_fn: -> { rand(2..5) },
-      request_key: :blood_pressures
+      request_key: :blood_pressures,
+      patient_sample_size: 0.5
     },
-    scheduled_appointments: {
-      request_key: :appointments
+    scheduled_appointment: {
+      size_fn: -> { 1 },
+      request_key: :appointments,
+      patient_sample_size: 0.5
     },
-    overdue_appointments: {
-      request_key: :appointments
+    overdue_appointment: {
+      size_fn: -> { 1 },
+      request_key: :appointments,
+      patient_sample_size: 0.5
     },
-    completed_phone_calls: {
+    completed_phone_call: {
       time_fn: -> { Faker::Time.between(6.months.ago, Date.today) },
-      size_fn: -> { rand(1..10) }
+      size_fn: -> { rand(1..10) },
+      patient_sample_size: 0.5
     }
   }.freeze
 
   def perform(user_id)
     @user = User.find(user_id)
 
-    GENERATION_SCRIPT.each do |trait, args|
+    TRAITS.each do |trait, args|
       create_resources(trait, args)
     end
   end
 
   private
 
-  def newly_registered_patient(time_fn)
+  def newly_registered_patient(time_fn:)
     build_patient_payload(FactoryBot.build(
       :patient,
       recorded_at: time_fn.call,
       registration_user: user,
-      registration_facility: user.facility)
-    )
+      registration_facility: user.facility
+    ))
   end
 
-  def ongoing_bp(patient, time_fn)
+  def ongoing_bp(patient:, time_fn:)
     build_blood_pressure_payload(FactoryBot.build(
       :blood_pressure,
       patient: patient,
@@ -72,7 +79,7 @@ class PopulateFakeDataJob
     ))
   end
 
-  def retroactive_bp(patient, time_fn)
+  def retroactive_bp(patient:, time_fn:)
     build_blood_pressure_payload(FactoryBot.build(
       :blood_pressure,
       patient: patient,
@@ -83,7 +90,7 @@ class PopulateFakeDataJob
     )).except(:recorded_at)
   end
 
-  def scheduled_appointment(patient, _time_fn)
+  def scheduled_appointment(patient:)
     return if patient.latest_scheduled_appointment.present?
 
     build_appointment_payload(FactoryBot.build(
@@ -95,7 +102,7 @@ class PopulateFakeDataJob
     ))
   end
 
-  def overdue_appointment(patient, _time_fn)
+  def overdue_appointment(patient:)
     return if patient.latest_scheduled_appointment.present?
 
     build_appointment_payload(FactoryBot.build(
@@ -108,7 +115,7 @@ class PopulateFakeDataJob
     ))
   end
 
-  def completed_phone_call(patient, time_fn)
+  def completed_phone_call(patient:, time_fn:)
     FactoryBot.create(
       :call_log,
       result: 'completed',
@@ -124,30 +131,25 @@ class PopulateFakeDataJob
     puts "#{path} failed with status: #{output.status}" unless output.status.ok?
   end
 
-  def sample(data, factor)
-    data.sample([factor * data.size, 1].max)
-  end
-
-  def registered_patients
-    user.registered_patients
-  end
-
   def sample_patients(percentage)
-    sample(registered_patients, percentage)
+    user.registered_patients
+        .sample([percentage * user.registered_patients.size, 1].max)
   end
 
-  def generate(size_fn, args)
-    (1...size_fn.call).flat_map { send(**args.values) }
+  def generate(trait, args)
+    (1...args[:size_fn].call).flat_map { send(trait, args.slice(:patient, :time_fn)) }
   end
 
-  def generate_for_patient_sample(method_name, percentage:, size_fn:, time_fn:)
-    sample_patients(percentage).flat_map do |patient|
-      generate(size_fn, method_name: method_name, patient: patient, time_fn: time_fn)
+  def generate_for_patient_sample(trait, args)
+    sample_patients(args[:patient_sample_size]).flat_map do |patient|
+      generate(trait, args.merge(patient: patient))
     end
   end
 
-  def create_resources(method_name, request_key:, size_fn:, time_fn:)
-    data = generate(size_fn, method_name: method_name, time_fn: time_fn)
+  def create_resources(trait, args)
+    data = args[:patient_sample_size] ? generate_for_patient_sample(trait, args) : generate(trait, args)
+
+    request_key = args[:request_key]
     return if request_key.blank?
 
     data.each_slice(20) do |data_slice|
