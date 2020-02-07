@@ -66,12 +66,6 @@ brew install redis
 redis-server -v
 ```
 
-Start the sidekiq process by running
-
-```bash
-bundle exec sidekiq
-```
-
 ### Testing Email
 
 We use [Mailcatcher](https://mailcatcher.me/) for testing email in development. Please use the
@@ -95,10 +89,25 @@ into the codebase.
 
 ### Running the application locally
 
-The application will start at http://localhost:3000.
+Foreman is used to run the application locally. First, install foreman.
+
 ```bash
-RAILS_ENV=development bundle exec rails server
+$ gem install foreman
 ```
+
+Then, run the following command to start the Rails and Sidekiq together.
+
+```bash
+$ foreman start -f Procfile.dev
+```
+
+**Note:** Foreman will also execute the `whenever` gem in trial mode. This will validate that the `whenever`
+configuration is valid, but will not actually schedule any cron jobs.
+
+Alternatively, you can start these services locally _without_ foreman by using the following commands individually.
+
+* Rails: `bundle exec rails server` or `bundle exec puma`
+* Sidekiq: `bundle exec sidekiq`
 
 ### Running the tests
 
