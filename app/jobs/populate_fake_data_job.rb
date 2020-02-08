@@ -17,12 +17,12 @@ class PopulateFakeDataJob
 
   TRAITS = {
     newly_registered_patient: {
-      time_fn: -> { Faker::Time.between(1.month.ago, Date.today) },
+      time_fn: -> { Faker::Time.between(1.month.ago, Time.now) },
       size_fn: -> { rand(50..200) },
       request_key: :patients
     },
     ongoing_bp: {
-      time_fn: -> { Faker::Time.between(1.month.ago, Date.today) },
+      time_fn: -> { Faker::Time.between(1.month.ago, Time.now) },
       size_fn: -> { rand(1..3) },
       request_key: :blood_pressures,
       patient_sample_size: 0.5
@@ -137,7 +137,7 @@ class PopulateFakeDataJob
   end
 
   def generate(trait, args)
-    (1...args[:size_fn].call).flat_map { send(trait, args.slice(:patient, :time_fn)) }
+    (1..args[:size_fn].call).flat_map { send(trait, args.slice(:patient, :time_fn)) }
   end
 
   def generate_for_patient_sample(trait, args)
@@ -147,6 +147,7 @@ class PopulateFakeDataJob
   end
 
   def create_resources(trait, args)
+    "Creating #{trait} for #{user.full_name}..."
     data = args[:patient_sample_size] ? generate_for_patient_sample(trait, args) : generate(trait, args)
 
     request_key = args[:request_key]
