@@ -22,8 +22,8 @@ every :week, at: local('01:00 am'), roles: [:whitelist_phone_numbers] do
   rake 'exotel_tasks:update_all_patients_phone_number_details'
 end
 
-every :month, at: local('02:00 am'), roles: [:seed] do
-  rake 'generate:seed[1]'
+every :week, at: local('02:00 am'), roles: [:fake_data] do
+  rake 'generate:fake_data'
 end
 
 every :day, at: local('03:00 am'), roles: [:cron] do
