@@ -5,7 +5,7 @@ FactoryBot.define do
     end
 
     id { SecureRandom.uuid }
-    sequence(:name) { |n| "Facility #{n}" }
+    sequence(:name) { |n| "#{facility_type} Facility #{n}" }
     sequence(:street_address) { |n| "#{n} Gandhi Road" }
     sequence(:village_or_colony) { |n| "Colony #{n}" }
     district 'Bathinda'

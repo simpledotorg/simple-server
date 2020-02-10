@@ -7,13 +7,17 @@ class PopulateFakeDataJob
   include Sidekiq::Throttled::Worker
 
   sidekiq_options queue: :low
-  sidekiq_throttle threshold: { limit: 20, period: 1.minute }
+  sidekiq_throttle threshold: {limit: 20, period: 1.minute}
 
   attr_reader :user
 
-  FAKE_DATA_USER_ROLE = 'Seeded'.freeze
   HOST = URI.parse("#{ENV['SIMPLE_SERVER_HOST_PROTOCOL']}://#{ENV['SIMPLE_SERVER_HOST']}").to_s
-  DEFAULT_HEADERS = { 'Content-Type' => 'application/json', 'ACCEPT' => 'application/json' }.freeze
+  DEFAULT_HEADERS = {'Content-Type' => 'application/json', 'ACCEPT' => 'application/json'}.freeze
+
+  FACTOR = {
+    ENV['ACTIVE_GENERATED_USER_ROLE'] => 1,
+    ENV['INACTIVE_GENERATED_USER_ROLE'] => 0.3
+  }
 
   TRAITS = {
     newly_registered_patient: {
@@ -23,7 +27,7 @@ class PopulateFakeDataJob
     },
     ongoing_bp: {
       time_fn: -> { Faker::Time.between(1.month.ago, Time.now) },
-      size_fn: -> { rand(1..3) },
+      size_fn: -> { rand(1..4) },
       request_key: :blood_pressures,
       patient_sample_size: 0.5
     },
@@ -54,7 +58,7 @@ class PopulateFakeDataJob
     @user = User.find(user_id)
 
     TRAITS.each do |trait, args|
-      create_resources(trait, args)
+      create_resources(trait, args.merge(activity_scale_factor: FACTOR[@user.role] || 0))
     end
   end
 
@@ -131,24 +135,21 @@ class PopulateFakeDataJob
     puts "#{path} failed with status: #{output.status}" unless output.status.ok?
   end
 
-  def sample_patients(percentage)
-    user.registered_patients
-        .sample([percentage * user.registered_patients.size, 1].max)
-  end
-
   def generate(trait, args)
-    (1..args[:size_fn].call).flat_map { send(trait, args.slice(:patient, :time_fn)) }
+    number_of_records = args[:size_fn].call * args[:activity_scale_factor]
+    (1..number_of_records).flat_map { send(trait, args.slice(:patient, :time_fn)) }
   end
 
-  def generate_for_patient_sample(trait, args)
-    sample_patients(args[:patient_sample_size]).flat_map do |patient|
-      generate(trait, args.merge(patient: patient))
-    end
+  def generate_for_sample_of_patients(trait, args)
+    user
+      .registered_patients
+      .sample([args[:patient_sample_size] * user.registered_patients.size, 1].max)
+      .flat_map { |patient| generate(trait, args.merge(patient: patient)) }
   end
 
   def create_resources(trait, args)
-    "Creating #{trait} for #{user.full_name}..."
-    data = args[:patient_sample_size] ? generate_for_patient_sample(trait, args) : generate(trait, args)
+    puts "Creating #{trait} for #{user.full_name}..."
+    data = args[:patient_sample_size] ? generate_for_sample_of_patients(trait, args) : generate(trait, args)
 
     request_key = args[:request_key]
     return if request_key.blank?
