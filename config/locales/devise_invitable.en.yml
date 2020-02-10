@@ -18,7 +18,6 @@ en:
     mailer:
       invitation_instructions:
         subject: "Simple Dashboard: Invitation"
-        hello: "Hello %{email}"
         someone_invited_you: "You are invited to the Simple Dashboard at: %{url} You can accept this invitation by clicking the link below."
         accept: "ACCEPT INVITATION"
         accept_until: "This invitation will be due in %{due_date}."
