@@ -13,6 +13,12 @@
 
 </head>
 <body>
+  <div class="anchors">
+      <a href="#watch" style="border-top: none;"><%= t('api.help.anchors.watch') %></a>
+      <a href="#howto"><%= t('api.help.anchors.howto') %></a>
+      <a href="#bp"><%= t('api.help.anchors.bp') %></a>
+      <a href="#support"><%= t('api.help.anchors.support') %></a>
+  </div>
   <%= t('api.help.body_html',
         help_screen_youtube_video_url: ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL'],
         thumb_demo_svg: inline_svg('thumb_demo.svg'),

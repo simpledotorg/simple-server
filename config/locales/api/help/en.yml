@@ -1,0 +1,8 @@
+en:
+  api:
+    help:
+      anchors:
+        watch: 'VIDEOS'
+        howto: 'INSTRUCTIONS'
+        bp: 'HOW TO MEASURE BPs'
+        support: 'ASK FOR HELP'

@@ -1,0 +1,8 @@
+hi-IN:
+  api:
+    help:
+      anchors:
+        watch: 'वीडियो'
+        howto: 'निर्देश'
+        bp: 'बी पी कैसे नापें'
+        support: 'मदद पाने के लिए पूछें'
