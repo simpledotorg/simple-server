@@ -15,7 +15,7 @@ class Admin::FacilitiesController < AdminController
   end
 
   def new
-    @facility = @facility_group.facilities.new
+    @facility = new_facility
     authorize([:manage, :facility, @facility])
   end
 
@@ -23,7 +23,7 @@ class Admin::FacilitiesController < AdminController
   end
 
   def create
-    @facility = @facility_group.facilities.new(facility_params)
+    @facility = new_facility(facility_params)
     authorize([:manage, :facility, @facility])
 
     if @facility.save
@@ -59,6 +59,12 @@ class Admin::FacilitiesController < AdminController
 
   private
 
+  def new_facility(attributes = nil)
+    @facility_group.facilities.new(attributes).tap do |facility|
+      facility.country ||= Rails.application.config.country[:name]
+    end
+  end
+
   def set_facility
     @facility = Facility.friendly.find(params[:id])
     authorize([:manage, :facility, @facility])
@@ -82,7 +88,8 @@ class Admin::FacilitiesController < AdminController
       :facility_size,
       :latitude,
       :longitude,
-      :enable_diabetes_management
+      :enable_diabetes_management,
+      :zone
     )
   end
 
@@ -140,5 +147,4 @@ class Admin::FacilitiesController < AdminController
     end
     grouped_errors
   end
-
 end

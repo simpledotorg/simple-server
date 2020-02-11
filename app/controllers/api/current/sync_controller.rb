@@ -1,6 +1,5 @@
 class Api::Current::SyncController < APIController
   include Api::Current::SyncToUser
-  before_action :check_disabled_api
   before_action :instrument_process_token
 
   def model_name
@@ -34,12 +33,6 @@ class Api::Current::SyncController < APIController
 
   def disable_audit_logs?
     false
-  end
-
-  def check_disabled_api
-    return if sync_api_toggled_on?
-    logger.info "Short circuiting #{request.env['PATH_INFO']} since it's a disabled feature"
-    head :forbidden
   end
 
   def sync_api_toggled_on?

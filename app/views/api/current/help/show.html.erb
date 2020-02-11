@@ -13,6 +13,7 @@
 
 </head>
 <%= t('api.help.body_html',
+      country: Rails.application.config.country[:abbreviation],
       help_screen_youtube_video_url: ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL'],
       thumb_demo_svg: inline_svg('thumb_demo.svg'),
       help_screen_youtube_passport_url: ENV['HELP_SCREEN_YOUTUBE_PASSPORT_URL'],

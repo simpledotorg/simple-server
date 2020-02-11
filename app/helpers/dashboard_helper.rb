@@ -37,6 +37,13 @@ module DashboardHelper
 
   def percentage_string(percentage)
     return '< 1%' if percentage < 1
+
     "#{percentage.round(0)}%"
+  end
+
+  def percentage(numerator, denominator)
+    return percentage_string(0) if denominator.zero?
+
+    percentage_string((numerator * 100) / denominator)
   end
 end

@@ -163,6 +163,10 @@ Rails.application.routes.draw do
     get 'blood_pressure_control', to: 'my_facilities#blood_pressure_control', as: 'my_facilities_blood_pressure_control'
   end
 
+  scope :resources do
+    get '/', to: 'resources#index', as: 'resources'
+  end
+
   namespace :admin do
     resources :organizations
 

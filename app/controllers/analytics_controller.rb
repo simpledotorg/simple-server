@@ -6,7 +6,7 @@ class AnalyticsController < AdminController
   DEFAULT_ANALYTICS_TIME_ZONE = 'Asia/Kolkata'
 
   def set_time_zone
-    time_zone = ENV['ANALYTICS_TIME_ZONE'] || DEFAULT_ANALYTICS_TIME_ZONE
+    time_zone = Rails.application.config.country[:time_zone] || DEFAULT_ANALYTICS_TIME_ZONE
 
     Groupdate.time_zone = time_zone
 
@@ -35,7 +35,7 @@ class AnalyticsController < AdminController
   end
 
   def set_quarter
-    @quarter, @year = previous_quarter_and_year
+    @year, @quarter = previous_year_and_quarter
     @quarter = params[:quarter].to_i if params[:quarter].present?
     @year = params[:year].to_i if params[:year].present?
   end
