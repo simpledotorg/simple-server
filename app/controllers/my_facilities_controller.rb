@@ -81,7 +81,7 @@ class MyFacilitiesController < AdminController
 
   def missed_visits
     @facilities = filter_facilities([:manage, :facility])
-    populate_periods([:quarter, :month])
+    populate_periods(%i[quarter month])
 
     missed_visits_query = MyFacilities::MissedVisitsQuery.new(facilities: @facilities,
                                                               period: @selected_period,
@@ -110,31 +110,29 @@ class MyFacilitiesController < AdminController
     registered_patients - controlled_bps - uncontrolled_bps
   end
 
-  def missed_visits_by_facility(missed_visits_query)
-    patients_by_period = missed_visits_query.patients_by_period
-    visits_by_period = missed_visits_query.visits_by_period
-    facility_patients = patients_by_period.map { |key, patients| [key, patients.group(:bp_facility_id).count] }.to_h
-    facility_patients.map do |period_key, facilities|
-      visited_patients = visits_by_period[period_key].pluck(:patient_id).to_set
-      facilities.map do |facility_id, patient_count|
-        responsible_patients = patients_by_period[period_key].where(bp_facility_id: facility_id).pluck(:patient_id).to_set
+  def missed_visits_by_facility(query)
+    query.patients_by_period.map do |(year, period), patients|
+      responsible_patients = patients.group(:bp_facility_id).count
+      visited_patients = query.visits_by_period[[year, period]].group(:responsible_facility_id).count
 
-        [[facility_id, period_key.first, period_key.second],
+      responsible_patients.map do |facility_id, patient_count|
+        [[facility_id, year, period],
          { patients: patient_count,
-           missed: (responsible_patients - visited_patients).count }]
+           missed: patient_count - visited_patients[facility_id] }]
       end.to_h
     end.reduce(:merge)
   end
 
-  def missed_visit_totals(missed_visits_query)
-    patients_by_period = missed_visits_query.patients_by_period
-    visits_by_period = missed_visits_query.visits_by_period
-    missed_visits_query.periods.map do |period_key|
-      patients =  patients_by_period[period_key].pluck(:patient_id).to_set
-      [period_key,
-       {patients: patients.count,
-        missed: (patients - visits_by_period[period_key].pluck(:patient_id).to_set).count}]
-    end.to_h
-  end
+  def missed_visit_totals(query)
+    missed_visits_by_facility(query).each_with_object({}) do |(key, missed_visit_data), total_missed_visit_data|
+      period = [key.second.to_i, key.third.to_i]
+      total_missed_visit_data[period] ||= {}
 
+      total_missed_visit_data[period][:patients] ||= 0
+      total_missed_visit_data[period][:patients] += missed_visit_data[:patients]
+
+      total_missed_visit_data[period][:missed] ||= 0
+      total_missed_visit_data[period][:missed] += missed_visit_data[:missed]
+    end
+  end
 end

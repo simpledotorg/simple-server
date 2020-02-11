@@ -25,11 +25,10 @@ class MyFacilities::MissedVisitsQuery
   end
 
   def patients_by_period
-    registered_before =
-      (@period == :quarter ? local_quarter_start(*@latest_period) - 2.months : local_month_start(*@latest_period) - 2.months)
-
     @patients_by_period ||=
       @periods.map do |year, period|
+        registered_before =
+          (@period == :quarter ? local_quarter_start(year, period) - 2.months : local_month_start(year, period) - 2.months)
         [[year, period], patients.where('patient_recorded_at < ?', registered_before)]
       end.to_h
   end
@@ -38,16 +37,10 @@ class MyFacilities::MissedVisitsQuery
     @visits_by_period ||=
       patients_by_period.map do |key, patients|
         case @period
-        when :quarter then
-          [key,
-           LatestBloodPressuresPerPatientPerQuarter
-             .where("(year, #{@period}) IN (#{periods_as_sql_list})")
-             .where(patient_id: patients.pluck(:patient_id))]
-        when :month then
-          [key,
-           LatestBloodPressuresPerPatientPerMonth
-             .where("(year, #{@period}) IN (#{periods_as_sql_list})")
-             .where(patient_id: patients.pluck(:patient_id))]
+        when :quarter
+          [key, visits_in_quarter(*key, patients)]
+        when :month
+          [key, visits_in_month(*key, patients)]
         end
       end.to_h
   end
@@ -74,6 +67,18 @@ class MyFacilities::MissedVisitsQuery
 
   private
 
+  def visits_in_quarter(year, quarter, patients)
+    LatestBloodPressuresPerPatientPerQuarter
+      .where(year: year, quarter: quarter)
+      .where(patient_id: patients.pluck(:patient_id))
+  end
+
+  def visits_in_month(year, month, patients)
+    LatestBloodPressuresPerPatientPerMonth
+      .where(year: year, month: month)
+      .where(patient_id: patients.pluck(:patient_id))
+  end
+
   def period_list(period, last_n)
     case period
     when :quarter then
@@ -82,9 +87,5 @@ class MyFacilities::MissedVisitsQuery
       last_n_months(n: last_n, inclusive: true)
         .map { |month| [month.year, month.month] }
     end
-  end
-
-  def periods_as_sql_list
-    @periods.map { |(year, period)| "('#{year}', '#{period}')" }.join(',')
   end
 end

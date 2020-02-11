@@ -24,12 +24,12 @@
   <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover" id="analytics-table">
     <colgroup>
       <col>
-      <col class="table-divider">
-      <col>
-      <col class="table-divider">
-      <col>
-      <col class="table-divider">
-      <col>
+      <% @display_periods.each do %>
+        <col class="table-divider">
+        <% unless @selected_period == :day %>
+          <col>
+        <% end %>
+      <% end %>
       <col class="table-divider">
       <col class="table-divider">
       <col class="mobile">
@@ -52,12 +52,10 @@
     </tr>
     <tr data-sort-method="thead" class="sorts">
       <th class="row-label sort-label">Facilities</th>
-      <th class="row-label sort-label">Percent</th>
-      <th class="row-label sort-label">Missed</th>
-      <th class="row-label sort-label">Percent</th>
-      <th class="row-label sort-label">Missed</th>
-      <th class="row-label sort-label" data-sort-default data-sort-method="number">Percent</th>
-      <th class="row-label sort-label">Missed</th>
+      <% @display_periods.reverse.each do |_| %>
+        <th class="row-label sort-label">Missed</th>
+        <th class="row-label sort-label" data-sort-default>Percent</th>
+      <% end %>
       <th class="row-label sort-label">
         <% case @selected_period %>
         <% when :quarter %>
@@ -88,8 +86,8 @@
         </td>
       <% end %>
 
-      <td class="type-number">346</td>
-      <td class="type-number">64,230</td>
+      <td class="type-number"><%= @calls_made.values.sum %></td>
+      <td class="type-number"><%= @all_time_registrations.values.sum %></td>
     </tr>
 
     <% @facilities.each do |facility| %>
