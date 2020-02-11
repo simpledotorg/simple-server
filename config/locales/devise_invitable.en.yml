@@ -24,8 +24,8 @@ en:
         accept_until: "This invitation will expire on %{due_date}."
         ignore: "If you do not want to accept the invitation, please ignore this email."
         click_button: "Click the button to accept your invitation."
-        link: "Dashboard link: %{url}"
-        username: "Email/username: %{email}"
+        link: "Dashboard link:"
+        username: "Email/username:"
   time:
     formats:
       devise:
