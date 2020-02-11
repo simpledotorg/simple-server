@@ -129,4 +129,4 @@ end
 #
 # create admin user
 #
-CreateAdminUser.create_owner('Admin User', 'admin@simple.org', 'password')
+CreateAdminUser.create_owner('Admin User', 'admin@simple.org', ENV['GENERATED_ADMIN_PASSWORD'])
