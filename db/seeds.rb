@@ -7,27 +7,13 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 require_relative '../lib/tasks/scripts/create_admin_user'
 require 'factory_bot_rails'
-require 'faker'
 
-NUM_OF_FACILITIES = 1000
+NUM_OF_FACILITIES = 10
 MAX_NUM_OF_USERS_PER_FACILITY = 5
-NUM_OF_USERS_PER_FACILITY_FN = -> { rand(1..MAX_NUMBER_OF_USERS_PER_FACILITY) }
+NUM_OF_USERS_PER_FACILITY_FN = -> { rand(1..MAX_NUM_OF_USERS_PER_FACILITY) }
 
 org = {
   :name => "IHCI"
-}
-
-state_to_districts = {
-  "Maharashtra" => ["Ghatkopar West", "Bhandara",
-                    "G North", "Satara", "Wardha",
-                    "Dharavi", "Ghatkopar E", "Mumbai",
-                    "Sindhudurg", "N Ward"],
-
-  "Punjab" => ["Pathankot", "Hoshiarpur", "Gurdaspur", "Mansa", "Bathinda"],
-
-  "Himachal Pradesh" => ["Kangra", "Chamba"],
-
-  "Karnataka" => ["Chikmagalur", "Raichur"]
 }
 
 facility_size_map = {
@@ -95,30 +81,34 @@ protocol_drugs_data.each { |drug_data| ProtocolDrug.find_or_create_by!(drug_data
 #
 facilities =
   (1..NUM_OF_FACILITIES).to_a.map do
-    state = state_to_districts.keys.sample
-    district = state_to_districts[state].sample
     type = facility_size_map.keys.sample
     size = facility_size_map[type]
 
-    facility_group_params = {name: district, organization: organization, protocol: protocol}
+    facility_group_params = {
+      organization: organization, protocol: protocol
+    }
+
     facility_group =
       FacilityGroup.find_by(facility_group_params) || FactoryBot.create(:facility_group, facility_group_params)
-    FactoryBot.create(:facility,
-                      facility_group_id: facility_group.id,
-                      state: state,
-                      district: district,
-                      facility_type: type,
-                      facility_size: size)
+
+    facility = FactoryBot.create(:facility,
+                                 facility_group_id: facility_group.id,
+                                 facility_type: type,
+                                 facility_size: size)
+
+    facility_group.update(name: facility.district)
+
+    facility
   end
 
 #
 # create users
 #
 facilities.each do |facility|
-  if facility.users.size < MAX_NUMBER_OF_USERS_PER_FACILITY
-    role = rand < 0.1 ? ENV['ACTIVE_GENERATED_USER_ROLE'] : ENV['INACTIVE_GENERATED_USER_ROLE']
+  if facility.users.size < MAX_NUM_OF_USERS_PER_FACILITY
+    role = rand > 0.1 ? ENV['ACTIVE_GENERATED_USER_ROLE'] : ENV['INACTIVE_GENERATED_USER_ROLE']
     FactoryBot.create_list(:user,
-                           NUMBER_OF_USERS_PER_FACILITY_FN.call,
+                           NUM_OF_USERS_PER_FACILITY_FN.call,
                            :with_phone_number_authentication,
                            registration_facility: facility,
                            organization: organization,
