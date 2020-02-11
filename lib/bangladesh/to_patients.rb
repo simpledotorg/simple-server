@@ -40,7 +40,7 @@ $registration_user = User.create_with(
   device_updated_at: DateTime.current
 ).find_or_create_by!(full_name: 'bangladesh-import-user')
 
-def nid(value)
+def national_id(value)
   # scientific notation
   if /e\+/.match?(value)
     base, exp = value.split("e+").map(&:to_i)
@@ -204,12 +204,12 @@ patient_data.each_with_index do |row, index|
   end
 
   # Patient info
-  patients[patient_key][:full_name] = value               if key == 'Name of Patient'
-  patients[patient_key][:gender] = value                  if key == 'Sex'
-  patients[patient_key][:age] = value                     if key == 'Age (years)'
-  patients[patient_key][:date_of_birth] = value           if key == 'Date of Birth'
-  patients[patient_key][:business_identifier]= nid(value) if key == 'NID'
-  patients[patient_key][:phone_number] = value            if key == 'Mobile Number (patient)'
+  patients[patient_key][:full_name] = value                       if key == 'Name of Patient'
+  patients[patient_key][:gender] = value                          if key == 'Sex'
+  patients[patient_key][:age] = value                             if key == 'Age (years)'
+  patients[patient_key][:date_of_birth] = value                   if key == 'Date of Birth'
+  patients[patient_key][:business_identifier]= national_id(value) if key == 'NID'
+  patients[patient_key][:phone_number] = value                    if key == 'Mobile Number (patient)'
 
   # Medical History
   patients[patient_key][:medical_history][:prior_heart_attack] = history(value) if key == 'Past History of Heart Attack'
