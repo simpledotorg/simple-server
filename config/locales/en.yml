@@ -39,19 +39,19 @@ en:
   name: "Name"
   phone_number: "Phone Number"
   registration_approval_email:
-    accessible_facilities: 'User will have access to data from the following facilities'
+    accessible_facilities: 'User will have access to data from'
     organization: "Organization"
     registration_facility: 'Registration Facility'
     subject: 'New Registration: User %{full_name} is requesting access to %{org_name} facilities.'
     allow_or_deny_access: "Allow or deny access"
   reset_password_approval_email:
-    accessible_facilities: 'User will have access to data from the following facilities'
+    accessible_facilities: 'User will have access to data from'
     organization: "Organization"
     registration_facility: "Registration Facility"
     subject: 'PIN Reset: User %{full_name} is requesting access.'
     allow_or_deny_access: "Allow or deny access"
   anonymized_data_download_email:
-    accessible_facilities: 'Attached documents contain anonymized data from the following facility/facilities'
+    accessible_facilities: 'Attached documents contain anonymized data from'
     organization: 'Organization'
     district_subject: 'Anonymized Data dump for District %{district_name}, requested by User %{recipient_name}'
     facility_subject: 'Anonymized Data dump for Facility %{facility_name}, requested by User %{recipient_name}'
