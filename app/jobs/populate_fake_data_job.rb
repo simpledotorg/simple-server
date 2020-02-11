@@ -86,12 +86,14 @@ class PopulateFakeDataJob
   end
 
   def retroactive_bp(patient:, time_fn:)
+    now = time_fn.call
+
     build_blood_pressure_payload(FactoryBot.build(
       :blood_pressure,
       patient: patient,
       user: user,
-      device_created_at: time_fn.call,
-      device_updated_at: time_fn.call,
+      device_created_at: now,
+      device_updated_at: now,
       facility: user.facility
     )).except(:recorded_at)
   end
