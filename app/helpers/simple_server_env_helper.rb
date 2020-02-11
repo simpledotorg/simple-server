@@ -20,6 +20,11 @@ module SimpleServerEnvHelper
 
   end
 
+  def logo_large_for_environment
+    # This is just placeholder, I don't have the simple logo PNG assets
+    image_tag 'trophy.png', width: 256, height: 256, alt: 'Simple logo'
+  end
+
   def favicon_for_environment
     env = ENV.fetch("SIMPLE_SERVER_ENV")
 
