@@ -87,8 +87,8 @@ protocol_drugs_data = [
 # create organizations, protocols and protocol_drugs
 #
 organization = Organization.find_by(org) || FactoryBot.create(:organization, org)
-protocol = Protocol.find_or_create_by(protocol_data)
-protocol_drugs_data.each { |drug_data| ProtocolDrug.find_or_create_by(drug_data.merge(protocol_id: protocol.id)) }
+protocol = Protocol.find_or_create_by!(protocol_data)
+protocol_drugs_data.each { |drug_data| ProtocolDrug.find_or_create_by!(drug_data.merge(protocol_id: protocol.id)) }
 
 #
 # create facility and facility_groups
