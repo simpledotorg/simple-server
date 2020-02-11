@@ -107,6 +107,24 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
         expect(response).to be_success
       end
     end
+
+    context 'with unauthorized facility group' do
+      let(:unauthorized_facility_group) { create(:facility_group) }
+      let(:facility) { create(:facility, valid_attributes) }
+      let(:params) do
+        {
+          id: facility.to_param,
+          facility: { facility_group_id: unauthorized_facility_group.id },
+          facility_group_id: facility_group.id
+        }
+      end
+
+      it 'does not update the facility' do
+        put :update, params: params
+        expect(flash[:alert]).to match(/not authorized/)
+        expect(facility.reload.facility_group).to eq(facility_group)
+      end
+    end
   end
 
   describe 'DELETE #destroy' do

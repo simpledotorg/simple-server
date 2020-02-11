@@ -34,7 +34,6 @@ class Admin::FacilitiesController < AdminController
   end
 
   def update
-    binding.pry
     if @facility.update(facility_params)
       redirect_to [:admin, @facility_group, @facility], notice: 'Facility was successfully updated.'
     else
