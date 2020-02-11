@@ -55,6 +55,8 @@ class PopulateFakeDataJob
   }.freeze
 
   def perform(user_id)
+    return if ENV['SIMPLE_SERVER_ENV'] == 'production'
+
     @user = User.find(user_id)
 
     TRAITS.each do |trait, args|
