@@ -11,9 +11,6 @@ class PopulateFakeDataJob
 
   attr_reader :user
 
-  HOST = URI.parse("#{ENV['SIMPLE_SERVER_HOST_PROTOCOL']}://#{ENV['SIMPLE_SERVER_HOST']}").to_s
-  DEFAULT_HEADERS = { 'Content-Type' => 'application/json', 'ACCEPT' => 'application/json' }.freeze
-
   USER_ACTIVITY_FACTOR = {
     ENV['ACTIVE_GENERATED_USER_ROLE'] => 1,
     ENV['INACTIVE_GENERATED_USER_ROLE'] => 0.3
@@ -169,8 +166,22 @@ class PopulateFakeDataJob
   end
 
   def api_post(path, data)
-    headers = DEFAULT_HEADERS.merge('X-USER-ID' => user.id, 'X-FACILITY-ID' => user.facility.id)
-    output = HTTP.auth("Bearer #{user.access_token}").headers(headers).post(URI.parse(HOST + path), json: data)
-    puts "#{path} failed with status: #{output.status}" unless output.status.ok?
+    output = HTTP
+               .auth("Bearer #{user.access_token}")
+               .headers(api_headers)
+               .post(api_url(path), json: data)
+
+    raise HTTP::Error unless output.status.ok?
+  end
+
+  def api_headers
+    { 'Content-Type' => 'application/json',
+      'ACCEPT' => 'application/json',
+      'X-USER-ID' => user.id,
+      'X-FACILITY-ID' => user.facility.id }
+  end
+
+  def api_url(path)
+    URI.parse("#{ENV['SIMPLE_SERVER_HOST_PROTOCOL']}://#{ENV['SIMPLE_SERVER_HOST']}/#{path}")
   end
 end
