@@ -34,6 +34,7 @@ class Admin::FacilitiesController < AdminController
   end
 
   def update
+    binding.pry
     if @facility.update(facility_params)
       redirect_to [:admin, @facility_group, @facility], notice: 'Facility was successfully updated.'
     else
@@ -74,9 +75,14 @@ class Admin::FacilitiesController < AdminController
     @facility_group = FacilityGroup.friendly.find(params[:facility_group_id])
   end
 
+  def authorized_facility_group
+    FacilityGroup.find_by(id: params[:facility][:facility_group_id]).tap do |group|
+      authorize([:manage, group]) if group
+    end
+  end
+
   def facility_params
     params.require(:facility).permit(
-      :facility_group_id,
       :name,
       :street_address,
       :village_or_colony,
@@ -90,7 +96,9 @@ class Admin::FacilitiesController < AdminController
       :longitude,
       :enable_diabetes_management,
       :zone
-    )
+    ).merge({
+      facility_group_id: authorized_facility_group&.id
+    }.compact)
   end
 
   def initialize_upload
