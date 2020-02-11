@@ -11,6 +11,13 @@
     color: #0075EB;
     font-size: 16px;
     letter-spacing: 0.2em;
+
+    &.support {
+      display: none;
+      &.IN {
+        display: block;
+      }
+    }
 }
 
 h6 {
@@ -93,4 +100,11 @@ caption {
 span.code {
     color: #000;
     font-weight: 500;
+}
+
+.card.support {
+  display: none;
+  &.IN {
+    display: block;
+  }
 }
