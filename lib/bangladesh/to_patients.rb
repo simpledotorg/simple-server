@@ -34,8 +34,8 @@ patient_medications = {}
 
 $registration_facility = Facility.find_by(name: 'UHC Golapganj')
 $registration_user = User.create_with(
-  sync_approval_status: "denied",
-  sync_approval_status_reason: "User is a robot",
+  sync_approval_status: 'denied',
+  sync_approval_status_reason: 'User is a robot',
   device_created_at: DateTime.current,
   device_updated_at: DateTime.current
 ).find_or_create_by!(full_name: 'bangladesh-import-user')
@@ -44,7 +44,7 @@ def national_id(value)
   # scientific notation
   if /e\+/.match?(value)
     base, exp = value.split("e+").map(&:to_i)
-    (base * exp ** 10).to_i.to_s
+    (base * exp**10).to_i.to_s
   else
     value
   end
@@ -129,7 +129,7 @@ def create_patient(params)
         patient: patient,
         facility: $registration_facility,
         encountered_on: bp[:recorded_at],
-        timezone_offset: 21600,
+        timezone_offset: 21_600,
         device_created_at: now,
         device_updated_at: now
       )
@@ -155,7 +155,7 @@ def create_patient(params)
 
     params[:prescription_drugs].each do |name, dosage|
       # Default dosage if only one
-      if !dosage && ProtocolDrug.where(name: name).count ==1
+      if !dosage && ProtocolDrug.where(name: name).count == 1
         dosage = ProtocolDrug.find_by(name: name).dosage
       end
 
@@ -204,12 +204,12 @@ patient_data.each_with_index do |row, index|
   end
 
   # Patient info
-  patients[patient_key][:full_name] = value                       if key == 'Name of Patient'
-  patients[patient_key][:gender] = value                          if key == 'Sex'
-  patients[patient_key][:age] = value                             if key == 'Age (years)'
-  patients[patient_key][:date_of_birth] = value                   if key == 'Date of Birth'
-  patients[patient_key][:business_identifier]= national_id(value) if key == 'NID'
-  patients[patient_key][:phone_number] = value                    if key == 'Mobile Number (patient)'
+  patients[patient_key][:full_name] = value                        if key == 'Name of Patient'
+  patients[patient_key][:gender] = value                           if key == 'Sex'
+  patients[patient_key][:age] = value                              if key == 'Age (years)'
+  patients[patient_key][:date_of_birth] = value                    if key == 'Date of Birth'
+  patients[patient_key][:business_identifier] = national_id(value) if key == 'NID'
+  patients[patient_key][:phone_number] = value                     if key == 'Mobile Number (patient)'
 
   # Medical History
   patients[patient_key][:medical_history][:prior_heart_attack] = history(value) if key == 'Past History of Heart Attack'
@@ -253,12 +253,12 @@ patient_data.each_with_index do |row, index|
   end
 
   # Medications
-  visit_medications["Amlodipine"] = dosage(value)          if /^Amlodipine/.match?(key)
-  visit_medications["Losartan Potassium"] = dosage(value)  if /^Losartan/.match?(key) || /^Losrtan/.match?(key)
-  visit_medications["Hydrochlorothiazide"] = dosage(value) if /^Hydrocholothiazide/.match?(key)
-  visit_medications["Atenolol"] = dosage(value)            if /^Beta Blocker/.match?(key)
-  visit_medications["Aspirin"] = dosage(value)             if /^Aspirin/.match?(key)
-  visit_medications["Rosuvastatin"] = dosage(value)        if /^Statin/.match?(key)
+  visit_medications['Amlodipine'] = dosage(value)          if /^Amlodipine/.match?(key)
+  visit_medications['Losartan Potassium'] = dosage(value)  if /^Losartan/.match?(key) || /^Losrtan/.match?(key)
+  visit_medications['Hydrochlorothiazide'] = dosage(value) if /^Hydrocholothiazide/.match?(key)
+  visit_medications['Atenolol'] = dosage(value)            if /^Beta Blocker/.match?(key)
+  visit_medications['Aspirin'] = dosage(value)             if /^Aspirin/.match?(key)
+  visit_medications['Rosuvastatin'] = dosage(value)        if /^Statin/.match?(key)
   visit_medications[value] = dosage(value)                 if /^Other/.match?(key)
   visit_medications[value] = dosage(value)                 if /^Other 2/.match?(key)
   visit_medications[value] = dosage(value)                 if /^Other 2-1/.match?(key)
