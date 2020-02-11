@@ -10,7 +10,6 @@ require "action_mailer/railtie"
 require "action_view/railtie"
 require "action_cable/engine"
 require "sprockets/railtie"
-# require "rails/test_unit/railtie"
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -33,7 +32,7 @@ module SimpleServer
 
     # Locale configuration
     config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
-    config.i18n.available_locales = %w[en mr-IN pa-Guru-IN bn-BD en_BD en_IN bn-IN hi-IN ta-IN te-IN]
+    config.i18n.available_locales = %w[en mr-IN pa-Guru-IN bn-BD en_BD en_IN en-IND bn-IN hi-IN ta-IN te-IN]
     config.i18n.fallbacks = [:en]
     config.i18n.default_locale = :en
   end
