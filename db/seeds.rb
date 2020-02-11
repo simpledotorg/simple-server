@@ -8,7 +8,7 @@
 require_relative '../lib/tasks/scripts/create_admin_user'
 require 'factory_bot_rails'
 
-NUM_OF_FACILITIES = 10
+NUM_OF_FACILITIES = 1000
 MAX_NUM_OF_USERS_PER_FACILITY = 5
 NUM_OF_USERS_PER_FACILITY_FN = -> { rand(1..MAX_NUM_OF_USERS_PER_FACILITY) }
 
