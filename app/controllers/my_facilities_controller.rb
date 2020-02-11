@@ -13,7 +13,6 @@ class MyFacilitiesController < AdminController
   around_action :set_time_zone
   before_action :authorize_my_facilities
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]
-  before_action :populate_all_periods, only: [:registrations]
   before_action :set_selected_period, only: [:registrations, :missed_visits]
 
 
@@ -81,7 +80,6 @@ class MyFacilitiesController < AdminController
 
   def missed_visits
     @facilities = filter_facilities([:manage, :facility])
-    populate_periods(%i[quarter month])
 
     missed_visits_query = MyFacilities::MissedVisitsQuery.new(facilities: @facilities,
                                                               period: @selected_period,
