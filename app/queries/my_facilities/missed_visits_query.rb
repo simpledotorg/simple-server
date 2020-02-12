@@ -19,17 +19,18 @@ class MyFacilities::MissedVisitsQuery
 
   def patients
     @patients ||=
-      LatestBloodPressuresPerPatient
-        .where(bp_facility_id: @facilities)
-        .where('patient_recorded_at < ?', Time.current.beginning_of_day - 2.months)
+      Patient
+       .joins('INNER JOIN latest_blood_pressures_per_patients ON patients.id = latest_blood_pressures_per_patients.patient_id')
+       .where(latest_blood_pressures_per_patients: { bp_facility_id: @facilities })
+       .where('recorded_at < ?', Time.current.beginning_of_day - 2.months)
   end
+
 
   def patients_by_period
     @patients_by_period ||=
       @periods.map do |year, period|
-        registered_before =
-          (@period == :quarter ? local_quarter_start(year, period) - 2.months : local_month_start(year, period) - 2.months)
-        [[year, period], patients.where('patient_recorded_at < ?', registered_before)]
+        period_start = (@period == :quarter ? local_quarter_start(year, period) : local_month_start(year, period))
+        [[year, period], patients.where('patient_recorded_at < ?', period_start - 2.months)]
       end.to_h
   end
 
@@ -43,13 +44,6 @@ class MyFacilities::MissedVisitsQuery
           [key, visits_in_month(*key, patients)]
         end
       end.to_h
-  end
-
-  def all_time_registrations
-    @all_time_registrations ||=
-      LatestBloodPressuresPerPatient
-        .where(facility: @facilities)
-        .where('patient_recorded_at < ?', Time.current.beginning_of_day - 2.months)
   end
 
   def calls_made
@@ -70,13 +64,13 @@ class MyFacilities::MissedVisitsQuery
   def visits_in_quarter(year, quarter, patients)
     LatestBloodPressuresPerPatientPerQuarter
       .where(year: year, quarter: quarter)
-      .where(patient_id: patients.pluck(:patient_id))
+      .where(patient_id: patients)
   end
 
   def visits_in_month(year, month, patients)
     LatestBloodPressuresPerPatientPerMonth
       .where(year: year, month: month)
-      .where(patient_id: patients.pluck(:patient_id))
+      .where(patient_id: patients)
   end
 
   def period_list(period, last_n)

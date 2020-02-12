@@ -53,9 +53,9 @@
     <tr data-sort-method="thead" class="sorts">
       <th class="row-label sort-label">Facilities</th>
       <% @display_periods.reverse.each do |_| %>
-        <th class="row-label sort-label">Missed</th>
         <th class="row-label sort-label" data-sort-default>Percent</th>
-      <% end %>
+        <th class="row-label sort-label">Missed</th>
+    <% end %>
       <th class="row-label sort-label">
         <% case @selected_period %>
         <% when :quarter %>

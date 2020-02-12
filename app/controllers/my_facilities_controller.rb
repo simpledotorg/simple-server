@@ -88,7 +88,7 @@ class MyFacilitiesController < AdminController
     @display_periods = missed_visits_query.periods
     @missed_visits_by_facility = missed_visits_by_facility(missed_visits_query)
     @calls_made = missed_visits_query.calls_made.count
-    @all_time_registrations = missed_visits_query.all_time_registrations.group(:bp_facility_id).count
+    @all_time_registrations = missed_visits_query.patients.group(:bp_facility_id).count
     @totals_by_period = missed_visit_totals(missed_visits_query)
   end
 
@@ -115,8 +115,8 @@ class MyFacilitiesController < AdminController
 
       responsible_patients.map do |facility_id, patient_count|
         [[facility_id, year, period],
-         { patients: patient_count,
-           missed: patient_count - visited_patients[facility_id] }]
+         { patients: patient_count.to_i,
+           missed: patient_count.to_i - visited_patients[facility_id].to_i }]
       end.to_h
     end.reduce(:merge)
   end

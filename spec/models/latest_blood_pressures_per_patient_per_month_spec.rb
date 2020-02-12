@@ -5,7 +5,7 @@ RSpec.describe LatestBloodPressuresPerPatientPerMonth, type: :model do
     it { should belong_to(:patient) }
   end
 
-  describe 'a' do
+  describe 'Materialized view query' do
     Timecop.travel('1 Oct 2019') do
       let!(:facilities) { create_list(:facility, 2) }
       let!(:months) do
