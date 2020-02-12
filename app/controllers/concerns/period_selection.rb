@@ -19,7 +19,7 @@ module PeriodSelection
         REGISTRATIONS_PERIODS.keys
       end
 
-      !valid_periods.include?(params[:period])
+      !valid_periods.include?(params[:period].to_sym)
     end
   end
 end
