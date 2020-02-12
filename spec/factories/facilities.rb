@@ -17,5 +17,6 @@ FactoryBot.define do
     facility_size { Facility.facility_sizes[:small] }
     facility_group { create(:facility_group) }
     enable_diabetes_management { true }
+    monthly_estimated_opd_load 300
   end
 end
