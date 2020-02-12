@@ -33,7 +33,6 @@ RSpec.describe Api::Current::EncountersController, type: :controller do
   end
 
   it_behaves_like 'a sync controller that authenticates user requests'
-  it_behaves_like 'a working sync controller that short circuits disabled apis'
   it_behaves_like 'a sync controller that audits the data access'
 
   describe 'POST sync: send data from device to server;' do

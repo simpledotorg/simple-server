@@ -3,7 +3,7 @@ class SmsNotificationService
 
   def initialize(recipient_number, sender_phone_number, client = Twilio::REST::Client.new)
     @sender_phone_number = sender_phone_number
-    @recipient_number = Phonelib.parse(recipient_number, ENV.fetch('DEFAULT_COUNTRY')).raw_national
+    @recipient_number = Phonelib.parse(recipient_number, Rails.application.config.country[:abbreviation]).raw_national
     @client = client
   end
 

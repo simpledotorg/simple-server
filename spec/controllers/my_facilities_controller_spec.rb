@@ -56,14 +56,11 @@ RSpec.describe MyFacilitiesController, type: :controller do
     it 'instantiates a MyFacilities::RegistrationsQuery object with the right arguments and calls the required methods' do
       params = { period: :quarter }
       query_object = MyFacilities::RegistrationsQuery.new
-      allow(MyFacilities::RegistrationsQuery).to receive(:new).with(hash_including(params))
-      allow(MyFacilities::RegistrationsQuery).to receive(:new)
-                                                     .with(hash_including(last_n: 3))
-                                                     .and_return(query_object)
-      allow(MyFacilities::RegistrationsQuery).to receive(:new)
-                                                     .with(hash_including(facilities(Facility.where(id: facility_under_supervisor))))
+      allow(MyFacilities::RegistrationsQuery).to receive(:new).with(hash_including(params.merge(last_n: 3)))
                                                      .and_return(query_object)
 
+      expect(MyFacilities::RegistrationsQuery).to receive(:new)
+                                                      .with(hash_including(facilities: facilities(Facility.where(id: facility_under_supervisor))))
       expect(query_object).to receive(:registrations).and_return(query_object.registrations)
       expect(query_object).to receive(:all_time_registrations).and_return(query_object.all_time_registrations)
 
