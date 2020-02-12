@@ -6,6 +6,8 @@ require 'pry'
 # Convert CSV to easily readable row-based format
 ############################
 from = ARGV.shift
+facility_name = ARGV.shift
+district = ARGV.shift
 
 encrypted_message = open(from).read
 key = ActiveSupport::KeyGenerator.new(ENV['BD_IMPORT_KEY']).generate_key(ENV['BD_IMPORT_SALT'], 32)
@@ -32,7 +34,7 @@ blood_pressure = {}
 visit_medications = {}
 patient_medications = {}
 
-$registration_facility = Facility.find_by(name: 'UHC Golapganj')
+$registration_facility = Facility.find_by(name: facility_name)
 $registration_user = User.create_with(
   sync_approval_status: 'denied',
   sync_approval_status_reason: 'User is a robot',
@@ -75,7 +77,7 @@ def create_patient(params)
     address = Address.create!(
       id: SecureRandom.uuid,
       **params[:address],
-      district: 'Golapganj',
+      district: district,
       state: 'Sylhet',
       country: 'Bangladesh',
       device_created_at: now,
