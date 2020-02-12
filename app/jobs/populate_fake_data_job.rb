@@ -148,7 +148,7 @@ class PopulateFakeDataJob
     request_key = args[:request_key]
     return if request_key.blank?
 
-    logger.info "[POPULATE_FAKE_DATA] Creating #{trait} for #{user.full_name} with #{data.size} #{request_key}"
+    logger.info "[POPULATE_FAKE_DATA] Creating #{trait} for #{user.full_name} with #{data.size} #{request_key} – for facility: #{user.facility.name}"
     data.each_slice(20) do |data_slice|
       api_post("/api/v3/#{request_key}/sync", request_key => data_slice) if data_slice.present?
     end
