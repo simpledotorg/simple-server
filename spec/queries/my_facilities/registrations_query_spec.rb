@@ -27,7 +27,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
       specify { expect(registrations_query.all_time_registrations.count).to eq(included_timestamps.count) }
     end
 
-    describe '#cohort_registrations' do
+    describe '#registrations' do
       context 'quarterly' do
         let!(:registrations_query) { described_class.new(period: :quarter, last_n: 3) }
 
