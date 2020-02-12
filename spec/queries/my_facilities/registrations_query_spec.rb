@@ -9,7 +9,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
       let!(:excluded_timestamps) { [1.day.ago, 1.months.ago] }
       let!(:patients) do
         (included_timestamps + excluded_timestamps).map do
-        |recorded_at| create(:patient, recorded_at: recorded_at)
+            |recorded_at| create(:patient, recorded_at: recorded_at)
         end
       end
       let!(:blood_pressures) do
@@ -18,7 +18,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
 
       before do
         ActiveRecord::Base.transaction do
-          ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{ENV['ANALYTICS_TIME_ZONE']}'")
+          ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Rails.application.config.country[:time_zone]}'")
           LatestBloodPressuresPerPatientPerMonth.refresh
           LatestBloodPressuresPerPatient.refresh
         end
@@ -35,7 +35,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
         let!(:excluded_timestamps) { [11.months.ago] }
         let!(:patients) do
           (included_timestamps + excluded_timestamps).map do
-          |recorded_at| create(:patient, recorded_at: recorded_at)
+            |recorded_at| create(:patient, recorded_at: recorded_at)
           end
         end
         let!(:blood_pressures) do
@@ -44,7 +44,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
 
         before do
           ActiveRecord::Base.transaction do
-            ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{ENV['ANALYTICS_TIME_ZONE']}'")
+            ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Rails.application.config.country[:time_zone]}'")
             PatientRegistrationsPerDayPerFacility.refresh
           end
         end
@@ -59,7 +59,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
         let!(:excluded_timestamps) { [12.months.ago] }
         let!(:patients) do
           (included_timestamps + excluded_timestamps).map do
-          |recorded_at| create(:patient, recorded_at: recorded_at)
+            |recorded_at| create(:patient, recorded_at: recorded_at)
           end
         end
         let!(:blood_pressures) do
@@ -68,7 +68,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
 
         before do
           ActiveRecord::Base.transaction do
-            ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{ENV['ANALYTICS_TIME_ZONE']}'")
+            ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Rails.application.config.country[:time_zone]}'")
             PatientRegistrationsPerDayPerFacility.refresh
           end
         end
@@ -90,7 +90,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
 
         before do
           ActiveRecord::Base.transaction do
-            ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{ENV['ANALYTICS_TIME_ZONE']}'")
+            ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Rails.application.config.country[:time_zone]}'")
             PatientRegistrationsPerDayPerFacility.refresh
           end
         end

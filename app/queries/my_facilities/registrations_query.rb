@@ -1,6 +1,6 @@
 class MyFacilities::RegistrationsQuery
   # Wrap query method calls with the appropriate timezone in which the reports will be consumed
-  # This is probably the ENV['ANALYTICS_TIME_ZONE']
+  # This is probably the Rails.application.config.country[:time_zone]
   # Example: `Time.use_zone('timezone string') { bp_control_query_object.cohort_registrations }`
 
   include QuarterHelper
@@ -20,15 +20,15 @@ class MyFacilities::RegistrationsQuery
   def registrations
     @registrations ||=
       PatientRegistrationsPerDayPerFacility
-        .where(facility: @facilities)
-        .where("(year, #{@period}) IN (#{periods_as_sql_list})")
+      .where(facility: @facilities)
+      .where("(year, #{@period}) IN (#{periods_as_sql_list})")
   end
 
   def all_time_registrations
     @all_time_registrations ||=
       LatestBloodPressuresPerPatient
-        .where(facility: @facilities)
-        .where('patient_recorded_at < ?', Time.current.beginning_of_day - 2.months)
+      .where(facility: @facilities)
+      .where('patient_recorded_at < ?', Time.current.beginning_of_day - 2.months)
   end
 
   private

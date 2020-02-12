@@ -89,8 +89,7 @@ class MyFacilities::BloodPressureControlQuery
 
     @monthly_bps ||=
       LatestBloodPressuresPerPatientPerMonth
-      .select("distinct on (patient_id)
-       bp_id, patient_id, bp_facility_id, bp_recorded_at, deleted_at, systolic, diastolic, quarter, year")
+      .select('distinct on (patient_id) *')
       .order('patient_id, bp_recorded_at DESC, bp_id')
       .where(patient: monthly_registrations)
       .where('(year = ? AND month = ?) OR (year = ? AND month = ?)',

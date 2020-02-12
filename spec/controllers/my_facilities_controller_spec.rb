@@ -61,6 +61,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
 
       expect(MyFacilities::RegistrationsQuery).to receive(:new)
                                                     .with(hash_including(facilities: facilities(Facility.where(id: facility_under_supervisor))))
+
       expect(query_object).to receive(:registrations).and_return(query_object.registrations)
       expect(query_object).to receive(:all_time_registrations).and_return(query_object.all_time_registrations)
 

@@ -15,7 +15,6 @@ class MyFacilitiesController < AdminController
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]
   before_action :set_selected_period, only: [:registrations, :missed_visits]
 
-
   def index
     @users_requesting_approval = paginate(policy_scope([:manage, :user, User])
                                             .requested_sync_approval
@@ -65,8 +64,9 @@ class MyFacilitiesController < AdminController
                                                                last_n: PERIODS_TO_DISPLAY[@selected_period])
 
     @registrations = registrations_query.registrations
-                       .group(:facility_id, :year, @selected_period)
-                       .sum(:registration_count)
+                                        .group(:facility_id, :year, @selected_period)
+                                        .sum(:registration_count)
+
 
     @all_time_registrations = registrations_query.all_time_registrations.group(:bp_facility_id).count
     @total_registrations_by_period =
