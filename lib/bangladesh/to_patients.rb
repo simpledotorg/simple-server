@@ -40,7 +40,21 @@ $registration_user = User.create_with(
   sync_approval_status_reason: 'User is a robot',
   device_created_at: DateTime.current,
   device_updated_at: DateTime.current
-).find_or_create_by!(full_name: 'bangladesh-import-user')
+).find_or_create_by!(full_name: "#{DISTRICT.downcase}-import-user")
+
+unless $registration_user.phone_number_authentications.any?
+  phone_number_authentication = PhoneNumberAuthentication.new(
+    user: $registration_user,
+    facility: $registration_facility,
+    password: rand(1000..9999).to_s,
+    phone_number: rand(1000..9999).to_s
+  )
+
+  phone_number_authentication.set_otp
+  phone_number_authentication.set_access_token
+
+  phone_number_authentication.save!
+end
 
 def national_id(value)
   # scientific notation
@@ -245,7 +259,8 @@ patient_data.each_with_index do |row, index|
       systolic: blood_pressure[:systolic],
       diastolic: blood_pressure[:diastolic],
       recorded_at: begin
-        DateTime.parse(blood_pressure[:recorded_at])
+        date = DateTime.parse(blood_pressure[:recorded_at])
+        date > DateTime.now ? DateTime.new(2019, 6, 1) : date
       rescue ArgumentError
         DateTime.new(2019, 6, 1)
       rescue TypeError
