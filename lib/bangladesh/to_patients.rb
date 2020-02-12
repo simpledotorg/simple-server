@@ -7,7 +7,7 @@ require 'pry'
 ############################
 from = ARGV.shift
 facility_name = ARGV.shift
-district = ARGV.shift
+DISTRICT = ARGV.shift
 
 encrypted_message = open(from).read
 key = ActiveSupport::KeyGenerator.new(ENV['BD_IMPORT_KEY']).generate_key(ENV['BD_IMPORT_SALT'], 32)
@@ -77,7 +77,7 @@ def create_patient(params)
     address = Address.create!(
       id: SecureRandom.uuid,
       **params[:address],
-      district: district,
+      district: DISTRICT,
       state: 'Sylhet',
       country: 'Bangladesh',
       device_created_at: now,
