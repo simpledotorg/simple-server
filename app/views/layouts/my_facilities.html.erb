@@ -64,14 +64,20 @@
                 <h4>Areas</h4>
                 <div class="checkbox-row">
                   <label for="all-zones-filter-mobile">
-                    <input type="radio" name="zone" value="" form="query-filters-mobile" id="all-zones-filter-mobile" checked>
+                    <input type="radio" name="zone" value="" form="query-filters-mobile" id="all-zones-filter-mobile"
+                       <% if @selected_zones.size == @zones.size %>
+                       checked
+                       <% end %>>
                     All blocks
                   </label>
                 </div>
                 <% @zones.each do |zone| %>
                   <div class="checkbox-row">
                     <label for="<%= zone %>-filter-mobile">
-                      <input type="radio" name="zone" value="<%= zone %>" form="query-filters-mobile" id="<%= zone %>-filter-mobile">
+                      <input type="radio" name="zone" value="<%= zone %>" form="query-filters-mobile" id="<%= zone %>-filter-mobile"
+                         <% if @selected_zones.size == 1 && @selected_zones.first == zone %>
+                         checked
+                         <% end %>>
                       <%= zone.capitalize %>
                     </label>
                   </div>
@@ -80,7 +86,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Clear all</button>
+            <a href="?" type="button" class="btn btn-secondary">Clear all</a>
             <button type="submit" form="query-filters-mobile" class="btn btn-primary">DONE</button>
           </div>
 
@@ -109,9 +115,12 @@
           <h4>Facility Filters</h4>
           <div class="dropdown show">
             <a class="btn btn-sm dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              All blocks
+              <% if @selected_zones.size == 1 %>
+                <%= @selected_zones.first&.capitalize %>
+              <% else %>
+                All blocks
+              <% end %>
             </a>
-
             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
               <button type="submit" name="zone" value="" class="dropdown-item" form="query-filters">All blocks</button>
               <div class="dropdown-divider"></div>
@@ -125,9 +134,8 @@
               <div>
                 <label for=<%= "facility-#{size}" %>>
                   <input type="checkbox" id=<%= "facility-#{size}" %> name="size[]" value=<%= size %>
-                        <% if @selected_sizes&.include?(size) %>
-                          checked
-                         <% end %>>
+                    <% if @selected_sizes&.include?(size) %>checked
+                    <% end %>>
                   <%= size.capitalize %>
                 </label>
               </div>
