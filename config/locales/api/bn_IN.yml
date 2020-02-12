@@ -1,21 +1,32 @@
 bn-IN:
   date:
-    formats:
-      default: "%d-%^b-%Y"
+    month_names: [~, 'জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর']
+    abbr_month_names: [~, 'জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর']
+  registration: 'নতুন নিবন্ধীকরণ'
+  reset_password: 'PIN রিসেট করুন'
   login:
     error_messages:
-      unknown_user: 'আমরা এই ব্যবহারকারীটিকে চিহ্নিত করতে পারছি না। অনুগ্রহ করে পরীক্ষা করুন এবং আবার চেষ্টা করুন।'
+      unknown_user: "আমরা এই ব্যবহারকারীটিকে চিহ্নিত করতে পারছি না। অনুগ্রহ করে পরীক্ষা করুন এবং আবার চেষ্টা করুন।"
       invalid_otp: 'আপনার OTP মিলছে না। আবার চেষ্টা করবেন?'
       expired_otp: 'আপনার একটি ফ্রেশ OTP লাগবে। একটি নতুনের অনুরোধ করুন।'
-      invalid_password: 'আপনার পাসওয়ার্ড মিলছে না। আবার চেষ্টা করবেন?'
-  month_names: [~, 'জানুয়ারী', 'ফেব্রুয়ারী', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'অগাস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর']
-  abbr_month_names: [~, 'জানুয়ারী', 'ফেব্রুয়ারী', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'অগাস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর']
+      invalid_password: 'আপনার পাসওয়ার্ড মিলছে না। আবার চেষ্টা করবেন?'
   sms:
     country_code: '+91'
-    request_otp: '<#> %{otp} হল আপনার সিম্পিল যাচাইকরণের কোড\n%{app_signature}'
+    request_otp: '<#> %{otp} হল আপনার সিম্পিল যাচাইকরণ কোড\n%{app_signature}'
     appointment_reminders:
-      missed_visit_sms_reminder: 'আমরা %{appointment_date} %{facility_name} তে আপনাকে আপনার নির্ধারিত বিপি পরীক্ষায় দেখতে পাইনি। অনুগ্রহ করে সকাল <9:30টা> থেকে দুপুর <2টোর> মধ্যে আসবেন।'
+      missed_visit_sms_reminder: '%{facility_name} এ আমাদের কর্মীরা আপনার এবং আপনার হার্টের স্বাস্থ্য নিয়ে চিন্তাভাবনা করছেন। আপনার কোনও ফলো-আপ প্রশ্ন বা উদ্বেগ থাকলে তার উত্তর দেওয়ার জন্য আমাদের স্বাস্থ্য দল সবসময় এখানে আছে।'
   analytics:
-    followup_patients: "কতজনরোগী %{facility_name}-এবিপিরেকর্ডকরেছে?"
-    patients_enrolled: "কতজনরোগী %{facility_name}-নথিভুক্তকরেছে?"
-    all_time_patients: "সবসময়: %{count} জনরোগী"
+    followup_patients: "কতজন ফলো-আপ রোগী %{facility_name} ভিজিট করেছেন?"
+    patients_enrolled: "কতজন নতুন রোগী %{facility_name} এ নথিভুক্ত রয়েছেন?"
+    all_time_patients: "সব সময়: %{count} জন রোগী"
+    updated_at: "%{time} এ আপডেট করা হয়েছে"
+  dashboard:
+    graphics:
+      graphics_title_html: "<b>%{previous_quarter_string}</b> এর সময় নিবন্ধন করা %{patients_in_previous_quarter} জন রোগীর <b>%{current_quarter_string}</b> এ কী হয়েছিল?"
+      report_name: "হাইপারটেনশনের প্রতিবেদন"
+      patients_controlled_in_quarter_html: "ভিজিট করা বিপি থাকা রোগী &lt;"
+      patients_uncontrolled_in_quarter_html: "ভিজিট করা বিপি থাকা রোগী &ge;"
+      patients_defaulted_in_quarter_html: "রোগীরা একটি প্রত্যাশিত ফলো-আপ ভিজিটে উপস্থিত হননি"
+      new_patients_registered: "নতুন নিবন্ধীকরণসমূহ"
+      patients_called_for_followup: "ফলো-আপ করা রোগীগণ"
+      patients_called_for_missed_followup: "যে রোগীদের ফোন করা হয়েছে"

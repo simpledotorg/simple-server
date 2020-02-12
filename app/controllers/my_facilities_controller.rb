@@ -45,8 +45,8 @@ class MyFacilitiesController < AdminController
     @totals[:missed] = missed_visits(@totals[:registered], @totals[:controlled], @totals[:uncontrolled])
 
     @registered_patients_per_facility = bp_query.cohort_registrations.group(:registration_facility_id).count
-    @controlled_bps_per_facility = bp_query.cohort_controlled_bps.group(:bp_facility_id).count
-    @uncontrolled_bps_per_facility = bp_query.cohort_uncontrolled_bps.group(:bp_facility_id).count
+    @controlled_bps_per_facility = bp_query.cohort_controlled_bps.group(:registration_facility_id).count
+    @uncontrolled_bps_per_facility = bp_query.cohort_uncontrolled_bps.group(:registration_facility_id).count
     @missed_visits_by_facility = @facilities.map do |f|
       [f.id, missed_visits(@registered_patients_per_facility[f.id].to_i,
                            @controlled_bps_per_facility[f.id].to_i,
@@ -80,7 +80,7 @@ class MyFacilitiesController < AdminController
   private
 
   def set_time_zone
-    time_zone = ENV['ANALYTICS_TIME_ZONE'] || DEFAULT_ANALYTICS_TIME_ZONE
+    time_zone = Rails.application.config.country[:time_zone] || DEFAULT_ANALYTICS_TIME_ZONE
 
     Time.use_zone(time_zone) { yield }
   end

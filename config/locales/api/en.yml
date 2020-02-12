@@ -1,4 +1,7 @@
 en:
+  date:
+    month_names: [~, 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    abbr_month_names: [~, 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
   registration: 'New registration'
   reset_password: 'Reset PIN'
   login:
@@ -12,19 +15,6 @@ en:
     request_otp: '<#> %{otp} is your Simple verification code\n%{app_signature}'
     appointment_reminders:
       missed_visit_sms_reminder: 'Our staff at %{facility_name} are thinking of you and your heart health. Our health team is always here if you have any follow-up questions or concerns.'
-  months:
-    1: 'January'
-    2: 'February'
-    3: 'March'
-    4: 'April'
-    5: 'May'
-    6: 'June'
-    7: 'July'
-    8: 'August'
-    9: 'September'
-    10: 'October'
-    11: 'November'
-    12: 'December'
   analytics:
     followup_patients: "How many follow-up patients visited %{facility_name}?"
     patients_enrolled: "How many new patients are enrolled at %{facility_name}?"

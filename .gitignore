@@ -20,5 +20,6 @@
 
 .byebug_history
 coverage
-.env
+.env.development.local
 .env.production
+.env
