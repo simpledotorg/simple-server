@@ -18,7 +18,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
 
       before do
         ActiveRecord::Base.transaction do
-          ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{ENV['ANALYTICS_TIME_ZONE']}'")
+          ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Rails.application.config.country[:time_zone]}'")
           LatestBloodPressuresPerPatientPerMonth.refresh
           LatestBloodPressuresPerPatient.refresh
         end
@@ -44,7 +44,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
 
         before do
           ActiveRecord::Base.transaction do
-            ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{ENV['ANALYTICS_TIME_ZONE']}'")
+            ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Rails.application.config.country[:time_zone]}'")
             PatientRegistrationsPerDayPerFacility.refresh
           end
         end
@@ -68,7 +68,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
 
         before do
           ActiveRecord::Base.transaction do
-            ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{ENV['ANALYTICS_TIME_ZONE']}'")
+            ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Rails.application.config.country[:time_zone]}'")
             PatientRegistrationsPerDayPerFacility.refresh
           end
         end
@@ -90,7 +90,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
 
         before do
           ActiveRecord::Base.transaction do
-            ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{ENV['ANALYTICS_TIME_ZONE']}'")
+            ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Rails.application.config.country[:time_zone]}'")
             PatientRegistrationsPerDayPerFacility.refresh
           end
         end
