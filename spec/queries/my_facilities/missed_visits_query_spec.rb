@@ -48,7 +48,6 @@ RSpec.describe MyFacilities::MissedVisitsQuery do
 
     context '#visits_by_period' do
       it "should bucket visits by the period they were recorded in" do
-        pp query.visits_by_period
         expect(query.visits_by_period[query.periods.first].map(&:bp_id)).to eq([bp_7.id, bp_8.id].sort)
         expect(query.visits_by_period[query.periods.second].map(&:bp_id).sort).to eq([bp_3.id].sort)
         expect(query.visits_by_period[query.periods.third].map(&:bp_id)).to eq([])
