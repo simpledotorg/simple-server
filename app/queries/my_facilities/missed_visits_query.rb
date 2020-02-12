@@ -20,11 +20,11 @@ class MyFacilities::MissedVisitsQuery
   def patients
     @patients ||=
       Patient
-       .joins('INNER JOIN latest_blood_pressures_per_patients ON patients.id = latest_blood_pressures_per_patients.patient_id')
-       .where(latest_blood_pressures_per_patients: { bp_facility_id: @facilities })
-       .where('recorded_at < ?', Time.current.beginning_of_day - 2.months)
+      .joins('INNER JOIN latest_blood_pressures_per_patients
+              ON patients.id = latest_blood_pressures_per_patients.patient_id')
+      .where(latest_blood_pressures_per_patients: { bp_facility_id: @facilities })
+      .where('recorded_at < ?', Time.current.beginning_of_day - 2.months)
   end
-
 
   def patients_by_period
     @patients_by_period ||=
@@ -52,7 +52,8 @@ class MyFacilities::MissedVisitsQuery
 
     CallLog
       .result_completed
-      .joins('INNER JOIN phone_number_authentications ON phone_number_authentications.phone_number = call_logs.caller_phone_number')
+      .joins('INNER JOIN phone_number_authentications
+              ON phone_number_authentications.phone_number = call_logs.caller_phone_number')
       .joins('INNER JOIN facilities ON facilities.id = phone_number_authentications.registration_facility_id')
       .where(phone_number_authentications: { registration_facility_id: @facilities })
       .where('call_logs.created_at >= ? AND call_logs.created_at <= ?', period_start, period_end)

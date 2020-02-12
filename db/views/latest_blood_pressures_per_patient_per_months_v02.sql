@@ -20,4 +20,3 @@ SELECT latest_bp_per_patient_per_month.*,
        LAG(bp_facility_id, 1) OVER (PARTITION BY patient_id ORDER BY bp_recorded_at ASC, bp_id) AS responsible_facility_id,
        LAG(bp_id, 1) OVER (PARTITION BY patient_id ORDER BY bp_recorded_at ASC, bp_id) AS previous_bp_id
 FROM latest_bp_per_patient_per_month;
-

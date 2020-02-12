@@ -67,6 +67,22 @@ RSpec.describe MyFacilitiesController, type: :controller do
 
       get :registrations, params: params
     end
+  end
+
+  describe 'GET #missed_visits' do
+    let!(:facility_under_supervisor) { create(:facility, facility_group: facility_group) }
+    let!(:facility_not_under_supervisor) { create(:facility) }
+    let!(:patients) do
+      [facility_under_supervisor, facility_not_under_supervisor].map do |facility|
+        create(:patient, registration_facility: facility, recorded_at: 3.months.ago)
+      end
+    end
+
+    it 'returns a success response' do
+      get :missed_visits, params: {}
+
+      expect(response).to be_success
+    end
 
     it 'instantiates a MyFacilities::MissedVisitsQuery object with the right arguments and calls the required methods' do
       params = { period: :quarter }

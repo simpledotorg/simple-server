@@ -12,12 +12,13 @@ module PeriodSelection
     end
 
     def invalid_period?
-      valid_periods = case action_name.to_sym
-      when :missed_visits
-        MISSED_VISITS_PERIODS.keys
-      when :registrations
-        REGISTRATIONS_PERIODS.keys
-      end
+      valid_periods =
+        case action_name.to_sym
+        when :missed_visits
+          MISSED_VISITS_PERIODS.keys
+        when :registrations
+          REGISTRATIONS_PERIODS.keys
+        end
 
       !valid_periods.include?(params[:period].to_sym)
     end
