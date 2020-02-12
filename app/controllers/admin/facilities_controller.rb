@@ -88,6 +88,7 @@ class Admin::FacilitiesController < AdminController
       :latitude,
       :longitude,
       :enable_diabetes_management,
+      :monthly_estimated_opd_load,
       :zone
     )
   end
