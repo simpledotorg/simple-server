@@ -649,7 +649,7 @@ th sup {
             vertical-align: middle;
             text-align: left;
             margin: 0;
-            white-space: nowrap;
+            word-break: break-word;
             text-transform: none;
             letter-spacing: 0;
             font-size: 14px;
@@ -745,13 +745,40 @@ th sup {
         border-left: 1px solid $grey-mid;
     }
 
-    td.type-rank { text-align: right; }
-    td.type-number { text-align: right; padding-right: 16px; }
-    td.type-percent { text-align: center; }
-    td.type-percent em { font-style: normal; background: #F1DBFF; color: #BE72E3; border-radius: 100px; padding: 2px 10px; }
+    td.type-rank {
+      text-align: right;
+    }
 
-    td.type-rank i { margin-left: 0.5em; color: $green; }
-    td.type-rank i.fa-long-arrow-alt-down { color: $red; }
+    td.type-number {
+      text-align: right;
+      padding-right: 16px;
+    }
+
+    td.type-percent {
+      text-align: center;
+    }
+
+    td.type-percent em {
+      font-style: normal;
+      background: #F1DBFF;
+      color: #BE72E3;
+      border-radius: 100px;
+      padding: 2px 10px;
+    }
+
+    .row-total td.type-percent em {
+      background: rgba(0,0,0,0.1);
+      color: rgba(0,0,0,0.6);
+    }
+
+    td.type-rank i {
+      margin-left: 0.5em;
+      color: $green;
+    }
+
+    td.type-rank i.fa-long-arrow-alt-down {
+      color: $red;
+    }
 }
 
 @include media-breakpoint-down(md) {

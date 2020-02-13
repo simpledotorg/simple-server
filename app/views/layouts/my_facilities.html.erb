@@ -5,21 +5,15 @@
   <div class="mobile">
     <div class="dropdown">
       <% my_facilities_page_titles = { my_facilities_overview_path => 'Overview',
-                                       my_facilities_ranked_facilities_path => 'Ranked facilities',
-                                       my_facilities_blood_pressure_control_path => 'BP control' } %>
+                                       my_facilities_blood_pressure_control_path => 'BP control',
+                                       my_facilities_registrations_path => 'Registrations' } %>
       <h1 class="btn btn-sm dropdown-toggle pl-0" role="button" id="dropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <%= my_facilities_page_titles[request.path] %>
       </h1>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink2">
         <%= link_to "Overview", my_facilities_overview_path(request.query_parameters), class: "dropdown-item" %>
-        <%= link_to "Ranked facilities", my_facilities_ranked_facilities_path(request.query_parameters), class: "dropdown-item" %>
         <%= link_to "BP control", my_facilities_blood_pressure_control_path(request.query_parameters), class: "dropdown-item" %>
-        <%= link_to "Missed visit", "#", class: 'dropdown-item' %>
-        <%= link_to "Registrations", "#", class: 'dropdown-item' %>
-        <%= link_to "Medication supply", "#", class: 'dropdown-item' %>
-        <%= link_to "Terminal digit pref.", "#", class: 'dropdown-item' %>
-        <%= link_to "Treatment inertia", "#", class: 'dropdown-item' %>
-        <%= link_to "Downloads", "#", class: 'dropdown-item' %>
+        <%= link_to "Registrations", my_facilities_registrations_path(request.query_parameters), class: "dropdown-item" %>
       </div>
     </div>
     <% unless request.path == my_facilities_overview_path %>
@@ -102,16 +96,10 @@
       <nav class="secondary-nav">
         <%= link_to 'Overview', my_facilities_overview_path,
                     class: request.path == my_facilities_overview_path ? "nav-link active" : "nav-link" %>
-        <%= link_to 'Ranked facilities', my_facilities_ranked_facilities_path(request.query_parameters),
-                    class: request.path == my_facilities_ranked_facilities_path ? "nav-link active" : "nav-link" %>
         <%= link_to 'BP control', my_facilities_blood_pressure_control_path(preserve_query_params(request.query_parameters, ["size"])),
                     class: request.path == my_facilities_blood_pressure_control_path ? "nav-link active" : "nav-link" %>
-        <a class="nav-link" href="#">Missed visit</a>
-        <a class="nav-link" href="#">Registrations</a>
-        <a class="nav-link" href="#">Medication supply</a>
-        <a class="nav-link" href="#">Terminal digit pref.</a>
-        <a class="nav-link" href="#">Treatment inertia</a>
-        <a class="nav-link" href="#">Downloads</a>
+        <%= link_to 'Registrations', my_facilities_registrations_path(preserve_query_params(request.query_parameters, ["size", "period"])),
+                    class: request.path == my_facilities_registrations_path ? "nav-link active" : "nav-link" %>
       </nav>
       <% unless request.path == my_facilities_overview_path %>
         <section id="facility-filters" class="secondary-nav-filters">
