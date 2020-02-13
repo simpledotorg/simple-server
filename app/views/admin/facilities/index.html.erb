@@ -6,7 +6,10 @@
       <%= link_to '+ Upload facilities CSV', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
     <% end %>
     <% if policy([:manage, FacilityGroup]).new? %>
-      <%= link_to '<i class="fas fa-plus mr-1"></i> New facility group' .html_safe, new_admin_facility_group_path, class: "btn btn-sm btn-primary" %>
+      <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-primary" do %>
+        <i class="fas fa-plus mr-1"></i>
+        New facility group
+      <% end %>
     <% end %>
   </div>
 </nav>
@@ -33,7 +36,10 @@
             <%= link_to 'Edit group', edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %>
           <% end %>
           <% if policy([:manage, :facility, facility_group.facilities.new]).new? %>
-            <%= link_to '<i class="fas fa-plus mr-1"></i> Add a facility' .html_safe, new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-primary" %>
+            <%= link_to new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-primary" do %>
+              <i class="fas fa-plus mr-1"></i>
+              Add a facility
+            <% end %>
           <% end %>
         </div>
       </div>
