@@ -15,6 +15,8 @@ crypt = ActiveSupport::MessageEncryptor.new(key)
 message = crypt.decrypt_and_verify(encrypted_message)
 data = CSV.parse(message, headers: true)
 
+BUSINESS_IDENTIFIER_METADATA_VERSION = "org.simple.bangladesh_national_id.meta.v1"
+
 patient_data = []
 
 (0...data.length).each do |row|
@@ -56,6 +58,26 @@ unless $registration_user.phone_number_authentications.any?
   phone_number_authentication.save!
 end
 
+def patient_age(age, date_of_birth)
+  if age.present?
+    { age: age, age_updated_at: Time.now }
+  elsif date_of_birth.present?
+    { date_of_birth: date_of_birth }
+  else
+    { age: 0, age_updated_at: Time.now }
+  end
+end
+
+def patient_gender(gender)
+  if ['m', 'M', 'male', 'Male', 'MALE'].includes?(gender)
+    'male'
+  elsif ['f', 'F', 'female', 'Female', 'FEMALE'].includes?(gender)
+    'female'
+  else
+    'transgender'
+  end
+end
+
 def national_id(value)
   # scientific notation
   if /e\+/.match?(value)
@@ -69,7 +91,7 @@ end
 def history(value)
   return 'yes' if value.to_i == 1
 
-  'unknow'
+  'unknown'
 end
 
 def dosage(value)
@@ -98,12 +120,12 @@ def create_patient(params)
     patient = Patient.create!(
       id: SecureRandom.uuid,
       full_name: params[:full_name],
-      gender: params[:gender],
-      age: params[:age],
-      date_of_birth: params[:date_of_birth],
+      gender: patient_gender(params[:gender]),
+      **patient_age(params[:age], params[:date_of_birth]),
       registration_facility: $registration_facility,
       registration_user: $registration_user,
       address: address,
+      status: 'active',
       recorded_at: params[:blood_pressures].map { |bp| bp[:recorded_at] }.min,
       device_created_at: now,
       device_updated_at: now
@@ -114,7 +136,9 @@ def create_patient(params)
       identifier: params[:business_identifier],
       patient: patient,
       device_created_at: now,
-      device_updated_at: now
+      device_updated_at: now,
+      "metadata_version": "org.simple.bangladesh_national_id.meta.v1",
+      "metadata": { assigningFacilityUuid: $registration_facility.id, assigningUserUuid: $registration_user.id }.to_json
     ) unless params[:business_identifier].blank?
 
     PatientPhoneNumber.create!(
@@ -122,6 +146,7 @@ def create_patient(params)
       patient: patient,
       number: params[:phone_number],
       phone_type: 'mobile',
+      active: true,
       device_created_at: now,
       device_updated_at: now
     )
@@ -178,6 +203,7 @@ def create_patient(params)
         id: SecureRandom.uuid,
         name: name,
         dosage: dosage,
+        rxnorm_code: '',
         is_protocol_drug: is_protocol_drug,
         is_deleted: false,
         patient: patient,
