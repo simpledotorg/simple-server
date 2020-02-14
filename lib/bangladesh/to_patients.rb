@@ -163,8 +163,6 @@ def create_patient(params)
     ) unless params[:business_identifier].blank?
 
     if params[:phone_number].present?
-      puts "#{ERR_LOG_TAG} #{params[:external_id]} skipping because no patient phone number was found..."
-
       PatientPhoneNumber.create!(
         id: SecureRandom.uuid,
         patient: patient,
