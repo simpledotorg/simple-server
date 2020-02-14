@@ -257,16 +257,6 @@ def create_patient(params)
       )
     end
 
-    if Appointment.group(:creation_facility_id).count.keys.any? { |k, _| k.nil? } ||
-      Patient.group(:recorded_at).count.keys.any? { |k, _| k.nil? }
-
-      puts  $registration_facility.name
-      puts "#{Appointment.group(:creation_facility_id).count}"
-      puts "#{Patient.group(:recorded_at).count}"
-      raise "HOLA"
-
-    end
-
     report_success(params)
   end
 end
