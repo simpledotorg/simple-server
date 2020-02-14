@@ -67,12 +67,9 @@ def national_id(value)
 end
 
 def history(value)
-  case value.to_i
-  when 0
-    'unknown'
-  when 1
-    'yes'
-  end
+  return 'yes' if value.to_i == 1
+
+  'unknow'
 end
 
 def dosage(value)
