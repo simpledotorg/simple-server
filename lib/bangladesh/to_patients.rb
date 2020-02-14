@@ -139,7 +139,7 @@ def create_patient(params)
     patient = Patient.create!(
       id: SecureRandom.uuid,
       full_name: params[:full_name],
-      gender: patient_gender(params[:gender]),
+      gender: params[:gender],
       age: params[:age],
       date_of_birth: params[:date_of_birth],
       age_updated_at: (now if params[:age].present?),
@@ -298,7 +298,7 @@ patient_data.each_with_index do |row, index|
   # Patient info
   patients[patient_key][:external_id] = value if key == 'Pt Unique ID'
   patients[patient_key][:full_name] = value if key == 'Name of Patient'
-  patients[patient_key][:gender] = value if key == 'Sex'
+  patients[patient_key][:gender] = patient_gender(value) if key == 'Sex'
   patients[patient_key][:age] = value if key == 'Age (years)'
   patients[patient_key][:date_of_birth] = value if key == 'Date of Birth'
   patients[patient_key][:business_identifier] = national_id(value) if key == 'NID'
