@@ -17,6 +17,8 @@ data = CSV.parse(message, headers: true)
 
 BUSINESS_IDENTIFIER_METADATA_VERSION = "org.simple.bangladesh_national_id.meta.v1"
 
+ERR_LOG_TAG = '[RECORD_IMPORT_ERR]'
+
 patient_data = []
 
 (0...data.length).each do |row|
@@ -58,23 +60,19 @@ unless $registration_user.phone_number_authentications.any?
   phone_number_authentication.save!
 end
 
-def patient_age(age, date_of_birth)
-  if age.present?
-    { age: age, age_updated_at: Time.now }
-  elsif date_of_birth.present?
-    { date_of_birth: date_of_birth }
-  else
-    { age: 0, age_updated_at: Time.now }
-  end
+def report_failure(reason, params)
+  puts "#{ERR_LOG_TAG} ex_id: #{params[:external_id]} - Patient failed: #{reason}"
+end
+
+def report_success(params)
+  puts "ex_id: #{params[:external_id]} - Patient created"
 end
 
 def patient_gender(gender)
-  if ['m', 'M', 'male', 'Male', 'MALE'].includes?(gender)
+  if ['m', 'M', 'male', 'Male', 'MALE'].include?(gender)
     'male'
-  elsif ['f', 'F', 'female', 'Female', 'FEMALE'].includes?(gender)
+  elsif ['f', 'F', 'female', 'Female', 'FEMALE'].include?(gender)
     'female'
-  else
-    'transgender'
   end
 end
 
@@ -82,7 +80,7 @@ def national_id(value)
   # scientific notation
   if /e\+/.match?(value)
     base, exp = value.split("e+").map(&:to_i)
-    (base * exp**10).to_i.to_s
+    (base * exp ** 10).to_i.to_s
   else
     value
   end
@@ -97,13 +95,34 @@ end
 def dosage(value)
   dosage_value = value.scan(/(\d|\.)/).join.to_f
   if dosage_value.to_i == dosage_value
-    "#{dosage_value.to_i} mg"     # 50.0 -> "50 mg"
+    "#{dosage_value.to_i} mg" # 50.0 -> "50 mg"
   else
-    "#{dosage_value} mg"          # 12.5 -> "12.5 mg"
+    "#{dosage_value} mg" # 12.5 -> "12.5 mg"
   end
 end
 
+def patient_recorded_at(blood_pressures)
+  date = blood_pressures.map { |bp| bp[:recorded_at] }.min
+  return DateTime.new(2019, 6, 1) if date.nil?
+  date
+end
+
 def create_patient(params)
+  if params[:gender].blank?
+    report_failure("unknown gender", params)
+    return
+  end
+
+  if params[:full_name].blank?
+    report_failure("missing name", params)
+    return
+  end
+
+  if params[:age].blank? && params[:date_of_birth].blank?
+    report_failure("missing age", params)
+    return
+  end
+
   Patient.transaction do
     now = DateTime.current
 
@@ -121,12 +140,14 @@ def create_patient(params)
       id: SecureRandom.uuid,
       full_name: params[:full_name],
       gender: patient_gender(params[:gender]),
-      **patient_age(params[:age], params[:date_of_birth]),
+      age: params[:age],
+      date_of_birth: params[:date_of_birth],
+      age_updated_at: (now if params[:age].present?),
       registration_facility: $registration_facility,
       registration_user: $registration_user,
       address: address,
       status: 'active',
-      recorded_at: params[:blood_pressures].map { |bp| bp[:recorded_at] }.min,
+      recorded_at: patient_recorded_at(params[:blood_pressures]),
       device_created_at: now,
       device_updated_at: now
     )
@@ -141,21 +162,26 @@ def create_patient(params)
       "metadata": { assigningFacilityUuid: $registration_facility.id, assigningUserUuid: $registration_user.id }.to_json
     ) unless params[:business_identifier].blank?
 
-    PatientPhoneNumber.create!(
-      id: SecureRandom.uuid,
-      patient: patient,
-      number: params[:phone_number],
-      phone_type: 'mobile',
-      active: true,
-      device_created_at: now,
-      device_updated_at: now
-    )
+    if params[:phone_number].present?
+      puts "#{ERR_LOG_TAG} #{params[:external_id]} skipping because no patient phone number was found..."
+
+      PatientPhoneNumber.create!(
+        id: SecureRandom.uuid,
+        patient: patient,
+        number: params[:phone_number],
+        phone_type: 'mobile',
+        active: true,
+        device_created_at: now,
+        device_updated_at: now
+      )
+    end
 
     MedicalHistory.create!(
       id: SecureRandom.uuid,
       patient: patient,
       user: $registration_user,
       diagnosed_with_hypertension: 'yes',
+      receiving_treatment_for_hypertension: 'yes',
       hypertension: 'yes',
       **params[:medical_history],
       device_created_at: now,
@@ -163,13 +189,16 @@ def create_patient(params)
     )
 
     params[:blood_pressures].each do |bp|
-      encounter = Encounter.create!(
+      encountered_on = Encounter.generate_encountered_on(bp[:recorded_at], 21_600)
+      encounter = Encounter.create_with(
         patient: patient,
         facility: $registration_facility,
-        encountered_on: bp[:recorded_at],
+        encountered_on: encountered_on,
         timezone_offset: 21_600,
         device_created_at: now,
         device_updated_at: now
+      ).find_or_create_by!(
+        id: Encounter.generate_id($registration_facility.id, patient.id, encountered_on)
       )
 
       blood_pressure = BloodPressure.create!(
@@ -215,6 +244,32 @@ def create_patient(params)
     end
 
     puts "Creating patient: #{params[:business_identifier]}"
+
+    if latest_blood_pressure = patient.reload.latest_blood_pressure
+      Appointment.create!(
+        status: 'scheduled',
+        appointment_type: 'automatic',
+        scheduled_date: latest_blood_pressure.recorded_at + 1.month,
+        patient: patient,
+        facility: $registration_facility,
+        creation_facility_id: $registration_facility.id,
+        user: $registration_user,
+        device_created_at: now,
+        device_updated_at: now
+      )
+    end
+
+    if Appointment.group(:creation_facility_id).count.keys.any? { |k, _| k.nil? } ||
+      Patient.group(:recorded_at).count.keys.any? { |k, _| k.nil? }
+
+      puts  $registration_facility.name
+      puts "#{Appointment.group(:creation_facility_id).count}"
+      puts "#{Patient.group(:recorded_at).count}"
+      raise "HOLA"
+
+    end
+
+    report_success(params)
   end
 end
 
@@ -243,26 +298,33 @@ patient_data.each_with_index do |row, index|
   end
 
   # Patient info
-  patients[patient_key][:full_name] = value                        if key == 'Name of Patient'
-  patients[patient_key][:gender] = value                           if key == 'Sex'
-  patients[patient_key][:age] = value                              if key == 'Age (years)'
-  patients[patient_key][:date_of_birth] = value                    if key == 'Date of Birth'
+  patients[patient_key][:external_id] = value if key == 'Pt Unique ID'
+  patients[patient_key][:full_name] = value if key == 'Name of Patient'
+  patients[patient_key][:gender] = value if key == 'Sex'
+  patients[patient_key][:age] = value if key == 'Age (years)'
+  patients[patient_key][:date_of_birth] = value if key == 'Date of Birth'
   patients[patient_key][:business_identifier] = national_id(value) if key == 'NID'
-  patients[patient_key][:phone_number] = value                     if key == 'Mobile Number (patient)'
+  patients[patient_key][:phone_number] = value if key == 'Mobile Number (patient)'
 
   # Medical History
   patients[patient_key][:medical_history][:prior_heart_attack] = history(value) if key == 'Past History of Heart Attack'
-  patients[patient_key][:medical_history][:prior_stroke] = history(value)       if key == 'Past History of Brain Stroke'
-  patients[patient_key][:medical_history][:diabetes] = history(value)           if key == 'Past History Of Diabaties'
+  patients[patient_key][:medical_history][:prior_stroke] = history(value) if key == 'Past History of Brain Stroke'
+  patients[patient_key][:medical_history][:diabetes] = history(value) if key == 'Past History Of Diabaties'
+
+  if patients[patient_key][:medical_history][:diabetes].nil?
+    patients[patient_key][:medical_history][:diabetes] = 'unknown'
+    report_failure("diabetes could not be set", patients[patient_key])
+  end
+
   if key == 'Past History of Chronic Kidney Disease'
     patients[patient_key][:medical_history][:chronic_kidney_disease] = history(value)
   end
 
   # Address
-  patients[patient_key][:address][:street_address]    = value  if key == 'Address'
-  patients[patient_key][:address][:village_or_colony] = value  if key == 'Village'
-  patients[patient_key][:address][:pin] = value                if key == 'Post Code'
-  patients[patient_key][:address][:zone] = value               if key == 'Union/Pouroshava'
+  patients[patient_key][:address][:street_address] = value if key == 'Address'
+  patients[patient_key][:address][:village_or_colony] = value if key == 'Village'
+  patients[patient_key][:address][:pin] = value if key == 'Post Code'
+  patients[patient_key][:address][:zone] = value if key == 'Union/Pouroshava'
 
   # BP Reading
   if /SBP/.match?(key)
@@ -282,27 +344,27 @@ patient_data.each_with_index do |row, index|
       systolic: blood_pressure[:systolic],
       diastolic: blood_pressure[:diastolic],
       recorded_at: begin
-        date = DateTime.parse(blood_pressure[:recorded_at])
-        date > DateTime.now ? DateTime.new(2019, 6, 1) : date
-      rescue ArgumentError
-        DateTime.new(2019, 6, 1)
-      rescue TypeError
-        DateTime.new(2019, 6, 1)
-      end
+                     date = DateTime.parse(blood_pressure[:recorded_at])
+                     date > DateTime.now ? DateTime.new(2019, 6, 1) : date
+                   rescue ArgumentError
+                     DateTime.new(2019, 6, 1)
+                   rescue TypeError
+                     DateTime.new(2019, 6, 1)
+                   end
     )
   end
 
   # Medications
-  visit_medications['Amlodipine'] = dosage(value)          if /^Amlodipine/.match?(key)
-  visit_medications['Losartan Potassium'] = dosage(value)  if /^Losartan/.match?(key) || /^Losrtan/.match?(key)
+  visit_medications['Amlodipine'] = dosage(value) if /^Amlodipine/.match?(key)
+  visit_medications['Losartan Potassium'] = dosage(value) if /^Losartan/.match?(key) || /^Losrtan/.match?(key)
   visit_medications['Hydrochlorothiazide'] = dosage(value) if /^Hydrocholothiazide/.match?(key)
-  visit_medications['Atenolol'] = dosage(value)            if /^Beta Blocker/.match?(key)
-  visit_medications['Aspirin'] = dosage(value)             if /^Aspirin/.match?(key)
-  visit_medications['Rosuvastatin'] = dosage(value)        if /^Statin/.match?(key)
-  visit_medications[value] = dosage(value)                 if /^Other/.match?(key)
-  visit_medications[value] = dosage(value)                 if /^Other 2/.match?(key)
-  visit_medications[value] = dosage(value)                 if /^Other 2-1/.match?(key)
-  visit_medications[value] = dosage(value)                 if /^Other 2-2/.match?(key)
-  visit_medications[value] = dosage(value)                 if /^Other 2-3/.match?(key)
-  visit_medications[value] = dosage(value)                 if /^Other 2-4/.match?(key)
+  visit_medications['Atenolol'] = dosage(value) if /^Beta Blocker/.match?(key)
+  visit_medications['Aspirin'] = dosage(value) if /^Aspirin/.match?(key)
+  visit_medications['Rosuvastatin'] = dosage(value) if /^Statin/.match?(key)
+  visit_medications[value] = dosage(value) if /^Other/.match?(key)
+  visit_medications[value] = dosage(value) if /^Other 2/.match?(key)
+  visit_medications[value] = dosage(value) if /^Other 2-1/.match?(key)
+  visit_medications[value] = dosage(value) if /^Other 2-2/.match?(key)
+  visit_medications[value] = dosage(value) if /^Other 2-3/.match?(key)
+  visit_medications[value] = dosage(value) if /^Other 2-4/.match?(key)
 end
