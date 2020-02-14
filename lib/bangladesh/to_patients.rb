@@ -280,7 +280,15 @@ patient_data.each_with_index do |row, index|
     patients[patient_key] ||= {
       blood_pressures: [],
       address: {},
-      medical_history: {},
+      medical_history: {
+        chronic_kidney_disease: "unknown",
+        diabetes: "unknown",
+        diagnosed_with_hypertension: "unknown",
+        hypertension: "unknown",
+        prior_heart_attack: "unknown",
+        prior_stroke: "unknown",
+        receiving_treatment_for_hypertension: "unknown"
+      },
       prescription_drugs: {}
     }
   end
@@ -298,11 +306,6 @@ patient_data.each_with_index do |row, index|
   patients[patient_key][:medical_history][:prior_heart_attack] = history(value) if key == 'Past History of Heart Attack'
   patients[patient_key][:medical_history][:prior_stroke] = history(value) if key == 'Past History of Brain Stroke'
   patients[patient_key][:medical_history][:diabetes] = history(value) if key == 'Past History Of Diabaties'
-
-  if patients[patient_key][:medical_history][:diabetes].nil?
-    patients[patient_key][:medical_history][:diabetes] = 'unknown'
-    report_failure("diabetes could not be set", patients[patient_key])
-  end
 
   if key == 'Past History of Chronic Kidney Disease'
     patients[patient_key][:medical_history][:chronic_kidney_disease] = history(value)
