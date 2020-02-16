@@ -15,8 +15,6 @@ crypt = ActiveSupport::MessageEncryptor.new(key)
 message = crypt.decrypt_and_verify(encrypted_message)
 data = CSV.parse(message, headers: true)
 
-binding.pry
-
 BUSINESS_IDENTIFIER_METADATA_VERSION = "org.simple.bangladesh_national_id.meta.v1"
 
 ERR_LOG_TAG = '[RECORD_IMPORT_ERR]'
