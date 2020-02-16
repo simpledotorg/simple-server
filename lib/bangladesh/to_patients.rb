@@ -15,6 +15,8 @@ crypt = ActiveSupport::MessageEncryptor.new(key)
 message = crypt.decrypt_and_verify(encrypted_message)
 data = CSV.parse(message, headers: true)
 
+binding.pry
+
 BUSINESS_IDENTIFIER_METADATA_VERSION = "org.simple.bangladesh_national_id.meta.v1"
 
 ERR_LOG_TAG = '[RECORD_IMPORT_ERR]'
@@ -298,7 +300,17 @@ patient_data.each_with_index do |row, index|
   patients[patient_key][:full_name] = value if key == 'Name of Patient'
   patients[patient_key][:gender] = patient_gender(value) if key == 'Sex'
   patients[patient_key][:age] = value if key == 'Age (years)'
-  patients[patient_key][:date_of_birth] = value if key == 'Date of Birth'
+  if key == 'Date of Birth'
+    patients[patient_key][:date_of_birth] = begin
+      date = DateTime.parse(value)
+      date = DateTime.parse(blood_pressure[:recorded_at])
+      date > DateTime.now ? nil : date
+    rescue ArgumentError
+      nil
+    rescue TypeError
+      nil
+    end
+  end
   patients[patient_key][:business_identifier] = national_id(value) if key == 'NID'
   patients[patient_key][:phone_number] = value if key == 'Mobile Number (patient)'
 
