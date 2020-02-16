@@ -13,7 +13,7 @@ RSpec.describe SmsNotificationService do
     let(:twilio_client) { double('TwilioClientDouble') }
     let(:sender_phone_number) { ENV['TWILIO_PHONE_NUMBER'] }
     let(:recipient_phone_number) { '8585858585' }
-    let(:expected_sms_recipient_phone_number) { '+918585858585' }
+    let(:expected_sms_recipient_phone_number) { '+8808585858585' }
 
     context 'follow_up_reminder' do
       it 'should have the SMS body in the default locale' do

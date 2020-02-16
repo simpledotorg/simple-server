@@ -9,7 +9,7 @@ te-IN:
       expired_otp: 'మీకు తాజా OTP అవసరం. తాజా దానిని అభ్యర్థించండి.'
       invalid_password: 'మీ పాస్‌వర్డ్ సరిపోలలేదు. మళ్లీ ప్రయత్నించాలా?'
   sms:
-    country_code: '+91'
+    country_code: '+880'
     request_otp: 'మీ సింపుల్ ధృవీకరణ కోడ్ <#> %{otp}\n%{app_signature}'
   analytics:
     followup_patients: "%{facility_name} లోఎంతమందిరోగులబిపిరికార్డ్అయింది?"
