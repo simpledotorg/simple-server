@@ -59,6 +59,26 @@ RSpec.describe SmsNotificationService do
           sms.send_reminder_sms('missed_visit_sms_reminder', appointment, ' ', 'gu-IN')
         end.to raise_error(StandardError)
       end
+
+      context 'when country code is set in environment' do
+        before { ENV['SMS_COUNTRY_CODE'] = '+880' }
+
+        let(:expected_sms_recipient_phone_number) { '+8808585858585' }
+
+        it 'uses the set country code' do
+          sms = SmsNotificationService.new(recipient_phone_number, sender_phone_number, twilio_client)
+          expected_msg_default = 'Our staff at Simple Facility are thinking of you and your heart health. Our health team is always here if you have any follow-up questions or concerns.'
+
+          expect(twilio_client).to receive_message_chain('messages.create').with(
+            from: '+15005550006',
+            to: expected_sms_recipient_phone_number,
+            status_callback: '',
+            body: /#{expected_msg_default}/
+          )
+
+          sms.send_reminder_sms('missed_visit_sms_reminder', appointment, '')
+        end
+      end
     end
   end
 end
