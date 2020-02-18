@@ -18,6 +18,17 @@ class Api::Current::Models
         description: 'This string should not be empty.' }
     end
 
+    def empty_string_if_bangladesh
+      if Rails.application.config.country[:name] == 'Bangladesh'
+        { type: [:string, 'null'],
+          description: 'This string is allowed to be empty (for Bangladesh)' }
+      else
+        { type: :string,
+          minLength: 1,
+          description: 'This string should not be empty (for India).' }
+      end
+    end
+
     def nullable_timestamp
       timestamp.merge(type: [:string, 'null'])
     end
@@ -87,7 +98,7 @@ class Api::Current::Models
       { type: :object,
         properties: {
           id: { '$ref' => '#/definitions/uuid' },
-          identifier: { '$ref' => '#/definitions/non_empty_string' },
+          identifier: { '$ref' => '#/definitions/empty_string_if_bangladesh' },
           identifier_type: { type: :string, enum: PatientBusinessIdentifier.identifier_types.keys },
           metadata_version: { type: :string },
           metadata: { type: :string },
@@ -336,6 +347,7 @@ class Api::Current::Models
         uuid: uuid,
         non_empty_string: non_empty_string,
         nullable_timestamp: nullable_timestamp,
+        empty_string_if_bangladesh: empty_string_if_bangladesh,
         bcrypt_password: bcrypt_password,
         patient: patient,
         address: address,
