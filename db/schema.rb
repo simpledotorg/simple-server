@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200210110351) do
+ActiveRecord::Schema.define(version: 20200218082025) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -885,5 +885,17 @@ ActiveRecord::Schema.define(version: 20200210110351) do
       latest_bp_per_patient_per_quarter.year,
       lag(latest_bp_per_patient_per_quarter.bp_facility_id, 1) OVER (PARTITION BY latest_bp_per_patient_per_quarter.patient_id ORDER BY latest_bp_per_patient_per_quarter.bp_recorded_at, latest_bp_per_patient_per_quarter.bp_id) AS responsible_facility_id
      FROM latest_bp_per_patient_per_quarter;
+  SQL
+  create_view "blood_pressures_per_facility_per_days", materialized: true, sql_definition: <<-SQL
+      SELECT count(blood_pressures.*) AS bp_count,
+      facilities.id AS facility_id,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, facilities.deleted_at)) AS deleted_at,
+      (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS day,
+      (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS month,
+      (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS quarter,
+      (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS year
+     FROM (facilities
+       LEFT JOIN blood_pressures ON ((facilities.id = blood_pressures.facility_id)))
+    GROUP BY (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, facilities.deleted_at, facilities.id;
   SQL
 end
