@@ -18,17 +18,6 @@ class Api::Current::Models
         description: 'This string should not be empty.' }
     end
 
-    def empty_string_if_bangladesh
-      if Rails.application.config.country[:name] == 'Bangladesh'
-        { type: [:string, 'null'],
-          description: 'This string is allowed to be empty (for Bangladesh)' }
-      else
-        { type: :string,
-          minLength: 1,
-          description: 'This string should not be empty (for India).' }
-      end
-    end
-
     def nullable_timestamp
       timestamp.merge(type: [:string, 'null'])
     end
@@ -98,14 +87,14 @@ class Api::Current::Models
       { type: :object,
         properties: {
           id: { '$ref' => '#/definitions/uuid' },
-          identifier: { '$ref' => '#/definitions/empty_string_if_bangladesh' },
+          identifier: { type: [:string, 'null'] },
           identifier_type: { type: :string, enum: PatientBusinessIdentifier.identifier_types.keys },
           metadata_version: { type: :string },
           metadata: { type: :string },
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' } },
-        required: %w[id created_at updated_at identifier identifier_type] }
+        required: %w[id created_at updated_at identifier_type] }
     end
 
     def nested_patient
@@ -347,7 +336,6 @@ class Api::Current::Models
         uuid: uuid,
         non_empty_string: non_empty_string,
         nullable_timestamp: nullable_timestamp,
-        empty_string_if_bangladesh: empty_string_if_bangladesh,
         bcrypt_password: bcrypt_password,
         patient: patient,
         address: address,

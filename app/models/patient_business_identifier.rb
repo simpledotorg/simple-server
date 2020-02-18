@@ -8,7 +8,8 @@ class PatientBusinessIdentifier < ApplicationRecord
     bangladesh_national_id: 'bangladesh_national_id'
   }
 
-  validates :identifier, presence: true, allow_blank: true
+  validates :identifier, presence: true, if: -> { identifier_type == 'simple_bp_passport' }
+  validates :identifier, presence: true, allow_blank: true, if: -> { identifier_type == 'bangladesh_national_id' }
   validates :identifier_type, presence: true
 
   validates :device_created_at, presence: true

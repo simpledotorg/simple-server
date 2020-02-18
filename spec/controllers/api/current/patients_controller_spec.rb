@@ -229,39 +229,36 @@ RSpec.describe Api::Current::PatientsController, type: :controller do
         end
       end
 
-      describe 'country-specific validations for patient business_identifier' do
-        it 'should allow empty identifier for Bangladesh env' do
-          original_country = Rails.application.config.country
-          # set country to BD
-          Rails.application.config.country = {
-            abbreviation: 'BD',
-            name: 'Bangladesh',
-            dashboard_locale: 'en_BD',
-            time_zone: 'Asia/Dhaka'
-          }
+      describe 'type-specific validations for patient business_identifier' do
+        it 'should allow empty identifier for bangladesh_national_id' do
 
           patients_payload = build_patient_payload(FactoryBot.create(:patient))
-          payload_with_missing_biz_id = patients_payload.deep_merge(
-            'business_identifiers' => [build_business_identifier_payload.merge(identifier: '')])
+          business_identifier = build_business_identifier_payload
+                                .merge(identifier: '',
+                                       identifier_type: 'bangladesh_national_id')
+          payload_with_missing_biz_id = patients_payload.deep_merge('business_identifiers' => [business_identifier])
 
           post :sync_from_user, params: { patients: [payload_with_missing_biz_id] }, as: :json
 
           expect(response).to have_http_status(200)
           expect(JSON.parse(response.body)['errors']).to be_empty
-
-          # reset country
-          Rails.application.config.country = original_country
+          expect(PatientBusinessIdentifier.where(id: business_identifier['id']).count).to eq 1
         end
 
-        it 'should disallow empty identifier for India env' do
+        it 'should disallow empty identifier for simple_bp_passport' do
           patients_payload = build_patient_payload(FactoryBot.create(:patient))
-          payload_with_missing_biz_id = patients_payload.deep_merge(
-            'business_identifiers' => [build_business_identifier_payload.merge(identifier: '')])
+          business_identifier = build_business_identifier_payload
+                                .merge(identifier: '',
+                                       identifier_type: 'simple_bp_passport')
+          payload_with_missing_biz_id = patients_payload.deep_merge('business_identifiers' => [business_identifier])
 
           post :sync_from_user, params: { patients: [payload_with_missing_biz_id] }, as: :json
 
           expect(response).to have_http_status(200)
-          expect(JSON.parse(response.body)['errors']).to_not be_empty
+          # Nested errors are not currently reported, so the response errors map doesn't contain an error
+          # Checking if the PatientBusinessIdentifier got created instead
+          expect(JSON.parse(response.body)['errors']).to be_empty
+          expect(PatientBusinessIdentifier.where(id: business_identifier['id']).count).to eq 0
         end
       end
 
