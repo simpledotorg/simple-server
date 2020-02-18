@@ -11,6 +11,7 @@ class Api::Current::PatientBusinessIdentifierTransformer
       Api::Current::Transformer
         .from_request(business_identifier)
         .merge(business_identifier['metadata'].present? ? { 'metadata' => JSON.parse(business_identifier['metadata']) } : {})
+        .merge('identifier' => business_identifier['identifier'].present? ? JSON.parse(business_identifier['identifier']) : '')
     end
   end
 end
