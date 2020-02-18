@@ -229,6 +229,42 @@ RSpec.describe Api::Current::PatientsController, type: :controller do
         end
       end
 
+      describe 'country-specific validations for patient business_identifier' do
+        it 'should allow empty identifier for Bangladesh env' do
+          original_country = Rails.application.config.country
+          # set country to BD
+          Rails.application.config.country = {
+            abbreviation: 'BD',
+            name: 'Bangladesh',
+            dashboard_locale: 'en_BD',
+            time_zone: 'Asia/Dhaka'
+          }
+
+          patients_payload = build_patient_payload(FactoryBot.create(:patient))
+          payload_with_missing_biz_id = patients_payload.deep_merge(
+            'business_identifiers' => [build_business_identifier_payload.merge(identifier: '')])
+
+          post :sync_from_user, params: { patients: [payload_with_missing_biz_id] }, as: :json
+
+          expect(response).to have_http_status(200)
+          expect(JSON.parse(response.body)['errors']).to be_empty
+
+          # reset country
+          Rails.application.config.country = original_country
+        end
+
+        it 'should disallow empty identifier for India env' do
+          patients_payload = build_patient_payload(FactoryBot.create(:patient))
+          payload_with_missing_biz_id = patients_payload.deep_merge(
+            'business_identifiers' => [build_business_identifier_payload.merge(identifier: '')])
+
+          post :sync_from_user, params: { patients: [payload_with_missing_biz_id] }, as: :json
+
+          expect(response).to have_http_status(200)
+          expect(JSON.parse(response.body)['errors']).to_not be_empty
+        end
+      end
+
       it 'does not change registration user or facility' do
         current_user = FactoryBot.create(:user)
         current_facility = FactoryBot.create(:facility, facility_group: current_user.facility.facility_group)
@@ -289,7 +325,9 @@ RSpec.describe Api::Current::PatientsController, type: :controller do
       let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
       let(:facility_in_another_group) { FactoryBot.create(:facility) }
 
-      let(:patients_in_another_group) { FactoryBot.create_list(:patient, 2, registration_facility: facility_in_another_group, updated_at: 3.minutes.ago) }
+      let(:patients_in_another_group) { FactoryBot.create_list(:patient, 2,
+                                                               registration_facility: facility_in_another_group,
+                                                               updated_at: 3.minutes.ago) }
 
       before :each do
         set_authentication_headers
