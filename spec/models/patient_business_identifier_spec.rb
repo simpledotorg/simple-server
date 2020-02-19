@@ -6,7 +6,7 @@ RSpec.describe PatientBusinessIdentifier, type: :model do
   end
 
   describe 'Validations' do
-    it { should validate_presence_of(:identifier) }
+    it { should validate_presence_of(:identifier).allow_nil }
     it { should validate_presence_of(:identifier_type) }
 
     it_behaves_like 'a record that validates device timestamps'
