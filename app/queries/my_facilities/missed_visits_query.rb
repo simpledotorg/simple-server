@@ -6,6 +6,8 @@ class MyFacilities::MissedVisitsQuery
   include QuarterHelper
   include MonthHelper
 
+  REGISTRATION_BUFFER = 2.months
+
   attr_reader :periods
 
   def initialize(facilities: Facility.all, period: :quarter, last_n: 3)
@@ -23,14 +25,14 @@ class MyFacilities::MissedVisitsQuery
       .joins('INNER JOIN latest_blood_pressures_per_patients
               ON patients.id = latest_blood_pressures_per_patients.patient_id')
       .where(latest_blood_pressures_per_patients: { bp_facility_id: @facilities })
-      .where('recorded_at < ?', Time.current.beginning_of_day - 2.months)
+      .where('recorded_at < ?', Time.current.beginning_of_day - REGISTRATION_BUFFER)
   end
 
   def patients_by_period
     @patients_by_period ||=
       @periods.map do |year, period|
         period_start = (@period == :quarter ? local_quarter_start(year, period) : local_month_start(year, period))
-        [[year, period], patients.where('patient_recorded_at < ?', period_start - 2.months)]
+        [[year, period], patients.where('patient_recorded_at < ?', period_start - REGISTRATION_BUFFER)]
       end.to_h
   end
 
@@ -58,6 +60,34 @@ class MyFacilities::MissedVisitsQuery
       .where(phone_number_authentications: { registration_facility_id: @facilities })
       .where('call_logs.created_at >= ? AND call_logs.created_at <= ?', period_start, period_end)
       .group('facilities.id::uuid')
+  end
+
+  def missed_visits_by_facility
+    @missed_visits_by_facility ||=
+      patients_by_period.map do |(year, period), patients|
+        responsible_patients = patients.group(:bp_facility_id).count
+        visited_patients = visits_by_period[[year, period]].group(:responsible_facility_id).count
+
+        responsible_patients.map do |facility_id, patient_count|
+          [[facility_id, year, period],
+           { patients: patient_count.to_i,
+             missed: patient_count.to_i - visited_patients[facility_id].to_i }]
+        end.to_h
+      end.reduce(:merge)
+  end
+
+  def missed_visit_totals
+    @missed_visit_totals ||=
+      missed_visits_by_facility.each_with_object({}) do |(key, missed_visit_data), total_missed_visit_data|
+        period = [key.second.to_i, key.third.to_i]
+        total_missed_visit_data[period] ||= {}
+
+        total_missed_visit_data[period][:patients] ||= 0
+        total_missed_visit_data[period][:patients] += missed_visit_data[:patients]
+
+        total_missed_visit_data[period][:missed] ||= 0
+        total_missed_visit_data[period][:missed] += missed_visit_data[:missed]
+      end
   end
 
   private
