@@ -21,13 +21,14 @@ class MyFacilitiesController < AdminController
                                             .order(updated_at: :desc))
 
     @facilities = policy_scope([:manage, :facility, Facility])
-    @inactive_facilities = MyFacilities::OverviewQuery.new(@facilities).inactive_facilities
+    overview_query = MyFacilities::OverviewQuery.new(@facilities)
+    @inactive_facilities = overview_query.inactive_facilities
 
     @facility_counts_by_size = { total: @facilities.group(:facility_size).count,
                                  inactive: @inactive_facilities.group(:facility_size).count }
 
     @inactive_facilities_bp_counts =
-      { last_week: @inactive_facilities.bp_counts_in_period(start: 1.week.ago, finish: Time.current),
+      { last_week: @inactive_facilities.bp_counts_in_period(start: 7.days.ago, finish: Time.current),
         last_month: @inactive_facilities.bp_counts_in_period(start: 1.month.ago, finish: Time.current) }
   end
 
