@@ -23,7 +23,9 @@ METHODS_TO_INSTRUMENT = [
 
   # Debugging production issues with large payloads
   [Api::Current::SyncController, :__sync_from_user__],
-  [AuditLog, :merge_log],
+  [Api::Current::SyncController, :capture_errors],
+  [AuditLog.singleton_class, :merge_log],
+  [AuditLog.singleton_class, :write_audit_log],
   [Api::Current::PatientPayloadValidator, :invalid?],
   [Address, :merge],
   [Patient, :merge],
