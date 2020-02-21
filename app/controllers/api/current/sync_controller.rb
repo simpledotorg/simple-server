@@ -1,5 +1,8 @@
 class Api::Current::SyncController < APIController
   include Api::Current::SyncToUser
+  include Api::Current::ValidateSchema
+  include Api::Current::ValidateModel
+
   before_action :instrument_process_token
 
   def model_name

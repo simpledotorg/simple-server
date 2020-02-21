@@ -1,6 +1,6 @@
 class Api::Current::PatientsController < Api::Current::SyncController
   def sync_from_user
-    __sync_from_user__(patients_params)
+    __sync_from_user__(request_params)
   end
 
   def sync_to_user
@@ -46,24 +46,29 @@ class Api::Current::PatientsController < Api::Current::SyncController
   end
 
   def merge_if_valid(single_patient_params)
-    validator = Api::Current::PatientPayloadValidator.new(single_patient_params)
-    logger.debug "Patient had errors: #{validator.errors_hash}" if validator.invalid?
-    if validator.invalid?
-      NewRelic::Agent.increment_metric('Merge/Patient/schema_invalid')
-      { errors_hash: validator.errors_hash }
-    else
-      patients_params_with_metadata = single_patient_params.merge(metadata: metadata)
-      transformed_params = Api::Current::PatientTransformer.from_nested_request(patients_params_with_metadata)
-      patient = MergePatientService.new(transformed_params).merge
-      { record: patient }
-    end
+    { record: MergePatientService.new(transform_from_request(single_patient_params)).merge }
   end
 
   def transform_to_response(patient)
     Api::Current::PatientTransformer.to_nested_response(patient)
   end
 
-  def patients_params
+  def transform_from_request(params)
+    Api::Current::PatientTransformer.from_nested_request(params.merge(metadata: metadata))
+  end
+
+  def record_errors(params)
+    patient = Patient.new(params.except('address', 'phone_numbers', 'business_identifiers', 'metadata'))
+    patient.address = Address.new(params['address'])
+    patient.phone_numbers = params['phone_numbers'].map { |record| PatientPhoneNumber.new(record) }
+    patient.business_identifiers = params['business_identifiers'].map { |record| PatientBusinessIdentifier.new(record) }
+
+    return if patient.valid?
+
+    patient.errors.full_messages
+  end
+
+  def request_params
     permitted_address_params = %i[
       id
       street_address
