@@ -86,10 +86,10 @@ class MyFacilitiesController < AdminController
                                                               last_n: PERIODS_TO_DISPLAY[@selected_period])
 
     @display_periods = missed_visits_query.periods
-    @missed_visits_by_facility = missed_visits_by_facility(missed_visits_query)
+    @missed_visits_by_facility = missed_visits_query.missed_visits_by_facility
     @calls_made = missed_visits_query.calls_made.count
     @all_time_registrations = missed_visits_query.patients.group(:bp_facility_id).count
-    @totals_by_period = missed_visit_totals(missed_visits_query)
+    @totals_by_period = missed_visits_query.missed_visit_totals
   end
 
   private
@@ -104,33 +104,7 @@ class MyFacilitiesController < AdminController
     authorize(:dashboard, :show?)
   end
 
-  def calculate_missed_visits(registered_patients, controlled_bps, uncontrolled_bps)
-    registered_patients - controlled_bps - uncontrolled_bps
-  end
-
-  def missed_visits_by_facility(query)
-    query.patients_by_period.map do |(year, period), patients|
-      responsible_patients = patients.group(:bp_facility_id).count
-      visited_patients = query.visits_by_period[[year, period]].group(:responsible_facility_id).count
-
-      responsible_patients.map do |facility_id, patient_count|
-        [[facility_id, year, period],
-         { patients: patient_count.to_i,
-           missed: patient_count.to_i - visited_patients[facility_id].to_i }]
-      end.to_h
-    end.reduce(:merge)
-  end
-
-  def missed_visit_totals(query)
-    missed_visits_by_facility(query).each_with_object({}) do |(key, missed_visit_data), total_missed_visit_data|
-      period = [key.second.to_i, key.third.to_i]
-      total_missed_visit_data[period] ||= {}
-
-      total_missed_visit_data[period][:patients] ||= 0
-      total_missed_visit_data[period][:patients] += missed_visit_data[:patients]
-
-      total_missed_visit_data[period][:missed] ||= 0
-      total_missed_visit_data[period][:missed] += missed_visit_data[:missed]
-    end
+  def calculate_missed_visits(registered_patients_count, controlled_bps_count, uncontrolled_bps_count)
+    registered_patients_count - controlled_bps_count - uncontrolled_bps_count
   end
 end

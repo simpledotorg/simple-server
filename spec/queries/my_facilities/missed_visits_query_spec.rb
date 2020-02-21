@@ -48,7 +48,7 @@ RSpec.describe MyFacilities::MissedVisitsQuery do
 
     context '#visits_by_period' do
       it "should bucket visits by the period they were recorded in" do
-        expect(query.visits_by_period[query.periods.first].map(&:bp_id)).to eq([bp_7.id, bp_8.id].sort)
+        expect(query.visits_by_period[query.periods.first].map(&:bp_id).sort).to eq([bp_7.id, bp_8.id].sort)
         expect(query.visits_by_period[query.periods.second].map(&:bp_id).sort).to eq([bp_3.id].sort)
         expect(query.visits_by_period[query.periods.third].map(&:bp_id)).to eq([])
       end
@@ -70,7 +70,7 @@ RSpec.describe MyFacilities::MissedVisitsQuery do
     let!(:patient_3) { create(:patient, registration_facility: facilities.first, recorded_at: 1.month.ago) }
 
     let!(:bp_1) { create(:blood_pressure, facility: facilities.first, patient: patients.first, recorded_at: quarters.first) }
-    let!(:bp_2) { create(:blood_pressure, facility: facilities.second, patient: patients.first, recorded_at: quarters.first) }
+    let!(:bp_2) { create(:blood_pressure, facility: facilities.second, patient: patients.first, recorded_at: quarters.first + 1.day) }
     let!(:bp_3) { create(:blood_pressure, facility: facilities.second, patient: patients.first, recorded_at: quarters.second) }
     let!(:bp_4) { create(:blood_pressure, facility: facilities.first, patient: patients.second, recorded_at: quarters.first) }
     let!(:bp_5) { create(:blood_pressure, facility: facilities.second, patient: patients.second, recorded_at: quarters.second) }
