@@ -1,0 +1,54 @@
+/* Background to white */
+body {
+    background: #fff;
+}
+
+table { page-break-inside: avoid; }
+
+/* Force background colors to print */
+*{ color-adjust: exact; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+/* Hide elements that are not required in print */
+.mobile,
+.dropdown,
+.breadcrumb,
+.downloads {
+    display: none;
+}
+
+/******************
+Custom formatting for printable elements
+******************/
+
+* a:link,
+* a:visited,
+.table-compact tr.sorts .sort-label {
+    color: #000 !important;
+    text-decoration: none !important;
+    font-weight: bold !important;
+}
+
+.table-compact td, .table-compact th, .table-compact col {
+    background: none !important;
+    border-color: #000 !important;
+}
+
+.card {
+    border: 2px solid black;
+}
+
+.split-bars .bar-1 { background: #ccc; color: #000; }
+.split-bars .bar-2 { background: #aaa; color: #000; }
+.split-bars .bar-3 { background: #888; color: #000; }
+
+.key div.didntattend:after { background: #ccc; }
+.key div.uncontrolled:after { background: #aaa; }
+.key div.controlled:after { background: #888; }
+
+.key div.didntattend,
+.key div.uncontrolled,
+.key div.controlled {
+    color: #000;
+}
+
+

@@ -31,7 +31,7 @@ class AnalyticsController < AdminController
 
     session[:period] = @period
 
-    @prev_periods = (@period == :quarter) ? 3 : 6
+    @prev_periods = (@period == :quarter) ? 5 : 6
   end
 
   def set_quarter
