@@ -49,9 +49,9 @@
                   default_percent = (defaulted.to_f / registered * 100).round
                 %>
 
-                <td class="bar bar-1" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="<%= (defaulted > 0 && default_percent == 0) ? "< 1" : default_percent %>% didn't attend" style="width: <%= default_percent %>%;"><%= defaulted %></td>
-                <td class="bar bar-2" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="<%= (uncontrolled > 0 && uncontrolled_percent == 0) ? "< 1" : uncontrolled_percent %>% visited and uncontrolled" style="width: <%= uncontrolled_percent %>%;"><%= uncontrolled %></td>
-                <td class="bar bar-3" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="<%= (controlled > 0 && controlled_percent == 0) ? "< 1" : controlled_percent %>% visited and controlled" style="width: <%= controlled_percent %>%;"><%= controlled %></td>
+                <td class="bar bar-1" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="<%= defaulted %> patients didn't attend" style="width: <%= default_percent %>%;"><%= (defaulted > 0 && default_percent == 0) ? "< 1" : default_percent %>%</td>
+                <td class="bar bar-2" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="<%= uncontrolled %> patients visited with uncontrolled BP" style="width: <%= uncontrolled_percent %>%;"><%= (uncontrolled > 0 && uncontrolled_percent == 0) ? "< 1" : uncontrolled_percent %>%</td>
+                <td class="bar bar-3" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="<%= controlled %> patients visited with controlled BP" style="width: <%= controlled_percent %>%;"><%= (controlled > 0 && controlled_percent == 0) ? "< 1" : controlled_percent %>%</td>
               <% else %>
                 <td class="bar bar-1 bar-none" style="width: 100%;">No patients</td>
               <% end %>
