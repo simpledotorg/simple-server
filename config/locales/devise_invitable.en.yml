@@ -25,7 +25,8 @@ en:
         ignore: "If you do not want to accept the invitation, please ignore this email."
         click_button: "Click below to accept your invitation."
         link: "Dashboard:"
-        username: "Email / username:"
+        username: "Username:"
+        confirm: "Confirm account"
   time:
     formats:
       devise:

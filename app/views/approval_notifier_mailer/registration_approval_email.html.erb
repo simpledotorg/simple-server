@@ -1,109 +1,59 @@
-<style> body { background:#F0F2F5; } </style>
+<h1 style="letter-spacing:-0.7px;color:#333;font-family:Arial,sans-serif;font-weight:700;margin:0;font-size:150%;"><%= t('new_user_registered') %></h1>
 
-<!-- WRAPPER -->
-<div style="background:#F0F2F5;">
+<div>&nbsp;</div>
 
-    <div>&nbsp;</div>
+<div style="height: 26px;"><strong style="font-size:85%;text-transform:uppercase;letter-spacing:2px;"><%= t('name') %></strong></div>
+<div style="font-size: 110%;" class=<%= @user.access_token_valid? ? 'active' : 'inactive' %> >
+  <%= @user.full_name %>
+</div>
 
-    <!-- MAX-WIDTH WRAPPER FOR OUTLOOK -->
-    <table cellpadding="0" cellspacing="0" border="0" style="padding:0px;margin:0px;width:100%;background:#F0F2F5;">
-        <tr><td colspan="3" style="padding:0px;margin:0px;font-size:20px;height:20px;" height="20">&nbsp;</td></tr>
-        <tr>
-            <td style="padding:0px;margin:0px;">&nbsp;</td>
-            <td style="padding:0px;margin:0px;width:500px;" width="500">
+<div>&nbsp;</div>
 
+<div style="height: 26px;"><strong style="font-size:85%;text-transform:uppercase;letter-spacing:2px;"><%= t('phone_number') %></strong></div>
+<div>
+  <a style="text-decoration:none;color#0075EB;letter-spacing:3px;" href="tel:<%= @user.phone_number %>"><%= @user.phone_number %></a>
+</div>
 
+<div>&nbsp;</div>
 
-    <div style="box-shadow: 0 2px 0 rgba(0,0,0,0.1);line-height: 1.3; background:#fff;padding:0 20px;border-radius:7px;font-family:Arial,sans-serif; text-align: center;">
+<div style="height: 26px;"><strong style="font-size:85%;text-transform:uppercase;letter-spacing:2px;"><%= t('registration_approval_email.registration_facility') %></strong></div>
+<div>
+  <%= @user.facility.name %>
+</div>
 
-    <div>&nbsp;</div>
-    <div>&nbsp;</div>
-
-    <img src="https://simple.org/images/simple_logo_256.png" width="48" height="48" style="width: 48px; height: 48px;" alt="">
-
-    <div>&nbsp;</div>
-
-    <!------------------------------------------------------
-    CONTENTS START
-    -------------------------------------------------------->
-        
-            <h1 style="letter-spacing:-0.7px;color:#333;font-family:Arial,sans-serif;font-weight:700;margin:0;font-size:150%;"><%= t('new_user_registered') %></h1>
-            
-            <div>&nbsp;</div>
-            
-            <div style="height: 26px;"><strong style="font-size:85%;text-transform:uppercase;letter-spacing:2px;"><%= t('name') %></strong></div>
-            <div style="font-size: 110%;" class=<%= @user.access_token_valid? ? 'active' : 'inactive' %> >
-              <%= @user.full_name %>
-            </div>
-        
-            <div>&nbsp;</div>
-        
-            <div style="height: 26px;"><strong style="font-size:85%;text-transform:uppercase;letter-spacing:2px;"><%= t('phone_number') %></strong></div>
-            <div>
-              <a style="text-decoration:none;color#0075EB;letter-spacing:3px;" href="tel:<%= @user.phone_number %>"><%= @user.phone_number %></a>
-            </div>
-        
-            <div>&nbsp;</div>
-        
-            <div style="height: 26px;"><strong style="font-size:85%;text-transform:uppercase;letter-spacing:2px;"><%= t('registration_approval_email.registration_facility') %></strong></div>
-            <div>
-              <%= @user.facility.name %>
-            </div>
-        
-            <div>&nbsp;</div>
-        
-        
-            <div>
-                <!--BUTTON SPECIFIC TO MS OUTLOOK-->
-                    <!--[if mso]>
-                    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="<%= admin_user_url(@user) %>" style="height:42px;v-text-anchor:middle;width:220px;" arcsize="12%" strokecolor="#c20020" fillcolor="#FF3355">
-                        <w:anchorlock/>
-                        <center style="color:#ffffff;font-family:sans-serif;font-size:15px;font-weight:bold;"><%= t("registration_approval_email.allow_or_deny_access") %></center>
-                      </v:roundrect>
-                    <![endif]-->
-
-                <!--NORMAL BUTTON-->
-                    <a href="<%= admin_user_url(@user) %>" style="background-color:#FF3355;border:1px solid #c20020;border-radius:5px;color:#ffffff;display:inline-block;font-family:sans-serif;font-size:16px;font-weight:bold;line-height:42px;text-align:center;text-decoration:none;width:220px;-webkit-text-size-adjust:none;mso-hide:all;">
-                    <%= t("registration_approval_email.allow_or_deny_access") %>
-                    </a>
-            </div>
-        
-            <div>&nbsp;</div>
-            <div>&nbsp;</div>
-
-            <!--HR-->
-            <div style="height:2px;background:#F0F2F5;margin:0;"></div>
-
-            <div>&nbsp;</div>
-            <div>&nbsp;</div>
-
-            <div>
-              <div><%= t('registration_approval_email.accessible_facilities') %>:</div>
-              <div>&nbsp;</div>
-              <div>
-                <% @user.facility_group.facilities.each do |facility| %>
-                  <div style="font-size: 85%; height: 24px;"><%= facility.name %></div>
-                <% end %>
-              </div>
-            </div>
-            
-        
-    <!------------------------------------------------------
-    CONTENTS END
-    -------------------------------------------------------->
-        <div>&nbsp;</div>
-        <div>&nbsp;</div>
-    </div>
-
-    <!-- END OUTLOOK MAX-WIDTH WRAPPER -->
-                </td>
-            <td style="padding:0px;margin:0px;">&nbsp;</td>
-        </tr>
-        <tr><td colspan="3" style="padding:0px;margin:0px;font-size:20px;height:20px;" height="20">&nbsp;</td></tr>
-    </table>
-    <!-- END -->
+<div>&nbsp;</div>
 
 
-    <div>&nbsp;</div>
-    <div>&nbsp;</div>
+<div>
+    <!--BUTTON SPECIFIC TO MS OUTLOOK-->
+        <!--[if mso]>
+        <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="<%= admin_user_url(@user) %>" style="height:42px;v-text-anchor:middle;width:220px;" arcsize="12%" strokecolor="#c20020" fillcolor="#FF3355">
+            <w:anchorlock/>
+            <center style="color:#ffffff;font-family:sans-serif;font-size:15px;font-weight:bold;"><%= t("registration_approval_email.allow_or_deny_access") %></center>
+          </v:roundrect>
+        <![endif]-->
+
+    <!--NORMAL BUTTON-->
+        <a href="<%= admin_user_url(@user) %>" style="background-color:#FF3355;border:1px solid #c20020;border-radius:5px;color:#ffffff;display:inline-block;font-family:sans-serif;font-size:16px;font-weight:bold;line-height:42px;text-align:center;text-decoration:none;width:220px;-webkit-text-size-adjust:none;mso-hide:all;">
+        <%= t("registration_approval_email.allow_or_deny_access") %>
+        </a>
+</div>
+
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+
+<!--HR-->
+<div style="height:2px;background:#F0F2F5;margin:0;"></div>
+
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+
+<div>
+  <div><%= t('registration_approval_email.accessible_facilities') %>:</div>
+  <div>&nbsp;</div>
+  <div>
+    <% @user.facility_group.facilities.each do |facility| %>
+      <div style="font-size: 85%; height: 24px;"><%= facility.name %></div>
+    <% end %>
+  </div>
 </div>
