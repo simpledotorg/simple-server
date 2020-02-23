@@ -26,9 +26,9 @@
   </div>
 </div>
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-md-4">
     <div class="card">
-      <h3>Latitude/Longitude</h3>
+      <h3>Latitude/longitude</h3>
       <% if @facility.latitude.present? && @facility.longitude.present? %>
         <div><i class="fas fa-map-marker-alt light mr-2"></i> <%= @facility.latitude %>, <%= @facility.longitude %></div>
       <% else %>
@@ -36,9 +36,15 @@
       <% end %>
     </div>
   </div>
-  <div class="col-md-6">
+  <div class="col-md-4">
     <div class="card">
-      <h3>Facility Type &amp; Size</h3>
+      <h3>Estimated OPD load</h3>
+      <div><%= @facility.monthly_opd_load_was || "(N/A)" %> adult patients per month</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card">
+      <h3>Facility type &amp; size</h3>
       <%= @facility.facility_type || "(No type set)" %> (<%= @facility.facility_size&.capitalize || "No size set" %>)
     </div>
   </div>

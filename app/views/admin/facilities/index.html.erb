@@ -5,7 +5,7 @@
       <%= link_to 'Bulk add facilities', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
     <% end %>
     <% if policy([:manage, FacilityGroup]).new? %>
-      <%= link_to 'Add facility group', new_admin_facility_group_path, class: "btn btn-sm btn-primary" %>
+      <%= link_to 'Add facility group', new_admin_facility_group_path, class: "btn btn-sm btn-success" %>
     <% end %>
   </nav>
 </div>
