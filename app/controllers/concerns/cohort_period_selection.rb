@@ -6,16 +6,13 @@ module CohortPeriodSelection
   included do
     include QuarterHelper
 
-    def selected_cohort_period
-      @period = params[:period] == 'month' ? :month : :quarter
-      @registration_quarter = sanitize_registration_quarter(params[:registration_quarter])
-      @registration_month = sanitize_registration_month(params[:registration_month])
-      @registration_year = sanitize_registration_year(params[:registration_year])
-
-      { period: @period,
-        registration_quarter: @registration_quarter,
-        registration_month: @registration_month,
-        registration_year: @registration_year }
+    def set_selected_cohort_period
+      cohort_period = params[:cohort_period] == 'month' ? :month : :quarter
+      @selected_cohort_period =
+        { cohort_period: cohort_period,
+          registration_quarter: sanitize_registration_quarter(params[:registration_quarter]),
+          registration_month: sanitize_registration_month(params[:registration_month]),
+          registration_year: sanitize_registration_year(params[:registration_year], cohort_period) }
     end
 
     private
@@ -26,9 +23,9 @@ module CohortPeriodSelection
       previous_year_and_quarter(Time.current.year, quarter(Time.current)).second
     end
 
-    def sanitize_registration_year(year)
+    def sanitize_registration_year(year, cohort_period)
       return year.to_i if year.to_i.positive?
-      return (Time.current.beginning_of_month - 1.month).year if @period == :month
+      return (Time.current.beginning_of_month - 1.month).year if cohort_period == :month
 
       previous_year_and_quarter(Time.current.year, quarter(Time.current)).first
     end

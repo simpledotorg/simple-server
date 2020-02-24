@@ -62,13 +62,14 @@ module QuarterHelper
     local_quarter_start(year, quarter).end_of_quarter
   end
 
-  def last_n_quarters(n)
-    year = current_year
-    quarter = current_quarter
+  def last_n_quarters(n:, inclusive: false)
+    initial_quarter = if inclusive
+                        [current_year, current_quarter]
+                      else previous_year_and_quarter(current_year, current_quarter)
+                      end
 
-    (1..n).map do |_|
-      year, quarter = previous_year_and_quarter(year, quarter)
-      [year, quarter]
+    (1...n).reduce([initial_quarter]) do |quarter_list, _|
+      quarter_list << previous_year_and_quarter(*quarter_list.last)
     end
   end
 end

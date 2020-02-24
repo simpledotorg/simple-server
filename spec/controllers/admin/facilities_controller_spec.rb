@@ -79,7 +79,8 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
         attributes_for(
           :facility,
           facility_group_id: facility_group.id,
-          pin: '999999'
+          pin: '999999',
+          monthly_estimated_opd_load: 500
         ).except(:id)
       end
 
