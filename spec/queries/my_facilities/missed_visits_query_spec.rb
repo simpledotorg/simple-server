@@ -33,13 +33,13 @@ RSpec.describe MyFacilities::MissedVisitsQuery do
     let!(:query) { described_class.new(period: :month) }
 
     context '#patients' do
-      it "shouldn't have patient registered less than two months ago" do
+      it "doesn't have patient registered less than two months ago" do
         expect(query.patients.map(&:id).sort).to eq(patients.map(&:id).sort)
       end
     end
 
     context '#patients_by_period' do
-      it 'should bucket patients by the period they registered in' do
+      it 'buckets patients by the period they registered in' do
         expect(query.patients_by_period[query.periods.first].map(&:id).sort).to eq(patients.map(&:id).sort)
         expect(query.patients_by_period[query.periods.second].map(&:id).sort).to eq([patients.first.id].sort)
         expect(query.patients_by_period[query.periods.third].map(&:id)).to eq([])
@@ -47,7 +47,7 @@ RSpec.describe MyFacilities::MissedVisitsQuery do
     end
 
     context '#visits_by_period' do
-      it "should bucket visits by the period they were recorded in" do
+      it 'buckets visits by the period they were recorded in' do
         expect(query.visits_by_period[query.periods.first].map(&:bp_id).sort).to eq([bp_7.id, bp_8.id].sort)
         expect(query.visits_by_period[query.periods.second].map(&:bp_id).sort).to eq([bp_3.id].sort)
         expect(query.visits_by_period[query.periods.third].map(&:bp_id)).to eq([])
@@ -87,13 +87,13 @@ RSpec.describe MyFacilities::MissedVisitsQuery do
     let!(:query) { described_class.new(period: :quarter) }
 
     context '#patients' do
-      it "shouldn't have patient registered less than two months ago" do
+      it "doesn't have patient registered less than two months ago" do
         expect(query.patients.map(&:id).sort).to eq(patients.map(&:id).sort)
       end
     end
 
     context '#patients_by_period' do
-      it 'should bucket patients by the period they registered in' do
+      it 'buckets patients by the period they registered in' do
         expect(query.patients_by_period[query.periods.first].map(&:id).sort).to eq(patients.map(&:id).sort)
         expect(query.patients_by_period[query.periods.second].map(&:id).sort).to eq([patients.first.id])
         expect(query.patients_by_period[query.periods.third].map(&:id)).to eq([patients.first.id])
@@ -101,7 +101,7 @@ RSpec.describe MyFacilities::MissedVisitsQuery do
     end
 
     context '#visits_by_period' do
-      it "should bucket visits by the period they were recorded in" do
+      it 'buckets visits by the period they were recorded in' do
         expect(query.visits_by_period[query.periods.first].map(&:bp_id).sort).to eq([bp_7.id, bp_8.id].sort)
         expect(query.visits_by_period[query.periods.second].map(&:bp_id).sort).to eq([bp_3.id].sort)
         expect(query.visits_by_period[query.periods.third].map(&:bp_id)).to eq([bp_2.id])
