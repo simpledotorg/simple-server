@@ -13,6 +13,6 @@ SELECT COUNT(bp_id) AS bp_count,
        facilities.id AS facility_id,
        facilities.deleted_at at time zone 'utc' at time zone (SELECT current_setting('TIMEZONE')) AS deleted_at,
        day, month, quarter, year
-FROM facilities
-LEFT OUTER JOIN latest_bp_per_patient_per_day ON facilities.id = latest_bp_per_patient_per_day.facility_id
+FROM latest_bp_per_patient_per_day
+INNER JOIN facilities ON facilities.id = latest_bp_per_patient_per_day.facility_id
 GROUP BY day, month, quarter, year, facilities.deleted_at, facilities.id;

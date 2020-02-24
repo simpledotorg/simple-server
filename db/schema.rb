@@ -892,8 +892,8 @@ ActiveRecord::Schema.define(version: 20200218082025) do
       latest_bp_per_patient_per_day.month,
       latest_bp_per_patient_per_day.quarter,
       latest_bp_per_patient_per_day.year
-     FROM (facilities
-       LEFT JOIN latest_bp_per_patient_per_day ON ((facilities.id = latest_bp_per_patient_per_day.facility_id)))
+     FROM (latest_bp_per_patient_per_day
+       JOIN facilities ON ((facilities.id = latest_bp_per_patient_per_day.facility_id)))
     GROUP BY latest_bp_per_patient_per_day.day, latest_bp_per_patient_per_day.month, latest_bp_per_patient_per_day.quarter, latest_bp_per_patient_per_day.year, facilities.deleted_at, facilities.id;
   SQL
 end
