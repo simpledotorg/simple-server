@@ -94,7 +94,7 @@ class Api::Current::Models
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' } },
-        required: %w[id created_at updated_at identifier_type] }
+        required: %w[id created_at updated_at identifier identifier_type] }
     end
 
     def nested_patient

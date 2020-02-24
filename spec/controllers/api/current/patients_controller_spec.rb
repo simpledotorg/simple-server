@@ -229,35 +229,19 @@ RSpec.describe Api::Current::PatientsController, type: :controller do
         end
       end
 
-      describe 'type-specific validations for patient business_identifier' do
-        it 'should allow empty identifier for bangladesh_national_id' do
-
+      describe 'patient business_identifier' do
+        it 'disallows missing identifier for bangladesh_national_id' do
           patients_payload = build_patient_payload(FactoryBot.create(:patient))
           business_identifier = build_business_identifier_payload
-                                .merge(identifier: '',
-                                       identifier_type: 'bangladesh_national_id')
-          payload_with_missing_biz_id = patients_payload.deep_merge('business_identifiers' => [business_identifier])
+          business_identifier.delete('identifier')
+          payload_without_biz_id = patients_payload.deep_merge('business_identifiers' => [business_identifier])
 
-          post :sync_from_user, params: { patients: [payload_with_missing_biz_id] }, as: :json
-
-          expect(response).to have_http_status(200)
-          expect(JSON.parse(response.body)['errors']).to be_empty
-          expect(PatientBusinessIdentifier.where(id: business_identifier['id']).count).to eq 1
-        end
-
-        it 'should disallow empty identifier for simple_bp_passport' do
-          patients_payload = build_patient_payload(FactoryBot.create(:patient))
-          business_identifier = build_business_identifier_payload
-                                .merge(identifier: '',
-                                       identifier_type: 'simple_bp_passport')
-          payload_with_missing_biz_id = patients_payload.deep_merge('business_identifiers' => [business_identifier])
-
-          post :sync_from_user, params: { patients: [payload_with_missing_biz_id] }, as: :json
+          post :sync_from_user, params: { patients: [payload_without_biz_id] }, as: :json
 
           expect(response).to have_http_status(200)
           # Nested errors are not currently reported, so the response errors map doesn't contain an error
           # Checking if the PatientBusinessIdentifier got created instead
-          expect(JSON.parse(response.body)['errors']).to be_empty
+          expect(JSON.parse(response.body)['errors'].to_s).to match(/business_identifiers\/0/)
           expect(PatientBusinessIdentifier.where(id: business_identifier['id']).count).to eq 0
         end
       end
