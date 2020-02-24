@@ -46,25 +46,17 @@ class Api::Current::PatientsController < Api::Current::SyncController
   end
 
   def merge_if_valid(single_patient_params)
-    if FeatureToggle.enabled?('SKIP_API_VALIDATION')
+    validator = Api::Current::PatientPayloadValidator.new(single_patient_params)
+    logger.debug "Patient had errors: #{validator.errors_hash}" if validator.invalid?
+    if validator.invalid?
+      NewRelic::Agent.increment_metric('Merge/Patient/schema_invalid')
+      { errors_hash: validator.errors_hash }
+    else
       patients_params_with_metadata = single_patient_params.merge(metadata: metadata)
       transformed_params = Api::Current::PatientTransformer.from_nested_request(patients_params_with_metadata)
       patient = MergePatientService.new(transformed_params).merge
       { record: patient }
-    else
-      validator = Api::Current::PatientPayloadValidator.new(single_patient_params)
-      logger.debug "Patient had errors: #{validator.errors_hash}" if validator.invalid?
-      if validator.invalid?
-        NewRelic::Agent.increment_metric('Merge/Patient/schema_invalid')
-        { errors_hash: validator.errors_hash }
-      else
-        patients_params_with_metadata = single_patient_params.merge(metadata: metadata)
-        transformed_params = Api::Current::PatientTransformer.from_nested_request(patients_params_with_metadata)
-        patient = MergePatientService.new(transformed_params).merge
-        { record: patient }
-      end
     end
-
   end
 
   def transform_to_response(patient)
