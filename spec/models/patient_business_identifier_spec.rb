@@ -6,8 +6,14 @@ RSpec.describe PatientBusinessIdentifier, type: :model do
   end
 
   describe 'Validations' do
-    it { should validate_presence_of(:identifier).allow_nil }
+    it { should validate_presence_of(:identifier) }
     it { should validate_presence_of(:identifier_type) }
+
+    context 'for bangladesh national IDs' do
+      subject { described_class.new(identifier_type: 'bangladesh_national_id') }
+
+      it { should validate_presence_of(:identifier).allow_nil }
+    end
 
     it_behaves_like 'a record that validates device timestamps'
   end
