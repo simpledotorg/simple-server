@@ -19,14 +19,12 @@ Dashboard UI
     position: relative;
 }
 
-.split-bars .bar-1 { background: $grey-mid; color: $grey-darkest; border-radius: 3px 0 0 3px; }
 .split-bars .bar-none { background: $grey-light; color: $grey-dark; border-radius: 3px; }
+.split-bars .bar-1 { background: $grey-mid; color: $grey-darkest; border-radius: 3px 0 0 3px; }
 .split-bars .bar-2 { background: $red; color: #fff; }
 .split-bars .bar-3 { background: $green-mid; border-radius: 0 3px 3px 0; color: $green-dark; }
 
-.split-row-first .split-bars .bar-1,
-.split-row-first .split-bars .bar-2,
-.split-row-first .split-bars .bar-3 {
+.split-row-first .split-bars .bar {
     background-image: url(/assets/diagonal-stripe.png);
     background-size: 120px;
 }
