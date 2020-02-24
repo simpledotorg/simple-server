@@ -3,7 +3,6 @@ require 'rails_helper'
 RSpec.describe MyFacilities::OverviewQuery do
 
   describe '#inactive_facilities' do
-
     let!(:active_facility) { create(:facility) }
     let!(:inactive_facility) { create (:facility) }
     let!(:inactive_facility_with_zero_bps) { create (:facility) }

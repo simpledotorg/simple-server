@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class MyFacilities::OverviewQuery
+  # Wrap query method calls with the appropriate timezone in which the reports will be consumed
+  # This is probably the Rails.application.config.country[:time_zone]
+  # Example: `Time.use_zone('timezone string') { bp_control_query_object.cohort_registrations }`
   include DayHelper
 
   INACTIVITY_THRESHOLD_DAYS = 7
