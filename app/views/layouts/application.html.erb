@@ -21,7 +21,7 @@
     <%= stylesheet_link_tag    'application', media: 'all' %>
     <%= javascript_include_tag 'application' %>
 
-    <link rel="icon" type="image/png" href="/assets/<%= favicon_for_environment %>">
+    <link rel="icon" type="image/png" href="<%= image_path(favicon_for_environment) %>">
 
     <!-- Roboto font -->
     <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700|Roboto:400,700" rel="stylesheet">
