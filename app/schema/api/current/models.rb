@@ -87,7 +87,7 @@ class Api::Current::Models
       { type: :object,
         properties: {
           id: { '$ref' => '#/definitions/uuid' },
-          identifier: { '$ref' => '#/definitions/non_empty_string' },
+          identifier: { type: [:string, 'null'] },
           identifier_type: { type: :string, enum: PatientBusinessIdentifier.identifier_types.keys },
           metadata_version: { type: :string },
           metadata: { type: :string },
