@@ -55,6 +55,7 @@ describe Api::Current::PatientPayloadValidator, type: :model do
         expect(payload.errors[:schema]).to be_present
       end
     end
+
     describe 'Non empty validations' do
       it 'Validates that full_name is not empty' do
         payload = new_patient_payload('full_name' => '')
@@ -94,6 +95,23 @@ describe Api::Current::PatientPayloadValidator, type: :model do
         payload = new_patient_payload('status' => 'foo')
         expect(payload.valid?).to be false
         expect(payload.errors[:schema]).to be_present
+      end
+    end
+
+    context 'when schema validations are disabled' do
+      before do
+        @original_env_var = ENV['ENABLE_SKIP_API_VALIDATION']
+        ENV['ENABLE_SKIP_API_VALIDATION'] = 'true'
+      end
+
+      after { ENV['ENABLE_SKIP_API_VALIDATION'] = @original_env_var }
+
+      it 'does not validate schema' do
+        validator = new_patient_payload
+
+        expect(validator).not_to receive(:validate_schema)
+
+        validator.validate
       end
     end
   end
