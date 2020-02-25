@@ -9,18 +9,33 @@
                 <h5><%= link_to user.full_name, [:admin, user] %></h5>
                 <div class="text-grey mt-1 mb-2">
                     <% if user.sync_approval_status_reason.present? %>
-                      <span><%= user.sync_approval_status_reason %> at <%= user.registration_facility.present? ? link_to(user.registration_facility.name, admin_facilities_path(user.registration_facility)) : "N/A" %></span>, <%= l user.updated_at.to_date %>
+                      <span><%= user.sync_approval_status_reason %> at
+                        <% if user.registration_facility.present? %>
+                          <%= link_to(user.registration_facility.name,
+                                      admin_facility_group_facility_path(user.registration_facility.facility_group,
+                                                                        user.registration_facility)) %>
+                        <% else %>
+                          <%= "N/A" %>
+                        <% end %>
+                      </span>, <%= l user.updated_at.to_date %>
                     <% end %>
                 </div>
 
               <div class="row">
                   <div class="col">
-                      <a href="tel:<%= user.phone_number %>" class="btn btn-outline-primary btn-sm btn-phone" style="letter-spacing: 0.1em;"><i class="fas fa-phone" style="font-size: 90%;"></i> <%= user.phone_number %></a>
+                      <a href="tel:<%= user.phone_number %>"
+                         class="btn btn-outline-primary btn-sm btn-phone" style="letter-spacing: 0.1em;">
+                        <i class="fas fa-phone" style="font-size: 90%;"></i> <%= user.phone_number %></a>
                   </div>
                   <div class="col text-right">
 
-                    <%= link_to "Allow access", admin_user_enable_access_path(user), method: :put, class: "btn btn-sm btn-outline-success", data: { confirm: I18n.t('admin.enable_access_alert') } %>
-                    <%= link_to '<i class="fas fa-times"></i>'.html_safe, '#deny-access-modal-' + user.id, 'data-toggle' => 'modal', class: "btn btn-sm btn-outline-danger" %>
+                    <%= link_to "Allow access", admin_user_enable_access_path(user),
+                                method: :put,
+                                class: "btn btn-sm btn-outline-success",
+                                data: { confirm: I18n.t('admin.enable_access_alert') } %>
+                    <%= link_to '<i class="fas fa-times"></i>'.html_safe, '#deny-access-modal-' + user.id,
+                                'data-toggle' => 'modal',
+                                class: "btn btn-sm btn-outline-danger" %>
 
                     <%= render partial: "admin/users/deny_access_modal", locals: { user: user } %>
                   </div>
