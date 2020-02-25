@@ -1,8 +1,7 @@
 require 'http'
 
 class ValidateData
-
-  HOST = "http://simple.test"
+  HOST = 'http://simple.test'.freeze
 
   REQUEST_URLS = [
     :patients,
@@ -10,8 +9,8 @@ class ValidateData
     :blood_sugars,
     :appointments,
     :medical_histories,
-    :prescription_drugs,
-  ]
+    :prescription_drugs
+  ].freeze
 
   def validate
     REQUEST_URLS.each do |model|
@@ -21,7 +20,7 @@ class ValidateData
 
   def api_get(model_name)
     response = HTTP
-                 .auth("Bearer 72789892ff8f876e159e7757983ff82f60b37d3e5a84240e61470c85eecaa50f")
+                 .auth('Bearer 72789892ff8f876e159e7757983ff82f60b37d3e5a84240e61470c85eecaa50f')
                  .headers(api_headers)
                  .get(api_url("api/v3/#{model_name}/sync"))
 
@@ -34,15 +33,13 @@ class ValidateData
         puts v.errors.full_messages
       end
     end
-
   end
 
   def api_headers
     { 'Content-Type' => 'application/json',
       'ACCEPT' => 'application/json',
       'X-USER-ID' => '60cae40c-3364-402f-8bbd-285d65150dcf',
-      'X-FACILITY-ID' => 'b4c5d96a-a02b-41ef-96d7-7a6eddda4c85'
-    }
+      'X-FACILITY-ID' => 'b4c5d96a-a02b-41ef-96d7-7a6eddda4c85' }
   end
 
   def api_url(path)

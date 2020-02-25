@@ -80,7 +80,7 @@ def national_id(value)
   # scientific notation
   if /e\+/.match?(value)
     base, exp = value.split("e+").map(&:to_i)
-    (base * exp ** 10).to_i.to_s
+    (base * exp**10).to_i.to_s
   else
     value
   end
