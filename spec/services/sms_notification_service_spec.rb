@@ -61,7 +61,7 @@ RSpec.describe SmsNotificationService do
       end
 
       context 'when country code is set in environment' do
-        before { ENV['SMS_COUNTRY_CODE'] = '+880' }
+        before { Rails.application.config.country[:sms_country_code] = '+880' }
 
         let(:expected_sms_recipient_phone_number) { '+8808585858585' }
 
