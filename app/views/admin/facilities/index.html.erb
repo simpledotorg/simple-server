@@ -54,7 +54,7 @@
           </div>
           <div class="col-md-1"><span class="text-muted"><%= facility.facility_type %></span></div>
           <div class="col-md-2"><span class="text-muted"><%= facility.facility_size&.capitalize || "No size set" %></span></div>
-          <div class="col-md-2"><span class="text-muted">OPD: <%= facility.monthly_opd_load_was || "N/A" %></span></div>
+          <div class="col-md-2"><span class="text-muted">OPD: <%= facility.monthly_estimated_opd_load || "N/A" %></span></div>
         </div>
 
       <% end %>
