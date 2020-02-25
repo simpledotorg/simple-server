@@ -21,7 +21,7 @@ class Api::Current::PatientPayloadValidator < Api::Current::PayloadValidator
     :reminder_consent
   )
 
-  validate :validate_schema
+  validate :validate_schema, unless: -> { FeatureToggle.enabled?('SKIP_API_VALIDATION') }
   validate :presence_of_age
   validate :past_date_of_birth
 
