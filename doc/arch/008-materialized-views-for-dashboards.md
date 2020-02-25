@@ -33,8 +33,7 @@ Accepted
 
 * Materialized view refresh times will scale with the size of the database tables. Currently `blood_pressures` is the most significant table.
 * View refresh order is important, dependant views should be refreshed only after their parent views to ensure consistency.
-* Views will have to be refreshed in the reporting timezone, to ensure that data is sorted into the appropriate time periods. 
-  A view per timezone will be needed to support multiple reporting timezones in a single deployment.
+* Views will have to be refreshed in the reporting timezone, to ensure that data is sorted into the appropriate time periods. A view per timezone will be needed to support multiple reporting timezones in a single deployment.
 * A change in the view definition can be carried out by creating a new migration. Scenic can generate these migrations for us.
 * Any domain logic leaking into the views will mean that the view definitions need to be updated when the domain logic changes.
     * Eg: If a view contains the definition of a `hypertensive` patient, the view will need to be updated if the definition of `hypertensive` changes.
