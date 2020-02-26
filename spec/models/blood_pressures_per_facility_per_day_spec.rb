@@ -25,19 +25,19 @@ RSpec.describe BloodPressuresPerFacilityPerDay, type: :model do
       described_class.refresh
     end
 
-    it 'should return a row per facility per day' do
+    it 'returns a row per facility per day' do
       expect(described_class.all.count).to eq(2)
     end
 
-    it 'should have two bps counted on the first day' do
+    it 'has two bps counted on the first day' do
       expect(described_class.where(year: 1.day.ago.year, day: 1.day.ago.yday).first.bp_count).to eq(2)
     end
 
-    it 'should have one bp on the second day' do
+    it 'has one bp on the second day' do
       expect(described_class.where(year: 2.day.ago.year, day: 2.day.ago.yday).first.bp_count).to eq(1)
     end
 
-    it "shouldn't have a row for facility_without_bp" do
+    it "doesn't have a row for facility_without_bp" do
       expect(described_class.all.pluck(:facility_id)).not_to include(facility_without_bp.id)
     end
   end

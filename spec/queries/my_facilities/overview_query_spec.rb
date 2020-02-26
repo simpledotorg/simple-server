@@ -48,7 +48,7 @@ RSpec.describe MyFacilities::OverviewQuery do
       end
     end
 
-    it 'should return only inactive facilities' do
+    it 'returns only inactive facilities' do
       facility_ids = [active_facility.id, inactive_facility.id, inactive_facility_with_zero_bps.id, inactive_facility_with_bp_outside_period.id]
 
       expect(described_class.new(facilities: Facility.where(id: facility_ids)).inactive_facilities.map(&:id))
