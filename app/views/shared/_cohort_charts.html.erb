@@ -33,7 +33,7 @@
       end
     %>
 
-    <div class="split-row">
+    <div class="split-row <%= 'split-row-first' if index == 0 %>">
       <div class="row px-lg-0">
         <div class="col-lg-3 nowrap order-lg-1">
           <h6><%= registered %> patients registered in <%= "#{cohort_period}" %></h6>
