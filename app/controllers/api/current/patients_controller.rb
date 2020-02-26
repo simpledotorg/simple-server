@@ -94,6 +94,7 @@ class Api::Current::PatientsController < Api::Current::SyncController
       metadata_version
       created_at
       updated_at
+      deleted_at
     ]
 
     patient_attributes = params.require(:patients)
