@@ -32,7 +32,7 @@ Accepted
 ## Consequences
 
 * Materialized view refresh times will scale with the size of the database tables. Currently `blood_pressures` is the most significant table.
-    Eg. The `LatestBloodPressuresPerPatientPerMonth` refresh takes 82569.7ms for 7557416 bps. This duration will increase with the number of bps.
+    Eg. The `LatestBloodPressuresPerPatientPerMonth` refresh takes 82569.7ms for 7557416 records in the `blood_pressures` table. This duration will increase with the number of bps.
 * View refresh order is important, dependant views should be refreshed only after their parent views to ensure consistency.
     * [Rake task](https://github.com/simpledotorg/simple-server/blob/b0724c59e32bad4150f216378b024a1e98df5f8e/lib/tasks/refresh_materialized_db_views.rake) to refresh the views in order
 * Views will have to be refreshed in the reporting timezone, to ensure that data is sorted into the appropriate time periods. A view per timezone will be needed to support multiple reporting timezones in a single deployment.
