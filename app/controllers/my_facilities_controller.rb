@@ -16,19 +16,20 @@ class MyFacilitiesController < AdminController
   before_action :set_selected_period, only: [:registrations, :missed_visits]
 
   def index
+    @facilities = policy_scope([:manage, :facility, Facility])
     @users_requesting_approval = paginate(policy_scope([:manage, :user, User])
                                             .requested_sync_approval
                                             .order(updated_at: :desc))
 
-    @facilities = policy_scope([:manage, :facility, Facility])
-    @inactive_facilities = MyFacilities::OverviewQuery.new(@facilities).inactive_facilities
+    overview_query = MyFacilities::OverviewQuery.new(facilities: @facilities)
+    @inactive_facilities = overview_query.inactive_facilities
 
     @facility_counts_by_size = { total: @facilities.group(:facility_size).count,
                                  inactive: @inactive_facilities.group(:facility_size).count }
 
     @inactive_facilities_bp_counts =
-      { last_week: @inactive_facilities.bp_counts_in_period(start: 1.week.ago, finish: Time.current),
-        last_month: @inactive_facilities.bp_counts_in_period(start: 1.month.ago, finish: Time.current) }
+      { last_week: overview_query.total_bps_in_last_n_days(n: 7),
+        last_month: overview_query.total_bps_in_last_n_days(n: 30) }
   end
 
   def blood_pressure_control

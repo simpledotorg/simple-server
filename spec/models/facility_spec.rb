@@ -34,25 +34,4 @@ RSpec.describe Facility, type: :model do
   describe 'Behavior' do
     it_behaves_like 'a record that is deletable'
   end
-
-  describe '.bp_counts_in_period' do
-    let(:facility) { create(:facility) }
-    let(:period_start) { 3.months.ago }
-    let(:period_finish) { Time.current }
-    let(:blood_pressure_in_period) { create(:blood_pressure, facility: facility, recorded_at: period_start + 1.day) }
-    let(:blood_pressure_at_period_start) { create(:blood_pressure, facility: facility, recorded_at: period_start) }
-    let(:blood_pressure_outside_period) do
-      create(:blood_pressure, facility: facility, recorded_at: period_start - 1.day)
-    end
-    let!(:encounters) do
-      [blood_pressure_in_period, blood_pressure_at_period_start, blood_pressure_outside_period].each do |record|
-        create(:encounter, :with_observables, observable: record, facility: facility)
-      end
-    end
-    let!(:results) { Facility.bp_counts_in_period(start: period_start, finish: period_finish) }
-
-    it 'should count blood_pressures that were recorded in the period' do
-      expect(results[facility.id]).to eq(2)
-    end
-  end
 end
