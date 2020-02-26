@@ -29,7 +29,7 @@ module MyFacilitiesFiltering
     end
 
     def set_selected_zones
-      @selected_zones = params[:zone].present? ? params[:zone] : @zones
+      @selected_zones = params[:zone].present? ? [params[:zone]] : @zones
     end
 
     def set_only_new_facilities

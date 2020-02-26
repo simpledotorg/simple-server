@@ -44,6 +44,6 @@ class MyFacilities::RegistrationsQuery
   end
 
   def periods_as_sql_list
-    @periods.map { |(year, day)| "('#{year}', '#{day}')" }.join(',')
+    @periods.map { |year, period| "('#{year}', '#{period}')" }.join(',')
   end
 end
