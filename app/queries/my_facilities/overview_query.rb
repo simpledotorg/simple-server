@@ -22,8 +22,8 @@ class MyFacilities::OverviewQuery
 
   def inactive_facilities
     active_facilities = bps_per_day_in_last_n_days(n: INACTIVITY_THRESHOLD_DAYS)
-                          .group(:facility_id)
-                          .having('SUM(bp_count) >= ?', INACTIVITY_THRESHOLD_BPS)
+                        .group(:facility_id)
+                        .having('SUM(bp_count) >= ?', INACTIVITY_THRESHOLD_BPS)
 
     @inactive_facilities ||= Facility.where.not(id: active_facilities.pluck(:facility_id))
   end
