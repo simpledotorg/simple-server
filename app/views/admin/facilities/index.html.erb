@@ -1,7 +1,7 @@
 <div class="page-header">
   <h1 class="page-title">All facilities</h1>
 
-  <div>
+  <div class="page-nav">
     <% if policy([:manage, :facility, Facility]).upload? %>
       <%= link_to '+ Upload facilities CSV', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
     <% end %>
