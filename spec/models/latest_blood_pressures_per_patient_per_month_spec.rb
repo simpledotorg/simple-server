@@ -33,10 +33,10 @@ RSpec.describe LatestBloodPressuresPerPatientPerMonth, type: :model do
       end
     end
 
-    it 'should return a row per patient per month' do
+    it 'returns a row per patient per month' do
       expect(query_results.count).to eq(6)
     end
-    it 'should return at least one row per patient' do
+    it 'returns at least one row per patient' do
       expect(query_results.pluck(:patient_id).uniq).to match_array(patients.map(&:id))
     end
   end
@@ -67,28 +67,27 @@ RSpec.describe LatestBloodPressuresPerPatientPerMonth, type: :model do
       LatestBloodPressuresPerPatientPerMonth
     end
 
-
-    it 'should contain the latest bp per month only' do
+    it 'contains the latest bp per month only' do
       expect(query_results.all.map(&:bp_id)).not_to include(bp_1.id)
     end
 
-    it "shouldn't have a responsible facility for a patient's second bp if their last bp was in the same month" do
+    it "doesn't have a responsible facility for a patient's second bp if their last bp was in the same month" do
       expect(query_results.where(bp_id: bp_2.id).first.responsible_facility_id).to be_nil
     end
 
-    it "shouldn't have a responsible facility for a patient's first bp" do
+    it "doesn't have a responsible facility for a patient's first bp" do
       expect(query_results.where(bp_id: bp_4.id).first.responsible_facility_id).to be_nil
     end
 
-    it 'should have the responsible facility be last facility where a bp was recorded in the previous month' do
+    it 'has the responsible facility be last facility where a bp was recorded in the previous month' do
       expect(query_results.where(bp_id: bp_3.id).first.responsible_facility_id).to eq(facilities.second.id)
     end
 
-    it 'should have the responsible facility be last facility where a bp was recorded in the previous month' do
+    it 'has the responsible facility be last facility where a bp was recorded in the previous month' do
       expect(query_results.where(bp_id: bp_5.id).first.responsible_facility_id).to eq(facilities.first.id)
     end
 
-    it 'should have the responsible facility be last facility where a bp was recorded in any prior month' do
+    it 'has the responsible facility be last facility where a bp was recorded in any prior month' do
       expect(query_results.where(bp_id: bp_7.id).first.responsible_facility_id).to eq(facilities.first.id)
     end
   end

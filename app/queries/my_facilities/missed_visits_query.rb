@@ -52,7 +52,8 @@ class MyFacilities::MissedVisitsQuery
     period_start = (@period == :quarter ? local_quarter_start(*@latest_period) : local_month_start(*@latest_period))
     period_end = @period == :quarter ? period_start.end_of_quarter : period_start.end_of_month
 
-    CallLog
+    @calls_made ||=
+      CallLog
       .result_completed
       .joins('INNER JOIN phone_number_authentications
               ON phone_number_authentications.phone_number = call_logs.caller_phone_number')
