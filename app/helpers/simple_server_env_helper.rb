@@ -27,11 +27,19 @@ module SimpleServerEnvHelper
 
     image_path(image_name)
   end
+    
+  def apple_touch_for_environment
+    env = ENV.fetch("SIMPLE_SERVER_ENV")
+
+    image_name = CUSTOMIZED_ENVS.include?(env) ? "simple_logo_#{env}_apple_touch.png" : "simple_logo_apple_touch.png"
+
+    image_path(image_name)
+  end
 
   def alt_for_environment
     env = ENV.fetch("SIMPLE_SERVER_ENV")
 
-    CUSTOMIZED_ENVS.include?(env) ? "Simple Server #{env.capitalize} Logo" : "Simple Server Logo"
+    CUSTOMIZED_ENVS.include?(env) ? "Simple Dashboard #{env.capitalize} Logo" : "Simple Dashboard Logo"
   end
 
   def get_title_for_environment
