@@ -7,5 +7,6 @@ en_IN:
         street_address: "House Number and Street"
         village_or_colony: "Colony, Village or Ward"
         zone: "Block"
-        district: "District"
-        state: "State"
+        district: "District *"
+        state: "State *"
+        country: "Country *"

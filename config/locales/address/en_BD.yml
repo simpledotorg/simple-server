@@ -7,5 +7,6 @@ en_BD:
         street_address: "House and road number"
         village_or_colony: "Village or Ward"
         zone: "Union"
-        district: "Upazila"
-        state: "District"
+        district: "Upazila *"
+        state: "District *"
+        country: "Country *"
