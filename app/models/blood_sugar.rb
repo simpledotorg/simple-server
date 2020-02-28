@@ -15,6 +15,7 @@ class BloodSugar < ApplicationRecord
   enum blood_sugar_type: {
     random: 'random',
     post_prandial: 'post_prandial',
-    fasting: 'fasting'
+    fasting: 'fasting',
+    hba1c: 'hba1c'
   }, _prefix: true
 end
