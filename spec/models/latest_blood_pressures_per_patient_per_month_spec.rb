@@ -67,7 +67,6 @@ RSpec.describe LatestBloodPressuresPerPatientPerMonth, type: :model do
       LatestBloodPressuresPerPatientPerMonth
     end
 
-
     it 'contains the latest bp per month only' do
       expect(query_results.all.map(&:bp_id)).not_to include(bp_1.id)
     end
