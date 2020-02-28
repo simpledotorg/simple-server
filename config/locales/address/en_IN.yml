@@ -11,3 +11,7 @@ en_IN:
         district: "District *"
         state: "State *"
         country: "Country *"
+    submit:
+      facility:
+        create: "Save facility"
+        update: "Save facility"

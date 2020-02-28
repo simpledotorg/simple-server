@@ -44,7 +44,7 @@
       <div class="row card-row">
           <div class="col-md-4">
             <% if policy([:manage, :facility, facility_group.facilities.new]).new? %>
-              <%= link_to new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-primary" do %>
+              <%= link_to new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-outline-success" do %>
                 <i class="fas fa-plus mr-1"></i>
                 Add a facility
               <% end %>

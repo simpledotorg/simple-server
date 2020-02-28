@@ -11,3 +11,7 @@ en_BD:
         district: "Upazila *"
         state: "District *"
         country: "Country *"
+    submit:
+      facility:
+        create: "Save facility"
+        update: "Save facility"
