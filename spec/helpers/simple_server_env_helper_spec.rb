@@ -149,6 +149,58 @@ RSpec.describe SimpleServerEnvHelper do
       end
     end
   end
+    
+  describe 'logo_android_192_for_environment' do
+    before { allow(self).to receive(:image_path).with(expected_logo_android_192).and_return('fingerprinted_logo_android_192') }
+
+    context 'when in the default environment' do
+      let(:expected_logo_android_192) { 'simple_logo_android_192.png' }
+
+      it 'should return the default logo' do
+        ENV[simple_server_env] = 'default'
+
+        expect(logo_android_192_for_environment).to eq 'fingerprinted_logo_android_192'
+      end
+    end
+
+    SimpleServerEnvHelper::CUSTOMIZED_ENVS.each do |environment|
+      context "when in the #{environment} environment" do
+        let(:expected_logo_android_192) { "simple_logo_#{environment}_android_192.png" }
+
+        it "should return the #{environment} logo_android_192" do
+          ENV[simple_server_env] = environment
+
+          expect(logo_android_192_for_environment).to eq 'fingerprinted_logo_android_192'
+        end
+      end
+    end
+  end
+    
+  describe 'logo_android_512_for_environment' do
+    before { allow(self).to receive(:image_path).with(expected_logo_android_512).and_return('fingerprinted_logo_android_512') }
+
+    context 'when in the default environment' do
+      let(:expected_logo_android_512) { 'simple_logo_android_512.png' }
+
+      it 'should return the default logo' do
+        ENV[simple_server_env] = 'default'
+
+        expect(logo_android_512_for_environment).to eq 'fingerprinted_logo_android_512'
+      end
+    end
+
+    SimpleServerEnvHelper::CUSTOMIZED_ENVS.each do |environment|
+      context "when in the #{environment} environment" do
+        let(:expected_logo_android_512) { "simple_logo_#{environment}_android_512.png" }
+
+        it "should return the #{environment} logo_android_512" do
+          ENV[simple_server_env] = environment
+
+          expect(logo_android_512_for_environment).to eq 'fingerprinted_logo_android_512'
+        end
+      end
+    end
+  end
 
   describe 'alt_for_environment' do
     context 'when in the default environment' do
