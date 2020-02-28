@@ -2,11 +2,11 @@
   <div class="col-md-6">
     <%= bootstrap_form_with(model: [:admin, facility_group, facility], local: true, autocomplete: "off", label_errors: true) do |form| %>
       <%= form.text_field :name, id: :facility_name, required: true, autocomplete: "off", help: "Include the facility type in the name. Example: PHC Brooklyn", label: "Facility name *" %>
-      <%= form.text_field :facility_type, id: :facility_type, help: "Examples: DH, SDH, CHC, PHC, UPHC, HWC, SC", label: "Facility type *", required: true %>
-      <%= form.select :facility_size, Facility.facility_sizes.map { |key, value| [key.capitalize, value] }, id: :facility_type, label: "Size *", help: "Select the closest relative size", required: true %>
+      <%= form.text_field :facility_type, id: :facility_type, help: "Examples: DH, SDH, CHC, PHC, UPHC, HWC, SC", required: true %>
+      <%= form.select :facility_size, Facility.facility_sizes.map { |key, value| [key.capitalize, value] }, id: :facility_size, help: "Select the closest relative size", required: true %>
       <h3 class="mt-5">Address</h3>
-      <%= form.text_field :street_address, id: :facility_street_address, label: "House number and street" %>
-      <%= form.text_field :village_or_colony, id: :facility_village_or_colony, label: "Colony, village, or ward" %>
+      <%= form.text_field :street_address, id: :facility_street_address %>
+      <%= form.text_field :village_or_colony, id: :facility_village_or_colony %>
       <%= form.text_field :zone, id: :facility_zone %>
       <%= form.text_field :district, id: :facility_district, required: true %>
       <%= form.text_field :state, id: :facility_state, required: true %>

@@ -3,9 +3,10 @@ en_BD:
     label:
       facility:
         name: "Name"
-        facility_type: "Facility Type"
+        facility_type: "Facility Type *"
+        size: "Size *"
         street_address: "House and road number"
-        village_or_colony: "Village or Ward"
+        village_or_colony: "Village or ward"
         zone: "Union"
         district: "Upazila *"
         state: "District *"
