@@ -30,6 +30,7 @@ module SimpleServerEnvHelper
 
     image_name = CUSTOMIZED_ENVS.include?(env) ? "simple_logo_#{env}_favicon.png" : "simple_logo_favicon.png"
 
+    image_path(image_name)
   end
 
   def alt_for_environment
