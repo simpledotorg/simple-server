@@ -32,9 +32,9 @@ $font-small: 11px;
 /********/
 
 .card h3 {
-    font-weight: 700;
-    font-size: 22px;
-    color: $grey-darkest;
+  font-weight: 700;
+  font-size: 22px;
+  color: $grey-darkest;
 }
 
 .empty-reports {
@@ -60,340 +60,304 @@ $font-small: 11px;
 }
 
 sup {
-    font-size: 60%;
-    padding-left: 2px;
+  font-size: 60%;
+  padding-left: 2px;
 }
 
 .card-dropdown {
-    width: 100%;
-    border: 1px solid $blue;
-    color: $blue;
-    font-weight: bold;
-    font-size: 18px;
-    padding: 8px;
-    height: 42px;
-    background: #fff url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAxOCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjAzMzMgMTQuOTQzMUw4LjkwODQ1IDE4LjA2NzlMNS43ODM2MiAxNC45NDMxQzUuNjMzMTUgMTQuNzkyMyA1LjQyODg3IDE0LjcwNzUgNS4yMTU4MyAxNC43MDc1QzUuMDAyOCAxNC43MDc1IDQuNzk4NTEgMTQuNzkyMyA0LjY0ODA1IDE0Ljk0MzFDNC4zMzM5NSAxNS4yNTcyIDQuMzMzOTUgMTUuNzY0NiA0LjY0ODA1IDE2LjA3ODZMOC4zNDQ2OSAxOS43NzUzQzguNjU4NzggMjAuMDg5NCA5LjE2NjE3IDIwLjA4OTQgOS40ODAyNiAxOS43NzUzTDEzLjE3NjkgMTYuMDc4NkMxMy40OTEgMTUuNzY0NiAxMy40OTEgMTUuMjU3MiAxMy4xNzY5IDE0Ljk0MzFDMTIuODYyOCAxNC42MzcgMTIuMzQ3NCAxNC42MjkgMTIuMDMzMyAxNC45NDMxVjE0Ljk0MzFaIiBmaWxsPSIjMDA3NUVCIi8+CjxwYXRoIGQ9Ik01Ljc5MTY0IDkuNzc1M0w4LjkxNjQ3IDYuNjUwNDdMMTIuMDQxMyA5Ljc3NTMxQzEyLjE5MTggOS45MjYxMSAxMi4zOTYxIDEwLjAxMDkgMTIuNjA5MSAxMC4wMTA5QzEyLjgyMjEgMTAuMDEwOSAxMy4wMjY0IDkuOTI2MTEgMTMuMTc2OSA5Ljc3NTMxQzEzLjQ5MSA5LjQ2MTIxIDEzLjQ5MSA4Ljk1MzgzIDEzLjE3NjkgOC42Mzk3M0w5LjQ4MDIzIDQuOTQzMDlDOS4xNjYxNCA0LjYyOSA4LjY1ODc1IDQuNjI5IDguMzQ0NjYgNC45NDMwOUw0LjY0ODAyIDguNjM5NzNDNC4zMzM5MiA4Ljk1MzgzIDQuMzMzOTIgOS40NjEyMSA0LjY0ODAyIDkuNzc1M0M0Ljk2MjExIDEwLjA4MTMgNS40Nzc1NSAxMC4wODk0IDUuNzkxNjQgOS43NzUzVjkuNzc1M1oiIGZpbGw9IiMwMDc1RUIiLz4KPC9zdmc+Cg==) no-repeat 96% 50%;
-    margin: 16px 0 8px 0;
-    border-radius: 5px;
-    position: relative;
-    -webkit-appearance: none;
+  width: 100%;
+  border: 1px solid $blue;
+  color: $blue;
+  font-weight: bold;
+  font-size: 18px;
+  padding: 8px;
+  height: 42px;
+  background: #fff url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAxOCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjAzMzMgMTQuOTQzMUw4LjkwODQ1IDE4LjA2NzlMNS43ODM2MiAxNC45NDMxQzUuNjMzMTUgMTQuNzkyMyA1LjQyODg3IDE0LjcwNzUgNS4yMTU4MyAxNC43MDc1QzUuMDAyOCAxNC43MDc1IDQuNzk4NTEgMTQuNzkyMyA0LjY0ODA1IDE0Ljk0MzFDNC4zMzM5NSAxNS4yNTcyIDQuMzMzOTUgMTUuNzY0NiA0LjY0ODA1IDE2LjA3ODZMOC4zNDQ2OSAxOS43NzUzQzguNjU4NzggMjAuMDg5NCA5LjE2NjE3IDIwLjA4OTQgOS40ODAyNiAxOS43NzUzTDEzLjE3NjkgMTYuMDc4NkMxMy40OTEgMTUuNzY0NiAxMy40OTEgMTUuMjU3MiAxMy4xNzY5IDE0Ljk0MzFDMTIuODYyOCAxNC42MzcgMTIuMzQ3NCAxNC42MjkgMTIuMDMzMyAxNC45NDMxVjE0Ljk0MzFaIiBmaWxsPSIjMDA3NUVCIi8+CjxwYXRoIGQ9Ik01Ljc5MTY0IDkuNzc1M0w4LjkxNjQ3IDYuNjUwNDdMMTIuMDQxMyA5Ljc3NTMxQzEyLjE5MTggOS45MjYxMSAxMi4zOTYxIDEwLjAxMDkgMTIuNjA5MSAxMC4wMTA5QzEyLjgyMjEgMTAuMDEwOSAxMy4wMjY0IDkuOTI2MTEgMTMuMTc2OSA5Ljc3NTMxQzEzLjQ5MSA5LjQ2MTIxIDEzLjQ5MSA4Ljk1MzgzIDEzLjE3NjkgOC42Mzk3M0w5LjQ4MDIzIDQuOTQzMDlDOS4xNjYxNCA0LjYyOSA4LjY1ODc1IDQuNjI5IDguMzQ0NjYgNC45NDMwOUw0LjY0ODAyIDguNjM5NzNDNC4zMzM5MiA4Ljk1MzgzIDQuMzMzOTIgOS40NjEyMSA0LjY0ODAyIDkuNzc1M0M0Ljk2MjExIDEwLjA4MTMgNS40Nzc1NSAxMC4wODk0IDUuNzkxNjQgOS43NzUzVjkuNzc1M1oiIGZpbGw9IiMwMDc1RUIiLz4KPC9zdmc+Cg==) no-repeat 96% 50%;
+  margin: 16px 0 8px 0;
+  border-radius: 5px;
+  position: relative;
+  -webkit-appearance: none;
 }
 
 h4 {
-    text-align: center;
-    font-size: 16px;
-    text-transform: uppercase;
-    letter-spacing: 6px;
-    color: rgba(0,0,0,0.3);
-    clear: both;
+  text-align: center;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 6px;
+  color: rgba(0,0,0,0.3);
+  clear: both;
 }
 
 p {
-    text-align: center;
-    font-size: 16px;
-    padding: 0 8px;
+  text-align: center;
+  font-size: 16px;
+  padding: 0 8px;
 }
 
 p.desc {
-    text-align: left;
-    font-size: 16px;
-    padding: 8px 0 8px 0;
+  text-align: left;
+  font-size: 16px;
+  padding: 8px 0 8px 0;
 }
 
 .progress-table {
-    margin-top: 16px;
-    font-size: 16px;
-    width: 100%;
-    border-collapse: collapse;
+  margin-top: 16px;
+  font-size: 16px;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .progress-table td {
-    padding: 8px 16px 8px 0;
-    border-top: 1px solid #EFECDF;
-    text-align: right;
-    font-size: 18px;
+  padding: 8px 16px 8px 0;
+  border-top: 1px solid #EFECDF;
+  text-align: right;
+  font-size: 18px;
 }
 
-.bar-chart td {
-  vertical-align: bottom;
-  padding: 0;
-  margin: 0;
+.progress-table td.no-padding {
+  padding-right: 0;
 }
 
-.bar-chart td.bars {
-  height: 170px;
-  background-image: linear-gradient(to bottom, #fff 10px, #F0F2F6 10px, #fff 11px, #fff 20px, #F0F2F6 20px, #fff 21px, #fff 30px, #F0F2F6 30px, #fff 31px, #fff 40px, #F0F2F6 40px, #fff 41px, #fff 50px, #F0F2F6 50px, #fff 51px, #fff 60px, #F0F2F6 60px, #fff 61px, #fff 70px, #F0F2F6 70px, #fff 71px, #fff 80px, #F0F2F6 80px, #fff 81px, #fff 90px, #F0F2F6 90px, #fff 91px, #fff 100px, #F0F2F6 100px, #fff 101px, #fff 110px, #F0F2F6 110px, #fff 111px, #fff, #fff 110px, #F0F2F6 110px, #fff 111px, #fff, #fff 110px, #F0F2F6 110px, #fff 111px, #fff, #fff 120px, #F0F2F6 120px, #fff 121px, #fff, #fff 130px, #F0F2F6 130px, #fff 131px, #fff, #fff 140px, #F0F2F6 140px, #fff 141px, #fff, #fff 150px, #F0F2F6 150px, #fff 151px, #fff, #fff 160px, #F0F2F6 160px, #fff 161px, #fff, #fff 170px, #F0F2F6 170px, #fff 171px, #fff, #fff 180px, #F0F2F6 180px, #fff 181px, #fff, #fff 190px, #F0F2F6 190px, #fff 191px, #fff, #fff 200px, #F0F2F6 200px, #fff 201px, #fff, #fff 210px, #F0F2F6 210px, #fff 211px, #fff, #fff 220px, #F0F2F6 220px, #fff 221px,  #fff 230px, #F0F2F6 230px, #fff 231px, #fff 240px, #F0F2F6 240px, #fff 241px, #fff 250px, #F0F2F6 250px, #fff 251px, #fff 260px, #F0F2F6 260px, #fff 261px, #fff 270px, #F0F2F6 270px, #fff 271px);
+.progress-table th {
+  padding: 0 0 8px 0;
+  font-weight: normal;
+  text-align: left;
+  font-size: 14px;
 }
 
-.bar-chart td.bar-labels {
-  border-top: 2px solid #ADB2B8;
-  white-space: nowrap;
+.progress-table  .row-label {
+  padding-left: 6px;
+  text-align: left;
+  font-weight: normal;
 }
 
-.bar-chart-column {
-  text-align: center;
-  border-radius: 4px 4px 0 0;
-  margin: 0 2px;
-  min-height: 6px;
+.progress-table .total td {
+  background: #F5F9FD;
+  color: #174A57;
 }
 
 .progress-table .total.green td {
-    background: #E4FFEF;
-    color: #00A541;
+  background: #E4FFEF;
+  color: #00A541;
 }
 
 .progress-table .total td,
 .progress-table .total + tr td {
-    border-color: #77A6D2;
+  border-color: #77A6D2;
 }
 
 .progress-table .total.green td,
 .progress-table .total.green + tr td {
-    border-color: #00A541;
+  border-color: #00A541;
 }
 
 span.percent {
-    font-size: 14px;
-    display: inline-block;
-    background: #E4FFEF;
-    color: #00A541;
-    border-radius: 100px;
-    padding: 5px 6px;
-    text-align: center;
-    min-width: 3em;
-    margin: -3px 0;
+  font-size: 14px;
+  display: inline-block;
+  background: #E4FFEF;
+  color: #00A541;
+  border-radius: 100px;
+  padding: 5px 6px;
+  text-align: center;
+  min-width: 3em;
+  margin: -3px 0;
 }
 
 .updated-date {
-    text-align: center;
-    font-size: 16px;
-    color: rgba(0,0,0,0.6);
-    padding: 0 0 16px 0;
-    clear: both;
-    line-height: 1.5;
-    
-    span {
-        letter-spacing: 1px;
-        font-size: 14px;
-        display: block;
-    }
+  text-align: center;
+  font-size: 16px;
+  color: rgba(0,0,0,0.6);
+  padding: 0 0 16px 0;
+  clear: both;
+  line-height: 1.5;
+
+  span {
+    letter-spacing: 1px;
+    font-size: 14px;
+    display: block;
+  }
 }
 
 .trophies {
-    text-align: center;
-    padding-top: 30px;
+  text-align: center;
+  padding-top: 30px;
 }
 
 footer p {
-    text-align: center;
+  text-align: center;
 }
 
 .trophy {
-    display: inline-block;
-    text-align: center;
-    margin: 0 8px 30px 8px;
-    font-size: 16px;
-    position: relative;
-    padding: 140px 0 0 0;
+  display: inline-block;
+  text-align: center;
+  margin: 0 8px 30px 8px;
+  font-size: 16px;
+  position: relative;
+  padding: 140px 0 0 0;
 }
 
-#return-patients .column-value {
-  color: #6C737A;
+.trophy svg.ribbon {
+  position: absolute;
+  top: 1px;
+  left: 50%;
+  margin-left: -65px;
 }
 
-
-.value-0 .bar-chart-column {
-  background: #DADDE0 !important;
+.trophy svg.lock {
+  position: relative;
+  top: 4px;
 }
 
 .trophy span {
-    display: block;
-    border-radius: 400px;
-    width: 94px;
-    height: 94px;
-    position: absolute;
-    top: 19px;
-    left: 50%;
-    margin-left: -47px;
-    line-height: 94px;
-    font-size: 42px;
-    box-sizing: border-box;
-    background: #8672F3;
-    color: #5844C3;
-    font-weight: 900;
-    text-shadow: 0 1px 0 rgba(255,255,255,0.2);
-    letter-spacing: -0.03em;
+  display: block;
+  border-radius: 400px;
+  width: 94px;
+  height: 94px;
+  position: absolute;
+  top: 19px;
+  left: 50%;
+  margin-left: -47px;
+  line-height: 94px;
+  font-size: 42px;
+  box-sizing: border-box;
+  background: #8672F3;
+  color: #5844C3;
+  font-weight: 900;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.2);
+  letter-spacing: -0.03em;
 }
 
 .trophy em {
-    position: absolute;
-    top: 22px;
-    left: 50%;
-    width: 86px;
-    height: 86px;
-    margin-left: -44px;
-    border-radius: 400px;
-    border: 1px solid #fff;
-    z-index: 5000;
+  position: absolute;
+  top: 22px;
+  left: 50%;
+  width: 86px;
+  height: 86px;
+  margin-left: -44px;
+  border-radius: 400px;
+  border: 1px solid #fff;
+  z-index: 5000;
 }
 
 .trophy div {
-    font-size: 90%;
+  font-size: 90%;
 }
 
 .trophy-10 span {
-    background: #E8F8EF;
-    color: #30BB67;
-    text-indent: -3px;
+  background: #E8F8EF;
+  color: #30BB67;
+  text-indent: -3px;
 }
 
 .trophy-25 span {
-    background: #F1D8FD;
-    color: #AA61CF;
+  background: #F1D8FD;
+  color: #AA61CF;
 }
 
 .trophy-50 span {
-    background: #D7E8F8;
-    color: #77A6D2;
+  background: #D7E8F8;
+  color: #77A6D2;
 }
 
 .trophy-100 span,
 .trophy-250 span,
 .trophy-500 span {
-    background: #FFC800;
-    color: #A38310;
-    font-size: 38px;
+  background: #FFC800;
+  color: #A38310;
+  font-size: 38px;
 }
 
 .trophy-1000 span,
 .trophy-2000 span {
-    background: #FF3355;
-    color: #B00C35;
+  background: #FF3355;
+  color: #B00C35;
 }
 
 .trophy-upcoming span {
-    color: rgba(0,0,0,0.3);
-    background: #eee;
+  color: rgba(0,0,0,0.3);
+  background: #eee;
 }
 
-.graph-label {
-  display: block;
-  font-size: 14px;
-  margin-top: 8px;
-  line-height: 1.4;
+.trophy-upcoming svg.ribbon {
+  opacity: 0.4;
 }
 
-.graph-label .label-2 {
-  color: #ADB2B8;
-  font-size: 14px;
-}
-
-.label-date {
-  display: block;
-  margin: 8px;
-}
-
-.column-value {
-  font-size: 22px;
-  margin-bottom: 4px;
-}
-
-.row-data {
-  padding: 12px 4px;
-  border-top: 1px solid #F0F2F5;
+.card .counts {
+  display: flex;
+  justify-content: space-between;
   clear: both;
-}
-
-.row-data h4 {
-  font-size: 16px;
-  font-weight: 400;
-}
-
-.row-value {
-  float: right;
-  font-size: 16px;
-}
-
-.row-head {
-  border-color: #E9DFBB;
-  border-bottom: 1px solid #EFECDF;
-  z-index: 10000;
-  margin-top: 16px;
-  margin-bottom: -1px;
-  background: #FFFCF0;
-  position: relative;
-  clear: both;
+  padding-top: 16px;
 }
 
 .card .count {
+  display: block;
+  padding: 24px 0 24px 0;
+  text-align: center;
+  font-size: 14px;
+  background: #EEF7FF;
+  margin: 10px 4px 4px 0;
+  border-radius: 10px;
+
+  strong {
     display: block;
-    padding: 24px 0 24px 0;
-    text-align: center;
-    font-size: 14px;
-    background: #EEF7FF;
-    margin: 10px 4px 4px 0;
-    border-radius: 10px;
-    
-    strong {
-        display: block;
-        padding-bottom: 8px;
-        font-size: 20px;
-    }
+    padding-bottom: 8px;
+    font-size: 20px;
+  }
 }
 
 .card .count-1 {
-    background: #EEF7FF;
-    color: #43617D;
-    flex: 1;
+  background: #EEF7FF;
+  color: #43617D;
+  flex: 1;
 }
 
 .card .count-2 {
-    flex: 1;
-    background: #E4FFEF;
-    color: #00A541;
+  flex: 1;
+  background: #E4FFEF;
+  color: #00A541;
 }
 
-.empty-reports .svg-container {
-  margin-top: 60px;
+.card .count:last-child {
+  margin-right: 0;
 }
 
 .card .count-empty svg {
-    height: 160px;
-    margin-top: 0;
+  height: 160px;
+  margin-top: 0;
 }
 
 .big-number {
-    font-weight: 500;
-    font-size: 64px;
-    padding-bottom: 8px;
-    letter-spacing: -0.03em;
+  font-weight: 500;
+  font-size: 64px;
+  padding-bottom: 8px;
+  letter-spacing: -0.03em;
 }
 
 .next-prev {
-    float: right;
-    margin-top: -8px;
+  float: right;
+  margin-top: -8px;
 }
 
 .button-next:active,
 .button-prev:active {
-    background: #EEF7FF;
-    border-radius: 4px;
-    outline: none;
+  background: #EEF7FF;
+  border-radius: 4px;
+  outline: none;
 }
 
 .button-next {
-    display: block;
-    float: left;
-    padding: 6px 24px 6px 16px;
+  display: block;
+  float: left;
+  padding: 6px 24px 6px 16px;
 }
 
 .button-prev {
-    display: block;
-    float: right;
-    padding: 6px 24px 6px 16px;
-    margin-right: -6px;
+  display: block;
+  float: right;
+  padding: 6px 24px 6px 16px;
+  margin-right: -6px;
 }
 
 .day {
-    min-height: 250px;
+  min-height: 250px;
 }
