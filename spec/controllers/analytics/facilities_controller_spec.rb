@@ -121,6 +121,16 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
         expect(Rails.cache.exist?(analytics_dashboard_cache_key)).to be true
         expect(Rails.cache.fetch(analytics_dashboard_cache_key)).to eq expected_cache_value[:dashboard]
       end
+
+      it 'never ends up querying the database when cached' do
+        get :show, params: { id: facility.id }
+
+        expect_any_instance_of(Facility).to_not receive(:cohort_analytics)
+        expect_any_instance_of(Facility).to_not receive(:dashboard_analytics)
+
+        # this get should always have cached values
+        get :show, params: { id: facility.id }
+      end
     end
 
     context 'Recent bps' do

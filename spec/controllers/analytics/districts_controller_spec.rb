@@ -104,6 +104,16 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
         expect(Rails.cache.exist?(analytics_dashboard_cache_key)).to be true
         expect(Rails.cache.fetch(analytics_dashboard_cache_key)).to eq expected_cache_value[:dashboard]
       end
+
+      it 'never ends up querying the database when cached' do
+        get :show, params: { organization_id: organization.id, id: district_name, period: :quarter }
+
+        expect_any_instance_of(OrganizationDistrict).to_not receive(:cohort_analytics)
+        expect_any_instance_of(OrganizationDistrict).to_not receive(:dashboard_analytics)
+
+        # this get should always have cached values
+        get :show, params: { organization_id: organization.id, id: district_name, period: :quarter }
+      end
     end
   end
 
