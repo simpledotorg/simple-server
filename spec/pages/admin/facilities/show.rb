@@ -3,7 +3,7 @@ module AdminPage
     class Show < ApplicationPage
       FACILITY_PAGE_HEADING = { css: 'h1.page-title' }.freeze
       UPLOAD_FACILITY_CSV_LINK = { css: '.page-nav>a.btn-default' }.freeze
-      ADD_FACILITY_GROUP_BUTTON = { css: '.page-nav>a.btn-primary' }.freeze
+      ADD_FACILITY_GROUP_BUTTON = { css: '.page-nav>a.btn-success' }.freeze
       ORGANISATION_LIST = { css: 'h2' }.freeze
 
       def verify_facility_page_header

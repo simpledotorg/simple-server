@@ -78,7 +78,7 @@ RSpec.feature 'Facility page functionality', type: :feature do
   end
 
   context 'facility listing' do
-    context 'admin  has permission to manage facilities for a facility group' do
+    context 'admin has permission to manage facilities for a facility group' do
       let!(:permissions) do
         [create(:user_permission, user: admin, permission_slug: :manage_facilities, resource: ihmi_group_bathinda)]
       end
