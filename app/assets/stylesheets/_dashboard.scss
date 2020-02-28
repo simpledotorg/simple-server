@@ -163,3 +163,13 @@ th[aria-sort=ascending]:not(.no-sort):after {
 .pad-bottom {
   padding-bottom: 10px;
 }
+
+h2 .heading-label,
+h3 .heading-label {
+    display: block;
+    text-transform: uppercase;
+    color: $grey-mid;
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-bottom: 0.5em;
+}

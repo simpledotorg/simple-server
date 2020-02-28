@@ -3,8 +3,6 @@ $accent-color: #FF3355; /* PINK */
 $red-dark: #B81631;
 $red: #FF3355;
 $red-light: #FFD6DD;
-$green-dark: #007A31;
-$green: #00B849;
 $yellow-dark: #E0B000;
 $yellow: #FFC800;
 
@@ -67,6 +65,7 @@ h2 {
     font-size: 22px;
     font-weight: bold;
     font-family: "Roboto", sans-serif;
+    margin-bottom: 0.5em;
 }
 
 h3 {
@@ -74,6 +73,7 @@ h3 {
     color: $grey-darkest;
     font-weight: 700;
     font-family: "Roboto", sans-serif;
+    margin-bottom: 0.5em;
 }
 
 h4 {
@@ -101,6 +101,11 @@ h6 {
 
 h6.bold {
     font-weight: bold;
+}
+
+a.link-add {
+    color: $green;
+    display: block;
 }
 
 .btn-outline.dropdown-toggle {
