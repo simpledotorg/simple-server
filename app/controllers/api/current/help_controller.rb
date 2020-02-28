@@ -19,9 +19,9 @@ class Api::Current::HelpController < APIController
     Dir.glob(HELP_TRANSLATIONS_GLOB)
         .each do |translation_file|
       locale = Pathname.new(translation_file).basename('.html').to_s.dasherize.to_sym
-      unless I18n.backend.translations.dig(locale, :api, :help, :body_html).present?
+#      unless I18n.backend.translations.dig(locale, :api, :help, :body_html).present?
         I18n.backend.store_translations(locale, { api: { help: { body_html: File.read(translation_file) } } })
-      end
+#      end
     end
   end
 end
