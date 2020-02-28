@@ -31,7 +31,7 @@ class AnalyticsController < AdminController
 
     session[:period] = @period
 
-    @prev_periods = (@period == :quarter) ? 3 : 6
+    @prev_periods = @period == :quarter ? 5 : 6
   end
 
   def set_quarter
@@ -40,8 +40,8 @@ class AnalyticsController < AdminController
     @year = params[:year].to_i if params[:year].present?
   end
 
-  def set_analytics_cache(key, data)
-    Rails.cache.fetch(key, expires_in: ENV.fetch('ANALYTICS_DASHBOARD_CACHE_TTL')) { data }
+  def set_analytics_cache(key)
+    Rails.cache.fetch(key, expires_in: ENV.fetch('ANALYTICS_DASHBOARD_CACHE_TTL')) { yield }
   end
 
   def analytics_cache_key_cohort(period)
