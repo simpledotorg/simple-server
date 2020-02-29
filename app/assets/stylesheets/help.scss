@@ -39,11 +39,14 @@ body {
 }
 
 #help h6 {
-    font-size: 18px;
-    color: #FF3355;
-    margin: 1em 0 0 0;
-    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: rgba(0,0,0,0.5);
+    margin-left: 8px;
+    margin-bottom: 16px;
+    font-size: 16px;
 }
+
 
 #help hr {
     margin: 3em 140px;
@@ -87,6 +90,15 @@ nav.help-nav a {
     }
 }
 
+nav.help-nav a:active,
+nav.help-nav a:hover {
+    background: red;
+    border-radius: 10px;
+    color: #000;
+    background: rgba(0,0,0,0.04);
+    border-color: transparent;
+}
+
 nav.help-nav a:first-of-type {
     border: none;
 }
@@ -126,30 +138,17 @@ a.help-back {
     padding: 0 8px 100px 8px;
 }
 
-ul, ul li {
+ul {
     margin: 0;
-    padding-left: 0;
-    list-style: none;
+    padding: 0 0 0 22px;
 }
 
 ul li {
-    padding: 2px 0 0 30px;
-    margin: 16px 0;
+    margin-top: 16px;
+    margin-bottom: 16px;
     position: relative;
-}
-
-ul li:before {
-    content: "✓";
-    font-size: 14px;
-    text-align: center;
-    color: #6C737A;
-    padding: 0 4px;
-    background: #fff;
-    border: 1px solid #DADDE0;
-    border-radius: 3px;
-    position: absolute;
-    left: 0;
-    top: 2px;
+    margin-left: 0;
+    padding-left: 4px;
 }
 
 ol {
@@ -158,14 +157,14 @@ ol {
     list-style: none;
 }
 
-ol li {
+ol li.num {
     margin: 1.5em 0;
     font-size: 18px;
     counter-increment: custom-counter;
     position: relative;
 }
 
-ol li::before {
+ol li.num::before {
   content: counter(custom-counter);
   font-size: 16px;
   font-weight: bold;
@@ -211,8 +210,8 @@ a.whatsapp-button {
 
 .whatsapp-button svg {
     vertical-align: middle;
-    height: 30px;
-    margin: -1px 4px 0 0;
+    height: 34px;
+    margin: -3px 4px 0 0;
     width: auto;
     display: inline-block;
 }
@@ -226,6 +225,11 @@ span.code {
     background: #E0FFED;
     border-radius: 5px;
     padding: 0 6px;
+}
+
+.card-tip span.code {
+    background: rgba(0,0,0,0.06);
+    color: rgba(0,0,0,0.6);
 }
 
 .help-example {
@@ -249,12 +253,21 @@ a.faq {
 .answer {
     display: none;
     overflow: hidden;
+    transition-timing-function: ease-in-out;
+    transition-property: all;
+    transition-duration: 2s;
+    padding-top: 8px;
 }
 
-.card.card-tip,
-.card-tip h3 {
+.card.card-tip {
     background: #FFF8E0;
-    color: #83702E;
+    color: #54523D;
+    
+    svg {
+        width: 100px;
+        float: right;
+        margin: -8px -16px 8px 8px;
+    }
 }
 
 .card.support {
