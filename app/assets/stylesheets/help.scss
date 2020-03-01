@@ -93,7 +93,6 @@ nav.help-nav a {
 nav.help-nav a:active,
 nav.help-nav a:hover {
     background: red;
-    border-radius: 10px;
     color: #000;
     background: rgba(0,0,0,0.04);
     border-color: transparent;
@@ -240,6 +239,16 @@ span.code {
     }
 }
 
+.help-example-text {
+    background: #F0F2F5;
+    margin-top: 1em;
+    border-radius: 6px;
+    padding: 16px;
+    font-size: 16px;
+    color: #666;
+    line-height: 1.7;
+}
+
 p.step {
     margin: 2em 0;
 }
@@ -248,15 +257,34 @@ a.faq {
     display: block;
     font-size: 18px;
     font-weight: 500;
+    position: relative;
+    padding-right: 30px;
 }
 
 .answer {
-    display: none;
+    max-height: 0;
     overflow: hidden;
-    transition-timing-function: ease-in-out;
-    transition-property: all;
-    transition-duration: 2s;
-    padding-top: 8px;
+    transition: max-height 0.2s ease-out;
+}
+
+#help .active {
+    margin-bottom: 8px;
+}
+
+#help a.faq:after {
+  content: '\02715'; /* Unicode character for "plus" sign (+) */
+  font-size: 24px;
+  color: #999;
+  position: absolute;
+  right: 8px;
+  top: -4px;
+  font-weight: normal;
+  transform: rotate(45deg);
+  transition: transform 0.2s ease-out;
+}
+
+#help a.active:after {
+  transform: rotate(0deg)
 }
 
 .card.card-tip {
