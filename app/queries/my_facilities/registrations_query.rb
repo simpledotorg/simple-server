@@ -20,26 +20,28 @@ class MyFacilities::RegistrationsQuery
   def registrations
     @registrations ||=
       PatientRegistrationsPerDayPerFacility
-      .where(facility: @facilities)
-      .where("(year, #{@period}) IN (#{periods_as_sql_list})")
+        .where(facility: @facilities)
+        .where("(year, #{@period}) IN (#{periods_as_sql_list})")
   end
 
   def all_time_registrations
     @all_time_registrations ||=
       LatestBloodPressuresPerPatient
-      .where(facility: @facilities)
-      .where('patient_recorded_at < ?', Time.current.beginning_of_day - 2.months)
+        .where(facility: @facilities)
+        .where('patient_recorded_at < ?', Time.current.beginning_of_day - 2.months)
   end
 
   private
 
   def period_list(period, last_n)
     case period
-    when :quarter then last_n_quarters(n: last_n, inclusive: true)
-    when :month then
-      last_n_months(n: last_n, inclusive: true)
-        .map { |month| [month.year, month.month] }
-    when :day then last_n_days(n: last_n)
+      when :quarter then
+        last_n_quarters(n: last_n, inclusive: true)
+      when :month then
+        last_n_months(n: last_n, inclusive: true)
+          .map { |month| [month.year, month.month] }
+      when :day then
+        last_n_days(n: last_n)
     end
   end
 

@@ -32,74 +32,57 @@
 
   <%= inline_stylesheet('common_webview.css') %>
   <%= inline_stylesheet('user_analytics.css') %>
+
+  <%= javascript_include_tag 'user_analytics' %>
 </head>
 
 <body>
 <% if @statistics.blank? %>
   <%= render 'empty_reports' %>
 <% else %>
-
-  <div class="updated-date">Last updated <span><%= l(Time.current) %></span></div>
+  <div class="updated-date">Last updated <span><%= l(@statistics[:last_updated_at]) %></span></div>
 
   <div class="card" style="min-height: 210px;">
     <div class="next-prev">
       <a href="#" onclick="plusDivs(-1)" class="button-next"><span><%= inline_svg('icon_arrow_back.svg') %></span></a>
       <a href="#" onclick="plusDivs(+1)" class="button-prev"><span><%= inline_svg('icon_arrow_forward.svg') %></span></a>
     </div>
-    <div class="day">
-      <h3>14-Jan-2020</h3>
-      <div class="counts">
-        <div class="count count-1">
-          <strong>Registered</strong>
-          <div class="big-number">6</div>
-          New patients
+
+    <!-- Dump all statistics in a hidden div so that we can parse it in JS -->
+    <!-- This allows us to minimize usage of server-side rendered dates and control them using JS -->
+    <%#= content_tag :div, class: "statistics", data: { statistics: @statistics }, style: "display: none" %>
+
+    <!-- daily stats view-->
+    <div id="daily-stats-card">
+      <% @statistics[:overall_registrations_per_day].each do |r| %>
+        <div class="day">
+          <h3 class="stat-day">
+            <%= display_date(Date.ordinal(r.year.to_i, r.day.to_i)) %>
+          </h3>
+
+          <div class="counts">
+            <div class="count count-1">
+              <strong>Registered</strong>
+              <div class="big-number">
+                <%= r.registration_count %>
+              </div>
+              New patients
+            </div>
+          </div>
         </div>
-        <div class="count count-2">
-          <strong>Follow-up</strong>
-          <div class="big-number">6</div>
-          Follow-up patients
-        </div>
+      <% end %>
+
+      <div class="day count-empty unavailable" style="display: none">
+        <h3>17-Jan-2020</h3>
+        <%= inline_svg('icon_sync_cloud.svg') %>
+        <p>Tap "Sync" on the home screen for new data.</p>
       </div>
-    </div>
-    <div class="day">
-      <h3>15-Jan-2020</h3>
-      <div class="counts">
-        <div class="count count-1">
-          <strong>Registered</strong>
-          <div class="big-number">14</div>
-          New patients
-        </div>
-        <div class="count count-2">
-          <strong>Follow-up</strong>
-          <div class="big-number">101</div>
-          Follow-up patients
-        </div>
+
+      <div class="day count-empty today-unavailable " style="display:none">
+        <h3>Today</h3>
+        <%= inline_svg('icon_moon.svg') %>
+        <p>Today is not available yet.<br>Data is updated at midnight each day.</p>
       </div>
-    </div>
-    <div class="day">
-      <h3>16-Jan-2020</h3>
-      <div class="counts">
-        <div class="count count-1">
-          <strong>Registered</strong>
-          <div class="big-number">0</div>
-          New patients
-        </div>
-        <div class="count count-2">
-          <strong>Follow-up</strong>
-          <div class="big-number">0</div>
-          Follow-up patients
-        </div>
-      </div>
-    </div>
-    <div class="day count-empty">
-      <h3>17-Jan-2020</h3>
-      <%= inline_svg('icon_sync_cloud.svg') %>
-      <p>Tap "Sync" on the home screen for new data.</p>
-    </div>
-    <div class="day count-empty">
-      <h3>Today</h3>
-      <%= inline_svg('icon_moon.svg') %>
-      <p>Today is not available yet.<br>Data is updated at midnight each day.</p>
     </div>
   </div>
 
@@ -328,9 +311,11 @@
       <div>3000 follow-up<br>hypertension patients</div>
     </div>
   </div>
+
   <footer>
     <h4 style="padding-top: 60px;">Notes</h4>
-    <p>Data is for all activity at <%= @current_facility.name %>. If data appears out of date, tap the "Sync pending" link
+    <p>Data is for all activity at <%= @current_facility.name %>. If data appears out of date, tap the "Sync pending"
+      link
       on the home screen, then check again.</p>
     <p>Follow-up patients are counted once-per-month. If a patient follows up multiple times in a month, they are only
       counted once.</p>
@@ -340,9 +325,16 @@
     <div style="height: 100px;"></div>
   </footer>
 <% end %>
-
+</body>
 
 <script>
+
+  window.onload = function () {
+    todaysDate = new Date();
+
+    // if today is unavailable, show an additional card after last available data for syncing again
+    // if today is available, show today's data
+  };
 
   var slideIndex = 1;
   showDivs(slideIndex);
@@ -354,15 +346,20 @@
   function showDivs(n) {
     var i;
     var x = document.getElementsByClassName("day");
-    if (n > x.length) {slideIndex = 1}
-    if (n < 1) {slideIndex = x.length} ;
+
+    if (n > x.length) {
+      slideIndex = 1
+    }
+
+    if (n < 1) {
+      slideIndex = x.length
+    }
+
     for (i = 0; i < x.length; i++) {
       x[i].style.display = "none";
     }
-    x[slideIndex-1].style.display = "block";
+
+    x[slideIndex - 1].style.display = "block";
   }
-
 </script>
-
-</body>
-</html>u
+</html>
