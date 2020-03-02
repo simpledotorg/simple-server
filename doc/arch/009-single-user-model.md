@@ -1,9 +1,9 @@
 # Single User Model
 
 ## Context
-We currently have two seperate models for Administrators (Admin) and Nurses (User)
+We currently have two separate models for Administrators (Admin) and Nurses (User)
 to distinguish users of the dashboard and the app respectively. But there is an increasing
-overlap between the two models. 
+overlap between the two models.
 
 - Some Administrators are using the app
 - Access to dashboard needs to be audited similarly to syncing
