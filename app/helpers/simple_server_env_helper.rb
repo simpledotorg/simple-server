@@ -38,7 +38,7 @@ module SimpleServerEnvHelper
 
     image_name = CUSTOMIZED_ENVS.include?(env) ? "simple_logo_#{env}-256.png" : "simple_logo-256.png"
 
-    image_tag image_name, width: 48, height: 48, style: "width: 48px; height: 48px;"
+    image_tag image_name, width: 48, height: 48, style: 'width: 48px; height: 48px;'
   end
 
   def get_title_for_environment
