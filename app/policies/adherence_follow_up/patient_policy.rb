@@ -17,10 +17,6 @@ class AdherenceFollowUp::PatientPolicy < ApplicationPolicy
     update?
   end
 
-  def download?
-    user.has_permission?(:download_adherence_follow_up_list)
-  end
-
   class Scope < Scope
     attr_reader :user, :scope
 
