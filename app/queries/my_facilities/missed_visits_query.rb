@@ -92,13 +92,13 @@ class MyFacilities::MissedVisitsQuery
   private
 
   def visits_in_quarter(year, quarter, patients)
-    LatestBloodPressuresPerPatientPerQuarter.where(year: year, quarter: quarter).where(patient: patients)
+    LatestBloodPressuresPerPatientPerQuarter
+      .where(year: year, quarter: quarter, patient: patients)
   end
 
   def visits_in_month(year, month, patients)
     LatestBloodPressuresPerPatientPerMonth
-      .where(year: year, month: month)
-      .where(patient: patients)
+      .where(year: year, month: month, patient: patients)
   end
 
   def period_list(period, last_n)
