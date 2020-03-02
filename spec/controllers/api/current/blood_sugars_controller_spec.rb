@@ -53,7 +53,7 @@ RSpec.describe Api::Current::BloodSugarsController, type: :controller do
 
           updated_records.each do |record|
             db_record = model.find(record['id'])
-            expect(db_record.attributes.to_json_and_back.with_payload_keys.with_int_timestamps)
+            expect(db_record.attributes.with_payload_keys.with_int_timestamps)
               .to eq(record.to_json_and_back.with_int_timestamps)
           end
         end
