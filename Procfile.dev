@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-web: bundle exec rails server
-=======
 web: bundle exec rails server -p 3000
->>>>>>> master
 worker: bundle exec sidekiq
 clock: bundle exec whenever && sleep infinity
