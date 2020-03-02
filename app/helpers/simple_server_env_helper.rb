@@ -17,7 +17,12 @@ module SimpleServerEnvHelper
     image_name = CUSTOMIZED_ENVS.include?(env) ? "simple_logo_#{env}.svg" : "simple_logo.svg"
 
     image_tag image_name, width: 30, height: 30, class: "d-inline-block mr-2 align-top", alt: alt_for_environment
+  end
 
+  def alt_for_environment
+    env = ENV.fetch("SIMPLE_SERVER_ENV")
+
+    CUSTOMIZED_ENVS.include?(env) ? "Simple Server #{env.capitalize} Logo" : "Simple Server Logo"
   end
 
   def favicon_for_environment
@@ -28,10 +33,12 @@ module SimpleServerEnvHelper
     image_path(image_name)
   end
 
-  def alt_for_environment
+  def mailer_logo_for_environment
     env = ENV.fetch("SIMPLE_SERVER_ENV")
 
-    CUSTOMIZED_ENVS.include?(env) ? "Simple Server #{env.capitalize} Logo" : "Simple Server Logo"
+    image_name = CUSTOMIZED_ENVS.include?(env) ? "simple_logo_#{env}-256.png" : "simple_logo-256.png"
+
+    image_tag image_name, width: 48, height: 48, style: "width: 48px; height: 48px;"
   end
 
   def get_title_for_environment
