@@ -21,7 +21,7 @@ class CorrectBangladeshPhoneNumber
     new_number = number
 
     new_number = new_number.start_with?('0') ? new_number : "0#{new_number}"
-    new_number.gsub!('-', '')
+    new_number.delete!('-')
 
     new_number
   end
