@@ -7,15 +7,15 @@ class PatientsController < AdminController
   def index
     authorize([:adherence_follow_up, Patient])
 
-    @patients = policy_scope([:adherence_follow_up, Patient]).not_contacted.order(device_created_at: :asc)
-    @patients = @patients.where(registration_facility: current_facility) if current_facility.present?
+    @patients = policy_scope([:adherence_follow_up, Patient])
+                  .not_contacted
+                  .order(device_created_at: :asc)
 
-    respond_to do |format|
-      format.html { @patients = paginate(@patients) }
-      format.csv do
-        send_data(render_to_string('index.csv.erb'), filename: download_filename)
-      end
+    if current_facility.present?
+      @patients = @patients.where(registration_facility: current_facility)
     end
+
+    @patients = paginate(@patients)
   end
 
   def update
@@ -44,10 +44,5 @@ class PatientsController < AdminController
 
   def page
     params[:patient][:page]
-  end
-
-  def download_filename
-    facility_name = current_facility.present? ? current_facility.name.parameterize : 'all'
-    "adherence-follow-up-patients_#{facility_name}_#{Date.current}.csv"
   end
 end
