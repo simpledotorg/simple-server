@@ -1,11 +1,4 @@
 class AdherenceFollowUp::FacilityPolicy < ApplicationPolicy
-  def download?
-    user_has_any_permissions?(
-      [:download_adherence_follow_up_list, nil],
-      [:download_adherence_follow_up_list, record.organization],
-      [:download_adherence_follow_up_list, record.facility_group]
-    )
-  end
 
   class Scope < Scope
     attr_reader :user, :scope
