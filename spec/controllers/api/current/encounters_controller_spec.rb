@@ -7,8 +7,8 @@ RSpec.describe Api::Current::EncountersController, type: :controller do
 
   let(:model) { Encounter }
 
-  let(:build_payload) { lambda { build_encounters_payload } }
-  let(:build_invalid_payload) { lambda { build_invalid_encounters_payload } }
+  let(:build_payload) { -> { build_encounters_payload } }
+  let(:build_invalid_payload) { -> { build_invalid_encounters_payload } }
   let(:invalid_record) { build_invalid_payload.call }
 
   let(:number_of_schema_errors_in_invalid_payload) { 3 }
@@ -33,7 +33,6 @@ RSpec.describe Api::Current::EncountersController, type: :controller do
   end
 
   it_behaves_like 'a sync controller that authenticates user requests'
-  it_behaves_like 'a working sync controller that short circuits disabled apis'
   it_behaves_like 'a sync controller that audits the data access'
 
   describe 'POST sync: send data from device to server;' do
@@ -51,26 +50,26 @@ RSpec.describe Api::Current::EncountersController, type: :controller do
           build_encounters_payload(encounter)
         end
 
-        expect {
+        expect do
           post(:sync_from_user, params: { encounters: encounters }, as: :json)
-        }.to change { Encounter.count }.by(3)
+        end.to change { Encounter.count }.by(3)
 
         expect(response).to have_http_status(200)
       end
 
       it 'creates new encounters with no observations' do
         empty_observations = {
-          :observations => {
-            :blood_pressures => []
+          observations: {
+            blood_pressures: []
           }
         }.with_indifferent_access
 
         encounter_with_no_observations = build_encounters_payload(build_record).merge(empty_observations)
 
-        expect {
+        expect do
           post(:sync_from_user, params: { encounters: [encounter_with_no_observations] }, as: :json)
-        }.to change { Encounter.count }.by(1)
-               .and change { Observation.count }.by(0)
+        end.to change { Encounter.count }.by(1)
+                                         .and change { Observation.count }.by(0)
 
         expect(response).to have_http_status(200)
       end
@@ -78,9 +77,9 @@ RSpec.describe Api::Current::EncountersController, type: :controller do
       it 'associates registration facility with the encounter' do
         encounter = build_encounters_payload(build_record)
 
-        expect {
+        expect do
           post(:sync_from_user, params: { encounters: [encounter] }, as: :json)
-        }.to change { Encounter.count }.by(1)
+        end.to change { Encounter.count }.by(1)
 
         expect(response).to have_http_status(200)
         expect(Encounter.find(encounter[:id]).facility).to eq request_facility
@@ -90,9 +89,9 @@ RSpec.describe Api::Current::EncountersController, type: :controller do
         encounter = build_encounters_payload(build_record)
         patient = Patient.find(encounter['patient_id'])
 
-        expect {
+        expect do
           post(:sync_from_user, params: { encounters: [encounter] }, as: :json)
-        }.to change { Encounter.count }.by(1)
+        end.to change { Encounter.count }.by(1)
 
         expect(response).to have_http_status(200)
         expect(Encounter.find(encounter[:id]).patient).to eq patient
@@ -104,12 +103,11 @@ RSpec.describe Api::Current::EncountersController, type: :controller do
           # Adding two observations from separate facilities
           encounter[:observations][:blood_pressures].append(build_blood_pressure_payload)
           encounter[:observations][:blood_pressures].append(build_blood_pressure_payload)
-
         end
         it 'does not create an encounter' do
-          expect {
+          expect do
             post(:sync_from_user, params: { encounters: [encounter] }, as: :json)
-          }.to_not change { Encounter.count }
+          end.to_not change { Encounter.count }
         end
 
         it 'returns an error in the response' do
@@ -117,7 +115,6 @@ RSpec.describe Api::Current::EncountersController, type: :controller do
           expect(JSON(response.body)['errors']).to eq(['schema' => ['Encounter observations belong to more than one facility'],
                                                        'id' => encounter['id']])
         end
-
       end
     end
   end

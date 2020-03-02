@@ -11,10 +11,10 @@ RSpec.describe Api::Current::AppointmentsController, type: :controller do
 
   let(:model) { Appointment }
 
-  let(:build_payload) { lambda { build_appointment_payload } }
-  let(:build_invalid_payload) { lambda { build_invalid_appointment_payload } }
+  let(:build_payload) { -> { build_appointment_payload } }
+  let(:build_invalid_payload) { -> { build_invalid_appointment_payload } }
   let(:invalid_record) { build_invalid_payload.call }
-  let(:update_payload) { lambda { |appointment| updated_appointment_payload appointment } }
+  let(:update_payload) { ->(appointment) { updated_appointment_payload appointment } }
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
   def create_record(options = {})
@@ -29,7 +29,6 @@ RSpec.describe Api::Current::AppointmentsController, type: :controller do
 
   it_behaves_like 'a sync controller that authenticates user requests'
   it_behaves_like 'a sync controller that audits the data access'
-  it_behaves_like 'a working sync controller that short circuits disabled apis'
 
   describe 'POST sync: send data from device to server;' do
     it_behaves_like 'a working sync controller creating records'
@@ -54,8 +53,8 @@ RSpec.describe Api::Current::AppointmentsController, type: :controller do
           after_post_appointments_ids = after_post_appointments.map(&:id)
 
           new_records.each do |record|
-            expect(after_post_appointments_ids.include? record[:id]).to be true
-            expect(Appointment.appointment_types.include? record[:appointment_type]).to be true
+            expect(after_post_appointments_ids.include?(record[:id])).to be true
+            expect(Appointment.appointment_types.include?(record[:appointment_type])).to be true
           end
         end
 
@@ -87,7 +86,7 @@ RSpec.describe Api::Current::AppointmentsController, type: :controller do
         it 'returns an error for new records with invalid appointment type' do
           records_with_invalid_appointment_type = (1..3).map { build_payload.call }
           records_with_invalid_appointment_type.each do |record|
-            record[:appointment_type] = ['manuall', 'automat', 'foo'].sample
+            record[:appointment_type] = %w[manuall automat foo].sample
           end
 
           records_payload_with_bad_appointment_type = Hash[request_key, records_with_invalid_appointment_type]
@@ -170,7 +169,7 @@ RSpec.describe Api::Current::AppointmentsController, type: :controller do
           response_appointments = JSON(response.body)['appointments']
 
           response_appointments.each do |appointment|
-            expect(Appointment.appointment_types.include? appointment['appointment_type']).to be true
+            expect(Appointment.appointment_types.include?(appointment['appointment_type'])).to be true
           end
         end
       end

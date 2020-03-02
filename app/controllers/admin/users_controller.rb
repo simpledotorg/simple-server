@@ -9,7 +9,10 @@ class Admin::UsersController < AdminController
     authorize([:manage, :user, User])
     @users = policy_scope([:manage, :user, User])
                .joins(phone_number_authentications: :facility)
-               .where('phone_number_authentications.registration_facility_id IN (?)', selected_district_facilities([:manage, :user]).map(&:id))
+               .where(
+                 'phone_number_authentications.registration_facility_id IN (?)',
+                 selected_district_facilities([:manage, :user]).map(&:id)
+               )
                .order('facilities.name', 'users.full_name', 'users.device_created_at')
 
     @users = paginate(@users)
@@ -55,7 +58,9 @@ class Admin::UsersController < AdminController
   end
 
   def enable_access
-    @user.sync_approval_allowed(I18n.t('admin.allowed_access_to_user', admin_name: current_admin.email.split('@').first))
+    @user.sync_approval_allowed(
+      I18n.t('admin.allowed_access_to_user', admin_name: current_admin.email.split('@').first)
+    )
     @user.save
     redirect_to request.referer || admin_user_url(@user), notice: 'User access has been enabled.'
   end
@@ -72,7 +77,7 @@ class Admin::UsersController < AdminController
   end
 
   def set_time_zone
-    time_zone = ENV['ANALYTICS_TIME_ZONE'] || AnalyticsController::DEFAULT_ANALYTICS_TIME_ZONE
+    time_zone = Rails.application.config.country[:time_zone] || AnalyticsController::DEFAULT_ANALYTICS_TIME_ZONE
     Time.use_zone(time_zone) { yield }
   end
 

@@ -7,9 +7,9 @@ RSpec.describe 'Patients sync', type: :request do
   let(:sync_route) { '/api/v2/patients/sync' }
   let(:blood_pressure_sync_route) { '/api/v2/blood_pressures/sync' }
 
-  let(:build_payload) { lambda { build_patient_payload_v2(FactoryBot.build(:patient, registration_facility: request_user.facility)) } }
-  let(:build_invalid_payload) { lambda { build_invalid_patient_payload } }
-  let(:update_payload) { lambda { |record| updated_patient_payload record } }
+  let(:build_payload) { -> { build_patient_payload_v2(FactoryBot.build(:patient, registration_facility: request_user.facility)) } }
+  let(:build_invalid_payload) { -> { build_invalid_patient_payload } }
+  let(:update_payload) { ->(record) { updated_patient_payload record } }
 
   let(:keys_not_expected_in_response) { ['business_identifiers'] }
 
@@ -28,7 +28,7 @@ RSpec.describe 'Patients sync', type: :request do
     created_patients = Patient.find(first_patients_payload.map { |patient| patient['id'] })
     updated_patients_payload = created_patients.map do |patient|
       updated_patient_payload_v2(patient)
-        .except(%w(address phone_numbers).sample)
+        .except(%w[address phone_numbers].sample)
     end
 
     post sync_route, params: { patients: updated_patients_payload }.to_json, headers: headers

@@ -1,0 +1,151 @@
+<% content_for(:content) do %>
+  <!---------------------
+  MOBILE NAV
+  --------------------->
+  <div class="mobile">
+    <div class="dropdown">
+      <% my_facilities_page_titles = { my_facilities_overview_path => 'Overview',
+                                       my_facilities_blood_pressure_control_path => 'BP control',
+                                       my_facilities_registrations_path => 'Registrations' } %>
+      <h1 class="btn btn-sm dropdown-toggle pl-0" role="button" id="dropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <%= my_facilities_page_titles[request.path] %>
+      </h1>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink2">
+        <%= link_to "Overview", my_facilities_overview_path(request.query_parameters), class: "dropdown-item" %>
+        <%= link_to "BP control", my_facilities_blood_pressure_control_path(request.query_parameters), class: "dropdown-item" %>
+        <%= link_to "Registrations", my_facilities_registrations_path(request.query_parameters), class: "dropdown-item" %>
+        <%= link_to "Missed Visits", my_facilities_missed_visits_path(request.query_parameters), class: "dropdown-item" %>
+      </div>
+    </div>
+    <% unless request.path == my_facilities_overview_path %>
+      <div class="mt-0 mb-4 active-filters-mobile">
+        <a class="filters-modal-toggle" data-toggle="modal" data-target="#facility-filter-modal">
+            <span class="filter-tags">
+              <% (Array(@selected_sizes) + Array(params[:zone])).each do |size| %>
+                <span class="badge badge-pill badge-secondary"><%= size.capitalize %></span>
+              <% end %>
+            </span>
+          <i class="fas fa-filter"></i> Filter facilities
+        </a>
+      </div>
+    <% end %>
+
+    <!-- Filter Modal -->
+    <div class="modal fade" id="facility-filter-modal" tabindex="-1" role="dialog" aria-labelledby="facility-filter-modal" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title" id="exampleModalCenterTitle">Facility filters</h2>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-6 mb-3">
+                <h4>Facility sizes</h4>
+                <form id="query-filters-mobile">
+                  <% @facility_sizes.each do |size| %>
+                    <div class="checkbox-row">
+                      <label for=<%= "facility-#{size}-mobile" %>>
+                      <%= check_box_tag("size[]", value=size, checked=@selected_sizes&.include?(size), {id: "facility-#{size}-mobile"}) %>
+                        <%= size.capitalize %>
+                      </label>
+                    </div>
+                  <% end %>
+                </form>
+              </div>
+              <div class="col-6 mb-3">
+                <h4>Areas</h4>
+                <div class="checkbox-row">
+                  <label for="all-zones-filter-mobile">
+                    <%= radio_button_tag("zone",
+                                         "",
+                                         checked=(@selected_zones.size == @zones.size),
+                                         { form: "query-filters-mobile",
+                                           id: "all-zones-filter-mobile" }) %>
+                    All blocks
+                  </label>
+                </div>
+                <% @zones.each do |zone| %>
+                  <div class="checkbox-row">
+                    <label for="<%= zone %>-filter-mobile">
+                      <%= radio_button_tag("zone",
+                                           zone,
+                                           checked=(@selected_zones.size == 1 && @selected_zones.first == zone),
+                                           { form: "query-filters-mobile",
+                                             id: "all-zones-filter-mobile" }) %>
+                      <%= zone.capitalize %>
+                    </label>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <a href="?" type="button" class="btn btn-secondary">Clear all</a>
+            <button type="submit" form="query-filters-mobile" class="btn btn-primary">DONE</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!---------------------
+  DESKTOP NAV
+  --------------------->
+  <div class="row">
+    <div class="col-lg-2 pl-lg-0 desktop">
+      <nav class="secondary-nav">
+        <%= link_to 'Overview', my_facilities_overview_path,
+                    class: "nav-link #{active_action?("index")}" %>
+        <%= link_to 'BP control', my_facilities_blood_pressure_control_path(preserve_query_params(request.query_parameters, ["size"])),
+                    class: "nav-link #{active_action?("blood_pressure_control")}" %>
+        <%= link_to 'Registrations', my_facilities_registrations_path(preserve_query_params(request.query_parameters, ["size", "period"])),
+                    class: "nav-link #{active_action?("registrations")}" %>
+        <%= link_to 'Missed Visits', my_facilities_missed_visits_path(preserve_query_params(request.query_parameters, ["size", "period"])),
+                    class: "nav-link #{active_action?("missed_visits")}" %>
+      </nav>
+      <% unless request.path == my_facilities_overview_path %>
+        <section id="facility-filters" class="secondary-nav-filters">
+          <h4>Facility Filters</h4>
+          <div class="dropdown show">
+            <a class="btn btn-sm dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <% if @selected_zones.size == 1 %>
+                <%= @selected_zones.first.capitalize %>
+              <% else %>
+                All blocks
+              <% end %>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+              <button type="submit" name="zone" value="" class="dropdown-item" form="query-filters">All blocks</button>
+              <div class="dropdown-divider"></div>
+              <% @zones.each do |zone| %>
+                <button type="submit" name="zone" value="<%= zone %>" class="dropdown-item" form="query-filters"><%= zone&.capitalize %></button>
+              <% end %>
+            </div>
+          </div>
+          <form id="query-filters">
+            <% @facility_sizes.each do |size| %>
+              <div>
+                <label for=<%= "facility-#{size}" %>>
+                  <%= check_box_tag("size[]", value=size, checked=@selected_sizes&.include?(size), {id: "facility-#{size}"}) %>
+                  <%= size.capitalize %>
+                </label>
+              </div>
+            <% end %>
+            <label>
+              <button type="submit" class="btn btn-sm btn-outline-primary">Apply filters</button>
+            </label>
+          </form>
+        </section>
+      <% end %>
+    </div>
+    <div class="col-lg-10 pr-lg-0">
+      <%= yield %>
+    </div>
+  </div>
+<% end %>
+<%= render template: "layouts/application" %>

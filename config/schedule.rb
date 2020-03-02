@@ -6,7 +6,8 @@ env :PATH, ENV['PATH']
 DEFAULT_CRON_TIME_ZONE = 'Asia/Kolkata'
 
 def local(time)
-  TZInfo::Timezone.get(DEFAULT_CRON_TIME_ZONE).local_to_utc(Time.parse(time))
+  TZInfo::Timezone.get(DEFAULT_CRON_TIME_ZONE)
+                  .local_to_utc(Time.parse(time))
 end
 
 every :day, at: local('11:00 pm').utc, roles: [:cron] do
@@ -23,4 +24,8 @@ end
 
 every :month, at: local('02:00 am'), roles: [:seed] do
   rake 'generate:seed[1]'
+end
+
+every :day, at: local('03:00 am'), roles: [:cron] do
+  rake 'refresh_materialized_db_views'
 end

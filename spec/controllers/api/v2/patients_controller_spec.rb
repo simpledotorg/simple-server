@@ -6,9 +6,9 @@ RSpec.describe Api::V2::PatientsController, type: :controller do
 
   let(:model) { Patient }
 
-  let(:build_payload) { lambda { build_patient_payload_v2 } }
-  let(:build_invalid_payload) { lambda { build_invalid_patient_payload } }
-  let(:update_payload) { lambda { |record| updated_patient_payload_v2 record } }
+  let(:build_payload) { -> { build_patient_payload_v2 } }
+  let(:build_invalid_payload) { -> { build_invalid_patient_payload } }
+  let(:update_payload) { ->(record) { updated_patient_payload_v2 record } }
   let(:invalid_record) { build_invalid_payload.call }
 
   let(:number_of_schema_errors_in_invalid_payload) { 2 + invalid_record['phone_numbers'].count }
@@ -25,7 +25,6 @@ RSpec.describe Api::V2::PatientsController, type: :controller do
 
   it_behaves_like 'a sync controller that authenticates user requests'
   it_behaves_like 'a sync controller that audits the data access'
-  it_behaves_like 'a working sync controller that short circuits disabled apis'
 
   describe 'POST sync: send data from device to server;' do
     it_behaves_like 'a working sync controller creating records'

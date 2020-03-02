@@ -6,7 +6,7 @@ class AnalyticsController < AdminController
   DEFAULT_ANALYTICS_TIME_ZONE = 'Asia/Kolkata'
 
   def set_time_zone
-    time_zone = ENV['ANALYTICS_TIME_ZONE'] || DEFAULT_ANALYTICS_TIME_ZONE
+    time_zone = Rails.application.config.country[:time_zone] || DEFAULT_ANALYTICS_TIME_ZONE
 
     Groupdate.time_zone = time_zone
 
@@ -31,17 +31,17 @@ class AnalyticsController < AdminController
 
     session[:period] = @period
 
-    @prev_periods = (@period == :quarter) ? 3 : 6
+    @prev_periods = @period == :quarter ? 5 : 6
   end
 
   def set_quarter
-    @quarter, @year = previous_quarter_and_year
+    @year, @quarter = previous_year_and_quarter
     @quarter = params[:quarter].to_i if params[:quarter].present?
     @year = params[:year].to_i if params[:year].present?
   end
 
-  def set_analytics_cache(key, data)
-    Rails.cache.fetch(key, expires_in: ENV.fetch('ANALYTICS_DASHBOARD_CACHE_TTL')) { data }
+  def set_analytics_cache(key)
+    Rails.cache.fetch(key, expires_in: ENV.fetch('ANALYTICS_DASHBOARD_CACHE_TTL')) { yield }
   end
 
   def analytics_cache_key_cohort(period)

@@ -2,18 +2,19 @@ require 'rails_helper'
 
 RSpec.describe Admin::FacilitiesController, type: :controller do
   let(:facility_group) { create(:facility_group) }
-  let(:valid_attributes) {
+  let(:valid_attributes) do
     attributes_for(
-        :facility,
-        facility_group_id: facility_group.id,
+      :facility,
+      facility_group_id: facility_group.id
     )
-  }
+  end
 
-  let(:invalid_attributes) {
+  let(:invalid_attributes) do
     attributes_for(
-        :facility,
-        name: nil)
-  }
+      :facility,
+      name: nil
+    )
+  end
 
   before do
     admin = create(:admin, :supervisor, facility_group: facility_group)
@@ -53,9 +54,9 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
   describe 'POST #create' do
     context 'with valid params' do
       it 'creates a new Facility' do
-        expect {
+        expect do
           post :create, params: { facility: valid_attributes, facility_group_id: facility_group.id }
-        }.to change(Facility, :count).by(1)
+        end.to change(Facility, :count).by(1)
       end
 
       it 'redirects to the facilities' do
@@ -74,13 +75,14 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
 
   describe 'PUT #update' do
     context 'with valid params' do
-      let(:new_attributes) {
+      let(:new_attributes) do
         attributes_for(
-            :facility,
-            facility_group_id: facility_group.id,
-            pin: "999999"
+          :facility,
+          facility_group_id: facility_group.id,
+          pin: '999999',
+          monthly_estimated_opd_load: 500
         ).except(:id)
-      }
+      end
 
       it 'updates the requested facility' do
         facility = Facility.create! valid_attributes
@@ -89,7 +91,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
         expect(facility.attributes.except('id', 'created_at', 'updated_at', 'deleted_at', 'slug',
                                           'facility_group_name', 'import', 'latitude', 'longitude',
                                           'organization_name'))
-            .to eq new_attributes.with_indifferent_access
+          .to eq new_attributes.with_indifferent_access
       end
 
       it 'redirects to the facility' do
@@ -111,9 +113,9 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
   describe 'DELETE #destroy' do
     it 'destroys the requested facility' do
       facility = Facility.create! valid_attributes
-      expect {
+      expect do
         delete :destroy, params: { id: facility.to_param, facility_group_id: facility_group.id }
-      }.to change(Facility, :count).by(-1)
+      end.to change(Facility, :count).by(-1)
     end
 
     it 'redirects to the facilities list' do
@@ -132,42 +134,42 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
 
   describe 'POST #upload' do
     context 'with valid organization and facility group' do
-      let(:organization) { FactoryBot.create(:organization, name: "OrgOne") }
-      let!(:facility_group_2) {
-        FactoryBot.create(:facility_group, name: "FGTwo",
-                          organization_id: organization.id)
-      }
+      let(:organization) { FactoryBot.create(:organization, name: 'OrgOne') }
+      let!(:facility_group_2) do
+        FactoryBot.create(:facility_group, name: 'FGTwo',
+                                           organization_id: organization.id)
+      end
       let(:upload_file) { fixture_file_upload('files/upload_facilities_test.csv', 'text/csv') }
       it 'uploads facilities file and passes validations' do
-        post :upload, params: { :upload_facilities_file => upload_file }
+        post :upload, params: { upload_facilities_file: upload_file }
         expect(flash[:notice]).to match(/File upload successful, your facilities will be created shortly./)
       end
     end
 
     context 'with duplicate rows' do
-      let(:organization) { FactoryBot.create(:organization, name: "OrgOne") }
-      let!(:facility_group_2) {
-        FactoryBot.create(:facility_group, name: "FGTwo",
-                          organization_id: organization.id)
-      }
+      let(:organization) { FactoryBot.create(:organization, name: 'OrgOne') }
+      let!(:facility_group_2) do
+        FactoryBot.create(:facility_group, name: 'FGTwo',
+                                           organization_id: organization.id)
+      end
       let(:upload_file) { fixture_file_upload('files/upload_facilities_test_2.csv', 'text/csv') }
       it 'uploads facilities file and fails validations' do
-        post :upload, params: { :upload_facilities_file => upload_file }
-        expect(assigns(:errors)).to eq(["Uploaded file has duplicate facilities",
+        post :upload, params: { upload_facilities_file: upload_file }
+        expect(assigns(:errors)).to eq(['Uploaded file has duplicate facilities',
                                         "Row(s) 2, 4: Facility group doesn't exist for the organization",
                                         "Row(s) 3: Organization doesn't exist",
                                         "Row(s) 5: Facility group doesn't exist for the organization and District can't be blank"])
       end
     end
     context 'with invalid organization and facility group' do
-      let(:organization) { FactoryBot.create(:organization, name: "OrgOne") }
-      let!(:facility_group_2) {
-        FactoryBot.create(:facility_group, name: "FGTwo",
-                          organization_id: organization.id)
-      }
+      let(:organization) { FactoryBot.create(:organization, name: 'OrgOne') }
+      let!(:facility_group_2) do
+        FactoryBot.create(:facility_group, name: 'FGTwo',
+                                           organization_id: organization.id)
+      end
       let(:upload_file) { fixture_file_upload('files/upload_facilities_test_3.csv', 'text/csv') }
       it 'uploads facilities file and fails validations' do
-        post :upload, params: { :upload_facilities_file => upload_file }
+        post :upload, params: { upload_facilities_file: upload_file }
         expect(assigns(:errors)).to eq(["Row(s) 2: Facility group doesn't exist for the organization",
                                         "Row(s) 3: Organization doesn't exist",
                                         "Row(s) 4: Facility group doesn't exist for the organization and District can't be blank",
@@ -175,13 +177,13 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
       end
     end
     context 'with unsupported file type' do
-      let(:upload_file) {
+      let(:upload_file) do
         fixture_file_upload('files/upload_facilities.docx',
                             'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-      }
+      end
       it 'uploads facilities file and fails validations' do
-        post :upload, params: { :upload_facilities_file => upload_file }
-        expect(assigns(:errors)).to eq(["File type not supported, please upload a csv or xlsx file instead"])
+        post :upload, params: { upload_facilities_file: upload_file }
+        expect(assigns(:errors)).to eq(['File type not supported, please upload a csv or xlsx file instead'])
       end
     end
   end

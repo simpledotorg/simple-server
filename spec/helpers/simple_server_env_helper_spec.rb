@@ -55,7 +55,7 @@ RSpec.describe SimpleServerEnvHelper do
     context 'when in the default environment' do
       it 'should return the default logo' do
         ENV[simple_server_env] = 'default'
-        logo_for_default_environment = image_tag 'simple_logo.svg', width: 30, height: 30, class: "d-inline-block mr-2 align-top", alt: 'Simple Server Logo'
+        logo_for_default_environment = image_tag 'simple_logo.svg', width: 30, height: 30, class: 'd-inline-block mr-2 align-top', alt: 'Simple Server Logo'
 
         expect(logo_for_environment).to eq logo_for_default_environment
       end
@@ -64,7 +64,7 @@ RSpec.describe SimpleServerEnvHelper do
     context 'when in the qa environment' do
       it 'should return the QA logo' do
         ENV[simple_server_env] = 'qa'
-        logo_for_qa_environment = image_tag 'simple_logo_qa.svg', width: 30, height: 30, class: "d-inline-block mr-2 align-top", alt: 'Simple Server Qa Logo'
+        logo_for_qa_environment = image_tag 'simple_logo_qa.svg', width: 30, height: 30, class: 'd-inline-block mr-2 align-top', alt: 'Simple Server Qa Logo'
 
         expect(logo_for_environment).to eq logo_for_qa_environment
       end
@@ -73,7 +73,7 @@ RSpec.describe SimpleServerEnvHelper do
     context 'when in the staging environment' do
       it 'should return the staging logo' do
         ENV[simple_server_env] = 'staging'
-        logo_for_staging_environment = image_tag 'simple_logo_staging.svg', width: 30, height: 30, class: "d-inline-block mr-2 align-top", alt: 'Simple Server Staging Logo'
+        logo_for_staging_environment = image_tag 'simple_logo_staging.svg', width: 30, height: 30, class: 'd-inline-block mr-2 align-top', alt: 'Simple Server Staging Logo'
 
         expect(logo_for_environment).to eq logo_for_staging_environment
       end
@@ -82,7 +82,7 @@ RSpec.describe SimpleServerEnvHelper do
     context 'when in the sandbox environment' do
       it 'should return the sandbox logo' do
         ENV[simple_server_env] = 'sandbox'
-        logo_for_sandbox_environment = image_tag 'simple_logo_sandbox.svg', width: 30, height: 30, class: "d-inline-block mr-2 align-top", alt: 'Simple Server Sandbox Logo'
+        logo_for_sandbox_environment = image_tag 'simple_logo_sandbox.svg', width: 30, height: 30, class: 'd-inline-block mr-2 align-top', alt: 'Simple Server Sandbox Logo'
 
         expect(logo_for_environment).to eq logo_for_sandbox_environment
       end
@@ -91,7 +91,7 @@ RSpec.describe SimpleServerEnvHelper do
     context 'when in the production environment' do
       it 'should return the production logo' do
         ENV[simple_server_env] = 'production'
-        logo_for_production_environment = image_tag 'simple_logo_production.svg', width: 30, height: 30, class: "d-inline-block mr-2 align-top", alt: 'Simple Server Production Logo'
+        logo_for_production_environment = image_tag 'simple_logo_production.svg', width: 30, height: 30, class: 'd-inline-block mr-2 align-top', alt: 'Simple Server Production Logo'
 
         expect(logo_for_environment).to eq logo_for_production_environment
       end
@@ -99,22 +99,26 @@ RSpec.describe SimpleServerEnvHelper do
   end
 
   describe 'favicon_for_environment' do
+    before { allow(self).to receive(:image_path).with(expected_favicon).and_return('fingerprinted_favicon') }
+
     context 'when in the default environment' do
+      let(:expected_favicon) { 'simple_logo_favicon.png' }
+
       it 'should return the default logo' do
         ENV[simple_server_env] = 'default'
-        favicon_for_default_environment = 'simple_logo_favicon.png'
 
-        expect(favicon_for_environment).to eq favicon_for_default_environment
+        expect(favicon_for_environment).to eq 'fingerprinted_favicon'
       end
     end
 
     SimpleServerEnvHelper::CUSTOMIZED_ENVS.each do |environment|
       context "when in the #{environment} environment" do
+        let(:expected_favicon) { "simple_logo_#{environment}_favicon.png" }
+
         it "should return the #{environment} favicon" do
           ENV[simple_server_env] = environment
-          favicon_for_environment = "simple_logo_#{environment}_favicon.png"
 
-          expect(favicon_for_environment).to eq favicon_for_environment
+          expect(favicon_for_environment).to eq 'fingerprinted_favicon'
         end
       end
     end
@@ -162,4 +166,3 @@ RSpec.describe SimpleServerEnvHelper do
     end
   end
 end
-

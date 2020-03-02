@@ -10,10 +10,9 @@ RSpec.describe Api::V2::CommunicationsController, type: :controller do
   end
 
   let(:model) { Communication }
-  let(:build_payload) { lambda { build_communication_payload } }
+  let(:build_payload) { -> { build_communication_payload } }
 
   it_behaves_like 'a sync controller that authenticates user requests'
-  it_behaves_like 'a working sync controller that short circuits disabled apis'
 
   describe 'POST sync: send data from device to server;' do
   end

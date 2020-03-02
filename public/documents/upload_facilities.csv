@@ -1,1 +1,1 @@
-organization,facility_group,facility_name,facility_type,street_address (optional),village_or_colony (optional),district,state,country,pin (optional),latitude (optional),longitude (optional)
+organization,facility_group,facility_name,facility_type,street_address (optional),village_or_colony (optional),zone_or_block (optional),district,state,country,pin (optional),latitude (optional),longitude (optional)

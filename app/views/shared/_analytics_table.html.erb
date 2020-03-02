@@ -1,32 +1,34 @@
 <div class="card pr-0 pr-md-3">
-  <div class="table-responsive table-compact">
-    <table id="analytics-table">
+  <h2><%= row_resource_description %></h2>
+    
+  <div class="table-responsive">
+    <table id="analytics-table" class="table-compact">
       <colgroup>
         <col>
-        <col style="border-left: 1px solid #dce4e8;">
-        <col style="border-left: 1px solid #dce4e8;">
+        <col class="table-divider">
+        <col class="table-divider">
         <col>
         <col>
-        <col style="border-left: 1px solid #dce4e8;">
+        <col class="table-divider">
         <col>
         <col>
-        <col style="border-left: 1px solid #dce4e8;">
+        <col class="table-divider">
         <col>
         <col>
       </colgroup>
       <thead>
       <tr>
-        <th><h3 class="ml-n2"><%= row_resource_description %></h3></th>
-        <th class="row-label"><strong>Registered patients</strong></th>
+        <th></th>
+        <th class="row-label"><strong>Registered</strong></th>
         <th class="row-label" colspan="3"><strong>Follow-up patients</strong></th>
         <th class="row-label" colspan="3"><strong>New registrations</strong></th>
         <th class="row-label" colspan="3"><strong>Patients called</strong></th>
       </tr>
 
-      <tr data-sort-method="thead">
+      <tr class="sorts" data-sort-method="thead">
         <th class="row-label sort-label" style="text-align: left; padding: 8px 4px;" data-sort-default>Name</th>
         <!--Registered patients-->
-        <th class="row-label sort-label" style="padding: 8px 4px;" data-sort-method="number">Total</th>
+        <th class="row-label sort-label" data-sort-default data-sort-method="number">Total</th>
 
         <!--Follow-up patients-->
         <% dates_for_periods(@period, 3, include_current_period: @show_current_period).each do |date| %>

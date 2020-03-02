@@ -27,12 +27,10 @@ class MedicalHistory < ApplicationRecord
   enum chronic_kidney_disease: MEDICAL_HISTORY_ANSWERS, _prefix: true
   enum receiving_treatment_for_hypertension: MEDICAL_HISTORY_ANSWERS, _prefix: true
   enum diabetes: MEDICAL_HISTORY_ANSWERS, _prefix: true
+  enum hypertension: MEDICAL_HISTORY_ANSWERS, _prefix: true
   enum diagnosed_with_hypertension: MEDICAL_HISTORY_ANSWERS, _prefix: true
 
-  def indicates_risk?
-    prior_heart_attack_boolean ||
-      prior_stroke_boolean ||
-      diabetes_boolean ||
-      chronic_kidney_disease_boolean
+  def indicates_hypertension_risk?
+    prior_heart_attack_boolean || prior_stroke_boolean
   end
 end

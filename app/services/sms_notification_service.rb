@@ -3,7 +3,7 @@ class SmsNotificationService
 
   def initialize(recipient_number, sender_phone_number, client = Twilio::REST::Client.new)
     @sender_phone_number = sender_phone_number
-    @recipient_number = Phonelib.parse(recipient_number, ENV.fetch('DEFAULT_COUNTRY')).raw_national
+    @recipient_number = Phonelib.parse(recipient_number, Rails.application.config.country[:abbreviation]).raw_national
     @client = client
   end
 
@@ -29,7 +29,7 @@ class SmsNotificationService
   def send_sms(body, callback_url = '')
     client.messages.create(
       from: sender_phone_number,
-      to: recipient_number.insert(0, I18n.t('sms.country_code')),
+      to: recipient_number.insert(0, Rails.application.config.country[:sms_country_code]),
       status_callback: callback_url,
       body: body)
   end

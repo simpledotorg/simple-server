@@ -23,11 +23,11 @@ describe Appointment, type: :model do
       let(:overdue_appointment) { create(:appointment, :overdue) }
       let(:upcoming_appointment) { create(:appointment) }
 
-      it "includes overdue appointments" do
+      it 'includes overdue appointments' do
         expect(Appointment.overdue).to include(overdue_appointment)
       end
 
-      it "excludes non-overdue appointments" do
+      it 'excludes non-overdue appointments' do
         expect(Appointment.overdue).not_to include(upcoming_appointment)
       end
     end
@@ -37,12 +37,12 @@ describe Appointment, type: :model do
       let(:overdue_appointment) { create(:appointment, :overdue) }
       let(:upcoming_appointment) { create(:appointment) }
 
-      it "includes overdue appointments that are overdue by 3 or more days" do
+      it 'includes overdue appointments that are overdue by 3 or more days' do
         expect(Appointment.overdue_by(3)).not_to include(recently_overdue_appointment)
         expect(Appointment.overdue_by(3)).to include(overdue_appointment)
       end
 
-      it "excludes non-overdue appointments" do
+      it 'excludes non-overdue appointments' do
         expect(Appointment.overdue).not_to include(upcoming_appointment)
       end
     end
@@ -61,16 +61,16 @@ describe Appointment, type: :model do
     end
   end
 
-  context "Result of follow-up" do
-    describe "For each category in the follow-up options" do
-      it "correctly records agreed to visit" do
+  context 'Result of follow-up' do
+    describe 'For each category in the follow-up options' do
+      it 'correctly records agreed to visit' do
         appointment.mark_patient_agreed_to_visit
 
         expect(appointment.agreed_to_visit).to eq(true)
         expect(appointment.remind_on).to eq(30.days.from_now.to_date)
       end
 
-      it "correctly records that the patient has already visited" do
+      it 'correctly records that the patient has already visited' do
         appointment.mark_patient_already_visited
 
         expect(appointment.status).to eq('visited')
@@ -78,7 +78,7 @@ describe Appointment, type: :model do
         expect(appointment.remind_on).to be nil
       end
 
-      it "correctly records remind to call" do
+      it 'correctly records remind to call' do
         appointment.mark_remind_to_call_later
 
         expect(appointment.remind_on).to eq(7.days.from_now.to_date)
@@ -89,26 +89,26 @@ describe Appointment, type: :model do
           appointment.mark_appointment_cancelled(cancel_reason)
 
           expect(appointment.cancel_reason).to eq(cancel_reason)
-          expect(appointment.status).to eq("cancelled")
+          expect(appointment.status).to eq('cancelled')
         end
       end
 
-      it "sets patient status if call indicated they died" do
+      it 'sets patient status if call indicated they died' do
         appointment.mark_patient_as_dead
 
-        expect(appointment.patient.status).to eq("dead")
+        expect(appointment.patient.status).to eq('dead')
       end
     end
   end
 
   context 'Overdue' do
-    describe "#days_overdue" do
-      it "returns the number of days overdue" do
+    describe '#days_overdue' do
+      it 'returns the number of days overdue' do
         appointment = create(:appointment, scheduled_date: 60.days.ago, status: :scheduled)
         expect(appointment.days_overdue).to eq(60)
       end
 
-      it "returns zero if the appointment is not overdue" do
+      it 'returns zero if the appointment is not overdue' do
         appointment = create(:appointment, scheduled_date: 10.days.from_now, status: :scheduled)
         expect(appointment.days_overdue).to eq(0)
       end
@@ -143,33 +143,34 @@ describe Appointment, type: :model do
     end
   end
 
-  context "CSV export" do
-    describe ".csv_headers" do
-      it "returns the correct headers" do
+  context 'CSV export' do
+    describe '.csv_headers' do
+      it 'returns the correct headers' do
         headers = [
-          "Patient name",
-          "Gender",
-          "Age",
-          "Days overdue",
-          "Registration date",
-          "Last BP",
-          "Last BP taken at",
-          "Last BP date",
-          "Risk level",
-          "Patient address",
-          "Patient village or colony",
-          "Patient phone"
+          'Patient name',
+          'Gender',
+          'Age',
+          'Days overdue',
+          'Registration date',
+          'Last BP',
+          'Last BP taken at',
+          'Last BP date',
+          'Risk level',
+          'Patient address',
+          'Patient village or colony',
+          'Patient phone'
         ]
         expect(Appointment.csv_headers).to eq(headers)
       end
     end
 
-    describe "#csv_fields" do
+    describe '#csv_fields' do
       before do
-        create(:blood_pressure, :high, patient: appointment.patient)
+        create(:blood_pressure, :hypertensive, patient: appointment.patient)
+        allow(appointment.patient).to receive(:high_risk?).and_return(true)
       end
 
-      it "returns the correct fields" do
+      it 'returns the correct fields' do
         csv_fields = [
           appointment.patient.full_name,
           appointment.patient.gender.capitalize,
@@ -179,8 +180,9 @@ describe Appointment, type: :model do
           appointment.patient.latest_blood_pressure.to_s,
           appointment.patient.latest_blood_pressure.facility.name,
           ApplicationController.helpers.display_date(
-            appointment.patient.latest_blood_pressure.recorded_at),
-          appointment.patient.risk_priority_label,
+            appointment.patient.latest_blood_pressure.recorded_at
+          ),
+          'High',
           appointment.patient.address.street_address,
           appointment.patient.address.village_or_colony,
           appointment.patient.phone_numbers.first&.number
@@ -192,9 +194,11 @@ describe Appointment, type: :model do
   end
 
   describe '#previously_communicated_via' do
-    let(:overdue_appointment) { create(:appointment,
-                                       scheduled_date: 31.days.ago,
-                                       status: :scheduled) }
+    let(:overdue_appointment) do
+      create(:appointment,
+             scheduled_date: 31.days.ago,
+             status: :scheduled)
+    end
 
     it 'returns falsey if there are no communications for the appointment' do
       expect(overdue_appointment.previously_communicated_via?(:missed_visit_sms_reminder)).to be_falsey
@@ -240,8 +244,7 @@ describe Appointment, type: :model do
             overdue: appointment.days_overdue > 0 ? 'Yes' : 'No',
             status: appointment.status,
             agreed_to_visit: appointment.agreed_to_visit,
-            remind_on: appointment.remind_on
-          }
+            remind_on: appointment.remind_on }
 
         expect(appointment.anonymized_data).to eq anonymised_data
       end

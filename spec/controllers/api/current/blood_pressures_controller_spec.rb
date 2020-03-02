@@ -11,10 +11,10 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
 
   let(:model) { BloodPressure }
 
-  let(:build_payload) { lambda { build_blood_pressure_payload } }
-  let(:build_invalid_payload) { lambda { build_invalid_blood_pressure_payload } }
+  let(:build_payload) { -> { build_blood_pressure_payload } }
+  let(:build_invalid_payload) { -> { build_invalid_blood_pressure_payload } }
   let(:invalid_record) { build_invalid_payload.call }
-  let(:update_payload) { lambda { |blood_pressure| updated_blood_pressure_payload(blood_pressure) } }
+  let(:update_payload) { ->(blood_pressure) { updated_blood_pressure_payload(blood_pressure) } }
   let(:number_of_schema_errors_in_invalid_payload) { 3 }
 
   def create_record(options = {})
@@ -27,13 +27,12 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
   def create_record_list(n, options = {})
     facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
     blood_pressures = create_list(:blood_pressure, n, { facility: facility }.merge(options))
-    blood_pressures.each {|record| create(:encounter, :with_observables, observable: record)}
+    blood_pressures.each { |record| create(:encounter, :with_observables, observable: record) }
     blood_pressures
   end
 
   it_behaves_like 'a sync controller that authenticates user requests'
   it_behaves_like 'a sync controller that audits the data access'
-  it_behaves_like 'a working sync controller that short circuits disabled apis'
 
   describe 'POST sync: send data from device to server;' do
     it_behaves_like 'a working sync controller creating records'
@@ -119,7 +118,8 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
           blood_pressure = build_blood_pressure_payload(
             FactoryBot.build(:blood_pressure,
                              patient: patient,
-                             device_created_at: older_bp_recording_date)).except('recorded_at')
+                             device_created_at: older_bp_recording_date)
+          ).except('recorded_at')
           post(:sync_from_user, params: { blood_pressures: [blood_pressure] }, as: :json)
 
           patient.reload
@@ -133,13 +133,15 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
           bp_recorded_two_months_ago = build_blood_pressure_payload(
             FactoryBot.build(:blood_pressure,
                              patient: patient,
-                             device_created_at: two_months_ago))
-                                         .except('recorded_at')
+                             device_created_at: two_months_ago)
+          )
+                                       .except('recorded_at')
           bp_recorded_three_months_ago = build_blood_pressure_payload(
             FactoryBot.build(:blood_pressure,
                              patient: patient,
-                             device_created_at: three_months_ago))
-                                           .except('recorded_at')
+                             device_created_at: three_months_ago)
+          )
+                                         .except('recorded_at')
 
           post(:sync_from_user, params: { blood_pressures: [bp_recorded_three_months_ago] }, as: :json)
           post(:sync_from_user, params: { blood_pressures: [bp_recorded_two_months_ago] }, as: :json)
@@ -165,8 +167,9 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
 
           blood_pressures_payload = blood_pressures.map(&method(:build_blood_pressure_payload))
 
-          expect { post(:sync_from_user, params: { blood_pressures: blood_pressures_payload }, as: :json)
-          }.to change { Encounter.count }.by(1)
+          expect do
+            post(:sync_from_user, params: { blood_pressures: blood_pressures_payload }, as: :json)
+          end.to change { Encounter.count }.by(1)
           expect(response).to have_http_status(200)
           expect(Encounter.pluck(:encountered_on)).to contain_exactly(encountered_on)
           expected_bps_thru_encounters = Encounter.all.flat_map(&:blood_pressures)
@@ -195,8 +198,9 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
 
           blood_pressures_payload = blood_pressures.map(&method(:build_blood_pressure_payload))
 
-          expect { post(:sync_from_user, params: { blood_pressures: blood_pressures_payload }, as: :json)
-          }.to change { Encounter.count }.by(3)
+          expect do
+            post(:sync_from_user, params: { blood_pressures: blood_pressures_payload }, as: :json)
+          end.to change { Encounter.count }.by(3)
           expect(response).to have_http_status(200)
           expect(Encounter.pluck(:encountered_on)).to contain_exactly(encountered_on_1,
                                                                       encountered_on_2,
@@ -221,14 +225,14 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
                     facility: facility,
                     patient: patient,
                     recorded_at: date)
-
             end
           end
 
           blood_pressures_payload = blood_pressures.map(&method(:build_blood_pressure_payload))
 
-          expect { post(:sync_from_user, params: { blood_pressures: blood_pressures_payload }, as: :json)
-          }.to change { Encounter.count }.by(3)
+          expect do
+            post(:sync_from_user, params: { blood_pressures: blood_pressures_payload }, as: :json)
+          end.to change { Encounter.count }.by(3)
           expect(response).to have_http_status(200)
           expect(Encounter.all.flat_map(&:blood_pressures).count).to eq(range_of_possible_observations.count * 3)
         end
@@ -236,27 +240,26 @@ RSpec.describe Api::Current::BloodPressuresController, type: :controller do
 
       context 'existing encounter' do
         let!(:blood_sugar) { create(:blood_sugar) }
-        let!(:encounter_id) { Encounter.generate_id(blood_sugar.facility_id, blood_sugar.patient_id, blood_sugar.recorded_at.to_date)}
+        let!(:encounter_id) { Encounter.generate_id(blood_sugar.facility_id, blood_sugar.patient_id, blood_sugar.recorded_at.to_date) }
         let!(:encounter) { create(:encounter, :with_observables, id: encounter_id, observable: blood_sugar) }
         let!(:blood_pressure_payload) do
           build_blood_pressure_payload(
             build(:blood_pressure,
                   patient: blood_sugar.patient,
                   facility: blood_sugar.facility,
-                  recorded_at: blood_sugar.recorded_at
-            ))
+                  recorded_at: blood_sugar.recorded_at)
+          )
         end
 
         it 'adds the blood sugar to an existing encounter' do
-          expect {
+          expect do
             post(:sync_from_user, params: { blood_pressures: [blood_pressure_payload] }, as: :json)
-          }.not_to change { Encounter.count }
+          end.not_to change { Encounter.count }
 
           encounter.reload
 
           expect(encounter.blood_pressures.first.id).to eq(blood_pressure_payload[:id])
         end
-
       end
     end
   end

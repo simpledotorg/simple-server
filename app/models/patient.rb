@@ -11,12 +11,10 @@ class Patient < ApplicationRecord
   GENDERS = %w[male female transgender].freeze
   STATUSES = %w[active dead migrated unresponsive inactive].freeze
   RISK_PRIORITIES = {
-    HIGHEST: 0,
-    VERY_HIGH: 1,
-    HIGH: 2,
-    REGULAR: 3,
-    LOW: 4,
-    NONE: 5
+    HIGH: 0,
+    REGULAR: 1,
+    LOW: 2,
+    NONE: 3
   }.freeze
 
   ANONYMIZED_DATA_FIELDS = %w[id created_at registration_date registration_facility_name user_id age gender]
@@ -99,12 +97,10 @@ class Patient < ApplicationRecord
     return RISK_PRIORITIES[:NONE] if latest_scheduled_appointment&.overdue_for_under_a_month?
 
     if latest_blood_pressure&.critical?
-      RISK_PRIORITIES[:HIGHEST]
-    elsif medical_history&.indicates_risk?
-      RISK_PRIORITIES[:VERY_HIGH]
-    elsif latest_blood_pressure&.very_high?
       RISK_PRIORITIES[:HIGH]
-    elsif latest_blood_pressure&.high?
+    elsif medical_history&.indicates_hypertension_risk? && latest_blood_pressure&.hypertensive?
+      RISK_PRIORITIES[:HIGH]
+    elsif latest_blood_pressure&.hypertensive?
       RISK_PRIORITIES[:REGULAR]
     elsif low_priority?
       RISK_PRIORITIES[:LOW]
@@ -113,23 +109,8 @@ class Patient < ApplicationRecord
     end
   end
 
-  def risk_priority_label
-    case risk_priority
-    when RISK_PRIORITIES[:HIGHEST] then
-      "Critical"
-    when RISK_PRIORITIES[:VERY_HIGH] then
-      "Very high"
-    when RISK_PRIORITIES[:HIGH] then
-      "High"
-    else
-      nil
-    end
-  end
-
   def high_risk?
-    [RISK_PRIORITIES[:HIGHEST],
-     RISK_PRIORITIES[:VERY_HIGH],
-     RISK_PRIORITIES[:HIGH]].include?(risk_priority)
+    risk_priority == RISK_PRIORITIES[:HIGH]
   end
 
   def current_age
@@ -138,8 +119,8 @@ class Patient < ApplicationRecord
     elsif age.present?
       return 0 if age == 0
 
-      years_since_update = Date.current.year - age_updated_at.year
-      age + years_since_update
+      years_since_update = (Time.current - age_updated_at) / 1.year
+      (age + years_since_update).floor
     end
   end
 

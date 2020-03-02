@@ -11,10 +11,10 @@ RSpec.describe Api::V2::AppointmentsController, type: :controller do
   end
 
   let(:model) { Appointment }
-  let(:build_payload) { lambda { build_appointment_payload_v2 } }
-  let(:build_invalid_payload) { lambda { build_invalid_appointment_payload } }
+  let(:build_payload) { -> { build_appointment_payload_v2 } }
+  let(:build_invalid_payload) { -> { build_invalid_appointment_payload } }
   let(:invalid_record) { build_invalid_payload.call }
-  let(:update_payload) { lambda { |appointment| updated_appointment_payload_v2(appointment) } }
+  let(:update_payload) { ->(appointment) { updated_appointment_payload_v2(appointment) } }
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
   def create_record(options = {})
@@ -29,7 +29,6 @@ RSpec.describe Api::V2::AppointmentsController, type: :controller do
 
   it_behaves_like 'a sync controller that authenticates user requests'
   it_behaves_like 'a sync controller that audits the data access'
-  it_behaves_like 'a working sync controller that short circuits disabled apis'
 
   describe 'POST sync: send data from device to server;' do
     it_behaves_like 'a working sync controller creating records'
@@ -70,7 +69,7 @@ RSpec.describe Api::V2::AppointmentsController, type: :controller do
           after_post_appointments_ids = after_post_appointments.map(&:id)
 
           new_records.each do |record|
-            expect(after_post_appointments_ids.include? record[:id]).to be true
+            expect(after_post_appointments_ids.include?(record[:id])).to be true
           end
 
           after_post_appointments.each do |appointment|
@@ -89,7 +88,7 @@ RSpec.describe Api::V2::AppointmentsController, type: :controller do
           after_post_appointments_ids = after_post_appointments.map(&:id)
 
           new_records.each do |record|
-            expect(after_post_appointments_ids.include? record[:id]).to be true
+            expect(after_post_appointments_ids.include?(record[:id])).to be true
           end
 
           after_post_appointments.each do |appointment|

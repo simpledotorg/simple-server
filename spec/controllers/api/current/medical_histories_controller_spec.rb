@@ -11,10 +11,10 @@ RSpec.describe Api::Current::MedicalHistoriesController, type: :controller do
 
   let(:model) { MedicalHistory }
 
-  let(:build_payload) { lambda { build_medical_history_payload_current } }
-  let(:build_invalid_payload) { lambda { build_invalid_medical_history_payload_current } }
+  let(:build_payload) { -> { build_medical_history_payload_current } }
+  let(:build_invalid_payload) { -> { build_invalid_medical_history_payload_current } }
   let(:invalid_record) { build_invalid_payload.call }
-  let(:update_payload) { lambda { |medical_history| updated_medical_history_payload_current medical_history } }
+  let(:update_payload) { ->(medical_history) { updated_medical_history_payload_current medical_history } }
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
   def create_record(options = {})
@@ -31,7 +31,6 @@ RSpec.describe Api::Current::MedicalHistoriesController, type: :controller do
 
   it_behaves_like 'a sync controller that authenticates user requests'
   it_behaves_like 'a sync controller that audits the data access'
-  it_behaves_like 'a working sync controller that short circuits disabled apis'
 
   describe 'POST sync: send data from device to server;' do
     it_behaves_like 'a working sync controller creating records'

@@ -87,7 +87,7 @@ class Api::Current::Models
       { type: :object,
         properties: {
           id: { '$ref' => '#/definitions/uuid' },
-          identifier: { '$ref' => '#/definitions/non_empty_string' },
+          identifier: { type: [:string, 'null'] },
           identifier_type: { type: :string, enum: PatientBusinessIdentifier.identifier_types.keys },
           metadata_version: { type: :string },
           metadata: { type: :string },
@@ -311,6 +311,7 @@ class Api::Current::Models
           chronic_kidney_disease: { type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys },
           receiving_treatment_for_hypertension: { type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys },
           diabetes: { type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys },
+          hypertension: { type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys },
           diagnosed_with_hypertension: { type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys },
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },

@@ -8,6 +8,7 @@ class Api::Current::MedicalHistoryPayloadValidator < Api::Current::PayloadValida
     :chronic_kidney_disease,
     :receiving_treatment_for_hypertension,
     :diabetes,
+    :hypertension,
     :diagnosed_with_hypertension,
     :created_at,
     :updated_at

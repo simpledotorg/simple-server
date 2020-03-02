@@ -1,7 +1,7 @@
 require 'rails_helper'
 require 'sidekiq/testing'
 
-RSpec::describe AppointmentNotification::MissedVisitJob, type: :job do
+RSpec.describe AppointmentNotification::MissedVisitJob, type: :job do
   let!(:ihci) { create(:organization, name: 'IHCI') }
   let!(:path) { create(:organization, name: 'PATH') }
   let!(:ihci_facility_group) { create(:facility_group, organization: ihci) }
@@ -27,7 +27,7 @@ RSpec::describe AppointmentNotification::MissedVisitJob, type: :job do
     allow(ENV).to receive(:[]).with('APPOINTMENT_NOTIFICATION_ORG_IDS').and_return(enabled_organizations.map(&:id))
 
     expect(AppointmentNotificationService).to receive(:send_after_missed_visit)
-                                                     .exactly(enabled_organizations.count).times do |appointments|
+      .exactly(enabled_organizations.count).times do |appointments|
       expect(appointments.count).to eq(2)
     end
 

@@ -26,7 +26,10 @@ class CohortAnalyticsQuery
         report_end = report_start.end_of_quarter
       end
 
-      results[[cohort_start.to_date, report_start.to_date]] = patient_counts(cohort_start, cohort_end, report_start, report_end)
+      results[[cohort_start.to_date, report_start.to_date]] = patient_counts(cohort_start,
+                                                                             cohort_end,
+                                                                             report_start,
+                                                                             report_end)
     end
 
     results
@@ -63,6 +66,7 @@ class CohortAnalyticsQuery
         FROM blood_pressures
         WHERE recorded_at >= '#{report_start}'
         AND recorded_at <= '#{report_end}'
+        AND deleted_at IS NULL
         ORDER BY patient_id, recorded_at DESC
       ) as newest_bps
       ON newest_bps.patient_id = patients.id

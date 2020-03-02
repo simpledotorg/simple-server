@@ -15,13 +15,14 @@ RSpec.describe Api::V2::BloodPressuresController, type: :controller do
   let(:build_payload) do
     lambda do
       build_blood_pressure_payload_v2(
-        FactoryBot.build(:blood_pressure, user: request_user))
+        FactoryBot.build(:blood_pressure, user: request_user)
+      )
     end
   end
 
-  let(:build_invalid_payload) { lambda { build_invalid_blood_pressure_payload } }
+  let(:build_invalid_payload) { -> { build_invalid_blood_pressure_payload } }
   let(:invalid_record) { build_invalid_payload.call }
-  let(:update_payload) { lambda { |blood_pressure| updated_blood_pressure_payload_v2 blood_pressure } }
+  let(:update_payload) { ->(blood_pressure) { updated_blood_pressure_payload_v2 blood_pressure } }
   let(:number_of_schema_errors_in_invalid_payload) { 3 }
 
   def create_record(options = {})
@@ -34,13 +35,12 @@ RSpec.describe Api::V2::BloodPressuresController, type: :controller do
   def create_record_list(n, options = {})
     facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
     blood_pressures = create_list(:blood_pressure, n, { facility: facility }.merge(options))
-    blood_pressures.each {|record| create(:encounter, :with_observables, observable: record)}
+    blood_pressures.each { |record| create(:encounter, :with_observables, observable: record) }
     blood_pressures
   end
 
   it_behaves_like 'a sync controller that authenticates user requests'
   it_behaves_like 'a sync controller that audits the data access'
-  it_behaves_like 'a working sync controller that short circuits disabled apis'
 
   describe 'POST sync: send data from device to server;' do
     it_behaves_like 'a working sync controller creating records'
@@ -85,7 +85,8 @@ RSpec.describe Api::V2::BloodPressuresController, type: :controller do
         blood_pressure = build_blood_pressure_payload_v2(
           FactoryBot.build(:blood_pressure,
                            patient: patient,
-                           device_created_at: older_blood_pressure_recording_date))
+                           device_created_at: older_blood_pressure_recording_date)
+        )
         post(:sync_from_user, params: { blood_pressures: [blood_pressure] }, as: :json)
 
         patient.reload
@@ -99,11 +100,13 @@ RSpec.describe Api::V2::BloodPressuresController, type: :controller do
         blood_pressure_recorded_one_month_ago = build_blood_pressure_payload_v2(
           FactoryBot.build(:blood_pressure,
                            patient: patient,
-                           device_created_at: one_month_ago))
+                           device_created_at: one_month_ago)
+        )
         blood_pressure_recorded_two_months_ago = build_blood_pressure_payload_v2(
           FactoryBot.build(:blood_pressure,
                            patient: patient,
-                           device_created_at: two_months_ago))
+                           device_created_at: two_months_ago)
+        )
         post(:sync_from_user, params: { blood_pressures: [blood_pressure_recorded_two_months_ago] }, as: :json)
         post(:sync_from_user, params: { blood_pressures: [blood_pressure_recorded_one_month_ago] }, as: :json)
 
@@ -160,7 +163,7 @@ RSpec.describe Api::V2::BloodPressuresController, type: :controller do
         get :sync_to_user, params: { limit: 6 }
 
         response_blood_pressures = JSON(response.body)['blood_pressures']
-        response_facilities = response_blood_pressures.map { |blood_pressure| blood_pressure['facility_id']}.to_set
+        response_facilities = response_blood_pressures.map { |blood_pressure| blood_pressure['facility_id'] }.to_set
 
         expect(response_blood_pressures.count).to eq 4
         expect(response_facilities).to match_array([request_facility.id, facility_in_same_group.id])

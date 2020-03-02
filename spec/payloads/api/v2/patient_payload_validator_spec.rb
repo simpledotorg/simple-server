@@ -54,7 +54,6 @@ describe Api::V2::PatientPayloadValidator, type: :model do
         expect(payload.valid?).to be false
         expect(payload.errors[:schema]).to be_present
       end
-
     end
     describe 'Non empty validations' do
       it 'Validates that full_name is not empty' do

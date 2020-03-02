@@ -76,7 +76,7 @@ RSpec.describe Api::V2::Analytics::UserAnalyticsController, type: :controller do
           get :show, format: :html
 
           expect(response.body).to match(/All time/)
-          expect(response.body).to match(Regexp.new("#{patients.count}"))
+          expect(response.body).to match(Regexp.new(patients.count.to_s))
         end
       end
     end

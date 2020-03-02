@@ -157,6 +157,18 @@ Rails.application.routes.draw do
   resources :patients, only: [:index, :update]
   resources :organizations, only: [:index], path: 'dashboard'
 
+  namespace :my_facilities do
+    root to: '/my_facilities#index', as: 'overview'
+    get 'ranked_facilities', to: 'ranked_facilities'
+    get 'blood_pressure_control', to: 'blood_pressure_control'
+    get 'registrations', to: 'registrations'
+    get 'missed_visits', to: 'missed_visits'
+  end
+
+  scope :resources do
+    get '/', to: 'resources#index', as: 'resources'
+  end
+
   namespace :admin do
     resources :organizations
 
