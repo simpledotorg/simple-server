@@ -10,6 +10,8 @@ class CorrectBangladeshPhoneNumber
   end
 
   def perform
+    return unless Rails.application.config.country[:name] == 'Bangladesh'
+
     patient.phone_numbers.each do |phone_number|
       phone_number.update!(number: correct(phone_number.number))
     end

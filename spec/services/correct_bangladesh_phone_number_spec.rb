@@ -1,6 +1,25 @@
 require 'rails_helper'
 
 describe CorrectBangladeshPhoneNumber do
+  let(:country_config) do
+    {
+      abbreviation: 'BD',
+      name: 'Bangladesh',
+      dashboard_locale: ENV['DEFAULT_PREFERRED_DASHBOARD_LOCALE'] || 'en_BD',
+      time_zone: ENV['DEFAULT_TIME_ZONE'] || 'Asia/Dhaka',
+      sms_country_code: ENV['SMS_COUNTRY_CODE'] || '+880'
+    }
+  end
+
+  before do
+    @original_country = Rails.application.config.country
+    Rails.application.config.country = country_config
+  end
+
+  after do
+    Rails.application.config.country = @original_country
+  end
+
   describe '.perform' do
     let(:patient) { double }
     let(:corrector) { double }
@@ -52,6 +71,24 @@ describe CorrectBangladeshPhoneNumber do
         corrector.perform
         expect(phone_number.reload.number).to eq('01111111111')
         expect(another_phone_number.reload.number).to eq('02222222222')
+      end
+    end
+
+    context 'when country is not Bangladesh' do
+      let(:country_config) do
+        {
+          abbreviation: 'IN',
+          name: 'India',
+          dashboard_locale: ENV['DEFAULT_PREFERRED_DASHBOARD_LOCALE'] || 'en_IN',
+          time_zone: ENV['DEFAULT_TIME_ZONE'] || 'Asia/Kolkata',
+          sms_country_code: ENV['SMS_COUNTRY_CODE'] || '+91'
+        }
+      end
+
+      let(:number) { '1234567890' }
+
+      it 'does not update phone numbers' do
+        expect { corrector.perform }.not_to change { phone_number.reload.number }
       end
     end
   end
