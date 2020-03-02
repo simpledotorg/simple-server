@@ -15,7 +15,7 @@
 <% export = CSV.generate("", headers: headers, write_headers: true) do |csv| %>
   <% @appointments.each do |appointment| %>
     <% row = [
-         "Did this, did this work?",
+         appointment.patient.full_name,
          appointment.patient.gender.capitalize,
          appointment.patient.current_age,
          appointment.days_overdue,
