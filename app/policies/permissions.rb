@@ -66,12 +66,6 @@ module Permissions
       resource_priority: %i[facility_group organization global],
       required_permissions: []
     },
-    download_adherence_follow_up_list: {
-      slug: :download_adherence_follow_up_list,
-      description: 'Download adherence follow-up list',
-      resource_priority: %i[facility_group organization global],
-      required_permissions: %i[view_adherence_follow_up_list]
-    },
     download_patient_line_list: {
       slug: :download_patient_line_list,
       description: 'Download patient line list',
@@ -105,7 +99,6 @@ module Permissions
         manage_admins
         view_health_worker_activity
         download_overdue_list
-        download_adherence_follow_up_list
         download_patient_line_list
       ]
     },
@@ -122,7 +115,6 @@ module Permissions
         manage_facilities
         view_overdue_list
         download_overdue_list
-        download_adherence_follow_up_list
         view_adherence_follow_up_list
         approve_health_workers
         view_cohort_reports
@@ -144,7 +136,6 @@ module Permissions
         manage_facilities
         view_overdue_list
         download_overdue_list
-        download_adherence_follow_up_list
         view_adherence_follow_up_list
         approve_health_workers
         view_health_worker_activity
@@ -167,10 +158,8 @@ module Permissions
         manage_admins
         view_health_worker_activity
         download_overdue_list
-        download_adherence_follow_up_list
         download_patient_line_list
         view_my_facilities
-        view_sidekiq_ui
       ]
     },
     { name: :custom,
