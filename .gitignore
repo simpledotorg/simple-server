@@ -23,3 +23,7 @@ coverage
 .env.development.local
 .env.production
 .env
+
+/lib/bangladesh/import/data/*.csv
+/lib/bangladesh/import/data/*.csv.encrypted
+/lib/bangladesh/import/data/*.xlsx

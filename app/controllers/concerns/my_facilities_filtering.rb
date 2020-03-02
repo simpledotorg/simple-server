@@ -29,7 +29,7 @@ module MyFacilitiesFiltering
     end
 
     def set_selected_zones
-      @selected_zones = params[:zone].present? ? params[:zone] : @zones
+      @selected_zones = params[:zone].present? ? [params[:zone]] : @zones
     end
 
     def set_only_new_facilities
@@ -41,7 +41,7 @@ module MyFacilitiesFiltering
     end
 
     def facilities_by_zone(facilities)
-      facilities.where('zone = ? OR zone IS NULL', @selected_zones)
+      facilities.where(zone: @selected_zones).or(Facility.where(zone: nil))
     end
 
     def facilities_by_created_at(facilities)

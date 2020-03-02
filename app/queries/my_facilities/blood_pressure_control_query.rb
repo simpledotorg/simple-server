@@ -8,30 +8,28 @@ class MyFacilities::BloodPressureControlQuery
   include QuarterHelper
   include MonthHelper
 
-  attr_reader :facilities
-
-  def initialize(period: :quarter,
-                 registration_quarter: previous_year_and_quarter(Time.current.year, quarter(Time.current)).second,
-                 registration_month: (Time.current.beginning_of_month - 1.month).month,
-                 registration_year: previous_year_and_quarter(Time.current.year, quarter(Time.current)).first,
-                 facilities: Facility.all)
-    @period = period
-    @registration_month = registration_month
-    @registration_quarter = registration_quarter
-    @registration_year = registration_year
+  def initialize(facilities: Facility.all, cohort_period: {})
+    # cohort_period is map that contains
+    # - :cohort_period (:quarter/:month),
+    # - :registration_quarter/:registration_month
+    # - :registration_year
+    @cohort_period = cohort_period[:cohort_period]
+    @registration_quarter = cohort_period[:registration_quarter]
+    @registration_month = cohort_period[:registration_month]
+    @registration_year = cohort_period[:registration_year]
     @facilities = facilities
   end
 
   def cohort_registrations
-    @period == :month ? monthly_registrations : quarterly_registrations
+    @cohort_period == :month ? monthly_registrations : quarterly_registrations
   end
 
   def cohort_controlled_bps
-    @period == :month ? monthly_controlled_bps : quarterly_controlled_bps
+    @cohort_period == :month ? monthly_controlled_bps : quarterly_controlled_bps
   end
 
   def cohort_uncontrolled_bps
-    @period == :month ? monthly_uncontrolled_bps : quarterly_uncontrolled_bps
+    @cohort_period == :month ? monthly_uncontrolled_bps : quarterly_uncontrolled_bps
   end
 
   def all_time_bps
@@ -48,6 +46,8 @@ class MyFacilities::BloodPressureControlQuery
   end
 
   private
+
+  attr_reader :facilities
 
   def quarterly_registrations
     patients = Patient.where(registration_facility: facilities)
@@ -89,8 +89,7 @@ class MyFacilities::BloodPressureControlQuery
 
     @monthly_bps ||=
       LatestBloodPressuresPerPatientPerMonth
-      .select("distinct on (patient_id)
-       bp_id, patient_id, bp_facility_id, bp_recorded_at, deleted_at, systolic, diastolic, quarter, year")
+      .select('distinct on (patient_id) *')
       .order('patient_id, bp_recorded_at DESC, bp_id')
       .where(patient: monthly_registrations)
       .where('(year = ? AND month = ?) OR (year = ? AND month = ?)',

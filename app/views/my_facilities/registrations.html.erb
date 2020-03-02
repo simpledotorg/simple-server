@@ -1,0 +1,109 @@
+<div class="row">
+  <div class="col-lg-12 pr-lg-0">
+    <div class="card card-responsive">
+      <div class="row">
+        <div class="col-lg-9 pr-5 pr-md-0">
+          <h3>New patient registrations</h3>
+          <p>OPD % indicates the percentage of estimated OPD patients that are registered. Estimated monthly OPD load is updated annually by surveillance officers.</p>
+        </div>
+        <div class="mt-1 mb-3 col-lg-3">
+          <div class="dropdown show">
+            <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#"
+               role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">
+              <%= PeriodSelection::PERIODS[:registrations][@selected_period] %>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+              <% PeriodSelection::PERIODS[:registrations].each do |period, period_name| %>
+                <button type="submit" name="period" value=<%= period %> class="dropdown-item" form="query-filters"><%= period_name %></button>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover" id="analytics-table">
+        <colgroup>
+          <col>
+          <% @display_periods.each do %>
+            <col class="table-divider">
+            <% unless @selected_period == :day %>
+              <col>
+            <% end %>
+          <% end %>
+          <col class="table-divider">
+          <col class="mobile">
+        </colgroup>
+        <thead>
+        <tr>
+          <% case @selected_period %>
+          <% when :quarter %>
+            <th></th>
+            <% @display_periods.reverse.each do |(year, quarter)| %>
+              <th colspan="2">
+                <%= "Q#{quarter}-#{year}" %>
+              </th>
+            <% end %>
+            <th>All-time</th>
+          <% when :month %>
+            <th></th>
+            <% @display_periods.reverse.each do |(year, month)| %>
+              <th colspan="2">
+                <%= month_short_name_and_year(month_start(year, month)) %>
+              </th>
+            <% end %>
+            <th>All-time</th>
+          <% end %>
+        </tr>
+        <tr data-sort-method="thead" class="sorts">
+          <th class="row-label sort-label">Facilities</th>
+          <% @display_periods.reverse.each do |period| %>
+            <th <% unless @selected_period == :day %>colspan="2"<% end %>
+                class="row-label sort-label"
+                data-sort-column-key="<%= period.join %>"
+                data-sort-method="number"
+                data-sort-default>
+              <% unless @selected_period == :day %>
+                <div class="float-left">% of OPD</div>
+              <% end %>
+              <div class="float-right"><%= @selected_period == :day ? doy_to_date(*period) : "Registered" %></div>
+            </th>
+          <% end %>
+          <th class="row-label sort-label"><% if @selected_period == :day %>All-time<br> <% end %> Registered patients <sup>1</sup></th>
+          <th class="mobile">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr class="row-total" data-sort-method="none">
+          <td class="type-title">All</td>
+          <% @display_periods.reverse.each do |period| %>
+            <td class="type-number" <% unless @selected_period == :day %>colspan="2"<% end %>><%= @total_registrations_by_period[period].to_i %></td>
+          <% end %>
+          <td class="type-number"><%= @all_time_registrations.values.sum %></td>
+        </tr>
+        <% @facilities.each do |facility| %>
+          <tr>
+            <td class="type-title"><%= link_to facility.name, analytics_facility_path(facility) %></td>
+            <% @display_periods.reverse.each do |period| %>
+              <% unless @selected_period == :day %>
+                <td class="type-percent" data-sort-column-key="<%= period.join %>">
+                  <em><%= percentage(@registrations[[facility.id, period.first.to_s, period.second.to_s]], facility.monthly_estimated_opd_load) %></em>
+                </td>
+              <% end %>
+              <td class="type-number" <% if @selected_period == :day %>data-sort-column-key="<%= period.join %>"<% end %>>
+                <%= @registrations[[facility.id, period.first.to_s, period.second.to_s]].to_i %>
+              </td>
+            <% end %>
+            <td class="type-number"><%= @all_time_registrations[facility.id].to_i %></td>
+          </tr>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
+    <section class="footnotes">
+      <ol>
+        <li><strong>All registered patients:</strong> All registered patients with exclusions for: lost to follow-up, transferred to another public facility, and died.</li>
+      </ol>
+    </section>
+  </div>
+</div>
