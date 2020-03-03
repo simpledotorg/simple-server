@@ -27,27 +27,19 @@ module SimpleServerEnvHelper
 
     image_path(image_name)
   end
-    
-  def apple_touch_for_environment
-    env = ENV.fetch("SIMPLE_SERVER_ENV")
+
+  def apple_logo_for_environment
+    env = ENV.fetch('SIMPLE_SERVER_ENV')
 
     image_name = CUSTOMIZED_ENVS.include?(env) ? "simple_logo_#{env}_apple_touch.png" : "simple_logo_apple_touch.png"
 
     image_path(image_name)
   end
 
-  def logo_android_192_for_environment
-    env = ENV.fetch("SIMPLE_SERVER_ENV")
+  def android_logo_for_environment(size:)
+    env = ENV.fetch('SIMPLE_SERVER_ENV')
 
-    image_name = CUSTOMIZED_ENVS.include?(env) ? "simple_logo_#{env}_android_192.png" : "simple_logo_logo_android_192.png"
-
-    image_path(image_name)
-  end
-    
-  def logo_android_512_for_environment
-    env = ENV.fetch("SIMPLE_SERVER_ENV")
-
-    image_name = CUSTOMIZED_ENVS.include?(env) ? "simple_logo_#{env}_android_512.png" : "simple_logo_logo_android_512.png"
+    image_name = CUSTOMIZED_ENVS.include?(env) ? "simple_logo_#{env}_android_#{size}.png" : "simple_logo_android_#{size}.png"
 
     image_path(image_name)
   end
