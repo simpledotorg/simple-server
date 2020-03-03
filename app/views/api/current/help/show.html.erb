@@ -10,7 +10,7 @@
 
   <%= inline_stylesheet('common_webview.css') %>
   <%= inline_stylesheet('help.css') %>
-    
+
   <%= javascript_include_tag 'help' %>
 
 </head>
@@ -18,10 +18,10 @@
       country: Rails.application.config.country[:abbreviation],
       help_screen_youtube_video_url: ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL'],
       thumb_demo_svg: inline_svg('thumb_demo.svg'),
-      help_scan_bp_passport_svg: inline_svg('help_scan_bp_passport.svg'),
-      help_bp_passport_svg: inline_svg('help_bp_passport.svg'),
-      help_calling_svg: inline_svg('help_calling.svg'),
-      help_tip_svg: inline_svg('help_tip.svg'),
+      help_scan_bp_passport_svg: inline_svg('help/scan_bp_passport.svg'),
+      help_bp_passport_svg: inline_svg('help/bp_passport.svg'),
+      help_calling_svg: inline_svg('help/calling.svg'),
+      help_tip_svg: inline_svg('help/tip.svg'),
       help_screen_youtube_passport_url: ENV['HELP_SCREEN_YOUTUBE_PASSPORT_URL'],
       thumb_passport_svg: inline_svg('thumb_passport.svg'),
       icon_search_svg: inline_svg('icon_search.svg'),
