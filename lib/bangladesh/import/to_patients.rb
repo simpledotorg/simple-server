@@ -1,4 +1,4 @@
-require File.expand_path('../../config/environment', __dir__)
+require File.expand_path('../../../config/environment', __dir__)
 require 'csv'
 require 'pry'
 
