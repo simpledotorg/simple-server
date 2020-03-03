@@ -1,27 +1,24 @@
 <div class="page-header">
-  <h1 class="page-title">
-    <% if policy([:manage, :admin, User]).index? %>
-      <%= link_to "Admins", admins_path, class: "#{active_controller?("email_authentications")}" %>
-      <i class="fas fa-angle-right light"></i>
-    <% end %>
-
-    Admin
-  </h1>
-  <nav class="page-nav">
-    <% if policy([:manage, :admin, @admin]).edit? %>
-      <%= link_to 'Edit admin', edit_admin_path(@admin), class: "btn btn-sm btn-primary" %>
-    <% end %>
+  <nav class="breadcrumb">
+      <% if policy([:manage, :admin, User]).index? %><%= link_to "Admins", admins_path, class: "#{active_controller?("email_authentications")}" %><% end %> <i class="fas fa-chevron-right"></i> <%= @admin.full_name %>
   </nav>
+  
 </div>
 
 <div class="card">
-  <h2>
-    <%= @admin.full_name %>
-  </h2>
-  <div class="card-row">
-    <h5><i class="fas fa-envelope"></i> Email: <%= mail_to @admin.email %></h5>
-    <h5><i class="fas fa-shield-alt"></i> Role: <%= @admin.role %></h5>
-    <h5><i class="fas fa-lock"></i> Permissions:</h5>
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <h2><%= @admin.full_name %></h2>
+        </div>
+        <div class="col-md-4" style="text-align:right;">
+            <% if policy([:manage, :admin, @admin]).edit? %>
+              <%= link_to 'Edit admin', edit_admin_path(@admin), class: "btn btn-sm btn-primary" %>
+            <% end %>  
+        </div>
+    </div>
+    <p><strong>Email:</strong> <%= mail_to @admin.email %></p>
+    <p><strong>Role:</strong> <%= @admin.role %></p>
+    <p><strong>Permissions:</strong></p>
     <ul>
       <% @admin.user_permissions.group_by(&:permission_slug).each do |permission_slug, user_permissions| %>
         <li><%= permission_slug.titleize %></li>
@@ -34,5 +31,4 @@
         </ul>
       <% end %>
     </ul>
-  </div>
 </div>

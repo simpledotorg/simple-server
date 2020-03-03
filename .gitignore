@@ -24,6 +24,6 @@ coverage
 .env.production
 .env
 
-/lib/bangladesh/data/*.csv
-/lib/bangladesh/data/*.csv.encrypted
-/lib/bangladesh/data/*.xlsx
+/lib/bangladesh/import/data/*.csv
+/lib/bangladesh/import/data/*.csv.encrypted
+/lib/bangladesh/import/data/*.xlsx

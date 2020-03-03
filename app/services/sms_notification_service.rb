@@ -29,7 +29,7 @@ class SmsNotificationService
   def send_sms(body, callback_url = '')
     client.messages.create(
       from: sender_phone_number,
-      to: recipient_number.insert(0, I18n.t('sms.country_code')),
+      to: recipient_number.insert(0, Rails.application.config.country[:sms_country_code]),
       status_callback: callback_url,
       body: body)
   end
