@@ -22,13 +22,37 @@ module SimpleServerEnvHelper
   def alt_for_environment
     env = ENV.fetch('SIMPLE_SERVER_ENV')
 
-    CUSTOMIZED_ENVS.include?(env) ? "Simple Server #{env.capitalize} Logo" : 'Simple Server Logo'
+    CUSTOMIZED_ENVS.include?(env) ? "Simple Dashboard #{env.capitalize} Logo" : 'Simple Dashboard Logo'
   end
 
   def favicon_for_environment
     env = ENV.fetch('SIMPLE_SERVER_ENV')
 
     image_name = CUSTOMIZED_ENVS.include?(env) ? "simple_logo_#{env}_favicon.png" : 'simple_logo_favicon.png'
+
+    image_path(image_name)
+  end
+
+  def apple_touch_for_environment
+    env = ENV.fetch("SIMPLE_SERVER_ENV")
+
+    image_name = CUSTOMIZED_ENVS.include?(env) ? "simple_logo_#{env}_apple_touch.png" : "simple_logo_apple_touch.png"
+
+    image_path(image_name)
+  end
+
+  def logo_android_192_for_environment
+    env = ENV.fetch("SIMPLE_SERVER_ENV")
+
+    image_name = CUSTOMIZED_ENVS.include?(env) ? "simple_logo_#{env}_android_192.png" : "simple_logo_android_192.png"
+
+    image_path(image_name)
+  end
+
+  def logo_android_512_for_environment
+    env = ENV.fetch("SIMPLE_SERVER_ENV")
+
+    image_name = CUSTOMIZED_ENVS.include?(env) ? "simple_logo_#{env}_android_512.png" : "simple_logo_android_512.png"
 
     image_path(image_name)
   end
