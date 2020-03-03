@@ -2357,7 +2357,7 @@
           ]
         },
         "blood_sugar_value": {
-          "type": "number"
+          "type": "decimal"
         },
         "deleted_at": {
           "$ref": "#/definitions/nullable_timestamp"
