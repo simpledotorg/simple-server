@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 describe CorrectBangladeshPhoneNumber do
+  include ActiveSupport::Testing::TimeHelpers
+
   let(:country_config) do
     {
       abbreviation: 'BD',
@@ -89,6 +91,20 @@ describe CorrectBangladeshPhoneNumber do
 
       it 'does not update phone numbers' do
         expect { corrector.perform }.not_to change { phone_number.reload.number }
+      end
+    end
+
+    context 'touching patient records' do
+      let(:number) { '1234567890' }
+
+      it 'touches the patient record' do
+        now = Time.current
+
+        travel_to now do
+          corrector.perform
+        end
+
+        expect(patient.reload.updated_at).to be_within(1.second).of(now)
       end
     end
   end

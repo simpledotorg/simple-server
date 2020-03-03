@@ -15,6 +15,8 @@ class CorrectBangladeshPhoneNumber
     patient.phone_numbers.each do |phone_number|
       phone_number.update!(number: correct(phone_number.number))
     end
+
+    patient.touch
   end
 
   def correct(number)
