@@ -229,6 +229,23 @@ RSpec.describe Api::Current::PatientsController, type: :controller do
         end
       end
 
+      describe 'patient business_identifier' do
+        it 'disallows missing identifier for bangladesh_national_id' do
+          patients_payload = build_patient_payload(FactoryBot.create(:patient))
+          business_identifier = build_business_identifier_payload
+          business_identifier.delete('identifier')
+          payload_without_biz_id = patients_payload.deep_merge('business_identifiers' => [business_identifier])
+
+          post :sync_from_user, params: { patients: [payload_without_biz_id] }, as: :json
+
+          expect(response).to have_http_status(200)
+          # Nested errors are not currently reported, so the response errors map doesn't contain an error
+          # Checking if the PatientBusinessIdentifier got created instead
+          expect(JSON.parse(response.body)['errors'].to_s).to match(/business_identifiers\/0/)
+          expect(PatientBusinessIdentifier.where(id: business_identifier['id']).count).to eq 0
+        end
+      end
+
       it 'does not change registration user or facility' do
         current_user = FactoryBot.create(:user)
         current_facility = FactoryBot.create(:facility, facility_group: current_user.facility.facility_group)
@@ -289,7 +306,9 @@ RSpec.describe Api::Current::PatientsController, type: :controller do
       let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
       let(:facility_in_another_group) { FactoryBot.create(:facility) }
 
-      let(:patients_in_another_group) { FactoryBot.create_list(:patient, 2, registration_facility: facility_in_another_group, updated_at: 3.minutes.ago) }
+      let(:patients_in_another_group) { FactoryBot.create_list(:patient, 2,
+                                                               registration_facility: facility_in_another_group,
+                                                               updated_at: 3.minutes.ago) }
 
       before :each do
         set_authentication_headers

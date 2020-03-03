@@ -19,6 +19,8 @@
     <meta charset="utf-8">
 
     <%= stylesheet_link_tag    'application', media: 'all' %>
+    <%= stylesheet_link_tag    'print', media: 'print' %>
+
     <%= javascript_include_tag 'application' %>
 
     <link rel="apple-touch-icon" sizes="180x180" href="<%= apple_logo_for_environment %>">
@@ -56,7 +58,7 @@
 
               <% if policy(:dashboard).view_my_facilities? && FeatureToggle.enabled?("MY_FACILITIES")%>
                 <li class="nav-item">
-                  <%= link_to "My Facilities", my_facilities_path, class: "nav-link #{active_controller?("my_facilities")}" %>
+                  <%= link_to "My Facilities", my_facilities_overview_path, class: "nav-link #{active_controller?("my_facilities")}" %>
                 </li>
               <% end %>
 

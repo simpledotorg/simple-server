@@ -1,40 +1,55 @@
 <% if @users_requesting_approval.any? && policy([:manage, :user, @users_requesting_approval.first]).enable_access? %>
   <% if @users_requesting_approval.any? %>
+
     <h2>Users to review</h2>
     <p>Contact these users promptly. Check that they are approved to access patient data at their facility.</p>
 
     <% @users_requesting_approval.each do |user| %>
       <% if policy([:manage, :user, user]).enable_access? %>
-          <div class="user-row">
-                <h5><%= link_to user.full_name, [:admin, user] %></h5>
-                <div class="text-grey mt-1 mb-2">
-                    <% if user.sync_approval_status_reason.present? %>
-                      <span><%= user.sync_approval_status_reason %> at <%= user.registration_facility.present? ? link_to(user.registration_facility.name, admin_facilities_path(user.registration_facility)) : "N/A" %></span>, <%= l user.updated_at.to_date %>
-                    <% end %>
-                </div>
+        <div class="user-row">
+          <h5><%= link_to user.full_name, [:admin, user] %></h5>
+          <div class="text-grey mt-1 mb-2">
+            <% if user.sync_approval_status_reason.present? %>
+              <span><%= user.sync_approval_status_reason %> at
+                <% if user.registration_facility.present? %>
+                  <%= link_to(user.registration_facility.name,
+                              admin_facility_group_facility_path(user.registration_facility.facility_group,
+                                                                 user.registration_facility)) %>
+                <% else %>
+                  "N/A"
+                <% end %>
+              </span>, <%= l user.updated_at.to_date %>
+            <% end %>
+          </div>
 
-              <div class="row">
-                  <div class="col">
-                      <a href="tel:<%= user.phone_number %>" class="btn btn-outline-primary btn-sm btn-phone" style="letter-spacing: 0.1em;"><i class="fas fa-phone" style="font-size: 90%;"></i> <%= user.phone_number %></a>
-                  </div>
-                  <div class="col text-right">
+          <div class="row">
+            <div class="col">
+              <a href="tel:<%= user.phone_number %>"
+                 class="btn btn-outline-primary btn-sm btn-phone" style="letter-spacing: 0.1em;">
+                <i class="fas fa-phone" style="font-size: 90%;"></i> <%= user.phone_number %></a>
+            </div>
 
-                    <%= link_to "Allow access", admin_user_enable_access_path(user), method: :put, class: "btn btn-sm btn-outline-success", data: { confirm: I18n.t('admin.enable_access_alert') } %>
-                    <%= link_to '<i class="fas fa-times"></i>'.html_safe, '#deny-access-modal-' + user.id, 'data-toggle' => 'modal', class: "btn btn-sm btn-outline-danger" %>
+            <div class="col text-right">
+              <%= link_to "Allow access", admin_user_enable_access_path(user),
+                          method: :put,
+                          class: "btn btn-sm btn-outline-success",
+                          data: { confirm: I18n.t('admin.enable_access_alert') } %>
+              <%= link_to '<i class="fas fa-times"></i>'.html_safe, '#deny-access-modal-' + user.id,
+                          'data-toggle' => 'modal',
+                          class: "btn btn-sm btn-outline-danger" %>
 
-                    <%= render partial: "admin/users/deny_access_modal", locals: { user: user } %>
-                  </div>
+              <%= render partial: "admin/users/deny_access_modal", locals: { user: user } %>
             </div>
           </div>
+        </div>
       <% end %>
     <% end %>
   <% else %>
-      <h2>All users reviewed</h2>
-      <p><i class="fas fa-check"></i> All user approvals are complete. Nice work.</p>
-  <% end %>
-
-  <%= paginate @users_requesting_approval %>
-<% else %>
     <h2>All users reviewed</h2>
     <p><i class="fas fa-check"></i> All user approvals are complete. Nice work.</p>
+  <% end %>
+  <%= paginate @users_requesting_approval %>
+<% else %>
+  <h2>All users reviewed</h2>
+  <p><i class="fas fa-check"></i> All user approvals are complete. Nice work.</p>
 <% end %>
