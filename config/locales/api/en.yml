@@ -11,7 +11,6 @@ en:
       expired_otp: 'You need a fresh OTP. Request a new one.'
       invalid_password: 'Your password does not match. Try again?'
   sms:
-    country_code: '+91'
     request_otp: '<#> %{otp} is your Simple verification code\n%{app_signature}'
     appointment_reminders:
       missed_visit_sms_reminder: 'Our staff at %{facility_name} are thinking of you and your heart health. Our health team is always here if you have any follow-up questions or concerns.'
