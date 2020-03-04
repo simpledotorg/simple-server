@@ -54,19 +54,27 @@
 
     <!-- daily stats view-->
     <div id="daily-stats-card">
-      <% @statistics[:overall_registrations_per_day].each do |r| %>
+      <% @statistics[:daily].sort.each do |date, stat| %>
         <div class="day">
           <h3 class="stat-day">
-            <%= display_date(Date.ordinal(r.year.to_i, r.day.to_i)) %>
+            <%= display_date(date) %>
           </h3>
 
           <div class="counts">
             <div class="count count-1">
               <strong>Registered</strong>
               <div class="big-number">
-                <%= r.registration_count %>
+                <%= dash_if_zero(stat[:registrations]) %>
               </div>
               New patients
+            </div>
+
+            <div class="count count-2">
+              <strong>Follow-up</strong>
+              <div class="big-number">
+                <%= dash_if_zero(stat[:follow_ups]) %>
+              </div>
+              Follow-up patients
             </div>
           </div>
         </div>
