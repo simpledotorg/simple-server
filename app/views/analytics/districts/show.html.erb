@@ -22,6 +22,13 @@
 <div class="downloads">
   <h4>Downloads</h4>
 
+  <p>
+    <%= link_to({ period: params[:period] }.merge(format: :csv)) do %>
+    <i class="far fa-file-excel mr-2"></i>
+    Cohort report
+    <% end %>
+  </p>
+
   <% if policy([:cohort_report, @organization_district]).patient_list? %>
     <p>
       <%= link_to analytics_organization_district_patient_list_path(organization_id: @organization_district.organization.id,
