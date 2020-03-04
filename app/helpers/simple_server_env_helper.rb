@@ -22,7 +22,7 @@ module SimpleServerEnvHelper
   end
 
   def logo_for_environment
-    image_name = "#{simple_env}/simple_logo.svg"
+    image_name = "logos/#{simple_env}/simple_logo.svg"
 
     image_tag image_name, width: 30, height: 30, class: 'd-inline-block mr-2 align-top', alt: alt_for_environment
   end
@@ -34,21 +34,21 @@ module SimpleServerEnvHelper
   end
 
   def mailer_logo_for_environment
-    image_name = "#{simple_env}/simple_logo_256.png"
+    image_name = "logos/#{simple_env}/simple_logo_256.png"
 
     image_tag image_name, width: 48, height: 48, style: 'width: 48px; height: 48px;'
   end
 
   def favicon_for_environment
-    image_path "#{simple_env}/simple_logo_favicon.png"
+    image_path "logos/#{simple_env}/simple_logo_favicon.png"
   end
 
   def apple_logo_for_environment
-    image_path "#{simple_env}/simple_logo_apple_touch.png"
+    image_path "logos/#{simple_env}/simple_logo_apple_touch.png"
   end
 
   def android_logo_for_environment(size:)
-    image_path "#{simple_env}/simple_logo_android_#{size}.png"
+    image_path "logos/#{simple_env}/simple_logo_android_#{size}.png"
   end
 
   private
