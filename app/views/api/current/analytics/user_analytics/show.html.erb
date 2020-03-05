@@ -48,9 +48,9 @@
       <a href="#" onclick="plusDivs(+1)" class="button-prev"><span><%= inline_svg('icon_arrow_forward.svg') %></span></a>
     </div>
 
-    <!-- Dump all statistics in a hidden div so that we can parse it in JS -->
-    <!-- This allows us to minimize usage of server-side rendered dates and control them using JS -->
-    <%#= content_tag :div, class: "statistics", data: { statistics: @statistics }, style: "display: none" %>
+    <!-- dump all statistics in a hidden div so that we can parse it in JS -->
+    <%= content_tag :div, id: "statistics", data: { statistics: @statistics }, style: "display: none" do %>
+    <% end %>
 
     <!-- daily stats view-->
     <div id="daily-stats-card">
@@ -80,16 +80,9 @@
         </div>
       <% end %>
 
-      <div class="day count-empty unavailable" style="display: none">
-        <h3>17-Jan-2020</h3>
+      <div class="day count-empty sync-nudge" style="display: none">
         <%= inline_svg('icon_sync_cloud.svg') %>
         <p>Tap "Sync" on the home screen for new data.</p>
-      </div>
-
-      <div class="day count-empty today-unavailable " style="display:none">
-        <h3>Today</h3>
-        <%= inline_svg('icon_moon.svg') %>
-        <p>Today is not available yet.<br>Data is updated at midnight each day.</p>
       </div>
     </div>
   </div>
@@ -336,12 +329,42 @@
 </body>
 
 <script>
+  function currentDate() {
+    return new Date().toJSON().slice(0, 10);
+  }
+
+  function statistics() {
+    return JSON.parse(document.querySelector('#statistics').attributes.getNamedItem('data-statistics').value);
+  }
+
+  function dailyStatistics() {
+    return Object.entries(statistics().daily);
+  }
+
+  function monthlyStatistics() {
+    return Object.entries(statistics().monthly);
+  }
+
+  function trophyStatistics() {
+    return Object.entries(statistics().trophies);
+  }
+
+  function showSyncNudgeIfNecessary() {
+    weHaveDataForToday = false;
+
+    for (let [date, _] of dailyStatistics()) {
+      if (currentDate() === date) {
+        weHaveDataForToday = true;
+      }
+    }
+
+    if (!weHaveDataForToday) {
+      document.querySelector('#daily-stats-card > .sync-nudge').style.display = 'block';
+    }
+  }
 
   window.onload = function () {
-    todaysDate = new Date();
-
-    // if today is unavailable, show an additional card after last available data for syncing again
-    // if today is available, show today's data
+    showSyncNudgeIfNecessary()
   };
 
   var slideIndex = 1;
