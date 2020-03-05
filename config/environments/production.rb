@@ -69,7 +69,6 @@ Rails.application.configure do
 
   # Set the default URL to use in mailer URL helpers
   config.action_mailer.default_url_options = { host: ENV.fetch("SIMPLE_SERVER_HOST") }
-  config.action_mailer.asset_host = "#{ENV.fetch("SIMPLE_SERVER_HOST_PROTOCOL")}://#{ENV.fetch("SIMPLE_SERVER_HOST")}"
 
   # Use SendGrid as our SMTP provider
   config.action_mailer.smtp_settings = {
