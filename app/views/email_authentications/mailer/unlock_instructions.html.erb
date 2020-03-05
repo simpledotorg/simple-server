@@ -1,31 +1,7 @@
-<h1 style="letter-spacing:-0.7px;color:#333;font-family:Arial,sans-serif;font-weight:700;margin:0;font-size:150%;">Account locked</h1>
+<p>Hello <%= @resource.email %>!</p>
 
-<div>&nbsp;</div>
+<p>Your account has been locked due to an excessive number of unsuccessful sign in attempts.</p>
 
-<div style="font-size:110%;">Hello <%= @resource.email %>!</div>
+<p>Click the link below to unlock your account:</p>
 
-<div>&nbsp;</div>
-
-<div style="font-size:110%;">Your Simple Dashboard account has been locked because of too many unsuccessful sign in attempts.</div>
-
-<div>&nbsp;</div>
-
-<div style="font-size:110%;">Click the button below to unlock your account:</div>
-
-<div>&nbsp;</div>
-<div>&nbsp;</div>
-
-<div>
-    <!--BUTTON SPECIFIC TO MS OUTLOOK-->
-        <!--[if mso]>
-        <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="<%= unlock_url(@resource, unlock_token: @token) %>" style="height:42px;v-text-anchor:middle;width:200px;" arcsize="12%" strokecolor="#c20020" fillcolor="#FF3355">
-            <w:anchorlock/>
-            <center style="color:#ffffff;font-family:sans-serif;font-size:15px;font-weight:bold;">Unlock account</center>
-          </v:roundrect>
-        <![endif]-->
-
-    <!--NORMAL BUTTON-->
-        <a href="<%= unlock_url(@resource, unlock_token: @token) %>" style="background-color:#FF3355;border:1px solid #c20020;border-radius:5px;color:#ffffff;display:inline-block;font-family:sans-serif;font-size:16px;font-weight:bold;line-height:42px;text-align:center;text-decoration:none;width:200px;-webkit-text-size-adjust:none;mso-hide:all;">
-        Unlock account
-        </a>
-</div>
+<p><%= link_to 'Unlock my account', unlock_url(@resource, unlock_token: @token) %></p>
