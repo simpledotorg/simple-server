@@ -98,32 +98,6 @@ RSpec.describe SimpleServerEnvHelper do
     end
   end
 
-  describe 'favicon_for_environment' do
-    before { allow(self).to receive(:image_path).with(expected_favicon).and_return('fingerprinted_favicon') }
-
-    context 'when in the default environment' do
-      let(:expected_favicon) { 'simple_logo_favicon.png' }
-
-      it 'should return the default logo' do
-        ENV[simple_server_env] = 'default'
-
-        expect(favicon_for_environment).to eq 'fingerprinted_favicon'
-      end
-    end
-
-    SimpleServerEnvHelper::CUSTOMIZED_ENVS.each do |environment|
-      context "when in the #{environment} environment" do
-        let(:expected_favicon) { "simple_logo_#{environment}_favicon.png" }
-
-        it "should return the #{environment} favicon" do
-          ENV[simple_server_env] = environment
-
-          expect(favicon_for_environment).to eq 'fingerprinted_favicon'
-        end
-      end
-    end
-  end
-
   describe 'alt_for_environment' do
     context 'when in the default environment' do
       it 'should return the default alt for the logo' do
@@ -162,6 +136,62 @@ RSpec.describe SimpleServerEnvHelper do
         ENV[simple_server_env] = 'production'
 
         expect(alt_for_environment).to eq 'Simple Server Production Logo'
+      end
+    end
+  end
+
+  describe 'favicon_for_environment' do
+    before { allow(self).to receive(:image_path).with(expected_favicon).and_return('fingerprinted_favicon') }
+
+    context 'when in the default environment' do
+      let(:expected_favicon) { 'simple_logo_favicon.png' }
+
+      it 'should return the default logo' do
+        ENV[simple_server_env] = 'default'
+
+        expect(favicon_for_environment).to eq 'fingerprinted_favicon'
+      end
+    end
+
+    SimpleServerEnvHelper::CUSTOMIZED_ENVS.each do |environment|
+      context "when in the #{environment} environment" do
+        let(:expected_favicon) { "simple_logo_#{environment}_favicon.png" }
+
+        it "should return the #{environment} favicon" do
+          ENV[simple_server_env] = environment
+
+          expect(favicon_for_environment).to eq 'fingerprinted_favicon'
+        end
+      end
+    end
+  end
+
+  describe 'mailer_logo_for_environment' do
+    before { allow(self).to receive(:image_path).with(expected_logo).and_return('fingerprinted_logo') }
+
+    context 'when in the default environment' do
+      let(:expected_logo) do
+        image_tag 'simple_logo-256.png', width: 48, height: 48, style: 'width: 48px; height: 48px;'
+      end
+
+      it 'should return the default logo' do
+        ENV[simple_server_env] = 'default'
+
+        expect(mailer_logo_for_environment).to eq expected_logo
+      end
+    end
+
+    SimpleServerEnvHelper::CUSTOMIZED_ENVS.each do |environment|
+      context "when in the #{environment} environment" do
+        let(:expected_logo) do
+          image_tag "simple_logo_#{environment}-256.png", width: 48, height: 48, style: 'width: 48px; height: 48px;'
+        end
+
+        it "should return the #{environment} favicon" do
+          ENV[simple_server_env] = environment
+
+          expect(mailer_logo_for_environment).to eq expected_logo
+        end
       end
     end
   end
