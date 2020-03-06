@@ -7,7 +7,11 @@ module DayHelper
     end
   end
 
+  def doy_to_date_obj(year, doy)
+    Date.ordinal(year.to_i, doy.to_i)
+  end
+
   def doy_to_date(year, doy)
-    Date.ordinal(year, doy).strftime('%d-%b')
+    doy_to_date_obj(year, doy).strftime('%d-%b')
   end
 end
