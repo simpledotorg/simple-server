@@ -14,7 +14,7 @@ class Analytics::DistrictsController < AnalyticsController
     respond_to do |format|
       format.html
       format.csv do
-        send_data render_to_string('show.csv.erb'), fliename: download_filename
+        send_data render_to_string('show.csv.erb'), filename: download_filename
       end
     end
   end
@@ -88,6 +88,6 @@ class Analytics::DistrictsController < AnalyticsController
   end
 
   def download_filename
-    "district-cohort-report_#{@organization_district.district_name}_#{Date.current}.csv"
+    "district-cohort-report_#{@organization_district.district_name}_#{Time.current.to_s(:number)}.csv"
   end
 end

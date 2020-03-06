@@ -1,6 +1,8 @@
-"<%= @organization_district.district_name %> Dashboard"
-
-"Cohort report"
+<%= [
+  "Report generated at:",
+  Time.current
+].to_csv -%>
+<%= ["#{@organization_district.district_name} Cohort Report"].to_csv -%>
 <%= [
   "Cohort period",
   "Follow up period",

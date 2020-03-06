@@ -79,6 +79,6 @@ class AppointmentsController < AdminController
 
   def download_filename
     facility_name = current_facility.present? ? current_facility.name.parameterize : 'all'
-    "overdue-patients_#{facility_name}_#{Date.current}.csv"
+    "overdue-patients_#{facility_name}_#{Time.current.to_s(:number)}.csv"
   end
 end

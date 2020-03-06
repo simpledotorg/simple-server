@@ -1,6 +1,8 @@
-"<%= @facility.name %> Dashboard"
-
-"Cohort report"
+<%= [
+  "Report generated at:",
+  Time.current
+].to_csv -%>
+<%= ["#{@facility.name} Cohort Report"].to_csv -%>
 <%= [
   "Cohort period",
   "Follow up period",
