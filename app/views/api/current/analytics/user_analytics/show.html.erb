@@ -44,15 +44,15 @@
 
   <div class="card" style="min-height: 210px;">
     <div class="next-prev">
-      <a href="#" onclick="plusDivs(-1)" class="button-next"><span><%= inline_svg('icon_arrow_back.svg') %></span></a>
-      <a href="#" onclick="plusDivs(+1)" class="button-prev"><span><%= inline_svg('icon_arrow_forward.svg') %></span></a>
+      <a href="#" onclick="nextSlide(-1)" class="button-next"><span><%= inline_svg('icon_arrow_back.svg') %></span></a>
+      <a href="#" onclick="nextSlide(+1)" class="button-prev"><span><%= inline_svg('icon_arrow_forward.svg') %></span></a>
     </div>
 
     <!-- dump all statistics in a hidden div so that we can parse it in JS -->
     <%= content_tag :div, id: "statistics", data: { statistics: @statistics }, style: "display: none" do %>
     <% end %>
 
-    <!-- daily stats view-->
+    <!-- daily stats view -->
     <div id="daily-stats-card">
       <% @statistics[:daily].sort.each do |date, stat| %>
         <div class="day">
@@ -303,7 +303,7 @@
   }
 
   function statistics() {
-    return JSON.parse(document.querySelector('#statistics').attributes.getNamedItem('data-statistics').value);
+    return JSON.parse(document.getElementById('statistics').attributes.getNamedItem('data-statistics').value);
   }
 
   function dailyStatistics() {
@@ -319,7 +319,7 @@
   }
 
   function showSyncNudgeIfNecessary() {
-    weHaveDataForToday = false;
+    let weHaveDataForToday = false;
 
     for (let [date, _] of dailyStatistics()) {
       if (currentDate() === date) {
@@ -332,34 +332,37 @@
     }
   }
 
-  window.onload = function () {
-    showSyncNudgeIfNecessary()
-  };
-
-  var slideIndex = 1;
-  showDivs(slideIndex);
-
-  function plusDivs(n) {
-    showDivs(slideIndex += n);
+  function elementsForAllDaysInTheCarousel() {
+    return document.getElementsByClassName("day");
   }
 
-  function showDivs(n) {
-    var i;
-    var x = document.getElementsByClassName("day");
+  function nextSlide(increment) {
+    nextSlidePosition = window.lastSlidePositionForProgressCards += increment;
+    showDailyProgressCards(nextSlidePosition);
+  }
 
-    if (n > x.length) {
-      slideIndex = 1
+  window.onload = function () {
+    window.lastSlidePositionForProgressCards = 1;
+    showDailyProgressCards(window.lastSlidePositionForProgressCards);
+    showSyncNudgeIfNecessary();
+  };
+
+  function showDailyProgressCards(next) {
+    var elementsForAllDays = elementsForAllDaysInTheCarousel();
+
+    if (next > elementsForAllDays.length) {
+      window.lastSlidePositionForProgressCards = 1
     }
 
-    if (n < 1) {
-      slideIndex = x.length
+    if (next < 1) {
+      window.lastSlidePositionForProgressCards = elementsForAllDays.length
     }
 
-    for (i = 0; i < x.length; i++) {
-      x[i].style.display = "none";
+    for (let i = 0; i < elementsForAllDays.length; i++) {
+      elementsForAllDays[i].style.display = "none";
     }
 
-    x[slideIndex - 1].style.display = "block";
+    elementsForAllDays[window.lastSlidePositionForProgressCards - 1].style.display = "block";
   }
 </script>
 </html>
