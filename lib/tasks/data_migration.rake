@@ -145,13 +145,4 @@ namespace :data_migration do
       user.save!
     end
   end
-
-  desc 'Format all Bangladesh patient phone numbers correctly'
-  task correct_bangladesh_phone_numbers: :environment do
-    exit 0 unless Rails.application.config.country[:name] == 'Bangladesh'
-
-    Patient.find_each do |patient|
-      CorrectBangladeshPhoneNumberJob.perform_later(patient)
-    end
-  end
 end

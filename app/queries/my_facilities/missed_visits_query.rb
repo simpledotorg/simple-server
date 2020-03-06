@@ -12,7 +12,7 @@ class MyFacilities::MissedVisitsQuery
 
   def initialize(facilities: Facility.all, period: :quarter, last_n: 3)
     # period can be :quarter, :month.
-    # last_n is the number of quarters/months data to be returned
+    # last_n is the number of quarters/months for which data is to be returned
     @facilities = facilities
     @period = period
     @periods = period_list(period, last_n)
@@ -22,9 +22,7 @@ class MyFacilities::MissedVisitsQuery
   def patients
     @patients ||=
       Patient
-      .joins('INNER JOIN latest_blood_pressures_per_patients
-              ON patients.id = latest_blood_pressures_per_patients.patient_id')
-      .where(latest_blood_pressures_per_patients: { bp_facility_id: @facilities })
+      .where(registration_facility_id: @facilities)
       .where('recorded_at < ?', Time.current.beginning_of_day - REGISTRATION_BUFFER)
   end
 
@@ -32,7 +30,7 @@ class MyFacilities::MissedVisitsQuery
     @patients_by_period ||=
       @periods.map do |year, period|
         period_start = (@period == :quarter ? local_quarter_start(year, period) : local_month_start(year, period))
-        [[year, period], patients.where('patient_recorded_at < ?', period_start - REGISTRATION_BUFFER)]
+        [[year, period], patients.where('recorded_at < ?', period_start - REGISTRATION_BUFFER)]
       end.to_h
   end
 
@@ -66,8 +64,8 @@ class MyFacilities::MissedVisitsQuery
   def missed_visits_by_facility
     @missed_visits_by_facility ||=
       patients_by_period.map do |(year, period), patients|
-        responsible_patients = patients.group(:bp_facility_id).count
-        visited_patients = visits_by_period[[year, period]].group(:responsible_facility_id).count
+        responsible_patients = patients.group(:registration_facility_id).count
+        visited_patients = visits_by_period[[year, period]].group(:registration_facility_id).count
 
         responsible_patients.map do |facility_id, patient_count|
           [[facility_id, year, period],
@@ -95,14 +93,12 @@ class MyFacilities::MissedVisitsQuery
 
   def visits_in_quarter(year, quarter, patients)
     LatestBloodPressuresPerPatientPerQuarter
-      .where(year: year, quarter: quarter)
-      .where(patient_id: patients)
+      .where(year: year, quarter: quarter, patient: patients)
   end
 
   def visits_in_month(year, month, patients)
     LatestBloodPressuresPerPatientPerMonth
-      .where(year: year, month: month)
-      .where(patient_id: patients)
+      .where(year: year, month: month, patient: patients)
   end
 
   def period_list(period, last_n)
