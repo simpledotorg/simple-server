@@ -298,7 +298,7 @@
 </body>
 
 <script>
-  function currentDate() {
+  function today() {
     return new Date().toJSON().slice(0, 10);
   }
 
@@ -322,7 +322,7 @@
     let weHaveDataForToday = false;
 
     for (let [date, _] of dailyStatistics()) {
-      if (currentDate() === date) {
+      if (today() === date) {
         weHaveDataForToday = true;
       }
     }
@@ -342,7 +342,7 @@
   }
 
   window.onload = function () {
-    window.lastSlidePositionForProgressCards = 1;
+    window.lastSlidePositionForProgressCards = -1;
     showDailyProgressCards(window.lastSlidePositionForProgressCards);
     showSyncNudgeIfNecessary();
   };
