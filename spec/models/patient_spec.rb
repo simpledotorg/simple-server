@@ -132,7 +132,7 @@ describe Patient, type: :model do
         create(:blood_sugar, patient: patient, blood_sugar_type: :random, blood_sugar_value: 150)
         create(:appointment, :overdue, patient: patient)
 
-        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:LOW])
+        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:NONE])
       end
     end
 
