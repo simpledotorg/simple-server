@@ -9,6 +9,12 @@ class MyFacilities::FollowUpsQuery
 
   attr_reader :periods
 
+  def self.total_follow_ups(facilities)
+    LatestBloodPressuresPerPatientPerDay
+      .where('patient_recorded_at < bp_recorded_at')
+      .where(facility: facilities)
+  end
+
   def initialize(facilities: Facility.all, period: :quarter, last_n: 3)
     # period can be :quarter, :month, :day.
     # last_n is the number of quarters/months/days data to be returned
@@ -18,9 +24,8 @@ class MyFacilities::FollowUpsQuery
   end
 
   def follow_ups
-    LatestBloodPressuresPerPatientPerDay
-      .where('patient_recorded_at < bp_recorded_at')
-      .where(facility: @facilities)
+    MyFacilities::FollowUpsQuery
+      .total_follow_ups(@facilities)
       .where("(year, #{@period}) IN (#{periods_as_sql_list})")
   end
 
