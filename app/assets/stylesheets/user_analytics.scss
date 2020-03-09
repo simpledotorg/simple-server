@@ -33,8 +33,12 @@ $font-small: 11px;
 
 .card h3 {
   font-weight: 700;
-  font-size: 22px;
+  font-size: 20px;
   color: $grey-darkest;
+}
+
+.card h3.stat-day {
+    letter-spacing: 2px;
 }
 
 .empty-reports {
@@ -185,13 +189,15 @@ span.percent {
 
 footer p {
   text-align: center;
+  font-size: 18px;
 }
 
 .trophy {
   display: inline-block;
   text-align: center;
   margin: 0 8px 30px 8px;
-  font-size: 16px;
+  font-size: 18px;
+  line-height: 1.3;
   position: relative;
   padding: 140px 0 0 0;
 }
@@ -293,7 +299,7 @@ footer p {
   display: block;
   padding: 24px 0 24px 0;
   text-align: center;
-  font-size: 14px;
+  font-size: 18px;
   background: #EEF7FF;
   margin: 10px 4px 4px 0;
   border-radius: 10px;
@@ -336,6 +342,7 @@ footer p {
 .next-prev {
   float: right;
   margin-top: -8px;
+  margin-right: -8px;
 }
 
 .button-next:active,
