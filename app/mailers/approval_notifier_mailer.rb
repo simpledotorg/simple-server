@@ -1,8 +1,6 @@
 class ApprovalNotifierMailer < ApplicationMailer
   attr_reader :user
 
-  default from: 'help@simple.org'
-
   def registration_approval_email(user_id:)
     @user = User.find(user_id)
     subject = I18n.t('registration_approval_email.subject',
