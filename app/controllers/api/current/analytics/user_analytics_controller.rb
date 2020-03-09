@@ -6,8 +6,11 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
   layout false
 
   def show
+    @days_ago = 30
+    @daily_period_list = period_list(:day, @days_ago).sort.reverse
+
     @statistics = {
-      daily: prepare_daily_stats,
+      daily: prepare_daily_stats(@days_ago),
       trophies: prepare_trophies,
       monthly: {},
       last_updated_at: Time.current
@@ -26,28 +29,32 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
   end
 
   def follow_ups_for_last_n_days(n)
-    MyFacilities::FollowUpsQuery
-      .new(facilities: current_facility, period: :day, last_n: n)
-      .follow_ups
-      .group(:year, :day)
-      .count
-      .map { |date, follow_ups| [date.map(&:to_i), follow_ups: follow_ups] }
-      .to_h
+    follow_ups =
+      MyFacilities::FollowUpsQuery
+        .new(facilities: current_facility, period: :day, last_n: n)
+        .follow_ups
+        .group(:year, :day)
+        .count
+        .map { |date, fups| [date.map(&:to_i), follow_ups: fups] }
+        .to_h
+
+    data_for_unavailable_dates(:follow_ups, @daily_period_list).merge(follow_ups)
   end
 
   def registrations_for_last_n_days(n)
-    MyFacilities::RegistrationsQuery
-      .new(facilities: current_facility, period: :day, last_n: n)
-      .registrations
-      .group_by { |reg| [reg.year, reg.day] }
-      .map { |date, reg| [date.map(&:to_i), registrations: reg.first.registration_count] }
-      .to_h
+    registrations =
+      MyFacilities::RegistrationsQuery
+        .new(facilities: current_facility, period: :day, last_n: n)
+        .registrations
+        .group_by { |reg| [reg.year, reg.day] }
+        .map { |date, reg| [date.map(&:to_i), registrations: reg.first.registration_count] }
+        .to_h
+
+    data_for_unavailable_dates(:registrations, @daily_period_list).merge(registrations)
   end
 
-  def prepare_daily_stats
-    n = 30
-    @daily_stats_period = period_list(:day, n)
-    [registrations_for_last_n_days(n), follow_ups_for_last_n_days(n)].inject(&:deep_merge)
+  def prepare_daily_stats(days_ago)
+    [registrations_for_last_n_days(days_ago), follow_ups_for_last_n_days(days_ago)].inject(&:deep_merge)
   end
 
   TROPHY_MILESTONES =
@@ -67,5 +74,9 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
 
     { locked_trophy_value: all_trophies[unlocked_trophies_until],
       unlocked_trophy_values: all_trophies[0, unlocked_trophies_until] }
+  end
+
+  def data_for_unavailable_dates(data_key, period_list)
+    period_list.to_h { |date| [date, data_key => 0] }
   end
 end

@@ -346,16 +346,25 @@ footer p {
 }
 
 .button-next {
+  background: none;
+  border: none;
   display: block;
   float: left;
   padding: 6px 24px 6px 16px;
 }
 
 .button-prev {
+  background: none;
+  border: none;
   display: block;
   float: right;
   padding: 6px 24px 6px 16px;
   margin-right: -6px;
+}
+
+.button-prev:disabled,
+.button-next:disabled {
+  opacity: 0.1;
 }
 
 .day {
