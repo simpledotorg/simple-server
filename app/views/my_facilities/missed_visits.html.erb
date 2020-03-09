@@ -4,8 +4,7 @@
       <div class="row">
         <div class="col-lg-9 pr-5 pr-md-0">
           <h3>Missed visit</h3>
-          <p>Patients who had no BP recorded during the quarter as a pecentage of all-time registered patients (patients
-            with no visit in > 1 year are excluded).</p>
+          <p>Patients who had no BP recorded during the <%= @selected_period %> as a percentage of all-time registered patients</p>
         </div>
 
         <div class="mt-1 mb-3 col-lg-3">
@@ -114,13 +113,13 @@
     </div>
     <section class="footnotes">
       <ol>
-        <li><strong>Calls made:</strong> The number of calls made anonymously through the Simple app that connected to the
-          patient. Note that this may significantly undercount calls made, if the user used another phone or called using
-          their personal phone number.
+        <li><strong>Calls made:</strong> The number of secure calls (only) made through the Simple app that connected to
+          the patient. Note that this may significantly undercount calls made, if the user made a normal call using their
+          personal phone number or used another phone.
         </li>
 
-        <li><strong>All registered patients:</strong> All registered patients with exclusions for: lost to follow-up,
-          transferred to another public facility, and died.
+        <li>
+          <strong>All time registered patients:</strong> All registered patients with at least one recorded blood pressure.
         </li>
       </ol>
     </section>
