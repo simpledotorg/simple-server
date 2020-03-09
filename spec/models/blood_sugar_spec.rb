@@ -11,7 +11,7 @@ RSpec.describe BloodSugar, type: :model do
     it { should belong_to(:user).optional }
   end
 
-  describe '#high?' do
+  describe '#diabetic?' do
     [{ blood_sugar_type: :random, blood_sugar_value: 300 },
      { blood_sugar_type: :fasting, blood_sugar_value: 200 },
      { blood_sugar_type: :post_prandial, blood_sugar_value: 301 }].each do |row|
@@ -19,7 +19,7 @@ RSpec.describe BloodSugar, type: :model do
         blood_sugar = create(:blood_sugar,
                              blood_sugar_type: row[:blood_sugar_type],
                              blood_sugar_value: row[:blood_sugar_value])
-        expect(blood_sugar).to be_high
+        expect(blood_sugar).to be_diabetic
       end
     end
 
@@ -30,7 +30,7 @@ RSpec.describe BloodSugar, type: :model do
         blood_sugar = create(:blood_sugar,
                              blood_sugar_type: row[:blood_sugar_type],
                              blood_sugar_value: row[:blood_sugar_value])
-        expect(blood_sugar).not_to be_high
+        expect(blood_sugar).not_to be_diabetic
       end
     end
   end

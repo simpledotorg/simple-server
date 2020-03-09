@@ -104,7 +104,7 @@ class Patient < ApplicationRecord
       RISK_PRIORITIES[:HIGH]
     elsif medical_history&.indicates_hypertension_risk? && latest_blood_pressure&.hypertensive?
       RISK_PRIORITIES[:HIGH]
-    elsif latest_blood_sugar&.high?
+    elsif latest_blood_sugar&.diabetic?
       RISK_PRIORITIES[:HIGH]
     elsif latest_blood_pressure&.hypertensive?
       RISK_PRIORITIES[:REGULAR]

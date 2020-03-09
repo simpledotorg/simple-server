@@ -24,7 +24,7 @@ class BloodSugar < ApplicationRecord
             fasting: 200 }
    }.with_indifferent_access.freeze
 
-  def high?
+  def diabetic?
     blood_sugar_value >= THRESHOLDS[:high][blood_sugar_type]
   end
 end
