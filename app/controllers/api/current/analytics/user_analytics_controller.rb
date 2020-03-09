@@ -1,6 +1,7 @@
 class Api::Current::Analytics::UserAnalyticsController < Api::Current::AnalyticsController
   include DashboardHelper
   include DayHelper
+  include PeriodHelper
 
   layout false
 
@@ -30,7 +31,7 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
       .follow_ups
       .group(:year, :day)
       .count
-      .map { |date, follow_ups| [doy_to_date_obj(*date), follow_ups: follow_ups] }
+      .map { |date, follow_ups| [date.map(&:to_i), follow_ups: follow_ups] }
       .to_h
   end
 
@@ -39,12 +40,14 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
       .new(facilities: current_facility, period: :day, last_n: n)
       .registrations
       .group_by { |reg| [reg.year, reg.day] }
-      .map { |date, reg| [doy_to_date_obj(*date), registrations: reg.first.registration_count] }
+      .map { |date, reg| [date.map(&:to_i), registrations: reg.first.registration_count] }
       .to_h
   end
 
   def prepare_daily_stats
-    [registrations_for_last_n_days(30), follow_ups_for_last_n_days(30)].inject(&:deep_merge)
+    n = 30
+    @daily_stats_period = period_list(:day, n)
+    [registrations_for_last_n_days(n), follow_ups_for_last_n_days(n)].inject(&:deep_merge)
   end
 
   TROPHY_MILESTONES =

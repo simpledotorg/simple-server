@@ -6,6 +6,7 @@ class MyFacilities::FollowUpsQuery
   include QuarterHelper
   include MonthHelper
   include DayHelper
+  include PeriodHelper
 
   attr_reader :periods
 
@@ -26,24 +27,6 @@ class MyFacilities::FollowUpsQuery
   def follow_ups
     MyFacilities::FollowUpsQuery
       .total_follow_ups(@facilities)
-      .where("(year, #{@period}) IN (#{periods_as_sql_list})")
-  end
-
-  private
-
-  def period_list(period, last_n)
-    case period
-      when :quarter then
-        last_n_quarters(n: last_n, inclusive: true)
-      when :month then
-        last_n_months(n: last_n, inclusive: true)
-          .map { |month| [month.year, month.month] }
-      when :day then
-        last_n_days(n: last_n)
-    end
-  end
-
-  def periods_as_sql_list
-    @periods.map { |year, period| "('#{year}', '#{period}')" }.join(',')
+      .where("(year, #{@period}) IN (#{periods_as_sql_list(@periods)})")
   end
 end

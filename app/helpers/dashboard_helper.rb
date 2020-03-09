@@ -3,6 +3,10 @@ module DashboardHelper
     zero?(value) ? "-" : value
   end
 
+  def zero_if_zero(value)
+    zero?(value) ? "0" : value
+  end
+
   def zero?(value)
     value.nil? || value.zero?
   end

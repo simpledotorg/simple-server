@@ -54,17 +54,17 @@
 
     <!-- daily stats view -->
     <div id="daily-stats-card">
-      <% @statistics[:daily].sort.each do |date, stat| %>
+      <% @daily_stats_period.sort.each do |date| %>
         <div class="day">
           <h3 class="stat-day">
-            <%= display_date(date) %>
+            <%= display_date(doy_to_date_obj(*date)) %>
           </h3>
 
           <div class="counts">
             <div class="count count-1">
               <strong>Registered</strong>
               <div class="big-number">
-                <%= dash_if_zero(stat[:registrations]) %>
+                <%= zero_if_zero(@statistics.dig(:daily, date, :registrations)) %>
               </div>
               New patients
             </div>
@@ -72,7 +72,7 @@
             <div class="count count-2">
               <strong>Follow-up</strong>
               <div class="big-number">
-                <%= dash_if_zero(stat[:follow_ups]) %>
+                <%= zero_if_zero(@statistics.dig(:daily, date, :follow_ups)) %>
               </div>
               Follow-up patients
             </div>
@@ -366,3 +366,7 @@
   }
 </script>
 </html>
+
+<!--* populate up until current date and zero stuff out if it doesn't exist-->
+<!--* user zeroes instead of dashes-->
+<!--* grey out arrows on either end once you reach the end-->
