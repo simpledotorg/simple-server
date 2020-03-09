@@ -19,8 +19,8 @@
   <div class="row">
     <div class="col-lg-9 pr-5 pr-md-0">
       <h3>BP control</h3>
-      <p><%= registration_period %> cohort is the outcomes for 37,000 patients registered in <%= registration_period %>
-        at their last visit in <%= visited_in_period%>. Patients with ‘missed visit’ had no BP recorded.</p>
+      <p><%= registration_period %> cohort is the outcomes for <%= number_with_delimiter(@totals[:registered]) %> patients registered in <%= registration_period %>
+        at their last visit in <%= visited_in_period %>. Patients with ‘missed visit’ had no BP recorded.</p>
     </div>
 
     <div class="mt-1 mb-3 col-lg-3">
