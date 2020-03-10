@@ -1,5 +1,9 @@
-**Story:** <pivotal story link>
+**Story card:** <pivotal story link>
 
-## Description
+## Because
 
-Enter description here...
+Enter the reason for raising this PR...
+
+## This addresses
+
+Enter the details of what all this covers...
