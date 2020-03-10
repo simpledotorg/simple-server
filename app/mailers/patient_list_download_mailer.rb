@@ -1,6 +1,4 @@
 class PatientListDownloadMailer < ApplicationMailer
-  default from: 'help@simple.org'
-
   def patient_list(recipient_email, model_type, model_name, patients_csv)
     @model_type = model_type
     @model_name = model_name

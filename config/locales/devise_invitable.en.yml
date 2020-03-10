@@ -17,12 +17,16 @@ en:
         submit_button: "Set my password"
     mailer:
       invitation_instructions:
-        subject: "Simple Dashboard: Invitation"
-        hello: "Hello %{email}"
-        someone_invited_you: "You are invited to the Simple Dashboard at: %{url} You can accept this invitation by clicking the link below."
-        accept: "ACCEPT INVITATION"
-        accept_until: "This invitation will be due in %{due_date}."
+        subject: "Access the Simple Dashboard"
+        app: "Simple Dashboard"
+        someone_invited_you: "You are invited as an admin to the Simple Dashboard"
+        accept: "Accept invite"
+        accept_until: "This invitation will expire on %{due_date}."
         ignore: "If you do not want to accept the invitation, please ignore this email."
+        click_button: "Click below to accept your invitation."
+        link: "Dashboard:"
+        username: "Username:"
+        confirm: "Confirm account"
   time:
     formats:
       devise:
