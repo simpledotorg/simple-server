@@ -80,6 +80,6 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
   end
 
   def data_for_unavailable_dates(data_key, period_list)
-    period_list.to_h { |date| [date, data_key => 0] }
+    period_list.map { |date| [date, data_key => 0] }.to_h
   end
 end
