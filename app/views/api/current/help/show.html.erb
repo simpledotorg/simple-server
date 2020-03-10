@@ -8,11 +8,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, shrink-to-fit=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
 
-  <%= inline_stylesheet('common_webview.css') %>
-  <%= inline_stylesheet('help.css') %>
-
-  <%= javascript_include_tag 'help' %>
-
+  <%= inline_stylesheet 'common_webview.css' %>
+  <%= inline_stylesheet 'help.css' %>
+  <%= inline_js 'help' %>
 </head>
 <%= t('api.help.body_html',
       country: Rails.application.config.country[:abbreviation],
