@@ -37,7 +37,7 @@ $font-small: 11px;
   color: $grey-darkest;
 }
 
-.card h3.stat-day {
+.card h3 span.num {
     letter-spacing: 2px;
 }
 
@@ -169,16 +169,13 @@ span.percent {
 
 .updated-date {
   text-align: center;
-  font-size: 16px;
+  font-size: 14px;
   color: rgba(0,0,0,0.6);
-  padding: 0 0 16px 0;
+  padding: 4px 0 16px 0;
   clear: both;
-  line-height: 1.5;
 
   span {
-    letter-spacing: 1px;
-    font-size: 14px;
-    display: block;
+    letter-spacing: 2px;
   }
 }
 
@@ -346,7 +343,9 @@ footer p {
 }
 
 .button-next:active,
-.button-prev:active {
+.button-prev:active,
+.button-next:focus,
+.button-prev:focus {
   background: #EEF7FF;
   border-radius: 4px;
   outline: none;
