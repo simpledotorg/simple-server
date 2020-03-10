@@ -50,7 +50,8 @@ body {
 
 #help hr {
     margin: 3em 140px;
-    color: #E9F3FF;
+    border: none;
+    border-top: 1px solid #dce4e8;
 }
 
 #help p,
@@ -91,11 +92,12 @@ nav.help-nav a {
 }
 
 nav.help-nav a:active,
-nav.help-nav a:hover {
-    background: red;
+nav.help-nav a:hover,
+nav.help-nav a:focus {
     color: #000;
     background: rgba(0,0,0,0.04);
     border-color: transparent;
+    outline: none;
 }
 
 nav.help-nav a:first-of-type {
@@ -272,12 +274,12 @@ a.faq {
 }
 
 #help a.faq:after {
-  content: '\02715'; /* Unicode character for "plus" sign (+) */
-  font-size: 24px;
+  content: '\00D7'; /* Unicode character for "plus" sign (+) */
+  font-size: 32px;
   color: #999;
   position: absolute;
   right: 8px;
-  top: -4px;
+  top: -9px;
   font-weight: normal;
   transform: rotate(45deg);
   transition: transform 0.2s ease-out;
