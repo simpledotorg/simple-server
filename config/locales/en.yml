@@ -39,19 +39,19 @@ en:
   name: "Name"
   phone_number: "Phone Number"
   registration_approval_email:
-    accessible_facilities: 'User will have access to data from the following facilities'
+    accessible_facilities: 'User will have access to data from'
     organization: "Organization"
     registration_facility: 'Registration Facility'
     subject: 'New Registration: User %{full_name} is requesting access to %{org_name} facilities.'
     allow_or_deny_access: "Allow or deny access"
   reset_password_approval_email:
-    accessible_facilities: 'User will have access to data from the following facilities'
+    accessible_facilities: 'User will have access to data from'
     organization: "Organization"
     registration_facility: "Registration Facility"
     subject: 'PIN Reset: User %{full_name} is requesting access.'
     allow_or_deny_access: "Allow or deny access"
   anonymized_data_download_email:
-    accessible_facilities: 'Attached documents contain anonymized data from the following facility/facilities'
+    accessible_facilities: 'Attached documents contain anonymized data from'
     organization: 'Organization'
     district_subject: 'Anonymized Data dump for District %{district_name}, requested by User %{recipient_name}'
     facility_subject: 'Anonymized Data dump for Facility %{facility_name}, requested by User %{recipient_name}'
@@ -60,10 +60,10 @@ en:
   patient_list_email:
     subject: "Patient list for %{model_type} %{model_name} attached"
     notice: 'You will soon be emailed a copy of the patient line list for %{model_type} %{model_name}.'
-    greeting_html: |
-      <p>As per your request, please find the patient list for %{model_type} %{model_name} attached. It contains patient details for every patient registered in the %{model_type}.</p>
-      <p><strong>Please note that this information is confidential and should be kept private.</strong></p>
-      <p>If you did not request this or have questions, please reply to <a href="mailto:help@simple.org">help@simple.org</a></p>
+    patient_list: 'Patient list'
+    requested: 'As you requested, please find the patient list for %{model_type} %{model_name} attached. It contains patient details for every patient registered in the %{model_type}.'
+    confidential: 'Please note that this information is confidential and should be kept private.'
+    unrequested: 'If you did not request this or have questions, please immediately reply to <a href="mailto:help@simple.org">help@simple.org</a>'
 
   admin:
     reset_otp_alert: 'Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP'
@@ -71,14 +71,14 @@ en:
     enable_access_alert: 'Are you sure you want to enable the access for user?'
     allowed_access_to_user: '%{admin_name} allowed access'
     denied_access_to_user: '%{admin_name} denied access'
-    dashboard_title: "Simple Server"
+    dashboard_title: "Simple Dashboard"
     phi_download_alert: "You are about to download confidental patient data. Are you sure you want to proceed?"
     phi_anonymized_download_alert: "You are about to download confidential (anonymized) patient data. Are you sure you want to proceed?"
 
   api:
     documentation:
       description: |
-        # API specification for Simple Server
+        # API specification for Simple Dashboard
         ## Sync APIs
         This API spec documents the endpoints that the devices (that are offline to varying levels) will use to sync data. The sync end points will send and receive bulk (a list of) entities. Both sending and receiving can be batched with configurable batch-sizes to accommodate low network bandwidth situations.
         ## Nesting resources
@@ -89,7 +89,7 @@ en:
         ## Sync Mechanism
         Refer to the [related ADR](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/001-synchronization.md).
 
-      title: 'Simple Server'
+      title: 'Simple Dashboard'
       logo:
         image: 'rtsl_logo.png'
         background_color: '#FFFFFF'

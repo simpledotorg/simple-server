@@ -1,7 +1,26 @@
-<p>Hello <%= @email %>!</p>
+<h1 style="letter-spacing:-0.7px;color:#333;font-family:Arial,sans-serif;font-weight:700;margin:0;font-size:150%;">Email change</h1>
+
+<div>&nbsp;</div>
+
+<div style="font-size:110%;">Hello <%= @email %></div>
+
+<div>&nbsp;</div>
 
 <% if @resource.try(:unconfirmed_email?) %>
-  <p>We're contacting you to notify you that your email is being changed to <%= @resource.unconfirmed_email %>.</p>
+  <div style="font-size:110%;">Your email for the Simple Dashboard is being changed to <%= @resource.unconfirmed_email %>.</div>
 <% else %>
-  <p>We're contacting you to notify you that your email has been changed to <%= @resource.email %>.</p>
+  <div style="font-size:110%;">Your email for the Simple Dashboard has being changed to <%= @resource.email %>.</div>
 <% end %>
+
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+
+<!--HR-->
+<div style="height:2px;background:#F0F2F5;margin:0;"></div>
+
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+
+<div style="font-size: 110%;">
+  If this is unexpected, please contact <a href="mailto:help@simple.org">help@simple.org</a>
+</div>
