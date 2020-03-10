@@ -1,4 +1,5 @@
 class Api::Current::Analytics::UserAnalyticsController < Api::Current::AnalyticsController
+  include ApplicationHelper
   include DashboardHelper
   include DayHelper
   include PeriodHelper
@@ -7,13 +8,15 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
 
   def show
     @days_ago = 30
-    @daily_period_list = period_list(:day, @days_ago).sort.reverse
+    @daily_period_list = period_list(:day, @days_ago).sort.reverse.map { |date| doy_to_date_obj(*date) }
 
     @statistics = {
       daily: prepare_daily_stats(@days_ago),
       trophies: prepare_trophies,
       monthly: {},
-      last_updated_at: Time.current
+      last_updated_at: Time.current,
+      formatted_tomorrow_date: display_date(Time.current + 1.day),
+      formatted_today_string: t(:today_str)
     }
 
     respond_to_html_or_json(@statistics)
@@ -35,7 +38,7 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
         .follow_ups
         .group(:year, :day)
         .count
-        .map { |date, fups| [date.map(&:to_i), follow_ups: fups] }
+        .map { |date, fps| [doy_to_date_obj(*date), follow_ups: fps] }
         .to_h
 
     data_for_unavailable_dates(:follow_ups, @daily_period_list).merge(follow_ups)
@@ -47,7 +50,7 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
         .new(facilities: current_facility, period: :day, last_n: n)
         .registrations
         .group_by { |reg| [reg.year, reg.day] }
-        .map { |date, reg| [date.map(&:to_i), registrations: reg.first.registration_count] }
+        .map { |date, reg| [doy_to_date_obj(*date), registrations: reg.first.registration_count] }
         .to_h
 
     data_for_unavailable_dates(:registrations, @daily_period_list).merge(registrations)

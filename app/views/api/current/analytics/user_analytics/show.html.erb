@@ -32,8 +32,6 @@
 
   <%= inline_stylesheet('common_webview.css') %>
   <%= inline_stylesheet('user_analytics.css') %>
-
-  <%= javascript_include_tag 'user_analytics' %>
 </head>
 
 <body>
@@ -44,9 +42,9 @@
 
   <div class="card" style="min-height: 210px;">
     <div class="next-prev">
-      <button href="#" onclick="nextSlide(+1)" class="button-next"><span><%= inline_svg('icon_arrow_back.svg') %></span>
+      <button onclick="nextSlide(+1)" class="button-next"><span><%= inline_svg('icon_arrow_back.svg') %></span>
       </button>
-      <button href="#" onclick="nextSlide(-1)" class="button-prev">
+      <button onclick="nextSlide(-1)" class="button-prev">
         <span><%= inline_svg('icon_arrow_forward.svg') %></span></button>
     </div>
 
@@ -56,8 +54,8 @@
 
     <!-- daily stats view -->
     <div id="daily-stats-card">
-      <div class="day count-empty sync-nudge" style="display: none">
-        <h3 class="stat-day"><%= display_date(doy_to_date_obj(*@daily_period_list.first)) %></h3>
+      <div class="day count-empty" style="display: none">
+        <h3 class="stat-day"></h3>
         <%= inline_svg('icon_sync_cloud.svg') %>
         <p>Tap "Sync" on the home screen for new data.</p>
       </div>
@@ -65,7 +63,7 @@
       <% @daily_period_list.each do |date| %>
         <div class="day">
           <h3 class="stat-day">
-            <%= display_date(doy_to_date_obj(*date)) %>
+            <%= display_date(date) %>
           </h3>
 
           <div class="counts">
@@ -297,92 +295,9 @@
 <% end %>
 </body>
 
-<script>
-  function today() {
-    return new Date().toJSON().slice(0, 10);
-  }
-
-  function statistics() {
-    return JSON.parse(document.getElementById('statistics').attributes.getNamedItem('data-statistics').value);
-  }
-
-  function dailyStatistics() {
-    return Object.entries(statistics().daily);
-  }
-
-  function monthlyStatistics() {
-    return Object.entries(statistics().monthly);
-  }
-
-  function trophyStatistics() {
-    return Object.entries(statistics().trophies);
-  }
-
-  function syncNudgeCardPosition() {
-    for (let [position, element] of Object.entries(elementsForAllDaysInTheCarousel())) {
-      if (element === document.querySelector('#daily-stats-card > .sync-nudge')) {
-        return parseInt(position);
-      }
-    }
-
-    return -1
-  }
-
-  function showSyncNudgeIfNecessary(currentSlide) {
-    let weHaveDataForToday = false;
-
-    for (let [date, _] of dailyStatistics()) {
-      if (today() === date) {
-        weHaveDataForToday = true;
-      }
-    }
-
-    if (!weHaveDataForToday && (currentSlide === syncNudgeCardPosition())) {
-      document.querySelector('#daily-stats-card > .sync-nudge').style.display = 'block';
-    }
-  }
-
-  function elementsForAllDaysInTheCarousel() {
-    return document.getElementsByClassName("day");
-  }
-
-  function nextSlide(increment) {
-    nextSlidePosition = window.lastSlidePositionForProgressCards += increment;
-    showDailyProgressCards(nextSlidePosition);
-    showSyncNudgeIfNecessary(nextSlidePosition);
-  }
-
-  function showDailyProgressCards(next) {
-    var elementsForAllDays = elementsForAllDaysInTheCarousel();
-    var nextButton = document.getElementsByClassName("button-next")[0];
-    var prevButton = document.getElementsByClassName("button-prev")[0];
-
-    nextButton.disabled = false;
-    prevButton.disabled = false;
-
-    if (next === elementsForAllDays.length) {
-      nextButton.disabled = true;
-    }
-
-    if (next === 1) {
-      prevButton.disabled = true;
-    }
-
-    for (let i = 0; i < elementsForAllDays.length; i++) {
-      elementsForAllDays[i].style.display = "none";
-    }
-
-    console.log(window.lastSlidePositionForProgressCards);
-    elementsForAllDays[window.lastSlidePositionForProgressCards - 1].style.display = "block";
-  }
-
-  window.onload = function () {
-    window.lastSlidePositionForProgressCards = 2;
-    showDailyProgressCards(window.lastSlidePositionForProgressCards);
-  };
-</script>
+<%= inline_js('user_analytics.js') %>
 </html>
 
 <!--* populate up until current date and zero stuff out if it doesn't exist-->
-<!--* user zeroes instead of dashes-->
+<!--* use zeroes instead of dashes-->
 <!--* grey out arrows on either end once you reach the end-->

@@ -7,7 +7,7 @@ module PeriodHelper
         last_n_months(n: last_n, inclusive: true)
           .map { |month| [month.year, month.month] }
       when :day then
-        last_n_days(n: last_n)
+        last_n_days(n: last_n, inclusive: true)
     end
   end
 
