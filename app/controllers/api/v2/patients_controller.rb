@@ -1,4 +1,4 @@
-class Api::V2::PatientsController < Api::Current::PatientsController
+class Api::V2::PatientsController < Api::V3::PatientsController
   private
 
   def merge_if_valid(single_patient_params)

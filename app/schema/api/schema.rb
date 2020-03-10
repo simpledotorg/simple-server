@@ -41,7 +41,7 @@ class Api::Schema
 
     def swagger_docs
       {
-        'current/swagger.json' => swagger_doc(:v3, Api::Current::Schema.all_definitions),
+        'v3/swagger.json' => swagger_doc(:v3, Api::V3::Schema.all_definitions),
         'v2/swagger.json' => swagger_doc(:v2, Api::V2::Schema.all_definitions)
       }
     end

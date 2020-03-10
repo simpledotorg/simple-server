@@ -12,5 +12,5 @@ FactoryBot.define do
 end
 
 def build_patient_phone_number_payload(phone_number = FactoryBot.build(:patient_phone_number))
-  Api::Current::PatientPhoneNumberTransformer.to_response(phone_number)
+  Api::V3::PatientPhoneNumberTransformer.to_response(phone_number)
 end

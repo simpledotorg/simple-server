@@ -92,7 +92,7 @@ Rails.application.routes.draw do
       end
     end
 
-    namespace :current, path: 'v3' do
+    namespace :v3, path: 'v3' do
       get 'ping', to: 'pings#show'
       post 'login', to: 'logins#login_user'
 

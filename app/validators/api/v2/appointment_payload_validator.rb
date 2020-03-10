@@ -1,4 +1,4 @@
-class Api::V2::AppointmentPayloadValidator < Api::Current::AppointmentPayloadValidator
+class Api::V2::AppointmentPayloadValidator < Api::V3::AppointmentPayloadValidator
   attr_accessor(
     :id,
     :patient_id,

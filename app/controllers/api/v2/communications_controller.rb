@@ -1,4 +1,4 @@
-class Api::V2::CommunicationsController < Api::Current::SyncController
+class Api::V2::CommunicationsController < Api::V3::SyncController
   def sync_from_user
     render json: { errors: nil }, status: :ok
   end

@@ -1,4 +1,4 @@
-class Api::V2::Models < Api::Current::Models
+class Api::V2::Models < Api::V3::Models
   class << self
     def patient
       super
