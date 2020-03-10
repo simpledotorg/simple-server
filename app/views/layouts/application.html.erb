@@ -23,6 +23,9 @@
 
     <%= javascript_include_tag 'application' %>
 
+    <link rel="apple-touch-icon" sizes="180x180" href="<%= apple_logo_for_environment %>">
+    <link rel="icon" sizes="192x192" href="<%= android_logo_for_environment(size: '192') %>">
+    <link rel="icon" sizes="512x512" href="<%= android_logo_for_environment(size: '512') %>">
     <link rel="icon" type="image/png" href="<%= favicon_for_environment %>">
 
     <!-- Roboto font -->
