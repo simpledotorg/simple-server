@@ -31,10 +31,6 @@ class Api::Current::PatientsController < Api::Current::SyncController
 
   private
 
-  def max_limit
-    500
-  end
-
   def unscope_associations
     Address.unscoped do
       PatientPhoneNumber.unscoped do

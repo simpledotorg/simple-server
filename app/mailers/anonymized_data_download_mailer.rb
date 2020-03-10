@@ -1,6 +1,4 @@
 class AnonymizedDataDownloadMailer < ApplicationMailer
-  default from: 'help@simple.org'
-
   def mail_anonymized_data
     @recipient_name = params[:recipient_name]
     @recipient_email = params[:recipient_email]

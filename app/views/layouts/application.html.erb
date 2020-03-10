@@ -55,7 +55,7 @@
 
               <% if policy(:dashboard).view_my_facilities? && FeatureToggle.enabled?("MY_FACILITIES")%>
                 <li class="nav-item">
-                  <%= link_to "My Facilities", my_facilities_path, class: "nav-link #{active_controller?("my_facilities")}" %>
+                  <%= link_to "My Facilities", my_facilities_overview_path, class: "nav-link #{active_controller?("my_facilities")}" %>
                 </li>
               <% end %>
 

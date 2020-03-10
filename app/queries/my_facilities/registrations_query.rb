@@ -11,7 +11,7 @@ class MyFacilities::RegistrationsQuery
 
   def initialize(facilities: Facility.all, period: :quarter, last_n: 3)
     # period can be :quarter, :month, :day.
-    # last_n is the number of quarters/months/days data to be returned
+    # last_n is the number of quarters/months/days for which data is to be returned
     @facilities = facilities
     @period = period
     @periods = period_list(period, last_n)
