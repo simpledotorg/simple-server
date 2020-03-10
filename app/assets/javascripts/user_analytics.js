@@ -76,7 +76,9 @@ function showSyncNudge(currentSlide) {
 function updateDateAtEndOfCarousel() {
   var endOfCarouselElement = allDaysInCarouselElements()[0].querySelector('.stat-day');
 
-  if (formatDate(latestDateInDailyStatistics()) === formatDate(yesterday())) {
+  if (formatDate(latestDateInDailyStatistics()) === formatDate(today())) {
+    endOfCarouselElement.innerHTML = formattedTodayString();
+  } else if (formatDate(latestDateInDailyStatistics()) === formatDate(yesterday())) {
     endOfCarouselElement.innerHTML = formattedTodayString();
   } else if (formatDate(latestDateInDailyStatistics()) < formatDate(yesterday())) {
     endOfCarouselElement.innerHTML = formattedTomorrowDate();
