@@ -7,7 +7,59 @@
     </style>
   </head>
 
-  <body>
-    <%= yield %>
+  <body style="background:#F0F2F5;">
+
+        <!-- WRAPPER -->
+        <div style="background:#F0F2F5;">
+
+            <div>&nbsp;</div>
+
+            <div>&nbsp;</div>
+
+            <!-- MAX-WIDTH WRAPPER FOR OUTLOOK -->
+            <table cellpadding="0" cellspacing="0" border="0" style="padding:0px;margin:0px;width:100%;background:#F0F2F5;">
+                <tr><td colspan="3" style="padding:0px;margin:0px;font-size:20px;height:20px;" height="20">&nbsp;</td></tr>
+                <tr>
+                    <td style="padding:0px;margin:0px;">&nbsp;</td>
+                    <td style="padding:0px;margin:0px;width:500px;" width="500">
+
+
+
+            <div style="box-shadow: 0 2px 0 rgba(0,0,0,0.1);line-height: 1.3; background:#fff;padding:0 20px;border-radius:7px;font-family:Arial,sans-serif; text-align: center;">
+
+            <div>&nbsp;</div>
+            <div>&nbsp;</div>
+
+            <%= mailer_logo_for_environment %>
+
+            <div>&nbsp;</div>
+
+            <!------------------------------------------------------
+            CONTENTS START
+            -------------------------------------------------------->
+
+            <%= yield %>
+
+            <!------------------------------------------------------
+            CONTENTS END
+            -------------------------------------------------------->
+                <div>&nbsp;</div>
+                <div>&nbsp;</div>
+            </div>
+
+            <!-- END OUTLOOK MAX-WIDTH WRAPPER -->
+                        </td>
+                    <td style="padding:0px;margin:0px;">&nbsp;</td>
+                </tr>
+                <tr><td colspan="3" style="padding:0px;margin:0px;font-size:20px;height:20px;" height="20">&nbsp;</td></tr>
+            </table>
+            <!-- END -->
+
+
+            <div>&nbsp;</div>
+            <div>&nbsp;</div>
+        </div>
+
+
   </body>
 </html>
