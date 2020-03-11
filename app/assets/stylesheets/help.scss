@@ -1,78 +1,99 @@
 body {
-    padding: 0;
-    margin: 0;
+  padding: 0;
+  margin: 0;
 }
 
-#help .card {
+#help {
+  .card {
     border-radius: 6px;
-    
-    p:last-of-type {
-        margin-bottom: 0;
-    }
-}
 
-#help h2 {
+    p:last-of-type {
+      margin-bottom: 0;
+    }
+  }
+
+  h2 {
     font-size: 28px;
     margin: 100px 8px 24px 8px;
-}
+  }
 
-#help h3 {
+  h3 {
     font-size: 20px;
     font-weight: 700;
     margin: 0 0 8px 0;
-    
-    .header-label {
-        display: block;
-        margin-bottom: 12px;
-        
-        span {
-            display: inline-block;
-            color: #6C737A;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            background: #E9F3FF;
-            padding: 6px 10px;
-            border-radius: 5px;
-        }
-    }
-}
 
-#help h6 {
+    .header-label {
+      display: block;
+      margin-bottom: 12px;
+
+      span {
+        display: inline-block;
+        color: #6C737A;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        background: #E9F3FF;
+        padding: 6px 10px;
+        border-radius: 5px;
+      }
+    }
+  }
+
+  h6 {
     text-transform: uppercase;
     letter-spacing: 2px;
     color: rgba(0,0,0,0.5);
     margin-left: 8px;
     margin-bottom: 16px;
     font-size: 16px;
-}
+  }
 
 
-#help hr {
+  hr {
     margin: 3em 140px;
     border: none;
     border-top: 1px solid #dce4e8;
-}
-
-#help p,
-#help li {
+  }
+    
+  p,
+  li {
     line-height: 1.5;
-}
+  }
 
-#help section {
+  section {
     margin: 0 8px;
-}
+  }
 
-#help a.video {
+  a.video {
     display: block;
     margin: 1em 0;
+  }
+
+  .active {
+    margin-bottom: 8px;
+  }
+
+  a.faq:after {
+    content: '\02715'; /* Unicode character for "plus" sign (+) */
+    font-size: 24px;
+    color: #999;
+    position: absolute;
+    right: 8px;
+    top: -4px;
+    font-weight: normal;
+    transform: rotate(45deg);
+    transition: transform 0.2s ease-out;
+  }
+
+  a.active:after {
+    transform: rotate(0deg)
+  }
 }
 
 nav.help-nav {
-    margin-bottom: 16px;
-}
+  margin-bottom: 16px;
 
-nav.help-nav a {
+  a {
     display: block;
     border-top: 1px solid rgba(0,0,0,0.07);
     padding: 16px 8px;
@@ -80,193 +101,193 @@ nav.help-nav a {
     position: relative;
     font-weight: 500;
     color: #0075EB;
-    
+
     svg {
-        position: absolute;
-        right: 8px;
-        top: 12px;
-        width: 32px;
-        height: 32px;
-        opacity: 0.5;
+      position: absolute;
+      right: 8px;
+      top: 12px;
+      width: 32px;
+      height: 32px;
+      opacity: 0.5;
     }
-}
 
-nav.help-nav a:active,
-nav.help-nav a:hover,
-nav.help-nav a:focus {
-    color: #000;
-    background: rgba(0,0,0,0.04);
-    border-color: transparent;
-    outline: none;
-}
-
-nav.help-nav a:first-of-type {
-    border: none;
+    &:active,
+    &:hover,
+    &:focus {
+        color: #000;
+        background: rgba(0,0,0,0.04);
+        border-color: transparent;
+        outline: none;
+    }
+    
+    &:first-of-type {
+      border: none;
+    }
+  }
 }
 
 a.help-back {
-    display: block;
-    position: fixed;
-    top: 8px;
-    padding: 8px;
-    margin-top: 16px;
-    background: #fff;
-    border-radius: 100px;
-    width: 32px;
-    margin-bottom: 16px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    z-index: 5000;
-    
-    svg {
-        width: 28px;
-        height: 28px;
-        position: relative;
-        top: 2px;
-        left: 2px;
-        opacity: 1;
-    }
+  display: block;
+  position: fixed;
+  top: 8px;
+  padding: 8px;
+  margin-top: 16px;
+  background: #fff;
+  border-radius: 100px;
+  width: 32px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  z-index: 5000;
+
+  svg {
+    width: 28px;
+    height: 28px;
+    position: relative;
+    top: 2px;
+    left: 2px;
+    opacity: 1;
+  }
 }
 
 .help-body {
-    position: absolute;
-    top: 0;
-    width: 100%;
-    min-height: 100%;
-    background: #F0F2F5;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  min-height: 100%;
+  background: #F0F2F5;
 }
 
 .help-contents {
-    padding: 0 8px 100px 8px;
+  padding: 0 8px 100px 8px;
 }
 
 ul {
-    margin: 0;
-    padding: 0 0 0 22px;
-}
+  margin: 0;
+  padding: 0 0 0 22px;
 
-ul li {
+  li {
     margin-top: 16px;
     margin-bottom: 16px;
     position: relative;
     margin-left: 0;
     padding-left: 4px;
+  }
 }
 
 ol {
-    counter-reset: custom-counter;
-    padding-left: 50px;
-    list-style: none;
-}
+  counter-reset: custom-counter;
+  padding-left: 50px;
+  list-style: none;
 
-ol li.num {
+  li.num {
     margin: 1.5em 0;
     font-size: 18px;
     counter-increment: custom-counter;
     position: relative;
-}
+  }
 
-ol li.num::before {
-  content: counter(custom-counter);
-  font-size: 16px;
-  font-weight: bold;
-  position: absolute;
-  --size: 32px;
-  left: calc(-1 * var(--size) - 16px);
-  line-height: var(--size);
-  width: var(--size);
-  height: var(--size);
-  top: -4px;
-  border-radius: 50%;
-  text-align: center;
-  border: 1px solid #DADDE0;
+  li.num::before {
+    content: counter(custom-counter);
+    font-size: 16px;
+    font-weight: bold;
+    position: absolute;
+    --size: 32px;
+    left: calc(-1 * var(--size) - 16px);
+    line-height: var(--size);
+    width: var(--size);
+    height: var(--size);
+    top: -4px;
+    border-radius: 50%;
+    text-align: center;
+    border: 1px solid #DADDE0;
+  }
 }
 
 .note {
-    font-size: 14px;
-    margin-top: 0.2em;
-}
-
-
-a.whatsapp-button div {
-    display: inline-block;
-    vertical-align: middle;
+  font-size: 14px;
+  margin-top: 0.2em;
 }
 
 a.whatsapp-button {
-    display: block;
-    margin: 1em 0;
-    padding: 14px 0;
-    text-align: center;
-    background: #dfffec;
-    color: #007A31;
-    text-decoration: none;
-    border-radius: 3px;
-    font-size: 20px;
-    font-weight: 500;
-    letter-spacing: 0.10em;
-    box-shadow:
-        0 2px 3px rgba(0,0,0,0.2),
-        0 3px 0 #C4EDD4;
+  display: block;
+  margin: 1em 0;
+  padding: 14px 0;
+  text-align: center;
+  background: #dfffec;
+  color: #007A31;
+  text-decoration: none;
+  border-radius: 3px;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 0.10em;
+  box-shadow:
+  0 2px 3px rgba(0,0,0,0.2),
+  0 3px 0 #C4EDD4;
+
+  div {
+    display: inline-block;
+    vertical-align: middle;
+  }
 }
 
 .whatsapp-button svg {
-    vertical-align: middle;
-    height: 34px;
-    margin: -3px 4px 0 0;
-    width: auto;
-    display: inline-block;
+  vertical-align: middle;
+  height: 34px;
+  margin: -3px 4px 0 0;
+  width: auto;
+  display: inline-block;
 }
 
 caption {
-    font-size: 13px;
+  font-size: 13px;
 }
 
 span.code {
-    color: #007A31;
-    background: #E0FFED;
-    border-radius: 5px;
-    padding: 0 6px;
+  color: #007A31;
+  background: #E0FFED;
+  border-radius: 5px;
+  padding: 0 6px;
 }
 
 .card-tip span.code {
-    background: rgba(0,0,0,0.06);
-    color: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.06);
+  color: rgba(0,0,0,0.6);
 }
 
 .help-example {
-    padding: 16px 0 0 0;
-    
-    svg {
-        max-width: 400px;
-    }
+  padding: 16px 0 0 0;
+
+  svg {
+    max-width: 400px;
+  }
 }
 
 .help-example-text {
-    background: #F0F2F5;
-    margin-top: 1em;
-    border-radius: 6px;
-    padding: 16px;
-    font-size: 16px;
-    color: #666;
-    line-height: 1.7;
+  background: #F0F2F5;
+  margin-top: 1em;
+  border-radius: 6px;
+  padding: 16px;
+  font-size: 16px;
+  color: #666;
+  line-height: 1.7;
 }
 
 p.step {
-    margin: 2em 0;
+  margin: 2em 0;
 }
 
 a.faq {
-    display: block;
-    font-size: 18px;
-    font-weight: 500;
-    position: relative;
-    padding-right: 30px;
+  display: block;
+  font-size: 18px;
+  font-weight: 500;
+  position: relative;
+  padding-right: 30px;
 }
 
 .answer {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.2s ease-out;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
 }
 
 #help .active {
@@ -290,20 +311,20 @@ a.faq {
 }
 
 .card.card-tip {
-    background: #FFF8E0;
-    color: #54523D;
-    
-    svg {
-        width: 100px;
-        float: right;
-        margin: -8px -16px 8px 8px;
-    }
+  background: #FFF8E0;
+  color: #54523D;
+
+  svg {
+    width: 100px;
+    float: right;
+    margin: -8px -16px 8px 8px;
+  }
 }
 
 .card.support {
-    display: none;
-    
-        &.IN {
-            display: block;
-        }
+  display: none;
+
+  &.IN {
+    display: block;
+  }
 }

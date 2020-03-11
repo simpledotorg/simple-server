@@ -7,11 +7,13 @@ class MyFacilities::RegistrationsQuery
   include MonthHelper
   include DayHelper
 
+  REGISTRATION_BUFFER = 2.months
+
   attr_reader :periods
 
   def initialize(facilities: Facility.all, period: :quarter, last_n: 3)
     # period can be :quarter, :month, :day.
-    # last_n is the number of quarters/months/days data to be returned
+    # last_n is the number of quarters/months/days for which data is to be returned
     @facilities = facilities
     @period = period
     @periods = period_list(period, last_n)
@@ -27,8 +29,8 @@ class MyFacilities::RegistrationsQuery
   def all_time_registrations
     @all_time_registrations ||=
       LatestBloodPressuresPerPatient
-      .where(facility: @facilities)
-      .where('patient_recorded_at < ?', Time.current.beginning_of_day - 2.months)
+      .where(registration_facility_id: @facilities)
+      .where('patient_recorded_at < ?', Time.current.beginning_of_day - REGISTRATION_BUFFER)
   end
 
   private
