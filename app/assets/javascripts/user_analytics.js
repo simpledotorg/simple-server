@@ -63,6 +63,7 @@ function showSyncNudge(currentSlide) {
       // don't count the sync nudge card as a real day card
       weHaveDataForToday = true;
       syncNudgeCardElement().classList.remove("day");
+      break;
     }
   }
 

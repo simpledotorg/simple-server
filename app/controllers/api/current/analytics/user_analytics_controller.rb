@@ -60,6 +60,25 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
     [registrations_for_last_n_days(days_ago), follow_ups_for_last_n_days(days_ago)].inject(&:deep_merge)
   end
 
+  #
+  # After exhausting the initial TROPHY_MILESTONES, subsequent milestones must follow the following pattern:
+  #
+  # 10
+  # 25
+  # 50
+  # 100
+  # 250
+  # 500
+  # 1_000
+  # 2_000
+  # 3_000
+  # 4_000
+  # 5_000
+  # 10_000
+  # 20_000
+  # 30_000
+  # etc.
+  #
   TROPHY_MILESTONES =
     [10, 25, 50, 100, 250, 500, 1_000, 2_000, 3_000, 4_000, 5_000]
   POST_SEED_MILESTONE_INCR = 10_000

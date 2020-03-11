@@ -88,60 +88,60 @@
     </div>
   </div>
 
-<div class="card">
-      <h3>Registered patients</h3>
+  <div class="card">
+    <h3>Registered patients</h3>
 
-      <form>
-        <select class="card-dropdown">
-          <optgroup label="All patients">
-            <option>All registered patients</option>
-          </optgroup>
-          <optgroup label="Hypertension">
-            <option>All</option>
-            <option>Female</option>
-            <option>Male</option>
-            <option>Transgender</option>
-          </optgroup>
-          <optgroup label="Diabetes">
-            <option>All</option>
-            <option>Female</option>
-            <option>Male</option>
-            <option>Transgender</option>
-          </optgroup>
-        </select>
-      </form>
+    <form>
+      <select class="card-dropdown">
+        <optgroup label="All patients">
+          <option>All registered patients</option>
+        </optgroup>
+        <optgroup label="Hypertension">
+          <option>All</option>
+          <option>Female</option>
+          <option>Male</option>
+          <option>Transgender</option>
+        </optgroup>
+        <optgroup label="Diabetes">
+          <option>All</option>
+          <option>Female</option>
+          <option>Male</option>
+          <option>Transgender</option>
+        </optgroup>
+      </select>
+    </form>
 
-      <table class="progress-table">
-        <tr class="total">
-          <td class="row-label">All-time</td>
-          <td>2410</td>
-        </tr>
-        <tr>
-          <td class="row-label no-padding">March</td>
-          <td>14</td>
-        </tr>
-        <tr>
-          <td class="row-label no-padding">February</td>
-          <td>109</td>
-        </tr>
-        <tr>
-          <td class="row-label no-padding">January</td>
-          <td>104</td>
-        </tr>
-        <tr>
-          <td class="row-label no-padding">December</td>
-          <td>98</td>
-        </tr>
-        <tr>
-          <td class="row-label no-padding">November</td>
-          <td>87</td>
-        </tr>
-        <tr>
-          <td class="row-label no-padding">October</td>
-          <td>90</td>
-        </tr>
-      </table>
-    </div>
+    <table class="progress-table">
+      <tr class="total">
+        <td class="row-label">All-time</td>
+        <td>2410</td>
+      </tr>
+      <tr>
+        <td class="row-label no-padding">March</td>
+        <td>14</td>
+      </tr>
+      <tr>
+        <td class="row-label no-padding">February</td>
+        <td>109</td>
+      </tr>
+      <tr>
+        <td class="row-label no-padding">January</td>
+        <td>104</td>
+      </tr>
+      <tr>
+        <td class="row-label no-padding">December</td>
+        <td>98</td>
+      </tr>
+      <tr>
+        <td class="row-label no-padding">November</td>
+        <td>87</td>
+      </tr>
+      <tr>
+        <td class="row-label no-padding">October</td>
+        <td>90</td>
+      </tr>
+    </table>
+  </div>
 
   <!--  <div class="card">-->
   <!--    <h3>Follow-up patients</h3>-->
@@ -239,26 +239,6 @@
   <!-- all trophies view -->
   <div class="trophies">
     <h4>Achievements</h4>
-    <!--
-    10
-    25
-    50
-    100
-    250
-    500
-    1000
-    2000
-    3000
-    4000
-    5000
-    10000
-    20000
-    30000
-    30000
-    40000
-    50000
-    etc...
-    -->
     <% @statistics[:trophies][:unlocked_trophy_values].sort.each do |trophy| %>
       <div class="trophy trophy-<%= trophy %>">
         <%= inline_svg('ribbon.svg') %>
@@ -284,7 +264,8 @@
     <h4 style="padding-top: 60px;">Notes</h4>
     <p>Data is for all activity at <%= @current_facility.name %>. If data appears out of date, tap the "Sync
       pending" link on the home screen.</p>
-    <p>A follow-up patient is only counted for one visit each month. If a patient follows up multiple times in a month, he or she is
+    <p>A follow-up patient is only counted for one visit each month. If a patient follows up multiple times in a month,
+      he or she is
       only counted once.</p>
     <h4 style="padding-top: 60px;">Thank you</h4>
     <p>Thank you for all of your hard work treating patients with hypertension. Your work saves lives from heart
