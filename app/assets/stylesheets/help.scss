@@ -82,7 +82,7 @@ body {
     font-size: 24px;
     opacity: 0.3;
     position: absolute;
-    right: 8px;
+    right: 4px;
     top: -4px;
     font-weight: lighter;
     transform: rotate(45deg);
@@ -213,7 +213,7 @@ ol {
   margin-top: 0.2em;
 }
 
-a.whatsapp-button {
+#help a.whatsapp-button {
   display: block;
   margin: 1em 0;
   padding: 14px 0;
@@ -235,7 +235,7 @@ a.whatsapp-button {
   }
 }
 
-.whatsapp-button svg {
+#help .whatsapp-button svg {
   vertical-align: middle;
   height: 34px;
   margin: -3px 4px 0 0;
@@ -306,7 +306,7 @@ a.faq {
   font-size: 32px;
   color: #999;
   position: absolute;
-  right: 8px;
+  right: 0;
   top: -9px;
   font-weight: normal;
   transform: rotate(45deg);
