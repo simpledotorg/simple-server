@@ -14,7 +14,7 @@ RSpec.describe BloodSugar, type: :model do
   describe '#diabetic?' do
     [{ blood_sugar_type: :random, blood_sugar_value: 300 },
      { blood_sugar_type: :fasting, blood_sugar_value: 200 },
-     { blood_sugar_type: :post_prandial, blood_sugar_value: 301 }].each do |row|
+     { blood_sugar_type: :post_prandial, blood_sugar_value: 300 }].each do |row|
       it 'returns true if blood sugar is in a high state' do
         blood_sugar = create(:blood_sugar,
                              blood_sugar_type: row[:blood_sugar_type],
@@ -24,8 +24,8 @@ RSpec.describe BloodSugar, type: :model do
     end
 
     [{ blood_sugar_type: :random, blood_sugar_value: 299 },
-     { blood_sugar_type: :fasting, blood_sugar_value: 150 },
-     { blood_sugar_type: :post_prandial, blood_sugar_value: 200 }].each do |row|
+     { blood_sugar_type: :fasting, blood_sugar_value: 299 },
+     { blood_sugar_type: :post_prandial, blood_sugar_value: 199 }].each do |row|
       it 'returns false if blood sugar is not in a high state' do
         blood_sugar = create(:blood_sugar,
                              blood_sugar_type: row[:blood_sugar_type],
