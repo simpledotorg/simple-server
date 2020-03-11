@@ -48,12 +48,26 @@ RSpec.describe MoveUserRecordedDataToRegistrationFacility do
         expect(patient.updated_at).to eq(patient.created_at)
       end
     end
+
+    it "Updates the patients_at_source_facility's business identifier metadata" do
+      service.fix_patient_data
+      patients_at_source_facility.each do |patient|
+        patient.reload
+        expect(patient.business_identifiers.first.metadata).to eq('assigning_user_id' => user.id,
+                                                                  'assigning_facility_id' => destination_facility.id)
+      end
+    end
   end
 
   describe '#fix_blood_pressures_data' do
     let!(:bps_at_correct_facility) { create_list(:blood_pressure, 2, facility: destination_facility, user: user) }
     let!(:bps_at_source_facility) { create_list(:blood_pressure, 2, user: user, facility: source_facility) }
     let!(:bps_at_another_source_facility) { create_list(:blood_pressure, 2, user: user, facility: another_source_facility) }
+    let!(:encounters) do
+      [bps_at_correct_facility + bps_at_source_facility + bps_at_another_source_facility].flatten.each do|record|
+        create(:encounter, :with_observables, patient: record.patient, observable: record, facility: record.facility)
+      end
+    end
 
     it "Moves all blood pressures recorded at the wrong facility to the user's registration facility" do
       expect do
@@ -89,6 +103,24 @@ RSpec.describe MoveUserRecordedDataToRegistrationFacility do
         blood_pressure.reload
         expect(blood_pressure.updated_at).to eq(blood_pressure.created_at)
       end
+    end
+
+    it "Moves the blood pressures' encounters away from the source facility" do
+      expect do
+        service.fix_blood_pressure_data
+      end.to change(Encounter.where(facility: source_facility), :count).to(0)
+    end
+
+    it "Moves the blood pressures' encounters to the destination facility" do
+      expect do
+        service.fix_blood_pressure_data
+      end.to change(Encounter.where(facility: destination_facility), :count).to(4)
+    end
+
+    it 'Does not move encounters at a different wrong facility' do
+      expect do
+        service.fix_blood_pressure_data
+      end.not_to(change{ Encounter.where(facility: another_source_facility).pluck(:id) })
     end
   end
 
@@ -173,6 +205,72 @@ RSpec.describe MoveUserRecordedDataToRegistrationFacility do
         prescription_drug.reload
         expect(prescription_drug.updated_at).to eq(prescription_drug.created_at)
       end
+    end
+  end
+
+  describe '#fix_blood_sugars_data' do
+    let!(:blood_sugars_at_correct_facility) { create_list(:blood_sugar, 2, facility: destination_facility, user: user) }
+    let!(:blood_sugars_at_source_facility) { create_list(:blood_sugar, 2, user: user, facility: source_facility) }
+    let!(:blood_sugars_at_another_source_facility) { create_list(:blood_sugar, 2, user: user, facility: another_source_facility) }
+
+    let!(:encounters) do
+      [blood_sugars_at_correct_facility + blood_sugars_at_source_facility + blood_sugars_at_another_source_facility].flatten.each do|record|
+        create(:encounter, :with_observables, patient: record.patient, observable: record, facility: record.facility)
+      end
+    end
+
+    it "Moves all blood sugars recorded at the wrong facility to the user's registration facility" do
+      expect do
+        service.fix_blood_sugar_data
+      end.to change(BloodSugar.where(user: user, facility: destination_facility), :count).by 2
+    end
+
+    it 'Ensures no blood sugars are recorded by the user at the wrong facility' do
+      expect do
+        service.fix_blood_sugar_data
+      end.to change(BloodSugar.where(user: user, facility: source_facility), :count).to(0)
+    end
+
+    it "Does not move blood sugars at a different wrong facility to the user's registration facility" do
+      expect do
+        service.fix_patient_data
+      end.not_to change(BloodSugar.where(user: user, facility: another_source_facility), :count)
+    end
+
+    it "Updates the blood_sugars_at_source_facility's updated at timestamp" do
+      service.fix_blood_sugar_data
+
+      blood_sugars_at_source_facility.each do |blood_sugar|
+        blood_sugar.reload
+        expect(blood_sugar.updated_at).not_to eq(blood_sugar.created_at)
+      end
+    end
+
+    it "Doesn't update the blood_sugars_at_correct_facility's updated at timestamp" do
+      service.fix_blood_sugar_data
+
+      blood_sugars_at_correct_facility.each do |blood_sugar|
+        blood_sugar.reload
+        expect(blood_sugar.updated_at).to eq(blood_sugar.created_at)
+      end
+    end
+
+    it "Moves the blood sugars' encounters away from the source facility" do
+      expect do
+        service.fix_blood_sugar_data
+      end.to change(Encounter.where(facility: source_facility), :count).to(0)
+    end
+
+    it "Moves the blood sugars' encounters to the destination facility" do
+      expect do
+        service.fix_blood_sugar_data
+      end.to change(Encounter.where(facility: destination_facility), :count).to(4)
+    end
+
+    it 'Does not move encounters at a different wrong facility' do
+      expect do
+        service.fix_blood_sugar_data
+      end.not_to(change{ Encounter.where(facility: another_source_facility).pluck(:id) })
     end
   end
 end
