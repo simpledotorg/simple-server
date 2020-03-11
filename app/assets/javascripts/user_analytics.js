@@ -20,11 +20,11 @@ function yesterday() {
 }
 
 function formattedTomorrowDate() {
-  return statistics().formatted_tomorrow_date;
+  return statistics().metadata.formatted_next_date;
 }
 
 function formattedTodayString() {
-  return statistics().formatted_today_string;
+  return statistics().metadata.formatted_today_string;
 }
 
 function latestDateInDailyStatistics() {

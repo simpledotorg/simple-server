@@ -131,5 +131,9 @@ class Facility < ApplicationRecord
     end
   end
 
+  def diabetes_enabled?
+    enable_diabetes_management.present?
+  end
+
   CSV::Converters[:strip_whitespace] = ->(value) { value.strip rescue value }
 end
