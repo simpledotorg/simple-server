@@ -63,6 +63,10 @@ body {
   section {
     margin: 0 8px;
   }
+    
+  a {
+    color: #0075EB;
+  }
 
   a.video {
     display: block;
@@ -76,17 +80,18 @@ body {
   a.faq:after {
     content: '\02715'; /* Unicode character for "plus" sign (+) */
     font-size: 24px;
-    color: #999;
+    opacity: 0.3;
     position: absolute;
     right: 8px;
     top: -4px;
-    font-weight: normal;
+    font-weight: lighter;
     transform: rotate(45deg);
-    transition: transform 0.2s ease-out;
+    transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
   }
 
   a.active:after {
-    transform: rotate(0deg)
+    transform: rotate(0deg);
+    opacity: 1;
   }
 }
 
