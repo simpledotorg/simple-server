@@ -33,8 +33,7 @@ class MyFacilitiesController < AdminController
   end
 
   def blood_pressure_control
-    @facilities = filter_facilities([:manage, :facility])
-
+    @facilities = policy_scope([:manage, :facility, Facility])
     bp_query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
                                                            cohort_period: @selected_cohort_period)
 
