@@ -6,7 +6,11 @@ end
 
 RSpec.describe MyFacilitiesController, type: :controller do
   let(:facility_group) { create(:facility_group) }
-  let(:supervisor) { create(:admin, :supervisor, facility_group: facility_group) }
+  let(:supervisor) do
+    create(:admin, :supervisor, facility_group: facility_group).tap do |user|
+      user.user_permissions.create!(permission_slug: 'view_my_facilities')
+    end
+  end
 
   render_views
 
@@ -17,7 +21,6 @@ RSpec.describe MyFacilitiesController, type: :controller do
   describe 'GET #index' do
     it 'returns a success response' do
       get :index, params: {}
-
       expect(response).to be_success
     end
   end
