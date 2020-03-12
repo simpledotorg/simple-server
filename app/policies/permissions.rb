@@ -121,7 +121,6 @@ module Permissions
         view_health_worker_activity
         download_patient_line_list
         manage_admins
-        view_my_facilities
       ]
     },
     { name: :analyst,
@@ -141,7 +140,6 @@ module Permissions
         view_health_worker_activity
         download_patient_line_list
         view_cohort_reports
-        view_my_facilities
       ]
     },
     { name: :owner,
@@ -159,7 +157,6 @@ module Permissions
         view_health_worker_activity
         download_overdue_list
         download_patient_line_list
-        view_my_facilities
       ]
     },
     { name: :custom,
