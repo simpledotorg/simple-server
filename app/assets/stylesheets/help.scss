@@ -1,109 +1,336 @@
-.anchors {
-    margin: -8px 0 16px 0;
+body {
+  padding: 0;
+  margin: 0;
 }
 
-.anchors a {
-    display: block;
-    padding: 16px 8px;
-    border-top: 1px solid rgba(0,0,0,0.05);
-    text-decoration: none;
-    font-weight: 400;
-    color: #0075EB;
-    font-size: 16px;
-    letter-spacing: 0.2em;
+#help {
+  .card {
+    border-radius: 6px;
 
-    &.support {
-      display: none;
-      &.IN {
-        display: block;
+    p:last-of-type {
+      margin-bottom: 0;
+    }
+  }
+
+  h2 {
+    font-size: 28px;
+    margin: 100px 8px 24px 8px;
+  }
+
+  h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+
+    .header-label {
+      display: block;
+      margin-bottom: 12px;
+
+      span {
+        display: inline-block;
+        color: #6C737A;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        background: #E9F3FF;
+        padding: 6px 10px;
+        border-radius: 5px;
       }
     }
-}
+  }
 
-h6 {
-    font-size: 18px;
-    color: #FF3355;
-    margin: 1em 0 0 0;
-    font-weight: 500;
-}
+  h6 {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: rgba(0,0,0,0.5);
+    margin-left: 8px;
+    margin-bottom: 16px;
+    font-size: 16px;
+  }
 
-ul, ul li {
-    margin: 0;
-    padding-left: 0;
-    list-style: none;
-}
 
-ul li {
-    padding: 2px 0 0 30px;
-    margin: 16px 0;
-    position: relative;
-}
+  hr {
+    margin: 3em 140px;
+    border: none;
+    border-top: 1px solid #dce4e8;
+  }
+    
+  p,
+  li {
+    line-height: 1.5;
+  }
 
-ul li:before {
-    content: "✓";
-    font-size: 14px;
-    text-align: center;
-    color: #6C737A;
-    padding: 0 4px;
-    background: #fff;
-    border: 1px solid #DADDE0;
-    border-radius: 3px;
+  section {
+    margin: 0 8px;
+  }
+    
+  a {
+    color: #0075EB;
+  }
+
+  a.video {
+    display: block;
+    margin: 1em 0;
+  }
+
+  .active {
+    margin-bottom: 8px;
+  }
+
+  a.faq:after {
+    content: '\02715'; /* Unicode character for "plus" sign (+) */
+    font-size: 24px;
+    opacity: 0.3;
     position: absolute;
-    left: 0;
-    top: 2px;
+    right: 4px;
+    top: -4px;
+    font-weight: lighter;
+    transform: rotate(45deg);
+    transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+  }
+
+  a.active:after {
+    transform: rotate(0deg);
+    opacity: 1;
+  }
 }
 
-ol li {
-    margin-bottom: 0.5em;
+nav.help-nav {
+  margin-bottom: 16px;
+
+  a {
+    display: block;
+    border-top: 1px solid rgba(0,0,0,0.07);
+    padding: 16px 8px;
+    font-size: 20px;
+    position: relative;
+    font-weight: 500;
+    color: #0075EB;
+
+    svg {
+      position: absolute;
+      right: 8px;
+      top: 12px;
+      width: 32px;
+      height: 32px;
+      opacity: 0.5;
+    }
+
+    &:active,
+    &:hover,
+    &:focus {
+        color: #000;
+        background: rgba(0,0,0,0.04);
+        border-color: transparent;
+        outline: none;
+    }
+    
+    &:first-of-type {
+      border: none;
+    }
+  }
+}
+
+a.help-back {
+  display: block;
+  position: fixed;
+  top: 8px;
+  padding: 8px;
+  margin-top: 16px;
+  background: #fff;
+  border-radius: 100px;
+  width: 32px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  z-index: 5000;
+
+  svg {
+    width: 28px;
+    height: 28px;
+    position: relative;
+    top: 2px;
+    left: 2px;
+    opacity: 1;
+  }
+}
+
+.help-body {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  min-height: 100%;
+  background: #F0F2F5;
+}
+
+.help-contents {
+  padding: 0 8px 100px 8px;
+}
+
+ul {
+  margin: 0;
+  padding: 0 0 0 22px;
+
+  li {
+    margin-top: 16px;
+    margin-bottom: 16px;
+    position: relative;
+    margin-left: 0;
+    padding-left: 4px;
+  }
+}
+
+ol {
+  counter-reset: custom-counter;
+  padding-left: 50px;
+  list-style: none;
+
+  li.num {
+    margin: 1.5em 0;
     font-size: 18px;
+    counter-increment: custom-counter;
+    position: relative;
+  }
+
+  li.num::before {
+    content: counter(custom-counter);
+    font-size: 16px;
+    font-weight: bold;
+    position: absolute;
+    --size: 32px;
+    left: calc(-1 * var(--size) - 16px);
+    line-height: var(--size);
+    width: var(--size);
+    height: var(--size);
+    top: -4px;
+    border-radius: 50%;
+    text-align: center;
+    border: 1px solid #DADDE0;
+  }
 }
 
 .note {
-    font-size: 14px;
-    margin-top: 0.2em;
+  font-size: 14px;
+  margin-top: 0.2em;
 }
 
+#help a.whatsapp-button {
+  display: block;
+  margin: 1em 0;
+  padding: 14px 0;
+  text-align: center;
+  background: #dfffec;
+  color: #007A31;
+  text-decoration: none;
+  border-radius: 3px;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 0.10em;
+  box-shadow:
+  0 2px 3px rgba(0,0,0,0.2),
+  0 3px 0 #C4EDD4;
 
-a.whatsapp-button div {
+  div {
     display: inline-block;
     vertical-align: middle;
+  }
 }
 
-a.whatsapp-button {
-    display: block;
-    margin: 1em 0 0 0;
-    padding: 12px 0;
-    text-align: center;
-    background: #dfffec;
-    color: #007A31;
-    text-decoration: none;
-    border-radius: 3px;
-    font-size: 18px;
-    letter-spacing: 0.10em;
-    box-shadow:
-        0 2px 3px rgba(0,0,0,0.2),
-        0 3px 0 #C4EDD4;
-}
-
-.whatsapp-button svg {
-    vertical-align: middle;
-    height: 30px;
-    margin: -1px 4px 0 0;
-    width: auto;
-    display: inline-block;
+#help .whatsapp-button svg {
+  vertical-align: middle;
+  height: 34px;
+  margin: -3px 4px 0 0;
+  width: auto;
+  display: inline-block;
 }
 
 caption {
-    font-size: 13px;
+  font-size: 13px;
 }
 
 span.code {
-    color: #000;
-    font-weight: 500;
+  color: #007A31;
+  background: #E0FFED;
+  border-radius: 5px;
+  padding: 0 6px;
+}
+
+.card-tip span.code {
+  background: rgba(0,0,0,0.06);
+  color: rgba(0,0,0,0.6);
+}
+
+.help-example {
+  padding: 16px 0 0 0;
+  text-align: center;
+
+  svg {
+    max-width: 400px;
+    min-height: 100px;
+  }
+}
+
+.help-example-text {
+  background: #F0F2F5;
+  margin-top: 1em;
+  border-radius: 6px;
+  padding: 16px;
+  font-size: 16px;
+  color: #666;
+  line-height: 1.7;
+}
+
+p.step {
+  margin: 2em 0;
+}
+
+a.faq {
+  display: block;
+  font-size: 18px;
+  font-weight: 500;
+  position: relative;
+  padding-right: 30px;
+}
+
+.answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+}
+
+#help .active {
+    margin-bottom: 8px;
+}
+
+#help a.faq:after {
+  content: '\00D7'; /* Unicode character for "plus" sign (+) */
+  font-size: 32px;
+  color: #999;
+  position: absolute;
+  right: 0;
+  top: -9px;
+  font-weight: normal;
+  transform: rotate(45deg);
+  transition: transform 0.2s ease-out;
+}
+
+#help a.active:after {
+  transform: rotate(0deg)
+}
+
+.card.card-tip {
+  background: #FFF8E0;
+  color: #54523D;
+
+  svg {
+    width: 100px;
+    float: right;
+    margin: -8px -16px 8px 8px;
+  }
 }
 
 .card.support {
   display: none;
+
   &.IN {
     display: block;
   }
