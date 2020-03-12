@@ -19,15 +19,12 @@ class AppointmentsController < AdminController
                       .distinct
                       .order(scheduled_date: :asc)
 
-    if current_facility
-      @appointments = @appointments.where(facility: current_facility)
-    end
+    @appointments = @appointments.where(facility: current_facility) if current_facility
 
     respond_to do |format|
       format.html { @appointments = paginate(@appointments) }
       format.csv do
-        facility_name = current_facility.present? ? current_facility.name.parameterize : 'all'
-        send_data @appointments.to_csv, filename: "overdue-patients_#{facility_name}_#{Date.current}.csv"
+        send_data render_to_string('index.csv.erb'), filename: download_filename
       end
     end
   end
@@ -78,5 +75,10 @@ class AppointmentsController < AdminController
 
   def page
     params[:appointment][:page]
+  end
+
+  def download_filename
+    facility_name = current_facility.present? ? current_facility.name.parameterize : 'all'
+    "overdue-patients_#{facility_name}_#{Time.current.to_s(:number)}.csv"
   end
 end
