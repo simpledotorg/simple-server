@@ -101,7 +101,7 @@ class MyFacilitiesController < AdminController
   end
 
   def authorize_my_facilities
-    authorize(:dashboard, :show?)
+    authorize(:dashboard, :view_my_facilities?)
   end
 
   def calculate_missed_visits(registered_patients_count, controlled_bps_count, uncontrolled_bps_count)
