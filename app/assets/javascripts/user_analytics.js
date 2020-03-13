@@ -111,11 +111,11 @@ function showDailyProgressCards(next) {
   }
 
   for (let i = 0; i < elementsForAllDays.length; i++) {
-    elementsForAllDays[i].style.display = "none";
+    console.log(elementsForAllDays[i]);
+    elementsForAllDays[i].classList.remove("day-show");
   }
 
-  console.log(window.lastSlidePositionForProgressCards);
-  elementsForAllDays[window.lastSlidePositionForProgressCards - 1].style.display = "block";
+  elementsForAllDays[window.lastSlidePositionForProgressCards - 1].classList.add("day-show");
 }
 
 window.onload = function () {

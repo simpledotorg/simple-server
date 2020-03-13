@@ -37,6 +37,31 @@ $font-small: 11px;
   color: $grey-darkest;
 }
 
+.card {
+    position: relative;
+}
+
+.day {
+    visibility: hidden;
+    position: absolute;
+    left: 10000000px;
+    
+    h3.stat-day {
+        opacity: 0;
+        transition: opacity 0.6s ease-in;
+    }
+}
+
+.day.day-show {
+    visibility: visible;
+    position: relative;
+    left: 0;
+    
+    h3.stat-day {
+        opacity: 1;
+    }
+}
+
 .card h3 span.num {
     letter-spacing: 2px;
 }
@@ -337,9 +362,10 @@ footer p {
 }
 
 .next-prev {
-  float: right;
-  margin-top: -8px;
-  margin-right: -8px;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1000000;
 }
 
 .button-next {
