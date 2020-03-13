@@ -22,8 +22,10 @@ class MyFacilities::MissedVisitsQuery
   def patients
     @patients ||=
       Patient
+      .joins('INNER JOIN latest_blood_pressures_per_patients
+              ON patients.id = latest_blood_pressures_per_patients.patient_id')
       .where(registration_facility_id: @facilities)
-      .where('recorded_at < ?', Time.current.beginning_of_day - REGISTRATION_BUFFER)
+      .where('patient_recorded_at < ?', Time.current.beginning_of_day - REGISTRATION_BUFFER)
   end
 
   def patients_by_period

@@ -8,19 +8,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, shrink-to-fit=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
 
-  <%= inline_stylesheet('common_webview.css') %>
-  <%= inline_stylesheet('help.css') %>
-
+  <%= inline_stylesheet 'common_webview.css' %>
+  <%= inline_stylesheet 'help.css' %>
+  <%= inline_js 'help.js' %>
 </head>
 <%= t('api.help.body_html',
       country: Rails.application.config.country[:abbreviation],
       help_screen_youtube_video_url: ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL'],
       thumb_demo_svg: inline_svg('thumb_demo.svg'),
+      help_scan_bp_passport_svg: inline_svg('help/scan_bp_passport.svg'),
+      help_bp_passport_svg: inline_svg('help/bp_passport.svg'),
+      help_calling_svg: inline_svg('help/calling.svg'),
+      help_tip_svg: inline_svg('help/tip.svg'),
       help_screen_youtube_passport_url: ENV['HELP_SCREEN_YOUTUBE_PASSPORT_URL'],
+      help_sync_svg: inline_svg('help/sync.svg'),
       thumb_passport_svg: inline_svg('thumb_passport.svg'),
       icon_search_svg: inline_svg('icon_search.svg'),
       thumb_bp_measure_svg: inline_svg('thumb_bp_measure.svg'),
       icon_whatsapp_icon_svg: inline_svg('icon_whatsapp_icon.svg'),
+      icon_back_svg: inline_svg('icon_back.svg'),
+      icon_settings_svg: inline_svg('icon_settings.svg'),
+      icon_chevron_right_svg: inline_svg('icon_chevron_right.svg'),
       help_screen_whatsapp_support_group_url: ENV['HELP_SCREEN_WHATSAPP_SUPPORT_GROUP_URL'],
       help_screen_whatsapp_support_number: ENV['HELP_SCREEN_WHATSAPP_SUPPORT_NUMBER']) %>
 </html>

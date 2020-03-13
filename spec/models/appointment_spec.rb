@@ -143,56 +143,6 @@ describe Appointment, type: :model do
     end
   end
 
-  context 'CSV export' do
-    describe '.csv_headers' do
-      it 'returns the correct headers' do
-        headers = [
-          'Patient name',
-          'Gender',
-          'Age',
-          'Days overdue',
-          'Registration date',
-          'Last BP',
-          'Last BP taken at',
-          'Last BP date',
-          'Risk level',
-          'Patient address',
-          'Patient village or colony',
-          'Patient phone'
-        ]
-        expect(Appointment.csv_headers).to eq(headers)
-      end
-    end
-
-    describe '#csv_fields' do
-      before do
-        create(:blood_pressure, :hypertensive, patient: appointment.patient)
-        allow(appointment.patient).to receive(:high_risk?).and_return(true)
-      end
-
-      it 'returns the correct fields' do
-        csv_fields = [
-          appointment.patient.full_name,
-          appointment.patient.gender.capitalize,
-          appointment.patient.current_age,
-          appointment.days_overdue,
-          appointment.patient.registration_date,
-          appointment.patient.latest_blood_pressure.to_s,
-          appointment.patient.latest_blood_pressure.facility.name,
-          ApplicationController.helpers.display_date(
-            appointment.patient.latest_blood_pressure.recorded_at
-          ),
-          'High',
-          appointment.patient.address.street_address,
-          appointment.patient.address.village_or_colony,
-          appointment.patient.phone_numbers.first&.number
-        ]
-
-        expect(appointment.csv_fields).to eq(csv_fields)
-      end
-    end
-  end
-
   describe '#previously_communicated_via' do
     let(:overdue_appointment) do
       create(:appointment,

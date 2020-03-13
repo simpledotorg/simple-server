@@ -1,0 +1,34 @@
+<%= [
+  "Report generated at:",
+  Time.current
+].to_csv -%>
+<%= [
+  "Patient name",
+  "Gender",
+  "Age",
+  "Days overdue",
+  "Registration date",
+  "Last BP",
+  "Last BP taken at",
+  "Last BP date",
+  "Risk level",
+  "Patient address",
+  "Patient village or colony",
+  "Patient phone"
+].to_csv -%>
+<% @appointments.each do |appointment| %>
+  <%= [
+    appointment.patient.full_name,
+    appointment.patient.gender.capitalize,
+    appointment.patient.current_age,
+    appointment.days_overdue,
+    appointment.patient.registration_date,
+    appointment.patient.latest_blood_pressure.to_s,
+    appointment.patient.latest_blood_pressure.facility.name,
+    display_date(appointment.patient.latest_blood_pressure.recorded_at),
+    ('High' if appointment.patient.high_risk?),
+    appointment.patient.address.street_address,
+    appointment.patient.address.village_or_colony,
+    appointment.patient.phone_numbers.first&.number
+  ].to_csv -%>
+<% end %>

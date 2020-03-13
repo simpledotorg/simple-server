@@ -138,6 +138,20 @@ describe Patient, type: :model do
 
         expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:LOW])
       end
+
+      it 'returns high priority for patients overdue with high blood sugar' do
+        create(:blood_sugar, patient: patient, blood_sugar_type: :random, blood_sugar_value: 300)
+        create(:appointment, scheduled_date: 31.days.ago, status: :scheduled, patient: patient)
+
+        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:HIGH])
+      end
+
+      it "returns 'none' priority for patients overdue with normal blood sugar" do
+        create(:blood_sugar, patient: patient, blood_sugar_type: :random, blood_sugar_value: 150)
+        create(:appointment, :overdue, patient: patient)
+
+        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:NONE])
+      end
     end
 
     describe '#current_age' do

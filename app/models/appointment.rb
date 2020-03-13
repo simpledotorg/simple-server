@@ -118,57 +118,6 @@ class Appointment < ApplicationRecord
     }
   end
 
-  # CSV export
-  def self.to_csv
-    appointments = all.joins(patient: { latest_blood_pressures: :facility })
-                     .includes(patient: [:address, :phone_numbers, :medical_history,
-                                         { latest_blood_pressures: :facility }])
-
-    CSV.generate(headers: true) do |csv|
-      csv << csv_headers
-
-      appointments.group_by { |a| a.patient.latest_blood_pressure.facility }.each do |_, facility_appointments|
-        facility_appointments.sort_by { |a| a.patient.risk_priority }.each do |appointment|
-          csv << appointment.csv_fields
-        end
-      end
-    end
-  end
-
-  def self.csv_headers
-    [
-      "Patient name",
-      "Gender",
-      "Age",
-      "Days overdue",
-      "Registration date",
-      "Last BP",
-      "Last BP taken at",
-      "Last BP date",
-      "Risk level",
-      "Patient address",
-      "Patient village or colony",
-      "Patient phone"
-    ].freeze
-  end
-
-  def csv_fields
-    [
-      patient.full_name,
-      patient.gender.capitalize,
-      patient.current_age,
-      days_overdue,
-      patient.registration_date,
-      patient.latest_blood_pressure.to_s,
-      patient.latest_blood_pressure.facility.name,
-      display_date(patient.latest_blood_pressure.recorded_at),
-      ('High' if patient.high_risk?),
-      patient.address.street_address,
-      patient.address.village_or_colony,
-      patient.phone_numbers.first&.number
-    ]
-  end
-
   def previously_communicated_via?(communication_type)
     communications.latest_by_type(communication_type)&.attempted?
   end

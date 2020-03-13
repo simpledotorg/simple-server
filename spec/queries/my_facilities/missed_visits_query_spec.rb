@@ -140,10 +140,10 @@ RSpec.describe MyFacilities::MissedVisitsQuery do
       expect(query.missed_visits_by_facility[[facilities.first.id, *periods.second]]).to eq(patients: 1, missed: 0)
       expect(query.missed_visits_by_facility[[facilities.second.id, *periods.second]]).to eq(patients: 1, missed: 0)
       expect(query.missed_visits_by_facility[[facilities.first.id, *periods.third]]).to eq(patients: 1, missed: 0)
-      expect(query.missed_visits_by_facility[[facilities.second.id, *periods.third]]).to eq(patients: 2, missed: 2)
+      expect(query.missed_visits_by_facility[[facilities.second.id, *periods.third]]).to eq(patients: 1, missed: 1)
       expect(query.missed_visit_totals[periods.first]).to eq(nil)
       expect(query.missed_visit_totals[periods.second]).to eq(patients: 2, missed: 0)
-      expect(query.missed_visit_totals[periods.third]).to eq(patients: 3, missed: 2)
+      expect(query.missed_visit_totals[periods.third]).to eq(patients: 2, missed: 1)
     end
   end
 
@@ -177,10 +177,10 @@ RSpec.describe MyFacilities::MissedVisitsQuery do
       expect(query.missed_visits_by_facility[[facilities.first.id, *periods.second]]).to eq(patients: 1, missed: 0)
       expect(query.missed_visits_by_facility[[facilities.second.id, *periods.second]]).to eq(patients: 1, missed: 0)
       expect(query.missed_visits_by_facility[[facilities.first.id, *periods.third]]).to eq(patients: 1, missed: 0)
-      expect(query.missed_visits_by_facility[[facilities.second.id, *periods.third]]).to eq(patients: 2, missed: 2)
+      expect(query.missed_visits_by_facility[[facilities.second.id, *periods.third]]).to eq(patients: 1, missed: 1)
       expect(query.missed_visit_totals[periods.first]).to eq(patients: 2, missed: 2)
       expect(query.missed_visit_totals[periods.second]).to eq(patients: 2, missed: 0)
-      expect(query.missed_visit_totals[periods.third]).to eq(patients: 3, missed: 2)
+      expect(query.missed_visit_totals[periods.third]).to eq(patients: 2, missed: 1)
     end
   end
 end
