@@ -21,6 +21,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
   describe 'GET #index' do
     it 'returns a success response' do
       get :index, params: {}
+
       expect(response).to be_success
     end
   end
