@@ -351,13 +351,6 @@ footer p {
   border-radius: 4px;
 }
 
-.button-next:active,
-.button-prev:active,
-.button-next:focus,
-.button-prev:focus {
-  outline: none;
-}
-
 .button-prev {
   background: none;
   border: none;
@@ -365,6 +358,18 @@ footer p {
   float: right;
   padding: 6px 24px 6px 16px;
   margin-right: -6px;
+}
+
+.button-next:active,
+.button-prev:active {
+  outline: none;
+  background: #E9F3FF;
+}
+
+.button-next:focus,
+.button-prev:focus {
+  outline: none;
+  background: none;
 }
 
 .button-prev:disabled,
