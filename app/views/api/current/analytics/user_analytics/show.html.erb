@@ -38,7 +38,7 @@
 <% if @statistics.blank? %>
   <%= render 'empty_reports' %>
 <% else %>
-  <div class="updated-date">Last updated: <span><%= l(@statistics.dig(:metadata, :last_updated_at)) %></span></div>
+  <div class="updated-date">Updated: <span><%= l(@statistics.dig(:metadata, :last_updated_at)) %></span></div>
 
   <div class="card" style="min-height: 210px;">
     <div class="next-prev">
