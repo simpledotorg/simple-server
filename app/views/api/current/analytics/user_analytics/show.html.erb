@@ -93,22 +93,26 @@
 
     <form>
       <select class="card-dropdown">
-        <optgroup label="All patients">
-          <option>All registered patients</option>
-        </optgroup>
-        <optgroup label="Hypertension">
-          <option>All</option>
-          <option>Female</option>
-          <option>Male</option>
-          <option>Transgender</option>
-        </optgroup>
+           <!--
+            - We don't need "Hypertension: All" unless DM is enabled.
+            - We don't need the word "Hypertension" at all unless DM is enabled.
+           -->
+          
+           <option>All</option>
+          
+           <% if @statistics.dig(:metadata, :is_diabetes_enabled) %>
+              <option>Hypertension: All</option>
+           <% end %>
+          
+           <option><% if @statistics.dig(:metadata, :is_diabetes_enabled) %>Hypertension: <% end %>Female</option>
+           <option><% if @statistics.dig(:metadata, :is_diabetes_enabled) %>Hypertension: <% end %>Male</option>
+           <option><% if @statistics.dig(:metadata, :is_diabetes_enabled) %>Hypertension: <% end %>Transgender</option>
+          
         <% if @statistics.dig(:metadata, :is_diabetes_enabled) %>
-          <optgroup label="Diabetes">
-            <option>All</option>
-            <option>Female</option>
-            <option>Male</option>
-            <option>Transgender</option>
-          </optgroup>
+           <option>Diabetes: All</option>
+           <option>Diabetes: Female</option>
+           <option>Diabetes: Male</option>
+           <option>Diabetes: Transgender</option>
         <% end %>
       </select>
     </form>
