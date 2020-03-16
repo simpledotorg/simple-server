@@ -41,7 +41,7 @@ module MyFacilitiesFiltering
     end
 
     def facilities_by_zone(facilities)
-      facilities.where(zone: @selected_zones).or(Facility.where(zone: nil))
+      facilities.where(zone: @selected_zones).or(facilities.where(zone: nil))
     end
 
     def facilities_by_created_at(facilities)
