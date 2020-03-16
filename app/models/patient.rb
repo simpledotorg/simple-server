@@ -32,7 +32,7 @@ class Patient < ApplicationRecord
   has_many :facilities, -> { distinct }, through: :blood_pressures
   has_many :users, -> { distinct }, through: :blood_pressures
   has_many :blood_sugars
-
+  has_many :latest_blood_sugars, -> { order(recorded_at: :desc) }, class_name: 'BloodSugar'
   belongs_to :registration_facility, class_name: "Facility", optional: true
   belongs_to :registration_user, class_name: "User"
 
@@ -73,6 +73,10 @@ class Patient < ApplicationRecord
     latest_blood_pressures.first
   end
 
+  def latest_blood_sugar
+    latest_blood_sugars.first
+  end
+
   def latest_phone_number
     phone_numbers.last&.number
   end
@@ -99,6 +103,8 @@ class Patient < ApplicationRecord
     if latest_blood_pressure&.critical?
       RISK_PRIORITIES[:HIGH]
     elsif medical_history&.indicates_hypertension_risk? && latest_blood_pressure&.hypertensive?
+      RISK_PRIORITIES[:HIGH]
+    elsif latest_blood_sugar&.diabetic?
       RISK_PRIORITIES[:HIGH]
     elsif latest_blood_pressure&.hypertensive?
       RISK_PRIORITIES[:REGULAR]

@@ -22,7 +22,13 @@ FactoryBot.define do
     phone_numbers { build_list(:patient_phone_number, 1, patient_id: id) }
     association :registration_facility, factory: :facility
     association :registration_user, factory: :user_created_on_device
-    business_identifiers { build_list(:patient_business_identifier, 1, patient_id: id) }
+    business_identifiers do
+      build_list(:patient_business_identifier,
+                 1,
+                 patient_id: id,
+                 metadata: {assigning_facility_id: registration_facility.id,
+                            assigning_user_id: registration_user.id})
+    end
     reminder_consent { Patient.reminder_consents[:granted] }
 
     trait :denied do
