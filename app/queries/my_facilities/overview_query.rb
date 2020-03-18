@@ -9,6 +9,8 @@ class MyFacilities::OverviewQuery
   INACTIVITY_THRESHOLD_DAYS = 7
   INACTIVITY_THRESHOLD_BPS = 10
 
+  attr_reader :facilities
+
   def initialize(facilities: Facility.all)
     @facilities = facilities
   end
@@ -25,7 +27,7 @@ class MyFacilities::OverviewQuery
                         .group(:facility_id)
                         .having('SUM(bp_count) >= ?', INACTIVITY_THRESHOLD_BPS)
 
-    @inactive_facilities ||= Facility.where.not(id: active_facilities.pluck(:facility_id))
+    @inactive_facilities ||= facilities.where.not(id: active_facilities.pluck(:facility_id))
   end
 
   private
@@ -33,7 +35,7 @@ class MyFacilities::OverviewQuery
   def bps_per_day_in_last_n_days(n:)
     days_list = days_as_sql_list(last_n_days(n: n))
     BloodPressuresPerFacilityPerDay
-      .where(facility: @facilities)
+      .where(facility: facilities)
       .where("((year, day) IN (#{days_list}))")
   end
 
