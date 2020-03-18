@@ -1,5 +1,5 @@
 module SimpleServerEnvHelper
-  CUSTOMIZED_ENVS = %w[development qa staging sandbox demo production].freeze
+  CUSTOMIZED_ENVS = %w[development qa sandbox demo production].freeze
 
   def style_class_for_environment
     env = ENV.fetch('SIMPLE_SERVER_ENV')
