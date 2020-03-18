@@ -111,7 +111,6 @@ function showDailyProgressCards(next) {
   }
 
   for (let i = 0; i < elementsForAllDays.length; i++) {
-    console.log(elementsForAllDays[i]);
     elementsForAllDays[i].classList.remove("day-show");
   }
 

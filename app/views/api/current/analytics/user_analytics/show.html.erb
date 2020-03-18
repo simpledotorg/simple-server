@@ -90,6 +90,7 @@
     </div>
   </div>
 
+  <!-- monthly registered patients view -->
   <div class="card">
     <h3>Registered patients</h3>
 
@@ -109,6 +110,7 @@
     </table>
   </div>
 
+  <!-- monthly follow-up patients view -->
   <div class="card">
     <h3>Follow-up patients</h3>
 
@@ -128,43 +130,32 @@
     </table>
   </div>
 
-<!--    <div class="card">-->
-<!--      <h3>Hypertension control</h3>-->
-<!--      <p class="desc">How many patients with hypertension had BP below 140/90 at their last follow-up visit?</p>-->
+  <!-- monthly hypertension control view -->
+  <div class="card">
+    <h3>Hypertension control</h3>
+    <p class="desc">
+      How many patients with hypertension had BP below 140/90 at their last follow-up visit in the month?
+    </p>
 
-<!--      <table class="progress-table">-->
-<!--        <tr>-->
-<!--          <td class="row-label no-padding">January</td>-->
-<!--          <td><span class="percent">100%</span></td>-->
-<!--          <td>14 of 14</td>-->
-<!--        </tr>-->
-<!--        <tr>-->
-<!--          <td class="row-label no-padding">December</td>-->
-<!--          <td><span class="percent">45%</span></td>-->
-<!--          <td>52 of 109</td>-->
-<!--        </tr>-->
-<!--        <tr>-->
-<!--          <td class="row-label no-padding">November</td>-->
-<!--          <td><span class="percent">42%</span></td>-->
-<!--          <td>49 of 104</td>-->
-<!--        </tr>-->
-<!--        <tr>-->
-<!--          <td class="row-label no-padding">October</td>-->
-<!--          <td><span class="percent">38%</span></td>-->
-<!--          <td>37 of 98</td>-->
-<!--        </tr>-->
-<!--        <tr>-->
-<!--          <td class="row-label no-padding">September</td>-->
-<!--          <td><span class="percent">36%</span></td>-->
-<!--          <td>16 of 87</td>-->
-<!--        </tr>-->
-<!--        <tr>-->
-<!--          <td class="row-label no-padding">August</td>-->
-<!--          <td><span class="percent">32%</span></td>-->
-<!--          <td>31 of 90</td>-->
-<!--        </tr>-->
-<!--      </table>-->
-<!--    </div>-->
+    <table class="progress-table">
+      <% @monthly_period_list.each do |month_date| %>
+        <tr>
+          <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
+          <td><span class="percent">
+              <%=
+                percentage(@statistics.dig(:monthly, month_date, :controlled_visits),
+                           @statistics.dig(:monthly, month_date, :total_visits))
+              %>
+            </span></td>
+          <td>
+            <%= zero_if_zero(@statistics.dig(:monthly, month_date, :controlled_visits)) %>
+            of
+            <%= zero_if_zero(@statistics.dig(:monthly, month_date, :total_visits)) %>
+          </td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
 
   <!-- all trophies view -->
   <div class="trophies">

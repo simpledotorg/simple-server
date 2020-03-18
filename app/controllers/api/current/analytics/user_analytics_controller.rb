@@ -40,7 +40,8 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
   def prepare_monthly_stats(months_ago)
     [
       registrations_for_last_n_months(months_ago),
-      follow_ups_for_last_n_months(months_ago)
+      follow_ups_for_last_n_months(months_ago),
+      htn_control_for_last_n_months(months_ago)
     ].inject(&:deep_merge)
   end
 
@@ -133,10 +134,36 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
         .follow_ups
         .group(:year, :month)
         .count
-        .map { |date, fps| [doy_to_date_obj(*date), follow_ups: fps] }
+        .map { |date, fps| [moy_to_date_obj(*date), follow_ups: fps] }
         .to_h
 
     data_for_unavailable_dates(:follow_ups, @monthly_period_list).merge(follow_ups)
+  end
+
+  def htn_control_for_last_n_months(n)
+    visits = LatestBloodPressuresPerPatientPerMonth
+               .where(facility: @current_facility)
+               .where("(year, month) IN (#{periods_as_sql_list(period_list(:month, n))})")
+
+    total_visits =
+      visits
+        .group(:year, :month)
+        .count
+        .map { |date, fps| [moy_to_date_obj(*date), total_visits: fps] }
+        .to_h
+
+    controlled_visits =
+      visits
+        .under_control
+        .group(:year, :month)
+        .count
+        .map { |date, fps| [moy_to_date_obj(*date), controlled_visits: fps] }
+        .to_h
+
+    [
+      data_for_unavailable_dates(:total_visits, @monthly_period_list).merge(total_visits),
+      data_for_unavailable_dates(:controlled_visits, @monthly_period_list).merge(controlled_visits)
+    ].inject(&:deep_merge)
   end
 
   def data_for_unavailable_dates(data_key, period_list)
