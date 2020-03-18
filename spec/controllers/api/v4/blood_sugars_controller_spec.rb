@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::V3::BloodSugarsController, type: :controller do
+RSpec.describe Api::V4::BloodSugarsController, type: :controller do
   let(:request_user) { create(:user) }
   let(:request_facility) { create(:facility, facility_group: request_user.facility.facility_group) }
   before :each do
@@ -104,15 +104,15 @@ RSpec.describe Api::V3::BloodSugarsController, type: :controller do
       end
 
       context 'hba1c blood sugars' do
-        it 'errors on hba1c blood sugars' do
+        it 'successfully records hba1c blood sugars' do
           blood_sugar = build_blood_sugar_payload(build(:blood_sugar, blood_sugar_type: :hba1c))
 
           post(:sync_from_user, params: { blood_sugars: [blood_sugar] }, as: :json)
-          schema_error = JSON(response.body)['errors'].first["schema"].first
-          error_string = "The property '#/blood_sugar_type' value \"hba1c\" did not match one of the following values: random, post_prandial, fasting in schema "
+          errors = JSON(response.body)['errors']
 
-          expect(schema_error).to match(/#{Regexp.quote(error_string)}/)
-          expect(BloodSugar.where(id: blood_sugar['id'])).to eq([])
+          expect(response).to have_http_status(200)
+          expect(errors).to eq([])
+          expect(BloodSugar.where(id: blood_sugar['id']).count).to eq 1
         end
       end
 
@@ -297,15 +297,15 @@ RSpec.describe Api::V3::BloodSugarsController, type: :controller do
         create_record_list(2, facility: facility, blood_sugar_type: :hba1c)
       end
 
-      it "doesn't send hba1c blood sugars" do
+      it "sends hba1c blood sugars" do
         get :sync_to_user, params: { limit: 8 }
 
         response_blood_sugars = JSON(response.body)['blood_sugars']
         response_types = response_blood_sugars.map { |blood_sugar| blood_sugar['blood_sugar_type'] }.to_set
 
-        expect(response_blood_sugars.count).to eq 6
-        expect(response_types.count).to eq 3
-        expect(response_types).not_to include('hba1c')
+        expect(response_blood_sugars.count).to eq 8
+        expect(response_types.count).to eq 4
+        expect(response_types).to include('hba1c')
       end
     end
   end

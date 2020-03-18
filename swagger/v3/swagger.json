@@ -2296,7 +2296,10 @@
           "$ref": "#/definitions/uuid"
         },
         "identifier": {
-          "$ref": "#/definitions/non_empty_string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "identifier_type": {
           "type": "string",

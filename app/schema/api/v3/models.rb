@@ -154,7 +154,7 @@ class Api::V3::Models
       { type: :object,
         properties: {
           id: { '$ref' => '#/definitions/uuid' },
-          blood_sugar_type: { type: :string, enum: BloodSugar.blood_sugar_types.keys },
+          blood_sugar_type: { type: :string, enum: BloodSugar.blood_sugar_types.keys.reject { |type| type == 'hba1c' } },
           blood_sugar_value: { type: :integer },
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },

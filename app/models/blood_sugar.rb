@@ -15,13 +15,17 @@ class BloodSugar < ApplicationRecord
   enum blood_sugar_type: {
     random: 'random',
     post_prandial: 'post_prandial',
-    fasting: 'fasting'
+    fasting: 'fasting',
+    hba1c: 'hba1c'
   }, _prefix: true
+
+  scope :without_hba1c, -> { where.not(blood_sugar_type: :hba1c) }
 
   THRESHOLDS = {
     high: { random: 300,
             post_prandial: 300,
-            fasting: 200 }
+            fasting: 200,
+            hba1c: 9.0 }
    }.with_indifferent_access.freeze
 
   def diabetic?

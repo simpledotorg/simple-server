@@ -9,10 +9,13 @@ class Api::V3::BloodSugarsController < Api::V3::SyncController
 
   def sync_to_user
     __sync_to_user__('blood_sugars')
-
   end
 
   private
+
+  def facility_group_records
+    current_facility_group.blood_sugars.with_discarded.without_hba1c
+  end
 
   def transform_to_response(blood_sugar)
     Api::V3::Transformer.to_response(blood_sugar)

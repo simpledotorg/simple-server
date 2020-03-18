@@ -37,7 +37,11 @@
 <script>
     var apis = [
         {
-            name: 'Current',
+            name: 'V4',
+            url: "<%= url_for(rswag_api: nil) + 'v4/swagger.json' %>"
+        },
+        {
+            name: 'V3',
             url: "<%= url_for(rswag_api: nil) + 'v3/swagger.json' %>"
         },
         {
