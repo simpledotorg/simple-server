@@ -62,7 +62,7 @@ module SimpleServerEnvHelper
   def bootstrap_navbar_classes_for_environment(env)
     navbar_classes = {
       'development' => ['navbar-light', 'bg-light'],
-      'staging' => ['navbar-light', 'bg-light'],
+      'demo' => ['navbar-light', 'bg-light'],
       'qa' => ['navbar-light', 'bg-light'],
       'sandbox' => ['navbar-light'],
       'production' => ['navbar-light'],
