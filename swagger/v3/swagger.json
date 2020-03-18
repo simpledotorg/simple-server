@@ -2352,11 +2352,12 @@
           "enum": [
             "random",
             "post_prandial",
-            "fasting"
+            "fasting",
+            "hba1c"
           ]
         },
         "blood_sugar_value": {
-          "type": "integer"
+          "type": "decimal"
         },
         "deleted_at": {
           "$ref": "#/definitions/nullable_timestamp"
