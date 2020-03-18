@@ -1,0 +1,22 @@
+<form>
+  <select class="card-dropdown">
+    <!--
+     - We don't need "Hypertension: All" unless DM is enabled.
+     - We don't need the word "Hypertension" at all unless DM is enabled.
+    -->
+
+    <% hypertension_option_text = statistics.dig(:metadata, :is_diabetes_enabled) ? 'Hypertension: ' : '' %>
+
+    <option><%= "#{hypertension_option_text}All" %></option>
+    <option><%= "#{hypertension_option_text}Female" %></option>
+    <option><%= "#{hypertension_option_text}Male" %></option>
+    <option><%= "#{hypertension_option_text}Transgender" %></option>
+
+    <% if statistics.dig(:metadata, :is_diabetes_enabled) %>
+      <option>Diabetes: All</option>
+      <option>Diabetes: Female</option>
+      <option>Diabetes: Male</option>
+      <option>Diabetes: Transgender</option>
+    <% end %>
+  </select>
+</form>

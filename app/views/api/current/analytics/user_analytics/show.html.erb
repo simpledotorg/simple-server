@@ -42,10 +42,12 @@
 
   <div class="card" style="min-height: 210px;">
     <div class="next-prev">
-      <button onclick="nextSlide(+1)" class="button-next"><span><%= inline_svg('icon_arrow_back.svg') %></span>
+      <button onclick="nextSlide(+1)" class="button-next">
+        <span><%= inline_svg('icon_arrow_back.svg') %></span>
       </button>
       <button onclick="nextSlide(-1)" class="button-prev">
-        <span><%= inline_svg('icon_arrow_forward.svg') %></span></button>
+        <span><%= inline_svg('icon_arrow_forward.svg') %></span>
+      </button>
     </div>
 
     <!-- dump all statistics in a hidden div so that we can parse it in JS -->
@@ -91,36 +93,12 @@
   <div class="card">
     <h3>Registered patients</h3>
 
-    <form>
-      <select class="card-dropdown">
-           <!--
-            - We don't need "Hypertension: All" unless DM is enabled.
-            - We don't need the word "Hypertension" at all unless DM is enabled.
-           -->
-          
-           <option>All</option>
-          
-           <% if @statistics.dig(:metadata, :is_diabetes_enabled) %>
-              <option>Hypertension: All</option>
-           <% end %>
-          
-           <option><% if @statistics.dig(:metadata, :is_diabetes_enabled) %>Hypertension: <% end %>Female</option>
-           <option><% if @statistics.dig(:metadata, :is_diabetes_enabled) %>Hypertension: <% end %>Male</option>
-           <option><% if @statistics.dig(:metadata, :is_diabetes_enabled) %>Hypertension: <% end %>Transgender</option>
-          
-        <% if @statistics.dig(:metadata, :is_diabetes_enabled) %>
-           <option>Diabetes: All</option>
-           <option>Diabetes: Female</option>
-           <option>Diabetes: Male</option>
-           <option>Diabetes: Transgender</option>
-        <% end %>
-      </select>
-    </form>
+    <%= render partial: 'api/current/analytics/user_analytics/gender_filter', locals: { statistics: @statistics } %>
 
     <table class="progress-table">
       <tr class="total">
         <td class="row-label">All-time</td>
-        <td><%= zero_if_zero(@statistics[:monthly].values.sum { |x| x[:registrations] }) %></td>
+        <td><%= zero_if_zero(@statistics[:monthly].values.sum { |x| x.fetch(:registrations, 0) }) %></td>
       </tr>
       <% @monthly_period_list.each do |month_date| %>
         <tr>
@@ -131,103 +109,67 @@
     </table>
   </div>
 
-  <!--  <div class="card">-->
-  <!--    <h3>Follow-up patients</h3>-->
+  <div class="card">
+    <h3>Follow-up patients</h3>
 
-  <!--    <form>-->
-  <!--      <select class="card-dropdown">-->
-  <!--        <optgroup label="All patients">-->
-  <!--          <option>All follow-up patients</option>-->
-  <!--        </optgroup>-->
-  <!--        <optgroup label="Hypertension">-->
-  <!--          <option>All</option>-->
-  <!--          <option>Female</option>-->
-  <!--          <option>Male</option>-->
-  <!--          <option>Transgender</option>-->
-  <!--        </optgroup>-->
-  <!--        <optgroup label="Diabetes">-->
-  <!--          <option>All</option>-->
-  <!--          <option>Female</option>-->
-  <!--          <option>Male</option>-->
-  <!--          <option>Transgender</option>-->
-  <!--        </optgroup>-->
-  <!--      </select>-->
-  <!--    </form>-->
+    <%= render partial: 'api/current/analytics/user_analytics/gender_filter', locals: { statistics: @statistics } %>
 
-  <!--    <table class="progress-table">-->
-  <!--      <tr class="total green">-->
-  <!--        <td class="row-label">All-time</td>-->
-  <!--        <td>2410</td>-->
-  <!--      </tr>-->
-  <!--      <tr>-->
-  <!--        <td class="row-label no-padding">January</td>-->
-  <!--        <td>14</td>-->
-  <!--      </tr>-->
-  <!--      <tr>-->
-  <!--        <td class="row-label no-padding">December</td>-->
-  <!--        <td>109</td>-->
-  <!--      </tr>-->
-  <!--      <tr>-->
-  <!--        <td class="row-label no-padding">November</td>-->
-  <!--        <td>104</td>-->
-  <!--      </tr>-->
-  <!--      <tr>-->
-  <!--        <td class="row-label no-padding">October</td>-->
-  <!--        <td>98</td>-->
-  <!--      </tr>-->
-  <!--      <tr>-->
-  <!--        <td class="row-label no-padding">September</td>-->
-  <!--        <td>87</td>-->
-  <!--      </tr>-->
-  <!--      <tr>-->
-  <!--        <td class="row-label no-padding">August</td>-->
-  <!--        <td>90</td>-->
-  <!--      </tr>-->
-  <!--    </table>-->
-  <!--  </div>-->
+    <table class="progress-table">
+      <tr class="total">
+        <td class="row-label">All-time</td>
+        <td><%= zero_if_zero(@statistics[:monthly].values.sum { |x| x.fetch(:follow_ups, 0) }) %></td>
+      </tr>
+      <% @monthly_period_list.each do |month_date| %>
+        <tr>
+          <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
+          <td><%= zero_if_zero(@statistics.dig(:monthly, month_date, :follow_ups)) %></td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
 
-  <!--  <div class="card">-->
-  <!--    <h3>Hypertension control</h3>-->
-  <!--    <p class="desc">How many patients with hypertension had BP below 140/90 at their last follow-up visit?</p>-->
+<!--    <div class="card">-->
+<!--      <h3>Hypertension control</h3>-->
+<!--      <p class="desc">How many patients with hypertension had BP below 140/90 at their last follow-up visit?</p>-->
 
-  <!--    <table class="progress-table">-->
-  <!--      <tr>-->
-  <!--        <td class="row-label no-padding">January</td>-->
-  <!--        <td><span class="percent">100%</span></td>-->
-  <!--        <td>14 of 14</td>-->
-  <!--      </tr>-->
-  <!--      <tr>-->
-  <!--        <td class="row-label no-padding">December</td>-->
-  <!--        <td><span class="percent">45%</span></td>-->
-  <!--        <td>52 of 109</td>-->
-  <!--      </tr>-->
-  <!--      <tr>-->
-  <!--        <td class="row-label no-padding">November</td>-->
-  <!--        <td><span class="percent">42%</span></td>-->
-  <!--        <td>49 of 104</td>-->
-  <!--      </tr>-->
-  <!--      <tr>-->
-  <!--        <td class="row-label no-padding">October</td>-->
-  <!--        <td><span class="percent">38%</span></td>-->
-  <!--        <td>37 of 98</td>-->
-  <!--      </tr>-->
-  <!--      <tr>-->
-  <!--        <td class="row-label no-padding">September</td>-->
-  <!--        <td><span class="percent">36%</span></td>-->
-  <!--        <td>16 of 87</td>-->
-  <!--      </tr>-->
-  <!--      <tr>-->
-  <!--        <td class="row-label no-padding">August</td>-->
-  <!--        <td><span class="percent">32%</span></td>-->
-  <!--        <td>31 of 90</td>-->
-  <!--      </tr>-->
-  <!--    </table>-->
-  <!--  </div>-->
+<!--      <table class="progress-table">-->
+<!--        <tr>-->
+<!--          <td class="row-label no-padding">January</td>-->
+<!--          <td><span class="percent">100%</span></td>-->
+<!--          <td>14 of 14</td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--          <td class="row-label no-padding">December</td>-->
+<!--          <td><span class="percent">45%</span></td>-->
+<!--          <td>52 of 109</td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--          <td class="row-label no-padding">November</td>-->
+<!--          <td><span class="percent">42%</span></td>-->
+<!--          <td>49 of 104</td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--          <td class="row-label no-padding">October</td>-->
+<!--          <td><span class="percent">38%</span></td>-->
+<!--          <td>37 of 98</td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--          <td class="row-label no-padding">September</td>-->
+<!--          <td><span class="percent">36%</span></td>-->
+<!--          <td>16 of 87</td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--          <td class="row-label no-padding">August</td>-->
+<!--          <td><span class="percent">32%</span></td>-->
+<!--          <td>31 of 90</td>-->
+<!--        </tr>-->
+<!--      </table>-->
+<!--    </div>-->
 
   <!-- all trophies view -->
   <div class="trophies">
     <h4>Achievements</h4>
-    <% @statistics[:trophies][:unlocked_trophy_values].sort.each do |trophy| %>
+    <% @statistics.dig(:trophies, :unlocked_trophy_values).sort.each do |trophy| %>
       <div class="trophy trophy-<%= trophy %>">
         <%= inline_svg('ribbon.svg') %>
         <em></em>
@@ -238,13 +180,13 @@
       </div>
     <% end %>
 
-    <div class="trophy trophy-<%= @statistics[:trophies][:locked_trophy_value] %> trophy-upcoming">
+    <div class="trophy trophy-<%= @statistics.dig(:trophies, :locked_trophy_value) %> trophy-upcoming">
       <%= inline_svg('ribbon.svg') %>
       <em></em>
       <span>
         <%= inline_svg('icon_lock.svg') %>
       </span>
-      <div><%= @statistics[:trophies][:locked_trophy_value] %> follow-up<br>hypertension patients</div>
+      <div><%= @statistics.dig(:trophies, :locked_trophy_value) %> follow-up<br>hypertension patients</div>
     </div>
   </div>
 

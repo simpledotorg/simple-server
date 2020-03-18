@@ -24,7 +24,7 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
         formatted_today_string: t(:today_str)
       }
     }
-    
+
     respond_to_html_or_json(@statistics)
   end
 
@@ -38,11 +38,17 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
   end
 
   def prepare_monthly_stats(months_ago)
-    [registrations_for_last_n_months(months_ago)].inject(&:deep_merge)
+    [
+      registrations_for_last_n_months(months_ago),
+      follow_ups_for_last_n_months(months_ago)
+    ].inject(&:deep_merge)
   end
 
   def prepare_daily_stats(days_ago)
-    [registrations_for_last_n_days(days_ago), follow_ups_for_last_n_days(days_ago)].inject(&:deep_merge)
+    [
+      registrations_for_last_n_days(days_ago),
+      follow_ups_for_last_n_days(days_ago)
+    ].inject(&:deep_merge)
   end
 
   #
@@ -118,6 +124,19 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
         .to_h
 
     data_for_unavailable_dates(:registrations, @monthly_period_list).merge(registrations)
+  end
+
+  def follow_ups_for_last_n_months(n)
+    follow_ups =
+      MyFacilities::FollowUpsQuery
+        .new(facilities: current_facility, period: :month, last_n: n)
+        .follow_ups
+        .group(:year, :month)
+        .count
+        .map { |date, fps| [doy_to_date_obj(*date), follow_ups: fps] }
+        .to_h
+
+    data_for_unavailable_dates(:follow_ups, @monthly_period_list).merge(follow_ups)
   end
 
   def data_for_unavailable_dates(data_key, period_list)
