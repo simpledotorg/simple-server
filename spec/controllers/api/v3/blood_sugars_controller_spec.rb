@@ -53,7 +53,7 @@ RSpec.describe Api::V3::BloodSugarsController, type: :controller do
 
           updated_records.each do |record|
             db_record = model.find(record['id'])
-            expect(db_record.attributes.to_json_and_back.with_payload_keys.with_int_timestamps)
+            expect(db_record.attributes.with_payload_keys.with_int_timestamps)
               .to eq(record.to_json_and_back.with_int_timestamps)
           end
         end
@@ -306,6 +306,27 @@ RSpec.describe Api::V3::BloodSugarsController, type: :controller do
         expect(response_blood_sugars.count).to eq 6
         expect(response_types.count).to eq 3
         expect(response_types).not_to include('hba1c')
+      end
+    end
+
+    context 'V4 blood_sugar_values' do
+      let(:facility) { create(:facility, facility_group: request_user.facility.facility_group) }
+
+      before :each do
+        set_authentication_headers
+        create_record(facility: facility, blood_sugar_type: :random)
+        create_record(facility: facility, blood_sugar_type: :fasting)
+        create_record(facility: facility, blood_sugar_type: :post_prandial)
+        create_record(facility: facility, blood_sugar_type: :hba1c)
+      end
+
+      it "sends integer blood_sugar_values" do
+        get :sync_to_user, params: { limit: 4 }
+
+        response_blood_sugars = JSON(response.body)['blood_sugars']
+        response_values = response_blood_sugars.map { |blood_sugar| blood_sugar['blood_sugar_value'] }
+
+        response_values.each { |value| expect(value).to be_instance_of(Integer) }
       end
     end
   end

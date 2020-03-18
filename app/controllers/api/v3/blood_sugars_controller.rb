@@ -18,7 +18,7 @@ class Api::V3::BloodSugarsController < Api::V3::SyncController
   end
 
   def transform_to_response(blood_sugar)
-    Api::V3::Transformer.to_response(blood_sugar)
+    Api::V3::BloodSugarTransformer.to_response(blood_sugar)
   end
 
   def merge_if_valid(blood_sugar_params)
