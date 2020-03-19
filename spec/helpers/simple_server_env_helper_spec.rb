@@ -26,11 +26,11 @@ RSpec.describe SimpleServerEnvHelper do
       end
     end
 
-    context 'when in the staging environment' do
+    context 'when in the demo environment' do
       it 'should return the production style class' do
-        ENV[simple_server_env] = 'staging'
+        ENV[simple_server_env] = 'demo'
 
-        expect(style_class_for_environment).to eq 'navbar navbar-expand-md fixed-top navbar-light bg-light navbar-staging'
+        expect(style_class_for_environment).to eq 'navbar navbar-expand-md fixed-top navbar-light bg-light navbar-demo'
       end
     end
 
@@ -70,11 +70,11 @@ RSpec.describe SimpleServerEnvHelper do
       end
     end
 
-    context 'when in the staging environment' do
-      it 'should return the staging alt for the logo' do
-        ENV[simple_server_env] = 'staging'
+    context 'when in the demo environment' do
+      it 'should return the demo alt for the logo' do
+        ENV[simple_server_env] = 'demo'
 
-        expect(get_title_for_environment).to eq '[Staging] Simple Dashboard'
+        expect(get_title_for_environment).to eq '[Demo] Simple Dashboard'
       end
     end
 
@@ -114,12 +114,12 @@ RSpec.describe SimpleServerEnvHelper do
       end
     end
 
-    context 'when in the staging environment' do
-      it 'should return the staging logo' do
-        ENV[simple_server_env] = 'staging'
-        logo_for_staging_environment = image_tag 'logos/staging/simple_logo.svg', width: 30, height: 30, class: 'd-inline-block mr-2 align-top', alt: 'Simple Dashboard Staging Logo'
+    context 'when in the demo environment' do
+      it 'should return the demo logo' do
+        ENV[simple_server_env] = 'demo'
+        logo_for_demo_environment = image_tag 'logos/demo/simple_logo.svg', width: 30, height: 30, class: 'd-inline-block mr-2 align-top', alt: 'Simple Dashboard Demo Logo'
 
-        expect(logo_for_environment).to eq logo_for_staging_environment
+        expect(logo_for_environment).to eq logo_for_demo_environment
       end
     end
 
@@ -159,11 +159,11 @@ RSpec.describe SimpleServerEnvHelper do
       end
     end
 
-    context 'when in the staging environment' do
-      it 'should return the staging alt for the logo' do
-        ENV[simple_server_env] = 'staging'
+    context 'when in the demo environment' do
+      it 'should return the demo alt for the logo' do
+        ENV[simple_server_env] = 'demo'
 
-        expect(alt_for_environment).to eq 'Simple Dashboard Staging Logo'
+        expect(alt_for_environment).to eq 'Simple Dashboard Demo Logo'
       end
     end
 
