@@ -19,7 +19,7 @@ class BloodSugar < ApplicationRecord
     hba1c: 'hba1c'
   }, _prefix: true
 
-  scope :without_hba1c, -> { where.not(blood_sugar_type: :hba1c) }
+  scope :for_v3, -> { where(blood_sugar_type: %i[random post_prandial fasting]) }
 
   THRESHOLDS = {
     high: { random: 300,

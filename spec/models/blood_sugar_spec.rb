@@ -36,4 +36,25 @@ RSpec.describe BloodSugar, type: :model do
       end
     end
   end
+
+  describe 'scopes' do
+    let!(:fasting) { create(:blood_sugar, blood_sugar_type: :fasting) }
+    let!(:random) { create(:blood_sugar, blood_sugar_type: :random) }
+    let!(:post_prandial) { create(:blood_sugar, blood_sugar_type: :post_prandial) }
+    let!(:hba1c) { create(:blood_sugar, blood_sugar_type: :hba1c) }
+
+    context '#for_v3' do
+      it 'only includes non hba1c blood sugars' do
+        expect(BloodSugar.for_v3).not_to include(hba1c)
+        expect(BloodSugar.for_v3.count).to eq 3
+      end
+    end
+
+    context '#all' do
+      it 'includes hba1c blood sugars' do
+        expect(BloodSugar.all).to include(hba1c)
+        expect(BloodSugar.count).to eq 4
+      end
+    end
+  end
 end

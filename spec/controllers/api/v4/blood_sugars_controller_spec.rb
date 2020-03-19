@@ -112,7 +112,8 @@ RSpec.describe Api::V4::BloodSugarsController, type: :controller do
 
           expect(response).to have_http_status(200)
           expect(errors).to eq([])
-          expect(BloodSugar.where(id: blood_sugar['id']).count).to eq 1
+          expect(BloodSugar.find(blood_sugar['id']).blood_sugar_value).to eq blood_sugar['blood_sugar_value']
+          expect(BloodSugar.find(blood_sugar['id']).blood_sugar_type).to eq blood_sugar['blood_sugar_type']
         end
       end
 
