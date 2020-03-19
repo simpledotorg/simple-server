@@ -19,7 +19,9 @@ class BloodSugar < ApplicationRecord
     hba1c: 'hba1c'
   }, _prefix: true
 
-  scope :for_v3, -> { where(blood_sugar_type: %i[random post_prandial fasting]) }
+  V3_TYPES = %i[random post_prandial fasting].freeze
+
+  scope :for_v3, -> { where(blood_sugar_type: V3_TYPES) }
 
   THRESHOLDS = {
     high: { random: 300,

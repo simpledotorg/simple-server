@@ -49,12 +49,5 @@ RSpec.describe BloodSugar, type: :model do
         expect(BloodSugar.for_v3.count).to eq 3
       end
     end
-
-    context '#all' do
-      it 'includes hba1c blood sugars' do
-        expect(BloodSugar.all).to include(hba1c)
-        expect(BloodSugar.count).to eq 4
-      end
-    end
   end
 end

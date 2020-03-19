@@ -116,6 +116,21 @@ RSpec.describe Api::V3::BloodSugarsController, type: :controller do
         end
       end
 
+      context 'float blood sugar values' do
+        it 'errors on float blood sugars values' do
+          blood_sugar = build_blood_sugar_payload(build(:blood_sugar, blood_sugar_type: :random, blood_sugar_value: 200.5))
+          blood_sugar.merge!('blood_sugar_value' => 200.5)
+
+
+          post(:sync_from_user, params: { blood_sugars: [blood_sugar] }, as: :json)
+          schema_error = JSON(response.body)['errors'].first["schema"].first
+          error_string = "The property '#/blood_sugar_value' of type number did not match the following type: integer in schema "
+
+          expect(schema_error).to match(/#{Regexp.quote(error_string)}/)
+          expect(BloodSugar.where(id: blood_sugar['id'])).to eq([])
+        end
+      end
+
       context 'creates encounters' do
         it 'assumes the same encounter for the blood_sugars recorded on the same day' do
           patient = FactoryBot.create(:patient)
