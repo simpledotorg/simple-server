@@ -53,3 +53,44 @@
   "#{default_percent}%"
 ].to_csv -%>
 <% end %>
+
+<%= ["#{@organization_district.district_name} Facilites Report"].to_csv -%>
+<%
+  headers = [
+    "Facility name",
+    "Total registered patients"
+  ]
+  dates = dates_for_periods(@period, 3, include_current_period: @show_current_period)
+  ["Follow up patients", "Registered patients"].each do |metric|
+    dates.each do |date|
+      headers << "#{metric} #{date}"
+    end
+  end
+%>
+<%= headers.to_csv -%>
+<%=
+  [
+    "All",
+    @dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 },
+    *dates.map { |period| analytics_totals(@dashboard_analytics, :follow_up_patients_by_period, period) },
+    *dates.map { |period| analytics_totals(@dashboard_analytics, :registered_patients_by_period, period) }
+  ].to_csv
+-%>
+<%
+  line = nil
+  row_resource = Facility.order(:name)
+  row_resource_description = "Facilities"
+  row_resource_display_field = :name
+%>
+<% policy_scope([:cohort_report, row_resource]).each do |resource| %>
+  <% if @dashboard_analytics[resource.id].present? %>
+    <%=
+      [
+        resource.send(row_resource_display_field),
+        @dashboard_analytics.dig(resource.id, :total_registered_patients) || 0,
+        *dates.map { |period| @dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, period) || 0 },
+        *dates.map { |period| @dashboard_analytics.dig(resource.id, :registered_patients_by_period, period) || 0 }
+      ].to_csv
+    -%>
+  <% end %>
+<% end %>
