@@ -92,7 +92,7 @@ Rails.application.routes.draw do
       end
     end
 
-    namespace :current, path: 'v3' do
+    namespace :v3, path: 'v3' do
       get 'ping', to: 'pings#show'
       post 'login', to: 'logins#login_user'
 
@@ -127,6 +127,13 @@ Rails.application.routes.draw do
 
       namespace :analytics do
         resource :user_analytics, only: [:show]
+      end
+    end
+
+    namespace :v4, path: 'v4' do
+      scope :blood_sugars do
+        get 'sync', to: 'blood_sugars#sync_to_user'
+        post 'sync', to: 'blood_sugars#sync_from_user'
       end
     end
   end

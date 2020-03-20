@@ -1,4 +1,4 @@
-class Api::V2::BloodPressuresController < Api::Current::BloodPressuresController
+class Api::V2::BloodPressuresController < Api::V3::BloodPressuresController
   private
 
   def transform_to_response(blood_pressure)

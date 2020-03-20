@@ -1,2 +1,2 @@
-class Api::V2::Analytics::UserAnalyticsController < Api::Current::Analytics::UserAnalyticsController
+class Api::V2::Analytics::UserAnalyticsController < Api::V3::Analytics::UserAnalyticsController
 end

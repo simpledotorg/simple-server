@@ -1,4 +1,4 @@
-class Api::V2::CommunicationPayloadValidator < Api::Current::CommunicationPayloadValidator
+class Api::V2::CommunicationPayloadValidator < Api::V3::CommunicationPayloadValidator
   attr_accessor(
     :id,
     :appointment_id,

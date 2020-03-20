@@ -1,0 +1,2410 @@
+{
+  "swagger": "2.0",
+  "basePath": "/api/v3",
+  "produces": [
+    "application/json"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "schemes": [
+    "https"
+  ],
+  "info": {
+    "description": "# API specification for Simple Server\n## Sync APIs\nThis API spec documents the endpoints that the devices (that are offline to varying levels) will use to sync data. The sync end points will send and receive bulk (a list of) entities. Both sending and receiving can be batched with configurable batch-sizes to accommodate low network bandwidth situations.\n## Nesting resources\nThe APIs have been designed to provide an optimal balance between accuracy and simplicity. Some of the APIs (patients) will be nested, and some other (blood pressures) will be flat.\n## Authentication\nTODO\n\n## Sync Mechanism\nRefer to the [related ADR](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/001-synchronization.md).\n",
+    "version": "v3",
+    "title": "Simple Server",
+    "x-logo": {
+      "url": "/assets/rtsl_logo-d7e4808e72f6d12641fd4a4f64669ed76d32170cd7a1e7fb9206ef7d1ba413c9.png",
+      "backgroundColor": "#FFFFFF"
+    },
+    "contact": {
+      "email": "eng-backend@resolvetosavelives.org"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://github.com/simpledotorg/simple-server/blob/master/LICENSE"
+    }
+  },
+  "paths": {
+    "/analytics/user_analytics": {
+      "get": {
+        "summary": "Sends JSON containing analytics for User",
+        "tags": [
+          "analytics"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON received"
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      }
+    },
+    "/analytics/user_analytics.html": {
+      "get": {
+        "summary": "Sends a static HTML containing analytics for user",
+        "tags": [
+          "analytics"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "produces": [
+          "text/html"
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "HTML received"
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      }
+    },
+    "/appointments/sync": {
+      "post": {
+        "summary": "Syncs appointment data from device to server.",
+        "tags": [
+          "Appointments"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "appointments",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "appointments": {
+                  "$ref": "#/definitions/appointments"
+                }
+              },
+              "required": [
+                "appointments"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found"
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs appointment data from server to device.",
+        "tags": [
+          "Appointments"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "process_token",
+            "type": "string",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "appointments received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "appointments": {
+                  "$ref": "#/definitions/appointments"
+                },
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
+                }
+              },
+              "required": [
+                "appointments",
+                "process_token"
+              ]
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      }
+    },
+    "/blood_pressures/sync": {
+      "post": {
+        "summary": "Syncs blood pressure data from device to server.",
+        "tags": [
+          "Blood Pressure"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "blood_pressures",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "blood_pressures": {
+                  "$ref": "#/definitions/blood_pressures"
+                }
+              },
+              "required": [
+                "blood_pressures"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs blood pressure data from server to device.",
+        "tags": [
+          "Blood Pressure"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "process_token",
+            "type": "string",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "blood pressures received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "blood_pressures": {
+                  "$ref": "#/definitions/blood_pressures"
+                },
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
+                }
+              },
+              "required": [
+                "blood_pressures",
+                "process_token"
+              ]
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      }
+    },
+    "/blood_sugars/sync": {
+      "post": {
+        "summary": "Syncs blood sugar data from device to server.",
+        "tags": [
+          "Blood Sugar"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "blood_sugars",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "blood_sugars": {
+                  "$ref": "#/definitions/blood_sugars"
+                }
+              },
+              "required": [
+                "blood_sugars"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs blood sugar data from server to device.",
+        "tags": [
+          "Blood Sugar"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "process_token",
+            "type": "string",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "blood sugar received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "blood_sugars": {
+                  "$ref": "#/definitions/blood_sugars"
+                },
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
+                }
+              },
+              "required": [
+                "blood_sugars",
+                "process_token"
+              ]
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      }
+    },
+    "/encounters/sync": {
+      "post": {
+        "summary": "Syncs encounters data from device to server.",
+        "tags": [
+          "Encounters"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "encounters",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "encounters": {
+                  "$ref": "#/definitions/encounters"
+                }
+              },
+              "required": [
+                "encounters"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs encounters data from server to device.",
+        "tags": [
+          "Encounters"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "process_token",
+            "type": "string",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "encounters received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "encounters": {
+                  "$ref": "#/definitions/encounters"
+                },
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
+                }
+              },
+              "required": [
+                "encounters",
+                "process_token"
+              ]
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      }
+    },
+    "/facilities/sync": {
+      "get": {
+        "summary": "Syncs facilities data from server to device.",
+        "tags": [
+          "facility"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "process_token",
+            "type": "string",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "facilities received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "facilities": {
+                  "$ref": "#/definitions/facilities"
+                },
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
+                }
+              },
+              "required": [
+                "facilities",
+                "process_token"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "/help.html": {
+      "get": {
+        "summary": "Sends a static HTML containing help documentation",
+        "tags": [
+          "help"
+        ],
+        "produces": [
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "HTML received"
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "summary": "Login in valid user",
+        "tags": [
+          "User Login"
+        ],
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user": {
+                  "$ref": "#/definitions/login_user"
+                }
+              },
+              "required": [
+                "user"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user is logged in",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "access_token": {
+                  "$ref": "#/definitions/non_empty_string"
+                },
+                "user": {
+                  "$ref": "#/definitions/user"
+                }
+              },
+              "required": [
+                "user",
+                "access_token"
+              ]
+            }
+          },
+          "401": {
+            "description": "user is not logged in with otp",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "Id of the record with errors"
+                },
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of json schema error strings describing validation errors"
+                },
+                "field_with_error": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/medical_histories/sync": {
+      "post": {
+        "summary": "Syncs medical_history data from device to server.",
+        "tags": [
+          "Medical History"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "medical_histories",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "medical_histories": {
+                  "$ref": "#/definitions/medical_histories"
+                }
+              },
+              "required": [
+                "medical_histories"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs medical_history data from server to device.",
+        "tags": [
+          "Medical History"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "process_token",
+            "type": "string",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "medical_histories received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "medical_histories": {
+                  "$ref": "#/definitions/medical_histories"
+                },
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
+                }
+              },
+              "required": [
+                "medical_histories",
+                "process_token"
+              ]
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      }
+    },
+    "/patients/sync": {
+      "post": {
+        "summary": "Syncs patient, address and phone number data from device to server.",
+        "tags": [
+          "patient"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "patients",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "patients": {
+                  "$ref": "#/definitions/nested_patients"
+                }
+              },
+              "required": [
+                "patients"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs patient, address and phone number data from server to device.",
+        "tags": [
+          "patient"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "process_token",
+            "type": "string",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "patients received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "patients": {
+                  "$ref": "#/definitions/nested_patients"
+                },
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
+                }
+              },
+              "required": [
+                "patients",
+                "process_token"
+              ]
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      }
+    },
+    "/prescription_drugs/sync": {
+      "post": {
+        "summary": "Syncs prescription drugs data from device to server.",
+        "tags": [
+          "Prescription Drug"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "prescription_drugs",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "prescription_drugs": {
+                  "$ref": "#/definitions/prescription_drugs"
+                }
+              },
+              "required": [
+                "prescription_drugs"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs prescription drugs data from server to device.",
+        "tags": [
+          "Prescription Drug"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "process_token",
+            "type": "string",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "blood pressures received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "prescription_drugs": {
+                  "$ref": "#/definitions/prescription_drugs"
+                },
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
+                }
+              },
+              "required": [
+                "prescription_drugs",
+                "process_token"
+              ]
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      }
+    },
+    "/protocols/sync": {
+      "get": {
+        "summary": "Syncs protocols and protocol drugs data from server to device.",
+        "tags": [
+          "protocol"
+        ],
+        "parameters": [
+          {
+            "name": "process_token",
+            "type": "string",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "protocols received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "protocols": {
+                  "$ref": "#/definitions/protocols"
+                },
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
+                }
+              },
+              "required": [
+                "protocols",
+                "process_token"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "/users/find": {
+      "get": {
+        "summary": "Find a existing user",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "phone_number",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string",
+            "description": "User UUID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user is found",
+            "schema": {
+              "$ref": "#/definitions/user"
+            }
+          },
+          "404": {
+            "description": "user is not found"
+          }
+        }
+      }
+    },
+    "/users/register": {
+      "post": {
+        "summary": "Register a new user",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user": {
+                  "$ref": "#/definitions/user"
+                }
+              },
+              "required": [
+                "user"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user is registered",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "access_token": {
+                  "$ref": "#/definitions/non_empty_string"
+                },
+                "user": {
+                  "$ref": "#/definitions/user"
+                }
+              },
+              "required": [
+                "user",
+                "access_token"
+              ]
+            }
+          },
+          "400": {
+            "description": "returns bad request if phone number already exists"
+          },
+          "404": {
+            "description": "returns not found if  facility id is not known"
+          }
+        }
+      }
+    },
+    "/users/{id}/request_otp": {
+      "post": {
+        "summary": "Request OTP for login",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "User UUID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user otp is reset and new otp is sent as an sms"
+          },
+          "404": {
+            "description": "user is not found"
+          }
+        }
+      }
+    },
+    "/users/me/reset_password": {
+      "parameters": [
+        {
+          "name": "HTTP_X_USER_ID",
+          "in": "header",
+          "type": "uuid"
+        },
+        {
+          "name": "HTTP_X_FACILITY_ID",
+          "in": "header",
+          "type": "uuid"
+        }
+      ],
+      "post": {
+        "summary": "Request for reset password",
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "password_digest",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "password_digest": {
+                  "$ref": "#/definitions/bcrypt_password"
+                }
+              },
+              "required": [
+                "passowrd_digest"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user password reset request is received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "access_token": {
+                  "$ref": "#/definitions/non_empty_string"
+                },
+                "user": {
+                  "$ref": "#/definitions/user"
+                }
+              },
+              "required": [
+                "user",
+                "access_token"
+              ]
+            }
+          },
+          "401": {
+            "description": "user is not unauthorized"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "error": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Id of the record with errors"
+        },
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of json schema error strings describing validation errors"
+        },
+        "field_with_error": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "errors": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/error"
+      }
+    },
+    "process_token": {
+      "name": "process_token",
+      "type": "string",
+      "format": "byte",
+      "description": "Token containing all the information needed to process batch requests from the user"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp with millisecond precision."
+    },
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}"
+    },
+    "non_empty_string": {
+      "type": "string",
+      "minLength": 1,
+      "description": "This string should not be empty."
+    },
+    "nullable_timestamp": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "description": "Timestamp with millisecond precision."
+    },
+    "bcrypt_password": {
+      "type": "string",
+      "pattern": "^\\$[0-9a-z]{2}\\$[0-9]{2}\\$[A-Za-z0-9\\.\\/]{53}$",
+      "description": "Bcrypt password digest"
+    },
+    "patient": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "gender": {
+          "type": "string",
+          "enum": [
+            "male",
+            "female",
+            "transgender"
+          ]
+        },
+        "full_name": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "dead",
+            "migrated",
+            "unresponsive",
+            "inactive"
+          ]
+        },
+        "date_of_birth": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "age": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "When age is present, age_updated_at must be present as well."
+        },
+        "age_updated_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "reminder_consent": {
+          "type": "string",
+          "enum": [
+            "granted",
+            "denied"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "gender",
+        "full_name",
+        "created_at",
+        "updated_at",
+        "status"
+      ]
+    },
+    "address": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "street_address": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "village_or_colony": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "zone": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "district": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "country": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "pin": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "phone_number": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "number": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "phone_type": {
+          "type": "string",
+          "enum": [
+            "mobile",
+            "landline"
+          ]
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "updated_at",
+        "number"
+      ]
+    },
+    "phone_numbers": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/phone_number"
+      }
+    },
+    "nested_patient": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "gender": {
+          "type": "string",
+          "enum": [
+            "male",
+            "female",
+            "transgender"
+          ]
+        },
+        "full_name": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "dead",
+            "migrated",
+            "unresponsive",
+            "inactive"
+          ]
+        },
+        "date_of_birth": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "age": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "When age is present, age_updated_at must be present as well."
+        },
+        "age_updated_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "reminder_consent": {
+          "type": "string",
+          "enum": [
+            "granted",
+            "denied"
+          ]
+        },
+        "address": {
+          "$ref": "#/definitions/address"
+        },
+        "phone_numbers": {
+          "$ref": "#/definitions/phone_numbers"
+        },
+        "business_identifiers": {
+          "$ref": "#/definitions/patient_business_identifiers"
+        }
+      },
+      "required": [
+        "id",
+        "gender",
+        "full_name",
+        "created_at",
+        "updated_at",
+        "status"
+      ],
+      "description": "Patient with address, phone numbers and business identifiers nested."
+    },
+    "nested_patients": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/nested_patient"
+      }
+    },
+    "encounter": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}",
+          "description": "This uuid is generated by hashing (SHA-1) the facility id, patient id, and encountered_on fields"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "encountered_on": {
+          "type": "string",
+          "format": "date"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "observations": {
+          "type": "object",
+          "properties": {
+            "blood_pressures": {
+              "$ref": "#/definitions/blood_pressures"
+            }
+          },
+          "required": [
+            "blood_pressures"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "updated_at",
+        "patient_id",
+        "encountered_on",
+        "observations"
+      ],
+      "description": "Encounter with observations: blood_pressures"
+    },
+    "encounters": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/encounter"
+      }
+    },
+    "blood_pressure": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "systolic": {
+          "type": "integer"
+        },
+        "diastolic": {
+          "type": "integer"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "facility_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "user_id": {
+          "$ref": "#/definitions/uuid"
+        }
+      },
+      "required": [
+        "systolic",
+        "diastolic",
+        "created_at",
+        "updated_at",
+        "patient_id",
+        "facility_id",
+        "user_id"
+      ]
+    },
+    "blood_pressures": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/blood_pressure"
+      }
+    },
+    "facility": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "name": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "street_address": {
+          "type": "string"
+        },
+        "village_or_colony": {
+          "type": "string"
+        },
+        "district": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "zone": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "state": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "country": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "pin": {
+          "type": "string"
+        },
+        "facility_type": {
+          "type": "string"
+        },
+        "facility_group_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "protocol_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "config": {
+          "type": "object",
+          "properties": {
+            "enable_diabetes_management": {
+              "type": "boolean"
+            }
+          }
+        },
+        "required": [
+          "enable_diabetes_management"
+        ]
+      },
+      "required": [
+        "id",
+        "name",
+        "district",
+        "state",
+        "country",
+        "facility_group_id",
+        "protocol_id"
+      ]
+    },
+    "facilities": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/facility"
+      }
+    },
+    "protocol_drug": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "protocol_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "rxnorm_code": {
+          "type": "string"
+        },
+        "dosage": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "dosage",
+        "name",
+        "protocol_id"
+      ]
+    },
+    "protocol_drugs": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/protocol_drug"
+      }
+    },
+    "protocol": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "name": {
+          "type": "string"
+        },
+        "follow_up_days": {
+          "type": "integer"
+        },
+        "protocol_drugs": {
+          "$ref": "#/definitions/protocol_drugs"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "protocol_drugs"
+      ]
+    },
+    "protocols": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/protocol"
+      }
+    },
+    "prescription_drug": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "name": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "dosage": {
+          "type": "string"
+        },
+        "rxnorm_code": {
+          "type": "string"
+        },
+        "is_protocol_drug": {
+          "type": "boolean"
+        },
+        "is_deleted": {
+          "type": "boolean"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "facility_id": {
+          "$ref": "#/definitions/uuid"
+        }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "updated_at",
+        "name",
+        "is_protocol_drug",
+        "is_deleted",
+        "patient_id",
+        "facility_id"
+      ]
+    },
+    "prescription_drugs": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/prescription_drug"
+      }
+    },
+    "user": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "full_name": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "phone_number": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "password_digest": {
+          "$ref": "#/definitions/bcrypt_password"
+        },
+        "registration_facility_id": {
+          "$ref": "#/definitions/uuid"
+        }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "updated_at",
+        "full_name",
+        "phone_number",
+        "password_digest",
+        "registration_facility_id"
+      ]
+    },
+    "users": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/user"
+      }
+    },
+    "login_user": {
+      "type": "object",
+      "properties": {
+        "phone_number": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "password": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "otp": {
+          "$ref": "#/definitions/non_empty_string"
+        }
+      },
+      "required": [
+        "phone_number",
+        "password",
+        "otp"
+      ]
+    },
+    "communication": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "appointment_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "user_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "communication_type": {
+          "type": "string",
+          "enum": [
+            "voip_call",
+            "manual_call",
+            "missed_visit_sms_reminder"
+          ]
+        },
+        "communication_result": {
+          "type": "string",
+          "enum": [
+            "unavailable",
+            "unreachable",
+            "successful",
+            "unsuccessful",
+            "in_progress",
+            "unknown"
+          ]
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "appointment_id",
+        "user_id",
+        "communication_type",
+        "communication_result",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "communications": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/communication"
+      }
+    },
+    "appointment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "facility_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "creation_facility_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "scheduled_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "scheduled",
+            "cancelled",
+            "visited"
+          ]
+        },
+        "cancel_reason": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "enum": [
+            "not_responding",
+            "moved",
+            "dead",
+            "invalid_phone_number",
+            "public_hospital_transfer",
+            "moved_to_private",
+            "other",
+            null
+          ]
+        },
+        "remind_on": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "agreed_to_visit": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "appointment_type": {
+          "type": "string",
+          "enum": [
+            "manual",
+            "automatic"
+          ]
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "patient_id",
+        "facility_id",
+        "scheduled_date",
+        "status",
+        "created_at",
+        "updated_at",
+        "appointment_type"
+      ]
+    },
+    "appointments": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/appointment"
+      }
+    },
+    "medical_history": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "prior_heart_attack": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "prior_stroke": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "chronic_kidney_disease": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "receiving_treatment_for_hypertension": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "diabetes": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "hypertension": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "diagnosed_with_hypertension": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "patient_id",
+        "prior_heart_attack",
+        "prior_stroke",
+        "chronic_kidney_disease",
+        "receiving_treatment_for_hypertension",
+        "diabetes",
+        "diagnosed_with_hypertension",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "medical_histories": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/medical_history"
+      }
+    },
+    "patient_business_identifier": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "identifier": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "identifier_type": {
+          "type": "string",
+          "enum": [
+            "simple_bp_passport",
+            "bangladesh_national_id"
+          ]
+        },
+        "metadata_version": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "string"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "updated_at",
+        "identifier",
+        "identifier_type"
+      ]
+    },
+    "patient_business_identifiers": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/patient_business_identifier"
+      }
+    },
+    "blood_sugar": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "blood_sugar_type": {
+          "type": "string",
+          "enum": [
+            "random",
+            "post_prandial",
+            "fasting",
+            "hba1c"
+          ]
+        },
+        "blood_sugar_value": {
+          "type": "decimal"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "facility_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "user_id": {
+          "$ref": "#/definitions/uuid"
+        }
+      },
+      "required": [
+        "id",
+        "blood_sugar_type",
+        "blood_sugar_value",
+        "created_at",
+        "updated_at",
+        "patient_id",
+        "facility_id",
+        "user_id"
+      ]
+    },
+    "blood_sugars": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/blood_sugar"
+      }
+    }
+  },
+  "securityDefinitions": {
+    "basic": {
+      "type": "basic"
+    }
+  }
+}

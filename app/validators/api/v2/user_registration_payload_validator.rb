@@ -1,2 +1,2 @@
-class Api::V2::UserRegistrationPayloadValidator < Api::Current::UserRegistrationPayloadValidator
+class Api::V2::UserRegistrationPayloadValidator < Api::V3::UserRegistrationPayloadValidator
 end

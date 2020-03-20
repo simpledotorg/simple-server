@@ -1,2 +1,2 @@
-class Api::V2::PrescriptionDrugTransformer < Api::Current::PrescriptionDrugTransformer
+class Api::V2::PrescriptionDrugTransformer < Api::V3::PrescriptionDrugTransformer
 end

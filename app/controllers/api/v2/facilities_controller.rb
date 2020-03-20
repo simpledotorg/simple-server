@@ -1,2 +1,2 @@
-class Api::V2::FacilitiesController < Api::Current::FacilitiesController
+class Api::V2::FacilitiesController < Api::V3::FacilitiesController
 end
