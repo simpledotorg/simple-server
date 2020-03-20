@@ -32,7 +32,7 @@ FactoryBot.define do
   end
 end
 
-# Payloads for current API
+# Payloads for v3 API
 
 def build_medical_history_payload_current(medical_history = FactoryBot.build(:medical_history))
   medical_history.attributes.with_payload_keys

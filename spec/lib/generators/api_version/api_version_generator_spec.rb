@@ -26,7 +26,7 @@ RSpec.describe ApiVersionGenerator, type: :generator do
       .map { |file| file.to_s.remove(Rails.root.to_s) }
   end
 
-  describe 'generates the scaffold required to migrate to a new API version' do
+  xdescribe 'generates the scaffold required to migrate to a new API version' do
     describe 'copy current specs for the give current version' do
       it 'api specs' do
         current_spec_files = files_in_directory(spec_root.join('api', 'current'))
