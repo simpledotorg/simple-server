@@ -1,5 +1,5 @@
 module SimpleServerEnvHelper
-  CUSTOMIZED_ENVS = %w[development qa staging sandbox demo production].freeze
+  CUSTOMIZED_ENVS = %w[development qa sandbox demo production].freeze
 
   def style_class_for_environment
     env = ENV.fetch('SIMPLE_SERVER_ENV')
@@ -62,7 +62,7 @@ module SimpleServerEnvHelper
   def bootstrap_navbar_classes_for_environment(env)
     navbar_classes = {
       'development' => ['navbar-light', 'bg-light'],
-      'staging' => ['navbar-light', 'bg-light'],
+      'demo' => ['navbar-light', 'bg-light'],
       'qa' => ['navbar-light', 'bg-light'],
       'sandbox' => ['navbar-light'],
       'production' => ['navbar-light'],
