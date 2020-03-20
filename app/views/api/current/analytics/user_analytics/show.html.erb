@@ -18,7 +18,6 @@
 4B. Don't show any achievements if < 10. Don't show the locked "upcoming" one either
 4C. When > 10 show first badge and locked "upcoming" badge for 25 follow-up visits
 4D. Follow the rules in the achievements html for how to count. After "10,000" just increment by 10,000 increments for infinity
-
 -->
 
 <!DOCTYPE html>
@@ -72,7 +71,7 @@
             <div class="count count-1">
               <strong>Registered</strong>
               <div class="big-number">
-                <%= zero_if_zero(@statistics.dig(:daily, day_date, :registrations)) %>
+                <%= zero_if_zero(@statistics.dig(:daily, :grouped_by_date, day_date, :registrations)) %>
               </div>
               Patients
             </div>
@@ -80,7 +79,7 @@
             <div class="count count-2">
               <strong>Follow-up</strong>
               <div class="big-number">
-                <%= zero_if_zero(@statistics.dig(:daily, day_date, :follow_ups)) %>
+                <%= zero_if_zero(@statistics.dig(:daily, :grouped_by_date, day_date, :follow_ups)) %>
               </div>
               Patients
             </div>
@@ -91,43 +90,91 @@
   </div>
 
   <!-- monthly registered patients view -->
+  <% registrations_table_name = 'registrations' %>
+
   <div class="card">
     <h3>Registered patients</h3>
 
-    <%= render partial: 'api/current/analytics/user_analytics/gender_filter', locals: { statistics: @statistics } %>
+    <%= render partial: 'api/current/analytics/user_analytics/gender_filter',
+               locals: { statistics: @statistics, data_table_name: registrations_table_name } %>
 
-    <table class="progress-table">
+    <table class="progress-table <%= registrations_table_name %>>">
       <tr class="total">
         <td class="row-label">All-time</td>
-        <td><%= zero_if_zero(@statistics[:monthly].values.sum { |x| x.fetch(:registrations, 0) }) %></td>
+        <td>
+          <%= zero_if_zero(@statistics
+                               .dig(:monthly, :grouped_by_date)
+                               .values
+                               .sum { |x| x.fetch(:registrations, 0) }) %>
+        </td>
       </tr>
       <% @monthly_period_list.each do |month_date| %>
         <tr>
           <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
-          <td><%= zero_if_zero(@statistics.dig(:monthly, month_date, :registrations)) %></td>
+          <td><%= zero_if_zero(@statistics.dig(:monthly, :grouped_by_date, month_date, :registrations)) %></td>
         </tr>
       <% end %>
     </table>
   </div>
 
   <!-- monthly follow-up patients view -->
+  <% follow_ups_table_name = 'follow_ups' %>
+
   <div class="card">
     <h3>Follow-up patients</h3>
 
-    <%= render partial: 'api/current/analytics/user_analytics/gender_filter', locals: { statistics: @statistics } %>
+    <%= render partial: 'api/current/analytics/user_analytics/gender_filter',
+               locals: { statistics: @statistics, data_table_name: follow_ups_table_name } %>
 
-    <table class="progress-table">
+    <!-- the "all" table -->
+    <table class="progress-table <%= follow_ups_table_name %> hypertension:all">
       <tr class="total">
         <td class="row-label">All-time</td>
-        <td><%= zero_if_zero(@statistics[:monthly].values.sum { |x| x.fetch(:follow_ups, 0) }) %></td>
+        <td>
+          <%= zero_if_zero(@statistics
+                               .dig(:monthly, :grouped_by_gender)
+                               .values
+                               .inject { |acc, next_v|
+                                 acc.deep_merge(next_v) { |_, v1, v2| v1 + v2 } }
+                               .values
+                               .sum { |x| x.fetch(:follow_ups, 0) }) %>
+        </td>
       </tr>
       <% @monthly_period_list.each do |month_date| %>
         <tr>
           <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
-          <td><%= zero_if_zero(@statistics.dig(:monthly, month_date, :follow_ups)) %></td>
+          <td><%= zero_if_zero(@statistics
+                                   .dig(:monthly, :grouped_by_gender)
+                                   .values
+                                   .inject { |acc, next_v|
+                                     acc.deep_merge(next_v) { |_, v1, v2| v1 + v2 } }
+                                   .dig(month_date, :follow_ups)) %></td>
         </tr>
       <% end %>
     </table>
+
+    <!-- gender-wise tables -->
+    <% Patient::GENDERS.each do |gender| %>
+      <table class="progress-table <%= follow_ups_table_name %> hypertension:<%= gender %>" style="display: none">
+        <tr class="total">
+          <td class="row-label">All-time</td>
+          <td>
+            <%= zero_if_zero(@statistics
+                                 .dig(:monthly, :grouped_by_gender, gender)
+                                 .values
+                                 .sum { |x| x.fetch(:follow_ups, 0) }) %>
+          </td>
+        </tr>
+        <% @monthly_period_list.each do |month_date| %>
+          <tr>
+            <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
+            <td>
+              <%= zero_if_zero(@statistics.dig(:monthly, :grouped_by_gender, gender, month_date, :follow_ups)) %>
+            </td>
+          </tr>
+        <% end %>
+      </table>
+    <% end %>
   </div>
 
   <!-- monthly hypertension control view -->
@@ -143,14 +190,14 @@
           <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
           <td><span class="percent">
               <%=
-                percentage(@statistics.dig(:monthly, month_date, :controlled_visits),
-                           @statistics.dig(:monthly, month_date, :total_visits))
+                percentage(@statistics.dig(:monthly, :grouped_by_date, month_date, :controlled_visits),
+                           @statistics.dig(:monthly, :grouped_by_date, month_date, :total_visits))
               %>
             </span></td>
           <td>
-            <%= zero_if_zero(@statistics.dig(:monthly, month_date, :controlled_visits)) %>
+            <%= zero_if_zero(@statistics.dig(:monthly, :grouped_by_date, month_date, :controlled_visits)) %>
             of
-            <%= zero_if_zero(@statistics.dig(:monthly, month_date, :total_visits)) %>
+            <%= zero_if_zero(@statistics.dig(:monthly, :grouped_by_date, month_date, :total_visits)) %>
           </td>
         </tr>
       <% end %>

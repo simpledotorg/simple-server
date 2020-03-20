@@ -1,4 +1,5 @@
 class Api::Current::Analytics::UserAnalyticsController < Api::Current::AnalyticsController
+  include HashUtilities
   include ApplicationHelper
   include DashboardHelper
   include MonthHelper
@@ -18,7 +19,7 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
       monthly: prepare_monthly_stats(@months_ago),
       trophies: prepare_trophies,
       metadata: {
-        is_diabetes_enabled: current_facility.diabetes_enabled?,
+        is_diabetes_enabled: false && current_facility.diabetes_enabled?,
         last_updated_at: Time.current,
         formatted_next_date: display_date(Time.current + 1.day),
         formatted_today_string: t(:today_str)
@@ -97,10 +98,10 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
         .follow_ups
         .group(:year, :day)
         .count
-        .map { |date, fps| [doy_to_date_obj(*date), follow_ups: fps] }
+        .map { |group, fps| [doy_to_date_obj(*group), follow_ups: fps] }
         .to_h
 
-    data_for_unavailable_dates(:follow_ups, @daily_period_list).merge(follow_ups)
+    group_by_date(data_for_unavailable_dates(:follow_ups, @daily_period_list).merge(follow_ups))
   end
 
   def registrations_for_last_n_days(n)
@@ -109,10 +110,10 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
         .new(facilities: current_facility, period: :day, last_n: n)
         .registrations
         .group_by { |reg| [reg.year, reg.day] }
-        .map { |date, reg| [doy_to_date_obj(*date), registrations: reg.first.registration_count] }
+        .map { |group, reg| [doy_to_date_obj(*group), registrations: reg.first.registration_count] }
         .to_h
 
-    data_for_unavailable_dates(:registrations, @daily_period_list).merge(registrations)
+    group_by_date(data_for_unavailable_dates(:registrations, @daily_period_list).merge(registrations))
   end
 
   def registrations_for_last_n_months(n)
@@ -121,10 +122,10 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
         .new(facilities: current_facility, period: :month, last_n: n)
         .registrations
         .group_by { |reg| [reg.year, reg.month] }
-        .map { |date, reg| [moy_to_date_obj(*date), registrations: reg.first.registration_count] }
+        .map { |group, reg| [moy_to_date_obj(*group), registrations: reg.first.registration_count] }
         .to_h
 
-    data_for_unavailable_dates(:registrations, @monthly_period_list).merge(registrations)
+    group_by_date(data_for_unavailable_dates(:registrations, @monthly_period_list).merge(registrations))
   end
 
   def follow_ups_for_last_n_months(n)
@@ -132,16 +133,15 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
       MyFacilities::FollowUpsQuery
         .new(facilities: current_facility, period: :month, last_n: n)
         .follow_ups
-        .group(:year, :month)
+        .joins(:patient)
+        .group(:gender, :year, :month)
         .count
-        .map { |date, fps| [moy_to_date_obj(*date), follow_ups: fps] }
-        .to_h
 
-    data_for_unavailable_dates(:follow_ups, @monthly_period_list).merge(follow_ups)
+    group_by_gender(follow_ups, :follow_ups, @monthly_period_list)
   end
 
   def htn_control_for_last_n_months(n)
-    visits = LatestBloodPressuresPerPatientPerMonth
+    visits = LatestBloodPressuresPerPatientPerDay
                .where(facility: @current_facility)
                .where("(year, month) IN (#{periods_as_sql_list(period_list(:month, n))})")
 
@@ -149,7 +149,7 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
       visits
         .group(:year, :month)
         .count
-        .map { |date, fps| [moy_to_date_obj(*date), total_visits: fps] }
+        .map { |group, fps| [moy_to_date_obj(*group), total_visits: fps] }
         .to_h
 
     controlled_visits =
@@ -157,13 +157,46 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
         .under_control
         .group(:year, :month)
         .count
-        .map { |date, fps| [moy_to_date_obj(*date), controlled_visits: fps] }
+        .map { |group, fps| [moy_to_date_obj(*group), controlled_visits: fps] }
         .to_h
 
-    [
-      data_for_unavailable_dates(:total_visits, @monthly_period_list).merge(total_visits),
-      data_for_unavailable_dates(:controlled_visits, @monthly_period_list).merge(controlled_visits)
-    ].inject(&:deep_merge)
+    group_by_date([
+                    data_for_unavailable_dates(:total_visits, @monthly_period_list).merge(total_visits),
+                    data_for_unavailable_dates(:controlled_visits, @monthly_period_list).merge(controlled_visits)
+                  ].inject(&:deep_merge))
+  end
+
+  #
+  # Groups by gender in the following format,
+  #
+  # { :grouped_by_gender =>
+  #    { "male" =>
+  #        { "Sun, 01 Mar 2020" => { :resource_name => 21 },
+  #          "Tue, 01 Oct 2019" => { :resource_name => 0 } },
+  #      "female" =>
+  #        { "Sun, 01 Mar 2020" => { :resource_name => 18 },
+  #          "Tue, 01 Oct 2019" => { :resource_name => 0 } } } }
+  #
+  def group_by_gender(resource_data, resource_name, period_list)
+    grouped_by_gender =
+      resource_data.inject(autovivified_hash) do |acc, (group, resource)|
+        gender, year, month = *group
+        acc[gender][moy_to_date_obj(year, month)].merge!(resource_name => resource)
+        acc
+      end
+
+    {
+      grouped_by_gender:
+        grouped_by_gender
+          .map { |gender, data| [gender, data_for_unavailable_dates(resource_name, period_list).merge(data)] }
+          .to_h
+    }
+  end
+
+  def group_by_date(resource_data)
+    {
+      grouped_by_date: resource_data
+    }
   end
 
   def data_for_unavailable_dates(data_key, period_list)

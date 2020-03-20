@@ -7,7 +7,7 @@ function statistics() {
 }
 
 function dailyStatistics() {
-  return Object.entries(statistics().daily);
+  return Object.entries(statistics().daily.grouped_by_date);
 }
 
 function today() {
@@ -115,6 +115,22 @@ function showDailyProgressCards(next) {
   }
 
   elementsForAllDays[window.lastSlidePositionForProgressCards - 1].classList.add("day-show");
+}
+
+function filterDataByGender(tableName) {
+  var tableElements = document.getElementsByClassName('progress-table ' + tableName);
+  var tableFilterElement = document.getElementsByClassName('card-dropdown ' + tableName);
+  var selectedOption = tableFilterElement[0].selectedOptions[0].value;
+  var selectedTableElement = document.getElementsByClassName('progress-table ' + tableName + ' ' + selectedOption);
+
+  window.foo = selectedOption;
+  window.bar = selectedTableElement;
+
+  for (let i = 0; i < tableElements.length; i++) {
+    tableElements[i].style.display = 'none';
+  }
+
+  selectedTableElement[0].style.display = 'inline-table';
 }
 
 window.onload = function () {
