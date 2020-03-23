@@ -95,7 +95,7 @@
   <div class="card">
     <h3>Registered patients</h3>
 
-    <%= render partial: 'api/current/analytics/user_analytics/gender_filter',
+    <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
                locals: { statistics: @statistics, data_table_name: registrations_table_name } %>
 
     <!-- the "all" table -->
@@ -104,19 +104,15 @@
         <td class="row-label">All-time</td>
         <td>
           <%= zero_if_zero(@statistics
-                               .dig(:monthly, :grouped_by_gender)
-                               .values
-                               .inject { |acc, next_v|
-                                 acc.deep_merge(next_v) { |_, v1, v2| v1 + v2 } }
-                               .values
-                               .sum { |x| x.fetch(:registrations, 0) }) %>
+                               .dig(:all_time, :grouped_by_gender)
+                               .sum { |_, data| data.fetch(:registrations, 0) }) %>
         </td>
       </tr>
       <% @monthly_period_list.each do |month_date| %>
         <tr>
           <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
           <td><%= zero_if_zero(@statistics
-                                   .dig(:monthly, :grouped_by_gender)
+                                   .dig(:monthly, :grouped_by_gender_and_date)
                                    .values
                                    .inject { |acc, next_v|
                                      acc.deep_merge(next_v) { |_, v1, v2| v1 + v2 } }
@@ -131,17 +127,18 @@
         <tr class="total">
           <td class="row-label">All-time</td>
           <td>
-            <%= zero_if_zero(@statistics
-                                 .dig(:monthly, :grouped_by_gender, gender)
-                                 .values
-                                 .sum { |x| x.fetch(:registrations, 0) }) %>
+            <%= zero_if_zero(@statistics.dig(:all_time, :grouped_by_gender, gender, :registrations)) %>
           </td>
         </tr>
         <% @monthly_period_list.each do |month_date| %>
           <tr>
             <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
             <td>
-              <%= zero_if_zero(@statistics.dig(:monthly, :grouped_by_gender, gender, month_date, :registrations)) %>
+              <%= zero_if_zero(@statistics.dig(:monthly,
+                                               :grouped_by_gender_and_date,
+                                               gender,
+                                               month_date,
+                                               :registrations)) %>
             </td>
           </tr>
         <% end %>
@@ -153,9 +150,9 @@
   <% follow_ups_table_name = 'follow_ups' %>
 
   <div class="card">
-    <h3>Follow-up patients</h3>
+    <h3>Follow-up hypertension patients</h3>
 
-    <%= render partial: 'api/current/analytics/user_analytics/gender_filter',
+    <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
                locals: { statistics: @statistics, data_table_name: follow_ups_table_name } %>
 
     <!-- the "all" table -->
@@ -164,19 +161,15 @@
         <td class="row-label">All-time</td>
         <td>
           <%= zero_if_zero(@statistics
-                               .dig(:monthly, :grouped_by_gender)
-                               .values
-                               .inject { |acc, next_v|
-                                 acc.deep_merge(next_v) { |_, v1, v2| v1 + v2 } }
-                               .values
-                               .sum { |x| x.fetch(:follow_ups, 0) }) %>
+                               .dig(:all_time, :grouped_by_gender)
+                               .sum { |_, data| data.fetch(:follow_ups, 0) }) %>
         </td>
       </tr>
       <% @monthly_period_list.each do |month_date| %>
         <tr>
           <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
           <td><%= zero_if_zero(@statistics
-                                   .dig(:monthly, :grouped_by_gender)
+                                   .dig(:monthly, :grouped_by_gender_and_date)
                                    .values
                                    .inject { |acc, next_v|
                                      acc.deep_merge(next_v) { |_, v1, v2| v1 + v2 } }
@@ -191,17 +184,18 @@
         <tr class="total">
           <td class="row-label">All-time</td>
           <td>
-            <%= zero_if_zero(@statistics
-                                 .dig(:monthly, :grouped_by_gender, gender)
-                                 .values
-                                 .sum { |x| x.fetch(:follow_ups, 0) }) %>
+            <%= zero_if_zero(@statistics.dig(:all_time, :grouped_by_gender, gender, :follow_ups)) %>
           </td>
         </tr>
         <% @monthly_period_list.each do |month_date| %>
           <tr>
             <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
             <td>
-              <%= zero_if_zero(@statistics.dig(:monthly, :grouped_by_gender, gender, month_date, :follow_ups)) %>
+              <%= zero_if_zero(@statistics.dig(:monthly,
+                                               :grouped_by_gender_and_date,
+                                               gender,
+                                               month_date,
+                                               :follow_ups)) %>
             </td>
           </tr>
         <% end %>

@@ -17,6 +17,7 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
     @statistics = {
       daily: prepare_daily_stats(@days_ago),
       monthly: prepare_monthly_stats(@months_ago),
+      all_time: prepare_all_time_stats,
       trophies: prepare_trophies,
       metadata: {
         is_diabetes_enabled: false && current_facility.diabetes_enabled?,
@@ -38,6 +39,13 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
     end
   end
 
+  def prepare_daily_stats(days_ago)
+    [
+      registrations_for_last_n_days(days_ago),
+      follow_ups_for_last_n_days(days_ago)
+    ].inject(&:deep_merge)
+  end
+
   def prepare_monthly_stats(months_ago)
     [
       registrations_for_last_n_months(months_ago),
@@ -46,12 +54,13 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
     ].inject(&:deep_merge)
   end
 
-  def prepare_daily_stats(days_ago)
+  def prepare_all_time_stats
     [
-      registrations_for_last_n_days(days_ago),
-      follow_ups_for_last_n_days(days_ago)
+      registrations_all_time,
+      follow_ups_all_time
     ].inject(&:deep_merge)
   end
+
 
   #
   # After exhausting the initial TROPHY_MILESTONES, subsequent milestones must follow the following pattern:
@@ -101,33 +110,9 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
         .map { |group, fps| [doy_to_date_obj(*group), follow_ups: fps] } # TODO: fix this doy_to_date_obj helper
         .to_h
 
-    group_by_date(data_for_unavailable_dates(:follow_ups, @daily_period_list).merge(follow_ups))
-  end
-
-  def registrations_for_last_n_days(n)
-    registrations =
-      MyFacilities::RegistrationsQuery
-        .new(facilities: current_facility, period: :day, last_n: n)
-        .registrations
-        .group_by { |reg| [reg.year, reg.day] }
-        .map { |group, reg| [doy_to_date_obj(*group), registrations: reg.first.registration_count] }
-        .to_h
-
-    group_by_date(data_for_unavailable_dates(:registrations, @daily_period_list).merge(registrations))
-  end
-
-  def registrations_for_last_n_months(n)
-    registrations =
-      current_facility
-        .registered_patients
-        .group(:gender)
-        .group_by_period(:month, :recorded_at, range: n.months.ago..Time.now)
-        .distinct('patients.id')
-        .count
-        .map { |(gender, date), count| [[gender, date.year, date.month], count] }
-        .to_h
-
-    group_by_gender(registrations, :registrations, @monthly_period_list)
+    {
+      grouped_by_date: data_for_unavailable_dates(:follow_ups, @daily_period_list).merge(follow_ups)
+    }
   end
 
   def follow_ups_for_last_n_months(n)
@@ -138,8 +123,76 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
         .joins(:patient)
         .group(:gender, :year, :month)
         .count
+        .map { |(gender, year, month), count| [[gender, moy_to_date_obj(year, month)], count] }
+        .to_h
 
-    group_by_gender(follow_ups, :follow_ups, @monthly_period_list)
+    {
+      grouped_by_gender_and_date:
+        group_by_gender_and_date(follow_ups, :follow_ups)
+          .map { |gender, data| [gender, data_for_unavailable_dates(:follow_ups,
+                                                                    @monthly_period_list).merge(data)] }
+          .to_h
+    }
+  end
+
+  def follow_ups_all_time
+    follow_ups =
+      MyFacilities::FollowUpsQuery
+        .total_follow_ups(current_facility)
+        .joins(:patient)
+        .group(:gender)
+        .count
+
+    {
+      grouped_by_gender: group_by_gender(follow_ups, :follow_ups)
+    }
+  end
+
+  def registrations_for_last_n_days(n)
+    registrations =
+      MyFacilities::RegistrationsQuery
+        .new(facilities: current_facility, period: :day, last_n: n)
+        .registrations
+        .group_by { |reg| [reg.year, reg.day] }
+        .map { |date, reg| [doy_to_date_obj(*date), registrations: reg.first.registration_count] }
+        .to_h
+
+    {
+      grouped_by_date: data_for_unavailable_dates(:registrations, @daily_period_list).merge(registrations)
+    }
+  end
+
+  def registrations_for_last_n_months(n)
+    registrations =
+      current_facility
+        .registered_patients
+        .group(:gender)
+        .group_by_period(:month, :recorded_at, range: n.months.ago..Time.now)
+        .distinct('patients.id')
+        .count
+        .map { |(gender, date), count| [[gender, date], count] }
+        .to_h
+
+    {
+      grouped_by_gender_and_date:
+        group_by_gender_and_date(registrations, :registrations)
+          .map { |gender, data| [gender, data_for_unavailable_dates(:registrations,
+                                                                    @monthly_period_list).merge(data)] }
+          .to_h
+    }
+  end
+
+  def registrations_all_time
+    registrations =
+      current_facility
+        .registered_patients
+        .group(:gender)
+        .distinct('patients.id')
+        .count
+
+    {
+      grouped_by_gender: group_by_gender(registrations, :registrations)
+    }
   end
 
   def htn_control_for_last_n_months(n)
@@ -162,14 +215,17 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
         .map { |group, fps| [moy_to_date_obj(*group), controlled_visits: fps] }
         .to_h
 
-    group_by_date([
-                    data_for_unavailable_dates(:total_visits, @monthly_period_list).merge(total_visits),
-                    data_for_unavailable_dates(:controlled_visits, @monthly_period_list).merge(controlled_visits)
-                  ].inject(&:deep_merge))
+    {
+      grouped_by_date:
+        [
+          data_for_unavailable_dates(:total_visits, @monthly_period_list).merge(total_visits),
+          data_for_unavailable_dates(:controlled_visits, @monthly_period_list).merge(controlled_visits)
+        ].inject(&:deep_merge)
+    }
   end
 
   #
-  # Groups by gender in the following format,
+  # Groups by gender+date in the following format,
   #
   # { :grouped_by_gender =>
   #    { "male" =>
@@ -179,27 +235,21 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
   #        { "Sun, 01 Mar 2020" => { :resource_name => 18 },
   #          "Tue, 01 Oct 2019" => { :resource_name => 0 } } } }
   #
-  def group_by_gender(resource_data, resource_name, period_list)
-    grouped_by_gender =
-      resource_data.inject(autovivified_hash) do |acc, (group, resource)|
-        gender, year, month = *group
-        acc[gender][moy_to_date_obj(year, month)].merge!(resource_name => resource)
-        acc
-      end
-
-    {
-      grouped_by_gender:
-        grouped_by_gender
-          .map { |gender, data| [gender, data_for_unavailable_dates(resource_name, period_list).merge(data)] }
-          .to_h
-    }
+  def group_by_gender_and_date(resource_data, resource_name)
+    resource_data.inject(autovivified_hash) do |acc, (group, resource)|
+      gender, date = *group
+      acc[gender][date].merge!(resource_name => resource)
+      acc
+    end
   end
 
-  def group_by_date(resource_data)
-    {
-      grouped_by_date: resource_data
-    }
+  def group_by_gender(resource_data, resource_name)
+    resource_data.inject(autovivified_hash) do |acc, (gender, resource)|
+      acc[gender].merge!(resource_name => resource)
+      acc
+    end
   end
+
 
   def data_for_unavailable_dates(data_key, period_list)
     period_list.map { |date| [date, data_key => 0] }.to_h
