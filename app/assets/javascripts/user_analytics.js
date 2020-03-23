@@ -123,9 +123,6 @@ function filterDataByGender(tableName) {
   var selectedOption = tableFilterElement[0].selectedOptions[0].value;
   var selectedTableElement = document.getElementsByClassName('progress-table ' + tableName + ' ' + selectedOption);
 
-  window.foo = selectedOption;
-  window.bar = selectedTableElement;
-
   for (let i = 0; i < tableElements.length; i++) {
     tableElements[i].style.display = 'none';
   }

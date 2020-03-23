@@ -98,7 +98,7 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
         .follow_ups
         .group(:year, :day)
         .count
-        .map { |group, fps| [doy_to_date_obj(*group), follow_ups: fps] }
+        .map { |group, fps| [doy_to_date_obj(*group), follow_ups: fps] } # TODO: fix this doy_to_date_obj helper
         .to_h
 
     group_by_date(data_for_unavailable_dates(:follow_ups, @daily_period_list).merge(follow_ups))
@@ -118,14 +118,16 @@ class Api::Current::Analytics::UserAnalyticsController < Api::Current::Analytics
 
   def registrations_for_last_n_months(n)
     registrations =
-      MyFacilities::RegistrationsQuery
-        .new(facilities: current_facility, period: :month, last_n: n)
-        .registrations
-        .group_by { |reg| [reg.year, reg.month] }
-        .map { |group, reg| [moy_to_date_obj(*group), registrations: reg.first.registration_count] }
+      current_facility
+        .registered_patients
+        .group(:gender)
+        .group_by_period(:month, :recorded_at, range: n.months.ago..Time.now)
+        .distinct('patients.id')
+        .count
+        .map { |(gender, date), count| [[gender, date.year, date.month], count] }
         .to_h
 
-    group_by_date(data_for_unavailable_dates(:registrations, @monthly_period_list).merge(registrations))
+    group_by_gender(registrations, :registrations, @monthly_period_list)
   end
 
   def follow_ups_for_last_n_months(n)
