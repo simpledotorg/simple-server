@@ -135,6 +135,10 @@ Rails.application.routes.draw do
         get 'sync', to: 'blood_sugars#sync_to_user'
         post 'sync', to: 'blood_sugars#sync_from_user'
       end
+
+      scope :users do
+        post 'activate', to: 'users#activate'
+      end
     end
   end
 

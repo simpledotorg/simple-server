@@ -253,8 +253,18 @@ class Api::V3::Models
           phone_number: { '$ref' => '#/definitions/non_empty_string' },
           password_digest: { '$ref' => '#/definitions/bcrypt_password' },
           registration_facility_id: { '$ref' => '#/definitions/uuid' },
+          sync_approval_status: { '$ref' => '#/definitions/non_empty_string' },
+          sync_approval_status_reason: { '$ref' => '#/definitions/non_empty_string' }
         },
-        required: %w[id created_at updated_at full_name phone_number password_digest registration_facility_id] }
+        required: %w[id
+                     created_at
+                     updated_at
+                     full_name
+                     phone_number
+                     password_digest
+                     registration_facility_id
+                     sync_approval_status
+                     sync_approval_status_reason] }
     end
 
     def login_user

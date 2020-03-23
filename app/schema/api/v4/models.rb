@@ -50,6 +50,31 @@ class Api::V4::Models
       }
     end
 
+    def user
+      { type: :object,
+        properties: {
+          id: { '$ref' => '#/definitions/uuid' },
+          deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
+          created_at: { '$ref' => '#/definitions/timestamp' },
+          updated_at: { '$ref' => '#/definitions/timestamp' },
+          full_name: { '$ref' => '#/definitions/non_empty_string' },
+          phone_number: { '$ref' => '#/definitions/non_empty_string' },
+          password_digest: { '$ref' => '#/definitions/bcrypt_password' },
+          registration_facility_id: { '$ref' => '#/definitions/uuid' },
+          sync_approval_status: { '$ref' => '#/definitions/non_empty_string' },
+          sync_approval_status_reason: { '$ref' => '#/definitions/non_empty_string' }
+        },
+        required: %w[id
+                     created_at
+                     updated_at
+                     full_name
+                     phone_number
+                     password_digest
+                     registration_facility_id
+                     sync_approval_status
+                     sync_approval_status_reason] }
+    end
+
     def definitions
       { timestamp: timestamp,
         uuid: uuid,
@@ -57,7 +82,8 @@ class Api::V4::Models
         nullable_timestamp: nullable_timestamp,
         bcrypt_password: bcrypt_password,
         blood_sugar: blood_sugar,
-        blood_sugars: array_of('blood_sugar')
+        blood_sugars: array_of('blood_sugar'),
+        user: user
       }
     end
   end
