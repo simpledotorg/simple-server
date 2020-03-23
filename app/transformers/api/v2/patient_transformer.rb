@@ -1,4 +1,4 @@
-class Api::V2::PatientTransformer < Api::Current::PatientTransformer
+class Api::V2::PatientTransformer < Api::V3::PatientTransformer
   class << self
     def to_nested_response(patient)
       transformed_patient = super(patient)

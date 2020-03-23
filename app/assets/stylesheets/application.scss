@@ -924,10 +924,10 @@ nav.navbar-sandbox a.nav-link { color: #5300E0 !important; }
 nav.navbar-sandbox a.nav-link:hover { color: #935EEC !important; }
 nav.navbar-sandbox { box-shadow: inset 0 2px 0 0 #5300E0; }
 
-nav.navbar-staging a.nav-link { color: #8E6F0C !important; }
-nav.navbar-staging a.nav-link:hover { color: #977600 !important; }
-nav.navbar-staging { box-shadow: inset 0 2px 0 0 #FFC800; }
+nav.navbar-demo a.nav-link { color: #8E6F0C !important; }
+nav.navbar-demo a.nav-link:hover { color: #977600 !important; }
+nav.navbar-demo { box-shadow: inset 0 2px 0 0 #FFC800; }
 
 nav.navbar-production a.nav-link { color: $grey-darkest !important; }
 nav.navbar-production a.nav-link:hover { color: $grey-mid !important; }
-nav.navbar-staging { box-shadow: none; }
+nav.navbar-demo { box-shadow: none; }

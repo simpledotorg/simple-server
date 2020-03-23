@@ -1,2 +1,2 @@
-class Api::V2::LoginsController < Api::Current::LoginsController
+class Api::V2::LoginsController < Api::V3::LoginsController
 end

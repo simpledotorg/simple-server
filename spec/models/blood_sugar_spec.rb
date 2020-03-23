@@ -14,7 +14,8 @@ RSpec.describe BloodSugar, type: :model do
   describe '#diabetic?' do
     [{ blood_sugar_type: :random, blood_sugar_value: 300 },
      { blood_sugar_type: :fasting, blood_sugar_value: 200 },
-     { blood_sugar_type: :post_prandial, blood_sugar_value: 300 }].each do |row|
+     { blood_sugar_type: :post_prandial, blood_sugar_value: 300 },
+     { blood_sugar_type: :hba1c, blood_sugar_value: 9.0 }].each do |row|
       it 'returns true if blood sugar is in a high state' do
         blood_sugar = create(:blood_sugar,
                              blood_sugar_type: row[:blood_sugar_type],
@@ -25,12 +26,27 @@ RSpec.describe BloodSugar, type: :model do
 
     [{ blood_sugar_type: :random, blood_sugar_value: 299 },
      { blood_sugar_type: :fasting, blood_sugar_value: 199 },
-     { blood_sugar_type: :post_prandial, blood_sugar_value: 299 }].each do |row|
+     { blood_sugar_type: :post_prandial, blood_sugar_value: 299 },
+     { blood_sugar_type: :hba1c, blood_sugar_value: 8.9 }].each do |row|
       it 'returns false if blood sugar is not in a high state' do
         blood_sugar = create(:blood_sugar,
                              blood_sugar_type: row[:blood_sugar_type],
                              blood_sugar_value: row[:blood_sugar_value])
         expect(blood_sugar).not_to be_diabetic
+      end
+    end
+  end
+
+  describe 'scopes' do
+    let!(:fasting) { create(:blood_sugar, blood_sugar_type: :fasting) }
+    let!(:random) { create(:blood_sugar, blood_sugar_type: :random) }
+    let!(:post_prandial) { create(:blood_sugar, blood_sugar_type: :post_prandial) }
+    let!(:hba1c) { create(:blood_sugar, blood_sugar_type: :hba1c) }
+
+    context '#for_v3' do
+      it 'only includes non hba1c blood sugars' do
+        expect(BloodSugar.for_v3).not_to include(hba1c)
+        expect(BloodSugar.for_v3.count).to eq 3
       end
     end
   end

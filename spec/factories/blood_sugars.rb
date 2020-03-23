@@ -13,7 +13,7 @@ FactoryBot.define do
 end
 
 def build_blood_sugar_payload(blood_sugar = FactoryBot.build(:blood_sugar))
-  Api::Current::Transformer.to_response(blood_sugar).with_indifferent_access
+  Api::V3::BloodSugarTransformer.to_response(blood_sugar).with_indifferent_access
 end
 
 def build_invalid_blood_sugar_payload

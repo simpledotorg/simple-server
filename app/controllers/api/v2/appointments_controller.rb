@@ -1,4 +1,4 @@
-class Api::V2::AppointmentsController < Api::Current::AppointmentsController
+class Api::V2::AppointmentsController < Api::V3::AppointmentsController
   private
 
   def set_default_appointment_type(appointment_params)

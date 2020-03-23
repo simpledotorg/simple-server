@@ -43,7 +43,7 @@ class ValidateData
                  .headers(api_headers)
                  .get(api_url("api/v3/#{model_name}/sync"))
 
-    validator = "Api::Current::#{model_name.to_s.classify}PayloadValidator".constantize
+    validator = "Api::V3::#{model_name.to_s.classify}PayloadValidator".constantize
     response_body = JSON(response.body)
 
     response_body[model_name.to_s].each do |res|

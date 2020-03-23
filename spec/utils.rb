@@ -19,8 +19,8 @@ class Hash
   end
 
   def with_payload_keys
-    Api::Current::Transformer.rename_attributes(
-      self, Api::Current::Transformer.inverted_key_mapping
+    Api::V3::Transformer.rename_attributes(
+      self, Api::V3::Transformer.inverted_key_mapping
     )
   end
 end

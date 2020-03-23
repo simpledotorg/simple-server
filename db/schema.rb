@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200304073131) do
+ActiveRecord::Schema.define(version: 20200228094952) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -89,7 +89,7 @@ ActiveRecord::Schema.define(version: 20200304073131) do
 
   create_table "blood_sugars", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "blood_sugar_type", null: false
-    t.integer "blood_sugar_value", null: false
+    t.decimal "blood_sugar_value", null: false
     t.uuid "patient_id", null: false
     t.uuid "user_id", null: false
     t.uuid "facility_id", null: false
