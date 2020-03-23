@@ -76,20 +76,14 @@
     *dates.map { |period| analytics_totals(@dashboard_analytics, :registered_patients_by_period, period) }
   ].to_csv
 -%>
-<%
-  line = nil
-  row_resource = Facility.order(:name)
-  row_resource_description = "Facilities"
-  row_resource_display_field = :name
-%>
-<% policy_scope([:cohort_report, row_resource]).each do |resource| %>
-  <% if @dashboard_analytics[resource.id].present? %>
+<% policy_scope([:cohort_report, Facility.order(:name)]).each do |facility| %>
+  <% if @dashboard_analytics[facility.id].present? %>
     <%=
       [
-        resource.send(row_resource_display_field),
-        @dashboard_analytics.dig(resource.id, :total_registered_patients) || 0,
-        *dates.map { |period| @dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, period) || 0 },
-        *dates.map { |period| @dashboard_analytics.dig(resource.id, :registered_patients_by_period, period) || 0 }
+        facility.name,
+        @dashboard_analytics.dig(facility.id, :total_registered_patients) || 0,
+        *dates.map { |period| @dashboard_analytics.dig(facility.id, :follow_up_patients_by_period, period) || 0 },
+        *dates.map { |period| @dashboard_analytics.dig(facility.id, :registered_patients_by_period, period) || 0 }
       ].to_csv
     -%>
   <% end %>
