@@ -27,7 +27,7 @@
                 <h5 class="mb-1" ><%= protocol_drug.dosage %> <%= protocol_drug.name %></h5>
             </div>
             <div class="col-md-3 mb-2"><i class="fas fa-pills light mr-1"></i>
-                    <span class="text-secondary">RXnorm Code:</span> 
+                    <span class="text-secondary">RXnorm Code:</span>
                     <% if protocol_drug.rxnorm_code.present? %>
                         <%= protocol_drug.rxnorm_code %>
                     <% else %>
@@ -39,7 +39,9 @@
                   <%= link_to 'Edit', edit_admin_protocol_protocol_drug_path(@protocol, protocol_drug), class: "btn btn-sm btn-outline-primary" %>
                 <% end %>
                 <% if policy([:manage, protocol_drug]).destroy? %>
-                  <%= link_to '<i class="fas fa-trash-alt"></i>' .html_safe, [:admin, @protocol, protocol_drug], method: :delete, data: { confirm: "Are you sure you want to delete #{protocol_drug.name}?" }, class: "btn btn-sm btn-outline-danger" %>
+                  <%= link_to([:admin, @protocol, protocol_drug], method: :delete, data: { confirm: "Are you sure you want to delete #{protocol_drug.name}?" }, class: "btn btn-sm btn-outline-danger") do %>
+                    <i class="fas fa-trash-alt"></i>
+                  <% end %>
                 <% end %>
             </div>
         </div>
