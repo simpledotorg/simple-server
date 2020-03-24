@@ -54,7 +54,7 @@ body {
     border: none;
     border-top: 1px solid #dce4e8;
   }
-    
+
   p,
   li {
     line-height: 1.5;
@@ -63,7 +63,7 @@ body {
   section {
     margin: 0 8px;
   }
-    
+
   a {
     color: #0075EB;
   }
@@ -93,245 +93,245 @@ body {
     transform: rotate(0deg);
     opacity: 1;
   }
-}
 
-nav.help-nav {
-  margin-bottom: 16px;
+  nav.help-nav {
+    margin-bottom: 16px;
 
-  a {
+    a {
+      display: block;
+      border-top: 1px solid rgba(0,0,0,0.07);
+      padding: 16px 8px;
+      font-size: 20px;
+      position: relative;
+      font-weight: 500;
+      color: #0075EB;
+
+      svg {
+        position: absolute;
+        right: 8px;
+        top: 12px;
+        width: 32px;
+        height: 32px;
+        opacity: 0.5;
+      }
+
+      &:active,
+      &:hover,
+      &:focus {
+          color: #000;
+          background: rgba(0,0,0,0.04);
+          border-color: transparent;
+          outline: none;
+      }
+
+      &:first-of-type {
+        border: none;
+      }
+    }
+  }
+
+  a.help-back {
     display: block;
-    border-top: 1px solid rgba(0,0,0,0.07);
-    padding: 16px 8px;
-    font-size: 20px;
-    position: relative;
-    font-weight: 500;
-    color: #0075EB;
+    position: fixed;
+    top: 8px;
+    padding: 8px;
+    margin-top: 16px;
+    background: #fff;
+    border-radius: 100px;
+    width: 32px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    z-index: 5000;
 
     svg {
-      position: absolute;
-      right: 8px;
-      top: 12px;
-      width: 32px;
-      height: 32px;
-      opacity: 0.5;
-    }
-
-    &:active,
-    &:hover,
-    &:focus {
-        color: #000;
-        background: rgba(0,0,0,0.04);
-        border-color: transparent;
-        outline: none;
-    }
-    
-    &:first-of-type {
-      border: none;
+      width: 28px;
+      height: 28px;
+      position: relative;
+      top: 2px;
+      left: 2px;
+      opacity: 1;
     }
   }
-}
 
-a.help-back {
-  display: block;
-  position: fixed;
-  top: 8px;
-  padding: 8px;
-  margin-top: 16px;
-  background: #fff;
-  border-radius: 100px;
-  width: 32px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  z-index: 5000;
-
-  svg {
-    width: 28px;
-    height: 28px;
-    position: relative;
-    top: 2px;
-    left: 2px;
-    opacity: 1;
-  }
-}
-
-.help-body {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  min-height: 100%;
-  background: #F0F2F5;
-}
-
-.help-contents {
-  padding: 0 8px 100px 8px;
-}
-
-ul {
-  margin: 0;
-  padding: 0 0 0 22px;
-
-  li {
-    margin-top: 16px;
-    margin-bottom: 16px;
-    position: relative;
-    margin-left: 0;
-    padding-left: 4px;
-  }
-}
-
-ol {
-  counter-reset: custom-counter;
-  padding-left: 50px;
-  list-style: none;
-
-  li.num {
-    margin: 1.5em 0;
-    font-size: 18px;
-    counter-increment: custom-counter;
-    position: relative;
-  }
-
-  li.num::before {
-    content: counter(custom-counter);
-    font-size: 16px;
-    font-weight: bold;
+  .help-body {
     position: absolute;
-    --size: 32px;
-    left: calc(-1 * var(--size) - 16px);
-    line-height: var(--size);
-    width: var(--size);
-    height: var(--size);
-    top: -4px;
-    border-radius: 50%;
-    text-align: center;
-    border: 1px solid #DADDE0;
+    top: 0;
+    width: 100%;
+    min-height: 100%;
+    background: #F0F2F5;
   }
-}
 
-.note {
-  font-size: 14px;
-  margin-top: 0.2em;
-}
-
-#help a.whatsapp-button {
-  display: block;
-  margin: 1em 0;
-  padding: 14px 0;
-  text-align: center;
-  background: #dfffec;
-  color: #007A31;
-  text-decoration: none;
-  border-radius: 3px;
-  font-size: 20px;
-  font-weight: 500;
-  letter-spacing: 0.10em;
-  box-shadow:
-  0 2px 3px rgba(0,0,0,0.2),
-  0 3px 0 #C4EDD4;
-
-  div {
-    display: inline-block;
-    vertical-align: middle;
+  .help-contents {
+    padding: 0 8px 100px 8px;
   }
-}
 
-#help .whatsapp-button svg {
-  vertical-align: middle;
-  height: 34px;
-  margin: -3px 4px 0 0;
-  width: auto;
-  display: inline-block;
-}
+  ul {
+    margin: 0;
+    padding: 0 0 0 22px;
 
-caption {
-  font-size: 13px;
-}
-
-span.code {
-  color: #007A31;
-  background: #E0FFED;
-  border-radius: 5px;
-  padding: 0 6px;
-}
-
-.card-tip span.code {
-  background: rgba(0,0,0,0.06);
-  color: rgba(0,0,0,0.6);
-}
-
-.help-example {
-  padding: 16px 0 0 0;
-  text-align: center;
-
-  svg {
-    max-width: 400px;
-    min-height: 100px;
+    li {
+      margin-top: 16px;
+      margin-bottom: 16px;
+      position: relative;
+      margin-left: 0;
+      padding-left: 4px;
+    }
   }
-}
 
-.help-example-text {
-  background: #F0F2F5;
-  margin-top: 1em;
-  border-radius: 6px;
-  padding: 16px;
-  font-size: 16px;
-  color: #666;
-  line-height: 1.7;
-}
+  ol {
+    counter-reset: custom-counter;
+    padding-left: 50px;
+    list-style: none;
 
-p.step {
-  margin: 2em 0;
-}
+    li.num {
+      margin: 1.5em 0;
+      font-size: 18px;
+      counter-increment: custom-counter;
+      position: relative;
+    }
 
-a.faq {
-  display: block;
-  font-size: 18px;
-  font-weight: 500;
-  position: relative;
-  padding-right: 30px;
-}
-
-.answer {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.2s ease-out;
-}
-
-#help .active {
-    margin-bottom: 8px;
-}
-
-#help a.faq:after {
-  content: '\00D7'; /* Unicode character for "plus" sign (+) */
-  font-size: 32px;
-  color: #999;
-  position: absolute;
-  right: 0;
-  top: -9px;
-  font-weight: normal;
-  transform: rotate(45deg);
-  transition: transform 0.2s ease-out;
-}
-
-#help a.active:after {
-  transform: rotate(0deg)
-}
-
-.card.card-tip {
-  background: #FFF8E0;
-  color: #54523D;
-
-  svg {
-    width: 100px;
-    float: right;
-    margin: -8px -16px 8px 8px;
+    li.num::before {
+      content: counter(custom-counter);
+      font-size: 16px;
+      font-weight: bold;
+      position: absolute;
+      --size: 32px;
+      left: calc(-1 * var(--size) - 16px);
+      line-height: var(--size);
+      width: var(--size);
+      height: var(--size);
+      top: -4px;
+      border-radius: 50%;
+      text-align: center;
+      border: 1px solid #DADDE0;
+    }
   }
-}
 
-.card.support {
-  display: none;
+  .note {
+    font-size: 14px;
+    margin-top: 0.2em;
+  }
 
-  &.IN {
+  a.whatsapp-button {
     display: block;
+    margin: 1em 0;
+    padding: 14px 0;
+    text-align: center;
+    background: #dfffec;
+    color: #007A31;
+    text-decoration: none;
+    border-radius: 3px;
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 0.10em;
+    box-shadow:
+    0 2px 3px rgba(0,0,0,0.2),
+    0 3px 0 #C4EDD4;
+
+    div {
+      display: inline-block;
+      vertical-align: middle;
+    }
+  }
+
+  .whatsapp-button svg {
+    vertical-align: middle;
+    height: 34px;
+    margin: -3px 4px 0 0;
+    width: auto;
+    display: inline-block;
+  }
+
+  caption {
+    font-size: 13px;
+  }
+
+  span.code {
+    color: #007A31;
+    background: #E0FFED;
+    border-radius: 5px;
+    padding: 0 6px;
+  }
+
+  .card-tip span.code {
+    background: rgba(0,0,0,0.06);
+    color: rgba(0,0,0,0.6);
+  }
+
+  .help-example {
+    padding: 16px 0 0 0;
+    text-align: center;
+
+    svg {
+      max-width: 400px;
+      min-height: 100px;
+    }
+  }
+
+  .help-example-text {
+    background: #F0F2F5;
+    margin-top: 1em;
+    border-radius: 6px;
+    padding: 16px;
+    font-size: 16px;
+    color: #666;
+    line-height: 1.7;
+  }
+
+  p.step {
+    margin: 2em 0;
+  }
+
+  a.faq {
+    display: block;
+    font-size: 18px;
+    font-weight: 500;
+    position: relative;
+    padding-right: 30px;
+  }
+
+  .answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+  }
+
+  .active {
+      margin-bottom: 8px;
+  }
+
+  a.faq:after {
+    content: '\00D7'; /* Unicode character for "plus" sign (+) */
+    font-size: 32px;
+    color: #999;
+    position: absolute;
+    right: 0;
+    top: -9px;
+    font-weight: normal;
+    transform: rotate(45deg);
+    transition: transform 0.2s ease-out;
+  }
+
+  a.active:after {
+    transform: rotate(0deg)
+  }
+
+  .card.card-tip {
+    background: #FFF8E0;
+    color: #54523D;
+
+    svg {
+      width: 100px;
+      float: right;
+      margin: -8px -16px 8px 8px;
+    }
+  }
+
+  .card.support {
+    display: none;
+
+    &.IN {
+      display: block;
+    }
   }
 }
