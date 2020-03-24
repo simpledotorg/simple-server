@@ -145,6 +145,33 @@
           }
         }
       }
+    },
+    "/users/find": {
+      "post": {
+        "summary": "Find a existing user",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "phone_number",
+            "in": "query",
+            "type": "string",
+            "description": "User phone number"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user is found",
+            "schema": {
+              "$ref": "#/definitions/find_user"
+            }
+          },
+          "404": {
+            "description": "user is not found"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -230,7 +257,7 @@
           ]
         },
         "blood_sugar_value": {
-          "type": "integer"
+          "type": "number"
         },
         "deleted_at": {
           "$ref": "#/definitions/nullable_timestamp"
@@ -273,6 +300,23 @@
       "items": {
         "$ref": "#/definitions/blood_sugar"
       }
+    },
+    "find_user": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "sync_approval_status": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "id"
+      ]
     }
   },
   "securityDefinitions": {

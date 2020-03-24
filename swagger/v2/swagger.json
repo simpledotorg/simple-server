@@ -1144,7 +1144,7 @@
                 }
               },
               "required": [
-                "passowrd_digest"
+                "password_digest"
               ]
             }
           }
@@ -1853,6 +1853,18 @@
         },
         "full_name": {
           "$ref": "#/definitions/non_empty_string"
+        },
+        "sync_approval_status": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sync_approval_status_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "phone_number": {
           "$ref": "#/definitions/non_empty_string"
