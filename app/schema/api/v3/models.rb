@@ -250,6 +250,8 @@ class Api::V3::Models
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' },
           full_name: { '$ref' => '#/definitions/non_empty_string' },
+          sync_approval_status: { type: [:string, 'null'] },
+          sync_approval_status_reason: { type: [:string, 'null'] },
           phone_number: { '$ref' => '#/definitions/non_empty_string' },
           password_digest: { '$ref' => '#/definitions/bcrypt_password' },
           registration_facility_id: { '$ref' => '#/definitions/uuid' },
