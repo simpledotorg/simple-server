@@ -63,7 +63,7 @@ en:
     patient_list: 'Patient list'
     requested: 'As you requested, please find the patient list for %{model_type} %{model_name} attached. It contains patient details for every patient registered in the %{model_type}.'
     confidential: 'Please note that this information is confidential and should be kept private.'
-    unrequested: 'If you did not request this or have questions, please immediately reply to <a href="mailto:help@simple.org">help@simple.org</a>'
+    unrequested_html: 'If you did not request this or have questions, please immediately reply to <a href="mailto:help@simple.org">help@simple.org</a>'
 
   admin:
     reset_otp_alert: 'Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP'

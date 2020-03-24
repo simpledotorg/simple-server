@@ -34,9 +34,9 @@
                           method: :put,
                           class: "btn btn-sm btn-outline-success",
                           data: { confirm: I18n.t('admin.enable_access_alert') } %>
-              <%= link_to '<i class="fas fa-times"></i>'.html_safe, '#deny-access-modal-' + user.id,
-                          'data-toggle' => 'modal',
-                          class: "btn btn-sm btn-outline-danger" %>
+              <%= link_to('#deny-access-modal-' + user.id, 'data-toggle' => 'modal', class: "btn btn-sm btn-outline-danger") do %>
+                <i class="fas fa-times"></i>
+              <% end %>
 
               <%= render partial: "admin/users/deny_access_modal", locals: { user: user } %>
             </div>

@@ -15,7 +15,10 @@
                            .sort
                            .each do |district| %>
 
-                          <%= link_to "<i class='fas fa-angle-right light'></i> #{district}".html_safe, analytics_organization_district_path(organization.id, district), class: "link-row" %>
+                          <%= link_to(analytics_organization_district_path(organization.id, district), class: "link-row") do %>
+                            <i class='fas fa-angle-right light'></i>
+                            <%= district %>
+                          <% end %>
 
                     <% end %>
 
