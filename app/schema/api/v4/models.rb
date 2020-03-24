@@ -50,6 +50,15 @@ class Api::V4::Models
       }
     end
 
+    def find_user
+      { type: :object,
+        properties: {
+          id: { '$ref' => '#/definitions/uuid' },
+          sync_approval_status: { type: [:string, 'null'] }
+        },
+        required: %w[id] }
+    end
+
     def definitions
       { timestamp: timestamp,
         uuid: uuid,
@@ -57,7 +66,8 @@ class Api::V4::Models
         nullable_timestamp: nullable_timestamp,
         bcrypt_password: bcrypt_password,
         blood_sugar: blood_sugar,
-        blood_sugars: array_of('blood_sugar')
+        blood_sugars: array_of('blood_sugar'),
+        find_user: find_user
       }
     end
   end
