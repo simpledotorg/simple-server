@@ -32,4 +32,14 @@ RSpec.describe PhoneNumberAuthentication, type: :model do
       end
     end
   end
+
+  describe 'clear_otp' do
+    subject(:authentication) { described_class.new(otp: '123456', otp_valid_until: Time.now) }
+
+    it 'clears the otp fields' do
+      authentication.clear_otp
+      expect(authentication.otp).to be_nil
+      expect(authentication.otp_valid_until).to be_nil
+    end
+  end
 end
