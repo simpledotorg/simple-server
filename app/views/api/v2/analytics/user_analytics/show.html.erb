@@ -1,10 +1,32 @@
+<!--
+
+1A. "Today" block should show data for the calendar day.
+1B. Preload the last 30 days of data. Tapping arrow buttons goes back/forward days using JS.
+1C. When first day is reached, arrow should be greyed out.
+1D. Title changes to "12-Dec-2019" etc for any day that's not "Today"
+1E. If data hasn't been synced up to a date display the #count-empty card instead of the counts. For instance, if data was synced yesterday, show the #count-empty for today. If data was synced 4 days ago, show #count-empty for today and last 3 days... then show data from the sync date backwards.
+1F. If data has been synced but all counts are zero, just do the normal thing and show 0 in the squares (that will mean some Sundays etc have no data, and that's okay)
+
+2A. Show follow-up patients (if Diabetes is being used, only include hypertension patients).
+2B. If fewer than 6 months since deployment of Simple, just show < 6 months of rows
+2C. Patient counts are for 'unique' patients that month (e.g. if a patient visited 5 times, they are only counted once... unless this is hard, in which case discuss with Daniel)
+2D. Patients with controlled BP is if the patient had BP <140/90 at most recent visit
+
+3. I think registrations is pretty obvious, but if you have questions, let me know.
+
+4A. Achievements is based on data from 2C.
+4B. Don't show any achievements if < 10. Don't show the locked "upcoming" one either
+4C. When > 10 show first badge and locked "upcoming" badge for 25 follow-up visits
+4D. Follow the rules in the achievements html for how to count. After "10,000" just increment by 10,000 increments for infinity
+-->
+
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="HandheldFriendly" content="True">
   <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, shrink-to-fit=no"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,shrink-to-fit=no"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
 
   <%= inline_stylesheet('common_webview.css') %>
@@ -12,37 +34,229 @@
 </head>
 
 <body>
-<% if @statistics.blank? %>
-  <%= render 'empty_reports' %>
-<% else %>
-  <div class="card">
-    <%= inline_svg('icon_new_bp.svg', classname: 'icon-float') %>
-    <h3>How many follow-up patients visited <%= @current_facility.name %>?</h3>
-    <%= render 'graph',
-               id: 'return-patients',
-               statistics: @statistics[:follow_up_patients_per_month],
-               first_of_current_month: @statistics[:first_of_current_month],
-               max_value: @statistics[:follow_up_patients_per_month].values.max,
-               max_height: 120 %>
+<div class="updated-date">Updated: <span><%= l(@statistics.dig(:metadata, :last_updated_at)) %></span></div>
+
+<div class="card" style="min-height: 210px;">
+  <div class="next-prev">
+    <button onclick="nextSlide(+1)" class="button-next">
+      <span><%= inline_svg('icon_arrow_back.svg') %></span>
+    </button>
+    <button onclick="nextSlide(-1)" class="button-prev">
+      <span><%= inline_svg('icon_arrow_forward.svg') %></span>
+    </button>
   </div>
 
-  <div class="card">
-    <%= inline_svg('icon_enroll.svg', classname: 'icon-float') %>
-    <h3>How many new patients were registered at <%= @current_facility.name %>?</h3>
-    <h5>All time: <%= @statistics[:total_patients_count] %> patients</h5>
-    <div class="bar-chart">
-      <%= render 'graph',
-                 id: '',
-                 statistics: @statistics[:patients_enrolled_per_month],
-                 first_of_current_month: @statistics[:first_of_current_month],
-                 max_value: @statistics[:patients_enrolled_per_month].values.max,
-                 max_height: 120 %>
+  <!-- dump all statistics in a hidden div so that we can parse it in JS -->
+  <%= content_tag :div, id: "statistics", data: { statistics: @statistics }, style: "display: none" do %>
+  <% end %>
+
+  <!-- daily stats view -->
+  <div id="daily-stats-card">
+    <div class="day count-empty" style="display: none">
+      <h3 class="stat-day"></h3>
+      <%= inline_svg('icon_sync_cloud.svg') %>
+      <p>Tap "Sync" on the home screen for new data.</p>
     </div>
-  </div>
 
-  <footer>
-    <small class="text-muted">Updated at <%= l(Time.current) %></small>
-  </footer>
-<% end %>
+    <% @daily_period_list.each do |day_date| %>
+      <div class="day">
+        <h3 class="stat-day">
+          <span class="num"><%= display_date(day_date) %></span>
+        </h3>
+
+        <div class="counts">
+          <div class="count count-1">
+            <strong>Registered</strong>
+            <div class="big-number">
+              <%= zero_if_zero(@statistics.dig(:daily, :grouped_by_date, :registrations, day_date)) %>
+            </div>
+            Patients
+          </div>
+
+          <div class="count count-2">
+            <strong>Follow-up</strong>
+            <div class="big-number">
+              <%= zero_if_zero(@statistics.dig(:daily, :grouped_by_date, :follow_ups, day_date)) %>
+            </div>
+            Patients
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- monthly registered patients view -->
+<% registrations_table_name = 'registrations' %>
+
+<div class="card">
+  <h3>Registered patients</h3>
+
+  <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
+             locals: { statistics: @statistics, data_table_name: registrations_table_name } %>
+
+  <!-- the "all" table -->
+  <table class="progress-table <%= registrations_table_name %> hypertension:all">
+    <tr class="total">
+      <td class="row-label">All-time</td>
+      <td>
+        <%= zero_if_zero(@statistics
+                             .dig(:all_time, :grouped_by_gender, :registrations)
+                             .values
+                             .inject(:+)) %>
+      </td>
+    </tr>
+    <% @monthly_period_list.each do |month_date| %>
+      <tr>
+        <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
+        <td><%= zero_if_zero(1) %></td>
+      </tr>
+    <% end %>
+  </table>
+
+  <!-- gender-wise tables -->
+  <% Patient::GENDERS.each do |gender| %>
+    <table class="progress-table <%= registrations_table_name %> hypertension:<%= gender %>" style="display: none">
+      <tr class="total">
+        <td class="row-label">All-time</td>
+        <td>
+          <%= zero_if_zero(@statistics.dig(:all_time, :grouped_by_gender, :registrations, gender)) %>
+        </td>
+      </tr>
+      <% @monthly_period_list.each do |month_date| %>
+        <tr>
+          <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
+          <td>
+            <%= zero_if_zero(@statistics.dig(:monthly,
+                                             :grouped_by_gender_and_date,
+                                             :registrations,
+                                             gender,
+                                             month_date)) %>
+          </td>
+        </tr>
+      <% end %>
+    </table>
+  <% end %>
+</div>
+
+<!-- monthly follow-up patients view -->
+<% follow_ups_table_name = 'follow_ups' %>
+
+<div class="card">
+  <h3>Follow-up hypertension patients</h3>
+
+  <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
+             locals: { statistics: @statistics, data_table_name: follow_ups_table_name } %>
+
+  <!-- the "all" table -->
+  <table class="progress-table <%= follow_ups_table_name %> hypertension:all">
+    <tr class="total">
+      <td class="row-label">All-time</td>
+      <td>
+        <%= zero_if_zero(@statistics
+                             .dig(:all_time, :grouped_by_gender, :registrations)
+                             .values
+                             .inject(:+)) %>
+      </td>
+    </tr>
+    <% @monthly_period_list.each do |month_date| %>
+      <tr>
+        <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
+        <td><%= zero_if_zero(1) %></td>
+      </tr>
+    <% end %>
+  </table>
+
+  <!-- gender-wise tables -->
+  <% Patient::GENDERS.each do |gender| %>
+    <table class="progress-table <%= follow_ups_table_name %> hypertension:<%= gender %>" style="display: none">
+      <tr class="total">
+        <td class="row-label">All-time</td>
+        <td>
+          <%= zero_if_zero(@statistics.dig(:all_time, :grouped_by_gender, :follow_ups, gender)) %>
+        </td>
+      </tr>
+      <% @monthly_period_list.each do |month_date| %>
+        <tr>
+          <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
+          <td>
+            <%= zero_if_zero(@statistics.dig(:monthly,
+                                             :grouped_by_gender_and_date,
+                                             :follow_ups,
+                                             gender,
+                                             month_date)) %>
+          </td>
+        </tr>
+      <% end %>
+    </table>
+  <% end %>
+</div>
+
+<!-- monthly hypertension control view -->
+<div class="card">
+  <h3>Hypertension control</h3>
+  <p class="desc">
+    How many patients with hypertension had BP below 140/90 at their last follow-up visit in the month?
+  </p>
+
+  <table class="progress-table">
+    <% @monthly_period_list.each do |month_date| %>
+      <tr>
+        <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
+        <td><span class="percent">
+              <%=
+                percentage(@statistics.dig(:monthly, :grouped_by_date, :controlled_visits, month_date),
+                           @statistics.dig(:monthly, :grouped_by_date, :total_visits, month_date))
+              %>
+            </span></td>
+        <td>
+          <%= zero_if_zero(@statistics.dig(:monthly, :grouped_by_date, :controlled_visits, month_date)) %>
+          of
+          <%= zero_if_zero(@statistics.dig(:monthly, :grouped_by_date, :total_visits, month_date)) %>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+</div>
+
+<!-- all trophies view -->
+<div class="trophies">
+  <h4>Achievements</h4>
+  <% @statistics.dig(:trophies, :unlocked_trophy_values).sort.each do |trophy| %>
+    <div class="trophy trophy-<%= trophy %>">
+      <%= inline_svg('ribbon.svg') %>
+      <em></em>
+      <span>
+          <%= number_to_human(trophy, :format => '%n%u', :units => { thousand: 'K', million: 'M' }) %>
+        </span>
+      <div><%= trophy %> follow-up<br>hypertension patients</div>
+    </div>
+  <% end %>
+
+  <div class="trophy trophy-<%= @statistics.dig(:trophies, :locked_trophy_value) %> trophy-upcoming">
+    <%= inline_svg('ribbon.svg') %>
+    <em></em>
+    <span>
+        <%= inline_svg('icon_lock.svg') %>
+      </span>
+    <div><%= @statistics.dig(:trophies, :locked_trophy_value) %> follow-up<br>hypertension patients</div>
+  </div>
+</div>
+
+<footer>
+  <h4 style="padding-top: 60px;">Notes</h4>
+  <p>Data is for all activity at <%= @current_facility.name %>. If data appears out of date, tap the "Sync
+    pending" link on the home screen.</p>
+  <p>A follow-up patient is only counted for one visit each month. If a patient follows up multiple times in a month,
+    he or she is
+    only counted once.</p>
+  <h4 style="padding-top: 60px;">Thank you</h4>
+  <p>Thank you for all of your hard work treating patients with hypertension. Your work saves lives from heart
+    attacks
+    and strokes.</p>
+  <div style="height: 100px;"></div>
+</footer>
 </body>
+
+<%= inline_js('user_analytics.js') %>
 </html>
