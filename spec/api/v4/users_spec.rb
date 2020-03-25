@@ -28,5 +28,4 @@ describe 'Users v4 API', swagger_doc: 'v4/swagger.json' do
       end
     end
   end
-
 end
