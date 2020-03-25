@@ -8,17 +8,17 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
 
   layout false
 
-  def show
-    days_ago = 30
-    months_ago = 6
+  DAYS_AGO = 30
+  MONTHS_AGO = 6
 
+  def show
     @daily_period_list =
-      period_list(:day, days_ago).sort.reverse.map { |date| doy_to_date_obj(*date) }
+      period_list(:day, DAYS_AGO).sort.reverse.map { |date| doy_to_date_obj(*date) }
     @monthly_period_list =
-      period_list(:month, months_ago).sort.reverse.map { |date| moy_to_date_obj(*date) }
+      period_list(:month, MONTHS_AGO).sort.reverse.map { |date| moy_to_date_obj(*date) }
 
     @user_analytics =
-      UserAnalyticsQuery.new(current_facility, days_ago: days_ago, months_ago: months_ago)
+      UserAnalyticsQuery.new(current_facility, days_ago: DAYS_AGO, months_ago: MONTHS_AGO)
 
     @statistics = {
       daily: prepare_daily_stats,

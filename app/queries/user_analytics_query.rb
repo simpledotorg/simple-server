@@ -44,7 +44,7 @@ class UserAnalyticsQuery
     current_facility
       .registered_patients
       .group(:gender)
-      .group_by_period(:month, :recorded_at, range: months_ago.months.ago..Time.now)
+      .group_by_period(:month, :recorded_at, last: months_ago)
       .distinct('patients.id')
       .count
       .map { |(gender, date), count| [[gender, date], count] }

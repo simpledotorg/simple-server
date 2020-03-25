@@ -8,7 +8,7 @@ module DashboardHelper
   end
 
   def zero?(value)
-    value.nil? || value.zero?
+    value.nil? || value.blank? || value.zero?
   end
 
   def dates_for_periods(period, previous_periods, from_time: Time.current, include_current_period: false)
