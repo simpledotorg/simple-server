@@ -13,7 +13,7 @@ describe 'Users v4 API', swagger_doc: 'v4/swagger.json' do
       end
 
       response '200', 'user is authenticated' do
-        let(:db_user) { FactoryBot.create(:user, password: '1234') }
+        let(:db_user) { create(:user, password: '1234') }
         let(:user) do
           { user: { id: db_user.id,
                     password: '1234' } }
@@ -24,7 +24,7 @@ describe 'Users v4 API', swagger_doc: 'v4/swagger.json' do
       end
 
       response '401', 'incorrect user id or password, authentication failed' do
-        let(:db_user) { FactoryBot.create(:user) }
+        let(:db_user) { create(:user) }
         let(:user) do
           { user: { id: db_user.id,
                     password: 'wrong_password' } }
@@ -35,7 +35,7 @@ describe 'Users v4 API', swagger_doc: 'v4/swagger.json' do
       end
 
       response '200', 'user otp is reset and new otp is sent as an sms' do
-        let(:db_user) { FactoryBot.create(:user, password: '1234') }
+        let(:db_user) { create(:user, password: '1234') }
         let(:user) do
           { user: { id: db_user.id,
                     password: '1234' } }
@@ -53,8 +53,8 @@ describe 'Users v4 API', swagger_doc: 'v4/swagger.json' do
     get 'Fetch user information' do
       tags 'User'
       security [basic: []]
-      let(:facility) { FactoryBot.create(:facility) }
-      let(:user) { FactoryBot.create(:user, registration_facility: facility) }
+      let(:facility) { create(:facility) }
+      let(:user) { create(:user, registration_facility: facility) }
       let(:HTTP_X_USER_ID) { user.id }
       let(:HTTP_X_FACILITY_ID) { facility.id }
       let(:Authorization) { "Bearer #{user.access_token}" }
@@ -65,7 +65,7 @@ describe 'Users v4 API', swagger_doc: 'v4/swagger.json' do
       end
 
       response '401', 'authentication failed' do
-        let(:Authorization) { "Bearer #{SecureRandom.hex(32)}" }
+        let(:Authorization) { "Bearer 'random string'" }
         run_test!
       end
     end

@@ -68,7 +68,9 @@ class Api::V4::Schema
     end
 
     def user_me_response
-      user_activate_response
+      { type: :object,
+        properties: { user: { '$ref' => '#/definitions/user' } },
+        required: %i[user] }
     end
 
     def definitions
