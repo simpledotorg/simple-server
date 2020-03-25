@@ -40,14 +40,6 @@ class UserAnalyticsQuery
       .to_h
   end
 
-  def all_time_follow_ups
-    MyFacilities::FollowUpsQuery
-      .total_follow_ups(current_facility)
-      .joins(:patient)
-      .group(:gender)
-      .count
-  end
-
   def monthly_registrations
     current_facility
       .registered_patients
@@ -59,6 +51,14 @@ class UserAnalyticsQuery
       .to_h
   end
 
+  def all_time_follow_ups
+    MyFacilities::FollowUpsQuery
+      .total_follow_ups(current_facility)
+      .joins(:patient)
+      .group(:gender)
+      .count
+  end
+
   def all_time_registrations
     current_facility
       .registered_patients
@@ -68,9 +68,10 @@ class UserAnalyticsQuery
   end
 
   def monthly_htn_control
-    visits = LatestBloodPressuresPerPatientPerDay
-               .where(facility: current_facility)
-               .where("(year, month) IN (#{periods_as_sql_list(period_list(:month, months_ago))})")
+    visits =
+      LatestBloodPressuresPerPatientPerDay
+        .where(facility: current_facility)
+        .where("(year, month) IN (#{periods_as_sql_list(period_list(:month, months_ago))})")
 
     total_visits =
       visits

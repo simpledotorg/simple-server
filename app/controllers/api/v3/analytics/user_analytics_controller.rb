@@ -94,6 +94,7 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
         {
           follow_ups:
             group_by_gender(@user_analytics.all_time_follow_ups),
+
           registrations:
             group_by_gender(@user_analytics.all_time_registrations)
         }

@@ -1,13 +1,23 @@
-function formatDate(date) {
-  return date.toJSON().slice(0, 10);
-}
-
+//
+// stats
+//
 function statistics() {
-  return JSON.parse(document.getElementById('statistics').attributes.getNamedItem('data-statistics').value);
+  return JSON.parse(document
+    .getElementById('statistics')
+    .attributes
+    .getNamedItem('data-statistics')
+    .value);
 }
 
 function dailyStatistics() {
   return Object.entries(statistics().daily.grouped_by_date);
+}
+
+//
+// dates
+//
+function formatDate(date) {
+  return date.toJSON().slice(0, 10);
 }
 
 function today() {
@@ -37,6 +47,9 @@ function latestDateInDailyStatistics() {
   return new Date(Math.max.apply(null, listOfDates));
 }
 
+//
+// elements
+//
 function syncNudgeCardElement() {
   return document.querySelector('#daily-stats-card > .count-empty');
 }
@@ -55,15 +68,20 @@ function syncNudgeCardPosition() {
   return -1
 }
 
+//
+// behaviour
+//
 function showSyncNudge(currentSlide) {
   var weHaveDataForToday = false;
 
-  for (let [date, _] of dailyStatistics()) {
-    if (date === formatDate(today())) {
-      // don't count the sync nudge card as a real day card
-      weHaveDataForToday = true;
-      syncNudgeCardElement().classList.remove("day");
-      break;
+  for (let [_, stats] of dailyStatistics()) {
+    for (let [date, _] of Object.entries(stats)) {
+      if (date === formatDate(today())) {
+        // don't count the sync nudge card as a real day card
+        weHaveDataForToday = true;
+        syncNudgeCardElement().classList.remove("day");
+        break;
+      }
     }
   }
 
@@ -130,6 +148,9 @@ function filterDataByGender(tableName) {
   selectedTableElement[0].style.display = 'inline-table';
 }
 
+//
+// loads at page refresh
+//
 window.onload = function () {
   window.lastSlidePositionForProgressCards = 1;
 
