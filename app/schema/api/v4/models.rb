@@ -61,8 +61,8 @@ class Api::V4::Models
           phone_number: { '$ref' => '#/definitions/non_empty_string' },
           password_digest: { '$ref' => '#/definitions/bcrypt_password' },
           registration_facility_id: { '$ref' => '#/definitions/uuid' },
-          sync_approval_status: { '$ref' => '#/definitions/non_empty_string' },
-          sync_approval_status_reason: { '$ref' => '#/definitions/non_empty_string' }
+          sync_approval_status: { type: [:string, 'null'] },
+          sync_approval_status_reason: { type: [:string, 'null'] }
         },
         required: %w[id
                      created_at
@@ -75,6 +75,15 @@ class Api::V4::Models
                      sync_approval_status_reason] }
     end
 
+    def activate_user
+      { type: :object,
+        properties: {
+          id: { '$ref' => '#/definitions/uuid' },
+          password: { '$ref' => '#/definitions/non_empty_string' }
+        },
+        required: %w[id password] }
+    end
+
     def definitions
       { timestamp: timestamp,
         uuid: uuid,
@@ -83,7 +92,8 @@ class Api::V4::Models
         bcrypt_password: bcrypt_password,
         blood_sugar: blood_sugar,
         blood_sugars: array_of('blood_sugar'),
-        user: user
+        user: user,
+        activate_user: activate_user
       }
     end
   end

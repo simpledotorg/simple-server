@@ -57,8 +57,7 @@ class Api::V4::Schema
 
     def user_activate_request
       { type: :object,
-        properties: { user: { id: { '$ref' => '#/definitions/uuid' },
-                              password: { '$ref' => '#/definitions/non-empty-string' } } },
+        properties: { user: { '$ref' => '#/definitions/activate_user'} },
         required: %i[user] }
     end
 
