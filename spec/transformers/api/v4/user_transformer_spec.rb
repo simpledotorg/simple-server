@@ -36,13 +36,12 @@ RSpec.describe Api::V4::UserTransformer do
     end
 
     it 'excludes sensitive params' do
-      it 'excludes sensitive params' do
-        expect(response).not_to include('otp',
-                                        'otp_valid_until',
-                                        'access_token',
-                                        'logged_in_at',
-                                        'role',
-                                        'organization_id')
+      expect(response).not_to include('otp',
+                                      'otp_valid_until',
+                                      'access_token',
+                                      'logged_in_at',
+                                      'role',
+                                      'organization_id')
     end
   end
 end
