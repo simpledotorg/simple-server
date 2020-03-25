@@ -164,7 +164,12 @@
           "200": {
             "description": "user is found",
             "schema": {
-              "$ref": "#/definitions/find_user"
+              "type": "object",
+              "properties": {
+                "user": {
+                  "$ref": "#/definitions/find_user"
+                }
+              }
             }
           },
           "404": {
