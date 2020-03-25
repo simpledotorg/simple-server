@@ -8,7 +8,11 @@ RSpec.describe Api::V4::UserTransformer do
         'id' => '123',
         'sync_approval_status' => 'approved',
         'other' => 'unnecessary',
-        'field' => 'values'
+        'field' => 'values',
+        'otp' => '123456',
+        'otp_valid_until' => Time.current,
+        'access_token' => 'access token string',
+        'logged_in_at' => Time.current
       }
     end
 
@@ -29,6 +33,10 @@ RSpec.describe Api::V4::UserTransformer do
 
     it 'excludes other params' do
       expect(response).not_to include('other', 'field')
+    end
+
+    it 'excludes sensitive params' do
+      expect(response).not_to include('otp', 'otp_valid_until', 'access_token', 'logged_in_at')
     end
   end
 end
