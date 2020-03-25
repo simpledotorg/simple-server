@@ -15,7 +15,7 @@ describe 'Users v4 API', swagger_doc: 'v4/swagger.json' do
       let(:id) { user.id }
 
       response '200', 'user is found' do
-        schema '$ref' => '#/definitions/find_user'
+        schema Api::V4::Schema.find_user_response
         let(:phone_number) { known_phone_number }
         let(:id) { user.id }
         run_test!

@@ -55,6 +55,12 @@ class Api::V4::Schema
       sync_to_user_response(:blood_sugars)
     end
 
+    def find_user_response
+      { type: :object,
+        properties: {
+          user: { '$ref' => '#/definitions/find_user' } } }
+    end
+
     def definitions
       { error: error,
         errors: Api::V4::Models.array_of('error'),

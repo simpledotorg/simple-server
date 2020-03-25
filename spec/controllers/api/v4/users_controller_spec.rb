@@ -7,13 +7,13 @@ RSpec.describe Api::V4::UsersController, type: :controller do
     before do
       allow(Api::V4::UserTransformer).to receive(:to_find_response)
         .with(user)
-        .and_return({ expected: "response" }.as_json)
+        .and_return({ some: "information" }.as_json)
     end
 
     it 'lists the users with the given phone number' do
       post :find, params: { phone_number: '1234567890' }
       expect(response.status).to eq(200)
-      expect(JSON(response.body).with_int_timestamps).to eq({ expected: "response" }.as_json)
+      expect(JSON(response.body).with_int_timestamps).to eq({ user: { some: "information" } }.as_json)
     end
 
     it 'returns 404 when user is not found' do
