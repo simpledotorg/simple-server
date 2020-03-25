@@ -1263,7 +1263,7 @@
                 }
               },
               "required": [
-                "passowrd_digest"
+                "password_digest"
               ]
             }
           }
@@ -1999,6 +1999,18 @@
         },
         "registration_facility_id": {
           "$ref": "#/definitions/uuid"
+        },
+        "sync_approval_status": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sync_approval_status_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
       "required": [
@@ -2352,12 +2364,11 @@
           "enum": [
             "random",
             "post_prandial",
-            "fasting",
-            "hba1c"
+            "fasting"
           ]
         },
         "blood_sugar_value": {
-          "type": "decimal"
+          "type": "integer"
         },
         "deleted_at": {
           "$ref": "#/definitions/nullable_timestamp"

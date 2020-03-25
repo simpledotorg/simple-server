@@ -145,6 +145,76 @@
           }
         }
       }
+    },
+    "/users/activate": {
+      "post": {
+        "summary": "Authenticate user, request OTP, and get user information",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user": {
+                  "$ref": "#/definitions/activate_user"
+                }
+              },
+              "required": [
+                "user"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user otp is reset and new otp is sent as an sms",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user": {
+                  "$ref": "#/definitions/user"
+                }
+              },
+              "required": [
+                "user"
+              ]
+            }
+          },
+          "401": {
+            "description": "user is not logged in with wrong password",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "Id of the record with errors"
+                },
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of json schema error strings describing validation errors"
+                },
+                "field_with_error": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "user is not found"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -230,7 +300,7 @@
           ]
         },
         "blood_sugar_value": {
-          "type": "integer"
+          "type": "number"
         },
         "deleted_at": {
           "$ref": "#/definitions/nullable_timestamp"
@@ -273,6 +343,71 @@
       "items": {
         "$ref": "#/definitions/blood_sugar"
       }
+    },
+    "user": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "full_name": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "phone_number": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "password_digest": {
+          "$ref": "#/definitions/bcrypt_password"
+        },
+        "registration_facility_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "sync_approval_status": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sync_approval_status_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "updated_at",
+        "full_name",
+        "phone_number",
+        "password_digest",
+        "registration_facility_id"
+      ]
+    },
+    "activate_user": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "password": {
+          "$ref": "#/definitions/non_empty_string"
+        }
+      },
+      "required": [
+        "id",
+        "password"
+      ]
     }
   },
   "securityDefinitions": {

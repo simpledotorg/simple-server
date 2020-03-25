@@ -70,9 +70,7 @@ class Api::V4::Models
                      full_name
                      phone_number
                      password_digest
-                     registration_facility_id
-                     sync_approval_status
-                     sync_approval_status_reason] }
+                     registration_facility_id] }
     end
 
     def activate_user
