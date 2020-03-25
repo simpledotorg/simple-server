@@ -33,6 +33,7 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
       }
     }
 
+
     respond_to_html_or_json(@statistics)
   end
 
@@ -164,7 +165,7 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
   end
 
   def group_by_gender(resource_data)
-    resource_data.inject(autovivified_hash) do |acc, (gender, resource)|
+    resource_data.inject({}) do |acc, (gender, resource)|
       acc[gender] = resource
       acc
     end

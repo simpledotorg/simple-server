@@ -107,6 +107,7 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
           let(:request_date) { Date.new(2018, 1, 1) }
           let(:reg_date) { request_date - 3.months }
           let(:follow_up_date) { request_date - 2.months }
+          let(:controlled_follow_up_date) { request_date - 1.month }
           let(:gender) { 'female' }
 
           before do
@@ -122,6 +123,13 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
                      facility: request_facility,
                      user: request_user,
                      recorded_at: follow_up_date)
+
+              create(:blood_pressure,
+                     :under_control,
+                     patient: patient,
+                     facility: request_facility,
+                     user: request_user,
+                     recorded_at: controlled_follow_up_date)
             end
 
             LatestBloodPressuresPerPatientPerDay.refresh
@@ -143,7 +151,7 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
                   (request_date - 4.months).to_s => 0,
                   reg_date.to_date.to_s => 3,
                   (request_date - 2.months).to_s => 0,
-                  (request_date - 1.months).to_s => 0,
+                  controlled_follow_up_date.to_date.to_s => 0,
                   request_date.to_s => 0,
                 }
               },
@@ -154,7 +162,7 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
                   (request_date - 4.months).to_s => 0,
                   (request_date - 3.months).to_s => 0,
                   follow_up_date.to_date.to_s => 3,
-                  (request_date - 1.months).to_s => 0,
+                  controlled_follow_up_date.to_date.to_s => 3,
                   request_date.to_s => 0,
                 }
               }
@@ -163,20 +171,12 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
             expect(response_body.dig(:monthly, :grouped_by_gender_and_date)).to eq(expected_output.deep_symbolize_keys)
           end
 
-          xit 'has data grouped by data' do
+          it 'has data grouped by date' do
             response_body =
               travel_to(request_date) do
                 get :show, format: :json
                 JSON.parse(response.body, symbolize_names: true)
               end
-
-            create(:blood_pressure,
-                   :under_control,
-                   patient: request_facility.patients.first,
-                   facility: request_facility,
-                   user: request_user,
-                   recorded_at: follow_up_date)
-
 
             expected_output = {
               total_visits: {
@@ -184,7 +184,7 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
                 (request_date - 4.months).to_s => 0,
                 (request_date - 3.months).to_s => 0,
                 (request_date - 2.months).to_s => 3,
-                (request_date - 1.months).to_s => 0,
+                (request_date - 1.months).to_s => 3,
                 request_date.to_s => 0,
               },
 
@@ -192,8 +192,8 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
                 (request_date - 5.months).to_s => 0,
                 (request_date - 4.months).to_s => 0,
                 (request_date - 3.months).to_s => 0,
-                (request_date - 2.months).to_s => 3,
-                (request_date - 1.months).to_s => 0,
+                (request_date - 2.months).to_s => 0,
+                (request_date - 1.months).to_s => 3,
                 request_date.to_s => 0,
               }
             }
@@ -366,6 +366,13 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
           expect(response.status).to eq(200)
           expect(response.content_type).to eq('text/html')
         end
+
+        it 'has the sync nudge card' do
+          get :show, format: :html
+
+          expect(response.body).to match(/Tap "Sync" on the home screen for new data/)
+        end
+
 
         it 'has the registrations card' do
           get :show, format: :html
