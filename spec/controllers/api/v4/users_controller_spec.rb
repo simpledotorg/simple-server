@@ -10,7 +10,6 @@ RSpec.describe Api::V4::UsersController, type: :controller do
         .with(user)
         .and_return({ expected: 'response' }.as_json)
 
-
       allow(SmsNotificationService).to receive(:new).and_return(sms_notification_service)
       allow(sms_notification_service).to receive(:send_request_otp_sms).and_return(true)
     end
@@ -20,7 +19,7 @@ RSpec.describe Api::V4::UsersController, type: :controller do
       expect(SmsNotificationService).to receive(:new).and_return(sms_notification_service)
       expect(sms_notification_service).to receive(:send_request_otp_sms).and_return(true)
 
-      post :activate, params: { user: {id: user.id, password: '1234'} }
+      post :activate, params: { user: { id: user.id, password: '1234' } }
 
       expect(response.status).to eq(200)
       expect(JSON(response.body).with_int_timestamps).to eq({ expected: 'response' }.as_json)
@@ -35,7 +34,7 @@ RSpec.describe Api::V4::UsersController, type: :controller do
       expect(SmsNotificationService).not_to receive(:new)
       expect(sms_notification_service).not_to receive(:send_request_otp_sms)
 
-      post :activate, params: { user: {id: user.id, password: '1235'} }
+      post :activate, params: { user: { id: user.id, password: '1235' } }
 
       expect(response.status).to eq(401)
       expect(JSON(response.body)).to eq('errors' => { 'user' => [I18n.t('login.error_messages.invalid_password')] })
@@ -44,9 +43,41 @@ RSpec.describe Api::V4::UsersController, type: :controller do
       expect(user.otp).to eq(existing_otp)
     end
 
-    it 'returns 404 when user is not found' do
+    it 'returns 401 when user is not found' do
       post :activate, params: { user: { id: SecureRandom.uuid, password: '1234' } }
-      expect(response.status).to eq(404)
+      expect(response.status).to eq(401)
+      expect(JSON(response.body)).to eq('errors' => { 'user' => [I18n.t('login.error_messages.invalid_password')] })
+    end
+  end
+
+  describe '#me' do
+    let(:facility_group) { FactoryBot.create(:facility_group) }
+    let(:facility) { FactoryBot.create(:facility, facility_group: facility_group) }
+    let(:user) { FactoryBot.create(:user, registration_facility: facility, organization: facility.organization) }
+
+    before(:each) do
+      request.env['HTTP_X_USER_ID'] = user.id
+      request.env['HTTP_X_FACILITY_ID'] = facility.id
+      request.env['HTTP_AUTHORIZATION'] = "Bearer #{user.access_token}"
+    end
+
+    it 'Returns the user information payload for a registered and authenticated user' do
+      get :me
+
+      expect(response.status).to eq(200)
+      expect(JSON(response.body)).to eq(Api::V4::UserTransformer.to_response(user))
+    end
+
+    it 'Returns 401 if the user is not authenticated' do
+      request.env['HTTP_AUTHORIZATION'] = 'an invalid access token'
+      post :reset_password, params: { id: user.id }
+      expect(response.status).to eq(401)
+    end
+
+    it 'Returns 401 if the user is not present' do
+      request.env['HTTP_X_USER_ID'] = SecureRandom.uuid
+      post :reset_password, params: { id: SecureRandom.uuid }
+      expect(response.status).to eq(401)
     end
   end
 end

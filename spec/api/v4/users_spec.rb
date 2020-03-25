@@ -23,7 +23,7 @@ describe 'Users v4 API', swagger_doc: 'v4/swagger.json' do
         run_test!
       end
 
-      response '401', 'user is not logged in with wrong password' do
+      response '401', 'incorrect user id or password, authentication failed' do
         let(:db_user) { FactoryBot.create(:user) }
         let(:user) do
           { user: { id: db_user.id,
@@ -43,10 +43,29 @@ describe 'Users v4 API', swagger_doc: 'v4/swagger.json' do
 
         run_test!
       end
+    end
+  end
 
-      response '404', 'user is not found' do
-        let(:user) { { id: SecureRandom.uuid } }
+  path '/users/me/' do
+    parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid, required: true
+    parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid, required: true
 
+    get 'Fetch user information' do
+      tags 'User'
+      security [basic: []]
+      let(:facility) { FactoryBot.create(:facility) }
+      let(:user) { FactoryBot.create(:user, registration_facility: facility) }
+      let(:HTTP_X_USER_ID) { user.id }
+      let(:HTTP_X_FACILITY_ID) { facility.id }
+      let(:Authorization) { "Bearer #{user.access_token}" }
+
+      response '200', 'returns user information' do
+        schema Api::V4::Schema.user_me_response
+        run_test!
+      end
+
+      response '401', 'authentication failed' do
+        let(:Authorization) { "Bearer #{SecureRandom.hex(32)}" }
         run_test!
       end
     end

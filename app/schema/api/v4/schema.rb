@@ -67,6 +67,10 @@ class Api::V4::Schema
         required: %i[user] }
     end
 
+    def user_me_response
+      user_activate_response
+    end
+
     def definitions
       { error: error,
         errors: Api::V4::Models.array_of('error'),

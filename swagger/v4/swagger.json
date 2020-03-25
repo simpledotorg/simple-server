@@ -185,7 +185,7 @@
             }
           },
           "401": {
-            "description": "user is not logged in with wrong password",
+            "description": "incorrect user id or password, authentication failed",
             "schema": {
               "type": "object",
               "properties": {
@@ -209,9 +209,54 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/users/me/": {
+      "parameters": [
+        {
+          "name": "HTTP_X_USER_ID",
+          "in": "header",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "HTTP_X_FACILITY_ID",
+          "in": "header",
+          "type": "uuid",
+          "required": true
+        }
+      ],
+      "get": {
+        "summary": "Fetch user information",
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns user information",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user": {
+                  "$ref": "#/definitions/user"
+                }
+              },
+              "required": [
+                "user"
+              ]
+            }
           },
-          "404": {
-            "description": "user is not found"
+          "401": {
+            "description": "authentication failed"
           }
         }
       }

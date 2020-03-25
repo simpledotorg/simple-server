@@ -137,6 +137,7 @@ Rails.application.routes.draw do
       end
 
       scope :users do
+        get 'me', to: 'users#me'
         post 'activate', to: 'users#activate'
       end
     end
