@@ -9,12 +9,12 @@ class Api::V4::UsersController < APIController
     return head :bad_request unless params[:phone_number].present?
     user = PhoneNumberAuthentication.find_by(phone_number: params[:phone_number])&.user
     return head :not_found unless user.present?
-    render json: { user: to_find_response(user) }, status: :ok
+    render json: to_find_response(user), status: :ok
   end
 
   private
 
   def to_find_response(user)
-    Api::V4::UserTransformer.to_find_response(user)
+    { user: Api::V4::UserTransformer.to_find_response(user) }
   end
 end
