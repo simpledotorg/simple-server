@@ -54,7 +54,9 @@
             <% end %>
           <% end %>
           <% if policy([:manage, :user, user]).destroy? %>
-            <%= link_to '<i class="fas fa-trash-alt"></i>'.html_safe, [:admin, user], method: :delete, data: { confirm: "Are you sure you want to delete #{user.full_name}?" }, class: "btn btn-sm btn-outline-danger ml-2" %>
+            <%= link_to([:admin, user], method: :delete, data: { confirm: "Are you sure you want to delete #{user.full_name}?" }, class: "btn btn-sm btn-outline-danger ml-2") do %>
+              <i class="fas fa-trash-alt"></i>
+            <% end %>
           <% end %>
 
           <% if policy([:manage, :user, user]).edit? %>
