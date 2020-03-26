@@ -91,7 +91,6 @@ class Api::V4::Models
         required: %w[id password] }
     end
 
-
     def definitions
       { timestamp: timestamp,
         uuid: uuid,
