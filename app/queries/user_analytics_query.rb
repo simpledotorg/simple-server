@@ -51,22 +51,6 @@ class UserAnalyticsQuery
       .to_h
   end
 
-  def all_time_follow_ups
-    MyFacilities::FollowUpsQuery
-      .total_follow_ups(current_facility)
-      .joins(:patient)
-      .group(:gender)
-      .count
-  end
-
-  def all_time_registrations
-    current_facility
-      .registered_patients
-      .group(:gender)
-      .distinct('patients.id')
-      .count
-  end
-
   def monthly_htn_control
     visits =
       LatestBloodPressuresPerPatientPerDay
@@ -90,5 +74,21 @@ class UserAnalyticsQuery
 
     { total_visits: total_visits,
       controlled_visits: controlled_visits }
+  end
+
+  def all_time_follow_ups
+    MyFacilities::FollowUpsQuery
+      .total_follow_ups(current_facility)
+      .joins(:patient)
+      .group(:gender)
+      .count
+  end
+
+  def all_time_registrations
+    current_facility
+      .registered_patients
+      .group(:gender)
+      .distinct('patients.id')
+      .count
   end
 end
