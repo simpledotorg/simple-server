@@ -10,7 +10,9 @@ function statistics() {
 }
 
 function dailyStatistics() {
-  return Object.entries(statistics().daily.grouped_by_date);
+  return Object.entries(statistics()
+    .daily
+    .grouped_by_date);
 }
 
 //
@@ -37,14 +39,24 @@ function formattedTodayString() {
   return statistics().metadata.formatted_today_string;
 }
 
-function latestDateInDailyStatistics() {
-  var listOfDates = [];
+function dailyStatisticsDates() {
+  var dates = [];
 
-  for (let [date, _] of dailyStatistics()) {
-    listOfDates.push(Date.parse(date));
+  for (let [_, item] of dailyStatistics()) {
+    dates.push(item)
   }
 
-  return new Date(Math.max.apply(null, listOfDates));
+  return Object.keys(Object.assign(...dates));
+}
+
+function latestDateInDailyStatistics() {
+  var dates = [];
+
+  for (let date of dailyStatisticsDates()) {
+    dates.push(Date.parse(date));
+  }
+
+  return new Date(Math.max.apply(null, dates));
 }
 
 //
@@ -74,14 +86,12 @@ function syncNudgeCardPosition() {
 function showSyncNudge(currentSlide) {
   var weHaveDataForToday = false;
 
-  for (let [_, stats] of dailyStatistics()) {
-    for (let [date, _] of Object.entries(stats)) {
-      if (date === formatDate(today())) {
-        // don't count the sync nudge card as a real day card
-        weHaveDataForToday = true;
-        syncNudgeCardElement().classList.remove("day");
-        break;
-      }
+  for (let date of dailyStatisticsDates()) {
+    if (date === formatDate(today())) {
+      // don't count the sync nudge card as a real day card
+      weHaveDataForToday = true;
+      syncNudgeCardElement().classList.remove("day");
+      break;
     }
   }
 
@@ -93,13 +103,17 @@ function showSyncNudge(currentSlide) {
 }
 
 function updateDateAtEndOfCarousel() {
+  var latestDate = formatDate(latestDateInDailyStatistics());
+  var todayDate = formatDate(today());
+  var yesterdayDate = formatDate(yesterday());
   var endOfCarouselElement = allDaysInCarouselElements()[0].querySelector('.stat-day');
 
-  if (formatDate(latestDateInDailyStatistics()) === formatDate(today())) {
+  if (latestDate === todayDate || latestDate === yesterdayDate) {
     endOfCarouselElement.innerHTML = formattedTodayString();
-  } else if (formatDate(latestDateInDailyStatistics()) === formatDate(yesterday())) {
-    endOfCarouselElement.innerHTML = formattedTodayString();
-  } else if (formatDate(latestDateInDailyStatistics()) < formatDate(yesterday())) {
+    return;
+  }
+
+  if (latestDate < yesterdayDate) {
     endOfCarouselElement.innerHTML = formattedTomorrowDate();
   }
 }
