@@ -146,6 +146,47 @@
         }
       }
     },
+    "/users/find": {
+      "post": {
+        "summary": "Find a existing user",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "phone_number",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "phone_number": {
+                  "$ref": "#/definitions/non_empty_string"
+                }
+              },
+              "required": [
+                "phone_number"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user is found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user": {
+                  "$ref": "#/definitions/find_user"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "user is not found"
+          }
+        }
+      }
+    },
     "/users/activate": {
       "post": {
         "summary": "Authenticate user, request OTP, and get user information",
@@ -189,25 +230,22 @@
             "schema": {
               "type": "object",
               "properties": {
-                "id": {
-                  "type": "string",
-                  "format": "uuid",
-                  "description": "Id of the record with errors"
-                },
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "description": "List of json schema error strings describing validation errors"
-                },
-                "field_with_error": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
+                "errors": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "List of descriptive error strings"
+                    }
                   }
                 }
-              }
+              },
+              "required": [
+                "errors"
+              ]
             }
           }
         }
@@ -437,6 +475,23 @@
         "phone_number",
         "password_digest",
         "registration_facility_id"
+      ]
+    },
+    "find_user": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "sync_approval_status": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "id"
       ]
     },
     "activate_user": {

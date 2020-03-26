@@ -73,6 +73,15 @@ class Api::V4::Models
                      registration_facility_id] }
     end
 
+    def find_user
+      { type: :object,
+        properties: {
+          id: { '$ref' => '#/definitions/uuid' },
+          sync_approval_status: { type: [:string, 'null'] }
+        },
+        required: %w[id] }
+    end
+
     def activate_user
       { type: :object,
         properties: {
@@ -91,6 +100,7 @@ class Api::V4::Models
         blood_sugar: blood_sugar,
         blood_sugars: array_of('blood_sugar'),
         user: user,
+        find_user: find_user,
         activate_user: activate_user
       }
     end

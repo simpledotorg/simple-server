@@ -1,6 +1,31 @@
 require 'swagger_helper'
 
 describe 'Users v4 API', swagger_doc: 'v4/swagger.json' do
+  path '/users/find' do
+    post 'Find a existing user' do
+      tags 'User'
+      parameter name: :phone_number, in: :body, schema: Api::V4::Schema.user_find_request
+
+      let(:known_phone_number) { Faker::PhoneNumber.phone_number }
+      let!(:user) { create(:user, phone_number: known_phone_number) }
+      let(:id) { user.id }
+
+      response '200', 'user is found' do
+        schema Api::V4::Schema.user_find_response
+        let(:phone_number) { { phone_number: known_phone_number } }
+        let(:id) { user.id }
+        run_test!
+      end
+
+      response '404', 'user is not found' do
+        let(:id) { SecureRandom.uuid }
+        let(:phone_number) { { phone_number: Faker::PhoneNumber.phone_number } }
+
+        run_test!
+      end
+    end
+  end
+
   path '/users/activate' do
     post 'Authenticate user, request OTP, and get user information' do
       tags 'User'
@@ -30,7 +55,7 @@ describe 'Users v4 API', swagger_doc: 'v4/swagger.json' do
                     password: 'wrong_password' } }
         end
 
-        schema Api::V4::Schema.error
+        schema Api::V4::Schema.user_activate_error
         run_test!
       end
 
