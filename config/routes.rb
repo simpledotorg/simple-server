@@ -138,6 +138,8 @@ Rails.application.routes.draw do
 
       scope :users do
         post 'find', to: 'users#find'
+        post 'activate', to: 'users#activate'
+        get 'me', to: 'users#me'
       end
     end
   end

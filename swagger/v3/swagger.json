@@ -1288,7 +1288,7 @@
             }
           },
           "401": {
-            "description": "user is not unauthorized"
+            "description": "authentication failed"
           }
         }
       }

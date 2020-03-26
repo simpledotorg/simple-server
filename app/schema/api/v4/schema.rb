@@ -55,10 +55,29 @@ class Api::V4::Schema
       sync_to_user_response(:blood_sugars)
     end
 
-    def find_user_response
+
+    def user_find_response
       { type: :object,
         properties: {
           user: { '$ref' => '#/definitions/find_user' } } }
+    end
+
+    def user_activate_request
+      { type: :object,
+        properties: { user: { '$ref' => '#/definitions/activate_user'} },
+        required: %i[user] }
+    end
+
+    def user_activate_response
+      { type: :object,
+        properties: { user: { '$ref' => '#/definitions/user' } },
+        required: %i[user] }
+    end
+
+    def user_me_response
+      { type: :object,
+        properties: { user: { '$ref' => '#/definitions/user' } },
+        required: %i[user] }
     end
 
     def definitions
