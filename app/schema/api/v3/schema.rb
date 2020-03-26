@@ -150,7 +150,7 @@ class Api::V3::Schema
       { type: :object,
         properties: {
           password_digest: { '$ref' => '#/definitions/bcrypt_password' } },
-        required: %i[passowrd_digest] }
+        required: %i[password_digest] }
     end
 
     def definitions
