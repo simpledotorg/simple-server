@@ -3,7 +3,7 @@ module DashboardHelper
     zero?(value) ? "-" : value
   end
 
-  def zero_if_zero(value)
+  def zero_if_unavailable(value)
     zero?(value) ? "0" : value
   end
 
@@ -40,6 +40,7 @@ module DashboardHelper
   end
 
   def percentage_string(percentage)
+    return '0%'   if percentage.zero?
     return '< 1%' if percentage < 1
 
     "#{percentage.round(0)}%"

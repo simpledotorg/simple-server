@@ -70,7 +70,7 @@
           <div class="count count-1">
             <strong>Registered</strong>
             <div class="big-number">
-              <%= zero_if_zero(@statistics.dig(:daily, :grouped_by_date, :registrations, day_date)) %>
+              <%= zero_if_unavailable(@statistics.dig(:daily, :grouped_by_date, :registrations, day_date)) %>
             </div>
             Patients
           </div>
@@ -78,7 +78,7 @@
           <div class="count count-2">
             <strong>Follow-up</strong>
             <div class="big-number">
-              <%= zero_if_zero(@statistics.dig(:daily, :grouped_by_date, :follow_ups, day_date)) %>
+              <%= zero_if_unavailable(@statistics.dig(:daily, :grouped_by_date, :follow_ups, day_date)) %>
             </div>
             Patients
           </div>
@@ -128,13 +128,13 @@
         <td><span class="percent">
               <%=
                 percentage(@statistics.dig(:monthly, :grouped_by_date, :controlled_visits, month_date),
-                           @statistics.dig(:monthly, :grouped_by_date, :total_visits, month_date))
+                                  @statistics.dig(:monthly, :grouped_by_date, :total_visits, month_date))
               %>
             </span></td>
         <td>
-          <%= zero_if_zero(@statistics.dig(:monthly, :grouped_by_date, :controlled_visits, month_date)) %>
+          <%= zero_if_unavailable(@statistics.dig(:monthly, :grouped_by_date, :controlled_visits, month_date)) %>
           of
-          <%= zero_if_zero(@statistics.dig(:monthly, :grouped_by_date, :total_visits, month_date)) %>
+          <%= zero_if_unavailable(@statistics.dig(:monthly, :grouped_by_date, :total_visits, month_date)) %>
         </td>
       </tr>
     <% end %>

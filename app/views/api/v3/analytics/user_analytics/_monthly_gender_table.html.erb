@@ -3,7 +3,7 @@
   <tr class="total">
     <td class="row-label">All-time</td>
     <td>
-      <%= zero_if_zero(@statistics
+      <%= zero_if_unavailable(@statistics
                            .dig(:all_time, :grouped_by_gender, resource)
                            .values
                            .inject(:+)) %>
@@ -13,7 +13,7 @@
     <tr>
       <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
       <td>
-        <%= zero_if_zero(@statistics
+        <%= zero_if_unavailable(@statistics
                              .dig(:monthly, :grouped_by_gender_and_date, resource)
                              .values
                              .inject { |acc, next_item| acc.merge(next_item) { |_, v1, v2| v1 + v2 } }
@@ -29,18 +29,18 @@
     <tr class="total">
       <td class="row-label">All-time</td>
       <td>
-        <%= zero_if_zero(@statistics.dig(:all_time, :grouped_by_gender, resource, gender)) %>
+        <%= zero_if_unavailable(@statistics.dig(:all_time, :grouped_by_gender, resource, gender)) %>
       </td>
     </tr>
     <% @monthly_period_list.each do |month_date| %>
       <tr>
         <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
         <td>
-          <%= zero_if_zero(@statistics.dig(:monthly,
-                                           :grouped_by_gender_and_date,
-                                           resource,
-                                           gender,
-                                           month_date)) %>
+          <%= zero_if_unavailable(@statistics.dig(:monthly,
+                                                  :grouped_by_gender_and_date,
+                                                  resource,
+                                                  gender,
+                                                  month_date)) %>
         </td>
       </tr>
     <% end %>
