@@ -12,14 +12,14 @@ describe 'Users v4 API', swagger_doc: 'v4/swagger.json' do
 
       response '200', 'user is found' do
         schema Api::V4::Schema.user_find_response
-        let(:phone_number) { known_phone_number }
+        let(:phone_number) { { phone_number: known_phone_number } }
         let(:id) { user.id }
         run_test!
       end
 
       response '404', 'user is not found' do
         let(:id) { SecureRandom.uuid }
-        let(:phone_number) { Faker::PhoneNumber.phone_number }
+        let(:phone_number) { { phone_number: Faker::PhoneNumber.phone_number } }
 
         run_test!
       end
