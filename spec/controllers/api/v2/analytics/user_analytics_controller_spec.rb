@@ -42,7 +42,7 @@ RSpec.describe Api::V2::Analytics::UserAnalyticsController, type: :controller do
 
             LatestBloodPressuresPerPatientPerDay.refresh
 
-            stub_const("Api::V2::Analytics::UserAnalyticsController::DAYS_AGO", 6)
+            stub_const("Api::V3::Analytics::UserAnalyticsController::DAYS_AGO", 6)
           end
 
           it 'has data grouped by date' do
@@ -134,7 +134,7 @@ RSpec.describe Api::V2::Analytics::UserAnalyticsController, type: :controller do
 
             LatestBloodPressuresPerPatientPerDay.refresh
 
-            stub_const("Api::V2::Analytics::UserAnalyticsController::MONTHS_AGO", 6)
+            stub_const("Api::V3::Analytics::UserAnalyticsController::MONTHS_AGO", 6)
           end
 
           it 'has data grouped by date and gender' do
