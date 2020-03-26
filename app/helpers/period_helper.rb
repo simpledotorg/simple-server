@@ -11,6 +11,19 @@ module PeriodHelper
     end
   end
 
+  def period_list_as_dates(period, last_n)
+    period_list(period, last_n).sort.reverse.map do |date|
+      case period
+        when :month then
+          moy_to_date(*date)
+        when :day then
+          doy_to_date(*date)
+        else
+          nil
+      end
+    end
+  end
+
   def periods_as_sql_list(periods)
     periods.map { |year, period| "('#{year}', '#{period}')" }.join(',')
   end

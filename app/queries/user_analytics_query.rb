@@ -17,7 +17,7 @@ class UserAnalyticsQuery
       .follow_ups
       .group(:year, :day)
       .count
-      .map { |group, count| [doy_to_date_obj(*group), count] }
+      .map { |group, count| [doy_to_date(*group), count] }
       .to_h
   end
 
@@ -36,7 +36,7 @@ class UserAnalyticsQuery
       .joins(:patient)
       .group(:gender, :year, :month)
       .count
-      .map { |(gender, year, month), count| [[gender, moy_to_date_obj(year, month)], count] }
+      .map { |(gender, year, month), count| [[gender, moy_to_date(year, month)], count] }
       .to_h
   end
 
@@ -61,7 +61,7 @@ class UserAnalyticsQuery
       visits
         .group(:year, :month)
         .count
-        .map { |group, count| [moy_to_date_obj(*group), count] }
+        .map { |group, count| [moy_to_date(*group), count] }
         .to_h
 
     controlled_visits =
@@ -69,7 +69,7 @@ class UserAnalyticsQuery
         .under_control
         .group(:year, :month)
         .count
-        .map { |group, count| [moy_to_date_obj(*group), count] }
+        .map { |group, count| [moy_to_date(*group), count] }
         .to_h
 
     { total_visits: total_visits,

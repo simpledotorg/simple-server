@@ -12,10 +12,8 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
   MONTHS_AGO = 6
 
   def show
-    @daily_period_list =
-      period_list(:day, DAYS_AGO).sort.reverse.map { |date| doy_to_date_obj(*date) }
-    @monthly_period_list =
-      period_list(:month, MONTHS_AGO).sort.reverse.map { |date| moy_to_date_obj(*date) }
+    @daily_period_list = period_list_as_dates(:day, DAYS_AGO)
+    @monthly_period_list = period_list_as_dates(:month, MONTHS_AGO)
 
     @user_analytics =
       UserAnalyticsQuery.new(current_facility, days_ago: DAYS_AGO, months_ago: MONTHS_AGO)
@@ -32,7 +30,6 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
         formatted_today_string: t(:today_str)
       }
     }
-
 
     respond_to_html_or_json(@statistics)
   end

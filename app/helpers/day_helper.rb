@@ -7,15 +7,15 @@ module DayHelper
     end
   end
 
-  def moy_to_date_obj(year, moy)
+  def moy_to_date(year, moy)
     Date.civil(year.to_i, moy.to_i)
   end
 
-  def doy_to_date_obj(year, doy)
+  def doy_to_date(year, doy)
     Date.ordinal(year.to_i, doy.to_i)
   end
 
-  def doy_to_date(year, doy)
-    doy_to_date_obj(year, doy).strftime('%d-%b')
+  def doy_to_date_str(year, doy)
+    doy_to_date(year, doy).strftime('%d-%b')
   end
 end
