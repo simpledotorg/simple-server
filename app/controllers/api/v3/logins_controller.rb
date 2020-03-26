@@ -15,7 +15,7 @@ class Api::V3::LoginsController < APIController
     else
       user = authentication.user
       authentication.set_access_token
-      authentication.clear_otp
+      authentication.invalidate_otp
       authentication.save
       AuditLog.login_log(user)
       render json: {

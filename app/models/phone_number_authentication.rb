@@ -46,9 +46,8 @@ class PhoneNumberAuthentication < ApplicationRecord
     self.otp_valid_until = generated_otp[:otp_valid_until]
   end
 
-  def clear_otp
-    self.otp = nil
-    self.otp_valid_until = nil
+  def invalidate_otp
+    self.otp_valid_until = Time.at(0)
   end
 
   def self.generate_otp
