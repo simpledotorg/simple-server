@@ -142,28 +142,31 @@
 </div>
 
 <!-- all trophies view -->
-<div class="trophies">
-  <h4>Achievements</h4>
-  <% @statistics.dig(:trophies, :unlocked_trophy_values).sort.each do |trophy| %>
-    <div class="trophy trophy-<%= trophy %>">
+<!-- only show achievements if follow_ups > 10 -->
+<% unless @statistics.dig(:trophies, :locked_trophy_value) == 10 %>
+  <div class="trophies">
+    <h4>Achievements</h4>
+    <% @statistics.dig(:trophies, :unlocked_trophy_values).sort.each do |trophy| %>
+      <div class="trophy trophy-<%= trophy %>">
+        <%= inline_svg('ribbon.svg') %>
+        <em></em>
+        <span>
+          <%= number_to_human(trophy, :format => '%n%u', :units => { thousand: 'K', million: 'M' }) %>
+        </span>
+        <div><%= trophy %> follow-up<br>hypertension patients</div>
+      </div>
+    <% end %>
+
+    <div class="trophy trophy-<%= @statistics.dig(:trophies, :locked_trophy_value) %> trophy-upcoming">
       <%= inline_svg('ribbon.svg') %>
       <em></em>
       <span>
-          <%= number_to_human(trophy, :format => '%n%u', :units => { thousand: 'K', million: 'M' }) %>
-        </span>
-      <div><%= trophy %> follow-up<br>hypertension patients</div>
-    </div>
-  <% end %>
-
-  <div class="trophy trophy-<%= @statistics.dig(:trophies, :locked_trophy_value) %> trophy-upcoming">
-    <%= inline_svg('ribbon.svg') %>
-    <em></em>
-    <span>
         <%= inline_svg('icon_lock.svg') %>
       </span>
-    <div><%= @statistics.dig(:trophies, :locked_trophy_value) %> follow-up<br>hypertension patients</div>
+      <div><%= @statistics.dig(:trophies, :locked_trophy_value) %> follow-up<br>hypertension patients</div>
+    </div>
   </div>
-</div>
+<% end %>
 
 <!-- footer -->
 <footer>
