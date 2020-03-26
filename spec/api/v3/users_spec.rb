@@ -107,7 +107,7 @@ describe 'Users v3 API', swagger_doc: 'v3/swagger.json' do
         run_test!
       end
 
-      response '401', 'user is not unauthorized' do
+      response '401', 'authentication failed' do
         let(:Authorization) { "Bearer #{SecureRandom.hex(32)}" }
         run_test!
       end

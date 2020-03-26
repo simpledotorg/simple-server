@@ -250,11 +250,19 @@ class Api::V3::Models
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' },
           full_name: { '$ref' => '#/definitions/non_empty_string' },
+          sync_approval_status: { type: [:string, 'null'] },
+          sync_approval_status_reason: { type: [:string, 'null'] },
           phone_number: { '$ref' => '#/definitions/non_empty_string' },
           password_digest: { '$ref' => '#/definitions/bcrypt_password' },
-          registration_facility_id: { '$ref' => '#/definitions/uuid' },
+          registration_facility_id: { '$ref' => '#/definitions/uuid' }
         },
-        required: %w[id created_at updated_at full_name phone_number password_digest registration_facility_id] }
+        required: %w[id
+                     created_at
+                     updated_at
+                     full_name
+                     phone_number
+                     password_digest
+                     registration_facility_id] }
     end
 
     def login_user
@@ -316,20 +324,18 @@ class Api::V3::Models
           deleted_at: { '$ref' => '#/definitions/nullable_timestamp' },
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' } },
-        required: [
-          :id,
-          :patient_id,
-          :prior_heart_attack,
-          :prior_stroke,
-          :chronic_kidney_disease,
-          :receiving_treatment_for_hypertension,
-          :diabetes,
-          :diagnosed_with_hypertension,
-          :created_at,
-          :updated_at
-        ]
-      }
+        required: %w[id
+                     patient_id
+                     prior_heart_attack
+                     prior_stroke
+                     chronic_kidney_disease
+                     receiving_treatment_for_hypertension
+                     diabetes
+                     diagnosed_with_hypertension
+                     created_at
+                     updated_at] }
     end
+
 
     def definitions
       { timestamp: timestamp,
