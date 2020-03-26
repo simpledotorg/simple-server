@@ -59,9 +59,6 @@ class Patient < ApplicationRecord
   validates_associated :address, if: :address
   validates_associated :phone_numbers, if: :phone_numbers
 
-  scope :diabetic, -> { joins(:medical_history).merge(MedicalHistory.diabetes_yes) }
-  scope :hypertensive, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes) }
-
   def past_date_of_birth
     if date_of_birth.present? && date_of_birth > Date.current
       errors.add(:date_of_birth, "can't be in the future")

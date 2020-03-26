@@ -44,24 +44,6 @@ describe Patient, type: :model do
   end
 
   context 'Scopes' do
-    describe '.diabetic' do
-      before do
-        diabetic_patients = create_list(:patient, 5)
-        diabetic_patients.each do |patient|
-          create_list(:medical_history, 3, patient: patient)
-        end
-
-        hypertensive_patients = create_list(:patient, 5)
-        hypertensive_patients.each do |patient|
-          create_list(:medical_history, 6, patient: patient)
-        end
-      end
-    end
-
-    describe '.hypertensive' do
-
-    end
-
     describe '.not_contacted' do
       let(:patient_to_followup) { create(:patient, device_created_at: 5.days.ago) }
       let(:patient_to_not_followup) { create(:patient, device_created_at: 1.day.ago) }
