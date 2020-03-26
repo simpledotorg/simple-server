@@ -70,6 +70,14 @@ function allDaysInCarouselElements() {
   return document.getElementsByClassName("day");
 }
 
+function nextSlideButtonElement() {
+  return document.getElementsByClassName("button-next")[0];
+}
+
+function prevSlideButtonElement() {
+  return document.getElementsByClassName("button-prev")[0];
+}
+
 function syncNudgeCardPosition() {
   for (let [position, element] of Object.entries(allDaysInCarouselElements())) {
     if (element === syncNudgeCardElement()) {
@@ -118,18 +126,10 @@ function updateDateAtEndOfCarousel() {
   }
 }
 
-function nextSlide(increment) {
-  nextSlidePosition = window.lastSlidePositionForProgressCards += increment;
-
-  showSyncNudge(nextSlidePosition);
-  showDailyProgressCards(nextSlidePosition);
-  updateDateAtEndOfCarousel();
-}
-
 function showDailyProgressCards(next) {
   var elementsForAllDays = allDaysInCarouselElements();
-  var nextButton = document.getElementsByClassName("button-next")[0];
-  var prevButton = document.getElementsByClassName("button-prev")[0];
+  var nextButton = nextSlideButtonElement();
+  var prevButton = prevSlideButtonElement();
 
   nextButton.disabled = false;
   prevButton.disabled = false;
@@ -149,6 +149,27 @@ function showDailyProgressCards(next) {
   elementsForAllDays[window.lastSlidePositionForProgressCards - 1].classList.add("day-show");
 }
 
+function refreshCarousel(slidePosition) {
+  showSyncNudge(slidePosition);
+  showDailyProgressCards(slidePosition);
+  updateDateAtEndOfCarousel()
+}
+
+//
+// loads at page refresh
+//
+window.onload = function () {
+  window.lastSlidePositionForProgressCards = 1;
+  refreshCarousel(window.lastSlidePositionForProgressCards)
+};
+
+//
+// on-click events
+//
+function nextSlide(increment) {
+  refreshCarousel(window.lastSlidePositionForProgressCards += increment)
+}
+
 function filterDataByGender(tableName) {
   var tableElements = document.getElementsByClassName('progress-table ' + tableName);
   var tableFilterElement = document.getElementsByClassName('card-dropdown ' + tableName);
@@ -161,14 +182,3 @@ function filterDataByGender(tableName) {
 
   selectedTableElement[0].style.display = 'inline-table';
 }
-
-//
-// loads at page refresh
-//
-window.onload = function () {
-  window.lastSlidePositionForProgressCards = 1;
-
-  showSyncNudge(window.lastSlidePositionForProgressCards);
-  showDailyProgressCards(window.lastSlidePositionForProgressCards);
-  updateDateAtEndOfCarousel()
-};
