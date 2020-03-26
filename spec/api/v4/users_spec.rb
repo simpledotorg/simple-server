@@ -4,7 +4,7 @@ describe 'Users v4 API', swagger_doc: 'v4/swagger.json' do
   path '/users/find' do
     post 'Find a existing user' do
       tags 'User'
-      parameter name: :phone_number, in: :query, type: :string, description: 'User phone number'
+      parameter name: :phone_number, in: :body, schema: Api::V4::Schema.user_find_request
 
       let(:known_phone_number) { Faker::PhoneNumber.phone_number }
       let!(:user) { create(:user, phone_number: known_phone_number) }
@@ -55,7 +55,7 @@ describe 'Users v4 API', swagger_doc: 'v4/swagger.json' do
                     password: 'wrong_password' } }
         end
 
-        schema Api::V4::Schema.error
+        schema Api::V4::Schema.user_activate_error
         run_test!
       end
 

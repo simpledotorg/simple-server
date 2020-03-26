@@ -155,9 +155,18 @@
         "parameters": [
           {
             "name": "phone_number",
-            "in": "query",
-            "type": "string",
-            "description": "User phone number"
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "phone_number": {
+                  "$ref": "#/definitions/non_empty_string"
+                }
+              },
+              "required": [
+                "phone_number"
+              ]
+            }
           }
         ],
         "responses": {
@@ -221,25 +230,22 @@
             "schema": {
               "type": "object",
               "properties": {
-                "id": {
-                  "type": "string",
-                  "format": "uuid",
-                  "description": "Id of the record with errors"
-                },
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "description": "List of json schema error strings describing validation errors"
-                },
-                "field_with_error": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
+                "errors": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "List of descriptive error strings"
+                    }
                   }
                 }
-              }
+              },
+              "required": [
+                "errors"
+              ]
             }
           }
         }

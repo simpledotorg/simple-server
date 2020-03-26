@@ -55,6 +55,11 @@ class Api::V4::Schema
       sync_to_user_response(:blood_sugars)
     end
 
+    def user_find_request
+      { type: :object,
+        properties: { phone_number: { '$ref' => '#/definitions/non_empty_string'} },
+        required: %i[phone_number] }
+    end
 
     def user_find_response
       { type: :object,
@@ -72,6 +77,23 @@ class Api::V4::Schema
       { type: :object,
         properties: { user: { '$ref' => '#/definitions/user' } },
         required: %i[user] }
+    end
+
+    def user_activate_error
+      { type: :object,
+        properties: {
+          errors: {
+            type: :object,
+            properties: {
+              user: {
+                type: :array,
+                items: { type: :string },
+                description: 'List of descriptive error strings'
+              }
+            }
+          }
+        } ,
+        required: %i[errors] }
     end
 
     def user_me_response
