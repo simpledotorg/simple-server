@@ -119,16 +119,16 @@ RSpec.describe Api::V4::BloodSugarsController, type: :controller do
 
       context 'creates encounters' do
         it 'assumes the same encounter for the blood_sugars recorded on the same day' do
-          patient = FactoryBot.create(:patient)
+          patient = create(:patient)
 
           blood_sugar_recording = Time.new(2019, 1, 1, 1, 1).utc
           encountered_on = blood_sugar_recording.to_date
 
           blood_sugars = (1..3).map do
-            FactoryBot.build(:blood_sugar,
-                             facility: request_facility,
-                             patient: patient,
-                             recorded_at: blood_sugar_recording)
+            build(:blood_sugar,
+                  facility: request_facility,
+                  patient: patient,
+                  recorded_at: blood_sugar_recording)
           end
 
           blood_sugars_payload = blood_sugars.map(&method(:build_blood_sugar_payload))
@@ -143,7 +143,7 @@ RSpec.describe Api::V4::BloodSugarsController, type: :controller do
         end
 
         it 'should create different encounters for blood_sugars recorded on different days' do
-          patient = FactoryBot.create(:patient)
+          patient = create(:patient)
 
           day_1 = Time.new(2019, 1, 1, 1, 1).utc
           day_2 = Time.new(2019, 1, 2, 1, 1).utc
@@ -154,10 +154,10 @@ RSpec.describe Api::V4::BloodSugarsController, type: :controller do
           encountered_on_3 = day_3.to_date
 
           blood_sugars = [day_1, day_2, day_3].map do |date|
-            FactoryBot.build(:blood_sugar,
-                             facility: request_facility,
-                             patient: patient,
-                             recorded_at: date)
+            build(:blood_sugar,
+                  facility: request_facility,
+                  patient: patient,
+                  recorded_at: date)
           end
 
           _add_blood_sugars = create_list(:blood_sugar, 5)

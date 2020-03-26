@@ -1144,7 +1144,7 @@
                 }
               },
               "required": [
-                "passowrd_digest"
+                "password_digest"
               ]
             }
           }
@@ -1169,7 +1169,7 @@
             }
           },
           "401": {
-            "description": "user is not unauthorized"
+            "description": "authentication failed"
           }
         }
       }
@@ -1862,6 +1862,18 @@
         },
         "registration_facility_id": {
           "$ref": "#/definitions/uuid"
+        },
+        "sync_approval_status": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sync_approval_status_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
       "required": [
