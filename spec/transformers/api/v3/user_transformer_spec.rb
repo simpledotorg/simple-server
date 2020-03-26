@@ -9,7 +9,15 @@ RSpec.describe Api::V3::UserTransformer do
     before do
       allow(Api::V3::Transformer).to receive(:to_response)
         .with(user)
-        .and_return({ 'user' => 'attributes'})
+        .and_return(
+          'user' => 'attributes',
+          'otp' => '123456',
+          'otp_valid_until' => Time.now,
+          'access_token' => 'supersecretaccesstoken',
+          'logged_in_at' => Time.now,
+          'role' => 'admin',
+          'organization_id' => 'organization-id'
+        )
     end
 
     it 'includes user attributes' do
