@@ -19,6 +19,22 @@ en:
     patients_enrolled: "How many new patients are enrolled at %{facility_name}?"
     all_time_patients: "All time: %{count} patients"
     updated_at: "Updated at %{time}"
+  user_analytics:
+    hypertension: 'Hypertension'
+    diabetes: 'Diabetes'
+    genders: ['all', male', 'female', 'transgender']
+    all_time: 'All-time'
+    follow_up_patients: 'Follow-up hypertension patients'
+    registered_patients: 'Registered Patients'
+    hypertension_control: 'Hypertension control'
+    hypertension_control_desc: 'How many patients with hypertension had BP below 140/90 at their last follow-up visit in the month?'
+    notes: 'Notes'
+    footer_note_1: "Data is for all activity at %{facility_name}. If data appears out of date, tap the \"Sync pending\" link on the home screen."
+    footer_note_2: 'A follow-up patient is only counted for one visit each month. If a patient follows up multiple times in a month, he or she is only counted once.'
+    thank_you: 'Thank You'
+    thank_you_note: 'Thank you for all of your hard work treating patients with hypertension. Your work saves lives from heart attacks and strokes.'
+    updated: 'Updated: %{time}'
+    ratio_string: '%{value_1} of %{value_2}'
   dashboard:
     graphics:
       graphics_title_html: "What happened in <b>%{current_quarter_string}</b> to the %{patients_in_previous_quarter} patients registered during <b>%{previous_quarter_string}</b>?"
