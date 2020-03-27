@@ -262,7 +262,7 @@ RSpec.describe Api::V2::Analytics::UserAnalyticsController, type: :controller do
               response_body = JSON.parse(response.body, symbolize_names: true)
 
               expect(response_body.dig(:metadata, :last_updated_at).to_date)
-                .to eq(Date.today)
+                .to eq(Time.current.to_date)
             end
 
             it 'has the date at which the request was made' do
