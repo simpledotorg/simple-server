@@ -35,7 +35,7 @@
 </head>
 
 <body>
-<div class="updated-date">Updated: <span><%= l(@statistics.dig(:metadata, :last_updated_at)) %></span></div>
+<div class="updated-date">Updated: <span><%= @statistics.dig(:metadata, :last_updated_at) %></span></div>
 
 <div class="card" style="min-height: 210px;">
   <!-- daily card switcher -->
