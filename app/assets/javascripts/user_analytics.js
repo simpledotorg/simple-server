@@ -81,7 +81,7 @@ function prevSlideButtonElement() {
 function syncNudgeCardPosition() {
   for (let [position, element] of Object.entries(allDaysInCarouselElements())) {
     if (element === syncNudgeCardElement()) {
-      return parseInt(position);
+      return parseInt(position) + 1;
     }
   }
 
@@ -104,6 +104,7 @@ function showSyncNudge(currentSlide) {
   }
 
   if (!weHaveDataForToday && (currentSlide === syncNudgeCardPosition())) {
+
     // re-enable the nudge card if we don't have today's data
     syncNudgeCardElement().classList.add("day");
     syncNudgeCardElement().style.display = 'block';
