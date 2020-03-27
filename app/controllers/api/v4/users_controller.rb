@@ -1,9 +1,16 @@
 class Api::V4::UsersController < APIController
-  skip_before_action :current_user_present?, only: [:activate]
-  skip_before_action :validate_sync_approval_status_allowed, only: [:activate, :me]
-  skip_before_action :authenticate, only: [:activate]
-  skip_before_action :validate_facility, only: [:activate]
-  skip_before_action :validate_current_facility_belongs_to_users_facility_group, only: [:activate]
+  skip_before_action :current_user_present?, only: [:find, :activate]
+  skip_before_action :validate_sync_approval_status_allowed, only: [:find, :activate, :me]
+  skip_before_action :authenticate, only: [:find, :activate]
+  skip_before_action :validate_facility, only: [:find, :activate]
+  skip_before_action :validate_current_facility_belongs_to_users_facility_group, only: [:find, :activate]
+
+  def find
+    return head :bad_request unless params[:phone_number].present?
+    user = PhoneNumberAuthentication.find_by(phone_number: params[:phone_number])&.user
+    return head :not_found unless user.present?
+    render json: to_find_response(user), status: :ok
+  end
 
   def activate
     return head :bad_request unless activate_params.present?
@@ -25,12 +32,12 @@ class Api::V4::UsersController < APIController
       end
 
       AuditLog.login_log(user)
-      render json: user_to_response(user), status: :ok
+      render json: to_response(user), status: :ok
     end
   end
 
   def me
-    render json: user_to_response(current_user), status: :ok
+    render json: to_response(current_user), status: :ok
   end
 
   private
@@ -39,7 +46,11 @@ class Api::V4::UsersController < APIController
     params.require(:user).permit(:id, :password)
   end
 
-  def user_to_response(user)
+  def to_find_response(user)
+    { user: Api::V4::UserTransformer.to_find_response(user) }
+  end
+
+  def to_response(user)
     { 'user' => Api::V4::UserTransformer.to_response(user) }
   end
 
