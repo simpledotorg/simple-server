@@ -1,10 +1,5 @@
 <form>
   <select class="card-dropdown <%= data_table_name %>" onchange='filterDataByGender("<%= data_table_name %>")'>
-    <!--
-     - We don't need "Hypertension: All" unless DM is enabled.
-     - We don't need the word "Hypertension" at all unless DM is enabled.
-    -->
-
     <% hypertension_option_text = statistics.dig(:metadata, :is_diabetes_enabled) ? 'Hypertension: ' : '' %>
 
     <option value="hypertension:all"><%= "#{hypertension_option_text}All" %></option>

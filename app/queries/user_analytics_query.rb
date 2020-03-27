@@ -78,7 +78,8 @@ class UserAnalyticsQuery
 
   def all_time_follow_ups
     MyFacilities::FollowUpsQuery
-      .total_follow_ups(current_facility)
+      .new(facilities: current_facility)
+      .total_follow_ups
       .joins(:patient)
       .group(:gender)
       .count

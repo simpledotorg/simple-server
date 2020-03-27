@@ -10,6 +10,8 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
 
   DAYS_AGO = 30
   MONTHS_AGO = 6
+  TROPHY_MILESTONES = [10, 25, 50, 100, 250, 500, 1_000, 2_000, 3_000, 4_000, 5_000]
+  TROPHY_MILESTONE_INCR = 10_000
 
   def show
     @daily_period_list = period_list_as_dates(:day, DAYS_AGO)
@@ -118,17 +120,14 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
   # 30_000
   # etc.
   #
-  TROPHY_MILESTONES =
-    [10, 25, 50, 100, 250, 500, 1_000, 2_000, 3_000, 4_000, 5_000]
-  POST_SEED_MILESTONE_INCR = 10_000
-
+  # i.e. increment by TROPHY_MILESTONE_INCR
   def prepare_trophies
-    total_follow_ups = MyFacilities::FollowUpsQuery.total_follow_ups(current_facility).count
+    total_follow_ups = MyFacilities::FollowUpsQuery.new(facilities: current_facility).total_follow_ups.count
 
     all_trophies =
       total_follow_ups > TROPHY_MILESTONES.last ?
         [*TROPHY_MILESTONES,
-         *(POST_SEED_MILESTONE_INCR..(total_follow_ups + POST_SEED_MILESTONE_INCR)).step(POST_SEED_MILESTONE_INCR)] :
+         *(TROPHY_MILESTONE_INCR..(total_follow_ups + TROPHY_MILESTONE_INCR)).step(TROPHY_MILESTONE_INCR)] :
         TROPHY_MILESTONES
 
     unlocked_trophies_until = all_trophies.index { |v| total_follow_ups < v }
@@ -145,7 +144,7 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
   #
   # Groups by gender+date in the following format,
   #
-  # { :grouped_by_gender =>
+  # { :grouped_by_gender_and_date =>
   #    { "male" =>
   #        { "Sun, 01 Mar 2020" => 21 },
   #          "Tue, 01 Oct 2019" => 0 },
@@ -154,17 +153,17 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
   #          "Tue, 01 Oct 2019" => 0 } } }
   #
   def group_by_gender_and_date(resource_data)
-    resource_data.inject(autovivified_hash) do |acc, (group, resource)|
+    resource_data.inject(autovivified_hash) do |by_gender_and_date, (group, resource)|
       gender, date = *group
-      acc[gender][date] = resource
-      acc
+      by_gender_and_date[gender][date] = resource
+      by_gender_and_date
     end
   end
 
   def group_by_gender(resource_data)
-    resource_data.inject({}) do |acc, (gender, resource)|
-      acc[gender] = resource
-      acc
+    resource_data.inject({}) do |by_gender, (gender, resource)|
+      by_gender[gender] = resource
+      by_gender
     end
   end
 

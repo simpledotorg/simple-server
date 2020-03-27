@@ -1,12 +1,12 @@
 module PeriodHelper
   def period_list(period, last_n)
     case period
-      when :quarter then
+      when :quarter
         last_n_quarters(n: last_n, inclusive: true)
-      when :month then
+      when :month
         last_n_months(n: last_n, inclusive: true)
           .map { |month| [month.year, month.month] }
-      when :day then
+      when :day
         last_n_days(n: last_n, inclusive: true)
     end
   end
@@ -14,9 +14,9 @@ module PeriodHelper
   def period_list_as_dates(period, last_n)
     period_list(period, last_n).sort.reverse.map do |date|
       case period
-        when :month then
+        when :month
           moy_to_date(*date)
-        when :day then
+        when :day
           doy_to_date(*date)
         else
           nil

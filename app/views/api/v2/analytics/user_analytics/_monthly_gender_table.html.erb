@@ -13,11 +13,12 @@
     <tr>
       <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
       <td>
-        <%= zero_if_unavailable(@statistics
-                                    .dig(:monthly, :grouped_by_gender_and_date, resource)
-                                    .values
-                                    .inject { |acc, next_item| acc.merge(next_item) { |_, v1, v2| v1 + v2 } }
-                                    &.dig(month_date)) %>
+        <% data_for_resource = @statistics.dig(:monthly, :grouped_by_gender_and_date, resource).values %>
+        <% sum_by_gender_and_group_monthly =
+               data_for_resource
+                   .inject { |by_month, count_for_gender| by_month.merge(count_for_gender) { |_, v1, v2| v1 + v2 } } %>
+
+        <%= zero_if_unavailable(sum_by_gender_and_group_monthly&.dig(month_date)) %>
       </td>
     </tr>
   <% end %>
