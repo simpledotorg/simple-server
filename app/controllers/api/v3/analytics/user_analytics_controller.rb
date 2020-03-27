@@ -27,7 +27,7 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
         is_diabetes_enabled: false,
         last_updated_at: l(Time.current),
         formatted_next_date: display_date(Time.current + 1.day),
-        formatted_today_string: t(:today_str)
+        today_string: t(:today_str)
       }
     }
 

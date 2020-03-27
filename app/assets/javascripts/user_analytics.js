@@ -27,34 +27,28 @@ function today() {
 }
 
 function yesterday() {
-  var todayDate = today();
+  const todayDate = today();
   return new Date(todayDate.setDate(todayDate.getDate() - 1));
+}
+
+function todayString() {
+  return statistics().metadata.today_string;
 }
 
 function formattedTomorrowDate() {
   return statistics().metadata.formatted_next_date;
 }
 
-function formattedTodayString() {
-  return statistics().metadata.formatted_today_string;
-}
-
 function dailyStatisticsDates() {
-  var dates = [];
-
-  for (let [_, item] of dailyStatistics()) {
-    dates.push(item)
-  }
+  const dates =
+    dailyStatistics().map(([_, stat]) => stat);
 
   return Object.keys(Object.assign(...dates));
 }
 
 function latestDateInDailyStatistics() {
-  var dates = [];
-
-  for (let date of dailyStatisticsDates()) {
-    dates.push(Date.parse(date));
-  }
+  const dates =
+    dailyStatisticsDates().map(date => Date.parse(date));
 
   return new Date(Math.max.apply(null, dates));
 }
@@ -62,25 +56,31 @@ function latestDateInDailyStatistics() {
 //
 // elements
 //
-function syncNudgeCardElement() {
+function $syncNudgeCard() {
   return document.querySelector('#daily-stats-card > .count-empty');
 }
 
-function allDaysInCarouselElements() {
+function $allDaysInCarousel() {
   return document.getElementsByClassName("day");
 }
 
-function nextSlideButtonElement() {
+function $nextSlideButton() {
   return document.getElementsByClassName("button-next")[0];
 }
 
-function prevSlideButtonElement() {
+function $prevSlideButton() {
   return document.getElementsByClassName("button-prev")[0];
 }
 
+//
+// behaviour
+//
 function syncNudgeCardPosition() {
-  for (let [position, element] of Object.entries(allDaysInCarouselElements())) {
-    if (element === syncNudgeCardElement()) {
+  const syncNudgeCardElement = $syncNudgeCard();
+  const allDaysInCarousel = $allDaysInCarousel();
+
+  for (let [position, element] of Object.entries(allDaysInCarousel)) {
+    if (element === syncNudgeCardElement) {
       return parseInt(position) + 1;
     }
   }
@@ -88,37 +88,34 @@ function syncNudgeCardPosition() {
   return -1
 }
 
-//
-// behaviour
-//
 function showSyncNudge(currentSlide) {
-  var weHaveDataForToday = false;
+  let dataForTodayPresent = false;
+  let syncNudgeCardElement = $syncNudgeCard();
 
   for (let date of dailyStatisticsDates()) {
     if (date === formatDate(today())) {
       // don't count the sync nudge card as a real day card
-      weHaveDataForToday = true;
-      syncNudgeCardElement().classList.remove("day");
+      dataForTodayPresent = true;
+      syncNudgeCardElement.classList.remove("day");
       break;
     }
   }
 
-  if (!weHaveDataForToday && (currentSlide === syncNudgeCardPosition())) {
-
+  if (!dataForTodayPresent && (currentSlide === syncNudgeCardPosition())) {
     // re-enable the nudge card if we don't have today's data
-    syncNudgeCardElement().classList.add("day");
-    syncNudgeCardElement().style.display = 'block';
+    syncNudgeCardElement.classList.add("day");
+    syncNudgeCardElement.style.display = 'block';
   }
 }
 
 function updateDateAtEndOfCarousel() {
-  var latestDate = formatDate(latestDateInDailyStatistics());
-  var todayDate = formatDate(today());
-  var yesterdayDate = formatDate(yesterday());
-  var endOfCarouselElement = allDaysInCarouselElements()[0].querySelector('.stat-day');
+  const latestDate = formatDate(latestDateInDailyStatistics());
+  const todayDate = formatDate(today());
+  const yesterdayDate = formatDate(yesterday());
+  const endOfCarouselElement = $allDaysInCarousel()[0].querySelector('.stat-day');
 
   if (latestDate === todayDate || latestDate === yesterdayDate) {
-    endOfCarouselElement.innerHTML = formattedTodayString();
+    endOfCarouselElement.innerHTML = todayString();
     return;
   }
 
@@ -128,9 +125,9 @@ function updateDateAtEndOfCarousel() {
 }
 
 function showDailyProgressCards(next) {
-  var elementsForAllDays = allDaysInCarouselElements();
-  var nextButton = nextSlideButtonElement();
-  var prevButton = prevSlideButtonElement();
+  const elementsForAllDays = $allDaysInCarousel();
+  let nextButton = $nextSlideButton();
+  let prevButton = $prevSlideButton();
 
   nextButton.disabled = false;
   prevButton.disabled = false;
@@ -172,10 +169,10 @@ function nextSlide(increment) {
 }
 
 function filterDataByGender(tableName) {
-  var tableElements = document.getElementsByClassName('progress-table ' + tableName);
-  var tableFilterElement = document.getElementsByClassName('card-dropdown ' + tableName);
-  var selectedOption = tableFilterElement[0].selectedOptions[0].value;
-  var selectedTableElement = document.getElementsByClassName('progress-table ' + tableName + ' ' + selectedOption);
+  let tableElements = document.getElementsByClassName('progress-table ' + tableName);
+  const tableFilterElement = document.getElementsByClassName('card-dropdown ' + tableName);
+  const selectedOption = tableFilterElement[0].selectedOptions[0].value;
+  let selectedTableElement = document.getElementsByClassName('progress-table ' + tableName + ' ' + selectedOption);
 
   for (let i = 0; i < tableElements.length; i++) {
     tableElements[i].style.display = 'none';
