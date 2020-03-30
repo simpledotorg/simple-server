@@ -423,12 +423,6 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
           end
         end
 
-        it 'has the achievements section' do
-          get :show, format: :html
-
-          expect(response.body).to match(/Achievements/)
-        end
-
         it 'has the footer' do
           get :show, format: :html
 
