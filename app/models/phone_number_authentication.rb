@@ -46,6 +46,10 @@ class PhoneNumberAuthentication < ApplicationRecord
     self.otp_valid_until = generated_otp[:otp_valid_until]
   end
 
+  def invalidate_otp
+    self.otp_valid_until = Time.at(0)
+  end
+
   def self.generate_otp
     digits = FeatureToggle.enabled?('FIXED_OTP_ON_REQUEST_FOR_QA') ? [0] : (0..9).to_a
     otp = ''
