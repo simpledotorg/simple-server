@@ -3,7 +3,7 @@ class UserAnalyticsQuery
   include MonthHelper
   include PeriodHelper
 
-  attr_reader :current_facility, :months_ago, :days_ago
+  attr_reader :current_facility, :days_ago, :months_ago
 
   def initialize(facility, days_ago: 30, months_ago: 6)
     @current_facility = facility
