@@ -12,7 +12,7 @@ RSpec.describe Api::V3::LoginsController, type: :controller do
               otp: db_user.otp } }
       end
 
-      it 'should respond with access token for the user' do
+      it 'responds with access token for the user' do
         post :login_user, params: request_params
 
         db_user.reload
@@ -21,7 +21,7 @@ RSpec.describe Api::V3::LoginsController, type: :controller do
         expect(JSON(response.body)['access_token']).to eq(db_user.access_token)
       end
 
-      it 'should update the access token for the user' do
+      it 'updates the access token for the user' do
         old_access_token = db_user.access_token
         post :login_user, params: request_params
 
@@ -29,25 +29,32 @@ RSpec.describe Api::V3::LoginsController, type: :controller do
         new_access_token = db_user.access_token
         expect(new_access_token).not_to eq(old_access_token)
       end
+
+      it 'expires otp after use' do
+        post :login_user, params: request_params
+
+        post :login_user, params: request_params
+        expect(response.status).to eq(401)
+        expect(JSON(response.body)).to eq('errors' => { 'user' => [I18n.t('login.error_messages.expired_otp')] })
+      end
     end
 
     describe 'request with valid phone number, password and otp, but otp is expired' do
       let(:db_user) do
         Timecop.freeze(Date.current - 3) { FactoryBot.create(:user, password: password) }
       end
+
       let(:request_params) do
         { user:
             { phone_number: db_user.phone_number,
               password: password,
               otp: db_user.otp } }
       end
-      it 'should respond with http status 401' do
+
+      it 'responds with http status 401' do
         post :login_user, params: request_params
         expect(response.status).to eq(401)
-        expect(JSON(response.body))
-          .to eq('errors' => {
-                   'user' => [I18n.t('login.error_messages.expired_otp')]
-                 })
+        expect(JSON(response.body)).to eq('errors' => { 'user' => [I18n.t('login.error_messages.expired_otp')] })
       end
     end
 
@@ -58,7 +65,8 @@ RSpec.describe Api::V3::LoginsController, type: :controller do
               password: '1234',
               otp: 'wrong otp' } }
       end
-      it 'should respond with http status 401' do
+
+      it 'responds with http status 401' do
         post :login_user, params: request_params
         expect(response.status).to eq(401)
         expect(JSON(response.body))
@@ -75,7 +83,8 @@ RSpec.describe Api::V3::LoginsController, type: :controller do
               password: 'wrong password',
               otp: db_user.otp } }
       end
-      it 'should respond with http status 401' do
+
+      it 'responds with http status 401' do
         post :login_user, params: request_params
         expect(response.status).to eq(401)
         expect(JSON(response.body))
@@ -92,7 +101,8 @@ RSpec.describe Api::V3::LoginsController, type: :controller do
               password: '1234',
               otp: db_user.otp } }
       end
-      it 'should respond with http status 401' do
+
+      it 'responds with http status 401' do
         post :login_user, params: request_params
         expect(response.status).to eq(401)
         expect(JSON(response.body))
