@@ -287,7 +287,7 @@ RSpec.describe Api::V2::Analytics::UserAnalyticsController, type: :controller do
               get :show, format: :json
               response_body = JSON.parse(response.body, symbolize_names: true)
 
-              expect(response_body.dig(:metadata, :formatted_today_string))
+              expect(response_body.dig(:metadata, :today_string))
                 .to eq(I18n.t(:today_str))
             end
 
@@ -390,6 +390,37 @@ RSpec.describe Api::V2::Analytics::UserAnalyticsController, type: :controller do
           get :show, format: :html
 
           expect(response.body).to match(/Hypertension control/)
+        end
+
+        context 'achievements' do
+          it 'has the section visible' do
+            #
+            # create BPs (follow-ups)
+            #
+            patients = create_list(:patient, 3, registration_facility: request_facility)
+            patients.each do |patient|
+              [patient.recorded_at + 1.month,
+               patient.recorded_at + 2.months,
+               patient.recorded_at + 3.months,
+               patient.recorded_at + 4.months].each do |date|
+                travel_to(date) do
+                  create(:blood_pressure,
+                         patient: patient,
+                         facility: request_facility,
+                         user: request_user)
+                end
+              end
+            end
+            LatestBloodPressuresPerPatientPerDay.refresh
+
+            get :show, format: :html
+            expect(response.body).to match(/Achievements/)
+          end
+
+          it 'is not visible if there are insufficient follow_ups' do
+            get :show, format: :html
+            expect(response.body).to_not match(/Achievements/)
+          end
         end
 
         it 'has the achievements section' do
