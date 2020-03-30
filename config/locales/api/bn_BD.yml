@@ -19,6 +19,22 @@ bn-BD:
     patients_enrolled: "কতজন নতুন রোগী %{facility_name} এ নথিভুক্ত রয়েছেন?"
     all_time_patients: "সব সময়: %{count} জন রোগী"
     updated_at: "%{time} এ আপডেট করা হয়েছে"
+  user_analytics:
+    hypertension:
+    diabetes:
+    genders:
+    all_time:
+    follow_up_patients:
+    registered_patients:
+    hypertension_control:
+    hypertension_control_desc:
+    notes:
+    footer_note_1:
+    footer_note_2:
+    thank_you:
+    thank_you_note:
+    updated:
+    ratio_string:
   dashboard:
     graphics:
       graphics_title_html: "<b>%{previous_quarter_string}</b> এর সময় নিবন্ধন করা %{patients_in_previous_quarter} জন রোগীর <b>%{current_quarter_string}</b> এ কী হয়েছিল?"
