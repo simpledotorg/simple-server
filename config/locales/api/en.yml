@@ -29,7 +29,7 @@ en:
     hypertension_control: 'Hypertension control'
     hypertension_control_desc: 'How many patients with hypertension had BP below 140/90 at their last follow-up visit in the month?'
     notes: 'Notes'
-    footer_note_1: "Data is for all activity at %{facility_name}. If data appears out of date, tap the \"Sync pending\" link on the home screen."
+    footer_note_1: 'Data is for all activity at %{facility_name}. If data appears out of date, tap the "Sync pending" link on the home screen.'
     footer_note_2: 'A follow-up patient is only counted for one visit each month. If a patient follows up multiple times in a month, he or she is only counted once.'
     thank_you: 'Thank You'
     thank_you_note: 'Thank you for all of your hard work treating patients with hypertension. Your work saves lives from heart attacks and strokes.'
