@@ -88,7 +88,7 @@ class MyFacilitiesController < AdminController
     @display_periods = missed_visits_query.periods
     @missed_visits_by_facility = missed_visits_query.missed_visits_by_facility
     @calls_made = missed_visits_query.calls_made.count
-    @all_time_registrations = missed_visits_query.patients.group(:registration_facility_id).count
+    @total_registrations = missed_visits_query.total_registrations
     @totals_by_period = missed_visits_query.missed_visit_totals
   end
 

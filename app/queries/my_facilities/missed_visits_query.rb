@@ -6,8 +6,6 @@ class MyFacilities::MissedVisitsQuery
   include QuarterHelper
   include MonthHelper
 
-  REGISTRATION_BUFFER = 2.months
-
   attr_reader :periods
 
   def initialize(facilities: Facility.all, period: :quarter, last_n: 3)
@@ -17,35 +15,7 @@ class MyFacilities::MissedVisitsQuery
     @period = period
     @periods = period_list(period, last_n)
     @latest_period = @periods.first
-  end
-
-  def patients
-    @patients ||=
-      Patient
-      .joins('INNER JOIN latest_blood_pressures_per_patients
-              ON patients.id = latest_blood_pressures_per_patients.patient_id')
-      .where(registration_facility_id: @facilities)
-      .where('patient_recorded_at < ?', Time.current.beginning_of_day - REGISTRATION_BUFFER)
-  end
-
-  def patients_by_period
-    @patients_by_period ||=
-      @periods.map do |year, period|
-        period_start = (@period == :quarter ? local_quarter_start(year, period) : local_month_start(year, period))
-        [[year, period], patients.where('recorded_at < ?', period_start - REGISTRATION_BUFFER)]
-      end.to_h
-  end
-
-  def visits_by_period
-    @visits_by_period ||=
-      patients_by_period.map do |key, patients|
-        case @period
-        when :quarter
-          [key, visits_in_quarter(*key, patients)]
-        when :month
-          [key, visits_in_month(*key, patients)]
-        end
-      end.to_h
+    @last_n = last_n
   end
 
   def calls_made
@@ -63,16 +33,34 @@ class MyFacilities::MissedVisitsQuery
       .group('facilities.id::uuid')
   end
 
+  def bp_query_by_cohort
+    @bp_query_by_cohort ||=
+      @periods.map do |year, period|
+        if @period == :month
+          bp_query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
+                                                                 cohort_period: { cohort_period: :month,
+                                                                                  registration_year: year,
+                                                                                  registration_month: period })
+        else
+          bp_query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
+                                                                 cohort_period: { cohort_period: :quarter,
+                                                                                  registration_year: year,
+                                                                                  registration_quarter: period })
+        end
+        [[year, period], bp_query]
+      end.to_h
+  end
+
   def missed_visits_by_facility
     @missed_visits_by_facility ||=
-      patients_by_period.map do |(year, period), patients|
-        responsible_patients = patients.group(:registration_facility_id).count
-        visited_patients = visits_by_period[[year, period]].group(:registration_facility_id).count
+      bp_query_by_cohort.map do |(year, period), bp_query|
+        cohort_registrations = bp_query.cohort_registrations.group(:registration_facility_id).count
+        cohort_bps = bp_query.cohort_bps.group(:registration_facility_id).count
 
-        responsible_patients.map do |facility_id, patient_count|
+        cohort_registrations.map do |facility_id, patient_count|
           [[facility_id, year, period],
            { patients: patient_count.to_i,
-             missed: patient_count.to_i - visited_patients[facility_id].to_i }]
+             missed: patient_count.to_i - cohort_bps[facility_id].to_i }]
         end.to_h
       end.reduce(:merge)
   end
@@ -91,24 +79,22 @@ class MyFacilities::MissedVisitsQuery
       end
   end
 
+  def total_registrations
+    registrations_query = MyFacilities::RegistrationsQuery.new(facilities: @facilities,
+                                                               period: @selected_period,
+                                                               last_n: @last_n)
+    @total_registrations ||=
+      registrations_query.total_registrations.group(:registration_facility_id).count
+  end
+
   private
-
-  def visits_in_quarter(year, quarter, patients)
-    LatestBloodPressuresPerPatientPerQuarter
-      .where(year: year, quarter: quarter, patient: patients)
-  end
-
-  def visits_in_month(year, month, patients)
-    LatestBloodPressuresPerPatientPerMonth
-      .where(year: year, month: month, patient: patients)
-  end
 
   def period_list(period, last_n)
     case period
     when :quarter then
-      last_n_quarters(n: last_n, inclusive: true)
+      last_n_quarters(n: last_n, inclusive: false)
     when :month then
-      last_n_months(n: last_n, inclusive: true)
+      last_n_months(n: last_n, inclusive: false)
         .map { |month| [month.year, month.month] }
     end
   end
