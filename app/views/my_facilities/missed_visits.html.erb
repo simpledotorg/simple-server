@@ -8,13 +8,13 @@
           <% when :quarter %>
             <% example_quarter = @display_periods.first %>
             <% following_quarter = next_year_and_quarter(*example_quarter) %>
-            <p>Patients who were recorded during a quarter <%= "(eg: Q#{example_quarter.second}-#{example_quarter.first})" %>,
+            <p>Patients who were registered during a quarter <%= "(eg: Q#{example_quarter.second}-#{example_quarter.first})" %>,
               and had no BPs recorded in the following quarter <%= "(Q#{following_quarter.second}-#{following_quarter.first})" %></p>
           <% when :month %>
             <% example_month = @display_periods.first %>
             <% following_months = month_short_name_and_year(local_month_start(*example_month) + 1.months) +
                 ', ' + month_short_name_and_year(local_month_start(*example_month) + 2.months) %>
-            <p>Patients who were recorded during a month <%= "(eg: #{month_short_name_and_year(local_month_start(*example_month))})" %>,
+            <p>Patients who were registered during a month <%= "(eg: #{month_short_name_and_year(local_month_start(*example_month))})" %>,
               and had no BPs recorded in the following two months <%= "(#{following_months})" %> </p>
           <% end %>
         </div>
@@ -51,11 +51,11 @@
           <% case @selected_period %>
           <% when :quarter %>
             <% @display_periods.reverse.each do |(year, quarter)| %>
-              <th colspan="2"><%= "Patients registered in Q#{quarter}-#{year}" %></th>
+              <th colspan="2"><%= "Reg in Q#{quarter}-#{year}" %></th>
             <% end %>
           <% when :month %>
             <% @display_periods.reverse.each do |(year, month)| %>
-              <th colspan="2"><%= "Patients registered in #{month_short_name_and_year(local_month_start(year, month))}" %></th>
+              <th colspan="2"><%= "Reg in #{month_short_name_and_year(local_month_start(year, month))}" %></th>
             <% end %>
           <% end %>
           <th>Calls made <sup>1</sup></th>
@@ -87,7 +87,7 @@
                                                               @display_periods.first.second)) %>
             <% end %>
           </th>
-          <th class="row-label sort-label">Registered patients <sup>2</sup></th>
+          <th class="row-label sort-label">Registered patients</th>
           <th class="mobile">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
         </tr>
         </thead>
@@ -141,8 +141,6 @@
           their
           personal phone number or used another phone.
         </li>
-
-        <li><strong>Total registered patients:</strong> All registered patients.</li>
       </ol>
     </section>
   </div>

@@ -21,8 +21,8 @@
       <div class="row">
         <div class="col-lg-9 pr-5 pr-md-0">
           <h3>BP control</h3>
-          <p><%= registration_period %> cohort is the outcomes for <%= number_with_delimiter(@totals[:registered]) %> patients registered in <%= registration_period %>
-            at their last visit in <%= visited_in_period %>. Patients with ‘missed visit’ had no BP recorded.</p>
+          <p><%= registration_period %> cohort is the outcome for <%= number_with_delimiter(@totals[:registered]) %> patients registered in <%= registration_period %>,
+            at their last visit in <%= visited_in_period %>. Patients with a ‘missed visit’ had no BP recorded.</p>
         </div>
 
         <div class="mt-1 mb-3 col-lg-3">
@@ -80,7 +80,7 @@
         <tr>
           <th></th>
           <th colspan="6">Cohort of patients registered in <%= registration_period %></th>
-          <th colspan="2">Overall</th>
+          <th colspan="2">Overall BP control<sup>1</sup></th>
           <th class="mobile">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
         </tr>
         <tr data-sort-method="thead" class="sorts">
@@ -93,7 +93,9 @@
           </th>
           <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="missed" colspan="2">Missed visit<br>in <%= visited_in_period %>
           </th>
-          <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="overall-controlled" colspan="3">Overall BP control<sup>1</sup></th>
+          <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="overall-percent">Percent</th>
+          <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="overall-controlled">Controlled</th>
+          <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="overall-registered">Registered</th>
           <th class="mobile"></th>
         </tr>
         </thead>
@@ -132,10 +134,15 @@
               <em><%= percentage(bp_stats[:missed], bp_stats[:registered]) %></em>
             </td>
             <td class="type-number"><%= bp_stats[:missed] %></td>
-            <td class="type-percent" data-sort-column-key="overall-controlled">
-              <em><%= percentage(bp_stats[:overall_controlled_bps], bp_stats[:overall_patients]) %></em></td>
-            <td class="type-number"><%= bp_stats[:overall_controlled_bps] %></td>
-            <td class="type-number"><%= bp_stats[:overall_patients] %></td>
+            <td class="type-percent" data-sort-column-key="overall-percent">
+              <em><%= percentage(bp_stats[:overall_controlled_bps], bp_stats[:overall_patients]) %></em>
+            </td>
+            <td class="type-number" data-sort-column-key="overall-controlled">
+              <%= bp_stats[:overall_controlled_bps] %>
+            </td>
+            <td class="type-number" data-sort-column-key="overall-registered">
+              <%= bp_stats[:overall_patients] %>
+            </td>
           </tr>
         <% end %>
         </tbody>
@@ -145,9 +152,10 @@
       <ol>
         <li><strong>Overall BP control:</strong>
         <ul>
-          <li>Numerator: Patients registered at this facility whose most recent BP in the past 90 days was under 140/90.</li>
-          <li>Denominator: Patients registered at this facility.</li>
-          <li>Patients registered in the last 2 months are excluded from both the <i>Numerator</i> and <i>Denominator</i>.</li>
+          <li>Percent: <i>(Controlled ÷ Registered)</i> × 100</li>
+          <li>Controlled: Patients registered at this facility whose most recent BP in the past 90 days was under 140/90.</li>
+          <li>Registered: Patients registered at this facility.</li>
+          <li>Patients registered in the last 2 months are excluded from both <i>Controlled</i> and <i>Registered</i>.</li>
           <li>Note: Follow-up BPs may be recorded at any facility.</li>
         </ul>
       </ol>

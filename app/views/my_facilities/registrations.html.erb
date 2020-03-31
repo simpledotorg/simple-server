@@ -68,7 +68,7 @@
               <div class="float-right"><%= @selected_period == :day ? doy_to_date(*period) : "Registered" %></div>
             </th>
           <% end %>
-          <th class="row-label sort-label" data-sort-column-key="all-time"><% if @selected_period == :day %>Total<br> <% end %> Registered patients <sup>1</sup></th>
+          <th class="row-label sort-label" data-sort-column-key="all-time"><% if @selected_period == :day %>Total<br> <% end %> Registered patients </th>
           <th class="mobile">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
         </tr>
         </thead>
@@ -103,11 +103,6 @@
       </table>
     </div>
     <section class="footnotes">
-      <ol>
-        <li>
-          <strong>Total registered patients:</strong> All registered patients.
-        </li>
-      </ol>
     </section>
   </div>
 </div>
