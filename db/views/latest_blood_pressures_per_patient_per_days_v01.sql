@@ -1,5 +1,5 @@
-WITH latest_bp_per_patient_per_month AS (
-    SELECT DISTINCT ON (patient_id, year, month)
+WITH latest_bp_per_patient_per_day AS (
+    SELECT DISTINCT ON (patient_id, year, day)
         blood_pressures.id AS bp_id,
         blood_pressures.patient_id AS patient_id,
         patients.registration_facility_id AS registration_facility_id,
@@ -15,9 +15,9 @@ WITH latest_bp_per_patient_per_month AS (
         cast(EXTRACT(YEAR FROM blood_pressures.recorded_at at time zone 'utc' at time zone (SELECT current_setting('TIMEZONE'))) as text) AS year
     FROM blood_pressures JOIN patients ON patients.id = blood_pressures.patient_id
     WHERE blood_pressures.deleted_at IS NULL
-    ORDER BY patient_id, year, month, blood_pressures.recorded_at DESC, bp_id
+    ORDER BY patient_id, year, day, blood_pressures.recorded_at DESC, bp_id
 )
-SELECT latest_bp_per_patient_per_month.*,
+SELECT latest_bp_per_patient_per_day.*,
        LAG(bp_facility_id, 1) OVER (PARTITION BY patient_id ORDER BY bp_recorded_at ASC, bp_id) AS responsible_facility_id,
        LAG(bp_id, 1) OVER (PARTITION BY patient_id ORDER BY bp_recorded_at ASC, bp_id) AS previous_bp_id
-FROM latest_bp_per_patient_per_month;
+FROM latest_bp_per_patient_per_day;

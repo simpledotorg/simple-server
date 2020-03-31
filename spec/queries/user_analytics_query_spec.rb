@@ -133,7 +133,8 @@ RSpec.describe UserAnalyticsQuery do
 
   context 'daily_follow_ups (for the specified facility)' do
     it 'returns daily follow-ups across Hypertension-only patients' do
-      expected_output = { three_days_back => 6,
+      expected_output = { four_days_back => 6,
+                          three_days_back => 12,
                           two_days_back => 6 }
 
       expect(analytics.daily_follow_ups).to eq(expected_output)
@@ -159,9 +160,9 @@ RSpec.describe UserAnalyticsQuery do
 
   context 'monthly_follow_ups (for the specified facility)' do
     it 'returns month-on-month follow-ups for Hypertension-only patients grouped by gender' do
-      expected_output = { ["female", current_month] => 4,
-                          ["male", current_month] => 4,
-                          ["transgender", current_month] => 4,
+      expected_output = { ["female", current_month] => 8,
+                          ["male", current_month] => 8,
+                          ["transgender", current_month] => 8,
 
                           ["female", two_months_back] => 2,
                           ["male", two_months_back] => 2,
@@ -214,7 +215,7 @@ RSpec.describe UserAnalyticsQuery do
           three_months_back => 6
         },
         total_visits: {
-          current_month => 12,
+          current_month => 24,
           two_months_back => 6,
           three_months_back => 12,
           four_months_back => 6

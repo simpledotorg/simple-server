@@ -12,7 +12,6 @@ class Api::V3::AnalyticsController < APIController
     end
 
   ensure
-    # Make sure we reset the timezone
     Groupdate.time_zone = "UTC"
   end
 end
