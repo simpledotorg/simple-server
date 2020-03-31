@@ -18,12 +18,14 @@ class MyFacilities::FollowUpsQuery
   end
 
   def total_follow_ups
-    LatestBloodPressuresPerPatientPerDay
-      .where('patient_recorded_at < bp_recorded_at')
-      .where(facility: @facilities)
+    @total_follow_ups ||=
+      LatestBloodPressuresPerPatientPerDay
+        .where('patient_recorded_at < bp_recorded_at')
+        .where(facility: @facilities)
   end
 
   def follow_ups
-    total_follow_ups.where("(year, #{@period}) IN (#{periods_as_sql_list(@periods)})")
+    @follow_ups ||=
+      total_follow_ups.where("(year, #{@period}) IN (#{periods_as_sql_list(@periods)})")
   end
 end

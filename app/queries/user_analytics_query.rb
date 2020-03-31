@@ -9,6 +9,11 @@ class UserAnalyticsQuery
     @current_facility = facility
     @days_ago = days_ago
     @months_ago = months_ago
+
+    @monthly_follow_ups_data =
+      MyFacilities::FollowUpsQuery
+        .new(facilities: current_facility, period: :month, last_n: months_ago)
+        .follow_ups
   end
 
   def daily_follow_ups
@@ -30,9 +35,7 @@ class UserAnalyticsQuery
   end
 
   def monthly_follow_ups
-    MyFacilities::FollowUpsQuery
-      .new(facilities: current_facility, period: :month, last_n: months_ago)
-      .follow_ups
+    @monthly_follow_ups_data
       .joins(:patient)
       .group(:gender, :year, :month)
       .count
@@ -52,19 +55,15 @@ class UserAnalyticsQuery
   end
 
   def monthly_htn_control
-    visits = MyFacilities::FollowUpsQuery
-               .new(facilities: current_facility, period: :month, last_n: months_ago)
-               .follow_ups
-
     total_visits =
-      visits
+      @monthly_follow_ups_data
         .group(:year, :month)
         .count
         .map { |group, count| [moy_to_date(*group), count] }
         .to_h
 
     controlled_visits =
-      visits
+      @monthly_follow_ups_data
         .under_control
         .group(:year, :month)
         .count
