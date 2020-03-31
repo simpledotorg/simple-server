@@ -7,7 +7,7 @@ RSpec.describe UserAnalyticsQuery do
   let!(:months_ago)    { 5 }
   let!(:days_ago)      { 10 }
   let!(:current_month) { Date.current.beginning_of_month }
-  let!(:current_day)   { Date.today }
+  let!(:current_day)   { Date.current }
 
   let!(:analytics) { UserAnalyticsQuery.new(facility,
                                             days_ago: days_ago,

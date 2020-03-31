@@ -27,9 +27,11 @@ class UserAnalyticsQuery
   end
 
   def daily_registrations
+    group_by_time_range = (days_ago.to_i - 1).days.ago.beginning_of_day..Date.current.end_of_day
+
     current_facility
       .registered_patients
-      .group_by_period(:day, :recorded_at, last: days_ago)
+      .group_by_period(:day, :recorded_at, range: group_by_time_range)
       .distinct('patients.id')
       .count
   end
@@ -44,10 +46,12 @@ class UserAnalyticsQuery
   end
 
   def monthly_registrations
+    group_by_time_range = (months_ago.to_i - 1).months.ago.beginning_of_month..Date.current.end_of_month
+
     current_facility
       .registered_patients
       .group(:gender)
-      .group_by_period(:month, :recorded_at, last: months_ago)
+      .group_by_period(:month, :recorded_at, range: group_by_time_range)
       .distinct('patients.id')
       .count
       .map { |(gender, date), count| [[gender, date], count] }
