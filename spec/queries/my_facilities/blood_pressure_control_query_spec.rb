@@ -271,11 +271,11 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       end
 
       describe '#all_time_bps' do
-        specify { expect(described_class.new.all_time_bps.count).to eq(2) }
+        specify { expect(described_class.new.all_time_patients.count).to eq(2) }
       end
 
       describe '#all_time_controlled_bps' do
-        specify { expect(described_class.new.all_time_controlled_bps.count).to eq(1) }
+        specify { expect(described_class.new.all_time_controlled_bps.count).to eq(2) }
       end
     end
   end

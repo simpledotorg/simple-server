@@ -32,15 +32,20 @@ class MyFacilities::BloodPressureControlQuery
     @cohort_period == :month ? monthly_uncontrolled_bps : quarterly_uncontrolled_bps
   end
 
-  def all_time_bps
-    @all_time_bps ||= LatestBloodPressuresPerPatient
-                      .where('patient_recorded_at < ?', Time.current.beginning_of_day - 2.months)
-                      .where(bp_facility_id: facilities)
+  def cohort_bps
+    @cohort_period == :month ? monthly_bps_cte : quarterly_bps
+  end
+
+  def all_time_patients
+    @all_time_patients ||= Patient
+                      .where('recorded_at < ?', Time.current.beginning_of_day - 2.months)
+                      .where(registration_facility: facilities)
   end
 
   def all_time_controlled_bps
     @all_time_controlled_bps ||=
-      all_time_bps
+      LatestBloodPressuresPerPatient
+      .where(registration_facility: facilities)
       .where('bp_recorded_at > ?', Time.current.beginning_of_day - 90.days)
       .under_control
   end
