@@ -39,7 +39,7 @@ RSpec.describe MyFacilities::MissedVisitsQuery do
       expect(query.missed_visits_by_facility[[facilities.second.id, *periods.third]]).to be_nil
       expect(query.missed_visit_totals[periods.first]).to eq(patients: 2, missed: 0)
       expect(query.missed_visit_totals[periods.second]).to eq(patients: 2, missed: 1)
-      expect(query.missed_visit_totals[periods.third]).to be_nil
+      expect(query.missed_visit_totals[periods.third]).to eq(patients: 0, missed: 0)
     end
   end
 

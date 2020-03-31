@@ -8,6 +8,8 @@ class MyFacilities::BloodPressureControlQuery
   include QuarterHelper
   include MonthHelper
 
+  REGISTRATION_BUFFER = 2.months
+
   def initialize(facilities: Facility.all, cohort_period: {})
     # cohort_period is map that contains
     # - :cohort_period (:quarter/:month),
@@ -36,14 +38,27 @@ class MyFacilities::BloodPressureControlQuery
     @cohort_period == :month ? monthly_bps_cte : quarterly_bps
   end
 
-  def all_time_patients
-    @all_time_patients ||= Patient
-                      .where('recorded_at < ?', Time.current.beginning_of_day - 2.months)
+  def cohort_missed_visits_count
+    cohort_registrations.count - cohort_bps.count
+  end
+
+  def cohort_missed_visits_count_by_facility
+    registrations = cohort_registrations.group(:registration_facility_id).count
+    bps = cohort_bps.group(:registration_facility_id).count
+
+    @facilities.map do |f|
+      [f.id, (registrations[f.id].to_i - bps[f.id].to_i)]
+    end.to_h
+  end
+
+  def overall_patients
+    @overall_patients ||= Patient
+                      .where('recorded_at < ?', Time.current.beginning_of_day - REGISTRATION_BUFFER)
                       .where(registration_facility: facilities)
   end
 
-  def all_time_controlled_bps
-    @all_time_controlled_bps ||=
+  def overall_controlled_bps
+    @overall_controlled_bps ||=
       LatestBloodPressuresPerPatient
       .where(registration_facility: facilities)
       .where('bp_recorded_at > ?', Time.current.beginning_of_day - 90.days)

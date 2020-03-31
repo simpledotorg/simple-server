@@ -41,20 +41,16 @@ class MyFacilitiesController < AdminController
     @totals = { registered: bp_query.cohort_registrations.count,
                 controlled: bp_query.cohort_controlled_bps.count,
                 uncontrolled: bp_query.cohort_uncontrolled_bps.count,
-                all_time_patients: bp_query.all_time_patients.count,
-                all_time_controlled_bps: bp_query.all_time_controlled_bps.count }
-    @totals[:missed] = calculate_missed_visits(@totals[:registered], @totals[:controlled], @totals[:uncontrolled])
+                missed: bp_query.cohort_missed_visits_count,
+                overall_patients: bp_query.overall_patients.count,
+                overall_controlled_bps: bp_query.overall_controlled_bps.count }
 
     @registered_patients_per_facility = bp_query.cohort_registrations.group(:registration_facility_id).count
     @controlled_bps_per_facility = bp_query.cohort_controlled_bps.group(:registration_facility_id).count
     @uncontrolled_bps_per_facility = bp_query.cohort_uncontrolled_bps.group(:registration_facility_id).count
-    @missed_visits_by_facility = @facilities.map do |f|
-      [f.id, calculate_missed_visits(@registered_patients_per_facility[f.id].to_i,
-                                     @controlled_bps_per_facility[f.id].to_i,
-                                     @uncontrolled_bps_per_facility[f.id].to_i)]
-    end.to_h
-    @all_time_patients_per_facility = bp_query.all_time_patients.group(:registration_facility_id).count
-    @all_time_controlled_bps_per_facility = bp_query.all_time_controlled_bps.group(:registration_facility_id).count
+    @missed_visits_by_facility = bp_query.cohort_missed_visits_count_by_facility
+    @overall_patients_per_facility = bp_query.overall_patients.group(:registration_facility_id).count
+    @overall_controlled_bps_per_facility = bp_query.overall_controlled_bps.group(:registration_facility_id).count
   end
 
   def registrations
@@ -102,9 +98,5 @@ class MyFacilitiesController < AdminController
 
   def authorize_my_facilities
     authorize(:dashboard, :view_my_facilities?)
-  end
-
-  def calculate_missed_visits(registered_patients_count, controlled_bps_count, uncontrolled_bps_count)
-    registered_patients_count - controlled_bps_count - uncontrolled_bps_count
   end
 end
