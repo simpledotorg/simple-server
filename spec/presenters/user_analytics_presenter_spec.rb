@@ -207,7 +207,6 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
                  user: current_user,
                  recorded_at: follow_up_date)
         end
-
         LatestBloodPressuresPerPatientPerDay.refresh
       end
 
@@ -319,6 +318,60 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
         expect(data[:trophies]).to eq(expected_output)
       end
+    end
+  end
+
+  describe '#display_percentage' do
+    it 'displays 0% if denominator is zero' do
+      expect(described_class.new(current_facility).display_percentage(2, 0)).to eq("0%")
+    end
+
+    it 'displays 0% if denominator is nil' do
+      expect(described_class.new(current_facility).display_percentage(2, nil)).to eq("0%")
+    end
+
+    it 'displays 0% if numerator is zero' do
+      expect(described_class.new(current_facility).display_percentage(0, 3)).to eq("0%")
+    end
+
+    it 'displays 0% if numerator is nil' do
+      expect(described_class.new(current_facility).display_percentage(nil, 2)).to eq("0%")
+    end
+
+    it 'displays the percentage rounded up' do
+      expect(described_class.new(current_facility).display_percentage(22, 7)).to eq("314%")
+    end
+  end
+
+  describe '#stats_across_genders_for_month' do
+    let(:reg_date) { Date.current.beginning_of_month }
+
+    before do
+      create(:patient,
+             registration_facility: current_facility,
+             recorded_at: reg_date - 1.month,
+             gender: 'male')
+      create(:patient,
+             registration_facility: current_facility,
+             recorded_at: reg_date - 1.month,
+             gender: 'female')
+      create(:patient,
+             registration_facility: current_facility,
+             recorded_at: reg_date + 1.weeks,
+             gender: 'female')
+      create(:patient,
+             registration_facility: current_facility,
+             recorded_at: reg_date + 1.weeks,
+             gender: 'transgender')
+
+      stub_const("UserAnalyticsPresenter::MONTHS_AGO", 6)
+    end
+
+    it 'merges together all genders and counts the resource for a given month date' do
+      user_analytics = described_class.new(current_facility)
+
+      expect(user_analytics.stats_across_genders_for_month(:registrations, reg_date)).to eq(2)
+      expect(user_analytics.stats_across_genders_for_month(:registrations, reg_date - 1.month)).to eq(2)
     end
   end
 end

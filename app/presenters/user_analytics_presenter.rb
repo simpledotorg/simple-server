@@ -35,7 +35,7 @@ class UserAnalyticsPresenter
   end
 
   def stats_across_genders_for_month(resource, month_date)
-    data_for_resource = @statistics.dig(:monthly, :grouped_by_gender_and_date, resource).values
+    data_for_resource = statistics.dig(:monthly, :grouped_by_gender_and_date, resource).values
 
     sum_across_gender_and_months =
       data_for_resource.inject do |by_month, count_for_gender|
