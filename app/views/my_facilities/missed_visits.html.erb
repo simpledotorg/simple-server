@@ -4,7 +4,19 @@
       <div class="row">
         <div class="col-lg-9 pr-5 pr-md-0">
           <h3>Missed visit</h3>
-          <p>Patients who had no BP recorded during the <%= @selected_period %> as a percentage of all-time registered patients</p>
+          <% case @selected_period %>
+          <% when :quarter %>
+            <% example_quarter = @display_periods.first %>
+            <% following_quarter = next_year_and_quarter(*example_quarter) %>
+            <p>Patients who were recorded during a quarter <%= "(eg: Q#{example_quarter.second}-#{example_quarter.first})" %>,
+              and had no BPs recorded in the following quarter <%= "(Q#{following_quarter.second}-#{following_quarter.first})" %></p>
+          <% when :month %>
+            <% example_month = @display_periods.first %>
+            <% following_months = month_short_name_and_year(local_month_start(*example_month) + 1.months) +
+                ', ' + month_short_name_and_year(local_month_start(*example_month) + 2.months) %>
+            <p>Patients who were recorded during a month <%= "(eg: #{month_short_name_and_year(local_month_start(*example_month))})" %>,
+              and had no BPs recorded in the following two months <%= "(#{following_months})" %> </p>
+          <% end %>
         </div>
 
         <div class="mt-1 mb-3 col-lg-3">
@@ -24,14 +36,14 @@
 
       <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover" id="analytics-table">
         <colgroup>
-          <col />
+          <col/>
           <% @display_periods.each do %>
-            <col class="table-divider" />
-            <col />
+            <col class="table-divider"/>
+            <col/>
           <% end %>
-          <col class="table-divider" />
-          <col class="table-divider" />
-          <col class="mobile" />
+          <col class="table-divider"/>
+          <col class="table-divider"/>
+          <col class="mobile"/>
         </colgroup>
         <thead>
         <tr>
@@ -39,21 +51,32 @@
           <% case @selected_period %>
           <% when :quarter %>
             <% @display_periods.reverse.each do |(year, quarter)| %>
-              <th colspan="2"><%= "Q#{quarter}-#{year}" %></th>
+              <th colspan="2"><%= "Patients registered in Q#{quarter}-#{year}" %></th>
             <% end %>
           <% when :month %>
             <% @display_periods.reverse.each do |(year, month)| %>
-              <th colspan="2"><%= month_short_name_and_year(local_month_start(year, month)) %></th>
+              <th colspan="2"><%= "Patients registered in #{month_short_name_and_year(local_month_start(year, month))}" %></th>
             <% end %>
           <% end %>
           <th>Calls made <sup>1</sup></th>
-          <th>All-time</th>
+          <th>Total</th>
         </tr>
         <tr data-sort-method="thead" class="sorts">
           <th class="row-label sort-label">Facilities</th>
-          <% @display_periods.reverse.each do |_| %>
+          <% @display_periods.reverse.each do |(year, period)| %>
             <th class="row-label sort-label" data-sort-default>Percent</th>
-            <th class="row-label sort-label">Missed</th>
+            <% case @selected_period %>
+              <% when :quarter %>
+                <% visited_in_year, visited_in_quarter = next_year_and_quarter(year, period) %>
+                <th class="row-label sort-label">Missed visit in <%= "Q#{visited_in_quarter}-#{visited_in_year}" %></th>
+
+              <% when :month %>
+                <% visited_in_months =
+                       month_short_name(month_start(year, period) + 1.months) +
+                           '/' +
+                           month_short_name(month_start(year, period) + 2.months) %>
+                <th class="row-label sort-label">Missed visit in <%= visited_in_months %></th>
+            <% end %>
           <% end %>
           <th class="row-label sort-label">
             <% case @selected_period %>
@@ -86,7 +109,7 @@
           <% end %>
 
           <td class="type-number"><%= @calls_made.values.sum %></td>
-          <td class="type-number"><%= @all_time_registrations.values.sum %></td>
+          <td class="type-number"><%= @total_registrations.values.sum %></td>
         </tr>
 
         <% @facilities.each do |facility| %>
@@ -105,7 +128,7 @@
               </td>
             <% end %>
             <td class="type-number"><%= @calls_made.dig(facility.id) || 0 %></td>
-            <td class="type-number"><%=  @all_time_registrations[facility.id].to_i %></td>
+            <td class="type-number"><%= @total_registrations[facility.id].to_i %></td>
           </tr>
         <% end %>
         </tbody>
@@ -114,13 +137,12 @@
     <section class="footnotes">
       <ol>
         <li><strong>Calls made:</strong> The number of secure calls (only) made through the Simple app that connected to
-          the patient. Note that this may significantly undercount calls made, if the user made a normal call using their
+          the patient. Note that this may significantly undercount calls made, if the user made a normal call using
+          their
           personal phone number or used another phone.
         </li>
 
-        <li>
-          <strong>All-time registered patients:</strong> All registered patients with at least one recorded blood pressure.
-        </li>
+        <li><strong>Total registered patients:</strong> All registered patients.</li>
       </ol>
     </section>
   </div>
