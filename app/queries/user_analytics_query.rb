@@ -52,10 +52,9 @@ class UserAnalyticsQuery
   end
 
   def monthly_htn_control
-    visits =
-      LatestBloodPressuresPerPatientPerDay
-        .where(facility: current_facility)
-        .where("(year, month) IN (#{periods_as_sql_list(period_list(:month, months_ago))})")
+    visits = MyFacilities::FollowUpsQuery
+               .new(facilities: current_facility, period: :month, last_n: months_ago)
+               .follow_ups
 
     total_visits =
       visits
