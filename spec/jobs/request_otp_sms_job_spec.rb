@@ -7,10 +7,6 @@ RSpec.describe RequestOtpSmsJob, type: :job do
   let!(:user) { create(:user, phone_number: '1234567890') }
   let!(:sms_notification_service) { double(SmsNotificationService.new(nil, nil)) }
 
-  before do
-    allow(ENV).to receive(:[]).with('TWILIO_PHONE_NUMBER').and_return('123456')
-  end
-
   it 'calls off to the SMSNotificationService to deliver the otp SMS' do
     expect(SmsNotificationService)
       .to receive(:new)
