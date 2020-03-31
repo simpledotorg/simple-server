@@ -5,7 +5,7 @@ class Api::V4::UsersController < APIController
   skip_before_action :validate_facility, only: [:find, :activate]
   skip_before_action :validate_current_facility_belongs_to_users_facility_group, only: [:find, :activate]
 
-  DEFAULT_USER_OTP_DELAY_IN_SECS = 5
+  DEFAULT_USER_OTP_DELAY_IN_SECONDS = 5
 
   def find
     return head :bad_request unless params[:phone_number].present?
@@ -28,7 +28,7 @@ class Api::V4::UsersController < APIController
       authentication.save
 
       unless FeatureToggle.auto_approve_for_qa?
-        delay_seconds = (ENV['USER_OTP_SMS_DELAY_IN_SECONDS'] || DEFAULT_USER_OTP_DELAY_IN_SECS).to_i.seconds
+        delay_seconds = (ENV['USER_OTP_SMS_DELAY_IN_SECONDS'] || DEFAULT_USER_OTP_DELAY_IN_SECONDS).to_i.seconds
         RequestOtpSmsJob.set(wait: delay_seconds).perform_later(user)
       end
 
