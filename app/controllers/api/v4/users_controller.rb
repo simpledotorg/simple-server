@@ -5,6 +5,8 @@ class Api::V4::UsersController < APIController
   skip_before_action :validate_facility, only: [:find, :activate]
   skip_before_action :validate_current_facility_belongs_to_users_facility_group, only: [:find, :activate]
 
+  DEFAULT_USER_OTP_SMS_DELAY = 5
+
   def find
     return head :bad_request unless params[:phone_number].present?
     user = PhoneNumberAuthentication.find_by(phone_number: params[:phone_number])&.user
@@ -26,9 +28,8 @@ class Api::V4::UsersController < APIController
       authentication.save
 
       unless FeatureToggle.auto_approve_for_qa?
-        SmsNotificationService
-          .new(user.phone_number, ENV['TWILIO_PHONE_NUMBER'])
-          .send_request_otp_sms(user.otp)
+        delay_seconds = (ENV['USER_OTP_SMS_DELAY'] || DEFAULT_USER_OTP_SMS_DELAY).to_i.seconds
+        RequestOtpSmsJob.set(wait: delay_seconds).perform_later(user)
       end
 
       AuditLog.login_log(user)
