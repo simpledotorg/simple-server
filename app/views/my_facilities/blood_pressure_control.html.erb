@@ -80,7 +80,7 @@
         <tr>
           <th></th>
           <th colspan="6">Cohort of patients registered in <%= registration_period %></th>
-          <th colspan="2">All-time</th>
+          <th colspan="2">Overall</th>
           <th class="mobile">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
         </tr>
         <tr data-sort-method="thead" class="sorts">
@@ -93,8 +93,7 @@
           </th>
           <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="missed" colspan="2">Missed visit<br>in <%= visited_in_period %>
           </th>
-          <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="all-time-controlled" colspan="2">All registered patients<br>with controlled
-            BP<sup>1</sup></th>
+          <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="overall-controlled" colspan="3">Overall BP control<sup>1</sup></th>
           <th class="mobile"></th>
         </tr>
         </thead>
@@ -110,13 +109,14 @@
           <td class="type-percent">
             <em><%= percentage(@totals[:all_time_controlled_bps], @totals[:all_time_patients]) %></em></td>
           <td class="type-number"><%= @totals[:all_time_controlled_bps] %></td>
+          <td class="type-number"><%= @totals[:all_time_patients] %></td>
         </tr>
         <% @facilities.each do |facility| %>
           <% bp_stats = { registered: @registered_patients_per_facility[facility.id].to_i,
                           controlled: @controlled_bps_per_facility[facility.id].to_i,
                           uncontrolled: @uncontrolled_bps_per_facility[facility.id].to_i,
                           missed: @missed_visits_by_facility[facility.id].to_i,
-                          all_time_bps: @all_time_bps_per_facility[facility.id].to_i,
+                          all_time_patients: @all_time_patients_per_facility[facility.id].to_i,
                           all_time_controlled_bps: @all_time_controlled_bps_per_facility[facility.id].to_i } %>
           <tr>
             <td class="type-title"><%= link_to facility.name, analytics_facility_path(facility) %></td>
@@ -133,8 +133,9 @@
             </td>
             <td class="type-number"><%= bp_stats[:missed] %></td>
             <td class="type-percent" data-sort-column-key="all-time-controlled">
-              <em><%= percentage(bp_stats[:all_time_controlled_bps], bp_stats[:all_time_bps]) %></em></td>
+              <em><%= percentage(bp_stats[:all_time_controlled_bps], bp_stats[:all_time_patients]) %></em></td>
             <td class="type-number"><%= bp_stats[:all_time_controlled_bps] %></td>
+            <td class="type-number"><%= bp_stats[:all_time_patients] %></td>
           </tr>
         <% end %>
         </tbody>
@@ -142,8 +143,13 @@
     </div>
     <section class="footnotes">
       <ol>
-        <li><strong>All registered patients with controlled BP:</strong>
-          Patient had at least 1 BP recorded in the previous 90 days from today and BP &lt;140/90 at last visit.</li>
+        <li><strong>Overall BP control:</strong>
+        <ul>
+          <li>Numerator: Patients registered at this facility whose most recent BP in the past 90 days was under 140/90.</li>
+          <li>Denominator: Patients registered at this facility.</li>
+          <li>Patients registered in the last 2 months are excluded from both the <i>Numerator</i> and <i>Denominator</i>.</li>
+          <li>Note: Follow-up BPs may be recorded at any facility.</li>
+        </ul>
       </ol>
     </section>
     <script>

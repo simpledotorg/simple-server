@@ -41,7 +41,7 @@ class MyFacilitiesController < AdminController
     @totals = { registered: bp_query.cohort_registrations.count,
                 controlled: bp_query.cohort_controlled_bps.count,
                 uncontrolled: bp_query.cohort_uncontrolled_bps.count,
-                all_time_patients: bp_query.all_time_bps.count,
+                all_time_patients: bp_query.all_time_patients.count,
                 all_time_controlled_bps: bp_query.all_time_controlled_bps.count }
     @totals[:missed] = calculate_missed_visits(@totals[:registered], @totals[:controlled], @totals[:uncontrolled])
 
@@ -53,8 +53,8 @@ class MyFacilitiesController < AdminController
                                      @controlled_bps_per_facility[f.id].to_i,
                                      @uncontrolled_bps_per_facility[f.id].to_i)]
     end.to_h
-    @all_time_bps_per_facility = bp_query.all_time_bps.group(:bp_facility_id).count
-    @all_time_controlled_bps_per_facility = bp_query.all_time_controlled_bps.group(:bp_facility_id).count
+    @all_time_patients_per_facility = bp_query.all_time_patients.group(:registration_facility_id).count
+    @all_time_controlled_bps_per_facility = bp_query.all_time_controlled_bps.group(:registration_facility_id).count
   end
 
   def registrations
