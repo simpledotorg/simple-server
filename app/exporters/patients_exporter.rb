@@ -10,7 +10,16 @@ module PatientsExporter
       csv << csv_headers
 
       patients.in_batches(of: BATCH_SIZE).each do |batch|
-        batch.each do |patient|
+        batch.includes(
+          :registration_facility,
+          :phone_numbers,
+          :address,
+          :medical_history,
+          :latest_bp_passports,
+          :latest_scheduled_appointments,
+          {latest_blood_pressures: :facility},
+          :latest_blood_sugars
+        ).each do |patient|
           csv << csv_fields(patient)
         end
       end
