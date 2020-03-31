@@ -3,22 +3,18 @@
   <tr class="total">
     <td class="row-label">All-time</td>
     <td>
-      <%= zero_if_unavailable(@statistics
-                                  .dig(:all_time, :grouped_by_gender, resource)
+      <%= zero_if_unavailable(@statistics.dig(:all_time,
+                                              :grouped_by_gender,
+                                              resource)
                                   .values
-                                  .inject(:+)) %>
+                                  .sum) %>
     </td>
   </tr>
-  <% @monthly_period_list.each do |month_date| %>
+  <% @user_analytics.monthly_period_list.each do |month_date| %>
     <tr>
       <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
       <td>
-        <% data_for_resource = @statistics.dig(:monthly, :grouped_by_gender_and_date, resource).values %>
-        <% sum_by_gender_and_group_monthly =
-               data_for_resource
-                   .inject { |by_month, count_for_gender| by_month.merge(count_for_gender) { |_, v1, v2| v1 + v2 } } %>
-
-        <%= zero_if_unavailable(sum_by_gender_and_group_monthly&.dig(month_date)) %>
+        <%= zero_if_unavailable(@user_analytics.stats_across_genders_for_month(resource, month_date)) %>
       </td>
     </tr>
   <% end %>
@@ -30,10 +26,13 @@
     <tr class="total">
       <td class="row-label">All-time</td>
       <td>
-        <%= zero_if_unavailable(@statistics.dig(:all_time, :grouped_by_gender, resource, gender)) %>
+        <%= zero_if_unavailable(@statistics.dig(:all_time,
+                                                :grouped_by_gender,
+                                                resource,
+                                                gender)) %>
       </td>
     </tr>
-    <% @monthly_period_list.each do |month_date| %>
+    <% @user_analytics.monthly_period_list.each do |month_date| %>
       <tr>
         <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
         <td>

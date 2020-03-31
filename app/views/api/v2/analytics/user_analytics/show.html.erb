@@ -38,7 +38,7 @@
       <p>Tap "Sync" on the home screen for new data.</p>
     </div>
 
-    <% @daily_period_list.each do |day_date| %>
+    <% @user_analytics.daily_period_list.each do |day_date| %>
       <div class="day">
         <h3 class="stat-day">
           <span class="num"><%= display_date(day_date) %></span>
@@ -48,17 +48,19 @@
           <div class="count count-1">
             <strong>Registered</strong>
             <div class="big-number">
-              <%= zero_if_unavailable(@statistics.dig(:daily, :grouped_by_date, :registrations, day_date)) %>
+              <% daily_registration_count = @statistics.dig(:daily, :grouped_by_date, :registrations, day_date) %>
+              <%= zero_if_unavailable(daily_registration_count) %>
             </div>
-            Patients
+            <%= display_singular_or_plural_str("Patients", daily_registration_count) %>
           </div>
 
           <div class="count count-2">
             <strong>Follow-up</strong>
             <div class="big-number">
-              <%= zero_if_unavailable(@statistics.dig(:daily, :grouped_by_date, :follow_ups, day_date)) %>
+              <% daily_follow_up_count = @statistics.dig(:daily, :grouped_by_date, :follow_ups, day_date) %>
+              <%= zero_if_unavailable(daily_follow_up_count) %>
             </div>
-            Patients
+            <%= display_singular_or_plural_str("Patients", daily_follow_up_count) %>
           </div>
         </div>
       </div>
@@ -76,7 +78,9 @@
              locals: { statistics: @statistics, data_table_name: registrations_table_name } %>
 
   <%= render partial: 'monthly_gender_table',
-             locals: { resource: :registrations, data_table_name: registrations_table_name } %>
+             locals: { resource: :registrations,
+                       user_analytics: @user_analytics,
+                       data_table_name: registrations_table_name } %>
 </div>
 
 <!-- monthly follow-up patients view -->
@@ -89,7 +93,9 @@
              locals: { statistics: @statistics, data_table_name: follow_ups_table_name } %>
 
   <%= render partial: 'monthly_gender_table',
-             locals: { resource: :follow_ups, data_table_name: follow_ups_table_name } %>
+             locals: { resource: :follow_ups,
+                       user_analytics: @user_analytics,
+                       data_table_name: follow_ups_table_name } %>
 </div>
 
 <!-- monthly hypertension control view -->
@@ -100,13 +106,19 @@
   </p>
 
   <table class="progress-table">
-    <% @monthly_period_list.each do |month_date| %>
+    <% @user_analytics.monthly_period_list.each do |month_date| %>
       <tr>
         <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
         <td><span class="percent">
               <%=
-                percentage(@statistics.dig(:monthly, :grouped_by_date, :controlled_visits, month_date),
-                           @statistics.dig(:monthly, :grouped_by_date, :total_visits, month_date))
+                @user_analytics.display_percentage(@statistics.dig(:monthly,
+                                                                   :grouped_by_date,
+                                                                   :controlled_visits,
+                                                                   month_date),
+                                                   @statistics.dig(:monthly,
+                                                                   :grouped_by_date,
+                                                                   :total_visits,
+                                                                   month_date))
               %>
             </span></td>
         <td>
@@ -121,8 +133,7 @@
 
 <!-- all trophies view -->
 <!-- do not show achievements if the only locked trophy available is the first one -->
-<% unless @statistics.dig(:trophies, :locked_trophy_value) ==
-    Api::V3::Analytics::UserAnalyticsController::TROPHY_MILESTONES.first %>
+<% unless @statistics.dig(:trophies, :locked_trophy_value) == UserAnalyticsPresenter::TROPHY_MILESTONES.first %>
 
   <div class="trophies">
     <h4>Achievements</h4>
