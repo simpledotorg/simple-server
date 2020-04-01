@@ -19,4 +19,5 @@ Rails.application.config.assets.precompile += %w(
   print.scss
   user_analytics.js
   user_analytics.scss
+  legacy/user_analytics.scss
 )
