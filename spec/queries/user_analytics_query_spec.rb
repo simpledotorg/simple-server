@@ -160,9 +160,9 @@ RSpec.describe UserAnalyticsQuery do
 
   context 'monthly_follow_ups (for the specified facility)' do
     it 'returns month-on-month follow-ups for Hypertension-only patients grouped by gender' do
-      expected_output = { ["female", current_month] => 8,
-                          ["male", current_month] => 8,
-                          ["transgender", current_month] => 8,
+      expected_output = { ["female", one_month_back] => 8,
+                          ["male", one_month_back] => 8,
+                          ["transgender", one_month_back] => 8,
 
                           ["female", two_months_back] => 2,
                           ["male", two_months_back] => 2,
@@ -182,13 +182,13 @@ RSpec.describe UserAnalyticsQuery do
 
   context 'monthly_registrations (for the specified facility)' do
     it 'returns month-on-month registrations for both Hypertension and Diabetes patients grouped by gender' do
-      expected_output = { ["female", current_month] => 4,
-                          ["male", current_month] => 4,
-                          ["transgender", current_month] => 4,
+      expected_output = { ["female", current_month] => 0,
+                          ["male", current_month] => 0,
+                          ["transgender", current_month] => 0,
 
-                          ["female", one_month_back] => 0,
-                          ["male", one_month_back] => 0,
-                          ["transgender", one_month_back] => 0,
+                          ["female", one_month_back] => 4,
+                          ["male", one_month_back] => 4,
+                          ["transgender", one_month_back] => 4,
 
                           ["female", two_months_back] => 0,
                           ["male", two_months_back] => 0,
@@ -210,12 +210,12 @@ RSpec.describe UserAnalyticsQuery do
     it 'returns month-on-month Hypertension control numbers' do
       expected_output = {
         controlled_visits: {
-          current_month => 12,
+          one_month_back => 12,
           two_months_back => 6,
           three_months_back => 6
         },
         total_visits: {
-          current_month => 24,
+          one_month_back => 24,
           two_months_back => 6,
           three_months_back => 12,
           four_months_back => 6
