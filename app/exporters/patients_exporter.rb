@@ -15,6 +15,7 @@ module PatientsExporter
           :phone_numbers,
           :address,
           :medical_history,
+          :prescription_drugs,
           :latest_bp_passports,
           {latest_scheduled_appointments: :facility},
           {latest_blood_pressures: :facility},
@@ -54,7 +55,17 @@ module PatientsExporter
       'Days Overdue',
       'Risk Level',
       'BP Passport ID',
-      'Simple Patient ID'
+      'Simple Patient ID',
+      'Medication 1',
+      'Dosage 1',
+      'Medication 2',
+      'Dosage 2',
+      'Medication 3',
+      'Dosage 3',
+      'Medication 4',
+      'Dosage 4',
+      'Medication 5',
+      'Dosage 5'
     ]
   end
 
@@ -90,7 +101,12 @@ module PatientsExporter
       patient.latest_scheduled_appointment&.days_overdue,
       ('High' if patient.high_risk?),
       patient.latest_bp_passport&.shortcode,
-      patient.id
+      patient.id,
+      *medications_for(patient)
     ]
+  end
+
+  def self.medications_for(patient)
+    patient.prescription_drugs.map { |drug| [drug.name, drug.dosage] }.flatten
   end
 end

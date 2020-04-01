@@ -7,6 +7,8 @@ RSpec.describe PatientsExporter do
   let!(:patient) { create(:patient, registration_facility: facility) }
   let!(:blood_pressure) { create(:blood_pressure, :critical, facility: facility, patient: patient) }
   let!(:appointment) { create(:appointment, :overdue, facility: facility, patient: patient) }
+  let!(:prescription_drug_1) { create(:prescription_drug, patient: patient) }
+  let!(:prescription_drug_2) { create(:prescription_drug, patient: patient) }
 
   let(:headers) do
     [
@@ -36,7 +38,17 @@ RSpec.describe PatientsExporter do
       'Days Overdue',
       'Risk Level',
       'BP Passport ID',
-      'Simple Patient ID'
+      'Simple Patient ID',
+      'Medication 1',
+      'Dosage 1',
+      'Medication 2',
+      'Dosage 2',
+      'Medication 3',
+      'Dosage 3',
+      'Medication 4',
+      'Dosage 4',
+      'Medication 5',
+      'Dosage 5'
     ]
   end
 
@@ -68,7 +80,11 @@ RSpec.describe PatientsExporter do
       appointment.days_overdue,
       'High',
       patient.latest_bp_passport&.shortcode,
-      patient.id
+      patient.id,
+      prescription_drug_1.name,
+      prescription_drug_1.dosage,
+      prescription_drug_2.name,
+      prescription_drug_2.dosage
     ]
   end
 
