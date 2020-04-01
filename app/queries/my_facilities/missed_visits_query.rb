@@ -54,13 +54,10 @@ class MyFacilities::MissedVisitsQuery
   def missed_visits_by_facility
     @missed_visits_by_facility ||=
       bp_query_by_cohort.map do |(year, period), bp_query|
-        cohort_registrations = bp_query.cohort_registrations.group(:registration_facility_id).count
-        cohort_missed_visits_count_by_facility = bp_query.cohort_missed_visits_count_by_facility
-
-        cohort_registrations.map do |facility_id, patient_count|
+        bp_query.cohort_registrations.group(:registration_facility_id).count.map do |facility_id, patient_count|
           [[facility_id, year, period],
            { patients: patient_count.to_i,
-             missed: cohort_missed_visits_count_by_facility[facility_id].to_i }]
+             missed: bp_query.cohort_missed_visits_count_by_facility[facility_id].to_i }]
         end.to_h
       end.reduce(:merge)
   end
