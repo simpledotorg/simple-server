@@ -31,6 +31,8 @@ RSpec.describe PatientsExporter do
       'Latest BP Facility Type',
       'Latest BP Facility District',
       'Latest BP Facility State',
+      'Follow-up Facility',
+      'Follow-up Date',
       'Days Overdue',
       'Risk Level',
       'BP Passport ID',
@@ -61,6 +63,8 @@ RSpec.describe PatientsExporter do
       blood_pressure.facility.facility_type,
       blood_pressure.facility.district,
       blood_pressure.facility.state,
+      appointment.facility.name,
+      appointment.scheduled_date.to_s(:rfc822),
       appointment.days_overdue,
       'High',
       patient.latest_bp_passport&.shortcode,
@@ -73,6 +77,8 @@ RSpec.describe PatientsExporter do
   end
 
   describe '#csv' do
+    let(:patient_batch) { Patient.where(id: patient.id) }
+
     it 'generates a CSV of patient records' do
       expect(subject.csv(Patient.all)).to eq(headers.to_csv + fields.to_csv)
     end
@@ -83,7 +89,7 @@ RSpec.describe PatientsExporter do
 
     it 'uses fetches patients in batches' do
       expect_any_instance_of(facility.registered_patients.class)
-        .to receive(:in_batches).and_return([[patient]])
+        .to receive(:in_batches).and_return([patient_batch])
 
       subject.csv(facility.registered_patients)
     end
