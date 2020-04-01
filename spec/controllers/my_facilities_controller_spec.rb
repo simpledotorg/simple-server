@@ -67,7 +67,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
                                                     .with(hash_including(facilities: facilities(Facility.where(id: facility_under_supervisor))))
 
       expect(query_object).to receive(:registrations).and_return(query_object.registrations)
-      expect(query_object).to receive(:all_time_registrations).and_return(query_object.all_time_registrations)
+      expect(query_object).to receive(:total_registrations).and_return(query_object.total_registrations)
 
       get :registrations, params: params
     end
@@ -98,11 +98,9 @@ RSpec.describe MyFacilitiesController, type: :controller do
                                                     .with(hash_including(facilities: facilities(Facility.where(id: facility_under_supervisor))))
 
       expect(query_object).to receive(:periods).and_return(query_object.periods)
-      expect(query_object).to receive(:patients).and_return(query_object.patients).at_least(:once)
+      expect(query_object).to receive(:missed_visits_by_facility).and_return(query_object.missed_visits_by_facility).at_least(:once)
+      expect(query_object).to receive(:missed_visit_totals).and_return(query_object.missed_visit_totals).at_least(:once)
       expect(query_object).to receive(:calls_made).and_return(query_object.calls_made)
-      expect(query_object).to receive(:patients_by_period).and_return(query_object.patients_by_period).at_least(:once)
-      expect(query_object).to receive(:visits_by_period).and_return(query_object.visits_by_period).at_least(:once)
-
       get :missed_visits, params: params
     end
   end
