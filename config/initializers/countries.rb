@@ -25,4 +25,4 @@ country_config = {
   }
 }.with_indifferent_access
 
-Rails.application.config.country = country_config['ENV.fetch('DEFAULT_COUNTRY')']
+Rails.application.config.country = country_config[ENV.fetch('DEFAULT_COUNTRY')]
