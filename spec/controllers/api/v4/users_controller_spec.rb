@@ -42,6 +42,9 @@ RSpec.describe Api::V4::UsersController, type: :controller do
 
       post :activate, params: { user: { id: user.id, password: '1234' } }
 
+      # execute the RequestOtpSmsJob
+      Sidekiq::Worker.drain_all
+
       expect(response.status).to eq(200)
       expect(JSON(response.body).with_int_timestamps).to eq('user' => { expected: 'response' }.as_json)
 
