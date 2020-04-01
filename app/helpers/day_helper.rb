@@ -7,10 +7,6 @@ module DayHelper
     end
   end
 
-  def moy_to_date(year, moy)
-    Date.civil(year.to_i, moy.to_i)
-  end
-
   def doy_to_date(year, doy)
     Date.ordinal(year.to_i, doy.to_i)
   end

@@ -12,8 +12,13 @@ module PeriodHelper
   end
 
   def period_list_as_dates(period, last_n)
-    period_list(period, last_n).sort.reverse.map do |date|
+    period_list = period_list(period, last_n)
+    return if period_list.blank?
+
+    period_list.sort.reverse.map do |date|
       case period
+        when :quarter
+          quarter_datetime(*date)
         when :month
           moy_to_date(*date)
         when :day

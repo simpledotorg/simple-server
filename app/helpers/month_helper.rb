@@ -19,6 +19,10 @@ module MonthHelper
     month_start.strftime('%b-%Y')
   end
 
+  def moy_to_date(year, moy)
+    Date.civil(year.to_i, moy.to_i)
+  end
+
   def last_n_months(n:, inclusive: false)
     range = inclusive ? (0..(n - 1)) : (1..n)
 
