@@ -375,8 +375,3 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
     end
   end
 end
-
-
-
-
-
