@@ -21,10 +21,6 @@ module ApplicationHelper
     date.strftime(STANDARD_DATE_DISPLAY_FORMAT)
   end
 
-  def display_singular_or_plural_str(pluralized_string, count)
-    count == 1 ? pluralized_string.singularize : pluralized_string
-  end
-
   def rounded_time_ago_in_words(date)
     if date == Date.current
       "Today"
