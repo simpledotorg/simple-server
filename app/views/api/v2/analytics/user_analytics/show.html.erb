@@ -48,19 +48,25 @@
           <div class="count count-1">
             <strong>Registered</strong>
             <div class="big-number">
-              <% daily_registration_count = @statistics.dig(:daily, :grouped_by_date, :registrations, day_date) %>
+              <% daily_registration_count = @statistics.dig(:daily,
+                                                            :grouped_by_date,
+                                                            :registrations,
+                                                            day_date) %>
               <%= zero_if_unavailable(daily_registration_count) %>
             </div>
-            <%= display_singular_or_plural_str("Patients", daily_registration_count) %>
+            <%= "Patient".pluralize(daily_registration_count) %>
           </div>
 
           <div class="count count-2">
             <strong>Follow-up</strong>
             <div class="big-number">
-              <% daily_follow_up_count = @statistics.dig(:daily, :grouped_by_date, :follow_ups, day_date) %>
+              <% daily_follow_up_count = @statistics.dig(:daily,
+                                                         :grouped_by_date,
+                                                         :follow_ups,
+                                                         day_date) %>
               <%= zero_if_unavailable(daily_follow_up_count) %>
             </div>
-            <%= display_singular_or_plural_str("Patients", daily_follow_up_count) %>
+            <%= "Patient".pluralize(daily_follow_up_count) %>
           </div>
         </div>
       </div>
@@ -122,9 +128,15 @@
               %>
             </span></td>
         <td>
-          <%= zero_if_unavailable(@statistics.dig(:monthly, :grouped_by_date, :controlled_visits, month_date)) %>
+          <%= zero_if_unavailable(@statistics.dig(:monthly,
+                                                  :grouped_by_date,
+                                                  :controlled_visits,
+                                                  month_date)) %>
           of
-          <%= zero_if_unavailable(@statistics.dig(:monthly, :grouped_by_date, :total_visits, month_date)) %>
+          <%= zero_if_unavailable(@statistics.dig(:monthly,
+                                                  :grouped_by_date,
+                                                  :total_visits,
+                                                  month_date)) %>
         </td>
       </tr>
     <% end %>
