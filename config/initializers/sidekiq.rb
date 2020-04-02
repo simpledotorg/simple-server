@@ -17,7 +17,11 @@ module SidekiqConfig
 
   def self.connection_pool
     ConnectionPool.new(size: Config.get_int('SIDEKIQ_REDIS_POOL_SIZE', DEFAULT_REDIS_POOL_SIZE)) do
-      Redis.new(host: ENV['SIDEKIQ_REDIS_HOST'])
+      if ENV['SIDEKIQ_REDIS_HOST'].present?
+        Redis.new(host: ENV['SIDEKIQ_REDIS_HOST'])
+      else
+        Redis.new
+      end
     end
   end
 end
