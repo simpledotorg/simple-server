@@ -17,8 +17,8 @@ module PatientsExporter
           :medical_history,
           :prescription_drugs,
           :latest_bp_passports,
-          {latest_scheduled_appointments: :facility},
-          {latest_blood_pressures: :facility},
+          { latest_scheduled_appointments: :facility },
+          { latest_blood_pressures: :facility },
           :latest_blood_sugars
         ).each do |patient|
           csv << csv_fields(patient)
