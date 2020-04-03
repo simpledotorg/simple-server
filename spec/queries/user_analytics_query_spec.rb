@@ -1,34 +1,34 @@
 require 'rails_helper'
 
 RSpec.describe UserAnalyticsQuery do
-  let!(:users)    { create_list(:user, 2) }
+  let!(:users) { create_list(:user, 2) }
   let!(:facility) { create(:facility) }
 
-  let!(:months_ago)    { 5 }
-  let!(:days_ago)      { 10 }
+  let!(:months_ago) { 5 }
+  let!(:days_ago) { 10 }
   let!(:current_month) { Date.current.beginning_of_month }
-  let!(:current_day)   { Date.current }
+  let!(:current_day) { Date.current }
 
   let!(:analytics) { UserAnalyticsQuery.new(facility,
                                             days_ago: days_ago,
                                             months_ago: months_ago) }
 
-  let(:five_months_back)  { current_month - 5.months }
-  let(:four_months_back)  { current_month - 4.months }
+  let(:five_months_back) { current_month - 5.months }
+  let(:four_months_back) { current_month - 4.months }
   let(:three_months_back) { current_month - 3.months }
-  let(:two_months_back)   { current_month - 2.months }
-  let(:one_month_back)    { current_month - 1.months }
+  let(:two_months_back) { current_month - 2.months }
+  let(:one_month_back) { current_month - 1.months }
 
-  let(:ten_days_back)   { current_day - 10.days }
-  let(:nine_days_back)  { current_day - 9.days }
+  let(:ten_days_back) { current_day - 10.days }
+  let(:nine_days_back) { current_day - 9.days }
   let(:eight_days_back) { current_day - 8.days }
   let(:seven_days_back) { current_day - 7.days }
-  let(:six_days_back)   { current_day - 6.days }
-  let(:five_days_back)  { current_day - 5.days }
-  let(:four_days_back)  { current_day - 4.days }
+  let(:six_days_back) { current_day - 6.days }
+  let(:five_days_back) { current_day - 5.days }
+  let(:four_days_back) { current_day - 4.days }
   let(:three_days_back) { current_day - 3.days }
-  let(:two_days_back)   { current_day - 2.days }
-  let(:one_day_back)    { current_day - 1.days }
+  let(:two_days_back) { current_day - 2.days }
+  let(:one_day_back) { current_day - 1.days }
 
   before do
     #
@@ -160,9 +160,13 @@ RSpec.describe UserAnalyticsQuery do
 
   context 'monthly_follow_ups (for the specified facility)' do
     it 'returns month-on-month follow-ups for Hypertension-only patients grouped by gender' do
-      expected_output = { ["female", one_month_back] => 8,
-                          ["male", one_month_back] => 8,
-                          ["transgender", one_month_back] => 8,
+      expected_output = { ["female", current_month] => 2,
+                          ["male", current_month] => 2,
+                          ["transgender", current_month] => 2,
+
+                          ["female", one_month_back] => 6,
+                          ["male", one_month_back] => 6,
+                          ["transgender", one_month_back] => 6,
 
                           ["female", two_months_back] => 2,
                           ["male", two_months_back] => 2,
@@ -210,12 +214,14 @@ RSpec.describe UserAnalyticsQuery do
     it 'returns month-on-month Hypertension control numbers' do
       expected_output = {
         controlled_visits: {
-          one_month_back => 12,
+          current_month => 6,
+          one_month_back => 6,
           two_months_back => 6,
           three_months_back => 6
         },
         total_visits: {
-          one_month_back => 24,
+          current_month => 6,
+          one_month_back => 18,
           two_months_back => 6,
           three_months_back => 12,
           four_months_back => 6
