@@ -5,14 +5,14 @@ describe Patient, type: :model do
   subject(:patient) { build(:patient) }
 
   describe 'Associations' do
-    it { should belong_to(:address).optional }
-    it { should have_many(:phone_numbers) }
-    it { should have_many(:blood_pressures) }
-    it { should have_many(:blood_sugars) }
-    it { should have_many(:prescription_drugs) }
-    it { should have_many(:facilities).through(:blood_pressures) }
-    it { should have_many(:appointments) }
-    it { should have_one(:medical_history) }
+    it { is_expected.to belong_to(:address).optional }
+    it { is_expected.to have_many(:phone_numbers) }
+    it { is_expected.to have_many(:blood_pressures) }
+    it { is_expected.to have_many(:blood_sugars) }
+    it { is_expected.to have_many(:prescription_drugs) }
+    it { is_expected.to have_many(:facilities).through(:blood_pressures) }
+    it { is_expected.to have_many(:appointments) }
+    it { is_expected.to have_one(:medical_history) }
 
     it 'has distinct facilities' do
       patient = FactoryBot.create(:patient)
@@ -21,12 +21,25 @@ describe Patient, type: :model do
       expect(patient.facilities.count).to eq(1)
     end
 
-    it { should belong_to(:registration_facility).class_name('Facility').optional }
-    it { should belong_to(:registration_user).class_name('User') }
-  end
+    it { is_expected.to belong_to(:registration_facility).class_name('Facility').optional }
+    it { is_expected.to belong_to(:registration_user).class_name('User') }
 
-  describe 'Associations' do
-    it { should have_many(:blood_pressures) }
+    it { is_expected.to have_many(:latest_blood_pressures).order(recorded_at: :desc).class_name('BloodPressure') }
+    it { is_expected.to have_many(:latest_blood_sugars).order(recorded_at: :desc).class_name('BloodSugar') }
+
+    specify do
+      is_expected.to have_many(:latest_scheduled_appointments)
+                       .conditions(status: 'scheduled')
+                       .order(scheduled_date: :desc)
+                       .class_name('Appointment')
+    end
+
+    specify do
+      is_expected.to have_many(:latest_bp_passports)
+                       .conditions(identifier_type: 'simple_bp_passport')
+                       .order(device_created_at: :desc)
+                       .class_name('PatientBusinessIdentifier')
+    end
   end
 
   describe 'Validations' do
