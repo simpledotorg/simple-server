@@ -6,8 +6,8 @@ RSpec.describe UserAnalyticsQuery do
 
   let!(:months_ago) { 5 }
   let!(:days_ago) { 10 }
-  let!(:current_month) { Date.current.beginning_of_month }
-  let!(:current_day) { Date.current }
+  let!(:current_day) { Date.new(2018, 1, 1) }
+  let!(:current_month) { current_day.beginning_of_month }
 
   let!(:analytics) { UserAnalyticsQuery.new(facility,
                                             days_ago: days_ago,
@@ -137,7 +137,9 @@ RSpec.describe UserAnalyticsQuery do
                           three_days_back => 12,
                           two_days_back => 6 }
 
-      expect(analytics.daily_follow_ups).to eq(expected_output)
+      travel_to(current_day) do
+        expect(analytics.daily_follow_ups).to eq(expected_output)
+      end
     end
   end
 
@@ -154,19 +156,17 @@ RSpec.describe UserAnalyticsQuery do
                           eight_days_back => 0,
                           nine_days_back => 0 }
 
-      expect(analytics.daily_registrations).to eq(expected_output)
+      travel_to(current_day) do
+        expect(analytics.daily_registrations).to eq(expected_output)
+      end
     end
   end
 
   context 'monthly_follow_ups (for the specified facility)' do
     it 'returns month-on-month follow-ups for Hypertension-only patients grouped by gender' do
-      expected_output = { ["female", current_month] => 2,
-                          ["male", current_month] => 2,
-                          ["transgender", current_month] => 2,
-
-                          ["female", one_month_back] => 6,
-                          ["male", one_month_back] => 6,
-                          ["transgender", one_month_back] => 6,
+      expected_output = { ["female", one_month_back] => 8,
+                          ["male", one_month_back] => 8,
+                          ["transgender", one_month_back] => 8,
 
                           ["female", two_months_back] => 2,
                           ["male", two_months_back] => 2,
@@ -180,7 +180,10 @@ RSpec.describe UserAnalyticsQuery do
                           ["male", four_months_back] => 2,
                           ["transgender", four_months_back] => 2 }
 
-      expect(analytics.monthly_follow_ups).to eq(expected_output)
+      travel_to(current_month) do
+        analytics = UserAnalyticsQuery.new(facility, days_ago: days_ago, months_ago: months_ago)
+        expect(analytics.monthly_follow_ups).to eq(expected_output)
+      end
     end
   end
 
@@ -206,7 +209,10 @@ RSpec.describe UserAnalyticsQuery do
                           ["male", four_months_back] => 2,
                           ["transgender", four_months_back] => 2 }
 
-      expect(analytics.monthly_registrations).to eq(expected_output)
+      travel_to(current_month) do
+        analytics = UserAnalyticsQuery.new(facility, days_ago: days_ago, months_ago: months_ago)
+        expect(analytics.monthly_registrations).to eq(expected_output)
+      end
     end
   end
 
@@ -214,21 +220,22 @@ RSpec.describe UserAnalyticsQuery do
     it 'returns month-on-month Hypertension control numbers' do
       expected_output = {
         controlled_visits: {
-          current_month => 6,
-          one_month_back => 6,
+          one_month_back => 12,
           two_months_back => 6,
           three_months_back => 6
         },
         total_visits: {
-          current_month => 6,
-          one_month_back => 18,
+          one_month_back => 24,
           two_months_back => 6,
           three_months_back => 12,
           four_months_back => 6
         },
       }
 
-      expect(analytics.monthly_htn_control).to eq(expected_output)
+      travel_to(current_month) do
+        analytics = UserAnalyticsQuery.new(facility, days_ago: days_ago, months_ago: months_ago)
+        expect(analytics.monthly_htn_control).to eq(expected_output)
+      end
     end
   end
 
