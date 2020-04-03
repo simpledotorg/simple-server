@@ -95,7 +95,6 @@ class UserAnalyticsPresenter
               .merge(@user_analytics.monthly_htn_control[:controlled_visits]),
         }
     }
-
   end
 
   def all_time_stats
@@ -111,6 +110,26 @@ class UserAnalyticsPresenter
     }
   end
 
+  #
+  # After exhausting the initial TROPHY_MILESTONES, subsequent milestones must follow the following pattern:
+  #
+  # 10
+  # 25
+  # 50
+  # 100
+  # 250
+  # 500
+  # 1_000
+  # 2_000
+  # 3_000
+  # 4_000
+  # 5_000
+  # 10_000
+  # 20_000
+  # 30_000
+  # etc.
+  #
+  # i.e. increment by TROPHY_MILESTONE_INCR
   def trophy_stats
     total_follow_ups = MyFacilities::FollowUpsQuery.new(facilities: @current_facility).total_follow_ups.count
 
