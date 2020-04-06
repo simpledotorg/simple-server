@@ -3,8 +3,12 @@ module DashboardHelper
     zero?(value) ? "-" : value
   end
 
+  def zero_if_unavailable(value)
+    zero?(value) ? "0" : value
+  end
+
   def zero?(value)
-    value.nil? || value.zero?
+    value.nil? || value.blank? || value.zero?
   end
 
   def dates_for_periods(period, previous_periods, from_time: Time.current, include_current_period: false)
@@ -36,6 +40,7 @@ module DashboardHelper
   end
 
   def percentage_string(percentage)
+    return '0%'   if percentage.zero?
     return '< 1%' if percentage < 1
 
     "#{percentage.round(0)}%"
