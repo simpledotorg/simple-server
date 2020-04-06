@@ -7,6 +7,9 @@ task refresh_materialized_db_views: :environment do
   ActiveRecord::Base.transaction do
     ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Rails.application.config.country[:time_zone]}'")
 
+    Rails.logger.info 'Refreshing LatestBloodPressuresPerPatientPerDay'
+    LatestBloodPressuresPerPatientPerDay.refresh
+
     Rails.logger.info 'Refreshing LatestBloodPressuresPerPatientPerMonth'
     LatestBloodPressuresPerPatientPerMonth.refresh
 

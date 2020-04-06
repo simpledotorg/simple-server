@@ -13,7 +13,7 @@
     <tr>
       <% statistics.each do |key, _value| %>
         <td class="bar-labels">
-          <span class="label-date"><%= key.strftime('%b') %></span>
+          <span class="label-date"><%= I18n.l(key, format: "%b") %></span>
         </td>
       <% end %>
     </tr>

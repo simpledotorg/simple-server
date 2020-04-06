@@ -2,6 +2,7 @@ en:
   date:
     month_names: [~, 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     abbr_month_names: [~, 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  today_str: 'Today'
   registration: 'New registration'
   reset_password: 'Reset PIN'
   login:
