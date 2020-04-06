@@ -1,7 +1,12 @@
+html, body {
+  height: 100%;
+  scroll-behavior: smooth;
+}
+
 body {
   background: #F0F2F5;
   margin: 0;
-  padding: 8px 0;
+  padding: 8px;
   font-family: Roboto, sans-serif;
   color: #2F363D;
   font-weight: 400;
