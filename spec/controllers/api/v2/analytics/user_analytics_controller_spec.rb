@@ -11,54 +11,355 @@ RSpec.describe Api::V2::Analytics::UserAnalyticsController, type: :controller do
   end
 
   describe '#show' do
-    context 'json_api' do
-      describe 'facility has no patients registered' do
-        it 'returns nil as the response' do
+    context 'json' do
+      describe 'facility has data' do
+        it 'has the statistics for the facility as json' do
           get :show, format: :json
+          response_body = JSON.parse(response.body, symbolize_names: true)
 
-          response_body = JSON(response.body)
-          expect(response_body).to be_nil
-        end
-      end
-
-      describe 'facility has patients registered' do
-        let!(:patients) { create_list(:patient, 2, registration_facility: request_facility) }
-
-        it 'returns the statistics for the facility as json' do
-          get :show, format: :json
-
-          response_body = JSON(response.body)
           expect(response_body.keys.map(&:to_sym))
-            .to include(:first_of_current_month,
-                        :total_patients_count,
-                        :follow_up_patients_per_month,
-                        :patients_enrolled_per_month)
+            .to include(:daily,
+                        :monthly,
+                        :all_time,
+                        :trophies,
+                        :metadata)
+        end
+
+        context 'daily' do
+          let(:request_date) { Date.new(2018, 1, 1) }
+          let(:reg_date) { request_date - 3.days }
+          let(:follow_up_date) { request_date - 2.days }
+
+          before do
+            patients = create_list(:patient, 3, registration_facility: request_facility, recorded_at: reg_date)
+            patients.each do |patient|
+              create(:blood_pressure,
+                     patient: patient,
+                     facility: request_facility,
+                     user: request_user,
+                     recorded_at: follow_up_date)
+            end
+
+            LatestBloodPressuresPerPatientPerDay.refresh
+
+            stub_const("UserAnalyticsPresenter::DAYS_AGO", 6)
+          end
+
+          it 'has data grouped by date' do
+            response_body =
+              travel_to(request_date) do
+                get :show, format: :json
+                JSON.parse(response.body, symbolize_names: true)
+              end
+
+            expected_output = {
+              registrations: {
+                (request_date - 5.days).to_s => 0,
+                (request_date - 4.days).to_s => 0,
+                reg_date.to_date.to_s => 3,
+                (request_date - 2.days).to_s => 0,
+                (request_date - 1.days).to_s => 0,
+                request_date.to_s => 0,
+              },
+
+              follow_ups: {
+                (request_date - 5.days).to_s => 0,
+                (request_date - 4.days).to_s => 0,
+                (request_date - 3.days).to_s => 0,
+                follow_up_date.to_date.to_s => 3,
+                (request_date - 1.days).to_s => 0,
+                request_date.to_s => 0,
+              }
+            }
+
+            expect(response_body.dig(:daily, :grouped_by_date)).to eq(expected_output.deep_symbolize_keys)
+          end
+
+          it 'has no data if facility has not recorded anything recently' do
+            get :show, format: :json
+            response_body = JSON.parse(response.body, symbolize_names: true)
+
+            expected_output = {
+              registrations: {
+                (Date.today - 5).to_s => 0,
+                (Date.today - 4).to_s => 0,
+                (Date.today - 3).to_s => 0,
+                (Date.today - 2).to_s => 0,
+                (Date.today - 1).to_s => 0,
+                Date.today.to_s => 0
+              },
+
+              follow_ups: {
+                (Date.today - 5).to_s => 0,
+                (Date.today - 4).to_s => 0,
+                (Date.today - 3).to_s => 0,
+                (Date.today - 2).to_s => 0,
+                (Date.today - 1).to_s => 0,
+                Date.today.to_s => 0,
+              }
+            }
+
+            expect(response_body.dig(:daily, :grouped_by_date)).to eq(expected_output.deep_symbolize_keys)
+          end
+        end
+
+        context 'monthly' do
+          let(:request_date) { Date.new(2018, 1, 1) }
+          let(:reg_date) { request_date - 3.months }
+          let(:follow_up_date) { request_date - 2.months }
+          let(:controlled_follow_up_date) { request_date - 1.month }
+          let(:gender) { 'female' }
+
+          before do
+            patients = create_list(:patient,
+                                   3,
+                                   registration_facility: request_facility,
+                                   recorded_at: reg_date,
+                                   gender: gender)
+            patients.each do |patient|
+              create(:blood_pressure,
+                     :critical,
+                     patient: patient,
+                     facility: request_facility,
+                     user: request_user,
+                     recorded_at: follow_up_date)
+
+              create(:blood_pressure,
+                     :under_control,
+                     patient: patient,
+                     facility: request_facility,
+                     user: request_user,
+                     recorded_at: controlled_follow_up_date)
+            end
+
+            LatestBloodPressuresPerPatientPerDay.refresh
+
+            stub_const("UserAnalyticsPresenter::MONTHS_AGO", 6)
+          end
+
+          it 'has data grouped by date and gender' do
+            response_body =
+              travel_to(request_date) do
+                get :show, format: :json
+                JSON.parse(response.body, symbolize_names: true)
+              end
+
+            expected_output = {
+              registrations: {
+                gender => {
+                  (request_date - 5.months).to_s => 0,
+                  (request_date - 4.months).to_s => 0,
+                  reg_date.to_date.to_s => 3,
+                  (request_date - 2.months).to_s => 0,
+                  controlled_follow_up_date.to_date.to_s => 0,
+                  request_date.to_s => 0,
+                }
+              },
+
+              follow_ups: {
+                gender => {
+                  (request_date - 5.months).to_s => 0,
+                  (request_date - 4.months).to_s => 0,
+                  (request_date - 3.months).to_s => 0,
+                  follow_up_date.to_date.to_s => 3,
+                  controlled_follow_up_date.to_date.to_s => 3,
+                  request_date.to_s => 0,
+                }
+              }
+            }
+
+            expect(response_body.dig(:monthly, :grouped_by_gender_and_date)).to eq(expected_output.deep_symbolize_keys)
+          end
+
+          it 'has data grouped by date' do
+            response_body =
+              travel_to(request_date) do
+                get :show, format: :json
+                JSON.parse(response.body, symbolize_names: true)
+              end
+
+            expected_output = {
+              total_visits: {
+                (request_date - 5.months).to_s => 0,
+                (request_date - 4.months).to_s => 0,
+                (request_date - 3.months).to_s => 0,
+                (request_date - 2.months).to_s => 3,
+                (request_date - 1.months).to_s => 3,
+                request_date.to_s => 0,
+              },
+
+              controlled_visits: {
+                (request_date - 5.months).to_s => 0,
+                (request_date - 4.months).to_s => 0,
+                (request_date - 3.months).to_s => 0,
+                (request_date - 2.months).to_s => 0,
+                (request_date - 1.months).to_s => 3,
+                request_date.to_s => 0,
+              }
+            }
+
+            expect(response_body.dig(:monthly, :grouped_by_date)).to eq(expected_output.deep_symbolize_keys)
+          end
+
+          it 'has no data if facility has not recorded anything recently' do
+            get :show, format: :json
+            response_body = JSON.parse(response.body, symbolize_names: true)
+
+            expected_output =
+              {
+                follow_ups: {},
+                registrations: {}
+              }
+            expect(response_body.dig(:monthly, :grouped_by_gender_and_date)).to eq(expected_output)
+          end
+        end
+
+        context 'all_time' do
+          let(:request_date) { Date.new(2018, 1, 1) }
+          let(:reg_date) { request_date - 3.months }
+          let(:follow_up_date) { request_date - 2.months }
+          let(:gender) { 'female' }
+
+          before do
+            patients = create_list(:patient,
+                                   3,
+                                   registration_facility: request_facility,
+                                   recorded_at: reg_date,
+                                   gender: gender)
+            patients.each do |patient|
+              create(:blood_pressure,
+                     patient: patient,
+                     facility: request_facility,
+                     user: request_user,
+                     recorded_at: follow_up_date)
+            end
+
+            LatestBloodPressuresPerPatientPerDay.refresh
+          end
+
+          it 'has data grouped by gender' do
+            get :show, format: :json
+            response_body = JSON.parse(response.body, symbolize_names: true)
+
+            expected_output = {
+              follow_ups: {
+                gender => 3
+              },
+
+              registrations: {
+                gender => 3
+              }
+            }
+
+            expect(response_body.dig(:all_time, :grouped_by_gender)).to eq(expected_output.deep_symbolize_keys)
+          end
+        end
+
+        context 'metadata' do
+          context 'last_updated_at' do
+            it 'has date for today if request was made today' do
+              get :show, format: :json
+              response_body = JSON.parse(response.body, symbolize_names: true)
+
+              expect(response_body.dig(:metadata, :last_updated_at).to_date)
+                .to eq(Time.current.to_date)
+            end
+
+            it 'has the date at which the request was made' do
+              two_days_ago = 2.days.ago.to_date
+
+              response_body = travel_to(two_days_ago) do
+                get :show, format: :json
+                JSON.parse(response.body, symbolize_names: true)
+              end
+
+              expect(response_body.dig(:metadata, :last_updated_at).to_date)
+                .to eq(two_days_ago)
+            end
+          end
+
+          it 'has the formatted_today_string (in the correct locale)' do
+            current_locale = I18n.locale
+
+            I18n.available_locales.each do |locale|
+              I18n.locale = locale
+
+              get :show, format: :json
+              response_body = JSON.parse(response.body, symbolize_names: true)
+
+              expect(response_body.dig(:metadata, :today_string))
+                .to eq(I18n.t(:today_str))
+            end
+
+            # reset locale
+            I18n.locale = current_locale
+          end
+
+          it 'has the formatted_next_date' do
+            date = Date.new(2020, 1, 1)
+
+            response_body = travel_to(date) do
+              get :show, format: :json
+              JSON.parse(response.body, symbolize_names: true)
+            end
+
+            expect(response_body.dig(:metadata, :formatted_next_date))
+              .to eq('02-JAN-2020')
+          end
+        end
+
+        context 'trophies' do
+          it 'has both unlocked and the upcoming locked trophy' do
+            #
+            # create BPs (follow-ups)
+            #
+            patients = create_list(:patient, 3, registration_facility: request_facility)
+            patients.each do |patient|
+              [patient.recorded_at + 1.month,
+               patient.recorded_at + 2.months,
+               patient.recorded_at + 3.months,
+               patient.recorded_at + 4.months].each do |date|
+                travel_to(date) do
+                  create(:blood_pressure,
+                         patient: patient,
+                         facility: request_facility,
+                         user: request_user)
+                end
+              end
+            end
+
+            LatestBloodPressuresPerPatientPerDay.refresh
+
+            get :show, format: :json
+            response_body = JSON.parse(response.body, symbolize_names: true)
+
+            expected_output = {
+              locked_trophy_value: 25,
+              unlocked_trophy_values: [10]
+            }.with_indifferent_access
+
+            expect(response_body[:trophies]).to eq(expected_output.deep_symbolize_keys)
+          end
+
+          it 'has only 1 locked trophy if there are no achievements' do
+            get :show, format: :json
+            response_body = JSON.parse(response.body, symbolize_names: true)
+
+            expected_output = {
+              locked_trophy_value: 10,
+              unlocked_trophy_values: []
+            }.with_indifferent_access
+
+            expect(response_body[:trophies]).to eq(expected_output.deep_symbolize_keys)
+          end
         end
       end
     end
 
-    context 'html api' do
+    context 'html' do
       render_views
 
-      describe 'facility has no patients registered' do
-        it 'returns an empty graph' do
-          get :show, format: :html
-
-          expect(response.status).to eq(200)
-          expect(response).to render_template(partial: '_empty_reports')
-        end
-      end
-
-      describe 'facility has patients registered' do
-        let(:months) { (1..6).map { |month| Date.new(2019, month, 1) } }
-        let!(:patients) do
-          patients = []
-          months.each do |week|
-            Timecop.scale(1.day, week) { patients << create_list(:patient, 2, registration_facility: request_facility) }
-          end
-          patients.flatten
-        end
-
+      describe 'facility has data' do
         it 'gets html when requested' do
           get :show, format: :html
 
@@ -66,17 +367,144 @@ RSpec.describe Api::V2::Analytics::UserAnalyticsController, type: :controller do
           expect(response.content_type).to eq('text/html')
         end
 
-        it 'has the name of the v2 facility' do
+        it 'has the sync nudge card' do
           get :show, format: :html
 
-          expect(response.body).to match(Regexp.new(request_facility.name))
+          expect(response.body).to match(/Tap "Sync" on the home screen for new data/)
         end
 
-        it 'has the total patient counts for the facility' do
+
+        it 'has the registrations card' do
           get :show, format: :html
 
-          expect(response.body).to match(/All time/)
-          expect(response.body).to match(Regexp.new(patients.count.to_s))
+          expect(response.body).to match(/Registered/)
+        end
+
+        it 'has the follow-ups card' do
+          get :show, format: :html
+
+          expect(response.body).to match(/Follow-up hypertension patients/)
+        end
+
+        it 'has the hypertension control card' do
+          get :show, format: :html
+
+          expect(response.body).to match(/Hypertension control/)
+        end
+
+        context 'achievements' do
+          it 'has the section visible' do
+            #
+            # create BPs (follow-ups)
+            #
+            patients = create_list(:patient, 3, registration_facility: request_facility)
+            patients.each do |patient|
+              [patient.recorded_at + 1.month,
+               patient.recorded_at + 2.months,
+               patient.recorded_at + 3.months,
+               patient.recorded_at + 4.months].each do |date|
+                travel_to(date) do
+                  create(:blood_pressure,
+                         patient: patient,
+                         facility: request_facility,
+                         user: request_user)
+                end
+              end
+            end
+            LatestBloodPressuresPerPatientPerDay.refresh
+
+            get :show, format: :html
+            expect(response.body).to match(/Achievements/)
+          end
+
+          it 'is not visible if there are insufficient follow_ups' do
+            get :show, format: :html
+            expect(response.body).to_not match(/Achievements/)
+          end
+        end
+
+        it 'has the footer' do
+          get :show, format: :html
+
+          expect(response.body).to match(/Notes/)
+        end
+      end
+    end
+  end
+
+  context 'legacy progress tabs' do
+    before do
+      allow(FeatureToggle).to receive(:enabled?).with('NEW_PROGRESS_TAB').and_return(false)
+    end
+
+    describe '#show' do
+      context 'json_api' do
+        describe 'facility has no patients registered' do
+          it 'returns nil as the response' do
+            get :show, format: :json
+
+            response_body = JSON(response.body)
+            expect(response_body).to be_nil
+          end
+        end
+
+        describe 'facility has patients registered' do
+          let!(:patients) { create_list(:patient, 2, registration_facility: request_facility) }
+
+          it 'returns the statistics for the facility as json' do
+            get :show, format: :json
+
+            response_body = JSON(response.body)
+            expect(response_body.keys.map(&:to_sym))
+              .to include(:first_of_current_month,
+                          :total_patients_count,
+                          :follow_up_patients_per_month,
+                          :patients_enrolled_per_month)
+          end
+        end
+      end
+
+      context 'html api' do
+        render_views
+
+        describe 'facility has no patients registered' do
+          it 'returns an empty graph' do
+            get :show, format: :html
+
+            expect(response.status).to eq(200)
+            expect(response).to render_template(partial: '_empty_reports')
+          end
+        end
+
+        describe 'facility has patients registered' do
+          let(:months) { (1..6).map { |month| Date.new(2019, month, 1) } }
+          let!(:patients) do
+            patients = []
+            months.each do |week|
+              Timecop.scale(1.day, week) { patients << create_list(:patient, 2, registration_facility: request_facility) }
+            end
+            patients.flatten
+          end
+
+          it 'gets html when requested' do
+            get :show, format: :html
+
+            expect(response.status).to eq(200)
+            expect(response.content_type).to eq('text/html')
+          end
+
+          it 'has the name of the v3 facility' do
+            get :show, format: :html
+
+            expect(response.body).to match(Regexp.new(request_facility.name))
+          end
+
+          it 'has the total patient counts for the facility' do
+            get :show, format: :html
+
+            expect(response.body).to match(/All time/)
+            expect(response.body).to match(Regexp.new(patients.count.to_s))
+          end
         end
       end
     end

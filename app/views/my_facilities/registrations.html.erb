@@ -65,7 +65,7 @@
               <% unless @selected_period == :day %>
                 <div class="float-left">% of OPD</div>
               <% end %>
-              <div class="float-right"><%= @selected_period == :day ? doy_to_date(*period) : "Registered" %></div>
+              <div class="float-right"><%= @selected_period == :day ? doy_to_date_str(*period) : "Registered" %></div>
             </th>
           <% end %>
           <th class="row-label sort-label" data-sort-column-key="all-time"><% if @selected_period == :day %>Total<br> <% end %> Registered patients </th>

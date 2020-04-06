@@ -10,7 +10,17 @@ module PatientsExporter
       csv << csv_headers
 
       patients.in_batches(of: BATCH_SIZE).each do |batch|
-        batch.each do |patient|
+        batch.includes(
+          :registration_facility,
+          :phone_numbers,
+          :address,
+          :medical_history,
+          :prescription_drugs,
+          :latest_bp_passports,
+          { latest_scheduled_appointments: :facility },
+          { latest_blood_pressures: :facility },
+          :latest_blood_sugars
+        ).each do |patient|
           csv << csv_fields(patient)
         end
       end
@@ -19,31 +29,43 @@ module PatientsExporter
 
   def self.csv_headers
     [
-      "Registration Date",
-      "Registration Quarter",
-      "Patient Name",
-      "Patient Age",
-      "Patient Gender",
-      "Patient Phone Number",
-      "Patient Village/Colony",
-      "Patient District",
-      "Patient State",
-      "Registration Facility Name",
-      "Registration Facility Type",
-      "Registration Facility District",
-      "Registration Facility State",
-      "Latest BP Systolic",
-      "Latest BP Diastolic",
-      "Latest BP Date",
-      "Latest BP Quarter",
-      "Latest BP Facility Name",
-      "Latest BP Facility Type",
-      "Latest BP Facility District",
-      "Latest BP Facility State",
-      "Days Overdue",
-      "Risk Level",
-      "BP Passport ID",
-      "Simple Patient ID"
+      'Registration Date',
+      'Registration Quarter',
+      'Patient Name',
+      'Patient Age',
+      'Patient Gender',
+      'Patient Phone Number',
+      'Patient Village/Colony',
+      'Patient District',
+      'Patient State',
+      'Registration Facility Name',
+      'Registration Facility Type',
+      'Registration Facility District',
+      'Registration Facility State',
+      'Latest BP Systolic',
+      'Latest BP Diastolic',
+      'Latest BP Date',
+      'Latest BP Quarter',
+      'Latest BP Facility Name',
+      'Latest BP Facility Type',
+      'Latest BP Facility District',
+      'Latest BP Facility State',
+      'Follow-up Facility',
+      'Follow-up Date',
+      'Days Overdue',
+      'Risk Level',
+      'BP Passport ID',
+      'Simple Patient ID',
+      'Medication 1',
+      'Dosage 1',
+      'Medication 2',
+      'Dosage 2',
+      'Medication 3',
+      'Dosage 3',
+      'Medication 4',
+      'Dosage 4',
+      'Medication 5',
+      'Dosage 5'
     ]
   end
 
@@ -74,10 +96,17 @@ module PatientsExporter
       latest_bp_facility&.facility_type,
       latest_bp_facility&.district,
       latest_bp_facility&.state,
+      patient.latest_scheduled_appointment&.facility&.name,
+      patient.latest_scheduled_appointment&.scheduled_date&.to_s(:rfc822),
       patient.latest_scheduled_appointment&.days_overdue,
       ('High' if patient.high_risk?),
       patient.latest_bp_passport&.shortcode,
-      patient.id
+      patient.id,
+      *medications_for(patient)
     ]
+  end
+
+  def self.medications_for(patient)
+    patient.prescription_drugs.flat_map { |drug| [drug.name, drug.dosage] }
   end
 end
