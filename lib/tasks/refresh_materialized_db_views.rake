@@ -13,6 +13,9 @@ task refresh_materialized_db_views: :environment do
     Rails.logger.info 'Refreshing LatestBloodPressuresPerPatientPerDay'
     LatestBloodPressuresPerPatientPerDay.refresh
 
+    Rails.logger.info 'Refreshing LatestBloodPressuresPerPatientPerDay'
+    LatestBloodPressuresPerPatientPerDay.refresh
+
     Rails.logger.info 'Refreshing LatestBloodPressuresPerPatientPerMonth'
     LatestBloodPressuresPerPatientPerMonth.refresh
 

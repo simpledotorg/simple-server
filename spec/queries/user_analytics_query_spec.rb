@@ -1,34 +1,34 @@
 require 'rails_helper'
 
 RSpec.describe UserAnalyticsQuery do
-  let!(:users)    { create_list(:user, 2) }
+  let!(:users) { create_list(:user, 2) }
   let!(:facility) { create(:facility) }
 
-  let!(:months_ago)    { 5 }
-  let!(:days_ago)      { 10 }
-  let!(:current_month) { Date.current.beginning_of_month }
-  let!(:current_day)   { Date.current }
+  let!(:months_ago) { 5 }
+  let!(:days_ago) { 10 }
+  let!(:current_day) { Date.new(2018, 1, 1) }
+  let!(:current_month) { current_day.beginning_of_month }
 
   let!(:analytics) { UserAnalyticsQuery.new(facility,
                                             days_ago: days_ago,
                                             months_ago: months_ago) }
 
-  let(:five_months_back)  { current_month - 5.months }
-  let(:four_months_back)  { current_month - 4.months }
+  let(:five_months_back) { current_month - 5.months }
+  let(:four_months_back) { current_month - 4.months }
   let(:three_months_back) { current_month - 3.months }
-  let(:two_months_back)   { current_month - 2.months }
-  let(:one_month_back)    { current_month - 1.months }
+  let(:two_months_back) { current_month - 2.months }
+  let(:one_month_back) { current_month - 1.months }
 
-  let(:ten_days_back)   { current_day - 10.days }
-  let(:nine_days_back)  { current_day - 9.days }
+  let(:ten_days_back) { current_day - 10.days }
+  let(:nine_days_back) { current_day - 9.days }
   let(:eight_days_back) { current_day - 8.days }
   let(:seven_days_back) { current_day - 7.days }
-  let(:six_days_back)   { current_day - 6.days }
-  let(:five_days_back)  { current_day - 5.days }
-  let(:four_days_back)  { current_day - 4.days }
+  let(:six_days_back) { current_day - 6.days }
+  let(:five_days_back) { current_day - 5.days }
+  let(:four_days_back) { current_day - 4.days }
   let(:three_days_back) { current_day - 3.days }
-  let(:two_days_back)   { current_day - 2.days }
-  let(:one_day_back)    { current_day - 1.days }
+  let(:two_days_back) { current_day - 2.days }
+  let(:one_day_back) { current_day - 1.days }
 
   before do
     #
@@ -137,7 +137,9 @@ RSpec.describe UserAnalyticsQuery do
                           three_days_back => 12,
                           two_days_back => 6 }
 
-      expect(analytics.daily_follow_ups).to eq(expected_output)
+      travel_to(current_day) do
+        expect(analytics.daily_follow_ups).to eq(expected_output)
+      end
     end
   end
 
@@ -154,7 +156,9 @@ RSpec.describe UserAnalyticsQuery do
                           eight_days_back => 0,
                           nine_days_back => 0 }
 
-      expect(analytics.daily_registrations).to eq(expected_output)
+      travel_to(current_day) do
+        expect(analytics.daily_registrations).to eq(expected_output)
+      end
     end
   end
 
@@ -176,7 +180,10 @@ RSpec.describe UserAnalyticsQuery do
                           ["male", four_months_back] => 2,
                           ["transgender", four_months_back] => 2 }
 
-      expect(analytics.monthly_follow_ups).to eq(expected_output)
+      travel_to(current_month) do
+        analytics = UserAnalyticsQuery.new(facility, days_ago: days_ago, months_ago: months_ago)
+        expect(analytics.monthly_follow_ups).to eq(expected_output)
+      end
     end
   end
 
@@ -202,7 +209,10 @@ RSpec.describe UserAnalyticsQuery do
                           ["male", four_months_back] => 2,
                           ["transgender", four_months_back] => 2 }
 
-      expect(analytics.monthly_registrations).to eq(expected_output)
+      travel_to(current_month) do
+        analytics = UserAnalyticsQuery.new(facility, days_ago: days_ago, months_ago: months_ago)
+        expect(analytics.monthly_registrations).to eq(expected_output)
+      end
     end
   end
 
@@ -222,7 +232,10 @@ RSpec.describe UserAnalyticsQuery do
         },
       }
 
-      expect(analytics.monthly_htn_control).to eq(expected_output)
+      travel_to(current_month) do
+        analytics = UserAnalyticsQuery.new(facility, days_ago: days_ago, months_ago: months_ago)
+        expect(analytics.monthly_htn_control).to eq(expected_output)
+      end
     end
   end
 

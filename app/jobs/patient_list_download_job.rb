@@ -17,7 +17,6 @@ class PatientListDownloadJob < ApplicationJob
     patients_csv = PatientsExporter.csv(
       model
         .registered_patients
-        .joins(:registration_facility)
         .order("facilities.state, facilities.district, facilities.name, patients.recorded_at ASC")
     )
 
