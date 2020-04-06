@@ -4,6 +4,10 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
   let!(:current_user) { create(:user) }
   let!(:current_facility) { create(:facility, facility_group: current_user.facility.facility_group) }
 
+  before do
+    Rails.cache.clear
+  end
+
   describe '#statistics' do
     context 'daily' do
       let(:request_date) { Date.new(2018, 1, 1) }
