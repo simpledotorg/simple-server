@@ -7,7 +7,7 @@
   "website": "https://simple.org",
   "repository": "https://github.com/simpledotorg/simple-server",
   "scripts": {
-    "postdeploy": "bundle exec rails db:schema:load && bundle exec rails db:seed"
+    "postdeploy": "./bin/heroku-setup"
   },
   "env": {
     "SECRET_KEY_BASE": {
