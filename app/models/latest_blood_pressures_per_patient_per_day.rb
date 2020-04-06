@@ -1,4 +1,4 @@
-class LatestBloodPressuresPerPatientPerMonth < ApplicationRecord
+class LatestBloodPressuresPerPatientPerDay < ApplicationRecord
   include BloodPressureable
 
   def self.refresh
