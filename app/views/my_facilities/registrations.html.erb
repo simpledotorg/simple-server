@@ -43,7 +43,7 @@
                 <%= "Q#{quarter}-#{year}" %>
               </th>
             <% end %>
-            <th>All-time</th>
+            <th>Total</th>
           <% when :month %>
             <th></th>
             <% @display_periods.reverse.each do |(year, month)| %>
@@ -51,7 +51,7 @@
                 <%= month_short_name_and_year(month_start(year, month)) %>
               </th>
             <% end %>
-            <th>All-time</th>
+            <th>Total</th>
           <% end %>
         </tr>
         <tr data-sort-method="thead" class="sorts">
@@ -65,10 +65,10 @@
               <% unless @selected_period == :day %>
                 <div class="float-left">% of OPD</div>
               <% end %>
-              <div class="float-right"><%= @selected_period == :day ? doy_to_date(*period) : "Registered" %></div>
+              <div class="float-right"><%= @selected_period == :day ? doy_to_date_str(*period) : "Registered" %></div>
             </th>
           <% end %>
-          <th class="row-label sort-label" data-sort-column-key="all-time"><% if @selected_period == :day %>All-time<br> <% end %> Registered patients <sup>1</sup></th>
+          <th class="row-label sort-label" data-sort-column-key="all-time"><% if @selected_period == :day %>Total<br> <% end %> Registered patients </th>
           <th class="mobile">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
         </tr>
         </thead>
@@ -79,7 +79,7 @@
           <% @display_periods.reverse.each do |period| %>
             <td class="type-number" <% unless @selected_period == :day %>colspan="2"<% end %>><%= @total_registrations_by_period[period].to_i %></td>
           <% end %>
-          <td class="type-number"><%= @all_time_registrations.values.sum %></td>
+          <td class="type-number"><%= @total_registrations.values.sum %></td>
         </tr>
         <% @facilities.each do |facility| %>
           <tr>
@@ -95,7 +95,7 @@
               </td>
             <% end %>
             <td class="type-number" data-sort-column-key="all-time">
-              <%= @all_time_registrations[facility.id].to_i %>
+              <%= @total_registrations[facility.id].to_i %>
             </td>
           </tr>
         <% end %>
@@ -103,11 +103,6 @@
       </table>
     </div>
     <section class="footnotes">
-      <ol>
-        <li>
-          <strong>All-time registered patients:</strong> All registered patients with at least one recorded blood pressure.
-        </li>
-      </ol>
     </section>
   </div>
 </div>
