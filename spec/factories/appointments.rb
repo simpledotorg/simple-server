@@ -25,10 +25,6 @@ def build_appointment_payload(appointment = FactoryBot.build(:appointment))
   appointment.attributes.with_payload_keys
 end
 
-def build_appointment_payload_v2(appointment = FactoryBot.build(:appointment))
-  build_appointment_payload(appointment).except('creation_facility_id')
-end
-
 def build_invalid_appointment_payload
   build_appointment_payload.merge(
     'status' => nil,
@@ -47,9 +43,4 @@ def updated_appointment_payload(existing_appointment)
     'updated_at' => update_time,
     'status' => updated_status
   )
-end
-
-def updated_appointment_payload_v2(existing_appointment)
-  updated_appointment_payload(existing_appointment)
-    .except('creation_facility_id')
 end
