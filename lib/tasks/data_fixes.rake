@@ -9,9 +9,12 @@ namespace :data_fixes do
     service = MoveUserRecordedDataToRegistrationFacility.new(user, source_facility, destination_facility)
     patient_count = service.fix_patient_data
     bp_count = service.fix_blood_pressure_data
+    bs_count = service.fix_blood_sugar_data
     appointment_count = service.fix_appointment_data
     prescription_drug_count = service.fix_prescription_drug_data
-    puts "[DATA FIXED] #{user.full_name},#{source_facility.name},#{destination_facility.name},"\
-         "#{patient_count},#{bp_count},#{appointment_count}, #{prescription_drug_count}"
+    puts "[DATA FIXED]"\
+         "user: #{user.full_name}, source: #{source_facility.name}, destination: #{destination_facility.name}, "\
+         "patients: #{patient_count}, BPs: #{bp_count}, blood sugars: #{bs_count}, "\
+         "appointments: #{appointment_count}, prescriptions: #{prescription_drug_count}"
   end
 end
