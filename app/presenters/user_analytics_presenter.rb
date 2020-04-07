@@ -10,16 +10,20 @@ class UserAnalyticsPresenter
   TROPHY_MILESTONES = [10, 25, 50, 100, 250, 500, 1_000, 2_000, 3_000, 4_000, 5_000]
   TROPHY_MILESTONE_INCR = 10_000
 
-  attr_reader :daily_period_list, :monthly_period_list, :last_refreshed_at
+  attr_reader :daily_period_list, :monthly_period_list
 
   def initialize(current_facility)
     @current_facility = current_facility
     @daily_period_list = period_list_as_dates(:day, DAYS_AGO)
     @monthly_period_list = period_list_as_dates(:month, MONTHS_AGO)
-    @user_analytics = UserAnalyticsQuery.new(current_facility, days_ago: DAYS_AGO, months_ago: MONTHS_AGO)
 
     @last_refreshed_at =
       Rails.cache.fetch(Rails.application.config.app_constants[:MATVIEW_REFRESH_TIME_KEY]).presence || Time.current
+
+    @user_analytics = UserAnalyticsQuery.new(current_facility,
+                                             days_ago: DAYS_AGO,
+                                             months_ago: MONTHS_AGO,
+                                             fetch_until: @last_refreshed_at)
   end
 
   def statistics
@@ -32,8 +36,8 @@ class UserAnalyticsPresenter
           trophies: trophy_stats,
           metadata: {
             is_diabetes_enabled: false,
-            last_updated_at: I18n.l(last_refreshed_at),
-            formatted_next_date: display_date(last_refreshed_at + 1.day),
+            last_updated_at: I18n.l(@last_refreshed_at),
+            formatted_next_date: display_date(@last_refreshed_at + 1.day),
             today_string: I18n.t(:today_str)
           }
         }
@@ -187,6 +191,6 @@ class UserAnalyticsPresenter
   end
 
   def statistics_cache_key
-    ['user_analytics', last_refreshed_at].join('/')
+    ['user_analytics', @last_refreshed_at].join('/')
   end
 end

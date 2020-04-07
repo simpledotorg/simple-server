@@ -348,7 +348,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
   end
 
   describe '#stats_across_genders_for_month' do
-    let(:reg_date) { Date.current.beginning_of_month }
+    let(:reg_date) { Date.new(2018, 4, 8) }
 
     before do
       create(:patient,
@@ -358,6 +358,10 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
       create(:patient,
              registration_facility: current_facility,
              recorded_at: reg_date - 1.month,
+             gender: 'female')
+      create(:patient,
+             registration_facility: current_facility,
+             recorded_at: reg_date,
              gender: 'female')
       create(:patient,
              registration_facility: current_facility,
@@ -372,10 +376,13 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
     end
 
     it 'merges together all genders and counts the resource for a given month date' do
-      user_analytics = described_class.new(current_facility)
-
-      expect(user_analytics.stats_across_genders_for_month(:registrations, reg_date)).to eq(2)
-      expect(user_analytics.stats_across_genders_for_month(:registrations, reg_date - 1.month)).to eq(2)
+      travel_to(reg_date) do
+        user_analytics = described_class.new(current_facility)
+        month_date = reg_date.beginning_of_month
+        
+        expect(user_analytics.stats_across_genders_for_month(:registrations, month_date)).to eq(1)
+        expect(user_analytics.stats_across_genders_for_month(:registrations, month_date - 1.month)).to eq(2)
+      end
     end
   end
 end

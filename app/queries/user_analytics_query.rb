@@ -3,22 +3,21 @@ class UserAnalyticsQuery
   include MonthHelper
   include PeriodHelper
 
-  attr_reader :current_facility, :days_ago, :months_ago
-
-  def initialize(facility, days_ago: 30, months_ago: 6)
+  def initialize(facility, days_ago: 30, months_ago: 6, fetch_until: Date.current)
     @current_facility = facility
     @days_ago = days_ago
     @months_ago = months_ago
+    @fetch_until = fetch_until
 
     @monthly_follow_ups_data =
       MyFacilities::FollowUpsQuery
-        .new(facilities: current_facility, period: :month, last_n: months_ago)
+        .new(facilities: @current_facility, period: :month, last_n: @months_ago)
         .follow_ups
   end
 
   def daily_follow_ups
     MyFacilities::FollowUpsQuery
-      .new(facilities: current_facility, period: :day, last_n: days_ago)
+      .new(facilities: @current_facility, period: :day, last_n: @days_ago)
       .follow_ups
       .group(:year, :day)
       .count
@@ -27,9 +26,9 @@ class UserAnalyticsQuery
   end
 
   def daily_registrations
-    group_by_time_range = (days_ago.to_i - 1).days.ago.beginning_of_day..Date.current.end_of_day
+    group_by_time_range = (@days_ago.to_i - 1).days.ago.beginning_of_day..@fetch_until
 
-    current_facility
+    @current_facility
       .registered_patients
       .group_by_period(:day, :recorded_at, range: group_by_time_range)
       .distinct('patients.id')
@@ -46,9 +45,9 @@ class UserAnalyticsQuery
   end
 
   def monthly_registrations
-    group_by_time_range = (months_ago.to_i - 1).months.ago.beginning_of_month..Date.current.end_of_month
+    group_by_time_range = (@months_ago.to_i - 1).months.ago.beginning_of_month..@fetch_until
 
-    current_facility
+    @current_facility
       .registered_patients
       .group(:gender)
       .group_by_period(:month, :recorded_at, range: group_by_time_range)
@@ -80,7 +79,7 @@ class UserAnalyticsQuery
 
   def all_time_follow_ups
     MyFacilities::FollowUpsQuery
-      .new(facilities: current_facility)
+      .new(facilities: @current_facility)
       .total_follow_ups
       .joins(:patient)
       .group(:gender)
@@ -88,7 +87,7 @@ class UserAnalyticsQuery
   end
 
   def all_time_registrations
-    current_facility
+    @current_facility
       .registered_patients
       .group(:gender)
       .distinct('patients.id')
