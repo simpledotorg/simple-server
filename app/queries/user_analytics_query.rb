@@ -13,12 +13,14 @@ class UserAnalyticsQuery
       MyFacilities::FollowUpsQuery
         .new(facilities: @current_facility, period: :month, last_n: @months_ago)
         .follow_ups
+        .where('bp_recorded_at < ?', @fetch_until)
   end
 
   def daily_follow_ups
     MyFacilities::FollowUpsQuery
       .new(facilities: @current_facility, period: :day, last_n: @days_ago)
       .follow_ups
+      .where('bp_recorded_at < ?', @fetch_until)
       .group(:year, :day)
       .count
       .map { |group, count| [doy_to_date(*group), count] }

@@ -379,7 +379,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
       travel_to(reg_date) do
         user_analytics = described_class.new(current_facility)
         month_date = reg_date.beginning_of_month
-        
+
         expect(user_analytics.stats_across_genders_for_month(:registrations, month_date)).to eq(1)
         expect(user_analytics.stats_across_genders_for_month(:registrations, month_date - 1.month)).to eq(2)
       end
