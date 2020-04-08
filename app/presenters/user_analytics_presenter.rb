@@ -191,6 +191,6 @@ class UserAnalyticsPresenter
   end
 
   def statistics_cache_key
-    ['user_analytics', @last_refreshed_at].join('/')
+    "user_analytics/#{@last_refreshed_at}"
   end
 end

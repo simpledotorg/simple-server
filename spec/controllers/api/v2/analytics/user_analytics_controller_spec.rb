@@ -11,10 +11,6 @@ RSpec.describe Api::V2::Analytics::UserAnalyticsController, type: :controller do
   end
 
   describe '#show' do
-    before do
-      Rails.cache.clear
-    end
-
     context 'json' do
       describe 'facility has data' do
         it 'has the statistics for the facility as json' do

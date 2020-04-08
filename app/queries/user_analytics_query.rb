@@ -3,7 +3,7 @@ class UserAnalyticsQuery
   include MonthHelper
   include PeriodHelper
 
-  def initialize(facility, days_ago: 30, months_ago: 6, fetch_until: Date.current)
+  def initialize(facility, days_ago: 30, months_ago: 6, fetch_until: Time.current)
     @current_facility = facility
     @days_ago = days_ago
     @months_ago = months_ago

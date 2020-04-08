@@ -25,7 +25,7 @@ RSpec.describe 'refresh_materialized_db_views' do
     end
 
     Timecop.freeze(refresh_begin_time + 1.day) do
-      expect(LatestBloodPressuresPerPatientPerDay).to receive(:refresh).and_raise(StandardError)
+      allow(LatestBloodPressuresPerPatientPerDay).to receive(:refresh).and_raise(StandardError)
 
       expect {
         invoke_task('refresh_materialized_db_views')
