@@ -1,6 +1,11 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  # Set correct host name dynamically in Heroku Review Apps
+  if ENV['HEROKU_APP_NAME'].present?
+    ENV['SIMPLE_SERVER_HOST'] = "#{ENV['HEROKU_APP_NAME']}.herokuapp.com"
+  end
+
   # Code is not reloaded between requests.
   config.cache_classes = true
 
@@ -55,8 +60,11 @@ Rails.application.configure do
   config.log_tags = [ :request_id ]
 
   # Use a different cache store in production.
-  config.cache_store = :redis_store,
-    { host: ENV['RAILS_CACHE_REDIS_URL'] }
+  if ENV['RAILS_CACHE_REDIS_URL'].present?
+    config.cache_store = :redis_store, { host: ENV['RAILS_CACHE_REDIS_URL'] }
+  else
+    config.cache_store = :redis_store, ENV['REDIS_URL']
+  end
 
   # Use a real queuing backend for Active Job (and separate queues per environment)
   config.active_job.queue_adapter     = :inline
