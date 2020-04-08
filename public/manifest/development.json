@@ -11,6 +11,12 @@
       "endpoint": "http://localhost:3000/api/",
       "display_name": "Bangladesh",
       "isd_code": "880"
+    },
+    {
+      "country_code": "ET",
+      "endpoint": "http://localhost:3000/api/",
+      "display_name": "Ethiopia",
+      "isd_code": "251"
     }
   ]
 }
