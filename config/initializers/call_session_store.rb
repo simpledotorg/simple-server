@@ -10,7 +10,10 @@ module CallSessionStore
   }
 
   CONNECTION_POOL = ConnectionPool.new(CONNECTION_PARAMETERS) do
-    Redis.new(host: ENV['CALL_SESSION_REDIS_HOST'])
+    if ENV['CALL_SESSION_REDIS_HOST'].present?
+      Redis.new(host: ENV['CALL_SESSION_REDIS_HOST'])
+    else
+      Redis.new
+    end
   end
 end
-
