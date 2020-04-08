@@ -37,13 +37,18 @@ Custom formatting for printable elements
     border: 2px solid black;
 }
 
-.split-bars .bar-1 { background: #ccc; color: #000; }
-.split-bars .bar-2 { background: #aaa; color: #000; }
-.split-bars .bar-3 { background: #888; color: #000; }
+.split-bars {
+    border-collapse: separate;
+    border-spacing: 4px;
+}
 
-.key div.didntattend:after { background: #ccc; }
-.key div.uncontrolled:after { background: #aaa; }
-.key div.controlled:after { background: #888; }
+.split-bars .bar-1 { }
+.split-bars .bar-2 { background: #E892A0; color: #AA1A32; }
+.split-bars .bar-3 { }
+
+.key div.didntattend:after { }
+.key div.uncontrolled:after { }
+.key div.controlled:after { }
 
 .key div.didntattend,
 .key div.uncontrolled,
