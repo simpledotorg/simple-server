@@ -35,6 +35,8 @@ latest_blood_sugar_facility.district AS latest_blood_sugar_district,
 latest_blood_sugar_facility.state AS latest_blood_sugar_state,
 greatest(0, date_part('day', NOW() - next_appointment.scheduled_date)) AS days_overdue,
 next_appointment.scheduled_date AS next_appointment_scheduled_date,
+next_appointment.status AS next_appointment_status,
+next_appointment.remind_on AS next_appointment_remind_on,
 next_appointment_facility.name AS next_appointment_facility_name,
 next_appointment_facility.facility_type AS next_appointment_facility_type,
 next_appointment_facility.district AS next_appointment_district,
@@ -102,7 +104,6 @@ ON latest_bp_passport.patient_id = p.id
 LEFT OUTER JOIN (
     SELECT DISTINCT ON (patient_id) *
     FROM appointments
-    WHERE status = 'scheduled'
     ORDER BY patient_id, scheduled_date DESC
 ) AS next_appointment
 ON next_appointment.patient_id = p.id

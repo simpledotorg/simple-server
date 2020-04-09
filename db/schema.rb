@@ -878,6 +878,8 @@ ActiveRecord::Schema.define(version: 20200409071355) do
       latest_blood_sugar_facility.state AS latest_blood_sugar_state,
       GREATEST((0)::double precision, date_part('day'::text, (now() - (next_appointment.scheduled_date)::timestamp with time zone))) AS days_overdue,
       next_appointment.scheduled_date AS next_appointment_scheduled_date,
+      next_appointment.status AS next_appointment_status,
+      next_appointment.remind_on AS next_appointment_remind_on,
       next_appointment_facility.name AS next_appointment_facility_name,
       next_appointment_facility.facility_type AS next_appointment_facility_type,
       next_appointment_facility.district AS next_appointment_district,
@@ -970,7 +972,6 @@ ActiveRecord::Schema.define(version: 20200409071355) do
               appointments.user_id,
               appointments.creation_facility_id
              FROM appointments
-            WHERE ((appointments.status)::text = 'scheduled'::text)
             ORDER BY appointments.patient_id, appointments.scheduled_date DESC) next_appointment ON ((next_appointment.patient_id = p.id)))
        LEFT JOIN facilities next_appointment_facility ON ((next_appointment_facility.id = next_appointment.facility_id)));
   SQL
