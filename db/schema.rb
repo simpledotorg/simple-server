@@ -880,6 +880,7 @@ ActiveRecord::Schema.define(version: 20200409071355) do
       next_appointment.scheduled_date AS next_appointment_scheduled_date,
       next_appointment.status AS next_appointment_status,
       next_appointment.remind_on AS next_appointment_remind_on,
+      next_appointment_facility.id AS next_appointment_facility_id,
       next_appointment_facility.name AS next_appointment_facility_name,
       next_appointment_facility.facility_type AS next_appointment_facility_type,
       next_appointment_facility.district AS next_appointment_district,
