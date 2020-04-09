@@ -7,6 +7,8 @@ class AppointmentsController < AdminController
   def index
     authorize [:overdue_list, Appointment], :index?
 
+    @patient_summaries = PatientSummary.overdue.order('risk_level DESC, next_appointment_scheduled_date DESC')
+
     @appointments = policy_scope([:overdue_list, Appointment])
                       .joins(patient: { latest_blood_pressures: :facility })
                       .includes(patient: [
