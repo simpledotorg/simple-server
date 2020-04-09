@@ -10,6 +10,9 @@ class AppointmentsController < AdminController
     @patient_summaries = policy_scope([:overdue_list, PatientSummary])
                            .overdue
                            .order('risk_level DESC, next_appointment_scheduled_date DESC')
+    if current_facility
+      @patient_summaries = @patient_summaries.where(next_appointment_facility_id: current_facility.id)
+    end
 
     @appointments = policy_scope([:overdue_list, Appointment])
                       .joins(patient: { latest_blood_pressures: :facility })
