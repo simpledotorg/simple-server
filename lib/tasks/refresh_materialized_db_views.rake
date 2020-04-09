@@ -2,10 +2,13 @@
 
 desc 'Refresh materialized views for dashboards'
 task refresh_materialized_db_views: :environment do
+  tz = Rails.application.config.country[:time_zone]
+  refresh_time_key = Rails.application.config.app_constants[:MATVIEW_REFRESH_TIME_KEY]
+
   # LatestBloodPressuresPerPatientPerMonth should be refreshed before
   # LatestBloodPressuresPerPatientPerQuarter and LatestBloodPressuresPerPatient
   ActiveRecord::Base.transaction do
-    ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Rails.application.config.country[:time_zone]}'")
+    ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{tz}'")
 
     Rails.logger.info 'Refreshing LatestBloodPressuresPerPatientPerDay'
     LatestBloodPressuresPerPatientPerDay.refresh
@@ -25,6 +28,7 @@ task refresh_materialized_db_views: :environment do
     Rails.logger.info 'Refreshing PatientRegistrationsPerDayPerFacility'
     PatientRegistrationsPerDayPerFacility.refresh
 
-    Rails.logger.info 'Refresh complete'
+    Time.use_zone(tz) { Rails.cache.write(refresh_time_key, Time.current) }
+    Rails.logger.info "Refresh complete, #{refresh_time_key} written to cache"
   end
 end
