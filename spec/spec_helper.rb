@@ -21,6 +21,10 @@ RSpec.configure do |config|
 
   config.shared_context_metadata_behavior = :apply_to_host_groups
 
+  config.before(:each) do
+    Rails.cache.clear
+  end
+
   Capybara.default_max_wait_time = 5
 
   Webdrivers::Chromedriver.update
@@ -31,7 +35,7 @@ RSpec.configure do |config|
 
   Capybara.register_driver :headless_chrome do |app|
     Capybara::Selenium::Driver.new app, browser: :chrome,
-                                        options: Selenium::WebDriver::Chrome::Options.new(args: %w[headless disable-gpu])
+                                   options: Selenium::WebDriver::Chrome::Options.new(args: %w[headless disable-gpu])
   end
 
   Capybara.default_driver = :headless_chrome

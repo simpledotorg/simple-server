@@ -16,22 +16,32 @@ class UserAnalyticsPresenter
     @current_facility = current_facility
     @daily_period_list = period_list_as_dates(:day, DAYS_AGO)
     @monthly_period_list = period_list_as_dates(:month, MONTHS_AGO)
-    @user_analytics = UserAnalyticsQuery.new(current_facility, days_ago: DAYS_AGO, months_ago: MONTHS_AGO)
+
+    @last_refreshed_at =
+      Rails.cache.fetch(Rails.application.config.app_constants[:MATVIEW_REFRESH_TIME_KEY]).presence || Time.current
+
+    @user_analytics = UserAnalyticsQuery.new(current_facility,
+                                             days_ago: DAYS_AGO,
+                                             months_ago: MONTHS_AGO,
+                                             fetch_until: @last_refreshed_at)
   end
 
   def statistics
-    @statistics ||= {
-      daily: daily_stats,
-      monthly: monthly_stats,
-      all_time: all_time_stats,
-      trophies: trophy_stats,
-      metadata: {
-        is_diabetes_enabled: false,
-        last_updated_at: I18n.l(Time.current),
-        formatted_next_date: display_date(Time.current + 1.day),
-        today_string: I18n.t(:today_str)
-      }
-    }
+    @statistics ||=
+      Rails.cache.fetch(statistics_cache_key) do
+        {
+          daily: daily_stats,
+          monthly: monthly_stats,
+          all_time: all_time_stats,
+          trophies: trophy_stats,
+          metadata: {
+            is_diabetes_enabled: false,
+            last_updated_at: I18n.l(@last_refreshed_at),
+            formatted_next_date: display_date(@last_refreshed_at + 1.day),
+            today_string: I18n.t(:today_str)
+          }
+        }
+      end
   end
 
   def stats_across_genders_for_month(resource, month_date)
@@ -178,5 +188,9 @@ class UserAnalyticsPresenter
 
   def data_for_unavailable_dates(period_list)
     period_list.map { |date| [date, 0] }.to_h
+  end
+
+  def statistics_cache_key
+    "user_analytics/#{@last_refreshed_at}"
   end
 end
