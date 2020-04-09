@@ -8,7 +8,7 @@ class Patient < ApplicationRecord
     denied: 'denied'
   }, _prefix: true
 
-  GENDERS = %w[male female transgender].freeze
+  GENDERS = Rails.application.config.country[:supported_genders].freeze
   STATUSES = %w[active dead migrated unresponsive inactive].freeze
   RISK_PRIORITIES = {
     HIGH: 0,
