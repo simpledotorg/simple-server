@@ -10,6 +10,7 @@ class AppointmentsController < AdminController
     @patient_summaries = policy_scope([:overdue_list, PatientSummary])
                            .overdue
                            .order('risk_level DESC, next_appointment_scheduled_date ASC')
+                           .includes(:next_appointment)
     if current_facility
       @patient_summaries = @patient_summaries.where(next_appointment_facility_id: current_facility.id)
     end
@@ -30,7 +31,10 @@ class AppointmentsController < AdminController
 
 
     respond_to do |format|
-      format.html { @appointments = paginate(@appointments) }
+      format.html do
+        @patient_summaries = paginate(@patient_summaries)
+        @appointments = paginate(@appointments)
+      end
       format.csv do
         send_data render_to_string('index.csv.erb'), filename: download_filename
       end

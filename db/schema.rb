@@ -878,6 +878,7 @@ ActiveRecord::Schema.define(version: 20200409071355) do
       latest_blood_sugar_facility.district AS latest_blood_sugar_district,
       latest_blood_sugar_facility.state AS latest_blood_sugar_state,
       GREATEST((0)::double precision, date_part('day'::text, (now() - (next_appointment.scheduled_date)::timestamp with time zone))) AS days_overdue,
+      next_appointment.id AS next_appointment_id,
       next_appointment.scheduled_date AS next_appointment_scheduled_date,
       next_appointment.status AS next_appointment_status,
       next_appointment.remind_on AS next_appointment_remind_on,

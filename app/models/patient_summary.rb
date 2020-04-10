@@ -1,6 +1,8 @@
 class PatientSummary < ActiveRecord::Base
   self.primary_key = :id
 
+  belongs_to :next_appointment, class_name: 'Appointment', foreign_key: :next_appointment_id
+
   def readonly?
     true
   end

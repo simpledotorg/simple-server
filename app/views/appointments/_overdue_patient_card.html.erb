@@ -1,0 +1,70 @@
+<div class="card">
+
+    <h5 class="mb-2">
+        <%= patient_summary.full_name %>,
+        <%= patient_summary.gender.capitalize %>,
+        <%= patient_summary.current_age %>
+    </h5>
+
+    <div>
+      <div>
+        <span class="text-secondary">Registered on:</span>
+        <%= handle_impossible_registration_date(patient_summary.recorded_at) %><br>
+      </div>
+      <% if patient_summary.latest_blood_pressure_recorded_at.present? %>
+        <div>
+          <span class="text-secondary">Last BP:</span>
+          <%= patient_summary.latest_blood_pressure_systolic %>/<%= patient_summary.latest_blood_pressure_diastolic %>
+          recorded at
+          <%= patient_summary.latest_blood_pressure_facility_name %>
+          <%= rounded_time_ago_in_words(patient_summary.latest_blood_pressure_recorded_at) %>
+        </div>
+      <% end %>
+      <div>
+        <span class="text-secondary">Home:</span>
+        <%= "#{patient_summary.street_address}, " if patient_summary.street_address.present? %>
+        <%= patient_summary.village_or_colony %>
+      </div>
+    </div>
+
+    <div class="card-date">
+        <% if patient_summary.risk_level > 0 %>
+          <div>
+            <span class="badge badge-pill badge-danger ml-2">HIGH RISK</span>
+          </div>
+        <% end %>
+        <%= patient_summary.days_overdue %> days overdue
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-md-3 mt-2">
+            <% if patient_summary.latest_phone_number.present? %>
+                <a href="tel:<%= patient_summary.latest_phone_number %>" class="btn btn-sm btn-block btn-phone btn-outline-primary btn-phone"><i class="fas fa-phone" style="font-size: 80%;"></i> <%= patient_summary.latest_phone_number %></a>
+            <% else %>
+                <a href="#" class="btn btn-sm btn-block btn-info disabled">&lt; No mobile &gt;</a>
+            <% end %>
+        </div>
+        <div class="col-md-4 mt-2">
+            <%= bootstrap_form_with(model: form_model) do |form| %>
+                <%= form.hidden_field :selected_facility_id, value: @facility_id %>
+                <%= form.hidden_field :page, value: @page %>
+                <%= form.select :call_result,
+                    call_result_options,
+                    {
+                        prompt: "Result of follow-up...",
+                        hide_label: true
+                    },
+                    onchange: "this.form.submit();",
+                    class: "form-control-sm"
+            %>
+            <% end %>
+        </div>
+    </div>
+    <%# last_interaction = show_last_interaction_date_and_result(patient) %>
+    <%# if last_interaction.present? %>
+        <div class="card-footer text-info">
+            Last interaction: <%#= last_interaction %>
+        </div>
+    <%# end %>
+
+</div>
