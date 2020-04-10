@@ -12,8 +12,11 @@ Rails.application.configure do
   # Show full error reports.
   config.consider_all_requests_local = true
 
-  config.cache_store = :redis_store,
-    { host: ENV['RAILS_CACHE_REDIS_URL'] }
+  if ENV['RAILS_CACHE_REDIS_URL'].present?
+    config.cache_store = :redis_store, { host: ENV['RAILS_CACHE_REDIS_URL'] }
+  else
+    config.cache_store = :redis_store, ENV['REDIS_URL']
+  end
 
   # Enable/disable caching. By default caching is disabled.
   if Rails.root.join('tmp/caching-dev.txt').exist?

@@ -11,6 +11,12 @@
       "endpoint": "https://api-sandbox.simple.org/api/",
       "display_name": "Bangladesh",
       "isd_code": "880"
+    },
+    {
+      "country_code": "ET",
+      "endpoint": "https://api-sandbox.simple.org/api/",
+      "display_name": "Ethiopia",
+      "isd_code": "251"
     }
   ]
 }

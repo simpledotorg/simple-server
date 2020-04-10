@@ -9,26 +9,26 @@ RSpec.describe UserAnalyticsQuery do
   let!(:current_day) { Date.new(2018, 1, 1) }
   let!(:current_month) { current_day.beginning_of_month }
 
-  let!(:analytics) { UserAnalyticsQuery.new(facility,
-                                            days_ago: days_ago,
-                                            months_ago: months_ago) }
+  let!(:five_months_back) { current_month - 5.months }
+  let!(:four_months_back) { current_month - 4.months }
+  let!(:three_months_back) { current_month - 3.months }
+  let!(:two_months_back) { current_month - 2.months }
+  let!(:one_month_back) { current_month - 1.months }
 
-  let(:five_months_back) { current_month - 5.months }
-  let(:four_months_back) { current_month - 4.months }
-  let(:three_months_back) { current_month - 3.months }
-  let(:two_months_back) { current_month - 2.months }
-  let(:one_month_back) { current_month - 1.months }
+  let!(:ten_days_back) { current_day - 10.days }
+  let!(:nine_days_back) { current_day - 9.days }
+  let!(:eight_days_back) { current_day - 8.days }
+  let!(:seven_days_back) { current_day - 7.days }
+  let!(:six_days_back) { current_day - 6.days }
+  let!(:five_days_back) { current_day - 5.days }
+  let!(:four_days_back) { current_day - 4.days }
+  let!(:three_days_back) { current_day - 3.days }
+  let!(:two_days_back) { current_day - 2.days }
+  let!(:one_day_back) { current_day - 1.days }
 
-  let(:ten_days_back) { current_day - 10.days }
-  let(:nine_days_back) { current_day - 9.days }
-  let(:eight_days_back) { current_day - 8.days }
-  let(:seven_days_back) { current_day - 7.days }
-  let(:six_days_back) { current_day - 6.days }
-  let(:five_days_back) { current_day - 5.days }
-  let(:four_days_back) { current_day - 4.days }
-  let(:three_days_back) { current_day - 3.days }
-  let(:two_days_back) { current_day - 2.days }
-  let(:one_day_back) { current_day - 1.days }
+  let(:analytics) { UserAnalyticsQuery.new(facility,
+                                           days_ago: days_ago,
+                                           months_ago: months_ago) }
 
   before do
     #
@@ -181,7 +181,6 @@ RSpec.describe UserAnalyticsQuery do
                           ["transgender", four_months_back] => 2 }
 
       travel_to(current_month) do
-        analytics = UserAnalyticsQuery.new(facility, days_ago: days_ago, months_ago: months_ago)
         expect(analytics.monthly_follow_ups).to eq(expected_output)
       end
     end
@@ -210,7 +209,6 @@ RSpec.describe UserAnalyticsQuery do
                           ["transgender", four_months_back] => 2 }
 
       travel_to(current_month) do
-        analytics = UserAnalyticsQuery.new(facility, days_ago: days_ago, months_ago: months_ago)
         expect(analytics.monthly_registrations).to eq(expected_output)
       end
     end
@@ -233,7 +231,6 @@ RSpec.describe UserAnalyticsQuery do
       }
 
       travel_to(current_month) do
-        analytics = UserAnalyticsQuery.new(facility, days_ago: days_ago, months_ago: months_ago)
         expect(analytics.monthly_htn_control).to eq(expected_output)
       end
     end
@@ -256,6 +253,45 @@ RSpec.describe UserAnalyticsQuery do
                           "transgender" => 8 }
 
       expect(analytics.all_time_registrations).to eq(expected_output)
+    end
+  end
+
+  context 'respect the fetch_until parameter', skip_before: true do
+    let!(:days_ago) { 10 }
+    let!(:months_ago) { 5 }
+    let!(:date) { DateTime.new(2018, 4, 8, 15, 16, 23, 42) }
+
+    let(:analytics) { UserAnalyticsQuery.new(facility,
+                                             days_ago: days_ago,
+                                             months_ago: months_ago,
+                                             fetch_until: date) }
+
+    before do
+      users.each do |u|
+        create(:patient,
+               registration_facility: facility,
+               registration_user: u,
+               gender: 'female',
+               recorded_at: date)
+
+        create(:patient,
+               registration_facility: facility,
+               registration_user: u,
+               gender: 'female',
+               recorded_at: date + 5.seconds)
+      end
+    end
+
+    it 'caps the daily_registrations' do
+      travel_to(date) do
+        expect(analytics.daily_registrations[date.to_date]).to eq(2)
+      end
+    end
+
+    it 'caps the monthly_registrations' do
+      travel_to(date) do
+        expect(analytics.monthly_registrations[['female', date.beginning_of_month.to_date]]).to eq(2)
+      end
     end
   end
 end

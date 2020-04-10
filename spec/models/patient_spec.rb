@@ -4,6 +4,10 @@ include Hashable
 describe Patient, type: :model do
   subject(:patient) { build(:patient) }
 
+  it 'picks up available genders from country config' do
+    expect(described_class::GENDERS).to eq(Rails.application.config.country[:supported_genders])
+  end
+
   describe 'Associations' do
     it { is_expected.to belong_to(:address).optional }
     it { is_expected.to have_many(:phone_numbers) }
