@@ -18,14 +18,44 @@ class MyFacilities::FollowUpsQuery
   end
 
   def total_follow_ups
+    date_truncate_string =
+      "(DATE_TRUNC('day', bp_recorded_at::timestamptz AT TIME ZONE '#{Groupdate.time_zone || 'Etc/UTC'}'))"
+
     @total_follow_ups ||=
       LatestBloodPressuresPerPatientPerDay
-        .where('patient_recorded_at < bp_recorded_at')
+        .where("patient_recorded_at < #{date_truncate_string}")
         .where(facility: @facilities)
   end
 
   def follow_ups
-    @follow_ups ||=
-      total_follow_ups.where("(year, #{@period}) IN (#{periods_as_sql_list(@periods)})")
+    case @period
+      when :month
+        monthly_follow_ups
+      when :day
+        daily_follow_ups
+      else
+        nil
+    end
+  end
+  def monthly_follow_ups
+    date_truncate_string =
+      "(DATE_TRUNC('month', bp_recorded_at::timestamptz AT TIME ZONE '#{Groupdate.time_zone || 'Etc/UTC'}'))"
+
+    @monthly_follow_ups ||=
+      LatestBloodPressuresPerPatientPerMonth
+        .where("patient_recorded_at < #{date_truncate_string}")
+        .where(facility: @facilities)
+        .where("(year, month) IN (#{periods_as_sql_list(pl)})")
+  end
+
+  def daily_follow_ups
+    date_truncate_string =
+      "(DATE_TRUNC('day', bp_recorded_at::timestamptz AT TIME ZONE '#{Groupdate.time_zone || 'Etc/UTC'}'))"
+
+    @daily_follow_ups ||=
+      LatestBloodPressuresPerPatientPerDay
+        .where("patient_recorded_at < #{date_truncate_string}")
+        .where(facility: @facilities)
+        .where("(year, day) IN (#{periods_as_sql_list(@periods)})")
   end
 end
