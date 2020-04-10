@@ -37,6 +37,7 @@ class MyFacilities::FollowUpsQuery
         nil
     end
   end
+
   def monthly_follow_ups
     date_truncate_string =
       "(DATE_TRUNC('month', bp_recorded_at::timestamptz AT TIME ZONE '#{Groupdate.time_zone || 'Etc/UTC'}'))"
@@ -45,7 +46,7 @@ class MyFacilities::FollowUpsQuery
       LatestBloodPressuresPerPatientPerMonth
         .where("patient_recorded_at < #{date_truncate_string}")
         .where(facility: @facilities)
-        .where("(year, month) IN (#{periods_as_sql_list(pl)})")
+        .where("(year, month) IN (#{periods_as_sql_list(@periods)})")
   end
 
   def daily_follow_ups
