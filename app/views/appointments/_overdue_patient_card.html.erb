@@ -15,8 +15,7 @@
         <div>
           <span class="text-secondary">Last BP:</span>
           <%= patient_summary.latest_blood_pressure_systolic %>/<%= patient_summary.latest_blood_pressure_diastolic %>
-          recorded at
-          <%= patient_summary.latest_blood_pressure_facility_name %>
+          recorded at <%= patient_summary.latest_blood_pressure_facility_name %>
           <%= rounded_time_ago_in_words(patient_summary.latest_blood_pressure_recorded_at) %>
         </div>
       <% end %>
