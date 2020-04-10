@@ -24,7 +24,7 @@ class Deploy
       end
       acc
     end
-  
+
   COUNTRIES_SUPPORTED = COUNTRY_TO_ENVIRONMENT.keys.sort
   DIRS_WITH_CRITICAL_CHANGES = {
     'db/' => 'Holds all the database migrations',
@@ -98,7 +98,10 @@ class Deploy
              skip_for: ['sandbox', 'qa', 'production'] },
 
       4 => { msg: 'Deploying...',
-             action: -> { deploy } }
+             action: -> { deploy } },
+
+      5 => { msg: 'Notifying...',
+             action: -> { notify } }
     }
   end
 
@@ -159,6 +162,36 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
     execute_safely("git push origin refs/tags/#{@tag_to_deploy}", confirm: true)
   end
 
+  def deploy
+    puts "#{@tag_to_deploy || 'master'} to '#{current_environment}'."
+    puts "Please 'tail -f log/capistrano.log' for more info."
+    execute_safely("bundle exec cap #{country_to_deploy}:#{current_environment} deploy",
+                   { 'BRANCH' => @tag_to_deploy, 'CONFIRM' => 'false' },
+                   confirm: true)
+  end
+
+  def notify
+    if !ENV['SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK']
+      puts 'SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK missing. Skipping notification.'
+    end
+
+    require 'net/http'
+    require 'json'
+
+    webhook = URI(ENV['SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK'])
+    http = Net::HTTP.new(webhook.host, webhook.port)
+    http.use_ssl = true
+    request = Net::HTTP::Post.new(webhook.path, 'Content-Type' => 'application/json')
+    request.body = { text: notification_text }.to_json
+    response = http.request(request)
+
+    if response.is_a?(Net::HTTPSuccess)
+      puts 'Notification complete'
+    else
+      puts 'Notification failed'
+    end
+  end
+
   def print_usage_and_exit
     $stderr.puts "Usage: bin/deploy <country> <environment> [tag-to-deploy]"
     $stderr.puts ""
@@ -183,6 +216,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
                      .map { |line| line.match(/\s(.*)/)&.captures&.last }
                      .reject { |line| line =~ /^Merge/ } # remove merge commits
                      .compact
+                     .map { |line| "* #{line}" }
                      .join("\n")
   end
 
@@ -201,14 +235,6 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
 
   def current_date
     Time.now.strftime("%Y-%m-%d")
-  end
-
-  def deploy
-    puts "#{@tag_to_deploy || 'master'} to '#{current_environment}'."
-    puts "Please 'tail -f log/capistrano.log' for more info."
-    execute_safely("bundle exec cap #{country_to_deploy}:#{current_environment} deploy",
-                   { 'BRANCH' => @tag_to_deploy, 'CONFIRM' => 'false' },
-                   confirm: true)
   end
 
   def wrap_step_in_box(step_name, &blk)
@@ -270,6 +296,13 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
 
   def check_current_git_branch
     execute_safely('git rev-parse --abbrev-ref HEAD').strip
+  end
+
+  def notification_text
+    <<~NOTIFICATION
+      Deployed `simple-server` `#{tag_to_deploy}` to #{country_to_deploy} #{current_environment}
+      #{changelog}
+    NOTIFICATION
   end
 end
 
