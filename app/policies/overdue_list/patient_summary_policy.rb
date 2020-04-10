@@ -1,4 +1,8 @@
 class OverdueList::PatientSummaryPolicy < ApplicationPolicy
+  def download?
+    user.has_permission?(:download_overdue_list)
+  end
+
   class Scope < Scope
     attr_reader :user, :scope
 

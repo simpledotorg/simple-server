@@ -20,8 +20,8 @@
   <%= [
     patient_summary.full_name,
     patient_summary.gender.capitalize,
-    patient_summary.current_age,
-    patient_summary.days_overdue,
+    patient_summary.current_age.to_i,
+    patient_summary.days_overdue.to_i,
     handle_impossible_registration_date(patient_summary.recorded_at),
     "#{patient_summary.latest_blood_pressure_systolic}/#{patient_summary.latest_blood_pressure_diastolic}",
     patient_summary.latest_blood_pressure_facility_name,

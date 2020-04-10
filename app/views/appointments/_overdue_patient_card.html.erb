@@ -3,7 +3,7 @@
     <h5 class="mb-2">
         <%= patient_summary.full_name %>,
         <%= patient_summary.gender.capitalize %>,
-        <%= patient_summary.current_age %>
+        <%= patient_summary.current_age.to_i %>
     </h5>
 
     <div>
@@ -33,7 +33,7 @@
             <span class="badge badge-pill badge-danger ml-2">HIGH RISK</span>
           </div>
         <% end %>
-        <%= patient_summary.days_overdue %> days overdue
+        <%= patient_summary.days_overdue.to_i %> days overdue
     </div>
 
     <div class="row mt-2">
@@ -60,11 +60,11 @@
             <% end %>
         </div>
     </div>
-    <%# last_interaction = show_last_interaction_date_and_result(patient) %>
-    <%# if last_interaction.present? %>
+    <% last_interaction = show_last_interaction_date_and_result(patient_summary.patient) %>
+    <% if last_interaction.present? %>
         <div class="card-footer text-info">
-            Last interaction: <%#= last_interaction %>
+            Last interaction: <%= last_interaction %>
         </div>
-    <%# end %>
+    <% end %>
 
 </div>

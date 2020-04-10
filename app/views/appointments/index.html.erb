@@ -8,7 +8,7 @@
            per_page: @per_page,
            scope_namespace: [:overdue_list, Facility]) %>
 
-<% if @appointments.present? && policy([:overdue_list, @appointments.first]).download? %>
+<% if @patient_summaries.present? && policy([:overdue_list, @patient_summaries.first]).download? %>
   <h2 name="download_text">Downloads</h2>
 
   <div class="mb-5 mt-3">
@@ -16,7 +16,7 @@
       <div class="text-grey">
         <i class="far fa-file-excel mr-2"></i> Select a facility to download Overdue Patients list
       </div>
-    <% elsif policy([:overdue_list, current_facility]).download? && @appointments.present? %>
+    <% else %>
       <%= link_to(appointments_path(facility_id: @facility_id, format: "csv"), class: "", data: { confirm: I18n.t('admin.phi_download_alert') }) do %>
         <i class='far fa-file-excel mr-2'></i>
         Download overdue list
@@ -25,7 +25,7 @@
   </div>
 <% end %>
 
-<% if @appointments.present? %>
+<% if @patient_summaries.present? %>
   <h2>Patient list</h2>
   <% call_result_options = {
       'Patient responded' => [['Agreed to visit', 'agreed_to_visit'], ['Patient has already visited', 'patient_has_already_visited']],

@@ -1,5 +1,27 @@
 require 'rails_helper'
 
+RSpec.describe OverdueList::PatientSummaryPolicy do
+  subject { described_class }
+
+  let(:user_with_permission) do
+    create(
+      :admin,
+      user_permissions: [build(:user_permission, permission_slug: :download_overdue_list)]
+    )
+  end
+  let(:user_without_permission) { create(:admin) }
+
+  permissions :download? do
+    it 'permits user with the appropriate permissions' do
+      expect(subject).to permit(user_with_permission, PatientSummary)
+    end
+
+    it 'does not permit users without the appropriate permissions' do
+      expect(subject).not_to permit(user_without_permission, PatientSummary)
+    end
+  end
+end
+
 RSpec.describe OverdueList::AppointmentPolicy::Scope do
   let(:subject) { described_class }
 
