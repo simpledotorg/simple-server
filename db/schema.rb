@@ -854,6 +854,7 @@ ActiveRecord::Schema.define(version: 20200409071355) do
       p.gender,
       latest_phone_number.number AS latest_phone_number,
       addresses.village_or_colony,
+      addresses.street_address,
       addresses.district,
       addresses.state,
       reg_facility.name AS registration_facility_name,

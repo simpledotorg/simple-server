@@ -9,7 +9,7 @@ class AppointmentsController < AdminController
 
     @patient_summaries = policy_scope([:overdue_list, PatientSummary])
                            .overdue
-                           .order('risk_level DESC, next_appointment_scheduled_date DESC')
+                           .order('risk_level DESC, next_appointment_scheduled_date ASC')
     if current_facility
       @patient_summaries = @patient_summaries.where(next_appointment_facility_id: current_facility.id)
     end
@@ -27,6 +27,7 @@ class AppointmentsController < AdminController
                       .order(scheduled_date: :asc)
 
     @appointments = @appointments.where(facility: current_facility) if current_facility
+
 
     respond_to do |format|
       format.html { @appointments = paginate(@appointments) }
