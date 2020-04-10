@@ -197,6 +197,8 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
     $stderr.puts ""
     $stderr.puts "Note: tag-to-deploy is required to deploy to production"
     $stderr.puts "Note: Make sure you are locally on the latest master branch"
+    $stderr.puts "Note: Export SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK to your environment to automatically"
+    $stderr.puts "      emit a notification about this deployment"
     exit 1
   end
 
