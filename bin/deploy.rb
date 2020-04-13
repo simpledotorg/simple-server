@@ -193,7 +193,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 
   def print_usage_and_exit
-    $stderr.puts "Usage: bin/deploy <country> <environment> [tag-to-deploy]"
+    $stderr.puts "Usage: bin/deploy.rb <country> <environment> [tag-to-deploy]"
     $stderr.puts ""
     $stderr.puts "Note: tag-to-deploy is required to deploy to production"
     $stderr.puts "Note: Make sure you are locally on the latest master branch"
