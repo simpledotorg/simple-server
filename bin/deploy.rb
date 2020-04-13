@@ -218,7 +218,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
                      .map { |line| line.match(/\s(.*)/)&.captures&.last }
                      .reject { |line| line =~ /^Merge/ } # remove merge commits
                      .compact
-                     .map { |line| "* #{line}" }
+                     .map { |line| "• #{line}" }
                      .join("\n")
   end
 
@@ -302,9 +302,18 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
 
   def notification_text
     <<~NOTIFICATION
-      Deployed `simple-server` `#{tag_to_deploy}` to #{country_to_deploy} #{current_environment}
+      #{notification_emoji} Deployed `simple-server` `#{tag_to_deploy}` to #{country_to_deploy} #{current_environment}
       #{changelog}
     NOTIFICATION
+  end
+
+  def notification_emoji
+    {
+      'sandbox' => ':ghost:',
+      'staging' => ':horse_racing:',
+      'demo' => ':horse_racing:',
+      'production' => ':rocket:'
+    }[current_environment]
   end
 end
 
