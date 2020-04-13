@@ -81,6 +81,7 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
               end
             end
             LatestBloodPressuresPerPatientPerDay.refresh
+            LatestBloodPressuresPerPatientPerMonth.refresh
 
             get :show, format: :html
             expect(response.body).to match(/Achievements/)

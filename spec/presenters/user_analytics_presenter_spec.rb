@@ -109,7 +109,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
                  recorded_at: controlled_follow_up_date)
         end
 
-        LatestBloodPressuresPerPatientPerDay.refresh
+        LatestBloodPressuresPerPatientPerMonth.refresh
 
         stub_const("UserAnalyticsPresenter::MONTHS_AGO", 6)
       end
