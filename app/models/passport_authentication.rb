@@ -1,4 +1,4 @@
-class PassportAuthentication < ApplicationRecord
+class PassportAuthentication < ActiveRecord::Base
   after_initialize :generate_access_token, if: :new_record?
   after_initialize :generate_otp, if: :new_record?
 
