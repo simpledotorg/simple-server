@@ -1,4 +1,6 @@
 class Api::V2::BloodPressuresController < Api::V3::BloodPressuresController
+  include Api::V2::LogApiUsageByUsers
+
   private
 
   def transform_to_response(blood_pressure)
