@@ -129,6 +129,7 @@ RSpec.describe UserAnalyticsQuery do
     end
 
     LatestBloodPressuresPerPatientPerDay.refresh
+    LatestBloodPressuresPerPatientPerMonth.refresh
   end
 
   context 'daily_follow_ups (for the specified facility)' do
@@ -164,11 +165,7 @@ RSpec.describe UserAnalyticsQuery do
 
   context 'monthly_follow_ups (for the specified facility)' do
     it 'returns month-on-month follow-ups for Hypertension-only patients grouped by gender' do
-      expected_output = { ["female", one_month_back] => 8,
-                          ["male", one_month_back] => 8,
-                          ["transgender", one_month_back] => 8,
-
-                          ["female", two_months_back] => 2,
+      expected_output = { ["female", two_months_back] => 2,
                           ["male", two_months_back] => 2,
                           ["transgender", two_months_back] => 2,
 
@@ -218,12 +215,10 @@ RSpec.describe UserAnalyticsQuery do
     it 'returns month-on-month Hypertension control numbers' do
       expected_output = {
         controlled_visits: {
-          one_month_back => 12,
           two_months_back => 6,
           three_months_back => 6
         },
         total_visits: {
-          one_month_back => 24,
           two_months_back => 6,
           three_months_back => 12,
           four_months_back => 6
