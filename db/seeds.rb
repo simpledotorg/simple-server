@@ -8,6 +8,7 @@
 require_relative '../lib/tasks/scripts/create_admin_user'
 require 'factory_bot_rails'
 
+NUM_OF_FACILITY_GROUPS = 5
 NUM_OF_FACILITIES = 10
 MAX_NUM_OF_USERS_PER_FACILITY = 5
 NUM_OF_USERS_PER_FACILITY_FN = -> { rand(1..MAX_NUM_OF_USERS_PER_FACILITY) }
@@ -76,30 +77,30 @@ organization = Organization.find_by(org) || FactoryBot.create(:organization, org
 protocol = Protocol.find_or_create_by!(protocol_data)
 protocol_drugs_data.each { |drug_data| ProtocolDrug.find_or_create_by!(drug_data.merge(protocol_id: protocol.id)) }
 
+facility_groups = (1..NUM_OF_FACILITY_GROUPS).to_a.map do
+  facility_group_params = {
+    organization: organization, protocol: protocol
+  }
+
+  FactoryBot.create(:facility_group, facility_group_params)
+end
+
 #
 # create facility and facility_groups
 #
 facilities =
-  (1..NUM_OF_FACILITIES).to_a.map do
-    type = facility_size_map.keys.sample
-    size = facility_size_map[type]
+  facility_groups.map do |fg|
+    (1..NUM_OF_FACILITIES).to_a.map do
+      type = facility_size_map.keys.sample
+      size = facility_size_map[type]
 
-    facility_group_params = {
-      organization: organization, protocol: protocol
-    }
-
-    facility_group =
-      FacilityGroup.find_by(facility_group_params) || FactoryBot.create(:facility_group, facility_group_params)
-
-    facility = FactoryBot.create(:facility,
-                                 facility_group_id: facility_group.id,
-                                 facility_type: type,
-                                 facility_size: size)
-
-    facility_group.update(name: facility.district)
-
-    facility
-  end
+      FactoryBot.create(:facility,
+                        facility_group_id: fg.id,
+                        district: fg.name,
+                        facility_type: type,
+                        facility_size: size)
+    end
+  end.flatten
 
 #
 # create users

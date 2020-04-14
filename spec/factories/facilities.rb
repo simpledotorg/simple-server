@@ -1,13 +1,9 @@
 FactoryBot.define do
   factory :facility do
-    transient do
-      village { Faker::Address.village }
-    end
-
     id { SecureRandom.uuid }
-    name { "#{facility_type} #{village}" }
+    name { "#{facility_type} #{village_or_colony}" }
     street_address { Faker::Address.street_address }
-    village_or_colony { village }
+    village_or_colony { Faker::Address.village }
     district { Faker::Address.district }
     state { Faker::Address.state }
     country { 'India' }
@@ -18,5 +14,7 @@ FactoryBot.define do
     facility_group { create(:facility_group) }
     enable_diabetes_management { true }
     monthly_estimated_opd_load 300
+
+    slug { name.parameterize.underscore }
   end
 end

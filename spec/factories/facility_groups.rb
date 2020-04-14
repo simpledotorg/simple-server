@@ -5,9 +5,11 @@ FactoryBot.define do
     end
 
     id { SecureRandom.uuid }
-    name { Faker::Company.name }
+    name { Faker::Address.district }
     description { Faker::Company.catch_phrase }
     organization { org }
     protocol
+
+    slug { name.parameterize.underscore }
   end
 end
