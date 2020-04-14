@@ -53,14 +53,13 @@ class MyFacilities::BloodPressureControlQuery
 
   def overall_patients
     @overall_patients ||= Patient
-                      .where('recorded_at < ?', Time.current.beginning_of_day - REGISTRATION_BUFFER)
-                      .where(registration_facility: facilities)
+                          .where('recorded_at < ?', Time.current.beginning_of_day - REGISTRATION_BUFFER)
+                          .where(registration_facility: facilities)
   end
 
   def overall_controlled_bps
     @overall_controlled_bps ||=
       LatestBloodPressuresPerPatient
-      .where(registration_facility: facilities)
       .where(patient: overall_patients)
       .where('bp_recorded_at > ?', Time.current.beginning_of_day - 90.days)
       .under_control
