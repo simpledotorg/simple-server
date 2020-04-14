@@ -7,7 +7,7 @@ class PopulateFakeDataJob
   include Sidekiq::Throttled::Worker
 
   sidekiq_options queue: :low
-  sidekiq_throttle threshold: { limit: 20, period: 1.minute }
+  sidekiq_throttle threshold: { limit: 5, period: 1.minute }
 
   attr_reader :user
 
@@ -28,23 +28,23 @@ class PopulateFakeDataJob
   TRAITS = {
     registered_patient: {
       time_fn: -> { Faker::Time.between(from: 9.month.ago, to: Time.now) },
-      size_fn: -> { rand(30..200) },
+      size_fn: -> { rand(30..150) },
       request_key: :patients
     },
     ongoing_bp: {
       time_fn: -> { Faker::Time.between(from: 3.month.ago, to: Time.now) },
-      size_fn: -> { rand(1..4) },
+      size_fn: -> { rand(1..3) },
       request_key: :blood_pressures,
       patient_sample_size: 0.40
     },
     retroactive_bp: {
       time_fn: -> { Faker::Time.between(from: 9.months.ago, to: 1.month.ago.beginning_of_month) },
-      size_fn: -> { rand(2..4) },
+      size_fn: -> { rand(1..3) },
       request_key: :blood_pressures,
       patient_sample_size: 0.20
     },
     scheduled_appointment: {
-      size_fn: -> { 1 },
+      size_fn: -> { rand(1..2) },
       request_key: :appointments,
       patient_sample_size: 0.50
     },
@@ -55,7 +55,7 @@ class PopulateFakeDataJob
     },
     completed_phone_call: {
       time_fn: -> { Faker::Time.between(from: 9.months.ago, to: Date.today) },
-      size_fn: -> { rand(1..4) },
+      size_fn: -> { rand(1..2) },
       patient_sample_size: 0.20
     }
   }.freeze
