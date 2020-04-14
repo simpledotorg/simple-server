@@ -42,7 +42,7 @@ class Api::V4::PatientController < APIController
 
     authentication = PassportAuthentication.find_by!(patient_business_identifier: passport)
 
-    if authentication.otp == request_otp && authentication.otp_valid?
+    if authentication.validate_otp(request_otp)
       render json: access_token_response(authentication), status: :ok
     else
       return head :unauthorized
