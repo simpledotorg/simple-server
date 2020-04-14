@@ -33,6 +33,13 @@ class Deploy
     'config/' => "Holds all service / third-party configs"
   }
 
+  NOTIFICATION_EMOJI = {
+    'sandbox' => ':ghost:',
+    'staging' => ':horse_racing:',
+    'demo' => ':horse_racing:',
+    'production' => ':rocket:'
+  }.freeze
+
   attr_reader :current_environment,
               :tag_to_deploy,
               :country_to_deploy,
@@ -302,18 +309,9 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
 
   def notification_text
     <<~NOTIFICATION
-      #{notification_emoji} Deployed `simple-server` `#{tag_to_deploy}` to #{country_to_deploy} #{current_environment}
+      #{NOTIFICATION_EMOJI[current_environment]} Deployed `simple-server` `#{tag_to_deploy}` to #{country_to_deploy} #{current_environment}
       #{changelog}
     NOTIFICATION
-  end
-
-  def notification_emoji
-    {
-      'sandbox' => ':ghost:',
-      'staging' => ':horse_racing:',
-      'demo' => ':horse_racing:',
-      'production' => ':rocket:'
-    }[current_environment]
   end
 end
 
