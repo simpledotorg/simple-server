@@ -154,7 +154,7 @@
         ],
         "parameters": [
           {
-            "name": "passport_id",
+            "name": "request_body",
             "in": "body",
             "schema": {
               "type": "object",
@@ -169,10 +169,52 @@
         ],
         "responses": {
           "200": {
-            "description": "patient is found and an OTP is sent to their phone"
+            "description": "Patient is found and an OTP is sent to their phone"
           },
           "404": {
-            "description": "incorrect passport id"
+            "description": "Incorrect passport id"
+          }
+        }
+      }
+    },
+    "/patient/authenticate": {
+      "post": {
+        "summary": "Authenticate a patient with BP Passport UUID and OTP",
+        "tags": [
+          "Patient"
+        ],
+        "parameters": [
+          {
+            "name": "request_body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "passport_id": {
+                  "$ref": "#/definitions/uuid"
+                },
+                "otp": {
+                  "$ref": "#/definitions/non_empty_string"
+                }
+              }
+            },
+            "description": "Patient's BP Passport UUID and OTP"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Correct OTP is submitted and access token is returned",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "access_token": {
+                  "$ref": "#/definitions/non_empty_string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Incorrect BP Passport UUID or OTP"
           }
         }
       }

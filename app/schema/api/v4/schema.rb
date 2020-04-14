@@ -61,6 +61,19 @@ class Api::V4::Schema
           passport_id: { '$ref' => '#/definitions/uuid' } } }
     end
 
+    def patient_authenticate_request
+      { type: :object,
+        properties: {
+          passport_id: { '$ref' => '#/definitions/uuid' },
+          otp: { '$ref' => '#/definitions/non_empty_string' }, } }
+    end
+
+    def patient_authenticate_response
+      { type: :object,
+        properties: {
+          access_token: { '$ref' => '#/definitions/non_empty_string' } } }
+    end
+
     def user_find_request
       { type: :object,
         properties: { phone_number: { '$ref' => '#/definitions/non_empty_string'} },
