@@ -20,7 +20,9 @@ class Api::V4::PatientController < APIController
       patient_business_identifier: passport
     )
 
-    # TODO: Send OTP
+    unless FeatureToggle.enabled?('FIXED_OTP_ON_REQUEST_FOR_QA')
+      SendPatientOtpSmsJob.set(wait: otp_delay_seconds).perform_later(authentication)
+    end
 
     head :ok
   end
@@ -54,5 +56,9 @@ class Api::V4::PatientController < APIController
 
   def access_token_response(authentication)
     { access_token: authentication.access_token }
+  end
+
+  def otp_delay_seconds
+    (ENV['USER_OTP_SMS_DELAY_IN_SECONDS'] || DEFAULT_USER_OTP_DELAY_IN_SECONDS).to_i.seconds
   end
 end
