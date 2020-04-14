@@ -20,6 +20,11 @@ class Api::V4::PatientController < APIController
       patient_business_identifier: passport
     )
 
+    unless authentication.otp_valid?
+      authentication.reset_otp
+      authentication.save!
+    end
+
     unless FeatureToggle.enabled?('FIXED_OTP_ON_REQUEST_FOR_QA')
       SendPatientOtpSmsJob.set(wait: otp_delay_seconds).perform_later(authentication)
     end

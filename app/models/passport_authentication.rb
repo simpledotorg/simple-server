@@ -19,7 +19,7 @@ class PassportAuthentication < ActiveRecord::Base
     self.access_token ||= SecureRandom.hex(32)
   end
 
-  def generate_otp
+  def build_otp
     new_otp = if FeatureToggle.enabled?('FIXED_OTP_ON_REQUEST_FOR_QA')
       "000000"
     else
@@ -28,8 +28,23 @@ class PassportAuthentication < ActiveRecord::Base
 
     new_otp_valid_until = Time.current + ENV['USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES'].to_i.minutes
 
-    self.otp ||= new_otp
-    self.otp_valid_until ||= new_otp_valid_until
+    { otp: new_otp, otp_valid_until: new_otp_valid_until }
+  end
+
+  def generate_otp
+    new_otp = build_otp
+
+    self.otp ||= new_otp[:otp]
+    self.otp_valid_until ||= new_otp[:otp_valid_until]
+
+    { otp: otp, otp_valid_until: otp_valid_until }
+  end
+
+  def reset_otp
+    new_otp = build_otp
+
+    self.otp = new_otp[:otp]
+    self.otp_valid_until = new_otp[:otp_valid_until]
 
     { otp: otp, otp_valid_until: otp_valid_until }
   end
