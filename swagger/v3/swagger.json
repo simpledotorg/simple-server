@@ -1991,15 +1991,6 @@
         "full_name": {
           "$ref": "#/definitions/non_empty_string"
         },
-        "phone_number": {
-          "$ref": "#/definitions/non_empty_string"
-        },
-        "password_digest": {
-          "$ref": "#/definitions/bcrypt_password"
-        },
-        "registration_facility_id": {
-          "$ref": "#/definitions/uuid"
-        },
         "sync_approval_status": {
           "type": [
             "string",
@@ -2011,6 +2002,15 @@
             "string",
             "null"
           ]
+        },
+        "phone_number": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "password_digest": {
+          "$ref": "#/definitions/bcrypt_password"
+        },
+        "registration_facility_id": {
+          "$ref": "#/definitions/uuid"
         }
       },
       "required": [

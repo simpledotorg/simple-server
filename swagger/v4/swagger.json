@@ -146,6 +146,37 @@
         }
       }
     },
+    "/patient/activate": {
+      "post": {
+        "summary": "Trigger an OTP to be sent to a patient",
+        "tags": [
+          "Patient"
+        ],
+        "parameters": [
+          {
+            "name": "passport_id",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "passport_id": {
+                  "$ref": "#/definitions/uuid"
+                }
+              }
+            },
+            "description": "Patient's BP Passport UUID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "patient is found and an OTP is sent to their phone"
+          },
+          "404": {
+            "description": "incorrect passport id"
+          }
+        }
+      }
+    },
     "/users/find": {
       "post": {
         "summary": "Find a existing user",

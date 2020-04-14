@@ -55,6 +55,12 @@ class Api::V4::Schema
       sync_to_user_response(:blood_sugars)
     end
 
+    def patient_activate_request
+      { type: :object,
+        properties: {
+          passport_id: { '$ref' => '#/definitions/uuid' } } }
+    end
+
     def user_find_request
       { type: :object,
         properties: { phone_number: { '$ref' => '#/definitions/non_empty_string'} },
