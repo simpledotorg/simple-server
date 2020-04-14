@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, shrink-to-fit=no"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+
+  <%= inline_stylesheet('common_webview.css') %>
+  <%= inline_stylesheet('legacy/user_analytics.css') %>
+</head>
+
+<body>
+<% if @statistics.blank? %>
+  <%= render 'api/v3/analytics/user_analytics/legacy/empty_reports' %>
+<% else %>
+  <div class="card">
+    <%= inline_svg('icon_new_bp.svg', classname: 'icon-float') %>
+    <h3><%= t('analytics.followup_patients', facility_name: @current_facility.name) %></h3>
+    <%= render 'api/v3/analytics/user_analytics/legacy/graph',
+               id: 'return-patients',
+               statistics: @statistics[:follow_up_patients_per_month],
+               first_of_current_month: @statistics[:first_of_current_month],
+               max_value: @statistics[:follow_up_patients_per_month].values.max,
+               max_height: 120 %>
+  </div>
+
+  <div class="card">
+    <%= inline_svg('icon_enroll.svg', classname: 'icon-float') %>
+    <h3><%= t('analytics.patients_enrolled', facility_name: @current_facility.name) %></h3>
+    <h5><%= t('analytics.all_time_patients', count: @statistics[:total_patients_count]) %></h5>
+    <div class="bar-chart">
+      <%= render 'api/v3/analytics/user_analytics/legacy/graph',
+                 id: '',
+                 statistics: @statistics[:patients_enrolled_per_month],
+                 first_of_current_month: @statistics[:first_of_current_month],
+                 max_value: @statistics[:patients_enrolled_per_month].values.max,
+                 max_height: 120 %>
+    </div>
+  </div>
+
+  <footer>
+    <small class="text-muted"><%= t('analytics.updated_at', time: l(Time.current)) %></small>
+  </footer>
+<% end %>
+</body>
+</html>

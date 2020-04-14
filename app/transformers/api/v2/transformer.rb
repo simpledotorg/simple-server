@@ -1,2 +1,2 @@
-class Api::V2::Transformer < Api::Current::Transformer
+class Api::V2::Transformer < Api::V3::Transformer
 end

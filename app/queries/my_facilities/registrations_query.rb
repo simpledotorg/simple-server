@@ -11,7 +11,7 @@ class MyFacilities::RegistrationsQuery
 
   def initialize(facilities: Facility.all, period: :quarter, last_n: 3)
     # period can be :quarter, :month, :day.
-    # last_n is the number of quarters/months/days data to be returned
+    # last_n is the number of quarters/months/days for which data is to be returned
     @facilities = facilities
     @period = period
     @periods = period_list(period, last_n)
@@ -20,30 +20,31 @@ class MyFacilities::RegistrationsQuery
   def registrations
     @registrations ||=
       PatientRegistrationsPerDayPerFacility
-      .where(facility: @facilities)
-      .where("(year, #{@period}) IN (#{periods_as_sql_list})")
+        .where(facility: @facilities)
+        .where("(year, #{@period}) IN (#{periods_as_sql_list})")
   end
 
-  def all_time_registrations
-    @all_time_registrations ||=
-      LatestBloodPressuresPerPatient
-      .where(facility: @facilities)
-      .where('patient_recorded_at < ?', Time.current.beginning_of_day - 2.months)
+  def total_registrations
+    @total_registrations ||=
+      Patient
+      .where(registration_facility: @facilities)
   end
 
   private
 
   def period_list(period, last_n)
     case period
-    when :quarter then last_n_quarters(n: last_n, inclusive: true)
-    when :month then
-      last_n_months(n: last_n, inclusive: true)
-        .map { |month| [month.year, month.month] }
-    when :day then last_n_days(n: last_n)
+      when :quarter then
+        last_n_quarters(n: last_n, inclusive: true)
+      when :month then
+        last_n_months(n: last_n, inclusive: true)
+          .map { |month| [month.year, month.month] }
+      when :day then
+        last_n_days(n: last_n)
     end
   end
 
   def periods_as_sql_list
-    @periods.map { |(year, day)| "('#{year}', '#{day}')" }.join(',')
+    @periods.map { |year, period| "('#{year}', '#{period}')" }.join(',')
   end
 end

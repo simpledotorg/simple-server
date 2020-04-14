@@ -68,6 +68,8 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
       let(:cohort_date1) { (today - (0 * 3).months).beginning_of_quarter }
       let(:cohort_date2) { (today - (1 * 3).months).beginning_of_quarter }
       let(:cohort_date3) { (today - (2 * 3).months).beginning_of_quarter }
+      let(:cohort_date4) { (today - (3 * 3).months).beginning_of_quarter }
+      let(:cohort_date5) { (today - (4 * 3).months).beginning_of_quarter }
 
       it 'caches the district correctly' do
         expected_cache_value =
@@ -78,7 +80,11 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
               [cohort_date2.prev_quarter, cohort_date2] =>
                       { registered: 3, followed_up: 3, defaulted: 0, controlled: 3, uncontrolled: 0 },
               [cohort_date3.prev_quarter, cohort_date3] =>
-                      { registered: 0, followed_up: 0, defaulted: 0, controlled: 0, uncontrolled: 0 }
+                      { registered: 0, followed_up: 0, defaulted: 0, controlled: 0, uncontrolled: 0 },
+              [cohort_date4.prev_quarter, cohort_date4] =>
+                      { registered: 0, followed_up: 0, defaulted: 0, controlled: 0, uncontrolled: 0 },
+              [cohort_date5.prev_quarter, cohort_date5] =>
+                      { registered: 0, followed_up: 0, defaulted: 0, controlled: 0, uncontrolled: 0 },
             },
 
             dashboard: {
@@ -97,6 +103,16 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
 
         expect(Rails.cache.exist?(analytics_dashboard_cache_key)).to be true
         expect(Rails.cache.fetch(analytics_dashboard_cache_key)).to eq expected_cache_value[:dashboard]
+      end
+
+      it 'never ends up querying the database when cached' do
+        get :show, params: { organization_id: organization.id, id: district_name, period: :quarter }
+
+        expect_any_instance_of(OrganizationDistrict).to_not receive(:cohort_analytics)
+        expect_any_instance_of(OrganizationDistrict).to_not receive(:dashboard_analytics)
+
+        # this get should always have cached values
+        get :show, params: { organization_id: organization.id, id: district_name, period: :quarter }
       end
     end
   end

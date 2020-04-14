@@ -1,5 +1,4 @@
 class OverdueList::FacilityPolicy < ApplicationPolicy
-
   def download?
     user_has_any_permissions?(
       [:download_overdue_list, nil],

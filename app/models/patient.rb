@@ -8,7 +8,7 @@ class Patient < ApplicationRecord
     denied: 'denied'
   }, _prefix: true
 
-  GENDERS = %w[male female transgender].freeze
+  GENDERS = Rails.application.config.country[:supported_genders].freeze
   STATUSES = %w[active dead migrated unresponsive inactive].freeze
   RISK_PRIORITIES = {
     HIGH: 0,
@@ -28,16 +28,25 @@ class Patient < ApplicationRecord
 
   has_many :blood_pressures, inverse_of: :patient
   has_many :prescription_drugs
-  has_many :latest_blood_pressures, -> { order(recorded_at: :desc) }, class_name: 'BloodPressure'
   has_many :facilities, -> { distinct }, through: :blood_pressures
   has_many :users, -> { distinct }, through: :blood_pressures
   has_many :blood_sugars
+  has_many :appointments
+  has_one :medical_history
 
   belongs_to :registration_facility, class_name: "Facility", optional: true
   belongs_to :registration_user, class_name: "User"
 
-  has_many :appointments
-  has_one :medical_history
+  has_many :latest_blood_pressures, -> { order(recorded_at: :desc) }, class_name: 'BloodPressure'
+  has_many :latest_blood_sugars, -> { order(recorded_at: :desc) }, class_name: 'BloodSugar'
+
+  has_many :latest_scheduled_appointments,
+           -> { where(status: 'scheduled').order(scheduled_date: :desc) },
+           class_name: 'Appointment'
+
+  has_many :latest_bp_passports,
+           -> { where(identifier_type: 'simple_bp_passport').order(device_created_at: :desc) },
+           class_name: 'PatientBusinessIdentifier'
 
   attribute :call_result, :string
 
@@ -66,11 +75,15 @@ class Patient < ApplicationRecord
   end
 
   def latest_scheduled_appointment
-    appointments.where(status: 'scheduled').order(scheduled_date: :desc).first
+    latest_scheduled_appointments.first
   end
 
   def latest_blood_pressure
     latest_blood_pressures.first
+  end
+
+  def latest_blood_sugar
+    latest_blood_sugars.first
   end
 
   def latest_phone_number
@@ -82,7 +95,7 @@ class Patient < ApplicationRecord
   end
 
   def latest_bp_passport
-    business_identifiers.simple_bp_passport.order(:device_created_at).last
+    latest_bp_passports.first
   end
 
   def phone_number?
@@ -99,6 +112,8 @@ class Patient < ApplicationRecord
     if latest_blood_pressure&.critical?
       RISK_PRIORITIES[:HIGH]
     elsif medical_history&.indicates_hypertension_risk? && latest_blood_pressure&.hypertensive?
+      RISK_PRIORITIES[:HIGH]
+    elsif latest_blood_sugar&.diabetic?
       RISK_PRIORITIES[:HIGH]
     elsif latest_blood_pressure&.hypertensive?
       RISK_PRIORITIES[:REGULAR]

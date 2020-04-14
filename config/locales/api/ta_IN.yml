@@ -9,10 +9,25 @@ ta-IN:
       expired_otp: 'உங்களுக்குப் புதிய OTP வேண்டும். புதியதைக் கோரவும்.'
       invalid_password: 'உங்கள் கடவுச்சொல் பொருந்தவில்லை. மீண்டும் முயலவா?'
   sms:
-    country_code: '+91'
     request_otp: '<#> %{otp} தான் உங்கள் சிம்பிள் சரிபார்ப்புக் குறியீடு\n%{app_signature}'
   analytics:
     followup_patients: "%{facility_name} இல்எத்தனைநோயாளிகளுக்குபிபிபதிவுசெய்யப்பட்டுள்ளது?"
     patients_enrolled: "%{facility_name} இல்எத்தனைநோயாளிகள்பதிவுசெய்துள்ளனர்?"
     all_time_patients: "எல்லாநேரமும்: %{count} நோயாளிகள்"
     updated_at: "Updated at %{time}"
+  user_analytics:
+    hypertension:
+    diabetes:
+    genders:
+    all_time:
+    follow_up_patients:
+    registered_patients:
+    hypertension_control:
+    hypertension_control_desc:
+    notes:
+    footer_note_1:
+    footer_note_2:
+    thank_you:
+    thank_you_note:
+    updated:
+    ratio_string:

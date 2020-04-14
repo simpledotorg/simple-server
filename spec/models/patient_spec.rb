@@ -4,15 +4,19 @@ include Hashable
 describe Patient, type: :model do
   subject(:patient) { build(:patient) }
 
+  it 'picks up available genders from country config' do
+    expect(described_class::GENDERS).to eq(Rails.application.config.country[:supported_genders])
+  end
+
   describe 'Associations' do
-    it { should belong_to(:address).optional }
-    it { should have_many(:phone_numbers) }
-    it { should have_many(:blood_pressures) }
-    it { should have_many(:blood_sugars) }
-    it { should have_many(:prescription_drugs) }
-    it { should have_many(:facilities).through(:blood_pressures) }
-    it { should have_many(:appointments) }
-    it { should have_one(:medical_history) }
+    it { is_expected.to belong_to(:address).optional }
+    it { is_expected.to have_many(:phone_numbers) }
+    it { is_expected.to have_many(:blood_pressures) }
+    it { is_expected.to have_many(:blood_sugars) }
+    it { is_expected.to have_many(:prescription_drugs) }
+    it { is_expected.to have_many(:facilities).through(:blood_pressures) }
+    it { is_expected.to have_many(:appointments) }
+    it { is_expected.to have_one(:medical_history) }
 
     it 'has distinct facilities' do
       patient = FactoryBot.create(:patient)
@@ -21,12 +25,25 @@ describe Patient, type: :model do
       expect(patient.facilities.count).to eq(1)
     end
 
-    it { should belong_to(:registration_facility).class_name('Facility').optional }
-    it { should belong_to(:registration_user).class_name('User') }
-  end
+    it { is_expected.to belong_to(:registration_facility).class_name('Facility').optional }
+    it { is_expected.to belong_to(:registration_user).class_name('User') }
 
-  describe 'Associations' do
-    it { should have_many(:blood_pressures) }
+    it { is_expected.to have_many(:latest_blood_pressures).order(recorded_at: :desc).class_name('BloodPressure') }
+    it { is_expected.to have_many(:latest_blood_sugars).order(recorded_at: :desc).class_name('BloodSugar') }
+
+    specify do
+      is_expected.to have_many(:latest_scheduled_appointments)
+                       .conditions(status: 'scheduled')
+                       .order(scheduled_date: :desc)
+                       .class_name('Appointment')
+    end
+
+    specify do
+      is_expected.to have_many(:latest_bp_passports)
+                       .conditions(identifier_type: 'simple_bp_passport')
+                       .order(device_created_at: :desc)
+                       .class_name('PatientBusinessIdentifier')
+    end
   end
 
   describe 'Validations' do
@@ -119,6 +136,20 @@ describe Patient, type: :model do
         create(:appointment, scheduled_date: 2.years.ago, status: :scheduled, patient: patient)
 
         expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:LOW])
+      end
+
+      it 'returns high priority for patients overdue with high blood sugar' do
+        create(:blood_sugar, patient: patient, blood_sugar_type: :random, blood_sugar_value: 300)
+        create(:appointment, scheduled_date: 31.days.ago, status: :scheduled, patient: patient)
+
+        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:HIGH])
+      end
+
+      it "returns 'none' priority for patients overdue with normal blood sugar" do
+        create(:blood_sugar, patient: patient, blood_sugar_type: :random, blood_sugar_value: 150)
+        create(:appointment, :overdue, patient: patient)
+
+        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:NONE])
       end
     end
 

@@ -17,6 +17,13 @@ class Analytics::FacilitiesController < AnalyticsController
                                 .order("DATE(recorded_at) DESC, recorded_at ASC")
 
     @recent_blood_pressures = paginate(@recent_blood_pressures)
+
+    respond_to do |format|
+      format.html
+      format.csv do
+        send_data render_to_string('show.csv.erb'), filename: download_filename
+      end
+    end
   end
 
   def share_anonymized_data
@@ -61,21 +68,26 @@ class Analytics::FacilitiesController < AnalyticsController
   end
 
   def set_cohort_analytics(period, prev_periods)
-    @cohort_analytics = set_analytics_cache(
-      analytics_cache_key_cohort(period),
-      @facility.cohort_analytics(period, prev_periods))
+    @cohort_analytics =
+      set_analytics_cache(analytics_cache_key_cohort(period)) do
+        @facility.cohort_analytics(period, prev_periods)
+      end
   end
 
   def set_dashboard_analytics(period, prev_periods)
-    @dashboard_analytics = set_analytics_cache(
-      analytics_cache_key_dashboard(period),
-      @facility.dashboard_analytics(period: period,
-                                    prev_periods: prev_periods,
-                                    include_current_period: @show_current_period))
+    @dashboard_analytics =
+      set_analytics_cache(analytics_cache_key_dashboard(period)) do
+        @facility.dashboard_analytics(period: period,
+                                      prev_periods: prev_periods,
+                                      include_current_period: @show_current_period)
+      end
   end
 
   def analytics_cache_key
     "analytics/facilities/#{@facility.id}"
   end
-end
 
+  def download_filename
+    "facility-cohort-report_#{@facility.name}_#{Time.current.to_s(:number)}.csv"
+  end
+end

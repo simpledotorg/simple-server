@@ -1,4 +1,4 @@
-class Api::V2::BloodPressurePayloadValidator < Api::Current::BloodPressurePayloadValidator
+class Api::V2::BloodPressurePayloadValidator < Api::V3::BloodPressurePayloadValidator
   attr_accessor(
     :id,
     :systolic,

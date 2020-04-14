@@ -10,10 +10,10 @@
           <div class="dropdown show">
             <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#"
                role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">
-              <%= PeriodSelection::PERIODS[@selected_period] %>
+              <%= PeriodSelection::PERIODS[:registrations][@selected_period] %>
             </a>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <% PeriodSelection::PERIODS.each do |period, period_name| %>
+              <% PeriodSelection::PERIODS[:registrations].each do |period, period_name| %>
                 <button type="submit" name="period" value=<%= period %> class="dropdown-item" form="query-filters"><%= period_name %></button>
               <% end %>
             </div>
@@ -43,7 +43,7 @@
                 <%= "Q#{quarter}-#{year}" %>
               </th>
             <% end %>
-            <th>All-time</th>
+            <th>Total</th>
           <% when :month %>
             <th></th>
             <% @display_periods.reverse.each do |(year, month)| %>
@@ -51,7 +51,7 @@
                 <%= month_short_name_and_year(month_start(year, month)) %>
               </th>
             <% end %>
-            <th>All-time</th>
+            <th>Total</th>
           <% end %>
         </tr>
         <tr data-sort-method="thead" class="sorts">
@@ -65,10 +65,10 @@
               <% unless @selected_period == :day %>
                 <div class="float-left">% of OPD</div>
               <% end %>
-              <div class="float-right"><%= @selected_period == :day ? doy_to_date(*period) : "Registered" %></div>
+              <div class="float-right"><%= @selected_period == :day ? doy_to_date_str(*period) : "Registered" %></div>
             </th>
           <% end %>
-          <th class="row-label sort-label"><% if @selected_period == :day %>All-time<br> <% end %> Registered patients <sup>1</sup></th>
+          <th class="row-label sort-label" data-sort-column-key="all-time"><% if @selected_period == :day %>Total<br> <% end %> Registered patients </th>
           <th class="mobile">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
         </tr>
         </thead>
@@ -79,7 +79,7 @@
           <% @display_periods.reverse.each do |period| %>
             <td class="type-number" <% unless @selected_period == :day %>colspan="2"<% end %>><%= @total_registrations_by_period[period].to_i %></td>
           <% end %>
-          <td class="type-number"><%= @all_time_registrations.values.sum %></td>
+          <td class="type-number"><%= @total_registrations.values.sum %></td>
         </tr>
         <% @facilities.each do |facility| %>
           <tr>
@@ -94,16 +94,15 @@
                 <%= @registrations[[facility.id, period.first.to_s, period.second.to_s]].to_i %>
               </td>
             <% end %>
-            <td class="type-number"><%= @all_time_registrations[facility.id].to_i %></td>
+            <td class="type-number" data-sort-column-key="all-time">
+              <%= @total_registrations[facility.id].to_i %>
+            </td>
           </tr>
         <% end %>
         </tbody>
       </table>
     </div>
     <section class="footnotes">
-      <ol>
-        <li><strong>All registered patients:</strong> All registered patients with exclusions for: lost to follow-up, transferred to another public facility, and died.</li>
-      </ol>
     </section>
   </div>
 </div>

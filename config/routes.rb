@@ -92,7 +92,7 @@ Rails.application.routes.draw do
       end
     end
 
-    namespace :current, path: 'v3' do
+    namespace :v3, path: 'v3' do
       get 'ping', to: 'pings#show'
       post 'login', to: 'logins#login_user'
 
@@ -129,6 +129,19 @@ Rails.application.routes.draw do
         resource :user_analytics, only: [:show]
       end
     end
+
+    namespace :v4, path: 'v4' do
+      scope :blood_sugars do
+        get 'sync', to: 'blood_sugars#sync_to_user'
+        post 'sync', to: 'blood_sugars#sync_from_user'
+      end
+
+      scope :users do
+        post 'find', to: 'users#find'
+        post 'activate', to: 'users#activate'
+        get 'me', to: 'users#me'
+      end
+    end
   end
 
   devise_for :email_authentications,
@@ -162,6 +175,7 @@ Rails.application.routes.draw do
     get 'ranked_facilities', to: 'ranked_facilities'
     get 'blood_pressure_control', to: 'blood_pressure_control'
     get 'registrations', to: 'registrations'
+    get 'missed_visits', to: 'missed_visits'
   end
 
   scope :resources do

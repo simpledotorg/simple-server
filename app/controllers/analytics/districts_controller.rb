@@ -10,6 +10,13 @@ class Analytics::DistrictsController < AnalyticsController
 
     set_dashboard_analytics(@period, 3)
     set_cohort_analytics(@period, @prev_periods)
+
+    respond_to do |format|
+      format.html
+      format.csv do
+        send_data render_to_string('show.csv.erb'), filename: download_filename
+      end
+    end
   end
 
   def share_anonymized_data
@@ -60,21 +67,27 @@ class Analytics::DistrictsController < AnalyticsController
   end
 
   def set_cohort_analytics(period, prev_periods)
-    @cohort_analytics = set_analytics_cache(
-      analytics_cache_key_cohort(period),
-      @organization_district.cohort_analytics(period, prev_periods))
+    @cohort_analytics =
+      set_analytics_cache(analytics_cache_key_cohort(period)) do
+        @organization_district.cohort_analytics(period, prev_periods)
+      end
   end
 
   def set_dashboard_analytics(period, prev_periods)
-    @dashboard_analytics = set_analytics_cache(
-      analytics_cache_key_dashboard(period),
-      @organization_district.dashboard_analytics(period: period,
-                                                 prev_periods: prev_periods,
-                                                 include_current_period: @show_current_period))
+    @dashboard_analytics =
+      set_analytics_cache(analytics_cache_key_dashboard(period)) do
+        @organization_district.dashboard_analytics(period: period,
+                                                   prev_periods: prev_periods,
+                                                   include_current_period: @show_current_period)
+      end
   end
 
   def analytics_cache_key
     sanitized_district_name = @organization_district.district_name.downcase.split(' ').join('-')
     "analytics/organization/#{@organization_district.organization.id}/district/#{sanitized_district_name}"
+  end
+
+  def download_filename
+    "district-cohort-report_#{@organization_district.district_name}_#{Time.current.to_s(:number)}.csv"
   end
 end

@@ -1,0 +1,233 @@
+{
+  "name": "Simple Server",
+  "description": "The web app behind Simple.org",
+  "keywords": [
+    "healthcare"
+  ],
+  "website": "https://simple.org",
+  "repository": "https://github.com/simpledotorg/simple-server",
+  "scripts": {
+    "postdeploy": "./bin/heroku-setup"
+  },
+  "env": {
+    "SECRET_KEY_BASE": {
+      "description": "A secret key for verifying the integrity of signed cookies.",
+      "generator": "secret"
+    },
+    "WEB_CONCURRENCY": {
+      "description": "The number of processes to run.",
+      "value": "5"
+    },
+    "ANALYTICS_DASHBOARD_CACHE_TTL": {
+      "value": "172800"
+    },
+    "ANALYTICS_TIME_ZONE": {
+      "value": "Asia/Kolkata"
+    },
+    "APPOINTMENT_NOTIFICATION_FAN_OUT_BATCH_SIZE": {
+      "value": "500"
+    },
+    "APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_FINISH": {
+      "value": "15"
+    },
+    "APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_START": {
+      "value": "14"
+    },
+    "APPOINTMENT_NOTIFICATION_ORG_IDS": {
+      "value": "89008920-021e-4116-b74c-8edf86180dd6"
+    },
+    "BACKFILL_ENCOUNTERS_FOR_BPS_TIMEZONE_OFFSET": {
+      "value": "19800"
+    },
+    "BACKFILL_USER_ID_FROM_AUDIT_LOGS_BATCH_SIZE": {
+      "value": "1000"
+    },
+    "CALL_SESSION_REDIS_POOL_SIZE": {
+      "value": "12"
+    },
+    "CALL_SESSION_REDIS_TIMEOUT_SEC": {
+      "value": "1"
+    },
+    "CRON_TIME_ZONE": {
+      "value": "Asia/Kolkata"
+    },
+    "DEFAULT_COUNTRY": {
+      "value": "IN"
+    },
+    "DEFAULT_NUMBER_OF_RECORDS": {
+      "value": "100"
+    },
+    "DEFAULT_TIME_ZONE": {
+      "value": "Asia/Kolkata"
+    },
+    "EMAIL_SUBJECT_PREFIX": {
+      "value": "[REVIEW]"
+    },
+    "ENABLE_CACHED_QUERIES_FOR_DASHBOARD": {
+      "value": "true"
+    },
+    "ENABLE_DASHBOARD_SNAPSHOT": {
+      "value": "true"
+    },
+    "ENABLE_DASHBOARD_VIEW_BY_DISTRICT": {
+      "value": "true"
+    },
+    "ENABLE_EXOTEL_WHITELIST_API": {
+      "value": "false"
+    },
+    "ENABLE_GENERATE_ENCOUNTER_ID_ENDPOINT": {
+      "value": "true"
+    },
+    "ENABLE_INVITE_ADMINS": {
+      "value": "true"
+    },
+    "ENABLE_PATIENT_FOLLOWUPS": {
+      "value": "true"
+    },
+    "ENABLE_PHONE_NUMBER_MASKING": {
+      "value": "true"
+    },
+    "ENABLE_PURGE_ENDPOINT_FOR_QA": {
+      "value": "false"
+    },
+    "ENABLE_SMS_NOTIFICATION_FOR_OTP": {
+      "value": "true"
+    },
+    "ENABLE_SMS_REMINDERS": {
+      "value": "true"
+    },
+    "ENABLE_SYNC_ENCOUNTERS": {
+      "value": "false"
+    },
+    "ENABLE_UPDATED_ANALYTICS_VIEWS": {
+      "value": "true"
+    },
+    "EXOTEL_API_RATE_LIMIT_PER_MINUTE": {
+      "value": "250"
+    },
+    "EXOTEL_CALL_DETAILS_JOB_RETRY_SECONDS": {
+      "value": "600"
+    },
+    "EXOTEL_CALL_DETAILS_JOB_RETRY_TIMES": {
+      "value": "5"
+    },
+    "EXOTEL_RE_REQUEST_WHITELIST_MONTHS": {
+      "value": "6"
+    },
+    "EXOTEL_SID": {
+      "value": "resolvetosavelives"
+    },
+    "EXOTEL_UPDATE_PHONE_NUMBER_DETAILS_BATCH_SIZE": {
+      "value": "1000"
+    },
+    "EXOTEL_VIRTUAL_NUMBER": {
+      "value": "1234567890"
+    },
+    "EXOTEL_WHITELIST_PHONE_NUMBER_DETAILS_BATCH_SIZE": {
+      "value": "1000"
+    },
+    "EXPORT_AUDIT_LOGS_BATCH_SIZE": {
+      "value": "5000"
+    },
+    "HELP_SCREEN_YOUTUBE_PASSPORT_URL": {
+      "value": "https://youtu.be/aktZ1yTdDOA"
+    },
+    "HELP_SCREEN_YOUTUBE_VIDEO_URL": {
+      "value": "https://youtu.be/zthrk6XfpjQ"
+    },
+    "IHCI_ORGANIZATION_UUID": {
+      "value": "89008920-021e-4116-b74c-8edf86180dd6"
+    },
+    "LANG": {
+      "value": "en_US.UTF-8"
+    },
+    "NEW_RELIC_APP_NAME": {
+      "value": "Simple Server (Review)"
+    },
+    "OWNER_EMAILS": {
+      "value": "Govind <govind@simple.org>, Srihari <srihari@simple.org>, Tim <tcheadle@resolvetosavelives.org>, Daniel <dburka@resolvetosavelives.org>, Deepa <deepa@simple.org>, Akshay <akshay@uncommon.is>"
+    },
+    "PROGRAM_INCEPTION_DATE": {
+      "value": "2018-01-01"
+    },
+    "RACK_ENV": {
+      "value": "production"
+    },
+    "RAILS_CACHE_REDIS_PASSWORD": {
+      "value": "invalid"
+    },
+    "RAILS_ENV": {
+      "value": "production"
+    },
+    "RAILS_LOG_TO_STDOUT": {
+      "value": "enabled"
+    },
+    "RAILS_MAX_THREADS": {
+      "value": "20"
+    },
+    "RAILS_SERVE_STATIC_FILES": {
+      "value": "enabled"
+    },
+    "SENTRY_CURRENT_ENV": {
+      "value": "review"
+    },
+    "SENTRY_ENV": {
+      "value": "review"
+    },
+    "SIDEKIQ_CONCURRENCY": {
+      "value": "15"
+    },
+    "SIDEKIQ_REDIS_POOL_SIZE": {
+      "value": "20"
+    },
+    "SIMPLE_SERVER_DATABASE_HOST": {
+      "value": "invalid"
+    },
+    "SIMPLE_SERVER_DATABASE_NAME": {
+      "value": "invalid"
+    },
+    "SIMPLE_SERVER_DATABASE_PASSWORD": {
+      "value": "invalid"
+    },
+    "SIMPLE_SERVER_DATABASE_USERNAME": {
+      "value": "invalid"
+    },
+    "SIMPLE_SERVER_ENV": {
+      "value": "review"
+    },
+    "SIMPLE_SERVER_HOST": {
+      "value": "rtsl-simple-review.herokuapp.com"
+    },
+    "SIMPLE_SERVER_HOST_PROTOCOL": {
+      "value": "https"
+    },
+    "SUPERVISOR_EMAILS": {
+      "value": "Dr. Bidisha Sumu <bidishasumu@gmail.com>, Dr. Capt. Ruchi Mehrotra <cvhogurdaspur@ihmi.in>"
+    },
+    "USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES": {
+      "value": "360"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "Hobby"
+    },
+    "worker": {
+      "quantity": 1,
+      "size": "Hobby"
+    }
+  },
+  "addons": [
+    "heroku-postgresql:hobby-dev",
+    "heroku-redis:hobby-dev"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    },
+    {
+      "url": "heroku/ruby"
+    }
+  ]
+}

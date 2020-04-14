@@ -8,6 +8,8 @@ Bundler/OrderedGems:
   Enabled: false
 Layout/LineLength:
   Max: 120
+Metrics/AbcSize:
+  Max: 30
 Style/Documentation:
   Enabled: false
 Style/FrozenStringLiteralComment:

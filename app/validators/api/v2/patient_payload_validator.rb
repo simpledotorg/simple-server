@@ -1,4 +1,4 @@
-class Api::V2::PatientPayloadValidator < Api::Current::PatientPayloadValidator
+class Api::V2::PatientPayloadValidator < Api::V3::PatientPayloadValidator
   attr_accessor(
     :id,
     :full_name,

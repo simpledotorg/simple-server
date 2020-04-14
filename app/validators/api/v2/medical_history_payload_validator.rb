@@ -1,2 +1,2 @@
-class Api::V2::MedicalHistoryPayloadValidator < Api::Current::MedicalHistoryPayloadValidator
+class Api::V2::MedicalHistoryPayloadValidator < Api::V3::MedicalHistoryPayloadValidator
 end

@@ -2,7 +2,7 @@
   <h1 class="page-title">Protocols</h1>
   <nav class="page-nav">
     <% if policy([:manage, Protocol]).new? %>
-      <%= link_to 'New protocol', new_admin_protocol_path, class: "btn btn-sm btn-primary" %>
+      <%= link_to 'Add protocol', new_admin_protocol_path, class: "btn btn-sm btn-primary" %>
     <% end %>
   </nav>
 </div>
@@ -19,7 +19,9 @@
                   <%= link_to 'Edit', edit_admin_protocol_path(protocol), class: "btn btn-sm btn-outline-primary" %>
                 <% end %>
                 <% if policy([:manage, protocol]).destroy? %>
-                  <%= link_to '<i class="fas fa-trash-alt"></i>' .html_safe, [:admin, protocol], method: :delete, data: { confirm: "Are you sure you want to delete #{protocol.name}?" }, class: "btn btn-sm btn-outline-danger" %>
+                  <%= link_to([:admin, protocol], method: :delete, data: { confirm: "Are you sure you want to delete #{protocol.name}?" }, class: "btn btn-sm btn-outline-danger") do %>
+                    <i class="fas fa-trash-alt"></i>
+                  <% end %>
                 <% end %>
           </div>
       </div>

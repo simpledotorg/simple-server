@@ -5,10 +5,12 @@ class PatientBusinessIdentifier < ApplicationRecord
 
   enum identifier_type: {
     simple_bp_passport: 'simple_bp_passport',
-    bangladesh_national_id: 'bangladesh_national_id'
+    bangladesh_national_id: 'bangladesh_national_id',
+    ethiopia_medical_record: 'ethiopia_medical_record'
   }
 
-  validates :identifier, presence: true
+  validates :identifier, presence: true, unless: -> { identifier_type == 'bangladesh_national_id' }
+  validates :identifier, presence: true, allow_blank: true, if: -> { identifier_type == 'bangladesh_national_id' }
   validates :identifier_type, presence: true
 
   validates :device_created_at, presence: true

@@ -38,7 +38,7 @@ class AppointmentNotification::Worker
   end
 
   def sms_delivery_callback_url
-    api_current_twilio_sms_delivery_url(host: ENV.fetch('SIMPLE_SERVER_HOST'),
+    api_v3_twilio_sms_delivery_url(host: ENV.fetch('SIMPLE_SERVER_HOST'),
                                         protocol: ENV.fetch('SIMPLE_SERVER_HOST_PROTOCOL'))
   end
 

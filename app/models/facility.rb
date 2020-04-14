@@ -100,13 +100,6 @@ class Facility < ApplicationRecord
     facilities
   end
 
-  def self.bp_counts_in_period(start:, finish:)
-    left_outer_joins(:blood_pressures)
-      .where('recorded_at IS NULL OR (recorded_at >= ? AND recorded_at < ?)', start, finish)
-      .group('facilities.id')
-      .count(:blood_pressures)
-  end
-
   def organization_exists
     organization = Organization.find_by(name: organization_name)
     errors.add(:organization, "doesn't exist") if
@@ -136,6 +129,10 @@ class Facility < ApplicationRecord
     if name.blank?
       errors.add(:facility_name, "can't be blank")
     end
+  end
+
+  def diabetes_enabled?
+    enable_diabetes_management.present?
   end
 
   CSV::Converters[:strip_whitespace] = ->(value) { value.strip rescue value }

@@ -2,14 +2,13 @@ require 'rails_helper'
 
 RSpec.describe MyFacilities::RegistrationsQuery do
   context 'Registrations queries' do
-    describe '#all_time_registrations' do
+    describe '#total_registrations' do
       let!(:registrations_query) { described_class.new }
 
-      let!(:included_timestamps) { [1.year.ago, 2.years.ago] }
-      let!(:excluded_timestamps) { [1.day.ago, 1.months.ago] }
+      let!(:included_timestamps) { [1.year.ago, 2.years.ago, 1.day.ago, 1.months.ago] }
       let!(:patients) do
-        (included_timestamps + excluded_timestamps).map do
-            |recorded_at| create(:patient, recorded_at: recorded_at)
+        included_timestamps.map do |recorded_at|
+          create(:patient, recorded_at: recorded_at)
         end
       end
       let!(:blood_pressures) do
@@ -24,18 +23,18 @@ RSpec.describe MyFacilities::RegistrationsQuery do
         end
       end
 
-      specify { expect(registrations_query.all_time_registrations.count).to eq(included_timestamps.count) }
+      specify { expect(registrations_query.total_registrations.count).to eq(included_timestamps.count) }
     end
 
-    describe '#cohort_registrations' do
+    describe '#registrations' do
       context 'quarterly' do
         let!(:registrations_query) { described_class.new(period: :quarter, last_n: 3) }
 
         let!(:included_timestamps) { [1.month.ago, 4.months.ago] }
         let!(:excluded_timestamps) { [11.months.ago] }
         let!(:patients) do
-          (included_timestamps + excluded_timestamps).map do
-            |recorded_at| create(:patient, recorded_at: recorded_at)
+          (included_timestamps + excluded_timestamps).map do |recorded_at|
+            create(:patient, recorded_at: recorded_at)
           end
         end
         let!(:blood_pressures) do
@@ -58,8 +57,8 @@ RSpec.describe MyFacilities::RegistrationsQuery do
         let!(:included_timestamps) { [1.month.ago, 2.months.ago] }
         let!(:excluded_timestamps) { [12.months.ago] }
         let!(:patients) do
-          (included_timestamps + excluded_timestamps).map do
-            |recorded_at| create(:patient, recorded_at: recorded_at)
+          (included_timestamps + excluded_timestamps).map do |recorded_at|
+            create(:patient, recorded_at: recorded_at)
           end
         end
         let!(:blood_pressures) do

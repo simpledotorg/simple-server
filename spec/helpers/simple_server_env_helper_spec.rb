@@ -26,11 +26,11 @@ RSpec.describe SimpleServerEnvHelper do
       end
     end
 
-    context 'when in the staging environment' do
+    context 'when in the demo environment' do
       it 'should return the production style class' do
-        ENV[simple_server_env] = 'staging'
+        ENV[simple_server_env] = 'demo'
 
-        expect(style_class_for_environment).to eq 'navbar navbar-expand-md fixed-top navbar-light bg-light navbar-staging'
+        expect(style_class_for_environment).to eq 'navbar navbar-expand-md fixed-top navbar-light bg-light navbar-demo'
       end
     end
 
@@ -51,11 +51,55 @@ RSpec.describe SimpleServerEnvHelper do
     end
   end
 
+  describe 'get_title_for_environment' do
+    before { allow(I18n).to receive(:t).with('admin.dashboard_title').and_return 'Simple Dashboard' }
+
+    context 'when in the default environment' do
+      it 'should return the default alt for the logo' do
+        ENV[simple_server_env] = 'default'
+
+        expect(get_title_for_environment).to eq 'Simple Dashboard'
+      end
+    end
+
+    context 'when in the qa environment' do
+      it 'should return the QA alt for the logo' do
+        ENV[simple_server_env] = 'qa'
+
+        expect(get_title_for_environment).to eq '[Qa] Simple Dashboard'
+      end
+    end
+
+    context 'when in the demo environment' do
+      it 'should return the demo alt for the logo' do
+        ENV[simple_server_env] = 'demo'
+
+        expect(get_title_for_environment).to eq '[Demo] Simple Dashboard'
+      end
+    end
+
+    context 'when in the sandbox environment' do
+      it 'should return the sandbox alt for the logo' do
+        ENV[simple_server_env] = 'sandbox'
+
+        expect(get_title_for_environment).to eq '[Sandbox] Simple Dashboard'
+      end
+    end
+
+    context 'when in the production environment' do
+      it 'should return the production alt for the logo' do
+        ENV[simple_server_env] = 'production'
+
+        expect(get_title_for_environment).to eq 'Simple Dashboard'
+      end
+    end
+  end
+
   describe 'logo_for_environment' do
     context 'when in the default environment' do
       it 'should return the default logo' do
         ENV[simple_server_env] = 'default'
-        logo_for_default_environment = image_tag 'simple_logo.svg', width: 30, height: 30, class: 'd-inline-block mr-2 align-top', alt: 'Simple Server Logo'
+        logo_for_default_environment = image_tag 'logos/default/simple_logo.svg', width: 30, height: 30, class: 'd-inline-block mr-2 align-top', alt: 'Simple Dashboard Logo'
 
         expect(logo_for_environment).to eq logo_for_default_environment
       end
@@ -64,25 +108,25 @@ RSpec.describe SimpleServerEnvHelper do
     context 'when in the qa environment' do
       it 'should return the QA logo' do
         ENV[simple_server_env] = 'qa'
-        logo_for_qa_environment = image_tag 'simple_logo_qa.svg', width: 30, height: 30, class: 'd-inline-block mr-2 align-top', alt: 'Simple Server Qa Logo'
+        logo_for_qa_environment = image_tag 'logos/qa/simple_logo.svg', width: 30, height: 30, class: 'd-inline-block mr-2 align-top', alt: 'Simple Dashboard Qa Logo'
 
         expect(logo_for_environment).to eq logo_for_qa_environment
       end
     end
 
-    context 'when in the staging environment' do
-      it 'should return the staging logo' do
-        ENV[simple_server_env] = 'staging'
-        logo_for_staging_environment = image_tag 'simple_logo_staging.svg', width: 30, height: 30, class: 'd-inline-block mr-2 align-top', alt: 'Simple Server Staging Logo'
+    context 'when in the demo environment' do
+      it 'should return the demo logo' do
+        ENV[simple_server_env] = 'demo'
+        logo_for_demo_environment = image_tag 'logos/demo/simple_logo.svg', width: 30, height: 30, class: 'd-inline-block mr-2 align-top', alt: 'Simple Dashboard Demo Logo'
 
-        expect(logo_for_environment).to eq logo_for_staging_environment
+        expect(logo_for_environment).to eq logo_for_demo_environment
       end
     end
 
     context 'when in the sandbox environment' do
       it 'should return the sandbox logo' do
         ENV[simple_server_env] = 'sandbox'
-        logo_for_sandbox_environment = image_tag 'simple_logo_sandbox.svg', width: 30, height: 30, class: 'd-inline-block mr-2 align-top', alt: 'Simple Server Sandbox Logo'
+        logo_for_sandbox_environment = image_tag 'logos/sandbox/simple_logo.svg', width: 30, height: 30, class: 'd-inline-block mr-2 align-top', alt: 'Simple Dashboard Sandbox Logo'
 
         expect(logo_for_environment).to eq logo_for_sandbox_environment
       end
@@ -91,31 +135,9 @@ RSpec.describe SimpleServerEnvHelper do
     context 'when in the production environment' do
       it 'should return the production logo' do
         ENV[simple_server_env] = 'production'
-        logo_for_production_environment = image_tag 'simple_logo_production.svg', width: 30, height: 30, class: 'd-inline-block mr-2 align-top', alt: 'Simple Server Production Logo'
+        logo_for_production_environment = image_tag 'logos/production/simple_logo.svg', width: 30, height: 30, class: 'd-inline-block mr-2 align-top', alt: 'Simple Dashboard Production Logo'
 
         expect(logo_for_environment).to eq logo_for_production_environment
-      end
-    end
-  end
-
-  describe 'favicon_for_environment' do
-    context 'when in the default environment' do
-      it 'should return the default logo' do
-        ENV[simple_server_env] = 'default'
-        favicon_for_default_environment = 'simple_logo_favicon.png'
-
-        expect(favicon_for_environment).to eq favicon_for_default_environment
-      end
-    end
-
-    SimpleServerEnvHelper::CUSTOMIZED_ENVS.each do |environment|
-      context "when in the #{environment} environment" do
-        it "should return the #{environment} favicon" do
-          ENV[simple_server_env] = environment
-          favicon_for_environment = "simple_logo_#{environment}_favicon.png"
-
-          expect(favicon_for_environment).to eq favicon_for_environment
-        end
       end
     end
   end
@@ -125,7 +147,7 @@ RSpec.describe SimpleServerEnvHelper do
       it 'should return the default alt for the logo' do
         ENV[simple_server_env] = 'default'
 
-        expect(alt_for_environment).to eq 'Simple Server Logo'
+        expect(alt_for_environment).to eq 'Simple Dashboard Logo'
       end
     end
 
@@ -133,15 +155,15 @@ RSpec.describe SimpleServerEnvHelper do
       it 'should return the QA alt for the logo' do
         ENV[simple_server_env] = 'qa'
 
-        expect(alt_for_environment).to eq 'Simple Server Qa Logo'
+        expect(alt_for_environment).to eq 'Simple Dashboard Qa Logo'
       end
     end
 
-    context 'when in the staging environment' do
-      it 'should return the staging alt for the logo' do
-        ENV[simple_server_env] = 'staging'
+    context 'when in the demo environment' do
+      it 'should return the demo alt for the logo' do
+        ENV[simple_server_env] = 'demo'
 
-        expect(alt_for_environment).to eq 'Simple Server Staging Logo'
+        expect(alt_for_environment).to eq 'Simple Dashboard Demo Logo'
       end
     end
 
@@ -149,7 +171,7 @@ RSpec.describe SimpleServerEnvHelper do
       it 'should return the sandbox alt for the logo' do
         ENV[simple_server_env] = 'sandbox'
 
-        expect(alt_for_environment).to eq 'Simple Server Sandbox Logo'
+        expect(alt_for_environment).to eq 'Simple Dashboard Sandbox Logo'
       end
     end
 
@@ -157,7 +179,115 @@ RSpec.describe SimpleServerEnvHelper do
       it 'should return the production alt for the logo' do
         ENV[simple_server_env] = 'production'
 
-        expect(alt_for_environment).to eq 'Simple Server Production Logo'
+        expect(alt_for_environment).to eq 'Simple Dashboard Production Logo'
+      end
+    end
+  end
+
+  describe 'apple_logo_for_environment' do
+    before { allow(self).to receive(:image_path).with(expected_apple_touch).and_return('fingerprinted_apple_touch') }
+
+    context 'when in the default environment' do
+      let(:expected_apple_touch) { 'logos/default/simple_logo_apple_touch.png' }
+
+      it 'should return the default logo' do
+        ENV[simple_server_env] = 'default'
+
+        expect(apple_logo_for_environment).to eq 'fingerprinted_apple_touch'
+      end
+    end
+
+    SimpleServerEnvHelper::CUSTOMIZED_ENVS.each do |environment|
+      context "when in the #{environment} environment" do
+        let(:expected_apple_touch) { "logos/#{environment}/simple_logo_apple_touch.png" }
+
+        it "should return the #{environment} apple_touch" do
+          ENV[simple_server_env] = environment
+
+          expect(apple_logo_for_environment).to eq 'fingerprinted_apple_touch'
+        end
+      end
+    end
+  end
+
+  describe 'android_logo_for_environment' do
+    before { allow(self).to receive(:image_path).with(expected_logo_android_192).and_return('fingerprinted_logo_android_192') }
+
+    context 'when in the default environment' do
+      let(:expected_logo_android_192) { 'logos/default/simple_logo_android_192.png' }
+
+      it 'should return the default logo' do
+        ENV[simple_server_env] = 'default'
+
+        expect(android_logo_for_environment(size: '192')).to eq 'fingerprinted_logo_android_192'
+      end
+    end
+
+    SimpleServerEnvHelper::CUSTOMIZED_ENVS.each do |environment|
+      context "when in the #{environment} environment" do
+        let(:expected_logo_android_192) { "logos/#{environment}/simple_logo_android_192.png" }
+
+        it "should return the #{environment} logo_android_192" do
+          ENV[simple_server_env] = environment
+
+          expect(android_logo_for_environment(size: '192')).to eq 'fingerprinted_logo_android_192'
+        end
+      end
+    end
+  end
+
+  describe 'favicon_for_environment' do
+    before { allow(self).to receive(:image_path).with(expected_favicon).and_return('fingerprinted_favicon') }
+
+    context 'when in the default environment' do
+      let(:expected_favicon) { 'logos/default/simple_logo_favicon.png' }
+
+      it 'should return the default logo' do
+        ENV[simple_server_env] = 'default'
+
+        expect(favicon_for_environment).to eq 'fingerprinted_favicon'
+      end
+    end
+
+    SimpleServerEnvHelper::CUSTOMIZED_ENVS.each do |environment|
+      context "when in the #{environment} environment" do
+        let(:expected_favicon) { "logos/#{environment}/simple_logo_favicon.png" }
+
+        it "should return the #{environment} favicon" do
+          ENV[simple_server_env] = environment
+
+          expect(favicon_for_environment).to eq 'fingerprinted_favicon'
+        end
+      end
+    end
+  end
+
+  describe 'mailer_logo_for_environment' do
+    before { allow(self).to receive(:image_path).with(expected_logo).and_return('fingerprinted_logo') }
+
+    context 'when in the default environment' do
+      let(:expected_logo) do
+        image_tag 'logos/default/simple_logo_256.png', width: 48, height: 48, style: 'width: 48px; height: 48px;'
+      end
+
+      it 'should return the default logo' do
+        ENV[simple_server_env] = 'default'
+
+        expect(mailer_logo_for_environment).to eq expected_logo
+      end
+    end
+
+    SimpleServerEnvHelper::CUSTOMIZED_ENVS.each do |environment|
+      context "when in the #{environment} environment" do
+        let(:expected_logo) do
+          image_tag "logos/#{environment}/simple_logo_256.png", width: 48, height: 48, style: 'width: 48px; height: 48px;'
+        end
+
+        it "should return the #{environment} favicon" do
+          ENV[simple_server_env] = environment
+
+          expect(mailer_logo_for_environment).to eq expected_logo
+        end
       end
     end
   end

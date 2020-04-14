@@ -1,1 +1,20 @@
-<%= t("patient_list_email.greeting_html", model_type: @model_type, model_name: @model_name) %>
+<h1 style="letter-spacing:-0.7px;color:#333;font-family:Arial,sans-serif;font-weight:700;margin:0;font-size:150%;"><%= t("patient_list_email.patient_list") %></h1>
+
+<div>&nbsp;</div>
+
+<div style="font-size:110%;"><%= t("patient_list_email.requested", model_type: @model_type, model_name: @model_name) %></div>
+
+<div>&nbsp;</div>
+
+<div style="font-size:110%;"><%= t("patient_list_email.confidential") %></div>
+
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+
+<!--HR-->
+<div style="height:2px;background:#F0F2F5;margin:0;"></div>
+
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+
+<div style="font-size:110%;"><%= t("patient_list_email.unrequested_html") %></div>

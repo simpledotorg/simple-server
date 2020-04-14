@@ -13,6 +13,7 @@
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink2">
         <%= link_to "Overview", my_facilities_overview_path(request.query_parameters), class: "dropdown-item" %>
         <%= link_to "BP control", my_facilities_blood_pressure_control_path(request.query_parameters), class: "dropdown-item" %>
+        <%= link_to "Missed Visits", my_facilities_missed_visits_path(request.query_parameters), class: "dropdown-item" %>
         <%= link_to "Registrations", my_facilities_registrations_path(request.query_parameters), class: "dropdown-item" %>
       </div>
     </div>
@@ -24,7 +25,6 @@
                 <span class="badge badge-pill badge-secondary"><%= size.capitalize %></span>
               <% end %>
             </span>
-
           <i class="fas fa-filter"></i> Filter facilities
         </a>
       </div>
@@ -49,10 +49,7 @@
                   <% @facility_sizes.each do |size| %>
                     <div class="checkbox-row">
                       <label for=<%= "facility-#{size}-mobile" %>>
-                        <input type="checkbox" id=<%= "facility-#{size}-mobile" %> name="size[]" value=<%= size %>
-                              <% if @selected_sizes&.include?(size) %>
-                                checked
-                               <% end %>>
+                      <%= check_box_tag("size[]", value=size, checked=@selected_sizes&.include?(size), {id: "facility-#{size}-mobile"}) %>
                         <%= size.capitalize %>
                       </label>
                     </div>
@@ -63,14 +60,22 @@
                 <h4>Areas</h4>
                 <div class="checkbox-row">
                   <label for="all-zones-filter-mobile">
-                    <input type="radio" name="zone" value="" form="query-filters-mobile" id="all-zones-filter-mobile" checked>
+                    <%= radio_button_tag("zone",
+                                         "",
+                                         checked=(@selected_zones.size == @zones.size),
+                                         { form: "query-filters-mobile",
+                                           id: "all-zones-filter-mobile" }) %>
                     All blocks
                   </label>
                 </div>
                 <% @zones.each do |zone| %>
                   <div class="checkbox-row">
                     <label for="<%= zone %>-filter-mobile">
-                      <input type="radio" name="zone" value="<%= zone %>" form="query-filters-mobile" id="<%= zone %>-filter-mobile">
+                      <%= radio_button_tag("zone",
+                                           zone,
+                                           checked=(@selected_zones.size == 1 && @selected_zones.first == zone),
+                                           { form: "query-filters-mobile",
+                                             id: "all-zones-filter-mobile" }) %>
                       <%= zone.capitalize %>
                     </label>
                   </div>
@@ -79,7 +84,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Clear all</button>
+            <a href="?" type="button" class="btn btn-secondary">Clear all</a>
             <button type="submit" form="query-filters-mobile" class="btn btn-primary">DONE</button>
           </div>
 
@@ -95,20 +100,25 @@
     <div class="col-lg-2 pl-lg-0 desktop">
       <nav class="secondary-nav">
         <%= link_to 'Overview', my_facilities_overview_path,
-                    class: request.path == my_facilities_overview_path ? "nav-link active" : "nav-link" %>
+                    class: "nav-link #{active_action?("index")}" %>
         <%= link_to 'BP control', my_facilities_blood_pressure_control_path(preserve_query_params(request.query_parameters, ["size"])),
-                    class: request.path == my_facilities_blood_pressure_control_path ? "nav-link active" : "nav-link" %>
+                    class: "nav-link #{active_action?("blood_pressure_control")}" %>
+        <%= link_to 'Missed Visits', my_facilities_missed_visits_path(preserve_query_params(request.query_parameters, ["size", "period"])),
+                    class: "nav-link #{active_action?("missed_visits")}" %>
         <%= link_to 'Registrations', my_facilities_registrations_path(preserve_query_params(request.query_parameters, ["size", "period"])),
-                    class: request.path == my_facilities_registrations_path ? "nav-link active" : "nav-link" %>
+                    class: "nav-link #{active_action?("registrations")}" %>
       </nav>
       <% unless request.path == my_facilities_overview_path %>
         <section id="facility-filters" class="secondary-nav-filters">
           <h4>Facility Filters</h4>
           <div class="dropdown show">
             <a class="btn btn-sm dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              All blocks
+              <% if @selected_zones.size == 1 %>
+                <%= @selected_zones.first.capitalize %>
+              <% else %>
+                All blocks
+              <% end %>
             </a>
-
             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
               <button type="submit" name="zone" value="" class="dropdown-item" form="query-filters">All blocks</button>
               <div class="dropdown-divider"></div>
@@ -121,10 +131,7 @@
             <% @facility_sizes.each do |size| %>
               <div>
                 <label for=<%= "facility-#{size}" %>>
-                  <input type="checkbox" id=<%= "facility-#{size}" %> name="size[]" value=<%= size %>
-                        <% if @selected_sizes&.include?(size) %>
-                          checked
-                         <% end %>>
+                  <%= check_box_tag("size[]", value=size, checked=@selected_sizes&.include?(size), {id: "facility-#{size}"}) %>
                   <%= size.capitalize %>
                 </label>
               </div>

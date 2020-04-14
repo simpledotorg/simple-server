@@ -7,6 +7,8 @@ RSpec.describe PatientsExporter do
   let!(:patient) { create(:patient, registration_facility: facility) }
   let!(:blood_pressure) { create(:blood_pressure, :critical, facility: facility, patient: patient) }
   let!(:appointment) { create(:appointment, :overdue, facility: facility, patient: patient) }
+  let!(:prescription_drug_1) { create(:prescription_drug, patient: patient) }
+  let!(:prescription_drug_2) { create(:prescription_drug, patient: patient) }
 
   let(:headers) do
     [
@@ -31,10 +33,22 @@ RSpec.describe PatientsExporter do
       'Latest BP Facility Type',
       'Latest BP Facility District',
       'Latest BP Facility State',
+      'Follow-up Facility',
+      'Follow-up Date',
       'Days Overdue',
       'Risk Level',
       'BP Passport ID',
-      'Simple Patient ID'
+      'Simple Patient ID',
+      'Medication 1',
+      'Dosage 1',
+      'Medication 2',
+      'Dosage 2',
+      'Medication 3',
+      'Dosage 3',
+      'Medication 4',
+      'Dosage 4',
+      'Medication 5',
+      'Dosage 5'
     ]
   end
 
@@ -61,10 +75,16 @@ RSpec.describe PatientsExporter do
       blood_pressure.facility.facility_type,
       blood_pressure.facility.district,
       blood_pressure.facility.state,
+      appointment.facility.name,
+      appointment.scheduled_date.to_s(:rfc822),
       appointment.days_overdue,
       'High',
       patient.latest_bp_passport&.shortcode,
-      patient.id
+      patient.id,
+      prescription_drug_1.name,
+      prescription_drug_1.dosage,
+      prescription_drug_2.name,
+      prescription_drug_2.dosage
     ]
   end
 
@@ -73,6 +93,8 @@ RSpec.describe PatientsExporter do
   end
 
   describe '#csv' do
+    let(:patient_batch) { Patient.where(id: patient.id) }
+
     it 'generates a CSV of patient records' do
       expect(subject.csv(Patient.all)).to eq(headers.to_csv + fields.to_csv)
     end
@@ -83,7 +105,7 @@ RSpec.describe PatientsExporter do
 
     it 'uses fetches patients in batches' do
       expect_any_instance_of(facility.registered_patients.class)
-        .to receive(:in_batches).and_return([[patient]])
+        .to receive(:in_batches).and_return([patient_batch])
 
       subject.csv(facility.registered_patients)
     end

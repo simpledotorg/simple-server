@@ -12,8 +12,11 @@ Rails.application.configure do
   # Show full error reports.
   config.consider_all_requests_local = true
 
-  config.cache_store = :redis_store,
-    { host: ENV['RAILS_CACHE_REDIS_URL'] }
+  if ENV['RAILS_CACHE_REDIS_URL'].present?
+    config.cache_store = :redis_store, { host: ENV['RAILS_CACHE_REDIS_URL'] }
+  else
+    config.cache_store = :redis_store, ENV['REDIS_URL']
+  end
 
   # Enable/disable caching. By default caching is disabled.
   if Rails.root.join('tmp/caching-dev.txt').exist?
@@ -31,6 +34,7 @@ Rails.application.configure do
   config.action_mailer.perform_caching = false
 
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+  config.action_mailer.asset_host = 'http://localhost:3000'
 
   # Use Mailcatcher to test mail in development
   config.action_mailer.delivery_method = :smtp

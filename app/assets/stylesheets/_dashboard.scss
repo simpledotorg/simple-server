@@ -14,16 +14,20 @@ Dashboard UI
 .split-bars .bar {
     background: #ddd;
     vertical-align: middle;
-    color: rgba(255,255,255,0.85);
     padding: 4px 8px;
-    font-weight: 500;
+    font-size: 110%;
     position: relative;
 }
 
-.split-bars .bar-1 { background: $grey-light; color: $grey-dark; border-radius: 3px 0 0 3px; }
-.split-bars .bar-none { border-radius: 3px; }
-.split-bars .bar-2 { background: $red; }
+.split-bars .bar-none { background: $grey-light; color: $grey-dark; border-radius: 3px; }
+.split-bars .bar-1 { background: $grey-mid; color: $grey-darkest; border-radius: 3px 0 0 3px; }
+.split-bars .bar-2 { background: $red; color: #fff; }
 .split-bars .bar-3 { background: $green-mid; border-radius: 0 3px 3px 0; color: $green-dark; }
+
+.split-row-first .split-bars .bar {
+    background-image: asset-url("diagonal-stripe.png");
+    background-size: 120px;
+}
 
 .split-row {
     margin-top: 4px;
@@ -71,7 +75,7 @@ Dashboard UI
     text-indent: -1000em;
 }
 
-.key div.didntattend:after { background: $grey-light; }
+.key div.didntattend:after { background: $grey-mid; }
 .key div.uncontrolled:after { background: $red; }
 .key div.controlled:after { background: $green-mid; }
 
@@ -158,4 +162,14 @@ th[aria-sort=ascending]:not(.no-sort):after {
 
 .pad-bottom {
   padding-bottom: 10px;
+}
+
+h2 .heading-label,
+h3 .heading-label {
+    display: block;
+    text-transform: uppercase;
+    color: $grey-mid;
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-bottom: 0.5em;
 }

@@ -1,20 +1,45 @@
 # frozen_string_literal: true
 
 class MyFacilities::OverviewQuery
-  INACTIVITY_THRESHOLD_PERIOD = 1.week.ago
+  # Wrap query method calls with the appropriate timezone in which the reports will be consumed
+  # This is probably the Rails.application.config.country[:time_zone]
+  # Example: `Time.use_zone('timezone string') { bp_control_query_object.cohort_registrations }`
+  include DayHelper
+
+  INACTIVITY_THRESHOLD_DAYS = 7
   INACTIVITY_THRESHOLD_BPS = 10
 
-  def initialize(facilities = Facility.all)
+  attr_reader :facilities
+
+  def initialize(facilities: Facility.all)
     @facilities = facilities
   end
 
-  def inactive_facilities
-    facilities = @facilities.left_outer_joins(:blood_pressures)
-                            .where('blood_pressures.recorded_at IS NULL OR blood_pressures.recorded_at > ?',
-                                   INACTIVITY_THRESHOLD_PERIOD)
-                            .having('COUNT(blood_pressures) < ? ', INACTIVITY_THRESHOLD_BPS)
-                            .group('facilities.id')
+  def total_bps_in_last_n_days(n: INACTIVITY_THRESHOLD_DAYS)
+    bps_per_day_in_last_n_days(n: n)
+      .select(:facility_id)
+      .group(:facility_id)
+      .sum(:bp_count)
+  end
 
-    Facility.where(id: facilities.pluck(:id))
+  def inactive_facilities
+    active_facilities = bps_per_day_in_last_n_days(n: INACTIVITY_THRESHOLD_DAYS)
+                        .group(:facility_id)
+                        .having('SUM(bp_count) >= ?', INACTIVITY_THRESHOLD_BPS)
+
+    @inactive_facilities ||= facilities.where.not(id: active_facilities.pluck(:facility_id))
+  end
+
+  private
+
+  def bps_per_day_in_last_n_days(n:)
+    days_list = days_as_sql_list(last_n_days(n: n))
+    BloodPressuresPerFacilityPerDay
+      .where(facility: facilities)
+      .where("((year, day) IN (#{days_list}))")
+  end
+
+  def days_as_sql_list(days)
+    days.map { |(year, day)| "('#{year}', '#{day}')" }.join(',')
   end
 end
