@@ -90,12 +90,4 @@ class Api::V4::PatientController < APIController
   def otp_delay_seconds
     (ENV['USER_OTP_SMS_DELAY_IN_SECONDS'] || DEFAULT_USER_OTP_DELAY_IN_SECONDS).to_i.seconds
   end
-
-  def request_passport_id
-    params.require(:passport_id)
-  end
-
-  def request_otp
-    params.require(:otp)
-  end
 end
