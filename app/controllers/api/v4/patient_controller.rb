@@ -66,7 +66,7 @@ class Api::V4::PatientController < APIController
   end
 
   def access_token_authorized?
-    authenticate_or_request_with_http_token do |token, _options|
+    authenticate_with_http_token do |token, _options|
       ActiveSupport::SecurityUtils.secure_compare(token, current_patient.access_token)
     end
   end
