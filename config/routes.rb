@@ -136,7 +136,7 @@ Rails.application.routes.draw do
         post 'sync', to: 'blood_sugars#sync_from_user'
       end
 
-      resource :patient, only: [:show] do
+      resource :patient, controller: 'patient', only: [:show] do
         post 'request_otp', to: 'patient#request_otp'
         post 'activate', to: 'patient#activate'
       end
