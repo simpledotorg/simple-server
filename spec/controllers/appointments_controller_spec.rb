@@ -39,8 +39,9 @@ RSpec.describe AppointmentsController, type: :controller do
     it 'populates a list of overdue appointments' do
       get :index, params: {}
       expected_ids = (overdue_appointments_in_facility_1 + overdue_appointments_in_facility_2).map(&:id)
+      patient_ids = (overdue_appointments_in_facility_1 + overdue_appointments_in_facility_2).map(&:patient_id)
 
-      expect(assigns(:appointments).map(&:id)).to match_array(expected_ids)
+      expect(assigns(:patient_summaries).map(&:id)).to match_array(patient_ids)
     end
 
     describe 'filtering by facility' do
