@@ -7,7 +7,7 @@ class Api::V4::PatientController < APIController
 
   DEFAULT_USER_OTP_DELAY_IN_SECONDS = 5
 
-  def activate
+  def request_otp
     passport = PatientBusinessIdentifier.find_by(
       identifier: request_passport_id,
       identifier_type: "simple_bp_passport"
@@ -32,7 +32,7 @@ class Api::V4::PatientController < APIController
     head :ok
   end
 
-  def authenticate
+  def activate
     passport = PatientBusinessIdentifier.find_by(
       identifier: request_passport_id,
       identifier_type: "simple_bp_passport"

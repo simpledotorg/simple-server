@@ -137,8 +137,8 @@ Rails.application.routes.draw do
       end
 
       resource :patient, only: [:show] do
+        post 'request_otp', to: 'patient#request_otp'
         post 'activate', to: 'patient#activate'
-        post 'authenticate', to: 'patient#authenticate'
       end
 
       scope :users do

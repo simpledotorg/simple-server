@@ -1,10 +1,10 @@
 require 'swagger_helper'
 
 describe 'Patient v4 API', swagger_doc: 'v4/swagger.json' do
-  path '/patient/activate' do
-    post 'Trigger an OTP to be sent to a patient' do
+  path '/patient/request_otp' do
+    post 'Request an OTP to be sent to a patient' do
       tags 'Patient'
-      parameter name: :request_body, in: :body, schema: Api::V4::Schema.patient_activate_request, description: 'Patient\'s BP Passport UUID'
+      parameter name: :request_body, in: :body, schema: Api::V4::Schema.patient_request_otp_request, description: 'Patient\'s BP Passport UUID'
 
       before :each do
         sms_notification_service = double(SmsNotificationService.new(nil, nil))
@@ -27,17 +27,17 @@ describe 'Patient v4 API', swagger_doc: 'v4/swagger.json' do
     end
   end
 
-  path '/patient/authenticate' do
-    post 'Authenticate a patient with BP Passport UUID and OTP' do
+  path '/patient/activate' do
+    post 'Activate a patient with BP Passport UUID and OTP' do
       tags 'Patient'
-      parameter name: :request_body, in: :body, schema: Api::V4::Schema.patient_authenticate_request, description: 'Patient\'s BP Passport UUID and OTP'
+      parameter name: :request_body, in: :body, schema: Api::V4::Schema.patient_activate_request, description: 'Patient\'s BP Passport UUID and OTP'
 
       response '200', 'Correct OTP is submitted and access token is returned' do
         let(:bp_passport) { create(:patient_business_identifier, identifier_type: 'simple_bp_passport') }
         let(:passport_authentication) { create(:passport_authentication, patient_business_identifier: bp_passport, patient: bp_passport.patient) }
         let(:request_body) { { passport_id: bp_passport.identifier, otp: passport_authentication.otp } }
 
-        schema Api::V4::Schema.patient_authenticate_response
+        schema Api::V4::Schema.patient_activate_response
         run_test!
       end
 

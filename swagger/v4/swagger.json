@@ -146,9 +146,9 @@
         }
       }
     },
-    "/patient/activate": {
+    "/patient/request_otp": {
       "post": {
-        "summary": "Trigger an OTP to be sent to a patient",
+        "summary": "Request an OTP to be sent to a patient",
         "tags": [
           "Patient"
         ],
@@ -177,9 +177,9 @@
         }
       }
     },
-    "/patient/authenticate": {
+    "/patient/activate": {
       "post": {
-        "summary": "Authenticate a patient with BP Passport UUID and OTP",
+        "summary": "Activate a patient with BP Passport UUID and OTP",
         "tags": [
           "Patient"
         ],
@@ -209,6 +209,9 @@
               "properties": {
                 "access_token": {
                   "$ref": "#/definitions/non_empty_string"
+                },
+                "patient_id": {
+                  "$ref": "#/definitions/uuid"
                 }
               }
             }
