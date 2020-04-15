@@ -9,7 +9,7 @@ class Api::V4::PatientController < APIController
 
   def request_otp
     passport = PatientBusinessIdentifier.find_by(
-      identifier: request_passport_id,
+      identifier: passport_id,
       identifier_type: "simple_bp_passport"
     )
     patient  = passport&.patient
@@ -34,7 +34,7 @@ class Api::V4::PatientController < APIController
 
   def activate
     passport = PatientBusinessIdentifier.find_by(
-      identifier: request_passport_id,
+      identifier: passport_id,
       identifier_type: "simple_bp_passport"
     )
     patient  = passport&.patient
@@ -42,7 +42,7 @@ class Api::V4::PatientController < APIController
 
     authentication = PassportAuthentication.find_by!(patient_business_identifier: passport)
 
-    if authentication.validate_otp(request_otp)
+    if authentication.validate_otp(otp)
       render json: access_token_response(authentication), status: :ok
     else
       return head :unauthorized
@@ -51,11 +51,11 @@ class Api::V4::PatientController < APIController
 
   private
 
-  def request_passport_id
+  def passport_id
     params.require(:passport_id)
   end
 
-  def request_otp
+  def otp
     params.require(:otp)
   end
 
