@@ -19,6 +19,9 @@ class Patient < ApplicationRecord
 
   ANONYMIZED_DATA_FIELDS = %w[id created_at registration_date registration_facility_name user_id age gender]
 
+  has_one :passport_authentication
+  delegate :access_token, to: :passport_authentication, allow_nil: true
+
   belongs_to :address, optional: true
   has_many :phone_numbers, class_name: 'PatientPhoneNumber'
   has_many :business_identifiers, class_name: 'PatientBusinessIdentifier'
