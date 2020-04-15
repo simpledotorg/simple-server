@@ -28,6 +28,11 @@ FactoryBot.define do
       prior_stroke_boolean { true }
       diabetes_boolean { true }
       chronic_kidney_disease_boolean { true }
+
+      prior_heart_attack { 'yes' }
+      prior_stroke { 'yes' }
+      diabetes { 'yes' }
+      chronic_kidney_disease { 'yes' }
     end
   end
 end
