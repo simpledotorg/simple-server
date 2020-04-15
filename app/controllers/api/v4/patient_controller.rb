@@ -1,9 +1,11 @@
 class Api::V4::PatientController < APIController
   skip_before_action :current_user_present?
   skip_before_action :validate_sync_approval_status_allowed
-  skip_before_action :authenticate
   skip_before_action :validate_facility
   skip_before_action :validate_current_facility_belongs_to_users_facility_group
+
+  before_action :current_patient_present?
+  before_action :authenticate, except: [:activate, :authenticate]
 
   DEFAULT_USER_OTP_DELAY_IN_SECONDS = 5
 
@@ -13,7 +15,7 @@ class Api::V4::PatientController < APIController
       identifier_type: "simple_bp_passport"
     )
     patient  = passport&.patient
-    return head :not_found unless patient.present?
+    return head :not_found unless patient.present? && patient&.latest_mobile_number.present?
 
     authentication = PassportAuthentication.find_or_create_by!(
       patient: patient,
@@ -49,7 +51,37 @@ class Api::V4::PatientController < APIController
     end
   end
 
+  def show
+    head :ok
+  end
+
   private
+
+  def access_token_authorized?
+    authenticate_or_request_with_http_token do |token, _options|
+      ActiveSupport::SecurityUtils.secure_compare(token, current_patient.access_token)
+    end
+  end
+
+  def access_token_response(authentication)
+    { access_token: authentication.access_token }
+  end
+
+  def authenticate
+    return head :unauthorized unless access_token_authorized?
+  end
+
+  def current_patient
+    @current_patient ||= Patient.find_by(id: request.headers['HTTP_X_PATIENT_ID'])
+  end
+
+  def current_patient_present?
+    return head :unauthorized unless current_patient.present?
+  end
+
+  def otp_delay_seconds
+    (ENV['USER_OTP_SMS_DELAY_IN_SECONDS'] || DEFAULT_USER_OTP_DELAY_IN_SECONDS).to_i.seconds
+  end
 
   def request_passport_id
     params.require(:passport_id)
@@ -57,13 +89,5 @@ class Api::V4::PatientController < APIController
 
   def request_otp
     params.require(:otp)
-  end
-
-  def access_token_response(authentication)
-    { access_token: authentication.access_token }
-  end
-
-  def otp_delay_seconds
-    (ENV['USER_OTP_SMS_DELAY_IN_SECONDS'] || DEFAULT_USER_OTP_DELAY_IN_SECONDS).to_i.seconds
   end
 end
