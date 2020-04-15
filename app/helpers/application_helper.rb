@@ -42,9 +42,11 @@ module ApplicationHelper
   end
 
   def show_last_interaction_date_and_result(patient)
-    return if patient.appointments.count < 2
+    ordered_appointments = patient.appointments.sort_by(&:scheduled_date).reverse
+    last_interaction = ordered_appointments.second
 
-    last_interaction = patient.appointments.order(scheduled_date: :desc).second
+    return unless last_interaction.present?
+
     last_interaction_date = last_interaction.created_at.strftime(STANDARD_DATE_DISPLAY_FORMAT)
     interaction_result = "" + last_interaction_date
 
@@ -59,4 +61,3 @@ module ApplicationHelper
     interaction_result
   end
 end
-
