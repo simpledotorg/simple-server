@@ -13,7 +13,7 @@ class Api::V4::PatientController < APIController
       identifier_type: "simple_bp_passport"
     )
     patient  = passport&.patient
-    return head :not_found unless patient.present?
+    return head :not_found unless patient.present? && patient.latest_mobile_number.present?
 
     authentication = PassportAuthentication.find_or_create_by!(
       patient: patient,
