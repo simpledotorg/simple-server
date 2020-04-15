@@ -4,7 +4,7 @@ class Api::V4::PatientController < APIController
   skip_before_action :validate_facility
   skip_before_action :validate_current_facility_belongs_to_users_facility_group
 
-  before_action :current_patient_present?
+  before_action :validate_current_patient
   before_action :authenticate, except: [:activate, :authenticate]
 
   DEFAULT_USER_OTP_DELAY_IN_SECONDS = 5
@@ -83,7 +83,7 @@ class Api::V4::PatientController < APIController
     @current_patient ||= Patient.find_by(id: request.headers['HTTP_X_PATIENT_ID'])
   end
 
-  def current_patient_present?
+  def validate_current_patient
     return head :unauthorized unless current_patient.present?
   end
 
