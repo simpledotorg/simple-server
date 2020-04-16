@@ -4,7 +4,7 @@ class Api::V4::PatientController < APIController
   skip_before_action :validate_facility
   skip_before_action :validate_current_facility_belongs_to_users_facility_group
 
-  before_action :validate_current_patient
+  before_action :validate_current_patient, except: [:request_otp, :activate]
   before_action :authenticate, except: [:request_otp, :activate]
 
   def request_otp
@@ -15,10 +15,7 @@ class Api::V4::PatientController < APIController
     patient  = passport&.patient
     return head :not_found unless patient.present? && patient.latest_mobile_number.present?
 
-    authentication = PassportAuthentication.find_or_create_by!(
-      patient: patient,
-      patient_business_identifier: passport
-    )
+    authentication = PassportAuthentication.find_or_create_by!(patient_business_identifier: passport)
 
     unless authentication.otp_valid?
       authentication.reset_otp
