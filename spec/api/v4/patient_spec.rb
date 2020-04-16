@@ -9,7 +9,7 @@ describe 'Patient v4 API', swagger_doc: 'v4/swagger.json' do
       before :each do
         sms_notification_service = double(SmsNotificationService.new(nil, nil))
         allow(SmsNotificationService).to receive(:new).and_return(sms_notification_service)
-        allow(sms_notification_service).to receive(:send_request_otp_sms).and_return(true)
+        allow(sms_notification_service).to receive(:send_patient_request_otp_sms).and_return(true)
       end
 
       response '200', 'Patient is found and an OTP is sent to their phone' do

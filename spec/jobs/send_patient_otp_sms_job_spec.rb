@@ -14,7 +14,7 @@ RSpec.describe SendPatientOtpSmsJob, type: :job do
             .and_return(sms_notification_service)
 
     expect(sms_notification_service)
-      .to receive(:send_request_otp_sms)
+      .to receive(:send_patient_request_otp_sms)
             .with(passport_authentication.otp)
             .and_return(true)
 

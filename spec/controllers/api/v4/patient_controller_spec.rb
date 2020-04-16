@@ -7,7 +7,6 @@ RSpec.describe Api::V4::PatientController, type: :controller do
     let!(:passport_authentication) { create(:passport_authentication, patient_business_identifier: bp_passport) }
 
     before do
-      allow(SendPatientOtpSmsJob).to receive(:set).and_return(SendPatientOtpSmsJob)
       allow(SendPatientOtpSmsJob).to receive(:perform_later)
     end
 

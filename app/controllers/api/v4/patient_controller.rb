@@ -7,8 +7,6 @@ class Api::V4::PatientController < APIController
   before_action :validate_current_patient
   before_action :authenticate, except: [:request_otp, :activate]
 
-  DEFAULT_USER_OTP_DELAY_IN_SECONDS = 5
-
   def request_otp
     passport = PatientBusinessIdentifier.find_by(
       identifier: passport_id,
@@ -28,7 +26,7 @@ class Api::V4::PatientController < APIController
     end
 
     unless FeatureToggle.enabled?('FIXED_OTP_ON_REQUEST_FOR_QA')
-      SendPatientOtpSmsJob.set(wait: otp_delay_seconds).perform_later(authentication)
+      SendPatientOtpSmsJob.perform_later(authentication)
     end
 
     head :ok
@@ -90,9 +88,5 @@ class Api::V4::PatientController < APIController
 
   def validate_current_patient
     return head :unauthorized unless current_patient.present?
-  end
-
-  def otp_delay_seconds
-    (ENV['USER_OTP_SMS_DELAY_IN_SECONDS'] || DEFAULT_USER_OTP_DELAY_IN_SECONDS).to_i.seconds
   end
 end
