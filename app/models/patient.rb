@@ -2,6 +2,7 @@ class Patient < ApplicationRecord
   include ApplicationHelper
   include Mergeable
   include Hashable
+  include PeriodHelper
 
   enum reminder_consent: {
     granted: 'granted',
@@ -67,6 +68,23 @@ class Patient < ApplicationRecord
 
   validates_associated :address, if: :address
   validates_associated :phone_numbers, if: :phone_numbers
+
+  def self.followed_up(period, date)
+    includes(:blood_pressures)
+      .where('recorded_at < ?', beginning_of_period(period, date))
+      .where(blood_pressures: { recorded_at: all_period(period, date) })
+  end
+
+  def self.all_follow_ups
+    date_to_month_sql =
+      "(DATE_TRUNC('month', blood_pressures.recorded_at::timestamptz AT TIME ZONE 'Asia/Kolkata')) AS month"
+
+    Patient.joins(:blood_pressures)
+      .select('DISTINCT ON (patients.id, blood_pressures.facility_id, month) *')
+      .select(date_to_month_sql)
+      .where("patients.recorded_at < #{date_to_month_sql}")
+      .order('patients.id', 'blood_pressures.facility_id', 'month')
+  end
 
   def past_date_of_birth
     if date_of_birth.present? && date_of_birth > Date.current

@@ -1,4 +1,30 @@
 module PeriodHelper
+  def all_period(period, date)
+    case period
+      when :quarter
+        date.all_quarter
+      when :month
+        date.all_month
+      when :day
+        date.all_day
+      else
+        return nil
+    end
+  end
+
+  def beginning_of_period(period, date)
+    case period
+      when :quarter
+        date.beginning_of_quarter
+      when :month
+        date.beginning_of_month
+      when :day
+        date.beginning_of_day
+      else
+        return nil
+    end
+  end
+
   def period_list(period, last_n)
     case period
       when :quarter

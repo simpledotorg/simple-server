@@ -7,7 +7,7 @@ class BloodPressure < ApplicationRecord
                               bp_systolic bp_diastolic]
 
   THRESHOLDS = {
-    critical:     { systolic: 180, diastolic: 110 },
+    critical: { systolic: 180, diastolic: 110 },
     hypertensive: { systolic: 140, diastolic: 90 }
   }.freeze
 
