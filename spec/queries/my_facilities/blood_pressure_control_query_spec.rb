@@ -292,6 +292,20 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
                facility: facility,
                user: user)
       end
+
+      let!(:old_patient) do
+        create(:patient, registration_facility: facility, registration_user: user, recorded_at: 6.months.ago)
+      end
+
+      let!(:old_bp) do
+        create(:blood_pressure,
+               :under_control,
+               facility: facility,
+               patient: old_patient,
+               recorded_at: old_patient.recorded_at,
+               user: user)
+      end
+
       before do
         ActiveRecord::Base.transaction do
           ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Rails.application.config.country[:time_zone]}'")
@@ -301,11 +315,11 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       end
 
       describe '#overall_patients' do
-        specify { expect(described_class.new.overall_patients.count).to eq(4) }
+        specify { expect(described_class.new.overall_patients.count).to eq(5) }
       end
 
       describe '#overall_controlled_bps' do
-        specify { expect(described_class.new.overall_controlled_bps.count).to eq(2) }
+        specify { expect(described_class.new.overall_controlled_bps.count).to eq(1) }
       end
     end
   end
