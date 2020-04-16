@@ -203,7 +203,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Correct OTP is submitted and access token is returned",
+            "description": "Correct OTP is submitted and API credentials are returned",
             "schema": {
               "type": "object",
               "properties": {
