@@ -5,8 +5,6 @@ class Api::V4::PatientController < APIController
   skip_before_action :validate_facility
   skip_before_action :validate_current_facility_belongs_to_users_facility_group
 
-  DEFAULT_USER_OTP_DELAY_IN_SECONDS = 5
-
   def request_otp
     passport = PatientBusinessIdentifier.find_by(
       identifier: passport_id,
@@ -26,7 +24,7 @@ class Api::V4::PatientController < APIController
     end
 
     unless FeatureToggle.enabled?('FIXED_OTP_ON_REQUEST_FOR_QA')
-      SendPatientOtpSmsJob.set(wait: otp_delay_seconds).perform_later(authentication)
+      SendPatientOtpSmsJob.perform_later(authentication)
     end
 
     head :ok
@@ -64,9 +62,5 @@ class Api::V4::PatientController < APIController
       access_token: authentication.access_token,
       patient_id: authentication.patient.id
     }
-  end
-
-  def otp_delay_seconds
-    (ENV['USER_OTP_SMS_DELAY_IN_SECONDS'] || DEFAULT_USER_OTP_DELAY_IN_SECONDS).to_i.seconds
   end
 end
