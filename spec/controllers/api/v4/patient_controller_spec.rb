@@ -4,7 +4,7 @@ RSpec.describe Api::V4::PatientController, type: :controller do
   describe '#request_otp' do
     let!(:bp_passport) { create(:patient_business_identifier, identifier_type: 'simple_bp_passport') }
     let(:patient) { bp_passport.patient }
-    let!(:passport_authentication) { create(:passport_authentication, patient: patient, patient_business_identifier: bp_passport) }
+    let!(:passport_authentication) { create(:passport_authentication, patient_business_identifier: bp_passport) }
 
     before do
       allow(SendPatientOtpSmsJob).to receive(:set).and_return(SendPatientOtpSmsJob)
@@ -41,7 +41,7 @@ RSpec.describe Api::V4::PatientController, type: :controller do
   describe '#activate' do
     let!(:bp_passport) { create(:patient_business_identifier, identifier_type: 'simple_bp_passport') }
     let(:patient) { bp_passport.patient }
-    let!(:passport_authentication) { create(:passport_authentication, patient: patient, patient_business_identifier: bp_passport) }
+    let!(:passport_authentication) { create(:passport_authentication, patient_business_identifier: bp_passport) }
 
     it 'returns a successful response' do
       post :activate, params: { passport_id: bp_passport.identifier, otp: passport_authentication.otp }
