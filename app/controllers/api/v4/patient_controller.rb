@@ -38,7 +38,7 @@ class Api::V4::PatientController < APIController
       identifier_type: "simple_bp_passport"
     )
     patient  = passport&.patient
-    return head :not_found unless patient.present?
+    return head :unauthorized unless patient.present?
 
     authentication = PassportAuthentication.find_by!(patient_business_identifier: passport)
 
@@ -60,7 +60,10 @@ class Api::V4::PatientController < APIController
   end
 
   def access_token_response(authentication)
-    { access_token: authentication.access_token }
+    {
+      access_token: authentication.access_token,
+      patient_id: authentication.patient.id
+    }
   end
 
   def otp_delay_seconds
