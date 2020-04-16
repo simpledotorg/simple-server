@@ -25,6 +25,17 @@ module PeriodHelper
     end
   end
 
+  def last_n_periods(period, last_n)
+    case period
+      when :month
+        last_n_months(n: last_n, inclusive: true)
+      when :day
+        beginning_of_period(period, (last_n - 1).days.ago).to_date..beginning_of_period(period, Time.current).to_date
+      else
+        nil
+    end.to_a
+  end
+
   def period_list(period, last_n)
     case period
       when :quarter

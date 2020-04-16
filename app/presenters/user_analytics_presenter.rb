@@ -64,17 +64,30 @@ class UserAnalyticsPresenter
 
   private
 
+  def daily_follow_ups
+    last_n_periods(:day, DAYS_AGO).map do |date|
+      [date, @current_facility.followed_up(:day, date).count]
+    end.to_h
+  end
+
+  def monthly_follow_ups
+    last_n_periods(:month, MONTHS_AGO).map do |date|
+      [date.to_date, @current_facility.followed_up(:month, date.to_date).group(:gender).count]
+    end.to_h
+  end
+
+  def daily_registrations
+    @user_analytics.daily_registrations
+  end
+
   def daily_stats
     {
       grouped_by_date:
         {
-          follow_ups:
-            data_for_unavailable_dates(@daily_period_list)
-              .merge(@user_analytics.daily_follow_ups),
-
+          follow_ups: daily_follow_ups,
           registrations:
             data_for_unavailable_dates(@daily_period_list)
-              .merge(@user_analytics.daily_registrations)
+              .merge(daily_registrations)
         }
     }
   end
@@ -83,11 +96,7 @@ class UserAnalyticsPresenter
     {
       grouped_by_gender_and_date:
         {
-          follow_ups:
-            group_by_gender_and_date(@user_analytics.monthly_follow_ups)
-              .map { |gender, data| [gender, data_for_unavailable_dates(@monthly_period_list).merge(data)] }
-              .to_h,
-
+          follow_ups: monthly_follow_ups,
           registrations:
             group_by_gender_and_date(@user_analytics.monthly_registrations)
               .map { |gender, data| [gender, data_for_unavailable_dates(@monthly_period_list).merge(data)] }
@@ -165,7 +174,7 @@ class UserAnalyticsPresenter
   #
   # { :grouped_by_gender_and_date =>
   #    { "male" =>
-  #        { "Sun, 01 Mar 2020" => 21 },
+  #        { "Sun, 01 Mar 2020" => 21 ,
   #          "Tue, 01 Oct 2019" => 0 },
   #      "female" =>
   #        { "Sun, 01 Mar 2020" => 18,

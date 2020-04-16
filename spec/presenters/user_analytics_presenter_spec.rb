@@ -13,14 +13,16 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
       before do
         patients = create_list(:patient, 3, registration_facility: current_facility, recorded_at: reg_date)
         patients.each do |patient|
-          create(:blood_pressure,
-                 patient: patient,
-                 facility: current_facility,
-                 user: current_user,
-                 recorded_at: follow_up_date)
+          create(:encounter,
+                 :with_observables,
+                 observable: create(:blood_pressure,
+                                    patient: patient,
+                                    facility: current_facility,
+                                    user: current_user,
+                                    recorded_at: follow_up_date))
         end
-        LatestBloodPressuresPerPatientPerDay.refresh
 
+        LatestBloodPressuresPerPatientPerDay.refresh
         stub_const("UserAnalyticsPresenter::DAYS_AGO", 6)
       end
 
@@ -94,19 +96,23 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
                                recorded_at: reg_date,
                                gender: gender)
         patients.each do |patient|
-          create(:blood_pressure,
-                 :critical,
-                 patient: patient,
-                 facility: current_facility,
-                 user: current_user,
-                 recorded_at: follow_up_date)
+          create(:encounter,
+                 :with_observables,
+                 observable: create(:blood_pressure,
+                                    :critical,
+                                    patient: patient,
+                                    facility: current_facility,
+                                    user: current_user,
+                                    recorded_at: follow_up_date))
 
-          create(:blood_pressure,
-                 :under_control,
-                 patient: patient,
-                 facility: current_facility,
-                 user: current_user,
-                 recorded_at: controlled_follow_up_date)
+          create(:encounter,
+                 :with_observables,
+                 observable: create(:blood_pressure,
+                                    :under_control,
+                                    patient: patient,
+                                    facility: current_facility,
+                                    user: current_user,
+                                    recorded_at: controlled_follow_up_date))
         end
 
         LatestBloodPressuresPerPatientPerMonth.refresh
@@ -133,14 +139,12 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
           },
 
           follow_ups: {
-            gender => {
-              (request_date - 5.months) => 0,
-              (request_date - 4.months) => 0,
-              (request_date - 3.months) => 0,
-              follow_up_date.to_date => 3,
-              controlled_follow_up_date.to_date => 3,
-              request_date => 0,
-            }
+            (request_date - 5.months) => {},
+            (request_date - 4.months) => {},
+            (request_date - 3.months) => {},
+            follow_up_date.to_date => { gender => 3 },
+            controlled_follow_up_date.to_date => { gender => 3 },
+            request_date => {},
           }
         }
 
@@ -177,11 +181,19 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
       end
 
       it 'has no data if facility has not recorded anything recently' do
+        now = Time.current.beginning_of_month.to_date
         data = described_class.new(current_facility).statistics
 
         expected_output =
           {
-            follow_ups: {},
+            follow_ups: {
+              (now - 5.months) => {},
+              (now - 4.months) => {},
+              (now - 3.months) => {},
+              (now - 2.months) => {},
+              (now - 1.months) => {},
+              now => {},
+            },
             registrations: {}
           }
         expect(data.dig(:monthly, :grouped_by_gender_and_date)).to eq(expected_output)
