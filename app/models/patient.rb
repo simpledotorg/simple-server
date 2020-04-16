@@ -100,6 +100,10 @@ class Patient < ApplicationRecord
     latest_bp_passports.first
   end
 
+  def access_tokens
+    passport_authentications.map(&:access_token)
+  end
+
   def phone_number?
     latest_phone_number.present?
   end
