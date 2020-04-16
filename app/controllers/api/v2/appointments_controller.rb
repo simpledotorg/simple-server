@@ -1,4 +1,6 @@
 class Api::V2::AppointmentsController < Api::V3::AppointmentsController
+  include Api::V2::LogApiUsageByUsers
+
   private
 
   def set_default_appointment_type(appointment_params)
