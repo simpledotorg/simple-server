@@ -5,7 +5,7 @@ class Api::V4::PatientController < APIController
   skip_before_action :validate_current_facility_belongs_to_users_facility_group
 
   before_action :validate_current_patient
-  before_action :authenticate, except: [:activate, :authenticate]
+  before_action :authenticate, except: [:request_otp, :activate]
 
   DEFAULT_USER_OTP_DELAY_IN_SECONDS = 5
 
