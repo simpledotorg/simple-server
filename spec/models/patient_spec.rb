@@ -11,12 +11,22 @@ describe Patient, type: :model do
   describe 'Associations' do
     it { is_expected.to belong_to(:address).optional }
     it { is_expected.to have_many(:phone_numbers) }
+    it { is_expected.to have_many(:business_identifiers) }
+    it { is_expected.to have_many(:passport_authentications).through(:business_identifiers) }
+
     it { is_expected.to have_many(:blood_pressures) }
     it { is_expected.to have_many(:blood_sugars) }
     it { is_expected.to have_many(:prescription_drugs) }
     it { is_expected.to have_many(:facilities).through(:blood_pressures) }
+    it { is_expected.to have_many(:users).through(:blood_pressures) }
     it { is_expected.to have_many(:appointments) }
     it { is_expected.to have_one(:medical_history) }
+
+    it { is_expected.to have_many(:encounters) }
+    it { is_expected.to have_many(:observations).through(:encounters) }
+
+    it { is_expected.to belong_to(:registration_facility).class_name('Facility').optional }
+    it { is_expected.to belong_to(:registration_user).class_name('User') }
 
     it 'has distinct facilities' do
       patient = FactoryBot.create(:patient)

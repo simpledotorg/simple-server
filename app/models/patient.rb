@@ -19,23 +19,22 @@ class Patient < ApplicationRecord
 
   ANONYMIZED_DATA_FIELDS = %w[id created_at registration_date registration_facility_name user_id age gender]
 
-  has_one :passport_authentication
-  delegate :access_token, to: :passport_authentication, allow_nil: true
 
   belongs_to :address, optional: true
   has_many :phone_numbers, class_name: 'PatientPhoneNumber'
   has_many :business_identifiers, class_name: 'PatientBusinessIdentifier'
-
-  has_many :encounters
-  has_many :observations, through: :encounters
+  has_many :passport_authentications, through: :business_identifiers
 
   has_many :blood_pressures, inverse_of: :patient
+  has_many :blood_sugars
   has_many :prescription_drugs
   has_many :facilities, -> { distinct }, through: :blood_pressures
   has_many :users, -> { distinct }, through: :blood_pressures
-  has_many :blood_sugars
   has_many :appointments
   has_one :medical_history
+
+  has_many :encounters
+  has_many :observations, through: :encounters
 
   belongs_to :registration_facility, class_name: "Facility", optional: true
   belongs_to :registration_user, class_name: "User"
