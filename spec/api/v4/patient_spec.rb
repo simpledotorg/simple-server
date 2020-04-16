@@ -32,7 +32,7 @@ describe 'Patient v4 API', swagger_doc: 'v4/swagger.json' do
       tags 'Patient'
       parameter name: :request_body, in: :body, schema: Api::V4::Schema.patient_activate_request, description: 'Patient\'s BP Passport UUID and OTP'
 
-      response '200', 'Correct OTP is submitted and access token is returned' do
+      response '200', 'Correct OTP is submitted and API credentials are returned' do
         let(:bp_passport) { create(:patient_business_identifier, identifier_type: 'simple_bp_passport') }
         let(:passport_authentication) { create(:passport_authentication, patient_business_identifier: bp_passport, patient: bp_passport.patient) }
         let(:request_body) { { passport_id: bp_passport.identifier, otp: passport_authentication.otp } }
