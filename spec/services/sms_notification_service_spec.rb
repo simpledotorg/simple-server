@@ -19,7 +19,7 @@ RSpec.describe SmsNotificationService do
       it 'should have the SMS body in the default locale' do
         sms = SmsNotificationService.new(recipient_phone_number, sender_phone_number, twilio_client)
 
-        expected_msg_default = 'Our staff at Simple Facility are thinking of you and your heart health. Our health team is always here if you have any follow-up questions or concerns.'
+        expected_msg_default = 'Our staff at Simple Facility are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre. Contact your ANM or ASHA.'
         expect(twilio_client).to receive_message_chain('messages.create').with(from: '+15005550006',
                                                                                to: expected_sms_recipient_phone_number,
                                                                                status_callback: '',
@@ -31,7 +31,7 @@ RSpec.describe SmsNotificationService do
       it 'should have the SMS body in Marathi' do
         sms = SmsNotificationService.new(recipient_phone_number, sender_phone_number, twilio_client)
 
-        expected_msg_marathi = 'आमचे Simple Facility चे कर्मचारी तुमचा आणि तुमच्या हृदयाच्या आरोग्याचा विचार करत आहेत. तुमच्या प्रश्नांची किंवा समस्यांची उत्तरे देण्यास आमची हेल्थ टीम सदैव तत्पर आहे.'
+        expected_msg_marathi = 'Our staff at Simple Facility are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre. Contact your ANM or ASHA.'
         expect(twilio_client).to receive_message_chain('messages.create').with(from: '+15005550006',
                                                                                to: expected_sms_recipient_phone_number,
                                                                                status_callback: '',
@@ -43,7 +43,7 @@ RSpec.describe SmsNotificationService do
       it 'should have the SMS body in Punjabi' do
         sms = SmsNotificationService.new(recipient_phone_number, sender_phone_number, twilio_client)
 
-        expected_msg_punjabi = 'Simple Facility ਵਿੱਚ ਸਾਡੇ ਕਰਮਚਾਰੀ ਤੁਹਾਡੇ ਅਤੇ ਤੁਹਾਡੇ ਦਿਲ ਦੀ ਸਿਹਤ ਬਾਰੇ ਸੋਚ ਰਹੇ ਹਨ । ਜੇ ਤੁਹਾਡੇ ਮਨ ਵਿੱਚ ਕੋਈ ਪ੍ਰਸ਼ਨ ਜਾਂ ਚਿੰਤਾ ਹੈ ਤਾਂ ਸਾਡੀ ਸਿਹਤ ਟੀਮ ਹਮੇਸ਼ਾ ਤੁਹਾਡੇ ਲਈ ਇੱਥੇ ਹੈ ।'
+        expected_msg_punjabi = 'Our staff at Simple Facility are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre. Contact your ANM or ASHA.'
         expect(twilio_client).to receive_message_chain('messages.create').with(from: '+15005550006',
                                                                                to: expected_sms_recipient_phone_number,
                                                                                status_callback: '',
@@ -74,7 +74,7 @@ RSpec.describe SmsNotificationService do
 
         it 'uses the set country code' do
           sms = SmsNotificationService.new(recipient_phone_number, sender_phone_number, twilio_client)
-          expected_msg_default = 'Our staff at Simple Facility are thinking of you and your heart health. Our health team is always here if you have any follow-up questions or concerns.'
+          expected_msg_default = 'Our staff at Simple Facility are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre. Contact your ANM or ASHA.'
 
           expect(twilio_client).to receive_message_chain('messages.create').with(
             from: '+15005550006',
