@@ -9,6 +9,6 @@ class SendPatientOtpSmsJob < ApplicationJob
 
     SmsNotificationService
       .new(phone_number, ENV['TWILIO_PHONE_NUMBER'])
-      .send_request_otp_sms(patient_authentication.otp)
+      .send_patient_request_otp_sms(patient_authentication.otp)
   end
 end
