@@ -91,4 +91,59 @@ RSpec.describe Api::V4::PatientController, type: :controller do
       end
     end
   end
+
+  describe '#show' do
+    let!(:bp_passport) { create(:patient_business_identifier, identifier_type: 'simple_bp_passport') }
+    let(:patient) { bp_passport.patient }
+    let!(:passport_authentication) { create(:passport_authentication, patient_business_identifier: bp_passport) }
+    let!(:access_token) { passport_authentication.access_token }
+
+    before do
+      request.headers['Accept'] = 'application/json'
+      request.headers['Authorization'] = "Bearer #{access_token}"
+      request.headers['X-Patient-Id'] = patient.id
+    end
+
+    it 'returns a successful response' do
+      get :show
+
+      expect(response.status).to eq(200)
+    end
+
+    context 'response schema' do
+      render_views
+
+      it 'returns patient information in the correct schema' do
+        get :show
+        response_data = JSON.parse(response.body)
+        expected_schema = Api::V4::Schema.patient_response.merge(definitions: Api::V4::Schema.all_definitions)
+        expect(JSON::Validator.validate(expected_schema, response_data)).to eq(true)
+      end
+    end
+
+
+    context 'when Authorization header is incorrect' do
+      before do
+        request.headers['Authorization'] = "Bearer nope-wrong-token-sorry"
+      end
+
+      it 'returns an unauthorized response' do
+        get :show
+
+        expect(response.status).to eq(401)
+      end
+    end
+
+    context 'when X-Patient-Id header is incorrect' do
+      before do
+        request.headers['X-Patient-Id'] = "nope-wrong-id-sorry"
+      end
+
+      it 'returns an unauthorized response' do
+        get :show
+
+        expect(response.status).to eq(401)
+      end
+    end
+  end
 end
