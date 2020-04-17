@@ -1,6 +1,6 @@
 class Api::V4::PatientController < PatientAPIController
-  before_action :validate_current_patient, except: [:activate, :login]
-  before_action :authenticate, except: [:activate, :login]
+  skip_before_action :validate_current_patient, only: [:activate, :login]
+  skip_before_action :authenticate, only: [:activate, :login]
 
   def activate
     passport = PatientBusinessIdentifier.find_by(
@@ -52,38 +52,5 @@ class Api::V4::PatientController < PatientAPIController
 
   def otp
     params.require(:otp)
-  end
-
-  def access_token_authorized?
-    authenticate_with_http_token do |token, _options|
-      current_patient.access_tokens.any? do |patient_token|
-        ActiveSupport::SecurityUtils.secure_compare(token, patient_token)
-      end
-    end
-  end
-
-  def access_token_response(authentication)
-    {
-      patient: {
-        id: authentication.patient.id,
-        access_token: authentication.access_token,
-        passport: {
-          id: authentication.patient_business_identifier.identifier,
-          shortcode: authentication.patient_business_identifier.shortcode
-        }
-      }
-    }
-  end
-
-  def authenticate
-    return head :unauthorized unless access_token_authorized?
-  end
-
-  def current_patient
-    @current_patient ||= Patient.find_by(id: request.headers['HTTP_X_PATIENT_ID'])
-  end
-
-  def validate_current_patient
-    return head :unauthorized unless current_patient.present?
   end
 end
