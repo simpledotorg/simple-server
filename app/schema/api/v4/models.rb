@@ -71,7 +71,7 @@ class Api::V4::Models
       {
         type: :object,
         properties: {
-          patient_id: { '$ref' => '#/definitions/uuid' },
+          id: { '$ref' => '#/definitions/uuid' },
           full_name: { '$ref' => '#/definitions/non_empty_string' },
           age: { type: [:integer, 'null'] },
           gender: { type: :string, enum: Patient::GENDERS },
@@ -95,7 +95,7 @@ class Api::V4::Models
       {
         type: :object,
         properties: {
-          phone_number_id: { '$ref' => '#/definitions/uuid' },
+          id: { '$ref' => '#/definitions/uuid' },
           number: { '$ref' => '#/definitions/non_empty_string' }
         }
       }
@@ -105,7 +105,7 @@ class Api::V4::Models
       {
         type: :object,
         properties: {
-          address_id: { '$ref' => '#/definitions/uuid' },
+          id: { '$ref' => '#/definitions/uuid' },
           street_address: { type: [:string, 'null'] },
           village_or_colony: { type: [:string, 'null'] },
           district: { type: [:string, 'null'] },
@@ -121,7 +121,7 @@ class Api::V4::Models
       {
         type: :object,
         properties: {
-          facility_id: { '$ref' => '#/definitions/uuid' },
+          id: { '$ref' => '#/definitions/uuid' },
           name: { '$ref' => '#/definitions/non_empty_string' },
           street_address: { type: [:string, 'null'] },
           village_or_colony: { type: [:string, 'null'] },

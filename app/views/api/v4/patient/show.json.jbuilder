@@ -1,5 +1,5 @@
 json.patient do
-  json.patient_id @current_patient.id
+  json.id @current_patient.id
   json.full_name @current_patient.full_name
   json.age @current_patient.current_age
   json.gender @current_patient.gender
@@ -8,7 +8,7 @@ json.patient do
   json.reminder_consent @current_patient.reminder_consent
 
   json.phone_numbers @current_patient.phone_numbers do |phone_number|
-    json.phone_number_id phone_number.id
+    json.id phone_number.id
     json.number phone_number.number
   end
 
@@ -16,7 +16,7 @@ json.patient do
     address = @current_patient.address
 
     json.address do
-      json.address_id address.id
+      json.id address.id
       json.street_address address.street_address
       json.village_or_colony address.village_or_colony
       json.district address.district
@@ -30,7 +30,7 @@ json.patient do
   json.registration_facility do
     facility = @current_patient.registration_facility
 
-    json.facility_id facility.id
+    json.id facility.id
     json.name facility.name
     json.street_address facility.street_address
     json.village_or_colony facility.village_or_colony
@@ -58,7 +58,7 @@ json.patient do
     json.recorded_at blood_pressure.recorded_at
 
     json.facility do
-      json.facility_id blood_pressure.facility.id
+      json.id blood_pressure.facility.id
       json.name blood_pressure.facility.name
       json.street_address blood_pressure.facility.street_address
       json.village_or_colony blood_pressure.facility.village_or_colony
@@ -75,7 +75,7 @@ json.patient do
     json.recorded_at blood_sugar.recorded_at
 
     json.facility do
-      json.facility_id blood_sugar.facility.id
+      json.id blood_sugar.facility.id
       json.name blood_sugar.facility.name
       json.street_address blood_sugar.facility.street_address
       json.village_or_colony blood_sugar.facility.village_or_colony
@@ -91,7 +91,7 @@ json.patient do
     json.status appointment.status
 
     json.facility do
-      json.facility_id appointment.facility.id
+      json.id appointment.facility.id
       json.name appointment.facility.name
       json.street_address appointment.facility.street_address
       json.village_or_colony appointment.facility.village_or_colony

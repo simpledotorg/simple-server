@@ -563,7 +563,7 @@
     "patient": {
       "type": "object",
       "properties": {
-        "patient_id": {
+        "id": {
           "$ref": "#/definitions/uuid"
         },
         "full_name": {
@@ -611,7 +611,7 @@
           "items": {
             "type": "object",
             "properties": {
-              "phone_number_id": {
+              "id": {
                 "$ref": "#/definitions/uuid"
               },
               "number": {
@@ -623,7 +623,7 @@
         "address": {
           "type": "object",
           "properties": {
-            "address_id": {
+            "id": {
               "$ref": "#/definitions/uuid"
             },
             "street_address": {
@@ -673,7 +673,7 @@
         "registration_facility": {
           "type": "object",
           "properties": {
-            "facility_id": {
+            "id": {
               "$ref": "#/definitions/uuid"
             },
             "name": {
@@ -782,7 +782,7 @@
               "facility": {
                 "type": "object",
                 "properties": {
-                  "facility_id": {
+                  "id": {
                     "$ref": "#/definitions/uuid"
                   },
                   "name": {
@@ -855,7 +855,7 @@
               "facility": {
                 "type": "object",
                 "properties": {
-                  "facility_id": {
+                  "id": {
                     "$ref": "#/definitions/uuid"
                   },
                   "name": {
@@ -925,7 +925,7 @@
               "facility": {
                 "type": "object",
                 "properties": {
-                  "facility_id": {
+                  "id": {
                     "$ref": "#/definitions/uuid"
                   },
                   "name": {
