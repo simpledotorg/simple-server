@@ -1,10 +1,4 @@
-class Api::V4::PatientController < APIController
-  skip_before_action :current_user_present?
-  skip_before_action :validate_sync_approval_status_allowed
-  skip_before_action :authenticate
-  skip_before_action :validate_facility
-  skip_before_action :validate_current_facility_belongs_to_users_facility_group
-
+class Api::V4::PatientController < PatientAPIController
   def activate
     passport = PatientBusinessIdentifier.find_by(
       identifier: passport_id,
