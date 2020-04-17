@@ -76,12 +76,40 @@ class UserAnalyticsPresenter
     end.to_h
   end
 
+  def monthly_visits
+    last_n_periods(:month, MONTHS_AGO).map do |date|
+      [date.to_date, @current_facility.followed_up(:month, date.to_date).count]
+    end.to_h
+  end
+
+  def controlled_visits
+    last_n_periods(:month, MONTHS_AGO).map do |date|
+      [date.to_date, @current_facility.followed_up(:month, date.to_date).merge(BloodPressure.under_control).count]
+    end.to_h
+  end
+
   def all_time_follow_ups
     @current_facility.all_follow_ups.group(:gender).count
   end
 
   def daily_registrations
-    @user_analytics.daily_registrations
+    @current_facility
+      .registered_patients
+      .group_by_period(:day, :recorded_at, last: DAYS_AGO)
+      .count
+  end
+
+  def monthly_registrations
+    last_n_periods(:month, MONTHS_AGO).map do |date|
+      [date.to_date, @current_facility.registered_patients.where(recorded_at: date.all_month).group(:gender).count]
+    end.to_h
+  end
+
+  def all_time_registrations
+    @current_facility
+      .registered_patients
+      .group(:gender)
+      .count
   end
 
   def daily_stats
@@ -89,9 +117,7 @@ class UserAnalyticsPresenter
       grouped_by_date:
         {
           follow_ups: daily_follow_ups,
-          registrations:
-            data_for_unavailable_dates(@daily_period_list)
-              .merge(daily_registrations)
+          registrations: daily_registrations
         }
     }
   end
@@ -101,21 +127,13 @@ class UserAnalyticsPresenter
       grouped_by_gender_and_date:
         {
           follow_ups: monthly_follow_ups,
-          registrations:
-            group_by_gender_and_date(@user_analytics.monthly_registrations)
-              .map { |gender, data| [gender, data_for_unavailable_dates(@monthly_period_list).merge(data)] }
-              .to_h
+          registrations: monthly_registrations
         },
 
       grouped_by_date:
         {
-          total_visits:
-            data_for_unavailable_dates(@monthly_period_list)
-              .merge(@user_analytics.monthly_htn_control[:total_visits]),
-
-          controlled_visits:
-            data_for_unavailable_dates(@monthly_period_list)
-              .merge(@user_analytics.monthly_htn_control[:controlled_visits]),
+          total_visits: monthly_visits,
+          controlled_visits: controlled_visits,
         }
     }
   end
@@ -125,9 +143,7 @@ class UserAnalyticsPresenter
       grouped_by_gender:
         {
           follow_ups: all_time_follow_ups,
-
-          registrations:
-            group_by_gender(@user_analytics.all_time_registrations)
+          registrations: all_time_registrations
         }
     }
   end
@@ -183,18 +199,10 @@ class UserAnalyticsPresenter
   #        { "Sun, 01 Mar 2020" => 18,
   #          "Tue, 01 Oct 2019" => 0 } } }
   #
-  def group_by_gender_and_date(resource_data)
-    resource_data.inject(autovivified_hash) do |by_gender_and_date, (group, resource)|
-      gender, date = *group
-      by_gender_and_date[gender][date] = resource
+  def group_by_date_and_gender(resource_data)
+    resource_data.inject(autovivified_hash) do |by_gender_and_date, ((date, gender), resource)|
+      by_gender_and_date[date][gender] = resource
       by_gender_and_date
-    end
-  end
-
-  def group_by_gender(resource_data)
-    resource_data.inject({}) do |by_gender, (gender, resource)|
-      by_gender[gender] = resource
-      by_gender
     end
   end
 

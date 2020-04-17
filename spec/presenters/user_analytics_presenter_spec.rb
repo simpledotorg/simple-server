@@ -128,16 +128,13 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
         expected_output = {
           registrations: {
-            gender => {
-              (request_date - 5.months) => 0,
-              (request_date - 4.months) => 0,
-              reg_date.to_date => 3,
-              (request_date - 2.months) => 0,
-              controlled_follow_up_date.to_date => 0,
-              request_date => 0,
-            }
-          },
-
+            (request_date - 5.months) => {},
+            (request_date - 4.months) => {},
+            reg_date.to_date => { gender => 3 },
+            (request_date - 2.months) => {},
+            controlled_follow_up_date.to_date => {},
+            request_date => {},
+            },
           follow_ups: {
             (request_date - 5.months) => {},
             (request_date - 4.months) => {},
@@ -194,7 +191,14 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
               (now - 1.months) => {},
               now => {},
             },
-            registrations: {}
+            registrations: {
+              (now - 5.months) => {},
+              (now - 4.months) => {},
+              (now - 3.months) => {},
+              (now - 2.months) => {},
+              (now - 1.months) => {},
+              now => {},
+            }
           }
         expect(data.dig(:monthly, :grouped_by_gender_and_date)).to eq(expected_output)
       end
