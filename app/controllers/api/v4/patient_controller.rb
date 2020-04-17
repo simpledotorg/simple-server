@@ -1,6 +1,6 @@
 class Api::V4::PatientController < PatientAPIController
-  before_action :validate_current_patient, except: [:request_otp, :activate]
-  before_action :authenticate, except: [:request_otp, :activate]
+  before_action :validate_current_patient, except: [:activate, :login]
+  before_action :authenticate, except: [:activate, :login]
 
   def activate
     passport = PatientBusinessIdentifier.find_by(
