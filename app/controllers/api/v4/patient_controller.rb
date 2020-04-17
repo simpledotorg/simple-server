@@ -5,7 +5,7 @@ class Api::V4::PatientController < APIController
   skip_before_action :validate_facility
   skip_before_action :validate_current_facility_belongs_to_users_facility_group
 
-  def request_otp
+  def activate
     passport = PatientBusinessIdentifier.find_by(
       identifier: passport_id,
       identifier_type: "simple_bp_passport"
@@ -30,7 +30,7 @@ class Api::V4::PatientController < APIController
     head :ok
   end
 
-  def activate
+  def login
     passport = PatientBusinessIdentifier.find_by(
       identifier: passport_id,
       identifier_type: "simple_bp_passport"
