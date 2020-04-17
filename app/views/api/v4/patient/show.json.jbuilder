@@ -1,11 +1,9 @@
 json.patient do
   json.patient_id @current_patient.id
   json.full_name @current_patient.full_name
-  json.age @current_patient.age
-  json.age_updated_at @current_patient.age_updated_at
+  json.age @current_patient.current_age
   json.gender @current_patient.gender
   json.status @current_patient.status
-  json.date_of_birth @current_patient.date_of_birth
   json.recorded_at @current_patient.recorded_at
   json.reminder_consent @current_patient.reminder_consent
 
@@ -21,7 +19,6 @@ json.patient do
       json.address_id address.id
       json.street_address address.street_address
       json.village_or_colony address.village_or_colony
-      json.zone address.zone
       json.district address.district
       json.zone address.zone
       json.state address.state
@@ -48,11 +45,9 @@ json.patient do
     json.medical_history do
       json.chronic_kidney_disease history.chronic_kidney_disease
       json.diabetes history.diabetes
-      json.diagnosed_with_hypertension history.diagnosed_with_hypertension
       json.hypertension history.hypertension
       json.prior_heart_attack history.prior_heart_attack
       json.prior_stroke history.prior_stroke
-      json.receiving_treatment_for_hypertension history.receiving_treatment_for_hypertension
     end
   end
 
@@ -90,6 +85,7 @@ json.patient do
 
   json.appointments @current_patient.appointments do |appointment|
     json.scheduled_date appointment.scheduled_date
+    json.status appointment.status
 
     json.facility do
       json.name appointment.facility.name
