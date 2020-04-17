@@ -9,6 +9,7 @@ class UserAnalyticsPresenter
   MONTHS_AGO = 6
   TROPHY_MILESTONES = [10, 25, 50, 100, 250, 500, 1_000, 2_000, 3_000, 4_000, 5_000]
   TROPHY_MILESTONE_INCR = 10_000
+  EXPIRE_STATISTICS_CACHE_IN = 15.minutes
 
   attr_reader :daily_period_list, :monthly_period_list
 
@@ -16,19 +17,11 @@ class UserAnalyticsPresenter
     @current_facility = current_facility
     @daily_period_list = period_list_as_dates(:day, DAYS_AGO)
     @monthly_period_list = period_list_as_dates(:month, MONTHS_AGO)
-
-    @last_refreshed_at =
-      Rails.cache.fetch(Rails.application.config.app_constants[:MATVIEW_REFRESH_TIME_KEY]).presence || Time.current
-
-    @user_analytics = UserAnalyticsQuery.new(current_facility,
-                                             days_ago: DAYS_AGO,
-                                             months_ago: MONTHS_AGO,
-                                             fetch_until: @last_refreshed_at)
   end
 
   def statistics
     @statistics ||=
-      Rails.cache.fetch(statistics_cache_key) do
+      Rails.cache.fetch(statistics_cache_key, expires_in: EXPIRE_STATISTICS_CACHE_IN) do
         {
           daily: daily_stats,
           monthly: monthly_stats,
@@ -36,8 +29,8 @@ class UserAnalyticsPresenter
           trophies: trophy_stats,
           metadata: {
             is_diabetes_enabled: false,
-            last_updated_at: I18n.l(@last_refreshed_at),
-            formatted_next_date: display_date(@last_refreshed_at + 1.day),
+            last_updated_at: I18n.l(Time.current),
+            formatted_next_date: display_date(Time.current + 1.day),
             today_string: I18n.t(:today_str)
           }
         }
@@ -63,54 +56,6 @@ class UserAnalyticsPresenter
   end
 
   private
-
-  def daily_follow_ups
-    last_n_periods(:day, DAYS_AGO).map do |date|
-      [date, @current_facility.followed_up(:day, date).count]
-    end.to_h
-  end
-
-  def monthly_follow_ups
-    last_n_periods(:month, MONTHS_AGO).map do |date|
-      [date.to_date, @current_facility.followed_up(:month, date.to_date).group(:gender).count]
-    end.to_h
-  end
-
-  def monthly_visits
-    last_n_periods(:month, MONTHS_AGO).map do |date|
-      [date.to_date, @current_facility.followed_up(:month, date.to_date).count]
-    end.to_h
-  end
-
-  def controlled_visits
-    last_n_periods(:month, MONTHS_AGO).map do |date|
-      [date.to_date, @current_facility.followed_up(:month, date.to_date).merge(BloodPressure.under_control).count]
-    end.to_h
-  end
-
-  def all_time_follow_ups
-    @current_facility.all_follow_ups.group(:gender).count
-  end
-
-  def daily_registrations
-    @current_facility
-      .registered_patients
-      .group_by_period(:day, :recorded_at, last: DAYS_AGO)
-      .count
-  end
-
-  def monthly_registrations
-    last_n_periods(:month, MONTHS_AGO).map do |date|
-      [date.to_date, @current_facility.registered_patients.where(recorded_at: date.all_month).group(:gender).count]
-    end.to_h
-  end
-
-  def all_time_registrations
-    @current_facility
-      .registered_patients
-      .group(:gender)
-      .count
-  end
 
   def daily_stats
     {
@@ -169,7 +114,7 @@ class UserAnalyticsPresenter
   #
   # i.e. increment by TROPHY_MILESTONE_INCR
   def trophy_stats
-    total_follow_ups = MyFacilities::FollowUpsQuery.new(facilities: @current_facility).total_follow_ups.count
+    total_follow_ups = @current_facility.all_follow_ups.count
 
     all_trophies =
       total_follow_ups > TROPHY_MILESTONES.last ?
@@ -188,29 +133,80 @@ class UserAnalyticsPresenter
     }
   end
 
-  #
-  # Groups by gender+date in the following format,
-  #
-  # { :grouped_by_gender_and_date =>
-  #    { "male" =>
-  #        { "Sun, 01 Mar 2020" => 21 ,
-  #          "Tue, 01 Oct 2019" => 0 },
-  #      "female" =>
-  #        { "Sun, 01 Mar 2020" => 18,
-  #          "Tue, 01 Oct 2019" => 0 } } }
-  #
-  def group_by_date_and_gender(resource_data)
-    resource_data.inject(autovivified_hash) do |by_gender_and_date, ((date, gender), resource)|
-      by_gender_and_date[date][gender] = resource
-      by_gender_and_date
+  def daily_follow_ups
+    fetch_for_date(:day, DAYS_AGO) do |date|
+      @current_facility
+        .patient_follow_ups(:day, date)
+        .count
     end
   end
 
-  def data_for_unavailable_dates(period_list)
-    period_list.map { |date| [date, 0] }.to_h
+  def daily_registrations
+    fetch_for_date(:day, DAYS_AGO) do |date|
+      @current_facility
+        .registered_patients
+        .where(recorded_at: date.all_day)
+        .count
+    end
+  end
+
+  def monthly_follow_ups
+    fetch_for_date(:month, MONTHS_AGO) do |date|
+      @current_facility
+        .patient_follow_ups(:month, date)
+        .group(:gender)
+        .count
+    end
+  end
+
+  def monthly_visits
+    fetch_for_date(:month, MONTHS_AGO) do |date|
+      @current_facility
+        .patient_follow_ups(:month, date)
+        .count
+    end
+  end
+
+  def controlled_visits
+    fetch_for_date(:month, MONTHS_AGO) do |date|
+      @current_facility
+        .patient_follow_ups(:month, date)
+        .merge(BloodPressure.under_control)
+        .count
+    end
+  end
+
+  def monthly_registrations
+    fetch_for_date(:month, MONTHS_AGO) do |date|
+      @current_facility
+        .registered_patients
+        .where(recorded_at: date.all_month)
+        .group(:gender)
+        .count
+    end
+  end
+
+  def all_time_follow_ups
+    @current_facility
+      .all_follow_ups
+      .group(:gender)
+      .count
+  end
+
+  def all_time_registrations
+    @current_facility
+      .registered_patients
+      .group(:gender)
+      .count
+  end
+
+  def fetch_for_date(period, last)
+    last_n_periods(period, last).map do |date|
+      [date.to_date, yield(date.to_date)]
+    end.to_h
   end
 
   def statistics_cache_key
-    "user_analytics/#{@current_facility.id}/#{@last_refreshed_at}"
+    "user_analytics/#{@current_facility.id}"
   end
 end

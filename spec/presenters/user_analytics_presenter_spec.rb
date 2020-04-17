@@ -387,7 +387,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
       stub_const("UserAnalyticsPresenter::MONTHS_AGO", 6)
     end
 
-    it 'merges together all genders and counts the resource for a given month date' do
+    pending 'merges together all genders and counts the resource for a given month date' do
       travel_to(reg_date) do
         user_analytics = described_class.new(current_facility)
         month_date = reg_date.beginning_of_month
