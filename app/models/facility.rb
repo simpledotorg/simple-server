@@ -48,13 +48,10 @@ class Facility < ApplicationRecord
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, to: :facility_group, allow_nil: true
+  delegate :followed_up, to: :patients, allow_nil: true
   delegate :all_follow_ups, to: :patients, allow_nil: true
 
   friendly_id :name, use: :slugged
-
-  def followed_up(period, date)
-    patients.followed_up(period, date)
-  end
 
   def cohort_analytics(period, prev_periods)
     query = CohortAnalyticsQuery.new(self.registered_patients)

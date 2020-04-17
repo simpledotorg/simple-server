@@ -78,14 +78,17 @@ class Patient < ApplicationRecord
     end
 
     def all_follow_ups
-      date_to_month_sql =
-        "(DATE_TRUNC('month', blood_pressures.recorded_at::timestamptz AT TIME ZONE 'Asia/Kolkata'))"
+      tz = Rails.application.config.country[:time_zone]
 
-      joins(:blood_pressures)
-        .select("DISTINCT ON (patients.id, blood_pressures.facility_id, #{date_to_month_sql}) *")
-        .select(date_to_month_sql)
-        .where("patients.recorded_at < #{date_to_month_sql}")
-        .order('patients.id', 'blood_pressures.facility_id', date_to_month_sql)
+      date_to_month_sql =
+        "(DATE_TRUNC('month', (blood_pressures.recorded_at::timestamptz) AT TIME ZONE #{tz})) AT TIME ZONE #{tz}"
+
+      from(joins(:blood_pressures)
+             .select("DISTINCT ON (patients.id, blood_pressures.facility_id, #{date_to_month_sql}) patients.*")
+             .select(date_to_month_sql)
+             .where("patients.recorded_at < #{date_to_month_sql}")
+             .order('patients.id', 'blood_pressures.facility_id', date_to_month_sql),
+           'patients')
     end
   end
 
