@@ -50,6 +50,16 @@ class Api::V4::Models
       }
     end
 
+    def login_patient
+      {
+        type: :object,
+        properties: {
+          access_token: { '$ref' => '#/definitions/non_empty_string' },
+          patient_id: { '$ref' => '#/definitions/uuid' }
+        }
+      }
+    end
+
     def user
       { type: :object,
         properties: {
@@ -99,6 +109,7 @@ class Api::V4::Models
         bcrypt_password: bcrypt_password,
         blood_sugar: blood_sugar,
         blood_sugars: array_of('blood_sugar'),
+        login_patient: login_patient,
         user: user,
         find_user: find_user,
         activate_user: activate_user

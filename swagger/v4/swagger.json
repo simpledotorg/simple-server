@@ -146,7 +146,7 @@
         }
       }
     },
-    "/patient/request_otp": {
+    "/patient/activate": {
       "post": {
         "summary": "Request an OTP to be sent to a patient",
         "tags": [
@@ -177,9 +177,9 @@
         }
       }
     },
-    "/patient/activate": {
+    "/patient/login": {
       "post": {
-        "summary": "Activate a patient with BP Passport UUID and OTP",
+        "summary": "Log in a patient with BP Passport UUID and OTP",
         "tags": [
           "Patient"
         ],
@@ -207,11 +207,8 @@
             "schema": {
               "type": "object",
               "properties": {
-                "access_token": {
-                  "$ref": "#/definitions/non_empty_string"
-                },
-                "patient_id": {
-                  "$ref": "#/definitions/uuid"
+                "patient": {
+                  "$ref": "#/definitions/login_patient"
                 }
               }
             }
@@ -501,6 +498,17 @@
       ],
       "items": {
         "$ref": "#/definitions/blood_sugar"
+      }
+    },
+    "login_patient": {
+      "type": "object",
+      "properties": {
+        "access_token": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        }
       }
     },
     "user": {
