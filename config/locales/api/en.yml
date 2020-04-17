@@ -15,6 +15,8 @@ en:
     request_otp: '<#> %{otp} is your Simple verification code\n%{app_signature}'
     appointment_reminders:
       missed_visit_sms_reminder: 'Our staff at %{facility_name} are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre. Contact your ANM or ASHA.'
+    patient_request_otp: '%{otp} is your BP Passport verification code'
+
   analytics:
     followup_patients: "How many follow-up patients visited %{facility_name}?"
     patients_enrolled: "How many new patients are enrolled at %{facility_name}?"

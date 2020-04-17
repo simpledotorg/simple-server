@@ -55,6 +55,34 @@ class Api::V4::Schema
       sync_to_user_response(:blood_sugars)
     end
 
+    def patient_activate_request
+      {
+        type: :object,
+        properties: {
+          passport_id: { '$ref' => '#/definitions/uuid' }
+        }
+      }
+    end
+
+    def patient_login_request
+      {
+        type: :object,
+        properties: {
+          passport_id: { '$ref' => '#/definitions/uuid' },
+          otp: { '$ref' => '#/definitions/non_empty_string' }
+        }
+      }
+    end
+
+    def patient_login_response
+      {
+        type: :object,
+        properties: {
+          patient: { '$ref' => '#/definitions/login_patient' }
+        }
+      }
+    end
+
     def user_find_request
       { type: :object,
         properties: { phone_number: { '$ref' => '#/definitions/non_empty_string'} },

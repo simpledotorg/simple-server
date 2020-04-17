@@ -136,6 +136,11 @@ Rails.application.routes.draw do
         post 'sync', to: 'blood_sugars#sync_from_user'
       end
 
+      resource :patient, only: [:show] do
+        post 'activate', to: 'patient#activate'
+        post 'login', to: 'patient#login'
+      end
+
       scope :users do
         post 'find', to: 'users#find'
         post 'activate', to: 'users#activate'
