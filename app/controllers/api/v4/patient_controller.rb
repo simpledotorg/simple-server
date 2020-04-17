@@ -66,8 +66,8 @@ class Api::V4::PatientController < PatientAPIController
   def access_token_response(authentication)
     {
       patient: {
-        access_token: authentication.access_token,
-        patient_id: authentication.patient.id
+        id: authentication.patient.id,
+        access_token: authentication.access_token
       }
     }
   end
