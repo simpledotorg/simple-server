@@ -50,6 +50,8 @@ class Patient < ApplicationRecord
            -> { where(identifier_type: 'simple_bp_passport').order(device_created_at: :desc) },
            class_name: 'PatientBusinessIdentifier'
 
+  has_many :current_prescription_drugs, -> { where(is_deleted: false) }, class_name: 'PrescriptionDrug'
+
   attribute :call_result, :string
 
   enum could_not_contact_reasons: {

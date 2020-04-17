@@ -40,6 +40,11 @@ describe Patient, type: :model do
 
     it { is_expected.to have_many(:latest_blood_pressures).order(recorded_at: :desc).class_name('BloodPressure') }
     it { is_expected.to have_many(:latest_blood_sugars).order(recorded_at: :desc).class_name('BloodSugar') }
+    specify do
+      is_expected.to have_many(:current_prescription_drugs)
+                       .conditions(is_deleted: false)
+                       .class_name('PrescriptionDrug')
+    end
 
     specify do
       is_expected.to have_many(:latest_scheduled_appointments)
