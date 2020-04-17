@@ -55,7 +55,14 @@ class Api::V4::Models
         type: :object,
         properties: {
           id: { '$ref' => '#/definitions/uuid' },
-          access_token: { '$ref' => '#/definitions/non_empty_string' }
+          access_token: { '$ref' => '#/definitions/non_empty_string' },
+          passport: {
+            type: :object,
+            properties: {
+              id: { '$ref' => '#/definitions/uuid' },
+              shortcode: { '$ref' => '#/definitions/non_empty_string' }
+            }
+          }
         }
       }
     end

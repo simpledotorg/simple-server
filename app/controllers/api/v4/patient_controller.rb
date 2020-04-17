@@ -66,7 +66,11 @@ class Api::V4::PatientController < PatientAPIController
     {
       patient: {
         id: authentication.patient.id,
-        access_token: authentication.access_token
+        access_token: authentication.access_token,
+        passport: {
+          id: authentication.patient_business_identifier.identifier,
+          shortcode: authentication.patient_business_identifier.shortcode
+        }
       }
     }
   end

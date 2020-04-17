@@ -50,7 +50,11 @@ RSpec.describe Api::V4::PatientController, type: :controller do
       expect(response_data).to match(
         "patient" => {
           "id" => patient.id,
-          "access_token" => passport_authentication.reload.access_token
+          "access_token" => passport_authentication.reload.access_token,
+          "passport" => {
+            "id" => bp_passport.identifier,
+            "shortcode" => bp_passport.shortcode
+          }
         }
       )
     end
