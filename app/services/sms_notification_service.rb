@@ -22,6 +22,10 @@ class SmsNotificationService
     send_sms(body, callback_url)
   end
 
+  def send_patient_request_otp_sms(otp)
+    send_sms(I18n.t('sms.patient_request_otp', otp: otp))
+  end
+
   private
 
   attr_reader :sender_phone_number, :recipient_number, :client

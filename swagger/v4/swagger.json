@@ -146,6 +146,79 @@
         }
       }
     },
+    "/patient/activate": {
+      "post": {
+        "summary": "Request an OTP to be sent to a patient",
+        "tags": [
+          "Patient"
+        ],
+        "parameters": [
+          {
+            "name": "request_body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "passport_id": {
+                  "$ref": "#/definitions/uuid"
+                }
+              }
+            },
+            "description": "Patient's BP Passport UUID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Patient is found and an OTP is sent to their phone"
+          },
+          "404": {
+            "description": "Incorrect passport id"
+          }
+        }
+      }
+    },
+    "/patient/login": {
+      "post": {
+        "summary": "Log in a patient with BP Passport UUID and OTP",
+        "tags": [
+          "Patient"
+        ],
+        "parameters": [
+          {
+            "name": "request_body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "passport_id": {
+                  "$ref": "#/definitions/uuid"
+                },
+                "otp": {
+                  "$ref": "#/definitions/non_empty_string"
+                }
+              }
+            },
+            "description": "Patient's BP Passport UUID and OTP"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Correct OTP is submitted and API credentials are returned",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "patient": {
+                  "$ref": "#/definitions/login_patient"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Incorrect BP Passport UUID or OTP"
+          }
+        }
+      }
+    },
     "/users/find": {
       "post": {
         "summary": "Find a existing user",
@@ -425,6 +498,17 @@
       ],
       "items": {
         "$ref": "#/definitions/blood_sugar"
+      }
+    },
+    "login_patient": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "access_token": {
+          "$ref": "#/definitions/non_empty_string"
+        }
       }
     },
     "user": {
