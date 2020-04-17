@@ -503,11 +503,11 @@
     "login_patient": {
       "type": "object",
       "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
         "access_token": {
           "$ref": "#/definitions/non_empty_string"
-        },
-        "patient_id": {
-          "$ref": "#/definitions/uuid"
         }
       }
     },
