@@ -78,14 +78,14 @@ class Api::V4::Models
           status: { type: :string, enum: Patient::STATUSES },
           recorded_at: { '$ref' => '#/definitions/timestamp' },
           reminder_consent: { type: :string, enum: Patient.reminder_consents.keys },
-          phone_numbers: array_of('patient_phone_number'),
-          address: { '$ref' => '#/definitions/patient_address' },
-          registration_facility: { '$ref' => '#/definitions/patient_facility' },
-          medical_history: { '$ref' => '#/definitions/patient_medical_history' },
-          blood_pressures: array_of('patient_blood_pressure'),
-          blood_sugars: array_of('patient_blood_sugar'),
-          appointments: array_of('patient_appointment'),
-          medications: array_of('patient_medication'),
+          phone_numbers: { type: ['null', :array], items: patient_phone_number },
+          address: patient_address,
+          registration_facility: patient_facility,
+          medical_history: patient_medical_history,
+          blood_pressures: { type: ['null', :array], items: patient_blood_pressure },
+          blood_sugars: { type: ['null', :array], items: patient_blood_sugar },
+          appointments: { type: ['null', :array], items: patient_appointment },
+          medications: { type: ['null', :array], items: patient_medication }
 
         }
       }
@@ -121,6 +121,7 @@ class Api::V4::Models
       {
         type: :object,
         properties: {
+          facility_id: { '$ref' => '#/definitions/uuid' },
           name: { '$ref' => '#/definitions/non_empty_string' },
           street_address: { type: [:string, 'null'] },
           village_or_colony: { type: [:string, 'null'] },
@@ -152,7 +153,7 @@ class Api::V4::Models
           systolic: { type: :integer },
           diastolic: { type: :integer },
           recorded_at: { '$ref' => '#/definitions/timestamp' },
-          facility: { '$ref' => '#/definitions/patient_facility' }
+          facility: patient_facility
         }
       }
     end
@@ -164,7 +165,7 @@ class Api::V4::Models
           blood_sugar_value: { type: :number },
           blood_sugar_type: { type: :string, enum: BloodSugar.blood_sugar_types.keys },
           recorded_at: { '$ref' => '#/definitions/timestamp' },
-          facility: { '$ref' => '#/definitions/patient_facility' }
+          facility: patient_facility
         }
       }
     end
@@ -175,7 +176,7 @@ class Api::V4::Models
         properties: {
           scheduled_date: { type: :string, format: :date },
           status: { type: :string, enum: Appointment.statuses.keys },
-          facility: { '$ref' => '#/definitions/patient_facility' }
+          facility: patient_facility
         }
       }
     end
@@ -243,14 +244,6 @@ class Api::V4::Models
         blood_sugars: array_of('blood_sugar'),
         login_patient: login_patient,
         patient: patient,
-        patient_phone_number: patient_phone_number,
-        patient_address: patient_address,
-        patient_facility: patient_facility,
-        patient_medical_history: patient_medical_history,
-        patient_blood_pressure: patient_blood_pressure,
-        patient_blood_sugar: patient_blood_sugar,
-        patient_appointment: patient_appointment,
-        patient_medication: patient_medication,
         user: user,
         find_user: find_user,
         activate_user: activate_user

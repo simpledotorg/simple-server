@@ -30,6 +30,7 @@ json.patient do
   json.registration_facility do
     facility = @current_patient.registration_facility
 
+    json.facility_id facility.id
     json.name facility.name
     json.street_address facility.street_address
     json.village_or_colony facility.village_or_colony
@@ -57,6 +58,7 @@ json.patient do
     json.recorded_at blood_pressure.recorded_at
 
     json.facility do
+      json.facility_id blood_pressure.facility.id
       json.name blood_pressure.facility.name
       json.street_address blood_pressure.facility.street_address
       json.village_or_colony blood_pressure.facility.village_or_colony
@@ -73,6 +75,7 @@ json.patient do
     json.recorded_at blood_sugar.recorded_at
 
     json.facility do
+      json.facility_id blood_sugar.facility.id
       json.name blood_sugar.facility.name
       json.street_address blood_sugar.facility.street_address
       json.village_or_colony blood_sugar.facility.village_or_colony
@@ -88,6 +91,7 @@ json.patient do
     json.status appointment.status
 
     json.facility do
+      json.facility_id appointment.facility.id
       json.name appointment.facility.name
       json.street_address appointment.facility.street_address
       json.village_or_colony appointment.facility.village_or_colony

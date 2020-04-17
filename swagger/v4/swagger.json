@@ -609,17 +609,158 @@
             "array"
           ],
           "items": {
-            "$ref": "#/definitions/patient_phone_number"
+            "type": "object",
+            "properties": {
+              "phone_number_id": {
+                "$ref": "#/definitions/uuid"
+              },
+              "number": {
+                "$ref": "#/definitions/non_empty_string"
+              }
+            }
           }
         },
         "address": {
-          "$ref": "#/definitions/patient_address"
+          "type": "object",
+          "properties": {
+            "address_id": {
+              "$ref": "#/definitions/uuid"
+            },
+            "street_address": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "village_or_colony": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "district": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "zone": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "state": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "country": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "pin": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
         },
         "registration_facility": {
-          "$ref": "#/definitions/patient_facility"
+          "type": "object",
+          "properties": {
+            "facility_id": {
+              "$ref": "#/definitions/uuid"
+            },
+            "name": {
+              "$ref": "#/definitions/non_empty_string"
+            },
+            "street_address": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "village_or_colony": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "district": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "state": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "country": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "pin": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
         },
         "medical_history": {
-          "$ref": "#/definitions/patient_medical_history"
+          "type": "object",
+          "properties": {
+            "chronic_kidney_disease": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            },
+            "diabetes": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            },
+            "hypertension": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            },
+            "prior_heart_attack": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            },
+            "prior_stroke": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            }
+          }
         },
         "blood_pressures": {
           "type": [
@@ -627,7 +768,65 @@
             "array"
           ],
           "items": {
-            "$ref": "#/definitions/patient_blood_pressure"
+            "type": "object",
+            "properties": {
+              "systolic": {
+                "type": "integer"
+              },
+              "diastolic": {
+                "type": "integer"
+              },
+              "recorded_at": {
+                "$ref": "#/definitions/timestamp"
+              },
+              "facility": {
+                "type": "object",
+                "properties": {
+                  "facility_id": {
+                    "$ref": "#/definitions/uuid"
+                  },
+                  "name": {
+                    "$ref": "#/definitions/non_empty_string"
+                  },
+                  "street_address": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "village_or_colony": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "district": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "state": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "country": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "pin": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              }
+            }
           }
         },
         "blood_sugars": {
@@ -636,7 +835,71 @@
             "array"
           ],
           "items": {
-            "$ref": "#/definitions/patient_blood_sugar"
+            "type": "object",
+            "properties": {
+              "blood_sugar_value": {
+                "type": "number"
+              },
+              "blood_sugar_type": {
+                "type": "string",
+                "enum": [
+                  "random",
+                  "post_prandial",
+                  "fasting",
+                  "hba1c"
+                ]
+              },
+              "recorded_at": {
+                "$ref": "#/definitions/timestamp"
+              },
+              "facility": {
+                "type": "object",
+                "properties": {
+                  "facility_id": {
+                    "$ref": "#/definitions/uuid"
+                  },
+                  "name": {
+                    "$ref": "#/definitions/non_empty_string"
+                  },
+                  "street_address": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "village_or_colony": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "district": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "state": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "country": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "pin": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              }
+            }
           }
         },
         "appointments": {
@@ -645,7 +908,68 @@
             "array"
           ],
           "items": {
-            "$ref": "#/definitions/patient_appointment"
+            "type": "object",
+            "properties": {
+              "scheduled_date": {
+                "type": "string",
+                "format": "date"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "scheduled",
+                  "cancelled",
+                  "visited"
+                ]
+              },
+              "facility": {
+                "type": "object",
+                "properties": {
+                  "facility_id": {
+                    "$ref": "#/definitions/uuid"
+                  },
+                  "name": {
+                    "$ref": "#/definitions/non_empty_string"
+                  },
+                  "street_address": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "village_or_colony": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "district": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "state": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "country": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "pin": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              }
+            }
           }
         },
         "medications": {
@@ -654,235 +978,22 @@
             "array"
           ],
           "items": {
-            "$ref": "#/definitions/patient_medication"
+            "type": "object",
+            "properties": {
+              "name": {
+                "$ref": "#/definitions/non_empty_string"
+              },
+              "dosage": {
+                "type": "string"
+              },
+              "rxnorm_code": {
+                "type": "string"
+              },
+              "is_protocol_drug": {
+                "type": "boolean"
+              }
+            }
           }
-        }
-      }
-    },
-    "patient_phone_number": {
-      "type": "object",
-      "properties": {
-        "phone_number_id": {
-          "$ref": "#/definitions/uuid"
-        },
-        "number": {
-          "$ref": "#/definitions/non_empty_string"
-        }
-      }
-    },
-    "patient_address": {
-      "type": "object",
-      "properties": {
-        "address_id": {
-          "$ref": "#/definitions/uuid"
-        },
-        "street_address": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "village_or_colony": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "district": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "zone": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "state": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "country": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "pin": {
-          "type": [
-            "string",
-            "null"
-          ]
-        }
-      }
-    },
-    "patient_facility": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "$ref": "#/definitions/non_empty_string"
-        },
-        "street_address": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "village_or_colony": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "district": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "state": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "country": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "pin": {
-          "type": [
-            "string",
-            "null"
-          ]
-        }
-      }
-    },
-    "patient_medical_history": {
-      "type": "object",
-      "properties": {
-        "chronic_kidney_disease": {
-          "type": "string",
-          "enum": [
-            "yes",
-            "no",
-            "unknown"
-          ]
-        },
-        "diabetes": {
-          "type": "string",
-          "enum": [
-            "yes",
-            "no",
-            "unknown"
-          ]
-        },
-        "hypertension": {
-          "type": "string",
-          "enum": [
-            "yes",
-            "no",
-            "unknown"
-          ]
-        },
-        "prior_heart_attack": {
-          "type": "string",
-          "enum": [
-            "yes",
-            "no",
-            "unknown"
-          ]
-        },
-        "prior_stroke": {
-          "type": "string",
-          "enum": [
-            "yes",
-            "no",
-            "unknown"
-          ]
-        }
-      }
-    },
-    "patient_blood_pressure": {
-      "type": "object",
-      "properties": {
-        "systolic": {
-          "type": "integer"
-        },
-        "diastolic": {
-          "type": "integer"
-        },
-        "recorded_at": {
-          "$ref": "#/definitions/timestamp"
-        },
-        "facility": {
-          "$ref": "#/definitions/patient_facility"
-        }
-      }
-    },
-    "patient_blood_sugar": {
-      "type": "object",
-      "properties": {
-        "blood_sugar_value": {
-          "type": "number"
-        },
-        "blood_sugar_type": {
-          "type": "string",
-          "enum": [
-            "random",
-            "post_prandial",
-            "fasting",
-            "hba1c"
-          ]
-        },
-        "recorded_at": {
-          "$ref": "#/definitions/timestamp"
-        },
-        "facility": {
-          "$ref": "#/definitions/patient_facility"
-        }
-      }
-    },
-    "patient_appointment": {
-      "type": "object",
-      "properties": {
-        "scheduled_date": {
-          "type": "string",
-          "format": "date"
-        },
-        "status": {
-          "type": "string",
-          "enum": [
-            "scheduled",
-            "cancelled",
-            "visited"
-          ]
-        },
-        "facility": {
-          "$ref": "#/definitions/patient_facility"
-        }
-      }
-    },
-    "patient_medication": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "$ref": "#/definitions/non_empty_string"
-        },
-        "dosage": {
-          "type": "string"
-        },
-        "rxnorm_code": {
-          "type": "string"
-        },
-        "is_protocol_drug": {
-          "type": "boolean"
         }
       }
     },
