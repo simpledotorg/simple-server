@@ -85,4 +85,11 @@ json.patient do
       json.pin appointment.facility.pin
     end
   end
+
+  json.medications @current_patient.current_prescription_drugs do |drug|
+    json.name drug.name
+    json.dosage drug.dosage
+    json.rxnorm_code drug.rxnorm_code
+    json.is_protocol_drug drug.is_protocol_drug
+  end
 end
