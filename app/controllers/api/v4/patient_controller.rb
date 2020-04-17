@@ -42,7 +42,6 @@ class Api::V4::PatientController < PatientAPIController
   end
 
   def show
-    head :ok
   end
 
   private
