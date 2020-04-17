@@ -49,8 +49,8 @@ RSpec.describe Api::V4::PatientController, type: :controller do
       response_data = JSON.parse(response.body)
       expect(response_data).to match(
         "patient" => {
-          "access_token" => passport_authentication.reload.access_token,
-          "patient_id" => patient.id
+          "id" => patient.id,
+          "access_token" => passport_authentication.reload.access_token
         }
       )
     end

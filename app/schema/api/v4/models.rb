@@ -54,8 +54,8 @@ class Api::V4::Models
       {
         type: :object,
         properties: {
-          access_token: { '$ref' => '#/definitions/non_empty_string' },
-          patient_id: { '$ref' => '#/definitions/uuid' }
+          id: { '$ref' => '#/definitions/uuid' },
+          access_token: { '$ref' => '#/definitions/non_empty_string' }
         }
       }
     end
