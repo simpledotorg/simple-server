@@ -49,7 +49,6 @@ class Facility < ApplicationRecord
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, to: :facility_group, allow_nil: true
   delegate :followed_up, to: :patients, allow_nil: true
-  delegate :all_follow_ups, to: :patients, allow_nil: true
 
   friendly_id :name, use: :slugged
 
@@ -73,6 +72,10 @@ class Facility < ApplicationRecord
 
     return {} if results.blank?
     results.inject(&:deep_merge)
+  end
+
+  def all_follow_ups
+    Patient.from(Patient.all_follow_ups.where(blood_pressures: { facility: self }), 'patients')
   end
 
   def self.parse_facilities(file_contents)

@@ -76,6 +76,10 @@ class UserAnalyticsPresenter
     end.to_h
   end
 
+  def all_time_follow_ups
+    @current_facility.all_follow_ups.group(:gender).count
+  end
+
   def daily_registrations
     @user_analytics.daily_registrations
   end
@@ -120,8 +124,7 @@ class UserAnalyticsPresenter
     {
       grouped_by_gender:
         {
-          follow_ups:
-            group_by_gender(@user_analytics.all_time_follow_ups),
+          follow_ups: all_time_follow_ups,
 
           registrations:
             group_by_gender(@user_analytics.all_time_registrations)
