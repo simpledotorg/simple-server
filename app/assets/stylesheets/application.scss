@@ -768,7 +768,9 @@ th sup {
       background: #F1DBFF;
       color: #BE72E3;
       border-radius: 100px;
-      padding: 2px 10px;
+      padding: 2px;
+      width: 3.5em;
+      display: block;
     }
 
     .row-total td.type-percent em {
