@@ -22,7 +22,6 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
                                     recorded_at: follow_up_date))
         end
 
-        LatestBloodPressuresPerPatientPerDay.refresh
         stub_const("UserAnalyticsPresenter::DAYS_AGO", 6)
       end
 
@@ -115,8 +114,6 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
                                     recorded_at: controlled_follow_up_date))
         end
 
-        LatestBloodPressuresPerPatientPerMonth.refresh
-
         stub_const("UserAnalyticsPresenter::MONTHS_AGO", 6)
       end
 
@@ -200,6 +197,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
               now => {},
             }
           }
+
         expect(data.dig(:monthly, :grouped_by_gender_and_date)).to eq(expected_output)
       end
     end
@@ -223,7 +221,6 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
                  user: current_user,
                  recorded_at: follow_up_date)
         end
-        LatestBloodPressuresPerPatientPerDay.refresh
       end
 
       it 'has data grouped by gender' do
@@ -312,8 +309,6 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
           end
         end
 
-        LatestBloodPressuresPerPatientPerDay.refresh
-
         data = described_class.new(current_facility).statistics
 
         expected_output = {
@@ -356,45 +351,6 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
     it 'displays the percentage rounded up' do
       expect(described_class.new(current_facility).display_percentage(22, 7)).to eq("314%")
-    end
-  end
-
-  describe '#stats_across_genders_for_month' do
-    let(:reg_date) { Date.new(2018, 4, 8) }
-
-    before do
-      create(:patient,
-             registration_facility: current_facility,
-             recorded_at: reg_date - 1.month,
-             gender: 'male')
-      create(:patient,
-             registration_facility: current_facility,
-             recorded_at: reg_date - 1.month,
-             gender: 'female')
-      create(:patient,
-             registration_facility: current_facility,
-             recorded_at: reg_date,
-             gender: 'female')
-      create(:patient,
-             registration_facility: current_facility,
-             recorded_at: reg_date + 1.weeks,
-             gender: 'female')
-      create(:patient,
-             registration_facility: current_facility,
-             recorded_at: reg_date + 1.weeks,
-             gender: 'transgender')
-
-      stub_const("UserAnalyticsPresenter::MONTHS_AGO", 6)
-    end
-
-    pending 'merges together all genders and counts the resource for a given month date' do
-      travel_to(reg_date) do
-        user_analytics = described_class.new(current_facility)
-        month_date = reg_date.beginning_of_month
-
-        expect(user_analytics.stats_across_genders_for_month(:registrations, month_date)).to eq(1)
-        expect(user_analytics.stats_across_genders_for_month(:registrations, month_date - 1.month)).to eq(2)
-      end
     end
   end
 end

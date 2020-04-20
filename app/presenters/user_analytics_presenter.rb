@@ -37,17 +37,6 @@ class UserAnalyticsPresenter
       end
   end
 
-  def stats_across_genders_for_month(resource, month_date)
-    data_for_resource = statistics.dig(:monthly, :grouped_by_gender_and_date, resource).values
-
-    sum_across_gender_and_months =
-      data_for_resource.inject do |by_month, count_for_gender|
-        by_month.merge(count_for_gender) { |_, v1, v2| v1 + v2 }
-      end
-
-    sum_across_gender_and_months&.dig(month_date)
-  end
-
   def display_percentage(numerator, denominator)
     return '0%' if denominator.nil? || denominator.zero? || numerator.nil?
     percentage = (numerator * 100.0) / denominator
@@ -71,8 +60,8 @@ class UserAnalyticsPresenter
     {
       grouped_by_gender_and_date:
         {
-          follow_ups: monthly_follow_ups,
-          registrations: monthly_registrations
+          follow_ups: monthly_follow_ups_by_gender,
+          registrations: monthly_registrations_by_gender
         },
 
       grouped_by_date:
@@ -87,8 +76,8 @@ class UserAnalyticsPresenter
     {
       grouped_by_gender:
         {
-          follow_ups: all_time_follow_ups,
-          registrations: all_time_registrations
+          follow_ups: all_time_follow_ups_by_gender,
+          registrations: all_time_registrations_by_gender
         }
     }
   end
@@ -114,15 +103,15 @@ class UserAnalyticsPresenter
   #
   # i.e. increment by TROPHY_MILESTONE_INCR
   def trophy_stats
-    total_follow_ups = @current_facility.all_follow_ups.count
+    all_time_follow_ups = all_time_follow_ups_by_gender.values.sum
 
     all_trophies =
-      total_follow_ups > TROPHY_MILESTONES.last ?
+      all_time_follow_ups > TROPHY_MILESTONES.last ?
         [*TROPHY_MILESTONES,
-         *(TROPHY_MILESTONE_INCR..(total_follow_ups + TROPHY_MILESTONE_INCR)).step(TROPHY_MILESTONE_INCR)] :
+         *(TROPHY_MILESTONE_INCR..(all_time_follow_ups + TROPHY_MILESTONE_INCR)).step(TROPHY_MILESTONE_INCR)] :
         TROPHY_MILESTONES
 
-    unlocked_trophies_until = all_trophies.index { |v| total_follow_ups < v }
+    unlocked_trophies_until = all_trophies.index { |v| all_time_follow_ups < v }
 
     {
       locked_trophy_value:
@@ -150,21 +139,20 @@ class UserAnalyticsPresenter
     end
   end
 
-  def monthly_follow_ups
-    fetch_for_date(:month, MONTHS_AGO) do |date|
-      @current_facility
-        .patient_follow_ups(:month, date)
-        .group(:gender)
-        .count
-    end
+  def monthly_follow_ups_by_gender
+    @monthly_follow_ups_by_gender ||=
+      fetch_for_date(:month, MONTHS_AGO) do |date|
+        @current_facility
+          .patient_follow_ups(:month, date)
+          .group(:gender)
+          .count
+      end
   end
 
   def monthly_visits
-    fetch_for_date(:month, MONTHS_AGO) do |date|
-      @current_facility
-        .patient_follow_ups(:month, date)
-        .count
-    end
+    @monthly_follow_ups_by_gender.map do |date, data|
+      [date, data.values.sum]
+    end.to_h
   end
 
   def controlled_visits
@@ -176,7 +164,7 @@ class UserAnalyticsPresenter
     end
   end
 
-  def monthly_registrations
+  def monthly_registrations_by_gender
     fetch_for_date(:month, MONTHS_AGO) do |date|
       @current_facility
         .registered_patients
@@ -186,18 +174,20 @@ class UserAnalyticsPresenter
     end
   end
 
-  def all_time_follow_ups
-    @current_facility
-      .all_follow_ups
-      .group(:gender)
-      .count
+  def all_time_follow_ups_by_gender
+    @all_time_follow_ups ||=
+      @current_facility
+        .all_follow_ups
+        .group(:gender)
+        .count
   end
 
-  def all_time_registrations
-    @current_facility
-      .registered_patients
-      .group(:gender)
-      .count
+  def all_time_registrations_by_gender
+    @all_time_registrations ||=
+      @current_facility
+        .registered_patients
+        .group(:gender)
+        .count
   end
 
   def fetch_for_date(period, last)
