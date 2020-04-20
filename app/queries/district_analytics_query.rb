@@ -41,30 +41,22 @@ class DistrictAnalyticsQuery
   end
 
   def follow_up_patients_by_period
-    #
-    # this is similar to what the group_by_period query already gives us,
-    # however, groupdate does not allow us to use these "groups" in a where clause
-    # hence, we've replicated its grouping behaviour in order to remove the patients
-    # that were registered prior to the period bucket
-    #
-    date_truncate_string =
-      "(DATE_TRUNC('#{@period}', blood_pressures.recorded_at::timestamptz AT TIME ZONE '#{Groupdate.time_zone || 'Etc/UTC'}'))"
-
     @follow_up_patients_by_period ||=
-      BloodPressure
-        .left_outer_joins(:user)
-        .left_outer_joins(:patient)
-        .joins(:facility)
-        .where(facilities: { id: facilities })
-        .where(deleted_at: nil)
-        .group('facilities.id')
-        .group_by_period(@period, 'blood_pressures.recorded_at')
-        .where("patients.recorded_at < #{date_truncate_string}")
-        .order('facilities.id')
-        .distinct
-        .count('patients.id')
+      dates_for_periods(@period,
+                        @prev_periods,
+                        from_time: @from_time,
+                        include_current_period: @include_current_period).map do |date|
 
-    group_by_facility_and_date(@follow_up_patients_by_period, :follow_up_patients_by_period)
+        Patient
+          .follow_ups(@period, date)
+          .where(blood_pressures: { facility: facilities })
+          .group('blood_pressures.facility_id')
+          .count
+          .map { |facility_id, count| [[facility_id, date], count] }
+          .to_h
+      end
+
+    group_by_facility_and_date(@follow_up_patients_by_period.inject(:merge), :follow_up_patients_by_period)
   end
 
   def total_calls_made_by_period
