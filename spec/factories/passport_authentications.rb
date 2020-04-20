@@ -4,9 +4,8 @@ FactoryBot.define do
     otp_valid_until { 3.minutes.from_now }
     access_token { SecureRandom.hex(32) }
 
-    patient
     patient_business_identifier do
-      create(:patient_business_identifier, patient: patient, identifier_type: 'simple_bp_passport')
+      create(:patient_business_identifier, identifier_type: 'simple_bp_passport')
     end
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200410201924) do
+ActiveRecord::Schema.define(version: 20200416091918) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -303,10 +303,10 @@ ActiveRecord::Schema.define(version: 20200410201924) do
     t.string "access_token", null: false
     t.string "otp", null: false
     t.datetime "otp_valid_until", null: false
-    t.uuid "patient_id", null: false
     t.uuid "patient_business_identifier_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["patient_business_identifier_id"], name: "index_passport_auth_on_business_id"
   end
 
   create_table "patient_business_identifiers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

@@ -4,16 +4,22 @@ RSpec.describe PassportAuthentication, type: :model do
   subject(:auth) { PassportAuthentication.new }
 
   describe 'Associations' do
-    it { should belong_to(:patient) }
-    it { should belong_to(:patient_business_identifier) }
+    it { is_expected.to belong_to(:patient_business_identifier) }
+
+    describe '#patient' do
+      before { auth.patient_business_identifier = create :patient_business_identifier }
+
+      it 'delegates #patient to patient_business_identifier' do
+        expect(auth.patient).to eq(auth.patient_business_identifier.patient)
+      end
+    end
   end
 
   describe 'Validations' do
-    it { should validate_presence_of(:access_token) }
-    it { should validate_presence_of(:otp) }
-    it { should validate_presence_of(:otp_valid_until) }
-    it { should validate_presence_of(:patient) }
-    it { should validate_presence_of(:patient_business_identifier) }
+    it { is_expected.to validate_presence_of(:access_token) }
+    it { is_expected.to validate_presence_of(:otp) }
+    it { is_expected.to validate_presence_of(:otp_valid_until) }
+    it { is_expected.to validate_presence_of(:patient_business_identifier) }
   end
 
   describe 'Access Token' do

@@ -1,4 +1,7 @@
 class Api::V4::PatientController < PatientAPIController
+  skip_before_action :validate_current_patient, only: [:activate, :login]
+  skip_before_action :authenticate, only: [:activate, :login]
+
   def activate
     passport = PatientBusinessIdentifier.find_by(
       identifier: passport_id,
@@ -7,10 +10,7 @@ class Api::V4::PatientController < PatientAPIController
     patient  = passport&.patient
     return head :not_found unless patient.present? && patient.latest_mobile_number.present?
 
-    authentication = PassportAuthentication.find_or_create_by!(
-      patient: patient,
-      patient_business_identifier: passport
-    )
+    authentication = PassportAuthentication.find_or_create_by!(patient_business_identifier: passport)
 
     unless authentication.otp_valid?
       authentication.reset_otp
@@ -41,6 +41,9 @@ class Api::V4::PatientController < PatientAPIController
     end
   end
 
+  def show
+  end
+
   private
 
   def passport_id
@@ -55,7 +58,11 @@ class Api::V4::PatientController < PatientAPIController
     {
       patient: {
         id: authentication.patient.id,
-        access_token: authentication.access_token
+        access_token: authentication.access_token,
+        passport: {
+          id: authentication.patient_business_identifier.identifier,
+          shortcode: authentication.patient_business_identifier.shortcode
+        }
       }
     }
   end

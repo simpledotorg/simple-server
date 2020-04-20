@@ -83,6 +83,15 @@ class Api::V4::Schema
       }
     end
 
+    def patient_response
+      {
+        type: :object,
+        properties: {
+          patient: { '$ref' => '#/definitions/patient' }
+        }
+      }
+    end
+
     def user_find_request
       { type: :object,
         properties: { phone_number: { '$ref' => '#/definitions/non_empty_string'} },
