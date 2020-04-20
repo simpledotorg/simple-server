@@ -106,7 +106,6 @@ RSpec.describe Api::V4::PatientController, type: :controller do
 
     it 'returns a successful response' do
       get :show
-
       expect(response.status).to eq(200)
     end
 
@@ -121,7 +120,6 @@ RSpec.describe Api::V4::PatientController, type: :controller do
       end
     end
 
-
     context 'when Authorization header is incorrect' do
       before do
         request.headers['Authorization'] = "Bearer nope-wrong-token-sorry"
@@ -129,7 +127,6 @@ RSpec.describe Api::V4::PatientController, type: :controller do
 
       it 'returns an unauthorized response' do
         get :show
-
         expect(response.status).to eq(401)
       end
     end
@@ -141,7 +138,6 @@ RSpec.describe Api::V4::PatientController, type: :controller do
 
       it 'returns an unauthorized response' do
         get :show
-
         expect(response.status).to eq(401)
       end
     end
