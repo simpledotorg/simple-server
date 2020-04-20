@@ -58,13 +58,13 @@
               <th colspan="2"><%= "Reg in #{month_short_name_and_year(local_month_start(year, month))}" %></th>
             <% end %>
           <% end %>
-          <th>Calls made <sup>1</sup></th>
+          <th>Calls&nbsp;made<sup>1</sup></th>
           <th>Total</th>
         </tr>
         <tr data-sort-method="thead" class="sorts">
           <th class="row-label sort-label">Facilities</th>
           <% @display_periods.reverse.each do |(year, period)| %>
-            <th class="row-label sort-label" data-sort-default>Percent</th>
+            <th class="row-label sort-label" data-sort-default>%</th>
             <% case @selected_period %>
               <% when :quarter %>
                 <% visited_in_year, visited_in_quarter = next_year_and_quarter(year, period) %>
