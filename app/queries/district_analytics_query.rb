@@ -54,9 +54,9 @@ class DistrictAnalyticsQuery
           .count
           .map { |facility_id, count| [[facility_id, date], count] }
           .to_h
-      end
+      end.inject(:merge)
 
-    group_by_facility_and_date(@follow_up_patients_by_period.inject(:merge), :follow_up_patients_by_period)
+    group_by_facility_and_date(@follow_up_patients_by_period, :follow_up_patients_by_period)
   end
 
   def total_calls_made_by_period
