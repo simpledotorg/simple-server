@@ -74,28 +74,28 @@
           <col>
           <col class="table-divider">
           <col>
+          <col class="table-divider">
           <col class="mobile">
         </colgroup>
         <thead>
         <tr>
           <th></th>
           <th colspan="6">Cohort of patients registered in <%= registration_period %></th>
-          <th colspan="2">Overall BP control<sup>1</sup></th>
+          <th colspan="3">Overall BP control<sup>1</sup></th>
           <th class="mobile">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
         </tr>
         <tr data-sort-method="thead" class="sorts">
           <th class="row-label sort-label">Facilities</th>
-          <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="controlled" colspan="2" data-sort-default>Visited with controlled
-            <br>BP in <%= visited_in_period %>
+          <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="controlled" colspan="2" data-sort-default>Controlled
+            BP<br>in <%= visited_in_period %>
           </th>
-          <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="uncontrolled" colspan="2">Visited with uncontrolled<br>BP
+          <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="uncontrolled" colspan="2">Uncontrolled BP<br>
             in <%= visited_in_period %>
           </th>
           <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="missed" colspan="2">Missed visit<br>in <%= visited_in_period %>
           </th>
-          <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="overall-percent">Percent</th>
-          <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="overall-controlled">Controlled</th>
-          <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="overall-registered">Registered</th>
+          <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="overall-percent" colspan="2">Controlled BP<br>in last 90 days</th>
+          <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="overall-registered">Registered<br>&gt; 2 months ago</th>
           <th class="mobile"></th>
         </tr>
         </thead>
@@ -152,7 +152,7 @@
       <ol>
         <li><strong>Overall BP control:</strong>
           <ul>
-            <li>Numerator: Patients registered at this facility whose most recent BP in the past 90 days was under 140/90.</li>
+            <li>Numerator: Patients registered at this facility whose most recent BP in the past 90 days was &lt;140/90.</li>
             <li>Denominator: Patients registered at this facility.</li>
             <li>Patients registered in the last 2 months are excluded from both the <i>Numerator</i> and <i>Denominator</i>.</li>
             <li>Note: Follow-up BPs may be recorded at any facility.</li>
