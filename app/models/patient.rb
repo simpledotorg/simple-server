@@ -71,23 +71,15 @@ class Patient < ApplicationRecord
   class << self
     include PeriodHelper
 
-    def follow_ups(period, date)
-      includes(:blood_pressures)
-        .where('patients.recorded_at < ?', beginning_of_period(period, date))
-        .where(blood_pressures: { recorded_at: all_period(period, date) })
-    end
-
-    def all_follow_ups
+    def follow_ups(period, last: nil)
       tz = Rails.application.config.country[:time_zone]
 
-      date_to_month_sql =
-        "(DATE_TRUNC('month', (blood_pressures.recorded_at::timestamptz) AT TIME ZONE '#{tz}')) AT TIME ZONE '#{tz}'"
+      date_to_period_sql =
+        "(DATE_TRUNC('#{period}', (blood_pressures.recorded_at::timestamptz) AT TIME ZONE '#{tz}')) AT TIME ZONE '#{tz}'"
 
       joins(:blood_pressures)
-        .select("DISTINCT ON (patients.id, blood_pressures.facility_id, #{date_to_month_sql}) patients.*")
-        .select(date_to_month_sql)
-        .where("patients.recorded_at < #{date_to_month_sql}")
-        .order('patients.id', 'blood_pressures.facility_id', date_to_month_sql)
+        .where("patients.recorded_at < #{date_to_period_sql}")
+        .group_by_period(period, 'blood_pressures.recorded_at', last: last)
     end
   end
 

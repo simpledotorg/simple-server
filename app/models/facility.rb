@@ -74,10 +74,6 @@ class Facility < ApplicationRecord
     results.inject(&:deep_merge)
   end
 
-  def all_follow_ups
-    Patient.from(Patient.all_follow_ups.where(blood_pressures: { facility: self }), 'patients')
-  end
-
   def self.parse_facilities(file_contents)
     facilities = []
     CSV.parse(file_contents, headers: true, converters: :strip_whitespace) do |row|

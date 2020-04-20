@@ -152,7 +152,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
           end
 
         expected_output = {
-          total_visits: {
+          follow_ups: {
             (request_date - 5.months) => 0,
             (request_date - 4.months) => 0,
             (request_date - 3.months) => 0,

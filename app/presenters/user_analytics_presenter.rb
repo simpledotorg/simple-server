@@ -50,25 +50,26 @@ class UserAnalyticsPresenter
     {
       grouped_by_date:
         {
-          follow_ups: daily_follow_ups,
-          registrations: daily_registrations
+          follow_ups: daily_follow_ups.count,
+          registrations: daily_registrations.count
         }
     }
   end
 
   def monthly_stats
     {
-      grouped_by_gender_and_date:
-        {
-          follow_ups: monthly_follow_ups_by_gender,
-          registrations: monthly_registrations_by_gender
-        },
-
       grouped_by_date:
         {
-          total_visits: monthly_visits,
-          controlled_visits: controlled_visits,
-        }
+          follow_ups: monthly_follow_ups.count,
+          registrations: monthly_registrations.count,
+          controlled_visits: controlled_visits.count,
+        },
+
+      grouped_by_gender_and_date:
+        {
+          follow_ups: monthly_follow_ups_by_gender.count,
+          registrations: monthly_registrations_by_gender.count
+        },
     }
   end
 
@@ -76,8 +77,8 @@ class UserAnalyticsPresenter
     {
       grouped_by_gender:
         {
-          follow_ups: all_time_follow_ups_by_gender,
-          registrations: all_time_registrations_by_gender
+          follow_ups: all_time_follow_ups_by_gender.count,
+          registrations: all_time_registrations_by_gender.count
         }
     }
   end
@@ -103,7 +104,7 @@ class UserAnalyticsPresenter
   #
   # i.e. increment by TROPHY_MILESTONE_INCR
   def trophy_stats
-    all_time_follow_ups = all_time_follow_ups_by_gender.values.sum
+    all_time_follow_ups = all_time_follow_ups_by_gender.count.values.sum
 
     all_trophies =
       all_time_follow_ups > TROPHY_MILESTONES.last ?
@@ -123,63 +124,45 @@ class UserAnalyticsPresenter
   end
 
   def daily_follow_ups
-    fetch_for_date(:day, DAYS_AGO) do |date|
-      @current_facility
-        .patient_follow_ups(:day, date)
-        .count
-    end
+    @current_facility.patient_follow_ups(:day, last: DAYS_AGO)
   end
 
   def daily_registrations
-    fetch_for_date(:day, DAYS_AGO) do |date|
+    @monthly_registrations ||=
       @current_facility
         .registered_patients
-        .where(recorded_at: date.all_day)
-        .count
-    end
+        .group_by_period(:day, :recorded_at, last: DAYS_AGO)
+  end
+
+  def monthly_follow_ups
+    @monthly_follow_ups ||=
+      @current_facility.patient_follow_ups(:month, last: MONTHS_AGO)
   end
 
   def monthly_follow_ups_by_gender
-    @monthly_follow_ups_by_gender ||=
-      fetch_for_date(:month, MONTHS_AGO) do |date|
-        @current_facility
-          .patient_follow_ups(:month, date)
-          .group(:gender)
-          .count
-      end
-  end
-
-  def monthly_visits
-    @monthly_follow_ups_by_gender.map do |date, data|
-      [date, data.values.sum]
-    end.to_h
+    @monthly_follow_ups.group(:gender)
   end
 
   def controlled_visits
-    fetch_for_date(:month, MONTHS_AGO) do |date|
-      @current_facility
-        .patient_follow_ups(:month, date)
-        .merge(BloodPressure.under_control)
-        .count
-    end
+    @monthly_follow_ups.merge(BloodPressure.under_control)
   end
 
   def monthly_registrations_by_gender
-    fetch_for_date(:month, MONTHS_AGO) do |date|
+    @monthly_registrations.group(:gender)
+  end
+
+  def monthly_registrations
+    @monthly_registrations ||=
       @current_facility
         .registered_patients
-        .where(recorded_at: date.all_month)
-        .group(:gender)
-        .count
-    end
+        .group_by_period(:month, :recorded_at, last: MONTHS_AGO)
   end
 
   def all_time_follow_ups_by_gender
     @all_time_follow_ups ||=
       @current_facility
-        .all_follow_ups
+        .patient_follow_ups(:month)
         .group(:gender)
-        .count
   end
 
   def all_time_registrations_by_gender
@@ -187,7 +170,6 @@ class UserAnalyticsPresenter
       @current_facility
         .registered_patients
         .group(:gender)
-        .count
   end
 
   def fetch_for_date(period, last)
