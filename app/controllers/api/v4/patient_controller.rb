@@ -53,4 +53,17 @@ class Api::V4::PatientController < PatientAPIController
   def otp
     params.require(:otp)
   end
+
+  def access_token_response(authentication)
+    {
+      patient: {
+        id: authentication.patient.id,
+        access_token: authentication.access_token,
+        passport: {
+          id: authentication.patient_business_identifier.identifier,
+          shortcode: authentication.patient_business_identifier.shortcode
+        }
+      }
+    }
+  end
 end

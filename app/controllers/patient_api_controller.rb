@@ -22,19 +22,6 @@ class PatientAPIController < ApplicationController
     end
   end
 
-  def access_token_response(authentication)
-    {
-      patient: {
-        id: authentication.patient.id,
-        access_token: authentication.access_token,
-        passport: {
-          id: authentication.patient_business_identifier.identifier,
-          shortcode: authentication.patient_business_identifier.shortcode
-        }
-      }
-    }
-  end
-
   def authenticate
     return head :unauthorized unless access_token_authorized?
   end
