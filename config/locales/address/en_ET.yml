@@ -1,0 +1,24 @@
+en_ET:
+  helpers:
+    label:
+      facility:
+        name: "Name"
+        facility_type: "Facility Type *"
+        size: "Size *"
+        street_address: "House and road number"
+        village_or_colony: "Kebele"
+        zone: "Zone"
+        district: "Woreda *"
+        state: "Region *"
+        country: "Country *"
+      address:
+        street_address: "House and street number"
+        village_or_colony: "Kebele"
+        zone: "Zone"
+        district: "Woreda *"
+        state: "Region *"
+        country: "Country *"
+    submit:
+      facility:
+        create: "Save facility"
+        update: "Save facility"

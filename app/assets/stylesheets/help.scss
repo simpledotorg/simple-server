@@ -1,6 +1,11 @@
+html, body {
+  height: auto;
+  scroll-behavior: auto;
+}
+
 #help {
-  padding: 0;
-  margin: 0;
+  padding: 0 !important;
+  margin: 0 !important;
 
   .card {
     border-radius: 6px;
@@ -445,4 +450,9 @@
       display: block;
     }
   }
+}
+
+.tos {
+    color: rgba(0,0,0,0.2);
+    padding: 24px 8px;
 }

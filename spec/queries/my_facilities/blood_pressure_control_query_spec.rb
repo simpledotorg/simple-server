@@ -104,6 +104,12 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
           expect(query.cohort_uncontrolled_bps.count).to eq(3)
         end
       end
+
+      describe '#cohort_missed_visits_count' do
+        specify do
+          expect(query.cohort_missed_visits_count).to eq(2)
+        end
+      end
     end
 
     context 'Monthly cohorts' do
@@ -219,9 +225,15 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
           expect(query.cohort_uncontrolled_bps.count).to eq(3)
         end
       end
+
+      describe '#cohort_missed_visits_count' do
+        specify do
+          expect(query.cohort_missed_visits_count).to eq(2)
+        end
+      end
     end
 
-    context 'All time queries' do
+    context 'Overall queries' do
       let!(:facility) { create(:facility) }
       let!(:user) { create(:user) }
 
@@ -232,7 +244,16 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       let!(:patient_with_recent_bp) do
         create(:patient, registration_facility: facility, registration_user: user, recorded_at: 4.months.ago)
       end
+
       let!(:patient_without_recent_bp) do
+        create(:patient, registration_facility: facility, registration_user: user, recorded_at: 4.months.ago)
+      end
+
+      let!(:patients_with_uncontrolled_bp) do
+        create(:patient, registration_facility: facility, registration_user: user, recorded_at: 4.months.ago)
+      end
+
+      let!(:patients_with_missed_visit) do
         create(:patient, registration_facility: facility, registration_user: user, recorded_at: 4.months.ago)
       end
 
@@ -253,12 +274,35 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
                facility: facility,
                user: user)
       end
+
       let!(:bp_for_patient_without_recent_bp) do
         create(:blood_pressure,
                :under_control,
                patient: patient_without_recent_bp,
                recorded_at: 4.months.ago,
                facility: facility,
+               user: user)
+      end
+
+      let!(:bp_for_patient_with_uncontrolled_bp) do
+        create(:blood_pressure,
+               :hypertensive,
+               patient: patients_with_uncontrolled_bp,
+               recorded_at: 4.months.ago,
+               facility: facility,
+               user: user)
+      end
+
+      let!(:old_patient) do
+        create(:patient, registration_facility: facility, registration_user: user, recorded_at: 6.months.ago)
+      end
+
+      let!(:old_bp) do
+        create(:blood_pressure,
+               :under_control,
+               facility: facility,
+               patient: old_patient,
+               recorded_at: old_patient.recorded_at,
                user: user)
       end
 
@@ -270,12 +314,12 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
         end
       end
 
-      describe '#all_time_bps' do
-        specify { expect(described_class.new.all_time_bps.count).to eq(2) }
+      describe '#overall_patients' do
+        specify { expect(described_class.new.overall_patients.count).to eq(5) }
       end
 
-      describe '#all_time_controlled_bps' do
-        specify { expect(described_class.new.all_time_controlled_bps.count).to eq(1) }
+      describe '#overall_controlled_bps' do
+        specify { expect(described_class.new.overall_controlled_bps.count).to eq(1) }
       end
     end
   end

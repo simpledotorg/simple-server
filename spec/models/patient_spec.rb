@@ -4,15 +4,29 @@ include Hashable
 describe Patient, type: :model do
   subject(:patient) { build(:patient) }
 
+  it 'picks up available genders from country config' do
+    expect(described_class::GENDERS).to eq(Rails.application.config.country[:supported_genders])
+  end
+
   describe 'Associations' do
-    it { should belong_to(:address).optional }
-    it { should have_many(:phone_numbers) }
-    it { should have_many(:blood_pressures) }
-    it { should have_many(:blood_sugars) }
-    it { should have_many(:prescription_drugs) }
-    it { should have_many(:facilities).through(:blood_pressures) }
-    it { should have_many(:appointments) }
-    it { should have_one(:medical_history) }
+    it { is_expected.to belong_to(:address).optional }
+    it { is_expected.to have_many(:phone_numbers) }
+    it { is_expected.to have_many(:business_identifiers) }
+    it { is_expected.to have_many(:passport_authentications).through(:business_identifiers) }
+
+    it { is_expected.to have_many(:blood_pressures) }
+    it { is_expected.to have_many(:blood_sugars) }
+    it { is_expected.to have_many(:prescription_drugs) }
+    it { is_expected.to have_many(:facilities).through(:blood_pressures) }
+    it { is_expected.to have_many(:users).through(:blood_pressures) }
+    it { is_expected.to have_many(:appointments) }
+    it { is_expected.to have_one(:medical_history) }
+
+    it { is_expected.to have_many(:encounters) }
+    it { is_expected.to have_many(:observations).through(:encounters) }
+
+    it { is_expected.to belong_to(:registration_facility).class_name('Facility').optional }
+    it { is_expected.to belong_to(:registration_user).class_name('User') }
 
     it 'has distinct facilities' do
       patient = FactoryBot.create(:patient)
@@ -21,12 +35,30 @@ describe Patient, type: :model do
       expect(patient.facilities.count).to eq(1)
     end
 
-    it { should belong_to(:registration_facility).class_name('Facility').optional }
-    it { should belong_to(:registration_user).class_name('User') }
-  end
+    it { is_expected.to belong_to(:registration_facility).class_name('Facility').optional }
+    it { is_expected.to belong_to(:registration_user).class_name('User') }
 
-  describe 'Associations' do
-    it { should have_many(:blood_pressures) }
+    it { is_expected.to have_many(:latest_blood_pressures).order(recorded_at: :desc).class_name('BloodPressure') }
+    it { is_expected.to have_many(:latest_blood_sugars).order(recorded_at: :desc).class_name('BloodSugar') }
+    specify do
+      is_expected.to have_many(:current_prescription_drugs)
+                       .conditions(is_deleted: false)
+                       .class_name('PrescriptionDrug')
+    end
+
+    specify do
+      is_expected.to have_many(:latest_scheduled_appointments)
+                       .conditions(status: 'scheduled')
+                       .order(scheduled_date: :desc)
+                       .class_name('Appointment')
+    end
+
+    specify do
+      is_expected.to have_many(:latest_bp_passports)
+                       .conditions(identifier_type: 'simple_bp_passport')
+                       .order(device_created_at: :desc)
+                       .class_name('PatientBusinessIdentifier')
+    end
   end
 
   describe 'Validations' do
@@ -70,6 +102,26 @@ describe Patient, type: :model do
 
   context 'Utility methods' do
     let(:patient) { create(:patient) }
+
+    describe '#access_tokens' do
+      let(:tokens) { ['token1', 'token2'] }
+      let(:other_tokens) { ['token3', 'token4'] }
+
+      before do
+        tokens.each do |token|
+          passport = create(:patient_business_identifier, patient: patient)
+          create(:passport_authentication, access_token: token, patient_business_identifier: passport)
+        end
+
+        other_tokens.each do |token|
+          create(:passport_authentication, access_token: token)
+        end
+      end
+
+      it 'returns all access tokens for the patient' do
+        expect(patient.access_tokens).to match_array(tokens)
+      end
+    end
 
     describe '#risk_priority' do
       it 'returns no priority for patients recently overdue' do
