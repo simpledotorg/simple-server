@@ -18,38 +18,73 @@
       padding: 60px 0 0 0;
       font-family: arial;
     }
-      .sc-feJyhm {
-          display: none;
-      }
-      nav.navbar {
-          position: fixed;
-          width: 100%;
-          background: rgb(38, 50, 56) !important;
-          top: 0;
-          left: 0;
-          z-index: 100000000;
-          padding-top: 12px;
-          padding-bottom: 12px;
-      }
-      nav.navbar a {
-          color: #fff !important;
-      }
-      nav.navbar a.navbar-brand {
-          font-weight: bold;
-          color: #666 !important;
-      }
-      .navbar-toggler {
-          background-color: #666;
-      }
-      h1 {
-          color: #FF3355 !important;
-      }
+    .sc-feJyhm {
+      display: none;
+    }
+    nav.navbar {
+      position: fixed;
+      width: 100%;
+      background: #0C3966 !important;
+      top: 0;
+      left: 0;
+      z-index: 100000000;
+      font-size: 14px;
+      font-weight: bold;
+      padding-top: 12px;
+      padding-bottom: 12px;
+    }
+    nav.navbar a {
+      color: #fff !important;
+    }
+      
+    @media (min-width: 900px) {  
+        nav.navbar-expand-lg {
+          width: 260px !important;
+        }
+        
+        .sc-iujRgT,
+        .kTYKTV,
+        .api-content {
+            margin-top: -60px;  
+        }
+        
+        .sc-GMQeP,
+        .eWtOBi {
+            background: #fff;
+            margin: 16px;
+            border-radius: 100px;
+            border-top: 1px solid rgba(0,0,0,0.2);
+        }
+        
+        .eWtOBi svg {
+            display: none;
+        }
+        
+        .eWtOBi input {
+            border: none;
+            padding-left: none;
+            margin: none !important;
+        }
+        
+        .bJNzQd {
+            margin: 0 !important;
+        }
+    }
+
+    .navbar-toggler {
+      background-color: #666;
+    }
+      
+      
+    h1 {
+      color: #FF3355 !important;
+    }
   </style>
 </head>
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">Simple API</a>
+  <a class="navbar-brand" href="#"><img src="https://simple.org/images/favicon.png" width="28" style="margin-top: -1px;"></a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
