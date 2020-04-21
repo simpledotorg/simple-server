@@ -9,6 +9,22 @@ describe ApplicationHelper, type: :helper do
     specify { expect(helper.bootstrap_class_for_flash('something-else')).to eq('something-else') }
   end
 
+  describe '#display_date' do
+    let(:date) { Date.new(2020, 1, 15) }
+
+    it 'returns a standard formatted date' do
+      expect(helper.display_date(date)).to eq('15-JAN-2020')
+    end
+
+    context 'when date is nil' do
+      let(:date) { nil }
+
+      xit 'returns nil' do
+
+      end
+    end
+  end
+
   describe '#rounded_time_ago_in_words' do
     it 'should return Today if date is less than 24 hours' do
       date = Date.current
