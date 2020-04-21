@@ -13,6 +13,7 @@ class Facility < ApplicationRecord
 
   has_many :phone_number_authentications, foreign_key: 'registration_facility_id'
   has_many :users, through: :phone_number_authentications
+
   has_many :encounters
   has_many :blood_pressures, through: :encounters, source: :blood_pressures
   has_many :blood_sugars, through: :encounters, source: :blood_sugars
@@ -48,7 +49,10 @@ class Facility < ApplicationRecord
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, to: :facility_group, allow_nil: true
-  delegate :follow_ups, to: :patients, allow_nil: true, prefix: :patient
+
+  def patient_follow_ups(period, last: nil)
+    Patient.follow_ups(period, last: last).where(blood_pressures: { facility: self })
+  end
 
   friendly_id :name, use: :slugged
 

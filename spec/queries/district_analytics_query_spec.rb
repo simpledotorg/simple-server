@@ -114,7 +114,7 @@ RSpec.describe DistrictAnalyticsQuery do
         expected_result =
           { facility.id =>
               { registered_patients_by_period: {
-                four_months_back => 1,
+                four_months_back => 1
               } } }
 
         expect(analytics.registered_patients_by_period).to eq(expected_result)
@@ -129,7 +129,7 @@ RSpec.describe DistrictAnalyticsQuery do
                 four_months_back => 0,
                 three_months_back => 1,
                 two_months_back => 0,
-                one_month_back => 0,
+                one_month_back => 0
               } } }
 
         expect(analytics.follow_up_patients_by_period).to eq(expected_result)

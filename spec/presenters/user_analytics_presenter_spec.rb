@@ -191,7 +191,6 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
             follow_ups: {},
             registrations: {}
           }
-
         expect(data.dig(:monthly, :grouped_by_gender_and_date)).to eq(expected_output)
       end
     end

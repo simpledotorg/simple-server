@@ -9,7 +9,7 @@ class UserAnalyticsPresenter
   MONTHS_AGO = 6
   TROPHY_MILESTONES = [10, 25, 50, 100, 250, 500, 1_000, 2_000, 3_000, 4_000, 5_000]
   TROPHY_MILESTONE_INCR = 10_000
-  EXPIRE_STATISTICS_CACHE_IN = 15.minutes
+  EXPIRE_STATISTICS_CACHE_IN = 30.minutes
 
   attr_reader :daily_period_list, :monthly_period_list
 
@@ -60,15 +60,15 @@ class UserAnalyticsPresenter
     {
       grouped_by_date:
         {
-          follow_ups: monthly_follow_ups.count,
-          registrations: monthly_registrations.count,
+          follow_ups: monthly_follow_ups,
+          registrations: monthly_registrations,
           controlled_visits: controlled_visits.count,
         },
 
       grouped_by_gender_and_date:
         {
-          follow_ups: monthly_follow_ups_by_gender.count,
-          registrations: monthly_registrations_by_gender.count
+          follow_ups: monthly_follow_ups_by_gender,
+          registrations: monthly_registrations_by_gender
         },
     }
   end
@@ -134,32 +134,43 @@ class UserAnalyticsPresenter
       .group_by_period(:day, :recorded_at, last: DAYS_AGO)
   end
 
-  def monthly_follow_ups
-    @monthly_follow_ups ||=
+  def monthly_follow_ups_by_gender
+    @monthly_follow_ups_by_gender ||=
       @current_facility
         .patient_follow_ups(:month, last: MONTHS_AGO)
+        .group(:gender)
+        .count
   end
 
-  def monthly_follow_ups_by_gender
-    monthly_follow_ups
-      .group(:gender)
+  def monthly_follow_ups
+    monthly_follow_ups_by_gender
+      .each_with_object({}) do |((date, _), count), by_date|
+        by_date[date] ||= 0
+        by_date[date] += count
+      end
   end
 
   def controlled_visits
-    monthly_follow_ups
+    @current_facility
+      .patient_follow_ups(:month, last: MONTHS_AGO)
       .merge(BloodPressure.under_control)
   end
 
-  def monthly_registrations
-    @monthly_registrations ||=
+  def monthly_registrations_by_gender
+    @monthly_registrations_by_gender ||=
       @current_facility
         .registered_patients
         .group_by_period(:month, :recorded_at, last: MONTHS_AGO)
+        .group(:gender)
+        .count
   end
 
-  def monthly_registrations_by_gender
-    monthly_registrations
-      .group(:gender)
+  def monthly_registrations
+    monthly_registrations_by_gender
+      .each_with_object({}) do |((date, _), count), by_date|
+        by_date[date] ||= 0
+        by_date[date] += count
+      end
   end
 
   def all_time_follow_ups

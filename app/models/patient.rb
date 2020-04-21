@@ -69,7 +69,7 @@ class Patient < ApplicationRecord
   validates_associated :phone_numbers, if: :phone_numbers
 
   def self.follow_ups(period, last: nil)
-    joins(:blood_pressures)
+    joins(encounters: :blood_pressures)
       .where("patients.recorded_at < #{BloodPressure.date_to_period_sql(period)}")
       .group_by_period(period, 'blood_pressures.recorded_at', last: last)
   end
