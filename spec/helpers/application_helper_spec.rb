@@ -19,8 +19,8 @@ describe ApplicationHelper, type: :helper do
     context 'when date is nil' do
       let(:date) { nil }
 
-      xit 'returns nil' do
-
+      it 'returns nil' do
+        expect(helper.display_date(date)).to eq(nil)
       end
     end
   end
