@@ -16,19 +16,20 @@
   "Patient village or colony",
   "Patient phone"
 ].to_csv -%>
-<% @appointments.each do |appointment| %>
+<% @patient_summaries.each do |patient_summary| %>
   <%= [
-    appointment.patient.full_name,
-    appointment.patient.gender.capitalize,
-    appointment.patient.current_age,
-    appointment.days_overdue,
-    appointment.patient.registration_date,
-    appointment.patient.latest_blood_pressure.to_s,
-    appointment.patient.latest_blood_pressure.facility.name,
-    display_date(appointment.patient.latest_blood_pressure.recorded_at),
-    ('High' if appointment.patient.high_risk?),
-    appointment.patient.address.street_address,
-    appointment.patient.address.village_or_colony,
-    appointment.patient.phone_numbers.first&.number
+    patient_summary.full_name,
+    patient_summary.gender.capitalize,
+    patient_summary.current_age.to_i,
+    patient_summary.days_overdue.to_i,
+    handle_impossible_registration_date(patient_summary.recorded_at),
+    "#{patient_summary.latest_blood_pressure_systolic}/#{patient_summary.latest_blood_pressure_diastolic}",
+    patient_summary.latest_blood_pressure_facility_name,
+    display_date(patient_summary.latest_blood_pressure_recorded_at),
+    ('High' if patient_summary.risk_level > 0),
+    patient_summary.street_address,
+    patient_summary.village_or_colony,
+    patient_summary.latest_phone_number,
+    "Patient Summary"
   ].to_csv -%>
 <% end %>

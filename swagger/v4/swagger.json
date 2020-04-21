@@ -146,6 +146,117 @@
         }
       }
     },
+    "/patient/activate": {
+      "post": {
+        "summary": "Request an OTP to be sent to a patient",
+        "tags": [
+          "Patient"
+        ],
+        "parameters": [
+          {
+            "name": "request_body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "passport_id": {
+                  "$ref": "#/definitions/uuid"
+                }
+              }
+            },
+            "description": "Patient's BP Passport UUID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Patient is found and an OTP is sent to their phone"
+          },
+          "404": {
+            "description": "Incorrect passport id"
+          }
+        }
+      }
+    },
+    "/patient/login": {
+      "post": {
+        "summary": "Log in a patient with BP Passport UUID and OTP",
+        "tags": [
+          "Patient"
+        ],
+        "parameters": [
+          {
+            "name": "request_body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "passport_id": {
+                  "$ref": "#/definitions/uuid"
+                },
+                "otp": {
+                  "$ref": "#/definitions/non_empty_string"
+                }
+              }
+            },
+            "description": "Patient's BP Passport UUID and OTP"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Correct OTP is submitted and API credentials are returned",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "patient": {
+                  "$ref": "#/definitions/login_patient"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Incorrect BP Passport UUID or OTP"
+          }
+        }
+      }
+    },
+    "/patient": {
+      "get": {
+        "summary": "Fetch patient information",
+        "tags": [
+          "Patient"
+        ],
+        "security": [
+          {
+            "basic": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_PATIENT_ID",
+            "in": "header",
+            "type": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Patient information is returned",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "patient": {
+                  "$ref": "#/definitions/patient"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid patient ID header"
+          }
+        }
+      }
+    },
     "/users/find": {
       "post": {
         "summary": "Find a existing user",
@@ -425,6 +536,465 @@
       ],
       "items": {
         "$ref": "#/definitions/blood_sugar"
+      }
+    },
+    "login_patient": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "access_token": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "passport": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/uuid"
+            },
+            "shortcode": {
+              "$ref": "#/definitions/non_empty_string"
+            }
+          }
+        }
+      }
+    },
+    "patient": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "full_name": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "age": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "gender": {
+          "type": "string",
+          "enum": [
+            "male",
+            "female",
+            "transgender"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "dead",
+            "migrated",
+            "unresponsive",
+            "inactive"
+          ]
+        },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "reminder_consent": {
+          "type": "string",
+          "enum": [
+            "granted",
+            "denied"
+          ]
+        },
+        "phone_numbers": {
+          "type": [
+            "null",
+            "array"
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/definitions/uuid"
+              },
+              "number": {
+                "$ref": "#/definitions/non_empty_string"
+              }
+            }
+          }
+        },
+        "address": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/uuid"
+            },
+            "street_address": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "village_or_colony": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "district": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "zone": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "state": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "country": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "pin": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "registration_facility": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/uuid"
+            },
+            "name": {
+              "$ref": "#/definitions/non_empty_string"
+            },
+            "street_address": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "village_or_colony": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "district": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "state": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "country": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "pin": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "medical_history": {
+          "type": "object",
+          "properties": {
+            "chronic_kidney_disease": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            },
+            "diabetes": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            },
+            "hypertension": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            },
+            "prior_heart_attack": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            },
+            "prior_stroke": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            }
+          }
+        },
+        "blood_pressures": {
+          "type": [
+            "null",
+            "array"
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "systolic": {
+                "type": "integer"
+              },
+              "diastolic": {
+                "type": "integer"
+              },
+              "recorded_at": {
+                "$ref": "#/definitions/timestamp"
+              },
+              "facility": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/definitions/uuid"
+                  },
+                  "name": {
+                    "$ref": "#/definitions/non_empty_string"
+                  },
+                  "street_address": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "village_or_colony": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "district": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "state": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "country": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "pin": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "blood_sugars": {
+          "type": [
+            "null",
+            "array"
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "blood_sugar_value": {
+                "type": "number"
+              },
+              "blood_sugar_type": {
+                "type": "string",
+                "enum": [
+                  "random",
+                  "post_prandial",
+                  "fasting",
+                  "hba1c"
+                ]
+              },
+              "recorded_at": {
+                "$ref": "#/definitions/timestamp"
+              },
+              "facility": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/definitions/uuid"
+                  },
+                  "name": {
+                    "$ref": "#/definitions/non_empty_string"
+                  },
+                  "street_address": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "village_or_colony": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "district": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "state": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "country": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "pin": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "appointments": {
+          "type": [
+            "null",
+            "array"
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "scheduled_date": {
+                "type": "string",
+                "format": "date"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "scheduled",
+                  "cancelled",
+                  "visited"
+                ]
+              },
+              "facility": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/definitions/uuid"
+                  },
+                  "name": {
+                    "$ref": "#/definitions/non_empty_string"
+                  },
+                  "street_address": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "village_or_colony": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "district": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "state": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "country": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "pin": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "medications": {
+          "type": [
+            "null",
+            "array"
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "$ref": "#/definitions/non_empty_string"
+              },
+              "dosage": {
+                "type": "string"
+              },
+              "rxnorm_code": {
+                "type": "string"
+              },
+              "is_protocol_drug": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
       }
     },
     "user": {

@@ -11,6 +11,8 @@ FactoryBot.define do
         assigning_facility_id: SecureRandom.uuid }
     end
 
+    patient
+
     trait(:without_metadata) do
       metadata_version { nil }
       metadata { nil }
