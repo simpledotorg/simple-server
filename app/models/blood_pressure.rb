@@ -64,4 +64,9 @@ class BloodPressure < ApplicationRecord
       bp_diastolic: diastolic
     }
   end
+
+  def self.date_to_period_sql(period)
+    tz = Rails.application.config.country[:time_zone]
+    "(DATE_TRUNC('#{period}', (blood_pressures.recorded_at::timestamptz) AT TIME ZONE '#{tz}')) AT TIME ZONE '#{tz}'"
+  end
 end

@@ -42,19 +42,11 @@ class DistrictAnalyticsQuery
 
   def follow_up_patients_by_period
     @follow_up_patients_by_period ||=
-      dates_for_periods(@period,
-                        @prev_periods,
-                        from_time: @from_time,
-                        include_current_period: @include_current_period).map do |date|
-
-        Patient
-          .follow_ups(@period, date)
-          .where(blood_pressures: { facility: facilities })
-          .group('blood_pressures.facility_id')
-          .count
-          .map { |facility_id, count| [[facility_id, date], count] }
-          .to_h
-      end.inject(:merge)
+      Patient
+        .group('blood_pressures.facility_id')
+        .follow_ups(@period, last: @prev_periods)
+        .where(blood_pressures: { facility: facilities })
+        .count
 
     group_by_facility_and_date(@follow_up_patients_by_period, :follow_up_patients_by_period)
   end

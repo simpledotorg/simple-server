@@ -68,7 +68,8 @@ RSpec.describe DistrictAnalyticsQuery do
       it 'groups the follow up patients by facility and beginning of month' do
         expected_result =
           { facility.id =>
-              { follow_up_patients_by_period: { three_months_back => 3,
+              { follow_up_patients_by_period: { four_months_back => 0,
+                                                three_months_back => 3,
                                                 two_months_back => 6,
                                                 one_month_back => 3 } } }
 
@@ -109,11 +110,11 @@ RSpec.describe DistrictAnalyticsQuery do
     end
 
     describe '#registered_patients_by_period' do
-      it "should'nt count discarded patients" do
+      it "shouldn't count discarded patients" do
         expected_result =
           { facility.id =>
               { registered_patients_by_period: {
-                four_months_back => 1
+                four_months_back => 1,
               } } }
 
         expect(analytics.registered_patients_by_period).to eq(expected_result)
@@ -125,7 +126,10 @@ RSpec.describe DistrictAnalyticsQuery do
         expected_result =
           { facility.id =>
               { follow_up_patients_by_period: {
-                three_months_back => 1
+                four_months_back => 0,
+                three_months_back => 1,
+                two_months_back => 0,
+                one_month_back => 0,
               } } }
 
         expect(analytics.follow_up_patients_by_period).to eq(expected_result)

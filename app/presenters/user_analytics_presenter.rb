@@ -77,7 +77,7 @@ class UserAnalyticsPresenter
     {
       grouped_by_gender:
         {
-          follow_ups: all_time_follow_ups_by_gender.count,
+          follow_ups: all_time_follow_ups,
           registrations: all_time_registrations_by_gender.count
         }
     }
@@ -104,7 +104,7 @@ class UserAnalyticsPresenter
   #
   # i.e. increment by TROPHY_MILESTONE_INCR
   def trophy_stats
-    follow_ups = all_time_follow_ups.count.values.sum
+    follow_ups = all_time_follow_ups.values.sum
 
     all_trophies =
       follow_ups > TROPHY_MILESTONES.last ?
@@ -166,15 +166,12 @@ class UserAnalyticsPresenter
     @all_time_follow_ups ||=
       @current_facility
         .patient_follow_ups(:month)
+        .group(:gender)
+        .count
         .each_with_object({}) do |((_, gender), count), by_gender|
-        by_gender[gender] ||= 0
-        by_gender[gender] += count
+          by_gender[gender] ||= 0
+          by_gender[gender] += count
       end
-  end
-
-  def all_time_follow_ups_by_gender
-    all_time_follow_ups
-      .group(:gender)
   end
 
   def all_time_registrations_by_gender

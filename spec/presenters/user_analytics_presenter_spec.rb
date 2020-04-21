@@ -224,11 +224,11 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
         expected_output = {
           follow_ups: {
-            [follow_up_date, gender] => 3
+            gender => 3
           },
 
           registrations: {
-            [reg_date, gender] => 3
+            gender => 3
           }
         }
 

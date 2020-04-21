@@ -69,13 +69,8 @@ class Patient < ApplicationRecord
   validates_associated :phone_numbers, if: :phone_numbers
 
   def self.follow_ups(period, last: nil)
-    tz = Rails.application.config.country[:time_zone]
-
-    date_to_period_sql =
-      "(DATE_TRUNC('#{period}', (blood_pressures.recorded_at::timestamptz) AT TIME ZONE '#{tz}')) AT TIME ZONE '#{tz}'"
-
     joins(:blood_pressures)
-      .where("patients.recorded_at < #{date_to_period_sql}")
+      .where("patients.recorded_at < #{BloodPressure.date_to_period_sql(period)}")
       .group_by_period(period, 'blood_pressures.recorded_at', last: last)
   end
 

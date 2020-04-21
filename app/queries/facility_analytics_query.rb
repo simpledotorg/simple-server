@@ -38,25 +38,18 @@ class FacilityAnalyticsQuery
 
   def follow_up_patients_by_period
     @follow_up_patients_by_period ||=
-      dates_for_periods(@period,
-                        @prev_periods,
-                        from_time: @from_time,
-                        include_current_period: @include_current_period).map do |date|
-
-
-        Patient.from(Patient
-                       .follow_ups(@period, date)
-                       .where(blood_pressures: { facility: @facility })
-                       .select('DISTINCT ON (blood_pressures.patient_id) patients.*')
-                       .select('blood_pressures.user_id AS user_id')
-                       .order('blood_pressures.patient_id', 'blood_pressures.recorded_at')
-                       .joins(:blood_pressures),
-                     'patients')
-          .group('user_id')
-          .count
-          .map { |user_id, count| [[user_id, date], count] }
-          .to_h
-      end.inject(:merge)
+      Patient
+        .from(Patient
+                .follow_ups(@period, last: @prev_periods)
+                .group('user_id', 'blood_pressures.patient_id', BloodPressure.date_to_period_sql(@period), 'blood_pressures.recorded_at', 'patients.deleted_at')
+                .where(blood_pressures: { facility: @facility })
+                .select("DISTINCT ON (blood_pressures.patient_id, #{BloodPressure.date_to_period_sql(@period)}) blood_pressures.user_id AS user_id, patients.deleted_at")
+                .select("blood_pressures.recorded_at AS bp_recorded_at")
+                .order('blood_pressures.patient_id', BloodPressure.date_to_period_sql(@period), 'blood_pressures.recorded_at'),
+              'patients')
+        .group('user_id')
+        .group_by_period(:month, 'bp_recorded_at')
+        .count
 
     group_by_user_and_date(@follow_up_patients_by_period, :follow_up_patients_by_period)
   end
@@ -85,7 +78,9 @@ class FacilityAnalyticsQuery
                                     include_current_period: @include_current_period)
 
     query_results.map do |(user_id, date), value|
-      { user_id => { key => { date => value }.slice(*valid_dates) } }
+      { user_id => { key => { date.to_date => value }.slice(*valid_dates) } }
     end.inject(&:deep_merge)
   end
 end
+
+
