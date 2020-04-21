@@ -34,7 +34,7 @@ describe 'Patient v4 API', swagger_doc: 'v4/swagger.json' do
 
       response '200', 'Correct OTP is submitted and API credentials are returned' do
         let(:bp_passport) { create(:patient_business_identifier, identifier_type: 'simple_bp_passport') }
-        let(:passport_authentication) { create(:passport_authentication, patient_business_identifier: bp_passport, patient: bp_passport.patient) }
+        let(:passport_authentication) { create(:passport_authentication, patient_business_identifier: bp_passport) }
         let(:request_body) { { passport_id: bp_passport.identifier, otp: passport_authentication.otp } }
 
         schema Api::V4::Schema.patient_login_response
@@ -43,8 +43,50 @@ describe 'Patient v4 API', swagger_doc: 'v4/swagger.json' do
 
       response '401', 'Incorrect BP Passport UUID or OTP' do
         let(:bp_passport) { create(:patient_business_identifier, identifier_type: 'simple_bp_passport') }
-        let!(:passport_authentication) { create(:passport_authentication, patient_business_identifier: bp_passport, patient: bp_passport.patient) }
+        let!(:passport_authentication) { create(:passport_authentication, patient_business_identifier: bp_passport) }
         let(:request_body) { { passport_id: bp_passport.identifier, otp: 'wrong' } }
+
+        run_test!
+      end
+    end
+  end
+
+  path '/patient' do
+    get 'Fetch patient information' do
+      tags 'Patient'
+      security [basic: []]
+      parameter name: 'HTTP_X_PATIENT_ID', in: :header, type: :uuid
+
+      response '200', 'Patient information is returned' do
+        let(:bp_passport) { create(:patient_business_identifier, identifier_type: 'simple_bp_passport') }
+        let(:passport_authentication) { create(:passport_authentication, patient_business_identifier: bp_passport) }
+        let(:request_body) { { passport_id: bp_passport.identifier, otp: passport_authentication.otp } }
+
+        let(:HTTP_X_PATIENT_ID) { passport_authentication.patient.id }
+        let(:Authorization) { "Bearer #{passport_authentication.access_token}" }
+
+        schema Api::V4::Schema.patient_response
+        run_test!
+      end
+
+      response '401', 'Invalid access token' do
+        let(:bp_passport) { create(:patient_business_identifier, identifier_type: 'simple_bp_passport') }
+        let(:passport_authentication) { create(:passport_authentication, patient_business_identifier: bp_passport) }
+        let(:request_body) { { passport_id: bp_passport.identifier, otp: passport_authentication.otp } }
+
+        let(:HTTP_X_PATIENT_ID) { passport_authentication.patient.id }
+        let(:Authorization) { "Bearer wrong-token" }
+
+        run_test!
+      end
+
+      response '401', 'Invalid patient ID header' do
+        let(:bp_passport) { create(:patient_business_identifier, identifier_type: 'simple_bp_passport') }
+        let(:passport_authentication) { create(:passport_authentication, patient_business_identifier: bp_passport) }
+        let(:request_body) { { passport_id: bp_passport.identifier, otp: passport_authentication.otp } }
+
+        let(:HTTP_X_PATIENT_ID) { 'wrong-patient-id' }
+        let(:Authorization) { "Bearer #{passport_authentication.access_token}" }
 
         run_test!
       end

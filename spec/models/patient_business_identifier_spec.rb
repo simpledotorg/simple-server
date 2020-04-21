@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe PatientBusinessIdentifier, type: :model do
   describe 'Associations' do
     it { should belong_to(:patient) }
+    it { should have_one(:passport_authentication) }
   end
 
   describe 'Validations' do
