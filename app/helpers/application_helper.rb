@@ -4,21 +4,21 @@ module ApplicationHelper
 
   def bootstrap_class_for_flash(flash_type)
     case flash_type
-      when 'success'
-        'alert-success'
-      when 'error'
-        'alert-danger'
-      when 'alert'
-        'alert-warning'
-      when 'notice'
-        'alert-primary'
-      else
-        flash_type.to_s
+    when 'success'
+      'alert-success'
+    when 'error'
+      'alert-danger'
+    when 'alert'
+      'alert-warning'
+    when 'notice'
+      'alert-primary'
+    else
+      flash_type.to_s
     end
   end
 
   def display_date(date)
-    date.strftime(STANDARD_DATE_DISPLAY_FORMAT)
+    date&.strftime(STANDARD_DATE_DISPLAY_FORMAT)
   end
 
   def rounded_time_ago_in_words(date)
