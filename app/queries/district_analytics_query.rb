@@ -46,7 +46,8 @@ class DistrictAnalyticsQuery
         .group('blood_pressures.facility_id')
         .follow_ups(@period, last: @prev_periods)
         .where(blood_pressures: { facility: facilities })
-        .count
+        .distinct
+        .count('patients.id')
 
     group_by_facility_and_date(@follow_up_patients_by_period, :follow_up_patients_by_period)
   end
