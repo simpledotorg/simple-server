@@ -68,19 +68,15 @@ class Patient < ApplicationRecord
   validates_associated :address, if: :address
   validates_associated :phone_numbers, if: :phone_numbers
 
-  class << self
-    include PeriodHelper
+  def self.follow_ups(period, last: nil)
+    tz = Rails.application.config.country[:time_zone]
 
-    def follow_ups(period, last: nil)
-      tz = Rails.application.config.country[:time_zone]
+    date_to_period_sql =
+      "(DATE_TRUNC('#{period}', (blood_pressures.recorded_at::timestamptz) AT TIME ZONE '#{tz}')) AT TIME ZONE '#{tz}'"
 
-      date_to_period_sql =
-        "(DATE_TRUNC('#{period}', (blood_pressures.recorded_at::timestamptz) AT TIME ZONE '#{tz}')) AT TIME ZONE '#{tz}'"
-
-      joins(:blood_pressures)
-        .where("patients.recorded_at < #{date_to_period_sql}")
-        .group_by_period(period, 'blood_pressures.recorded_at', last: last)
-    end
+    joins(:blood_pressures)
+      .where("patients.recorded_at < #{date_to_period_sql}")
+      .group_by_period(period, 'blood_pressures.recorded_at', last: last)
   end
 
   def past_date_of_birth

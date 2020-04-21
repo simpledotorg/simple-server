@@ -104,15 +104,15 @@ class UserAnalyticsPresenter
   #
   # i.e. increment by TROPHY_MILESTONE_INCR
   def trophy_stats
-    all_time_follow_ups = all_time_follow_ups_by_gender.count.values.sum
+    follow_ups = all_time_follow_ups.count.values.sum
 
     all_trophies =
-      all_time_follow_ups > TROPHY_MILESTONES.last ?
+      follow_ups > TROPHY_MILESTONES.last ?
         [*TROPHY_MILESTONES,
-         *(TROPHY_MILESTONE_INCR..(all_time_follow_ups + TROPHY_MILESTONE_INCR)).step(TROPHY_MILESTONE_INCR)] :
+         *(TROPHY_MILESTONE_INCR..(follow_ups + TROPHY_MILESTONE_INCR)).step(TROPHY_MILESTONE_INCR)] :
         TROPHY_MILESTONES
 
-    unlocked_trophies_until = all_trophies.index { |v| all_time_follow_ups < v }
+    unlocked_trophies_until = all_trophies.index { |v| follow_ups < v }
 
     {
       locked_trophy_value:
@@ -124,31 +124,30 @@ class UserAnalyticsPresenter
   end
 
   def daily_follow_ups
-    @current_facility.patient_follow_ups(:day, last: DAYS_AGO)
+    @current_facility
+      .patient_follow_ups(:day, last: DAYS_AGO)
   end
 
   def daily_registrations
-    @monthly_registrations ||=
-      @current_facility
-        .registered_patients
-        .group_by_period(:day, :recorded_at, last: DAYS_AGO)
+    @current_facility
+      .registered_patients
+      .group_by_period(:day, :recorded_at, last: DAYS_AGO)
   end
 
   def monthly_follow_ups
     @monthly_follow_ups ||=
-      @current_facility.patient_follow_ups(:month, last: MONTHS_AGO)
+      @current_facility
+        .patient_follow_ups(:month, last: MONTHS_AGO)
   end
 
   def monthly_follow_ups_by_gender
-    @monthly_follow_ups.group(:gender)
+    monthly_follow_ups
+      .group(:gender)
   end
 
   def controlled_visits
-    @monthly_follow_ups.merge(BloodPressure.under_control)
-  end
-
-  def monthly_registrations_by_gender
-    @monthly_registrations.group(:gender)
+    monthly_follow_ups
+      .merge(BloodPressure.under_control)
   end
 
   def monthly_registrations
@@ -158,24 +157,30 @@ class UserAnalyticsPresenter
         .group_by_period(:month, :recorded_at, last: MONTHS_AGO)
   end
 
-  def all_time_follow_ups_by_gender
+  def monthly_registrations_by_gender
+    monthly_registrations
+      .group(:gender)
+  end
+
+  def all_time_follow_ups
     @all_time_follow_ups ||=
       @current_facility
         .patient_follow_ups(:month)
-        .group(:gender)
+        .each_with_object({}) do |((_, gender), count), by_gender|
+        by_gender[gender] ||= 0
+        by_gender[gender] += count
+      end
+  end
+
+  def all_time_follow_ups_by_gender
+    all_time_follow_ups
+      .group(:gender)
   end
 
   def all_time_registrations_by_gender
-    @all_time_registrations ||=
-      @current_facility
-        .registered_patients
-        .group(:gender)
-  end
-
-  def fetch_for_date(period, last)
-    last_n_periods(period, last).map do |date|
-      [date.to_date, yield(date.to_date)]
-    end.to_h
+    @current_facility
+      .registered_patients
+      .group(:gender)
   end
 
   def statistics_cache_key

@@ -125,20 +125,20 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
         expected_output = {
           registrations: {
-            (request_date - 5.months) => {},
-            (request_date - 4.months) => {},
-            reg_date.to_date => { gender => 3 },
-            (request_date - 2.months) => {},
-            controlled_follow_up_date.to_date => {},
-            request_date => {},
-            },
+            [(request_date - 5.months), gender] => 0,
+            [(request_date - 4.months), gender] => 0,
+            [reg_date.to_date, gender] => 3,
+            [(request_date - 2.months), gender] => 0,
+            [controlled_follow_up_date.to_date, gender] => 0,
+            [request_date, gender] => 0,
+          },
           follow_ups: {
-            (request_date - 5.months) => {},
-            (request_date - 4.months) => {},
-            (request_date - 3.months) => {},
-            follow_up_date.to_date => { gender => 3 },
-            controlled_follow_up_date.to_date => { gender => 3 },
-            request_date => {},
+            [(request_date - 5.months), gender] => 0,
+            [(request_date - 4.months), gender] => 0,
+            [(request_date - 3.months), gender] => 0,
+            [follow_up_date.to_date, gender] => 3,
+            [controlled_follow_up_date.to_date, gender] => 3,
+            [request_date, gender] => 0,
           }
         }
 
@@ -161,6 +161,15 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
             request_date => 0,
           },
 
+          registrations: {
+            (request_date - 5.months) => 0,
+            (request_date - 4.months) => 0,
+            (request_date - 3.months) => 3,
+            (request_date - 2.months) => 0,
+            (request_date - 1.months) => 0,
+            request_date => 0,
+          },
+
           controlled_visits: {
             (request_date - 5.months) => 0,
             (request_date - 4.months) => 0,
@@ -175,27 +184,12 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
       end
 
       it 'has no data if facility has not recorded anything recently' do
-        now = Time.current.beginning_of_month.to_date
         data = described_class.new(current_facility).statistics
 
         expected_output =
           {
-            follow_ups: {
-              (now - 5.months) => {},
-              (now - 4.months) => {},
-              (now - 3.months) => {},
-              (now - 2.months) => {},
-              (now - 1.months) => {},
-              now => {},
-            },
-            registrations: {
-              (now - 5.months) => {},
-              (now - 4.months) => {},
-              (now - 3.months) => {},
-              (now - 2.months) => {},
-              (now - 1.months) => {},
-              now => {},
-            }
+            follow_ups: {},
+            registrations: {}
           }
 
         expect(data.dig(:monthly, :grouped_by_gender_and_date)).to eq(expected_output)
@@ -215,11 +209,13 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
                                recorded_at: reg_date,
                                gender: gender)
         patients.each do |patient|
-          create(:blood_pressure,
-                 patient: patient,
-                 facility: current_facility,
-                 user: current_user,
-                 recorded_at: follow_up_date)
+          create(:encounter,
+                 :with_observables,
+                 observable: create(:blood_pressure,
+                                    patient: patient,
+                                    facility: current_facility,
+                                    user: current_user,
+                                    recorded_at: follow_up_date))
         end
       end
 
@@ -228,11 +224,11 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
         expected_output = {
           follow_ups: {
-            gender => 3
+            [follow_up_date, gender] => 3
           },
 
           registrations: {
-            gender => 3
+            [reg_date, gender] => 3
           }
         }
 
@@ -301,10 +297,12 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
            patient.recorded_at + 3.months,
            patient.recorded_at + 4.months].each do |date|
             travel_to(date) do
-              create(:blood_pressure,
-                     patient: patient,
-                     facility: current_facility,
-                     user: current_user)
+              create(:encounter,
+                     :with_observables,
+                     observable: create(:blood_pressure,
+                                        patient: patient,
+                                        facility: current_facility,
+                                        user: current_user))
             end
           end
         end
