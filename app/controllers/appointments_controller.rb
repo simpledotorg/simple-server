@@ -7,22 +7,18 @@ class AppointmentsController < AdminController
   def index
     authorize [:overdue_list, Appointment], :index?
 
-    @appointments = policy_scope([:overdue_list, Appointment])
-                      .joins(patient: { latest_blood_pressures: :facility })
-                      .includes(patient: [
-                        :address,
-                        :phone_numbers,
-                        :medical_history,
-                        { latest_blood_pressures: :facility }
-                      ])
-                      .overdue
-                      .distinct
-                      .order(scheduled_date: :asc)
+    @patient_summaries = policy_scope([:overdue_list, PatientSummary])
+                           .overdue
+                           .order(risk_level: :desc, next_appointment_scheduled_date: :desc)
 
-    @appointments = @appointments.where(facility: current_facility) if current_facility
+    if current_facility
+      @patient_summaries = @patient_summaries.where(next_appointment_facility_id: current_facility.id)
+    end
 
     respond_to do |format|
-      format.html { @appointments = paginate(@appointments) }
+      format.html do
+        @patient_summaries = paginate(@patient_summaries).includes(:next_appointment, patient: :appointments)
+      end
       format.csv do
         send_data render_to_string('index.csv.erb'), filename: download_filename
       end

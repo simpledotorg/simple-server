@@ -9,12 +9,28 @@ RSpec.describe SmsNotificationService do
            scheduled_date: appointment_scheduled_date)
   end
 
-  context '#send_reminder_sms' do
-    let(:twilio_client) { double('TwilioClientDouble') }
-    let(:sender_phone_number) { ENV['TWILIO_PHONE_NUMBER'] }
-    let(:recipient_phone_number) { '8585858585' }
-    let(:expected_sms_recipient_phone_number) { '+918585858585' }
+  let(:twilio_client) { double('TwilioClientDouble') }
+  let(:sender_phone_number) { ENV['TWILIO_PHONE_NUMBER'] }
+  let(:recipient_phone_number) { '8585858585' }
+  let(:expected_sms_recipient_phone_number) { '+918585858585' }
 
+  subject(:sms) { SmsNotificationService.new(recipient_phone_number, sender_phone_number, twilio_client) }
+
+  describe '#send_patient_request_otp_sms' do
+    it 'does stuff' do
+      expect(twilio_client).to receive_message_chain('messages.create').with(
+        from: '+15005550006',
+        to: expected_sms_recipient_phone_number,
+        status_callback: '',
+        body: /123456/
+      )
+
+      sms.send_patient_request_otp_sms('123456')
+    end
+
+  end
+
+  describe '#send_reminder_sms' do
     context 'follow_up_reminder' do
       it 'should have the SMS body in the default locale' do
         sms = SmsNotificationService.new(recipient_phone_number, sender_phone_number, twilio_client)

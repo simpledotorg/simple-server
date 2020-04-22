@@ -2,6 +2,7 @@ class PatientBusinessIdentifier < ApplicationRecord
   include Mergeable
 
   belongs_to :patient
+  has_one :passport_authentication
 
   enum identifier_type: {
     simple_bp_passport: 'simple_bp_passport',
