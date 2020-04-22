@@ -1,4 +1,6 @@
-class AuditLog < ApplicationRecord
+class AuditLog
+  include ActiveModel::Model
+
   MERGE_STATUS_TO_ACTION = {
     discarded: 'update_on_discarded',
     invalid: 'invalid',
@@ -6,9 +8,6 @@ class AuditLog < ApplicationRecord
     updated: 'update',
     old: 'touch'
   }.freeze
-
-  belongs_to :user
-  belongs_to :auditable, polymorphic: true
 
   validates :action, presence: true
   validates :auditable_type, presence: true
