@@ -53,6 +53,13 @@ class Patient < ApplicationRecord
 
   attribute :call_result, :string
 
+  #
+  # Note: This scope expects a join(:blood_pressures) to exist.
+  # For eg, Patient.joins(:blood_pressures).follow_ups(:month).
+  #
+  # It doesn't include the join in this scope to play well with certain parent scopes (eg. Facility).
+  # Parent scopes might auto add this join and the final query would end up with unnecessary joins, affecting perf.
+  #
   scope :follow_ups, -> (period, last: nil) {
     where("patients.recorded_at < #{BloodPressure.date_to_period_sql(period)}")
       .group_by_period(period, 'blood_pressures.recorded_at', last: last)
