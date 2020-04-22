@@ -17,7 +17,7 @@ class Facility < ApplicationRecord
   has_many :encounters
   has_many :blood_pressures, through: :encounters, source: :blood_pressures
   has_many :blood_sugars, through: :encounters, source: :blood_sugars
-  has_many :patients, -> { distinct }, through: :encounters
+  has_many :patients, -> { distinct }, through: :blood_pressures
   has_many :prescription_drugs
   has_many :appointments
   has_many :registered_patients, class_name: "Patient", foreign_key: "registration_facility_id"
@@ -49,10 +49,9 @@ class Facility < ApplicationRecord
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, to: :facility_group, allow_nil: true
-
-  def patient_follow_ups(period, last: nil)
-    Patient.follow_ups(period, last: last).where(blood_pressures: { facility: self })
-  end
+  delegate :follow_ups, to: :patients, allow_nil: true, prefix: :patient
+  delegate :visitors, to: :patients, allow_nil: true
+  delegate :follow_ups, to: :blood_pressures, allow_nil: true, prefix: :bp
 
   friendly_id :name, use: :slugged
 
