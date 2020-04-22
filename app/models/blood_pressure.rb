@@ -33,12 +33,6 @@ class BloodPressure < ApplicationRecord
           THRESHOLDS[:hypertensive][:diastolic])
   end)
 
-  scope :follow_ups, -> (period, last: nil) {
-    joins(:patient)
-      .where("patients.recorded_at < #{date_to_period_sql(period)}")
-      .group_by_period(period, 'blood_pressures.recorded_at', last: last)
-  }
-
   def critical?
     systolic >= THRESHOLDS[:critical][:systolic] || diastolic >= THRESHOLDS[:critical][:diastolic]
   end
