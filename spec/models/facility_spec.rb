@@ -21,6 +21,7 @@ RSpec.describe Facility, type: :model do
     end
 
     it { should belong_to(:facility_group).optional }
+    it { should delegate_method(:follow_ups).to(:patient).with_prefix(:patient).allow_nil }
   end
 
   describe 'Validations' do

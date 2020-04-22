@@ -76,6 +76,52 @@ describe Patient, type: :model do
   end
 
   context 'Scopes' do
+    describe '.follow_ups' do
+      let!(:current_user) { create(:user) }
+      let!(:current_facility) { create(:facility, facility_group: current_user.facility.facility_group) }
+      let!(:reg_date) { Date.new(2018, 1, 1) }
+      let!(:patient_with_follow_up) { create(:patient, registration_facility: current_facility, recorded_at: reg_date) }
+      let!(:patient_without_follow_up) { create(:patient, recorded_at: reg_date) }
+
+      before do
+        create(:encounter,
+               :with_observables,
+               observable: create(:blood_pressure,
+                                  patient: patient_with_follow_up,
+                                  facility: current_facility,
+                                  user: current_user,
+                                  recorded_at: reg_date + 1.day))
+
+        create(:encounter,
+               :with_observables,
+               observable: create(:blood_pressure,
+                                  patient: patient_with_follow_up,
+                                  facility: current_facility,
+                                  user: current_user,
+                                  recorded_at: reg_date + 1.month))
+
+        # visit in a random facility
+        create(:encounter,
+               :with_observables,
+               observable: create(:blood_pressure,
+                                  patient: patient_with_follow_up,
+                                  user: current_user,
+                                  recorded_at: reg_date + 1.month))
+      end
+
+      it 'groups follow ups by day' do
+        expect(Patient.joins(:blood_pressures).follow_ups(:day).count.values.sum).to eq(3)
+      end
+
+      it 'groups follow ups by month' do
+        expect(Patient.joins(:blood_pressures).follow_ups(:month).count.values.sum).to eq(2)
+      end
+
+      it 'includes patients that followed up in a different facility than registration facility' do
+        expect(Patient.joins(:blood_pressures).follow_ups(:month).count.values.sum).to eq(2)
+      end
+    end
+
     describe '.not_contacted' do
       let(:patient_to_followup) { create(:patient, device_created_at: 5.days.ago) }
       let(:patient_to_not_followup) { create(:patient, device_created_at: 1.day.ago) }

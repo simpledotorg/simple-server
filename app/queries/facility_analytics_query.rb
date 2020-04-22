@@ -40,6 +40,7 @@ class FacilityAnalyticsQuery
     @follow_up_patients_by_period ||=
       Patient
         .from(Patient
+                .joins(:blood_pressures)
                 .follow_ups(@period, last: @prev_periods)
                 .group('user_id', 'blood_pressures.patient_id', BloodPressure.date_to_period_sql(@period), 'blood_pressures.recorded_at', 'patients.deleted_at')
                 .where(blood_pressures: { facility: @facility })

@@ -53,6 +53,11 @@ class Patient < ApplicationRecord
 
   attribute :call_result, :string
 
+  scope :follow_ups, -> (period, last: nil) {
+    where("patients.recorded_at < #{BloodPressure.date_to_period_sql(period)}")
+      .group_by_period(period, 'blood_pressures.recorded_at', last: last)
+  }
+
   enum could_not_contact_reasons: {
     not_responding: 'not_responding',
     moved: 'moved',
@@ -70,17 +75,6 @@ class Patient < ApplicationRecord
 
   validates_associated :address, if: :address
   validates_associated :phone_numbers, if: :phone_numbers
-
-  def self.follow_ups(period, last: nil)
-    joins(:blood_pressures)
-      .where("patients.recorded_at < #{BloodPressure.date_to_period_sql(period)}")
-      .group_by_period(period, 'blood_pressures.recorded_at', last: last)
-  end
-
-  def self.visitors(period, last: nil)
-    where("patients.recorded_at < #{BloodPressure.date_to_period_sql(period)}")
-      .group_by_period(period, 'blood_pressures.recorded_at', last: last)
-  end
 
   def past_date_of_birth
     if date_of_birth.present? && date_of_birth > Date.current
