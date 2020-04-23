@@ -185,11 +185,4 @@ class Patient < ApplicationRecord
     prescription_drugs.discard_all
     discard
   end
-
-  private
-
-  def low_priority?
-    latest_scheduled_appointment&.overdue_for_over_a_year? &&
-      latest_blood_pressure&.under_control?
-  end
 end
