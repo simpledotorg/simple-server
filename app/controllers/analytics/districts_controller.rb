@@ -8,13 +8,12 @@ class Analytics::DistrictsController < AnalyticsController
   def show
     @show_current_period = true
 
+    set_dashboard_analytics(@period, 3)
+    set_cohort_analytics(@period, @prev_periods)
+
     respond_to do |format|
-      format.html do
-        set_dashboard_analytics(@period, 3)
-        set_cohort_analytics(@period, @prev_periods)
-      end
+      format.html
       format.csv do
-        set_cohort_analytics_per_facility(@period, @prev_periods)
         set_facility_keys
         send_data render_to_string('show.csv.erb'), filename: download_filename
       end
@@ -72,13 +71,6 @@ class Analytics::DistrictsController < AnalyticsController
     @cohort_analytics =
       set_analytics_cache(analytics_cache_key_cohort(period)) do
         @organization_district.cohort_analytics(period, prev_periods)
-      end
-  end
-
-  def set_cohort_analytics_per_facility(period, prev_periods)
-    @cohort_analytics =
-      set_analytics_cache("#{analytics_cache_key_cohort(period)}/per_facility") do
-        @organization_district.cohort_analytics(period, prev_periods, per_facility: true)
       end
   end
 
