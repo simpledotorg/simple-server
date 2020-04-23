@@ -1,5 +1,5 @@
-<!-- the "all" table -->
-<table class="progress-table <%= data_table_name %> hypertension:all">
+<!-- the "all" table for both HTN & DM across genders -->
+<table class="progress-table <%= data_table_name %> all">
   <tr class="total">
     <td class="row-label">All-time</td>
     <td>
@@ -23,8 +23,34 @@
   <% end %>
 </table>
 
-<!-- gender-wise tables -->
+<!-- hypertension-only -->
+<!-- the "all genders" table -->
+<table class="progress-table <%= data_table_name %> hypertension:all" style="display: none">
+  <tr class="total">
+    <td class="row-label">All-time</td>
+    <td>
+      <%= zero_if_unavailable(@statistics.dig(:all_time,
+                                              :grouped_by_gender,
+                                              resource)
+                                  .values
+                                  .sum) %>
+    </td>
+  </tr>
+  <% @user_analytics.monthly_period_list.each do |month_date| %>
+    <tr>
+      <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
+      <td>
+        <%= zero_if_unavailable(@statistics.dig(:monthly,
+                                                :grouped_by_date,
+                                                resource,
+                                                month_date)) %>
+      </td>
+    </tr>
+  <% end %>
+</table>
+
 <% Patient::GENDERS.each do |gender| %>
+  <!-- gender-wise tables -->
   <table class="progress-table <%= data_table_name %> hypertension:<%= gender %>" style="display: none">
     <tr class="total">
       <td class="row-label">All-time</td>
@@ -41,6 +67,62 @@
         <td>
           <%= zero_if_unavailable(@statistics.dig(:monthly,
                                                   :grouped_by_gender_and_date,
+                                                  resource,
+                                                  [month_date, gender])) %>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>
+
+<!-- diabetes-only -->
+<!-- the "all genders" table -->
+<table class="progress-table <%= data_table_name %> diabetes:all" style="display: none">
+  <tr class="total">
+    <td class="row-label">All-time</td>
+    <td>
+      <%= zero_if_unavailable(@statistics.dig(:all_time,
+                                              :grouped_by_gender,
+                                              :diabetes,
+                                              resource)
+                                  .values
+                                  .sum) %>
+    </td>
+  </tr>
+  <% @user_analytics.monthly_period_list.each do |month_date| %>
+    <tr>
+      <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
+      <td>
+        <%= zero_if_unavailable(@statistics.dig(:monthly,
+                                                :grouped_by_date,
+                                                :diabetes,
+                                                resource,
+                                                month_date)) %>
+      </td>
+    </tr>
+  <% end %>
+</table>
+
+<% Patient::GENDERS.each do |gender| %>
+  <!-- gender-wise tables -->
+  <table class="progress-table <%= data_table_name %> diabetes:<%= gender %>" style="display: none">
+    <tr class="total">
+      <td class="row-label">All-time</td>
+      <td>
+        <%= zero_if_unavailable(@statistics.dig(:all_time,
+                                                :grouped_by_gender,
+                                                :diabetes,
+                                                resource,
+                                                gender)) %>
+      </td>
+    </tr>
+    <% @user_analytics.monthly_period_list.each do |month_date| %>
+      <tr>
+        <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
+        <td>
+          <%= zero_if_unavailable(@statistics.dig(:monthly,
+                                                  :grouped_by_gender_and_date,
+                                                  :diabetes,
                                                   resource,
                                                   [month_date, gender])) %>
         </td>

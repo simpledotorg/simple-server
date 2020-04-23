@@ -30,6 +30,7 @@ class Patient < ApplicationRecord
   has_many :facilities, -> { distinct }, through: :blood_pressures
   has_many :users, -> { distinct }, through: :blood_pressures
   has_many :appointments
+
   has_one :medical_history
 
   has_many :encounters
@@ -64,6 +65,14 @@ class Patient < ApplicationRecord
     where("patients.recorded_at < #{BloodPressure.date_to_period_sql(period)}")
       .group_by_period(period, 'blood_pressures.recorded_at', last: last)
   }
+
+  scope :diabetic_follow_ups, -> (period, last: nil) {
+    diabetic
+      .where("patients.recorded_at < #{BloodSugar.date_to_period_sql(period)}")
+      .group_by_period(period, 'blood_sugars.recorded_at', last: last)
+  }
+
+  scope :diabetic, -> { joins(:medical_history).where(medical_histories: { diabetes: 'yes' }) }
 
   enum could_not_contact_reasons: {
     not_responding: 'not_responding',

@@ -28,7 +28,7 @@ class UserAnalyticsPresenter
           all_time: all_time_stats,
           trophies: trophy_stats,
           metadata: {
-            is_diabetes_enabled: false,
+            is_diabetes_enabled: @current_facility.diabetes_enabled?,
             last_updated_at: I18n.l(Time.current),
             formatted_next_date: display_date(Time.current + 1.day),
             today_string: I18n.t(:today_str)
@@ -50,8 +50,8 @@ class UserAnalyticsPresenter
     {
       grouped_by_date:
         {
-          follow_ups: daily_follow_ups.count,
-          registrations: daily_registrations.count
+          follow_ups: daily_follow_ups,
+          registrations: daily_registrations
         }
     }
   end
@@ -62,13 +62,21 @@ class UserAnalyticsPresenter
         {
           follow_ups: monthly_follow_ups,
           registrations: monthly_registrations,
-          controlled_visits: controlled_visits.count,
+          controlled_visits: controlled_visits,
+          diabetes: {
+            follow_ups: monthly_diabetes_follow_ups,
+            registrations: monthly_diabetes_regs
+          }
         },
 
       grouped_by_gender_and_date:
         {
           follow_ups: monthly_follow_ups_by_gender,
-          registrations: monthly_registrations_by_gender
+          registrations: monthly_regs_by_gender,
+          diabetes: {
+            follow_ups: monthly_diabetes_follow_ups_by_gender,
+            registrations: monthly_diabetes_regs_by_gender
+          }
         },
     }
   end
@@ -77,8 +85,12 @@ class UserAnalyticsPresenter
     {
       grouped_by_gender:
         {
-          follow_ups: all_time_follow_ups,
-          registrations: all_time_registrations_by_gender.count
+          follow_ups: all_time_follow_ups_by_gender,
+          registrations: all_time_regs_by_gender,
+          diabetes: {
+            follow_ups: all_time_diabetes_follow_ups_by_gender,
+            registrations: all_time_diabetes_regs_by_gender
+          }
         }
     }
   end
@@ -104,7 +116,7 @@ class UserAnalyticsPresenter
   #
   # i.e. increment by TROPHY_MILESTONE_INCR
   def trophy_stats
-    follow_ups = all_time_follow_ups.values.sum
+    follow_ups = all_time_follow_ups_by_gender.values.sum
 
     all_trophies =
       follow_ups > TROPHY_MILESTONES.last ?
@@ -126,12 +138,14 @@ class UserAnalyticsPresenter
   def daily_follow_ups
     @current_facility
       .patient_follow_ups(:day, last: DAYS_AGO)
+      .count
   end
 
   def daily_registrations
     @current_facility
       .registered_patients
       .group_by_period(:day, :recorded_at, last: DAYS_AGO)
+      .count
   end
 
   def monthly_follow_ups_by_gender
@@ -142,22 +156,38 @@ class UserAnalyticsPresenter
         .count
   end
 
+  def monthly_diabetes_follow_ups_by_gender
+    @current_facility
+      .patient_diabetic_follow_ups(:month, last: MONTHS_AGO)
+      .group(:gender)
+      .count
+  end
+
+  def monthly_diabetes_follow_ups
+    monthly_diabetes_follow_ups_by_gender
+      .each_with_object({}) do |((date, _), count), by_date|
+      by_date[date] ||= 0
+      by_date[date] += count
+    end
+  end
+
   def monthly_follow_ups
     monthly_follow_ups_by_gender
       .each_with_object({}) do |((date, _), count), by_date|
-        by_date[date] ||= 0
-        by_date[date] += count
-      end
+      by_date[date] ||= 0
+      by_date[date] += count
+    end
   end
 
   def controlled_visits
     @current_facility
       .patient_follow_ups(:month, last: MONTHS_AGO)
       .merge(BloodPressure.under_control)
+      .count
   end
 
-  def monthly_registrations_by_gender
-    @monthly_registrations_by_gender ||=
+  def monthly_regs_by_gender
+    @monthly_regs_by_gender ||=
       @current_facility
         .registered_patients
         .group_by_period(:month, :recorded_at, last: MONTHS_AGO)
@@ -165,33 +195,76 @@ class UserAnalyticsPresenter
         .count
   end
 
-  def monthly_registrations
-    monthly_registrations_by_gender
-      .each_with_object({}) do |((date, _), count), by_date|
-        by_date[date] ||= 0
-        by_date[date] += count
-      end
+  def monthly_diabetes_regs_by_gender
+    @current_facility
+      .registered_diabetic_patients
+      .group_by_period(:month, :recorded_at, last: MONTHS_AGO)
+      .group(:gender)
+      .count
   end
 
-  def all_time_follow_ups
-    @all_time_follow_ups ||=
+  def monthly_diabetes_regs
+    monthly_diabetes_regs_by_gender
+      .each_with_object({}) do |((date, _), count), by_date|
+      by_date[date] ||= 0
+      by_date[date] += count
+    end
+  end
+
+  def monthly_registrations
+    monthly_regs_by_gender
+      .each_with_object({}) do |((date, _), count), by_date|
+      by_date[date] ||= 0
+      by_date[date] += count
+    end
+  end
+
+  def all_time_follow_ups_by_gender
+    @all_time_follow_ups_by_gender ||=
       @current_facility
         .patient_follow_ups(:month)
         .group(:gender)
         .count
         .each_with_object({}) do |((_, gender), count), by_gender|
-          by_gender[gender] ||= 0
-          by_gender[gender] += count
+        by_gender[gender] ||= 0
+        by_gender[gender] += count
       end
   end
 
-  def all_time_registrations_by_gender
+  def all_time_diabetes_follow_ups_by_gender
+    @current_facility
+      .patient_diabetic_follow_ups(:month, last: MONTHS_AGO)
+      .group(:gender)
+      .count
+      .each_with_object({}) do |((_, gender), count), by_gender|
+      by_gender[gender] ||= 0
+      by_gender[gender] += count
+    end
+  end
+
+  def all_time_regs_by_gender
     @current_facility
       .registered_patients
       .group(:gender)
+      .count
+  end
+
+  def all_time_diabetes_regs_by_gender
+    @current_facility
+      .registered_diabetic_patients
+      .group(:gender)
+      .count
   end
 
   def statistics_cache_key
     "user_analytics/#{@current_facility.id}"
+  end
+
+  def group_by_date
+
+  end
+
+  def group_by_gender
+
   end
 end
