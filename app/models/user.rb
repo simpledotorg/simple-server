@@ -30,14 +30,11 @@ class User < ApplicationRecord
            source: :authenticatable,
            source_type: 'EmailAuthentication'
 
-  has_many :audit_logs, as: :auditable
   has_many :appointments
   has_many :medical_histories
   has_many :prescription_drugs
 
   has_many :user_permissions, foreign_key: :user_id, dependent: :delete_all
-
-  has_many :audit_logs, as: :auditable
 
   validates :full_name, presence: true
   validates :role, presence: true, if: -> { email_authentication.present? }

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200410201924) do
+ActiveRecord::Schema.define(version: 20200421132003) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -54,19 +54,6 @@ ActiveRecord::Schema.define(version: 20200410201924) do
     t.index ["facility_id"], name: "index_appointments_on_facility_id"
     t.index ["patient_id"], name: "index_appointments_on_patient_id"
     t.index ["user_id"], name: "index_appointments_on_user_id"
-  end
-
-  create_table "audit_logs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "action", null: false
-    t.string "auditable_type", null: false
-    t.uuid "auditable_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.uuid "user_id", null: false
-    t.datetime "deleted_at"
-    t.index ["action", "auditable_type"], name: "index_audit_logs_on_action_and_auditable_type"
-    t.index ["auditable_type", "auditable_id"], name: "index_audit_logs_on_auditable_type_and_auditable_id"
-    t.index ["user_id"], name: "index_audit_logs_on_user_id"
   end
 
   create_table "blood_pressures", id: :uuid, default: nil, force: :cascade do |t|
@@ -303,10 +290,10 @@ ActiveRecord::Schema.define(version: 20200410201924) do
     t.string "access_token", null: false
     t.string "otp", null: false
     t.datetime "otp_valid_until", null: false
-    t.uuid "patient_id", null: false
     t.uuid "patient_business_identifier_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["patient_business_identifier_id"], name: "index_passport_auth_on_business_id"
   end
 
   create_table "patient_business_identifiers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

@@ -2,13 +2,12 @@ class PassportAuthentication < ActiveRecord::Base
   after_initialize :generate_access_token, if: :new_record?
   after_initialize :generate_otp, if: :new_record?
 
-  belongs_to :patient
   belongs_to :patient_business_identifier
+  delegate :patient, to: :patient_business_identifier
 
   validates :access_token, presence: true
   validates :otp, presence: true
   validates :otp_valid_until, presence: true
-  validates :patient, presence: true
   validates :patient_business_identifier, presence: true
 
   def otp_valid?
