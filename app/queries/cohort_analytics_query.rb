@@ -1,12 +1,13 @@
 class CohortAnalyticsQuery
   include QuarterHelper
 
-  def initialize(patients, period = :month)
+  def initialize(patients, period = :month, per_facility: false)
     @patients = patients
     @include_current_period = true
+    @per_facility = per_facility
   end
 
-  def patient_counts_by_period(period, prev_periods, from_time: Time.current, per_facility: false)
+  def patient_counts_by_period(period, prev_periods, from_time: Time.current)
     results = {}
 
     # index is a quick hack to allow toggling the current period in the results.
@@ -26,7 +27,7 @@ class CohortAnalyticsQuery
         report_end = report_start.end_of_quarter
       end
 
-      if per_facility
+      if @per_facility
         results[[cohort_start.to_date, report_start.to_date]] = patient_counts_per_facility(cohort_start, cohort_end, report_start, report_end)
       else
         results[[cohort_start.to_date, report_start.to_date]] = patient_counts(cohort_start, cohort_end, report_start, report_end)
@@ -74,7 +75,7 @@ class CohortAnalyticsQuery
       defaulted: { total: registered_patients.size - followed_up_patients.size, **defaulted_counts },
       controlled: { total: controlled_patients.size, **controlled_counts },
       uncontrolled: { total: uncontrolled_patients.size, **uncontrolled_counts }
-    }
+    }.with_indifferent_access
   end
 
   def registered(cohort_start, cohort_end)
