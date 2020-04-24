@@ -8,7 +8,10 @@
   </div>
 
   <div class="split-row">
-    <% analytics_percentages = calculate_percentage_for_analytics(current_cohort_analytics.slice(:defaulted, :controlled, :uncontrolled)) %>
+    <%
+      totals = current_cohort_analytics.slice(:defaulted, :controlled, :uncontrolled).map { |k, v| [k, v[:total]] }.to_h.with_indifferent_access
+      analytics_percentages = calculate_percentage_for_analytics(totals)
+    %>
     <table class="split-bars" style="height: 180px;">
 
       <tr>

@@ -33,10 +33,10 @@ module DashboardHelper
   end
 
   def calculate_percentage_for_analytics(analytics)
-    total = analytics.values.map {|metric| metric[:total] }.sum
-    return analytics.map {|k, v| [k, v[:total]] }.to_h.with_indifferent_access if total == 0
+    total = analytics.values.sum
+    return analytics if total == 0
 
-    analytics.map { |k, v| [k, (v[:total] * 100.0) / total] }.to_h.with_indifferent_access
+    analytics.map { |k, v| [k, (v * 100.0) / total] }.to_h.with_indifferent_access
   end
 
   def percentage_string(percentage)
