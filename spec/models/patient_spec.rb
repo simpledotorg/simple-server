@@ -124,10 +124,10 @@ describe Patient, type: :model do
     end
 
     describe '#risk_priority' do
-      it 'returns no priority for patients recently overdue' do
+      it 'returns regular priority for patients recently overdue' do
         create(:appointment, scheduled_date: 29.days.ago, status: :scheduled, patient: patient)
 
-        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:NONE])
+        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:REGULAR])
       end
 
       it 'returns high priority for patients overdue with critical bp' do
@@ -152,11 +152,11 @@ describe Patient, type: :model do
         expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:REGULAR])
       end
 
-      it 'returns no priority for patients overdue with only medical risk history' do
+      it 'returns regular priority for patients overdue with only medical risk history' do
         create(:medical_history, :prior_risk_history, patient: patient)
         create(:appointment, :overdue, patient: patient)
 
-        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:NONE])
+        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:REGULAR])
       end
 
       it 'returns regular priority for patients overdue with hypertension' do
@@ -166,11 +166,11 @@ describe Patient, type: :model do
         expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:REGULAR])
       end
 
-      it 'returns low priority for patients overdue with low risk' do
+      it 'returns regular priority for patients overdue with low risk' do
         create(:blood_pressure, :under_control, patient: patient)
         create(:appointment, scheduled_date: 2.years.ago, status: :scheduled, patient: patient)
 
-        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:LOW])
+        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:REGULAR])
       end
 
       it 'returns high priority for patients overdue with high blood sugar' do
@@ -180,11 +180,11 @@ describe Patient, type: :model do
         expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:HIGH])
       end
 
-      it "returns 'none' priority for patients overdue with normal blood sugar" do
+      it "returns regular priority for patients overdue with normal blood sugar" do
         create(:blood_sugar, patient: patient, blood_sugar_type: :random, blood_sugar_value: 150)
         create(:appointment, :overdue, patient: patient)
 
-        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:NONE])
+        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:REGULAR])
       end
     end
 
