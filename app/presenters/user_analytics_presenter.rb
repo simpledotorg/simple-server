@@ -9,7 +9,7 @@ class UserAnalyticsPresenter
   MONTHS_AGO = 6
   TROPHY_MILESTONES = [10, 25, 50, 100, 250, 500, 1_000, 2_000, 3_000, 4_000, 5_000]
   TROPHY_MILESTONE_INCR = 10_000
-  EXPIRE_STATISTICS_CACHE_IN = 30.minutes
+  EXPIRE_STATISTICS_CACHE_IN = 15.minutes
 
   attr_reader :daily_period_list, :monthly_period_list
 
@@ -50,8 +50,8 @@ class UserAnalyticsPresenter
     {
       grouped_by_date:
         {
-          follow_ups: daily_follow_ups.count,
-          registrations: daily_registrations.count
+          follow_ups: daily_follow_ups,
+          registrations: daily_registrations
         }
     }
   end
@@ -62,7 +62,7 @@ class UserAnalyticsPresenter
         {
           follow_ups: monthly_follow_ups,
           registrations: monthly_registrations,
-          controlled_visits: controlled_visits.count,
+          controlled_visits: controlled_visits,
         },
 
       grouped_by_gender_and_date:
@@ -77,8 +77,8 @@ class UserAnalyticsPresenter
     {
       grouped_by_gender:
         {
-          follow_ups: all_time_follow_ups,
-          registrations: all_time_registrations_by_gender.count
+          follow_ups: all_time_follow_ups_by_gender,
+          registrations: all_time_registrations_by_gender
         }
     }
   end
@@ -104,7 +104,7 @@ class UserAnalyticsPresenter
   #
   # i.e. increment by TROPHY_MILESTONE_INCR
   def trophy_stats
-    follow_ups = all_time_follow_ups.values.sum
+    follow_ups = all_time_follow_ups_by_gender.values.sum
 
     all_trophies =
       follow_ups > TROPHY_MILESTONES.last ?
@@ -126,12 +126,14 @@ class UserAnalyticsPresenter
   def daily_follow_ups
     @current_facility
       .patient_follow_ups(:day, last: DAYS_AGO)
+      .count
   end
 
   def daily_registrations
     @current_facility
       .registered_patients
       .group_by_period(:day, :recorded_at, last: DAYS_AGO)
+      .count
   end
 
   def monthly_follow_ups_by_gender
@@ -154,6 +156,7 @@ class UserAnalyticsPresenter
     @current_facility
       .patient_follow_ups(:month, last: MONTHS_AGO)
       .merge(BloodPressure.under_control)
+      .count
   end
 
   def monthly_registrations_by_gender
@@ -173,7 +176,7 @@ class UserAnalyticsPresenter
       end
   end
 
-  def all_time_follow_ups
+  def all_time_follow_ups_by_gender
     @all_time_follow_ups ||=
       @current_facility
         .patient_follow_ups(:month)
@@ -189,6 +192,7 @@ class UserAnalyticsPresenter
     @current_facility
       .registered_patients
       .group(:gender)
+      .count
   end
 
   def statistics_cache_key
