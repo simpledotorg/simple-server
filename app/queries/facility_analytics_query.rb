@@ -38,6 +38,17 @@ class FacilityAnalyticsQuery
 
   def follow_up_patients_by_period
     @follow_up_patients_by_period ||=
+
+      #
+      # The DISTINCT ON is for when a patient visits a facility twice in a period and is seen by different users.
+      # Without it, the visit is counted twice and the total increases in comparison to facility follow ups.
+      #
+      # The salient clause: we're DISTINCTing ON the BloodPressure.date_to_period_sql and the user_id together.
+      #
+      # However, we've turned this into a nested subquery using .from as a workaround for ActiveRecord's inability to
+      # compose a COUNT with a DISTINCT ON – it ends up with garble like COUNT DISTINCT DISTINCT ON which is an
+      # invalid query since AR doesn't know how to handle DISTINCT ON.
+      #
       Patient
         .from(Patient
                 .joins(:blood_pressures)
