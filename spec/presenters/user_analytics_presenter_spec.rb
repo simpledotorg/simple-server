@@ -13,13 +13,14 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
       before do
         patients = create_list(:patient, 3, registration_facility: current_facility, recorded_at: reg_date)
         patients.each do |patient|
-          create(:blood_pressure,
-                 patient: patient,
-                 facility: current_facility,
-                 user: current_user,
-                 recorded_at: follow_up_date)
+          create(:encounter,
+                 :with_observables,
+                 observable: create(:blood_pressure,
+                                    patient: patient,
+                                    facility: current_facility,
+                                    user: current_user,
+                                    recorded_at: follow_up_date))
         end
-        LatestBloodPressuresPerPatientPerDay.refresh
 
         stub_const("UserAnalyticsPresenter::DAYS_AGO", 6)
       end
@@ -94,22 +95,24 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
                                recorded_at: reg_date,
                                gender: gender)
         patients.each do |patient|
-          create(:blood_pressure,
-                 :critical,
-                 patient: patient,
-                 facility: current_facility,
-                 user: current_user,
-                 recorded_at: follow_up_date)
+          create(:encounter,
+                 :with_observables,
+                 observable: create(:blood_pressure,
+                                    :critical,
+                                    patient: patient,
+                                    facility: current_facility,
+                                    user: current_user,
+                                    recorded_at: follow_up_date))
 
-          create(:blood_pressure,
-                 :under_control,
-                 patient: patient,
-                 facility: current_facility,
-                 user: current_user,
-                 recorded_at: controlled_follow_up_date)
+          create(:encounter,
+                 :with_observables,
+                 observable: create(:blood_pressure,
+                                    :under_control,
+                                    patient: patient,
+                                    facility: current_facility,
+                                    user: current_user,
+                                    recorded_at: controlled_follow_up_date))
         end
-
-        LatestBloodPressuresPerPatientPerMonth.refresh
 
         stub_const("UserAnalyticsPresenter::MONTHS_AGO", 6)
       end
@@ -122,25 +125,20 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
         expected_output = {
           registrations: {
-            gender => {
-              (request_date - 5.months) => 0,
-              (request_date - 4.months) => 0,
-              reg_date.to_date => 3,
-              (request_date - 2.months) => 0,
-              controlled_follow_up_date.to_date => 0,
-              request_date => 0,
-            }
+            [(request_date - 5.months), gender] => 0,
+            [(request_date - 4.months), gender] => 0,
+            [reg_date.to_date, gender] => 3,
+            [(request_date - 2.months), gender] => 0,
+            [controlled_follow_up_date.to_date, gender] => 0,
+            [request_date, gender] => 0,
           },
-
           follow_ups: {
-            gender => {
-              (request_date - 5.months) => 0,
-              (request_date - 4.months) => 0,
-              (request_date - 3.months) => 0,
-              follow_up_date.to_date => 3,
-              controlled_follow_up_date.to_date => 3,
-              request_date => 0,
-            }
+            [(request_date - 5.months), gender] => 0,
+            [(request_date - 4.months), gender] => 0,
+            [(request_date - 3.months), gender] => 0,
+            [follow_up_date.to_date, gender] => 3,
+            [controlled_follow_up_date.to_date, gender] => 3,
+            [request_date, gender] => 0,
           }
         }
 
@@ -154,12 +152,21 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
           end
 
         expected_output = {
-          total_visits: {
+          follow_ups: {
             (request_date - 5.months) => 0,
             (request_date - 4.months) => 0,
             (request_date - 3.months) => 0,
             (request_date - 2.months) => 3,
             (request_date - 1.months) => 3,
+            request_date => 0,
+          },
+
+          registrations: {
+            (request_date - 5.months) => 0,
+            (request_date - 4.months) => 0,
+            (request_date - 3.months) => 3,
+            (request_date - 2.months) => 0,
+            (request_date - 1.months) => 0,
             request_date => 0,
           },
 
@@ -201,13 +208,14 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
                                recorded_at: reg_date,
                                gender: gender)
         patients.each do |patient|
-          create(:blood_pressure,
-                 patient: patient,
-                 facility: current_facility,
-                 user: current_user,
-                 recorded_at: follow_up_date)
+          create(:encounter,
+                 :with_observables,
+                 observable: create(:blood_pressure,
+                                    patient: patient,
+                                    facility: current_facility,
+                                    user: current_user,
+                                    recorded_at: follow_up_date))
         end
-        LatestBloodPressuresPerPatientPerDay.refresh
       end
 
       it 'has data grouped by gender' do
@@ -288,15 +296,15 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
            patient.recorded_at + 3.months,
            patient.recorded_at + 4.months].each do |date|
             travel_to(date) do
-              create(:blood_pressure,
-                     patient: patient,
-                     facility: current_facility,
-                     user: current_user)
+              create(:encounter,
+                     :with_observables,
+                     observable: create(:blood_pressure,
+                                        patient: patient,
+                                        facility: current_facility,
+                                        user: current_user))
             end
           end
         end
-
-        LatestBloodPressuresPerPatientPerDay.refresh
 
         data = described_class.new(current_facility).statistics
 
@@ -340,45 +348,6 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
     it 'displays the percentage rounded up' do
       expect(described_class.new(current_facility).display_percentage(22, 7)).to eq("314%")
-    end
-  end
-
-  describe '#stats_across_genders_for_month' do
-    let(:reg_date) { Date.new(2018, 4, 8) }
-
-    before do
-      create(:patient,
-             registration_facility: current_facility,
-             recorded_at: reg_date - 1.month,
-             gender: 'male')
-      create(:patient,
-             registration_facility: current_facility,
-             recorded_at: reg_date - 1.month,
-             gender: 'female')
-      create(:patient,
-             registration_facility: current_facility,
-             recorded_at: reg_date,
-             gender: 'female')
-      create(:patient,
-             registration_facility: current_facility,
-             recorded_at: reg_date + 1.weeks,
-             gender: 'female')
-      create(:patient,
-             registration_facility: current_facility,
-             recorded_at: reg_date + 1.weeks,
-             gender: 'transgender')
-
-      stub_const("UserAnalyticsPresenter::MONTHS_AGO", 6)
-    end
-
-    it 'merges together all genders and counts the resource for a given month date' do
-      travel_to(reg_date) do
-        user_analytics = described_class.new(current_facility)
-        month_date = reg_date.beginning_of_month
-
-        expect(user_analytics.stats_across_genders_for_month(:registrations, month_date)).to eq(1)
-        expect(user_analytics.stats_across_genders_for_month(:registrations, month_date - 1.month)).to eq(2)
-      end
     end
   end
 end
