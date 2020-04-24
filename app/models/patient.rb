@@ -75,18 +75,18 @@ class Patient < ApplicationRecord
   }
 
   scope :follow_ups, -> (period, last:) {
-    follow_ups_with(:blood_sugars, period, time_col: 'encountered_on', last: last)
+    follow_ups_with(:encounters, period, time_col: 'encountered_on', last: last)
   }
 
-  private_class_method :follow_ups_with
-
   def self.follow_ups_with(resource_type, period, time_col: 'recorded_at', last: nil)
-    resource_name = resource_type.to_s.singularize.camelize
+    resource_name = resource_type.to_s.singularize.camelize.constantize
     group_by_time = "#{resource_type}.#{time_col}"
 
-    where("patients.recorded_at < ?", resource_name.date_to_period_sql(period))
+    where("patients.recorded_at < #{resource_name.date_to_period_sql(period)}")
       .group_by_period(period, group_by_time, last: last)
   end
+
+  private_class_method :follow_ups_with
 
   enum could_not_contact_reasons: {
     not_responding: 'not_responding',
