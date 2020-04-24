@@ -60,22 +60,28 @@ class UserAnalyticsPresenter
     {
       grouped_by_date:
         {
-          follow_ups: monthly_follow_ups,
-          registrations: monthly_registrations,
-          controlled_visits: controlled_visits,
+          hypertension: {
+            follow_ups: Hypertension::monthly_follow_ups,
+            registrations: Hypertension::monthly_registrations,
+            controlled_visits: Hypertension::controlled_visits,
+          },
+
           diabetes: {
-            follow_ups: monthly_diabetes_follow_ups,
-            registrations: monthly_diabetes_regs
+            follow_ups: Diabetes::monthly_follow_ups,
+            registrations: Diabetes::monthly_registrations
           }
         },
 
       grouped_by_gender_and_date:
         {
-          follow_ups: monthly_follow_ups_by_gender,
-          registrations: monthly_regs_by_gender,
+          hypertension: {
+            follow_ups: Hypertension::monthly_follow_ups_by_gender,
+            registrations: Hypertension::monthly_regs_by_gender
+          },
+
           diabetes: {
-            follow_ups: monthly_diabetes_follow_ups_by_gender,
-            registrations: monthly_diabetes_regs_by_gender
+            follow_ups: Diabetes::monthly_follow_ups_by_gender,
+            registrations: Diabetes::monthly_regs_by_gender
           }
         },
     }
@@ -85,11 +91,19 @@ class UserAnalyticsPresenter
     {
       grouped_by_gender:
         {
-          follow_ups: all_time_follow_ups_by_gender,
-          registrations: all_time_regs_by_gender,
+          all: {
+            follow_ups: all_follow_ups,
+            registrations: all_registrations
+          },
+
+          hypertension: {
+            follow_ups: Hypertension::all_time_follow_ups_by_gender,
+            registrations: Hypertension::all_time_regs_by_gender,
+          },
+
           diabetes: {
-            follow_ups: all_time_diabetes_follow_ups_by_gender,
-            registrations: all_time_diabetes_regs_by_gender
+            follow_ups: Diabetes::all_time_diabetes_follow_ups_by_gender,
+            registrations: Diabetes::all_time_diabetes_regs_by_gender
           }
         }
     }
@@ -148,112 +162,132 @@ class UserAnalyticsPresenter
       .count
   end
 
-  def monthly_follow_ups_by_gender
-    @monthly_follow_ups_by_gender ||=
+  def all_follow_ups
+    @current_facility
+      .follow_ups(:month, last: DAYS_AGO)
+      .count
+  end
+
+  def all_registrations
+    @current_facility
+      .registered_patients
+      .group_by_period(:month, :recorded_at, last: DAYS_AGO)
+      .count
+  end
+
+  module Hypertension
+    def monthly_follow_ups_by_gender
+      @monthly_follow_ups_by_gender ||=
+        @current_facility
+          .hypertension_follow_ups(:month, last: MONTHS_AGO)
+          .group(:gender)
+          .count
+    end
+
+    def monthly_follow_ups
+      monthly_follow_ups_by_gender
+        .each_with_object({}) do |((date, _), count), by_date|
+        by_date[date] ||= 0
+        by_date[date] += count
+      end
+    end
+
+    def controlled_visits
       @current_facility
-        .patient_follow_ups(:month, last: MONTHS_AGO)
+        .hypertension_follow_ups(:month, last: MONTHS_AGO)
+        .merge(BloodPressure.under_control)
+        .count
+    end
+
+
+    def monthly_registrations
+      monthly_regs_by_gender
+        .each_with_object({}) do |((date, _), count), by_date|
+        by_date[date] ||= 0
+        by_date[date] += count
+      end
+    end
+
+    def monthly_regs_by_gender
+      @monthly_regs_by_gender ||=
+        @current_facility
+          .registered_hypertension_patients
+          .group_by_period(:month, :recorded_at, last: MONTHS_AGO)
+          .group(:gender)
+          .count
+    end
+
+    def all_time_follow_ups_by_gender
+      @all_time_follow_ups_by_gender ||=
+        @current_facility
+          .hypertension_follow_ups(:month)
+          .group(:gender)
+          .count
+          .each_with_object({}) do |((_, gender), count), by_gender|
+          by_gender[gender] ||= 0
+          by_gender[gender] += count
+        end
+    end
+
+    def all_time_regs_by_gender
+      @current_facility
+        .registered_hypertension_patients
         .group(:gender)
         .count
-  end
-
-  def monthly_diabetes_follow_ups_by_gender
-    @current_facility
-      .patient_diabetic_follow_ups(:month, last: MONTHS_AGO)
-      .group(:gender)
-      .count
-  end
-
-  def monthly_diabetes_follow_ups
-    monthly_diabetes_follow_ups_by_gender
-      .each_with_object({}) do |((date, _), count), by_date|
-      by_date[date] ||= 0
-      by_date[date] += count
     end
   end
 
-  def monthly_follow_ups
-    monthly_follow_ups_by_gender
-      .each_with_object({}) do |((date, _), count), by_date|
-      by_date[date] ||= 0
-      by_date[date] += count
+  module Diabetes
+    def monthly_follow_ups_by_gender
+      @monthly_follow_ups_by_gender ||=
+        @current_facility
+          .diabetes_follow_ups(:month, last: MONTHS_AGO)
+          .group(:gender)
+          .count
     end
-  end
 
-  def controlled_visits
-    @current_facility
-      .patient_follow_ups(:month, last: MONTHS_AGO)
-      .merge(BloodPressure.under_control)
-      .count
-  end
+    def monthly_follow_ups
+      monthly_follow_ups_by_gender
+        .each_with_object({}) do |((date, _), count), by_date|
+        by_date[date] ||= 0
+        by_date[date] += count
+      end
+    end
 
-  def monthly_regs_by_gender
-    @monthly_regs_by_gender ||=
+    def monthly_regs_by_gender
+      @monthly_regs_by_gender ||=
+        @current_facility
+          .registered_diabetes_patients
+          .group_by_period(:month, :recorded_at, last: MONTHS_AGO)
+          .group(:gender)
+          .count
+    end
+
+    def monthly_regs
+      monthly_regs_by_gender
+        .each_with_object({}) do |((date, _), count), by_date|
+        by_date[date] ||= 0
+        by_date[date] += count
+      end
+    end
+
+    def all_time_follow_ups_by_gender
       @current_facility
-        .registered_patients
-        .group_by_period(:month, :recorded_at, last: MONTHS_AGO)
-        .group(:gender)
-        .count
-  end
-
-  def monthly_diabetes_regs_by_gender
-    @current_facility
-      .registered_diabetic_patients
-      .group_by_period(:month, :recorded_at, last: MONTHS_AGO)
-      .group(:gender)
-      .count
-  end
-
-  def monthly_diabetes_regs
-    monthly_diabetes_regs_by_gender
-      .each_with_object({}) do |((date, _), count), by_date|
-      by_date[date] ||= 0
-      by_date[date] += count
-    end
-  end
-
-  def monthly_registrations
-    monthly_regs_by_gender
-      .each_with_object({}) do |((date, _), count), by_date|
-      by_date[date] ||= 0
-      by_date[date] += count
-    end
-  end
-
-  def all_time_follow_ups_by_gender
-    @all_time_follow_ups_by_gender ||=
-      @current_facility
-        .patient_follow_ups(:month)
+        .diabetes_follow_ups(:month, last: MONTHS_AGO)
         .group(:gender)
         .count
         .each_with_object({}) do |((_, gender), count), by_gender|
         by_gender[gender] ||= 0
         by_gender[gender] += count
       end
-  end
-
-  def all_time_diabetes_follow_ups_by_gender
-    @current_facility
-      .patient_diabetic_follow_ups(:month, last: MONTHS_AGO)
-      .group(:gender)
-      .count
-      .each_with_object({}) do |((_, gender), count), by_gender|
-      by_gender[gender] ||= 0
-      by_gender[gender] += count
     end
-  end
 
-  def all_time_regs_by_gender
-    @current_facility
-      .registered_patients
-      .group(:gender)
-      .count
-  end
-
-  def all_time_diabetes_regs_by_gender
-    @current_facility
-      .registered_diabetic_patients
-      .group(:gender)
-      .count
+    def all_time_regs_by_gender
+      @current_facility
+        .registered_diabetes_patients
+        .group(:gender)
+        .count
+    end
   end
 
   def statistics_cache_key
@@ -261,10 +295,8 @@ class UserAnalyticsPresenter
   end
 
   def group_by_date
-
   end
 
   def group_by_gender
-
   end
 end

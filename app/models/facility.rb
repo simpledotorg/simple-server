@@ -21,14 +21,16 @@ class Facility < ApplicationRecord
   has_many :prescription_drugs
   has_many :appointments
 
-  has_many :patients, -> { distinct }, through: :blood_pressures
-  has_many :diabetic_patients, -> { diabetic.distinct }, through: :blood_sugars, source: :patient
+  has_many :patients, -> { distinct }, through: :encounters
+  has_many :diabetes_patients, -> { diabetes_only.distinct }, through: :blood_sugars, source: :patient
+  has_many :hypertension_patients, -> { hypertension_only.distinct }, through: :blood_pressures, source: :patient
 
   has_many :registered_patients,
            class_name: "Patient", foreign_key: "registration_facility_id"
-  has_many :registered_diabetic_patients, -> { diabetic },
+  has_many :registered_diabetes_patients, -> { diabetes_only },
            class_name: "Patient", foreign_key: "registration_facility_id"
-
+  has_many :registered_hypertension_patients, -> { hypertension_only },
+           class_name: "Patient", foreign_key: "registration_facility_id"
 
   enum facility_size: {
     community: "community",
@@ -57,8 +59,10 @@ class Facility < ApplicationRecord
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, to: :facility_group, allow_nil: true
+
   delegate :follow_ups, to: :patients, prefix: :patient
-  delegate :diabetic_follow_ups, to: :diabetic_patients, prefix: :patient
+  delegate :diabetes_follow_ups, to: :diabetes_patients, prefix: false
+  delegate :hypertension_follow_ups, to: :hypertension_patients, prefix: false
 
   friendly_id :name, use: :slugged
 

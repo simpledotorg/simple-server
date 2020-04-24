@@ -22,4 +22,9 @@ class Encounter < ApplicationRecord
       .advance(seconds: timezone_offset)
       .to_date
   end
+
+  def self.date_to_period_sql(period)
+    tz = Rails.application.config.country[:time_zone]
+    "(DATE_TRUNC('#{period}', (encountered_on::timestamptz) AT TIME ZONE '#{tz}')) AT TIME ZONE '#{tz}'"
+  end
 end

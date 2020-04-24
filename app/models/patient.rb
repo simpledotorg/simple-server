@@ -54,6 +54,9 @@ class Patient < ApplicationRecord
 
   attribute :call_result, :string
 
+  scope :diabetes_only, -> { joins(:medical_history).merge(MedicalHistory.diabetes_yes) }
+  scope :hypertension_only, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes) }
+
   #
   # Note: This scope expects a join(:blood_pressures) to exist.
   # For eg, Patient.joins(:blood_pressures).follow_ups(:month).
@@ -61,18 +64,29 @@ class Patient < ApplicationRecord
   # It doesn't include the join in this scope to play well with certain parent scopes (eg. Facility).
   # Parent scopes might auto add this join and the final query would end up with unnecessary joins, affecting perf.
   #
-  scope :follow_ups, -> (period, last: nil) {
-    where("patients.recorded_at < #{BloodPressure.date_to_period_sql(period)}")
-      .group_by_period(period, 'blood_pressures.recorded_at', last: last)
+  scope :hypertension_follow_ups, -> (period, last:) {
+    follow_ups_with(:blood_pressures, period, last: last)
+      .hypertension_only
   }
 
-  scope :diabetic_follow_ups, -> (period, last: nil) {
-    diabetic
-      .where("patients.recorded_at < #{BloodSugar.date_to_period_sql(period)}")
-      .group_by_period(period, 'blood_sugars.recorded_at', last: last)
+  scope :diabetes_follow_ups, -> (period, last:) {
+    follow_ups_with(:blood_sugars, period, last: last)
+      .diabetes_only
   }
 
-  scope :diabetic, -> { joins(:medical_history).where(medical_histories: { diabetes: 'yes' }) }
+  scope :follow_ups, -> (period, last:) {
+    follow_ups_with(:blood_sugars, period, time_col: 'encountered_on', last: last)
+  }
+
+  private_class_method :follow_ups_with
+
+  def self.follow_ups_with(resource_type, period, time_col: 'recorded_at', last: nil)
+    resource_name = resource_type.to_s.singularize.camelize
+    group_by_time = "#{resource_type}.#{time_col}"
+
+    where("patients.recorded_at < ?", resource_name.date_to_period_sql(period))
+      .group_by_period(period, group_by_time, last: last)
+  end
 
   enum could_not_contact_reasons: {
     not_responding: 'not_responding',

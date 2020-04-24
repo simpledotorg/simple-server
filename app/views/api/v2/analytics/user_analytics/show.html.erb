@@ -1,3 +1,26 @@
+<!--
+
+1A. "Today" block should show data for the calendar day.
+1B. Preload the last 30 days of data. Tapping arrow buttons goes back/forward days using JS.
+1C. When first day is reached, arrow should be greyed out.
+1D. Title changes to "12-Dec-2019" etc for any day that's not "Today"
+1E. If data hasn't been synced up to a date display the #count-empty card instead of the counts. For instance, if data was synced yesterday, show the #count-empty for today. If data was synced 4 days ago, show #count-empty for today and last 3 days... then show data from the sync date backwards.
+1F. If data has been synced but all counts are zero, just do the normal thing and show 0 in the squares (that will mean some Sundays etc have no data, and that's okay)
+
+2A. Show follow-up patients (if Diabetes is being used, only include hypertension patients).
+2B. If fewer than 6 months since deployment of Simple, just show < 6 months of rows
+2C. Patient counts are for 'unique' patients that month (e.g. if a patient visited 5 times, they are only counted once... unless this is hard, in which case discuss with Daniel)
+2D. Patients with controlled BP is if the patient had BP <140/90 at most recent visit
+
+3. I think registrations is pretty obvious, but if you have questions, let me know.
+
+4A. Achievements is based on data from 2C.
+4B. Don't show any achievements if < 10. Don't show the locked "upcoming" one either
+4C. When > 10 show first badge and locked "upcoming" badge for 25 follow-up visits
+4D. Follow the rules in the achievements html for how to count. After "10,000" just increment by 10,000 increments for infinity
+
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
