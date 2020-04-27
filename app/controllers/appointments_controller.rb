@@ -69,6 +69,10 @@ class AppointmentsController < AdminController
     params[:appointment][:selected_facility_id]
   end
 
+  def less_than_one_year_overdue
+    params[:less_than_one_year_overdue]
+  end
+
   def page
     params[:appointment][:page]
   end

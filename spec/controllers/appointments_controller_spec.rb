@@ -63,6 +63,29 @@ RSpec.describe AppointmentsController, type: :controller do
       end
     end
 
+    describe 'filtering by search queries' do
+      it "displays patients only less than one year overdue" do
+
+        really_overdue_appointment = create(:appointment,
+          facility: facility_2,
+          scheduled_date: 400.days.ago,
+          status: :scheduled
+        )
+        create(:blood_pressure, patient: really_overdue_appointment.patient, facility: facility_2)
+
+        really_overdue_patient_ids = really_overdue_appointment.patient_id
+
+        get :index, params: {
+          less_than_one_year_overdue: "1",
+          per_page: 'All'
+        }
+
+        patient_ids = (overdue_appointments_in_facility_1 + overdue_appointments_in_facility_2).map(&:patient_id)
+        expect(assigns(:patient_summaries).map(&:id)).to match_array(patient_ids)
+        expect(assigns(:patient_summaries).map(&:id)).to_not match_array(really_overdue_patient_ids)
+      end
+    end
+
     describe 'pagination' do
       it 'shows "Pagination::DEFAULT_PAGE_SIZE" records per page' do
         stub_const('Pagination::DEFAULT_PAGE_SIZE', 5)
