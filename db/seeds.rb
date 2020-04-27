@@ -5,8 +5,10 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
 require_relative '../lib/tasks/scripts/create_admin_user'
 require 'factory_bot_rails'
+require 'faker'
 
 NUM_OF_FACILITY_GROUPS = 5
 NUM_OF_FACILITIES = 10
@@ -121,3 +123,4 @@ end
 # create admin user
 #
 CreateAdminUser.create_owner('Admin User', 'admin@simple.org', ENV['GENERATED_ADMIN_PASSWORD'])
+

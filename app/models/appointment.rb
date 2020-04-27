@@ -45,8 +45,6 @@ class Appointment < ApplicationRecord
       .where(arel_table[:scheduled_date].lt(Date.current))
       .where(arel_table[:scheduled_date].gteq(365.days.ago))
       .where(arel_table[:remind_on].eq(nil).or(arel_table[:remind_on].lteq(Date.current)))
-
-
   end
 
   def self.overdue_by(number_of_days)
