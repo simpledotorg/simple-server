@@ -1,12 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe UserAnalyticsPresenter, type: :model do
-  let!(:current_user) { create(:user) }
-  let!(:current_facility) { create(:facility, facility_group: current_user.facility.facility_group) }
+  let(:current_user) { create(:user) }
+  let(:current_facility) { create(:facility, facility_group: current_user.facility.facility_group) }
+  let(:request_date) { Date.new(2018, 1, 1) }
 
   describe '#statistics' do
     context 'daily' do
-      let(:request_date) { Date.new(2018, 1, 1) }
       let(:reg_date) { request_date - 3.days }
       let(:follow_up_date) { request_date - 2.days }
 
@@ -59,21 +59,21 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
         expected_output = {
           registrations: {
-            (Date.today - 5) => 0,
-            (Date.today - 4) => 0,
-            (Date.today - 3) => 0,
-            (Date.today - 2) => 0,
-            (Date.today - 1) => 0,
-            Date.today => 0
+            (Date.current - 5) => 0,
+            (Date.current - 4) => 0,
+            (Date.current - 3) => 0,
+            (Date.current - 2) => 0,
+            (Date.current - 1) => 0,
+            Date.current => 0
           },
 
           follow_ups: {
-            (Date.today - 5) => 0,
-            (Date.today - 4) => 0,
-            (Date.today - 3) => 0,
-            (Date.today - 2) => 0,
-            (Date.today - 1) => 0,
-            Date.today => 0,
+            (Date.current - 5) => 0,
+            (Date.current - 4) => 0,
+            (Date.current - 3) => 0,
+            (Date.current - 2) => 0,
+            (Date.current - 1) => 0,
+            Date.current => 0,
           }
         }
 
@@ -82,23 +82,40 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
     end
 
     context 'monthly' do
-      let(:request_date) { Date.new(2018, 1, 1) }
-      let(:reg_date) { request_date - 3.months }
-      let(:follow_up_date) { request_date - 2.months }
-      let(:controlled_follow_up_date) { request_date - 1.month }
-      let(:gender) { 'female' }
+      let(:reg_date) { request_date - 2.months }
+      let(:follow_up_date) { request_date - 1.month }
+      let(:controlled_follow_up_date) { request_date }
 
       before do
-        patients = create_list(:patient,
-                               3,
-                               registration_facility: current_facility,
-                               recorded_at: reg_date,
-                               gender: gender)
+        patients = [create(:patient,
+                           :hypertension,
+                           registration_facility: current_facility,
+                           recorded_at: reg_date,
+                           gender: 'female'),
+                    create(:patient,
+                           :hypertension,
+                           registration_facility: current_facility,
+                           recorded_at: reg_date,
+                           gender: 'male'),
+                    create(:patient,
+                           :diabetes,
+                           registration_facility: current_facility,
+                           recorded_at: reg_date,
+                           gender: 'transgender')]
+
         patients.each do |patient|
           create(:encounter,
                  :with_observables,
                  observable: create(:blood_pressure,
                                     :critical,
+                                    patient: patient,
+                                    facility: current_facility,
+                                    user: current_user,
+                                    recorded_at: follow_up_date))
+
+          create(:encounter,
+                 :with_observables,
+                 observable: create(:blood_sugar,
                                     patient: patient,
                                     facility: current_facility,
                                     user: current_user,
@@ -114,7 +131,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
                                     recorded_at: controlled_follow_up_date))
         end
 
-        stub_const("UserAnalyticsPresenter::MONTHS_AGO", 6)
+        stub_const("UserAnalyticsPresenter::MONTHS_AGO", 3)
       end
 
       it 'has data grouped by date and gender' do
@@ -124,21 +141,42 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
           end
 
         expected_output = {
-          registrations: {
-            [(request_date - 5.months), gender] => 0,
-            [(request_date - 4.months), gender] => 0,
-            [reg_date.to_date, gender] => 3,
-            [(request_date - 2.months), gender] => 0,
-            [controlled_follow_up_date.to_date, gender] => 0,
-            [request_date, gender] => 0,
+          hypertension: {
+            registrations: {
+              [reg_date.to_date, 'male'] => 1,
+              [reg_date.to_date, 'female'] => 1,
+
+              [(request_date - 1.month), 'male'] => 0,
+              [(request_date - 1.month), 'female'] => 0,
+
+              [request_date, 'male'] => 0,
+              [request_date, 'female'] => 0,
+            },
+
+            follow_ups: {
+              [(request_date - 2.months), 'male'] => 0,
+              [(request_date - 2.months), 'female'] => 0,
+
+              [follow_up_date.to_date, 'male'] => 1,
+              [follow_up_date.to_date, 'female'] => 1,
+
+              [controlled_follow_up_date.to_date, 'male'] => 1,
+              [controlled_follow_up_date.to_date, 'female'] => 1,
+            }
           },
-          follow_ups: {
-            [(request_date - 5.months), gender] => 0,
-            [(request_date - 4.months), gender] => 0,
-            [(request_date - 3.months), gender] => 0,
-            [follow_up_date.to_date, gender] => 3,
-            [controlled_follow_up_date.to_date, gender] => 3,
-            [request_date, gender] => 0,
+
+          diabetes: {
+            registrations: {
+              [reg_date.to_date, 'transgender'] => 1,
+              [(request_date - 1.month), 'transgender'] => 0,
+              [request_date, 'transgender'] => 0
+            },
+
+            follow_ups: {
+              [(request_date - 2.months), 'transgender'] => 0,
+              [follow_up_date.to_date, 'transgender'] => 1,
+              [request_date, 'transgender'] => 0,
+            }
           }
         }
 
@@ -152,31 +190,52 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
           end
 
         expected_output = {
-          follow_ups: {
-            (request_date - 5.months) => 0,
-            (request_date - 4.months) => 0,
-            (request_date - 3.months) => 0,
-            (request_date - 2.months) => 3,
-            (request_date - 1.months) => 3,
-            request_date => 0,
+          unique_total: {
+            follow_ups: {
+              (request_date - 2.months) => 0,
+              (request_date - 1.months) => 3,
+              request_date => 3,
+            },
+
+            registrations: {
+              (request_date - 2.months) => 3,
+              (request_date - 1.months) => 0,
+              request_date => 0
+            }
           },
 
-          registrations: {
-            (request_date - 5.months) => 0,
-            (request_date - 4.months) => 0,
-            (request_date - 3.months) => 3,
-            (request_date - 2.months) => 0,
-            (request_date - 1.months) => 0,
-            request_date => 0,
+          hypertension: {
+            follow_ups: {
+              (request_date - 2.months) => 0,
+              (request_date - 1.months) => 2,
+              request_date => 2,
+            },
+
+            registrations: {
+              (request_date - 2.months) => 2,
+              (request_date - 1.months) => 0,
+              request_date => 0,
+            },
+
+            controlled_visits: {
+              (request_date - 2.months) => 0,
+              (request_date - 1.months) => 0,
+              request_date => 2,
+            }
           },
 
-          controlled_visits: {
-            (request_date - 5.months) => 0,
-            (request_date - 4.months) => 0,
-            (request_date - 3.months) => 0,
-            (request_date - 2.months) => 0,
-            (request_date - 1.months) => 3,
-            request_date => 0,
+          diabetes: {
+            follow_ups: {
+              (request_date - 2.months) => 0,
+              (request_date - 1.months) => 1,
+              request_date => 0,
+            },
+
+            registrations: {
+              (request_date - 2.months) => 1,
+              (request_date - 1.months) => 0,
+              request_date => 0,
+            },
           }
         }
 
@@ -186,31 +245,55 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
       it 'has no data if facility has not recorded anything recently' do
         data = described_class.new(current_facility).statistics
 
-        expected_output =
-          {
+        expected_output = {
+          hypertension: {
+            follow_ups: {},
+            registrations: {}
+          },
+
+          diabetes: {
             follow_ups: {},
             registrations: {}
           }
+        }
         expect(data.dig(:monthly, :grouped_by_gender_and_date)).to eq(expected_output)
       end
     end
 
     context 'all_time' do
-      let(:request_date) { Date.new(2018, 1, 1) }
       let(:reg_date) { request_date - 3.months }
       let(:follow_up_date) { request_date - 2.months }
-      let(:gender) { 'female' }
 
       before do
-        patients = create_list(:patient,
-                               3,
-                               registration_facility: current_facility,
-                               recorded_at: reg_date,
-                               gender: gender)
+        patients = [create(:patient,
+                           :hypertension,
+                           registration_facility: current_facility,
+                           recorded_at: reg_date,
+                           gender: 'female'),
+                    create(:patient,
+                           :hypertension,
+                           registration_facility: current_facility,
+                           recorded_at: reg_date,
+                           gender: 'male'),
+                    create(:patient,
+                           :diabetes,
+                           registration_facility: current_facility,
+                           recorded_at: reg_date,
+                           gender: 'transgender')]
+
+
         patients.each do |patient|
           create(:encounter,
                  :with_observables,
                  observable: create(:blood_pressure,
+                                    patient: patient,
+                                    facility: current_facility,
+                                    user: current_user,
+                                    recorded_at: follow_up_date))
+
+          create(:encounter,
+                 :with_observables,
+                 observable: create(:blood_sugar,
                                     patient: patient,
                                     facility: current_facility,
                                     user: current_user,
@@ -222,12 +305,26 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
         data = described_class.new(current_facility).statistics
 
         expected_output = {
-          follow_ups: {
-            gender => 3
+          hypertension: {
+            follow_ups: {
+              'female' => 1,
+              'male' => 1
+            },
+
+            registrations: {
+              'female' => 1,
+              'male' => 1
+            }
           },
 
-          registrations: {
-            gender => 3
+          diabetes: {
+            follow_ups: {
+              'transgender' => 1
+            },
+
+            registrations: {
+              'transgender' => 1
+            }
           }
         }
 
@@ -287,22 +384,21 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
     context 'trophies' do
       it 'has both unlocked and the upcoming locked trophy' do
         #
-        # create BPs (follow-ups)
+        # create BPs (hypertension follow-ups)
         #
-        patients = create_list(:patient, 3, registration_facility: current_facility)
+        patients = create_list(:patient, 3, :hypertension, registration_facility: current_facility)
         patients.each do |patient|
-          [patient.recorded_at + 1.month,
+          [patient.recorded_at + 1.months,
            patient.recorded_at + 2.months,
            patient.recorded_at + 3.months,
            patient.recorded_at + 4.months].each do |date|
-            travel_to(date) do
-              create(:encounter,
-                     :with_observables,
-                     observable: create(:blood_pressure,
-                                        patient: patient,
-                                        facility: current_facility,
-                                        user: current_user))
-            end
+            create(:encounter,
+                   :with_observables,
+                   observable: create(:blood_pressure,
+                                      patient: patient,
+                                      facility: current_facility,
+                                      recorded_at: date,
+                                      user: current_user))
           end
         end
 

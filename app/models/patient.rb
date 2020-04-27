@@ -64,17 +64,17 @@ class Patient < ApplicationRecord
   # It doesn't include the join in this scope to play well with certain parent scopes (eg. Facility).
   # Parent scopes might auto add this join and the final query would end up with unnecessary joins, affecting perf.
   #
-  scope :hypertension_follow_ups, -> (period, last:) {
+  scope :hypertension_follow_ups, -> (period, last: nil) {
     follow_ups_with(:blood_pressures, period, last: last)
       .hypertension_only
   }
 
-  scope :diabetes_follow_ups, -> (period, last:) {
+  scope :diabetes_follow_ups, -> (period, last: nil) {
     follow_ups_with(:blood_sugars, period, last: last)
       .diabetes_only
   }
 
-  scope :follow_ups, -> (period, last:) {
+  scope :follow_ups, -> (period, last: nil) {
     follow_ups_with(:encounters, period, time_col: 'encountered_on', last: last)
   }
 
