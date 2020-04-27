@@ -7,7 +7,7 @@ Config.ensure_required_keys_are_present(required_keys: [
   'SENDGRID_USERNAME',
   'SENDGRID_PASSWORD',
   'SENTRY_DSN',
-  'SENTRY_ENV',
+  'SENTRY_CURRENT_ENV',
   'TWILIO_ACCOUNT_SID',
   'TWILIO_AUTH_TOKEN',
   'TWILIO_PHONE_NUMBER',
