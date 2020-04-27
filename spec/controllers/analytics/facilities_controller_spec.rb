@@ -49,7 +49,9 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
 
     context 'dashboard analytics' do
       it 'returns relevant analytics keys per facility' do
-        get :show, params: { id: facility.id }
+        Timecop.travel(apr_2019) do
+          get :show, params: { id: facility.id }
+        end
 
         expect(response.status).to eq(200)
         expect(assigns(:dashboard_analytics)[user.id].keys).to match_array(%i[follow_up_patients_by_period
