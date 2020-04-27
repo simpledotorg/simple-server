@@ -1,4 +1,6 @@
 class Api::V2::PatientsController < Api::V3::PatientsController
+  include Api::V2::LogApiUsageByUsers
+
   private
 
   def merge_if_valid(single_patient_params)

@@ -22,17 +22,18 @@ class Patient < ApplicationRecord
   belongs_to :address, optional: true
   has_many :phone_numbers, class_name: 'PatientPhoneNumber'
   has_many :business_identifiers, class_name: 'PatientBusinessIdentifier'
-
-  has_many :encounters
-  has_many :observations, through: :encounters
+  has_many :passport_authentications, through: :business_identifiers
 
   has_many :blood_pressures, inverse_of: :patient
+  has_many :blood_sugars
   has_many :prescription_drugs
   has_many :facilities, -> { distinct }, through: :blood_pressures
   has_many :users, -> { distinct }, through: :blood_pressures
-  has_many :blood_sugars
   has_many :appointments
   has_one :medical_history
+
+  has_many :encounters
+  has_many :observations, through: :encounters
 
   belongs_to :registration_facility, class_name: "Facility", optional: true
   belongs_to :registration_user, class_name: "User"
@@ -47,6 +48,8 @@ class Patient < ApplicationRecord
   has_many :latest_bp_passports,
            -> { where(identifier_type: 'simple_bp_passport').order(device_created_at: :desc) },
            class_name: 'PatientBusinessIdentifier'
+
+  has_many :current_prescription_drugs, -> { where(is_deleted: false) }, class_name: 'PrescriptionDrug'
 
   attribute :call_result, :string
 
@@ -96,6 +99,10 @@ class Patient < ApplicationRecord
 
   def latest_bp_passport
     latest_bp_passports.first
+  end
+
+  def access_tokens
+    passport_authentications.map(&:access_token)
   end
 
   def phone_number?
