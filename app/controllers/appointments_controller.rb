@@ -7,13 +7,16 @@ class AppointmentsController < AdminController
   def index
     authorize [:overdue_list, Appointment], :index?
 
-    @patient_summaries = policy_scope([:overdue_list, PatientSummary])
-                           .overdue
-                           .order(risk_level: :desc, next_appointment_scheduled_date: :desc)
+    @patient_summaries = if only_less_than_year_overdue
+      policy_scope([:overdue_list, PatientSummary]).overdue
+    else
+      policy_scope([:overdue_list, PatientSummary]).all_overdue
+    end
 
     if current_facility
       @patient_summaries = @patient_summaries.where(next_appointment_facility_id: current_facility.id)
     end
+    @patient_summaries = @patient_summaries.order(risk_level: :desc, next_appointment_scheduled_date: :desc)
 
     respond_to do |format|
       format.html do
@@ -69,8 +72,8 @@ class AppointmentsController < AdminController
     params[:appointment][:selected_facility_id]
   end
 
-  def less_than_one_year_overdue
-    params[:less_than_one_year_overdue]
+  def only_less_than_year_overdue
+    params[:only_less_than_year_overdue]
   end
 
   def page

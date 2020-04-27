@@ -47,6 +47,12 @@ class Appointment < ApplicationRecord
       .where(arel_table[:remind_on].eq(nil).or(arel_table[:remind_on].lteq(Date.current)))
   end
 
+  def self.all_overdue
+    where(status: 'scheduled')
+      .where(arel_table[:scheduled_date].lt(Date.current))
+      .where(arel_table[:remind_on].eq(nil).or(arel_table[:remind_on].lteq(Date.current)))
+  end
+
   def self.overdue_by(number_of_days)
     overdue.where('scheduled_date <= ?', Date.current - number_of_days.days)
   end

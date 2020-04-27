@@ -63,26 +63,43 @@ RSpec.describe AppointmentsController, type: :controller do
       end
     end
 
-    describe 'filtering by search queries' do
-      it "displays patients only less than one year overdue" do
-
+    describe "filtering by days overdue" do
+      it "displays patients only less than one year overdue when checked" do
         really_overdue_appointment = create(:appointment,
           facility: facility_2,
-          scheduled_date: 400.days.ago,
-          status: :scheduled
+          scheduled_date: 380.days.ago,
+          status: 'scheduled'
         )
         create(:blood_pressure, patient: really_overdue_appointment.patient, facility: facility_2)
-
         really_overdue_patient_ids = really_overdue_appointment.patient_id
 
         get :index, params: {
-          less_than_one_year_overdue: "1",
+          only_less_than_year_overdue: "1",
           per_page: 'All'
         }
 
         patient_ids = (overdue_appointments_in_facility_1 + overdue_appointments_in_facility_2).map(&:patient_id)
         expect(assigns(:patient_summaries).map(&:id)).to match_array(patient_ids)
         expect(assigns(:patient_summaries).map(&:id)).to_not match_array(really_overdue_patient_ids)
+      end
+
+      it "displays patients with all overdue date when unchecked" do
+        really_overdue_appointment = create(:appointment,
+          facility: facility_2,
+          scheduled_date: 380.days.ago,
+          status: 'scheduled'
+        )
+        create(:blood_pressure, patient: really_overdue_appointment.patient, facility: facility_2)
+        really_overdue_patient_ids = really_overdue_appointment.patient_id
+
+        get :index, params: {
+          only_less_than_year_overdue: "0",
+          per_page: 'All'
+        }
+
+        patient_ids = (overdue_appointments_in_facility_1 + overdue_appointments_in_facility_2).map(&:patient_id)
+        expected_patient_ids = patient_ids.push(really_overdue_patient_ids)
+        expect(assigns(:patient_summaries).map(&:id)).to_not match_array(expected_patient_ids)
       end
     end
 
