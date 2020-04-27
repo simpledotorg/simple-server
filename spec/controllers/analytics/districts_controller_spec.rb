@@ -39,7 +39,9 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
 
     context 'dashboard analytics' do
       it 'returns relevant analytics keys per facility' do
-        get :show, params: { organization_id: organization.id, id: district_name }
+        Timecop.travel(Date.new(2019, 3, 1)) do
+          get :show, params: { organization_id: organization.id, id: district_name }
+        end
 
         expect(response.status).to eq(200)
         expect(assigns(:dashboard_analytics)[facility.id].keys).to match_array(%i[follow_up_patients_by_period
@@ -116,7 +118,7 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
               facility.id => {
                 registered_patients_by_period: { cohort_date3 => 3 },
                 total_registered_patients: 3,
-                follow_up_patients_by_period: { cohort_date2 => 3 }
+                follow_up_patients_by_period: { cohort_date1 => 0, cohort_date2 => 3, cohort_date3 => 0 }
               }
             }
           }

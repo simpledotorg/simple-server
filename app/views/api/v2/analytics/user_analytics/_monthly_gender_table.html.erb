@@ -14,7 +14,10 @@
     <tr>
       <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
       <td>
-        <%= zero_if_unavailable(@user_analytics.stats_across_genders_for_month(resource, month_date)) %>
+        <%= zero_if_unavailable(@statistics.dig(:monthly,
+                                                :grouped_by_date,
+                                                resource,
+                                                month_date)) %>
       </td>
     </tr>
   <% end %>
@@ -39,8 +42,7 @@
           <%= zero_if_unavailable(@statistics.dig(:monthly,
                                                   :grouped_by_gender_and_date,
                                                   resource,
-                                                  gender,
-                                                  month_date)) %>
+                                                  [month_date, gender])) %>
         </td>
       </tr>
     <% end %>
