@@ -1,8 +1,11 @@
 FactoryBot.define do
   factory :blood_sugar do
     id { SecureRandom.uuid }
-    blood_sugar_type { 'random' }
-    blood_sugar_value { 150 }
+    blood_sugar_type { BloodSugar::blood_sugar_types.keys.sample }
+    blood_sugar_value do
+      threshold = BloodSugar::THRESHOLDS[:high][blood_sugar_type]
+      rand(threshold*0.9..threshold*1.1).round(2)
+    end
     device_created_at { Time.current }
     device_updated_at { Time.current }
     recorded_at { device_created_at }

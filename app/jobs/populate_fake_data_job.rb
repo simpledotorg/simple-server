@@ -29,29 +29,48 @@ class PopulateFakeDataJob
     registered_patient: {
       time_fn: -> { Faker::Time.between(from: 9.month.ago, to: Time.now) },
       size_fn: -> { rand(30..150) },
-      request_key: :patients
+      request_key: :patients,
+      api_version: 'v3'
     },
     ongoing_bp: {
       time_fn: -> { Faker::Time.between(from: 3.month.ago, to: Time.now) },
       size_fn: -> { rand(1..3) },
+      patient_sample_size: 0.40,
       request_key: :blood_pressures,
-      patient_sample_size: 0.40
+      api_version: 'v3',
     },
     retroactive_bp: {
       time_fn: -> { Faker::Time.between(from: 9.months.ago, to: 1.month.ago.beginning_of_month) },
       size_fn: -> { rand(1..3) },
+      patient_sample_size: 0.20,
       request_key: :blood_pressures,
-      patient_sample_size: 0.20
+      api_version: 'v3',
+    },
+    ongoing_blood_sugar: {
+      time_fn: -> { Faker::Time.between(from: 3.month.ago, to: Time.now) },
+      size_fn: -> { rand(1..3) },
+      patient_sample_size: 0.20,
+      request_key: :blood_sugars,
+      api_version: 'v4'
+    },
+    retroactive_blood_sugar: {
+      time_fn: -> { Faker::Time.between(from: 9.months.ago, to: 1.month.ago.beginning_of_month) },
+      size_fn: -> { rand(1..3) },
+      patient_sample_size: 0.05,
+      request_key: :blood_sugars,
+      api_version: 'v4'
     },
     scheduled_appointment: {
       size_fn: -> { rand(1..2) },
+      patient_sample_size: 0.50,
       request_key: :appointments,
-      patient_sample_size: 0.50
+      api_version: 'v3'
     },
     overdue_appointment: {
       size_fn: -> { 1 },
+      patient_sample_size: 0.50,
       request_key: :appointments,
-      patient_sample_size: 0.50
+      api_version: 'v3'
     },
     completed_phone_call: {
       time_fn: -> { Faker::Time.between(from: 9.months.ago, to: Date.today) },
@@ -102,8 +121,31 @@ class PopulateFakeDataJob
       user: user,
       device_created_at: now,
       device_updated_at: now,
-      facility: user.facility
+      facility: user.facility,
     )).except(:recorded_at)
+  end
+
+  def ongoing_blood_sugar(patient:, time_fn:)
+    build_blood_sugar_payload(FactoryBot.build(
+      :blood_sugar,
+      patient: patient,
+      user: user,
+      recorded_at: time_fn.call,
+      facility: user.facility
+    ))
+  end
+
+  def retroactive_blood_sugar(patient:, time_fn:)
+    now = time_fn.call
+
+    build_blood_sugar_payload(FactoryBot.build(
+      :blood_sugar,
+      patient: patient,
+      user: user,
+      device_created_at: now,
+      device_updated_at: now,
+      facility: user.facility
+    ))
   end
 
   def scheduled_appointment(patient:)
@@ -146,11 +188,12 @@ class PopulateFakeDataJob
     data = args[:patient_sample_size] ? generate_for_sample_of_patients(trait, args) : generate(trait, args)
 
     request_key = args[:request_key]
+    api_version = args[:api_version]
     return if request_key.blank?
 
     logger.info "[POPULATE_FAKE_DATA] Creating #{trait} for #{user.full_name} with #{data.size} #{request_key} – for facility: #{user.facility.name}"
     data.each_slice(20) do |data_slice|
-      api_post("/api/v3/#{request_key}/sync", request_key => data_slice) if data_slice.present?
+      api_post("/api/#{api_version}/#{request_key}/sync", request_key => data_slice) if data_slice.present?
     end
   end
 
