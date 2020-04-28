@@ -74,7 +74,7 @@ RSpec.describe AppointmentsController, type: :controller do
         really_overdue_patient_ids = really_overdue_appointment.patient_id
 
         get :index, params: {
-          only_less_than_year_overdue: "1",
+          search_filters: ["only_less_than_year_overdue"],
           per_page: 'All'
         }
 
@@ -93,13 +93,13 @@ RSpec.describe AppointmentsController, type: :controller do
         really_overdue_patient_ids = really_overdue_appointment.patient_id
 
         get :index, params: {
-          only_less_than_year_overdue: "0",
+          search_filters: [""],
           per_page: 'All'
         }
 
         patient_ids = (overdue_appointments_in_facility_1 + overdue_appointments_in_facility_2).map(&:patient_id)
         expected_patient_ids = patient_ids.push(really_overdue_patient_ids)
-        expect(assigns(:patient_summaries).map(&:id)).to_not match_array(expected_patient_ids)
+        expect(assigns(:patient_summaries).map(&:id)).to match_array(expected_patient_ids)
       end
     end
 

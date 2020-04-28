@@ -2,16 +2,30 @@ class AppointmentsController < AdminController
   include FacilityFiltering
   include Pagination
 
+  before_action :set_search_filters, only: [:index]
   before_action :set_appointment, only: [:update]
 
   def index
     authorize [:overdue_list, Appointment], :index?
 
-    @patient_summaries = if only_less_than_year_overdue
+    search_params = params.permit(search_filters: [])
+    @current_search_filters = search_params[:search_filters] || []
+
+    @patient_summaries = if @current_search_filters.include?("only_less_than_year_overdue")
       policy_scope([:overdue_list, PatientSummary]).overdue
     else
       policy_scope([:overdue_list, PatientSummary]).all_overdue
     end
+    if @current_search_filters.include?("phone_number")
+      @patient_summaries = @patient_summaries.where("latest_phone_number is not null")
+    end
+    if @current_search_filters.include?("high_risk")
+      @patient_summarie = @patient_summaries.where("risk_level == 1")
+    end
+    # TODO this doesn't seem to be on patient_summaries right now
+    # if @current_search_filters.include?(:diabetes)
+    #   @patient_summaries.with_medical_history(:diabetes)
+    # end
 
     if current_facility
       @patient_summaries = @patient_summaries.where(next_appointment_facility_id: current_facility.id)
@@ -21,6 +35,7 @@ class AppointmentsController < AdminController
     respond_to do |format|
       format.html do
         @patient_summaries = paginate(@patient_summaries).includes(:next_appointment, patient: :appointments)
+        render layout: "overdue"
       end
       format.csv do
         send_data render_to_string('index.csv.erb'), filename: download_filename
@@ -40,6 +55,17 @@ class AppointmentsController < AdminController
   end
 
   private
+
+  def set_search_filters
+    @search_filters = {
+      "only_less_than_year_overdue" => "Only < 365 days overdue",
+      "only_overdue_patients" => "Only overdue patients",
+      "diabetes" => "Diabetes",
+      "hypertension" => "Hypertension",
+      "high_risk" => "Only high risk",
+      "phone_number" => "Only with phone number",
+    }
+  end
 
   def set_appointment
     @appointment = Appointment.find(params[:id] || params[:appointment_id])
