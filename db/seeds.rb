@@ -10,9 +10,9 @@ require_relative '../lib/tasks/scripts/create_admin_user'
 require 'factory_bot_rails'
 require 'faker'
 
-NUM_OF_FACILITY_GROUPS = 5
-NUM_OF_FACILITIES = 10
-MAX_NUM_OF_USERS_PER_FACILITY = 5
+NUM_OF_FACILITY_GROUPS = 1
+NUM_OF_FACILITIES = 2
+MAX_NUM_OF_USERS_PER_FACILITY = 2
 NUM_OF_USERS_PER_FACILITY_FN = -> { rand(1..MAX_NUM_OF_USERS_PER_FACILITY) }
 
 org = {

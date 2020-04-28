@@ -26,10 +26,22 @@ FactoryBot.define do
       build_list(:patient_business_identifier,
                  1,
                  patient_id: id,
-                 metadata: {assigning_facility_id: registration_facility.id,
-                            assigning_user_id: registration_user.id})
+                 metadata: { assigning_facility_id: registration_facility.id,
+                             assigning_user_id: registration_user.id })
     end
     reminder_consent { Patient.reminder_consents[:granted] }
+
+    trait :hypertension do
+      medical_history {
+        build(:medical_history, :hypertension, patient_id: id, user: registration_user)
+      }
+    end
+
+    trait :diabetes do
+      medical_history {
+        build(:medical_history, :diabetes, patient_id: id, user: registration_user)
+      }
+    end
 
     trait :denied do
       reminder_consent { Patient.reminder_consents[:denied] }
@@ -43,26 +55,26 @@ end
 
 def build_patient_payload(patient = FactoryBot.build(:patient))
   patient.attributes.with_payload_keys
-         .except('address_id')
-         .except('registration_user_id')
-         .except('registration_facility_id')
-         .except('test_data')
-         .merge(
-           'address' => patient.address.attributes.with_payload_keys,
-           'phone_numbers' => patient.phone_numbers.map { |phno| phno.attributes.with_payload_keys.except('patient_id', 'dnd_status') },
-           'business_identifiers' => patient.business_identifiers.map do |bid|
-             bid.attributes.with_payload_keys
-               .except('patient_id')
-               .merge('metadata' => bid.metadata&.to_json)
-           end
-         )
+    .except('address_id')
+    .except('registration_user_id')
+    .except('registration_facility_id')
+    .except('test_data')
+    .merge(
+      'address' => patient.address.attributes.with_payload_keys,
+      'phone_numbers' => patient.phone_numbers.map { |phno| phno.attributes.with_payload_keys.except('patient_id', 'dnd_status') },
+      'business_identifiers' => patient.business_identifiers.map do |bid|
+        bid.attributes.with_payload_keys
+          .except('patient_id')
+          .merge('metadata' => bid.metadata&.to_json)
+      end
+    )
 end
 
 def build_patient_payload_v2(patient = FactoryBot.build(:patient))
   payload = build_patient_payload(patient)
   payload.merge('address' => payload['address'].except('zone'))
-         .except('recorded_at')
-         .except('reminder_consent')
+    .except('recorded_at')
+    .except('reminder_consent')
 end
 
 def build_invalid_patient_payload
