@@ -3,13 +3,13 @@
     <%= t('dashboard.graphics.graphics_title_html',
           current_quarter_string: quarter_string(date),
           previous_quarter_string: quarter_string(date.prev_quarter),
-          patients_in_previous_quarter: current_cohort_analytics[:registered][:total]
+          patients_in_previous_quarter: current_cohort_analytics.dig(:registered, :total) || current_cohort_analytics[:registered]
         ) %>
   </div>
 
   <div class="split-row">
     <%
-      totals = current_cohort_analytics.slice(:defaulted, :controlled, :uncontrolled).map { |k, v| [k, v[:total]] }.to_h.with_indifferent_access
+      totals = current_cohort_analytics.slice(:defaulted, :controlled, :uncontrolled).map { |k, v| [k, current_cohort_analytics.dig(k, :total) || v] }.to_h.with_indifferent_access
       analytics_percentages = calculate_percentage_for_analytics(totals)
     %>
     <table class="split-bars" style="height: 180px;">
@@ -20,7 +20,8 @@
         </td>
         <td class="snapshot-controlled snapshot-key">
           <div>
-            <%= current_cohort_analytics[:controlled][:total] %> <%= t('dashboard.graphics.patients_controlled_in_quarter_html') %> 140/90
+            <%= current_cohort_analytics.dig(:controlled, :total) || current_cohort_analytics[:controlled] %>
+            <%= t('dashboard.graphics.patients_controlled_in_quarter_html') %> 140/90
           </div>
         </td>
       </tr>
@@ -31,7 +32,8 @@
         </td>
         <td class="snapshot-uncontrolled snapshot-key">
           <div>
-            <%= current_cohort_analytics[:uncontrolled][:total] %> <%= t('dashboard.graphics.patients_uncontrolled_in_quarter_html') %> 140/90
+            <%= current_cohort_analytics.dig(:uncontrolled, :total) || current_cohort_analytics[:uncontrolled] %>
+            <%= t('dashboard.graphics.patients_uncontrolled_in_quarter_html') %> 140/90
           </div>
         </td>
       </tr>
@@ -42,7 +44,8 @@
         </td>
         <td class="snapshot-didntattend snapshot-key">
           <div>
-            <%= current_cohort_analytics[:defaulted][:total] %> <%= t('dashboard.graphics.patients_defaulted_in_quarter_html') %>
+            <%= current_cohort_analytics.dig(:defaulted, :total) || current_cohort_analytics[:defaulted] %>
+            <%= t('dashboard.graphics.patients_defaulted_in_quarter_html') %>
           </div>
         </td>
       </tr>
