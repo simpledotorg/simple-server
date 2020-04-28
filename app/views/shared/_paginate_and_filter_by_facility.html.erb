@@ -24,11 +24,4 @@
     </div>
   </div>
 
-  <div class="form-row">
-    <div id="search-filters" class="form-group col-md-6">
-      <%= form.check_box :only_less_than_year_overdue, label: "Only < 365 days overdue", onchange: "this.form.submit();" %>
-      <%= form.submit "Filter", style: "position: absolute; left: -9999px; width: 1px; height: 1px;" %>
-    </div>
-  </div>
-  <%= form.submit "Filter", style: "position: absolute; left: -9999px; width: 1px; height: 1px;" %>
 <% end %>
