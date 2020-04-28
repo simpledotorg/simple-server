@@ -25,3 +25,8 @@ end
 every 3.hours, roles: [:cron] do
   rake 'refresh_materialized_db_views'
 end
+
+every :week, at: local('02:00 am'), roles: [:cron] do
+  rake 'purge:users_data'
+  rake 'generate:fake_data'
+end

@@ -1,4 +1,6 @@
 class Qa::PurgesController < APIController
+  require 'tasks/scripts/purge_users_data'
+
   skip_before_action :current_user_present?, only: [:purge_patient_data]
   skip_before_action :validate_sync_approval_status_allowed, only: [:purge_patient_data]
   skip_before_action :authenticate, only: [:purge_patient_data]
@@ -8,17 +10,7 @@ class Qa::PurgesController < APIController
 
   def purge_patient_data
     return unless FeatureToggle.enabled?('PURGE_ENDPOINT_FOR_QA')
-    BloodPressure.delete_all
-    PrescriptionDrug.delete_all
-    PatientPhoneNumber.delete_all
-    PatientBusinessIdentifier.delete_all
-    Communication.delete_all
-    Appointment.delete_all
-    MedicalHistory.delete_all
-    Patient.delete_all
-    Address.delete_all
-    Observation.delete_all
-    Encounter.delete_all
+    PurgeUsersData.perform
 
     head :ok
   end
