@@ -125,7 +125,7 @@ from scratch.
 
 Run the following command from the project root to create a new dashboard admin:
 ```bash
-bundle exec rake create_admin_user["<name>","<email>","<password>"]
+bundle exec rails 'create_admin_user[<name>,<email>,<password>]'
 ```
 
 ## Documentation
