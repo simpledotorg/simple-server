@@ -22,10 +22,6 @@ class AppointmentsController < AdminController
     if @current_search_filters.include?("high_risk")
       @patient_summarie = @patient_summaries.where("risk_level == 1")
     end
-    # TODO this doesn't seem to be on patient_summaries right now
-    # if @current_search_filters.include?(:diabetes)
-    #   @patient_summaries.with_medical_history(:diabetes)
-    # end
 
     if current_facility
       @patient_summaries = @patient_summaries.where(next_appointment_facility_id: current_facility.id)
@@ -60,8 +56,6 @@ class AppointmentsController < AdminController
     @search_filters = {
       "only_less_than_year_overdue" => "Only < 365 days overdue",
       "only_overdue_patients" => "Only overdue patients",
-      "diabetes" => "Diabetes",
-      "hypertension" => "Hypertension",
       "high_risk" => "Only high risk",
       "phone_number" => "Only with phone number",
     }
