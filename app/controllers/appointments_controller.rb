@@ -54,10 +54,10 @@ class AppointmentsController < AdminController
 
   def set_search_filters
     @search_filters = {
-      "only_less_than_year_overdue" => "Only < 365 days overdue",
-      "only_overdue_patients" => "Only overdue patients",
-      "high_risk" => "Only high risk",
-      "phone_number" => "Only with phone number",
+      "only_less_than_year_overdue" => "< 365 days overdue",
+      "phone_number" => "Has phone number",
+      "no_phone_number" => "No phone number",
+      "high_risk" => "High risk only",
     }
   end
 

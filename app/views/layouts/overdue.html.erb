@@ -4,7 +4,7 @@
   --------------------->
   <div class="mobile">
     <div class="mt-0 mb-4 active-filters-mobile">
-      <a class="filters-modal-toggle" data-toggle="modal" data-target="#facility-filter-modal">
+      <a class="filters-modal-toggle" data-toggle="modal" data-target="#filter-modal">
           <span class="filter-tags">
             <% (Array(@search_filters)).each do |filter, label| %>
               <span class="badge badge-pill badge-secondary"><%= label %></span>
@@ -14,12 +14,12 @@
       </a>
     </div>
     <!-- Filter Modal -->
-    <div class="modal fade" id="facility-filter-modal" tabindex="-1" role="dialog" aria-labelledby="facility-filter-modal" aria-hidden="true">
+    <div class="modal fade" id="filter-modal" tabindex="-1" role="dialog" aria-labelledby="filter-modal" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
 
         <div class="modal-content">
           <div class="modal-header">
-            <h2 class="modal-title" id="exampleModalCenterTitle">Overdue filters</h2>
+            <h2 class="modal-title" id="exampleModalCenterTitle">Patients</h2>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -27,11 +27,11 @@
           <div class="modal-body">
             <div class="row">
               <div class="col-6 mb-3">
-                <h4>Facility sizes</h4>
-                <form id="query-filters-mobile">
+                <h4>Patients</h4>
+                <form>
                   <% @search_filters.each do |filter, label| %>
                     <div class="checkbox-row">
-                      <label for=<%= "facility-#{filter}-mobile" %>>
+                      <label for=<%= "search-#{filter}-mobile" %>>
                         <% checked = @current_search_filters.include?(filter) %>
                         <%= check_box_tag("search_filters[]", filter, checked, { id: "search-#{filter}-mobile" } ) %>
                         <%= label %>
@@ -58,17 +58,8 @@
   <div class="row">
     <div class="col-lg-2 pl-lg-0 desktop">
       <section class="secondary-nav-filters">
-        <h4>Facility Filters</h4>
-
-        <div>
-          <label>All geographic areas</label>
-        </div>
-      </section>
-
-      <section id="facility-filters" class="secondary-nav-filters">
-        <h4>Search Filters</h4>
+        <h4>Patients</h4>
         <%= form_for appointments_path, method: :get, id: "query-filters" do |form| %>
-          <% puts "current search filters: #{@current_search_filters} "%>
           <% @search_filters.each do |filter, label| %>
             <div>
               <label for=<%= "search-#{filter}" %>>
@@ -81,6 +72,18 @@
           <label>
             <button type="submit" class="btn btn-sm btn-outline-primary">Apply filters</button>
           </label>
+        <% end %>
+      </section>
+
+      <section>
+        Print
+      </section>
+
+      <section>
+        <% if @patient_summaries.present? && policy([:overdue_list, @patient_summaries.first]).download? %>
+          <%= link_to(appointments_path(format: "csv"), class: "", data: { confirm: I18n.t('admin.phi_download_alert') }) do %>
+            <h4>Download Results</h4>
+          <% end %>
         <% end %>
       </section>
     </div>
