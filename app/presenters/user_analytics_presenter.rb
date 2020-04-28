@@ -1,6 +1,5 @@
 class UserAnalyticsPresenter
   include ApplicationHelper
-  include HashUtilities
   include MonthHelper
   include DayHelper
   include PeriodHelper
