@@ -18,11 +18,11 @@
     <%
       cohort_start, report_start = report_dates
 
-      registered = analytics.dig(:registered, :total) || analytics[:registered]
-      followed_up = analytics.dig(:followed_up, :total) || analytics[:followed_up]
-      defaulted = analytics.dig(:defaulted, :total) || analytics[:defaulted]
-      controlled = analytics.dig(:controlled, :total) || analytics[:controlled]
-      uncontrolled = analytics.dig(:uncontrolled, :total) || analytics[:uncontrolled]
+      registered = analytics.dig(:registered, :total) || 0
+      followed_up = analytics.dig(:followed_up, :total) || 0
+      defaulted = analytics.dig(:defaulted, :total) || 0
+      controlled = analytics.dig(:controlled, :total) || 0
+      uncontrolled = analytics.dig(:uncontrolled, :total) || 0
 
       if @period == :quarter
         report_period = quarter_string(report_start)

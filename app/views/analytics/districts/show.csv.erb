@@ -22,11 +22,11 @@ end).to_csv -%>
 <% @facility_keys.each do |facility_id, facility_name| %>
 <%= [facility_name].concat(@cohort_analytics.each_with_index.flat_map do |(report_dates, analytics), index|
   cohort_start, report_start = report_dates
-  registered = analytics[:registered][facility_id] || 0
-  followed_up = analytics[:followed_up][facility_id] || 0
-  defaulted = analytics[:defaulted][facility_id] || 0
-  controlled = analytics[:controlled][facility_id] || 0
-  uncontrolled = analytics[:uncontrolled][facility_id] || 0
+  registered = analytics.dig(:registered, facility_id) || 0
+  followed_up = analytics.dig(:followed_up, facility_id) || 0
+  defaulted = analytics.dig(:defaulted, facility_id) || 0
+  controlled = analytics.dig(:controlled, facility_id) || 0
+  uncontrolled = analytics.dig(:uncontrolled, facility_id) || 0
   if @period == :quarter
     report_period = quarter_string(report_start)
     cohort_period = quarter_string(cohort_start)
