@@ -18,11 +18,10 @@ class Facility < ApplicationRecord
   has_many :blood_pressures, through: :encounters, source: :blood_pressures
   has_many :blood_sugars, through: :encounters, source: :blood_sugars
   has_many :patients, -> { distinct }, through: :encounters
+  has_many :hypertension_patients, -> { distinct }, through: :blood_pressures, source: :patient
   has_many :prescription_drugs
-
-  has_many :registered_patients, class_name: "Patient", foreign_key: "registration_facility_id"
-
   has_many :appointments
+  has_many :registered_patients, class_name: "Patient", foreign_key: "registration_facility_id"
 
   enum facility_size: {
     community: "community",
@@ -34,10 +33,10 @@ class Facility < ApplicationRecord
   with_options if: :import do |facility|
     facility.validates :organization_name, presence: true
     facility.validates :facility_group_name, presence: true
-    facility.validate  :facility_name_presence
-    facility.validate  :organization_exists
-    facility.validate  :facility_group_exists
-    facility.validate  :facility_is_unique
+    facility.validate :facility_name_presence
+    facility.validate :organization_exists
+    facility.validate :facility_group_exists
+    facility.validate :facility_is_unique
   end
 
   with_options unless: :import do |facility|
@@ -51,6 +50,7 @@ class Facility < ApplicationRecord
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, to: :facility_group, allow_nil: true
+  delegate :follow_ups, to: :hypertension_patients, prefix: :patient
 
   friendly_id :name, use: :slugged
 
@@ -102,26 +102,21 @@ class Facility < ApplicationRecord
 
   def organization_exists
     organization = Organization.find_by(name: organization_name)
-    errors.add(:organization, "doesn't exist") if
-        organization_name.present? && organization.blank?
+    errors.add(:organization, "doesn't exist") if organization_name.present? && organization.blank?
   end
 
   def facility_group_exists
     organization = Organization.find_by(name: organization_name)
-    facility_group = FacilityGroup.find_by(name: facility_group_name, organization_id: organization.id) if
-        organization.present?
-    errors.add(:facility_group, "doesn't exist for the organization") if
-        organization.present? && facility_group_name.present? && facility_group.blank?
+    facility_group = FacilityGroup.find_by(name: facility_group_name, organization_id: organization.id) if organization.present?
+    errors.add(:facility_group, "doesn't exist for the organization") if organization.present? && facility_group_name.present? && facility_group.blank?
 
   end
 
   def facility_is_unique
     organization = Organization.find_by(name: organization_name)
-    facility_group = FacilityGroup.find_by(name: facility_group_name, organization_id: organization.id) if
-        organization.present?
+    facility_group = FacilityGroup.find_by(name: facility_group_name, organization_id: organization.id) if organization.present?
     facility = Facility.find_by(name: name, facility_group: facility_group.id) if facility_group.present?
-    errors.add(:facility, 'already exists') if
-        organization.present? && facility_group.present? && facility.present?
+    errors.add(:facility, 'already exists') if organization.present? && facility_group.present? && facility.present?
 
   end
 

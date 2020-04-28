@@ -73,15 +73,15 @@ RSpec.describe Api::V2::Analytics::UserAnalyticsController, type: :controller do
                patient.recorded_at + 3.months,
                patient.recorded_at + 4.months].each do |date|
                 travel_to(date) do
-                  create(:blood_pressure,
-                         patient: patient,
-                         facility: request_facility,
-                         user: request_user)
+                  create(:encounter,
+                         :with_observables,
+                         observable: create(:blood_pressure,
+                                            patient: patient,
+                                            facility: request_facility,
+                                            user: request_user))
                 end
               end
             end
-            LatestBloodPressuresPerPatientPerDay.refresh
-            LatestBloodPressuresPerPatientPerMonth.refresh
 
             get :show, format: :html
             expect(response.body).to match(/Achievements/)

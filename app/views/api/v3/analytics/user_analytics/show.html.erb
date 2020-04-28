@@ -124,7 +124,7 @@
                                                                        month_date),
                                                        @statistics.dig(:monthly,
                                                                        :grouped_by_date,
-                                                                       :total_visits,
+                                                                       :follow_ups,
                                                                        month_date))
                   %>
                 </span></td>
@@ -136,7 +136,7 @@
               of
               <%= zero_if_unavailable(@statistics.dig(:monthly,
                                                       :grouped_by_date,
-                                                      :total_visits,
+                                                      :follow_ups,
                                                       month_date)) %>
             </td>
           </tr>
