@@ -41,6 +41,22 @@ class PopulateFakeDataJob
         },
         request_key: :patients,
         api_version: 'v3'
+      },
+
+      diagnosis: {
+        size_fn: -> { 1 },
+        build_fn: -> (args) {
+          build_patient_payload(FactoryBot.build(
+            :medical_history,
+            [:hypertension, :diabetes].sample,
+            patient: args[:patient],
+            registration_user: user,
+            registration_facility: user.facility
+          ))
+        },
+        request_key: :medical_histories,
+        api_version: 'v3',
+        patient_sample_size: 1
       }
     }
   end
