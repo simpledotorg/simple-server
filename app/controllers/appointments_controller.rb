@@ -2,24 +2,24 @@ class AppointmentsController < AdminController
   include FacilityFiltering
   include Pagination
 
-  before_action :set_search_filters, only: [:index]
+  before_action :set_patient_search_filters, only: [:index]
   before_action :set_appointment, only: [:update]
 
   def index
     authorize [:overdue_list, Appointment], :index?
 
     search_params = params.permit(search_filters: [])
-    @current_search_filters = search_params[:search_filters] || []
+    @search_filters = search_params[:search_filters] || []
 
-    @patient_summaries = if @current_search_filters.include?("only_less_than_year_overdue")
+    @patient_summaries = if @search_filters.include?("only_less_than_year_overdue")
       policy_scope([:overdue_list, PatientSummary]).overdue
     else
       policy_scope([:overdue_list, PatientSummary]).all_overdue
     end
-    if @current_search_filters.include?("phone_number")
+    if @search_filters.include?("phone_number")
       @patient_summaries = @patient_summaries.where("latest_phone_number is not null")
     end
-    if @current_search_filters.include?("high_risk")
+    if @search_filters.include?("high_risk")
       @patient_summarie = @patient_summaries.where("risk_level == 1")
     end
 
@@ -52,8 +52,8 @@ class AppointmentsController < AdminController
 
   private
 
-  def set_search_filters
-    @search_filters = {
+  def set_patient_search_filters
+    @patient_search_filters = {
       "only_less_than_year_overdue" => "< 365 days overdue",
       "phone_number" => "Has phone number",
       "no_phone_number" => "No phone number",
