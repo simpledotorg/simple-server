@@ -45,7 +45,7 @@ class DistrictAnalyticsQuery
       Patient
         .joins(:blood_pressures)
         .group('blood_pressures.facility_id')
-        .follow_ups(@period, last: @prev_periods)
+        .hypertension_follow_ups(@period, last: @prev_periods)
         .where(blood_pressures: { facility: facilities })
         .distinct
         .count('patients.id')

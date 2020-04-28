@@ -52,7 +52,7 @@ RSpec.describe Api::V2::Analytics::UserAnalyticsController, type: :controller do
         it 'has the follow-ups card' do
           get :show, format: :html
 
-          expect(response.body).to match(/Follow-up hypertension patients/)
+          expect(response.body).to match(/Follow-up patients/)
         end
 
         it 'has the hypertension control card' do
@@ -66,7 +66,7 @@ RSpec.describe Api::V2::Analytics::UserAnalyticsController, type: :controller do
             #
             # create BPs (follow-ups)
             #
-            patients = create_list(:patient, 3, registration_facility: request_facility)
+            patients = create_list(:patient, 3, :hypertension, registration_facility: request_facility)
             patients.each do |patient|
               [patient.recorded_at + 1.month,
                patient.recorded_at + 2.months,
@@ -163,7 +163,7 @@ RSpec.describe Api::V2::Analytics::UserAnalyticsController, type: :controller do
             expect(response.content_type).to eq('text/html')
           end
 
-          it 'has the name of the v2 facility' do
+          it 'has the name of the v3 facility' do
             get :show, format: :html
 
             expect(response.body).to match(Regexp.new(request_facility.name))

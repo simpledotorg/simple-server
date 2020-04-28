@@ -4,10 +4,9 @@
     <td class="row-label">All-time</td>
     <td>
       <%= zero_if_unavailable(@statistics.dig(:all_time,
-                                              :grouped_by_gender,
-                                              resource)
-                                  .values
-                                  .sum) %>
+                                              :grouped_by_date,
+                                              :unique_total,
+                                              resource)) %>
     </td>
   </tr>
   <% @user_analytics.monthly_period_list.each do |month_date| %>
@@ -16,6 +15,7 @@
       <td>
         <%= zero_if_unavailable(@statistics.dig(:monthly,
                                                 :grouped_by_date,
+                                                :unique_total,
                                                 resource,
                                                 month_date)) %>
       </td>

@@ -80,8 +80,13 @@ describe Patient, type: :model do
       let!(:current_user) { create(:user) }
       let!(:current_facility) { create(:facility, facility_group: current_user.facility.facility_group) }
       let!(:reg_date) { Date.new(2018, 1, 1) }
-      let!(:patient_with_follow_up) { create(:patient, registration_facility: current_facility, recorded_at: reg_date) }
-      let!(:patient_without_follow_up) { create(:patient, recorded_at: reg_date) }
+      let!(:patient_with_follow_up) { create(:patient,
+                                             :hypertension,
+                                             registration_facility: current_facility,
+                                             recorded_at: reg_date) }
+      let!(:patient_without_follow_up) { create(:patient,
+                                                :hypertension,
+                                                recorded_at: reg_date) }
 
       before do
         create(:encounter,
@@ -110,15 +115,15 @@ describe Patient, type: :model do
       end
 
       it 'groups follow ups by day' do
-        expect(Patient.joins(:blood_pressures).follow_ups(:day).count.values.sum).to eq(3)
+        expect(Patient.joins(:blood_pressures).hypertension_follow_ups(:day).count.values.sum).to eq(3)
       end
 
       it 'groups follow ups by month' do
-        expect(Patient.joins(:blood_pressures).follow_ups(:month).count.values.sum).to eq(2)
+        expect(Patient.joins(:blood_pressures).hypertension_follow_ups(:month).count.values.sum).to eq(2)
       end
 
       it 'includes patients that followed up in a different facility than registration facility' do
-        expect(Patient.joins(:blood_pressures).follow_ups(:month).count.values.sum).to eq(2)
+        expect(Patient.joins(:blood_pressures).hypertension_follow_ups(:month).count.values.sum).to eq(2)
       end
     end
 

@@ -41,14 +41,14 @@ class FacilityAnalyticsQuery
       Patient
         .from(Patient
                 .joins(:blood_pressures)
-                .follow_ups(@period, last: @prev_periods)
-                .group('user_id', 'blood_pressures.patient_id', BloodPressure.date_to_period_sql(@period), 'blood_pressures.recorded_at', 'patients.deleted_at')
+                .hypertension_follow_ups(@period, last: @prev_periods)
+                .group('bp_user_id', 'blood_pressures.patient_id', BloodPressure.date_to_period_sql(@period), 'blood_pressures.recorded_at', 'patients.deleted_at')
                 .where(blood_pressures: { facility: @facility })
-                .select("DISTINCT ON (blood_pressures.patient_id, #{BloodPressure.date_to_period_sql(@period)}) blood_pressures.user_id AS user_id, patients.deleted_at")
+                .select("DISTINCT ON (blood_pressures.patient_id, #{BloodPressure.date_to_period_sql(@period)}) blood_pressures.user_id AS bp_user_id, patients.deleted_at")
                 .select("blood_pressures.recorded_at AS bp_recorded_at")
                 .order('blood_pressures.patient_id', BloodPressure.date_to_period_sql(@period), 'blood_pressures.recorded_at'),
               'patients')
-        .group('user_id')
+        .group('bp_user_id')
         .group_by_period(:month, 'bp_recorded_at')
         .count
 

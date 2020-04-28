@@ -23,6 +23,14 @@ FactoryBot.define do
       diagnosed_with_hypertension { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unknown] }
     end
 
+    trait :hypertension do
+      hypertension { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:yes] }
+    end
+
+    trait :diabetes do
+      diabetes { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:yes] }
+    end
+
     trait :prior_risk_history do
       prior_heart_attack_boolean { true }
       prior_stroke_boolean { true }
@@ -32,6 +40,7 @@ FactoryBot.define do
       prior_heart_attack { 'yes' }
       prior_stroke { 'yes' }
       diabetes { 'yes' }
+      hypertension { "yes" }
       chronic_kidney_disease { 'yes' }
     end
   end

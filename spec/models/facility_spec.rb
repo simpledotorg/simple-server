@@ -6,7 +6,7 @@ RSpec.describe Facility, type: :model do
     it { should have_many(:blood_pressures).through(:encounters).source(:blood_pressures) }
     it { should have_many(:blood_sugars).through(:encounters).source(:blood_sugars) }
     it { should have_many(:prescription_drugs) }
-    it { should have_many(:patients).through(:blood_pressures) }
+    it { should have_many(:patients).through(:encounters) }
     it { should have_many(:appointments) }
 
     it { should have_many(:registered_patients).class_name('Patient').with_foreign_key('registration_facility_id') }

@@ -22,16 +22,18 @@ RSpec.describe FacilityAnalyticsQuery do
           patients = []
 
           users.each do |u|
-            patients << create_list(:patient, 3, registration_facility: facility, registration_user: u)
+            patients << create_list(:patient, 3, :hypertension, registration_facility: facility, registration_user: u)
           end
 
           patients.flatten
         end
 
+        # rp = 6
+
         #
         # add blood_pressures next month
         #
-        Timecop.travel(month + 1.month) do
+        Timecop.travel(month + 1.month) do # dec
           users.each do |u|
             registered_patients.each do |patient|
               create(:blood_pressure,
@@ -39,6 +41,8 @@ RSpec.describe FacilityAnalyticsQuery do
                      facility: facility,
                      user: u)
             end
+            # u1: 6 encounters, 6 bps
+            # u2: 6 encounters, 6 bps
           end
         end
 
@@ -106,7 +110,7 @@ RSpec.describe FacilityAnalyticsQuery do
     describe '#follow_up_patients_by_period' do
       it 'should discount counting as follow-up if the last BP is removed' do
         patient = Timecop.travel(four_months_back) do
-          create(:patient, registration_facility: facility, registration_user: users.first)
+          create(:patient, :hypertension, registration_facility: facility, registration_user: users.first)
         end
 
         _mar_bp = Timecop.travel(three_months_back) do
@@ -133,7 +137,7 @@ RSpec.describe FacilityAnalyticsQuery do
     describe '#registered_patients_by_period' do
       it 'should count patients as registered even if they do not have a bp' do
         Timecop.travel(one_month_back) do
-          create_list(:patient, 3, registration_facility: facility, registration_user: users.first)
+          create_list(:patient, 3, :hypertension, registration_facility: facility, registration_user: users.first)
         end
 
         expected_result =
@@ -157,13 +161,21 @@ RSpec.describe FacilityAnalyticsQuery do
 
   context 'for discarded patients' do
     let!(:patients) do
-      Timecop.travel(four_months_back) { create_list(:patient, 2, registration_facility: facility, registration_user: users.first) }
+      Timecop.travel(four_months_back) { create_list(:patient,
+                                                     2,
+                                                     :hypertension,
+                                                     registration_facility: facility,
+                                                     registration_user: users.first) }
     end
 
     before do
       Timecop.travel(three_months_back) do
-        create(:blood_pressure, patient: patients.first, facility: facility, user: users.first)
-        create(:blood_pressure, patient: patients.second, facility: facility, user: users.first)
+        create(:encounter,
+               :with_observables,
+               observable: create(:blood_pressure, patient: patients.first, facility: facility, user: users.first))
+        create(:encounter,
+               :with_observables,
+               observable: create(:blood_pressure, patient: patients.second, facility: facility, user: users.first))
       end
       patients.first.discard_data
     end
