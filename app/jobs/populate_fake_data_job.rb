@@ -46,12 +46,11 @@ class PopulateFakeDataJob
       diagnosis: {
         size_fn: -> { 1 },
         build_fn: -> (args) {
-          build_patient_payload(FactoryBot.build(
+          build_medical_history_payload_current(FactoryBot.build(
             :medical_history,
             [:hypertension, :diabetes].sample,
             patient: args[:patient],
-            registration_user: user,
-            registration_facility: user.facility
+            user: user,
           ))
         },
         request_key: :medical_histories,
@@ -204,8 +203,16 @@ class PopulateFakeDataJob
     #
     # register some patients
     #
-    patient_trait_args = patient_traits.dig(:registered_patient)
-    create_resources(generate(patient_trait_args), :registered_patient, patient_trait_args)
+    patient_trait_args = patient_traits[:registered_patient]
+    registered_patients = (1..patient_trait_args[:size_fn].call).flat_map { generate(patient_trait_args) }
+    create_resources(registered_patients, :registered_patient, patient_trait_args)
+
+    # create medical histories for registered patients
+    diagnosis_trait_args = patient_traits[:diagnosis]
+    patient_diagnosis = user.registered_patients.flat_map do |patient|
+      generate(diagnosis_trait_args.merge(patient: patient))
+    end
+    create_resources(patient_diagnosis, :diagnosis, diagnosis_trait_args)
 
     #
     # generate various traits for the registered patients
@@ -233,15 +240,19 @@ class PopulateFakeDataJob
   end
 
   def generate_traits(trait_args)
+    number_of_records = trait_args[:size_fn].call * scale_factor
     user
       .registered_patients
       .sample([trait_args[:patient_sample_size] * user.registered_patients.size, 1].max)
-      .flat_map { |patient| generate(trait_args.merge(patient: patient)) }
+      .flat_map do |patient|
+      number_of_records.times.map do
+        generate(trait_args.merge(patient: patient))
+      end
+    end
   end
 
   def generate(trait_args)
-    number_of_records = trait_args[:size_fn].call * scale_factor
-    (1..number_of_records).flat_map { trait_args[:build_fn].call(trait_args) }
+    trait_args[:build_fn].call(trait_args)
   end
 
   def api_post(path, data)
