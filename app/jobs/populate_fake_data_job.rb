@@ -124,7 +124,7 @@ class PopulateFakeDataJob
       scheduled_appointment: {
         size_fn: -> { rand(1..1) },
         build_fn: -> (args) {
-          return if patient.latest_scheduled_appointment.present?
+          return if args[:patient].latest_scheduled_appointment.present?
 
           build_appointment_payload(FactoryBot.build(
             :appointment,
@@ -142,7 +142,7 @@ class PopulateFakeDataJob
       overdue_appointment: {
         size_fn: -> { 1 },
         build_fn: -> (args) {
-          return if patient.latest_scheduled_appointment.present?
+          return if args[:patient].latest_scheduled_appointment.present?
 
           build_appointment_payload(FactoryBot.build(
             :appointment,
@@ -167,7 +167,7 @@ class PopulateFakeDataJob
             :call_log,
             result: 'completed',
             caller_phone_number: user.phone_number,
-            callee_phone_number: patient.latest_phone_number,
+            callee_phone_number: args[:patient].latest_phone_number,
             end_time: args[:time_fn].call
           )
         },
