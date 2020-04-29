@@ -10,8 +10,8 @@ class Qa::PurgesController < APIController
 
   def purge_patient_data
     return unless FeatureToggle.enabled?('PURGE_ENDPOINT_FOR_QA')
-    PurgeUsersData.perform
 
+    PurgeUsersData.perform
     head :ok
   end
 

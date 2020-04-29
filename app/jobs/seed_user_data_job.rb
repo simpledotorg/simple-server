@@ -2,7 +2,7 @@ require 'factory_bot_rails'
 require 'faker'
 require File.expand_path('spec/utils')
 
-class PopulateFakeDataJob
+class SeedUserDataJob
   include Sidekiq::Worker
   include Sidekiq::Throttled::Worker
 
@@ -67,8 +67,6 @@ class PopulateFakeDataJob
         time_fn: -> { Faker::Time.between(from: 3.month.ago, to: Time.now) },
         size_fn: -> { rand(1..3) },
         build_fn: -> (args) {
-          return nil
-
           build_blood_pressure_payload(FactoryBot.build(
             :blood_pressure,
             patient: args[:patient],
@@ -196,8 +194,11 @@ class PopulateFakeDataJob
     }
   end
 
+  class InvalidSeedUserDataOperation < RuntimeError; end
+
   def perform(user_id)
-    return if ENV['SIMPLE_SERVER_ENV'] == 'production'
+    raise InvalidSeedUserDataOperation,
+          "Can't generate seed data in #{ENV['SIMPLE_SERVER_ENV']}!" if ENV['SIMPLE_SERVER_ENV'] == 'production'
 
     @user = User.find(user_id)
 
@@ -242,12 +243,12 @@ class PopulateFakeDataJob
     end
   end
 
-  def patient_traits_scale_factor
+  def traits_scale_factor
     USER_ACTIVITY_FACTOR[user.role] * FACILITY_SIZE_FACTOR[user.registration_facility.facility_size]
   end
 
   def generate_traits(trait_args)
-    number_of_records = (trait_args[:size_fn].call * patient_traits_scale_factor).to_i
+    number_of_records = (trait_args[:size_fn].call * traits_scale_factor).to_i
 
     user
       .registered_patients
