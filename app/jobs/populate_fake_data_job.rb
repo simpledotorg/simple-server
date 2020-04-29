@@ -35,7 +35,6 @@ class PopulateFakeDataJob
         build_fn: -> (args) {
           build_patient_payload(FactoryBot.build(
             :patient,
-            [:hypertension, :diabetes].sample,
             recorded_at: args[:time_fn].call,
             registration_user: user,
             registration_facility: user.facility
@@ -250,7 +249,7 @@ class PopulateFakeDataJob
       number_of_records.times.map do
         generate(trait_args.merge(patient: patient))
       end
-    end
+    end.compact
   end
 
   def generate(trait_args)
