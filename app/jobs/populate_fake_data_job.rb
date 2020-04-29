@@ -25,6 +25,8 @@ class PopulateFakeDataJob
   }.with_indifferent_access
   FACILITY_SIZE_FACTOR.default = 0
 
+  PAYLOAD_SIZE = 20
+
   def patient_traits
     {
       registered_patient: {
@@ -234,7 +236,7 @@ class PopulateFakeDataJob
     logger.info("Creating #{trait_name} for #{user.full_name}" +
                   "with #{data.size} #{request_key} – facility: #{user.facility.name}")
 
-    data.each_slice(20) do |data_slice|
+    data.each_slice(PAYLOAD_SIZE) do |data_slice|
       api_post("/api/#{api_version}/#{request_key}/sync", request_key => data_slice) if data_slice.present?
     end
   end
