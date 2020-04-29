@@ -31,7 +31,7 @@ class PopulateFakeDataJob
     {
       registered_patient: {
         time_fn: -> { Faker::Time.between(from: 9.month.ago, to: Time.now) },
-        size_fn: -> { rand(30..150) },
+        size_fn: -> { rand(1..2) },
         build_fn: -> (args) {
           build_patient_payload(FactoryBot.build(
             :patient,
@@ -67,6 +67,8 @@ class PopulateFakeDataJob
         time_fn: -> { Faker::Time.between(from: 3.month.ago, to: Time.now) },
         size_fn: -> { rand(1..3) },
         build_fn: -> (args) {
+          return nil
+
           build_blood_pressure_payload(FactoryBot.build(
             :blood_pressure,
             patient: args[:patient],
@@ -203,7 +205,8 @@ class PopulateFakeDataJob
     # register some patients with their medical histories
     #
     patient_trait_args = patient_traits[:registered_patient]
-    registered_patients = patient_trait_args[:size_fn].call.to_i.times.flat_map do
+    number_of_patient_records = patient_trait_args[:size_fn].call.to_i
+    registered_patients = number_of_patient_records.times.flat_map do
       generate(patient_trait_args)
     end
     create_resources(registered_patients, :registered_patient, patient_trait_args)
@@ -245,13 +248,14 @@ class PopulateFakeDataJob
 
   def generate_traits(trait_args)
     number_of_records = (trait_args[:size_fn].call * patient_traits_scale_factor).to_i
+
     user
       .registered_patients
       .sample([trait_args[:patient_sample_size] * user.registered_patients.size, 1].max)
       .flat_map do |patient|
-      number_of_records.times.map do
-        generate(trait_args.merge(patient: patient))
-      end.compact
+      number_of_records
+        .times
+        .map { generate(trait_args.merge(patient: patient)) }
     end
   end
 
