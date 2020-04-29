@@ -12,22 +12,24 @@ class AddPermissionToAccessLevel
     @access_level = Permissions::ACCESS_LEVELS.select { |level| level[:name] == access_level_name }.first
   end
 
-  def valid_permission?
-    true if permission && valid_permission_for_access_level?
+  def valid?
+    permission && valid_permission_for_access_level?
   end
 
   def users
     users = User.includes(:user_permissions).where.not(user_permissions: { id: nil })
-    users.select(&:user_is_a_match?)
+    users.select{ |user| user_is_a_match?(user) }
   end
 
-  def create_permissions
+  def create
     users.each do |user|
       permission_resources(user).each do |resource|
-        UserPermission.create(user: user,
-                              permission_slug: permission[:slug],
-                              resource_type: resource[:resource_type],
-                              resource_id: resource[:resource_id])
+        UserPermission
+          .where(user: user,
+                 permission_slug: permission[:slug],
+                 resource_type: resource[:resource_type],
+                 resource_id: resource[:resource_id])
+          .first_or_create
       end
     end
   end
@@ -61,6 +63,6 @@ class AddPermissionToAccessLevel
   end
 
   def valid_permission_for_access_level?
-    access_level && access_level[:default_permissions].include?(permission)
+    access_level && access_level[:default_permissions].include?(permission_name)
   end
 end
