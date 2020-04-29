@@ -57,6 +57,8 @@ GEM
       execjs (~> 2.0)
     bcrypt (3.1.13)
     bindex (0.5.0)
+    bootsnap (1.4.6)
+      msgpack (~> 1.0)
     bootstrap (4.3.1)
       autoprefixer-rails (>= 9.1.0)
       popper_js (>= 1.14.3, < 2)
@@ -237,6 +239,7 @@ GEM
     mini_mime (1.0.2)
     mini_portile2 (2.4.0)
     minitest (5.14.0)
+    msgpack (1.3.3)
     multi_json (1.13.1)
     multipart-post (2.0.0)
     nenv (0.3.0)
@@ -482,6 +485,7 @@ PLATFORMS
 DEPENDENCIES
   activerecord-import
   bcrypt (~> 3.1, >= 3.1.11)
+  bootsnap
   bootstrap (~> 4.3.1)
   bootstrap_form (>= 4.1.0)
   byebug

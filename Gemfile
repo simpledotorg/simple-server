@@ -9,6 +9,7 @@ end
 
 gem 'activerecord-import'
 gem 'bcrypt', '~> 3.1', '>= 3.1.11'
+gem 'bootsnap'
 gem 'bootstrap_form', '>= 4.1.0'
 gem 'bootstrap', '~> 4.3.1'
 gem 'connection_pool'
