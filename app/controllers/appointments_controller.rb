@@ -5,10 +5,12 @@ class AppointmentsController < AdminController
   before_action :set_patient_search_filters, only: [:index]
   before_action :set_appointment, only: [:update]
 
+  DEFAULT_SEARCH_FILTERS = ["only_less_than_year_overdue"]
+
   def index
     authorize [:overdue_list, Appointment], :index?
 
-    @search_filters = index_params[:search_filters] || []
+    @search_filters = index_params[:search_filters] || DEFAULT_SEARCH_FILTERS
 
     @patient_summaries = apply_search_filters
 
