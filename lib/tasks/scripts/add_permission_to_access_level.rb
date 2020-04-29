@@ -16,11 +16,6 @@ class AddPermissionToAccessLevel
     permission && valid_permission_for_access_level?
   end
 
-  def users
-    users = User.includes(:user_permissions).where.not(user_permissions: { id: nil })
-    users.select{ |user| user_is_a_match?(user) }
-  end
-
   def create
     users.each do |user|
       permission_resources(user).each do |resource|
@@ -36,10 +31,15 @@ class AddPermissionToAccessLevel
 
   private
 
+  def users
+    users = User.includes(:user_permissions).where.not(user_permissions: { id: nil })
+    users.select{ |user| user_is_a_match?(user) }
+  end
+
   def permission_resources(user)
     return [{ resource_type: nil, resource_id: nil }] if permission[:resource_priority] == [:global]
 
-    existing_resource_types = user.user_permissions.map(&:resource_type)
+    existing_resource_types = user.user_permissions.map(&:resource_type).uniq
 
     case
     when permission[:resource_priority].include?(:facility_group) && existing_resource_types.include?('FacilityGroup')
@@ -50,6 +50,8 @@ class AddPermissionToAccessLevel
       user.user_permissions.where(resource_type: 'Organization').map do |resource|
         { resource_type: resource.resource_type, resource_id: resource.resource_id }
       end.uniq
+    when permission[:resource_priority].include?(:global) && existing_resource_types.include?(nil)
+      [{ resource_type: nil, resource_id: nil }]
     end
   end
 
