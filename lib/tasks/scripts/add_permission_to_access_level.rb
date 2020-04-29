@@ -47,6 +47,7 @@ class AddPermissionToAccessLevel
     when permission[:resource_priority].include?(:organization) && existing_resource_types.include?('Organization')
       user.user_permissions.where(resource_type: 'Organization').map do |resource|
         { resource_type: resource.resource_type, resource_id: resource.resource_id }.uniq
+      end
     end
   end
 
