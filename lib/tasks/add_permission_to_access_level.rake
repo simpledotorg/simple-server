@@ -3,9 +3,10 @@
 require 'tasks/scripts/add_permission_to_access_level'
 
 desc 'Add a permission to users with a specified access level'
+# Usage example: bundle exec rake add_permission_to_access_level[view_my_facilities,supervisor]
+
 task :add_permission_to_access_level,
      [:permission, :access_level] => :environment do |_t, args|
-  # bundle exec rake add_permission_to_access_level[view_my_facilities,supervisor]
 
   permission = args[:permission].to_sym
   access_level = args[:access_level].to_sym

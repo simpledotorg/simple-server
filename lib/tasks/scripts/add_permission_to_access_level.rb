@@ -17,14 +17,14 @@ class AddPermissionToAccessLevel
   end
 
   def create
+    return unless valid?
+
     users.each do |user|
       permission_resources(user).each do |resource|
-        UserPermission
-          .where(user: user,
-                 permission_slug: permission[:slug],
-                 resource_type: resource[:resource_type],
-                 resource_id: resource[:resource_id])
-          .first_or_create
+        UserPermission.find_or_create_by!(user: user,
+                                          permission_slug: permission[:slug],
+                                          resource_type: resource[:resource_type],
+                                          resource_id: resource[:resource_id])
       end
     end
   end
@@ -33,29 +33,40 @@ class AddPermissionToAccessLevel
 
   def users
     users = User.includes(:user_permissions).where.not(user_permissions: { id: nil })
-    users.select{ |user| user_is_a_match?(user) }
+    users.select(&method(:eligible?))
   end
 
   def permission_resources(user)
     return [{ resource_type: nil, resource_id: nil }] if permission[:resource_priority] == [:global]
 
-    existing_resource_types = user.user_permissions.map(&:resource_type).uniq
-
-    case
-    when permission[:resource_priority].include?(:facility_group) && existing_resource_types.include?('FacilityGroup')
-      user.user_permissions.where(resource_type: 'FacilityGroup').map do |resource|
-        { resource_type: resource.resource_type, resource_id: resource.resource_id }
-      end.uniq
-    when permission[:resource_priority].include?(:organization) && existing_resource_types.include?('Organization')
-      user.user_permissions.where(resource_type: 'Organization').map do |resource|
-        { resource_type: resource.resource_type, resource_id: resource.resource_id }
-      end.uniq
-    when permission[:resource_priority].include?(:global) && existing_resource_types.include?(nil)
+    case permission_resource_type(user.user_permissions.map(&:resource_type).uniq)
+    when :facility_group
+      user.user_permissions.where(resource_type: 'FacilityGroup').map(&method(:permission_resource)).uniq
+    when :organization
+      user.user_permissions.where(resource_type: 'Organization').map(&method(:permission_resource)).uniq
+    when :global
       [{ resource_type: nil, resource_id: nil }]
+    else
+      []
     end
   end
 
-  def user_is_a_match?(user)
+  def permission_resource(resource)
+    resource.slice(:resource_type, :resource_id)
+  end
+
+  def permission_resource_type(user_resource_types)
+    return :facility_group if permission[:resource_priority].include?(:facility_group) &&
+                              user_resource_types.include?('FacilityGroup')
+
+    return :organization if permission[:resource_priority].include?(:organization) &&
+                            user_resource_types.include?('Organization')
+
+    :global if permission[:resource_priority].include?(:global) &&
+               user_resource_types.include?(nil)
+  end
+
+  def eligible?(user)
     user_permissions = user.user_permissions.map(&:permission_slug).uniq.sort.map(&:to_sym)
     required_permissions = permission[:required_permissions]
     access_level_permissions = access_level[:default_permissions].uniq.sort
