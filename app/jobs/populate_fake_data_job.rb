@@ -205,7 +205,7 @@ class PopulateFakeDataJob
     # register some patients
     #
     patient_trait_args = patient_traits[:registered_patient]
-    registered_patients = (1..patient_trait_args[:size_fn].call).flat_map { generate(patient_trait_args) }
+    registered_patients = patient_trait_args[:size_fn].call.to_i.times.flat_map { generate(patient_trait_args) }
     create_resources(registered_patients, :registered_patient, patient_trait_args)
 
     # create medical histories for registered patients
@@ -246,10 +246,10 @@ class PopulateFakeDataJob
       .registered_patients
       .sample([trait_args[:patient_sample_size] * user.registered_patients.size, 1].max)
       .flat_map do |patient|
-      number_of_records.times.map do
+      number_of_records.to_i.times.map do
         generate(trait_args.merge(patient: patient))
-      end
-    end.compact
+      end.compact
+    end
   end
 
   def generate(trait_args)
