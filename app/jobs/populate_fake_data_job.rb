@@ -106,6 +106,7 @@ class PopulateFakeDataJob
         build_fn: -> (args) {
           build_blood_sugar_payload(FactoryBot.build(
             :blood_sugar,
+            :with_hba1c,
             patient: args[:patient],
             user: user,
             recorded_at: args[:time_fn].call,
@@ -125,6 +126,7 @@ class PopulateFakeDataJob
 
           build_blood_sugar_payload(FactoryBot.build(
             :blood_sugar,
+            :with_hba1c,
             patient: args[:patient],
             user: user,
             device_created_at: now,
@@ -227,7 +229,7 @@ class PopulateFakeDataJob
     api_version = trait_args[:api_version]
     return if request_key.blank?
 
-    logger.info("Creating #{trait_name} for #{user.full_name}" +
+    logger.info("Creating #{trait_name} for #{user.full_name} " +
                   "with #{data.size} #{request_key} – facility: #{user.facility.name}")
 
     data.each_slice(SYNC_PAYLOAD_SIZE) do |data_slice|

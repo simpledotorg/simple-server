@@ -10,6 +10,8 @@ FactoryBot.define do
     organization { org }
     protocol
 
-    slug { name.parameterize.underscore }
+    sequence :slug do |n|
+      "#{name.to_s.parameterize.underscore}_#{n}"
+    end
   end
 end

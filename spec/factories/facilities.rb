@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :facility do
     id { SecureRandom.uuid }
-    name { "#{facility_type} #{village_or_colony}" }
+    name { "#{facility_type} #{village_or_colony}" + rand(1..100).to_s }
     street_address { Faker::Address.street_address }
     village_or_colony { Faker::Address.village }
     district { Faker::Address.district }
@@ -15,6 +15,8 @@ FactoryBot.define do
     enable_diabetes_management { true }
     monthly_estimated_opd_load 300
 
-    slug { name.parameterize.underscore }
+    sequence :slug do |n|
+      "#{name.to_s.parameterize.underscore}_#{n}"
+    end
   end
 end
