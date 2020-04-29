@@ -64,7 +64,7 @@
           <%= hidden_field_tag :facility_id, @facility_id %>
           <%= hidden_field_tag :per_page, @per_page %>
 
-          <% @patient_search_filters.each do |filter, label| %>
+          <% Array(@patient_search_filters).each do |filter, label| %>
             <div>
               <label for=<%= "search-#{filter}" %>>
                 <% checked = @search_filters.include?(filter) %>
