@@ -75,7 +75,11 @@ class Patient < ApplicationRecord
   }
 
   scope :follow_ups, -> (period, last: nil) {
-    follow_ups_with(:encounters, period, time_col: 'encountered_on', last: last)
+    where(observations: { observable_type: 'BloodPressures' }, medical_history: { hypertension: 'yes' })
+      .or(where(observations: { observable_type: 'BloodSugar' }, medical_history: { diabetes: 'yes' }))
+      .joins(:medical_history, :observations)
+      .where("patients.recorded_at < #{Encounter.date_to_period_sql(period)}")
+      .group_by_period(period, 'encounters_patients_join.encountered_on', last: last)
   }
 
   def self.follow_ups_with(resource_type, period, time_col: 'recorded_at', last: nil)

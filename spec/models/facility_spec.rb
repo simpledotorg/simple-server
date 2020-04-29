@@ -11,17 +11,79 @@ RSpec.describe Facility, type: :model do
 
     it { should have_many(:registered_patients).class_name('Patient').with_foreign_key('registration_facility_id') }
 
-    it 'has distinct patients' do
-      facility = create(:facility)
-      patient = create(:patient)
-      blood_pressures = create_list(:blood_pressure, 2, facility: facility, patient: patient)
-      blood_sugars = create_list(:blood_sugar, 2, facility: facility, patient: patient)
-      (blood_pressures + blood_sugars).each { |record| create(:encounter, :with_observables, patient: patient, observable: record, facility: facility) }
-      expect(facility.patients.count).to eq(1)
+    context 'patients' do
+      it 'has distinct patients' do
+        facility =
+          create(:facility)
+
+        dm_patient =
+          create(:patient, :diabetes)
+        htn_patient =
+          create(:patient, :hypertension)
+
+        create(:encounter, :with_observables, observable:
+          create(:blood_sugar, facility: facility, patient: dm_patient))
+        create(:encounter, :with_observables, observable:
+          create(:blood_sugar, facility: facility, patient: htn_patient))
+
+        create(:encounter, :with_observables, observable:
+          create(:blood_pressure, facility: facility, patient: htn_patient))
+        create(:encounter, :with_observables, observable:
+          create(:blood_pressure, facility: facility, patient: dm_patient))
+
+        expect(facility.patients.count).to eq(2)
+      end
     end
 
     it { should belong_to(:facility_group).optional }
     it { should delegate_method(:follow_ups).to(:patients).with_prefix(:patient) }
+  end
+
+  describe 'Delegates' do
+    it 'has distinct patients' do
+      registration_date = Time.new(2018, 4, 8)
+      first_follow_up_date = registration_date + 1.month
+      second_follow_up_date = first_follow_up_date + 1.month
+
+      facility =
+        create(:facility)
+
+      dm_patient =
+        create(:patient, :diabetes,
+               recorded_at: registration_date)
+      htn_patient =
+        create(:patient, :hypertension,
+               recorded_at: registration_date)
+
+      create(:encounter, :with_observables, observable:
+        create(:blood_sugar,
+               facility: facility,
+               patient: dm_patient,
+               recorded_at: first_follow_up_date))
+      create(:encounter, :with_observables, observable:
+        create(:blood_sugar,
+               facility: facility,
+               patient: htn_patient,
+               recorded_at: first_follow_up_date))
+
+      create(:encounter, :with_observables, observable:
+        create(:blood_pressure,
+               facility: facility,
+               patient: htn_patient,
+               recorded_at: second_follow_up_date))
+      create(:encounter, :with_observables, observable:
+        create(:blood_pressure,
+               facility: facility,
+               patient: dm_patient,
+               recorded_at: second_follow_up_date))
+
+      expected_output = {
+        first_follow_up_date.to_date.beginning_of_month => 1,
+        second_follow_up_date.to_date.beginning_of_month => 1
+      }
+
+      expect(facility.patient_follow_ups(:month).count).to eq(expected_output)
+    end
   end
 
   describe 'Validations' do
