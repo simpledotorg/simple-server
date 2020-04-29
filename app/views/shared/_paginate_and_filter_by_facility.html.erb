@@ -26,4 +26,5 @@
   <% @search_filters.each do |value| %>
     <%= form.hidden_field "search_filters[]", value: value %>
   <% end %>
+  <%= form.submit "Filter", style: "position: absolute; left: -9999px; width: 1px; height: 1px;" %>
 <% end %>
