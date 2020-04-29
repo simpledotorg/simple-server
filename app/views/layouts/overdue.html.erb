@@ -80,14 +80,14 @@
       </section>
 
       <section>
-        Print
-      </section>
-
-      <section>
-        <% if @patient_summaries.present? && policy([:overdue_list, @patient_summaries.first]).download? %>
-          <%= link_to(appointments_path(format: "csv"), class: "", data: { confirm: I18n.t('admin.phi_download_alert') }) do %>
-            <h4>Download Results</h4>
+        <% if current_facility %>
+          <% if @patient_summaries.present? && policy([:overdue_list, @patient_summaries.first]).download? %>
+            <%= link_to(appointments_path(format: "csv"), class: "", data: { confirm: I18n.t('admin.phi_download_alert') }) do %>
+              <h4>Download Results</h4>
+            <% end %>
           <% end %>
+        <% else %>
+          <em>Select a facility to download Overdue Patients list</em>
         <% end %>
       </section>
     </div>
