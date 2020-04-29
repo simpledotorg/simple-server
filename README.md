@@ -115,11 +115,21 @@ Alternatively, you can start these services locally _without_ foreman by using t
 RAILS_ENV=test bundle exec rspec
 ```
 
-Note:
+### Generating seed data
 
-* For the `development` environment, this will truncate existing data and seed the database
-from scratch.
-* Please refer to `config/seed.yml` to set the multiplier values to control the volume of seed data generated.
+To generate seed data, execute the following command from the project root:
+
+```bash
+bundle exec rake db:seed generate:fake_data
+```
+
+To purge the generated patient data, run
+
+```bash
+bundle exec rake purge:users_data
+```
+
+Note that this only removes patient level data and preserves Users, Facilities and Organisations.
 
 ### Creating an admin user
 
