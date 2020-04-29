@@ -8,8 +8,7 @@ class AppointmentsController < AdminController
   def index
     authorize [:overdue_list, Appointment], :index?
 
-    search_params = params.permit(search_filters: [])
-    @search_filters = search_params[:search_filters] || []
+    @search_filters = index_params[:search_filters] || []
 
     @patient_summaries = if @search_filters.include?("only_less_than_year_overdue")
       policy_scope([:overdue_list, PatientSummary]).overdue
@@ -61,6 +60,10 @@ class AppointmentsController < AdminController
     }
   end
 
+  def index_params
+    @index_params ||= params.permit(:facility_id, :per_page, search_filters: [])
+  end
+
   def set_appointment
     @appointment = Appointment.find(params[:id] || params[:appointment_id])
     authorize([:overdue_list, @appointment])
@@ -90,10 +93,6 @@ class AppointmentsController < AdminController
 
   def selected_facility_id
     params[:appointment][:selected_facility_id]
-  end
-
-  def only_less_than_year_overdue
-    params[:only_less_than_year_overdue]
   end
 
   def page

@@ -28,7 +28,7 @@
             <div class="row">
               <div class="col-6 mb-3">
                 <h4>Patients</h4>
-                <form>
+                <%= form_tag appointments_path, method: :get do %>
                   <% @search_filters.each do |filter, label| %>
                     <div class="checkbox-row">
                       <label for=<%= "search-#{filter}-mobile" %>>
@@ -36,11 +36,9 @@
                         <%= check_box_tag("search_filters[]", filter, checked, { id: "search-#{filter}-mobile" } ) %>
                         <%= label %>
                       </label>
-                    <%= hidden_field_tag :facility_id, @facility_id %>
-                    <%= hidden_field_tag :per_page, @per_page %>
                     </div>
                   <% end %>
-                </form>
+                <% end %>
               </div>
             </div>
           </div>
@@ -61,7 +59,11 @@
     <div class="col-lg-2 pl-lg-0 desktop">
       <section class="secondary-nav-filters">
         <h4>Patients</h4>
-        <%= form_for appointments_path, method: :get, id: "query-filters" do |form| %>
+
+        <%= form_tag appointments_path, method: :get do %>
+          <%= hidden_field_tag :facility_id, @facility_id %>
+          <%= hidden_field_tag :per_page, @per_page %>
+
           <% @patient_search_filters.each do |filter, label| %>
             <div>
               <label for=<%= "search-#{filter}" %>>
