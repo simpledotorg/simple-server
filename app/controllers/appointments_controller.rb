@@ -10,17 +10,7 @@ class AppointmentsController < AdminController
 
     @search_filters = index_params[:search_filters] || []
 
-    @patient_summaries = if @search_filters.include?("only_less_than_year_overdue")
-      policy_scope([:overdue_list, PatientSummary]).overdue
-    else
-      policy_scope([:overdue_list, PatientSummary]).all_overdue
-    end
-    if @search_filters.include?("phone_number")
-      @patient_summaries = @patient_summaries.where("latest_phone_number is not null")
-    end
-    if @search_filters.include?("high_risk")
-      @patient_summarie = @patient_summaries.where("risk_level == 1")
-    end
+    @patient_summaries = apply_search_filters
 
     if current_facility
       @patient_summaries = @patient_summaries.where(next_appointment_facility_id: current_facility.id)
@@ -50,6 +40,24 @@ class AppointmentsController < AdminController
   end
 
   private
+
+  def apply_search_filters
+    @patient_summaries = if @search_filters.include?("only_less_than_year_overdue")
+      policy_scope([:overdue_list, PatientSummary]).overdue
+    else
+      policy_scope([:overdue_list, PatientSummary]).all_overdue
+    end
+    if @search_filters.include?("phone_number")
+      @patient_summaries = @patient_summaries.where("latest_phone_number is not null")
+    end
+    if @search_filters.include?("no_phone_number")
+      @patient_summaries = @patient_summaries.where("latest_phone_number is null")
+    end
+    if @search_filters.include?("high_risk")
+      @patient_summaries = @patient_summaries.where("risk_level == 1")
+    end
+    @patient_summaries
+  end
 
   def set_patient_search_filters
     @patient_search_filters = {
