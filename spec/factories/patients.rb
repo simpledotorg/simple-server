@@ -43,19 +43,19 @@ end
 
 def build_patient_payload(patient = FactoryBot.build(:patient))
   patient.attributes.with_payload_keys
-      .except('address_id')
-      .except('registration_user_id')
-      .except('registration_facility_id')
-      .except('test_data')
-      .merge(
-        'address' => patient.address.attributes.with_payload_keys,
-        'phone_numbers' => patient.phone_numbers.map { |phno| phno.attributes.with_payload_keys.except('patient_id', 'dnd_status') },
-        'business_identifiers' => patient.business_identifiers.map do |bid|
-          bid.attributes.with_payload_keys
-            .except('patient_id')
-            .merge('metadata' => bid.metadata&.to_json)
-        end
-     )
+    .except('address_id')
+    .except('registration_user_id')
+    .except('registration_facility_id')
+    .except('test_data')
+    .merge(
+      'address' => patient.address.attributes.with_payload_keys,
+      'phone_numbers' => patient.phone_numbers.map { |phno| phno.attributes.with_payload_keys.except('patient_id', 'dnd_status') },
+      'business_identifiers' => patient.business_identifiers.map do |bid|
+        bid.attributes.with_payload_keys
+          .except('patient_id')
+          .merge('metadata' => bid.metadata&.to_json)
+      end
+    )
 end
 
 def build_patient_payload_v2(patient = FactoryBot.build(:patient))
