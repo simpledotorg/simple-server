@@ -25,13 +25,13 @@ class PopulateFakeDataJob
   }.with_indifferent_access
   FACILITY_SIZE_FACTOR.default = 0
 
-  PAYLOAD_SIZE = 20
+  SYNC_PAYLOAD_SIZE = 20
 
   def patient_traits
     {
       registered_patient: {
         time_fn: -> { Faker::Time.between(from: 9.month.ago, to: Time.now) },
-        size_fn: -> { rand(1..2) },
+        size_fn: -> { rand(30..150) },
         build_fn: -> (args) {
           build_patient_payload(FactoryBot.build(
             :patient,
@@ -65,7 +65,7 @@ class PopulateFakeDataJob
     {
       ongoing_bp: {
         time_fn: -> { Faker::Time.between(from: 3.month.ago, to: Time.now) },
-        size_fn: -> { rand(1..1) },
+        size_fn: -> { rand(1..3) },
         build_fn: -> (args) {
           build_blood_pressure_payload(FactoryBot.build(
             :blood_pressure,
@@ -138,7 +138,7 @@ class PopulateFakeDataJob
       },
 
       scheduled_appointment: {
-        size_fn: -> { rand(1..1) },
+        size_fn: -> { 1 },
         build_fn: -> (args) {
           return if args[:patient].latest_scheduled_appointment.present?
 
@@ -156,7 +156,7 @@ class PopulateFakeDataJob
       },
 
       overdue_appointment: {
-        size_fn: -> { 1 },
+        size_fn: -> { rand(1..2) },
         build_fn: -> (args) {
           return if args[:patient].latest_scheduled_appointment.present?
 
@@ -192,28 +192,23 @@ class PopulateFakeDataJob
     }
   end
 
-  def scale_factor
-    USER_ACTIVITY_FACTOR[user.role] * FACILITY_SIZE_FACTOR[user.registration_facility.facility_size]
-  end
-
   def perform(user_id)
     return if ENV['SIMPLE_SERVER_ENV'] == 'production'
 
     @user = User.find(user_id)
 
     #
-    # register some patients
+    # register some patients with their medical histories
     #
     patient_trait_args = patient_traits[:registered_patient]
     registered_patients = patient_trait_args[:size_fn].call.to_i.times.flat_map { generate(patient_trait_args) }
     create_resources(registered_patients, :registered_patient, patient_trait_args)
 
-    # create medical histories for registered patients
     diagnosis_trait_args = patient_traits[:diagnosis]
-    patient_diagnosis = user.registered_patients.flat_map do |patient|
+    diagnosis_data = user.registered_patients.flat_map do |patient|
       generate(diagnosis_trait_args.merge(patient: patient))
     end
-    create_resources(patient_diagnosis, :diagnosis, diagnosis_trait_args)
+    create_resources(diagnosis_data, :diagnosis, diagnosis_trait_args)
 
     #
     # generate various traits for the registered patients
@@ -235,13 +230,17 @@ class PopulateFakeDataJob
     logger.info("Creating #{trait_name} for #{user.full_name}" +
                   "with #{data.size} #{request_key} – facility: #{user.facility.name}")
 
-    data.each_slice(PAYLOAD_SIZE) do |data_slice|
+    data.each_slice(SYNC_PAYLOAD_SIZE) do |data_slice|
       api_post("/api/#{api_version}/#{request_key}/sync", request_key => data_slice) if data_slice.present?
     end
   end
 
+  def patient_traits_scale_factor
+    USER_ACTIVITY_FACTOR[user.role] * FACILITY_SIZE_FACTOR[user.registration_facility.facility_size]
+  end
+
   def generate_traits(trait_args)
-    number_of_records = trait_args[:size_fn].call * scale_factor
+    number_of_records = trait_args[:size_fn].call * patient_traits_scale_factor
     user
       .registered_patients
       .sample([trait_args[:patient_sample_size] * user.registered_patients.size, 1].max)
