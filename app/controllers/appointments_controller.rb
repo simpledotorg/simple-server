@@ -64,7 +64,7 @@ class AppointmentsController < AdminController
       @patient_summaries = @patient_summaries.where("latest_phone_number is null")
     end
     if @search_filters.include?("high_risk")
-      @patient_summaries = @patient_summaries.where("risk_level == 1")
+      @patient_summaries = @patient_summaries.where("risk_level = 1")
     end
     @patient_summaries
   end
