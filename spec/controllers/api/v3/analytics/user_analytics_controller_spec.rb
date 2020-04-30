@@ -42,7 +42,6 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
           expect(response.body).to match(/Tap "Sync" on the home screen for new data/)
         end
 
-
         it 'has the registrations card' do
           get :show, format: :html
 
@@ -63,7 +62,7 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
 
         context 'achievements' do
           it 'has the section visible' do
-            let(:request_date) { Date.new(2018, 4, 8) }
+            request_date = Date.new(2018, 4, 8)
 
             #
             # create BPs (follow-ups)
@@ -83,10 +82,10 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
                                             user: request_user))
                 end
               end
-
-              get :show, format: :html
-              expect(response.body).to match(/Achievements/)
             end
+
+            get :show, format: :html
+            expect(response.body).to match(/Achievements/)
           end
 
           it 'is not visible if there are insufficient follow_ups' do

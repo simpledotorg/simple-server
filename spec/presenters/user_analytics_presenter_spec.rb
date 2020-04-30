@@ -328,26 +328,26 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
       expect(data[:trophies]).to eq(expected_output)
     end
   end
-end
 
-describe '#display_percentage' do
-  it 'displays 0% if denominator is zero' do
-    expect(described_class.new(current_facility).display_percentage(2, 0)).to eq("0%")
-  end
+  describe '#display_percentage' do
+    it 'displays 0% if denominator is zero' do
+      expect(described_class.new(current_facility).display_percentage(2, 0)).to eq("0%")
+    end
 
-  it 'displays 0% if denominator is nil' do
-    expect(described_class.new(current_facility).display_percentage(2, nil)).to eq("0%")
-  end
+    it 'displays 0% if denominator is nil' do
+      expect(described_class.new(current_facility).display_percentage(2, nil)).to eq("0%")
+    end
 
-  it 'displays 0% if numerator is zero' do
-    expect(described_class.new(current_facility).display_percentage(0, 3)).to eq("0%")
-  end
+    it 'displays 0% if numerator is zero' do
+      expect(described_class.new(current_facility).display_percentage(0, 3)).to eq("0%")
+    end
 
-  it 'displays 0% if numerator is nil' do
-    expect(described_class.new(current_facility).display_percentage(nil, 2)).to eq("0%")
-  end
+    it 'displays 0% if numerator is nil' do
+      expect(described_class.new(current_facility).display_percentage(nil, 2)).to eq("0%")
+    end
 
-  it 'displays the percentage rounded up' do
-    expect(described_class.new(current_facility).display_percentage(22, 7)).to eq("314%")
+    it 'displays the percentage rounded up' do
+      expect(described_class.new(current_facility).display_percentage(22, 7)).to eq("314%")
+    end
   end
 end
