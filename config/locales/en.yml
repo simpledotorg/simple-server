@@ -85,6 +85,19 @@ en:
         The APIs have been designed to provide an optimal balance between accuracy and simplicity. Some of the APIs (patients) will be nested, and some other (blood pressures) will be flat.
         ## Authentication
         ### User Authentication
+        A Simple client attempting to authenticate a medical professional needs three pieces of information:
+        - The user's registered phone number
+        - The user's PIN / Password
+        - An OTP message that is generated during the authentication process, and sent to the user's registered phone number
+
+        On successful verification of these credentials, the client will receive an access token. All subsequent requests to protected API endpoints should include this access token.
+
+        A successful authentication flow involves the following steps:
+        1. Submit the users phone number to the [`/v4/users/find` endpoint](#tag/User/paths/~1users~1find/post). If a user exists with this phone number, the response will return their `id`.
+        2. Submit the user's `id` retreived in the previous step, along with the user's `password` to the [`v4/users/activate` endpoint](#tag/User/paths/~1users~1activate/post). This will validate the user's password, and trigger an OTP to be sent to the user's phone number
+        3. Submit the user's `id`, their `password`, and the `otp` received after the previous step to the [`v3/login` endpoint](#tag/User-Login/paths/~1login/post). If the submitted otp and password are valid, this will return an `access_token` that can be used to authenticate the user
+
+        This token is a `Bearer` token, and should be attached as a header to all subsequent API requests as described here [link to bearer token docs here].
 
         ### Patient Authentication
 
