@@ -76,6 +76,81 @@ describe Patient, type: :model do
   end
 
   context 'Scopes' do
+    describe '.hypertension_follow_ups' do
+      let(:reg_date) { Date.new(2018, 1, 1) }
+
+      let(:current_user) { create(:user) }
+      let(:current_facility) { create(:facility, facility_group: current_user.facility.facility_group) }
+      let(:patient_with_follow_up) { create(:patient,
+                                            :hypertension,
+                                            registration_facility: current_facility,
+                                            recorded_at: reg_date) }
+      let(:patient_without_follow_up) { create(:patient, :hypertension, recorded_at: reg_date) }
+
+      before do
+        create(:encounter,
+               :with_observables,
+               observable: create(:blood_pressure,
+                                  patient: patient_with_follow_up,
+                                  facility: current_facility,
+                                  user: current_user,
+                                  recorded_at: reg_date + 1.day))
+
+        create(:encounter,
+               :with_observables,
+               observable: create(:blood_pressure,
+                                  patient: patient_with_follow_up,
+                                  facility: current_facility,
+                                  user: current_user,
+                                  recorded_at: reg_date + 1.month))
+
+        # visit in a random facility
+        create(:encounter,
+               :with_observables,
+               observable: create(:blood_pressure,
+                                  patient: patient_with_follow_up,
+                                  user: current_user,
+                                  recorded_at: reg_date + 1.month))
+      end
+
+      it 'groups follow ups by day' do
+        expect(Patient.joins(:blood_pressures).hypertension_follow_ups(:day).count.values.sum).to eq(3)
+      end
+
+      it 'groups follow ups by month' do
+        expect(Patient.joins(:blood_pressures).hypertension_follow_ups(:month).count.values.sum).to eq(2)
+      end
+
+      it 'includes patients that followed up in a different facility than registration facility' do
+        expect(Patient.joins(:blood_pressures).hypertension_follow_ups(:month).count.values.sum).to eq(2)
+      end
+    end
+
+    describe '.not_contacted' do
+      let(:patient_to_followup) { create(:patient, device_created_at: 5.days.ago) }
+      let(:patient_to_not_followup) { create(:patient, device_created_at: 1.day.ago) }
+      let(:patient_contacted) { create(:patient, contacted_by_counsellor: true) }
+      let(:patient_could_not_be_contacted) { create(:patient, could_not_contact_reason: 'dead') }
+
+      it 'includes uncontacted patients registered 2 days ago or earlier' do
+        expect(Patient.not_contacted).to include(patient_to_followup)
+      end
+
+      it 'excludes uncontacted patients registered less than 2 days ago' do
+        expect(Patient.not_contacted).not_to include(patient_to_not_followup)
+      end
+
+      it 'excludes already contacted patients' do
+        expect(Patient.not_contacted).not_to include(patient_contacted)
+      end
+
+      it 'excludes patients who could not be contacted' do
+        expect(Patient.not_contacted).not_to include(patient_could_not_be_contacted)
+      end
+    end
+  end
+
+  context 'Scopes' do
     describe '.follow_ups' do
       let!(:current_user) { create(:user) }
       let!(:current_facility) { create(:facility, facility_group: current_user.facility.facility_group) }
@@ -175,10 +250,10 @@ describe Patient, type: :model do
     end
 
     describe '#risk_priority' do
-      it 'returns no priority for patients recently overdue' do
+      it 'returns regular priority for patients recently overdue' do
         create(:appointment, scheduled_date: 29.days.ago, status: :scheduled, patient: patient)
 
-        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:NONE])
+        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:REGULAR])
       end
 
       it 'returns high priority for patients overdue with critical bp' do
@@ -203,11 +278,11 @@ describe Patient, type: :model do
         expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:REGULAR])
       end
 
-      it 'returns no priority for patients overdue with only medical risk history' do
+      it 'returns regular priority for patients overdue with only medical risk history' do
         create(:medical_history, :prior_risk_history, patient: patient)
         create(:appointment, :overdue, patient: patient)
 
-        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:NONE])
+        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:REGULAR])
       end
 
       it 'returns regular priority for patients overdue with hypertension' do
@@ -217,11 +292,11 @@ describe Patient, type: :model do
         expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:REGULAR])
       end
 
-      it 'returns low priority for patients overdue with low risk' do
+      it 'returns regular priority for patients overdue with low risk' do
         create(:blood_pressure, :under_control, patient: patient)
         create(:appointment, scheduled_date: 2.years.ago, status: :scheduled, patient: patient)
 
-        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:LOW])
+        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:REGULAR])
       end
 
       it 'returns high priority for patients overdue with high blood sugar' do
@@ -231,11 +306,11 @@ describe Patient, type: :model do
         expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:HIGH])
       end
 
-      it "returns 'none' priority for patients overdue with normal blood sugar" do
+      it "returns regular priority for patients overdue with normal blood sugar" do
         create(:blood_sugar, patient: patient, blood_sugar_type: :random, blood_sugar_value: 150)
         create(:appointment, :overdue, patient: patient)
 
-        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:NONE])
+        expect(patient.risk_priority).to eq(Patient::RISK_PRIORITIES[:REGULAR])
       end
     end
 

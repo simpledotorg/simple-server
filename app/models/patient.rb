@@ -17,38 +17,31 @@ class Patient < ApplicationRecord
 
   ANONYMIZED_DATA_FIELDS = %w[id created_at registration_date registration_facility_name user_id age gender]
 
-  belongs_to :address, optional: true
+  has_one :medical_history
   has_many :phone_numbers, class_name: 'PatientPhoneNumber'
   has_many :business_identifiers, class_name: 'PatientBusinessIdentifier'
   has_many :passport_authentications, through: :business_identifiers
-
   has_many :blood_pressures, inverse_of: :patient
   has_many :blood_sugars
   has_many :prescription_drugs
   has_many :facilities, -> { distinct }, through: :blood_pressures
   has_many :users, -> { distinct }, through: :blood_pressures
   has_many :appointments
-
-  has_one :medical_history
-
   has_many :encounters
   has_many :observations, through: :encounters
-
-  belongs_to :registration_facility, class_name: "Facility", optional: true
-  belongs_to :registration_user, class_name: "User"
-
-  has_many :latest_blood_pressures, -> { order(recorded_at: :desc) }, class_name: 'BloodPressure'
+  has_many :current_prescription_drugs, -> { where(is_deleted: false) }, class_name: 'PrescriptionDrug'
   has_many :latest_blood_sugars, -> { order(recorded_at: :desc) }, class_name: 'BloodSugar'
-
+  has_many :latest_blood_pressures, -> { order(recorded_at: :desc) }, class_name: 'BloodPressure'
   has_many :latest_scheduled_appointments,
            -> { where(status: 'scheduled').order(scheduled_date: :desc) },
            class_name: 'Appointment'
-
   has_many :latest_bp_passports,
            -> { where(identifier_type: 'simple_bp_passport').order(device_created_at: :desc) },
            class_name: 'PatientBusinessIdentifier'
 
-  has_many :current_prescription_drugs, -> { where(is_deleted: false) }, class_name: 'PrescriptionDrug'
+  belongs_to :address, optional: true
+  belongs_to :registration_facility, class_name: "Facility", optional: true
+  belongs_to :registration_user, class_name: "User"
 
   attribute :call_result, :string
 
@@ -73,11 +66,7 @@ class Patient < ApplicationRecord
   }
 
   scope :follow_ups, -> (period, last: nil) {
-    where(observations: { observable_type: 'BloodPressures' }, medical_history: { hypertension: 'yes' })
-      .or(where(observations: { observable_type: 'BloodSugar' }, medical_history: { diabetes: 'yes' }))
-      .joins(:medical_history, :observations)
-      .where("patients.recorded_at < #{Encounter.date_to_period_sql(period)}")
-      .group_by_period(period, 'encounters_patients_join.encountered_on', last: last)
+    follow_ups_with(:encounters, period, time_col: 'encountered_on', last: last)
   }
 
   def self.follow_ups_with(resource_type, period, time_col: 'recorded_at', last: nil)

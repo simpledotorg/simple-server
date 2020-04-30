@@ -78,8 +78,8 @@ RSpec.describe Facility, type: :model do
                recorded_at: second_follow_up_date))
 
       expected_output = {
-        first_follow_up_date.to_date.beginning_of_month => 1,
-        second_follow_up_date.to_date.beginning_of_month => 1
+        first_follow_up_date.to_date.beginning_of_month => 2,
+        second_follow_up_date.to_date.beginning_of_month => 2
       }
 
       expect(facility.patient_follow_ups(:month).count).to eq(expected_output)

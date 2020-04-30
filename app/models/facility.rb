@@ -116,14 +116,17 @@ class Facility < ApplicationRecord
 
   def facility_group_exists
     organization = Organization.find_by(name: organization_name)
-    facility_group = FacilityGroup.find_by(name: facility_group_name, organization_id: organization.id) if organization.present?
-    errors.add(:facility_group, "doesn't exist for the organization") if organization.present? && facility_group_name.present? && facility_group.blank?
-
+    facility_group = FacilityGroup.find_by(name: facility_group_name,
+                                           organization_id: organization.id) if organization.present?
+    if organization.present? && facility_group_name.present? && facility_group.blank?
+      errors.add(:facility_group, "doesn't exist for the organization")
+    end
   end
 
   def facility_is_unique
     organization = Organization.find_by(name: organization_name)
-    facility_group = FacilityGroup.find_by(name: facility_group_name, organization_id: organization.id) if organization.present?
+    facility_group = FacilityGroup.find_by(name: facility_group_name,
+                                           organization_id: organization.id) if organization.present?
     facility = Facility.find_by(name: name, facility_group: facility_group.id) if facility_group.present?
     errors.add(:facility, 'already exists') if organization.present? && facility_group.present? && facility.present?
 
