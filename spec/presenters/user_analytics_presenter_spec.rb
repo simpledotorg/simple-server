@@ -286,34 +286,40 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
     context 'trophies' do
       it 'has both unlocked and the upcoming locked trophy' do
-        #
-        # create BPs (follow-ups)
-        #
-        patients = create_list(:patient, 3, registration_facility: current_facility)
-        patients.each do |patient|
-          [patient.recorded_at + 1.month,
-           patient.recorded_at + 2.months,
-           patient.recorded_at + 3.months,
-           patient.recorded_at + 4.months].each do |date|
-            travel_to(date) do
-              create(:encounter,
-                     :with_observables,
-                     observable: create(:blood_pressure,
-                                        patient: patient,
-                                        facility: current_facility,
-                                        user: current_user))
+        Timecop.freeze("10:00 AM UTC") do
+          #
+          # create BPs (follow-ups)
+          #
+          patients = create_list(:patient, 3, registration_facility: current_facility)
+          patients.each do |patient|
+            [patient.recorded_at + 1.month,
+            patient.recorded_at + 2.months,
+            patient.recorded_at + 3.months,
+            patient.recorded_at + 4.months].each do |date|
+              puts Time.current
+              puts Date.current
+              puts "traveling to #{date}"
+              Timecop.freeze(date) do
+                create(:encounter,
+                      :with_observables,
+                      observable: create(:blood_pressure,
+                                          patient: patient,
+                                          facility: current_facility,
+                                          user: current_user))
+              end
             end
           end
+          puts "its now #{Date.current}"
+
+          data = described_class.new(current_facility).statistics
+
+          expected_output = {
+            locked_trophy_value: 25,
+            unlocked_trophy_values: [10]
+          }
+
+          expect(data[:trophies]).to eq(expected_output)
         end
-
-        data = described_class.new(current_facility).statistics
-
-        expected_output = {
-          locked_trophy_value: 25,
-          unlocked_trophy_values: [10]
-        }
-
-        expect(data[:trophies]).to eq(expected_output)
       end
 
       it 'has only 1 locked trophy if there are no achievements' do
