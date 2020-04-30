@@ -13,18 +13,14 @@ class Facility < ApplicationRecord
 
   has_many :phone_number_authentications, foreign_key: 'registration_facility_id'
   has_many :users, through: :phone_number_authentications
-
   has_many :encounters
-  has_many :blood_pressures, through: :encounters, source: :blood_pressures
   has_many :blood_sugars, through: :encounters, source: :blood_sugars
-
+  has_many :blood_pressures, through: :encounters, source: :blood_pressures
   has_many :prescription_drugs
   has_many :appointments
-
   has_many :patients, -> { distinct }, through: :encounters
   has_many :diabetes_patients, -> { diabetes_only.distinct }, through: :blood_sugars, source: :patient
   has_many :hypertension_patients, -> { hypertension_only.distinct }, through: :blood_pressures, source: :patient
-
   has_many :registered_patients,
            class_name: "Patient", foreign_key: "registration_facility_id"
   has_many :registered_diabetes_patients, -> { diabetes_only },
@@ -59,6 +55,7 @@ class Facility < ApplicationRecord
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, to: :facility_group, allow_nil: true
+  delegate :follow_ups, to: :hypertension_patients, prefix: :patient
 
   delegate :follow_ups, to: :patients, prefix: :patient
   delegate :diabetes_follow_ups, to: :diabetes_patients, prefix: false

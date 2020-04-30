@@ -12,9 +12,7 @@ class Patient < ApplicationRecord
   STATUSES = %w[active dead migrated unresponsive inactive].freeze
   RISK_PRIORITIES = {
     HIGH: 0,
-    REGULAR: 1,
-    LOW: 2,
-    NONE: 3
+    REGULAR: 1
   }.freeze
 
   ANONYMIZED_DATA_FIELDS = %w[id created_at registration_date registration_facility_name user_id age gender]
@@ -58,7 +56,7 @@ class Patient < ApplicationRecord
   scope :hypertension_only, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes) }
 
   #
-  # Note: This scope expects a join(:blood_pressures) to exist.
+  # Note: This scope expects a joins(:blood_pressures) to exist.
   # For eg, Patient.joins(:blood_pressures).follow_ups(:month).
   #
   # It doesn't include the join in this scope to play well with certain parent scopes (eg. Facility).
@@ -153,7 +151,7 @@ class Patient < ApplicationRecord
   end
 
   def risk_priority
-    return RISK_PRIORITIES[:NONE] if latest_scheduled_appointment&.overdue_for_under_a_month?
+    return RISK_PRIORITIES[:REGULAR] if latest_scheduled_appointment&.overdue_for_under_a_month?
 
     if latest_blood_pressure&.critical?
       RISK_PRIORITIES[:HIGH]
@@ -161,12 +159,8 @@ class Patient < ApplicationRecord
       RISK_PRIORITIES[:HIGH]
     elsif latest_blood_sugar&.diabetic?
       RISK_PRIORITIES[:HIGH]
-    elsif latest_blood_pressure&.hypertensive?
-      RISK_PRIORITIES[:REGULAR]
-    elsif low_priority?
-      RISK_PRIORITIES[:LOW]
     else
-      RISK_PRIORITIES[:NONE]
+      RISK_PRIORITIES[:REGULAR]
     end
   end
 
@@ -229,12 +223,5 @@ class Patient < ApplicationRecord
     phone_numbers.discard_all
     prescription_drugs.discard_all
     discard
-  end
-
-  private
-
-  def low_priority?
-    latest_scheduled_appointment&.overdue_for_over_a_year? &&
-      latest_blood_pressure&.under_control?
   end
 end
