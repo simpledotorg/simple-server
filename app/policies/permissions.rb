@@ -121,6 +121,7 @@ module Permissions
         view_health_worker_activity
         download_patient_line_list
         manage_admins
+        view_my_facilities
       ]
     },
     { name: :analyst,
