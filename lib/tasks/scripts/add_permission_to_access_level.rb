@@ -13,11 +13,13 @@ class AddPermissionToAccessLevel
   end
 
   def valid?
-    permission && valid_permission_for_access_level?
+    return true if permission && valid_permission_for_access_level?
+
+    false
   end
 
   def create
-    return unless valid?
+    return false unless valid?
 
     users.each do |user|
       permission_resources(user).each do |resource|
