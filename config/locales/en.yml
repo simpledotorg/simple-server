@@ -84,7 +84,9 @@ en:
         ## Nesting resources
         The APIs have been designed to provide an optimal balance between accuracy and simplicity. Some of the APIs (patients) will be nested, and some other (blood pressures) will be flat.
         ## Authentication
-        TODO
+        ### User Authentication
+
+        ### Patient Authentication
 
         ## Sync Mechanism
         Refer to the [related ADR](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/001-synchronization.md).
