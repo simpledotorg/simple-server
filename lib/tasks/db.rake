@@ -3,15 +3,15 @@ namespace :db do
   task seed_user_data: :environment do
     abort "Can't run this task in env:#{ENV['SIMPLE_SERVER_ENV']}!" if ENV['SIMPLE_SERVER_ENV'] == 'production'
 
-    if ENV['ACTIVE_GENERATED_USER_ROLE'].blank? || ENV['INACTIVE_GENERATED_USER_ROLE'].blank?
+    if ENV['SEED_GENERATED_ACTIVE_USER_ROLE'].blank? || ENV['SEED_GENERATED_INACTIVE_USER_ROLE'].blank?
       abort "Can't proceed! \n" \
-      "Set configs for: ENV['ACTIVE_GENERATED_USER_ROLE'] and ENV['INACTIVE_GENERATED_USER_ROLE'] " \
+      "Set configs for: ENV['SEED_GENERATED_ACTIVE_USER_ROLE'] and ENV['SEED_GENERATED_INACTIVE_USER_ROLE'] " \
       "before running this task. \n" \
       "Make sure there are some users created with those two roles; see db:seed."
     end
 
 
-    User.where(role: [ENV['ACTIVE_GENERATED_USER_ROLE'], ENV['INACTIVE_GENERATED_USER_ROLE']])
+    User.where(role: [ENV['SEED_GENERATED_ACTIVE_USER_ROLE'], ENV['SEED_GENERATED_INACTIVE_USER_ROLE']])
       .each { |user| SeedUserDataJob.perform_async(user.id) }
   end
 

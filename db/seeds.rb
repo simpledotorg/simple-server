@@ -109,7 +109,7 @@ facilities =
 #
 facilities.each do |facility|
   if facility.users.size < MAX_NUM_OF_USERS_PER_FACILITY
-    role = rand > 0.1 ? ENV['ACTIVE_GENERATED_USER_ROLE'] : ENV['INACTIVE_GENERATED_USER_ROLE']
+    role = rand > 0.1 ? ENV['SEED_GENERATED_ACTIVE_USER_ROLE'] : ENV['SEED_GENERATED_INACTIVE_USER_ROLE']
     FactoryBot.create_list(:user,
                            NUM_OF_USERS_PER_FACILITY_FN.call,
                            :with_phone_number_authentication,
@@ -122,5 +122,5 @@ end
 #
 # create admin user
 #
-CreateAdminUser.create_owner('Admin User', 'admin@simple.org', ENV['GENERATED_ADMIN_PASSWORD'])
+CreateAdminUser.create_owner('Admin User', 'admin@simple.org', ENV['SEED_GENERATED_ADMIN_PASSWORD'])
 
