@@ -35,11 +35,11 @@ RSpec.describe SmsNotificationService do
       it 'should have the SMS body in the default locale' do
         sms = SmsNotificationService.new(recipient_phone_number, sender_phone_number, twilio_client)
 
-        expected_msg_default = 'Our staff at Simple Facility are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre. Contact your ANM or ASHA.'
+        expected_msg = 'Our staff at Simple Facility are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre. Contact your ANM or ASHA.'
         expect(twilio_client).to receive_message_chain('messages.create').with(from: '+15005550006',
                                                                                to: expected_sms_recipient_phone_number,
                                                                                status_callback: '',
-                                                                               body: expected_msg_default)
+                                                                               body: expected_msg)
 
         sms.send_reminder_sms('missed_visit_sms_reminder', appointment, '')
       end
@@ -47,11 +47,11 @@ RSpec.describe SmsNotificationService do
       it 'should have the SMS body in Marathi' do
         sms = SmsNotificationService.new(recipient_phone_number, sender_phone_number, twilio_client)
 
-        expected_msg_marathi = 'आमचे Simple Facility येथील कर्मचारी तुमच्‍याबद्दल आणि तुमच्‍या ह्रदयाच्‍या आरोग्‍याबद्दल विचार करीत आहेत. कृपया आपल्या रक्तदाबाची औषधे चालू ठेवा. जवळच्या उपकेंद्रामधून आपले औषध घ्या. आपल्या ANM किंवा ASHA शी संपर्क साधा.'
+        expected_msg = 'आमचे Simple Facility येथील कर्मचारी तुमच्‍याबद्दल आणि तुमच्‍या ह्रदयाच्‍या आरोग्‍याबद्दल विचार करीत आहेत. कृपया आपल्या रक्तदाबाची औषधे चालू ठेवा. जवळच्या उपकेंद्रामधून आपले औषध घ्या. आपल्या ANM किंवा ASHA शी संपर्क साधा.'
         expect(twilio_client).to receive_message_chain('messages.create').with(from: '+15005550006',
                                                                                to: expected_sms_recipient_phone_number,
                                                                                status_callback: '',
-                                                                               body: expected_msg_marathi)
+                                                                               body: expected_msg)
 
         sms.send_reminder_sms('missed_visit_sms_reminder', appointment, '', 'mr-IN')
       end
@@ -59,11 +59,11 @@ RSpec.describe SmsNotificationService do
       it 'should have the SMS body in Punjabi' do
         sms = SmsNotificationService.new(recipient_phone_number, sender_phone_number, twilio_client)
 
-        expected_msg_punjabi = 'Simple Facility ਵਿਖੇ ਸਾਡਾ ਸਟਾਫ਼ ਤੁਹਾਡੇ ਅਤੇ ਤੁਹਾਡੇ ਦਿਲ ਦੀ ਸਿਹਤ ਬਾਰੇ ਸੋਚ ਰਿਹਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀਆਂ ਬਲੱਡ ਸ਼ੂਗਰ ਦਵਾਈਆਂ ਜਾਰੀ ਰੱਖੋ। ਨਜ਼ਦੀਕੀ ਉਪ ਕੇਂਦਰ ਤੋਂ ਆਪਣੀ ਦਵਾਈ ਇਕੱਤਰ ਕਰੋ। ਆਪਣੀ ANM ਜਾਂ ASHA ਨਾਲ ਸੰਪਰਕ ਕਰੋ।'
+        expected_msg = 'Simple Facility ਵਿਖੇ ਸਾਡਾ ਸਟਾਫ਼ ਤੁਹਾਡੇ ਅਤੇ ਤੁਹਾਡੇ ਦਿਲ ਦੀ ਸਿਹਤ ਬਾਰੇ ਸੋਚ ਰਿਹਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀਆਂ ਬਲੱਡ ਸ਼ੂਗਰ ਦਵਾਈਆਂ ਜਾਰੀ ਰੱਖੋ। ਨਜ਼ਦੀਕੀ ਉਪ ਕੇਂਦਰ ਤੋਂ ਆਪਣੀ ਦਵਾਈ ਇਕੱਤਰ ਕਰੋ। ਆਪਣੀ ANM ਜਾਂ ASHA ਨਾਲ ਸੰਪਰਕ ਕਰੋ।'
         expect(twilio_client).to receive_message_chain('messages.create').with(from: '+15005550006',
                                                                                to: expected_sms_recipient_phone_number,
                                                                                status_callback: '',
-                                                                               body: expected_msg_punjabi)
+                                                                               body: expected_msg)
 
         sms.send_reminder_sms('missed_visit_sms_reminder', appointment, '', 'pa-Guru-IN')
       end
@@ -71,11 +71,11 @@ RSpec.describe SmsNotificationService do
       it 'should have the SMS body in Kannada' do
         sms = SmsNotificationService.new(recipient_phone_number, sender_phone_number, twilio_client)
 
-        expected_msg_punjabi = 'Simple Facility ನಲ್ಲಿರುವ ನಮ್ಮ ಸಿಬ್ಬಂದಿ ನಿಮ್ಮ ಮತ್ತು ನಿಮ್ಮ ಹೃದಯದ ಆರೋಗ್ಯದ ಬಗ್ಗೆ ಯೋಚಿಸುತ್ತಿದ್ದಾರೆ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಬ್ಲಡ್ ಪ್ರೆಶರ್ ಔಷಧಗಳನ್ನು ಮುಂದುವರೆಸಿ. ನಿಮ್ಮ ಹತ್ತಿರದ ಉಪ ಕೇಂದ್ರದಲ್ಲಿ ನಿಮ್ಮ ಔಷಧಗಳನ್ನು ಸಂಗ್ರಹಿಸಿ. ನಿಮ್ಮ ANM ಅಥವಾ ASHA ಅವರನ್ನು ಸಂಪರ್ಕಿಸಿ.'
+        expected_msg = 'Simple Facility ನಲ್ಲಿರುವ ನಮ್ಮ ಸಿಬ್ಬಂದಿ ನಿಮ್ಮ ಮತ್ತು ನಿಮ್ಮ ಹೃದಯದ ಆರೋಗ್ಯದ ಬಗ್ಗೆ ಯೋಚಿಸುತ್ತಿದ್ದಾರೆ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಬ್ಲಡ್ ಪ್ರೆಶರ್ ಔಷಧಗಳನ್ನು ಮುಂದುವರೆಸಿ. ನಿಮ್ಮ ಹತ್ತಿರದ ಉಪ ಕೇಂದ್ರದಲ್ಲಿ ನಿಮ್ಮ ಔಷಧಗಳನ್ನು ಸಂಗ್ರಹಿಸಿ. ನಿಮ್ಮ ANM ಅಥವಾ ASHA ಅವರನ್ನು ಸಂಪರ್ಕಿಸಿ.'
         expect(twilio_client).to receive_message_chain('messages.create').with(from: '+15005550006',
                                                                                to: expected_sms_recipient_phone_number,
                                                                                status_callback: '',
-                                                                               body: expected_msg_punjabi)
+                                                                               body: expected_msg)
 
         sms.send_reminder_sms('missed_visit_sms_reminder', appointment, '', 'kn-IN')
       end
