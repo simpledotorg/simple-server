@@ -97,6 +97,7 @@ facilities =
       size = facility_size_map[type]
 
       FactoryBot.create(:facility,
+                        :seed,
                         facility_group_id: fg.id,
                         district: fg.name,
                         facility_type: type,
