@@ -1,6 +1,6 @@
 namespace :db do
-  desc 'Generate some fake data for a seed user roles;Example: rake "db:seed_users'
-  task seed_users: :environment do
+  desc 'Generate some fake data for a seed user roles;Example: rake "db:seed_user_data'
+  task seed_user_data: :environment do
     abort "Can't run this task in env:#{ENV['SIMPLE_SERVER_ENV']}!" if ENV['SIMPLE_SERVER_ENV'] == 'production'
 
     if ENV['ACTIVE_GENERATED_USER_ROLE'].blank? || ENV['INACTIVE_GENERATED_USER_ROLE'].blank?
@@ -15,8 +15,8 @@ namespace :db do
       .each { |user| SeedUserDataJob.perform_async(user.id) }
   end
 
-  desc 'Purge all user data; Example: rake "db:purge_users'
-  task purge_users: :environment do
+  desc 'Purge all user data; Example: rake "db:purge_user_data'
+  task purge_user_data: :environment do
     abort "Can't run this task in #{ENV['SIMPLE_SERVER_ENV']}!'" if ENV['SIMPLE_SERVER_ENV'] == 'production'
 
     require 'tasks/scripts/purge_users_data'

@@ -120,10 +120,10 @@ RAILS_ENV=test bundle exec rspec
 To generate seed data, execute the following command from the project root:
 
 ```bash
-bundle exec rake db:seed db:seed_users
+bundle exec rake db:seed db:seed_users_data
 ```
 
-**Note**: This spins up sidekiq jobs to generate data and expects the server to be running. 
+**Note**: This spins up sidekiq jobs to generate data and expects the server+sidekiq to be running. 
 Ensure that you are running:
 
 ```bash
@@ -133,10 +133,10 @@ $ foreman start -f Procfile.dev
 To purge the generated patient data, run
 
 ```bash
-bundle exec rake db:purge_users
+bundle exec rake db:purge_users_data
 ```
 
-**Note**: This only removes patient data. It preserves `User`, `Facility` and `Organization`.
+**Note**: This only removes data created by `db:seed_users_data`, it keeps the seed data created by `db:seed`.
 
 ### Creating an admin user
 
