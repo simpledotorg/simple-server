@@ -7,13 +7,14 @@ class AppointmentNotificationService
 
   class << self
     def send_after_missed_visit(appointments:, days_overdue: 3, schedule_at:)
-      fan_out_reminders(appointments
-                          .overdue_by(days_overdue)
+      overdue_appts_with_patient_consent = appointments.overdue_by(days_overdue)
                           .includes(patient: [:phone_numbers])
                           .where(patients: { reminder_consent: 'granted' })
-                          .merge(PatientPhoneNumber.phone_type_mobile),
-                        Communication.communication_types[:missed_visit_sms_reminder],
-                        schedule_at)
+                          .merge(PatientPhoneNumber.phone_type_mobile)
+
+      fan_out_reminders(overdue_appts_with_patient_consent,
+        Communication.communication_types[:missed_visit_sms_reminder],
+        schedule_at)
     end
 
     def fan_out_reminders(appointments, communication_type, schedule_at)
@@ -25,11 +26,7 @@ class AppointmentNotificationService
     end
 
     def eligible_appointments(appointments, communication_type)
-      appointments.select { |appointment| eligible_for_sending_sms?(appointment, communication_type) }
-    end
-
-    def eligible_for_sending_sms?(appointment, communication_type)
-      (not appointment.previously_communicated_via?(communication_type))
+      appointments.select { |appointment| !appointment.previously_communicated_via?(communication_type) }
     end
   end
 end
