@@ -84,7 +84,7 @@ class BloodPressure < ApplicationRecord
   # time-period-boundary issues.
   #
   def self.date_to_period_sql(period)
-    tz = Rails.application.config.country[:time_zone]
+    tz = Time.zone.name
     "(DATE_TRUNC('#{period}', (blood_pressures.recorded_at::timestamptz) AT TIME ZONE '#{tz}')) AT TIME ZONE '#{tz}'"
   end
 end
