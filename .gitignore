@@ -27,3 +27,6 @@ coverage
 /lib/bangladesh/import/data/*.csv
 /lib/bangladesh/import/data/*.csv.encrypted
 /lib/bangladesh/import/data/*.xlsx
+
+# Ignore leftover pulls from cap db:pull
+/*.sql
