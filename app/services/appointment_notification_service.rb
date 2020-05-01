@@ -1,5 +1,5 @@
 class AppointmentNotificationService
-  FAN_OUT_BATCH_SIZE = (ENV['APPOINTMENT_NOTIFICATION_FAN_OUT_BATCH_SIZE'].presence || 250).to_i
+  FAN_OUT_BATCH_SIZE = (ENV['APPOINTMENT_NOTIFICATION_FAN_OUT_BATCH_SIZE'].presence || 1).to_i
 
   def self.send_after_missed_visit(*args)
     new(*args).send_after_missed_visit
