@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe PatientSummaryQuery do
   let(:facility) do
@@ -6,7 +6,7 @@ RSpec.describe PatientSummaryQuery do
   end
 
   let(:really_overdue_appointments) do
-    appointments = create_list(:appointment, 2, facility: facility, scheduled_date: 380.days.ago, status: 'scheduled')
+    create_list(:appointment, 2, facility: facility, scheduled_date: 380.days.ago, status: "scheduled")
   end
 
   it "returns nothing for no data" do
@@ -20,9 +20,9 @@ RSpec.describe PatientSummaryQuery do
     result = PatientSummaryQuery.call(filters: ["only_less_than_year_overdue"])
 
     patients = result.map(&:patient)
-    expect(result.map(&:id)).to match_array(patients.map(&:id))
-    expect(patients).to match_array(patients)
-    expect(patients).to_not match_array(really_overdue_appointments.map(&:patient))
+    expect(result.map(&:id)).to match_array(expected_patients.map(&:id))
+    expect(patients).to match_array(expected_patients)
+    expect(patients).to_not match_array(really_overdue_patients)
   end
 
   it "can include appointments overdue more than a year when filter includes them" do
