@@ -29,4 +29,4 @@ coverage
 /lib/bangladesh/import/data/*.xlsx
 
 # Ignore leftover pulls from cap db:pull
-*.sql
+/*.sql
