@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200421132003) do
+ActiveRecord::Schema.define(version: 20200501174342) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -289,7 +289,7 @@ ActiveRecord::Schema.define(version: 20200421132003) do
   create_table "passport_authentications", force: :cascade do |t|
     t.string "access_token", null: false
     t.string "otp", null: false
-    t.datetime "otp_valid_until", null: false
+    t.datetime "otp_expires_at", null: false
     t.uuid "patient_business_identifier_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -358,7 +358,7 @@ ActiveRecord::Schema.define(version: 20200421132003) do
     t.string "phone_number", null: false
     t.string "password_digest", null: false
     t.string "otp", null: false
-    t.datetime "otp_valid_until", null: false
+    t.datetime "otp_expires_at", null: false
     t.datetime "logged_in_at"
     t.string "access_token", null: false
     t.uuid "registration_facility_id"
