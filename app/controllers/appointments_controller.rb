@@ -52,9 +52,6 @@ class AppointmentsController < AdminController
 
   private
 
-  def apply_search_filters
-  end
-
   def set_patient_search_filters
     @patient_search_filters = {
       "only_less_than_year_overdue" => "< 365 days overdue",
