@@ -102,13 +102,13 @@ RSpec.describe SmsNotificationService do
 
         it 'uses the set country code' do
           sms = SmsNotificationService.new(recipient_phone_number, sender_phone_number, twilio_client)
-          expected_msg_default = 'Our staff at Simple Facility are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre. Contact your ANM or ASHA.'
+          expected_msg = 'Our staff at Simple Facility are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre. Contact your ANM or ASHA.'
 
           expect(twilio_client).to receive_message_chain('messages.create').with(
             from: '+15005550006',
             to: expected_sms_recipient_phone_number,
             status_callback: '',
-            body: /#{expected_msg_default}/
+            body: /#{expected_msg}/
           )
 
           sms.send_reminder_sms('missed_visit_sms_reminder', appointment, '')
@@ -189,13 +189,13 @@ RSpec.describe SmsNotificationService do
 
         it 'uses the set country code' do
           sms = SmsNotificationService.new(recipient_phone_number, sender_phone_number, twilio_client)
-          expected_msg_default = 'Our staff at Simple Facility are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre. Contact your ANM or ASHA.'
+          expected_msg = 'Our staff at Simple Facility are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre. Contact your ANM or ASHA.'
 
           expect(twilio_client).to receive_message_chain('messages.create').with(
             from: 'whatsapp:+15005550006',
             to: "whatsapp:#{expected_sms_recipient_phone_number}",
             status_callback: '',
-            body: /#{expected_msg_default}/
+            body: /#{expected_msg}/
           )
 
           sms.send_reminder_whatsapp('missed_visit_sms_reminder', appointment, '')
