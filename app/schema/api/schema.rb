@@ -19,6 +19,12 @@ class Api::Schema
       }
     end
 
+    def security_definitions
+      { basic: {
+        type: :basic
+      } }
+    end
+
     def swagger_doc(version, definitions)
       {
         swagger: '2.0',
@@ -28,7 +34,8 @@ class Api::Schema
         schemes: ['https'],
         info: swagger_info(version),
         paths: {},
-        definitions: definitions
+        definitions: definitions,
+        securityDefinitions: security_definitions
       }
     end
 
