@@ -9,9 +9,9 @@ RSpec.describe PeriodHelper, type: :helper do
     let(:current_date) { Date.current }
 
     it 'generates a sorted list of dates given a quarter and time range' do
-      expect(period_list_as_dates(:quarter, 3)).to eq([current_date.beginning_of_month,
-                                                       current_date.beginning_of_month - 3.months,
-                                                       current_date.beginning_of_month - 6.months])
+      expect(period_list_as_dates(:quarter, 3)).to eq([current_date.beginning_of_quarter,
+                                                       current_date.beginning_of_quarter - 3.months,
+                                                       current_date.beginning_of_quarter - 6.months])
     end
 
     it 'generates a sorted list of dates given a month and time range' do
