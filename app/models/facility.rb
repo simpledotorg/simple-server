@@ -3,6 +3,7 @@ require 'roo'
 class Facility < ApplicationRecord
   include Mergeable
   include QuarterHelper
+
   extend FriendlyId
 
   has_many :phone_number_authentications, foreign_key: 'registration_facility_id'
@@ -13,8 +14,8 @@ class Facility < ApplicationRecord
   has_many :encounters
   has_many :patients, -> { distinct }, through: :encounters
 
-  has_many :blood_sugars, through: :patients, source: :blood_sugars
-  has_many :blood_pressures, through: :patients, source: :blood_pressures
+  has_many :blood_sugars, through: :encounters, source: :blood_sugars
+  has_many :blood_pressures, through: :encounters, source: :blood_pressures
 
   has_many :registered_patients,
            class_name: "Patient", foreign_key: "registration_facility_id"

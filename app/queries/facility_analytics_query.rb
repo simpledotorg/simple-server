@@ -78,7 +78,7 @@ class FacilityAnalyticsQuery
       CallLog
         .result_completed
         .joins(%Q(INNER JOIN phone_number_authentications
-                  ON phone_number_authentications.phone_number = call_logs.caller_phone_number'))
+                  ON phone_number_authentications.phone_number = call_logs.caller_phone_number))
         .joins(%Q(INNER JOIN facilities
                   ON facilities.id = phone_number_authentications.registration_facility_id))
         .joins(%Q(INNER JOIN user_authentications
