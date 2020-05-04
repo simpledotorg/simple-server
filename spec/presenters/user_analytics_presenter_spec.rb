@@ -59,21 +59,21 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
         expected_output = {
           registrations: {
-            (Date.today - 5) => 0,
-            (Date.today - 4) => 0,
-            (Date.today - 3) => 0,
-            (Date.today - 2) => 0,
-            (Date.today - 1) => 0,
-            Date.today => 0
+            (Date.current - 5) => 0,
+            (Date.current - 4) => 0,
+            (Date.current - 3) => 0,
+            (Date.current - 2) => 0,
+            (Date.current - 1) => 0,
+            Date.current => 0
           },
 
           follow_ups: {
-            (Date.today - 5) => 0,
-            (Date.today - 4) => 0,
-            (Date.today - 3) => 0,
-            (Date.today - 2) => 0,
-            (Date.today - 1) => 0,
-            Date.today => 0,
+            (Date.current - 5) => 0,
+            (Date.current - 4) => 0,
+            (Date.current - 3) => 0,
+            (Date.current - 2) => 0,
+            (Date.current - 1) => 0,
+            Date.current => 0,
           }
         }
 
@@ -315,17 +315,17 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
         expect(data[:trophies]).to eq(expected_output)
       end
+    end
 
-      it 'has only 1 locked trophy if there are no achievements' do
-        data = described_class.new(current_facility).statistics
+    it 'has only 1 locked trophy if there are no achievements' do
+      data = described_class.new(current_facility).statistics
 
-        expected_output = {
-          locked_trophy_value: 10,
-          unlocked_trophy_values: []
-        }
+      expected_output = {
+        locked_trophy_value: 10,
+        unlocked_trophy_values: []
+      }
 
-        expect(data[:trophies]).to eq(expected_output)
-      end
+      expect(data[:trophies]).to eq(expected_output)
     end
   end
 

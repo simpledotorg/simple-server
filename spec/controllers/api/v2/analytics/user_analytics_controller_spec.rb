@@ -63,28 +63,30 @@ RSpec.describe Api::V2::Analytics::UserAnalyticsController, type: :controller do
 
         context 'achievements' do
           it 'has the section visible' do
-            #
-            # create BPs (follow-ups)
-            #
-            patients = create_list(:patient, 3, registration_facility: request_facility)
-            patients.each do |patient|
-              [patient.recorded_at + 1.month,
-               patient.recorded_at + 2.months,
-               patient.recorded_at + 3.months,
-               patient.recorded_at + 4.months].each do |date|
-                travel_to(date) do
-                  create(:encounter,
-                         :with_observables,
-                         observable: create(:blood_pressure,
-                                            patient: patient,
-                                            facility: request_facility,
-                                            user: request_user))
+            Timecop.freeze("10:00 AM UTC") do
+              #
+              # create BPs (follow-ups)
+              #
+              patients = create_list(:patient, 3, registration_facility: request_facility)
+              patients.each do |patient|
+                [patient.recorded_at + 1.month,
+                patient.recorded_at + 2.months,
+                patient.recorded_at + 3.months,
+                patient.recorded_at + 4.months].each do |date|
+                  travel_to(date) do
+                    create(:encounter,
+                          :with_observables,
+                          observable: create(:blood_pressure,
+                                              patient: patient,
+                                              facility: request_facility,
+                                              user: request_user))
+                  end
                 end
               end
-            end
 
-            get :show, format: :html
-            expect(response.body).to match(/Achievements/)
+              get :show, format: :html
+              expect(response.body).to match(/Achievements/)
+            end
           end
 
           it 'is not visible if there are insufficient follow_ups' do
