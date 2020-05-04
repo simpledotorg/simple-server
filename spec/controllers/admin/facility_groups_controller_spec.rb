@@ -84,7 +84,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
           :facility_group,
           organization_id: organization.id,
           protocol_id: protocol.id
-        ).except(:id)
+        ).except(:id, :slug)
       end
 
       it 'updates the requested facility_group' do
