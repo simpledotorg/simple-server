@@ -88,7 +88,7 @@ en:
         ## Sync Mechanism
         Refer to the [related ADR](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/001-synchronization.md).
 
-        ## Authentication
+        ## API Authentication
         There are two types of authentication available to access different parts of the Simple API.
         - User Authentication - For medical professionals using the Simple App. Grants access to most of the Simple API
           to read and write data for communities of patients.
