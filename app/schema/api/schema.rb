@@ -34,7 +34,12 @@ class Api::Schema
           type: 'apiKey',
           in: 'header',
           name: 'X-FACILITY-ID'
-        }
+        },
+        patient_id: {
+          type: 'apiKey',
+          in: 'header',
+          name: 'X-PATIENT-ID'
+        },
       }
     end
 

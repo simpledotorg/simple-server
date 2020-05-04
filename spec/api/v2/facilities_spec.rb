@@ -4,7 +4,7 @@ describe 'Facilities V2 API', swagger_doc: 'v2/swagger.json' do
   path '/facilities/sync' do
     get 'Syncs facilities data from server to device.' do
       tags 'facility'
-      security [access_token: [], patient_id: [], facility_id: []]
+      security [access_token: [], user_id: [], facility_id: []]
 
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid

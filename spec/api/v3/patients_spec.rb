@@ -4,7 +4,7 @@ describe 'Patients v3 API', swagger_doc: 'v3/swagger.json' do
   path '/patients/sync' do
     post 'Syncs patient, address and phone number data from device to server.' do
       tags 'patient'
-      security [access_token: [], patient_id: [], facility_id: []]
+      security [access_token: [], user_id: [], facility_id: []]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
       parameter name: :patients, in: :body, schema: Api::V3::Schema.patient_sync_from_user_request
@@ -39,7 +39,7 @@ describe 'Patients v3 API', swagger_doc: 'v3/swagger.json' do
 
     get 'Syncs patient, address and phone number data from server to device.' do
       tags 'patient'
-      security [access_token: [], patient_id: [], facility_id: []]
+      security [access_token: [], user_id: [], facility_id: []]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
       Api::V3::Schema.sync_to_user_request.each do |param|

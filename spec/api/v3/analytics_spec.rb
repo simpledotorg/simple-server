@@ -4,7 +4,7 @@ describe 'Analytics Current API', swagger_doc: 'v3/swagger.json' do
   path '/analytics/user_analytics' do
     get 'Sends JSON containing analytics for User' do
       tags 'analytics'
-      security [access_token: [], patient_id: [], facility_id: []]
+      security [access_token: [], user_id: [], facility_id: []]
       produces 'application/json'
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
@@ -35,7 +35,7 @@ describe 'Analytics Current API', swagger_doc: 'v3/swagger.json' do
   path '/analytics/user_analytics.html' do
     get 'Sends a static HTML containing analytics for user' do
       tags 'analytics'
-      security [access_token: [], patient_id: [], facility_id: []]
+      security [access_token: [], user_id: [], facility_id: []]
       produces 'text/html'
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
