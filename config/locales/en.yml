@@ -80,11 +80,23 @@ en:
       description: |
         # API spec for Simple Server
         ## Sync APIs
+
         This API spec documents the endpoints that the devices (that are offline to varying levels) will use to sync data. The sync end points will send and receive bulk (a list of) entities. Both sending and receiving can be batched with configurable batch-sizes to accommodate low network bandwidth situations.
+
         ## Nesting resources
+
         The APIs have been designed to provide an optimal balance between accuracy and simplicity. Some of the APIs (patients) will be nested, and some other (blood pressures) will be flat.
+
         ## Authentication
+
+        There are two types of authentication available to access different parts of the Simple API.
+
+        - User Authentication - For medical professionals using the Simple App. Grants access to most of the Simple API
+          to read and write data for communities of patients
+        - Patient authentication - For individual patients. Grants access to read a patient's own data.
+
         ### User Authentication
+
         A Simple client attempting to authenticate a medical professional needs three pieces of information:
         - The user's registered phone number
         - The user's PIN / Password
@@ -101,19 +113,20 @@ en:
 
         ### Patient Authentication
 
-        A Simple client attempting to authenticate a patient needs two pieces of information:
-        - The patient's BP Passport UUID
-        - An OTP message that is generated during the authentication process, and sent to the patient's registered phone number
+        A Simple client can make authenticated requests to the Simple API on behalf of a patient with the following
+        credentials:
+        - API Access Token
+        - Patient ID
 
-        On successful verification of these credentials, the client will receive a payload containing an API access
-        token and a patient ID. Both of these data points need to be attached to subsequent requests as request headers
-        as shown below.
+        In order to obtain these credentials, a Simple client can authenticate a patient with the following steps. The
+        client will need the patient's BP Passport UUID to perform the authentication.
+        1. Submit the patient's BP Passport UUID to the [`POST /v4/patients/activate` endpoint](#tag/Patient/paths/~1patient~1activate/post)
+        2. Submit the patient's BP Passport UUID and OTP (received after the previous step) to the [`POST /v4/patients/login` endpoint](#tag/Patient/paths/~1patient~1login/post)
+
+        On successful authentication, the client will receive a payload containing an API access token and a patient ID.
+        Both of these data points need to be attached to subsequent requests as request headers as shown below.
         - `Authorization: Bearer <access token>`
         - `X-Patient-Id: <patient ID>`
-
-        A successful authentication flow involves the following steps:
-        1. Submit the patient's BP Passport UUID to the `POST /v4/patients/activate` endpoint
-        2. Submit the patient's BP Passport UUID and OTP (received after the previous step) to the `POST /v4/patients/login` endpoint
 
         ## Sync Mechanism
         Refer to the [related ADR](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/001-synchronization.md).
