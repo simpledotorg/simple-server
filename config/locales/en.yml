@@ -101,6 +101,20 @@ en:
 
         ### Patient Authentication
 
+        A Simple client attempting to authenticate a patient needs two pieces of information:
+        - The patient's BP Passport UUID
+        - An OTP message that is generated during the authentication process, and sent to the patient's registered phone number
+
+        On successful verification of these credentials, the client will receive a payload containing an API access
+        token and a patient ID. Both of these data points need to be attached to subsequent requests as request headers
+        as shown below.
+        - `Authorization: Bearer <access token>`
+        - `X-Patient-Id: <patient ID>`
+
+        A successful authentication flow involves the following steps:
+        1. Submit the patient's BP Passport UUID to the `POST /v4/patients/activate` endpoint
+        2. Submit the patient's BP Passport UUID and OTP (received after the previous step) to the `POST /v4/patients/login` endpoint
+
         ## Sync Mechanism
         Refer to the [related ADR](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/001-synchronization.md).
 
