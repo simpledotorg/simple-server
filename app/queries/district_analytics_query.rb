@@ -43,12 +43,10 @@ class DistrictAnalyticsQuery
   def follow_up_patients_by_period
     @follow_up_patients_by_period ||=
       Patient
-        .joins(:blood_pressures)
         .group('blood_pressures.facility_id')
         .hypertension_follow_ups(@period, last: @prev_periods)
         .where(blood_pressures: { facility: facilities })
-        .distinct
-        .count('patients.id')
+        .count
 
     group_by_facility_and_date(@follow_up_patients_by_period, :follow_up_patients_by_period)
   end
@@ -57,7 +55,8 @@ class DistrictAnalyticsQuery
     @total_calls_made_by_period ||=
       CallLog
         .result_completed
-        .joins('INNER JOIN phone_number_authentications ON phone_number_authentications.phone_number = call_logs.caller_phone_number')
+        .joins(%Q(INNER JOIN phone_number_authentications
+                  ON phone_number_authentications.phone_number = call_logs.caller_phone_number'))
         .joins('INNER JOIN facilities ON facilities.id = phone_number_authentications.registration_facility_id')
         .where(phone_number_authentications: { registration_facility_id: facilities })
         .group('facilities.id::uuid')

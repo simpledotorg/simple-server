@@ -5,22 +5,17 @@ class Facility < ApplicationRecord
   include QuarterHelper
   extend FriendlyId
 
-  attribute :import, :boolean, default: false
-  attribute :organization_name, :string
-  attribute :facility_group_name, :string
-
-  belongs_to :facility_group, optional: true
-
   has_many :phone_number_authentications, foreign_key: 'registration_facility_id'
   has_many :users, through: :phone_number_authentications
-  has_many :encounters
-  has_many :blood_sugars, through: :encounters, source: :blood_sugars
-  has_many :blood_pressures, through: :encounters, source: :blood_pressures
-  has_many :prescription_drugs
   has_many :appointments
+  has_many :prescription_drugs
+
+  has_many :encounters
   has_many :patients, -> { distinct }, through: :encounters
-  has_many :diabetes_patients, -> { diabetes_only.distinct }, through: :blood_sugars, source: :patient
-  has_many :hypertension_patients, -> { hypertension_only.distinct }, through: :blood_pressures, source: :patient
+
+  has_many :blood_sugars, through: :patients, source: :blood_sugars
+  has_many :blood_pressures, through: :patients, source: :blood_pressures
+
   has_many :registered_patients,
            class_name: "Patient", foreign_key: "registration_facility_id"
   has_many :registered_diabetes_patients, -> { diabetes_only },
@@ -28,12 +23,18 @@ class Facility < ApplicationRecord
   has_many :registered_hypertension_patients, -> { hypertension_only },
            class_name: "Patient", foreign_key: "registration_facility_id"
 
+  belongs_to :facility_group, optional: true
+
   enum facility_size: {
     community: "community",
     small: "small",
     medium: "medium",
     large: "large"
   }
+
+  attribute :import, :boolean, default: false
+  attribute :organization_name, :string
+  attribute :facility_group_name, :string
 
   with_options if: :import do |facility|
     facility.validates :organization_name, presence: true
@@ -55,11 +56,9 @@ class Facility < ApplicationRecord
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, to: :facility_group, allow_nil: true
-  delegate :follow_ups, to: :hypertension_patients, prefix: :patient
-
   delegate :follow_ups, to: :patients, prefix: :patient
-  delegate :diabetes_follow_ups, to: :diabetes_patients, prefix: false
-  delegate :hypertension_follow_ups, to: :hypertension_patients, prefix: false
+  delegate :diabetes_follow_ups, to: :patients, prefix: false
+  delegate :hypertension_follow_ups, to: :patients, prefix: false
 
   friendly_id :name, use: :slugged
 

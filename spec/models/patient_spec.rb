@@ -29,9 +29,13 @@ describe Patient, type: :model do
     it { is_expected.to belong_to(:registration_user).class_name('User') }
 
     it 'has distinct facilities' do
-      patient = FactoryBot.create(:patient)
-      facility = FactoryBot.create(:facility)
-      FactoryBot.create_list(:blood_pressure, 5, patient: patient, facility: facility)
+      patient = create(:patient)
+      facility = create(:facility)
+      5.times do
+        create(:encounter,
+               :with_observables,
+               observable: create(:blood_pressure, patient: patient, facility: facility))
+      end
       expect(patient.facilities.count).to eq(1)
     end
 
@@ -65,7 +69,7 @@ describe Patient, type: :model do
     it_behaves_like 'a record that validates device timestamps'
 
     it 'validates that date of birth is not in the future' do
-      patient = FactoryBot.build(:patient)
+      patient = build(:patient)
       patient.date_of_birth = 3.days.from_now
       expect(patient).to be_invalid
     end
@@ -76,129 +80,175 @@ describe Patient, type: :model do
   end
 
   context 'Scopes' do
-    describe '.hypertension_follow_ups' do
-      let(:reg_date) { Date.new(2018, 1, 1) }
+    let(:reg_date) { Date.new(2018, 1, 1) }
+    let(:current_user) { create(:user) }
+    let(:current_facility) { create(:facility, facility_group: current_user.facility.facility_group) }
+    let(:follow_up_facility) { create(:facility, facility_group: current_user.facility.facility_group) }
+    let(:hypertensive_patient) { create(:patient,
+                                        :hypertension,
+                                        registration_facility: current_facility,
+                                        recorded_at: reg_date) }
+    let(:diabetic_patient) { create(:patient,
+                                    :diabetes,
+                                    registration_facility: current_facility,
+                                    recorded_at: reg_date) }
+    let(:first_follow_up_date) { reg_date + 1.month }
+    let(:second_follow_up_date) { first_follow_up_date + 1.day }
 
-      let(:current_user) { create(:user) }
-      let(:current_facility) { create(:facility, facility_group: current_user.facility.facility_group) }
-      let(:patient_with_follow_up) { create(:patient,
-                                            :hypertension,
-                                            registration_facility: current_facility,
-                                            recorded_at: reg_date) }
-      let(:patient_without_follow_up) { create(:patient, :hypertension, recorded_at: reg_date) }
-
+    context 'follow ups' do
       before do
+        2.times do
+          create(:encounter,
+                 :with_observables,
+                 observable: create(:blood_sugar,
+                                    facility: current_facility,
+                                    patient: diabetic_patient,
+                                    user: current_user,
+                                    recorded_at: first_follow_up_date))
+
+          create(:encounter,
+                 :with_observables,
+                 observable: create(:blood_pressure,
+                                    patient: hypertensive_patient,
+                                    facility: current_facility,
+                                    user: current_user,
+                                    recorded_at: first_follow_up_date))
+        end
+
+        # visit at a facility different from registration
         create(:encounter,
                :with_observables,
                observable: create(:blood_pressure,
-                                  patient: patient_with_follow_up,
+                                  patient: hypertensive_patient,
+                                  facility: follow_up_facility,
+                                  user: current_user,
+                                  recorded_at: first_follow_up_date))
+
+        # diabetic patient following up with a BP
+        create(:encounter,
+               :with_observables,
+               observable: create(:blood_pressure,
+                                  patient: diabetic_patient,
                                   facility: current_facility,
                                   user: current_user,
-                                  recorded_at: reg_date + 1.day))
+                                  recorded_at: first_follow_up_date))
 
+        # another follow up in the same month but another day
         create(:encounter,
                :with_observables,
                observable: create(:blood_pressure,
-                                  patient: patient_with_follow_up,
+                                  patient: hypertensive_patient,
                                   facility: current_facility,
                                   user: current_user,
-                                  recorded_at: reg_date + 1.month))
-
-        # visit in a random facility
-        create(:encounter,
-               :with_observables,
-               observable: create(:blood_pressure,
-                                  patient: patient_with_follow_up,
-                                  user: current_user,
-                                  recorded_at: reg_date + 1.month))
+                                  recorded_at: second_follow_up_date))
       end
 
-      it 'groups follow ups by day' do
-        expect(Patient.joins(:blood_pressures).hypertension_follow_ups(:day).count.values.sum).to eq(3)
+      describe '.follow_ups' do
+        context 'by day' do
+          it 'groups follow ups by day' do
+            expect(Patient.joins(:encounters).follow_ups(:day).count).to eq({ first_follow_up_date => 2,
+                                                                              second_follow_up_date => 1 })
+          end
+
+          it 'can be grouped by facility and day' do
+            expect(Patient
+                     .joins(:encounters)
+                     .follow_ups(:day)
+                     .group('encounters.facility_id')
+                     .count).to eq({ [first_follow_up_date, current_facility.id] => 2,
+                                     [first_follow_up_date, follow_up_facility.id] => 1,
+                                     [second_follow_up_date, current_facility.id] => 1,
+                                     [second_follow_up_date, follow_up_facility.id] => 0 })
+          end
+        end
+
+        context 'by month' do
+          it 'groups follow ups by month' do
+            expect(Patient.joins(:encounters).follow_ups(:month).count).to eq({ first_follow_up_date => 2 })
+          end
+
+          it 'can be grouped by facility and day' do
+            expect(Patient
+                     .joins(:encounters)
+                     .follow_ups(:month)
+                     .group('encounters.facility_id')
+                     .count).to eq({ [first_follow_up_date, current_facility.id] => 2,
+                                     [first_follow_up_date, follow_up_facility.id] => 1 })
+          end
+        end
       end
 
-      it 'groups follow ups by month' do
-        expect(Patient.joins(:blood_pressures).hypertension_follow_ups(:month).count.values.sum).to eq(2)
+      describe '.diabetes_follow_ups' do
+        context 'by day' do
+          it 'groups follow ups by day' do
+            expect(Patient
+                     .diabetes_follow_ups(:day)
+                     .count).to eq({ first_follow_up_date => 1 })
+          end
+
+          it 'can be grouped by facility and day' do
+            expect(Patient
+                     .diabetes_follow_ups(:day)
+                     .group('blood_sugars.facility_id')
+                     .count).to eq({ [first_follow_up_date, current_facility.id] => 1 })
+          end
+        end
+
+        context 'by month' do
+          it 'groups follow ups by month' do
+            expect(Patient
+                     .diabetes_follow_ups(:month)
+                     .count).to eq({ first_follow_up_date => 1 })
+          end
+
+          it 'can be grouped by facility and month' do
+            expect(Patient
+                     .diabetes_follow_ups(:month)
+                     .group('blood_sugars.facility_id')
+                     .count).to eq({ [first_follow_up_date, current_facility.id] => 1 })
+          end
+        end
       end
 
-      it 'includes patients that followed up in a different facility than registration facility' do
-        expect(Patient.joins(:blood_pressures).hypertension_follow_ups(:month).count.values.sum).to eq(2)
-      end
-    end
+      describe '.hypertension_follow_ups' do
+        context 'by day' do
+          it 'groups follow ups by day' do
+            expect(Patient
+                     .joins(:blood_pressures)
+                     .hypertension_follow_ups(:day)
+                     .count).to eq({ first_follow_up_date => 1,
+                                     second_follow_up_date => 1 })
+          end
 
-    describe '.not_contacted' do
-      let(:patient_to_followup) { create(:patient, device_created_at: 5.days.ago) }
-      let(:patient_to_not_followup) { create(:patient, device_created_at: 1.day.ago) }
-      let(:patient_contacted) { create(:patient, contacted_by_counsellor: true) }
-      let(:patient_could_not_be_contacted) { create(:patient, could_not_contact_reason: 'dead') }
+          it 'can be grouped by facility and day' do
+            expect(Patient
+                     .joins(:blood_pressures)
+                     .hypertension_follow_ups(:day)
+                     .group('blood_pressures.facility_id')
+                     .count).to eq({ [first_follow_up_date, current_facility.id] => 1,
+                                     [first_follow_up_date, follow_up_facility.id] => 1,
+                                     [second_follow_up_date, current_facility.id] => 1,
+                                     [second_follow_up_date, follow_up_facility.id] => 0 })
+          end
+        end
 
-      it 'includes uncontacted patients registered 2 days ago or earlier' do
-        expect(Patient.not_contacted).to include(patient_to_followup)
-      end
+        context 'by month' do
+          it 'groups follow ups by month' do
+            expect(Patient
+                     .joins(:blood_pressures)
+                     .hypertension_follow_ups(:month)
+                     .count).to eq({ first_follow_up_date => 1 })
+          end
 
-      it 'excludes uncontacted patients registered less than 2 days ago' do
-        expect(Patient.not_contacted).not_to include(patient_to_not_followup)
-      end
-
-      it 'excludes already contacted patients' do
-        expect(Patient.not_contacted).not_to include(patient_contacted)
-      end
-
-      it 'excludes patients who could not be contacted' do
-        expect(Patient.not_contacted).not_to include(patient_could_not_be_contacted)
-      end
-    end
-  end
-
-  context 'Scopes' do
-    describe '.follow_ups' do
-      let!(:current_user) { create(:user) }
-      let!(:current_facility) { create(:facility, facility_group: current_user.facility.facility_group) }
-      let!(:reg_date) { Date.new(2018, 1, 1) }
-      let!(:patient_with_follow_up) { create(:patient,
-                                             :hypertension,
-                                             registration_facility: current_facility,
-                                             recorded_at: reg_date) }
-      let!(:patient_without_follow_up) { create(:patient,
-                                                :hypertension,
-                                                recorded_at: reg_date) }
-
-      before do
-        create(:encounter,
-               :with_observables,
-               observable: create(:blood_pressure,
-                                  patient: patient_with_follow_up,
-                                  facility: current_facility,
-                                  user: current_user,
-                                  recorded_at: reg_date + 1.day))
-
-        create(:encounter,
-               :with_observables,
-               observable: create(:blood_pressure,
-                                  patient: patient_with_follow_up,
-                                  facility: current_facility,
-                                  user: current_user,
-                                  recorded_at: reg_date + 1.month))
-
-        # visit in a random facility
-        create(:encounter,
-               :with_observables,
-               observable: create(:blood_pressure,
-                                  patient: patient_with_follow_up,
-                                  user: current_user,
-                                  recorded_at: reg_date + 1.month))
-      end
-
-      it 'groups follow ups by day' do
-        expect(Patient.joins(:blood_pressures).hypertension_follow_ups(:day).count.values.sum).to eq(3)
-      end
-
-      it 'groups follow ups by month' do
-        expect(Patient.joins(:blood_pressures).hypertension_follow_ups(:month).count.values.sum).to eq(2)
-      end
-
-      it 'includes patients that followed up in a different facility than registration facility' do
-        expect(Patient.joins(:blood_pressures).hypertension_follow_ups(:month).count.values.sum).to eq(2)
+          it 'can be grouped by facility and month' do
+            expect(Patient
+                     .joins(:blood_pressures)
+                     .hypertension_follow_ups(:month)
+                     .group('blood_pressures.facility_id')
+                     .count).to eq({ [first_follow_up_date, current_facility.id] => 1,
+                                     [first_follow_up_date, follow_up_facility.id] => 1 })
+          end
+        end
       end
     end
 

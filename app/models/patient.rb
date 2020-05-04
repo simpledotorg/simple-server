@@ -18,18 +18,23 @@ class Patient < ApplicationRecord
   ANONYMIZED_DATA_FIELDS = %w[id created_at registration_date registration_facility_name user_id age gender]
 
   has_one :medical_history
-  has_many :phone_numbers, class_name: 'PatientPhoneNumber'
+
   has_many :business_identifiers, class_name: 'PatientBusinessIdentifier'
   has_many :passport_authentications, through: :business_identifiers
-  has_many :blood_pressures, inverse_of: :patient
-  has_many :blood_sugars
-  has_many :prescription_drugs
-  has_many :facilities, -> { distinct }, through: :blood_pressures
-  has_many :users, -> { distinct }, through: :blood_pressures
+
+  has_many :phone_numbers, class_name: 'PatientPhoneNumber'
   has_many :appointments
+  has_many :prescription_drugs
+
   has_many :encounters
   has_many :observations, through: :encounters
-  has_many :current_prescription_drugs, -> { where(is_deleted: false) }, class_name: 'PrescriptionDrug'
+
+  has_many :blood_sugars, inverse_of: :patient
+  has_many :blood_pressures, inverse_of: :patient
+
+  has_many :users, -> { distinct }, through: :blood_pressures
+  has_many :facilities, -> { distinct }, through: :blood_pressures
+
   has_many :latest_blood_sugars, -> { order(recorded_at: :desc) }, class_name: 'BloodSugar'
   has_many :latest_blood_pressures, -> { order(recorded_at: :desc) }, class_name: 'BloodPressure'
   has_many :latest_scheduled_appointments,
@@ -39,7 +44,10 @@ class Patient < ApplicationRecord
            -> { where(identifier_type: 'simple_bp_passport').order(device_created_at: :desc) },
            class_name: 'PatientBusinessIdentifier'
 
+  has_many :current_prescription_drugs, -> { where(is_deleted: false) }, class_name: 'PrescriptionDrug'
+
   belongs_to :address, optional: true
+
   belongs_to :registration_facility, class_name: "Facility", optional: true
   belongs_to :registration_user, class_name: "User"
 
@@ -48,13 +56,6 @@ class Patient < ApplicationRecord
   scope :diabetes_only, -> { joins(:medical_history).merge(MedicalHistory.diabetes_yes) }
   scope :hypertension_only, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes) }
 
-  #
-  # Note: This scope expects a joins(:blood_pressures) to exist.
-  # For eg, Patient.joins(:blood_pressures).follow_ups(:month).
-  #
-  # It doesn't include the join in this scope to play well with certain parent scopes (eg. Facility).
-  # Parent scopes might auto add this join and the final query would end up with unnecessary joins, affecting perf.
-  #
   scope :hypertension_follow_ups, -> (period, last: nil) {
     follow_ups_with(:blood_pressures, period, last: last)
       .hypertension_only
@@ -73,8 +74,10 @@ class Patient < ApplicationRecord
     resource_name = resource_type.to_s.singularize.camelize.constantize
     group_by_time = "#{resource_type}.#{time_col}"
 
-    where("patients.recorded_at < #{resource_name.date_to_period_sql(period)}")
+    joins(resource_type)
+      .where("patients.recorded_at < #{resource_name.date_to_period_sql(period)}")
       .group_by_period(period, group_by_time, last: last)
+      .distinct
   end
 
   private_class_method :follow_ups_with

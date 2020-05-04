@@ -28,12 +28,10 @@ RSpec.describe FacilityAnalyticsQuery do
           patients.flatten
         end
 
-        # rp = 6
-
         #
         # add blood_pressures next month
         #
-        Timecop.travel(month + 1.month) do # dec
+        Timecop.travel(month + 1.month) do
           users.each do |u|
             registered_patients.each do |patient|
               create(:blood_pressure,
@@ -41,8 +39,6 @@ RSpec.describe FacilityAnalyticsQuery do
                      facility: facility,
                      user: u)
             end
-            # u1: 6 encounters, 6 bps
-            # u2: 6 encounters, 6 bps
           end
         end
 
