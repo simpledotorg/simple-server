@@ -91,23 +91,35 @@ en:
         ## Authentication
         There are two types of authentication available to access different parts of the Simple API.
         - User Authentication - For medical professionals using the Simple App. Grants access to most of the Simple API
-          to read and write data for communities of patients
+          to read and write data for communities of patients.
         - Patient authentication - For individual patients. Grants access to read a patient's own data.
 
         ### User Authentication
-        A Simple client attempting to authenticate a medical professional needs three pieces of information:
-        - The user's registered phone number
-        - The user's PIN / Password
-        - An OTP message that is generated during the authentication process, and sent to the user's registered phone number
 
-        On successful verification of these credentials, the client will receive an access token. All subsequent requests to protected API endpoints should include this access token.
+        A Simple client can make authenticated requests to the Simple API on behalf of a medical professional with the
+        following credentials:
+        - API Access Token
+        - User ID
+        - Facility ID
 
-        A successful authentication flow involves the following steps:
-        1. Submit the users phone number to the [`POST /v4/users/find` endpoint](#tag/User/paths/~1users~1find/post). If a user exists with this phone number, the response will return their `id`.
-        2. Submit the user's `id` retreived in the previous step, along with the user's `password` to the [`POST v4/users/activate` endpoint](#tag/User/paths/~1users~1activate/post). This will validate the user's password, and trigger an OTP to be sent to the user's phone number
-        3. Submit the user's `id`, their `password`, and the `otp` received after the previous step to the [`POST v3/login` endpoint](#tag/User-Login/paths/~1login/post). If the submitted otp and password are valid, this will return an `access_token` that can be used to authenticate the user
+        In order to obtain these credentials, a Simple client can authenticate a user with the following steps. The
+        client will need the user's registered phone number to perform the authentication.
+        1. Submit the users phone number to the [`POST /v4/users/find` endpoint](#tag/User/paths/~1users~1find/post). If
+        a user exists with this phone number, the response will return their id.
+        2. Submit the user's id retreived in the previous step, along with the user's password to the
+        [`POST v4/users/activate` endpoint](#tag/User/paths/~1users~1activate/post).
+        This will validate the user's password, and trigger an OTP to be sent to the user's phone number.
+        3. Submit the user's id, their password, and the OTP (received after the previous step) to the
+        [`POST v3/login` endpoint](#tag/User-Login/paths/~1login/post). If the submitted otp and password are valid,
+        this will return an access token that can be used to authenticate the user.
 
-        This token is a `Bearer` token, and should be attached as a header to all subsequent API requests as described here [link to bearer token docs here].
+        On successful authentication, the client will receive a payload containing an API access token and some user
+        information.
+        The following headers need to be attached to subsequent requests as shown below.
+        - `Authorization: Bearer <access token>`
+        - `X-User-Id: <user ID>`
+        - `X-Facility-Id: <facility ID>` This is the id for either the registration facility of the user, or another
+        facility in their facility group.
 
         ### Patient Authentication
         A Simple client can make authenticated requests to the Simple API on behalf of a patient with the following
