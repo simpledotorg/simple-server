@@ -19,6 +19,26 @@ class Api::Schema
       }
     end
 
+    def security_definitions
+      {
+        access_token: {
+          type: 'http',
+          scheme: 'bearer'
+        },
+        user_id: {
+          type: 'apiKey',
+          in: 'header',
+          name: 'X-USER-ID'
+        },
+        facility_id: {
+          type: 'apiKey',
+          in: 'header',
+          name: 'X-FACILITY-ID'
+        }
+      }
+    end
+
+
     def swagger_doc(version, definitions)
       {
         swagger: '2.0',
@@ -28,7 +48,8 @@ class Api::Schema
         schemes: ['https'],
         info: swagger_info(version),
         paths: {},
-        definitions: definitions
+        definitions: definitions,
+        securityDefinitions: security_definitions
       }
     end
 
