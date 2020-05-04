@@ -5,7 +5,8 @@ AllCops:
     - 'config/**/*'
     - 'db/**/*'
 Bundler/OrderedGems:
-  Enabled: false
+  Enabled: true
+  TreatCommentsAsGroupSeparators: true
 Layout/LineLength:
   Max: 120
 Metrics/AbcSize:
