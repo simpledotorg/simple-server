@@ -411,17 +411,17 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
         expect(data[:trophies]).to eq(expected_output)
       end
+    end
 
-      it 'has only 1 locked trophy if there are no achievements' do
-        data = described_class.new(current_facility).statistics
+    it 'has only 1 locked trophy if there are no achievements' do
+      data = described_class.new(current_facility).statistics
 
-        expected_output = {
-          locked_trophy_value: 10,
-          unlocked_trophy_values: []
-        }
+      expected_output = {
+        locked_trophy_value: 10,
+        unlocked_trophy_values: []
+      }
 
-        expect(data[:trophies]).to eq(expected_output)
-      end
+      expect(data[:trophies]).to eq(expected_output)
     end
   end
 

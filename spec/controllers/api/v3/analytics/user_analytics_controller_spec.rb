@@ -42,7 +42,6 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
           expect(response.body).to match(/Tap "Sync" on the home screen for new data/)
         end
 
-
         it 'has the registrations card' do
           get :show, format: :html
 
@@ -63,10 +62,16 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
 
         context 'achievements' do
           it 'has the section visible' do
+            request_date = Date.new(2018, 4, 8)
+
             #
             # create BPs (follow-ups)
             #
-            patients = create_list(:patient, 3, :hypertension, registration_facility: request_facility)
+            patients = create_list(:patient,
+                                   3,
+                                   :hypertension,
+                                   registration_facility: request_facility,
+                                   recorded_at: request_date)
             patients.each do |patient|
               [patient.recorded_at + 1.month,
                patient.recorded_at + 2.months,

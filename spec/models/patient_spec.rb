@@ -378,6 +378,7 @@ describe Patient, type: :model do
       end
 
       it 'returns 0 if age is 0' do
+        patient.date_of_birth = nil
         patient.age = 0
         patient.age_updated_at = 2.years.ago
 

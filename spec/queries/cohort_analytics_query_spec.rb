@@ -1,8 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe CohortAnalyticsQuery do
-  let!(:facility) { create(:facility) }
-  let(:analytics) { CohortAnalyticsQuery.new(facility.registered_patients) }
+  let!(:facility1) { create(:facility) }
+  let!(:facility2) { create(:facility) }
+  let(:analytics) { CohortAnalyticsQuery.new(Patient.where(registration_facility: [facility1, facility2])) }
 
   let(:jan) { DateTime.new(2019, 1, 1) }
   let(:feb) { DateTime.new(2019, 2, 1) }
@@ -64,71 +65,160 @@ RSpec.describe CohortAnalyticsQuery do
   end
 
   describe '#patient_counts' do
-    let!(:jan_registered_patients) do
+    let!(:jan_registered_patients_1) do
       travel_to(jan) do
-        create_list(:patient, 15, registration_facility: facility)
+        create_list(:patient, 10, registration_facility: facility1)
       end
     end
+
+    let!(:jan_registered_patients_2) do
+      travel_to(jan) do
+        create_list(:patient, 5, registration_facility: facility2)
+      end
+    end
+
+    let(:cohort_start) { DateTime.new(2019, 1, 1).beginning_of_quarter }
+    let(:cohort_end) { cohort_start.end_of_quarter }
+    let(:report_start) { DateTime.new(2019, 4, 1).beginning_of_quarter }
+    let(:report_end) { report_start.end_of_quarter }
+    let(:counts) { analytics.patient_counts(cohort_start, cohort_end, report_start, report_end).deep_symbolize_keys }
 
     it 'calculates return and control patient counts in Q2 for patients registered in Q1' do
       travel_to(april) do
-        # 2 patients under control, 3 not controlled
-        jan_registered_patients[0..1].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility) }
-        jan_registered_patients[2..4].each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility) }
+        # Facility 1: 2 patients under control, 3 not controlled
+        jan_registered_patients_1[0..1].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
+        jan_registered_patients_1[2..4].each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
+
+        # Facility 2: 3 patients under control, 1 not controlled
+        jan_registered_patients_2[0..2].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
+        jan_registered_patients_2[3..3].each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
       end
 
       expected_result = {
-        registered: 15,
-        followed_up: 5,
-        defaulted: 10,
-        controlled: 2,
-        uncontrolled: 3
-      }
+        registered: {
+          total: 15,
+          facility1.id => 10,
+          facility2.id => 5
+        },
+        followed_up: {
+          total: 9,
+          facility1.id => 5,
+          facility2.id => 4
+        },
+        defaulted: {
+          total: 6,
+          facility1.id => 5,
+          facility2.id => 1
+        },
+        controlled: {
+          total: 5,
+          facility1.id => 2,
+          facility2.id => 3
+        },
+        uncontrolled: {
+          total: 4,
+          facility1.id => 3,
+          facility2.id => 1
+        }
+      }.deep_symbolize_keys
 
-      cohort_start = DateTime.new(2019, 1, 1).beginning_of_quarter
-      cohort_end = cohort_start.end_of_quarter
-
-      report_start = DateTime.new(2019, 4, 1).beginning_of_quarter
-      report_end = report_start.end_of_quarter
-
-      expect(analytics.patient_counts(cohort_start, cohort_end, report_start, report_end)).to eq(expected_result)
+      expect(counts).to eq(expected_result)
     end
 
-    it 'calculates return and control patient counts in Feb-Mar for patients registered in Jan' do
-      travel_to(march) do
-        # 3 patients under control, 5 not controlled
-        jan_registered_patients[0..2].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility) }
-        jan_registered_patients[3..7].each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility) }
+    context 'when a patient makes multiple follow-up visits' do
+      it 'only counts the patient once in the registration facility' do
+        travel_to(april) do
+          jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
+          jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility2) }
+        end
+
+        expected_follow_ups = {
+          total: 1,
+          facility1.id => 1
+        }.deep_symbolize_keys
+
+        expect(counts[:followed_up].deep_symbolize_keys).to eq(expected_follow_ups)
       end
 
-      expected_result = {
-        registered: 15,
-        followed_up: 8,
-        defaulted: 7,
-        controlled: 3,
-        uncontrolled: 5
-      }
+      it 'marks patient uncontrolled if most recent bp is hypertensive' do
+        travel_to(april) do
+          jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
+        end
+        travel_to(may) do
+          jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
+        end
 
-      cohort_start = DateTime.new(2019, 1, 1).beginning_of_month
-      cohort_end = cohort_start.end_of_month
+        expect(counts[:controlled][:total]).to eq(0)
+        expect(counts[:uncontrolled][:total]).to eq(1)
+      end
 
-      report_start = DateTime.new(2019, 2, 1).beginning_of_month
-      report_end = DateTime.new(2019, 3, 1).end_of_month
+      it 'marks patient controlled if most recent bp is under control' do
+        travel_to(april) do
+          jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility1) }
+        end
+        travel_to(may) do
+          jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility2) }
+        end
 
-      expect(analytics.patient_counts(cohort_start, cohort_end, report_start, report_end)).to eq(expected_result)
+        expect(counts[:controlled][:total]).to eq(1)
+        expect(counts[:uncontrolled][:total]).to eq(0)
+      end
+    end
+
+    context 'monthly' do
+      let(:cohort_start) { DateTime.new(2019, 1, 1).beginning_of_month }
+      let(:cohort_end) { cohort_start.end_of_month }
+      let(:report_start) { DateTime.new(2019, 2, 1).beginning_of_month }
+      let(:report_end) { DateTime.new(2019, 3, 1).end_of_month }
+
+      it 'calculates return and control patient counts in Feb-Mar for patients registered in Jan' do
+        travel_to(march) do
+          # Facility 1: 2 patients under control, 3 not controlled
+          jan_registered_patients_1[0..1].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
+          jan_registered_patients_1[2..4].each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
+
+          # Facility 2: 3 patients under control, 1 not controlled
+          jan_registered_patients_2[0..2].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
+          jan_registered_patients_2[3..3].each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
+        end
+
+        expected_result = {
+          registered: {
+            total: 15,
+            facility1.id => 10,
+            facility2.id => 5
+          },
+          followed_up: {
+            total: 9,
+            facility1.id => 5,
+            facility2.id => 4
+          },
+          defaulted: {
+            total: 6,
+            facility1.id => 5,
+            facility2.id => 1
+          },
+          controlled: {
+            total: 5,
+            facility1.id => 2,
+            facility2.id => 3
+          },
+          uncontrolled: {
+            total: 4,
+            facility1.id => 3,
+            facility2.id => 1
+          }
+        }.deep_symbolize_keys
+
+        expect(counts).to eq(expected_result)
+      end
     end
 
     context 'with discarded patients' do
-      let!(:cohort_start) { DateTime.new(2019, 1, 1).beginning_of_month }
-      let!(:cohort_end) { cohort_start.end_of_month }
-
-      let!(:report_start) { DateTime.new(2019, 2, 1).beginning_of_month }
-      let!(:report_end) { DateTime.new(2019, 3, 1).end_of_month }
+      before { jan_registered_patients_1[0..2].each(&:discard_data) }
 
       it 'does not count discarded patients' do
-        jan_registered_patients[0..2].each(&:discard_data)
-
-        expect(analytics.patient_counts(cohort_start, cohort_end, report_start, report_end)[:registered]).to eq(12)
+        expect(counts[:registered][:total]).to eq(12)
       end
     end
   end
