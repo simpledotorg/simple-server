@@ -115,11 +115,23 @@ Alternatively, you can start these services locally _without_ foreman by using t
 RAILS_ENV=test bundle exec rspec
 ```
 
-Note:
+### Generating seed data
 
-* For the `development` environment, this will truncate existing data and seed the database
-from scratch.
-* Please refer to `config/seed.yml` to set the multiplier values to control the volume of seed data generated.
+To generate seed data, execute the following command from the project root
+
+```bash
+$ foreman start -f Procfile.dev
+$ bundle exec rails db:seed db:seed_users_data
+```
+**Note**: This **requires** server and sidekiq to be running.
+
+To purge the generated patient data, run
+
+```bash
+bundle exec rails db:purge_users_data
+```
+
+**Note**: This only removes data created by `db:seed_users_data`, it keeps the seed data created by `db:seed`.
 
 ### Creating an admin user
 
