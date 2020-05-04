@@ -7,6 +7,7 @@ class Api::V3::AnalyticsController < APIController
     time_zone = Rails.application.config.country[:time_zone] || DEFAULT_ANALYTICS_TIME_ZONE
 
     Groupdate.time_zone = time_zone
+
     Time.use_zone(time_zone) do
       yield
     end

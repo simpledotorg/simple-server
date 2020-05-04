@@ -1,6 +1,5 @@
 class UserAnalyticsPresenter
   include ApplicationHelper
-  include HashUtilities
   include MonthHelper
   include DayHelper
   include PeriodHelper
@@ -106,11 +105,11 @@ class UserAnalyticsPresenter
   def trophy_stats
     follow_ups = all_time_follow_ups_by_gender.values.sum
 
-    all_trophies =
-      follow_ups > TROPHY_MILESTONES.last ?
-        [*TROPHY_MILESTONES,
-         *(TROPHY_MILESTONE_INCR..(follow_ups + TROPHY_MILESTONE_INCR)).step(TROPHY_MILESTONE_INCR)] :
-        TROPHY_MILESTONES
+    all_trophies = if follow_ups > TROPHY_MILESTONES.last
+      [*TROPHY_MILESTONES, *(TROPHY_MILESTONE_INCR..(follow_ups + TROPHY_MILESTONE_INCR)).step(TROPHY_MILESTONE_INCR)]
+    else
+      TROPHY_MILESTONES
+    end
 
     unlocked_trophies_until = all_trophies.index { |v| follow_ups < v }
 
