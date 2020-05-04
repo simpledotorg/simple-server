@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200421132003) do
+ActiveRecord::Schema.define(version: 20200501174342) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -52,6 +52,7 @@ ActiveRecord::Schema.define(version: 20200421132003) do
     t.index ["appointment_type"], name: "index_appointments_on_appointment_type"
     t.index ["deleted_at"], name: "index_appointments_on_deleted_at"
     t.index ["facility_id"], name: "index_appointments_on_facility_id"
+    t.index ["patient_id", "scheduled_date"], name: "index_appointments_on_patient_id_and_scheduled_date", order: { scheduled_date: :desc }
     t.index ["patient_id"], name: "index_appointments_on_patient_id"
     t.index ["user_id"], name: "index_appointments_on_user_id"
   end
@@ -69,6 +70,7 @@ ActiveRecord::Schema.define(version: 20200421132003) do
     t.datetime "deleted_at"
     t.datetime "recorded_at"
     t.index ["deleted_at"], name: "index_blood_pressures_on_deleted_at"
+    t.index ["patient_id", "recorded_at"], name: "index_blood_pressures_on_patient_id_and_recorded_at", order: { recorded_at: :desc }
     t.index ["patient_id"], name: "index_blood_pressures_on_patient_id"
     t.index ["recorded_at"], name: "index_blood_pressures_on_recorded_at"
     t.index ["user_id"], name: "index_blood_pressures_on_user_id"
@@ -289,7 +291,7 @@ ActiveRecord::Schema.define(version: 20200421132003) do
   create_table "passport_authentications", force: :cascade do |t|
     t.string "access_token", null: false
     t.string "otp", null: false
-    t.datetime "otp_valid_until", null: false
+    t.datetime "otp_expires_at", null: false
     t.uuid "patient_business_identifier_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -358,7 +360,7 @@ ActiveRecord::Schema.define(version: 20200421132003) do
     t.string "phone_number", null: false
     t.string "password_digest", null: false
     t.string "otp", null: false
-    t.datetime "otp_valid_until", null: false
+    t.datetime "otp_expires_at", null: false
     t.datetime "logged_in_at"
     t.string "access_token", null: false
     t.uuid "registration_facility_id"
