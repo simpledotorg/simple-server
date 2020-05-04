@@ -18,5 +18,9 @@ task :add_permission_to_access_level,
           ' this task'
   end
 
-  new_permissions.create
+  created_permissions = new_permissions.create
+  users_with_new_permissions = created_permissions.flatten.map(&:user).uniq.sort_by(&:full_name)
+
+  puts "Created #{created_permissions.count} permission records for the following #{users_with_new_permissions.count} "\
+       "users: #{users_with_new_permissions.map(&:full_name)}"
 end

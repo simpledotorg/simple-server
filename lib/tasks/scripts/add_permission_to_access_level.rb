@@ -3,13 +3,14 @@
 # Creates the specified permission for users who have the specified access_level
 class AddPermissionToAccessLevel
 
-  attr_reader :permission_name, :access_level_name, :access_level, :permission
+  attr_reader :permission_name, :access_level_name, :access_level, :permission, :users
 
   def initialize(permission_name, access_level_name)
     @permission_name = permission_name
     @access_level_name = access_level_name
     @permission = Permissions::ALL_PERMISSIONS[permission_name]
     @access_level = Permissions::ACCESS_LEVELS.select { |level| level[:name] == access_level_name }.first
+    @users = eligible_users
   end
 
   def valid?
@@ -21,8 +22,9 @@ class AddPermissionToAccessLevel
   def create
     return false unless valid?
 
-    users.each do |user|
-      permission_resources(user).each do |resource|
+    users.map do |user|
+      permission_resources(user).map do |resource|
+        Rails.logger.info log_string(permission, user, resource)
         UserPermission.find_or_create_by!(user: user,
                                           permission_slug: permission[:slug],
                                           resource_type: resource[:resource_type],
@@ -33,9 +35,9 @@ class AddPermissionToAccessLevel
 
   private
 
-  def users
-    users = User.includes(:user_permissions).where.not(user_permissions: { id: nil })
-    users.select(&method(:eligible?))
+  def eligible_users
+    User.includes(:user_permissions).where.not(user_permissions: { id: nil })
+        .select(&method(:eligible?))
   end
 
   def permission_resources(user)
@@ -79,5 +81,13 @@ class AddPermissionToAccessLevel
 
   def valid_permission_for_access_level?
     access_level && access_level[:default_permissions].include?(permission_name)
+  end
+
+  def log_string(permission, user, resource)
+    return "Creating a global '#{permission[:slug]}' permission for User: #{user.full_name} (#{user.id}) " if
+      resource[:resource_type].nil?
+
+    "Creating a '#{permission[:slug]}' permission for User: #{user.full_name} (#{user.id}), "\
+    "with Resource type: '#{resource[:resource_type]}' and Resource id: #{resource[:resource_id]}"
   end
 end

@@ -73,6 +73,10 @@ RSpec.describe AddPermissionToAccessLevel do
 
     context 'resource priorities' do
       context 'permissions which only have a global priority' do
+        before do
+          UserPermission.where(permission_slug: 'view_my_facilities').each(&:destroy!)
+        end
+
         it 'creates a permission of resource_type `nil` (global) even if the user has no other permissions of that type' do
           stub_const('Permissions::ACCESS_LEVELS', [{ name: :supervisor,
                                                       description: 'CVHO: Cardiovascular Health Officer',
