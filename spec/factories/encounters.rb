@@ -21,11 +21,11 @@ FactoryBot.define do
       encountered_on { observable.recorded_at.to_date }
     end
 
-    encountered_on '2019-09-11'
+    encountered_on { '2019-09-11' }
 
-    timezone_offset 0
-    metadata nil
-    notes ''
+    timezone_offset { 0 }
+    metadata { nil }
+    notes { '' }
 
     device_created_at { Time.now }
     device_updated_at { Time.now }
