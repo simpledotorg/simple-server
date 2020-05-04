@@ -4,6 +4,7 @@ class Address < ApplicationRecord
   STATE_TO_LOCALE = {
     punjab: 'pa-Guru-IN',
     maharashtra: 'mr-IN',
+    karnataka: 'kn-IN'
   }
 
   validates :device_created_at, presence: true

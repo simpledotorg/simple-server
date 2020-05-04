@@ -12,7 +12,7 @@ FactoryBot.define do
     gender { Patient::GENDERS.sample }
     full_name { common_names[gender].sample + ' ' + common_names[gender].sample }
     status { Patient::STATUSES[0] }
-    date_of_birth { Date.current if has_date_of_birth? }
+    date_of_birth { rand(18..80).years.ago if has_date_of_birth? }
     age { rand(18..100) unless has_date_of_birth? }
     age_updated_at { Time.current }
     device_created_at { Time.current }
@@ -43,26 +43,26 @@ end
 
 def build_patient_payload(patient = FactoryBot.build(:patient))
   patient.attributes.with_payload_keys
-         .except('address_id')
-         .except('registration_user_id')
-         .except('registration_facility_id')
-         .except('test_data')
-         .merge(
-           'address' => patient.address.attributes.with_payload_keys,
-           'phone_numbers' => patient.phone_numbers.map { |phno| phno.attributes.with_payload_keys.except('patient_id', 'dnd_status') },
-           'business_identifiers' => patient.business_identifiers.map do |bid|
-             bid.attributes.with_payload_keys
-               .except('patient_id')
-               .merge('metadata' => bid.metadata&.to_json)
-           end
-         )
+    .except('address_id')
+    .except('registration_user_id')
+    .except('registration_facility_id')
+    .except('test_data')
+    .merge(
+      'address' => patient.address.attributes.with_payload_keys,
+      'phone_numbers' => patient.phone_numbers.map { |phno| phno.attributes.with_payload_keys.except('patient_id', 'dnd_status') },
+      'business_identifiers' => patient.business_identifiers.map do |bid|
+        bid.attributes.with_payload_keys
+          .except('patient_id')
+          .merge('metadata' => bid.metadata&.to_json)
+      end
+    )
 end
 
 def build_patient_payload_v2(patient = FactoryBot.build(:patient))
   payload = build_patient_payload(patient)
   payload.merge('address' => payload['address'].except('zone'))
-         .except('recorded_at')
-         .except('reminder_consent')
+    .except('recorded_at')
+    .except('reminder_consent')
 end
 
 def build_invalid_patient_payload

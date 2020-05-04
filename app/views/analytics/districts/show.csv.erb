@@ -3,55 +3,61 @@
   Time.current
 ].to_csv -%>
 <%= ["#{@organization_district.district_name} Cohort Report"].to_csv -%>
-<%= [
-  "Cohort period",
-  "Follow up period",
-  "Patients registered",
-  "Patients followed up",
-  "Patients controlled",
-  "Patients uncontrolled",
-  "Patients defaulted",
-  "Control rate",
-  "Uncontrolled rate",
-  "Default rate"
-].to_csv -%>
-<% @cohort_analytics.each_with_index do |(report_dates, analytics), index| %>
-  <%
-    cohort_start, report_start = report_dates
-    registered = analytics[:registered]
-    followed_up = analytics[:followed_up]
-    defaulted = analytics[:defaulted]
-    controlled = analytics[:controlled]
-    uncontrolled = analytics[:uncontrolled]
-    if @period == :quarter
-      report_period = quarter_string(report_start)
-      cohort_period = quarter_string(cohort_start)
-    else
-      report_period = [report_start.strftime("%b %-d"), (report_start + 1.month).end_of_month.strftime("%b %-d")].join("-")
-      cohort_period = cohort_start.strftime("%b %Y")
-    end
-    if registered > 0
-      controlled_percent = (controlled.to_f / registered * 100).round
-      uncontrolled_percent = (uncontrolled.to_f / registered * 100).round
-      default_percent = (defaulted.to_f / registered * 100).round
-    else
-      controlled_percent = 0
-      uncontrolled_percent = 0
-      default_percent = 0
-    end
-  %>
-<%= [
-  cohort_period,
-  report_period,
-  registered,
-  followed_up,
-  controlled,
-  uncontrolled,
-  defaulted,
-  "#{controlled_percent}%",
-  "#{uncontrolled_percent}%",
-  "#{default_percent}%"
-].to_csv -%>
+<%= ['Facility'].concat(@cohort_analytics.each_with_index.flat_map do |(report_dates, analytics), index|
+  [
+    'Cohort period',
+    'Follow up period',
+    'Patients registered',
+    'Patients followed up',
+    'Patients controlled',
+    'Patients uncontrolled',
+    'Patients defaulted',
+    'Control rate',
+    'Uncontrolled rate',
+    'Default rate',
+    nil
+  ]
+end).to_csv -%>
+
+<% @facility_keys.each do |facility_id, facility_name| %>
+<%= [facility_name].concat(@cohort_analytics.each_with_index.flat_map do |(report_dates, analytics), index|
+  cohort_start, report_start = report_dates
+  registered = analytics.dig(:registered, facility_id) || 0
+  followed_up = analytics.dig(:followed_up, facility_id) || 0
+  defaulted = analytics.dig(:defaulted, facility_id) || 0
+  controlled = analytics.dig(:controlled, facility_id) || 0
+  uncontrolled = analytics.dig(:uncontrolled, facility_id) || 0
+  if @period == :quarter
+    report_period = quarter_string(report_start)
+    cohort_period = quarter_string(cohort_start)
+  else
+    report_period = [report_start.strftime("%b %-d"), (report_start + 1.month).end_of_month.strftime("%b %-d")].join("-")
+    cohort_period = cohort_start.strftime("%b %Y")
+  end
+  if registered > 0
+    controlled_percent = (controlled.to_f / registered * 100).round
+    uncontrolled_percent = (uncontrolled.to_f / registered * 100).round
+    default_percent = (defaulted.to_f / registered * 100).round
+  else
+    controlled_percent = 0
+    uncontrolled_percent = 0
+    default_percent = 0
+  end
+
+  [
+    cohort_period,
+    report_period,
+    registered,
+    followed_up,
+    controlled,
+    uncontrolled,
+    defaulted,
+    "#{controlled_percent}%",
+    "#{uncontrolled_percent}%",
+    "#{default_percent}%",
+    nil
+  ]
+end).to_csv -%>
 <% end %>
 
 <%= ["#{@organization_district.district_name} Facilites Report"].to_csv -%>
@@ -63,7 +69,7 @@
   dates = dates_for_periods(@period, 3, include_current_period: @show_current_period)
   ["Follow up patients", "Registered patients"].each do |metric|
     dates.each do |date|
-      headers << "#{metric} #{date}"
+      headers << "#{metric} #{format_period(@period, date)}"
     end
   end
 %>

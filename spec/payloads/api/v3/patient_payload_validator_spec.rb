@@ -12,7 +12,7 @@ describe Api::V3::PatientPayloadValidator, type: :model do
       expect(new_patient_payload('address' => nil,
                                  'phone_numbers' => nil,
                                  'age' => nil,
-                                 'date_of_birth' => Date.current)).to be_valid
+                                 'date_of_birth' => 20.years.ago)).to be_valid
 
       expect(new_patient_payload('address' => nil,
                                  'phone_numbers' => nil,
