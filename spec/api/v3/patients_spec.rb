@@ -4,7 +4,7 @@ describe 'Patients v3 API', swagger_doc: 'v3/swagger.json' do
   path '/patients/sync' do
     post 'Syncs patient, address and phone number data from device to server.' do
       tags 'patient'
-      security [basic: []]
+      security [access_token: [], patient_id: [], facility_id: []]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
       parameter name: :patients, in: :body, schema: Api::V3::Schema.patient_sync_from_user_request
@@ -12,6 +12,8 @@ describe 'Patients v3 API', swagger_doc: 'v3/swagger.json' do
       response '200', 'patients created' do
         let(:request_user) { FactoryBot.create(:user) }
         let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
+        let(:user_id) { request_user.id }
+        let(:patient_id) { request_facility.id }
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:HTTP_X_FACILITY_ID) { request_facility.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
@@ -37,7 +39,7 @@ describe 'Patients v3 API', swagger_doc: 'v3/swagger.json' do
 
     get 'Syncs patient, address and phone number data from server to device.' do
       tags 'patient'
-      security [basic: []]
+      security [access_token: [], patient_id: [], facility_id: []]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
       Api::V3::Schema.sync_to_user_request.each do |param|

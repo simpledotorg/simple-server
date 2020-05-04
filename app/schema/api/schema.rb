@@ -20,10 +20,24 @@ class Api::Schema
     end
 
     def security_definitions
-      { basic: {
-        type: :basic
-      } }
+      {
+        access_token: {
+          type: 'http',
+          scheme: 'bearer'
+        },
+        user_id: {
+          type: 'apiKey',
+          in: 'header',
+          name: 'X-USER-ID'
+        },
+        facility_id: {
+          type: 'apiKey',
+          in: 'header',
+          name: 'X-FACILITY-ID'
+        }
+      }
     end
+
 
     def swagger_doc(version, definitions)
       {
