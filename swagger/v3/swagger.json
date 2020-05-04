@@ -38,7 +38,7 @@
             "access_token": [
 
             ],
-            "patient_id": [
+            "user_id": [
 
             ],
             "facility_id": [
@@ -82,7 +82,7 @@
             "access_token": [
 
             ],
-            "patient_id": [
+            "user_id": [
 
             ],
             "facility_id": [
@@ -126,7 +126,7 @@
             "access_token": [
 
             ],
-            "patient_id": [
+            "user_id": [
 
             ],
             "facility_id": [
@@ -180,7 +180,7 @@
             "access_token": [
 
             ],
-            "patient_id": [
+            "user_id": [
 
             ],
             "facility_id": [
@@ -249,7 +249,7 @@
             "access_token": [
 
             ],
-            "patient_id": [
+            "user_id": [
 
             ],
             "facility_id": [
@@ -311,7 +311,7 @@
             "access_token": [
 
             ],
-            "patient_id": [
+            "user_id": [
 
             ],
             "facility_id": [
@@ -380,7 +380,7 @@
             "access_token": [
 
             ],
-            "patient_id": [
+            "user_id": [
 
             ],
             "facility_id": [
@@ -442,7 +442,7 @@
             "access_token": [
 
             ],
-            "patient_id": [
+            "user_id": [
 
             ],
             "facility_id": [
@@ -511,7 +511,7 @@
             "access_token": [
 
             ],
-            "patient_id": [
+            "user_id": [
 
             ],
             "facility_id": [
@@ -573,7 +573,7 @@
             "access_token": [
 
             ],
-            "patient_id": [
+            "user_id": [
 
             ],
             "facility_id": [
@@ -642,7 +642,7 @@
             "access_token": [
 
             ],
-            "patient_id": [
+            "user_id": [
 
             ],
             "facility_id": [
@@ -795,7 +795,7 @@
             "access_token": [
 
             ],
-            "patient_id": [
+            "user_id": [
 
             ],
             "facility_id": [
@@ -857,7 +857,7 @@
             "access_token": [
 
             ],
-            "patient_id": [
+            "user_id": [
 
             ],
             "facility_id": [
@@ -926,7 +926,7 @@
             "access_token": [
 
             ],
-            "patient_id": [
+            "user_id": [
 
             ],
             "facility_id": [
@@ -988,7 +988,7 @@
             "access_token": [
 
             ],
-            "patient_id": [
+            "user_id": [
 
             ],
             "facility_id": [
@@ -1057,7 +1057,7 @@
             "access_token": [
 
             ],
-            "patient_id": [
+            "user_id": [
 
             ],
             "facility_id": [
@@ -1119,7 +1119,7 @@
             "access_token": [
 
             ],
-            "patient_id": [
+            "user_id": [
 
             ],
             "facility_id": [
@@ -1351,7 +1351,7 @@
             "access_token": [
 
             ],
-            "patient_id": [
+            "user_id": [
 
             ],
             "facility_id": [
@@ -2536,6 +2536,11 @@
       "type": "apiKey",
       "in": "header",
       "name": "X-FACILITY-ID"
+    },
+    "patient_id": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "X-PATIENT-ID"
     }
   }
 }
