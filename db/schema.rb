@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200430144041) do
+ActiveRecord::Schema.define(version: 20200504174240) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -349,6 +349,7 @@ ActiveRecord::Schema.define(version: 20200430144041) do
     t.string "could_not_contact_reason"
     t.datetime "recorded_at"
     t.string "reminder_consent", default: "denied", null: false
+    t.integer "risk_level"
     t.index ["deleted_at"], name: "index_patients_on_deleted_at"
     t.index ["recorded_at"], name: "index_patients_on_recorded_at"
     t.index ["registration_facility_id"], name: "index_patients_on_registration_facility_id"
