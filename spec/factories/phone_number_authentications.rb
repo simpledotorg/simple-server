@@ -4,7 +4,7 @@ FactoryBot.define do
     password { rand(1000..9999).to_s }
     password_confirmation { password }
     otp { rand(100_000..999_999).to_s }
-    otp_expires_at { 3.minutes.from_now }
+    otp_valid_until { 3.minutes.from_now }
     access_token { SecureRandom.hex(32) }
 
     facility

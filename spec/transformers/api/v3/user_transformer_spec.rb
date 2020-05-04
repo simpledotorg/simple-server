@@ -12,7 +12,7 @@ RSpec.describe Api::V3::UserTransformer do
         .and_return(
           'user' => 'attributes',
           'otp' => '123456',
-          'otp_expires_at' => Time.now,
+          'otp_valid_until' => Time.now,
           'access_token' => 'supersecretaccesstoken',
           'logged_in_at' => Time.now,
           'role' => 'admin',
@@ -35,7 +35,7 @@ RSpec.describe Api::V3::UserTransformer do
     it 'excludes sensitive params' do
       expect(response).not_to include(
         'otp',
-        'otp_expires_at',
+        'otp_valid_until',
         'access_token',
         'logged_in_at',
         'role',

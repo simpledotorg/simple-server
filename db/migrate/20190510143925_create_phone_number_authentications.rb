@@ -4,7 +4,7 @@ class CreatePhoneNumberAuthentications < ActiveRecord::Migration[5.1]
       t.string :phone_number, unique: true, null: false
       t.string :password_digest, null: false
       t.string :otp, null: false
-      t.datetime :otp_expires_at, null: false
+      t.datetime :otp_valid_until, null: false
       t.datetime :logged_in_at
       t.string :access_token, null: false
 
