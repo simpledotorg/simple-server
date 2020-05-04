@@ -36,7 +36,7 @@ module DashboardHelper
     total = analytics.values.sum
     return analytics if total == 0
 
-    analytics.map { |k, v| [k, (v * 100.0) / total] }.to_h
+    analytics.map { |k, v| [k, (v * 100.0) / total] }.to_h.with_indifferent_access
   end
 
   def percentage_string(percentage)
