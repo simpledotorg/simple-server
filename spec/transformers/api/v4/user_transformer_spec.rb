@@ -7,7 +7,7 @@ RSpec.describe Api::V4::UserTransformer do
       user
         .attributes
         .merge('otp' => '123456',
-               'otp_valid_until' => Time.current,
+               'otp_expires_at' => Time.current,
                'access_token' => 'access token string',
                'logged_in_at' => Time.current)
     end
@@ -41,7 +41,7 @@ RSpec.describe Api::V4::UserTransformer do
 
     it 'excludes sensitive params' do
       expect(response).not_to include('otp',
-                                      'otp_valid_until',
+                                      'otp_expires_at',
                                       'access_token',
                                       'logged_in_at',
                                       'role',
@@ -59,7 +59,7 @@ RSpec.describe Api::V4::UserTransformer do
         'field' => 'values',
         'password_digest' => 'supersecretdigest',
         'otp' => '123456',
-        'otp_valid_until' => Time.current,
+        'otp_expires_at' => Time.current,
         'access_token' => 'access token string',
         'logged_in_at' => Time.current
       }
@@ -87,7 +87,7 @@ RSpec.describe Api::V4::UserTransformer do
     it 'excludes sensitive params' do
       expect(response).not_to include('password_digest',
                                       'otp',
-                                      'otp_valid_until',
+                                      'otp_expires_at',
                                       'access_token',
                                       'logged_in_at',
                                       'role',
