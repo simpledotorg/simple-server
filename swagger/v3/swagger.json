@@ -35,7 +35,13 @@
         ],
         "security": [
           {
-            "basic": [
+            "access_token": [
+
+            ],
+            "patient_id": [
+
+            ],
+            "facility_id": [
 
             ]
           }
@@ -73,7 +79,13 @@
         ],
         "security": [
           {
-            "basic": [
+            "access_token": [
+
+            ],
+            "patient_id": [
+
+            ],
+            "facility_id": [
 
             ]
           }
@@ -111,7 +123,13 @@
         ],
         "security": [
           {
-            "basic": [
+            "access_token": [
+
+            ],
+            "patient_id": [
+
+            ],
+            "facility_id": [
 
             ]
           }
@@ -159,7 +177,13 @@
         ],
         "security": [
           {
-            "basic": [
+            "access_token": [
+
+            ],
+            "patient_id": [
+
+            ],
+            "facility_id": [
 
             ]
           }
@@ -222,7 +246,13 @@
         ],
         "security": [
           {
-            "basic": [
+            "access_token": [
+
+            ],
+            "patient_id": [
+
+            ],
+            "facility_id": [
 
             ]
           }
@@ -278,7 +308,13 @@
         ],
         "security": [
           {
-            "basic": [
+            "access_token": [
+
+            ],
+            "patient_id": [
+
+            ],
+            "facility_id": [
 
             ]
           }
@@ -341,7 +377,13 @@
         ],
         "security": [
           {
-            "basic": [
+            "access_token": [
+
+            ],
+            "patient_id": [
+
+            ],
+            "facility_id": [
 
             ]
           }
@@ -397,7 +439,13 @@
         ],
         "security": [
           {
-            "basic": [
+            "access_token": [
+
+            ],
+            "patient_id": [
+
+            ],
+            "facility_id": [
 
             ]
           }
@@ -460,7 +508,13 @@
         ],
         "security": [
           {
-            "basic": [
+            "access_token": [
+
+            ],
+            "patient_id": [
+
+            ],
+            "facility_id": [
 
             ]
           }
@@ -516,7 +570,13 @@
         ],
         "security": [
           {
-            "basic": [
+            "access_token": [
+
+            ],
+            "patient_id": [
+
+            ],
+            "facility_id": [
 
             ]
           }
@@ -579,7 +639,13 @@
         ],
         "security": [
           {
-            "basic": [
+            "access_token": [
+
+            ],
+            "patient_id": [
+
+            ],
+            "facility_id": [
 
             ]
           }
@@ -726,7 +792,13 @@
         ],
         "security": [
           {
-            "basic": [
+            "access_token": [
+
+            ],
+            "patient_id": [
+
+            ],
+            "facility_id": [
 
             ]
           }
@@ -782,7 +854,13 @@
         ],
         "security": [
           {
-            "basic": [
+            "access_token": [
+
+            ],
+            "patient_id": [
+
+            ],
+            "facility_id": [
 
             ]
           }
@@ -976,7 +1054,13 @@
         ],
         "security": [
           {
-            "basic": [
+            "access_token": [
+
+            ],
+            "patient_id": [
+
+            ],
+            "facility_id": [
 
             ]
           }
@@ -1032,7 +1116,13 @@
         ],
         "security": [
           {
-            "basic": [
+            "access_token": [
+
+            ],
+            "patient_id": [
+
+            ],
+            "facility_id": [
 
             ]
           }
@@ -1258,7 +1348,13 @@
         ],
         "security": [
           {
-            "basic": [
+            "access_token": [
+
+            ],
+            "patient_id": [
+
+            ],
+            "facility_id": [
 
             ]
           }
