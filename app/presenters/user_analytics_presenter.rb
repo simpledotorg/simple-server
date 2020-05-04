@@ -101,10 +101,11 @@ class UserAnalyticsPresenter
       all_time_htn_stats.dig(:grouped_by_gender, :hypertension, :follow_ups).values.sum
 
     all_trophies = if follow_ups > TROPHY_MILESTONES.last
-      [*TROPHY_MILESTONES, *(TROPHY_MILESTONE_INCR..(follow_ups + TROPHY_MILESTONE_INCR)).step(TROPHY_MILESTONE_INCR)]
-    else
-      TROPHY_MILESTONES
-    end
+                     [*TROPHY_MILESTONES,
+                      *(TROPHY_MILESTONE_INCR..(follow_ups + TROPHY_MILESTONE_INCR)).step(TROPHY_MILESTONE_INCR)]
+                   else
+                     TROPHY_MILESTONES
+                   end
 
     unlocked_trophies_until = all_trophies.index { |v| follow_ups < v }
 
@@ -211,14 +212,14 @@ class UserAnalyticsPresenter
   def all_time_unique_stats
     follow_ups =
       @current_facility
-        .hypertension_follow_ups(:month)
+        .patient_follow_ups(:month)
         .count
         .values
         .sum
 
     registrations =
       @current_facility
-        .registered_hypertension_patients
+        .registered_patients
         .count
 
     {
