@@ -80,23 +80,21 @@ en:
       description: |
         # API spec for Simple Server
         ## Sync APIs
-
         This API spec documents the endpoints that the devices (that are offline to varying levels) will use to sync data. The sync end points will send and receive bulk (a list of) entities. Both sending and receiving can be batched with configurable batch-sizes to accommodate low network bandwidth situations.
 
         ## Nesting resources
-
         The APIs have been designed to provide an optimal balance between accuracy and simplicity. Some of the APIs (patients) will be nested, and some other (blood pressures) will be flat.
 
+        ## Sync Mechanism
+        Refer to the [related ADR](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/001-synchronization.md).
+
         ## Authentication
-
         There are two types of authentication available to access different parts of the Simple API.
-
         - User Authentication - For medical professionals using the Simple App. Grants access to most of the Simple API
           to read and write data for communities of patients
         - Patient authentication - For individual patients. Grants access to read a patient's own data.
 
         ### User Authentication
-
         A Simple client attempting to authenticate a medical professional needs three pieces of information:
         - The user's registered phone number
         - The user's PIN / Password
@@ -112,7 +110,6 @@ en:
         This token is a `Bearer` token, and should be attached as a header to all subsequent API requests as described here [link to bearer token docs here].
 
         ### Patient Authentication
-
         A Simple client can make authenticated requests to the Simple API on behalf of a patient with the following
         credentials:
         - API Access Token
@@ -128,9 +125,8 @@ en:
         - `Authorization: Bearer <access token>`
         - `X-Patient-Id: <patient ID>`
 
-        ## Sync Mechanism
-        Refer to the [related ADR](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/001-synchronization.md).
-
+        The comprehensive list of authentication mechanisms used is provided below. It lists the specific details of
+        using access tokens and other request headers to authenticate with the API.
       title: 'Simple Server'
       logo:
         image: 'rtsl_logo.png'
