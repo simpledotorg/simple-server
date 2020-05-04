@@ -4,7 +4,7 @@ describe 'Medical History V2 API', swagger_doc: 'v2/swagger.json' do
   path '/medical_histories/sync' do
     post 'Syncs medical_history data from device to server.' do
       tags 'Medical History'
-      security [basic: []]
+      security [access_token: [], patient_id: [], facility_id: []]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
       parameter name: :medical_histories, in: :body, schema: Api::V2::Schema.medical_history_sync_from_user_request
@@ -38,7 +38,7 @@ describe 'Medical History V2 API', swagger_doc: 'v2/swagger.json' do
 
     get 'Syncs medical_history data from server to device.' do
       tags 'Medical History'
-      security [basic: []]
+      security [access_token: [], patient_id: [], facility_id: []]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
       Api::V2::Schema.sync_to_user_request.each do |param|

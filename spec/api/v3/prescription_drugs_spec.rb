@@ -4,7 +4,7 @@ describe 'PrescriptionDrugs v3 API', swagger_doc: 'v3/swagger.json' do
   path '/prescription_drugs/sync' do
     post 'Syncs prescription drugs data from device to server.' do
       tags 'Prescription Drug'
-      security [basic: []]
+      security [access_token: [], patient_id: [], facility_id: []]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
       parameter name: :prescription_drugs, in: :body, schema: Api::V3::Schema.prescription_drug_sync_from_user_request
@@ -37,7 +37,7 @@ describe 'PrescriptionDrugs v3 API', swagger_doc: 'v3/swagger.json' do
 
     get 'Syncs prescription drugs data from server to device.' do
       tags 'Prescription Drug'
-      security [basic: []]
+      security [access_token: [], patient_id: [], facility_id: []]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
       Api::V3::Schema.sync_to_user_request.each do |param|

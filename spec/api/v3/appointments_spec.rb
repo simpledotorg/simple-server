@@ -4,7 +4,7 @@ describe 'Appointment v3 API', swagger_doc: 'v3/swagger.json' do
   path '/appointments/sync' do
     post 'Syncs appointment data from device to server.' do
       tags 'Appointments'
-      security [basic: []]
+      security [access_token: [], patient_id: [], facility_id: []]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
       parameter name: :appointments, in: :body, schema: Api::V3::Schema.appointment_sync_from_user_request
@@ -37,7 +37,7 @@ describe 'Appointment v3 API', swagger_doc: 'v3/swagger.json' do
 
     get 'Syncs appointment data from server to device.' do
       tags 'Appointments'
-      security [basic: []]
+      security [access_token: [], patient_id: [], facility_id: []]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
       Api::V3::Schema.sync_to_user_request.each do |param|

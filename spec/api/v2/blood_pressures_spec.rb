@@ -4,7 +4,7 @@ describe 'BloodPressures V2 API', swagger_doc: 'v2/swagger.json' do
   path '/blood_pressures/sync' do
     post 'Syncs blood pressure data from device to server.' do
       tags 'Blood Pressure'
-      security [basic: []]
+      security [access_token: [], patient_id: [], facility_id: []]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
       parameter name: :blood_pressures, in: :body, schema: Api::V2::Schema.blood_pressure_sync_from_user_request
@@ -38,7 +38,7 @@ describe 'BloodPressures V2 API', swagger_doc: 'v2/swagger.json' do
 
     get 'Syncs blood pressure data from server to device.' do
       tags 'Blood Pressure'
-      security [basic: []]
+      security [access_token: [], patient_id: [], facility_id: []]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
       Api::V2::Schema.sync_to_user_request.each do |param|
