@@ -9,6 +9,14 @@ FactoryBot.define do
     facility
     user
     patient
+
+    trait :with_hba1c do
+      blood_sugar_type { BloodSugar::blood_sugar_types.keys.sample }
+      blood_sugar_value do
+        threshold = BloodSugar::THRESHOLDS[:high][blood_sugar_type]
+        rand(threshold * 0.9..threshold * 1.1).round(2)
+      end
+    end
   end
 end
 
