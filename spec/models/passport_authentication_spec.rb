@@ -18,7 +18,7 @@ RSpec.describe PassportAuthentication, type: :model do
   describe 'Validations' do
     it { is_expected.to validate_presence_of(:access_token) }
     it { is_expected.to validate_presence_of(:otp) }
-    it { is_expected.to validate_presence_of(:otp_expires_at) }
+    it { is_expected.to validate_presence_of(:otp_valid_until) }
     it { is_expected.to validate_presence_of(:patient_business_identifier) }
   end
 
@@ -60,13 +60,13 @@ RSpec.describe PassportAuthentication, type: :model do
     describe '#generate_otp' do
       it 'sets a six digit OTP' do
         auth.otp = nil
-        auth.otp_expires_at = nil
+        auth.otp_valid_until = nil
 
         travel_to now do
           auth.generate_otp
 
           expect(auth.otp).to match(/[0-9]{6}/)
-          expect(auth.otp_expires_at).to eq(5.minutes.from_now)
+          expect(auth.otp_valid_until).to eq(5.minutes.from_now)
         end
       end
 
@@ -80,13 +80,13 @@ RSpec.describe PassportAuthentication, type: :model do
     describe '#reset_otp' do
       it 'sets a six digit OTP' do
         auth.otp = nil
-        auth.otp_expires_at = nil
+        auth.otp_valid_until = nil
 
         travel_to now do
           auth.reset_otp
 
           expect(auth.otp).to match(/[0-9]{6}/)
-          expect(auth.otp_expires_at).to eq(5.minutes.from_now)
+          expect(auth.otp_valid_until).to eq(5.minutes.from_now)
         end
       end
 
@@ -108,14 +108,14 @@ RSpec.describe PassportAuthentication, type: :model do
     describe '#otp_valid?' do
       context 'when OTP has not expired' do
         it 'returns true' do
-          auth.otp_expires_at = 5.minutes.from_now
+          auth.otp_valid_until = 5.minutes.from_now
           expect(auth).to be_otp_valid
         end
       end
 
       context 'when OTP has expired' do
         it 'returns false' do
-          auth.otp_expires_at = 5.minutes.ago
+          auth.otp_valid_until = 5.minutes.ago
           expect(auth).not_to be_otp_valid
         end
       end
@@ -144,7 +144,7 @@ RSpec.describe PassportAuthentication, type: :model do
       context 'when OTP is expired' do
         let(:otp) { auth.otp }
 
-        before { auth.otp_expires_at = 5.minutes.ago }
+        before { auth.otp_valid_until = 5.minutes.ago }
 
         it 'returns false' do
           expect(auth.validate_otp(otp)).to eq(false)
