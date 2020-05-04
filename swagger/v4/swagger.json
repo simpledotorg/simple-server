@@ -50,12 +50,14 @@
           {
             "name": "HTTP_X_USER_ID",
             "in": "header",
-            "type": "uuid"
+            "type": "uuid",
+            "document": false
           },
           {
             "name": "HTTP_X_FACILITY_ID",
             "in": "header",
-            "type": "uuid"
+            "type": "uuid",
+            "description": "potato"
           },
           {
             "name": "blood_sugars",
