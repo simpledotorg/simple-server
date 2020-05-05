@@ -2,7 +2,7 @@ require 'factory_bot_rails'
 require 'faker'
 require File.expand_path('spec/utils')
 
-class SeedUserDataJob
+class SeedUsersDataJob
   include Sidekiq::Worker
   include Sidekiq::Throttled::Worker
 
@@ -31,7 +31,7 @@ class SeedUserDataJob
     {
       registered_patient: {
         time_fn: -> { Faker::Time.between(from: 9.month.ago, to: Time.now) },
-        size_fn: -> { rand(1..2) },
+        size_fn: -> { rand(30..150) },
         build_fn: -> (args) {
           build_patient_payload(FactoryBot.build(:patient,
                                                  recorded_at: args[:time_fn].call,
@@ -175,11 +175,11 @@ class SeedUserDataJob
     }
   end
 
-  class InvalidSeedUserDataOperation < RuntimeError;
+  class InvalidSeedUsersDataOperation < RuntimeError;
   end
 
   def perform(user_id)
-    raise InvalidSeedUserDataOperation,
+    raise InvalidSeedUsersDataOperation,
           "Can't generate seed data in #{ENV['SIMPLE_SERVER_ENV']}!" if ENV['SIMPLE_SERVER_ENV'] == 'production'
 
     @user = User.find(user_id)
