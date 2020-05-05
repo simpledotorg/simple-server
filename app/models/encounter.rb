@@ -1,5 +1,6 @@
 class Encounter < ApplicationRecord
   include Mergeable
+  include SQLHelpers
 
   belongs_to :patient, optional: true
   belongs_to :facility
@@ -21,10 +22,5 @@ class Encounter < ApplicationRecord
       .utc
       .advance(seconds: timezone_offset)
       .to_date
-  end
-
-  def self.date_to_period_sql(period)
-    tz = Rails.application.config.country[:time_zone]
-    "(DATE_TRUNC('#{period}', (encounters.encountered_on::timestamptz) AT TIME ZONE '#{tz}')) AT TIME ZONE '#{tz}'"
   end
 end

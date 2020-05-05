@@ -2,6 +2,7 @@ class BloodPressure < ApplicationRecord
   include Mergeable
   include Hashable
   include Observeable
+  include SQLHelpers
 
   ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at bp_date registration_facility_name user_id
                               bp_systolic bp_diastolic]
@@ -61,28 +62,5 @@ class BloodPressure < ApplicationRecord
       bp_systolic: systolic,
       bp_diastolic: diastolic
     }
-  end
-
-  #
-  # This is a helper class method that is useful for breaking up the BP recording time in various time-periods in SQL.
-  # It takes the recorded_at (timestamp without timezone) and truncates it to the beginning of the month.
-  #
-  # Following is the series of transformations it applies to truncate it in right timezone:
-  #
-  # * Interpret the "timestamp without timezone" in the DB timezone (UTC).
-  # * Converts it to a "timestamp with timezone" the country timezone.
-  # * Truncates it to a month (this returns a "timestamp without timezone")
-  # * Converts it back to a "timestamp with timezone" in the country timezone
-  #
-  # FAQ:
-  #
-  # Q. Why should we cast the truncate into a timestamp with timezone at all? Don't we just end up with day/month?
-  # A. DATE_TRUNC returns a "timestamp without timezone" not a month/day/quarter. If it's used in a "where"
-  # clause for comparison, the timezone will come into effect and is valuable to be kept correct so as to not run into
-  # time-period-boundary issues.
-  #
-  def self.date_to_period_sql(period)
-    tz = Time.zone.name
-    "(DATE_TRUNC('#{period}', (blood_pressures.recorded_at::timestamptz) AT TIME ZONE '#{tz}')) AT TIME ZONE '#{tz}'"
   end
 end

@@ -9,7 +9,8 @@ describe Patient, type: :model do
   end
 
   describe 'Associations' do
-    it { is_expected.to belong_to(:address).optional }
+    it { is_expected.to have_one(:medical_history) }
+
     it { is_expected.to have_many(:phone_numbers) }
     it { is_expected.to have_many(:business_identifiers) }
     it { is_expected.to have_many(:passport_authentications).through(:business_identifiers) }
@@ -20,11 +21,11 @@ describe Patient, type: :model do
     it { is_expected.to have_many(:facilities).through(:blood_pressures) }
     it { is_expected.to have_many(:users).through(:blood_pressures) }
     it { is_expected.to have_many(:appointments) }
-    it { is_expected.to have_one(:medical_history) }
 
     it { is_expected.to have_many(:encounters) }
     it { is_expected.to have_many(:observations).through(:encounters) }
 
+    it { is_expected.to belong_to(:address).optional }
     it { is_expected.to belong_to(:registration_facility).class_name('Facility').optional }
     it { is_expected.to belong_to(:registration_user).class_name('User') }
 
@@ -44,6 +45,7 @@ describe Patient, type: :model do
 
     it { is_expected.to have_many(:latest_blood_pressures).order(recorded_at: :desc).class_name('BloodPressure') }
     it { is_expected.to have_many(:latest_blood_sugars).order(recorded_at: :desc).class_name('BloodSugar') }
+
     specify do
       is_expected.to have_many(:current_prescription_drugs)
                        .conditions(is_deleted: false)
@@ -80,22 +82,40 @@ describe Patient, type: :model do
   end
 
   context 'Scopes' do
-    let(:reg_date) { Date.new(2018, 1, 1) }
-    let(:current_user) { create(:user) }
-    let(:current_facility) { create(:facility, facility_group: current_user.facility.facility_group) }
-    let(:follow_up_facility) { create(:facility, facility_group: current_user.facility.facility_group) }
-    let(:hypertensive_patient) { create(:patient,
-                                        :hypertension,
-                                        registration_facility: current_facility,
-                                        recorded_at: reg_date) }
-    let(:diabetic_patient) { create(:patient,
-                                    :diabetes,
-                                    registration_facility: current_facility,
-                                    recorded_at: reg_date) }
-    let(:first_follow_up_date) { reg_date + 1.month }
-    let(:second_follow_up_date) { first_follow_up_date + 1.day }
+    describe '.diabetes_only' do
+      it 'only includes patients with diagnosis of diabetes' do
+        create_list(:patient, 2, :diabetes)
+        create(:patient, :hypertension)
+
+        expect(Patient.diabetes_only.count).to eq(2)
+      end
+    end
+
+    describe '.hypertension_only' do
+      it 'only  includes patients with diagnosis of hypertension' do
+        create_list(:patient, 2, :hypertension)
+        create(:patient, :diabetes)
+
+        expect(Patient.hypertension_only.count).to eq(2)
+      end
+    end
 
     context 'follow ups' do
+      let(:reg_date) { Date.new(2018, 1, 1) }
+      let(:current_user) { create(:user) }
+      let(:current_facility) { create(:facility, facility_group: current_user.facility.facility_group) }
+      let(:follow_up_facility) { create(:facility, facility_group: current_user.facility.facility_group) }
+      let(:hypertensive_patient) { create(:patient,
+                                          :hypertension,
+                                          registration_facility: current_facility,
+                                          recorded_at: reg_date) }
+      let(:diabetic_patient) { create(:patient,
+                                      :diabetes,
+                                      registration_facility: current_facility,
+                                      recorded_at: reg_date) }
+      let(:first_follow_up_date) { reg_date + 1.month }
+      let(:second_follow_up_date) { first_follow_up_date + 1.day }
+
       before do
         2.times do
           create(:encounter,

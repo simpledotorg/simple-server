@@ -1,6 +1,7 @@
 class BloodSugar < ApplicationRecord
   include Mergeable
   include Observeable
+  include SQLHelpers
 
   belongs_to :patient, optional: true
   belongs_to :user, optional: true
@@ -32,10 +33,5 @@ class BloodSugar < ApplicationRecord
 
   def diabetic?
     blood_sugar_value >= THRESHOLDS[:high][blood_sugar_type]
-  end
-
-  def self.date_to_period_sql(period)
-    tz = Rails.application.config.country[:time_zone]
-    "(DATE_TRUNC('#{period}', (blood_sugars.recorded_at::timestamptz) AT TIME ZONE '#{tz}')) AT TIME ZONE '#{tz}'"
   end
 end

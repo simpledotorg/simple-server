@@ -56,27 +56,27 @@ class Patient < ApplicationRecord
   scope :diabetes_only, -> { joins(:medical_history).merge(MedicalHistory.diabetes_yes) }
   scope :hypertension_only, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes) }
 
-  scope :hypertension_follow_ups, -> (period, last: nil) {
-    follow_ups_with(:blood_pressures, period, last: last)
-      .hypertension_only
+  scope :follow_ups, -> (period, last: nil) {
+    follow_ups_with(Encounter, period, time_col: 'encountered_on', last: last)
   }
 
   scope :diabetes_follow_ups, -> (period, last: nil) {
-    follow_ups_with(:blood_sugars, period, last: last)
+    follow_ups_with(BloodSugar, period, last: last)
       .diabetes_only
   }
 
-  scope :follow_ups, -> (period, last: nil) {
-    follow_ups_with(:encounters, period, time_col: 'encountered_on', last: last)
+  scope :hypertension_follow_ups, -> (period, last: nil) {
+    follow_ups_with(BloodPressure, period, last: last)
+      .hypertension_only
   }
 
-  def self.follow_ups_with(resource_type, period, time_col: 'recorded_at', last: nil)
-    resource_name = resource_type.to_s.singularize.camelize.constantize
-    group_by_time = "#{resource_type}.#{time_col}"
+  def self.follow_ups_with(model_name, period, time_col: 'recorded_at', last: nil)
+    model_name_sym = model_name.name.underscore.pluralize.to_sym
+    time_col_with_model_name = "#{model_name_sym}.#{time_col}"
 
-    joins(resource_type)
-      .where("patients.recorded_at < #{resource_name.date_to_period_sql(period)}")
-      .group_by_period(period, group_by_time, last: last)
+    joins(model_name_sym)
+      .where("patients.recorded_at < #{model_name.date_to_period_sql(time_col_with_model_name, period)}")
+      .group_by_period(period, time_col_with_model_name, last: last)
       .distinct
   end
 
