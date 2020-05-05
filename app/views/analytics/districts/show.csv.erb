@@ -1,17 +1,18 @@
 <%= [
-  "Report generated at:",
+  'Report generated at:',
   Time.current
 ].to_csv -%>
-<%= ["#{@organization_district.district_name} Cohort Report"].to_csv -%>
+<% period = @period == :quarter ? 'Quarterly' : 'Monthly' %>
+<%= ["#{@organization_district.district_name} #{period} Cohort Report"].to_csv -%>
 <%= ['Facility'].concat(@cohort_analytics.each_with_index.flat_map do |(report_dates, analytics), index|
   [
     'Cohort period',
     'Follow up period',
-    'Patients registered',
+    'Patients in cohort',
     'Patients followed up',
     'Patients controlled',
     'Patients uncontrolled',
-    'Patients defaulted',
+    "Patients didn't attend",
     'Control rate',
     'Uncontrolled rate',
     'Default rate',
