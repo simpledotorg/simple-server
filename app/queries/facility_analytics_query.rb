@@ -55,15 +55,16 @@ class FacilityAnalyticsQuery
                 .distinct(false) # this removes the distinct from hypertension_follow_ups so we can apply DISTINCT ON
                 .group('bp_user_id',
                        'blood_pressures.patient_id',
-                       BloodPressure.date_to_period_sql(@period),
+                       BloodPressure.date_to_period_sql('blood_pressures.recorded_at', @period),
                        'blood_pressures.recorded_at',
                        'patients.deleted_at')
                 .where(blood_pressures: { facility: @facility })
-                .select(%Q(DISTINCT ON (blood_pressures.patient_id, #{BloodPressure.date_to_period_sql(@period)})
+                .select(%Q(DISTINCT ON (blood_pressures.patient_id,
+                                        #{BloodPressure.date_to_period_sql('blood_pressures.recorded_at', @period)})
                            blood_pressures.user_id AS bp_user_id, patients.deleted_at))
                 .select("blood_pressures.recorded_at AS bp_recorded_at")
                 .order('blood_pressures.patient_id',
-                       BloodPressure.date_to_period_sql(@period),
+                       BloodPressure.date_to_period_sql('blood_pressures.recorded_at', @period),
                        'blood_pressures.recorded_at'),
               'patients')
         .group('bp_user_id')
