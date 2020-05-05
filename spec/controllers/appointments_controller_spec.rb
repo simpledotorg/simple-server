@@ -80,7 +80,7 @@ RSpec.describe AppointmentsController, type: :controller do
 
         patient_ids = (overdue_appointments_in_facility_1 + overdue_appointments_in_facility_2).map(&:patient_id)
         expect(assigns(:patient_summaries).map(&:id)).to match_array(patient_ids)
-        expect(assigns(:patient_summaries).map(&:id)).to_not match_array(really_overdue_patient_ids)
+        expect(assigns(:patient_summaries).map(&:id)).to_not include(really_overdue_patient_ids)
       end
 
       it "displays patients with all overdue date when unchecked" do
@@ -90,7 +90,7 @@ RSpec.describe AppointmentsController, type: :controller do
           status: 'scheduled'
         )
         create(:blood_pressure, patient: really_overdue_appointment.patient, facility: facility_2)
-        really_overdue_patient_ids = really_overdue_appointment.patient_id
+        really_overdue_patient_id = really_overdue_appointment.patient_id
 
         get :index, params: {
           search_filters: [""],
@@ -98,7 +98,7 @@ RSpec.describe AppointmentsController, type: :controller do
         }
 
         patient_ids = (overdue_appointments_in_facility_1 + overdue_appointments_in_facility_2).map(&:patient_id)
-        expected_patient_ids = patient_ids.push(really_overdue_patient_ids)
+        expected_patient_ids = patient_ids.push(really_overdue_patient_id)
         expect(assigns(:patient_summaries).map(&:id)).to match_array(expected_patient_ids)
       end
     end
