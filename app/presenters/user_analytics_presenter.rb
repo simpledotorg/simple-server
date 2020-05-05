@@ -43,7 +43,34 @@ class UserAnalyticsPresenter
     "#{percentage.round(0)}%"
   end
 
+  private
+
   def daily_stats
+    @current_facility.diabetes_enabled? ? daily_total_stats : daily_htn_stats
+  end
+
+  def daily_htn_stats
+    follow_ups =
+      @current_facility
+        .hypertension_follow_ups(:day, last: DAYS_AGO)
+        .count
+
+    registrations =
+      @current_facility
+        .registered_hypertension_patients
+        .group_by_period(:day, :recorded_at, last: DAYS_AGO)
+        .count
+
+    {
+      grouped_by_date:
+        {
+          follow_ups: follow_ups,
+          registrations: registrations
+        }
+    }
+  end
+
+  def daily_total_stats
     follow_ups =
       @current_facility
         .patient_follow_ups(:day, last: DAYS_AGO)
@@ -65,13 +92,17 @@ class UserAnalyticsPresenter
   end
 
   def monthly_stats
-    [monthly_unique_stats,
+    return monthly_htn_stats unless @current_facility.diabetes_enabled?
+
+    [monthly_total_stats,
      monthly_htn_stats,
      monthly_dm_stats].inject(:deep_merge)
   end
 
   def all_time_stats
-    [all_time_unique_stats,
+    return all_time_htn_stats unless @current_facility.diabetes_enabled?
+
+    [all_time_total_stats,
      all_time_htn_stats,
      all_time_dm_stats].inject(:deep_merge)
   end
@@ -118,7 +149,7 @@ class UserAnalyticsPresenter
     }
   end
 
-  def monthly_unique_stats
+  def monthly_total_stats
     follow_ups =
       @current_facility
         .patient_follow_ups(:month, last: MONTHS_AGO)
@@ -132,7 +163,7 @@ class UserAnalyticsPresenter
 
     {
       grouped_by_date: {
-        unique_total: {
+        total: {
           follow_ups: follow_ups,
           registrations: registrations
         }
@@ -209,7 +240,7 @@ class UserAnalyticsPresenter
     }
   end
 
-  def all_time_unique_stats
+  def all_time_total_stats
     follow_ups =
       @current_facility
         .patient_follow_ups(:month)
@@ -224,7 +255,7 @@ class UserAnalyticsPresenter
 
     {
       grouped_by_date: {
-        unique_total: {
+        total: {
           follow_ups: follow_ups,
           registrations: registrations
         }

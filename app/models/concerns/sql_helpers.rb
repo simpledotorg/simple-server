@@ -3,7 +3,7 @@ module SQLHelpers
 
   class_methods do
     #
-    # This is a helper class method that is useful for breaking up the recording time in various time-periods in SQL.
+    # This is useful for breaking up the recording time in various time-periods in SQL.
     # It takes the recorded_at (timestamp without timezone) and truncates it to the beginning of the month.
     #
     # Following is the series of transformations it applies to truncate it in right timezone:

@@ -169,7 +169,7 @@ RSpec.describe Api::V2::Analytics::UserAnalyticsController, type: :controller do
             expect(response.content_type).to eq('text/html')
           end
 
-          it 'has the name of the v3 facility' do
+          it 'has the name of the v2 facility' do
             get :show, format: :html
 
             expect(response.body).to match(Regexp.new(request_facility.name))

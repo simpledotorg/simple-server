@@ -1,51 +1,110 @@
-<!-- the "all" table for both HTN & DM across genders -->
-<table class="progress-table <%= data_table_name %> all">
-  <tr class="total">
-    <td class="row-label">All-time</td>
-    <td>
-      <%= zero_if_unavailable(@statistics.dig(:all_time,
-                                              :grouped_by_date,
-                                              :unique_total,
-                                              resource)) %>
-    </td>
-  </tr>
-  <% @user_analytics.monthly_period_list.each do |month_date| %>
-    <tr>
-      <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
+<!-- don't load up the tables for totals and diabetes if diabetes is off -->
+<% if statistics.dig(:metadata, :is_diabetes_enabled) %>
+  <!-- the "all" table for both HTN & DM across genders -->
+  <table class="progress-table <%= data_table_name %> all">
+    <tr class="total">
+      <td class="row-label">All-time</td>
       <td>
-        <%= zero_if_unavailable(@statistics.dig(:monthly,
-                                                :grouped_by_date,
-                                                :unique_total,
-                                                resource,
-                                                month_date)) %>
+        <%= zero_if_unavailable(statistics.dig(:all_time,
+                                               :grouped_by_date,
+                                               :total,
+                                               resource)) %>
       </td>
     </tr>
-  <% end %>
-</table>
+    <% @user_analytics.monthly_period_list.each do |month_date| %>
+      <tr>
+        <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
+        <td>
+          <%= zero_if_unavailable(statistics.dig(:monthly,
+                                                 :grouped_by_date,
+                                                 :total,
+                                                 resource,
+                                                 month_date)) %>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+
+  <!-- diabetes-only -->
+  <!-- the "all genders" table -->
+  <table class="progress-table <%= data_table_name %> diabetes:all" style="display: none">
+    <tr class="total">
+      <td class="row-label">All-time</td>
+      <td>
+        <%= zero_if_unavailable(statistics.dig(:all_time,
+                                               :grouped_by_gender,
+                                               :diabetes,
+                                               resource)
+                                    .values
+                                    .sum) %>
+      </td>
+    </tr>
+    <% @user_analytics.monthly_period_list.each do |month_date| %>
+      <tr>
+        <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
+        <td>
+          <%= zero_if_unavailable(statistics.dig(:monthly,
+                                                 :grouped_by_date,
+                                                 :diabetes,
+                                                 resource,
+                                                 month_date)) %>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>
+
+<% Patient::GENDERS.each do |gender| %>
+  <!-- gender-wise tables -->
+  <table class="progress-table <%= data_table_name %> diabetes:<%= gender %>" style="display: none">
+    <tr class="total">
+      <td class="row-label">All-time</td>
+      <td>
+        <%= zero_if_unavailable(statistics.dig(:all_time,
+                                               :grouped_by_gender,
+                                               :diabetes,
+                                               resource,
+                                               gender)) %>
+      </td>
+    </tr>
+    <% @user_analytics.monthly_period_list.each do |month_date| %>
+      <tr>
+        <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
+        <td>
+          <%= zero_if_unavailable(statistics.dig(:monthly,
+                                                 :grouped_by_gender_and_date,
+                                                 :diabetes,
+                                                 resource,
+                                                 [month_date, gender])) %>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>
 
 <!-- hypertension-only -->
 <!-- the "all genders" table -->
-<table class="progress-table <%= data_table_name %> hypertension:all" style="display: none">
+<% visibility_for_htn_table = statistics.dig(:metadata, :is_diabetes_enabled) ? 'display: none' : '' %>
+
+<table class="progress-table <%= data_table_name %> hypertension:all" style="<%= visibility_for_htn_table %>">
   <tr class="total">
     <td class="row-label">All-time</td>
     <td>
-      <%= zero_if_unavailable(@statistics.dig(:all_time,
-                                              :grouped_by_gender,
-                                              :hypertension,
-                                              resource)
-                                  .values
-                                  .sum) %>
+      <%= zero_if_unavailable(statistics.dig(:all_time,
+                                             :grouped_by_gender,
+                                             :hypertension,
+                                             resource).values.sum) %>
     </td>
   </tr>
   <% @user_analytics.monthly_period_list.each do |month_date| %>
     <tr>
       <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
       <td>
-        <%= zero_if_unavailable(@statistics.dig(:monthly,
-                                                :grouped_by_date,
-                                                :hypertension,
-                                                resource,
-                                                month_date)) %>
+        <%= zero_if_unavailable(statistics.dig(:monthly,
+                                               :grouped_by_date,
+                                               :hypertension,
+                                               resource,
+                                               month_date)) %>
       </td>
     </tr>
   <% end %>
@@ -57,78 +116,22 @@
     <tr class="total">
       <td class="row-label">All-time</td>
       <td>
-        <%= zero_if_unavailable(@statistics.dig(:all_time,
-                                                :grouped_by_gender,
-                                                :hypertension,
-                                                resource,
-                                                gender)) %>
+        <%= zero_if_unavailable(statistics.dig(:all_time,
+                                               :grouped_by_gender,
+                                               :hypertension,
+                                               resource,
+                                               gender)) %>
       </td>
     </tr>
     <% @user_analytics.monthly_period_list.each do |month_date| %>
       <tr>
         <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
         <td>
-          <%= zero_if_unavailable(@statistics.dig(:monthly,
-                                                  :grouped_by_gender_and_date,
-                                                  :hypertension,
-                                                  resource,
-                                                  [month_date, gender])) %>
-        </td>
-      </tr>
-    <% end %>
-  </table>
-<% end %>
-
-<!-- diabetes-only -->
-<!-- the "all genders" table -->
-<table class="progress-table <%= data_table_name %> diabetes:all" style="display: none">
-  <tr class="total">
-    <td class="row-label">All-time</td>
-    <td>
-      <%= zero_if_unavailable(@statistics.dig(:all_time,
-                                              :grouped_by_gender,
-                                              :diabetes,
-                                              resource)
-                                  .values
-                                  .sum) %>
-    </td>
-  </tr>
-  <% @user_analytics.monthly_period_list.each do |month_date| %>
-    <tr>
-      <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
-      <td>
-        <%= zero_if_unavailable(@statistics.dig(:monthly,
-                                                :grouped_by_date,
-                                                :diabetes,
-                                                resource,
-                                                month_date)) %>
-      </td>
-    </tr>
-  <% end %>
-</table>
-
-<% Patient::GENDERS.each do |gender| %>
-  <!-- gender-wise tables -->
-  <table class="progress-table <%= data_table_name %> diabetes:<%= gender %>" style="display: none">
-    <tr class="total">
-      <td class="row-label">All-time</td>
-      <td>
-        <%= zero_if_unavailable(@statistics.dig(:all_time,
-                                                :grouped_by_gender,
-                                                :diabetes,
-                                                resource,
-                                                gender)) %>
-      </td>
-    </tr>
-    <% @user_analytics.monthly_period_list.each do |month_date| %>
-      <tr>
-        <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
-        <td>
-          <%= zero_if_unavailable(@statistics.dig(:monthly,
-                                                  :grouped_by_gender_and_date,
-                                                  :diabetes,
-                                                  resource,
-                                                  [month_date, gender])) %>
+          <%= zero_if_unavailable(statistics.dig(:monthly,
+                                                 :grouped_by_gender_and_date,
+                                                 :hypertension,
+                                                 resource,
+                                                 [month_date, gender])) %>
         </td>
       </tr>
     <% end %>
