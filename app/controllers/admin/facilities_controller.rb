@@ -89,7 +89,9 @@ class Admin::FacilitiesController < AdminController
       :longitude,
       :enable_diabetes_management,
       :monthly_estimated_opd_load,
-      :zone
+      :zone,
+      :enable_teleconsultation,
+      :teleconsultation_phone_number
     )
   end
 
