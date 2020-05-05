@@ -14,6 +14,14 @@ class SmsNotificationService
                     app_signature: app_signature))
   end
 
+  def send_reminder_whatsapp(reminder_type, appointment, callback_url, locale = DEFAULT_LOCALE)
+    body = I18n.t("sms.appointment_reminders.#{reminder_type}",
+                  facility_name: appointment.facility.name,
+                  locale: locale)
+
+    send_whatsapp(body, callback_url)
+  end
+
   def send_reminder_sms(reminder_type, appointment, callback_url, locale = DEFAULT_LOCALE)
     body = I18n.t("sms.appointment_reminders.#{reminder_type}",
                   facility_name: appointment.facility.name,
@@ -34,6 +42,14 @@ class SmsNotificationService
     client.messages.create(
       from: sender_phone_number,
       to: recipient_number.insert(0, Rails.application.config.country[:sms_country_code]),
+      status_callback: callback_url,
+      body: body)
+  end
+
+  def send_whatsapp(body, callback_url = '')
+    client.messages.create(
+      from: "whatsapp:" + sender_phone_number,
+      to: "whatsapp:" + recipient_number.insert(0, Rails.application.config.country[:sms_country_code]),
       status_callback: callback_url,
       body: body)
   end
