@@ -10,13 +10,10 @@ class AppointmentsController < AdminController
   def index
     authorize [:overdue_list, Appointment], :index?
 
-    @search_filters = index_params[:search_filters]
-    # We have to check for a couple cases here to handle the default, page load with no parameters as well as the
-    # case where a user cleared out all search filters and then submitted the search form.
-    # This is because the default page load has one search filter enabled.
-    if @search_filters.blank? && index_params[:submitted] # user cleared out all filters and submitted
-      @search_filters = []
-    elsif @search_filters.blank? # initial page load
+    @search_filters = index_params[:search_filters] || []
+    # We have to check to see this is the first page load where we want to apply default search filters. This
+    # is the case where the form is _not_ submitted and there are no search filters passed in.
+    if @search_filters.blank? && !index_params[:submitted]
       @search_filters = DEFAULT_SEARCH_FILTERS
     end
 
