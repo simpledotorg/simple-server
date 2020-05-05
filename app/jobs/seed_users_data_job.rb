@@ -2,7 +2,7 @@ require 'factory_bot_rails'
 require 'faker'
 require File.expand_path('spec/utils')
 
-class SeedUserDataJob
+class SeedUsersDataJob
   include Sidekiq::Worker
   include Sidekiq::Throttled::Worker
 
@@ -31,7 +31,7 @@ class SeedUserDataJob
     {
       registered_patient: {
         time_fn: -> { Faker::Time.between(from: 9.month.ago, to: Time.now) },
-        size_fn: -> { rand(1..2) },
+        size_fn: -> { rand(30..150) },
         build_fn: -> (args) {
           build_patient_payload(FactoryBot.build(:patient,
                                                  recorded_at: args[:time_fn].call,
@@ -45,6 +45,7 @@ class SeedUserDataJob
       diagnosis: {
         size_fn: -> { 1 },
         build_fn: -> (args) {
+          return if args[:patient].medical_history
           build_medical_history_payload_current(FactoryBot.build(:medical_history,
                                                                  [:hypertension_yes, :diabetes_yes].sample,
                                                                  patient: args[:patient],
@@ -175,11 +176,11 @@ class SeedUserDataJob
     }
   end
 
-  class InvalidSeedUserDataOperation < RuntimeError;
+  class InvalidSeedUsersDataOperation < RuntimeError;
   end
 
   def perform(user_id)
-    raise InvalidSeedUserDataOperation,
+    raise InvalidSeedUsersDataOperation,
           "Can't generate seed data in #{ENV['SIMPLE_SERVER_ENV']}!" if ENV['SIMPLE_SERVER_ENV'] == 'production'
 
     @user = User.find(user_id)
@@ -195,9 +196,9 @@ class SeedUserDataJob
     create_resources(registered_patients, :registered_patient, patient_trait_args)
 
     diagnosis_trait_args = patient_traits[:diagnosis]
-    diagnosis_data = user.registered_patients.flat_map do |patient|
-      generate(diagnosis_trait_args.merge(patient: patient))
-    end
+    diagnosis_data = user.registered_patients
+                       .flat_map { |patient| generate(diagnosis_trait_args.merge(patient: patient)) }
+                       .compact
     create_resources(diagnosis_data, :diagnosis, diagnosis_trait_args)
 
     #
