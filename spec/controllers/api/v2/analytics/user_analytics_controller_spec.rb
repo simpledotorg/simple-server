@@ -52,7 +52,7 @@ RSpec.describe Api::V2::Analytics::UserAnalyticsController, type: :controller do
         it 'has the follow-ups card' do
           get :show, format: :html
 
-          expect(response.body).to match(/Follow-up patients/)
+          expect(response.body).to match(/Follow-up hypertension patients/)
         end
 
         it 'has the hypertension control card' do
