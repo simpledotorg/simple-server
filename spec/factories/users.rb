@@ -53,8 +53,8 @@ FactoryBot.define do
 
   factory :admin, class: User do
     transient do
-      email { Faker::Internet.email(full_name) }
-      password { Faker::Internet.password(6) }
+      email { Faker::Internet.email(name: full_name) }
+      password { Faker::Internet.password(min_length: 6) }
       facility_group { build(:facility_group) }
     end
 
@@ -66,10 +66,10 @@ FactoryBot.define do
     user_permissions { [] }
     organization
 
-    role :owner
+    role { :owner }
 
     trait(:owner) do
-      role :owner
+      role { :owner }
 
       after :create do |user, _options|
         access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
@@ -80,7 +80,7 @@ FactoryBot.define do
     end
 
     trait(:supervisor) do
-      role :supervisor
+      role { :supervisor }
       after :create do |user, options|
         access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
         access_level[:default_permissions].each do |slug|
@@ -90,7 +90,7 @@ FactoryBot.define do
     end
 
     trait(:analyst) do
-      role :analyst
+      role { :analyst }
       after :create do |user, options|
         access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
         access_level[:default_permissions].each do |slug|
@@ -100,7 +100,7 @@ FactoryBot.define do
     end
 
     trait(:counsellor) do
-      role :counsellor
+      role { :counsellor }
       after :create do |user, options|
         access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
         access_level[:default_permissions].each do |slug|
@@ -110,7 +110,7 @@ FactoryBot.define do
     end
 
     trait(:organization_owner) do
-      role :organization_owner
+      role { :organization_owner }
       after :create do |user, options|
         access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
         access_level[:default_permissions].each do |slug|
