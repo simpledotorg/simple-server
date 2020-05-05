@@ -3,10 +3,6 @@ class PatientSummaryQuery
     new(*args).call
   end
 
-  # Create the query object with optional base relation and search filters
-  #
-  # relation: A base AR Relation to scope things off of - this would typically be used for authorization
-  # filters: An Array of search filters
   def initialize(relation: PatientSummary.all, filters: [])
     @relation = relation
     @filters = filters
