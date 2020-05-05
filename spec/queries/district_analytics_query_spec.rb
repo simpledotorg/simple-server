@@ -115,7 +115,7 @@ RSpec.describe DistrictAnalyticsQuery do
     end
 
     describe '#registered_patients_by_period' do
-      it "shouldn't count discarded patients" do
+      it "excludes count discarded patients" do
         expected_result =
           { facility.id =>
               { registered_patients_by_period: {
@@ -127,7 +127,7 @@ RSpec.describe DistrictAnalyticsQuery do
     end
 
     describe '#follow_up_patients_by_period' do
-      it "shouldn't count discarded patients" do
+      it "excludes count discarded patients" do
         expected_result =
           { facility.id =>
               { follow_up_patients_by_period: {
@@ -142,7 +142,7 @@ RSpec.describe DistrictAnalyticsQuery do
     end
 
     describe '#total_registered_patients' do
-      it "shouldn't count discarded patients" do
+      it "excludes count discarded patients" do
         expected_result =
           { facility.id =>
               {

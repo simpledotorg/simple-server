@@ -36,7 +36,6 @@ class UserAnalyticsPresenter
   end
 
   def display_percentage(numerator, denominator)
-
     return '0%' if denominator.nil? || denominator.zero? || numerator.nil?
     percentage = (numerator * 100.0) / denominator
 
@@ -45,18 +44,20 @@ class UserAnalyticsPresenter
 
   private
 
+  attr_reader :current_facility
+
   def daily_stats
-    @current_facility.diabetes_enabled? ? daily_total_stats : daily_htn_stats
+    current_facility.diabetes_enabled? ? daily_total_stats : daily_htn_stats
   end
 
   def daily_htn_stats
     follow_ups =
-      @current_facility
+      current_facility
         .hypertension_follow_ups(:day, last: DAYS_AGO)
         .count
 
     registrations =
-      @current_facility
+      current_facility
         .registered_hypertension_patients
         .group_by_period(:day, :recorded_at, last: DAYS_AGO)
         .count
@@ -72,12 +73,12 @@ class UserAnalyticsPresenter
 
   def daily_total_stats
     follow_ups =
-      @current_facility
+      current_facility
         .patient_follow_ups(:day, last: DAYS_AGO)
         .count
 
     registrations =
-      @current_facility
+      current_facility
         .registered_patients
         .group_by_period(:day, :recorded_at, last: DAYS_AGO)
         .count
@@ -92,7 +93,7 @@ class UserAnalyticsPresenter
   end
 
   def monthly_stats
-    return monthly_htn_stats unless @current_facility.diabetes_enabled?
+    return monthly_htn_stats unless current_facility.diabetes_enabled?
 
     [monthly_total_stats,
      monthly_htn_stats,
@@ -100,7 +101,7 @@ class UserAnalyticsPresenter
   end
 
   def all_time_stats
-    return all_time_htn_stats unless @current_facility.diabetes_enabled?
+    return all_time_htn_stats unless current_facility.diabetes_enabled?
 
     [all_time_total_stats,
      all_time_htn_stats,
@@ -151,12 +152,12 @@ class UserAnalyticsPresenter
 
   def monthly_total_stats
     follow_ups =
-      @current_facility
+      current_facility
         .patient_follow_ups(:month, last: MONTHS_AGO)
         .count
 
     registrations =
-      @current_facility
+      current_facility
         .registered_patients
         .group_by_period(:month, :recorded_at, last: MONTHS_AGO)
         .count
@@ -173,19 +174,19 @@ class UserAnalyticsPresenter
 
   def monthly_htn_stats
     follow_ups =
-      @current_facility
+      current_facility
         .hypertension_follow_ups(:month, last: MONTHS_AGO)
         .group(:gender)
         .count
 
     controlled_visits =
-      @current_facility
+      current_facility
         .hypertension_follow_ups(:month, last: MONTHS_AGO)
         .merge(BloodPressure.under_control)
         .count
 
     registrations =
-      @current_facility
+      current_facility
         .registered_hypertension_patients
         .group_by_period(:month, :recorded_at, last: MONTHS_AGO)
         .group(:gender)
@@ -211,13 +212,13 @@ class UserAnalyticsPresenter
 
   def monthly_dm_stats
     follow_ups =
-      @current_facility
+      current_facility
         .diabetes_follow_ups(:month, last: MONTHS_AGO)
         .group(:gender)
         .count
 
     registrations =
-      @current_facility
+      current_facility
         .registered_diabetes_patients
         .group_by_period(:month, :recorded_at, last: MONTHS_AGO)
         .group(:gender)
@@ -242,14 +243,14 @@ class UserAnalyticsPresenter
 
   def all_time_total_stats
     follow_ups =
-      @current_facility
+      current_facility
         .patient_follow_ups(:month)
         .count
         .values
         .sum
 
     registrations =
-      @current_facility
+      current_facility
         .registered_patients
         .count
 
@@ -265,13 +266,13 @@ class UserAnalyticsPresenter
 
   def all_time_htn_stats
     follow_ups =
-      sum_by_gender(@current_facility
+      sum_by_gender(current_facility
                       .hypertension_follow_ups(:month)
                       .group(:gender)
                       .count)
 
     registrations =
-      @current_facility
+      current_facility
         .registered_hypertension_patients
         .group(:gender)
         .count
@@ -288,13 +289,13 @@ class UserAnalyticsPresenter
 
   def all_time_dm_stats
     follow_ups =
-      sum_by_gender(@current_facility
+      sum_by_gender(current_facility
                       .diabetes_follow_ups(:month)
                       .group(:gender)
                       .count)
 
     registrations =
-      @current_facility
+      current_facility
         .registered_diabetes_patients
         .group(:gender)
         .count
@@ -310,7 +311,7 @@ class UserAnalyticsPresenter
   end
 
   def statistics_cache_key
-    "user_analytics/#{@current_facility.id}"
+    "user_analytics/#{current_facility.id}"
   end
 
   def sum_by_date(data)
