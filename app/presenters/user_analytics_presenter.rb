@@ -26,7 +26,7 @@ class UserAnalyticsPresenter
           all_time: all_time_stats,
           trophies: trophy_stats,
           metadata: {
-            is_diabetes_enabled: @current_facility.diabetes_enabled?,
+            is_diabetes_enabled: diabetes_enabled?,
             last_updated_at: I18n.l(Time.current),
             formatted_next_date: display_date(Time.current + 1.day),
             today_string: I18n.t(:today_str)
@@ -46,8 +46,12 @@ class UserAnalyticsPresenter
 
   attr_reader :current_facility
 
+  def diabetes_enabled?
+    FeatureToggle.enabled?('ENABLE_DIABETES_SUPPORT_IN_PROGRESS_TAB') && current_facility.diabetes_enabled?
+  end
+
   def daily_stats
-    current_facility.diabetes_enabled? ? daily_total_stats : daily_htn_stats
+    diabetes_enabled? ? daily_total_stats : daily_htn_stats
   end
 
   def daily_htn_stats
@@ -93,7 +97,7 @@ class UserAnalyticsPresenter
   end
 
   def monthly_stats
-    return monthly_htn_stats unless current_facility.diabetes_enabled?
+    return monthly_htn_stats unless diabetes_enabled?
 
     [monthly_total_stats,
      monthly_htn_stats,
@@ -101,7 +105,7 @@ class UserAnalyticsPresenter
   end
 
   def all_time_stats
-    return all_time_htn_stats unless current_facility.diabetes_enabled?
+    return all_time_htn_stats unless diabetes_enabled?
 
     [all_time_total_stats,
      all_time_htn_stats,
