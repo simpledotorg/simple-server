@@ -7,11 +7,11 @@ class PassportAuthentication < ActiveRecord::Base
 
   validates :access_token, presence: true
   validates :otp, presence: true
-  validates :otp_valid_until, presence: true
+  validates :otp_expires_at, presence: true
   validates :patient_business_identifier, presence: true
 
   def otp_valid?
-    otp_valid_until >= Time.current
+    otp_expires_at >= Time.current
   end
 
   def generate_access_token
@@ -26,22 +26,22 @@ class PassportAuthentication < ActiveRecord::Base
     new_otp = build_otp
 
     self.otp ||= new_otp[:otp]
-    self.otp_valid_until ||= new_otp[:otp_valid_until]
+    self.otp_expires_at ||= new_otp[:otp_expires_at]
 
-    { otp: otp, otp_valid_until: otp_valid_until }
+    { otp: otp, otp_expires_at: otp_expires_at }
   end
 
   def reset_otp
     new_otp = build_otp
 
     self.otp = new_otp[:otp]
-    self.otp_valid_until = new_otp[:otp_valid_until]
+    self.otp_expires_at = new_otp[:otp_expires_at]
 
-    { otp: otp, otp_valid_until: otp_valid_until }
+    { otp: otp, otp_expires_at: otp_expires_at }
   end
 
   def expire_otp
-    self.otp_valid_until = Time.at(0)
+    self.otp_expires_at = Time.at(0)
   end
 
   def validate_otp(otp)
@@ -64,8 +64,8 @@ class PassportAuthentication < ActiveRecord::Base
       SecureRandom.random_number.to_s[2..7]
     end
 
-    new_otp_valid_until = Time.current + ENV['USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES'].to_i.minutes
+    new_otp_expires_at = Time.current + ENV['USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES'].to_i.minutes
 
-    { otp: new_otp, otp_valid_until: new_otp_valid_until }
+    { otp: new_otp, otp_expires_at: new_otp_expires_at }
   end
 end

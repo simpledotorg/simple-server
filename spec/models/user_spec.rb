@@ -48,7 +48,7 @@ RSpec.describe User, type: :model do
 
       it 'assigns an otp and access token to the phone number authentication' do
         expect(phone_number_authentication.otp).to be_present
-        expect(phone_number_authentication.otp_valid_until).to be_present
+        expect(phone_number_authentication.otp_expires_at).to be_present
         expect(phone_number_authentication.access_token).to be_present
       end
 

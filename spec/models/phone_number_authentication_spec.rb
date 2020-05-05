@@ -34,11 +34,11 @@ RSpec.describe PhoneNumberAuthentication, type: :model do
   end
 
   describe 'invalidate_otp' do
-    subject(:authentication) { described_class.new(otp: '123456', otp_valid_until: Time.now) }
+    subject(:authentication) { described_class.new(otp: '123456', otp_expires_at: Time.now) }
 
     it 'clears the otp fields' do
       authentication.invalidate_otp
-      expect(authentication.otp_valid_until.to_i).to eq(0)
+      expect(authentication.otp_expires_at.to_i).to eq(0)
     end
   end
 end
