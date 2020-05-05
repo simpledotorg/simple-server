@@ -45,6 +45,7 @@ class SeedUsersDataJob
       diagnosis: {
         size_fn: -> { 1 },
         build_fn: -> (args) {
+          return if args[:patient].medical_history
           build_medical_history_payload_current(FactoryBot.build(:medical_history,
                                                                  [:hypertension_yes, :diabetes_yes].sample,
                                                                  patient: args[:patient],
@@ -195,9 +196,9 @@ class SeedUsersDataJob
     create_resources(registered_patients, :registered_patient, patient_trait_args)
 
     diagnosis_trait_args = patient_traits[:diagnosis]
-    diagnosis_data = user.registered_patients.flat_map do |patient|
-      generate(diagnosis_trait_args.merge(patient: patient))
-    end
+    diagnosis_data = user.registered_patients
+                       .flat_map { |patient| generate(diagnosis_trait_args.merge(patient: patient)) }
+                       .compact
     create_resources(diagnosis_data, :diagnosis, diagnosis_trait_args)
 
     #
