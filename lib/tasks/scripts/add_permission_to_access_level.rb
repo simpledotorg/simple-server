@@ -24,7 +24,7 @@ class AddPermissionToAccessLevel
 
     users.map do |user|
       permission_resources(user).map do |resource|
-        Rails.logger.info log_string(permission, user, resource)
+        Rails.logger.info log_message(permission: permission, user: user, resource: resource)
         UserPermission.find_or_create_by!(user: user,
                                           permission_slug: permission[:slug],
                                           resource_type: resource[:resource_type],
@@ -83,8 +83,8 @@ class AddPermissionToAccessLevel
     access_level && access_level[:default_permissions].include?(permission_name)
   end
 
-  def log_string(permission, user, resource)
-    return "Creating a global '#{permission[:slug]}' permission for User: #{user.full_name} (#{user.id}) " if
+  def log_message(permission:, user:, resource:)
+    return "Creating a global '#{permission[:slug]}' permission for User: #{user.full_name} (#{user.id})" if
       resource[:resource_type].nil?
 
     "Creating a '#{permission[:slug]}' permission for User: #{user.full_name} (#{user.id}), "\

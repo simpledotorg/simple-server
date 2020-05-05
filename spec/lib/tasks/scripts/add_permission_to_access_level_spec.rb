@@ -27,6 +27,7 @@ RSpec.describe AddPermissionToAccessLevel do
 
     before do
       create(:user_permission, user: supervisor_1, permission_slug: :manage_facilities, resource_type: 'FacilityGroup', resource_id: facility_group_2.id)
+      allow(Rails.logger).to receive(:info).and_return nil
     end
 
     context 'users have permissions' do
@@ -38,6 +39,14 @@ RSpec.describe AddPermissionToAccessLevel do
     context "users don't have permissions" do
       it 'creates multiple permissions for users who have permissions at multiple resources' do
         UserPermission.where(user: supervisor_1, permission_slug: 'view_cohort_reports').each(&:destroy!)
+
+        expect(Rails.logger).to receive(:info)
+          .with("Creating a 'view_cohort_reports' permission for User: #{supervisor_1.full_name} (#{supervisor_1.id}),"\
+                " with Resource type: 'FacilityGroup' and Resource id: #{facility_group_1.id}")
+
+        expect(Rails.logger).to receive(:info)
+          .with("Creating a 'view_cohort_reports' permission for User: #{supervisor_1.full_name} (#{supervisor_1.id}),"\
+                " with Resource type: 'FacilityGroup' and Resource id: #{facility_group_2.id}")
 
         described_class.new(:view_cohort_reports, :supervisor).create
 
@@ -91,6 +100,11 @@ RSpec.describe AddPermissionToAccessLevel do
                                                                               manage_admins
                                                                               view_my_facilities] }])
 
+          expect(Rails.logger).to receive(:info).with("Creating a global 'view_my_facilities' permission for User: "\
+                                                      "#{supervisor_1.full_name} (#{supervisor_1.id})")
+          expect(Rails.logger).to receive(:info).with("Creating a global 'view_my_facilities' permission for User: "\
+                                                      "#{supervisor_2.full_name} (#{supervisor_2.id})")
+
           described_class.new(:view_my_facilities, :supervisor).create
 
           expect(UserPermission.exists?(user: supervisor_1,
@@ -119,6 +133,15 @@ RSpec.describe AddPermissionToAccessLevel do
                         .update(resource_id: organization.id,
                                 resource_type: 'Organization')
 
+          expect(Rails.logger).to receive(:info)
+            .with("Creating a 'view_cohort_reports' permission for User: #{supervisor_1.full_name} (#{supervisor_1.id}),"\
+                  " with Resource type: 'FacilityGroup' and Resource id: #{facility_group_1.id}")
+
+          expect(Rails.logger).to receive(:info)
+            .with("Creating a 'view_cohort_reports' permission for User: #{supervisor_2.full_name} (#{supervisor_2.id}),"\
+                  " with Resource type: 'FacilityGroup' and Resource id: #{facility_group_2.id}")
+
+
           described_class.new(:view_cohort_reports, :supervisor).create
 
           expect(UserPermission.exists?(user: supervisor_1,
@@ -140,6 +163,10 @@ RSpec.describe AddPermissionToAccessLevel do
         end
 
         it "creates a permission of resource_type 'Organization' when the user has other permissions of that type" do
+          expect(Rails.logger).to receive(:info)
+            .with("Creating a 'view_cohort_reports' permission for User: #{organization_owner.full_name} "\
+          "(#{organization_owner.id}), with Resource type: 'Organization' and Resource id: #{organization.id}")
+
           described_class.new(:view_cohort_reports, :organization_owner).create
 
           expect(UserPermission.exists?(user: organization_owner,
@@ -150,6 +177,8 @@ RSpec.describe AddPermissionToAccessLevel do
         end
 
         it 'creates a permission of resource_type `nil` (global) when the user has other permissions of that type' do
+          expect(Rails.logger).to receive(:info).with("Creating a global 'view_cohort_reports' permission for User: "\
+                                                      "#{owner.full_name} (#{owner.id})")
           described_class.new(:view_cohort_reports, :owner).create
 
           expect(UserPermission.exists?(user: owner,
