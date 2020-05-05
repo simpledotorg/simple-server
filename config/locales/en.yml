@@ -97,7 +97,7 @@ en:
         ### User Authentication
 
         A Simple client can make authenticated requests to the Simple API on behalf of a medical professional with the
-        following credentials:
+        following three required credentials:
         - API Access Token
         - User ID
         - Facility ID
@@ -111,7 +111,8 @@ en:
         This will validate the user's password, and trigger an OTP to be sent to the user's phone number.
         3. Submit the user's id, their password, and the OTP (received after the previous step) to the
         [`POST v3/login` endpoint](#tag/User-Login/paths/~1login/post). If the submitted otp and password are valid,
-        this will return an access token that can be used to authenticate the user.
+        this will return an access token that can be used to authenticate the user. The access token will remain valid
+        until the user signs into another device.
 
         On successful authentication, the client will receive a payload containing an API access token and some user
         information.
@@ -129,13 +130,16 @@ en:
 
         In order to obtain these credentials, a Simple client can authenticate a patient with the following steps. The
         client will need the patient's BP Passport UUID to perform the authentication.
-        1. Submit the patient's BP Passport UUID to the [`POST /v4/patients/activate` endpoint](#tag/Patient/paths/~1patient~1activate/post)
+        1. Submit the patient's BP Passport UUID to the [`POST /v4/patients/activate` endpoint](#tag/Patient/paths/~1patient~1activate/post).
+           This will trigger an OTP message to be sent to the patient's registered phone number.
         2. Submit the patient's BP Passport UUID and OTP (received after the previous step) to the [`POST /v4/patients/login` endpoint](#tag/Patient/paths/~1patient~1login/post)
 
         On successful authentication, the client will receive a payload containing an API access token and a patient ID.
         Both of these data points need to be attached to subsequent requests as request headers as shown below.
         - `Authorization: Bearer <access token>`
         - `X-Patient-Id: <patient ID>`
+
+        The API access token will remain valid until the patient signs into another device.
 
         The comprehensive list of authentication mechanisms used is provided below. It lists the specific details of
         using access tokens and other request headers to authenticate with the API.
