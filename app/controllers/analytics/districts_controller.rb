@@ -14,6 +14,7 @@ class Analytics::DistrictsController < AnalyticsController
     respond_to do |format|
       format.html
       format.csv do
+        set_facility_keys
         send_data render_to_string('show.csv.erb'), filename: download_filename
       end
     end
@@ -80,6 +81,12 @@ class Analytics::DistrictsController < AnalyticsController
                                                    prev_periods: prev_periods,
                                                    include_current_period: @show_current_period)
       end
+  end
+
+  def set_facility_keys
+    facilities = @organization_district.facilities.order(:name).pluck(:id, :name).to_h
+
+    @facility_keys = { total: "Total" }.merge(facilities).with_indifferent_access
   end
 
   def analytics_cache_key
