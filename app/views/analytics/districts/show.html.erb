@@ -23,9 +23,15 @@
   <h4>Downloads</h4>
 
   <p>
-    <%= link_to(period: params[:period], format: :csv) do %>
-    <i class="far fa-file-excel mr-2"></i>
-    Cohort report
+    <%= link_to(period: :quarter, format: :csv) do %>
+      <i class="far fa-file-excel mr-2"></i>
+      Quarterly cohort report
+    <% end %>
+  </p>
+  <p>
+    <%= link_to(period: :month, format: :csv) do %>
+      <i class="far fa-file-excel mr-2"></i>
+      Monthly cohort report
     <% end %>
   </p>
 

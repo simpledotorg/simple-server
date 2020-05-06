@@ -17,6 +17,7 @@ Dashboard UI
     padding: 4px 8px;
     font-size: 110%;
     position: relative;
+    white-space: nowrap;
 }
 
 .split-bars .bar-none { background: $grey-light; color: $grey-dark; border-radius: 3px; }

@@ -27,6 +27,6 @@ every 3.hours, roles: [:cron] do
 end
 
 every :month, at: local('02:00 am'), roles: [:seed_data] do
-  rake 'purge:users_data'
-  rake 'generate:fake_data'
+  rake 'db:purge_users_data'
+  rake 'db:seed_users_data'
 end
