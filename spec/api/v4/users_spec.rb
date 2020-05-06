@@ -77,7 +77,7 @@ describe 'Users v4 API', swagger_doc: 'v4/swagger.json' do
 
     get 'Fetch user information' do
       tags 'User'
-      security [basic: []]
+      security [access_token: [], user_id: [], facility_id: []]
       let(:facility) { create(:facility) }
       let(:user) { create(:user, registration_facility: facility) }
       let(:HTTP_X_USER_ID) { user.id }

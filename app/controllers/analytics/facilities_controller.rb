@@ -88,6 +88,9 @@ class Analytics::FacilitiesController < AnalyticsController
   end
 
   def download_filename
-    "facility-cohort-report_#{@facility.name}_#{Time.current.to_s(:number)}.csv"
+    period = @period == :quarter ? "quarterly" : "monthly"
+    facility = @facility.name
+    time = Time.current.to_s(:number)
+    "facility-#{period}-cohort-report_#{facility}_#{time}.csv"
   end
 end
