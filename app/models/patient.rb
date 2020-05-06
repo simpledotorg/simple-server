@@ -70,7 +70,7 @@ class Patient < ApplicationRecord
 
   def self.follow_ups_with(model_name, period, time_column: 'recorded_at', last: nil)
     table_name = model_name.table_name
-    time_column_with_table_name = "#{model_name_sym}.#{time_column}"
+    time_column_with_table_name = "#{table_name}.#{time_column}"
 
     joins(table_name)
       .where("patients.recorded_at < #{model_name.date_to_period_sql(time_column_with_table_name, period)}")
