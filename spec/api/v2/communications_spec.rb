@@ -4,7 +4,7 @@ describe 'Communication V2 API', swagger_doc: 'v2/swagger.json' do
   path '/communications/sync' do
     post 'Syncs communication data from device to server.' do
       tags 'Communications'
-      security [basic: []]
+      security [access_token: [], user_id: [], facility_id: []]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
       parameter name: :communications, in: :body, schema: Api::V2::Schema.communication_sync_from_user_request
@@ -38,7 +38,7 @@ describe 'Communication V2 API', swagger_doc: 'v2/swagger.json' do
 
     get 'Syncs communication data from server to device.' do
       tags 'Communications'
-      security [basic: []]
+      security [access_token: [], user_id: [], facility_id: []]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
       Api::V2::Schema.sync_to_user_request.each do |param|
