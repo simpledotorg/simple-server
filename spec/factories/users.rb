@@ -54,7 +54,7 @@ FactoryBot.define do
   factory :admin, class: User do
     transient do
       email { Faker::Internet.email(name: full_name) }
-      password { Faker::Internet.password(min_length: 6) }
+      password { Faker::Internet.password(min_length: 12) }
       facility_group { build(:facility_group) }
     end
 
