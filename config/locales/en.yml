@@ -36,6 +36,10 @@ en:
   time:
     formats:
       default: "%d-%^b-%Y %I:%M %p"
+  errors:
+    messages:
+      password:
+        password_strength: "is too weak. Please avoid common words and reptitive / sequential characters."
   name: "Name"
   phone_number: "Phone Number"
   registration_approval_email:
