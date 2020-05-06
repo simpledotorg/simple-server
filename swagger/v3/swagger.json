@@ -1806,11 +1806,15 @@
           "properties": {
             "enable_diabetes_management": {
               "type": "boolean"
+            },
+            "enable_teleconsultation": {
+              "type": "boolean"
             }
           }
         },
         "required": [
-          "enable_diabetes_management"
+          "enable_diabetes_management",
+          "enable_teleconsultation"
         ]
       },
       "required": [

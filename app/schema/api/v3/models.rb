@@ -189,9 +189,11 @@ class Api::V3::Models
           config: {
             type: :object,
             properties: {
-              enable_diabetes_management: { type: :boolean } }
+              enable_diabetes_management: { type: :boolean },
+              enable_teleconsultation: { type: :boolean }
+            }
           },
-          required: %w[enable_diabetes_management]
+          required: %w[enable_diabetes_management enable_teleconsultation]
         },
         required: %w[id name district state country facility_group_id protocol_id]
       }

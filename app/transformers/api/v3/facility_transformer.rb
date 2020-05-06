@@ -2,9 +2,13 @@ class Api::V3::FacilityTransformer
   class << self
     def to_response(facility)
       facility.as_json
-        .except('enable_diabetes_management', 'monthly_estimated_opd_load')
-        .merge(config: { enable_diabetes_management: facility.enable_diabetes_management },
-               protocol_id: facility.protocol.try(:id))
+              .except('enable_diabetes_management',
+                      'monthly_estimated_opd_load',
+                      'enable_teleconsultation',
+                      'teleconsultation_phone_number')
+              .merge(config: { enable_diabetes_management: facility.enable_diabetes_management,
+                               enable_teleconsultation: facility.enable_teleconsultation },
+                     protocol_id: facility.protocol.try(:id))
     end
   end
 end
