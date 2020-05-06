@@ -95,6 +95,9 @@ class Analytics::DistrictsController < AnalyticsController
   end
 
   def download_filename
-    "district-cohort-report_#{@organization_district.district_name}_#{Time.current.to_s(:number)}.csv"
+    period = @period == :quarter ? "quarterly" : "monthly"
+    district = @organization_district.district_name
+    time = Time.current.to_s(:number)
+    "district-#{period}-cohort-report_#{district}_#{time}.csv"
   end
 end

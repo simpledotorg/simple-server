@@ -1,19 +1,20 @@
 <%= [
-  "Report generated at:",
+  'Report generated at:',
   Time.current
 ].to_csv -%>
-<%= ["#{@facility.name} Cohort Report"].to_csv -%>
+<% period = @period == :quarter ? 'Quarterly' : 'Monthly' %>
+<%= ["#{@facility.name} #{period} Cohort Report"].to_csv -%>
 <%= [
-  "Cohort period",
-  "Follow up period",
-  "Patients registered",
-  "Patients followed up",
-  "Patients controlled",
-  "Patients uncontrolled",
-  "Patients defaulted",
-  "Control rate",
-  "Uncontrolled rate",
-  "Default rate"
+  'Cohort period',
+  'Follow up period',
+  'Patients in cohort',
+  'Patients followed up',
+  'Patients controlled',
+  'Patients uncontrolled',
+  "Patients didn't attend",
+  'Control rate',
+  'Uncontrolled rate',
+  'Default rate'
 ].to_csv -%>
 <% @cohort_analytics.each_with_index do |(report_dates, analytics), index| %>
   <%
