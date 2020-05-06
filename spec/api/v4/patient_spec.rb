@@ -54,7 +54,7 @@ describe 'Patient v4 API', swagger_doc: 'v4/swagger.json' do
   path '/patient' do
     get 'Fetch patient information' do
       tags 'Patient'
-      security [basic: []]
+      security [access_token: [], patient_id: []]
       parameter name: 'HTTP_X_PATIENT_ID', in: :header, type: :uuid
 
       response '200', 'Patient information is returned' do

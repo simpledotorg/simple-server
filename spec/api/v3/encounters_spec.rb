@@ -4,7 +4,7 @@ describe 'Encounters v3 API', swagger_doc: 'v3/swagger.json' do
   path '/encounters/sync' do
     post 'Syncs encounters data from device to server.' do
       tags 'Encounters'
-      security [basic: []]
+      security [access_token: [], user_id: [], facility_id: []]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
       parameter name: :encounters, in: :body, schema: Api::V3::Schema.encounter_sync_from_user_request
@@ -38,7 +38,7 @@ describe 'Encounters v3 API', swagger_doc: 'v3/swagger.json' do
 
     get 'Syncs encounters data from server to device.' do
       tags 'Encounters'
-      security [basic: []]
+      security [access_token: [], user_id: [], facility_id: []]
       parameter name: 'HTTP_X_USER_ID', in: :header, type: :uuid
       parameter name: 'HTTP_X_FACILITY_ID', in: :header, type: :uuid
       Api::V3::Schema.sync_to_user_request.each do |param|
