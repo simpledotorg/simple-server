@@ -47,7 +47,7 @@ class UserAnalyticsPresenter
   attr_reader :current_facility
 
   def diabetes_enabled?
-    FeatureToggle.enabled?('ENABLE_DIABETES_SUPPORT_IN_PROGRESS_TAB') && current_facility.diabetes_enabled?
+    FeatureToggle.enabled?('DIABETES_SUPPORT_IN_PROGRESS_TAB') && current_facility.diabetes_enabled?
   end
 
   def daily_stats
