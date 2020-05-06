@@ -178,8 +178,9 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 
   def notify
-    if !ENV['SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK']
+    unless ENV['SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK']
       puts 'SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK missing. Skipping notification.'
+      return
     end
 
     require 'net/http'
@@ -219,7 +220,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 
   def changelog
-    @changelog ||= execute_safely("git log #{last_deployed_sha}..HEAD --oneline --decorate=no")
+    @changelog ||= execute_safely("git log #{commit_range} --oneline --decorate=no")
                      .strip
                      .split("\n")
                      .map { |line| line.match(/\s(.*)/)&.captures&.last }
@@ -230,7 +231,11 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 
   def changes_in_file(file)
-    execute_safely("git diff #{last_deployed_sha}..HEAD #{file}")
+    execute_safely("git diff #{commit_range} #{file}")
+  end
+
+  def commit_range
+    "#{last_deployed_sha}..#{@tag_to_deploy || 'HEAD'}"
   end
 
   def find_existing_release_tags(date)
