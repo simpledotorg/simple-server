@@ -83,7 +83,30 @@ class CleanBiswanathDupes
   end
 
   def port_exact_match_activity
-    "Pretending to port exact-match activity..."
+    duplicate_patients = Patient.where(id: exact_matches.keys)
+
+    no_action_required = duplicate_patients.select do |patient|
+      no_activity?(patient) && no_modifications?(patient)
+    end
+    no_action_required.each(&:discard_data)
+    puts "- #{no_action_required.count} patients have no activity or modifications"
+
+    actionable_patients = duplicate_patients - no_action_required
+
+    puts "- #{actionable_patients.count} patients have new activity or modifications"
+
+    actionable_patients.each do |patient|
+      real_patient_id = exact_matches[patient.id]
+
+      patient.blood_pressures.each { |record| record.update!(patient_id: real_patient_id) }
+      patient.blood_sugars.each { |record| record.update!(patient_id: real_patient_id) }
+      patient.encounters.each { |record| record.update!(patient_id: real_patient_id) }
+      patient.appointments.each { |record| record.update!(patient_id: real_patient_id) }
+      patient.prescription_drugs.each { |record| record.update!(patient_id: real_patient_id) }
+      patient.medical_history&.update!(patient_id: real_patient_id)
+
+      patient.reload.discard_data
+    end
   end
 
   def port_unmatched_patients
@@ -97,9 +120,9 @@ class CleanBiswanathDupes
   end
 
   def print_summary
-    puts "Matched patients: #{exact_matches.count}"
-    puts "Unmatched patients: #{ambiguous_matches.count}"
-    puts "No matches patients: #{no_matches.count}"
+    puts "Patients with an exact match: #{exact_matches.count}"
+    puts "Patients with ambiguous matches: #{ambiguous_matches.count}"
+    puts "Patients with no match: #{no_matches.count}"
   end
 
   def duplicate_patients
@@ -128,5 +151,26 @@ class CleanBiswanathDupes
     match_by_name_age_address(patient).select do |match|
       patient.latest_phone_number && (patient.latest_phone_number == match.latest_phone_number)
     end
+  end
+
+  def no_activity?(patient)
+    [
+      *patient.blood_pressures,
+      *patient.blood_sugars,
+      *patient.encounters,
+      *patient.observations,
+      *patient.appointments,
+      *patient.prescription_drugs,
+      patient.medical_history
+    ].compact.blank?
+  end
+
+  def no_modifications?(patient)
+    [
+      patient.updated_at,
+      patient.address.updated_at,
+      *patient.phone_numbers.map(&:updated_at),
+      *patient.business_identifiers.map(&:updated_at)
+    ].max < Date.new(2020, 03, 12)
   end
 end
