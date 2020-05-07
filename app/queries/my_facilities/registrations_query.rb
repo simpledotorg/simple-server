@@ -17,6 +17,7 @@ class MyFacilities::RegistrationsQuery
     @periods = period_list(period, last_n)
   end
 
+  # htn-only
   def registrations
     @registrations ||=
       PatientRegistrationsPerDayPerFacility
@@ -24,6 +25,7 @@ class MyFacilities::RegistrationsQuery
         .where("(year, #{@period}) IN (#{periods_as_sql_list})")
   end
 
+  # htn-only
   def total_registrations
     @total_registrations ||=
       Patient

@@ -51,12 +51,14 @@ class MyFacilities::BloodPressureControlQuery
     end.to_h
   end
 
+  # htn-only
   def overall_patients
     @overall_patients ||= Patient
                           .where('recorded_at < ?', Time.current.beginning_of_day - REGISTRATION_BUFFER)
                           .where(registration_facility: facilities)
   end
 
+  # htn-only
   def overall_controlled_bps
     @overall_controlled_bps ||=
       LatestBloodPressuresPerPatient
@@ -69,6 +71,7 @@ class MyFacilities::BloodPressureControlQuery
 
   attr_reader :facilities
 
+  # htn-only
   def quarterly_registrations
     patients = Patient.where(registration_facility: facilities)
 
@@ -78,6 +81,7 @@ class MyFacilities::BloodPressureControlQuery
                      local_quarter_end(@registration_year, @registration_quarter))
   end
 
+  # htn-only
   def quarterly_bps
     visited_in_quarter = next_year_and_quarter(@registration_year, @registration_quarter)
     @quarterly_bps ||=
@@ -94,6 +98,7 @@ class MyFacilities::BloodPressureControlQuery
     @quarterly_uncontrolled_bps ||= quarterly_bps.hypertensive
   end
 
+  # htn-only
   def monthly_registrations
     patients = Patient.where(registration_facility: facilities)
 
@@ -103,6 +108,7 @@ class MyFacilities::BloodPressureControlQuery
                      local_month_end(@registration_year, @registration_month))
   end
 
+  # htn-only
   def monthly_bps
     visited_in_months = [local_month_start(@registration_year, @registration_month) + 1.month,
                          local_month_start(@registration_year, @registration_month) + 2.months]
@@ -117,6 +123,7 @@ class MyFacilities::BloodPressureControlQuery
              visited_in_months.second.year.to_s, visited_in_months.second.month.to_s)
   end
 
+  # htn-only
   def monthly_bps_cte
     # Using the table as a CTE(nested query) is a workaround
     # for ActiveRecord's inability to compose a `COUNT` with a `DISTINCT ON`.
