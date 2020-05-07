@@ -1,7 +1,10 @@
-hi-IN:
+hi_IN:
   date:
-    month_names: [~, 'जनवरी','फ़रवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितंबर','अक्टूबर','नवंबर','दिसंबर']
-    abbr_month_names: [~, 'जनवरी','फ़रवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितंबर','अक्टूबर','नवंबर','दिसंबर']
+    month_names: [~, 'जनवरी', 'फ़रवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर']
+    abbr_month_names: [~, 'जनवरी', 'फ़रवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर']
+  today_str: 'आज'
+  registration: 'नया पंजीकरण'
+  reset_password: 'PIN रीसेट करें'
   login:
     error_messages:
       unknown_user: "हम इस यूज़र को नहीं पहचानते। कृपया जांचें और फिर प्रयास करें।"
@@ -10,24 +13,37 @@ hi-IN:
       invalid_password: 'आपका पासवर्ड मेल नहीं खा रहा। फिर प्रयास करना चाहेंगे?'
   sms:
     request_otp: '<#> %{otp} आपका सिम्पल कोड है\n%{app_signature}'
+    appointment_reminders:
+      missed_visit_sms_reminder: '%{facility_name} के हमारे कर्मचारी आपके और आपके दिल के स्वास्थ्य के बारे में सोच रहे हैं। यदि आपके कोई फॉलो-अप प्रश्न या चिंताएँ हैं, तो हमारी स्वास्थ्य टीम हमेशा आपके लिए यहाँ उपलब्ध है।'
+    patient_request_otp: '%{otp} आपका बीपी पासपोर्ट सत्यापन कोड है'
   analytics:
     followup_patients: "%{facility_name} में कितने मरीज़ों का बी पी रिकॉर्ड हुई?"
     patients_enrolled: "%{facility_name} में कितने मरीज़ रजिस्टर हुए?"
     all_time_patients: "सभी समय: %{count} मरीज़"
     updated_at: "Updated at %{time}"
   user_analytics:
-    hypertension:
-    diabetes:
-    genders:
-    all_time:
-    follow_up_patients:
-    registered_patients:
-    hypertension_control:
-    hypertension_control_desc:
-    notes:
-    footer_note_1:
-    footer_note_2:
-    thank_you:
-    thank_you_note:
-    updated:
-    ratio_string:
+    hypertension: 'हाइपरटेंशन'
+    diabetes: 'मधुमेह'
+    genders: ['सभी', पुरूष, 'महिला', 'ट्रांसजेंडर']
+    all_time: 'हमेशा'
+    follow_up_patients: 'हाइपरटेंशन के रोगियों को फ़ॉलो-अप करें'
+    registered_patients: 'रजिस्टर किए गए रोगी'
+    hypertension_control: 'हाइपरटेंशन का नियंत्रण'
+    hypertension_control_desc: 'माह की पिछली फ़ॉलो-अप विज़िट में हाइपरटेंशन के कितने रोगियों का बीपी 140/90 से कम था?'
+    notes: 'नोट'
+    footer_note_1: '%{facility_name} की सभी गतिविधियों का डेटा। अगर डेटा पुराना दिखाई दे रहा है, तो होम स्क्रीन पर "लंबित को सिंक्रनाइज़ करें" लिंक पर टैप करें।'
+    footer_note_2: 'फ़ॉलो अप रोगियों को हर माह केवल एक विज़िट के लिए गिना जाता है। अगर कोई रोगी, एक माह में एक से ज़्यादा बार फ़ॉलो अप करता है, तो उसे केवल एक बार ही गिना जाएगा।'
+    thank_you: 'आपका धन्यवाद'
+    thank_you_note: 'हाइपरटेंशन के रोगियों का उपचार करने में आपकी कड़ी मेहनत के लिए धन्यवाद। आपका काम, हृदयाघात और स्ट्रोक से लोगों का जीवन बचाता है।'
+    updated: 'अपडेट किया गया: %{time}'
+    ratio_string: '%{value_2} में से %{value_1}'
+  dashboard:
+    graphics:
+      graphics_title_html: "<b>%{previous_quarter_string}</b> के दौरान पंजीकृत किये गए %{patients_in_previous_quarter} मरीजों का <b>%{current_quarter_string}</b> में क्या हुआ?"
+      report_name: "हाइपरटेंशन रिपोर्ट"
+      patients_controlled_in_quarter_html: "विज़िट करने वाले बीपी के रोगी &lt;"
+      patients_uncontrolled_in_quarter_html: "विज़िट करने वाले बीपी के रोगी &ge;"
+      patients_defaulted_in_quarter_html: "मरीज अपेक्षित फॉलो-अप विजिट के लिए उपस्थित नहीं हुए"
+      new_patients_registered: "नए पंजीकरण"
+      patients_called_for_followup: "रोगियों से फ़ॉलो-अप लें"
+      patients_called_for_missed_followup: "बुलाए गए मरीज"
