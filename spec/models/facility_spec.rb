@@ -191,4 +191,20 @@ RSpec.describe Facility, type: :model do
   describe 'Behavior' do
     it_behaves_like 'a record that is deletable'
   end
+
+  describe '#cohort_analytics' do
+    it 'should only consider registered hypertensive patients' do
+      facility =
+        create(:facility)
+
+      _dm_patients =
+        create_list(:patient, 10, :diabetes, registration_facility: facility)
+      htn_patients =
+        create_list(:patient, 10, :hypertension, registration_facility: facility)
+
+      expect(CohortAnalyticsQuery).to receive(:new).with(match_array(htn_patients)).and_call_original
+
+      facility.cohort_analytics(:month, 3)
+    end
+  end
 end

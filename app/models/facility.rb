@@ -61,7 +61,7 @@ class Facility < ApplicationRecord
   friendly_id :name, use: :slugged
 
   def cohort_analytics(period, prev_periods)
-    query = CohortAnalyticsQuery.new(self.registered_patients)
+    query = CohortAnalyticsQuery.new(self.registered_hypertension_patients)
     query.patient_counts_by_period(period, prev_periods)
   end
 
