@@ -506,7 +506,7 @@ DEPENDENCIES
   devise_invitable (~> 1.7.0)
   discard (~> 1.0)
   dotenv-rails
-  factory_bot_rails
+  factory_bot_rails (~> 4.8)
   faker
   fakeredis
   friendly_id (~> 5.2.4)
