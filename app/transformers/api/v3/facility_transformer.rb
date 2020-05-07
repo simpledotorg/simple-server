@@ -5,7 +5,8 @@ class Api::V3::FacilityTransformer
               .except('enable_diabetes_management',
                       'monthly_estimated_opd_load',
                       'enable_teleconsultation',
-                      'teleconsultation_phone_number')
+                      'teleconsultation_phone_number',
+                      'teleconsultation_isd_code')
               .merge(config: { enable_diabetes_management: facility.enable_diabetes_management,
                                enable_teleconsultation: facility.enable_teleconsultation },
                      protocol_id: facility.protocol.try(:id))

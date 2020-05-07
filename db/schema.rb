@@ -218,6 +218,7 @@ ActiveRecord::Schema.define(version: 20200505104339) do
     t.integer "monthly_estimated_opd_load"
     t.boolean "enable_teleconsultation", default: false, null: false
     t.string "teleconsultation_phone_number"
+    t.string "teleconsultation_isd_code"
     t.index ["deleted_at"], name: "index_facilities_on_deleted_at"
     t.index ["enable_diabetes_management"], name: "index_facilities_on_enable_diabetes_management"
     t.index ["facility_group_id"], name: "index_facilities_on_facility_group_id"

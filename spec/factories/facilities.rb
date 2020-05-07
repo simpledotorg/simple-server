@@ -15,6 +15,7 @@ FactoryBot.define do
     enable_diabetes_management { true }
     enable_teleconsultation { true }
     teleconsultation_phone_number { Faker::PhoneNumber.phone_number }
+    teleconsultation_isd_code { Faker::PhoneNumber.country_code }
     monthly_estimated_opd_load { 300 }
 
     sequence :slug do |n|

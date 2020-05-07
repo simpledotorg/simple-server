@@ -91,7 +91,8 @@ class Admin::FacilitiesController < AdminController
       :monthly_estimated_opd_load,
       :zone,
       :enable_teleconsultation,
-      :teleconsultation_phone_number
+      :teleconsultation_phone_number,
+      :teleconsultation_isd_code
     )
   end
 
