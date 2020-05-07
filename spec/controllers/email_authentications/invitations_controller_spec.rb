@@ -5,6 +5,7 @@ RSpec.describe EmailAuthentications::InvitationsController, type: :controller do
     @request.env['devise.mapping'] = Devise.mappings[:email_authentication]
     admin = create(:admin, :owner)
     sign_in(admin.email_authentication)
+    ActionMailer::Base.deliveries.clear
   end
 
   describe '#new' do
