@@ -66,9 +66,9 @@ RSpec.describe Api::V4::FacilityTeleconsultationsController, type: :controller d
 
       context 'ISD code is nil' do
         it 'returns a null phone number' do
-          user.registration_facility.update!(enable_teleconsultation: true,
-                                             teleconsultation_isd_code: nil,
-                                             teleconsultation_phone_number: phone_number)
+          user.registration_facility.update_columns(enable_teleconsultation: true,
+                                                    teleconsultation_isd_code: nil,
+                                                    teleconsultation_phone_number: phone_number)
 
           get :show, params: { facility_id: user.registration_facility.id }
           expect(response).to have_http_status(200)
@@ -78,9 +78,9 @@ RSpec.describe Api::V4::FacilityTeleconsultationsController, type: :controller d
 
       context 'phone number is nil' do
         it 'returns a null phone number' do
-          user.registration_facility.update!(enable_teleconsultation: true,
-                                             teleconsultation_isd_code: isd_code,
-                                             teleconsultation_phone_number: nil)
+          user.registration_facility.update_columns(enable_teleconsultation: true,
+                                                    teleconsultation_isd_code: isd_code,
+                                                    teleconsultation_phone_number: nil)
 
           get :show, params: { facility_id: user.registration_facility.id }
           expect(response).to have_http_status(200)
