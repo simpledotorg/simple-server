@@ -98,14 +98,79 @@ class CleanBiswanathDupes
     actionable_patients.each do |patient|
       real_patient_id = exact_matches[patient.id]
 
-      patient.blood_pressures.each { |record| record.update!(patient_id: real_patient_id) }
-      patient.blood_sugars.each { |record| record.update!(patient_id: real_patient_id) }
-      patient.encounters.each { |record| record.update!(patient_id: real_patient_id) }
+      blood_pressures = patient.blood_pressures.each { |record| record.update!(patient_id: real_patient_id) }
+      blood_sugars = patient.blood_sugars.each { |record| record.update!(patient_id: real_patient_id) }
+      port_bp_encounters(real_patient_id, blood_pressures)
+      port_bs_encounters(real_patient_id, blood_sugars)
       patient.appointments.each { |record| record.update!(patient_id: real_patient_id) }
       patient.prescription_drugs.each { |record| record.update!(patient_id: real_patient_id) }
       patient.medical_history&.update!(patient_id: real_patient_id)
 
       patient.reload.discard_data
+    end
+  end
+
+  def port_bp_encounters(real_patient_id, blood_pressures)
+    blood_pressures.each do |blood_pressure|
+      current_timezone_offset = blood_pressure.encounter.timezone_offset
+      encountered_on = Encounter.generate_encountered_on(blood_pressure.recorded_at, current_timezone_offset)
+
+      encounter_merge_params = {
+        id: Encounter.generate_id(blood_pressure.facility_id, real_patient_id, encountered_on),
+        patient_id: real_patient_id,
+        device_created_at: blood_pressure.device_created_at,
+        device_updated_at: blood_pressure.device_updated_at,
+        encountered_on: encountered_on,
+        timezone_offset: current_timezone_offset,
+        facility_id: blood_pressure.facility_id,
+        observations: {
+          blood_pressures:
+            [blood_pressure.slice(:id,
+                                  :systolic,
+                                  :diastolic,
+                                  :patient_id,
+                                  :facility_id,
+                                  :user_id,
+                                  :created_at,
+                                  :updated_at,
+                                  :recorded_at,
+                                  :deleted_at)]
+        }
+      }.with_indifferent_access
+
+      MergeEncounterService.new(encounter_merge_params, import_user, current_timezone_offset)
+    end
+  end
+
+  def port_bs_encounters(real_patient_id, blood_sugars)
+    blood_sugars.each do |blood_sugar|
+      current_timezone_offset = blood_sugar.encounter.timezone_offset
+      encountered_on = Encounter.generate_encountered_on(blood_sugar.recorded_at, current_timezone_offset)
+
+      encounter_merge_params = {
+        id: Encounter.generate_id(blood_sugar.facility_id, real_patient_id, encountered_on),
+        patient_id: real_patient_id,
+        device_created_at: blood_sugar.device_created_at,
+        device_updated_at: blood_sugar.device_updated_at,
+        encountered_on: encountered_on,
+        timezone_offset: current_timezone_offset,
+        facility_id: blood_sugar.facility_id,
+        observations: {
+          blood_sugars:
+            [blood_sugar.slice(:id,
+                               :blood_sugar_type,
+                               :blood_sugar_value,
+                               :patient_id,
+                               :facility_id,
+                               :user_id,
+                               :created_at,
+                               :updated_at,
+                               :recorded_at,
+                               :deleted_at)]
+        }
+      }.with_indifferent_access
+
+      MergeEncounterService.new(encounter_merge_params, import_user, current_timezone_offset)
     end
   end
 
