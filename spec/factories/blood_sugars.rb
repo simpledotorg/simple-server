@@ -6,17 +6,10 @@ FactoryBot.define do
     device_created_at { Time.current }
     device_updated_at { Time.current }
     recorded_at { device_created_at }
-    facility
-    user
-    patient
 
-    trait :with_hba1c do
-      blood_sugar_type { BloodSugar::blood_sugar_types.keys.sample }
-      blood_sugar_value do
-        threshold = BloodSugar::THRESHOLDS[:high][blood_sugar_type]
-        rand(threshold * 0.9..threshold * 1.1).round(2)
-      end
-    end
+    association :facility, strategy: :create
+    association :user, strategy: :create
+    association :patient, strategy: :create
 
     trait(:with_encounter) do
       after :build do |blood_sugar|
@@ -25,6 +18,14 @@ FactoryBot.define do
                patient: blood_sugar.patient,
                observable: blood_sugar,
                facility: blood_sugar.facility)
+      end
+    end
+
+    trait :with_hba1c do
+      blood_sugar_type { BloodSugar::blood_sugar_types.keys.sample }
+      blood_sugar_value do
+        threshold = BloodSugar::THRESHOLDS[:high][blood_sugar_type]
+        rand(threshold * 0.9..threshold * 1.1).round(2)
       end
     end
   end
