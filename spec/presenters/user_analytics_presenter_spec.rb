@@ -256,20 +256,23 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
         end
       end
 
-      it 'has the formatted_today_string (in the correct locale)' do
-        current_locale = I18n.locale
-
-        I18n.available_locales.each do |locale|
-          I18n.locale = locale
-
-          data = described_class.new(current_facility).statistics
-
-          expect(data.dig(:metadata, :today_string))
-            .to eq(I18n.t(:today_str))
+      context 'formatted_today_string' do
+        before do
+          @current_locale = I18n.locale
         end
 
-        # reset locale
-        I18n.locale = current_locale
+        after do
+          I18n.locale = @current_locale
+        end
+
+        I18n.available_locales.each do |locale|
+          it "is in #{locale}" do
+            I18n.locale = locale
+            data = described_class.new(current_facility).statistics
+
+            expect(data.dig(:metadata, :today_string)).to eq(I18n.t(:today_str, locale: locale))
+          end
+        end
       end
 
       it 'has the formatted_next_date' do
