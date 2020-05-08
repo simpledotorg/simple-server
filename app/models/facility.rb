@@ -47,6 +47,8 @@ class Facility < ApplicationRecord
   validates :state, presence: true
   validates :country, presence: true
   validates :pin, numericality: true, allow_blank: true
+  validates :teleconsultation_isd_code, presence: true, if: :teleconsultation_enabled?
+  validates :teleconsultation_phone_number, presence: true, if: :teleconsultation_enabled?
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, to: :facility_group, allow_nil: true
@@ -128,6 +130,10 @@ class Facility < ApplicationRecord
 
   def diabetes_enabled?
     enable_diabetes_management.present?
+  end
+
+  def teleconsultation_enabled?
+    enable_teleconsultation.present?
   end
 
   CSV::Converters[:strip_whitespace] = ->(value) { value.strip rescue value }

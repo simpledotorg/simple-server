@@ -22,6 +22,7 @@
 //= require components
 //= require tablesort
 //= require tablesort/dist/sorts/tablesort.number.min
+//= require hide-teleconsultation-fields.js
 //= require_tree .
 
 $(function () {
