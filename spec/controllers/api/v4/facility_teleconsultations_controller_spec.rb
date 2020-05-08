@@ -19,7 +19,7 @@ RSpec.describe Api::V4::FacilityTeleconsultationsController, type: :controller d
                                              teleconsultation_isd_code: isd_code,
                                              teleconsultation_phone_number: phone_number)
 
-          get :phone_number, params: { facility_id: user.registration_facility.id }
+          get :show, params: { facility_id: user.registration_facility.id }
           expect(response).to have_http_status(200)
           expect(JSON.parse(response.body)['teleconsultation_phone_number']).to eq(isd_code + ' ' + phone_number)
         end
@@ -32,7 +32,7 @@ RSpec.describe Api::V4::FacilityTeleconsultationsController, type: :controller d
                            teleconsultation_isd_code: isd_code,
                            teleconsultation_phone_number: phone_number)
 
-          get :phone_number, params: { facility_id: facility.id }
+          get :show, params: { facility_id: facility.id }
           expect(response).to have_http_status(200)
           expect(JSON.parse(response.body)['teleconsultation_phone_number']).to eq(isd_code + ' ' + phone_number)
         end
@@ -45,7 +45,7 @@ RSpec.describe Api::V4::FacilityTeleconsultationsController, type: :controller d
                            teleconsultation_isd_code: isd_code,
                            teleconsultation_phone_number: phone_number)
 
-          get :phone_number, params: { facility_id: facility.id }
+          get :show, params: { facility_id: facility.id }
           expect(response).to have_http_status(401)
         end
       end
@@ -58,7 +58,7 @@ RSpec.describe Api::V4::FacilityTeleconsultationsController, type: :controller d
                                              teleconsultation_isd_code: isd_code,
                                              teleconsultation_phone_number: phone_number)
 
-          get :phone_number, params: { facility_id: user.registration_facility.id }
+          get :show, params: { facility_id: user.registration_facility.id }
           expect(response).to have_http_status(200)
           expect(JSON.parse(response.body)['teleconsultation_phone_number']).to be_nil
         end
@@ -70,7 +70,7 @@ RSpec.describe Api::V4::FacilityTeleconsultationsController, type: :controller d
                                              teleconsultation_isd_code: nil,
                                              teleconsultation_phone_number: phone_number)
 
-          get :phone_number, params: { facility_id: user.registration_facility.id }
+          get :show, params: { facility_id: user.registration_facility.id }
           expect(response).to have_http_status(200)
           expect(JSON.parse(response.body)['teleconsultation_phone_number']).to be_nil
         end
@@ -82,7 +82,7 @@ RSpec.describe Api::V4::FacilityTeleconsultationsController, type: :controller d
                                              teleconsultation_isd_code: isd_code,
                                              teleconsultation_phone_number: nil)
 
-          get :phone_number, params: { facility_id: user.registration_facility.id }
+          get :show, params: { facility_id: user.registration_facility.id }
           expect(response).to have_http_status(200)
           expect(JSON.parse(response.body)['teleconsultation_phone_number']).to be_nil
         end
