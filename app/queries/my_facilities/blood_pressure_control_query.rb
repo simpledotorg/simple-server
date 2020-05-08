@@ -51,20 +51,19 @@ class MyFacilities::BloodPressureControlQuery
     end.to_h
   end
 
-  # htn-only
   def overall_patients
     @overall_patients ||= Patient
-                          .where('recorded_at < ?', Time.current.beginning_of_day - REGISTRATION_BUFFER)
-                          .where(registration_facility: facilities)
+                            .hypertension_only
+                            .where('recorded_at < ?', Time.current.beginning_of_day - REGISTRATION_BUFFER)
+                            .where(registration_facility: facilities)
   end
 
-  # htn-only
   def overall_controlled_bps
     @overall_controlled_bps ||=
       LatestBloodPressuresPerPatient
-      .where(patient: overall_patients)
-      .where('bp_recorded_at > ?', Time.current.beginning_of_day - 90.days)
-      .under_control
+        .where(patient: overall_patients)
+        .where('bp_recorded_at > ?', Time.current.beginning_of_day - 90.days)
+        .under_control
   end
 
   private
