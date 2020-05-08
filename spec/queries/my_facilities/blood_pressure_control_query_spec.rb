@@ -242,35 +242,19 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       end
 
       let!(:patient_with_recent_bp) do
-        create(:patient,
-               :hypertension,
-               registration_facility: facility,
-               registration_user: user,
-               recorded_at: 4.months.ago)
+        create(:patient, registration_facility: facility, registration_user: user, recorded_at: 4.months.ago)
       end
 
       let!(:patient_without_recent_bp) do
-        create(:patient,
-               :hypertension,
-               registration_facility: facility,
-               registration_user: user,
-               recorded_at: 4.months.ago)
+        create(:patient, registration_facility: facility, registration_user: user, recorded_at: 4.months.ago)
       end
 
       let!(:patients_with_uncontrolled_bp) do
-        create(:patient,
-               :hypertension,
-               registration_facility: facility,
-               registration_user: user,
-               recorded_at: 4.months.ago)
+        create(:patient, registration_facility: facility, registration_user: user, recorded_at: 4.months.ago)
       end
 
       let!(:patients_with_missed_visit) do
-        create(:patient,
-               :hypertension,
-               registration_facility: facility,
-               registration_user: user,
-               recorded_at: 4.months.ago)
+        create(:patient, registration_facility: facility, registration_user: user, recorded_at: 4.months.ago)
       end
 
       let!(:bp_for_recent_patient) do
@@ -310,11 +294,7 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       end
 
       let!(:old_patient) do
-        create(:patient,
-               :hypertension,
-               registration_facility: facility,
-               registration_user: user,
-               recorded_at: 6.months.ago)
+        create(:patient, registration_facility: facility, registration_user: user, recorded_at: 6.months.ago)
       end
 
       let!(:old_bp) do

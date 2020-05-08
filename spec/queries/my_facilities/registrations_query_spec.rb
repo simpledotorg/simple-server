@@ -8,7 +8,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
       let!(:included_timestamps) { [1.year.ago, 2.years.ago, 1.day.ago, 1.months.ago] }
       let!(:patients) do
         included_timestamps.map do |recorded_at|
-          create(:patient, :hypertension, recorded_at: recorded_at)
+          create(:patient, recorded_at: recorded_at)
         end
       end
       let!(:blood_pressures) do
