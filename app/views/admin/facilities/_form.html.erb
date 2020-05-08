@@ -31,7 +31,7 @@
         <%= form.check_box :enable_teleconsultation, id: :facility_enable_teleconsultation %>
         <div class="row" id="teleconsultation_fields" style=<%= "#{'display:none' unless @facility[:enable_teleconsultation]}" %> >
           <div class="col col-md-4">
-            <%= form.text_field :teleconsultation_isd_code, id: :facility_teleconsultation_isd_code, label: 'ISD Code',
+            <%= form.text_field :teleconsultation_isd_code, id: :facility_teleconsultation_isd_code, label: 'Country Code',
                                 value: @facility[:teleconsultation_isd_code] || Rails.application.config.country['sms_country_code'] %>
           </div>
           <div class="col-md-8">
