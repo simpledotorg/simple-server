@@ -70,9 +70,10 @@ class MyFacilities::BloodPressureControlQuery
 
   attr_reader :facilities
 
-  # htn-only
   def quarterly_registrations
-    patients = Patient.where(registration_facility: facilities)
+    patients = Patient
+                 .hypertension_only
+                 .where(registration_facility: facilities)
 
     @quarterly_registrations ||=
       patients.where('recorded_at >= ? AND recorded_at <= ?',
@@ -80,13 +81,12 @@ class MyFacilities::BloodPressureControlQuery
                      local_quarter_end(@registration_year, @registration_quarter))
   end
 
-  # htn-only
   def quarterly_bps
     visited_in_quarter = next_year_and_quarter(@registration_year, @registration_quarter)
     @quarterly_bps ||=
       LatestBloodPressuresPerPatientPerQuarter
-      .where(patient: quarterly_registrations)
-      .where(year: visited_in_quarter.first, quarter: visited_in_quarter.second)
+        .where(patient: quarterly_registrations)
+        .where(year: visited_in_quarter.first, quarter: visited_in_quarter.second)
   end
 
   def quarterly_controlled_bps
@@ -97,9 +97,10 @@ class MyFacilities::BloodPressureControlQuery
     @quarterly_uncontrolled_bps ||= quarterly_bps.hypertensive
   end
 
-  # htn-only
   def monthly_registrations
-    patients = Patient.where(registration_facility: facilities)
+    patients = Patient
+                 .hypertension_only
+                 .where(registration_facility: facilities)
 
     @monthly_registrations ||=
       patients.where('recorded_at >= ? AND recorded_at <= ?',
@@ -107,29 +108,27 @@ class MyFacilities::BloodPressureControlQuery
                      local_month_end(@registration_year, @registration_month))
   end
 
-  # htn-only
   def monthly_bps
     visited_in_months = [local_month_start(@registration_year, @registration_month) + 1.month,
                          local_month_start(@registration_year, @registration_month) + 2.months]
 
     @monthly_bps ||=
       LatestBloodPressuresPerPatientPerMonth
-      .select('distinct on (patient_id) *')
-      .order('patient_id, bp_recorded_at DESC, bp_id')
-      .where(patient: monthly_registrations)
-      .where('(year = ? AND month = ?) OR (year = ? AND month = ?)',
-             visited_in_months.first.year.to_s, visited_in_months.first.month.to_s,
-             visited_in_months.second.year.to_s, visited_in_months.second.month.to_s)
+        .select('distinct on (patient_id) *')
+        .order('patient_id, bp_recorded_at DESC, bp_id')
+        .where(patient: monthly_registrations)
+        .where('(year = ? AND month = ?) OR (year = ? AND month = ?)',
+               visited_in_months.first.year.to_s, visited_in_months.first.month.to_s,
+               visited_in_months.second.year.to_s, visited_in_months.second.month.to_s)
   end
 
-  # htn-only
   def monthly_bps_cte
     # Using the table as a CTE(nested query) is a workaround
     # for ActiveRecord's inability to compose a `COUNT` with a `DISTINCT ON`.
     @monthly_bps_cte ||=
       LatestBloodPressuresPerPatientPerMonth
-      .from(monthly_bps,
-            'latest_blood_pressures_per_patient_per_months')
+        .from(monthly_bps,
+              'latest_blood_pressures_per_patient_per_months')
   end
 
   def monthly_controlled_bps
