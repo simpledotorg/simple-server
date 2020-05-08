@@ -58,7 +58,7 @@ gem 'wkhtmltoimage-binary'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
-  gem 'capistrano', '~> 3.10'
+  gem 'capistrano', '3.11.0'
   gem 'capistrano-db-tasks', require: false
   gem 'capistrano-multiconfig', require: true
   gem 'capistrano-passenger'
