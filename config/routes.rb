@@ -147,7 +147,9 @@ Rails.application.routes.draw do
         get 'me', to: 'users#me'
       end
 
-      resource :facility_teleconsultations, only: [:show]
+      scope :facility_teleconsultations do
+        get '/:facility_id', to: 'facility_teleconsultations#show'
+      end
     end
   end
 
