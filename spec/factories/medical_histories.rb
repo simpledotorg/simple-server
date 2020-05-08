@@ -36,11 +36,11 @@ FactoryBot.define do
     end
 
     trait :diabetes_no do
-      diabetes { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unkown] }
+      diabetes { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unknown] }
     end
 
     trait :diabetes_unknown do
-      diabetes { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unkown] }
+      diabetes { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unknown] }
     end
 
     trait :prior_risk_history do
