@@ -21,10 +21,10 @@ RSpec.describe AppointmentNotificationService do
       allow(@sms_response_double).to receive(:status).and_return('queued')
     end
 
-    it 'should spawn sms reminder jobs' do
+    it 'should spawn a sms reminder job for each appointment' do
       expect do
         AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
-      end.to change(AppointmentNotification::Worker.jobs, :size).by(1)
+      end.to change(AppointmentNotification::Worker.jobs, :size).by(4)
     end
 
     it 'should ignore appointments which are recently overdue (< 3 days)' do
@@ -58,7 +58,7 @@ RSpec.describe AppointmentNotificationService do
 
       expect do
         AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
-      end.to change(AppointmentNotification::Worker.jobs, :size).by(1)
+      end.to change(AppointmentNotification::Worker.jobs, :size).by(4)
     end
 
     it 'should only send reminders to patients who have granted consent' do
