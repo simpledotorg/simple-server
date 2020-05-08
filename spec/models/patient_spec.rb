@@ -84,19 +84,19 @@ describe Patient, type: :model do
   context 'Scopes' do
     describe '.diabetes_only' do
       it 'only includes patients with diagnosis of diabetes' do
-        create_list(:patient, 2, :diabetes)
-        create(:patient, :hypertension)
+        _htn_patients = create_list(:patient, 2, :diabetes)
+        dm_patients = create(:patient, :hypertension)
 
-        expect(Patient.diabetes_only.count).to eq(2)
+        expect(Patient.with_diabetes.count).to match_array(dm_patients)
       end
     end
 
     describe '.hypertension_only' do
       it 'only  includes patients with diagnosis of hypertension' do
-        create_list(:patient, 2, :hypertension)
-        create(:patient, :diabetes)
+        htn_patients = create_list(:patient, 2, :hypertension)
+        _dm_patients = create(:patient, :diabetes)
 
-        expect(Patient.hypertension_only.count).to eq(2)
+        expect(Patient.with_hypertension.count).to match_array(htn_patients)
       end
     end
 
@@ -167,14 +167,14 @@ describe Patient, type: :model do
         context 'by day' do
           it 'groups follow ups by day' do
             expect(Patient
-                     .follow_ups(:day)
+                     .follow_ups_by_period(:day)
                      .count).to eq({ first_follow_up_date => 2,
                                      second_follow_up_date => 1 })
           end
 
           it 'can be grouped by facility and day' do
             expect(Patient
-                     .follow_ups(:day)
+                     .follow_ups_by_period(:day)
                      .group('encounters.facility_id')
                      .count).to eq({ [first_follow_up_date, current_facility.id] => 2,
                                      [first_follow_up_date, follow_up_facility.id] => 1,
@@ -186,13 +186,13 @@ describe Patient, type: :model do
         context 'by month' do
           it 'groups follow ups by month' do
             expect(Patient
-                     .follow_ups(:month)
+                     .follow_ups_by_period(:month)
                      .count).to eq({ first_follow_up_date => 2 })
           end
 
           it 'can be grouped by facility and day' do
             expect(Patient
-                     .follow_ups(:month)
+                     .follow_ups_by_period(:month)
                      .group('encounters.facility_id')
                      .count).to eq({ [first_follow_up_date, current_facility.id] => 2,
                                      [first_follow_up_date, follow_up_facility.id] => 1 })
@@ -204,13 +204,13 @@ describe Patient, type: :model do
         context 'by day' do
           it 'groups follow ups by day' do
             expect(Patient
-                     .diabetes_follow_ups(:day)
+                     .diabetes_follow_ups_by_period(:day)
                      .count).to eq({ first_follow_up_date => 1 })
           end
 
           it 'can be grouped by facility and day' do
             expect(Patient
-                     .diabetes_follow_ups(:day)
+                     .diabetes_follow_ups_by_period(:day)
                      .group('blood_sugars.facility_id')
                      .count).to eq({ [first_follow_up_date, current_facility.id] => 1 })
           end
@@ -219,13 +219,13 @@ describe Patient, type: :model do
         context 'by month' do
           it 'groups follow ups by month' do
             expect(Patient
-                     .diabetes_follow_ups(:month)
+                     .diabetes_follow_ups_by_period(:month)
                      .count).to eq({ first_follow_up_date => 1 })
           end
 
           it 'can be grouped by facility and month' do
             expect(Patient
-                     .diabetes_follow_ups(:month)
+                     .diabetes_follow_ups_by_period(:month)
                      .group('blood_sugars.facility_id')
                      .count).to eq({ [first_follow_up_date, current_facility.id] => 1 })
           end
@@ -236,14 +236,14 @@ describe Patient, type: :model do
         context 'by day' do
           it 'groups follow ups by day' do
             expect(Patient
-                     .hypertension_follow_ups(:day)
+                     .hypertension_follow_ups_by_period(:day)
                      .count).to eq({ first_follow_up_date => 1,
                                      second_follow_up_date => 1 })
           end
 
           it 'can be grouped by facility and day' do
             expect(Patient
-                     .hypertension_follow_ups(:day)
+                     .hypertension_follow_ups_by_period(:day)
                      .group('blood_pressures.facility_id')
                      .count).to eq({ [first_follow_up_date, current_facility.id] => 1,
                                      [first_follow_up_date, follow_up_facility.id] => 1,
@@ -255,13 +255,13 @@ describe Patient, type: :model do
         context 'by month' do
           it 'groups follow ups by month' do
             expect(Patient
-                     .hypertension_follow_ups(:month)
+                     .hypertension_follow_ups_by_period(:month)
                      .count).to eq({ first_follow_up_date => 1 })
           end
 
           it 'can be grouped by facility and month' do
             expect(Patient
-                     .hypertension_follow_ups(:month)
+                     .hypertension_follow_ups_by_period(:month)
                      .group('blood_pressures.facility_id')
                      .count).to eq({ [first_follow_up_date, current_facility.id] => 1,
                                      [first_follow_up_date, follow_up_facility.id] => 1 })

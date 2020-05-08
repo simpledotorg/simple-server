@@ -1,4 +1,4 @@
-class UserAnalyticsPresenter
+class UserAnalyticsPresenter < Struct.new(:current_facility)
   include ApplicationHelper
   include DayHelper
   include PeriodHelper
@@ -8,14 +8,6 @@ class UserAnalyticsPresenter
   TROPHY_MILESTONES = [10, 25, 50, 100, 250, 500, 1_000, 2_000, 3_000, 4_000, 5_000]
   TROPHY_MILESTONE_INCR = 10_000
   EXPIRE_STATISTICS_CACHE_IN = 15.minutes
-
-  attr_reader :daily_period_list, :monthly_period_list
-
-  def initialize(current_facility)
-    @current_facility = current_facility
-    @daily_period_list = period_list_as_dates(:day, DAYS_AGO)
-    @monthly_period_list = period_list_as_dates(:month, MONTHS_AGO)
-  end
 
   def statistics
     @statistics ||=
@@ -42,9 +34,15 @@ class UserAnalyticsPresenter
     "#{percentage.round(0)}%"
   end
 
-  private
+  def daily_period_list
+    period_list_as_dates(:day, DAYS_AGO)
+  end
 
-  attr_reader :current_facility
+  def monthly_period_list
+    period_list_as_dates(:month, MONTHS_AGO)
+  end
+
+  private
 
   def diabetes_enabled?
     FeatureToggle.enabled?('DIABETES_SUPPORT_IN_PROGRESS_TAB') && current_facility.diabetes_enabled?
@@ -57,7 +55,7 @@ class UserAnalyticsPresenter
   def daily_htn_stats
     follow_ups =
       current_facility
-        .hypertension_follow_ups(:day, last: DAYS_AGO)
+        .hypertension_follow_ups_by_period(:day, last: DAYS_AGO)
         .count
 
     registrations =
@@ -78,7 +76,7 @@ class UserAnalyticsPresenter
   def daily_total_stats
     follow_ups =
       current_facility
-        .patient_follow_ups(:day, last: DAYS_AGO)
+        .patient_follow_ups_by_period(:day, last: DAYS_AGO)
         .count
 
     registrations =
@@ -157,7 +155,7 @@ class UserAnalyticsPresenter
   def monthly_total_stats
     follow_ups =
       current_facility
-        .patient_follow_ups(:month, last: MONTHS_AGO)
+        .patient_follow_ups_by_period(:month, last: MONTHS_AGO)
         .count
 
     registrations =
@@ -179,13 +177,13 @@ class UserAnalyticsPresenter
   def monthly_htn_stats
     follow_ups =
       current_facility
-        .hypertension_follow_ups(:month, last: MONTHS_AGO)
+        .hypertension_follow_ups_by_period(:month, last: MONTHS_AGO)
         .group(:gender)
         .count
 
     controlled_visits =
       current_facility
-        .hypertension_follow_ups(:month, last: MONTHS_AGO)
+        .hypertension_follow_ups_by_period(:month, last: MONTHS_AGO)
         .merge(BloodPressure.under_control)
         .count
 
@@ -217,7 +215,7 @@ class UserAnalyticsPresenter
   def monthly_dm_stats
     follow_ups =
       current_facility
-        .diabetes_follow_ups(:month, last: MONTHS_AGO)
+        .diabetes_follow_ups_by_period(:month, last: MONTHS_AGO)
         .group(:gender)
         .count
 
@@ -248,7 +246,7 @@ class UserAnalyticsPresenter
   def all_time_total_stats
     follow_ups =
       current_facility
-        .patient_follow_ups(:month)
+        .patient_follow_ups_by_period(:month)
         .count
         .values
         .sum
@@ -271,7 +269,7 @@ class UserAnalyticsPresenter
   def all_time_htn_stats
     follow_ups =
       sum_by_gender(current_facility
-                      .hypertension_follow_ups(:month)
+                      .hypertension_follow_ups_by_period(:month)
                       .group(:gender)
                       .count)
 
@@ -294,7 +292,7 @@ class UserAnalyticsPresenter
   def all_time_dm_stats
     follow_ups =
       sum_by_gender(current_facility
-                      .diabetes_follow_ups(:month)
+                      .diabetes_follow_ups_by_period(:month)
                       .group(:gender)
                       .count)
 

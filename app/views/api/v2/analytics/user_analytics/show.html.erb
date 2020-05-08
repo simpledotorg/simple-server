@@ -82,13 +82,15 @@
     <% registrations_table_name = 'registrations' %>
 
     <%= render partial: 'gender_filter',
-               locals: { statistics: @statistics, data_table_name: registrations_table_name } %>
+               locals: { data_table_name: registrations_table_name,
+                         is_diabetes_enabled: @statistics.dig(:metadata, :is_diabetes_enabled) } %>
 
     <%= render partial: 'monthly_gender_table',
                locals: { resource: :registrations,
-                         user_analytics: @user_analytics,
-                         statistics: @statistics,
-                         data_table_name: registrations_table_name } %>
+                         statistics: statistics,
+                         data_table_name: registrations_table_name,
+                         monthly_period_list: @user_analytics.monthly_period_list,
+                         is_diabetes_enabled: @statistics.dig(:metadata, :is_diabetes_enabled) } %>
   </div>
 
   <!-- monthly follow-up patients view -->
@@ -98,13 +100,15 @@
     <% follow_ups_table_name = 'follow_ups' %>
 
     <%= render partial: 'gender_filter',
-               locals: { statistics: @statistics, data_table_name: follow_ups_table_name } %>
+               locals: { data_table_name: follow_ups_table_name,
+                         is_diabetes_enabled: @statistics.dig(:metadata, :is_diabetes_enabled) } %>
 
     <%= render partial: 'monthly_gender_table',
                locals: { resource: :follow_ups,
-                         user_analytics: @user_analytics,
-                         statistics: @statistics,
-                         data_table_name: follow_ups_table_name } %>
+                         statistics: statistics,
+                         data_table_name: follow_ups_table_name,
+                         monthly_period_list: @user_analytics.monthly_period_list,
+                         is_diabetes_enabled: @statistics.dig(:metadata, :is_diabetes_enabled) } %>
   </div>
 
   <!-- monthly hypertension control view -->

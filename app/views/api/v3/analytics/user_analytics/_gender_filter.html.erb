@@ -1,20 +1,19 @@
 <form>
   <select class="card-dropdown <%= data_table_name %>" onchange='filterDataByGender("<%= data_table_name %>")'>
-    <% if statistics.dig(:metadata, :is_diabetes_enabled) %>
+    <% if is_diabetes_enabled %>
       <option value="all">
         All
       </option>
   <% end %>
 
-    <% hypertension_option_text =
-           statistics.dig(:metadata, :is_diabetes_enabled) ? 'Hypertension: ' : '' %>
+    <% hypertension_option_text = is_diabetes_enabled ? 'Hypertension: ' : '' %>
 
     <option value="hypertension:all"><%= "#{hypertension_option_text}All" %></option>
     <option value="hypertension:female"><%= "#{hypertension_option_text}Female" %></option>
     <option value="hypertension:male"><%= "#{hypertension_option_text}Male" %></option>
     <option value="hypertension:transgender"><%= "#{hypertension_option_text}Transgender" %></option>
 
-    <% if statistics.dig(:metadata, :is_diabetes_enabled) %>
+    <% if is_diabetes_enabled %>
       <option value="diabetes:all">Diabetes: All</option>
       <option value="diabetes:female">Diabetes: Female</option>
       <option value="diabetes:male">Diabetes: Male</option>

@@ -13,13 +13,9 @@ RSpec.describe Facility, type: :model do
 
     context 'patients' do
       it 'has distinct patients' do
-        facility =
-          create(:facility)
-
-        dm_patient =
-          create(:patient, :diabetes)
-        htn_patient =
-          create(:patient, :hypertension)
+        facility = create(:facility)
+        dm_patient = create(:patient, :diabetes)
+        htn_patient = create(:patient, :hypertension)
 
         create(:encounter, :with_observables, observable:
           create(:blood_sugar, facility: facility, patient: dm_patient))
@@ -36,7 +32,7 @@ RSpec.describe Facility, type: :model do
     end
 
     it { should belong_to(:facility_group).optional }
-    it { should delegate_method(:follow_ups).to(:patients).with_prefix(:patient) }
+    it { should delegate_method(:follow_ups_by_period).to(:patients).with_prefix(:patient) }
   end
 
   describe 'Delegates' do
@@ -46,15 +42,9 @@ RSpec.describe Facility, type: :model do
         first_follow_up_date = registration_date + 1.month
         second_follow_up_date = first_follow_up_date + 1.month
 
-        facility =
-          create(:facility)
-
-        dm_patient =
-          create(:patient, :diabetes,
-                 recorded_at: registration_date)
-        htn_patient =
-          create(:patient, :hypertension,
-                 recorded_at: registration_date)
+        facility = create(:facility)
+        dm_patient = create(:patient, :diabetes, recorded_at: registration_date)
+        htn_patient = create(:patient, :hypertension, recorded_at: registration_date)
 
         create(:encounter, :with_observables, observable:
           create(:blood_sugar,
@@ -93,15 +83,9 @@ RSpec.describe Facility, type: :model do
         first_follow_up_date = registration_date + 1.month
         second_follow_up_date = first_follow_up_date + 1.month
 
-        facility =
-          create(:facility)
-
-        dm_patient =
-          create(:patient, :diabetes,
-                 recorded_at: registration_date)
-        htn_patient =
-          create(:patient, :hypertension,
-                 recorded_at: registration_date)
+        facility = create(:facility)
+        dm_patient = create(:patient, :diabetes, recorded_at: registration_date)
+        htn_patient = create(:patient, :hypertension, recorded_at: registration_date)
 
         create(:encounter, :with_observables, observable:
           create(:blood_sugar,
@@ -139,15 +123,9 @@ RSpec.describe Facility, type: :model do
         first_follow_up_date = registration_date + 1.month
         second_follow_up_date = first_follow_up_date + 1.month
 
-        facility =
-          create(:facility)
-
-        dm_patient =
-          create(:patient, :diabetes,
-                 recorded_at: registration_date)
-        htn_patient =
-          create(:patient, :hypertension,
-                 recorded_at: registration_date)
+        facility = create(:facility)
+        dm_patient = create(:patient, :diabetes, recorded_at: registration_date)
+        htn_patient = create(:patient, :hypertension, recorded_at: registration_date)
 
         create(:encounter, :with_observables, observable:
           create(:blood_sugar,

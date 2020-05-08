@@ -35,37 +35,20 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
       context 'html' do
         render_views
 
-
         describe 'facility has data' do
-          it 'gets html when requested' do
+          it 'renders various important sections in the ui' do
             get :show, format: :html
 
+            # responds with html
             expect(response.status).to eq(200)
             expect(response.content_type).to eq('text/html')
-          end
 
-          it 'has the sync nudge card' do
-            get :show, format: :html
-
+            # UI cards
             expect(response.body).to match(/Tap "Sync" on the home screen for new data/)
-          end
-
-          it 'has the registrations card' do
-            get :show, format: :html
-
             expect(response.body).to match(/Registered/)
-          end
-
-          it 'has the follow-ups card' do
-            get :show, format: :html
-
             expect(response.body).to match(/Follow-up patients/)
-          end
-
-          it 'has the hypertension control card' do
-            get :show, format: :html
-
             expect(response.body).to match(/Hypertension control/)
+            expect(response.body).to match(/Notes/)
           end
 
           context 'achievements' do
@@ -104,12 +87,6 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
               get :show, format: :html
               expect(response.body).to_not match(/Achievements/)
             end
-          end
-
-          it 'has the footer' do
-            get :show, format: :html
-
-            expect(response.body).to match(/Notes/)
           end
         end
       end
