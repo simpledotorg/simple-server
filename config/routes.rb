@@ -146,6 +146,10 @@ Rails.application.routes.draw do
         post 'activate', to: 'users#activate'
         get 'me', to: 'users#me'
       end
+
+      scope :facility_teleconsultations do
+        get '/:facility_id', to: 'facility_teleconsultations#phone_number'
+      end
     end
   end
 
