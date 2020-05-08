@@ -2,6 +2,9 @@ te-IN:
   date:
     month_names: [~, 'జన', 'ఫిబ్ర', 'మార్చి', 'ఏప్రిల్', 'మే', 'జూన్', 'జూలై', 'ఆగ', 'సెప్టెం', 'అక్టో', 'నవం', 'డిసెం']
     abbr_month_names: [~, 'జన', 'ఫిబ్ర', 'మార్చి', 'ఏప్రిల్', 'మే', 'జూన్', 'జూలై', 'ఆగ', 'సెప్టెం', 'అక్టో', 'నవం', 'డిసెం']
+  today_str: 'ఈరోజు'
+  registration: 'కొత్త నమోదు'
+  reset_password: 'PIN రీసెట్ చేయి'
   login:
     error_messages:
       unknown_user: "ఆ వినియోగదారు మాకు తెలియదు. తనిఖీ చేసిన తర్వాత మళ్లీ ప్రయత్నించండి."
@@ -10,24 +13,37 @@ te-IN:
       invalid_password: 'మీ పాస్‌వర్డ్ సరిపోలలేదు. మళ్లీ ప్రయత్నించాలా?'
   sms:
     request_otp: 'మీ సింపుల్ ధృవీకరణ కోడ్ <#> %{otp}\n%{app_signature}'
+    appointment_reminders:
+      missed_visit_sms_reminder: '%{facility_name} లోని మా స్టాఫ్ మీ మరియు మీ హృదయం యొక్క ఆరోగ్యం గురించి ఆలోచిస్తారు. ఒకవేళ మీకు ఏవైనా తదుపరి ప్రశ్నలు లేదా సమస్యలు ఉంటే మా ఆరోగ్య రక్షణ బృందం ఎల్లప్పుడూ మీకు సహాయం చేస్తుంది.'
+    patient_request_otp: 'మీ బిపి పాస్‌పోర్ట్ ధృవీకరణ కోడ్ %{otp}'
   analytics:
     followup_patients: "%{facility_name} లోఎంతమందిరోగులబిపిరికార్డ్అయింది?"
     patients_enrolled: "%{facility_name} లోఎంతమందిరోగులునమోదుచేసుకున్నారు?"
     all_time_patients: "మొత్తంసమయం: %{count} మందిరోగులు"
     updated_at: "Updated at %{time}"
   user_analytics:
-    hypertension:
-    diabetes:
-    genders:
-    all_time:
-    follow_up_patients:
-    registered_patients:
-    hypertension_control:
-    hypertension_control_desc:
-    notes:
-    footer_note_1:
-    footer_note_2:
-    thank_you:
-    thank_you_note:
-    updated:
-    ratio_string:
+    hypertension: 'అధిక రక్తపోటు'
+    diabetes: 'మధుమేహం'
+    genders: ['అందరూ', పురుషుడు, 'మహిళ', 'ట్రాన్స్‌జండర్']
+    all_time: 'మొత్తం సమయం'
+    follow_up_patients: 'అధిక రక్తపోటు రోగులను అనుసరించండి'
+    registered_patients: 'నమోదు చేయబడిన రోగులు'
+    hypertension_control: 'అధిక రక్తపోటు నియంత్రణ'
+    hypertension_control_desc: 'అధిక రక్తపోటును కలిగి ఉన్న ఎంత మంది రోగులు ఈ నెలలో వారి గత సందర్శనలో 140/90 కంటే తక్కువ బిపిని కలిగి ఉన్నారు?'
+    notes: 'గమనికలు'
+    footer_note_1: '%{facility_name} వద్ద మొత్తం కార్యచరణాల కోసం డేటా. డేటా తాజాగా లేకుంటే, హోమ్ స్క్రీన్‌లో "సమకాలీకరణ పెండింగ్‌లో ఉంది" లింక్‌ను ట్యాప్ చేయండి.'
+    footer_note_2: 'అనుసరణ రోగి ప్రతి నెల ఒక సందర్ళనకు మాత్రమే లెక్కించబడతారు. రోగు నెలలో పలు సార్లు అనుసరిస్తే, అతను లేదా ఆమె ఒకసారి మాత్రమే లెక్కించబడతారు.'
+    thank_you: 'ధన్యవాదాలు'
+    thank_you_note: 'అధిక రక్తపోటును కలిగి ఉన్న రోగులను చికిత్స చేసే మీ యొక్క హార్డ్‌వర్క్‌కు ధన్యవాదాలు. మీ యొక్క పని నిజంగా గుండెనొప్పులు, గుండెపోట్ల నుండి చాలా మంది ప్రాణాలను కాపాడుతోంది.'
+    updated: 'అప్‌డేట్ చేసినవి: %{time}'
+    ratio_string: '%{value_2} యొక్క %{value_1}'
+  dashboard:
+    graphics:
+      graphics_title_html: "<b>%{previous_quarter_string}</b> సమయంలో నమోదు చేసిన %{patients_in_previous_quarter} రోగులకు <b>%{current_quarter_string}</b>లో ఏమి జరిగింది?"
+      report_name: "రక్తపోటు నివేదిక"
+      patients_controlled_in_quarter_html: "బిపితో సందర్శించిన రోగులు &lt;"
+      patients_uncontrolled_in_quarter_html: "బిపితో సందర్శించిన రోగులు &ge;"
+      patients_defaulted_in_quarter_html: "రోగులు అంచనా వేసిన ఫాలో-అప్ సందర్శనకు రాలేదు"
+      new_patients_registered: "కొత్త నమోదులు"
+      patients_called_for_followup: "ఫాలో-అప్ చేసిన రోగులు"
+      patients_called_for_missed_followup: "కాల్ చేసిన రోగులు"
