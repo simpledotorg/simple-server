@@ -25,11 +25,11 @@ class MyFacilities::RegistrationsQuery
         .where("(year, #{@period}) IN (#{periods_as_sql_list})")
   end
 
-  # htn-only
   def total_registrations
     @total_registrations ||=
       Patient
-      .where(registration_facility: @facilities)
+        .hypertension_only
+        .where(registration_facility: @facilities)
   end
 
   private
