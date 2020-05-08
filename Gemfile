@@ -19,7 +19,7 @@ gem 'devise', '>= 4.7.1'
 gem 'devise_invitable', '~> 1.7.0'
 gem 'discard', '~> 1.0'
 gem 'dotenv-rails'
-gem 'factory_bot_rails', require: false
+gem 'factory_bot_rails', '~> 4.8', require: false
 gem 'faker', require: false
 gem 'friendly_id', '~> 5.2.4'
 gem 'groupdate'
@@ -36,7 +36,7 @@ gem 'pg', '>= 0.18', '< 2.0'
 gem 'phonelib'
 gem 'pry-rails'
 gem 'pundit'
-gem 'rails', '~> 5.1.6.2'
+gem 'rails', '5.2.4.2'
 gem 'react-rails'
 gem 'redis'
 gem 'redis-rails'
@@ -57,7 +57,7 @@ gem 'whenever', require: false
 gem 'wkhtmltoimage-binary'
 
 group :development, :test do
-  gem 'byebug', platforms: %i[mri mingw x64_mingw]
+  gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'capistrano', '~> 3.10'
   gem 'capistrano-db-tasks', require: false
   gem 'capistrano-multiconfig', require: true
