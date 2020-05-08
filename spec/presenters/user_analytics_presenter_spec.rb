@@ -266,7 +266,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
         end
 
         I18n.available_locales.each do |locale|
-          it "has the formatted_today_string in #{locale}" do
+          it "is in #{locale}" do
             I18n.locale = locale
             data = described_class.new(current_facility).statistics
 
