@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200504204839) do
+ActiveRecord::Schema.define(version: 20200505104339) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -217,6 +217,9 @@ ActiveRecord::Schema.define(version: 20200504204839) do
     t.boolean "enable_diabetes_management", default: false, null: false
     t.string "facility_size"
     t.integer "monthly_estimated_opd_load"
+    t.boolean "enable_teleconsultation", default: false, null: false
+    t.string "teleconsultation_phone_number"
+    t.string "teleconsultation_isd_code"
     t.index ["deleted_at"], name: "index_facilities_on_deleted_at"
     t.index ["enable_diabetes_management"], name: "index_facilities_on_enable_diabetes_management"
     t.index ["facility_group_id"], name: "index_facilities_on_facility_group_id"
