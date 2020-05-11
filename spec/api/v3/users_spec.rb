@@ -94,7 +94,7 @@ describe 'Users v3 API', swagger_doc: 'v3/swagger.json' do
 
     post 'Request for reset password' do
       tags 'User'
-      security [basic: []]
+      security [access_token: [], user_id: [], facility_id: []]
       parameter name: :password_digest, in: :body, schema: Api::V3::Schema.user_reset_password_request
       let(:user) { FactoryBot.create(:user, registration_facility: facility) }
       let(:HTTP_X_USER_ID) { user.id }

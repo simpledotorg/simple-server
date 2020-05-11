@@ -1,0 +1,2225 @@
+en-IND:
+  faker:
+    phone_number:
+      formats: ['##########']
+    address:
+      block:
+        - Budhana
+        - Shahpur
+        - Jansath
+      street_address:
+        - 14 Basement Raheja Complex 834, Anna Salai
+        - 215, 4th Main 3rd Ph, JP Nagar
+        - Gr Floor, Plot No 260, Mehar Bldg, Sector 28, Vashi
+        - 503, Jagruti Apts, Sainath Road, Malad (west)
+        - 3, Mathura Chaya, Navghar Road, Bhayander
+      state:
+        - Punjab
+        - Maharashtra
+        - Himachal Pradesh
+        - Karnataka
+      district:
+        - Anantapur
+        - Chittoor
+        - East Godavari
+        - Guntur
+        - Kadapa
+        - Krishna
+        - Kurnool
+        - Prakasam
+        - Sri Potti Sriramulu Nellore
+        - Srikakulam
+        - Visakhapatnam
+        - Vizianagaram
+        - West Godavari
+        - Baksa
+        - Barpeta
+        - Bishwanath
+        - Bongaigaon
+        - Cachar
+        - Charaideo
+        - Chirang
+        - Darrang
+        - Dhemaji
+        - Dhubri
+        - Dibrugarh
+        - Dima Hasao
+        - Goalpara
+        - Golaghat
+        - Hailakandi
+        - Hojai
+        - Jorhat
+        - Kamrup
+        - Karbi Anglong
+        - Karimganj
+        - Kokrajhar
+        - Lakhimpur
+        - Majuli
+        - Morigaon
+        - Nagaon
+        - Nalbari
+        - Sivasagar
+        - South Salmara
+        - Sonitpur
+        - Tinsukia
+        - Udalguri
+        - Balod
+        - Baloda Bazar
+        - Balrampur
+        - Bastar
+        - Bemetara
+        - Bijapur
+        - Bilaspur
+        - Dantewada
+        - Dhamtari
+        - Durg
+        - Gariaband
+        - Janjgir-Champa
+        - Jashpur
+        - Kabirdham
+        - Kanker
+        - Kondagaon
+        - Korba
+        - Koriya
+        - Mahasamund
+        - Mungeli
+        - Narayanpur
+        - Raigarh
+        - Raipur
+        - Rajnandgaon
+        - Sukma
+      village:
+        - Kubba
+        - Goslan
+        - Madpur
+        - Lal Kalan
+        - Amargarh Kaler
+        - Aliwal
+        - Sidhwan Bet
+        - Sherpur Kalan
+        - Galib Kalan
+        - Bhundri
+        - Akalgarh
+        - Sudhar
+        - Halwara
+        - Heran
+        - Boparai Kalan
+        - Rajoana Kalan
+        - Ikolaha
+        - Isru
+        - Kot Panaich
+        - Jarg
+        - Bija
+        - Rajewal Rohno
+        - Hathur
+        - Kaonke Kalan
+        - Chakar
+        - Shankar
+        - Siahar
+        - Kila Raipur
+        - Guram
+        - Ghawaddi
+        - Dehlon
+        - Dharaur
+        - Ramgarh Sardaran
+        - Rurka
+        - Katana Sahib
+        - Jandali
+        - Rampur
+        - Sarabha
+        - Kaila
+        - Ghungrana
+        - Chhapar
+        - Sehjo Majra
+        - Harion Khurd
+        - Jhar Sahib Urf Chuharpur
+        - Andlu
+        - Kamalpura
+        - Siloani
+        - Bassian
+        - Lamma
+        - Alamgir
+        - Sangowal
+        - Baddowal
+        - Phagla
+        - Bhaini Sahib
+        - Raian
+        - Urdhan
+        - Anaitpura
+        - Abusaid
+        - Sarangdev
+        - Kot Razada
+        - Nanoke
+        - Pandori
+        - Ramdas Rural
+        - Atari
+        - Sarai Amanat Khan
+        - Sangna
+        - Hoshiar Nagar
+        - Kasel
+        - Chatiwind
+        - Basarke Gillan
+        - Bhakna Kalan
+        - Adliwala
+        - Basarke
+        - Ghukey Wali
+        - Basarke
+        - Jagdev Kalan
+        - Kohala
+        - Padri
+        - Lopoke
+        - Barar
+        - Manawala
+        - Udho Nangal
+        - Dharmu Chak
+        - Kathu Nangal
+        - Sathiala
+        - Jalal
+        - Baba Bakala
+        - Gumtala
+        - Miran Kot Kalan
+        - Sakhowal
+        - Chaudhriwal
+        - Bhol
+        - Hajipur
+        - Madhopur
+        - Alisher
+        - Dostpur
+        - Lopa
+        - Kohar
+        - Kahnuwal
+        - Thikriwal
+        - Pandori Maiya Singh
+        - Harpura
+        - Dhandoi
+        - Bham
+        - Aluna
+        - Gandhian
+        - Gurdas Nangal
+        - Chhawla Urf Purana Shala
+        - Talibpur
+        - Abdal
+        - Ghuman
+        - Tugial
+        - Dera Baba Nanak
+        - Haripur
+        - Kathar
+        - Kandola
+        - Ghurial
+        - Khurdpur
+        - Daroli Kalan
+        - Dolike
+        - Mander
+        - Kotla Surajmal
+        - Sansarpur
+        - Malsian
+        - Hazara
+        - Kotli Than Singh
+        - Jauhal
+        - Sura
+        - Pattar Kalan
+        - Randawa Masandan
+        - Alowal
+        - Shankar
+        - Sarih
+        - Chak Kalan
+        - Boparai
+        - Bilga
+        - Mau Sahib
+        - Shahpur
+        - Haripur
+        - Samrai
+        - Raj Gomal
+        - Nakodar
+        - Himatpura
+        - Sardarpura
+        - Jandwala Hanwanta
+        - Gumjal
+        - Chugha
+        - Nonari Khokhar
+        - Lopon
+        - Billimar
+        - Balel K Hasal
+        - Moranwala
+        - Sutantar Nagar
+        - Ugoke
+        - Sande Hasham
+        - Firoz Shah
+        - Bazidpur
+        - Mirzeke
+        - Dhandi Kadim
+        - Sekhwan
+        - Katora
+        - Asarpur
+        - Kule Majra
+        - Hassanpur
+        - Kapuri
+        - Harpalpur
+        - Nanhera
+        - Nanheri
+        - Bapror
+        - Gunike
+        - Tohra
+        - Todarwal
+        - Dakonda
+        - Thuhi
+        - Duldi
+        - Narmana
+        - Paidan
+        - Banera Khurd
+        - Ramgarh
+        - Mansurpur Urf Chhitanwala
+        - Rohta
+        - Laut
+        - Kalyan
+        - Rith Kheri
+        - Shergarh
+        - Daftri Wala
+        - Baras
+        - Harana
+        - Ghuram
+        - Ugani
+        - Sargarh
+        - Mohi Khurd
+        - Andana
+        - Ubhewal
+        - Khurana
+        - Khurani
+        - Badrukha
+        - Loha Khera
+        - Ubha
+        - Shahpur Kalan
+        - Gandhua
+        - Gujjran
+        - Mehlan
+        - Isapur
+        - Sherpur
+        - Herike
+        - Mulowal
+        - Kanjhla
+        - Bararwal
+        - Alo Arkh
+        - Amargarh
+        - Chaunda
+        - Bagrian
+        - Jandali Kalan
+        - Bhudan
+        - Lehragaga
+        - Hajipur
+        - Dhamian
+        - Atalgarh
+        - Adhkara
+        - Sandhran
+        - Singri Wala
+        - Kotla Naudh Singh
+        - Dhugga
+        - Bassi Gulan Hussain
+        - Bassi Purani
+        - Harkhowal
+        - Chabewal
+        - Bassi Kalan
+        - Bajraur
+        - Bajwara
+        - Bhungarni
+        - Mandial
+        - Satnaur
+        - Kot Fatuhi
+        - Jassowal
+        - Behbalpur
+        - Moranwali
+        - Ghore Waha
+        - Jaura
+        - Moonak Kalan
+        - Talwara
+        - Alampur
+        - Bodal
+        - Kangmai
+        - Kukanet
+        - Gondpur
+        - Bhangala
+        - Jassi Bag Wali
+        - Jangi Rana
+        - Bajak
+        - Giana
+        - Bhaghi Bandar
+        - Chak Fateh Singh Wala
+        - Chak Bakhtu
+        - Nathana
+        - Bhucho Kalan
+        - Ghanda Bana
+        - Phur Rural
+        - Bhai Rupa
+        - Har Rai Pur Urf Bhokhri
+        - Kot Shamir
+        - Jandan Wala
+        - Dan Singh Wala
+        - Mehma Sarja
+        - Kangar
+        - Dialpura Bhaika
+        - Rajgarh
+        - Thaman Garh
+        - Maisar Khana
+        - Gill Kalan
+        - Jiadan
+        - Dikh
+        - Pitho
+        - Bhagta Bhaika
+        - Allowal
+        - Khadur Sahib
+        - Kalla
+        - Goindwal Sahib
+        - Bharowal
+        - Nagoke
+        - Gandiwind
+        - Verowal
+        - Bhuchar Kalan
+        - Johal Dhaiwala
+        - Dadehar Sahib
+        - Lohar
+        - Brahampura
+        - Jiobala
+        - Jhabal
+        - Panjwar
+        - Rataul
+        - Wan
+        - Sakhira
+        - Jaura
+        - Akbarpura
+        - Alipur
+        - Thatha
+        - Bathe Bhaini
+        - Nathu Chak
+        - Singhpura
+        - Sur Singh
+        - Valtoha
+        - Kot Ise Khan
+        - Khosa Kotla
+        - Ghaloti
+        - Jalalabad
+        - Takhtupura
+        - Dina
+        - Patto Hira Singh
+        - Samadh Bhai
+        - Gholia Khurd
+        - Nathewala
+        - Chuhar Chak
+        - Dhudike
+        - Daudhar East
+        - Mehron
+        - Madoke
+        - Ramuwala Nawan
+        - Ghall Kalan
+        - Daroli Bhai
+        - Bukan Wala
+        - Bara Ghar
+        - Badhni Kalan
+        - Gharuan
+        - Sohana
+        - Kumbra
+        - Chatt
+        - Rani Majra
+        - Mundhon Sangatia
+        - Dhakauli
+        - Kansal
+        - Desu Majra
+        - Daun
+        - Chaparchiri Kalan
+        - Chaparchiri Khurd
+        - Barauli
+        - Bir Chhat
+        - Lalru
+        - Hoshiarpur
+        - Teur
+        - Khizarabad
+        - Sahib Chand
+        - Kot Bhai
+        - Chhatteana
+        - Theri
+        - Mallan
+        - Sarai Naga
+        - Mangat Ker
+        - Rupana
+        - Abul Khurana
+        - Sikhwala
+        - Badal
+        - Lambi
+        - Saidpur
+        - Tibba
+        - Dalla
+        - Bharowana
+        - Mira
+        - Alamgir
+        - Karahal Kalan
+        - Nurpur Dona
+        - Bhet
+        - Khukhrain
+        - Badshahpur
+        - Shadipur
+        - Nadala
+        - Bulewal
+        - Hardaspur
+        - Chachoki
+        - Domeli
+        - Palahi
+        - Bhulla Rai
+        - Rampur Sunra
+        - Bhundar
+        - Kot Dharmu
+        - Chhapian Wali
+        - Chhachhohar
+        - Bhama Kalan
+        - Tandian
+        - Achanak
+        - Akbarpur Khudal
+        - Kulana
+        - Bahadurpur
+        - Barah
+        - Biro Ke Kalan
+        - Ali Sher Kalan
+        - Anupgarh
+        - Maghanian
+        - Samaon
+        - Khiwa Kalan
+        - Gurthari
+        - Dhalewan
+        - Phaphre Bhai Ke
+        - Bappiana
+        - Bhopal
+        - Khiala Kalan
+        - Bhaini Bagha
+        - Bhikhi
+        - Kiratpur Sahib
+        - Jind Bari
+        - Dehni
+        - Daulowal
+        - Bhagwala
+        - Bhambaur Sahib
+        - Makrauna Kalan
+        - Sabaur
+        - Chanoli
+        - Chabrewal
+        - Saheri
+        - Kainaur
+        - Dumna
+        - Nathmal Pur
+        - Hardo Nimoh
+        - Kishanpura
+        - Kotla Nihang
+        - Ghanaula
+        - Dugri
+        - Fatehpur Bunga
+        - Bindrakh
+        - Chamkaur Sahib
+        - Ajit Gill
+        - Sandhwan
+        - Sarawan
+        - Dal Singh Wala
+        - Nangal
+        - Nathewala
+        - Panj Garain Kalan
+        - Behbal Kalan
+        - Marak
+        - Rameana
+        - Kot Sukhia
+        - Dhudi
+        - Machaki Kalan
+        - Mallewala
+        - Rajowala
+        - Urapar
+        - Khurd
+        - Jagatpur
+        - Jhingran
+        - Bazidpur
+        - Mukandpur
+        - Lidhar Kalan
+        - Chandpur Rurki
+        - Durgapur
+        - Daulatpur
+        - Sotran
+        - Khatkar Kalan
+        - Chak Guru
+        - Jindowal
+        - Paddi Matwali
+        - Malupota
+        - Banga Bet
+        - Rakran Bet
+        - Banga
+        - Balachaur
+        - Rahon
+        - Saunti
+        - Kapurgarh
+        - Bhambrian
+        - Sangatpur Sodhian
+        - Tehalpura
+        - Nalina Kalan
+        - Sanghol
+        - Kotla Ajner
+        - Kotla Badla
+        - Ranwan
+        - Gadhera
+        - Badali Ala Singh
+        - Bhagrana
+        - Mukarampur
+        - Kheri Bir Singh
+        - Nandpur
+        - Bahar
+        - Attewali
+        - Kukar Majra
+        - Sehna
+        - Talewal
+        - Dhilwan
+        - Mauran
+        - Sekha
+        - Kattu
+        - Karamgarh
+        - Kahne Ke
+        - Thikri Wala
+        - Dhaula
+        - Pandher
+        - Pharwahi
+        - Bhathla
+        - Bhaini Fatta
+        - Rura Kalan
+        - Sehjra
+        - Gangohar
+        - Gehal
+        - Bazid Ke Kalan
+        - Bihla
+        - Mehal Kalan
+        - Dhanaula
+        - Bhadaur
+        - Tapa
+        - Nihalpur
+        - Madhopur
+        - Phalaura
+        - Salowal
+        - Sukalgarh
+        - Jagatpur
+        - Pathan Chak
+        - Bela Masat Garh
+        - Barath
+        - Karoli
+        - Nagrota
+        - Jharoli
+        - Antore
+        - Gugran
+        - Taloor
+        - Naroli
+        - Phalaura
+        - Makhanpur
+        - Siyonti
+        - Sangher
+        - Napwal
+        - Bharoli Kalan
+        - Janial
+        - Sakol
+        - Samrala
+        - Danwal
+        - Sittogunno
+        - Gadda Dob
+        - Burj Urf Hanumangarh
+        - Patti Sadiq Urf Patti Umra
+        - Mehrajpura Urf Mehrana
+        - Ramgarh
+        - Haripura Urf Bara Tirath
+        - Killian Wali
+        - Shiwana
+        - Khui Khera
+        - Panj Kosi
+        - Thara Singh Wala Hithar
+        - Mehmu Joya
+        - Chak Sawah Wala
+        - Pire Ke Bodla
+        - Burhandin Wala
+        - Chak Sotrian
+        - Khuranj
+        - Singhe Wala
+        - Paliwala
+        - Parbhat Singh Wala Uttar
+        - Bahmani Wala
+        - Mohar Singh Wala Hithar
+        - Lambochar Kalan Uttar
+        - Ojhan Wali
+        - Kabul Shah Hithar
+        - Korian Wali
+        - Ghurka
+        - Jaura Jand Urf Chimne Wala
+        - Depulana
+        - Began Wali
+        - Nawan Hasta
+        - Ahmadnagar
+        - Akola
+        - Amravati
+        - Aurangabad
+        - Belgaum
+        - Bhandara
+        - Bid
+        - Buldana
+        - Chandrapur
+        - Dhule
+        - Gadchiroli
+        - Gondiya
+        - Hingoli
+        - Jalgaon
+        - Jalna
+        - Kolhapur
+        - Latur
+        - Nagpur
+        - Nanded
+        - Nashik
+        - Osmanabad
+        - Parbhani
+        - Pune
+        - Raigarh
+        - Ratnagiri
+        - Sangli
+        - Satara
+        - Sindhudurg
+        - Solapur
+        - Thane
+        - Wardha
+        - Washim
+        - Yavatmal
+        - Nandurbar
+        - Akola
+        - Sangamner
+        - Kopargaon
+        - Rahta
+        - Shrirampur
+        - Nevasa
+        - Shevgaon
+        - Nagar
+        - Rahuri
+        - Parner
+        - Shrigonda
+        - Karjat
+        - Jamkhed
+        - Telhara
+        - Akot
+        - Balapur
+        - Akola
+        - Murtijapur
+        - Patur
+        - Barshitakli
+        - Dharni
+        - Chikhaldara
+        - Anjangaon Surji
+        - Achalpur
+        - Chandurbazar
+        - Morshi
+        - Warud
+        - Teosa
+        - Amravati
+        - Bhatkuli
+        - Daryapur
+        - Nandgaon-Khandeshwar
+        - Chandur
+        - Dhamangaon
+        - Kannad
+        - Soegaon
+        - Phulambri
+        - Aurangabad
+        - Khuldabad
+        - Vaijapur
+        - Gangapur
+        - Paithan
+        - Raybag
+        - Tumsar
+        - Mohadi
+        - Sakoli
+        - Lakhani
+        - Pauni
+        - Lakhandur
+        - Ashti
+        - Patoda
+        - Shirur
+        - Georai
+        - Manjlegaon
+        - Wadwani
+        - Bid
+        - Kaij
+        - Dharur
+        - Parli
+        - Ambejogai
+        - Jalgaon
+        - Sangrampur
+        - Shegaon
+        - Nandura
+        - Malkapur
+        - Motala
+        - Mehkar
+        - Chikhli
+        - Buldana
+        - Deolgaon Raja
+        - Sindkhed Raja
+        - Lonar
+        - Warora
+        - Chimur
+        - Nagbhir
+        - Brahmapuri
+        - Sawali
+        - Sindewahi
+        - Bhadravati
+        - Chandrapur
+        - Mul
+        - Pombhurna
+        - Ballarpur
+        - Korpana
+        - Rajura
+        - Gondpipri
+        - Shirpur
+        - Sindkhede
+        - Sakri
+        - Dhule
+        - Desaiganj
+        - Armori
+        - Kurkheda
+        - Korchi
+        - Dhanora
+        - Gadchiroli
+        - Chamorshi
+        - Mulchera
+        - Etapalli
+        - Bhamragad
+        - Aheri
+        - Sironcha
+        - Tirora
+        - Goregaon
+        - Gondiya
+        - Amgaon
+        - Salekasa
+        - Sadak-Arjuni
+        - Arjuni Morgaon
+        - Deori
+        - Sengaon
+        - Hingoli
+        - Aundha
+        - Kalamnuri
+        - Basmath
+        - Chopda
+        - Yawal
+        - Raver
+        - Edlabad
+        - Bodvad
+        - Bhusawal
+        - Jalgaon
+        - Erandol
+        - Dharangaon
+        - Amalner
+        - Parola
+        - Bhadgaon
+        - Chalisgaon
+        - Pachora
+        - Jamner
+        - Bhokardan
+        - Jafferabad
+        - Jalna
+        - Badnapur
+        - Ambad
+        - Ghansawangi
+        - Mantha
+        - Shahuwadi
+        - Panhala
+        - Hatkanangle
+        - Shirol
+        - Karvir
+        - Bavda
+        - Radhanagari
+        - Kagal
+        - Bhudargad
+        - Ajra
+        - Gadhinglaj
+        - Chandgad
+        - Latur
+        - Renapur
+        - Jalkot
+        - Chakur
+        - Shirur-Anantpal
+        - Ausa
+        - Nilanga
+        - Deoni
+        - Udgir
+        - Narkhed
+        - Katol
+        - Kalameshwar
+        - Savner
+        - Parseoni
+        - Ramtek
+        - Mauda
+        - Kamptee
+        - Nagpur
+        - Hingna
+        - Umred
+        - Kuhi
+        - Bhiwapur
+        - Mahoor
+        - Kinwat
+        - Himayatnagar
+        - Hadgaon
+        - Ardhapur
+        - Nanded
+        - Mudkhed
+        - Bhokar
+        - Umri
+        - Dharmabad
+        - Biloli
+        - Naigaon
+        - Loha
+        - Kandhar
+        - Mukhed
+        - Deglur
+        - Surgana
+        - Kalwan
+        - Deola
+        - Baglan
+        - Malegaon
+        - Nandgaon
+        - Chandvad
+        - Dindori
+        - Peint
+        - Trimbakeshwar
+        - Nashik
+        - Igatpuri
+        - Abit Khind
+        - Agar
+        - Agastinagar
+        - Akola
+        - Ambad
+        - Ambevangan
+        - Ambhol
+        - Ambikanagar
+        - Ambit
+        - Aurangpur
+        - Babhul Wandi
+        - Badgi
+        - Bahirwadi
+        - Balthan
+        - Baravwadi
+        - Bari
+        - Belapur
+        - Bhandardara
+        - Bhojadarawadi
+        - Bholewadi
+        - Bitaka
+        - Bori
+        - Bramhanwada
+        - Chaitanyapur
+        - Chand Suraj
+        - Chandgirwadi
+        - Chas
+        - Chichondi
+        - Chinchavane
+        - Chital Wedhe
+        - Dagadwadi
+        - Deogaon
+        - Deothan
+        - Dhagewadi
+        - Dhamangaon Pat
+        - Dhamangaon-awari
+        - Dhamanvan
+        - Dhokri
+        - Dhumalwadi
+        - Digambar
+        - Dongargaon
+        - Dongarwadi
+        - Ekdare
+        - Esarthav
+        - Ganore
+        - Gardani
+        - Garwadi
+        - Ghatghar
+        - Ghodsarwadi
+        - Ghoti
+        - Godewadi
+        - Gondoshi
+        - Guhire
+        - Hivargaon
+        - Induri
+        - Jachakwadi
+        - Jahagirdarwadi
+        - Jambhale
+        - Jamgaon
+        - Jaynawadi
+        - Kalamb
+        - Kalas Bk.
+        - Kalas Kh.
+        - Kalewadi
+        - Karandi
+        - Katalapur
+        - Kauthewadi
+        - Keli Kotul
+        - Keli Otur
+        - Keli Rumhanwadi
+        - Kelungan
+        - Khadki Bk.
+        - Khadki Kh.
+        - Khanapur
+        - Khetewadi
+        - Khirvire
+        - Khuntewadi
+        - Kodni
+        - Kohane
+        - Kohondi
+        - Kokanwadi
+        - Koltembhe
+        - Kombhalne
+        - Kothale
+        - Kotul
+        - Kumbhefal
+        - Kumshet
+        - Ladgaon
+        - Lahit Bk.
+        - Lahit Kh.
+        - Lavhali Kotul
+        - Lavhali Otur
+        - Lingdev
+        - Mahadeowadi
+        - Malegaon
+        - Manhere
+        - Manik Ozar
+        - Manoharpur
+        - Manyale
+        - Maveshi
+        - Mehenduri
+        - Mhaladevi
+        - Mhalungi
+        - Mogras
+        - Morwadi
+        - Murshet
+        - Muthalane
+        - Mutkhel
+        - Nachanthav
+        - Nagawadi
+        - Navalewadi
+        - Nilwande
+        - Nimbral
+        - Nirgudwadi
+        - Pabhulwandi
+        - Pachanai
+        - Pachapattawadi
+        - Padalane
+        - Padoshi
+        - Paithan
+        - Palsunde
+        - Pangari
+        - Panjare
+        - Parakhatpur
+        - Pedhewadi
+        - Pendshet
+        - Phophasandi
+        - Pimpaldarawadi
+        - Pimpaldari
+        - Pimpalgaon Khand
+        - Pimpalgaon Nakvinda
+        - Pimpalgaon Nipani
+        - Pimparkane
+        - Pimpri
+        - Pisewadi
+        - Poparewadi
+        - Purushawadi
+        - Rajur
+        - Ranad Bk.
+        - Ranad Kh.
+        - Ratanwadi
+        - Rede
+        - Rumbhodi
+        - Sakirwadi
+        - Samrad
+        - Samsherpur
+        - Sangavi
+        - Sarowar
+        - Satewadi
+        - Savarkute
+        - Sawargaonpat
+        - Senit Kh.
+        - Shelad
+        - Shelvihire
+        - Shendi
+        - Shenit
+        - Sherankhel
+        - Sherewadi
+        - Shidawad
+        - Shilvandi
+        - Shinde
+        - Shinganwadi
+        - Shirpunje Bk.
+        - Shirpunje Kh.
+        - Shiswad
+        - Shivajinagar
+        - Somalwadi
+        - Sugaon Bk.
+        - Sugaon Kh.
+        - Sultanpur
+        - Tahakari
+        - Takali
+        - Tale
+        - Tambhol
+        - Terungan
+        - Thakarwadi
+        - Tirdhe
+        - Titavi
+        - Udadawane
+        - Umbarwadi
+        - Unchkhadak Bk.
+        - Unchkhadak Kh.
+        - Vashere
+        - Vihir
+        - Virgaon
+        - Vithe
+        - Wagdari
+        - Waghapur
+        - Waki
+        - Wanjulshet
+        - Waranghushi
+        - Abhalwadi
+        - Ajampur
+        - Akalapur
+        - Ambhore
+        - Ambi Dumala
+        - Ambi Khalasa
+        - Arampur
+        - Ashwi Bk.
+        - Ashwi Kh.
+        - Barnagar
+        - Kalgachia
+        - Baghbor
+        - Barpeta
+        - Sarthebari
+        - Bajali
+        - Sarupeta
+        - Jalah
+        - Bongaigaon
+        - Boitamari
+        - Srijangram
+        - Bijni
+        - Sidli
+        - Katigora
+        - Silchar
+        - Udarbond
+        - Sonai
+        - Lakhipur
+        - Harisinga
+        - Khoirabari
+        - Pathorighat
+        - Sipajhar
+        - Mangaldoi
+        - Kalaigaon
+        - Dalgaon
+        - Udalguri
+        - Majbat
+        - Dhemaji
+        - Sissibargaon
+        - Jonai
+        - Dhakuakhana
+        - Subansiri
+        - Agamoni
+        - Bagribari
+        - Chapar
+        - South Salmara
+        - Mankachar
+        - Dibrugarh West
+        - Dibrugarh East
+        - Chabua
+        - Tengakhat
+        - Moran
+        - Tingkhong
+        - Lakhipur
+        - Balijana
+        - Matia
+        - Dudhnai
+        - Rangjuli
+        - Bokakhat
+        - Khumtai
+        - Dergaon
+        - Golaghat
+        - Sarupathar
+        - Majuli
+        - Jorhat East
+        - Teok
+        - Goreswar
+        - Rangia
+        - Kamalpur
+        - Hajo
+        - Chhaygaon
+        - Nagarbera
+        - Boko
+        - Palasbari
+        - Guwahati
+        - North Guwahati
+        - Dispur
+        - Sonapur
+        - Chandrapur
+        - Donka
+        - Diphu
+        - Phuloni
+        - Gossaigaon
+        - Bhowraguri
+        - Dotoma
+        - Kokrajhar
+        - Sidli
+        - Narayanpur
+        - Bihpuria
+        - Naobaicha
+        - Kadam
+        - North Lakhimpur
+        - Dhakuakhana
+        - Subansiri
+        - Mayong
+        - Bhuragaon
+        - Laharighat
+        - Marigaon
+        - Mikirbheta
+        - Kaliabor
+        - Samaguri
+        - Dhing
+        - Nagaon
+        - Raha
+        - Kampur
+        - Hojai
+        - Lanka
+        - Baska
+        - Tihu
+        - Pachim Nalbari
+        - Barkhetri
+        - Barbhag
+        - Nalbari
+        - Ghograpar
+        - Tamulpur
+        - Umrangso
+        - Haflong
+        - Mahur
+        - Maibong
+        - Dimow
+        - Sibsagar
+        - Amguri
+        - Nazira
+        - Sonari
+        - Mahmora
+        - Dhekiajuli
+        - Chariduar
+        - Tezpur
+        - Na-Duar
+        - Biswanath
+        - Helem
+        - Gohpur
+        - Sadiya
+        - Doom Dooma
+        - Tinsukia
+        - Margherita
+        - Ahom Pathar
+        - Aikhari Billar Pathar
+        - Amuguri
+        - Athiabari
+        - Atta Gaon
+        - Bagidawara
+        - Bagula Mari
+        - Bahbari
+        - Bairapur
+        - Baje Gaon
+        - Bajegaon Pathar
+        - Bala Bhitha
+        - Bala Gaon
+        - Bala Pet
+        - Balipur
+        - Bandar Khowa
+        - Bangsibari Gaon
+        - Bangsibari Pathar
+        - Banmaja Pathar
+        - Barangabari
+        - Barapeta
+        - Barbari Jhar
+        - Bare Gaon
+        - Barharid
+        - Barnagar
+        - Barpeta Road
+        - Barugua
+        - Bata Bari
+        - Belguri
+        - Benni Bari
+        - Bhalaguri Gaon
+        - Bhaluk Doba
+        - Bhaluki
+        - Bhangnamari
+        - Bhatarmari
+        - Bhato Pukhuri
+        - Bhetomare Tup
+        - Bhukaua Mari
+        - Bhunmaja Gaon
+        - Bilashi Para
+        - Bilashipara Pathar
+        - Bishpani
+        - Bogriguri Gaon
+        - Bogriguri Pathar
+        - Borgopa Bilar Pathar
+        - Bunmajar Pam
+        - Chal Chalia
+        - Chandha Mari
+        - Chanta Bari
+        - Chengulia
+        - Chunbari Gaon
+        - Chura Guri
+        - Dahla Para
+        - Dakshin Bher Bheri
+        - Dakshin Oanakgari
+        - Dakshinburi Khamar
+        - Dalo Gaon
+        - Dekiajani Gaon
+        - Dekiajani Pathar
+        - Dharma Pur
+        - Dhup Guri
+        - Dimajuli
+        - Domani Gaon
+        - Dotra
+        - Dumuri Guri
+        - Duramari
+        - Dwarika
+        - Elengamari
+        - Fewra Khowa
+        - Gahe Khanda
+        - Gakhalirpar
+        - Gamari Guri
+        - Ganakpara
+        - Gandari Para
+        - Gella Para
+        - Gengreng Para
+        - Ghilajari
+        - Ghugu Bari
+        - Gobardhana
+        - Gobindapur
+        - Gola Gaon
+        - Guagacha
+        - Hala Pakuri
+        - Hatapara
+        - Helanar Pam
+        - Howli Gaon
+        - Jaisihati
+        - Jaknikura
+        - Jakua Para
+        - Jamadarbari Gaon
+        - Jamadarbari Pathar
+        - Jyoti Gaon
+        - Kachu Gaon
+        - Kah Doba
+        - Kahitama Gaon
+        - Kahitama N.C.
+        - Kahitama Pather
+        - Kaimari
+        - Kajiamati
+        - Kala Bhanga
+        - Kalbari
+        - Kalita Para
+        - Kalpani
+        - Kamar Gaon
+        - Kamar Para
+        - Katajar Gaon
+        - Katajar Pathar
+        - Kaur Para
+        - Kayasta Gaon
+        - Keteki Bari
+        - Khagra Bari
+        - Khagra Bari N.C.
+        - Khaira Bari
+        - Khata Kuchi
+        - Khatal Para
+        - Khudna Bari
+        - Khudna Bari Pathar
+        - Khusura Bari
+        - Khutharijan N.C.
+        - Khuthuri Jhar
+        - Kismatdwarika
+        - Kuchiakhanda
+        - Kumuria
+        - Kurobaha
+        - Labdanguri Gaon
+        - Labdanguri Pathar
+        - Luashur
+        - Madri Jora
+        - Madulijar
+        - Mainamata Gaon
+        - Mainamatha Pathar
+        - Mairajar Pathar
+        - Manipur
+        - Masua
+        - Matanga Gaon
+        - Maura Jhar
+        - Mayang Para
+        - Mech Para
+        - Meda Gaon
+        - Moutupuri
+        - Narayan Guri
+        - Narsingbari
+        - Nichuka
+        - Nil Chaka Bausi
+        - Nimua
+        - Niz Damaka
+        - Nizdamo Gaon
+        - Nizdokua
+        - Nontola
+        - Oxiguri Gaon
+        - Oxiguri Pathar
+        - Peragaon
+        - Peragaon Pathar
+        - Pora Gaon
+        - Pub Sabakamar
+        - Puthimari
+        - Raghu Bill
+        - Raha Gaon
+        - Rajdhakamal
+        - Rampur
+        - Rangdia
+        - Raypur
+        - Safakamar
+        - Samthaibari
+        - Santaradaha
+        - Sapana
+        - Sarbhog
+        - Saru Harid
+        - Sat Bainer Tup
+        - Shalmara
+        - Shapur
+        - Shimlajhar
+        - Simla Guri
+        - Simul Bari
+        - Sukanjani
+        - Sukrung Bari Pathar
+        - Sukurungbari Gaon
+        - Sulikata
+        - Sunpoira
+        - Takhlibilar Pathar
+        - Tekaimari
+        - Tenga Gaon
+        - Udalguri Gaon
+        - Ujan Bahbari
+        - Unnekuri
+        - Uttar Athiabari
+        - Uttar Bher Bheri
+        - Uttar Burikhamar
+        - Uttar Ganakguri
+        - Uttar Sabakamar
+        - Aditpur
+        - Amguri
+        - Bagulamari
+        - Balagaon
+        - Balai Pathar
+        - Balapathar
+        - Balikuri Gaon
+        - Balikuri Pathar
+        - Bandarmora
+        - Banghugi
+        - Agarvado
+        - Alorna
+        - Amberem
+        - Arambol
+        - Cansarvornem
+        - Casnem
+        - Chandel
+        - Chopdem
+        - Corgao
+        - Dargalim
+        - Ibrampur
+        - Mandrem
+        - Mopa
+        - Morgim
+        - Ozorim
+        - Paliem
+        - Pernem
+        - Pernem
+        - Poroscodem
+        - Querim
+        - Siolim
+        - Tamboxem
+        - Tiracol
+        - Torxem
+        - Tuem
+        - Uguem
+        - Varconda
+        - Virnora
+        - Aldona
+        - Bambolim
+        - Bicholim
+        - Calangute
+        - Calapor
+        - Candolim
+        - Carapur
+        - Chimbel
+        - Colvale
+        - Cujira
+        - Goa Velha
+        - Guirim
+        - Mapusa
+        - Morambi-O-Grande
+        - Morambi-O-Pequeno
+        - Murda
+        - Panaji
+        - Panelim
+        - Penha-de-Franca
+        - Reis Magos
+        - Renovadi
+        - Saligao
+        - Sanquelim
+        - Socorro
+        - Bandora
+        - Chicalim
+        - Margao
+        - Mormugao
+        - Pale
+        - Ponda
+        - Queula
+        - Sancoale
+        - Valpoi
+        - Cuncolim
+        - Curchorem Cacora
+        - Quepem
+        - Sanguem
+        - Sanvordem
+        - Advoi
+        - Ambedem
+        - Ambeli
+        - Ansolem
+        - Assodem
+        - Birondem
+        - Bombedem
+        - Buimpal
+        - Carambolim-Brama
+        - Carambolim-Buzruco
+        - Caranzol
+        - Codiem
+        - Codqui
+        - Codvol
+        - Compordem
+        - Conquirem
+        - Cotorem
+        - Cudcem
+        - Cumarconda
+        - Dabem
+        - Damocem
+        - Davem
+        - Edorem
+        - Govanem
+        - Guleli
+        - Gululem
+        - Maloli
+        - Malpona
+        - Mauzi
+        - Melauli
+        - Morlem
+        - Nagargao
+        - Naguem
+        - Naneli
+        - Nanorem
+        - Onda
+        - Padeli
+        - Pale
+        - Pissurlem
+        - Ponocem
+        - Querim
+        - Saleli
+        - Sanvorcem
+        - Sanvordem
+        - Satorem
+        - Sigonem
+        - Siranguli
+        - Sirsodem
+        - Sonal
+        - Sonus-Vonvoliem
+        - Ustem
+        - Vaguriem
+        - Vainguinim
+        - Valpoi
+        - Vantem
+        - Velguem
+        - Xelopo-Buzruco
+        - Xelopo-Curdo
+        - Zormen
+        - Bandora
+        - Chicalim
+        - Curti
+        - Margao
+        - Mormugao
+        - Ponda
+        - Queula
+        - Sancoale
+        - Aquem
+        - Benaulim
+        - Chinchinim
+        - Cuncolim
+        - Curchorem Cacora
+        - Davorlim
+        - Navelim
+        - Quepem
+        - Varca
+        - Ambelim
+        - Aquem
+        - Assolna
+        - Benaulim
+        - Canacona
+        - Carmona
+        - Cavelossim
+        - Chinchinim
+        - Cuncolim
+        - Davorlim
+        - Deussua
+        - Margao
+        - Mulem
+        - Navelim
+        - Orlim
+        - Quepem
+        - Sanguem
+        - Sanvordem
+        - Sarzora
+        - Sirlim
+        - Varca
+        - Velim
+        - Cazur
+        - Corla
+        - Curchorem Cacora
+        - Mangal
+        - Quepem
+        - Sanguem
+        - Sanvordem
+        - Bati
+        - Colomba
+        - Comproi
+        - Coranginim
+        - Costi
+        - Cotarli
+        - Cumbari
+        - Curpem
+        - Dongor
+        - Dudal
+        - Maulinguem
+        - Muguli
+        - Naiquinim
+        - Netorli
+        - Nundem
+        - Patiem
+        - Porteem
+        - Potrem
+        - Rivona
+        - Sanguem
+        - Tudou
+        - Uguem
+        - Verlem
+        - Vichundrem
+        - Viliena
+        - Xelpem
+        - Canacona
+        - Aamaguhan
+        - Aanoari
+        - Adanbeda
+        - Adenga
+        - Amgaon
+        - Arandi
+        - Badagaon
+        - Badbattar
+        - Badekhauli
+        - Baderajpur
+        - Badwar
+        - Baijanpuri
+        - Balenga
+        - Baniyagaon
+        - Banskot
+        - Bastar Budra
+        - Batrali
+        - Bavnimari
+        - Bayalpur
+        - Bedma
+        - Bedmamari
+        - Belgoan
+        - Bhandarpal
+        - Bhatgaon
+        - Binjhe
+        - Bitalkhauli
+        - Borgaon
+        - Buikijuganar
+        - Charbhata
+        - Cherabeda
+        - Chhindli
+        - Chhotemalgaon
+        - Chhoterajpur
+        - Chichadi
+        - Chiprel
+        - Churegaon
+        - Dadargadh
+        - Dhamanpuri
+        - Dhanora
+        - Dhodera
+        - Dhonderapal
+        - Dundabedma
+        - Eragaon
+        - Gadad
+        - Gamhari
+        - Garawandi
+        - Garh Siliyara
+        - Garhdhanora
+        - Ghodajhar
+        - Girgoli
+        - Gourgoan Chikhaladih
+        - Govindpura
+        - Halda
+        - Halia
+        - Harwankodo
+        - Harwel
+        - Hatma
+        - Hichka
+        - Honawandi
+        - Honhed
+        - Hudawa
+        - Jamgaon
+        - Jarandi
+        - Jodekara
+        - Kalepal
+        - Kalgaon
+        - Kalgaon
+        - Kanagaon
+        - Karmari
+        - Karrarmeta
+        - Kawagaon
+        - Keshkal
+        - Khajrawand
+        - Khalari
+        - Khalebendi
+        - Khalechandeli
+        - Khalemurvend
+        - Khetarpal
+        - Kibda
+        - Kodobhat
+        - Kohkameta
+        - Kongera
+        - Kopra
+        - Korahobeda
+        - Korgaon
+        - Korkoti
+        - Kosmi
+        - Kothodi
+        - Koundkera
+        - Kudadwahi
+        - Kukdadah
+        - Kuldadihi
+        - Kumud
+        - Kupagondi
+        - Kurrubhat
+        - Kuye
+        - Lihagaon
+        - Machhali
+        - Madgaon
+        - Mahurbeda
+        - Mainpur
+        - Manikpur
+        - Manjhicherra
+        - Marangpuri
+        - Masukokoda
+        - Matenga
+        - Middey
+        - Taraibeda
+        - Nalajhar
+        - Narna
+        - Naukabeda
+        - Nawagarh
+        - Nayanar
+        - Nirachhindali
+        - Padde
+        - Padoki
+        - Palana
+        - Palora
+        - Parali
+        - Parasgaon
+        - Parond
+        - Pendrawand
+        - Pidhapal
+        - Pipra
+        - Pitechunwa
+        - Pradhancherra
+        - Randha
+        - Raobeda
+        - Salebhat
+        - Salna
+        - Sargipal
+        - Sawala
+        - Sawalwahi
+        - Sendurmeta
+        - Seonipal
+        - Sidhawand
+        - Sikagaon
+        - Silati
+        - Singanpur
+        - Sonpur
+        - Surdongar
+        - Taraibeda
+        - Tenwasa
+        - Timdi
+        - Titirwand
+        - Todasi
+        - Toskapal
+        - Tumuskonadi
+        - Tutari
+        - Udidgaon
+        - Umaradah
+        - Umla
+        - Undari
+        - Uparbedi
+        - Uparchandeli
+        - Uparmurvend
+        - Vishrampuri
+        - Aadermad
+        - Aadimpar
+        - Aadpal
+        - Aamasara
+        - Aamgaon
+        - Aatargaon
+        - Acheli
+        - Adnar
+        - Ajrail
+        - Akkabeda
+        - Alwar Alias Gattakal
+        - Bade Jamhari
+        - Bade Tondabeda
+        - Badebedkot
+        - Badgaon
+        - Badkanar
+        - Bagdongri
+        - Bagjhar
+        - Bakoor
+        - Bakulwahi
+        - Balemeta
+        - Bamhani
+        - Banhker
+        - Banspal
+        - Basing
+        - Bawadi
+        - Bayonar
+        - Becha
+        - Bedma
+        - Bedmakot
+        - Belgaon
+        - Benoor
+        - Bharanda
+        - Bhatpal
+        - Bhiragaon
+        - Bhurwal
+        - Bijlee
+        - Bilelar
+        - Binagunda
+        - Bogan
+        - Borand
+        - Boranirpi
+        - Keshkal
+        - Narayanpur
+        - Kondagaon
+        - Jagdalpur
+        - Pendraroad
+        - Lormi
+        - Kota
+        - Mungeli
+        - Takhatpur
+        - Bilaspur
+        - Masturi
+        - Bilha
+        - Bhopal pattanam
+        - Bijapur
+        - Dantewada
+        - Konta
+        - Kurud
+        - Dhamtari
+        - Nagri
+        - Nawagarh
+        - Bemetra
+        - Saja
+        - Berla
+        - Dhamdha
+        - Durg
+        - Patan
+        - Gunderdehi
+        - Dondiluhara
+        - Sanjari balod
+        - Gurur
+        - Janjgir
+        - Nawagarh
+        - Champa
+        - Sakti
+        - Pamgarh
+        - Dabhara
+        - Malkharoda
+        - Jaijaipur
+        - Bagicha
+        - Jashpur
+        - Kunkuri
+        - Pathalgaon
+        - Charama
+        - Bhanupratappur
+        - Kanker
+        - Narharpur
+        - Antagarh
+        - Pakhanjur
+        - Kawardha
+        - Pandariya
+        - Katghora
+        - Pali
+        - Korba
+        - Kartala
+        - Bharatpur
+        - Baikunthpur
+        - Sonhat
+        - Manendragarh
+        - Basna
+        - Saraipali
+        - Mahasamund
+        - Udaipur
+        - Lailunga
+        - Gharghoda
+        - Raigarh
+        - Kharsia
+        - Sarangarh
+        - Simga
+        - Bhatapara
+        - Baloda Bazar
+        - Palari
+        - Kasdol
+        - Bilaigarh
+        - Arang
+        - Abhanpur
+        - Raipur
+        - Rajim
+        - Tilda
+        - Bindranawagarh
+        - Deobhog
+        - Chhuikhadan
+        - Khairagarh
+        - Dongargarh
+        - Rajnandgaon
+        - Dongargaon
+        - Mohla
+        - Manpur
+        - Ambagarh
+        - Pal
+        - Wadrafnagar
+        - Pratappur
+        - Samari
+        - Surajpur
+        - Ambikapur
+        - Rajpur
+        - Lundra
+        - Sitapur
+        - Tamsi
+        - Adilabad
+        - Jainad
+        - Bela
+        - Talamadugu
+        - Gudihathnoor
+        - Inderavelly
+        - Narnoor
+        - Kerameri
+        - Wankdi
+        - Sirpur
+        - Kouthala
+        - Bejjur
+        - Kagaznagar
+        - Asifabad
+        - Jainoor
+        - Utnoor
+        - Ichoda
+        - Bazarhathnoor
+        - Boath
+        - Neradigonda
+        - Sirpur
+        - Rebbana
+        - Bhimini
+        - Dahegaon
+        - Vemanpalle
+        - Nennal
+        - Tandur
+        - Tiryani
+        - Jannaram
+        - Kaddam
+        - Sarangapur
+        - Kuntala
+        - Kubeer
+        - Bhainsa
+        - Tanoor
+        - Mudhole
+        - Lokeswaram
+        - Dilawarpur
+        - Nirmal
+        - Laxmanchanda
+        - Mamda
+        - Khanapur
+        - Dandepalle
+        - Kasipet
+        - Bellampalle
+        - Kotapalle
+        - Mandamarri
+        - Luxettipet
+        - Mancherial
+        - Jaipur
+        - Chennur
+        - D.Hirehal
+        - Rayadurg
+        - Kanekal
+        - Bommanahal
+        - Vidapanakal
+        - Guntakal
+        - Gooty
+        - Peddavadugur
+        - Yadiki
+        - Tadpatri
+        - Peddapappur
+        - Pamidi
+        - Vajrakarur
+        - Uravakonda
+        - Beluguppa
+        - Gummagatta
+        - Brahmasamudram
+        - Kalyandurg
+        - Atmakur
+        - Kudair
+        - Garladinne
+        - Singanamala
+        - Putlur
+        - Yellanur
+        - Narpala
+        - Bukkaraya Samudram
+        - Anantapur
+        - Raptadu
+        - Settur
+        - Kundurpi
+        - Kambadur
+        - Kanaganapalle
+        - Dharmavaram
+        - Bathalapalle
+        - Tadimarri
+        - Mudigubba
+        - Talupula
+        - Nambulipulikunta
+        - Gandlapenta
+        - Kadiri
+        - Nallamada
+        - Bukkapatnam
+        - Kothacheruvu
+        - Chennekothapalle
+        - Ramagiri
+        - Roddam
+        - Madakasira
+        - Amarapuram
+        - Gudibanda
+        - Rolla
+        - Agali
+        - Parigi
+        - Penukonda
+        - Puttaparthi
+        - Obuladevaracheruvu
+        - Nallacheruvu
+        - Tanakal
+        - Amadagur
+        - Gorantla
+        - Somandepalle
+        - Hindupur
+        - Lepakshi
+        - Chilamathur
+        - Mulakalacheruvu
+        - Thamballapalle
+        - Peddamandyam
+        - Gurramkonda
+        - Kalakada
+        - Kambhamvaripalle
+        - Rompicherla
+        - Yerravaripalem
+        - Tirupati
+        - Renigunta
+        - Yerpedu
+        - Srikalahasti
+        - Thottambedu
+        - Buchinaidu Kandriga
+        - Varadaiahpalem
+        - K.V.B.Puram
+        - Tirupati
+        - Chandragiri
+        - Chinnagottigallu
+        - Pileru
+        - Kalikiri
+        - Vayalpad
+        - Kurabalakota
+        - Pedda Thippasamudram
+        - B.Kothakota
+        - Madanapalle
+        - Nimmanapalle
+        - Sodam
+        - Pulicherla
+        - Pakala
+        - Vedurukuppam
+        - Ramachandrapuram
+        - Vadamalapeta
+        - Narayanavanam
+        - Pichatur
+        - Satyavedu
+        - Nagalapuram
+        - Nindra
+        - Vijayapuram
+        - Nagari
+        - Puttur
+        - Karvetinagar
+        - Penumuru
+        - Puthalapattu
+        - Irala
+        - Somala
+        - Chowdepalle
+        - Ramasamudram
+        - Punganur
+        - Peddapanjani
+        - Gangavaram
+        - Thavanampalle
+        - Srirangarajapuram
+        - Gangadhara Nellore
+        - Chittoor
+        - Palamaner
+        - Baireddipalle
+        - Venkatagirikota
+        - Santhipuram
+        - Gudupalle
+        - Kuppam
+        - Ramakuppam
+        - Bangarupalem
+        - Yadamarri
+        - Gudipala
+        - Palasamudram
+        - Kondapuram
+        - Mylavaram
+        - Peddamudium
+        - Rajupalem
+        - Duvvur
+        - S.Mydukur
+        - Brahmamgarimattam
+        - Sri Avadhutha Kasinayana
+        - Kalasapadu
+        - Porumamilla
+        - B.Kodur
+        - Badvel
+        - Gopavaram
+        - Khajipet
+        - Chapad
+        - Proddatur
+        - Jammalamadugu
+        - Muddanur
+        - Simhadripuram
+    name:
+      last_name:
+        - Acharya
+        - Agarwal
+        - Khatri
+        - Ahuja
+        - Anand
+        - Laghari
+        - Patel
+        - Reddy
+        - Bakshi
+        - Varma
+        - Chowdhury
+        - Chawla
+        - Joshi
+        - Khanna
+        - Kaur
+        - Singh
+        - Garg
+        - Gupta
+        - Kapoor
+        - Chandra
+        - Kumar
+        - Mehta
+        - Mukherjee
+        - Saxena
+        - Rai
+        - Thakur
+        - Sharma
+        - Ranganathan
+
+      first_name:
+        - Saanvi
+        - Aadya
+        - Kiara
+        - Diya
+        - Pihu
+        - Prisha
+        - Ananya
+        - Fatima
+        - Myra
+        - Aarohi
+        - Aaradhya
+        - Aarya
+        - Sri
+        - Pari
+        - Anvi
+        - Riya
+        - Siya
+        - Kavya
+        - Ayesha
+        - Anika
+        - Anaya
+        - Advika
+        - Aditi
+        - Maryam
+        - Riddhi
+        - Meera
+        - Aanya
+        - Ahana
+        - Aayra
+        - Sai
+        - Maria
+        - Samaira
+        - Swara
+        - Navya
+        - Jia
+        - Isha
+        - Avani
+        - Sophia
+        - Kyra
+        - Shreya
+        - Ira
+        - Aadriti
+        - Amyra
+        - Yazhini
+        - Vanya
+        - Nisha
+        - Mishka
+        - Nitara
+        - Mary
+        - Mahira
+        - Aarushi
+        - Sanaya
+        - Maithreyi
+        - Manya
+        - Drishya
+        - Kashvi
+        - Inaaya
+        - Ishika
+        - Aavya
+        - Aadhira
+        - Anshika
+        - Misha
+        - Mia
+        - Ishani
+        - Veda
+        - Tania
+        - Shanaya
+        - Reeva
+        - Trisha
+        - Hayaa
+        - Vedanshi
+        - Tia
+        - Sahana
+        - Vrinda
+        - Sana
+        - Shivanya
+        - Pranavi
+        - Naira
+        - Manasvi
+        - Aradhana
+        - Mishti
+        - Nitya
+        - Dhvani
+        - Ayat
+        - Divija
+        - Maahi
+        - Aarna
+        - Disha
+        - Vaishnavi
+        - Saira
+        - Zara

@@ -10,7 +10,7 @@ describe ExotelAPIService, type: :model do
       'Authorization' => "Basic #{auth_token}",
       'Connection' => 'close',
       'Host' => 'api.exotel.com',
-      'User-Agent' => 'http.rb/4.1.1'
+      'User-Agent' => 'http.rb/4.4.1'
     }
   end
 
@@ -27,7 +27,7 @@ describe ExotelAPIService, type: :model do
         'Authorization' => "Basic #{auth_token}",
         'Connection' => 'close',
         'Host' => 'api.exotel.com',
-        'User-Agent' => 'http.rb/4.1.1'
+        'User-Agent' => 'http.rb/4.4.1'
       }
     end
 

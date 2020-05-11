@@ -1,28 +1,29 @@
 <%= [
-  "Report generated at:",
+  'Report generated at:',
   Time.current
 ].to_csv -%>
-<%= ["#{@facility.name} Cohort Report"].to_csv -%>
+<% period = @period == :quarter ? 'Quarterly' : 'Monthly' %>
+<%= ["#{@facility.name} #{period} Cohort Report"].to_csv -%>
 <%= [
-  "Cohort period",
-  "Follow up period",
-  "Patients registered",
-  "Patients followed up",
-  "Patients controlled",
-  "Patients uncontrolled",
-  "Patients defaulted",
-  "Control rate",
-  "Uncontrolled rate",
-  "Default rate"
+  'Cohort period',
+  'Follow up period',
+  'Patients in cohort',
+  'Patients followed up',
+  'Patients controlled',
+  'Patients uncontrolled',
+  "Patients didn't attend",
+  'Control rate',
+  'Uncontrolled rate',
+  'Default rate'
 ].to_csv -%>
 <% @cohort_analytics.each_with_index do |(report_dates, analytics), index| %>
   <%
     cohort_start, report_start = report_dates
-    registered = analytics[:registered]
-    followed_up = analytics[:followed_up]
-    defaulted = analytics[:defaulted]
-    controlled = analytics[:controlled]
-    uncontrolled = analytics[:uncontrolled]
+    registered = analytics.dig(:registered, :total) || 0
+    followed_up = analytics.dig(:followed_up, :total) || 0
+    defaulted = analytics.dig(:defaulted, :total) || 0
+    controlled = analytics.dig(:controlled, :total) || 0
+    uncontrolled = analytics.dig(:uncontrolled, :total) || 0
     if @period == :quarter
       report_period = quarter_string(report_start)
       cohort_period = quarter_string(cohort_start)

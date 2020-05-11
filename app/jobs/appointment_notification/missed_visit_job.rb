@@ -11,9 +11,8 @@ class AppointmentNotification::MissedVisitJob
       appointments = Appointment.includes(facility: { facility_group: :organization })
                          .where(facility: { facility_groups: { organization: organization } })
 
-      AppointmentNotificationService
-          .send_after_missed_visit(appointments: appointments,
-                                   schedule_at: schedule_today_or_tomorrow(schedule_hour_start, schedule_hour_finish))
+      schedule_at = schedule_today_or_tomorrow(schedule_hour_start, schedule_hour_finish)
+      AppointmentNotificationService.send_after_missed_visit(appointments: appointments, schedule_at: schedule_at)
     end
   end
 end

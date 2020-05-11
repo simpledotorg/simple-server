@@ -81,7 +81,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
           facility_group_id: facility_group.id,
           pin: '999999',
           monthly_estimated_opd_load: 500
-        ).except(:id)
+        ).except(:id, :slug)
       end
 
       it 'updates the requested facility' do

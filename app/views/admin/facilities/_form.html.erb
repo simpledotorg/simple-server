@@ -24,11 +24,21 @@
 
       <%= form.number_field :monthly_estimated_opd_load, id: :facility_monthly_estimated_opd_load, label: "Estimated outpatient load (monthly)", help: "Estimate the TOTAL ADULT PATIENTS seen in the outpatient dept each month. Leave blank if unknown." %>
 
-      <h3 class="mt-5">Diabetes enabled?</h3>
       <div class="mb-3">
-        <%= form.check_box :enable_diabetes_management, id: :facility_enable_diabetes_management, wrapper_class: 'pad-bottom' %>
+        <h3 class="mt-5">Diabetes enabled?</h3>
+        <%= form.check_box :enable_diabetes_management, id: :facility_enable_diabetes_management %>
+        <h3 class="mt-5">Teleconsultation enabled?</h3>
+        <%= form.check_box :enable_teleconsultation, id: :facility_enable_teleconsultation %>
+        <div class="row mt-2" id="teleconsultation_fields" style=<%= "#{'display:none' unless @facility[:enable_teleconsultation]}" %> >
+          <div class="col col-md-4">
+            <%= form.text_field :teleconsultation_isd_code, id: :facility_teleconsultation_isd_code, label: 'Country Code',
+                                value: @facility[:teleconsultation_isd_code].presence || Rails.application.config.country['sms_country_code'] %>
+          </div>
+          <div class="col-md-8">
+            <%= form.text_field :teleconsultation_phone_number, id: :facility_teleconsultation_phone_number, label: 'Mobile Number' %>
+          </div>
+        </div>
       </div>
-
       <%= form.primary %>
     <% end %>
   </div>

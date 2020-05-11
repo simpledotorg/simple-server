@@ -5,86 +5,126 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+require_relative '../lib/tasks/scripts/create_admin_user'
 require 'factory_bot_rails'
 require 'faker'
 
-facilities = [
-  { name:          "CHC Nathana",
-    facility_type: "CHC",
-    district:      "Bathinda",
-    state:         "Punjab",
-    country:       "India" },
+NUM_OF_FACILITY_GROUPS = 1
+NUM_OF_FACILITIES = 4
+MAX_NUM_OF_USERS_PER_FACILITY = 2
+NUM_OF_USERS_PER_FACILITY_FN = -> { rand(1..MAX_NUM_OF_USERS_PER_FACILITY) }
+ADMIN_USER_NAME = 'Admin User'
+ADMIN_USER_EMAIL = 'admin@simple.org'
 
-  { name:          "CHC Bagta",
-    facility_type: "CHC",
-    district:      "Bathinda",
-    state:         "Punjab",
-    country:       "India" },
+org = {
+  :name => "IHCI"
+}
 
-  { name:          "CHC Buccho",
-    facility_type: "CHC",
-    district:      "Bathinda",
-    state:         "Punjab",
-    country:       "India" },
+facility_size_map = {
+  "CH" => :large,
+  "DH" => :large,
+  "Hospital" => :large,
+  "RH" => :large,
+  "SDH" => :large,
 
-  { name:          "PHC Meheraj",
-    facility_type: "PHC",
-    district:      "Bathinda",
-    state:         "Punjab",
-    country:       "India" },
+  "CHC" => :medium,
 
-  { name:          "CHC Khyalakalan",
-    facility_type: "CHC",
-    district:      "Mansa",
-    state:         "Punjab",
-    country:       "India" },
+  "MPHC" => :small,
+  "PHC" => :small,
+  "SAD" => :small,
+  "Standalone" => :small,
+  "UHC" => :small,
+  "UPHC" => :small,
+  "USAD" => :small,
 
-  { name:          "PHC Joga",
-    facility_type: "PHC",
-    district:      "Mansa",
-    state:         "Punjab",
-    country:       "India" }]
+  "HWC" => :community,
+  "Village" => :community
+}
 
 protocol_data = {
-  name:           'Punjab Hypertension Protocol',
+  name: 'Simple Hypertension Protocol',
   follow_up_days: 30
 }
 
 protocol_drugs_data = [
   {
-    name:   'Amlodipine',
+    name: 'Amlodipine',
     dosage: '5 mg'
   },
   {
-    name:   'Amlodipine',
+    name: 'Amlodipine',
     dosage: '10 mg'
   },
   {
-    name:   'Telmisartan',
+    name: 'Telmisartan',
     dosage: '40 mg'
   },
   {
-    name:   'Telmisartan',
+    name: 'Telmisartan',
     dosage: '80 mg'
   },
   {
-    name:   'Chlorthalidone',
+    name: 'Chlorthalidone',
     dosage: '12.5 mg'
   },
   {
-    name:   'Chlorthalidone',
+    name: 'Chlorthalidone',
     dosage: '25 mg'
   }
 ]
 
-organization = FactoryBot.create(:organization)
-facility_group   = FactoryBot.create(:facility_group, organization: organization)
+#
+# create organizations, protocols and protocol_drugs
+#
+organization = Organization.find_by(org) || FactoryBot.create(:organization, org)
+protocol = Protocol.find_or_create_by!(protocol_data)
+protocol_drugs_data.each { |drug_data| ProtocolDrug.find_or_create_by!(drug_data.merge(protocol_id: protocol.id)) }
 
-facilities.each do |facility_data|
-  Facility.find_or_create_by(facility_data.merge(facility_group_id: facility_group.id))
+facility_groups = (1..NUM_OF_FACILITY_GROUPS).to_a.map do
+  facility_group_params = {
+    organization: organization, protocol: protocol
+  }
+
+  FactoryBot.create(:facility_group, facility_group_params)
 end
 
-protocol = Protocol.find_or_create_by(protocol_data)
-protocol_drugs_data.each do |drug_data|
-  ProtocolDrug.find_or_create_by(drug_data.merge(protocol_id: protocol.id))
+#
+# create facility and facility_groups
+#
+facilities =
+  facility_groups.map do |fg|
+    (1..NUM_OF_FACILITIES).to_a.map do
+      type = facility_size_map.keys.sample
+      size = facility_size_map[type]
+
+      FactoryBot.create(:facility,
+                        :seed,
+                        facility_group_id: fg.id,
+                        district: fg.name,
+                        facility_type: type,
+                        facility_size: size)
+    end
+  end.flatten
+
+#
+# create users
+#
+facilities.each do |facility|
+  if facility.users.size < MAX_NUM_OF_USERS_PER_FACILITY
+    role = rand > 0.1 ? ENV['SEED_GENERATED_ACTIVE_USER_ROLE'] : ENV['SEED_GENERATED_INACTIVE_USER_ROLE']
+    FactoryBot.create_list(:user,
+                           NUM_OF_USERS_PER_FACILITY_FN.call,
+                           :with_phone_number_authentication,
+                           registration_facility: facility,
+                           organization: organization,
+                           role: role)
+  end
+end
+
+#
+# create admin user
+#
+unless EmailAuthentication.find_by_email(ADMIN_USER_EMAIL)
+  CreateAdminUser.create_owner(ADMIN_USER_NAME, ADMIN_USER_EMAIL, ENV['SEED_GENERATED_ADMIN_PASSWORD'])
 end
