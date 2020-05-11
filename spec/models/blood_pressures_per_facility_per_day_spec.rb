@@ -37,6 +37,14 @@ RSpec.describe BloodPressuresPerFacilityPerDay, type: :model do
       expect(described_class.where(year: 2.day.ago.year, day: 2.day.ago.yday).first.bp_count).to eq(1)
     end
 
+    it 'counts blood pressures of only patients who are diagnosed hypertensive' do
+      patient_with_hypertension_no = create(:patient, :hypertension_no, registration_facility: facility_with_bp)
+      create(:blood_pressure, facility: facility_with_bp, recorded_at: days.first, patient: patient_with_hypertension_no)
+      described_class.refresh
+
+      expect(described_class.where(year: 1.day.ago.year, day: 1.day.ago.yday).first.bp_count).to eq(2)
+    end
+
     it "doesn't have a row for facility_without_bp" do
       expect(described_class.all.pluck(:facility_id)).not_to include(facility_without_bp.id)
     end
