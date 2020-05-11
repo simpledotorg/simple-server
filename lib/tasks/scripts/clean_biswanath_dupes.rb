@@ -106,6 +106,7 @@ class CleanBiswanathDupes
 
       blood_pressures = patient.blood_pressures.where.not(id: bp_denylist).each { |record| record.update!(patient_id: real_patient_id) }
       blood_sugars = patient.blood_sugars.each { |record| record.update!(patient_id: real_patient_id) }
+
       port_bp_encounters(real_patient_id, blood_pressures)
       port_bs_encounters(real_patient_id, blood_sugars)
       patient.appointments.each { |record| record.update!(patient_id: real_patient_id) }
@@ -144,7 +145,7 @@ class CleanBiswanathDupes
         }
       }.with_indifferent_access
 
-      MergeEncounterService.new(encounter_merge_params, import_user, current_timezone_offset)
+      MergeEncounterService.new(encounter_merge_params, import_user, current_timezone_offset).merge
     end
   end
 
@@ -176,7 +177,7 @@ class CleanBiswanathDupes
         }
       }.with_indifferent_access
 
-      MergeEncounterService.new(encounter_merge_params, import_user, current_timezone_offset)
+      MergeEncounterService.new(encounter_merge_params, import_user, current_timezone_offset).merge
     end
   end
 
