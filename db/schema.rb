@@ -800,21 +800,6 @@ ActiveRecord::Schema.define(version: 20200504204839) do
        JOIN users u ON ((u.id = bp.user_id)))
        LEFT JOIN patient_phone_numbers pn ON ((pn.patient_id = p.id)));
   SQL
-  create_view "patient_registrations_per_day_per_facilities", materialized: true, sql_definition: <<-SQL
-      SELECT count(patients.id) AS registration_count,
-      patients.registration_facility_id AS facility_id,
-      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, facilities.deleted_at)) AS deleted_at,
-      (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS day,
-      (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS month,
-      (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS quarter,
-      (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS year
-     FROM (patients
-       JOIN facilities ON ((patients.registration_facility_id = facilities.id)))
-    WHERE (patients.deleted_at IS NULL)
-    GROUP BY (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, patients.registration_facility_id, facilities.deleted_at;
-  SQL
-  add_index "patient_registrations_per_day_per_facilities", ["facility_id", "day", "year"], name: "index_patient_registrations_per_day_per_facilities", unique: true
-
   create_view "patient_summaries", sql_definition: <<-SQL
       SELECT p.recorded_at,
       concat(date_part('year'::text, p.recorded_at), ' Q', date_part('quarter'::text, p.recorded_at)) AS registration_quarter,
@@ -977,4 +962,20 @@ ActiveRecord::Schema.define(version: 20200504204839) do
       users
     WHERE ((blood_pressures.patient_id = patients.id) AND (blood_pressures.facility_id = facilities.id) AND (blood_pressures.user_id = users.id));
   SQL
+  create_view "patient_registrations_per_day_per_facilities", materialized: true, sql_definition: <<-SQL
+      SELECT count(patients.id) AS registration_count,
+      patients.registration_facility_id AS facility_id,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, facilities.deleted_at)) AS deleted_at,
+      (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS day,
+      (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS month,
+      (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS quarter,
+      (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS year
+     FROM ((patients
+       JOIN facilities ON ((patients.registration_facility_id = facilities.id)))
+       JOIN medical_histories ON ((patients.id = medical_histories.patient_id)))
+    WHERE ((patients.deleted_at IS NULL) AND (medical_histories.hypertension = 'yes'::text))
+    GROUP BY (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, patients.registration_facility_id, facilities.deleted_at;
+  SQL
+  add_index "patient_registrations_per_day_per_facilities", ["facility_id", "day", "year"], name: "index_patient_registrations_per_day_per_facilities", unique: true
+
 end
