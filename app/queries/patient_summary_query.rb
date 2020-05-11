@@ -1,6 +1,21 @@
 class PatientSummaryQuery
+  FILTERS = {
+    "only_less_than_year_overdue" => "< 365 days overdue",
+    "phone_number" => "Has phone number",
+    "no_phone_number" => "No phone number",
+    "high_risk" => "High risk only",
+  }.freeze
+
   def self.call(*args)
     new(*args).call
+  end
+
+  def self.filters
+    FILTERS
+  end
+
+  def self.label_for(filter)
+    FILTERS.fetch(filter)
   end
 
   def initialize(relation: PatientSummary.all, filters: [])

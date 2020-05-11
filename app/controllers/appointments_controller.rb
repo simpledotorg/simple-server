@@ -2,7 +2,6 @@ class AppointmentsController < AdminController
   include FacilityFiltering
   include Pagination
 
-  before_action :set_patient_search_filters, only: [:index]
   before_action :set_appointment, only: [:update]
 
   DEFAULT_SEARCH_FILTERS = ["only_less_than_year_overdue"]
@@ -48,15 +47,6 @@ class AppointmentsController < AdminController
   end
 
   private
-
-  def set_patient_search_filters
-    @patient_search_filters = {
-      "only_less_than_year_overdue" => "< 365 days overdue",
-      "phone_number" => "Has phone number",
-      "no_phone_number" => "No phone number",
-      "high_risk" => "High risk only",
-    }
-  end
 
   def index_params
     @index_params ||= params.permit(:facility_id, :per_page, :submitted, search_filters: [])
