@@ -32,7 +32,6 @@ class MyFacilities::OverviewQuery
 
   private
 
-  # unclear if htn-only
   def bps_per_day_in_last_n_days(n:)
     days_list = days_as_sql_list(last_n_days(n: n))
     BloodPressuresPerFacilityPerDay

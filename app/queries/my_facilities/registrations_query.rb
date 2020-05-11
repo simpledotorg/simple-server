@@ -17,7 +17,6 @@ class MyFacilities::RegistrationsQuery
     @periods = period_list(period, last_n)
   end
 
-  # htn-only
   def registrations
     @registrations ||=
       PatientRegistrationsPerDayPerFacility
