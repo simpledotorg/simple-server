@@ -7,7 +7,8 @@
       <a class="filters-modal-toggle" data-toggle="modal" data-target="#filter-modal">
           <span class="filter-tags">
             <% (Array(@search_filters)).each do |filter| %>
-              <span class="badge badge-pill badge-secondary"><%= filter %></span>
+              <% label = @patient_search_filters[filter] %>
+              <span class="badge badge-pill badge-secondary"><%= label %></span>
             <% end %>
           </span>
         <i class="fas fa-filter"></i> Search filters
