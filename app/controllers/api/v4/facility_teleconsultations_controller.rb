@@ -11,7 +11,9 @@ class Api::V4::FacilityTeleconsultationsController < APIController
   private
 
   def teleconsultation_phone_number
-    facility.teleconsultation_isd_code + facility.teleconsultation_phone_number if
+    phone_number = Phonelib.parse(facility.teleconsultation_isd_code.to_s + facility.teleconsultation_phone_number.to_s)
+
+    phone_number.full_e164 if
       facility.teleconsultation_isd_code.present? && facility.teleconsultation_phone_number.present?
   end
 
