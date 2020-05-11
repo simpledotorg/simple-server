@@ -13,6 +13,15 @@ RSpec.describe PatientSummaryQuery do
     expect(PatientSummaryQuery.call).to eq([])
   end
 
+  it "ignores phone number filters if both filters are set" do
+    patient_1 = create(:patient, :with_overdue_appointments)
+    patient_2 = create(:patient, :with_overdue_appointments, phone_numbers: [])
+
+    result = PatientSummaryQuery.call(filters: ["phone_number", "no_phone_number"])
+    expected_patients = result.map(&:patient)
+    expect(result.map(&:id)).to match_array(expected_patients.map(&:id))
+  end
+
   it "can filter out appointments overdue more than a year" do
     expected_patients = create_list(:patient, 2, :with_overdue_appointments)
     really_overdue_patients = really_overdue_appointments.map(&:patient)

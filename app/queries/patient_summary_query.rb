@@ -29,14 +29,17 @@ class PatientSummaryQuery
     else
       relation.all_overdue
     end
+    if filters.include?("high_risk")
+      result = result.where("risk_level = 1")
+    end
+    if filters.include?("phone_number") && filters.include?("no_phone_number")
+      return result
+    end
     if filters.include?("phone_number")
       result = result.where("latest_phone_number is not null")
     end
     if filters.include?("no_phone_number")
       result = result.where("latest_phone_number is null")
-    end
-    if filters.include?("high_risk")
-      result = result.where("risk_level = 1")
     end
     result
   end
