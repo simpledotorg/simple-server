@@ -95,10 +95,16 @@ class CleanBiswanathDupes
 
     puts "- #{actionable_patients.count} patients have new activity or modifications"
 
+    bp_denylist = [
+      '3162e5db-e959-4c3e-af64-5d703ba1dc5a',
+      '081530b8-60d9-47c6-bddf-ac0fe6efc7d4',
+      'e409c013-b52d-4a87-98cf-5088fb31b705'
+    ]
+
     actionable_patients.each do |patient|
       real_patient_id = exact_matches[patient.id]
 
-      blood_pressures = patient.blood_pressures.each { |record| record.update!(patient_id: real_patient_id) }
+      blood_pressures = patient.blood_pressures.where.not(id: bp_denylist).each { |record| record.update!(patient_id: real_patient_id) }
       blood_sugars = patient.blood_sugars.each { |record| record.update!(patient_id: real_patient_id) }
       port_bp_encounters(real_patient_id, blood_pressures)
       port_bs_encounters(real_patient_id, blood_sugars)
