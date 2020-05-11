@@ -6,8 +6,8 @@
     <div class="mt-0 mb-4 active-filters-mobile">
       <a class="filters-modal-toggle" data-toggle="modal" data-target="#filter-modal">
           <span class="filter-tags">
-            <% (Array(@patient_search_filters)).each do |filter, label| %>
-              <span class="badge badge-pill badge-secondary"><%= label %></span>
+            <% (Array(@search_filters)).each do |filter| %>
+              <span class="badge badge-pill badge-secondary"><%= filter %></span>
             <% end %>
           </span>
         <i class="fas fa-filter"></i> Search filters
@@ -28,8 +28,8 @@
             <div class="row">
               <div class="col-6 mb-3">
                 <h4>Patients</h4>
-                <%= form_tag appointments_path, method: :get do %>
-                  <% @search_filters.each do |filter, label| %>
+                <%= form_tag appointments_path, method: :get, id: "search-filters-mobile" do %>
+                  <% @patient_search_filters.each do |filter, label| %>
                     <div class="checkbox-row">
                       <label for=<%= "search-#{filter}-mobile" %>>
                         <% checked = @search_filters.include?(filter) %>
@@ -44,7 +44,7 @@
           </div>
           <div class="modal-footer">
             <a href="?" type="button" class="btn btn-secondary">Clear all</a>
-            <button type="submit" form="query-filters-mobile" class="btn btn-primary">DONE</button>
+            <button type="submit" form="search-filters-mobile" class="btn btn-primary">DONE</button>
           </div>
 
         </div>
@@ -60,9 +60,7 @@
       <section class="secondary-nav-filters">
         <h4>Patients</h4>
 
-        <%= form_tag appointments_path, method: :get do %>
-          <%= hidden_field_tag :facility_id, @facility_id %>
-          <%= hidden_field_tag :per_page, @per_page %>
+        <%= form_tag appointments_path, method: :get, id: "search-filters" do %>
           <%= hidden_field_tag :submitted, true %>
 
           <% Array(@patient_search_filters).each do |filter, label| %>
