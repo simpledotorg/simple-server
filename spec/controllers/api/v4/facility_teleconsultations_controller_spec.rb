@@ -21,7 +21,7 @@ RSpec.describe Api::V4::FacilityTeleconsultationsController, type: :controller d
 
           get :show, params: { facility_id: user.registration_facility.id }
           expect(response).to have_http_status(200)
-          expect(JSON.parse(response.body)['teleconsultation_phone_number']).to eq(isd_code + ' ' + phone_number)
+          expect(JSON.parse(response.body)['teleconsultation_phone_number']).to eq(isd_code + phone_number)
         end
       end
 
@@ -34,7 +34,7 @@ RSpec.describe Api::V4::FacilityTeleconsultationsController, type: :controller d
 
           get :show, params: { facility_id: facility.id }
           expect(response).to have_http_status(200)
-          expect(JSON.parse(response.body)['teleconsultation_phone_number']).to eq(isd_code + ' ' + phone_number)
+          expect(JSON.parse(response.body)['teleconsultation_phone_number']).to eq(isd_code + phone_number)
         end
       end
 
@@ -53,14 +53,14 @@ RSpec.describe Api::V4::FacilityTeleconsultationsController, type: :controller d
 
     context 'Teleconsultation is disabled or phone number is not set up' do
       context 'teleconsultation is disabled' do
-        it 'returns a null phone number' do
+        it 'returns the phone number' do
           user.registration_facility.update!(enable_teleconsultation: false,
                                              teleconsultation_isd_code: isd_code,
                                              teleconsultation_phone_number: phone_number)
 
           get :show, params: { facility_id: user.registration_facility.id }
           expect(response).to have_http_status(200)
-          expect(JSON.parse(response.body)['teleconsultation_phone_number']).to be_nil
+          expect(JSON.parse(response.body)['teleconsultation_phone_number']).to eq(isd_code + phone_number)
         end
       end
 

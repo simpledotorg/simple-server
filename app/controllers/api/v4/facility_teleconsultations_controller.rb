@@ -11,8 +11,8 @@ class Api::V4::FacilityTeleconsultationsController < APIController
   private
 
   def teleconsultation_phone_number
-    "#{facility.teleconsultation_isd_code} #{facility.teleconsultation_phone_number}" if
-      facility.teleconsultation_isd_code && facility.teleconsultation_phone_number && facility.enable_teleconsultation
+    facility.teleconsultation_isd_code + facility.teleconsultation_phone_number if
+      facility.teleconsultation_isd_code.present? && facility.teleconsultation_phone_number.present?
   end
 
   def set_facility
