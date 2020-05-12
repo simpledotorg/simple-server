@@ -36,7 +36,7 @@ RSpec.describe Facility, type: :model do
   end
 
   describe 'Delegates' do
-    context '#patient_follow_ups' do
+    context '#patient_follow_ups_by_period' do
       it 'counts follow_ups across HTN and DM' do
         registration_date = Time.new(2018, 4, 8)
         first_follow_up_date = registration_date + 1.month
@@ -73,11 +73,11 @@ RSpec.describe Facility, type: :model do
           second_follow_up_date.to_date.beginning_of_month => 2
         }
 
-        expect(facility.patient_follow_ups(:month).count).to eq(expected_output)
+        expect(facility.patient_follow_ups_by_period(:month).count).to eq(expected_output)
       end
     end
 
-    context '#hypertension_follow_ups' do
+    context '#hypertension_follow_ups_by_period' do
       it 'counts follow_ups only for hypertensive patients' do
         registration_date = Time.new(2018, 4, 8)
         first_follow_up_date = registration_date + 1.month
@@ -113,11 +113,11 @@ RSpec.describe Facility, type: :model do
           second_follow_up_date.to_date.beginning_of_month => 1
         }
 
-        expect(facility.hypertension_follow_ups(:month).count).to eq(expected_output)
+        expect(facility.hypertension_follow_ups_by_period(:month).count).to eq(expected_output)
       end
     end
 
-    context '#diabetes_follow_ups' do
+    context '#diabetes_follow_ups_by_period' do
       it 'counts follow_ups only for diabetic patients' do
         registration_date = Time.new(2018, 4, 8)
         first_follow_up_date = registration_date + 1.month
@@ -153,7 +153,7 @@ RSpec.describe Facility, type: :model do
           first_follow_up_date.to_date.beginning_of_month => 1
         }
 
-        expect(facility.diabetes_follow_ups(:month).count).to eq(expected_output)
+        expect(facility.diabetes_follow_ups_by_period(:month).count).to eq(expected_output)
       end
     end
   end

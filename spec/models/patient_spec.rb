@@ -84,19 +84,19 @@ describe Patient, type: :model do
   context 'Scopes' do
     describe '.diabetes_only' do
       it 'only includes patients with diagnosis of diabetes' do
-        _htn_patients = create_list(:patient, 2, :diabetes)
-        dm_patients = create(:patient, :hypertension)
+        dm_patients = create_list(:patient, 2, :diabetes)
+        _htn_patients = create(:patient, :hypertension)
 
-        expect(Patient.with_diabetes.count).to match_array(dm_patients)
+        expect(Patient.with_diabetes).to match_array(dm_patients)
       end
     end
 
     describe '.hypertension_only' do
       it 'only  includes patients with diagnosis of hypertension' do
         htn_patients = create_list(:patient, 2, :hypertension)
-        _dm_patients = create(:patient, :diabetes)
+        _dm_patient = create(:patient, :diabetes)
 
-        expect(Patient.with_hypertension.count).to match_array(htn_patients)
+        expect(Patient.with_hypertension).to match_array(htn_patients)
       end
     end
 

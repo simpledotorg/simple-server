@@ -87,7 +87,7 @@
 
     <%= render partial: 'monthly_gender_table',
                locals: { resource: :registrations,
-                         statistics: statistics,
+                         statistics: @statistics,
                          data_table_name: registrations_table_name,
                          monthly_period_list: @user_analytics.monthly_period_list,
                          is_diabetes_enabled: @statistics.dig(:metadata, :is_diabetes_enabled) } %>
@@ -105,7 +105,7 @@
 
     <%= render partial: 'monthly_gender_table',
                locals: { resource: :follow_ups,
-                         statistics: statistics,
+                         statistics: @statistics,
                          data_table_name: follow_ups_table_name,
                          monthly_period_list: @user_analytics.monthly_period_list,
                          is_diabetes_enabled: @statistics.dig(:metadata, :is_diabetes_enabled) } %>

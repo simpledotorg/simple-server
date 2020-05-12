@@ -27,7 +27,7 @@ class Facility < ApplicationRecord
            class_name: "Patient",
            foreign_key: "registration_facility_id"
   has_many :registered_diabetes_patients,
-           -> { diabetes_only },
+           -> { with_diabetes },
            class_name: "Patient",
            foreign_key: "registration_facility_id"
   has_many :registered_hypertension_patients,
