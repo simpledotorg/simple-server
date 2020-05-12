@@ -22,7 +22,7 @@ module PurgeUsersData
     ActiveRecord::Base.transaction do
       models.each do |model|
         puts "Deleting #{model} data"
-        model.delete_all
+        model.with_discarded.delete_all
       end
     end
   end

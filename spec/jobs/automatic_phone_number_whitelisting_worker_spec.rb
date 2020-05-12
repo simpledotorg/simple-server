@@ -21,7 +21,7 @@ RSpec.describe AutomaticPhoneNumberWhitelistingWorker, type: :job do
       'Connection' => 'close',
       'Host' => 'api.exotel.com',
       'Content-Type' => 'application/x-www-form-urlencoded',
-      'User-Agent' => 'http.rb/4.1.1'
+      'User-Agent' => 'http.rb/4.4.1'
     }
   end
   let!(:stub) do
