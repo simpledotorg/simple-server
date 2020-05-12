@@ -82,7 +82,7 @@ describe Patient, type: :model do
   end
 
   context 'Scopes' do
-    describe '.diabetes_only' do
+    describe '.with_diabetes' do
       it 'only includes patients with diagnosis of diabetes' do
         dm_patients = create_list(:patient, 2, :diabetes)
         _htn_patients = create(:patient, :hypertension)
@@ -91,7 +91,7 @@ describe Patient, type: :model do
       end
     end
 
-    describe '.hypertension_only' do
+    describe '.with_hypertension' do
       it 'only  includes patients with diagnosis of hypertension' do
         htn_patients = create_list(:patient, 2, :hypertension)
         _dm_patient = create(:patient, :diabetes)
