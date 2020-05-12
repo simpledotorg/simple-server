@@ -53,17 +53,17 @@ class MyFacilities::BloodPressureControlQuery
 
   def overall_patients
     @overall_patients ||= Patient
-                            .with_hypertension
-                            .where('recorded_at < ?', Time.current.beginning_of_day - REGISTRATION_BUFFER)
-                            .where(registration_facility: facilities)
+                          .with_hypertension
+                          .where('recorded_at < ?', Time.current.beginning_of_day - REGISTRATION_BUFFER)
+                          .where(registration_facility: facilities)
   end
 
   def overall_controlled_bps
     @overall_controlled_bps ||=
       LatestBloodPressuresPerPatient
-        .where(patient: overall_patients)
-        .where('bp_recorded_at > ?', Time.current.beginning_of_day - 90.days)
-        .under_control
+      .where(patient: overall_patients)
+      .where('bp_recorded_at > ?', Time.current.beginning_of_day - 90.days)
+      .under_control
   end
 
   private
@@ -72,8 +72,8 @@ class MyFacilities::BloodPressureControlQuery
 
   def quarterly_registrations
     patients = Patient
-                 .with_hypertension
-                 .where(registration_facility: facilities)
+               .with_hypertension
+               .where(registration_facility: facilities)
 
     @quarterly_registrations ||=
       patients.where('recorded_at >= ? AND recorded_at <= ?',
@@ -85,8 +85,8 @@ class MyFacilities::BloodPressureControlQuery
     visited_in_quarter = next_year_and_quarter(@registration_year, @registration_quarter)
     @quarterly_bps ||=
       LatestBloodPressuresPerPatientPerQuarter
-        .where(patient: quarterly_registrations)
-        .where(year: visited_in_quarter.first, quarter: visited_in_quarter.second)
+      .where(patient: quarterly_registrations)
+      .where(year: visited_in_quarter.first, quarter: visited_in_quarter.second)
   end
 
   def quarterly_controlled_bps
@@ -99,8 +99,8 @@ class MyFacilities::BloodPressureControlQuery
 
   def monthly_registrations
     patients = Patient
-                 .with_hypertension
-                 .where(registration_facility: facilities)
+               .with_hypertension
+               .where(registration_facility: facilities)
 
     @monthly_registrations ||=
       patients.where('recorded_at >= ? AND recorded_at <= ?',
@@ -114,12 +114,12 @@ class MyFacilities::BloodPressureControlQuery
 
     @monthly_bps ||=
       LatestBloodPressuresPerPatientPerMonth
-        .select('distinct on (patient_id) *')
-        .order('patient_id, bp_recorded_at DESC, bp_id')
-        .where(patient: monthly_registrations)
-        .where('(year = ? AND month = ?) OR (year = ? AND month = ?)',
-               visited_in_months.first.year.to_s, visited_in_months.first.month.to_s,
-               visited_in_months.second.year.to_s, visited_in_months.second.month.to_s)
+      .select('distinct on (patient_id) *')
+      .order('patient_id, bp_recorded_at DESC, bp_id')
+      .where(patient: monthly_registrations)
+      .where('(year = ? AND month = ?) OR (year = ? AND month = ?)',
+             visited_in_months.first.year.to_s, visited_in_months.first.month.to_s,
+             visited_in_months.second.year.to_s, visited_in_months.second.month.to_s)
   end
 
   def monthly_bps_cte
@@ -127,8 +127,8 @@ class MyFacilities::BloodPressureControlQuery
     # for ActiveRecord's inability to compose a `COUNT` with a `DISTINCT ON`.
     @monthly_bps_cte ||=
       LatestBloodPressuresPerPatientPerMonth
-        .from(monthly_bps,
-              'latest_blood_pressures_per_patient_per_months')
+      .from(monthly_bps,
+            'latest_blood_pressures_per_patient_per_months')
   end
 
   def monthly_controlled_bps
