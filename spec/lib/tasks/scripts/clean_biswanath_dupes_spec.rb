@@ -86,6 +86,30 @@ RSpec.describe CleanBiswanathDupes do
     end
   end
 
+  describe 'port_exact_match_activity' do
+    it 'ports activity to the exactly matched patient' do
+      dup_patient = create(:patient, registration_user: dup_user)
+      real_patient = create(:patient, registration_user: real_user)
+
+      blood_pressure = create(:blood_pressure, :with_encounter, patient: dup_patient)
+      appointment = create(:appointment, patient: dup_patient)
+      prescription_drug = create(:prescription_drug, patient: dup_patient)
+      medical_history = create(:medical_history, patient: dup_patient)
+
+      cleaner = CleanBiswanathDupes.new
+
+      cleaner.exact_matches = { dup_patient.id => real_patient.id }
+
+      cleaner.call
+
+      expect(blood_pressure.reload.patient).to eq(real_patient)
+      expect(appointment.reload.patient).to eq(real_patient)
+      expect(prescription_drug.reload.patient).to eq(real_patient)
+      expect(medical_history.reload.patient).to eq(real_patient)
+      expect(dup_patient.reload).to be_discarded
+    end
+  end
+
   describe 'port_unmatched_patients' do
     it 'updates registration user of unmatched patients' do
       dup_patient_1 = create(:patient, registration_user: dup_user)
