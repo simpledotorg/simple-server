@@ -13,13 +13,9 @@ RSpec.describe Facility, type: :model do
 
     context 'patients' do
       it 'has distinct patients' do
-        facility =
-          create(:facility)
-
-        dm_patient =
-          create(:patient, :diabetes)
-        htn_patient =
-          create(:patient, :hypertension)
+        facility = create(:facility)
+        dm_patient = create(:patient, :diabetes)
+        htn_patient = create(:patient, :hypertension)
 
         create(:encounter, :with_observables, observable:
           create(:blood_sugar, facility: facility, patient: dm_patient))
@@ -36,25 +32,19 @@ RSpec.describe Facility, type: :model do
     end
 
     it { should belong_to(:facility_group).optional }
-    it { should delegate_method(:follow_ups).to(:patients).with_prefix(:patient) }
+    it { should delegate_method(:follow_ups_by_period).to(:patients).with_prefix(:patient) }
   end
 
   describe 'Delegates' do
-    context '#patient_follow_ups' do
+    context '#patient_follow_ups_by_period' do
       it 'counts follow_ups across HTN and DM' do
         registration_date = Time.new(2018, 4, 8)
         first_follow_up_date = registration_date + 1.month
         second_follow_up_date = first_follow_up_date + 1.month
 
-        facility =
-          create(:facility)
-
-        dm_patient =
-          create(:patient, :diabetes,
-                 recorded_at: registration_date)
-        htn_patient =
-          create(:patient, :hypertension,
-                 recorded_at: registration_date)
+        facility = create(:facility)
+        dm_patient = create(:patient, :diabetes, recorded_at: registration_date)
+        htn_patient = create(:patient, :hypertension, recorded_at: registration_date)
 
         create(:encounter, :with_observables, observable:
           create(:blood_sugar,
@@ -83,25 +73,19 @@ RSpec.describe Facility, type: :model do
           second_follow_up_date.to_date.beginning_of_month => 2
         }
 
-        expect(facility.patient_follow_ups(:month).count).to eq(expected_output)
+        expect(facility.patient_follow_ups_by_period(:month).count).to eq(expected_output)
       end
     end
 
-    context '#hypertension_follow_ups' do
+    context '#hypertension_follow_ups_by_period' do
       it 'counts follow_ups only for hypertensive patients' do
         registration_date = Time.new(2018, 4, 8)
         first_follow_up_date = registration_date + 1.month
         second_follow_up_date = first_follow_up_date + 1.month
 
-        facility =
-          create(:facility)
-
-        dm_patient =
-          create(:patient, :diabetes,
-                 recorded_at: registration_date)
-        htn_patient =
-          create(:patient, :hypertension,
-                 recorded_at: registration_date)
+        facility = create(:facility)
+        dm_patient = create(:patient, :diabetes, recorded_at: registration_date)
+        htn_patient = create(:patient, :hypertension, recorded_at: registration_date)
 
         create(:encounter, :with_observables, observable:
           create(:blood_sugar,
@@ -129,25 +113,19 @@ RSpec.describe Facility, type: :model do
           second_follow_up_date.to_date.beginning_of_month => 1
         }
 
-        expect(facility.hypertension_follow_ups(:month).count).to eq(expected_output)
+        expect(facility.hypertension_follow_ups_by_period(:month).count).to eq(expected_output)
       end
     end
 
-    context '#diabetes_follow_ups' do
+    context '#diabetes_follow_ups_by_period' do
       it 'counts follow_ups only for diabetic patients' do
         registration_date = Time.new(2018, 4, 8)
         first_follow_up_date = registration_date + 1.month
         second_follow_up_date = first_follow_up_date + 1.month
 
-        facility =
-          create(:facility)
-
-        dm_patient =
-          create(:patient, :diabetes,
-                 recorded_at: registration_date)
-        htn_patient =
-          create(:patient, :hypertension,
-                 recorded_at: registration_date)
+        facility = create(:facility)
+        dm_patient = create(:patient, :diabetes, recorded_at: registration_date)
+        htn_patient = create(:patient, :hypertension, recorded_at: registration_date)
 
         create(:encounter, :with_observables, observable:
           create(:blood_sugar,
@@ -175,7 +153,7 @@ RSpec.describe Facility, type: :model do
           first_follow_up_date.to_date.beginning_of_month => 1
         }
 
-        expect(facility.diabetes_follow_ups(:month).count).to eq(expected_output)
+        expect(facility.diabetes_follow_ups_by_period(:month).count).to eq(expected_output)
       end
     end
   end

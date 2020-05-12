@@ -51,21 +51,21 @@ class Patient < ApplicationRecord
 
   attribute :call_result, :string
 
-  scope :diabetes_only, -> { joins(:medical_history).merge(MedicalHistory.diabetes_yes) }
-  scope :hypertension_only, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes) }
+  scope :with_diabetes, -> { joins(:medical_history).merge(MedicalHistory.diabetes_yes) }
+  scope :with_hypertension, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes) }
 
-  scope :follow_ups, -> (period, last: nil) {
+  scope :follow_ups_by_period, -> (period, last: nil) {
     follow_ups_with(Encounter, period, time_column: 'encountered_on', last: last)
   }
 
-  scope :diabetes_follow_ups, -> (period, last: nil) {
+  scope :diabetes_follow_ups_by_period, -> (period, last: nil) {
     follow_ups_with(BloodSugar, period, last: last)
-      .diabetes_only
+      .with_diabetes
   }
 
-  scope :hypertension_follow_ups, -> (period, last: nil) {
+  scope :hypertension_follow_ups_by_period, -> (period, last: nil) {
     follow_ups_with(BloodPressure, period, last: last)
-      .hypertension_only
+      .with_hypertension
   }
 
   def self.follow_ups_with(model_name, period, time_column: 'recorded_at', last: nil)

@@ -51,7 +51,7 @@ class FacilityAnalyticsQuery
       Patient
         .from(Patient
                 .joins(:blood_pressures)
-                .hypertension_follow_ups(@period, last: @prev_periods)
+                .hypertension_follow_ups_by_period(@period, last: @prev_periods)
                 .distinct(false) # this removes the distinct from hypertension_follow_ups so we can apply DISTINCT ON
                 .group('bp_user_id',
                        'blood_pressures.patient_id',
