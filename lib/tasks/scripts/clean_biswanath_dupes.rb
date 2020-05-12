@@ -1,29 +1,4 @@
 class CleanBiswanathDupes
-  # * Import BD data locally
-  # * Identify the dupe patients (code)
-  # * For the dupe patients, identify the measurements - Appointments, BPs, MHs, Medications, Passports, NIDs, phone_numbers, addresses, patient, Observations, encounters, blood_sugars (code)
-  # * Look up the real patients for the dupes
-  # * Look up the real patients separately in this order of matchability
-  #   * matcher => name, age, address, phone_numbers
-  #   * matcher => name, age, address
-  #   * matcher => name, age
-  # * Port the measurements from dupe patient data to real patient data
-  #
-  # Syncs with user
-  #   * BloodPressure
-  #   * BloodSugar
-  #   * Encounters
-  #   * Observations
-  #   * Appointments
-  #   * Prescription Drug
-  #   * MedicalHistory
-  #
-  # Syncs w/o user
-  #   * Patient
-  #   * Address (patient)  (confirm with mobile team if phone number edit is in place)
-  #   * BusinessIdentifier (confirm with mobile team if phone number edit is in place)
-  #   * PatientPhoneNumber (confirm with mobile team if phone number edit is in place)
-
   def self.call(*args)
     new(*args).call
   end
