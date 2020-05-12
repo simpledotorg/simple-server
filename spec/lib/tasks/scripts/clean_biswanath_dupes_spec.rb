@@ -2,8 +2,8 @@ require 'rails_helper'
 require 'tasks/scripts/clean_biswanath_dupes'
 
 RSpec.describe CleanBiswanathDupes do
-  let(:dup_user) { create(:user, id: '2b469d02-f746-4550-bb91-6651143ca8cc') }
-  let(:real_user) { create(:user) }
+  let!(:dup_user) { create(:user, id: '2b469d02-f746-4550-bb91-6651143ca8cc') }
+  let!(:real_user) { create(:user, full_name: 'biswanath-import-user') }
 
   describe 'identify_patient_matches' do
     it 'matches by name and age' do
@@ -83,6 +83,46 @@ RSpec.describe CleanBiswanathDupes do
       expect(cleaner.exact_matches).to be_empty
       expect(cleaner.ambiguous_matches).to contain_exactly(dup_patient)
       expect(cleaner.no_matches).to be_empty
+    end
+  end
+
+  describe 'port_unmatched_patients' do
+    it 'updates registration user of unmatched patients' do
+      dup_patient_1 = create(:patient, registration_user: dup_user)
+      dup_patient_2 = create(:patient, registration_user: dup_user)
+
+      other_patient = create(:patient)
+      other_user = other_patient.registration_user
+
+      cleaner = CleanBiswanathDupes.new
+
+      cleaner.no_matches = [dup_patient_1, dup_patient_2]
+
+      cleaner.call
+
+      expect(dup_patient_1.registration_user).to eq(real_user)
+      expect(dup_patient_2.registration_user).to eq(real_user)
+
+      expect(other_patient.registration_user).to eq(other_user)
+    end
+  end
+
+  describe 'deactivate_ambiguous_patients' do
+    it 'deactivates all ambiguous patients' do
+      dup_patient_1 = create(:patient, registration_user: dup_user)
+      dup_patient_2 = create(:patient, registration_user: dup_user)
+
+      other_patient = create(:patient)
+      other_user = other_patient.registration_user
+
+      cleaner = CleanBiswanathDupes.new
+
+      cleaner.ambiguous_matches = [dup_patient_1, dup_patient_2]
+
+      expect(dup_patient_1).to receive(:discard_data)
+      expect(dup_patient_2).to receive(:discard_data)
+
+      cleaner.call
     end
   end
 end
