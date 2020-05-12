@@ -12,7 +12,7 @@ class FacilityAnalyticsQuery
   def total_registered_patients
     @total_registered_patients ||=
       @facility
-        .registered_patients
+        .registered_hypertension_patients
         .group('registration_user_id')
         .distinct('patients.id')
         .count
@@ -27,7 +27,7 @@ class FacilityAnalyticsQuery
   def registered_patients_by_period
     @registered_patients_by_period ||=
       @facility
-        .registered_patients
+        .registered_hypertension_patients
         .group('registration_user_id')
         .group_by_period(@period, :recorded_at)
         .distinct('patients.id')
