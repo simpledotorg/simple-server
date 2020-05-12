@@ -39,7 +39,7 @@ en:
   errors:
     messages:
       password:
-        password_strength: "is too weak. Please avoid common words and reptitive / sequential characters."
+        password_strength: "is too weak. We recommend a passphrase made up of at least four randomly choosen words. For example 'logic finite eager ratio'"
   name: "Name"
   phone_number: "Phone Number"
   registration_approval_email:
