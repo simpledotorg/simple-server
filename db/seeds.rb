@@ -11,9 +11,11 @@ require 'factory_bot_rails'
 require 'faker'
 
 NUM_OF_FACILITY_GROUPS = 1
-NUM_OF_FACILITIES = 2
+NUM_OF_FACILITIES = 4
 MAX_NUM_OF_USERS_PER_FACILITY = 2
 NUM_OF_USERS_PER_FACILITY_FN = -> { rand(1..MAX_NUM_OF_USERS_PER_FACILITY) }
+ADMIN_USER_NAME = 'Admin User'
+ADMIN_USER_EMAIL = 'admin@simple.org'
 
 org = {
   :name => "IHCI"
@@ -123,5 +125,6 @@ end
 #
 # create admin user
 #
-CreateAdminUser.create_owner('Admin User', 'admin@simple.org', ENV['SEED_GENERATED_ADMIN_PASSWORD'])
-
+unless EmailAuthentication.find_by_email(ADMIN_USER_EMAIL)
+  CreateAdminUser.create_owner(ADMIN_USER_NAME, ADMIN_USER_EMAIL, ENV['SEED_GENERATED_ADMIN_PASSWORD'])
+end

@@ -139,6 +139,12 @@ class Api::V4::Schema
         required: %i[user] }
     end
 
+    def facility_teleconsultations_response
+      { type: :object,
+        properties: { teleconsultation_phone_number: { type: [:string, 'null'] } },
+        required: %i[teleconsultation_phone_number] }
+    end
+
     def definitions
       { error: error,
         errors: Api::V4::Models.array_of('error'),

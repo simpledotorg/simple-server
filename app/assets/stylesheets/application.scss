@@ -34,10 +34,10 @@ $font-small: 11px;
 @import "tablesort/tablesort";
 
 // Local imports
-@import "dashboard";
-@import "resources";
-@import "graphs";
-@import "snapshots";
+@import "partials/dashboard";
+@import "partials/resources";
+@import "partials/graphs";
+@import "partials/snapshots";
 
 body {
     padding-top: 5rem;
