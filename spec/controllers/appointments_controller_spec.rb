@@ -83,7 +83,7 @@ RSpec.describe AppointmentsController, type: :controller do
         expect(assigns(:patient_summaries).map(&:id)).to_not include(really_overdue_patient_id)
       end
 
-      it "displays patients with all overdue date when unchecked" do
+      it "displays patients with all overdue date when unchecked and form is submitted" do
         really_overdue_appointment = create(:appointment,
           facility: facility_2,
           scheduled_date: 380.days.ago,
@@ -93,8 +93,8 @@ RSpec.describe AppointmentsController, type: :controller do
         really_overdue_patient_id = really_overdue_appointment.patient_id
 
         get :index, params: {
-          search_filters: [""],
-          per_page: 'All'
+          per_page: 'All',
+          submitted: 'true'
         }
 
         patient_ids = (overdue_appointments_in_facility_1 + overdue_appointments_in_facility_2).map(&:patient_id)
