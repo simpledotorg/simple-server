@@ -1,5 +1,5 @@
-<!-- don't load up the tables for totals and diabetes if diabetes is off -->
-<% if statistics.dig(:metadata, :is_diabetes_enabled) %>
+<!-- load up the tables for totals and diabetes only if diabetes is on -->
+<% if is_diabetes_enabled %>
   <!-- the "all" table for both HTN & DM across genders -->
   <table class="progress-table <%= data_table_name %> all">
     <tr class="total">
@@ -11,7 +11,7 @@
                                                resource)) %>
       </td>
     </tr>
-    <% @user_analytics.monthly_period_list.each do |month_date| %>
+    <% monthly_period_list.each do |month_date| %>
       <tr>
         <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
         <td>
@@ -39,7 +39,7 @@
                                     .sum) %>
       </td>
     </tr>
-    <% @user_analytics.monthly_period_list.each do |month_date| %>
+    <% monthly_period_list.each do |month_date| %>
       <tr>
         <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
         <td>
@@ -67,7 +67,7 @@
                                                gender)) %>
       </td>
     </tr>
-    <% @user_analytics.monthly_period_list.each do |month_date| %>
+    <% monthly_period_list.each do |month_date| %>
       <tr>
         <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
         <td>
@@ -84,9 +84,9 @@
 
 <!-- hypertension-only -->
 <!-- the "all genders" table -->
-<% visibility_for_htn_table = statistics.dig(:metadata, :is_diabetes_enabled) ? 'display: none' : '' %>
+<table class="progress-table <%= data_table_name %> hypertension:all"
+       style="<%= is_diabetes_enabled ? 'display: none' : '' %>">
 
-<table class="progress-table <%= data_table_name %> hypertension:all" style="<%= visibility_for_htn_table %>">
   <tr class="total">
     <td class="row-label">All-time</td>
     <td>
@@ -96,7 +96,7 @@
                                              resource).values.sum) %>
     </td>
   </tr>
-  <% @user_analytics.monthly_period_list.each do |month_date| %>
+  <% monthly_period_list.each do |month_date| %>
     <tr>
       <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
       <td>
@@ -123,7 +123,7 @@
                                                gender)) %>
       </td>
     </tr>
-    <% @user_analytics.monthly_period_list.each do |month_date| %>
+    <% monthly_period_list.each do |month_date| %>
       <tr>
         <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
         <td>
