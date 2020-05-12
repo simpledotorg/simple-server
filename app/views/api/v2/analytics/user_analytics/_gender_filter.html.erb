@@ -1,10 +1,6 @@
 <form>
   <select class="card-dropdown <%= data_table_name %>" onchange='filterDataByGender("<%= data_table_name %>")'>
-    <% if is_diabetes_enabled %>
-      <option value="all">
-        All
-      </option>
-    <% end %>
+    <% if is_diabetes_enabled %><option value="all">All</option><% end %>
 
     <% hypertension_option_text = is_diabetes_enabled ? 'Hypertension: ' : '' %>
 

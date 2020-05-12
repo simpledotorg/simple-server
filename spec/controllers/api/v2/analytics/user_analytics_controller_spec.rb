@@ -2,10 +2,12 @@ require 'rails_helper'
 
 RSpec.describe Api::V2::Analytics::UserAnalyticsController, type: :controller do
   let!(:request_user) { create(:user) }
-  let!(:request_facility) { create(:facility, facility_group: request_user.facility.facility_group) }
 
   describe '#show' do
+    let(:request_facility) { create(:facility, facility_group: request_user.facility.facility_group) }
+
     context 'json' do
+
       before :each do
         request.env['HTTP_X_USER_ID'] = request_user.id
         request.env['HTTP_X_FACILITY_ID'] = request_facility.id
@@ -26,6 +28,10 @@ RSpec.describe Api::V2::Analytics::UserAnalyticsController, type: :controller do
     end
 
     context 'when diabetes management is enabled' do
+      let(:request_facility) { create(:facility,
+                                      enable_diabetes_management: true,
+                                      facility_group: request_user.facility.facility_group) }
+
       before :each do
         request.env['HTTP_X_USER_ID'] = request_user.id
         request.env['HTTP_X_FACILITY_ID'] = request_facility.id
@@ -92,11 +98,13 @@ RSpec.describe Api::V2::Analytics::UserAnalyticsController, type: :controller do
     end
 
     context 'when diabetes management is disabled' do
+      let(:request_facility) { create(:facility,
+                                      enable_diabetes_management: false,
+                                      facility_group: request_user.facility.facility_group) }
+
       before :each do
         request.env['HTTP_X_USER_ID'] = request_user.id
-        request.env['HTTP_X_FACILITY_ID'] = create(:facility,
-                                                   enable_diabetes_management: false,
-                                                   facility_group: request_user.facility.facility_group).id
+        request.env['HTTP_X_FACILITY_ID'] = request_facility.id
         request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
       end
 

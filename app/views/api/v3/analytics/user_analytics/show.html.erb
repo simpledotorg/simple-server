@@ -95,7 +95,11 @@
 
   <!-- monthly follow-up patients view -->
   <div class="card">
-    <h3>Follow-up<%= @statistics.dig(:metadata, :is_diabetes_enabled) ? ' ' : ' hypertension ' %>patients</h3>
+    <% if @statistics.dig(:metadata, :is_diabetes_enabled) %>
+      <h3>Follow-up patients</h3>
+    <% else %>
+      <h3>Follow-up hypertension patients</h3>
+    <% end %>
 
     <% follow_ups_table_name = 'follow_ups' %>
 
