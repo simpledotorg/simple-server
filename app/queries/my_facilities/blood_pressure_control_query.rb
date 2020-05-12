@@ -53,7 +53,7 @@ class MyFacilities::BloodPressureControlQuery
 
   def overall_patients
     @overall_patients ||= Patient
-                            .hypertension_only
+                            .with_hypertension
                             .where('recorded_at < ?', Time.current.beginning_of_day - REGISTRATION_BUFFER)
                             .where(registration_facility: facilities)
   end
@@ -72,7 +72,7 @@ class MyFacilities::BloodPressureControlQuery
 
   def quarterly_registrations
     patients = Patient
-                 .hypertension_only
+                 .with_hypertension
                  .where(registration_facility: facilities)
 
     @quarterly_registrations ||=
@@ -99,7 +99,7 @@ class MyFacilities::BloodPressureControlQuery
 
   def monthly_registrations
     patients = Patient
-                 .hypertension_only
+                 .with_hypertension
                  .where(registration_facility: facilities)
 
     @monthly_registrations ||=

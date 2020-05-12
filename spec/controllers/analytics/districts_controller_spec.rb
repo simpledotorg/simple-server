@@ -17,7 +17,7 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
     # register patients
     #
     registered_patients = Timecop.travel(Date.new(2018, 11, 1)) do
-      create_list(:patient, 3, :hypertension, registration_facility: facility)
+      create_list(:patient, 3, registration_facility: facility)
     end
 
     #

@@ -85,7 +85,7 @@ describe Patient, type: :model do
     describe '.with_diabetes' do
       it 'only includes patients with diagnosis of diabetes' do
         dm_patients = create_list(:patient, 2, :diabetes)
-        _htn_patients = create(:patient, :hypertension)
+        _htn_patients = create(:patient)
 
         expect(Patient.with_diabetes).to match_array(dm_patients)
       end
@@ -93,7 +93,7 @@ describe Patient, type: :model do
 
     describe '.with_hypertension' do
       it 'only  includes patients with diagnosis of hypertension' do
-        htn_patients = create_list(:patient, 2, :hypertension)
+        htn_patients = create_list(:patient, 2)
         _dm_patient = create(:patient, :diabetes)
 
         expect(Patient.with_hypertension).to match_array(htn_patients)
@@ -105,10 +105,7 @@ describe Patient, type: :model do
       let(:current_user) { create(:user) }
       let(:current_facility) { create(:facility, facility_group: current_user.facility.facility_group) }
       let(:follow_up_facility) { create(:facility, facility_group: current_user.facility.facility_group) }
-      let(:hypertensive_patient) { create(:patient,
-                                          :hypertension,
-                                          registration_facility: current_facility,
-                                          recorded_at: reg_date) }
+      let(:hypertensive_patient) { create(:patient, registration_facility: current_facility, recorded_at: reg_date) }
       let(:diabetic_patient) { create(:patient,
                                       :diabetes,
                                       registration_facility: current_facility,

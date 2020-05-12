@@ -27,7 +27,7 @@ class MyFacilities::RegistrationsQuery
   def total_registrations
     @total_registrations ||=
       Patient
-        .hypertension_only
+        .with_hypertension
         .where(registration_facility: @facilities)
   end
 

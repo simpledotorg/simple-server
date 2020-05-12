@@ -17,12 +17,10 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
         before do
           patients = [create(:patient,
-                             :hypertension,
                              registration_facility: current_facility,
                              recorded_at: reg_date,
                              gender: 'female'),
                       create(:patient,
-                             :hypertension,
                              registration_facility: current_facility,
                              recorded_at: reg_date,
                              gender: 'male'),
@@ -195,11 +193,9 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
         before do
           patients = [create(:patient,
-                             :hypertension,
                              registration_facility: current_facility,
                              recorded_at: reg_date),
                       create(:patient,
-                             :hypertension,
                              registration_facility: current_facility,
                              recorded_at: reg_date),
                       create(:patient,
@@ -282,12 +278,10 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
         before do
           patients = [create(:patient,
-                             :hypertension,
                              registration_facility: current_facility,
                              recorded_at: reg_date,
                              gender: 'female'),
                       create(:patient,
-                             :hypertension,
                              registration_facility: current_facility,
                              recorded_at: reg_date,
                              gender: 'male'),
@@ -374,12 +368,10 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
         before do
           patients = [create(:patient,
-                             :hypertension,
                              registration_facility: current_facility,
                              recorded_at: reg_date,
                              gender: 'female'),
                       create(:patient,
-                             :hypertension,
                              registration_facility: current_facility,
                              recorded_at: reg_date,
                              gender: 'male'),
@@ -505,11 +497,9 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
         before do
           patients = [create(:patient,
-                             :hypertension,
                              registration_facility: current_facility,
                              recorded_at: reg_date),
                       create(:patient,
-                             :hypertension,
                              registration_facility: current_facility,
                              recorded_at: reg_date),
                       create(:patient,
@@ -592,12 +582,10 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
         before do
           patients = [create(:patient,
-                             :hypertension,
                              registration_facility: current_facility,
                              recorded_at: reg_date,
                              gender: 'female'),
                       create(:patient,
-                             :hypertension,
                              registration_facility: current_facility,
                              recorded_at: reg_date,
                              gender: 'male'),
@@ -716,7 +704,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
         #
         # create BPs (hypertension follow-ups)
         #
-        patients = create_list(:patient, 3, :hypertension, registration_facility: current_facility)
+        patients = create_list(:patient, 3, registration_facility: current_facility)
         patients.each do |patient|
           [patient.recorded_at + 1.months,
            patient.recorded_at + 2.months,

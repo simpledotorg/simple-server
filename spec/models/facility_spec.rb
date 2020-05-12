@@ -15,7 +15,7 @@ RSpec.describe Facility, type: :model do
       it 'has distinct patients' do
         facility = create(:facility)
         dm_patient = create(:patient, :diabetes)
-        htn_patient = create(:patient, :hypertension)
+        htn_patient = create(:patient)
 
         create(:encounter, :with_observables, observable:
           create(:blood_sugar, facility: facility, patient: dm_patient))
@@ -44,7 +44,7 @@ RSpec.describe Facility, type: :model do
 
         facility = create(:facility)
         dm_patient = create(:patient, :diabetes, recorded_at: registration_date)
-        htn_patient = create(:patient, :hypertension, recorded_at: registration_date)
+        htn_patient = create(:patient, recorded_at: registration_date)
 
         create(:encounter, :with_observables, observable:
           create(:blood_sugar,
@@ -85,7 +85,7 @@ RSpec.describe Facility, type: :model do
 
         facility = create(:facility)
         dm_patient = create(:patient, :diabetes, recorded_at: registration_date)
-        htn_patient = create(:patient, :hypertension, recorded_at: registration_date)
+        htn_patient = create(:patient, recorded_at: registration_date)
 
         create(:encounter, :with_observables, observable:
           create(:blood_sugar,
@@ -125,7 +125,7 @@ RSpec.describe Facility, type: :model do
 
         facility = create(:facility)
         dm_patient = create(:patient, :diabetes, recorded_at: registration_date)
-        htn_patient = create(:patient, :hypertension, recorded_at: registration_date)
+        htn_patient = create(:patient, recorded_at: registration_date)
 
         create(:encounter, :with_observables, observable:
           create(:blood_sugar,

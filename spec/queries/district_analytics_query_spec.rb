@@ -20,7 +20,7 @@ RSpec.describe DistrictAnalyticsQuery do
         # register patients
         #
         registered_patients_on_jan = Timecop.travel(month) do
-          create_list(:patient, 3, :hypertension, registration_facility: facility)
+          create_list(:patient, 3, registration_facility: facility)
         end
 
         #
@@ -102,7 +102,7 @@ RSpec.describe DistrictAnalyticsQuery do
 
   context 'for discarded patients' do
     let!(:patients) do
-      Timecop.travel(four_months_back) { create_list(:patient, 2, :hypertension, registration_facility: facility) }
+      Timecop.travel(four_months_back) { create_list(:patient, 2, registration_facility: facility) }
     end
 
     before do

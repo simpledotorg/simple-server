@@ -63,11 +63,7 @@ RSpec.describe Api::V2::Analytics::UserAnalyticsController, type: :controller do
               #
               # create BPs (follow-ups)
               #
-              patients = create_list(:patient,
-                                     3,
-                                     :hypertension,
-                                     registration_facility: request_facility,
-                                     recorded_at: request_date)
+              patients = create_list(:patient, 3, registration_facility: request_facility, recorded_at: request_date)
               patients.each do |patient|
                 [patient.recorded_at + 1.month,
                  patient.recorded_at + 2.months,
