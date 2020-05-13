@@ -5,7 +5,7 @@ class Api::V4::FacilityTeleconsultationsController < APIController
   attr_reader :facility
 
   def show
-    render json: { teleconsultation_phone_number: facility.teleconsultation_full_number }
+    render json: { teleconsultation_phone_number: facility.teleconsultation_phone_number_with_isd }
   end
 
   private

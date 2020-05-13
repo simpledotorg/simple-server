@@ -139,8 +139,8 @@ class Facility < ApplicationRecord
     enable_teleconsultation.present?
   end
 
-  def teleconsultation_full_number
-    return unless teleconsultation_isd_code.present? && teleconsultation_phone_number.present?
+  def teleconsultation_phone_number_with_isd
+    return if teleconsultation_isd_code.blank? || teleconsultation_phone_number.blank?
 
     Phonelib.parse(teleconsultation_isd_code + teleconsultation_phone_number).full_e164
   end
