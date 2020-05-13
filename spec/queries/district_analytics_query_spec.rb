@@ -23,6 +23,7 @@ RSpec.describe DistrictAnalyticsQuery do
           create_list(:patient, 3, registration_facility: facility)
         end
 
+        Timecop.travel(month) { create(:patient, :hypertension_no, registration_facility: facility) }
         #
         # add blood_pressures next month
         #
@@ -44,7 +45,7 @@ RSpec.describe DistrictAnalyticsQuery do
     end
 
     describe '#registered_patients_by_period' do
-      it 'groups the registered patients by facility and beginning of month' do
+      it 'groups the registered patients diagnosed as hypertensive by facility and beginning of month' do
         expected_result =
           { facility.id =>
               { registered_patients_by_period: {
@@ -57,7 +58,7 @@ RSpec.describe DistrictAnalyticsQuery do
     end
 
     describe '#total_registered_patients' do
-      it 'groups the registered patients by facility' do
+      it 'groups the registered patients diagnosed as hypertensive by facility' do
         expected_result =
           { facility.id =>
               {
