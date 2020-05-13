@@ -17,15 +17,10 @@ RSpec.describe Facility, type: :model do
         dm_patient = create(:patient, :diabetes)
         htn_patient = create(:patient)
 
-        create(:encounter, :with_observables, observable:
-          create(:blood_sugar, facility: facility, patient: dm_patient))
-        create(:encounter, :with_observables, observable:
-          create(:blood_sugar, facility: facility, patient: htn_patient))
-
-        create(:encounter, :with_observables, observable:
-          create(:blood_pressure, facility: facility, patient: htn_patient))
-        create(:encounter, :with_observables, observable:
-          create(:blood_pressure, facility: facility, patient: dm_patient))
+        create(:blood_sugar, :with_encounter, facility: facility, patient: dm_patient)
+        create(:blood_sugar, :with_encounter, facility: facility, patient: htn_patient)
+        create(:blood_pressure, :with_encounter, facility: facility, patient: htn_patient)
+        create(:blood_pressure, :with_encounter,facility: facility, patient: dm_patient)
 
         expect(facility.patients.count).to eq(2)
       end
@@ -46,27 +41,10 @@ RSpec.describe Facility, type: :model do
         dm_patient = create(:patient, :diabetes, recorded_at: registration_date)
         htn_patient = create(:patient, recorded_at: registration_date)
 
-        create(:encounter, :with_observables, observable:
-          create(:blood_sugar,
-                 facility: facility,
-                 patient: dm_patient,
-                 recorded_at: first_follow_up_date))
-        create(:encounter, :with_observables, observable:
-          create(:blood_sugar,
-                 facility: facility,
-                 patient: htn_patient,
-                 recorded_at: first_follow_up_date))
-
-        create(:encounter, :with_observables, observable:
-          create(:blood_pressure,
-                 facility: facility,
-                 patient: htn_patient,
-                 recorded_at: second_follow_up_date))
-        create(:encounter, :with_observables, observable:
-          create(:blood_pressure,
-                 facility: facility,
-                 patient: dm_patient,
-                 recorded_at: second_follow_up_date))
+        create(:blood_sugar, :with_encounter, facility: facility, patient: dm_patient, recorded_at: first_follow_up_date)
+        create(:blood_sugar, :with_encounter, facility: facility, patient: htn_patient, recorded_at: first_follow_up_date)
+        create(:blood_pressure, :with_encounter, facility: facility, patient: htn_patient, recorded_at: second_follow_up_date)
+        create(:blood_pressure, :with_encounter, facility: facility, patient: dm_patient, recorded_at: second_follow_up_date)
 
         expected_output = {
           first_follow_up_date.to_date.beginning_of_month => 2,
@@ -87,27 +65,10 @@ RSpec.describe Facility, type: :model do
         dm_patient = create(:patient, :diabetes, recorded_at: registration_date)
         htn_patient = create(:patient, recorded_at: registration_date)
 
-        create(:encounter, :with_observables, observable:
-          create(:blood_sugar,
-                 facility: facility,
-                 patient: dm_patient,
-                 recorded_at: first_follow_up_date))
-        create(:encounter, :with_observables, observable:
-          create(:blood_sugar,
-                 facility: facility,
-                 patient: htn_patient,
-                 recorded_at: first_follow_up_date))
-
-        create(:encounter, :with_observables, observable:
-          create(:blood_pressure,
-                 facility: facility,
-                 patient: htn_patient,
-                 recorded_at: second_follow_up_date))
-        create(:encounter, :with_observables, observable:
-          create(:blood_pressure,
-                 facility: facility,
-                 patient: dm_patient,
-                 recorded_at: second_follow_up_date))
+        create(:blood_sugar, :with_encounter, facility: facility, patient: dm_patient, recorded_at: first_follow_up_date)
+        create(:blood_sugar, :with_encounter, facility: facility, patient: htn_patient, recorded_at: first_follow_up_date)
+        create(:blood_pressure, :with_encounter, facility: facility, patient: htn_patient, recorded_at: second_follow_up_date)
+        create(:blood_pressure, :with_encounter, facility: facility, patient: dm_patient, recorded_at: second_follow_up_date)
 
         expected_output = {
           second_follow_up_date.to_date.beginning_of_month => 1
@@ -127,27 +88,10 @@ RSpec.describe Facility, type: :model do
         dm_patient = create(:patient, :diabetes, recorded_at: registration_date)
         htn_patient = create(:patient, recorded_at: registration_date)
 
-        create(:encounter, :with_observables, observable:
-          create(:blood_sugar,
-                 facility: facility,
-                 patient: dm_patient,
-                 recorded_at: first_follow_up_date))
-        create(:encounter, :with_observables, observable:
-          create(:blood_sugar,
-                 facility: facility,
-                 patient: htn_patient,
-                 recorded_at: first_follow_up_date))
-
-        create(:encounter, :with_observables, observable:
-          create(:blood_pressure,
-                 facility: facility,
-                 patient: htn_patient,
-                 recorded_at: second_follow_up_date))
-        create(:encounter, :with_observables, observable:
-          create(:blood_pressure,
-                 facility: facility,
-                 patient: dm_patient,
-                 recorded_at: second_follow_up_date))
+        create(:blood_sugar, :with_encounter, facility: facility, patient: dm_patient, recorded_at: first_follow_up_date)
+        create(:blood_sugar, :with_encounter, facility: facility, patient: htn_patient, recorded_at: first_follow_up_date)
+        create(:blood_pressure, :with_encounter, facility: facility, patient: htn_patient, recorded_at: second_follow_up_date)
+        create(:blood_pressure, :with_encounter, facility: facility, patient: dm_patient, recorded_at: second_follow_up_date)
 
         expected_output = {
           first_follow_up_date.to_date.beginning_of_month => 1

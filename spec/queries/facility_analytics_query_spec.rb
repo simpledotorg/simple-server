@@ -164,12 +164,8 @@ RSpec.describe FacilityAnalyticsQuery do
 
     before do
       Timecop.travel(three_months_back) do
-        create(:encounter,
-               :with_observables,
-               observable: create(:blood_pressure, patient: patients.first, facility: facility, user: users.first))
-        create(:encounter,
-               :with_observables,
-               observable: create(:blood_pressure, patient: patients.second, facility: facility, user: users.first))
+        create(:blood_pressure, :with_encounter, patient: patients.first, facility: facility, user: users.first)
+        create(:blood_pressure, :with_encounter, patient: patients.second, facility: facility, user: users.first)
       end
       patients.first.discard_data
     end
