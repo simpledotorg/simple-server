@@ -4,6 +4,8 @@
   RUBY_VERSION=$(cat .ruby-version)
 } > /dev/null 2>&1
 
+BUNDLER_VERSION=1.17.3
+
 init (){
   verify_ruby_version && verify_bundled_gems && verify_yarn_packages
   verify_foreman
@@ -117,7 +119,7 @@ verify_ruby_version (){
 verify_bundled_gems (){
   echo 'Updating gems...'
   {
-    (gem list -i bundler || gem install bundler) && bundle install --binstubs=./bundle/bin
+    (gem list -i -v ${BUNDLER_VERSION} bundler || gem install bundler -v ${BUNDLER_VERSION}) && bundle _${BUNDLER_VERSION}_ install --binstubs=./bundle/bin
   } 2>&1
 }
 
