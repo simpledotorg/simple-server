@@ -28,7 +28,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
     it 'returns a success response' do
       facility_group = FacilityGroup.create! valid_attributes
       get :index, params: { organization_id: organization.id }
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
@@ -36,14 +36,14 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
     it 'returns a success response' do
       facility_group = FacilityGroup.create! valid_attributes
       get :show, params: { id: facility_group.to_param, organization_id: organization.id }
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
   describe 'GET #new' do
     it 'returns a success response' do
       get :new, params: { organization_id: organization.id }
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
@@ -51,7 +51,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
     it 'returns a success response' do
       facility_group = FacilityGroup.create! valid_attributes
       get :edit, params: { id: facility_group.to_param, organization_id: organization.id }
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
@@ -72,7 +72,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
     context 'with invalid params' do
       it "returns a success response (i.e. to display the 'new' template)" do
         post :create, params: { facility_group: invalid_attributes, organization_id: organization.id }
-        expect(response).to be_success
+        expect(response).to be_successful
       end
     end
   end
@@ -106,7 +106,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       it "returns a success response (i.e. to display the 'edit' template)" do
         facility_group = FacilityGroup.create! valid_attributes
         put :update, params: { id: facility_group.to_param, facility_group: invalid_attributes, organization_id: organization.id }
-        expect(response).to be_success
+        expect(response).to be_successful
       end
     end
   end

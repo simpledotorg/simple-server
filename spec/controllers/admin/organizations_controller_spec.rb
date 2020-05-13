@@ -18,14 +18,14 @@ RSpec.describe Admin::OrganizationsController, type: :controller do
     it 'returns a success response' do
       organization = Organization.create! valid_attributes
       get :index, params: {}
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
   describe 'GET #new' do
     it 'returns a success response' do
       get :new, params: {}
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
@@ -33,7 +33,7 @@ RSpec.describe Admin::OrganizationsController, type: :controller do
     it 'returns a success response' do
       organization = Organization.create! valid_attributes
       get :edit, params: { id: organization.to_param }
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
@@ -54,7 +54,7 @@ RSpec.describe Admin::OrganizationsController, type: :controller do
     context 'with invalid params' do
       it "returns a success response (i.e. to display the 'new' template)" do
         post :create, params: { organization: invalid_attributes }
-        expect(response).to be_success
+        expect(response).to be_successful
       end
     end
   end
@@ -84,7 +84,7 @@ RSpec.describe Admin::OrganizationsController, type: :controller do
       it "returns a success response (i.e. to display the 'edit' template)" do
         organization = Organization.create! valid_attributes
         put :update, params: { id: organization.to_param, organization: invalid_attributes }
-        expect(response).to be_success
+        expect(response).to be_successful
       end
     end
   end

@@ -22,7 +22,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
     it 'returns a success response' do
       get :index, params: {}
 
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
@@ -30,7 +30,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
     it 'returns a success response' do
       get :ranked_facilities, params: {}
 
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
@@ -38,7 +38,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
     it 'returns a success response' do
       get :blood_pressure_control, params: {}
 
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
@@ -54,7 +54,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
     it 'returns a success response' do
       get :registrations, params: {}
 
-      expect(response).to be_success
+      expect(response).to be_successful
     end
 
     it 'instantiates a MyFacilities::RegistrationsQuery object with the right arguments and calls the required methods' do
@@ -85,7 +85,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
     it 'returns a success response' do
       get :missed_visits, params: {}
 
-      expect(response).to be_success
+      expect(response).to be_successful
     end
 
     it 'instantiates a MyFacilities::MissedVisitsQuery object with the right arguments and calls the required methods' do
