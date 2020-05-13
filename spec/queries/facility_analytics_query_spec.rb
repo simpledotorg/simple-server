@@ -61,33 +61,37 @@ RSpec.describe FacilityAnalyticsQuery do
     end
 
     describe '#registered_patients_by_period' do
-      it 'groups the registered patients diagnosed as hypertensive by facility and beginning of month' do
-        expected_result =
-          { users.first.id =>
-              { registered_patients_by_period: { five_months_back => 3,
-                                                 four_months_back => 3 } },
+      context 'considers only htn diagnosed patients' do
+        it 'groups the registered patients by facility and beginning of month' do
+          expected_result =
+            { users.first.id =>
+                { registered_patients_by_period: { five_months_back => 3,
+                                                   four_months_back => 3 } },
 
-            users.second.id =>
-              { registered_patients_by_period: { five_months_back => 3,
-                                                 four_months_back => 3 } } }
+              users.second.id =>
+                { registered_patients_by_period: { five_months_back => 3,
+                                                   four_months_back => 3 } } }
 
-        expect(analytics.registered_patients_by_period).to eq(expected_result)
+          expect(analytics.registered_patients_by_period).to eq(expected_result)
+        end
       end
     end
 
     describe '#total_registered_patients' do
-      it 'groups the registered patients diagnosed as hypertensive by facility and beginning of month' do
-        expected_result =
-          { users.first.id =>
-              {
-                total_registered_patients: 6
-              },
-            users.second.id =>
-              {
-                total_registered_patients: 6
-              } }
+      context 'considers only htn diagnosed patients' do
+        it 'groups the registered patients by facility and beginning of month' do
+          expected_result =
+            { users.first.id =>
+                {
+                  total_registered_patients: 6
+                },
+              users.second.id =>
+                {
+                  total_registered_patients: 6
+                } }
 
-        expect(analytics.total_registered_patients).to eq(expected_result)
+          expect(analytics.total_registered_patients).to eq(expected_result)
+        end
       end
     end
 
