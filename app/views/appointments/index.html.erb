@@ -6,24 +6,8 @@
            current_admin: current_admin,
            facility_id: @facility_id,
            per_page: @per_page,
+           form_id: "search-filters",
            scope_namespace: [:overdue_list, Facility]) %>
-
-<% if @patient_summaries.present? && policy([:overdue_list, @patient_summaries.first]).download? %>
-  <h2 name="download_text">Downloads</h2>
-
-  <div class="mb-5 mt-3">
-    <% if @facility_id == "All" %>
-      <div class="text-grey">
-        <i class="far fa-file-excel mr-2"></i> Select a facility to download Overdue Patients list
-      </div>
-    <% else %>
-      <%= link_to(appointments_path(facility_id: @facility_id, format: "csv"), class: "", data: { confirm: I18n.t('admin.phi_download_alert') }) do %>
-        <i class='far fa-file-excel mr-2'></i>
-        Download overdue list
-      <% end %>
-    <% end %>
-  </div>
-<% end %>
 
 <% if @patient_summaries.present? %>
   <h2>Patient list</h2>
