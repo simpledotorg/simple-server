@@ -82,8 +82,8 @@ RSpec.describe MyFacilities::OverviewQuery do
       end
     end
 
-    it 'counts only bps for patients diagnosed with hypertension' do
-      expect(described_class.new(facilities: facility).total_bps_in_last_n_days(n: 2)[facility.id]).to eq(1)
+    context 'considers only htn diagnosed patients' do
+      specify { expect(described_class.new(facilities: facility).total_bps_in_last_n_days(n: 2)[facility.id]).to eq(1) }
     end
   end
 end

@@ -35,8 +35,8 @@ RSpec.describe MyFacilities::RegistrationsQuery do
           end
         end
 
-        it 'counts registrations diagnosed with hypertension in the last_n quarters' do
-          expect(registrations_query.registrations.count).to eq(included_timestamps.count)
+        context 'considers only htn diagnosed patients' do
+          specify { expect(registrations_query.registrations.count).to eq(included_timestamps.count) }
         end
       end
 
@@ -58,8 +58,8 @@ RSpec.describe MyFacilities::RegistrationsQuery do
           end
         end
 
-        it 'counts registrations diagnosed with hypertension in the last_n months' do
-          expect(registrations_query.registrations.count).to eq(included_timestamps.count)
+        context 'considers only htn diagnosed patients' do
+          specify { expect(registrations_query.registrations.count).to eq(included_timestamps.count) }
         end
       end
 
@@ -79,8 +79,8 @@ RSpec.describe MyFacilities::RegistrationsQuery do
           end
         end
 
-        it 'counts registrations diagnosed with hypertension in the last_n days' do
-          expect(registrations_query.registrations.count).to eq(included_timestamps.count)
+        context 'considers only htn diagnosed patients' do
+          specify { expect(registrations_query.registrations.count).to eq(included_timestamps.count) }
         end
       end
     end

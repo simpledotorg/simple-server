@@ -105,27 +105,29 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
         end
       end
 
-      describe '#cohort_registrations' do
-        it 'counts registrations diagnosed with hypertension' do
-          expect(query.cohort_registrations.count).to eq(7)
+      context 'considers only htn diagnosed patients' do
+        describe '#cohort_registrations' do
+          specify do
+            expect(query.cohort_registrations.count).to eq(7)
+          end
         end
-      end
 
-      describe '#cohort_controlled_bps' do
-        it 'counts controlled bps of patients diagnosed with hypertension' do
-          expect(query.cohort_controlled_bps.count).to eq(2)
+        describe '#cohort_controlled_bps' do
+          specify do
+            expect(query.cohort_controlled_bps.count).to eq(2)
+          end
         end
-      end
 
-      describe '#cohort_uncontrolled_bps' do
-        it 'counts uncontrolled bps of patients diagnosed with hypertension' do
-          expect(query.cohort_uncontrolled_bps.count).to eq(3)
+        describe '#cohort_uncontrolled_bps' do
+          specify do
+            expect(query.cohort_uncontrolled_bps.count).to eq(3)
+          end
         end
-      end
 
-      describe '#cohort_missed_visits_count' do
-        it 'counts missed visits by patients diagnosed with hypertension' do
-          expect(query.cohort_missed_visits_count).to eq(2)
+        describe '#cohort_missed_visits_count' do
+          specify do
+            expect(query.cohort_missed_visits_count).to eq(2)
+          end
         end
       end
     end
@@ -245,27 +247,29 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
         end
       end
 
-      describe '#cohort_registrations' do
-        it 'counts registrations diagnosed with hypertension' do
-          expect(query.cohort_registrations.count).to eq(7)
+      context 'considers only htn diagnosed patients' do
+        describe '#cohort_registrations' do
+          specify do
+            expect(query.cohort_registrations.count).to eq(7)
+          end
         end
-      end
 
-      describe '#cohort_controlled_bps' do
-        it 'counts controlled bps of patients diagnosed with hypertension' do
-          expect(query.cohort_controlled_bps.count).to eq(2)
+        describe '#cohort_controlled_bps' do
+          specify do
+            expect(query.cohort_controlled_bps.count).to eq(2)
+          end
         end
-      end
 
-      describe '#cohort_uncontrolled_bps' do
-        it 'counts uncontrolled bps of patients diagnosed with hypertension' do
-          expect(query.cohort_uncontrolled_bps.count).to eq(3)
+        describe '#cohort_uncontrolled_bps' do
+          specify do
+            expect(query.cohort_uncontrolled_bps.count).to eq(3)
+          end
         end
-      end
 
-      describe '#cohort_missed_visits_count' do
-        it 'counts missed visits by patients diagnosed with hypertension' do
-          expect(query.cohort_missed_visits_count).to eq(2)
+        describe '#cohort_missed_visits_count' do
+          specify do
+            expect(query.cohort_missed_visits_count).to eq(2)
+          end
         end
       end
     end
@@ -373,15 +377,15 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
         end
       end
 
-      describe '#overall_patients' do
-        it 'counts hypertensive patients in the appropriate registration period' do
-          expect(described_class.new.overall_patients.count).to eq(5)
+      context 'considers only htn diagnosed patients' do
+        describe '#overall_patients' do
+          specify { expect(described_class.new.overall_patients.count).to eq(5) }
         end
-      end
 
-      describe '#overall_controlled_bps' do
-        it 'counts bp_for_patient_with_recent_bp' do
-          expect(described_class.new.overall_controlled_bps.count).to eq(1)
+        describe '#overall_controlled_bps' do
+          it 'counts bp_for_patient_with_recent_bp' do
+            expect(described_class.new.overall_controlled_bps.count).to eq(1)
+          end
         end
       end
     end
