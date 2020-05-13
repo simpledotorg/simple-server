@@ -11,6 +11,16 @@ FactoryBot.define do
     association :user, strategy: :create
     association :patient, strategy: :create
 
+    trait(:with_encounter) do
+      after :build do |blood_pressure|
+        create(:encounter,
+               :with_observables,
+               patient: blood_pressure.patient,
+               observable: blood_pressure,
+               facility: blood_pressure.facility)
+      end
+    end
+
     trait :critical do
       systolic { 181 }
       diastolic { 111 }
