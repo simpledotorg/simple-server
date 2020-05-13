@@ -49,6 +49,10 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
         end
       end
 
+      let!(:non_htn_patient) do
+        create(:patient, :hypertension_no, recorded_at: cohort_range.sample, registration_facility: facility, registration_user: user)
+      end
+
       let!(:controlled_blood_pressures) do
         patients_with_controlled_bp.map do |patient|
           create(:blood_pressure,
@@ -71,8 +75,22 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
         end
       end
 
-      let!(:query) do
+      let!(:bps_for_non_htn_patient) do
+        [create(:blood_pressure,
+                :under_control,
+                facility: facility,
+                patient: non_htn_patient,
+                recorded_at: current_quarter_range.sample,
+                user: user),
+         create(:blood_pressure,
+                :hypertensive,
+                facility: facility,
+                patient: non_htn_patient,
+                recorded_at: current_quarter_range.sample,
+                user: user)]
+      end
 
+      let!(:query) do
         described_class.new(facilities: Facility.all,
                             cohort_period: { cohort_period: :quarter,
                                              registration_quarter: registration_quarter,
@@ -88,25 +106,25 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       end
 
       describe '#cohort_registrations' do
-        specify do
+        it 'counts registrations diagnosed with hypertension' do
           expect(query.cohort_registrations.count).to eq(7)
         end
       end
 
       describe '#cohort_controlled_bps' do
-        specify do
+        it 'counts controlled bps of patients diagnosed with hypertension' do
           expect(query.cohort_controlled_bps.count).to eq(2)
         end
       end
 
       describe '#cohort_uncontrolled_bps' do
-        specify do
+        it 'counts uncontrolled bps of patients diagnosed with hypertension' do
           expect(query.cohort_uncontrolled_bps.count).to eq(3)
         end
       end
 
       describe '#cohort_missed_visits_count' do
-        specify do
+        it 'counts missed visits by patients diagnosed with hypertension' do
           expect(query.cohort_missed_visits_count).to eq(2)
         end
       end
@@ -166,6 +184,10 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
         end
       end
 
+      let!(:non_htn_patient) do
+        create(:patient, :hypertension_no, recorded_at: cohort_range.sample, registration_facility: facility, registration_user: user)
+      end
+
       let!(:controlled_blood_pressures) do
         patients_with_controlled_bp.map do |patient|
           create(:blood_pressure,
@@ -194,6 +216,21 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
         end
       end
 
+      let!(:bps_for_non_htn_patient) do
+        [create(:blood_pressure,
+                :under_control,
+                facility: facility,
+                patient: non_htn_patient,
+                recorded_at: current_month_range.sample,
+                user: user),
+         create(:blood_pressure,
+                :hypertensive,
+                facility: facility,
+                patient: non_htn_patient,
+                recorded_at: previous_month_range.sample,
+                user: user)]
+      end
+
       let!(:query) do
         described_class.new(facilities: Facility.all,
                             cohort_period: { cohort_period: :month,
@@ -209,25 +246,25 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       end
 
       describe '#cohort_registrations' do
-        specify do
+        it 'counts registrations diagnosed with hypertension' do
           expect(query.cohort_registrations.count).to eq(7)
         end
       end
 
       describe '#cohort_controlled_bps' do
-        specify do
+        it 'counts controlled bps of patients diagnosed with hypertension' do
           expect(query.cohort_controlled_bps.count).to eq(2)
         end
       end
 
       describe '#cohort_uncontrolled_bps' do
-        specify do
+        it 'counts uncontrolled bps of patients diagnosed with hypertension' do
           expect(query.cohort_uncontrolled_bps.count).to eq(3)
         end
       end
 
       describe '#cohort_missed_visits_count' do
-        specify do
+        it 'counts missed visits by patients diagnosed with hypertension' do
           expect(query.cohort_missed_visits_count).to eq(2)
         end
       end
@@ -255,6 +292,14 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
 
       let!(:patients_with_missed_visit) do
         create(:patient, registration_facility: facility, registration_user: user, recorded_at: 4.months.ago)
+      end
+
+      let!(:non_htn_patient_with_recent_bp) do
+        create(:patient, :hypertension_no, registration_facility: facility, registration_user: user, recorded_at: 4.months.ago)
+      end
+
+      let!(:old_patient) do
+        create(:patient, registration_facility: facility, registration_user: user, recorded_at: 6.months.ago)
       end
 
       let!(:bp_for_recent_patient) do
@@ -293,11 +338,25 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
                user: user)
       end
 
-      let!(:old_patient) do
-        create(:patient, registration_facility: facility, registration_user: user, recorded_at: 6.months.ago)
+      let!(:bp_for_patient_with_uncontrolled_bp) do
+        create(:blood_pressure,
+               :hypertensive,
+               patient: patients_with_uncontrolled_bp,
+               recorded_at: 4.months.ago,
+               facility: facility,
+               user: user)
       end
 
-      let!(:old_bp) do
+      let!(:bp_for_non_htn_patient_with_recent_bp) do
+        create(:blood_pressure,
+               :under_control,
+               patient: non_htn_patient_with_recent_bp,
+               recorded_at: 1.week.ago,
+               facility: facility,
+               user: user)
+      end
+
+      let!(:old_bp_for_old_patient) do
         create(:blood_pressure,
                :under_control,
                facility: facility,
@@ -315,11 +374,15 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       end
 
       describe '#overall_patients' do
-        specify { expect(described_class.new.overall_patients.count).to eq(5) }
+        it 'counts hypertensive patients in the appropriate registration period' do
+          expect(described_class.new.overall_patients.count).to eq(5)
+        end
       end
 
       describe '#overall_controlled_bps' do
-        specify { expect(described_class.new.overall_controlled_bps.count).to eq(1) }
+        it 'counts bp_for_patient_with_recent_bp' do
+          expect(described_class.new.overall_controlled_bps.count).to eq(1)
+        end
       end
     end
   end
