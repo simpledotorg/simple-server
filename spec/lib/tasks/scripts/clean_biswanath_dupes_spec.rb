@@ -10,7 +10,7 @@ RSpec.describe CleanBiswanathDupes do
       dup_patient = create(:patient, registration_user: dup_user, full_name: 'Test', age: 50)
       real_patient = create(:patient, registration_user: real_user, full_name: 'Test', age: 50)
 
-      cleaner = CleanBiswanathDupes.new
+      cleaner = CleanBiswanathDupes.new(verbose: false)
 
       cleaner.identify_patient_matches
 
@@ -28,7 +28,7 @@ RSpec.describe CleanBiswanathDupes do
       real_patient = create(:patient, registration_user: real_user, full_name: 'Test', age: 50, address: real_address)
       other_patient = create(:patient, registration_user: real_user, full_name: 'Test', age: 50, address: other_address)
 
-      cleaner = CleanBiswanathDupes.new
+      cleaner = CleanBiswanathDupes.new(verbose: false)
 
       cleaner.identify_patient_matches
 
@@ -50,7 +50,7 @@ RSpec.describe CleanBiswanathDupes do
       real_phone = create(:patient_phone_number, number: '1234567890', patient: real_patient)
       other_phone = create(:patient_phone_number, number: '0987654321', patient: other_patient)
 
-      cleaner = CleanBiswanathDupes.new
+      cleaner = CleanBiswanathDupes.new(verbose: false)
 
       cleaner.identify_patient_matches
 
@@ -62,7 +62,7 @@ RSpec.describe CleanBiswanathDupes do
     it 'identifies patients with no matches' do
       dup_patient = create(:patient, registration_user: dup_user, full_name: 'Test', age: 50)
 
-      cleaner = CleanBiswanathDupes.new
+      cleaner = CleanBiswanathDupes.new(verbose: false)
 
       cleaner.identify_patient_matches
 
@@ -76,7 +76,7 @@ RSpec.describe CleanBiswanathDupes do
       real_patient = create(:patient, registration_user: real_user, full_name: 'Test', age: 50)
       other_patient = create(:patient, registration_user: real_user, full_name: 'Test', age: 50)
 
-      cleaner = CleanBiswanathDupes.new
+      cleaner = CleanBiswanathDupes.new(verbose: false)
 
       cleaner.identify_patient_matches
 
@@ -96,7 +96,7 @@ RSpec.describe CleanBiswanathDupes do
       prescription_drug = create(:prescription_drug, patient: dup_patient)
       medical_history = create(:medical_history, patient: dup_patient)
 
-      cleaner = CleanBiswanathDupes.new
+      cleaner = CleanBiswanathDupes.new(verbose: false)
 
       cleaner.exact_matches = { dup_patient.id => real_patient.id }
 
@@ -118,7 +118,7 @@ RSpec.describe CleanBiswanathDupes do
       other_patient = create(:patient)
       other_user = other_patient.registration_user
 
-      cleaner = CleanBiswanathDupes.new
+      cleaner = CleanBiswanathDupes.new(verbose: false)
 
       cleaner.no_matches = [dup_patient_1, dup_patient_2]
 
@@ -139,7 +139,7 @@ RSpec.describe CleanBiswanathDupes do
       other_patient = create(:patient)
       other_user = other_patient.registration_user
 
-      cleaner = CleanBiswanathDupes.new
+      cleaner = CleanBiswanathDupes.new(verbose: false)
 
       cleaner.ambiguous_matches = [dup_patient_1, dup_patient_2]
 

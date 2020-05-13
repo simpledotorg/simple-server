@@ -3,31 +3,32 @@ class CleanBiswanathDupes
     new(*args).call
   end
 
-  attr_accessor :dryrun, :exact_matches, :ambiguous_matches, :no_matches
+  attr_accessor :dryrun, :exact_matches, :ambiguous_matches, :no_matches, :verbose
 
-  def initialize(dryrun: false)
+  def initialize(dryrun: false, verbose: true)
     @dryrun = dryrun
     @exact_matches = {}
     @ambiguous_matches = []
     @no_matches = []
+    @verbose = verbose
   end
 
   def call
-    puts 'Identifying patient matches...'
+    log 'Identifying patient matches...'
     identify_patient_matches
 
     return if dryrun
 
-    puts 'Porting activity of patients with exact matches...'
+    log 'Porting activity of patients with exact matches...'
     port_exact_match_activity
 
-    puts 'Porting unmatched patients to the import user...'
+    log 'Porting unmatched patients to the import user...'
     port_unmatched_patients
 
-    puts 'Deactiviting ambiguous patients...'
+    log 'Deactiviting ambiguous patients...'
     deactivate_ambiguous_patients
 
-    puts 'Complete. Goodbye.'
+    log 'Complete. Goodbye.'
   end
 
   def identify_patient_matches
@@ -64,11 +65,11 @@ class CleanBiswanathDupes
       no_activity?(patient) && no_modifications?(patient)
     end
     no_action_required.each(&:discard_data)
-    puts "- #{no_action_required.count} patients have no activity or modifications"
+    log "- #{no_action_required.count} patients have no activity or modifications"
 
     actionable_patients = duplicate_patients - no_action_required
 
-    puts "- #{actionable_patients.count} patients have new activity or modifications"
+    log "- #{actionable_patients.count} patients have new activity or modifications"
 
     bp_denylist = [
       '3162e5db-e959-4c3e-af64-5d703ba1dc5a',
@@ -166,10 +167,15 @@ class CleanBiswanathDupes
     ambiguous_matches.each(&:discard_data)
   end
 
+  def log(msg)
+    puts msg if verbose
+  end
+
+
   def print_summary
-    puts "Patients with an exact match: #{exact_matches.count}"
-    puts "Patients with ambiguous matches: #{ambiguous_matches.count}"
-    puts "Patients with no match: #{no_matches.count}"
+    log "Patients with an exact match: #{exact_matches.count}"
+    log "Patients with ambiguous matches: #{ambiguous_matches.count}"
+    log "Patients with no match: #{no_matches.count}"
   end
 
   def duplicate_patients
