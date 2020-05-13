@@ -22,7 +22,7 @@ class AppointmentsController < AdminController
     if current_facility
       @patient_summaries = @patient_summaries.where(next_appointment_facility_id: current_facility.id)
     end
-    @patient_summaries = @patient_summaries.order(risk_level: :desc, next_appointment_scheduled_date: :desc)
+    @patient_summaries = @patient_summaries.order(risk_level: :desc, next_appointment_scheduled_date: :desc, id: :asc)
 
     respond_to do |format|
       format.html do
