@@ -174,8 +174,8 @@ RSpec.describe Facility, type: :model do
     it 'should only consider registered hypertensive patients' do
       facility = create(:facility)
 
-      _dm_patients = create_list(:patient, 10, :diabetes, registration_facility: facility)
-      htn_patients = create_list(:patient, 10, registration_facility: facility)
+      _non_htn_patients = create_list(:patient, 2, :hypertension_no, registration_facility: facility)
+      htn_patients = create_list(:patient, 2, registration_facility: facility)
 
       expect(CohortAnalyticsQuery).to receive(:new).with(match_array(htn_patients)).and_call_original
 
