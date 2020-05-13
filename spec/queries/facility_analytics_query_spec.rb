@@ -25,6 +25,8 @@ RSpec.describe FacilityAnalyticsQuery do
             patients << create_list(:patient, 3, registration_facility: facility, registration_user: u)
           end
 
+          patients << create(:patient, :hypertension_no, registration_facility: facility, registration_user: users.first)
+
           patients.flatten
         end
 
@@ -59,7 +61,7 @@ RSpec.describe FacilityAnalyticsQuery do
     end
 
     describe '#registered_patients_by_period' do
-      it 'groups the registered patients by facility and beginning of month' do
+      it 'groups the registered patients diagnosed as hypertensive by facility and beginning of month' do
         expected_result =
           { users.first.id =>
               { registered_patients_by_period: { five_months_back => 3,
@@ -74,7 +76,7 @@ RSpec.describe FacilityAnalyticsQuery do
     end
 
     describe '#total_registered_patients' do
-      it 'groups the registered patients by facility and beginning of month' do
+      it 'groups the registered patients diagnosed as hypertensive by facility and beginning of month' do
         expected_result =
           { users.first.id =>
               {
