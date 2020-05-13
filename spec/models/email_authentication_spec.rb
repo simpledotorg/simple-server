@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe EmailAuthentication, type: :model do
-  WEAK_PASSWORD_ERROR = "is too weak. We recommend a passphrase made up of at least four randomly choosen words. For example 'logic finite eager ratio'"
+  WEAK_PASSWORD_ERROR = "Please choose a stronger password with at least 8 characters. Try a mix of letters, numbers, and symbols."
 
   describe 'Associations' do
     it { should have_one(:user_authentication) }
@@ -11,7 +11,7 @@ RSpec.describe EmailAuthentication, type: :model do
   it "should require a non blank password" do
     auth = build(:email_authentication, password: "")
     expect(auth).to_not be_valid
-    expect(auth.errors.messages[:password]).to eq ["can't be blank", WEAK_PASSWORD_ERROR]
+    expect(auth.errors.messages[:password]).to eq [WEAK_PASSWORD_ERROR]
   end
 
   it "should require a strong password" do
@@ -21,12 +21,6 @@ RSpec.describe EmailAuthentication, type: :model do
       expect(auth).to_not be_valid, "password #{password} should not be valid"
       expect(auth.errors.messages[:password]).to eq [WEAK_PASSWORD_ERROR]
     end
-  end
-
-  it "cannot be the example password" do
-    auth = build(:email_authentication, password: "logic finite eager ratio")
-    expect(auth).to_not be_valid
-    expect(auth.errors.messages[:password]).to eq ["cannot match the example password"]
   end
 
   it "should allow strong passwords" do

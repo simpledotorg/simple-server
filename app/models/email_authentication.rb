@@ -1,6 +1,4 @@
 class EmailAuthentication < ApplicationRecord
-  EXAMPLE_PASSPHRASE = "logic finite eager ratio"
-
   devise :database_authenticatable, :invitable, :lockable, :recoverable,
          :rememberable, :timeoutable, :trackable, :validatable, validate_on_invite: true
 
@@ -10,14 +8,17 @@ class EmailAuthentication < ApplicationRecord
   delegate :full_name, :resources, :role, :organization, to: :user, allow_nil: true
 
   validates :password, password_strength: {use_dictionary: true}, allow_nil: true
-  validate :cannot_use_example_password
+
+  after_validation :strip_unnecessary_errors
 
   private
 
-  def cannot_use_example_password
-    return unless password.present?
-    if password == EXAMPLE_PASSPHRASE
-      errors.add(:password, "cannot match the example password")
+  # We only want to display one error message to the user, so if we get multiple
+  # errors clear out all errors and present our nice message to the user.
+  def strip_unnecessary_errors
+    if errors[:password].any? && errors[:password].size > 1
+      errors.delete(:password)
+      errors.add(:password, I18n.translate("errors.messages.password.password_strength"))
     end
   end
 
