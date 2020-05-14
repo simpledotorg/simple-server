@@ -124,7 +124,7 @@ describe PatientSummary, type: :model do
     end
 
     describe "Risk level" do
-      let(:patient) { create(:patient) }
+      let(:patient) { build(:patient) }
 
       describe '#risk_priority' do
         before { Appointment.destroy_all }
