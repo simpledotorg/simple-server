@@ -115,7 +115,7 @@ RSpec.describe Facility, type: :model do
   end
 
   describe '#cohort_analytics' do
-    it 'should only consider registered hypertensive patients' do
+    it 'considers only registered hypertensive patients' do
       facility = create(:facility)
 
       _non_htn_patients = create_list(:patient, 2, :hypertension_no, registration_facility: facility)

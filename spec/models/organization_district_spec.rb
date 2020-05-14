@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe OrganizationDistrict, type: :model do
   describe '#cohort_analytics' do
-    it 'should only consider registered hypertensive patients' do
+    it 'considers only registered hypertensive patients' do
       organization = create(:organization)
       facility_group = create(:facility_group, organization: organization)
       facility1 = create(:facility, facility_group: facility_group, district: 'Bathinda')
