@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::V2::Analytics::UserAnalyticsController, type: :controller do
+RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
   let!(:request_user) { create(:user) }
 
   describe '#show' do

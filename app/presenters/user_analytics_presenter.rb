@@ -2,6 +2,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   include ApplicationHelper
   include DayHelper
   include PeriodHelper
+  include DashboardHelper
 
   DAYS_AGO = 30
   MONTHS_AGO = 6
@@ -27,19 +28,69 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
       end
   end
 
-  def display_percentage(numerator, denominator)
-    return '0%' if denominator.nil? || denominator.zero? || numerator.nil?
-    percentage = (numerator * 100.0) / denominator
-
-    "#{percentage.round(0)}%"
+  def daily_stats_by_date(stat, day_date)
+    zero_if_unavailable statistics.dig(:daily, :grouped_by_date, stat, day_date)
   end
 
-  def daily_stats_by_date(resource, day_date)
-    statistics.dig(:daily, :grouped_by_date, resource, day_date)
+  def monthly_htn_stats_by_date(stat, month_date)
+    zero_if_unavailable statistics.dig(:monthly, :grouped_by_date, :hypertension, stat, month_date)
   end
 
-  def monthly_stats_by_date(resource, stat, month_date)
-    statistics.dig(:daily, :grouped_by_date, resource, stat, month_date)
+  def monthly_dm_stats_by_date(stat, month_date)
+    zero_if_unavailable statistics.dig(:monthly, :grouped_by_date, :diabetes, stat, month_date)
+  end
+
+  def monthly_htn_or_dm_stats_by_date(stat, month_date)
+    zero_if_unavailable statistics.dig(:monthly, :grouped_by_date, :htn_or_dm, stat, month_date)
+  end
+
+  def monthly_htn_control_rate(month_date)
+    display_percentage(monthly_htn_stats_by_date(:controlled_visits, month_date),
+                       monthly_htn_stats_by_date(:follow_ups, month_date))
+  end
+
+  def monthly_dm_stats_by_date_and_gender(stat, month_date, gender)
+    zero_if_unavailable statistics.dig(:monthly, :grouped_by_date_and_gender, :diabetes, stat, [month_date, gender])
+  end
+
+  def monthly_htn_stats_by_date_and_gender(stat, month_date, gender)
+    zero_if_unavailable statistics.dig(:monthly, :grouped_by_date_and_gender, :hypertension, stat, [month_date, gender])
+  end
+
+  def all_time_htn_or_dm_count(stat)
+    zero_if_unavailable statistics.dig(:all_time, :grouped_by_date, :htn_or_dm, stat)
+  end
+
+  def all_time_dm_count(stat)
+    zero_if_unavailable statistics.dig(:all_time, :grouped_by_gender, :diabetes, stat).values.sum
+  end
+
+  def all_time_htn_count(stat)
+    zero_if_unavailable statistics.dig(:all_time, :grouped_by_gender, :hypertension, stat).values.sum
+  end
+
+  def all_time_dm_stats_by_gender(stat, gender)
+    zero_if_unavailable statistics.dig(:all_time, :grouped_by_gender, :diabetes, stat, gender)
+  end
+
+  def all_time_htn_stats_by_gender(stat, gender)
+    zero_if_unavailable statistics.dig(:all_time, :grouped_by_gender, :hypertension, stat, gender)
+  end
+
+  def locked_trophy
+    statistics.dig(:trophies, :locked_trophy_value)
+  end
+
+  def unlocked_trophies
+    statistics.dig(:trophies, :unlocked_trophy_values)
+  end
+
+  def achievements?
+    statistics.dig(:trophies, :locked_trophy_value) > TROPHY_MILESTONES.first
+  end
+
+  def diabetes_enabled?
+    FeatureToggle.enabled?('DIABETES_SUPPORT_IN_PROGRESS_TAB') && current_facility.diabetes_enabled?
   end
 
   def daily_period_list
@@ -50,14 +101,17 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
     period_list_as_dates(:month, MONTHS_AGO)
   end
 
-  private
+  def display_percentage(numerator, denominator)
+    return '0%' if denominator.nil? || denominator.zero? || numerator.nil?
+    percentage = (numerator * 100.0) / denominator
 
-  def diabetes_enabled?
-    FeatureToggle.enabled?('DIABETES_SUPPORT_IN_PROGRESS_TAB') && current_facility.diabetes_enabled?
+    "#{percentage.round(0)}%"
   end
 
+  private
+
   def daily_stats
-    diabetes_enabled? ? daily_total_stats : daily_htn_stats
+    diabetes_enabled? ? daily_htn_or_dm_stats : daily_htn_stats
   end
 
   def daily_htn_stats
@@ -81,7 +135,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
     }
   end
 
-  def daily_total_stats
+  def daily_htn_or_dm_stats
     follow_ups =
       current_facility
         .patient_follow_ups_by_period(:day, last: DAYS_AGO)
@@ -105,7 +159,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   def monthly_stats
     return monthly_htn_stats unless diabetes_enabled?
 
-    [monthly_total_stats,
+    [monthly_htn_or_dm_stats,
      monthly_htn_stats,
      monthly_dm_stats].inject(:deep_merge)
   end
@@ -113,7 +167,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   def all_time_stats
     return all_time_htn_stats unless diabetes_enabled?
 
-    [all_time_total_stats,
+    [all_time_htn_or_dm_stats,
      all_time_htn_stats,
      all_time_dm_stats].inject(:deep_merge)
   end
@@ -160,7 +214,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
     }
   end
 
-  def monthly_total_stats
+  def monthly_htn_or_dm_stats
     follow_ups =
       current_facility
         .patient_follow_ups_by_period(:month, last: MONTHS_AGO)
@@ -174,7 +228,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
 
     {
       grouped_by_date: {
-        total: {
+        htn_or_dm: {
           follow_ups: follow_ups,
           registrations: registrations
         }
@@ -203,7 +257,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
         .count
 
     {
-      grouped_by_gender_and_date: {
+      grouped_by_date_and_gender: {
         hypertension: {
           follow_ups: follow_ups,
           registrations: registrations
@@ -235,7 +289,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
         .count
 
     {
-      grouped_by_gender_and_date: {
+      grouped_by_date_and_gender: {
         diabetes: {
           follow_ups: follow_ups,
           registrations: registrations
@@ -251,7 +305,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
     }
   end
 
-  def all_time_total_stats
+  def all_time_htn_or_dm_stats
     follow_ups =
       current_facility
         .patient_follow_ups_by_period(:month)
@@ -266,7 +320,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
 
     {
       grouped_by_date: {
-        total: {
+        htn_or_dm: {
           follow_ups: follow_ups,
           registrations: registrations
         }

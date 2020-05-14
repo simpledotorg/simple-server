@@ -109,7 +109,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
             }
           }
 
-          expect(data.dig(:monthly, :grouped_by_gender_and_date)).to eq(expected_output)
+          expect(data.dig(:monthly, :grouped_by_date_and_gender)).to eq(expected_output)
         end
 
         it 'has data grouped by date' do
@@ -119,7 +119,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
             end
 
           expected_output = {
-            total: {
+            htn_or_dm: {
               follow_ups: {
                 (request_date - 2.months) => 0,
                 (request_date - 1.months) => 3,
@@ -185,7 +185,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
               registrations: {}
             }
           }
-          expect(data.dig(:monthly, :grouped_by_gender_and_date)).to eq(expected_output)
+          expect(data.dig(:monthly, :grouped_by_date_and_gender)).to eq(expected_output)
         end
       end
 
@@ -351,7 +351,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
           data = described_class.new(current_facility).statistics
 
           expected_output = {
-            total: {
+            htn_or_dm: {
               follow_ups: 3,
               registrations: 3
             }
@@ -452,7 +452,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
             }
           }
 
-          expect(data.dig(:monthly, :grouped_by_gender_and_date)).to eq(expected_output)
+          expect(data.dig(:monthly, :grouped_by_date_and_gender)).to eq(expected_output)
         end
 
         it 'has data grouped by date' do
@@ -495,7 +495,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
               registrations: {}
             }
           }
-          expect(data.dig(:monthly, :grouped_by_gender_and_date)).to eq(expected_output)
+          expect(data.dig(:monthly, :grouped_by_date_and_gender)).to eq(expected_output)
         end
       end
 
