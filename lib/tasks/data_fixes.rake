@@ -1,5 +1,4 @@
 require 'tasks/scripts/move_user_recorded_data_to_registration_facility'
-require 'tasks/scripts/clean_biswanath_dupes'
 
 namespace :data_fixes do
   desc 'Move all data recorded by a user from a source facility to a destination facility'
@@ -17,15 +16,5 @@ namespace :data_fixes do
          "user: #{user.full_name}, source: #{source_facility.name}, destination: #{destination_facility.name}, "\
          "patients: #{patient_count}, BPs: #{bp_count}, blood sugars: #{bs_count}, "\
          "appointments: #{appointment_count}, prescriptions: #{prescription_drug_count}"
-  end
-
-  desc 'Clean up Biswanath duplicate patients - May 2020'
-  task :clean_biswanath_dupes => :environment do
-    CleanBiswanathDupes.call
-  end
-
-  desc 'Clean up Biswanath duplicate patients (dryrun)- May 2020'
-  task :clean_biswanath_dupes_dryrun => :environment do
-    CleanBiswanathDupes.call(dryrun: true)
   end
 end

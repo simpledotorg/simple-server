@@ -5,6 +5,7 @@ class PatientSummary < ActiveRecord::Base
   belongs_to :next_appointment, class_name: 'Appointment', foreign_key: :next_appointment_id
 
   scope :overdue, -> { joins(:next_appointment).merge(Appointment.overdue) }
+  scope :all_overdue, -> { joins(:next_appointment).merge(Appointment.all_overdue) }
 
   def readonly?
     true

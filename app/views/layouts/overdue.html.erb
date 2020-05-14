@@ -1,0 +1,99 @@
+<% content_for(:content) do %>
+  <!---------------------
+  MOBILE NAV
+  --------------------->
+  <div class="mobile">
+    <div class="mt-0 mb-4 active-filters-mobile">
+      <a class="filters-modal-toggle" data-toggle="modal" data-target="#filter-modal">
+          <span class="filter-tags">
+            <% (Array(@search_filters)).each do |filter| %>
+              <% label = PatientSummaryQuery.label_for(filter) %>
+              <span class="badge badge-pill badge-secondary"><%= label %></span>
+            <% end %>
+          </span>
+        <i class="fas fa-filter"></i> Search filters
+      </a>
+    </div>
+    <!-- Filter Modal -->
+    <div class="modal fade" id="filter-modal" tabindex="-1" role="dialog" aria-labelledby="filter-modal" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title" id="exampleModalCenterTitle">Patients</h2>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-6 mb-3">
+                <h4>Patients</h4>
+                <%= form_tag appointments_path, method: :get, id: "search-filters-mobile" do %>
+                  <% PatientSummaryQuery.filters.each do |filter, label| %>
+                    <div class="checkbox-row">
+                      <label for=<%= "search-#{filter}-mobile" %>>
+                        <% checked = @search_filters.include?(filter) %>
+                        <%= check_box_tag("search_filters[]", filter, checked, { id: "search-#{filter}-mobile" } ) %>
+                        <%= label %>
+                      </label>
+                    </div>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <a href="?" type="button" class="btn btn-secondary">Clear all</a>
+            <button type="submit" form="search-filters-mobile" class="btn btn-primary">DONE</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!---------------------
+  DESKTOP NAV
+  --------------------->
+  <div class="row">
+    <div class="col-lg-2 pl-lg-0 desktop">
+      <section class="secondary-nav-filters">
+        <h4>Patients</h4>
+
+        <%= form_tag appointments_path, method: :get, id: "search-filters" do %>
+          <%= hidden_field_tag :submitted, true %>
+
+          <% PatientSummaryQuery.filters.each do |filter, label| %>
+            <div>
+              <label for=<%= "search-#{filter}" %>>
+                <% checked = @search_filters.include?(filter) %>
+                <%= check_box_tag("search_filters[]", filter, checked, { id: "search-#{filter}" } ) %>
+                <%= label %>
+              </label>
+            </div>
+          <% end %>
+          <label>
+            <button type="submit" class="btn btn-sm btn-outline-primary">Apply filters</button>
+          </label>
+        <% end %>
+      </section>
+
+      <section>
+        <% if current_facility %>
+          <% if @patient_summaries.present? && policy([:overdue_list, @patient_summaries.first]).download? %>
+            <%= link_to(appointments_path(format: "csv"), class: "", data: { confirm: I18n.t('admin.phi_download_alert') }) do %>
+              <h4>Download Results</h4>
+            <% end %>
+          <% end %>
+        <% else %>
+          <em>Select a facility to download Overdue Patients list</em>
+        <% end %>
+      </section>
+    </div>
+    <div class="col-lg-10 pr-lg-0">
+      <%= yield %>
+    </div>
+  </div>
+<% end %>
+<%= render template: "layouts/application" %>
