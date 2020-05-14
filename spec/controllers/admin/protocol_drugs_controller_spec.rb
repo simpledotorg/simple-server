@@ -19,7 +19,7 @@ RSpec.describe Admin::ProtocolDrugsController, type: :controller do
     it 'returns a success response' do
       protocol_drug = ProtocolDrug.create! valid_attributes
       get :index, params: { protocol_id: protocol.id }
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
@@ -27,14 +27,14 @@ RSpec.describe Admin::ProtocolDrugsController, type: :controller do
     it 'returns a success response' do
       protocol_drug = ProtocolDrug.create! valid_attributes
       get :show, params: { id: protocol_drug.to_param, protocol_id: protocol.id }
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
   describe 'GET #new' do
     it 'returns a success response' do
       get :new, params: { protocol_id: protocol.id }
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
@@ -42,7 +42,7 @@ RSpec.describe Admin::ProtocolDrugsController, type: :controller do
     it 'returns a success response' do
       protocol_drug = ProtocolDrug.create! valid_attributes
       get :edit, params: { id: protocol_drug.to_param, protocol_id: protocol.id }
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
@@ -63,7 +63,7 @@ RSpec.describe Admin::ProtocolDrugsController, type: :controller do
     context 'with invalid params' do
       it "returns a success response (i.e. to display the 'new' template)" do
         post :create, params: { protocol_drug: invalid_attributes, protocol_id: protocol.id }
-        expect(response).to be_success
+        expect(response).to be_successful
       end
     end
   end
@@ -93,7 +93,7 @@ RSpec.describe Admin::ProtocolDrugsController, type: :controller do
       it "returns a success response (i.e. to display the 'edit' template)" do
         protocol_drug = ProtocolDrug.create! valid_attributes
         put :update, params: { id: protocol_drug.to_param, protocol_drug: invalid_attributes, protocol_id: protocol.id }
-        expect(response).to be_success
+        expect(response).to be_successful
       end
     end
   end

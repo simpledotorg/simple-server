@@ -7,6 +7,7 @@ module PatientsExporter
 
   def self.csv(patients)
     CSV.generate(headers: true) do |csv|
+      csv << timestamp
       csv << csv_headers
 
       patients.in_batches(of: BATCH_SIZE).each do |batch|
@@ -25,6 +26,13 @@ module PatientsExporter
         end
       end
     end
+  end
+
+  def self.timestamp
+    [
+      'Report generated at:',
+      Time.current
+    ]
   end
 
   def self.csv_headers

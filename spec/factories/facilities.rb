@@ -13,7 +13,7 @@ FactoryBot.define do
     facility_size { Facility.facility_sizes[:small] }
     facility_group { create(:facility_group) }
     enable_diabetes_management { [true, false].sample }
-    enable_teleconsultation { [true, false].sample }
+    enable_teleconsultation { true }
     teleconsultation_phone_number { Faker::PhoneNumber.phone_number }
     teleconsultation_isd_code { Faker::PhoneNumber.country_code }
     monthly_estimated_opd_load { 300 }
