@@ -11,10 +11,11 @@ class CorrectBangladeshMedicationDosages
     new(*args).call
   end
 
-  attr_reader :dryrun
+  attr_reader :dryrun, :verbose
 
-  def initialize(dryrun: false)
+  def initialize(dryrun: false, verbose: true)
     @dryrun = dryrun
+    @verbose = verbose
   end
 
   def call
@@ -22,12 +23,15 @@ class CorrectBangladeshMedicationDosages
 
     return if dryrun
 
+    log 'Updating dosages...'
     update_dosages
+
+    log 'Complete. Goodbye.'
   end
 
   def print_summary
-    puts 'Zero dosage medications found:'
-    PROTOCOL_DOSAGES.keys.each { |drug| puts "#{drug}: #{eligible_drugs(drug).count} records" }
+    log 'Zero dosage medications found:'
+    PROTOCOL_DOSAGES.keys.each { |drug| log "#{drug}: #{eligible_drugs(drug).count} records" }
   end
 
   def update_dosages
@@ -38,5 +42,9 @@ class CorrectBangladeshMedicationDosages
 
   def eligible_drugs(name)
     PrescriptionDrug.where(name: name, dosage: '0 mg')
+  end
+
+  def log(message)
+    puts message if verbose
   end
 end
