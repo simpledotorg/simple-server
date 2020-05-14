@@ -36,13 +36,14 @@ class PhoneNumberAuthentication
     attr_reader :otp, :password, :phone_number
 
     def verify(authentication)
-      error_string = if !authentication.present?
+      error_string = case
+      when !authentication.present?
         I18n.t('login.error_messages.unknown_user')
-      elsif authentication.otp != otp
+      when authentication.otp != otp
         I18n.t('login.error_messages.invalid_otp')
-      elsif !authentication.otp_valid?
+      when !authentication.otp_valid?
         I18n.t('login.error_messages.expired_otp')
-      elsif !authentication.authenticate(password)
+      when !authentication.authenticate(password)
         I18n.t('login.error_messages.invalid_password')
       end
 
