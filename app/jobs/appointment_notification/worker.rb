@@ -5,14 +5,14 @@ class AppointmentNotification::Worker
 
   sidekiq_options queue: 'high'
 
-  def perform(appointment, communication_type)
+  def perform(appointment, communication_type, locale = DEFAULT_LOCALE)
     return if appointment.previously_communicated_via?(communication_type)
 
+    patient_phone_number = appointment.patient.latest_mobile_number
+    message = appointment_message(appointment, communication_type, locale)
+
     begin
-      sms_response = NotificationService.new.send_whatsapp(
-        appointment.patient.latest_mobile_number,
-        appointment_message(appointment)
-      )
+      sms_response = NotificationService.new.send_whatsapp(patient_phone_number, message)
 
       Communication.create_with_twilio_details!(
         appointment: appointment,
@@ -27,9 +27,9 @@ class AppointmentNotification::Worker
 
   private
 
-  def appointment_message(appointment)
+  def appointment_message(appointment, communication_type, locale)
      I18n.t(
-       "sms.appointment_reminders.#{reminder_type}",
+       "sms.appointment_reminders.#{communication_type}",
        facility_name: appointment.facility.name,
        locale: locale
      )
@@ -42,7 +42,9 @@ class AppointmentNotification::Worker
       extra: {
         exception: e.to_s
       },
-      tags: { type: 'appointment-notification-job' }
+      tags: {
+        type: 'appointment-notification-job'
+      }
     )
   end
 end
