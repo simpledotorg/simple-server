@@ -12,27 +12,22 @@ class Api::V3::LoginsController < APIController
       phone_number: login_params[:phone_number],
     )
 
-    authentication = result.authentication
-    errors = result.error_message
-
-    if !result.success?
-      Raven.capture_message(
-        'Login Error',
-        logger: 'logger',
-        extra: {
-          login_params: login_params,
-          errors: errors,
-        },
-        tags: { type: 'login' }
-      )
-      render json: { errors: { user: [errors] }}, status: :unauthorized
-    else
-      user = authentication.user
+    if result.success?
+      user = result.user
       AuditLog.login_log(user)
-      render json: {
+      response = {
         user: user_to_response(user),
         access_token: user.access_token
-      }, status: :ok
+      }
+      render json: response, status: :ok
+    else
+      notify_sentry(result)
+      response = {
+        errors: {
+          user: [result.error_message]
+        }
+      }
+      render json: response, status: :unauthorized
     end
   end
 
@@ -52,5 +47,16 @@ class Api::V3::LoginsController < APIController
 
   def login_params
     params.require(:user).permit(:phone_number, :password, :otp)
+  end
+
+  def notify_sentry(result)
+    Raven.capture_message('Login Error',
+      logger: 'logger',
+      extra: {
+        login_params: login_params,
+        errors: result.error_message,
+      },
+      tags: { type: 'login' }
+    )
   end
 end

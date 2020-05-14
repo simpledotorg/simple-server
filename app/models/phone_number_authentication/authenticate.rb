@@ -4,6 +4,10 @@ class PhoneNumberAuthentication
       def success?
         self.success
       end
+
+      def user
+        authentication.user
+      end
     end
 
     def self.call(*args)
