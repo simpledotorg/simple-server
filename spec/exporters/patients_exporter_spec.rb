@@ -9,6 +9,14 @@ RSpec.describe PatientsExporter do
   let!(:appointment) { create(:appointment, :overdue, facility: facility, patient: patient) }
   let!(:prescription_drug_1) { create(:prescription_drug, patient: patient) }
   let!(:prescription_drug_2) { create(:prescription_drug, patient: patient) }
+  let(:now) { Time.current }
+
+  let(:timestamp) do
+    [
+      'Report generated at:',
+      now
+    ]
+  end
 
   let(:headers) do
     [
@@ -96,11 +104,15 @@ RSpec.describe PatientsExporter do
     let(:patient_batch) { Patient.where(id: patient.id) }
 
     it 'generates a CSV of patient records' do
-      expect(subject.csv(Patient.all)).to eq(headers.to_csv + fields.to_csv)
+      travel_to now do
+        expect(subject.csv(Patient.all)).to eq(timestamp.to_csv + headers.to_csv + fields.to_csv)
+      end
     end
 
     it 'generates a blank CSV (only headers) if no patients exist' do
-      expect(subject.csv(Patient.none)).to eq(headers.to_csv)
+      travel_to now do
+        expect(subject.csv(Patient.none)).to eq(timestamp.to_csv + headers.to_csv)
+      end
     end
 
     it 'uses fetches patients in batches' do
