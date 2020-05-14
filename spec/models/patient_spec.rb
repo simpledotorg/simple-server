@@ -91,7 +91,7 @@ describe Patient, type: :model do
     describe '.with_hypertension' do
       it 'only includes patients with diagnosis of hypertension' do
         htn_patients = create_list(:patient, 2)
-        _non_htn_patient = create(:patient, :hypertension_no)
+        _non_htn_patient = create(:patient, :without_hypertension)
 
         expect(Patient.with_hypertension).to match_array(htn_patients)
       end

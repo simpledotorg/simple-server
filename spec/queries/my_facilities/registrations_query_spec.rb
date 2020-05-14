@@ -11,7 +11,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
           create(:patient, recorded_at: recorded_at)
         end
       end
-      let!(:non_htn_patient) { create(:patient, :hypertension_no, recorded_at: included_timestamps.first) }
+      let!(:non_htn_patient) { create(:patient, :without_hypertension, recorded_at: included_timestamps.first) }
 
       specify { expect(registrations_query.total_registrations.count).to eq(patients.count) }
     end
@@ -27,7 +27,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
             create(:patient, recorded_at: recorded_at)
           end
         end
-        let!(:non_htn_patient) { create(:patient, :hypertension_no, recorded_at: included_timestamps.first) }
+        let!(:non_htn_patient) { create(:patient, :without_hypertension, recorded_at: included_timestamps.first) }
 
         before do
           ActiveRecord::Base.transaction do
@@ -51,7 +51,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
             create(:patient, recorded_at: recorded_at)
           end
         end
-        let!(:non_htn_patient) { create(:patient, :hypertension_no, recorded_at: included_timestamps.first) }
+        let!(:non_htn_patient) { create(:patient, :without_hypertension, recorded_at: included_timestamps.first) }
 
         before do
           ActiveRecord::Base.transaction do
@@ -73,7 +73,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
         let!(:patients) do
           (included_timestamps + excluded_timestamps).map { |recorded_at| create(:patient, recorded_at: recorded_at) }
         end
-        let!(:non_htn_patient) { create(:patient, :hypertension_no, recorded_at: included_timestamps.first) }
+        let!(:non_htn_patient) { create(:patient, :without_hypertension, recorded_at: included_timestamps.first) }
 
         before do
           ActiveRecord::Base.transaction do

@@ -25,7 +25,7 @@ RSpec.describe FacilityAnalyticsQuery do
             patients << create_list(:patient, 3, registration_facility: facility, registration_user: u)
           end
 
-          patients << create(:patient, :hypertension_no, registration_facility: facility, registration_user: users.first)
+          patients << create(:patient, :without_hypertension, registration_facility: facility, registration_user: users.first)
 
           patients.flatten
         end

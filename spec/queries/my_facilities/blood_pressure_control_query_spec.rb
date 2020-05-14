@@ -50,7 +50,7 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       end
 
       let!(:non_htn_patient) do
-        create(:patient, :hypertension_no, recorded_at: cohort_range.sample, registration_facility: facility, registration_user: user)
+        create(:patient, :without_hypertension, recorded_at: cohort_range.sample, registration_facility: facility, registration_user: user)
       end
 
       let!(:controlled_blood_pressures) do
@@ -185,7 +185,7 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       end
 
       let!(:non_htn_patient) do
-        create(:patient, :hypertension_no, recorded_at: cohort_range.sample, registration_facility: facility, registration_user: user)
+        create(:patient, :without_hypertension, recorded_at: cohort_range.sample, registration_facility: facility, registration_user: user)
       end
 
       let!(:controlled_blood_pressures) do
@@ -299,7 +299,7 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       end
 
       let!(:non_htn_patient_with_recent_bp) do
-        create(:patient, :hypertension_no, registration_facility: facility, registration_user: user, recorded_at: 4.months.ago)
+        create(:patient, :without_hypertension, registration_facility: facility, registration_user: user, recorded_at: 4.months.ago)
       end
 
       let!(:old_patient) do

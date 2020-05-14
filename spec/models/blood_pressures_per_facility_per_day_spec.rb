@@ -38,7 +38,7 @@ RSpec.describe BloodPressuresPerFacilityPerDay, type: :model do
     end
 
     it 'counts blood pressures of only patients who are diagnosed hypertensive' do
-      patient_with_hypertension_no = create(:patient, :hypertension_no, registration_facility: facility_with_bp)
+      patient_with_hypertension_no = create(:patient, :without_hypertension, registration_facility: facility_with_bp)
       create(:blood_pressure, facility: facility_with_bp, recorded_at: days.first, patient: patient_with_hypertension_no)
       described_class.refresh
 

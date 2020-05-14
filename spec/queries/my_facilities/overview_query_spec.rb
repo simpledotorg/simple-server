@@ -66,7 +66,7 @@ RSpec.describe MyFacilities::OverviewQuery do
     let!(:user) { create(:user, registration_facility: facility) }
 
     let!(:htn_patient) { create(:patient, registration_user: user, registration_facility: facility) }
-    let!(:non_htn_patient) { create(:patient, :hypertension_no, registration_user: user, registration_facility: facility) }
+    let!(:non_htn_patient) { create(:patient, :without_hypertension, registration_user: user, registration_facility: facility) }
 
     let!(:bp_for_htn_patient) do
       create(:blood_pressure, user: user, facility: facility, patient: htn_patient, recorded_at: 1.day.ago)

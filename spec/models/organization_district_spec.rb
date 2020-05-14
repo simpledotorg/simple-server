@@ -10,7 +10,7 @@ RSpec.describe OrganizationDistrict, type: :model do
 
       org_district = OrganizationDistrict.new('Bathinda', organization)
 
-      _non_htn_patients = create_list(:patient, 2, :hypertension_no, registration_facility: facility1)
+      _non_htn_patients = create_list(:patient, 2, :without_hypertension, registration_facility: facility1)
       htn_patients = create_list(:patient, 2, registration_facility: facility2)
 
       expect(CohortAnalyticsQuery).to receive(:new).with(match_array(htn_patients)).and_call_original

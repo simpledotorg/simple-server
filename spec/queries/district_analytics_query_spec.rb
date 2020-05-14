@@ -23,7 +23,7 @@ RSpec.describe DistrictAnalyticsQuery do
           create_list(:patient, 3, registration_facility: facility)
         end
 
-        Timecop.travel(month) { create(:patient, :hypertension_no, registration_facility: facility) }
+        Timecop.travel(month) { create(:patient, :without_hypertension, registration_facility: facility) }
         #
         # add blood_pressures next month
         #

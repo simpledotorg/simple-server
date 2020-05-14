@@ -21,7 +21,7 @@ RSpec.describe PatientRegistrationsPerDayPerFacility, type: :model do
 
     let!(:patients_with_hypertension_no) do
       facilities.map do |facility|
-        create(:patient, :hypertension_no, registration_facility: facility, recorded_at: 1.days.ago)
+        create(:patient, :without_hypertension, registration_facility: facility, recorded_at: 1.days.ago)
       end
     end
 

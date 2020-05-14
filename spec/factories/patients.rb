@@ -32,7 +32,7 @@ FactoryBot.define do
     reminder_consent { Patient.reminder_consents[:granted] }
     medical_history { build(:medical_history, :hypertension_yes, patient_id: id) }
 
-    trait :hypertension_no do
+    trait :without_hypertension do
       medical_history { build(:medical_history, :hypertension_no, patient_id: id) }
     end
 
