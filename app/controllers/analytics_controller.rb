@@ -28,6 +28,9 @@ class AnalyticsController < AdminController
     else
       :month
     end
+    if !([:quarter, :month].include?(@period))
+      raise ArgumentError, "Invalid period set #{@period}"
+    end
 
     session[:period] = @period
 
