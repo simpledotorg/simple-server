@@ -1,4 +1,6 @@
 class NotificationService
+  include Rails.application.routes.url_helpers
+
   DEFAULT_LOCALE = :en
 
   attr_reader :client
