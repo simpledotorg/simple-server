@@ -59,6 +59,5 @@ class PhoneNumberAuthentication
     def success
       Result.new(authentication, true, nil)
     end
-
   end
 end
