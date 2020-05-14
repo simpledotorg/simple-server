@@ -34,6 +34,14 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
     "#{percentage.round(0)}%"
   end
 
+  def daily_stats_by_date(resource, day_date)
+    statistics.dig(:daily, :grouped_by_date, resource, day_date)
+  end
+
+  def monthly_stats_by_date(resource, stat, month_date)
+    statistics.dig(:daily, :grouped_by_date, resource, stat, month_date)
+  end
+
   def daily_period_list
     period_list_as_dates(:day, DAYS_AGO)
   end
