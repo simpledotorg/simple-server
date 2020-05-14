@@ -18,14 +18,4 @@ namespace :data_fixes do
          "patients: #{patient_count}, BPs: #{bp_count}, blood sugars: #{bs_count}, "\
          "appointments: #{appointment_count}, prescriptions: #{prescription_drug_count}"
   end
-
-  desc 'Clean up Biswanath duplicate patients - May 2020'
-  task :clean_biswanath_dupes => :environment do
-    CleanBiswanathDupes.call
-  end
-
-  desc 'Clean up Biswanath duplicate patients (dryrun)- May 2020'
-  task :clean_biswanath_dupes_dryrun => :environment do
-    CleanBiswanathDupes.call(dryrun: true)
-  end
 end
