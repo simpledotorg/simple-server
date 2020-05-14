@@ -38,21 +38,21 @@ class NotificationService
   end
 =end
 
-  def send_sms(sender_number, recipient_number, message)
+  def send_sms(recipient_number, message)
     recipient_number = parse_phone_number(recipient_number)
 
     client.messages.create(
-      from: sender_number,
+      from: twilio_sender_number,
       to: recipient_number.insert(0, Rails.application.config.country[:sms_country_code]),
       status_callback: twilio_callback_url,
       body: body)
   end
 
-  def send_whatsapp(sender_number, recipient_number, message)
+  def send_whatsapp(recipient_number, message)
     recipient_number = parse_phone_number(recipient_number)
 
     client.messages.create(
-      from: "whatsapp:" + sender_number,
+      from: "whatsapp:" + twilio_sender_number,
       to: "whatsapp:" + recipient_number.insert(0, Rails.application.config.country[:sms_country_code]),
       status_callback: twilio_callback_url,
       body: body)
@@ -70,6 +70,10 @@ class NotificationService
 
   def twilio_auth_token
     ENV.fetch('TWILIO_REMINDERS_ACCOUNT_AUTH_TOKEN'))
+  end
+
+  def twilio_sender_number
+    ENV.fetch('TWILIO_REMINDERS_ACCOUNT_PHONE_NUMBER')
   end
 
   def twilio_callback_url
