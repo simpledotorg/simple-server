@@ -5,6 +5,8 @@ class Facility < ApplicationRecord
   include QuarterHelper
   extend FriendlyId
 
+  before_save :clear_isd_code, unless: -> { teleconsultation_phone_number.present? }
+
   attribute :import, :boolean, default: false
   attribute :organization_name, :string
   attribute :facility_group_name, :string
@@ -47,6 +49,9 @@ class Facility < ApplicationRecord
   validates :state, presence: true
   validates :country, presence: true
   validates :pin, numericality: true, allow_blank: true
+  validates :teleconsultation_isd_code, presence: true, if: :teleconsultation_enabled?
+  validates :teleconsultation_phone_number, presence: true, if: :teleconsultation_enabled?
+  validates :enable_teleconsultation, inclusion: { in: [true, false] }
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, to: :facility_group, allow_nil: true
@@ -130,5 +135,15 @@ class Facility < ApplicationRecord
     enable_diabetes_management.present?
   end
 
+  def teleconsultation_enabled?
+    enable_teleconsultation.present?
+  end
+
   CSV::Converters[:strip_whitespace] = ->(value) { value.strip rescue value }
+
+  private
+
+  def clear_isd_code
+    self.teleconsultation_isd_code = ""
+  end
 end

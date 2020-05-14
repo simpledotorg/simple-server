@@ -10,12 +10,25 @@ class PatientBusinessIdentifier < ApplicationRecord
     ethiopia_medical_record: 'ethiopia_medical_record'
   }
 
-  validates :identifier, presence: true, unless: -> { identifier_type == 'bangladesh_national_id' }
-  validates :identifier, presence: true, allow_blank: true, if: -> { identifier_type == 'bangladesh_national_id' }
+  validate :identifier_present
   validates :identifier_type, presence: true
 
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
+
+  # We want to allow blank values (but not nil) for Bangladesh because of legacy reasons,
+  # and prevent blank _and_ nil for all other identifier types.
+  def identifier_present
+    if identifier_type == "bangladesh_national_id"
+      if identifier.nil?
+        errors.add(:identifier, "can't be blank")
+      end
+    else
+      if identifier.blank?
+        errors.add(:identifier, "can't be blank")
+      end
+    end
+  end
 
   def shortcode
     if simple_bp_passport?

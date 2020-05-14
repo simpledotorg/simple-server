@@ -47,7 +47,8 @@ class SeedUsersDataJob
         build_fn: -> (args) {
           return if args[:patient].medical_history
           build_medical_history_payload_current(FactoryBot.build(:medical_history,
-                                                                 [:hypertension_yes, :diabetes_yes].sample,
+                                                                 [:hypertension_yes, :hypertension_no].sample,
+                                                                 [:diabetes_yes, :diabetes_no, :diabetes_unknown].sample,
                                                                  patient: args[:patient],
                                                                  user: user))
         },

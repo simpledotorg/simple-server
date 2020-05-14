@@ -32,11 +32,11 @@ set up the application step by step. You can do so as follows.
 First, you need to [install
 ruby](https://www.ruby-lang.org/en/documentation/installation). It is
 recommended to use [rbenv](https://github.com/rbenv/rbenv) to manage ruby
-versions.
+versions. Note that we currently use Bundler version 1.17.3, so that is also hardcoded below.
 
 ```bash
-gem install bundler
-bundle install
+gem install bundler -v 1.17.3
+bundle _1.17.3_ install
 rake yarn:install
 rails db:setup
 ```
