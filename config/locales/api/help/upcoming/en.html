@@ -1,0 +1,381 @@
+<body id="help">
+<div id="help-section" class="help-body">
+    <div class="help-contents">
+        <nav class="help-nav">
+            <a href="#" onclick="open_window('help-start'); return false">
+                Getting started
+                %{icon_chevron_right_svg}
+            </a>
+            <a href="#" onclick="open_window('help-register'); return false">
+                Register a patient
+                %{icon_chevron_right_svg}
+            </a>
+            <a href="#" onclick="open_window('help-search'); return false">
+                Find the correct patient
+                %{icon_chevron_right_svg}
+            </a>
+            <a href="#" onclick="open_window('help-record'); return false">
+                Record a patient’s visit
+                %{icon_chevron_right_svg}
+            </a>
+            <a href="#" onclick="open_window('help-overdue'); return false">
+                Call overdue patients
+                %{icon_chevron_right_svg}
+            </a>
+            <a href="#" onclick="open_window('help-faq'); return false">
+                Common questions
+                %{icon_chevron_right_svg}
+            </a>
+        </nav>
+        
+        <div class="card support %{country}">
+            <h3>Ask for help</h3>
+            <a href="%{help_screen_whatsapp_support_group_url}" class="whatsapp-button">
+                %{icon_whatsapp_icon_svg} %{help_screen_whatsapp_support_number}
+            </a>
+            <p>If you have problems or questions, please press the button for our
+                WhatsApp group. Our friendly team will help you.</p>
+        </div>
+        
+        <p class="tos"><a href="https://simple.org/simple-privacy">Privacy Policy</a> <span class="divider">&nbsp;|&nbsp;</span> <a href="https://simple.org/terms">Terms of Service</a></p>
+    </div>
+</div>
+    
+<div id="help-start" class="help-body" style="display: none;">
+    <div class="help-contents">
+        <a href="#" onclick="close_window('help-start'); return false" class="help-back">
+            %{icon_back_svg}
+        </a>
+
+        <h2>Getting started</h2>
+        
+        <div class="card">
+            <h3>Watch a video</h3>
+
+            <a href="%{help_screen_youtube_video_url}" class="video">
+                %{thumb_demo_svg}
+            </a>
+
+            <p>Learn how to use Simple in 5 minutes.</p>
+        </div>
+        
+        <div class="card">
+            <h3>Who to record in Simple?</h3>
+            <p>Use Simple to record <i>every patient who has hypertension</i> or who is taking medicines for high BP.</p>
+            <p>When the patient returns for follow-up, search for the same patient and enter a new BP.</p>
+        </div>
+        
+        <div class="card">
+            <h3><span class="header-label"><span>Step 1</span></span>Take patient's BP</h3>
+            <p>Take an accurate BP: feet on floor, back against chair, no talking.</p>
+        </div>
+        
+        <div class="card">
+            <h3><span class="header-label"><span>Step 2</span></span>Write in BP Passport</h3>
+            <p>If you have BP Passports, write the patient's name. Then, scan it using the Simple app.</p>
+        </div>
+        
+        <div class="card">
+            <h3><span class="header-label"><span>Step 3</span></span>Register patient</h3>
+            <p>If they are new, register the patient.</p>
+        </div>
+        
+        <div class="card">
+            <h3><span class="header-label"><span>Step 4</span></span>Enter BP in Simple</h3>
+            <p><i>Do not round</i> the BP reading.</p>
+        </div>
+        
+        <div class="card">
+            <h3><span class="header-label"><span>Step 5</span></span>Enter medicines</h3>
+            <p>Enter the patient's current hypertension medicines.</p>
+        </div>
+        
+        <div class="card">
+            <h3><span class="header-label"><span>Step 6</span></span>Save the patient</h3>
+            <p>Hit <span class="code">SAVE</span> and schedule the patient's next visit. Write that date on the BP Passport.</p>
+        </div>
+        
+        <hr>
+        
+        <div class="card">
+            <h3><span class="header-label"><span>Missed visit</span></span>What happens next?</h3>
+            <p>If your patient misses their visit, Simple will send a text message reminding them to come back.</p>
+        </div>
+        
+        <hr>
+        
+        <div class="card card-tip">
+            %{help_tip_svg}
+            <h3>Tip</h3>
+            <p>Always make sure to record the patients at the correct facility. On the home screen, always check the facility in the top left.</p>
+        </div>
+        
+    </div>
+</div>
+    
+<div id="help-register" class="help-body" style="display: none;">
+    <div class="help-contents">
+        <a href="#" onclick="close_window('help-register'); return false" class="help-back">
+            %{icon_back_svg}
+        </a>
+
+        <h2>Register a patient</h2>
+        <section style="margin: -16px 0 24px 8px;"><p>There are two ways to register new patients:</p></section>
+        
+        <div class="card">
+            <h3><span class="header-label"><span>Option 1</span></span>If you have BP Passports</h3>
+            
+            <ol>
+                <li class="num">
+                    Press this button on the main screen
+                    <div class="help-example">%{help_scan_bp_passport_svg}</div>
+                </li>
+            
+                <li class="num">
+                    Pick up a <i>blank</i> BP Passport and scan the QR code.
+                    <div class="help-example">%{help_bp_passport_svg}</div>
+                </li>
+
+                <li class="num">Search for the patient’s full name.</li>
+
+                <li class="num">If you do not see the patient in the search results, tap <span class="code">Register as a new patient</span>.</li>
+
+                <li class="num">Fill the registration form.</li>
+                
+                <li class="num">Talk to your patient and then complete the medical history.</li>
+                
+                <li class="num">Record the patient visit, press <span class="code">Save</span>.</li>
+            </ol>
+
+        </div>
+        <div class="card">
+            <h3><span class="header-label"><span>Option 2</span></span>If you <i>do not</i> have BP Passports</h3>
+            
+            <ol>
+                <li class="num">Press <span class="code">Enter patient’s name</span></li>
+
+                <li class="num">Enter your patient's full name.</li>
+                
+                <li class="num">If you do not see the patient in the search results, tap <span class="code">Register as a new patient</span>.</li>
+                
+                <li class="num">Fill the registration form.</li>
+                 
+                <li class="num">Talk to your patient and then complete the medical history.</li>
+                
+                <li class="num">Record the patient visit, press <span class="code">Save</span>.</li>
+            </ol>
+            
+        </div>
+        
+        <hr>
+        
+        <div class="card card-tip">
+            %{help_tip_svg}
+            <h3>Tips</h3>
+            <ul>
+            <li>Always make sure to record the patients at the correct facility. On the home screen, always check the facility in the top left.</li>
+            <li>Enter mobile number if you can!</li>
+            <li>If you cannot find a follow-up patient, it is okay to register them as a new patient.</li>
+            <li>If a patient loses their BP Passport, please give them a new one. Patients can have multiple BP Passports, they will all work correctly.</li>
+            </ul>
+        </div>
+        
+    </div>
+</div>
+
+<div id="help-search" class="help-body" style="display: none;">
+    <div class="help-contents">
+        <a href="#" onclick="close_window('help-search'); return false" class="help-back">
+            %{icon_back_svg}
+        </a>
+
+        <h2>Find the correct patient</h2>
+        
+        <div class="card">
+            <h3>How to find patients</h3>
+            <p>When you search for a patient by name or mobile number, it is important to select the correct patient.</p>
+        </div>
+        <div class="card">
+            <h3>Choose the <i>correct</i> patient</h3>
+            <p>In the search results, it is very important to choose the correct patient. Always check:</p>
+            
+            <ol>
+                <li class="num"><span class="code">Name</span> matches</li>
+                <li class="num"><span class="code">Age</span> is correct</li>
+                <li class="num"><span class="code">Address</span> is where the patient lives</li>
+                <li class="num"><span class="code">Mobile number</span> matches</li>
+                <li class="num"><span class="code">Last visit date</span> was a day the patient visited the hospital.</li>
+            </ol>
+            <p>If the patient does not match any of the patients in the search, please register them as a new patient.</p>
+        </div>
+        <hr>
+        <div class="card card-tip">
+            %{help_tip_svg}
+            <h3>Tip</h3>
+            <p>If BP Passport scanning is not working, you can still type the BP Passport number into Simple on the same screen where you scan.</p>
+        </div>
+    </div>
+</div>
+
+<div id="help-record" class="help-body" style="display: none;">
+    <div class="help-contents">
+        <a href="#" onclick="close_window('help-record'); return false" class="help-back">
+            %{icon_back_svg}
+        </a>
+
+        <h2>Record a patient's visit</h2>
+        <div class="card">
+            <h3>First, find the patient</h3>
+            <p>You can find patients two ways: scan their BP Passport or search for the patient by name or mobile number.</p>
+        </div>
+        <div class="card">
+            <h3>Record BP and medicines</h3>
+            <ol>
+                <li class="num">On the patient's summary screen, press <span class="code">+&nbsp;Blood pressure</span></li>
+
+                <li class="num">Then, add patient's hypertension medicines.</li>
+
+                <li class="num">Select the correct medicines and their dosages. To remove a medicine, tap the dosage and select <span class="code">None</span></li>
+
+                <li class="num">Press <span class="code">Save</span> and select the next visit date. Optional: You can change where the patient should visit next by pressing ‘Change’ below the patient’s current facility.</li>
+
+                <li class="num">Done. The patient visit is saved.</li>
+            </ol>
+        </div>
+        <hr>
+        <div class="card card-tip">
+            %{help_tip_svg}
+            <h3>Tips</h3>
+            <ul>
+                <li>You can select the next visit date on a calendar by tapping <span class="code">CHANGE</span> when scheduling the visit.</li>
+                <li>If you select <span class="code">NOT NOW</span>, the patient will not have a scheduled visit.</li>
+                <li>You can enter a BP from a previous visit. Enter the BP like normal and <span class="code">CHANGE</span> the date.</li>
+            </ul>
+        </div>
+        
+    </div>
+</div>
+
+<div id="help-overdue" class="help-body" style="display: none;">
+    <div class="help-contents">
+        <a href="#" onclick="close_window('help-overdue'); return false" class="help-back">
+            %{icon_back_svg}
+        </a>
+
+        <h2>Call overdue patients</h2>
+        
+        <div class="card">
+            <h3>What is "Overdue"?</h3>
+            <p>Patients are overdue if they did not have a BP recorded by their scheduled visit date.</p>
+            <p>Patients at the top of the overdue patients list, are the most critical. Start calling patients at the top of the overdue list.</p>
+        </div>
+        <div class="card">
+            <h3>Calling patients</h3>
+            <p>Call patients by pressing the phone icon. You may see two options: <span class="code">Normal call</span> and <span class="code">Secure call</span>. A "secure" call is toll-free will hide your phone number from the patient.</p>
+            
+            <div class="help-example">%{help_calling_svg}</div>
+        </div>
+        <div class="card">
+            <h3>Mark "result of call"</h3>
+            <p>Please mark the result of each phone call that you make. Press on the patient card to see the following options:</p>
+            <ol>
+
+                <li class="num"><span class="code">Agreed to visit</span> if the patients tells you that they are coming for a follow-up.</li>
+                
+                <li class="num"><span class="code">Remind to call later...</span> if the patient didn’t mention when they can follow-up or didn’t answer their phone call.</li>
+
+                <li class="num"><span class="code">Remove from overdue list</span> if:
+                    <div class="graphic-html help-example-text">
+                        <ul>
+                        <li style="margin-top: 0;">Patient has already visited</li>
+                        <li>Patient is not responding</li>
+                        <li>Phone number does not work</li>
+                        <li>Transferred to another facility</li>
+                        <li>Moved to private practitioner</li>
+                        <li style="margin-bottom: 0;">Died</li>
+                        </ul>
+                    </div>
+                </li>
+            </ol>
+        </div>
+        
+    </div>
+</div>
+
+<div id="help-faq" class="help-body" style="display: none;">
+    <div class="help-contents">
+        <a href="#" onclick="close_window('help-faq'); return false" class="help-back">
+            %{icon_back_svg}
+        </a>
+
+        <h2>Common questions</h2>
+        
+        <div class="card">
+            <a class="faq">What should I do if my app crashes?</a>
+            <div class="answer">
+              <p>First try restarting your device. If Simple is crashing and you cannot fix it, please go to the <span class="help">Help</span> screen and contact your supervisor or our team.</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <a class="faq">Scan isn't working. What should I do?</a>
+            <div class="answer">
+              <p>Enter the BP Passport number at the bottom of the screen. If the problem persists, restart your phone. If it still does not work, contact your supervisor.</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <a class="faq">How do I update the app?</a>
+            <div class="answer">
+              <p>Update the app by pressing the settings icon and pressing <span class="code">Update</span>. It is important to have the latest version of Simple on your device.</p>
+              <div class="help-example">%{icon_settings_svg}</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <a class="faq">I cannot find a follow-up patient</a>
+            <div class="answer">
+              <p>Sometimes it is difficult to find a follow-up patient when they do not have a BP Passport. If, after 5 minutes, you cannot find the patient, register them as a new patient. It is possible to combine the patient records in the future.</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <a class="faq">Can a patient have 2 BP Passports?</a>
+            <div class="answer">
+              <p>Yes. A patient can have multiple BP Passports. They will all continue to work.</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <a class="faq">I ran out of BP Passports</a>
+            <div class="answer">
+              <p>Please ask your supervisor to order more BP Passports, before you run out. Remember, you can still record patients even if you do not have any BP Passports &#8212; you can assign BP Passports later.</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <a class="faq">What is a "sync"?</a>
+            <div class="answer">
+              <p>A "sync" saves your data to a central server. Please make sure that your data gets saved at least once per day. If you do not have a good internet connection, your data might take some time to sync.</p>
+              <div class="help-example">%{help_sync_svg}</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <a class="faq">How much data does Simple use?</a>
+            <div class="answer">
+              <p>Simple uses very little data. On average about 20 MB is used each month.</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <a class="faq">Can Simple access my information?</a>
+            <div class="answer">
+              <p>Simple does not access any of the personal information on your phone or tablet.</p>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+</body>
