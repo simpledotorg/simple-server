@@ -4,6 +4,7 @@ function $teleconsultationFields() {
 
 function toggleTeleconsultationFields(checkbox) {
     let teleconsultationFields = $teleconsultationFields();
+    
     if (checkbox.checked) {
         teleconsultationFields.style.display = '';
     } else {
