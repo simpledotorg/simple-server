@@ -38,6 +38,12 @@ FactoryBot.define do
     trait(:with_sanitized_phone_number) do
       phone_numbers { build_list(:patient_phone_number, 1, patient_id: id, number: '9876543210') }
     end
+    trait(:with_appointments) do
+      appointments { build_list(:appointment, 2, facility: registration_facility) }
+    end
+    trait(:with_overdue_appointments) do
+      appointments { build_list(:appointment, 2, :overdue, facility: registration_facility) }
+    end
   end
 end
 

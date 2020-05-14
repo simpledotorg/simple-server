@@ -1,4 +1,8 @@
 <%= bootstrap_form_with(url: form_url, method: :get, layout: :horizontal, class: "mt-4") do |form| %>
+  <% form_id = local_assigns[:form_id]
+     html_options = { onchange: "this.form.submit();" }
+     html_options.merge!(form: form_id) if form_id.present?
+  %>
   <div class="form-row">
     <div id="facility-selector" class="form-group col-md-6">
       <%= form.select :facility_id,
@@ -9,7 +13,7 @@
                           selected: facility_id,
                           wrapper: false
                       },
-                      onchange: "this.form.submit();"
+                      html_options
       %>
     </div>
     <div id="limit-selector" class="form-group col-md-3">
@@ -19,9 +23,10 @@
                           hide_label: true,
                           selected: per_page,
                       },
-                      onchange: "this.form.submit();"
+                      html_options
       %>
     </div>
   </div>
+  <%= form.hidden_field :submitted %>
   <%= form.submit "Filter", style: "position: absolute; left: -9999px; width: 1px; height: 1px;" %>
 <% end %>
