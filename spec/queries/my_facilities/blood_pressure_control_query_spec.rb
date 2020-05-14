@@ -108,19 +108,21 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       context 'considers only htn diagnosed patients' do
         describe '#cohort_registrations' do
           specify do
-            expect(query.cohort_registrations.count).to eq(7)
+            expect(query.cohort_registrations).to match_array(patients_with_controlled_bp +
+                                                                patients_with_uncontrolled_bp +
+                                                                patients_with_missed_visit)
           end
         end
 
         describe '#cohort_controlled_bps' do
           specify do
-            expect(query.cohort_controlled_bps.count).to eq(2)
+            expect(query.cohort_controlled_bps.pluck(:bp_id)).to match_array(controlled_blood_pressures.pluck(:id))
           end
         end
 
         describe '#cohort_uncontrolled_bps' do
           specify do
-            expect(query.cohort_uncontrolled_bps.count).to eq(3)
+            expect(query.cohort_uncontrolled_bps.pluck(:bp_id)).to match_array(uncontrolled_blood_pressures.pluck(:id))
           end
         end
 
@@ -161,9 +163,7 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       end
 
       let!(:patients_with_controlled_bp) do
-        (1..2).map do
-          create(:patient, recorded_at: cohort_range.sample, registration_facility: facility, registration_user: user)
-        end
+        create_list(:patient, 2, recorded_at: cohort_range.sample, registration_facility: facility, registration_user: user)
       end
 
       let!(:patients_with_uncontrolled_bp) do
@@ -181,9 +181,7 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       end
 
       let!(:patients_with_missed_visit) do
-        (1..2).map do
-          create(:patient, recorded_at: cohort_range.sample, registration_facility: facility, registration_user: user)
-        end
+        create_list(:patient, 2, recorded_at: cohort_range.sample, registration_facility: facility, registration_user: user)
       end
 
       let!(:non_htn_patient) do
@@ -196,13 +194,13 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
                  :under_control,
                  facility: facility,
                  patient: patient,
-                 recorded_at: current_month_range.sample,
+                 recorded_at: previous_month_range.sample,
                  user: user)
           create(:blood_pressure,
                  :under_control,
                  facility: facility,
                  patient: patient,
-                 recorded_at: previous_month_range.sample,
+                 recorded_at: current_month_range.sample,
                  user: user)
         end
       end
@@ -250,19 +248,21 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       context 'considers only htn diagnosed patients' do
         describe '#cohort_registrations' do
           specify do
-            expect(query.cohort_registrations.count).to eq(7)
+            expect(query.cohort_registrations).to match_array(patients_with_controlled_bp +
+                                                                patients_with_uncontrolled_bp +
+                                                                patients_with_missed_visit)
           end
         end
 
         describe '#cohort_controlled_bps' do
           specify do
-            expect(query.cohort_controlled_bps.count).to eq(2)
+            expect(query.cohort_controlled_bps.pluck(:bp_id)).to match_array(controlled_blood_pressures.pluck(:id))
           end
         end
 
         describe '#cohort_uncontrolled_bps' do
           specify do
-            expect(query.cohort_uncontrolled_bps.count).to eq(3)
+            expect(query.cohort_uncontrolled_bps.pluck(:bp_id)).to match_array(uncontrolled_blood_pressures.pluck(:id))
           end
         end
 
@@ -379,12 +379,16 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
 
       context 'considers only htn diagnosed patients' do
         describe '#overall_patients' do
-          specify { expect(described_class.new.overall_patients.count).to eq(5) }
+          specify { expect(described_class.new.overall_patients).to contain_exactly(patient_with_recent_bp,
+                                                                                    patient_without_recent_bp,
+                                                                                    patients_with_uncontrolled_bp,
+                                                                                    patients_with_missed_visit,
+                                                                                    old_patient) }
         end
 
         describe '#overall_controlled_bps' do
-          it 'counts bp_for_patient_with_recent_bp' do
-            expect(described_class.new.overall_controlled_bps.count).to eq(1)
+          specify do
+            expect(described_class.new.overall_controlled_bps.pluck(:bp_id)).to contain_exactly(bp_for_patient_with_recent_bp.id)
           end
         end
       end
