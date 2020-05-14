@@ -21,8 +21,8 @@ class PhoneNumberAuthentication
     end
 
     def call
-      authentication = PhoneNumberAuthentication.find_by(phone_number: phone_number)
-      result = verify(authentication)
+      self.authentication = PhoneNumberAuthentication.find_by(phone_number: phone_number)
+      result = verify_auth
       if result.success?
         authentication.set_access_token
         authentication.invalidate_otp
@@ -33,25 +33,32 @@ class PhoneNumberAuthentication
 
     private
 
+    attr_accessor :authentication
     attr_reader :otp, :password, :phone_number
 
-    def verify(authentication)
-      error_string = case
-      when !authentication.present?
-        I18n.t('login.error_messages.unknown_user')
+    def verify_auth
+      case
+      when authentication.nil?
+        failure('login.error_messages.unknown_user')
       when authentication.otp != otp
-        I18n.t('login.error_messages.invalid_otp')
+        failure('login.error_messages.invalid_otp')
       when !authentication.otp_valid?
-        I18n.t('login.error_messages.expired_otp')
+        failure('login.error_messages.expired_otp')
       when !authentication.authenticate(password)
-        I18n.t('login.error_messages.invalid_password')
-      end
-
-      if error_string
-        Result.new(authentication, false, error_string)
+        failure('login.error_messages.invalid_password')
       else
-        Result.new(authentication, true, nil)
+        success
       end
     end
+
+    def failure(message_key)
+      error_string = I18n.t(message_key)
+      Result.new(authentication, false, error_string)
+    end
+
+    def success
+      Result.new(authentication, true, nil)
+    end
+
   end
 end
