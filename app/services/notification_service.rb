@@ -39,23 +39,25 @@ class NotificationService
 =end
 
   def send_sms(recipient_number, message)
-    recipient_number = parse_phone_number(recipient_number)
+    recipient_number = parse_phone_number(recipient_number).insert(0, Rails.application.config.country[:sms_country_code])
 
     client.messages.create(
       from: twilio_sender_number,
-      to: recipient_number.insert(0, Rails.application.config.country[:sms_country_code]),
+      to: recipient_number,
       status_callback: twilio_callback_url,
-      body: body)
+      body: body
+    )
   end
 
   def send_whatsapp(recipient_number, message)
-    recipient_number = parse_phone_number(recipient_number)
+    recipient_number = parse_phone_number(recipient_number).insert(0, Rails.application.config.country[:sms_country_code])
 
     client.messages.create(
       from: "whatsapp:" + twilio_sender_number,
-      to: "whatsapp:" + recipient_number.insert(0, Rails.application.config.country[:sms_country_code]),
+      to: "whatsapp:" + recipient_number,
       status_callback: twilio_callback_url,
-      body: body)
+      body: body
+    )
   end
 
   private
