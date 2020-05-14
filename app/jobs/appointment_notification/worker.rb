@@ -1,23 +1,20 @@
 class AppointmentNotification::Worker
-  include Rails.application.routes.url_helpers
   include Sidekiq::Worker
 
   sidekiq_options queue: 'high'
 
-  def perform(appointments, communication_type)
-    Appointment.where(id: appointments).each do |appointment|
-      next if appointment.previously_communicated_via?(communication_type)
+  def perform(appointment, communication_type)
+    return if appointment.previously_communicated_via?(communication_type)
 
-      begin
-        sms_response = send_sms(appointment, communication_type)
-        Communication.create_with_twilio_details!(appointment: appointment,
-                                                  twilio_sid: sms_response.sid,
-                                                  twilio_msg_status: sms_response.status,
-                                                  communication_type: communication_type)
+    begin
+      sms_response = send_sms(appointment, communication_type)
+      Communication.create_with_twilio_details!(appointment: appointment,
+                                                twilio_sid: sms_response.sid,
+                                                twilio_msg_status: sms_response.status,
+                                                communication_type: communication_type)
 
-      rescue Twilio::REST::TwilioError => e
-        report_error(e)
-      end
+    rescue Twilio::REST::TwilioError => e
+      report_error(e)
     end
   end
 
