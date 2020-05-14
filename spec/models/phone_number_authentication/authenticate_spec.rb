@@ -19,6 +19,16 @@ RSpec.describe PhoneNumberAuthentication::Authenticate do
           phone_number: user.phone_number)
       }.to change { user.phone_number_authentication.access_token }
     end
+
+    it "invalidates OTP" do
+      user = FactoryBot.create(:user, password: "5489")
+      expect(user.otp_valid?).to be true
+      PhoneNumberAuthentication::Authenticate.call(otp: user.otp,
+        password: "5489",
+        phone_number: user.phone_number)
+      expect(user.phone_number_authentication.otp_expires_at).to eq(Time.at(0))
+      expect(user.otp_valid?).to be false
+    end
   end
 
   context "fails when" do
@@ -50,7 +60,6 @@ RSpec.describe PhoneNumberAuthentication::Authenticate do
 
     it "otp is expired" do
       user = Timecop.freeze(Date.current - 3) { FactoryBot.create(:user, password: "5489") }
-
       result = PhoneNumberAuthentication::Authenticate.call(otp: user.otp,
         password: "5489",
         phone_number: user.phone_number)
