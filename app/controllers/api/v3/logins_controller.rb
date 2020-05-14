@@ -7,16 +7,27 @@ class Api::V3::LoginsController < APIController
   before_action :validate_login_payload, only: %i[create]
 
   def login_user
-    authentication = PhoneNumberAuthentication.find_by(phone_number: login_params[:phone_number])
-    errors = errors_in_user_login(authentication)
+    result = PhoneNumberAuthentication::Authenticate.call(otp: login_params[:otp],
+      password: login_params[:password],
+      phone_number: login_params[:phone_number],
+    )
 
-    if errors.present?
-      render json: { errors: errors }, status: :unauthorized
+    authentication = result.authentication
+    errors = result.error_message
+
+    if !result.success?
+      Raven.capture_message(
+        'Login Error',
+        logger: 'logger',
+        extra: {
+          login_params: login_params,
+          errors: errors,
+        },
+        tags: { type: 'login' }
+      )
+      render json: { errors: { user: [errors] }}, status: :unauthorized
     else
       user = authentication.user
-      authentication.set_access_token
-      authentication.invalidate_otp
-      authentication.save
       AuditLog.login_log(user)
       render json: {
         user: user_to_response(user),
@@ -41,30 +52,5 @@ class Api::V3::LoginsController < APIController
 
   def login_params
     params.require(:user).permit(:phone_number, :password, :otp)
-  end
-
-  def errors_in_user_login(user)
-    error_string = if !user.present?
-      I18n.t('login.error_messages.unknown_user')
-    elsif user.otp != login_params[:otp]
-      I18n.t('login.error_messages.invalid_otp')
-    elsif !user.otp_valid?
-      I18n.t('login.error_messages.expired_otp')
-    elsif !user.authenticate(login_params[:password])
-      I18n.t('login.error_messages.invalid_password')
-    end
-
-    if error_string.present?
-      Raven.capture_message(
-        'Login Error',
-        logger: 'logger',
-        extra: {
-          login_params: login_params,
-          errors: error_string
-        },
-        tags: { type: 'login' }
-      )
-      { user: [error_string] } if error_string.present?
-    end
   end
 end

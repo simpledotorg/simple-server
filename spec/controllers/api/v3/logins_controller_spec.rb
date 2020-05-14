@@ -12,7 +12,7 @@ RSpec.describe Api::V3::LoginsController, type: :controller do
               otp: db_user.otp } }
       end
 
-      it 'responds with access token for the user' do
+      fit 'responds with access token for the user' do
         post :login_user, params: request_params
 
         db_user.reload
@@ -21,7 +21,7 @@ RSpec.describe Api::V3::LoginsController, type: :controller do
         expect(JSON(response.body)['access_token']).to eq(db_user.access_token)
       end
 
-      it 'updates the access token for the user' do
+      fit 'updates the access token for the user' do
         old_access_token = db_user.access_token
         post :login_user, params: request_params
 
