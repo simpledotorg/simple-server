@@ -22,7 +22,7 @@
         <div class="col-lg-9 pr-5 pr-md-0">
           <h3>BP control</h3>
           <p><%= registration_period %> cohort is the outcome for <%= number_with_delimiter(@totals[:registered]) %> patients registered in <%= registration_period %>,
-            at their last visit in <%= visited_in_period %>. Patients with a ‘missed visit’ had no BP recorded.</p>
+            at their last visit in <%= visited_in_period %>.
         </div>
 
         <div class="mt-1 mb-3 col-lg-3">
@@ -92,7 +92,7 @@
           <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="uncontrolled" colspan="2">Uncontrolled BP<br>
             in <%= visited_in_period %>
           </th>
-          <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="missed" colspan="2">Missed visit<br>in <%= visited_in_period %>
+          <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="missed" colspan="2">No BP taken<br>in <%= visited_in_period %>
           </th>
           <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="overall-percent" colspan="2">Controlled BP<br>in last 90 days</th>
           <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="overall-registered">Registered<br>&gt; 2 months ago</th>

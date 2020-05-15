@@ -1,5 +1,6 @@
 class Encounter < ApplicationRecord
   include Mergeable
+  include SQLHelpers
 
   belongs_to :patient, optional: true
   belongs_to :facility
