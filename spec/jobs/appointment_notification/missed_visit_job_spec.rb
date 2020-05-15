@@ -13,7 +13,7 @@ RSpec.describe AppointmentNotification::MissedVisitJob, type: :job do
   let!(:all_overdue_appointments) { overdue_appointments_from_ihci + overdue_appointments_from_path }
 
   before do
-    allow(AppointmentNotification::Worker).to receive(:perform_later)
+    allow_any_instance_of(AppointmentNotification::Worker).to receive(:perform)
 
     allow(FeatureToggle).to receive(:enabled?).with('SMS_REMINDERS').and_return(true)
     allow(ENV).to receive(:[]).with('APPOINTMENT_NOTIFICATION_FAN_OUT_BATCH_SIZE').and_return(250)
