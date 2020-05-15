@@ -1,11 +1,13 @@
-$(document).ready(function () {
-    $("#facility_enable_teleconsultation").click(function () {
-        var isEnabled = $(this).prop("checked");
-        var teleconsultationFields = $("#teleconsultation_fields");
-        if (isEnabled) {
-            teleconsultationFields.show();
-        } else {
-            teleconsultationFields.hide();
-        }
-    });
-});
+function $teleconsultationFields() {
+    return document.getElementById('teleconsultation_fields');
+}
+
+function toggleTeleconsultationFields(checkbox) {
+    let teleconsultationFields = $teleconsultationFields();
+    
+    if (checkbox.checked) {
+        teleconsultationFields.style.display = '';
+    } else {
+        teleconsultationFields.style.display = 'none';
+    }
+}
