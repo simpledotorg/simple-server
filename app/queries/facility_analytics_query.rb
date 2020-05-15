@@ -57,7 +57,7 @@ class FacilityAnalyticsQuery
                 .where(blood_pressures: { facility: @facility })
                 .select("DISTINCT ON (blood_pressures.patient_id, #{BloodPressure.date_to_period_sql(@period)}) blood_pressures.user_id AS user_id, patients.deleted_at")
                 .select("blood_pressures.recorded_at AS bp_recorded_at")
-                .order('blood_pressures.patient_id', BloodPressure.date_to_period_sql(@period), 'blood_pressures.recorded_at'),
+                .order('blood_pressures.patient_id', Arel.sql(BloodPressure.date_to_period_sql(@period)), 'blood_pressures.recorded_at'),
               'patients')
         .group('user_id')
         .group_by_period(:month, 'bp_recorded_at')
