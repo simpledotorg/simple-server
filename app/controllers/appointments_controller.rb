@@ -4,20 +4,30 @@ class AppointmentsController < AdminController
 
   before_action :set_appointment, only: [:update]
 
+  DEFAULT_SEARCH_FILTERS = ["only_less_than_year_overdue"]
+
   def index
     authorize [:overdue_list, Appointment], :index?
 
-    @patient_summaries = policy_scope([:overdue_list, PatientSummary])
-                           .overdue
-                           .order(risk_level: :desc, next_appointment_scheduled_date: :desc)
+    @search_filters = index_params[:search_filters] || []
+    # We have to check to see this is the first page load where we want to apply default search filters. This
+    # is the case where the form is _not_ submitted and there are no search filters passed in.
+    if @search_filters.blank? && !index_params[:submitted]
+      @search_filters = DEFAULT_SEARCH_FILTERS
+    end
+
+    scope = policy_scope([:overdue_list, PatientSummary])
+    @patient_summaries = PatientSummaryQuery.call(relation: scope, filters: @search_filters)
 
     if current_facility
       @patient_summaries = @patient_summaries.where(next_appointment_facility_id: current_facility.id)
     end
+    @patient_summaries = @patient_summaries.order(risk_level: :desc, next_appointment_scheduled_date: :desc, id: :asc)
 
     respond_to do |format|
       format.html do
         @patient_summaries = paginate(@patient_summaries).includes(:next_appointment, patient: :appointments)
+        render layout: "overdue"
       end
       format.csv do
         send_data render_to_string('index.csv.erb'), filename: download_filename
@@ -37,6 +47,10 @@ class AppointmentsController < AdminController
   end
 
   private
+
+  def index_params
+    @index_params ||= params.permit(:facility_id, :per_page, :submitted, search_filters: [])
+  end
 
   def set_appointment
     @appointment = Appointment.find(params[:id] || params[:appointment_id])

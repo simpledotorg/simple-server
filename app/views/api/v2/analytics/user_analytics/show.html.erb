@@ -14,7 +14,9 @@
 
 <body>
 <div class="progress-contents">
-  <div class="updated-date">Updated: <span><%= @statistics.dig(:metadata, :last_updated_at) %></span></div>
+  <div class="updated-date">
+    Updated: <span><%= @user_analytics.last_updated_at %></span>
+  </div>
 
   <div class="card" style="min-height: 210px;">
     <!-- daily card switcher -->
@@ -28,7 +30,10 @@
     </div>
 
     <!-- dump all statistics in a hidden div so that we can parse it in JS -->
-    <%= content_tag :div, id: "statistics", data: { statistics: @statistics }, style: "display: none" do %>
+    <%= content_tag :div,
+                    id: "statistics",
+                    data: { statistics: @user_analytics.statistics },
+                    style: "display: none" do %>
     <% end %>
 
     <!-- daily stats view -->
@@ -49,25 +54,17 @@
             <div class="count count-1">
               <strong>Registered</strong>
               <div class="big-number">
-                <% daily_registration_count = @statistics.dig(:daily,
-                                                              :grouped_by_date,
-                                                              :registrations,
-                                                              day_date) %>
-                <%= zero_if_unavailable(daily_registration_count) %>
+                <%= @user_analytics.daily_stats_by_date(:registrations, day_date) %>
               </div>
-              <%= "Patient".pluralize(daily_registration_count) %>
+              <%= "Patient".pluralize(@user_analytics.daily_stats_by_date(:registrations, day_date)) %>
             </div>
 
             <div class="count count-2">
               <strong>Follow-up</strong>
               <div class="big-number">
-                <% daily_follow_up_count = @statistics.dig(:daily,
-                                                           :grouped_by_date,
-                                                           :follow_ups,
-                                                           day_date) %>
-                <%= zero_if_unavailable(daily_follow_up_count) %>
+                <%= @user_analytics.daily_stats_by_date(:follow_ups, day_date) %>
               </div>
-              <%= "Patient".pluralize(daily_follow_up_count) %>
+              <%= "Patient".pluralize(@user_analytics.daily_stats_by_date(:follow_ups, day_date)) %>
             </div>
           </div>
         </div>
@@ -83,19 +80,17 @@
 
     <%= render partial: 'gender_filter',
                locals: { data_table_name: registrations_table_name,
-                         is_diabetes_enabled: @statistics.dig(:metadata, :is_diabetes_enabled) } %>
+                         is_diabetes_enabled: @user_analytics.diabetes_enabled? } %>
 
     <%= render partial: 'monthly_gender_table',
-               locals: { resource: :registrations,
-                         statistics: @statistics,
-                         data_table_name: registrations_table_name,
-                         monthly_period_list: @user_analytics.monthly_period_list,
-                         is_diabetes_enabled: @statistics.dig(:metadata, :is_diabetes_enabled) } %>
+               locals: { stat: :registrations,
+                         user_analytics: @user_analytics,
+                         data_table_name: registrations_table_name } %>
   </div>
 
   <!-- monthly follow-up patients view -->
   <div class="card">
-    <% if @statistics.dig(:metadata, :is_diabetes_enabled) %>
+    <% if @user_analytics.diabetes_enabled? %>
       <h3>Follow-up patients</h3>
     <% else %>
       <h3>Follow-up hypertension patients</h3>
@@ -105,14 +100,12 @@
 
     <%= render partial: 'gender_filter',
                locals: { data_table_name: follow_ups_table_name,
-                         is_diabetes_enabled: @statistics.dig(:metadata, :is_diabetes_enabled) } %>
+                         is_diabetes_enabled: @user_analytics.diabetes_enabled? } %>
 
     <%= render partial: 'monthly_gender_table',
-               locals: { resource: :follow_ups,
-                         statistics: @statistics,
-                         data_table_name: follow_ups_table_name,
-                         monthly_period_list: @user_analytics.monthly_period_list,
-                         is_diabetes_enabled: @statistics.dig(:metadata, :is_diabetes_enabled) } %>
+               locals: { stat: :follow_ups,
+                         user_analytics: @user_analytics,
+                         data_table_name: follow_ups_table_name } %>
   </div>
 
   <!-- monthly hypertension control view -->
@@ -126,32 +119,15 @@
       <% @user_analytics.monthly_period_list.each do |month_date| %>
         <tr>
           <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
-          <td><span class="percent">
-                  <%=
-                    @user_analytics.display_percentage(@statistics.dig(:monthly,
-                                                                       :grouped_by_date,
-                                                                       :hypertension,
-                                                                       :controlled_visits,
-                                                                       month_date),
-                                                       @statistics.dig(:monthly,
-                                                                       :grouped_by_date,
-                                                                       :hypertension,
-                                                                       :follow_ups,
-                                                                       month_date))
-                  %>
-                </span></td>
           <td>
-            <%= zero_if_unavailable(@statistics.dig(:monthly,
-                                                    :grouped_by_date,
-                                                    :hypertension,
-                                                    :controlled_visits,
-                                                    month_date)) %>
+            <span class="percent">
+              <%= @user_analytics.monthly_htn_control_rate(month_date) %>
+            </span>
+          </td>
+          <td>
+            <%= @user_analytics.monthly_htn_stats_by_date(:controlled_visits, month_date) %>
             of
-            <%= zero_if_unavailable(@statistics.dig(:monthly,
-                                                    :grouped_by_date,
-                                                    :hypertension,
-                                                    :follow_ups,
-                                                    month_date)) %>
+            <%= @user_analytics.monthly_htn_stats_by_date(:follow_ups, month_date) %>
           </td>
         </tr>
       <% end %>
@@ -159,12 +135,10 @@
   </div>
 
   <!-- all trophies view -->
-  <!-- do not show achievements if the only locked trophy available is the first one -->
-  <% unless @statistics.dig(:trophies, :locked_trophy_value) == UserAnalyticsPresenter::TROPHY_MILESTONES.first %>
-
+  <% if @user_analytics.achievements? %>
     <div class="trophies">
       <h4>Achievements</h4>
-      <% @statistics.dig(:trophies, :unlocked_trophy_values).sort.each do |trophy| %>
+      <% @user_analytics.unlocked_trophies.sort.each do |trophy| %>
         <div class="trophy trophy-<%= trophy %>">
           <%= inline_svg('ribbon.svg') %>
           <em></em>
@@ -175,13 +149,13 @@
         </div>
       <% end %>
 
-      <div class="trophy trophy-<%= @statistics.dig(:trophies, :locked_trophy_value) %> trophy-upcoming">
+      <div class="trophy trophy-<%= @user_analytics.locked_trophy %> trophy-upcoming">
         <%= inline_svg('ribbon.svg') %>
         <em></em>
         <span>
             <%= inline_svg('icon_lock.svg') %>
           </span>
-        <div><%= @statistics.dig(:trophies, :locked_trophy_value) %> follow-up<br>hypertension patients</div>
+        <div><%= @user_analytics.locked_trophy %> follow-up<br>hypertension patients</div>
       </div>
     </div>
   <% end %>

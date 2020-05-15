@@ -40,12 +40,26 @@ FactoryBot.define do
       medical_history { build(:medical_history, :diabetes_yes, patient_id: id) }
     end
 
+    trait :hypertension do
+      medical_history { build(:medical_history, :hypertension_yes, patient_id: id) }
+    end
+
+    trait :diabetes do
+      medical_history { build(:medical_history, :diabetes_yes, patient_id: id) }
+    end
+
     trait :denied do
       reminder_consent { Patient.reminder_consents[:denied] }
     end
 
     trait(:with_sanitized_phone_number) do
       phone_numbers { build_list(:patient_phone_number, 1, patient_id: id, number: '9876543210') }
+    end
+    trait(:with_appointments) do
+      appointments { build_list(:appointment, 2, facility: registration_facility) }
+    end
+    trait(:with_overdue_appointments) do
+      appointments { build_list(:appointment, 2, :overdue, facility: registration_facility) }
     end
   end
 end

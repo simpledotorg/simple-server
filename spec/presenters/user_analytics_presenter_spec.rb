@@ -17,10 +17,12 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
         before do
           patients = [create(:patient,
+                             :hypertension,
                              registration_facility: current_facility,
                              recorded_at: reg_date,
                              gender: 'female'),
                       create(:patient,
+                             :hypertension,
                              registration_facility: current_facility,
                              recorded_at: reg_date,
                              gender: 'male'),
@@ -31,26 +33,31 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
                              gender: 'transgender')]
 
           patients.each do |patient|
-            create(:blood_pressure,
-                   :with_encounter,
-                   :critical,
-                   patient: patient,
-                   facility: current_facility,
-                   user: current_user,
-                   recorded_at: follow_up_date)
-            create(:blood_sugar,
-                   :with_encounter,
-                   patient: patient,
-                   facility: current_facility,
-                   user: current_user,
-                   recorded_at: follow_up_date)
-            create(:blood_pressure,
-                   :with_encounter,
-                   :under_control,
-                   patient: patient,
-                   facility: current_facility,
-                   user: current_user,
-                   recorded_at: controlled_follow_up_date)
+            create(:encounter,
+                   :with_observables,
+                   observable: create(:blood_pressure,
+                                      :critical,
+                                      patient: patient,
+                                      facility: current_facility,
+                                      user: current_user,
+                                      recorded_at: follow_up_date))
+
+            create(:encounter,
+                   :with_observables,
+                   observable: create(:blood_sugar,
+                                      patient: patient,
+                                      facility: current_facility,
+                                      user: current_user,
+                                      recorded_at: follow_up_date))
+
+            create(:encounter,
+                   :with_observables,
+                   observable: create(:blood_pressure,
+                                      :under_control,
+                                      patient: patient,
+                                      facility: current_facility,
+                                      user: current_user,
+                                      recorded_at: controlled_follow_up_date))
           end
 
           stub_const("UserAnalyticsPresenter::MONTHS_AGO", 3)
@@ -102,7 +109,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
             }
           }
 
-          expect(data.dig(:monthly, :grouped_by_gender_and_date)).to eq(expected_output)
+          expect(data.dig(:monthly, :grouped_by_date_and_gender)).to eq(expected_output)
         end
 
         it 'has data grouped by date' do
@@ -112,7 +119,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
             end
 
           expected_output = {
-            total: {
+            htn_or_dm: {
               follow_ups: {
                 (request_date - 2.months) => 0,
                 (request_date - 1.months) => 3,
@@ -178,7 +185,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
               registrations: {}
             }
           }
-          expect(data.dig(:monthly, :grouped_by_gender_and_date)).to eq(expected_output)
+          expect(data.dig(:monthly, :grouped_by_date_and_gender)).to eq(expected_output)
         end
       end
 
@@ -188,9 +195,11 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
         before do
           patients = [create(:patient,
+                             :hypertension,
                              registration_facility: current_facility,
                              recorded_at: reg_date),
                       create(:patient,
+                             :hypertension,
                              registration_facility: current_facility,
                              recorded_at: reg_date),
                       create(:patient,
@@ -199,12 +208,13 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
                              recorded_at: reg_date)]
 
           patients.each do |patient|
-            create(:blood_pressure,
-                   :with_encounter,
-                   patient: patient,
-                   facility: current_facility,
-                   user: current_user,
-                   recorded_at: follow_up_date)
+            create(:encounter,
+                   :with_observables,
+                   observable: create(:blood_pressure,
+                                      patient: patient,
+                                      facility: current_facility,
+                                      user: current_user,
+                                      recorded_at: follow_up_date))
           end
 
           stub_const("UserAnalyticsPresenter::DAYS_AGO", 6)
@@ -272,10 +282,12 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
         before do
           patients = [create(:patient,
+                             :hypertension,
                              registration_facility: current_facility,
                              recorded_at: reg_date,
                              gender: 'female'),
                       create(:patient,
+                             :hypertension,
                              registration_facility: current_facility,
                              recorded_at: reg_date,
                              gender: 'male'),
@@ -287,18 +299,21 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
 
           patients.each do |patient|
-            create(:blood_pressure,
-                   :with_encounter,
-                   patient: patient,
-                   facility: current_facility,
-                   user: current_user,
-                   recorded_at: follow_up_date)
-            create(:blood_sugar,
-                   :with_encounter,
-                   patient: patient,
-                   facility: current_facility,
-                   user: current_user,
-                   recorded_at: follow_up_date)
+            create(:encounter,
+                   :with_observables,
+                   observable: create(:blood_pressure,
+                                      patient: patient,
+                                      facility: current_facility,
+                                      user: current_user,
+                                      recorded_at: follow_up_date))
+
+            create(:encounter,
+                   :with_observables,
+                   observable: create(:blood_sugar,
+                                      patient: patient,
+                                      facility: current_facility,
+                                      user: current_user,
+                                      recorded_at: follow_up_date))
           end
         end
 
@@ -336,7 +351,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
           data = described_class.new(current_facility).statistics
 
           expected_output = {
-            total: {
+            htn_or_dm: {
               follow_ups: 3,
               registrations: 3
             }
@@ -359,10 +374,12 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
         before do
           patients = [create(:patient,
+                             :hypertension,
                              registration_facility: current_facility,
                              recorded_at: reg_date,
                              gender: 'female'),
                       create(:patient,
+                             :hypertension,
                              registration_facility: current_facility,
                              recorded_at: reg_date,
                              gender: 'male'),
@@ -373,26 +390,31 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
                              gender: 'transgender')]
 
           patients.each do |patient|
-            create(:blood_pressure,
-                   :with_encounter,
-                   :critical,
-                   patient: patient,
-                   facility: current_facility,
-                   user: current_user,
-                   recorded_at: follow_up_date)
-            create(:blood_sugar,
-                   :with_encounter,
-                   patient: patient,
-                   facility: current_facility,
-                   user: current_user,
-                   recorded_at: follow_up_date)
-            create(:blood_pressure,
-                   :with_encounter,
-                   :under_control,
-                   patient: patient,
-                   facility: current_facility,
-                   user: current_user,
-                   recorded_at: controlled_follow_up_date)
+            create(:encounter,
+                   :with_observables,
+                   observable: create(:blood_pressure,
+                                      :critical,
+                                      patient: patient,
+                                      facility: current_facility,
+                                      user: current_user,
+                                      recorded_at: follow_up_date))
+
+            create(:encounter,
+                   :with_observables,
+                   observable: create(:blood_sugar,
+                                      patient: patient,
+                                      facility: current_facility,
+                                      user: current_user,
+                                      recorded_at: follow_up_date))
+
+            create(:encounter,
+                   :with_observables,
+                   observable: create(:blood_pressure,
+                                      :under_control,
+                                      patient: patient,
+                                      facility: current_facility,
+                                      user: current_user,
+                                      recorded_at: controlled_follow_up_date))
           end
 
           stub_const("UserAnalyticsPresenter::MONTHS_AGO", 3)
@@ -430,7 +452,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
             }
           }
 
-          expect(data.dig(:monthly, :grouped_by_gender_and_date)).to eq(expected_output)
+          expect(data.dig(:monthly, :grouped_by_date_and_gender)).to eq(expected_output)
         end
 
         it 'has data grouped by date' do
@@ -473,7 +495,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
               registrations: {}
             }
           }
-          expect(data.dig(:monthly, :grouped_by_gender_and_date)).to eq(expected_output)
+          expect(data.dig(:monthly, :grouped_by_date_and_gender)).to eq(expected_output)
         end
       end
 
@@ -483,9 +505,11 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
         before do
           patients = [create(:patient,
+                             :hypertension,
                              registration_facility: current_facility,
                              recorded_at: reg_date),
                       create(:patient,
+                             :hypertension,
                              registration_facility: current_facility,
                              recorded_at: reg_date),
                       create(:patient,
@@ -494,12 +518,13 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
                              recorded_at: reg_date)]
 
           patients.each do |patient|
-            create(:blood_pressure,
-                   :with_encounter,
-                   patient: patient,
-                   facility: current_facility,
-                   user: current_user,
-                   recorded_at: follow_up_date)
+            create(:encounter,
+                   :with_observables,
+                   observable: create(:blood_pressure,
+                                      patient: patient,
+                                      facility: current_facility,
+                                      user: current_user,
+                                      recorded_at: follow_up_date))
           end
 
           stub_const("UserAnalyticsPresenter::DAYS_AGO", 6)
@@ -567,10 +592,12 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
         before do
           patients = [create(:patient,
+                             :hypertension,
                              registration_facility: current_facility,
                              recorded_at: reg_date,
                              gender: 'female'),
                       create(:patient,
+                             :hypertension,
                              registration_facility: current_facility,
                              recorded_at: reg_date,
                              gender: 'male'),
@@ -582,18 +609,21 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
 
           patients.each do |patient|
-            create(:blood_pressure,
-                   :with_encounter,
-                   patient: patient,
-                   facility: current_facility,
-                   user: current_user,
-                   recorded_at: follow_up_date)
-            create(:blood_sugar,
-                   :with_encounter,
-                   patient: patient,
-                   facility: current_facility,
-                   user: current_user,
-                   recorded_at: follow_up_date)
+            create(:encounter,
+                   :with_observables,
+                   observable: create(:blood_pressure,
+                                      patient: patient,
+                                      facility: current_facility,
+                                      user: current_user,
+                                      recorded_at: follow_up_date))
+
+            create(:encounter,
+                   :with_observables,
+                   observable: create(:blood_sugar,
+                                      patient: patient,
+                                      facility: current_facility,
+                                      user: current_user,
+                                      recorded_at: follow_up_date))
           end
         end
 
@@ -686,18 +716,19 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
         #
         # create BPs (hypertension follow-ups)
         #
-        patients = create_list(:patient, 3, registration_facility: current_facility)
+        patients = create_list(:patient, 3, :hypertension, registration_facility: current_facility)
         patients.each do |patient|
           [patient.recorded_at + 1.months,
            patient.recorded_at + 2.months,
            patient.recorded_at + 3.months,
            patient.recorded_at + 4.months].each do |date|
-            create(:blood_pressure,
-                   :with_encounter,
-                   patient: patient,
-                   facility: current_facility,
-                   recorded_at: date,
-                   user: current_user)
+            create(:encounter,
+                   :with_observables,
+                   observable: create(:blood_pressure,
+                                      patient: patient,
+                                      facility: current_facility,
+                                      recorded_at: date,
+                                      user: current_user))
           end
         end
 

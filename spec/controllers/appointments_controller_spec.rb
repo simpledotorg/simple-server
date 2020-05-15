@@ -33,7 +33,7 @@ RSpec.describe AppointmentsController, type: :controller do
 
     it 'returns a success response' do
       get :index, params: {}
-      expect(response).to be_success
+      expect(response).to be_successful
     end
 
     it 'populates a list of overdue appointments' do
@@ -60,6 +60,46 @@ RSpec.describe AppointmentsController, type: :controller do
 
         expect(response.body).to include("recorded at #{facility_1.name}")
         expect(response.body).not_to include("recorded at #{facility_2.name}")
+      end
+    end
+
+    describe "filtering by days overdue" do
+      it "displays patients only less than one year overdue when checked" do
+        really_overdue_appointment = create(:appointment,
+          facility: facility_2,
+          scheduled_date: 380.days.ago,
+          status: 'scheduled'
+        )
+        create(:blood_pressure, patient: really_overdue_appointment.patient, facility: facility_2)
+        really_overdue_patient_id = really_overdue_appointment.patient_id
+
+        get :index, params: {
+          search_filters: ["only_less_than_year_overdue"],
+          per_page: 'All'
+        }
+
+        patient_ids = (overdue_appointments_in_facility_1 + overdue_appointments_in_facility_2).map(&:patient_id)
+        expect(assigns(:patient_summaries).map(&:id)).to match_array(patient_ids)
+        expect(assigns(:patient_summaries).map(&:id)).to_not include(really_overdue_patient_id)
+      end
+
+      it "displays patients with all overdue date when unchecked and form is submitted" do
+        really_overdue_appointment = create(:appointment,
+          facility: facility_2,
+          scheduled_date: 380.days.ago,
+          status: 'scheduled'
+        )
+        create(:blood_pressure, patient: really_overdue_appointment.patient, facility: facility_2)
+        really_overdue_patient_id = really_overdue_appointment.patient_id
+
+        get :index, params: {
+          per_page: 'All',
+          submitted: 'true'
+        }
+
+        patient_ids = (overdue_appointments_in_facility_1 + overdue_appointments_in_facility_2).map(&:patient_id)
+        expected_patient_ids = patient_ids.push(really_overdue_patient_id)
+        expect(assigns(:patient_summaries).map(&:id)).to match_array(expected_patient_ids)
       end
     end
 

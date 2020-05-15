@@ -2,7 +2,4 @@
 
 bundle exec rails db:schema:load:with_data
 bundle exec rails db:seed
-
-if [ ! -z "${SUPERADMIN_PASSWORD}" ]; then
-  bundle exec rake create_admin_user[admin,admin@simple.org,${SUPERADMIN_PASSWORD}]
-fi
+bundle exec rails db:seed_users_data
