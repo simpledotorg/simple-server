@@ -15,10 +15,7 @@ RSpec.describe AppointmentNotificationService do
     end
 
     before do
-      @sms_response_double = double('SmsNotificationServiceResponse')
-      allow_any_instance_of(SmsNotificationService).to receive(:send_reminder_sms).and_return(@sms_response_double)
-      allow(@sms_response_double).to receive(:sid).and_return(SecureRandom.uuid)
-      allow(@sms_response_double).to receive(:status).and_return('queued')
+      allow_any_instance_of(AppointmentNotification::Worker).to receive(:perform)
     end
 
     it 'should spawn a sms reminder job for each appointment' do
@@ -36,11 +33,14 @@ RSpec.describe AppointmentNotificationService do
     end
 
     it 'should skip sending reminders for appointments for which reminders are already sent' do
-      AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
-      AppointmentNotification::Worker.drain
+      #AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
+      #AppointmentNotification::Worker.drain
 
-      appointments_with_reminders_sent = overdue_appointments.select { |a| a.communications.present? }
-      expect(appointments_with_reminders_sent.count).to eq(4)
+      overdue_appointments.each do |appointment|
+        communication = FactoryBot.create(:communication, communication_type: "missed_visit_whatsapp_reminder",
+                                          detailable: create(:twilio_sms_delivery_detail, :sent))
+        appointment.communications << communication
+      end
 
       expect do
         AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
@@ -48,13 +48,11 @@ RSpec.describe AppointmentNotificationService do
     end
 
     it 'should send reminders for appointments for which previous reminders failed' do
-      allow(@sms_response_double).to receive(:status).and_return('failed')
-
-      AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
-      AppointmentNotification::Worker.drain
-
-      appointments_with_reminders_failed = overdue_appointments.select { |a| a.communications.any?(&:unsuccessful?) }
-      expect(appointments_with_reminders_failed.count).to eq(4)
+      overdue_appointments.each do |appointment|
+        communication = FactoryBot.create(:communication, communication_type: "missed_visit_whatsapp_reminder",
+                                          detailable: create(:twilio_sms_delivery_detail, :failed))
+        appointment.communications << communication
+      end
 
       expect do
         AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
@@ -68,13 +66,10 @@ RSpec.describe AppointmentNotificationService do
         end
 
       overdue_appointments = Appointment.where(id: overdue_appointment_ids)
-                                        .includes(patient: [:phone_numbers], facility: { facility_group: :organization })
 
-      AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
-      AppointmentNotification::Worker.drain
-
-      eligible_appointments = overdue_appointments.select { |a| a.communications.present? }
-      expect(eligible_appointments.count).to eq(1)
+      expect do
+        AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
+      end.to change(AppointmentNotification::Worker.jobs, :size).by(1)
     end
 
     context 'when a patient has just landline or invalid numbers' do

@@ -26,20 +26,23 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     it "sends a reminder whatsapp" do
       expect_any_instance_of(NotificationService).to receive(:send_whatsapp).with(appointment_phone_number, expected_message)
 
-      described_class.perform_now(appointment, communication_type, locale)
+      described_class.perform_async(appointment.id, communication_type, locale)
+      described_class.drain
     end
 
     it "records a Communication log if successful" do
       expect {
-        described_class.perform_now(appointment, communication_type, locale)
+        described_class.perform_async(appointment.id, communication_type, locale)
+        described_class.drain
       }.to change { Communication.count }.by(1)
     end
 
     it "does not send if Communication already sent" do
-      allow(appointment).to receive(:previously_communicated_via?).and_return(true)
+      allow_any_instance_of(Appointment).to receive(:previously_communicated_via?).and_return(true)
 
       expect {
-        described_class.perform_now(appointment, communication_type, locale)
+        described_class.perform_async(appointment.id, communication_type, locale)
+        described_class.drain
       }.not_to change { Communication.count }
     end
 
@@ -50,7 +53,8 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       end
 
       expect {
-        described_class.perform_now(appointment, communication_type, locale)
+        described_class.perform_async(appointment.id, communication_type, locale)
+        described_class.drain
       }.not_to change { Communication.count }
     end
 
@@ -61,7 +65,8 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
 
         expect_any_instance_of(NotificationService).to receive(:send_whatsapp).with(appointment_phone_number, expected_message)
 
-        described_class.perform_now(appointment, communication_type, locale)
+        described_class.perform_async(appointment.id, communication_type, locale)
+        described_class.drain
       end
     end
 
@@ -69,7 +74,8 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       locale = "fr"
 
       expect do
-        described_class.perform_now(appointment, communication_type, locale)
+        described_class.perform_async(appointment.id, communication_type, locale)
+        described_class.drain
       end.to raise_error(StandardError)
     end
   end
