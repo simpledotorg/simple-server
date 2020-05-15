@@ -58,6 +58,10 @@ describe PatientSummary, type: :model do
         expect(patient_summary.district).to eq(patient.address.district)
         expect(patient_summary.state).to eq(patient.address.state)
       end
+
+      it "includes patient status" do
+        expect(patient_summary.status).to eq(patient.status)
+      end
     end
 
     describe "Registration details" do
