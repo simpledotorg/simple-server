@@ -6,9 +6,20 @@ FactoryBot.define do
     device_created_at { Time.current }
     device_updated_at { Time.current }
     recorded_at { device_created_at }
-    facility
-    user
-    patient
+
+    association :facility, strategy: :create
+    association :user, strategy: :create
+    association :patient, strategy: :create
+
+    trait(:with_encounter) do
+      after :build do |blood_sugar|
+        create(:encounter,
+               :with_observables,
+               patient: blood_sugar.patient,
+               observable: blood_sugar,
+               facility: blood_sugar.facility)
+      end
+    end
 
     trait :with_hba1c do
       blood_sugar_type { BloodSugar::blood_sugar_types.keys.sample }

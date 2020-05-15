@@ -23,7 +23,10 @@ function formatDate(date) {
 }
 
 function today() {
-  return new Date();
+  let local = new Date();
+  local.setMinutes(local.getMinutes() - local.getTimezoneOffset());
+
+  return local
 }
 
 function yesterday() {

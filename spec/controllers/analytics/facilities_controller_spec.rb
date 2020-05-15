@@ -23,7 +23,11 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
   let(:analytics_dashboard_cache_key) { "analytics/facilities/#{facility.id}/dashboard/month" }
 
   let!(:registered_patients) do
-    travel_to(feb_2019) { create_list(:patient, 3, registration_facility: facility, registration_user: user) }
+    travel_to(feb_2019) { create_list(:patient,
+                                      3,
+                                      :hypertension,
+                                      registration_facility: facility,
+                                      registration_user: user) }
   end
 
   before do
@@ -87,7 +91,12 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
       end
 
       it 'caches the facility correctly' do
-        create_list(:patient, 3, registration_facility: facility, registration_user: user, recorded_at: mar_2019)
+        create_list(:patient,
+                    3,
+                    :hypertension,
+                    registration_facility: facility,
+                    registration_user: user,
+                    recorded_at: mar_2019)
 
         expected_cache_value =
           {
