@@ -16,6 +16,7 @@ class DistrictAnalyticsQuery
   def total_registered_patients
     @total_registered_patients ||=
       Patient
+        .with_hypertension
         .joins(:registration_facility)
         .where(facilities: { id: facilities })
         .group('facilities.id')
@@ -31,6 +32,7 @@ class DistrictAnalyticsQuery
   def registered_patients_by_period
     @registered_patients_by_period ||=
       Patient
+        .with_hypertension
         .joins(:registration_facility)
         .where(facilities: { id: facilities })
         .group('facilities.id')

@@ -28,7 +28,7 @@ FactoryBot.define do
     end
 
     trait :hypertension_no do
-      hypertension { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:yes] }
+      hypertension { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:no] }
     end
 
     trait :diabetes_yes do
@@ -36,7 +36,7 @@ FactoryBot.define do
     end
 
     trait :diabetes_no do
-      diabetes { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unknown] }
+      diabetes { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:no] }
     end
 
     trait :diabetes_unknown do

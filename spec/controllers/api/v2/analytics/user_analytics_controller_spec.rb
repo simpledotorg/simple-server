@@ -63,23 +63,14 @@ RSpec.describe Api::V2::Analytics::UserAnalyticsController, type: :controller do
               #
               # create BPs (follow-ups)
               #
-              patients = create_list(:patient,
-                                     3,
-                                     :hypertension,
-                                     registration_facility: request_facility,
-                                     recorded_at: request_date)
+              patients = create_list(:patient, 3, registration_facility: request_facility, recorded_at: request_date)
               patients.each do |patient|
                 [patient.recorded_at + 1.month,
                  patient.recorded_at + 2.months,
                  patient.recorded_at + 3.months,
                  patient.recorded_at + 4.months].each do |date|
                   travel_to(date) do
-                    create(:encounter,
-                           :with_observables,
-                           observable: create(:blood_pressure,
-                                              patient: patient,
-                                              facility: request_facility,
-                                              user: request_user))
+                    create(:blood_pressure, :with_encounter, patient: patient, facility: request_facility, user: request_user)
                   end
                 end
               end

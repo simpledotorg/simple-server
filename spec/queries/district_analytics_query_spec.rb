@@ -23,6 +23,7 @@ RSpec.describe DistrictAnalyticsQuery do
           create_list(:patient, 3, :hypertension, registration_facility: facility)
         end
 
+        Timecop.travel(month) { create(:patient, :without_hypertension, registration_facility: facility) }
         #
         # add blood_pressures next month
         #
@@ -44,40 +45,46 @@ RSpec.describe DistrictAnalyticsQuery do
     end
 
     describe '#registered_patients_by_period' do
-      it 'groups the registered patients by facility and beginning of month' do
-        expected_result =
-          { facility.id =>
-              { registered_patients_by_period: {
-                four_months_back => 3,
-                three_months_back => 3
-              } } }
+      context 'considers only htn diagnosed patients' do
+        it 'groups the registered patients by facility and beginning of month' do
+          expected_result =
+            { facility.id =>
+                { registered_patients_by_period: {
+                  four_months_back => 3,
+                  three_months_back => 3
+                } } }
 
-        expect(analytics.registered_patients_by_period).to eq(expected_result)
+          expect(analytics.registered_patients_by_period).to eq(expected_result)
+        end
       end
     end
 
     describe '#total_registered_patients' do
-      it 'groups the registered patients by facility' do
-        expected_result =
-          { facility.id =>
-              {
-                total_registered_patients: 6
-              } }
+      context 'considers only htn diagnosed patients' do
+        it 'groups the registered patients by facility' do
+          expected_result =
+            { facility.id =>
+                {
+                  total_registered_patients: 6
+                } }
 
-        expect(analytics.total_registered_patients).to eq(expected_result)
+          expect(analytics.total_registered_patients).to eq(expected_result)
+        end
       end
     end
 
     describe '#follow_up_patients_by_period' do
-      it 'groups the follow up patients by facility and beginning of month' do
-        expected_result =
-          { facility.id =>
-              { follow_up_patients_by_period: { four_months_back => 0,
-                                                three_months_back => 3,
-                                                two_months_back => 6,
-                                                one_month_back => 3 } } }
+      context 'considers only htn diagnosed patients' do
+        it 'groups the follow up patients by facility and beginning of month' do
+          expected_result =
+            { facility.id =>
+                { follow_up_patients_by_period: { four_months_back => 0,
+                                                  three_months_back => 3,
+                                                  two_months_back => 6,
+                                                  one_month_back => 3 } } }
 
-        expect(analytics.follow_up_patients_by_period).to eq(expected_result)
+          expect(analytics.follow_up_patients_by_period).to eq(expected_result)
+        end
       end
     end
 

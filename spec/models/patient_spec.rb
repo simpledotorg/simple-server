@@ -32,11 +32,8 @@ describe Patient, type: :model do
     it 'has distinct facilities' do
       patient = create(:patient)
       facility = create(:facility)
-      5.times do
-        create(:encounter,
-               :with_observables,
-               observable: create(:blood_pressure, patient: patient, facility: facility))
-      end
+      create_list(:blood_pressure, 5, :with_encounter, patient: patient, facility: facility)
+
       expect(patient.facilities.count).to eq(1)
     end
 
@@ -85,16 +82,16 @@ describe Patient, type: :model do
     describe '.with_diabetes' do
       it 'only includes patients with diagnosis of diabetes' do
         dm_patients = create_list(:patient, 2, :diabetes)
-        _htn_patients = create(:patient, :hypertension)
+        _htn_patients = create(:patient)
 
         expect(Patient.with_diabetes).to match_array(dm_patients)
       end
     end
 
     describe '.with_hypertension' do
-      it 'only  includes patients with diagnosis of hypertension' do
-        htn_patients = create_list(:patient, 2, :hypertension)
-        _dm_patient = create(:patient, :diabetes)
+      it 'only includes patients with diagnosis of hypertension' do
+        htn_patients = create_list(:patient, 2)
+        _non_htn_patient = create(:patient, :without_hypertension)
 
         expect(Patient.with_hypertension).to match_array(htn_patients)
       end
@@ -105,10 +102,7 @@ describe Patient, type: :model do
       let(:current_user) { create(:user) }
       let(:current_facility) { create(:facility, facility_group: current_user.facility.facility_group) }
       let(:follow_up_facility) { create(:facility, facility_group: current_user.facility.facility_group) }
-      let(:hypertensive_patient) { create(:patient,
-                                          :hypertension,
-                                          registration_facility: current_facility,
-                                          recorded_at: reg_date) }
+      let(:hypertensive_patient) { create(:patient, registration_facility: current_facility, recorded_at: reg_date) }
       let(:diabetic_patient) { create(:patient,
                                       :diabetes,
                                       registration_facility: current_facility,
@@ -118,49 +112,43 @@ describe Patient, type: :model do
 
       before do
         2.times do
-          create(:encounter,
-                 :with_observables,
-                 observable: create(:blood_sugar,
-                                    facility: current_facility,
-                                    patient: diabetic_patient,
-                                    user: current_user,
-                                    recorded_at: first_follow_up_date))
-
-          create(:encounter,
-                 :with_observables,
-                 observable: create(:blood_pressure,
-                                    patient: hypertensive_patient,
-                                    facility: current_facility,
-                                    user: current_user,
-                                    recorded_at: first_follow_up_date))
+          create(:blood_sugar,
+                 :with_encounter,
+                 facility: current_facility,
+                 patient: diabetic_patient,
+                 user: current_user,
+                 recorded_at: first_follow_up_date)
+          create(:blood_pressure,
+                 :with_encounter,
+                 patient: hypertensive_patient,
+                 facility: current_facility,
+                 user: current_user,
+                 recorded_at: first_follow_up_date)
         end
 
         # visit at a facility different from registration
-        create(:encounter,
-               :with_observables,
-               observable: create(:blood_pressure,
-                                  patient: hypertensive_patient,
-                                  facility: follow_up_facility,
-                                  user: current_user,
-                                  recorded_at: first_follow_up_date))
+        create(:blood_pressure,
+               :with_encounter,
+               patient: hypertensive_patient,
+               facility: follow_up_facility,
+               user: current_user,
+               recorded_at: first_follow_up_date)
 
         # diabetic patient following up with a BP
-        create(:encounter,
-               :with_observables,
-               observable: create(:blood_pressure,
-                                  patient: diabetic_patient,
-                                  facility: current_facility,
-                                  user: current_user,
-                                  recorded_at: first_follow_up_date))
+        create(:blood_pressure,
+               :with_encounter,
+               patient: diabetic_patient,
+               facility: current_facility,
+               user: current_user,
+               recorded_at: first_follow_up_date)
 
         # another follow up in the same month but another day
-        create(:encounter,
-               :with_observables,
-               observable: create(:blood_pressure,
-                                  patient: hypertensive_patient,
-                                  facility: current_facility,
-                                  user: current_user,
-                                  recorded_at: second_follow_up_date))
+        create(:blood_pressure,
+               :with_encounter,
+               patient: hypertensive_patient,
+               facility: current_facility,
+               user: current_user,
+               recorded_at: second_follow_up_date)
       end
 
       describe '.follow_ups' do
@@ -473,15 +461,8 @@ describe Patient, type: :model do
       create_list(:prescription_drug, 2, patient: patient)
       create(:medical_history, patient: patient)
       create_list(:appointment, 2, patient: patient)
-      bps = create_list(:blood_pressure, 2, patient: patient)
-      sugars = create_list(:blood_sugar, 2, patient: patient)
-      (bps + sugars).each do |record|
-        create(:encounter,
-               :with_observables,
-               patient: patient,
-               observable: record,
-               facility: patient.registration_facility)
-      end
+      create_list(:blood_pressure,  2, :with_encounter, patient: patient)
+      create_list(:blood_sugar, 2, :with_encounter, patient: patient)
     end
 
     it "should discard a patient's address" do
