@@ -1,9 +1,7 @@
-class AppointmentNotification::Worker
-  include Sidekiq::Worker
+class AppointmentNotification::Worker < ApplicationJob
+  queue_as :high
 
   DEFAULT_LOCALE = :en
-
-  sidekiq_options queue: 'high'
 
   def perform(appointment, communication_type, locale = DEFAULT_LOCALE)
     return if appointment.previously_communicated_via?(communication_type)
