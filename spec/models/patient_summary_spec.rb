@@ -30,8 +30,10 @@ describe PatientSummary, type: :model do
         expect(patient_summary.id).to eq(patient.id)
       end
 
-      it "includes patient name" do
+      it "includes patient attributes" do
         expect(patient_summary.full_name).to eq(patient.full_name)
+        expect(patient_summary.gender).to eq(patient.gender)
+        expect(patient_summary.status).to eq(patient.status)
       end
 
       context "current_age" do
@@ -49,18 +51,10 @@ describe PatientSummary, type: :model do
         end
       end
 
-      it "includes patient gender" do
-        expect(patient_summary.gender).to eq(patient.gender)
-      end
-
       it "includes patient address", :aggregate_failures do
         expect(patient_summary.village_or_colony).to eq(patient.address.village_or_colony)
         expect(patient_summary.district).to eq(patient.address.district)
         expect(patient_summary.state).to eq(patient.address.state)
-      end
-
-      it "includes patient status" do
-        expect(patient_summary.status).to eq(patient.status)
       end
     end
 
