@@ -2,45 +2,75 @@ require 'rails_helper'
 require 'sidekiq/testing'
 
 RSpec.describe AppointmentNotification::Worker, type: :job do
+  let!(:facility_name) { 'Simple Facility' }
+  let!(:appointment_scheduled_date) { Date.new(2018, 1, 1) }
+  let!(:appointment) do
+    create(:appointment,
+           facility: create(:facility, name: facility_name),
+           scheduled_date: appointment_scheduled_date)
+  end
+
+  let(:appointment_phone_number) { appointment.patient.latest_mobile_number }
+  let(:communication_type) { "missed_visit_whatsapp_reminder" }
+  let(:locale) { "en" }
+  let(:expected_message) { "Our staff at Simple Facility are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre. Contact your ANM or ASHA." }
+
   before do
-    sms_response_double = double('SmsNotificationServiceResponse')
-    allow_any_instance_of(SmsNotificationService).to receive(:send_reminder_sms).and_return(sms_response_double)
-    allow(sms_response_double).to receive(:sid).and_return(SecureRandom.uuid)
-    allow(sms_response_double).to receive(:status).and_return('queued')
+    notification_response = double('NotificationServiceResponse')
+    allow_any_instance_of(NotificationService).to receive(:send_whatsapp).and_return(notification_response)
+    allow(notification_response).to receive(:sid).and_return(SecureRandom.uuid)
+    allow(notification_response).to receive(:status).and_return('queued')
   end
 
-  it 'sends reminder SMSes for all appointments and creates communication entries for them' do
-    expect do
-      described_class.perform_async(create_list(:appointment, 3, :overdue).map(&:id), 'missed_visit_sms_reminder')
-    end.to change(described_class.jobs, :size).by(1)
+  describe "#perform" do
+    it "sends a reminder whatsapp" do
+      expect_any_instance_of(NotificationService).to receive(:send_whatsapp).with(appointment_phone_number, expected_message)
 
-    described_class.drain
-
-    expect(Communication.count).to eq(3)
-  end
-
-  it 'should skip the appointment if there are any Twilio errors during the job', skip_before: true do
-    expect(Raven).to receive(:capture_message).and_return(true)
-
-    sms_response_double = double('SmsNotificationServiceResponse')
-
-    appointment_number = 1
-    allow_any_instance_of(SmsNotificationService).to receive(:send_reminder_sms) do
-      raise Twilio::REST::TwilioError if appointment_number > 2
-
-      appointment_number += 1
-      sms_response_double
+      described_class.perform_now(appointment, communication_type, locale)
     end
 
-    allow(sms_response_double).to receive(:sid).and_return(SecureRandom.uuid)
-    allow(sms_response_double).to receive(:status).and_return('queued')
+    it "records a Communication log if successful" do
+      expect {
+        described_class.perform_now(appointment, communication_type, locale)
+      }.to change { Communication.count }.by(1)
+    end
 
-    expect do
-      described_class.perform_async(create_list(:appointment, 3, :overdue).map(&:id), 'missed_visit_sms_reminder')
-    end.to change(described_class.jobs, :size).by(1)
+    it "does not send if Communication already sent" do
+      allow(appointment).to receive(:previously_communicated_via?).and_return(true)
 
-    described_class.drain
+      expect {
+        described_class.perform_now(appointment, communication_type, locale)
+      }.not_to change { Communication.count }
+    end
 
-    expect(Communication.count).to eq(2)
+    it "does not record a Communication log if any errors occur" do
+      allow_any_instance_of(NotificationService).to receive(:send_whatsapp) do
+        raise Twilio::REST::TwilioError
+        notification_response
+      end
+
+      expect {
+        described_class.perform_now(appointment, communication_type, locale)
+      }.not_to change { Communication.count }
+    end
+
+    context "uses message translations" do
+      it "should have the message text in Marathi" do
+        locale = "mr-IN"
+        expected_message = 'आमचे Simple Facility येथील कर्मचारी तुमच्‍याबद्दल आणि तुमच्‍या ह्रदयाच्‍या आरोग्‍याबद्दल विचार करीत आहेत. कृपया आपल्या रक्तदाबाची औषधे चालू ठेवा. जवळच्या उपकेंद्रामधून आपले औषध घ्या. आपल्या ANM किंवा ASHA शी संपर्क साधा.'
+
+        expect_any_instance_of(NotificationService).to receive(:send_whatsapp).with(appointment_phone_number, expected_message)
+
+        described_class.perform_now(appointment, communication_type, locale)
+      end
+    end
+
+    it 'should raise an error if the message text is not found in locales' do
+      locale = "fr"
+
+      expect do
+        described_class.perform_now(appointment, communication_type, locale)
+      end.to raise_error(StandardError)
+    end
   end
 end
