@@ -220,7 +220,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 
   def changelog
-    @changelog ||= execute_safely("git log #{commit_range} --oneline --decorate=no")
+    @changelog ||= execute_safely("git log #{commit_range_for_diffs} --oneline --decorate=no")
                      .strip
                      .split("\n")
                      .map { |line| line.match(/\s(.*)/)&.captures&.last }
@@ -231,10 +231,10 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 
   def changes_in_file(file)
-    execute_safely("git diff #{commit_range} #{file}")
+    execute_safely("git diff #{commit_range_for_diffs} #{file}")
   end
 
-  def commit_range
+  def commit_range_for_diffs
     "#{last_deployed_sha}..#{@tag_to_deploy || 'HEAD'}"
   end
 
