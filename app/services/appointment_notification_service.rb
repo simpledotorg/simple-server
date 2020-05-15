@@ -7,7 +7,7 @@ class AppointmentNotificationService
     @appointments = appointments
     @days_overdue = days_overdue
     @schedule_at = schedule_at
-    @communication_type = Communication.communication_types[:missed_visit_sms_reminder]
+    @communication_type = Communication.communication_types[:missed_visit_whatsapp_reminder]
   end
 
   def send_after_missed_visit
