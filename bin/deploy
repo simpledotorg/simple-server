@@ -267,9 +267,22 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
     prompt_for_confirmation('Confirm before proceeding', ['y', 'Y'], 32) if confirm
 
     env_vars.each { |env_var, value| ENV[env_var] = value } unless env_vars.empty?
-    output = `#{cmd}`
+    output = display_spinner { `#{cmd}` }
     raise DeployError if $?.exitstatus > 0
     output
+  end
+
+  def display_spinner
+    spinner = Thread.new do
+      loop do
+        %w[/ - \\ |].each do |char|
+          print(colorize("#{char}\r", 32))
+          sleep 0.2
+        end
+      end
+    end
+
+    yield.tap { spinner.kill }
   end
 
   #
