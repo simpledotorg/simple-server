@@ -12,7 +12,7 @@ class FacilityAnalyticsQuery
   def total_registered_patients
     @total_registered_patients ||=
       @facility
-        .registered_patients
+        .registered_hypertension_patients
         .group('registration_user_id')
         .distinct('patients.id')
         .count
@@ -27,7 +27,7 @@ class FacilityAnalyticsQuery
   def registered_patients_by_period
     @registered_patients_by_period ||=
       @facility
-        .registered_patients
+        .registered_hypertension_patients
         .group('registration_user_id')
         .group_by_period(@period, :recorded_at)
         .distinct('patients.id')
@@ -65,7 +65,7 @@ class FacilityAnalyticsQuery
                     blood_pressures.user_id AS bp_user_id,
                     patients.deleted_at))
                 .select("blood_pressures.recorded_at AS bp_recorded_at")
-                .order('blood_pressures.patient_id', 
+                .order('blood_pressures.patient_id',
                        Arel.sql(BloodPressure.date_to_period_sql('blood_pressures.recorded_at', @period)),
                        'blood_pressures.recorded_at'),
               'patients')
