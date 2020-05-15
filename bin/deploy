@@ -333,11 +333,13 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 end
 
-Deploy
-  .new(country_to_deploy:
-         ARGV[0],
-       current_environment:
-         ARGV[1],
-       tag_to_deploy:
-         ARGV[2]
-  ).start
+if __FILE__ == $0
+  Deploy
+    .new(country_to_deploy:
+           ARGV[0],
+         current_environment:
+           ARGV[1],
+         tag_to_deploy:
+           ARGV[2]
+    ).start
+end
