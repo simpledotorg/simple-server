@@ -1,5 +1,6 @@
 class RequestOtpSmsJob < ApplicationJob
   queue_as :default
+  self.queue_adapter = :sidekiq
 
   def perform(user)
     NotificationService.new.send_sms(user.phone_number, otp_message(user))
