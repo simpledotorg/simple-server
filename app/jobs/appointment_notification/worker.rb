@@ -1,9 +1,12 @@
-class AppointmentNotification::Worker < ApplicationJob
-  queue_as :high
+class AppointmentNotification::Worker
+  include Sidekiq::Worker
+  sidekiq_options queue: 'high'
 
   DEFAULT_LOCALE = :en
 
-  def perform(appointment, communication_type, locale = DEFAULT_LOCALE)
+  def perform(appointment_id, communication_type, locale = DEFAULT_LOCALE)
+    appointment = Appointment.find(appointment_id)
+
     return if appointment.previously_communicated_via?(communication_type)
 
     patient_phone_number = appointment.patient.latest_mobile_number
