@@ -10,24 +10,6 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   TROPHY_MILESTONE_INCR = 10_000
   EXPIRE_STATISTICS_CACHE_IN = 15.minutes
 
-  def statistics
-    @statistics ||=
-      Rails.cache.fetch(statistics_cache_key, expires_in: EXPIRE_STATISTICS_CACHE_IN) do
-        {
-          daily: daily_stats,
-          monthly: monthly_stats,
-          all_time: all_time_stats,
-          trophies: trophy_stats,
-          metadata: {
-            is_diabetes_enabled: diabetes_enabled?,
-            last_updated_at: I18n.l(Time.current),
-            formatted_next_date: display_date(Time.current + 1.day),
-            today_string: I18n.t(:today_str)
-          }
-        }
-      end
-  end
-
   def daily_stats_by_date(stat, day_date)
     zero_if_unavailable statistics.dig(:daily, :grouped_by_date, stat, day_date)
   end
@@ -106,6 +88,28 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
     percentage = (numerator * 100.0) / denominator
 
     "#{percentage.round(0)}%"
+  end
+
+  def last_updated_at
+    statistics.dig(:metadata, :last_updated_at)
+  end
+
+  def statistics
+    @statistics ||=
+      Rails.cache.fetch(statistics_cache_key, expires_in: EXPIRE_STATISTICS_CACHE_IN) do
+        {
+          daily: daily_stats,
+          monthly: monthly_stats,
+          all_time: all_time_stats,
+          trophies: trophy_stats,
+          metadata: {
+            is_diabetes_enabled: diabetes_enabled?,
+            last_updated_at: I18n.l(Time.current),
+            formatted_next_date: display_date(Time.current + 1.day),
+            today_string: I18n.t(:today_str)
+          }
+        }
+      end
   end
 
   private
