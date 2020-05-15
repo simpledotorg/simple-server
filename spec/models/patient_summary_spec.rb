@@ -122,8 +122,6 @@ describe PatientSummary, type: :model do
     end
 
     describe "Risk level" do
-      let(:patient) { create(:patient) }
-
       describe '#risk_priority' do
         before { Appointment.destroy_all }
 
@@ -141,8 +139,9 @@ describe PatientSummary, type: :model do
         end
 
         it 'returns 1 for hypertensive bp patients with medical history risks' do
-          create(:blood_pressure, :hypertensive, patient: patient)
+          patient.medical_history.delete
           create(:medical_history, :prior_risk_history, patient: patient)
+          create(:blood_pressure, :hypertensive, patient: patient)
           create(:appointment, :overdue, patient: patient)
 
           expect(PatientSummary.find_by(id: patient.id).risk_level).to eq(1)
