@@ -6,7 +6,7 @@ class NotificationService
   attr_reader :client
 
   def initialize
-    @client = Twilio::REST::Client.new(twilio_account_sid, twilio_account_token)
+    @client = Twilio::REST::Client.new(twilio_account_sid, twilio_auth_token)
   end
 
 =begin
@@ -71,7 +71,7 @@ class NotificationService
   end
 
   def twilio_auth_token
-    ENV.fetch('TWILIO_REMINDERS_ACCOUNT_AUTH_TOKEN'))
+    ENV.fetch('TWILIO_REMINDERS_ACCOUNT_AUTH_TOKEN')
   end
 
   def twilio_sender_number
