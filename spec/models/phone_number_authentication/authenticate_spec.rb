@@ -31,7 +31,7 @@ RSpec.describe PhoneNumberAuthentication::Authenticate do
     end
   end
 
-  context "fails when" do
+  context "failing authentication" do
     it "phone number is not found" do
       result = PhoneNumberAuthentication::Authenticate.call(otp: "1234",
         password: "5489",
@@ -65,6 +65,39 @@ RSpec.describe PhoneNumberAuthentication::Authenticate do
         phone_number: user.phone_number)
       expect(result).to_not be_success
       expect(result.error_message).to eq("You need a fresh OTP. Request a new one.")
+    end
+  end
+
+  context "account lockout" do
+    it "increments failed attempts" do
+      user = FactoryBot.create(:user, password: "5489")
+      result =  nil
+      expect {
+        result = PhoneNumberAuthentication::Authenticate.call(otp: user.otp,
+          password: "9099",
+          phone_number: user.phone_number)
+      }.to change { user.phone_number_authentication.failed_attempts }.by(1)
+      expect(result).to_not be_success
+    end
+
+    it "increments failed attempts up to five, then sets locked_at time" do
+      user = FactoryBot.create(:user, password: "5489")
+      phone_number_authentication = user.phone_number_authentication
+      PhoneNumberAuthentication::Authenticate.call(otp: user.otp, password: "bad", phone_number: user.phone_number)
+      PhoneNumberAuthentication::Authenticate.call(otp: "xx12", password: "5489", phone_number: user.phone_number)
+      PhoneNumberAuthentication::Authenticate.call(otp: "xxxx", password: "5489", phone_number: user.phone_number)
+      PhoneNumberAuthentication::Authenticate.call(otp: user.otp, password: "bad", phone_number: user.phone_number)
+      phone_number_authentication.reload
+      expect(phone_number_authentication.failed_attempts).to eq(4)
+      expect(phone_number_authentication.locked_at).to be_nil
+      time = nil
+      Timecop.freeze do
+        time = Time.current
+        PhoneNumberAuthentication::Authenticate.call(otp: user.otp, password: "bad", phone_number: user.phone_number)
+      end
+      phone_number_authentication.reload
+      expect(phone_number_authentication.failed_attempts).to eq(5)
+      expect(phone_number_authentication.locked_at).to eq(time)
     end
   end
 end

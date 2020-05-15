@@ -41,13 +41,23 @@ class PhoneNumberAuthentication
       when authentication.nil?
         failure('login.error_messages.unknown_user')
       when authentication.otp != otp
+        track_failed_attempt
         failure('login.error_messages.invalid_otp')
       when !authentication.otp_valid?
+        track_failed_attempt
         failure('login.error_messages.expired_otp')
       when !authentication.authenticate(password)
+        track_failed_attempt
         failure('login.error_messages.invalid_password')
       else
         success
+      end
+    end
+
+    def track_failed_attempt
+      authentication.increment!(:failed_attempts)
+      if authentication.failed_attempts >= 5
+        authentication.update!(locked_at: Time.current)
       end
     end
 
