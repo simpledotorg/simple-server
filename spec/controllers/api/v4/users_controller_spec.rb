@@ -24,7 +24,6 @@ RSpec.describe Api::V4::UsersController, type: :controller do
 
   describe '#activate' do
     let!(:user) { create(:user, password: '1234') }
-    let!(:sms_notification_service) { double(SmsNotificationService.new(nil, nil)) }
 
     before do
       allow(Api::V4::UserTransformer).to receive(:to_response)
