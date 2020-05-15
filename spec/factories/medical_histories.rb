@@ -52,6 +52,7 @@ FactoryBot.define do
       prior_heart_attack { 'yes' }
       prior_stroke { 'yes' }
       diabetes { 'yes' }
+      hypertension { "yes" }
       chronic_kidney_disease { 'yes' }
     end
   end
