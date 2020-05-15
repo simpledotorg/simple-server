@@ -24,7 +24,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
   describe 'GET #index' do
     it 'returns a success response' do
       get :index, params: { facility_group_id: facility_group.id }
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
@@ -32,14 +32,14 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
     it 'returns a success response' do
       facility = Facility.create! valid_attributes
       get :show, params: { id: facility.to_param, facility_group_id: facility_group.id }
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
   describe 'GET #new' do
     it 'returns a success response' do
       get :new, params: { facility_group_id: facility_group.id }
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
@@ -47,7 +47,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
     it 'returns a success response' do
       facility = Facility.create! valid_attributes
       get :edit, params: { id: facility.to_param, facility_group_id: facility_group.id }
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
@@ -68,7 +68,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
     context 'with invalid params' do
       it "returns a success response (i.e. to display the 'new' template)" do
         post :create, params: { facility: invalid_attributes, facility_group_id: facility_group.id }
-        expect(response).to be_success
+        expect(response).to be_successful
       end
     end
   end
@@ -105,7 +105,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
       it "returns a success response (i.e. to display the 'edit' template)" do
         facility = Facility.create! valid_attributes
         put :update, params: { id: facility.to_param, facility: invalid_attributes, facility_group_id: facility_group.id }
-        expect(response).to be_success
+        expect(response).to be_successful
       end
     end
   end
@@ -128,7 +128,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
   describe 'GET #upload' do
     it 'returns a successful response' do
       get :upload
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 

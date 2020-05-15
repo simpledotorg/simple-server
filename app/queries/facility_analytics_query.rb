@@ -65,8 +65,8 @@ class FacilityAnalyticsQuery
                     blood_pressures.user_id AS bp_user_id,
                     patients.deleted_at))
                 .select("blood_pressures.recorded_at AS bp_recorded_at")
-                .order('blood_pressures.patient_id',
-                       BloodPressure.date_to_period_sql('blood_pressures.recorded_at', @period),
+                .order('blood_pressures.patient_id', 
+                       Arel.sql(BloodPressure.date_to_period_sql(@period)), 
                        'blood_pressures.recorded_at'),
               'patients')
         .group('bp_user_id')

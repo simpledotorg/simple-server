@@ -154,6 +154,12 @@ class Facility < ApplicationRecord
     enable_teleconsultation.present?
   end
 
+  def teleconsultation_phone_number_with_isd
+    return if teleconsultation_isd_code.blank? || teleconsultation_phone_number.blank?
+
+    Phonelib.parse(teleconsultation_isd_code + teleconsultation_phone_number).full_e164
+  end
+
   CSV::Converters[:strip_whitespace] = ->(value) { value.strip rescue value }
 
   private
