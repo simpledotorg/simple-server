@@ -33,7 +33,7 @@ RSpec.describe AppointmentsController, type: :controller do
 
     it 'returns a success response' do
       get :index, params: {}
-      expect(response).to be_success
+      expect(response).to be_successful
     end
 
     it 'populates a list of overdue appointments' do
