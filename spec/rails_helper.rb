@@ -17,6 +17,9 @@ Dir[Rails.root.join('spec/**/shared_examples/**/*.rb')].sort.each { |f| require 
 ActiveRecord::Migration.maintain_test_schema!
 
 RSpec.configure do |config|
+  # See https://github.com/philostler/rspec-sidekiq/wiki/FAQ-&-Troubleshooting for sidekiq / test info
+  config.warn_when_jobs_not_processed_by_sidekiq = false
+
   config.include ActiveSupport::Testing::TimeHelpers
 
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
