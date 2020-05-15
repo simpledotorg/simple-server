@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_11_135921) do
+ActiveRecord::Schema.define(version: 2020_05_15_072317) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -787,6 +787,7 @@ ActiveRecord::Schema.define(version: 2020_05_11_135921) do
               ELSE ((p.age)::double precision + date_part('years'::text, age(now(), (p.age_updated_at)::timestamp with time zone)))
           END AS current_age,
       p.gender,
+      p.status,
       latest_phone_number.number AS latest_phone_number,
       addresses.village_or_colony,
       addresses.street_address,
