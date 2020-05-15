@@ -31,7 +31,7 @@ RSpec.describe PhoneNumberAuthentication::Authenticate do
     end
   end
 
-  context "failing authentication" do
+  context "fails when" do
     it "phone number is not found" do
       result = PhoneNumberAuthentication::Authenticate.call(otp: "1234",
         password: "5489",
