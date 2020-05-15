@@ -1,10 +1,15 @@
 class RequestOtpSmsJob < ApplicationJob
   queue_as :default
-  self.queue_adapter = :sidekiq
 
   def perform(user)
-    SmsNotificationService
-      .new(user.phone_number, ENV['TWILIO_PHONE_NUMBER'])
-      .send_request_otp_sms(user.otp)
+    NotificationService.new.send_sms(user.phone_number, otp_message(user))
+  end
+
+  private
+
+  def otp_message(user)
+    app_signature = ENV['SIMPLE_APP_SIGNATURE']
+
+    I18n.t("sms.request_otp", otp: user.otp, app_signature: app_signature)
   end
 end
