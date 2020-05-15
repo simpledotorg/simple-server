@@ -15,7 +15,7 @@
 <body>
 <div class="progress-contents">
   <div class="updated-date">
-    Updated: <span><%= @user_analytics.statistics.dig(:metadata, :last_updated_at) %></span>
+    Updated: <span><%= @user_analytics.last_updated_at %></span>
   </div>
 
   <div class="card" style="min-height: 210px;">
