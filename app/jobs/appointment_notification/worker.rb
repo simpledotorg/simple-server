@@ -10,12 +10,12 @@ class AppointmentNotification::Worker < ApplicationJob
     message = appointment_message(appointment, communication_type, locale)
 
     begin
-      sms_response = NotificationService.new.send_whatsapp(patient_phone_number, message)
+      response = NotificationService.new.send_whatsapp(patient_phone_number, message)
 
       Communication.create_with_twilio_details!(
         appointment: appointment,
-        twilio_sid: sms_response.sid,
-        twilio_msg_status: sms_response.status,
+        twilio_sid: response.sid,
+        twilio_msg_status: response.status,
         communication_type: communication_type
       )
     rescue Twilio::REST::TwilioError => e
@@ -26,11 +26,11 @@ class AppointmentNotification::Worker < ApplicationJob
   private
 
   def appointment_message(appointment, communication_type, locale)
-     I18n.t(
-       "sms.appointment_reminders.#{communication_type}",
-       facility_name: appointment.facility.name,
-       locale: locale
-     )
+    I18n.t(
+      "sms.appointment_reminders.#{communication_type}",
+      facility_name: appointment.facility.name,
+      locale: locale
+    )
   end
 
   def report_error(e)
