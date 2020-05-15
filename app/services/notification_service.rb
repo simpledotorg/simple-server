@@ -9,35 +9,6 @@ class NotificationService
     @client = Twilio::REST::Client.new(twilio_account_sid, twilio_auth_token)
   end
 
-=begin
-  def send_request_otp_sms(otp)
-    app_signature = ENV['SIMPLE_APP_SIGNATURE']
-    send_sms(I18n.t('sms.request_otp',
-                    otp: otp,
-                    app_signature: app_signature))
-  end
-
-  def send_reminder_whatsapp(reminder_type, appointment, callback_url, locale = DEFAULT_LOCALE)
-    body = I18n.t("sms.appointment_reminders.#{reminder_type}",
-                  facility_name: appointment.facility.name,
-                  locale: locale)
-
-    send_whatsapp(body, callback_url)
-  end
-
-  def send_reminder_sms(reminder_type, appointment, callback_url, locale = DEFAULT_LOCALE)
-    body = I18n.t("sms.appointment_reminders.#{reminder_type}",
-                  facility_name: appointment.facility.name,
-                  locale: locale)
-
-    send_sms(body, callback_url)
-  end
-
-  def send_patient_request_otp_sms(otp)
-    send_sms(I18n.t('sms.patient_request_otp', otp: otp))
-  end
-=end
-
   def send_sms(recipient_number, message)
     sender_number    = twilio_sender_number
     recipient_number = parse_phone_number(recipient_number)
