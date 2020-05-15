@@ -99,5 +99,22 @@ RSpec.describe PhoneNumberAuthentication::Authenticate do
       expect(phone_number_authentication.failed_attempts).to eq(5)
       expect(phone_number_authentication.locked_at).to eq(time)
     end
+
+    it "returns locked out message if within locked window" do
+      user = FactoryBot.create(:user, password: "5489")
+      Timecop.freeze do
+        user.phone_number_authentication.update(failed_attempts: 5, locked_at: Time.current)
+        Timecop.travel(2.minutes.from_now) do
+          result = PhoneNumberAuthentication::Authenticate.call(otp: user.otp, password: "5489", phone_number: user.phone_number)
+          expect(result.success).to be false
+          expect(result.error_message).to eq("Your account is locked out for 18 minutes. Please wait and try again later.")
+        end
+        Timecop.travel(10.minutes.from_now) do
+          result = PhoneNumberAuthentication::Authenticate.call(otp: user.otp, password: "5489", phone_number: user.phone_number)
+          expect(result.success).to be false
+          expect(result.error_message).to eq("Your account is locked out for 10 minutes. Please wait and try again later.")
+        end
+      end
+    end
   end
 end

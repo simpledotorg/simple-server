@@ -40,6 +40,10 @@ class PhoneNumberAuthentication
       case
       when authentication.nil?
         failure('login.error_messages.unknown_user')
+      when authentication.locked_at && authentication.locked_at >= 20.minutes.ago
+        minutes = (20.minutes - (Time.current - authentication.locked_at)) / 1.minute
+        minutes = minutes.round
+        failure("login.error_messages.account_locked", minutes: minutes)
       when authentication.otp != otp
         track_failed_attempt
         failure('login.error_messages.invalid_otp')
@@ -61,8 +65,8 @@ class PhoneNumberAuthentication
       end
     end
 
-    def failure(message_key)
-      error_string = I18n.t(message_key)
+    def failure(message_key, opts = {})
+      error_string = I18n.t(message_key, opts)
       Result.new(authentication, false, error_string)
     end
 
