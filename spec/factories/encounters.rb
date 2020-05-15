@@ -14,6 +14,7 @@ FactoryBot.define do
         [build(:observation,
                encounter_id: id,
                observable: observable,
+               observable_type: observable.class.name,
                user: observable.user)]
       end
       facility { observable.facility }

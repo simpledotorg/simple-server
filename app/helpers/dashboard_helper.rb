@@ -4,7 +4,7 @@ module DashboardHelper
   end
 
   def zero_if_unavailable(value)
-    zero?(value) ? "0" : value
+    zero?(value) ? 0 : value
   end
 
   def zero?(value)
