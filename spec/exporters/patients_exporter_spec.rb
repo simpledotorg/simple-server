@@ -4,7 +4,7 @@ RSpec.describe PatientsExporter do
   include QuarterHelper
 
   let!(:facility) { create(:facility) }
-  let!(:patient) { create(:patient, registration_facility: facility) }
+  let!(:patient) { create(:patient, registration_facility: facility, status: 'dead') }
   let!(:blood_pressure) { create(:blood_pressure, :critical, facility: facility, patient: patient) }
   let!(:appointment) { create(:appointment, :overdue, facility: facility, patient: patient) }
   let!(:prescription_drug_1) { create(:prescription_drug, patient: patient) }
@@ -45,6 +45,7 @@ RSpec.describe PatientsExporter do
       'Follow-up Date',
       'Days Overdue',
       'Risk Level',
+      'Dead?',
       'BP Passport ID',
       'Simple Patient ID',
       'Medication 1',
@@ -87,6 +88,7 @@ RSpec.describe PatientsExporter do
       appointment.scheduled_date.to_s(:rfc822),
       appointment.days_overdue,
       'High',
+      'Died',
       patient.latest_bp_passport&.shortcode,
       patient.id,
       prescription_drug_1.name,

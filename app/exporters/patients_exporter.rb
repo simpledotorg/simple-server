@@ -62,6 +62,7 @@ module PatientsExporter
       'Follow-up Date',
       'Days Overdue',
       'Risk Level',
+      'Dead?',
       'BP Passport ID',
       'Simple Patient ID',
       'Medication 1',
@@ -110,6 +111,7 @@ module PatientsExporter
       latest_appointment&.scheduled_date&.to_s(:rfc822),
       latest_appointment&.days_overdue,
       ('High' if patient.high_risk?),
+      ('Died' if patient.status == 'dead'),
       latest_bp_passport&.shortcode,
       patient.id,
       *medications_for(patient)

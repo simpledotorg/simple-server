@@ -10,11 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_11_135921) do
+ActiveRecord::Schema.define(version: 2020_05_15_101844) do
 
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
   enable_extension "pgcrypto"
+  enable_extension "plpgsql"
 
   create_table "addresses", id: :uuid, default: nil, force: :cascade do |t|
     t.string "street_address"
@@ -178,7 +178,7 @@ ActiveRecord::Schema.define(version: 2020_05_11_135921) do
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["deleted_at"], name: "e_d_at"
+    t.index ["deleted_at"], name: "index_encounters_on_deleted_at"
     t.index ["facility_id"], name: "index_encounters_on_facility_id"
     t.index ["patient_id"], name: "index_encounters_on_patient_id"
   end
@@ -787,6 +787,7 @@ ActiveRecord::Schema.define(version: 2020_05_11_135921) do
               ELSE ((p.age)::double precision + date_part('years'::text, age(now(), (p.age_updated_at)::timestamp with time zone)))
           END AS current_age,
       p.gender,
+      p.status,
       latest_phone_number.number AS latest_phone_number,
       addresses.village_or_colony,
       addresses.street_address,
