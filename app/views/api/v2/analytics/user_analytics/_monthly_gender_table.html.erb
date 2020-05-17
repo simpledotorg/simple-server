@@ -38,20 +38,20 @@
   </table>
 <% end %>
 
+<!-- gender-wise tables -->
 <% Patient::GENDERS.each do |gender| %>
-  <!-- gender-wise tables -->
   <table class="progress-table <%= data_table_name %> diabetes:<%= gender %>" style="display: none">
     <tr class="total">
       <td class="row-label">All-time</td>
       <td>
-        <%= user_analytics.all_time_dm_stats_by_gender(stat, gender) %>
+        <%= user_analytics.all_time_dm_stats_with_gender(stat, gender) %>
       </td>
     </tr>
     <% user_analytics.monthly_period_list.each do |month_date| %>
       <tr>
         <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
         <td>
-          <%= user_analytics.monthly_dm_stats_by_date_and_gender(stat, month_date, gender) %>
+          <%= user_analytics.monthly_dm_stats_with_gender(stat, month_date, gender) %>
         </td>
       </tr>
     <% end %>
@@ -79,20 +79,20 @@
   <% end %>
 </table>
 
+<!-- gender-wise tables -->
 <% Patient::GENDERS.each do |gender| %>
-  <!-- gender-wise tables -->
   <table class="progress-table <%= data_table_name %> hypertension:<%= gender %>" style="display: none">
     <tr class="total">
       <td class="row-label">All-time</td>
       <td>
-        <%= user_analytics.all_time_htn_stats_by_gender(stat, gender) %>
+        <%= user_analytics.all_time_htn_stats_with_gender(stat, gender) %>
       </td>
     </tr>
     <% user_analytics.monthly_period_list.each do |month_date| %>
       <tr>
         <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
         <td>
-          <%= user_analytics.monthly_htn_stats_by_date_and_gender(stat, month_date, gender) %>
+          <%= user_analytics.monthly_htn_stats_with_gender(stat, month_date, gender) %>
         </td>
       </tr>
     <% end %>

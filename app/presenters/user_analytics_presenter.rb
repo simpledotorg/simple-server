@@ -83,15 +83,15 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def achievements?
-    achievements.dig(:trophies, :locked_trophy_value) > TROPHY_MILESTONES.first
+    achievements.dig(:locked_trophy_value) > TROPHY_MILESTONES.first
   end
 
   def locked_trophy
-    achievements.dig(:trophies, :locked_trophy_value)
+    achievements.dig(:locked_trophy_value)
   end
 
   def unlocked_trophies
-    achievements.dig(:trophies, :unlocked_trophy_values)
+    achievements.dig(:unlocked_trophy_values)
   end
 
   def daily_period_list
@@ -112,7 +112,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
 
   def js_payload
     {
-      dates_for_daily_stats: [],
+      dates_for_daily_stats: daily_regs.keys | daily_follow_ups.keys,
       formatted_next_date: display_date(Time.current + 1.day),
       today_string: I18n.t(:today_str)
     }
@@ -205,7 +205,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   memoize def monthly_dm_regs
-    sum_by_date(monthly_dm_regs)
+    sum_by_date(monthly_dm_regs_with_gender)
   end
 
   memoize def monthly_dm_follow_ups_with_gender

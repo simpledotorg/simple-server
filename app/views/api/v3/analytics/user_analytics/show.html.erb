@@ -29,10 +29,10 @@
       </button>
     </div>
 
-    <!-- dump all statistics in a hidden div so that we can parse it in JS -->
+    <!-- dump all stats in a hidden div so that we can parse it in JS -->
     <%= content_tag :div,
                     id: "statistics",
-                    data: { statistics: @user_analytics.statistics },
+                    data: { statistics: @user_analytics.js_payload },
                     style: "display: none" do %>
     <% end %>
 
@@ -121,7 +121,7 @@
           <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
           <td>
             <span class="percent">
-              <%= @user_analytics.monthly_htn_control_rate(month_date) %>
+              <%= @user_analytics.monthly_htn_control_rate_by_date(month_date) %>
             </span>
           </td>
           <td>
