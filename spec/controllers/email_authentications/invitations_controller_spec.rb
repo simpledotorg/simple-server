@@ -95,7 +95,7 @@ RSpec.describe EmailAuthentications::InvitationsController, type: :controller do
       end
 
       it 'responds with bad request if email is invalid' do
-        post :create, params: params.merge(email: 'invalid email')
+        post :create, params: params.merge(email: 'invalid email', password: generate(:strong_password))
 
         expect(response).to be_bad_request
         expect(JSON(response.body)).to eq('errors' => ['Email is invalid'])
