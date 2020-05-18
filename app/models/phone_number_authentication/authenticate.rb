@@ -29,7 +29,8 @@ class PhoneNumberAuthentication
       if result.success?
         authentication.set_access_token
         authentication.invalidate_otp
-        authentication.save
+        authentication.failed_attempts = 0
+        authentication.save!
       end
       result
     end

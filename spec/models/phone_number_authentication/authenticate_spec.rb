@@ -80,6 +80,17 @@ RSpec.describe PhoneNumberAuthentication::Authenticate do
       expect(result).to_not be_success
     end
 
+    it "failed attempts are reset on successful login" do
+      user = FactoryBot.create(:user, password: "5489")
+      phone_number_authentication = user.phone_number_authentication
+      PhoneNumberAuthentication::Authenticate.call(otp: user.otp, password: "bad", phone_number: user.phone_number)
+      PhoneNumberAuthentication::Authenticate.call(otp: "xx12", password: "5489", phone_number: user.phone_number)
+      expect(phone_number_authentication.reload.failed_attempts).to eq(2)
+      result = PhoneNumberAuthentication::Authenticate.call(otp: user.otp, password: "5489", phone_number: user.phone_number)
+      expect(result.success?).to be true
+      expect(phone_number_authentication.reload.failed_attempts).to eq(0)
+    end
+
     it "increments failed attempts up to five, then sets locked_at time" do
       user = FactoryBot.create(:user, password: "5489")
       phone_number_authentication = user.phone_number_authentication
