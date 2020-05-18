@@ -11,9 +11,10 @@ class AppointmentNotification::Worker
 
     patient_phone_number = appointment.patient.latest_mobile_number
     message = appointment_message(appointment, communication_type, locale)
+    callback_url = NotificationService.twilio_callback_url
 
     begin
-      response = NotificationService.new.send_whatsapp(patient_phone_number, message)
+      response = NotificationService.new.send_whatsapp(patient_phone_number, message, callback_url)
 
       Communication.create_with_twilio_details!(
         appointment: appointment,
