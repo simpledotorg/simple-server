@@ -36,6 +36,10 @@ en:
   time:
     formats:
       default: "%d-%^b-%Y %I:%M %p"
+  errors:
+    messages:
+      password:
+        password_strength: "Please choose a stronger password with at least 8 characters. Try a mix of letters, numbers, and symbols."
   name: "Name"
   phone_number: "Phone Number"
   registration_approval_email:
