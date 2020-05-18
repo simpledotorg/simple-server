@@ -74,6 +74,6 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   end
 
   def temporary_password
-    SecureRandom.base64(8)
+    SecureRandom.base64(16)
   end
 end
