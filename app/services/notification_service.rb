@@ -45,7 +45,7 @@ class NotificationService
     client.messages.create(
       from: sender_number,
       to: recipient_number,
-      status_callback: callback_url
+      status_callback: callback_url,
       body: message
     )
   end
