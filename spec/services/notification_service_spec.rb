@@ -10,7 +10,6 @@ RSpec.describe NotificationService do
   before do
     # Fake the internal Twilio client
     allow(notification_service).to receive(:client).and_return(twilio_client)
-    allow(notification_service).to receive(:twilio_callback_url).and_return(fake_callback_url)
   end
 
   describe "#send_sms" do
@@ -25,7 +24,7 @@ RSpec.describe NotificationService do
         body: "test sms message"
       )
 
-      notification_service.send_sms(recipient_phone_number, "test sms message")
+      notification_service.send_sms(recipient_phone_number, "test sms message", fake_callback_url)
     end
   end
 
@@ -41,7 +40,7 @@ RSpec.describe NotificationService do
         body: "test whatsapp message"
       )
 
-      notification_service.send_whatsapp(recipient_phone_number, "test whatsapp message")
+      notification_service.send_whatsapp(recipient_phone_number, "test whatsapp message", fake_callback_url)
     end
   end
 
