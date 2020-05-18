@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :email_authentication do
     email { Faker::Internet.email }
-    password { Faker::Internet.password }
+    password { generate(:strong_password) }
   end
 end
