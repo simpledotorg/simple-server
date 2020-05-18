@@ -22,7 +22,7 @@ class Admin::UsersController < AdminController
     @recent_blood_pressures = @user
                                 .blood_pressures
                                 .includes(:patient, :facility)
-                                .order("DATE(recorded_at) DESC, recorded_at ASC")
+                                .order(Arel.sql("DATE(recorded_at) DESC, recorded_at ASC"))
 
     @recent_blood_pressures = paginate(@recent_blood_pressures)
   end

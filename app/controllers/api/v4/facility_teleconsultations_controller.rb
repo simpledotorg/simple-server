@@ -5,16 +5,10 @@ class Api::V4::FacilityTeleconsultationsController < APIController
   attr_reader :facility
 
   def show
-    render json: { teleconsultation_phone_number: teleconsultation_phone_number }
+    render json: { teleconsultation_phone_number: facility.teleconsultation_phone_number_with_isd }
   end
 
   private
-
-  def teleconsultation_phone_number
-    return unless facility.teleconsultation_isd_code.present? && facility.teleconsultation_phone_number.present?
-
-    Phonelib.parse(facility.teleconsultation_isd_code + facility.teleconsultation_phone_number).full_e164
-  end
 
   def set_facility
     @facility ||= Facility.find(params[:facility_id])

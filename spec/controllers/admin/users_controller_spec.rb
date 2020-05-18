@@ -32,7 +32,7 @@ RSpec.describe Admin::UsersController, type: :controller do
     it 'returns a success response' do
       user = create(:user)
       get :index, params: { facility_id: facility.id }
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
@@ -40,7 +40,7 @@ RSpec.describe Admin::UsersController, type: :controller do
     it 'returns a success response' do
       user = create(:user)
       get :show, params: { id: user.to_param, facility_id: facility.id }
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
@@ -48,7 +48,7 @@ RSpec.describe Admin::UsersController, type: :controller do
     it 'returns a success response' do
       user = create(:user)
       get :edit, params: { id: user.to_param, facility_id: facility.id }
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 

@@ -7,6 +7,7 @@ module PatientsExporter
 
   def self.csv(patients)
     CSV.generate(headers: true) do |csv|
+      csv << timestamp
       csv << csv_headers
 
       patients.in_batches(of: BATCH_SIZE).each do |batch|
@@ -27,10 +28,18 @@ module PatientsExporter
     end
   end
 
+  def self.timestamp
+    [
+      'Report generated at:',
+      Time.current
+    ]
+  end
+
   def self.csv_headers
     [
       'Registration Date',
       'Registration Quarter',
+      'Patient died?',
       'Patient Name',
       'Patient Age',
       'Patient Gender',
@@ -79,6 +88,7 @@ module PatientsExporter
     [
       patient.recorded_at.presence && I18n.l(patient.recorded_at),
       patient.recorded_at.presence && quarter_string(patient.recorded_at),
+      ('Died' if patient.status == 'dead'),
       patient.full_name,
       patient.current_age,
       patient.gender.capitalize,

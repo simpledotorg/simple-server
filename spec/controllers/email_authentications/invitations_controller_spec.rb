@@ -11,7 +11,7 @@ RSpec.describe EmailAuthentications::InvitationsController, type: :controller do
   describe '#new' do
     it 'returns a success response' do
       get :new, params: {}
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 

@@ -1,5 +1,5 @@
 require 'tasks/scripts/move_user_recorded_data_to_registration_facility'
-require 'tasks/scripts/clean_biswanath_dupes'
+require 'tasks/scripts/correct_bangladesh_medication_dosages'
 
 namespace :data_fixes do
   desc 'Move all data recorded by a user from a source facility to a destination facility'
@@ -19,13 +19,13 @@ namespace :data_fixes do
          "appointments: #{appointment_count}, prescriptions: #{prescription_drug_count}"
   end
 
-  desc 'Clean up Biswanath duplicate patients - May 2020'
-  task :clean_biswanath_dupes => :environment do
-    CleanBiswanathDupes.call
+  desc 'Correct zero dosage medication in Bangladesh'
+  task :correct_bangladesh_medication_dosages => :environment do
+    CorrectBangladeshMedicationDosages.call
   end
 
-  desc 'Clean up Biswanath duplicate patients (dryrun)- May 2020'
-  task :clean_biswanath_dupes_dryrun => :environment do
-    CleanBiswanathDupes.call(dryrun: true)
+  desc 'Correct zero dosage medication in Bangladesh (dryrun)'
+  task :correct_bangladesh_medication_dosages_dryrun => :environment do
+    CorrectBangladeshMedicationDosages.call(dryrun: true)
   end
 end

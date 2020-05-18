@@ -4,16 +4,25 @@ RSpec.describe PatientsExporter do
   include QuarterHelper
 
   let!(:facility) { create(:facility) }
-  let!(:patient) { create(:patient, registration_facility: facility) }
+  let!(:patient) { create(:patient, registration_facility: facility, status: 'dead') }
   let!(:blood_pressure) { create(:blood_pressure, :critical, facility: facility, patient: patient) }
   let!(:appointment) { create(:appointment, :overdue, facility: facility, patient: patient) }
   let!(:prescription_drug_1) { create(:prescription_drug, patient: patient) }
   let!(:prescription_drug_2) { create(:prescription_drug, patient: patient) }
+  let(:now) { Time.current }
+
+  let(:timestamp) do
+    [
+      'Report generated at:',
+      now
+    ]
+  end
 
   let(:headers) do
     [
       'Registration Date',
       'Registration Quarter',
+      'Patient died?',
       'Patient Name',
       'Patient Age',
       'Patient Gender',
@@ -56,6 +65,7 @@ RSpec.describe PatientsExporter do
     [
       I18n.l(patient.recorded_at),
       quarter_string(patient.recorded_at),
+      'Died',
       patient.full_name,
       patient.current_age,
       patient.gender.capitalize,
@@ -96,11 +106,15 @@ RSpec.describe PatientsExporter do
     let(:patient_batch) { Patient.where(id: patient.id) }
 
     it 'generates a CSV of patient records' do
-      expect(subject.csv(Patient.all)).to eq(headers.to_csv + fields.to_csv)
+      travel_to now do
+        expect(subject.csv(Patient.all)).to eq(timestamp.to_csv + headers.to_csv + fields.to_csv)
+      end
     end
 
     it 'generates a blank CSV (only headers) if no patients exist' do
-      expect(subject.csv(Patient.none)).to eq(headers.to_csv)
+      travel_to now do
+        expect(subject.csv(Patient.none)).to eq(timestamp.to_csv + headers.to_csv)
+      end
     end
 
     it 'uses fetches patients in batches' do
