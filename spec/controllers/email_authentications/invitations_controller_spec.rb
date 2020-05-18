@@ -5,6 +5,7 @@ RSpec.describe EmailAuthentications::InvitationsController, type: :controller do
     @request.env['devise.mapping'] = Devise.mappings[:email_authentication]
     admin = create(:admin, :owner)
     sign_in(admin.email_authentication)
+    ActionMailer::Base.deliveries.clear
   end
 
   describe '#new' do
@@ -95,14 +96,14 @@ RSpec.describe EmailAuthentications::InvitationsController, type: :controller do
       end
 
       it 'responds with bad request if email is invalid' do
-        post :create, params: params.merge(email: 'invalid email')
+        post :create, params: params.merge(email: 'invalid email', password: generate(:strong_password))
 
         expect(response).to be_bad_request
         expect(JSON(response.body)).to eq('errors' => ['Email is invalid'])
       end
 
       it 'responds with bad request email already exists' do
-        EmailAuthentication.create!(email: email, password: Faker::Internet.password)
+        EmailAuthentication.create!(email: email, password: generate(:strong_password))
         post :create, params: params
 
         expect(response).to be_bad_request
@@ -110,14 +111,14 @@ RSpec.describe EmailAuthentications::InvitationsController, type: :controller do
       end
 
       it 'does not send an invitation email if the email is already taken' do
-        EmailAuthentication.create!(email: email, password: Faker::Internet.password)
+        EmailAuthentication.create!(email: email, password: generate(:strong_password))
         expect do
           post :create, params: params
         end.not_to change(ActionMailer::Base.deliveries, :count)
       end
 
       it 'does not send an invitation email params are invalid' do
-        EmailAuthentication.create!(email: email, password: Faker::Internet.password)
+        EmailAuthentication.create!(email: email, password: generate(:strong_password))
         expect do
           post :create, params: params.except(:full_name)
         end.not_to change(ActionMailer::Base.deliveries, :count)

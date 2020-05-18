@@ -39,6 +39,7 @@ module PatientsExporter
     [
       'Registration Date',
       'Registration Quarter',
+      'Patient died?',
       'Patient Name',
       'Patient Age',
       'Patient Gender',
@@ -62,7 +63,6 @@ module PatientsExporter
       'Follow-up Date',
       'Days Overdue',
       'Risk Level',
-      'Dead?',
       'BP Passport ID',
       'Simple Patient ID',
       'Medication 1',
@@ -88,6 +88,7 @@ module PatientsExporter
     [
       patient.recorded_at.presence && I18n.l(patient.recorded_at),
       patient.recorded_at.presence && quarter_string(patient.recorded_at),
+      ('Died' if patient.status == 'dead'),
       patient.full_name,
       patient.current_age,
       patient.gender.capitalize,
@@ -111,7 +112,6 @@ module PatientsExporter
       latest_appointment&.scheduled_date&.to_s(:rfc822),
       latest_appointment&.days_overdue,
       ('High' if patient.high_risk?),
-      ('Died' if patient.status == 'dead'),
       latest_bp_passport&.shortcode,
       patient.id,
       *medications_for(patient)

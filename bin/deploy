@@ -178,8 +178,9 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 
   def notify
-    if !ENV['SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK']
+    unless ENV['SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK']
       puts 'SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK missing. Skipping notification.'
+      return
     end
 
     require 'net/http'
@@ -219,7 +220,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 
   def changelog
-    @changelog ||= execute_safely("git log #{last_deployed_sha}..HEAD --oneline --decorate=no")
+    @changelog ||= execute_safely("git log #{commit_range_for_diffs} --oneline --decorate=no")
                      .strip
                      .split("\n")
                      .map { |line| line.match(/\s(.*)/)&.captures&.last }
@@ -230,7 +231,11 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 
   def changes_in_file(file)
-    execute_safely("git diff #{last_deployed_sha}..HEAD #{file}")
+    execute_safely("git diff #{commit_range_for_diffs} #{file}")
+  end
+
+  def commit_range_for_diffs
+    "#{last_deployed_sha}..#{@tag_to_deploy || 'HEAD'}"
   end
 
   def find_existing_release_tags(date)
@@ -262,9 +267,22 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
     prompt_for_confirmation('Confirm before proceeding', ['y', 'Y'], 32) if confirm
 
     env_vars.each { |env_var, value| ENV[env_var] = value } unless env_vars.empty?
-    output = `#{cmd}`
+    output = display_spinner { `#{cmd}` }
     raise DeployError if $?.exitstatus > 0
     output
+  end
+
+  def display_spinner
+    spinner = Thread.new do
+      loop do
+        %w[/ - \\ |].each do |char|
+          print(colorize("#{char}\r", 32))
+          sleep 0.2
+        end
+      end
+    end
+
+    yield.tap { spinner.kill }
   end
 
   #
@@ -290,7 +308,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 
   def release_tag_regex
-    %r{([0-9]{4})-([0][0-9]|[1][0-2])-([0][0-9]|[1][0-9]|[2][0-9]|[3][0-1])-([0-9]{1,})}
+    %r{(\d{4}-\d{2}-\d{2}-\d+)}
   end
 
   def prompt_for_confirmation(msg, prompt_codes, color)
@@ -315,11 +333,13 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 end
 
-Deploy
-  .new(country_to_deploy:
-         ARGV[0],
-       current_environment:
-         ARGV[1],
-       tag_to_deploy:
-         ARGV[2]
-  ).start
+if __FILE__ == $0
+  Deploy
+    .new(country_to_deploy:
+           ARGV[0],
+         current_environment:
+           ARGV[1],
+         tag_to_deploy:
+           ARGV[2]
+    ).start
+end

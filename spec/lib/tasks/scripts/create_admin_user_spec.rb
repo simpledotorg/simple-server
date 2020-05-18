@@ -5,7 +5,7 @@ RSpec.describe CreateAdminUser do
   describe '#create_owner' do
     let!(:name) { Faker::Name.name }
     let!(:email) { Faker::Internet.email }
-    let!(:password) { Faker::Internet.password }
+    let!(:password) { generate(:strong_password) }
 
     it 'should create a new user with owner permissions' do
       user = CreateAdminUser.create_owner(name, email, password)
