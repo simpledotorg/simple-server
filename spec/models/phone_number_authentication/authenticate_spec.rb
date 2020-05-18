@@ -102,7 +102,7 @@ RSpec.describe PhoneNumberAuthentication::Authenticate do
       expect(phone_number_authentication.failed_attempts).to eq(4)
       expect(phone_number_authentication.locked_at).to be_nil
       time = nil
-      Timecop.freeze do
+      Timecop.freeze("January 1 2020 2:00 PM") do
         time = Time.current
         PhoneNumberAuthentication::Authenticate.call(otp: user.otp, password: "bad", phone_number: user.phone_number)
       end
