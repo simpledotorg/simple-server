@@ -77,6 +77,8 @@ group :development do
   gem 'guard-rspec', require: false
   gem 'listen', '>= 3.0.5', '< 3.2'
   gem 'rails-erd'
+  gem "spring"
+  gem "spring-commands-rspec"
   gem 'web-console', '>= 3.3.0'
 end
 
