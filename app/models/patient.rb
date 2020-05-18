@@ -78,8 +78,6 @@ class Patient < ApplicationRecord
       .distinct
   end
 
-  private_class_method :follow_ups_with
-
   enum could_not_contact_reasons: {
     not_responding: 'not_responding',
     moved: 'moved',
