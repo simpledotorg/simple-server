@@ -1,45 +1,45 @@
 class Api::V3::UsersController < APIController
   skip_before_action :current_user_present?, only: [:register, :find, :request_otp]
-    skip_before_action :validate_sync_approval_status_allowed, only: [:register, :find, :request_otp]
-    skip_before_action :authenticate, only: [:register, :find, :request_otp]
-    skip_before_action :validate_facility, only: [:register, :find, :request_otp]
-    skip_before_action :validate_current_facility_belongs_to_users_facility_group, only: [:register, :find, :request_otp]
-    before_action :validate_registration_payload, only: %i[register]
+  skip_before_action :validate_sync_approval_status_allowed, only: [:register, :find, :request_otp]
+  skip_before_action :authenticate, only: [:register, :find, :request_otp]
+  skip_before_action :validate_facility, only: [:register, :find, :request_otp]
+  skip_before_action :validate_current_facility_belongs_to_users_facility_group, only: [:register, :find, :request_otp]
+  before_action :validate_registration_payload, only: %i[register]
 
-    def register
-      user = User.build_with_phone_number_authentication(user_from_request)
-      return head :not_found unless user.registration_facility.present?
+  def register
+    user = User.build_with_phone_number_authentication(user_from_request)
+    return head :not_found unless user.registration_facility.present?
 
-      if user.phone_number_authentication.invalid?
-        return render json: {
-          errors: user.phone_number_authentication.errors
-        }, status: :bad_request
-      end
-
-      send_approval_email(user) if approve_and_save(user)
-
-      render json: {
-        user: user_to_response(user),
-        access_token: user.access_token
-      }, status: :ok
+    if user.phone_number_authentication.invalid?
+      return render json: {
+        errors: user.phone_number_authentication.errors
+      }, status: :bad_request
     end
 
-    def find
-      return head :bad_request unless find_params.present?
-      user = find_user(find_params)
-      return head :not_found unless user.present?
-      render json: user_to_response(user), status: 200
-    end
+    send_approval_email(user) if approve_and_save(user)
 
-    def request_otp
-      user = User.find(request_user_id)
-      phone_number_authentication = user.phone_number_authentication
-      phone_number_authentication.set_otp
-      phone_number_authentication.save
+    render json: {
+      user: user_to_response(user),
+      access_token: user.access_token
+    }, status: :ok
+  end
 
-      unless FeatureToggle.auto_approve_for_qa?
-        delay_seconds = (ENV['USER_OTP_SMS_DELAY_IN_SECONDS'] || DEFAULT_USER_OTP_DELAY_IN_SECONDS).to_i.seconds
-        RequestOtpSmsJob.set(wait: delay_seconds).perform_later(user)
+  def find
+    return head :bad_request unless find_params.present?
+    user = find_user(find_params)
+    return head :not_found unless user.present?
+    render json: user_to_response(user), status: 200
+  end
+
+  def request_otp
+    user = User.find(request_user_id)
+    phone_number_authentication = user.phone_number_authentication
+    phone_number_authentication.set_otp
+    phone_number_authentication.save
+
+    unless FeatureToggle.auto_approve_for_qa?
+      delay_seconds = (ENV['USER_OTP_SMS_DELAY_IN_SECONDS'] || DEFAULT_USER_OTP_DELAY_IN_SECONDS).to_i.seconds
+      RequestOtpSmsJob.set(wait: delay_seconds).perform_later(user)
     end
 
     head :ok
