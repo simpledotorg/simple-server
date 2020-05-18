@@ -48,6 +48,7 @@ gem 'scenic'
 gem 'sentry-raven'
 gem 'sidekiq'
 gem 'sidekiq-throttled'
+gem 'strong_password', '~> 0.0.8'
 gem 'timecop', '~> 0.9.0', require: false
 gem 'twilio-ruby', '~> 5.10', '>= 5.10.3'
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
