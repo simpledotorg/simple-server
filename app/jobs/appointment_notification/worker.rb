@@ -1,5 +1,7 @@
 class AppointmentNotification::Worker
+  include Rails.application.routes.url_helpers
   include Sidekiq::Worker
+
   sidekiq_options queue: 'high'
 
   DEFAULT_LOCALE = :en
@@ -11,7 +13,6 @@ class AppointmentNotification::Worker
 
     patient_phone_number = appointment.patient.latest_mobile_number
     message = appointment_message(appointment, communication_type, locale)
-    callback_url = NotificationService.twilio_callback_url
 
     begin
       response = NotificationService.new.send_whatsapp(patient_phone_number, message, callback_url)
@@ -47,6 +48,13 @@ class AppointmentNotification::Worker
       tags: {
         type: 'appointment-notification-job'
       }
+    )
+  end
+
+  def callback_url
+    api_v3_twilio_sms_delivery_url(
+      host: ENV.fetch('SIMPLE_SERVER_HOST'),
+      protocol: ENV.fetch('SIMPLE_SERVER_HOST_PROTOCOL')
     )
   end
 end

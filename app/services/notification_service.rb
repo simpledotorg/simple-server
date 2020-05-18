@@ -1,6 +1,4 @@
 class NotificationService
-  include Rails.application.routes.url_helpers
-
   DEFAULT_LOCALE = :en
 
   attr_reader :client
@@ -9,14 +7,14 @@ class NotificationService
     @client = Twilio::REST::Client.new(twilio_account_sid, twilio_auth_token)
   end
 
-  def send_sms(recipient_number, message, callback_url)
+  def send_sms(recipient_number, message, callback_url=nil)
     sender_number    = twilio_sender_number
     recipient_number = parse_phone_number(recipient_number)
 
     send_twilio_message(sender_number, recipient_number, message, callback_url)
   end
 
-  def send_whatsapp(recipient_number, message, callback_url)
+  def send_whatsapp(recipient_number, message, callback_url=nil)
     sender_number    = "whatsapp:" + twilio_sender_number
     recipient_number = "whatsapp:" + parse_phone_number(recipient_number)
 
@@ -28,20 +26,13 @@ class NotificationService
     default_country_code + parsed_number
   end
 
-  def self.twilio_callback_url
-    api_v3_twilio_sms_delivery_url(
-      host: ENV.fetch('SIMPLE_SERVER_HOST'),
-      protocol: ENV.fetch('SIMPLE_SERVER_HOST_PROTOCOL')
-    )
-  end
-
   private
 
   def default_country_code
     Rails.application.config.country[:sms_country_code]
   end
 
-  def send_twilio_message(sender_number, recipient_number, message, callback_url)
+  def send_twilio_message(sender_number, recipient_number, message, callback_url=nil)
     client.messages.create(
       from: sender_number,
       to: recipient_number,
