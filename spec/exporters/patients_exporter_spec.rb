@@ -22,6 +22,7 @@ RSpec.describe PatientsExporter do
     [
       'Registration Date',
       'Registration Quarter',
+      'Patient died?',
       'Patient Name',
       'Patient Age',
       'Patient Gender',
@@ -45,7 +46,6 @@ RSpec.describe PatientsExporter do
       'Follow-up Date',
       'Days Overdue',
       'Risk Level',
-      'Dead?',
       'BP Passport ID',
       'Simple Patient ID',
       'Medication 1',
@@ -65,6 +65,7 @@ RSpec.describe PatientsExporter do
     [
       I18n.l(patient.recorded_at),
       quarter_string(patient.recorded_at),
+      'Died',
       patient.full_name,
       patient.current_age,
       patient.gender.capitalize,
@@ -88,7 +89,6 @@ RSpec.describe PatientsExporter do
       appointment.scheduled_date.to_s(:rfc822),
       appointment.days_overdue,
       'High',
-      'Died',
       patient.latest_bp_passport&.shortcode,
       patient.id,
       prescription_drug_1.name,
