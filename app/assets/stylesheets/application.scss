@@ -907,6 +907,11 @@ nav.breadcrumb i {
     position: relative;
 }
 
+form.edit_email_authentication .invalid-feedback {
+    font-size: 100%;
+    font-weight: bold;
+}
+
 /******************
 Environments
 ******************/

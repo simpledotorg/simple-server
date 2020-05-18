@@ -51,10 +51,14 @@ FactoryBot.define do
     factory :user_created_on_device, traits: [:with_phone_number_authentication]
   end
 
+  sequence(:strong_password) do |n|
+    [Faker::Name.first_name, Faker::Name.last_name, Faker::Internet.domain_word, n].join("-")
+  end
+
   factory :admin, class: User do
     transient do
       email { Faker::Internet.email(name: full_name) }
-      password { Faker::Internet.password(min_length: 6) }
+      password { generate(:strong_password) }
       facility_group { build(:facility_group) }
     end
 
