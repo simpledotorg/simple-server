@@ -12,18 +12,18 @@ Rails.application.configure do
   # Show full error reports.
   config.consider_all_requests_local = true
 
-  if ENV['RAILS_CACHE_REDIS_URL'].present?
-    config.cache_store = :redis_store, { host: ENV['RAILS_CACHE_REDIS_URL'] }
+  config.cache_store = if ENV["RAILS_CACHE_REDIS_URL"].present?
+    [:redis_store, {host: ENV["RAILS_CACHE_REDIS_URL"]}]
   else
-    config.cache_store = :redis_store, ENV['REDIS_URL']
+    [:redis_store, ENV["REDIS_URL"]]
   end
 
   # Enable/disable caching. By default caching is disabled.
-  if Rails.root.join('tmp/caching-dev.txt').exist?
+  if Rails.root.join("tmp/caching-dev.txt").exist?
     config.action_controller.perform_caching = true
 
     config.public_file_server.headers = {
-      'Cache-Control' => "public, max-age=#{2.days.seconds.to_i}"
+      "Cache-Control" => "public, max-age=#{2.days.seconds.to_i}"
     }
   else
     config.action_controller.perform_caching = false
@@ -33,12 +33,12 @@ Rails.application.configure do
   config.action_mailer.raise_delivery_errors = false
   config.action_mailer.perform_caching = false
 
-  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
-  config.action_mailer.asset_host = 'http://localhost:3000'
+  config.action_mailer.default_url_options = {host: "localhost", port: 3000}
+  config.action_mailer.asset_host = "http://localhost:3000"
 
   # Use Mailcatcher to test mail in development
   config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = { :address => "localhost", :port => 1025 }
+  config.action_mailer.smtp_settings = {address: "localhost", port: 1025}
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
