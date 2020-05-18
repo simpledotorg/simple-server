@@ -113,7 +113,7 @@ RSpec.describe PhoneNumberAuthentication::Authenticate do
 
     it "returns locked out message if within locked window" do
       user = FactoryBot.create(:user, password: "5489")
-      Timecop.freeze do
+      Timecop.freeze("January 1st 2020 12:00") do
         user.phone_number_authentication.update(failed_attempts: 5, locked_at: Time.current)
         Timecop.travel(2.minutes.from_now) do
           result = PhoneNumberAuthentication::Authenticate.call(otp: user.otp, password: "5489", phone_number: user.phone_number)
@@ -128,7 +128,7 @@ RSpec.describe PhoneNumberAuthentication::Authenticate do
       end
     end
 
-    it "unlocked the user after 20 minutes" do
+    it "unlocks the user after 20 minutes" do
       user = FactoryBot.create(:user, password: "5489")
       phone_number_authentication = user.phone_number_authentication
       Timecop.freeze do
