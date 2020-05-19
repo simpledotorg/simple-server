@@ -109,6 +109,7 @@ class Facility < ApplicationRecord
                    pin: row['pin (optional)'],
                    latitude: row['latitude (optional)'],
                    longitude: row['longitude (optional)'],
+                   facility_size: row['size (optional)'],
                    import: true }
       next if facility.except(:import).values.all?(&:blank?)
 

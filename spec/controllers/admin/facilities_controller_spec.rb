@@ -176,6 +176,20 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
                                         "Row(s) 5: Organization name can't be blank"])
       end
     end
+    context 'with invalid facility sizes' do
+      let(:organization) { FactoryBot.create(:organization, name: 'OrgOne') }
+      let!(:facility_group_2) do
+        FactoryBot.create(:facility_group, name: 'FGTwo',
+                          organization_id: organization.id)
+      end
+      let(:upload_file) { fixture_file_upload('files/upload_facilities_test_4.csv', 'text/csv') }
+      it 'uploads facilities file and fails validations' do
+        post :upload, params: { upload_facilities_file: upload_file }
+        expect(assigns(:errors)).to eq(["Facility size on row 3 is invalid",
+                                        "Facility size on row 4 is invalid"])
+      end
+    end
+
     context 'with unsupported file type' do
       let(:upload_file) do
         fixture_file_upload('files/upload_facilities.docx',

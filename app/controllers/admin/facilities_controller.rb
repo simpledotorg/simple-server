@@ -119,13 +119,21 @@ class Admin::FacilitiesController < AdminController
         facilities_slice.count != facilities_slice.uniq.count
   end
 
+  def valid_facility_size?(facility)
+    facility_size = facility[:facility_size]
+    facility_size.blank? || Facility::facility_sizes.include?(facility_size)
+  end
+
   def validate_facilities
     @row_errors = []
     row_num = 2
     @facilities.each do |facility|
-      import_facility = Facility.new(facility)
-      @row_errors << [row_num, import_facility.errors.full_messages.to_sentence] if
-          import_facility.invalid?
+      if valid_facility_size?(facility)
+        import_facility = Facility.new(facility)
+        @row_errors << [row_num, import_facility.errors.full_messages.to_sentence] if import_facility.invalid?
+      else
+        @errors << "Facility size on row #{row_num} is invalid"
+      end
       row_num += 1
     end
     if @row_errors.present?
