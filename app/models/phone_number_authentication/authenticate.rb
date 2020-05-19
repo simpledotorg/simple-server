@@ -50,7 +50,7 @@ class PhoneNumberAuthentication
           minutes_left = minutes_left.round
           failure("login.error_messages.account_locked", minutes: minutes_left)
         else
-          unlock
+          authentication.unlock
           verify_auth
         end
       when authentication.otp != otp
@@ -65,10 +65,6 @@ class PhoneNumberAuthentication
       else
         success
       end
-    end
-
-    def unlock
-      authentication.update!(locked_at: nil, failed_attempts: 0)
     end
 
     def track_failed_attempt
