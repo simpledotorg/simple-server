@@ -1,8 +1,5 @@
 class PhoneNumberAuthentication
   class Authenticate
-    USER_AUTH_MAX_FAILED_ATTEMPTS = Integer(ENV["USER_AUTH_MAX_FAILED_ATTEMPTS"])
-    USER_AUTH_LOCKOUT_IN_MINUTES = Integer(ENV["USER_AUTH_LOCKOUT_IN_MINUTES"])
-
     class Result < Struct.new(:authentication, :success, :error_message)
       def success?
         self.success
@@ -49,10 +46,8 @@ class PhoneNumberAuthentication
       when authentication.nil?
         failure('login.error_messages.unknown_user')
       when authentication.locked_at
-        if authentication.locked_at >= lockout_time.ago
-          minutes_left = (lockout_time - (Time.current - authentication.locked_at)) / 1.minute
-          minutes_left = minutes_left.round
-          failure("login.error_messages.account_locked", minutes: minutes_left)
+        if authentication.in_lockout_period?
+          failure("login.error_messages.account_locked", minutes: authentication.minutes_left_on_lockout)
         else
           authentication.unlock
           verify_auth

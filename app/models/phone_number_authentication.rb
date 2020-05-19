@@ -1,4 +1,7 @@
 class PhoneNumberAuthentication < ApplicationRecord
+  USER_AUTH_MAX_FAILED_ATTEMPTS = Integer(ENV["USER_AUTH_MAX_FAILED_ATTEMPTS"]).freeze
+  USER_AUTH_LOCKOUT_IN_MINUTES = Integer(ENV["USER_AUTH_LOCKOUT_IN_MINUTES"]).freeze
+
   has_secure_password
 
   has_one :user_authentication, as: :authenticatable
@@ -35,6 +38,19 @@ class PhoneNumberAuthentication < ApplicationRecord
 
   def unlock
     update!(locked_at: nil, failed_attempts: 0)
+  end
+
+  def in_lockout_period?
+    locked_at >= lockout_time.ago
+  end
+
+  def lockout_time
+    USER_AUTH_LOCKOUT_IN_MINUTES.minutes
+  end
+
+  def minutes_left_on_lockout
+    minutes_left = (lockout_time - (Time.current - locked_at)) / 1.minute
+    minutes_left = minutes_left.round
   end
 
   def otp_valid?
