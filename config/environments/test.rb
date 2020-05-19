@@ -37,8 +37,8 @@ Rails.application.configure do
   config.action_mailer.asset_host = "http://localhost:3000"
   config.active_job.queue_adapter = :inline
 
-  # Print deprecation notices to the stderr.
-  config.active_support.deprecation = :stderr
+  config.active_support.deprecation = :raise
+
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
