@@ -30,10 +30,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
         let!(:non_htn_patient) { create(:patient, :without_hypertension, recorded_at: included_timestamps.first) }
 
         before do
-          ActiveRecord::Base.transaction do
-            ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Rails.application.config.country[:time_zone]}'")
-            PatientRegistrationsPerDayPerFacility.refresh
-          end
+          PatientRegistrationsPerDayPerFacility.refresh
         end
 
         context 'considers only htn diagnosed patients' do
@@ -54,10 +51,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
         let!(:non_htn_patient) { create(:patient, :without_hypertension, recorded_at: included_timestamps.first) }
 
         before do
-          ActiveRecord::Base.transaction do
-            ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Rails.application.config.country[:time_zone]}'")
-            PatientRegistrationsPerDayPerFacility.refresh
-          end
+          PatientRegistrationsPerDayPerFacility.refresh
         end
 
         context 'considers only htn diagnosed patients' do
@@ -76,10 +70,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
         let!(:non_htn_patient) { create(:patient, :without_hypertension, recorded_at: included_timestamps.first) }
 
         before do
-          ActiveRecord::Base.transaction do
-            ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Rails.application.config.country[:time_zone]}'")
-            PatientRegistrationsPerDayPerFacility.refresh
-          end
+          PatientRegistrationsPerDayPerFacility.refresh
         end
 
         context 'considers only htn diagnosed patients' do
