@@ -24,6 +24,8 @@ Config.ensure_required_keys_are_present(required_keys: [
   'RAILS_CACHE_REDIS_PASSWORD',
   'SIDEKIQ_CONCURRENCY',
   'ANALYTICS_DASHBOARD_CACHE_TTL',
+  "USER_AUTH_LOCKOUT_IN_MINUTES",
+  "USER_AUTH_MAX_FAILED_ATTEMPTS"
 ])
 
 Config.ensure_required_keys_have_fallbacks(required_keys: {
