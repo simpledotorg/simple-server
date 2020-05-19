@@ -1,1 +1,1 @@
-organization,facility_group,facility_name,facility_type,street_address (optional),village_or_colony (optional),zone_or_block (optional),district,state,country,pin (optional),latitude (optional),longitude (optional),size (optional)
+organization,facility_group,facility_name,facility_type,street_address (optional),village_or_colony (optional),zone_or_block (optional),district,state,country,pin (optional),latitude (optional),longitude (optional),size (optional),enable_teleconsultation (optional),teleconsultation_phone_number,teleconsultation_isd_code

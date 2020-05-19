@@ -110,6 +110,9 @@ class Facility < ApplicationRecord
                    latitude: row['latitude (optional)'],
                    longitude: row['longitude (optional)'],
                    facility_size: row['size (optional)'],
+                   enable_teleconsultation: row['enable_teleconsultation (true/false)'],
+                   teleconsultation_phone_number: row['teleconsultation_phone_number'],
+                   teleconsultation_isd_code: row['teleconsultation_isd_code'],
                    import: true }
       next if facility.except(:import).values.all?(&:blank?)
 
