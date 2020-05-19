@@ -47,10 +47,7 @@ RSpec.describe MyFacilities::OverviewQuery do
     end
 
     before do
-      ActiveRecord::Base.transaction do
-        ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Rails.application.config.country[:time_zone]}'")
-        BloodPressuresPerFacilityPerDay.refresh
-      end
+      BloodPressuresPerFacilityPerDay.refresh
     end
 
     it 'returns only inactive facilities' do
@@ -76,10 +73,7 @@ RSpec.describe MyFacilities::OverviewQuery do
     end
 
     before do
-      ActiveRecord::Base.transaction do
-        ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Rails.application.config.country[:time_zone]}'")
-        BloodPressuresPerFacilityPerDay.refresh
-      end
+      BloodPressuresPerFacilityPerDay.refresh
     end
 
     context 'considers only htn diagnosed patients' do
