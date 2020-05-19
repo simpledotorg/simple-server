@@ -117,12 +117,12 @@ RSpec.describe PhoneNumberAuthentication::Authenticate do
         user.phone_number_authentication.update(failed_attempts: 5, locked_at: Time.current)
         Timecop.travel(2.minutes.from_now) do
           result = PhoneNumberAuthentication::Authenticate.call(otp: user.otp, password: "5489", phone_number: user.phone_number)
-          expect(result.success).to be false
+          expect(result).to_not be_success
           expect(result.error_message).to eq("Your account is locked out for 18 minutes. Please wait and try again later.")
         end
         Timecop.travel(10.minutes.from_now) do
           result = PhoneNumberAuthentication::Authenticate.call(otp: user.otp, password: "5489", phone_number: user.phone_number)
-          expect(result.success).to be false
+          expect(result).to_not be_success
           expect(result.error_message).to eq("Your account is locked out for 10 minutes. Please wait and try again later.")
         end
       end
@@ -135,14 +135,14 @@ RSpec.describe PhoneNumberAuthentication::Authenticate do
         user.phone_number_authentication.update(failed_attempts: 5, locked_at: Time.current)
         Timecop.travel(2.minutes.from_now) do
           result = PhoneNumberAuthentication::Authenticate.call(otp: user.otp, password: "5489", phone_number: user.phone_number)
-          expect(result.success).to be false
+          expect(result).to_not be_success
           expect(result.error_message).to eq("Your account is locked out for 18 minutes. Please wait and try again later.")
         end
         Timecop.travel(21.minutes.from_now) do
           phone_number_authentication.set_otp # handled by the mobile app I think?
           phone_number_authentication.save
           result = PhoneNumberAuthentication::Authenticate.call(otp: user.otp, password: "5489", phone_number: user.phone_number)
-          expect(result.success).to be true
+          expect(result).to be_success
           expect(phone_number_authentication.failed_attempts).to eq(0)
           expect(phone_number_authentication.locked_at).to be_nil
         end
