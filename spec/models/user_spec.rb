@@ -63,6 +63,67 @@ RSpec.describe User, type: :model do
     end
   end
 
-  xdescribe '.update_with_phone_number_authentication' do
+  describe "Search" do
+    shared_examples "searches against case-insensitive full_names" do |search_method|
+      let!(:user_1) { create(:user, full_name: "Sri Priyanka John") }
+      let!(:user_2) { create(:user, full_name: "Priya Sri Gupta") }
+
+      ["Sri", "sri"].each do |term|
+        it "returns all results for search term: #{term}" do
+          expect(User.send(search_method, term)).to match_array([user_1, user_2])
+        end
+      end
+
+      ["Priyanka", "priyanka", "John", "john", "Priyanka John", "priyanka john"].each do |term|
+        it "returns the matched user for search term: #{term}" do
+          expect(User.send(search_method, term)).to match_array(user_1)
+        end
+      end
+
+      ["Pri", ""].each do |term|
+        it "returns no results for unmatched search term: #{term}" do
+          expect(User.send(search_method, term)).to be_empty
+        end
+      end
+
+      ["gupta\n\n\r", "\bpriya", "gUPTa", "      gupta         "].each do |term|
+        it "ignores escape characters and random casings" do
+          expect(User.send(search_method, term)).to match_array(user_2)
+        end
+      end
+    end
+
+    describe ".search_by_name_or_phone" do
+      include_examples "searches against case-insensitive full_names", :search_by_name_or_phone
+
+      context "searches against phone_number" do
+        let!(:user_1_phone) { Faker::PhoneNumber.phone_number }
+        let!(:user_2_phone) { Faker::PhoneNumber.phone_number }
+        let!(:user_1) { create(:user, full_name: "Sri Priyanka John", phone_number: user_1_phone) }
+        let!(:user_2) { create(:user, full_name: "Priya Sri Gupta", phone_number: user_2_phone) }
+
+        it "returns the matched user with an exact match on phone_number" do
+          expect(User.search_by_name_or_phone(user_1_phone)).to match_array(user_1)
+        end
+
+        it "returns no results for a combination of multiple phone_numbers" do
+          expect(User.search_by_name_or_phone(user_1_phone + user_2_phone)).to be_empty
+          expect(User.search_by_name_or_phone(user_1_phone + " " + user_2_phone)).to be_empty
+        end
+
+        it "returns no results for a combination of full_name and phone_number from different users" do
+          expect(User.search_by_name_or_phone("Priya" + " " + user_1_phone)).to be_empty
+        end
+
+        it "returns the first match for a combination of full_name and phone_number from the same user" do
+          expect(User.search_by_name_or_phone(user_1_phone + " " + "John")).to match_array(user_1)
+          expect(User.search_by_name_or_phone("Priya" + " " + user_2_phone)).to match_array(user_2)
+        end
+      end
+    end
+
+    describe ".search_by_name_or_email" do
+      include_examples "searches against case-insensitive full_names", :search_by_name_or_email
+    end
   end
 end

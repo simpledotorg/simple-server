@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  include PgSearch::Model
+
   AUTHENTICATION_TYPES = {
     email_authentication: 'EmailAuthentication',
     phone_number_authentication: 'PhoneNumberAuthentication'
@@ -35,6 +37,13 @@ class User < ApplicationRecord
   has_many :prescription_drugs
 
   has_many :user_permissions, foreign_key: :user_id, dependent: :delete_all
+
+  pg_search_scope :search_by_name_or_phone,
+                  against: [:full_name],
+                  associated_against: { phone_number_authentications: [:phone_number] }
+  pg_search_scope :search_by_name_or_email,
+                  against: [:full_name],
+                  associated_against: { email_authentications: [:email] }
 
   validates :full_name, presence: true
   validates :role, presence: true, if: -> { email_authentication.present? }
