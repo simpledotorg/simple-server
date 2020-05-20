@@ -13,14 +13,19 @@ class CorrectBangladeshMedicalHistories
   end
 
   def call
+    unless Rails.application.config.country[:abbreviation] == "BD"
+      log "Cannot run this cleanup outside of Bangladesh"
+      return
+    end
+
     print_summary
 
     return if dryrun
 
-    log 'Updating medical histories...'
+    log "Updating medical histories..."
     update_medical_histories
 
-    log 'Complete. Goodbye.'
+    log "Complete. Goodbye."
   end
 
   def print_summary
@@ -28,13 +33,13 @@ class CorrectBangladeshMedicalHistories
   end
 
   def eligible_medical_histories
-    MedicalHistory.where(hypertension: 'unknown')
+    MedicalHistory.where(hypertension: "unknown")
   end
 
   def update_medical_histories
     eligible_medical_histories.update_all(
-      hypertension: 'yes',
-      diagnosed_with_hypertension: 'yes'
+      hypertension: "yes",
+      diagnosed_with_hypertension: "yes"
     )
   end
 
