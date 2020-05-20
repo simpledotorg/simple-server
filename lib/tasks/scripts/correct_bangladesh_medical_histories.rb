@@ -17,7 +17,7 @@ class CorrectBangladeshMedicalHistories
 
     return if dryrun
 
-    log 'Updating dosages...'
+    log 'Updating medical histories...'
     update_medical_histories
 
     log 'Complete. Goodbye.'
