@@ -71,13 +71,13 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       end
     end
 
-    it 'should raise an error if the message text is not found in locales' do
+    it 'should raise an error if locale is invalid' do
       locale = "fr"
 
       expect do
         described_class.perform_async(appointment.id, communication_type, locale)
         described_class.drain
-      end.to raise_error(StandardError)
+      end.to raise_error(I18n::InvalidLocale)
     end
   end
 end
