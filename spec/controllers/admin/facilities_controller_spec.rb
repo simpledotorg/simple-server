@@ -176,7 +176,8 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
                                         "Row(s) 4: Facility group doesn't exist for the organization and District can't be blank",
                                         "Row(s) 5: Organization name can't be blank",
                                         "Row(s) 6: Facility size not in #{Facility::facility_sizes.values.join(', ')}",
-                                        "Row(s) 7: Enable teleconsultation is not included in the list"])
+                                        "Row(s) 7: Enable teleconsultation is not included in the list",
+                                        "Row(s) 8: Enable diabetes management is not included in the list"])
       end
     end
 

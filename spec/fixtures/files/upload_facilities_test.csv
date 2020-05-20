@@ -1,3 +1,3 @@
-organization,facility_group,facility_name,facility_type,street_address (optional),village_or_colony (optional),zone_or_block (optional),district,state,country,pin (optional),longitude (optional),latitude (optional),size (optional),enable_teleconsultation (true/false),teleconsultation_phone_number,teleconsultation_isd_code
-OrgOne,FGTwo,Test Facility,CHC,,,,Bhatinda,Punjab,India,,,,,false,,
-OrgOne,FGTwo,Test Facility 2,CHC,,,,Bhatinda,Punjab,India,,,,,true,9999999999,91
+organization,facility_group,facility_name,facility_type,street_address (optional),village_or_colony (optional),zone_or_block (optional),district,state,country,pin (optional),latitude (optional),longitude (optional),size (optional),enable_diabetes_management (true/false),enable_teleconsultation (true/false),teleconsultation_phone_number,teleconsultation_isd_code
+OrgOne,FGTwo,Test Facility,CHC,,,,Bhatinda,Punjab,India,,,,,false,false,,
+OrgOne,FGTwo,Test Facility 2,CHC,,,,Bhatinda,Punjab,India,,,,,false,true,9999999999,91

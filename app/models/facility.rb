@@ -68,6 +68,7 @@ class Facility < ApplicationRecord
   validates :teleconsultation_isd_code, presence: true, if: :teleconsultation_enabled?
   validates :teleconsultation_phone_number, presence: true, if: :teleconsultation_enabled?
   validates :enable_teleconsultation, inclusion: { in: [true, false] }
+  validates :enable_diabetes_management, inclusion: { in: [true, false] }
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, to: :facility_group, allow_nil: true
@@ -116,6 +117,7 @@ class Facility < ApplicationRecord
                    latitude: row['latitude (optional)'],
                    longitude: row['longitude (optional)'],
                    facility_size: row['size (optional)'],
+                   enable_diabetes_management: row['enable_diabetes_management (true/false)'],
                    enable_teleconsultation: row['enable_teleconsultation (true/false)'],
                    teleconsultation_phone_number: row['teleconsultation_phone_number'],
                    teleconsultation_isd_code: row['teleconsultation_isd_code'],
