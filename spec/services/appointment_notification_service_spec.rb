@@ -32,16 +32,36 @@ RSpec.describe AppointmentNotificationService do
       expect(ineligible_appointments).to be_empty
     end
 
-    it 'should skip sending reminders for appointments for which reminders are already sent' do
-      overdue_appointments.each do |appointment|
-        communication = FactoryBot.create(:communication, communication_type: "missed_visit_whatsapp_reminder",
-                                          detailable: create(:twilio_sms_delivery_detail, :sent))
-        appointment.communications << communication
-      end
+    context "if WHATSAPP_APPOINTMENT_REMINDERS feature is disabled" do
+      it 'should skip sending reminders for appointments for which SMS reminders are already sent' do
+        expect(FeatureToggle).to receive(:enabled?).with("WHATSAPP_APPOINTMENT_REMINDERS").and_return(false)
 
-      expect do
-        AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
-      end.to change(AppointmentNotification::Worker.jobs, :size).by(0)
+        overdue_appointments.each do |appointment|
+          communication = FactoryBot.create(:communication, communication_type: "missed_visit_sms_reminder",
+                                            detailable: create(:twilio_sms_delivery_detail, :sent))
+          appointment.communications << communication
+        end
+
+        expect do
+          AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
+        end.to change(AppointmentNotification::Worker.jobs, :size).by(0)
+      end
+    end
+
+    context "if WHATSAPP_APPOINTMENT_REMINDERS feature is enabled" do
+      it 'should skip sending reminders for appointments for which WhatsApp reminders are already sent' do
+        expect(FeatureToggle).to receive(:enabled?).with("WHATSAPP_APPOINTMENT_REMINDERS").and_return(true)
+
+        overdue_appointments.each do |appointment|
+          communication = FactoryBot.create(:communication, communication_type: "missed_visit_whatsapp_reminder",
+                                            detailable: create(:twilio_sms_delivery_detail, :sent))
+          appointment.communications << communication
+        end
+
+        expect do
+          AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
+        end.to change(AppointmentNotification::Worker.jobs, :size).by(0)
+      end
     end
 
     it 'should send reminders for appointments for which previous reminders failed' do
