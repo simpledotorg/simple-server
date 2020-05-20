@@ -64,30 +64,30 @@ RSpec.describe User, type: :model do
   end
 
   describe "Search" do
-    shared_examples "searches against case-insensitive full_names" do |search_method|
+    shared_examples "searches whole words against full_names" do |search_method|
       let!(:user_1) { create(:user, full_name: "Sri Priyanka John") }
       let!(:user_2) { create(:user, full_name: "Priya Sri Gupta") }
 
-      ["Sri", "sri"].each do |term|
-        it "returns all results for search term: #{term}" do
+      ["Sri", "sri", "SRi", "sRi", "SRI", "sRI"].each do |term|
+        it "returns results for case-insensitive searches" do
           expect(User.send(search_method, term)).to match_array([user_1, user_2])
         end
       end
 
-      ["Priyanka", "priyanka", "John", "john", "Priyanka John", "priyanka john"].each do |term|
-        it "returns the matched user for search term: #{term}" do
+      ["Priyanka", "John", "Priyanka John"].each do |term|
+        it "matches on first name, last name or full names" do
           expect(User.send(search_method, term)).to match_array(user_1)
         end
       end
 
       ["Pri", ""].each do |term|
-        it "returns no results for unmatched search term: #{term}" do
+        it "returns nothing for unmatched searches" do
           expect(User.send(search_method, term)).to be_empty
         end
       end
 
-      ["gupta\n\n\r", "\bpriya", "gUPTa", "      gupta         "].each do |term|
-        it "ignores escape characters and random casings" do
+      ["gupta\n\n\r", "\bpriya", "      gupta         "].each do |term|
+        it "ignores escape characters and whitespace around words" do
           expect(User.send(search_method, term)).to match_array(user_2)
         end
       end
