@@ -1,5 +1,6 @@
 class SendPatientOtpSmsJob < ApplicationJob
   queue_as :default
+  self.queue_adapter = :sidekiq
 
   def perform(passport_authentication)
     phone_number = passport_authentication.patient&.latest_mobile_number
