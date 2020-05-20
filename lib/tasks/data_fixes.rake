@@ -19,24 +19,4 @@ namespace :data_fixes do
          "patients: #{patient_count}, BPs: #{bp_count}, blood sugars: #{bs_count}, "\
          "appointments: #{appointment_count}, prescriptions: #{prescription_drug_count}"
   end
-
-  desc 'Correct zero dosage medication in Bangladesh'
-  task :correct_bangladesh_medication_dosages => :environment do
-    CorrectBangladeshMedicationDosages.call
-  end
-
-  desc 'Correct zero dosage medication in Bangladesh (dryrun)'
-  task :correct_bangladesh_medication_dosages_dryrun => :environment do
-    CorrectBangladeshMedicationDosages.call(dryrun: true)
-  end
-
-  desc 'Correct medical histories in Bangladesh'
-  task :correct_bangladesh_medical_histories => :environment do
-    CorrectBangladeshMedicalHistories.call
-  end
-
-  desc 'Correct medical histories in Bangladesh (dryrun)'
-  task :correct_bangladesh_medical_histories_dryrun => :environment do
-    CorrectBangladeshMedicalHistories.call(dryrun: true)
-  end
 end
