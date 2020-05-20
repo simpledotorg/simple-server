@@ -64,10 +64,10 @@ RSpec.describe User, type: :model do
   end
 
   describe "Search" do
-    shared_examples "searches whole words against full_names" do |search_method|
-      let!(:user_1) { create(:user, full_name: "Sri Priyanka John") }
-      let!(:user_2) { create(:user, full_name: "Priya Sri Gupta") }
+    let!(:user_1) { create(:user, full_name: "Sri Priyanka John") }
+    let!(:user_2) { create(:user, full_name: "Priya Sri Gupta") }
 
+    shared_examples "searches whole words against full_names" do |search_method|
       ["Sri", "sri", "SRi", "sRi", "SRI", "sRI"].each do |term|
         it "returns results for case-insensitive searches: #{term.inspect}" do
           expect(User.send(search_method, term)).to match_array([user_1, user_2])
@@ -97,33 +97,51 @@ RSpec.describe User, type: :model do
       include_examples "searches whole words against full_names", :search_by_name_or_phone
 
       context "searches against phone_number" do
-        let!(:user_1_phone) { Faker::PhoneNumber.phone_number }
-        let!(:user_2_phone) { Faker::PhoneNumber.phone_number }
-        let!(:user_1) { create(:user, full_name: "Sri Priyanka John", phone_number: user_1_phone) }
-        let!(:user_2) { create(:user, full_name: "Priya Sri Gupta", phone_number: user_2_phone) }
-
         it "matches a user with a phone number" do
-          expect(User.search_by_name_or_phone(user_1_phone)).to match_array(user_1)
+          expect(User.search_by_name_or_phone(user_1.phone_number)).to match_array(user_1)
+        end
+
+        it "matches a combination of name and phone number from the same user" do
+          expect(User.search_by_name_or_phone(user_1.phone_number + " " + "John")).to match_array(user_1)
+          expect(User.search_by_name_or_phone("Priya" + " " + user_2.phone_number)).to match_array(user_2)
         end
 
         it "returns nothing for a combination of multiple phone numbers" do
-          expect(User.search_by_name_or_phone(user_1_phone + user_2_phone)).to be_empty
-          expect(User.search_by_name_or_phone(user_1_phone + " " + user_2_phone)).to be_empty
+          expect(User.search_by_name_or_phone(user_1.phone_number + user_2.phone_number)).to be_empty
+          expect(User.search_by_name_or_phone(user_1.phone_number + " " + user_2.phone_number)).to be_empty
         end
 
         it "returns nothing for a combination of name and phone number from different users" do
-          expect(User.search_by_name_or_phone("Priya" + " " + user_1_phone)).to be_empty
-        end
-
-        it "matches a combination of name and phone numer from the same user" do
-          expect(User.search_by_name_or_phone(user_1_phone + " " + "John")).to match_array(user_1)
-          expect(User.search_by_name_or_phone("Priya" + " " + user_2_phone)).to match_array(user_2)
+          expect(User.search_by_name_or_phone("Priya" + " " + user_1.phone_number)).to be_empty
         end
       end
     end
 
     describe ".search_by_name_or_email" do
       include_examples "searches whole words against full_names", :search_by_name_or_email
+
+      context "searches against email" do
+        let!(:admin_1) { create(:admin, full_name: "Sri Priyanka John") }
+        let!(:admin_2) { create(:admin, full_name: "Priya Sri Gupta") }
+
+        it "matches an admin with an email" do
+          expect(User.search_by_name_or_email(admin_1.email)).to match_array(admin_1)
+        end
+
+        it "matches a combination of name and email from the same admin" do
+          expect(User.search_by_name_or_email(admin_1.email + " " + "John")).to match_array(admin_1)
+          expect(User.search_by_name_or_email("Priya" + " " + admin_2.email)).to match_array(admin_2)
+        end
+
+        it "returns nothing for a combination of multiple emails" do
+          expect(User.search_by_name_or_email(admin_1.email + admin_2.email)).to be_empty
+          expect(User.search_by_name_or_email(admin_1.email + " " + admin_2.email)).to be_empty
+        end
+
+        it "returns nothing for a combination of name and email from different admins" do
+          expect(User.search_by_name_or_email("Priya" + " " + admin_1.email)).to be_empty
+        end
+      end
     end
   end
 end
