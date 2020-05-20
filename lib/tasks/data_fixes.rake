@@ -1,6 +1,4 @@
 require 'tasks/scripts/move_user_recorded_data_to_registration_facility'
-require 'tasks/scripts/correct_bangladesh_medication_dosages'
-require 'tasks/scripts/correct_bangladesh_medical_histories'
 
 namespace :data_fixes do
   desc 'Move all data recorded by a user from a source facility to a destination facility'
