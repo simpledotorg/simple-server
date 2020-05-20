@@ -1,4 +1,0 @@
-organization,facility_group,facility_name,facility_type,street_address (optional),village_or_colony (optional),zone_or_block (optional),district,state,country,pin (optional),longitude (optional),latitude (optional),size (optional),enable_teleconsultation (true/false),teleconsultation_phone_number,teleconsultation_isd_code
-OrgOne,FGTwo,Test Facility 1,CHC,,,,Bhatinda,Punjab,India,,,,small,false,,
-OrgOne,FGTwo,Test Facility 2,CHC,,,,Bhatinda,Punjab,India,,,,invalid size,false,,
-OrgOne,FGTwo,Test Facility 3,CHC,,,,Bhatinda,Punjab,India,,,,invalid size,false,,
