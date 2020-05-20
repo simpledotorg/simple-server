@@ -33,9 +33,7 @@ class Admin::FacilityCSVValidator
       import_facility = Facility.new(facility)
       row_errors << [row_num, import_facility.errors.full_messages.to_sentence] if import_facility.invalid?
     end
-    if row_errors.present?
-      group_row_errors(row_errors).each { |error| @errors << error }
-    end
+    group_row_errors(row_errors).each { |error| @errors << error } if row_errors.present?
   end
 
   private
