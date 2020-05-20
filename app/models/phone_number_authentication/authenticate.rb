@@ -36,6 +36,7 @@ class PhoneNumberAuthentication
 
     attr_accessor :authentication
     attr_reader :otp, :password, :phone_number
+    delegate :track_failed_attempt, to: :authentication
 
     def lockout_time
       USER_AUTH_LOCKOUT_IN_MINUTES.minutes
@@ -63,13 +64,6 @@ class PhoneNumberAuthentication
         failure('login.error_messages.invalid_password')
       else
         success
-      end
-    end
-
-    def track_failed_attempt
-      authentication.increment!(:failed_attempts)
-      if authentication.failed_attempts >= USER_AUTH_MAX_FAILED_ATTEMPTS
-        authentication.update!(locked_at: Time.current)
       end
     end
 

@@ -48,6 +48,13 @@ class PhoneNumberAuthentication < ApplicationRecord
     USER_AUTH_LOCKOUT_IN_MINUTES.minutes
   end
 
+  def track_failed_attempt
+    increment!(:failed_attempts)
+    if failed_attempts >= USER_AUTH_MAX_FAILED_ATTEMPTS
+      update!(locked_at: Time.current)
+    end
+  end
+
   def minutes_left_on_lockout
     minutes_left = (lockout_time - (Time.current - locked_at)) / 1.minute
     minutes_left = minutes_left.round
