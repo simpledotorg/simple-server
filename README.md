@@ -52,12 +52,12 @@ rails server
 ngrok http 3000
 ```
 
-The output of the ngrok command is HTTP and HTTPS URLs that can be used to access your local server. Configure the
-following places with the HTTPS URL.
+The output of the ngrok command is HTTP and HTTPS URLs that can be used to access your local server. The HTTP URL cannot
+be used since HTTP traffic will not be supported by the emulator. Configure the following places with the HTTPS URL.
 
 In the `gradle.properties` file in the `simple-android` repository,
 ```
-qaApiEndpoint=<HTTPS URL>
+qaManifestEndpoint=<HTTPS URL>
 ```
 
 In the `.env.development.local` (you can create this file if it doesn't exist),
