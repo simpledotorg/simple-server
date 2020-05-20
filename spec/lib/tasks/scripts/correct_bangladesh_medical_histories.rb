@@ -39,7 +39,7 @@ RSpec.describe CorrectBangladeshMedicalHistories do
         no = create(:medical_history, :hypertension_no)
         unknown = create(:medical_history, :hypertension_unknown)
 
-        CorrectBangladeshMedicalHistories.call(dryrun: true, verbose: false)
+        CorrectBangladeshMedicalHistories.call(verbose: false)
 
         expect(yes.hypertension).to eq("yes")
         expect(no.hypertension).to eq("no")
