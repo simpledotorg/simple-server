@@ -173,20 +173,9 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
         expect(assigns(:errors)).to eq(["Row(s) 2: Facility group doesn't exist for the organization",
                                         "Row(s) 3: Organization doesn't exist",
                                         "Row(s) 4: Facility group doesn't exist for the organization and District can't be blank",
-                                        "Row(s) 5: Organization name can't be blank"])
-      end
-    end
-    context 'with invalid facility sizes' do
-      let(:organization) { FactoryBot.create(:organization, name: 'OrgOne') }
-      let!(:facility_group_2) do
-        FactoryBot.create(:facility_group, name: 'FGTwo',
-                          organization_id: organization.id)
-      end
-      let(:upload_file) { fixture_file_upload('files/upload_facilities_test_4.csv', 'text/csv') }
-      it 'uploads facilities file and fails validations' do
-        post :upload, params: { upload_facilities_file: upload_file }
-        expect(assigns(:errors)).to eq(["Facility size on row 3 is invalid",
-                                        "Facility size on row 4 is invalid"])
+                                        "Row(s) 5: Organization name can't be blank",
+                                        "Row(s) 6: Facility size not in #{Facility::facility_sizes.values.join(', ')}",
+                                        "Row(s) 7: Enable teleconsultation is not included in the list"])
       end
     end
 

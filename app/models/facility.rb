@@ -3,6 +3,7 @@ require 'roo'
 class Facility < ApplicationRecord
   include Mergeable
   include QuarterHelper
+  include LiberalEnum
   extend FriendlyId
 
   before_save :clear_isd_code, unless: -> { teleconsultation_phone_number.present? }
@@ -42,6 +43,8 @@ class Facility < ApplicationRecord
     large: "large"
   }
 
+  liberal_enum :facility_size
+
   with_options if: :import do |facility|
     facility.validates :organization_name, presence: true
     facility.validates :facility_group_name, presence: true
@@ -59,6 +62,9 @@ class Facility < ApplicationRecord
   validates :state, presence: true
   validates :country, presence: true
   validates :pin, numericality: true, allow_blank: true
+  validates :facility_size, inclusion: { in: facility_sizes.values,
+                                         message: "not in #{facility_sizes.values.join(", ")}",
+                                         allow_blank: true }
   validates :teleconsultation_isd_code, presence: true, if: :teleconsultation_enabled?
   validates :teleconsultation_phone_number, presence: true, if: :teleconsultation_enabled?
   validates :enable_teleconsultation, inclusion: { in: [true, false] }
