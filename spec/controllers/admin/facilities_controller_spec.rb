@@ -161,6 +161,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
                                         "Row(s) 5: Facility group doesn't exist for the organization and District can't be blank"])
       end
     end
+
     context 'with invalid organization and facility group' do
       let(:organization) { FactoryBot.create(:organization, name: 'OrgOne') }
       let!(:facility_group_2) do

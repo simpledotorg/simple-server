@@ -136,10 +136,6 @@ class Admin::FacilitiesController < AdminController
     params[:upload_facilities_file].present?
   end
 
-  def file_valid?
-    params[:upload_facilities_file].present? && @errors.blank?
-  end
-
   def group_row_errors
     grouped_errors = []
     unique_errors = @row_errors.map { |row, message | message }.uniq
