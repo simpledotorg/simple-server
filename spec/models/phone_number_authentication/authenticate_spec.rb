@@ -64,7 +64,7 @@ RSpec.describe PhoneNumberAuthentication::Authenticate do
         password: "5489",
         phone_number: user.phone_number)
       expect(result).to_not be_success
-      expect(result.error_message).to eq("You need a fresh OTP. Request a new one.")
+      expect(result.error_message).to eq("Your OTP is expired. Request a new one.")
     end
   end
 
@@ -118,12 +118,12 @@ RSpec.describe PhoneNumberAuthentication::Authenticate do
         Timecop.travel(2.minutes.from_now) do
           result = PhoneNumberAuthentication::Authenticate.call(otp: user.otp, password: "5489", phone_number: user.phone_number)
           expect(result).to_not be_success
-          expect(result.error_message).to eq("Your account is locked out for 18 minutes. Please wait and try again later.")
+          expect(result.error_message).to eq("Your account has been locked for the next 18 minutes. Please wait and try again.")
         end
         Timecop.travel(10.minutes.from_now) do
           result = PhoneNumberAuthentication::Authenticate.call(otp: user.otp, password: "5489", phone_number: user.phone_number)
           expect(result).to_not be_success
-          expect(result.error_message).to eq("Your account is locked out for 10 minutes. Please wait and try again later.")
+          expect(result.error_message).to eq("Your account has been locked for the next 10 minutes. Please wait and try again.")
         end
       end
     end
@@ -136,7 +136,7 @@ RSpec.describe PhoneNumberAuthentication::Authenticate do
         Timecop.travel(2.minutes.from_now) do
           result = PhoneNumberAuthentication::Authenticate.call(otp: user.otp, password: "5489", phone_number: user.phone_number)
           expect(result).to_not be_success
-          expect(result.error_message).to eq("Your account is locked out for 18 minutes. Please wait and try again later.")
+          expect(result.error_message).to eq(I18n.t("login.error_messages.account_locked", minutes: 18))
         end
         Timecop.travel(21.minutes.from_now) do
           phone_number_authentication.set_otp # handled by the mobile app I think?
