@@ -33,9 +33,6 @@ RSpec.describe AppointmentNotificationService do
     end
 
     it 'should skip sending reminders for appointments for which reminders are already sent' do
-      #AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
-      #AppointmentNotification::Worker.drain
-
       overdue_appointments.each do |appointment|
         communication = FactoryBot.create(:communication, communication_type: "missed_visit_whatsapp_reminder",
                                           detailable: create(:twilio_sms_delivery_detail, :sent))
