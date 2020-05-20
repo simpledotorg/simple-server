@@ -2,6 +2,8 @@ require "rails_helper"
 
 RSpec.describe Api::ManifestsController, type: :controller do
   describe "GET #show" do
+    render_views
+
     context "in production environments" do
       environments = Dir
         .glob("config/deploy/*.rb")
