@@ -1,10 +1,8 @@
 class NotificationService
   DEFAULT_LOCALE = :en
 
-  attr_reader :client
-
-  def initialize
-    @client = Twilio::REST::Client.new(twilio_account_sid, twilio_auth_token)
+  def client
+    @client ||= Twilio::REST::Client.new(twilio_account_sid, twilio_auth_token)
   end
 
   def send_sms(recipient_number, message, callback_url=nil)
