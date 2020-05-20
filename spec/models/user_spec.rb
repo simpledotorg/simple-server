@@ -94,7 +94,7 @@ RSpec.describe User, type: :model do
     end
 
     describe ".search_by_name_or_phone" do
-      include_examples "searches against case-insensitive full_names", :search_by_name_or_phone
+      include_examples "searches whole words against full_names", :search_by_name_or_phone
 
       context "searches against phone_number" do
         let!(:user_1_phone) { Faker::PhoneNumber.phone_number }
@@ -123,7 +123,7 @@ RSpec.describe User, type: :model do
     end
 
     describe ".search_by_name_or_email" do
-      include_examples "searches against case-insensitive full_names", :search_by_name_or_email
+      include_examples "searches whole words against full_names", :search_by_name_or_email
     end
   end
 end
