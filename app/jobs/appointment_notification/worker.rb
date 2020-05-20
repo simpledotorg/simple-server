@@ -17,7 +17,7 @@ class AppointmentNotification::Worker
     begin
       notification_service = NotificationService.new
 
-      if FeatureToggle.enabled?("WHATSAPP_APPOINTMENT_REMINDERS")
+      if communication_type == "missed_visit_whatsapp_reminder"
         response = notification_service.send_whatsapp(patient_phone_number, message, callback_url)
       else
         response = notification_service.send_sms(patient_phone_number, message, callback_url)
