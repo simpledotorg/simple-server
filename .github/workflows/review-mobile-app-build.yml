@@ -1,4 +1,4 @@
-name: Review App Build
+name: Review Mobile App Build
 
 on: pull_request
 
@@ -23,5 +23,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v1
         with:
-          name: review-apk-${{github.event.pull_request.number}}
+          name: review-mobile-app-${{github.event.pull_request.number}}
           path: simple-android/app/build/outputs/apk/qa/debug/app-qa-debug.apk
