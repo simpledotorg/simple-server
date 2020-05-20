@@ -15,7 +15,7 @@ RSpec.describe AppointmentNotification::MissedVisitJob, type: :job do
   before do
     allow_any_instance_of(AppointmentNotification::Worker).to receive(:perform)
 
-    allow(FeatureToggle).to receive(:enabled?).with('SMS_REMINDERS').and_return(true)
+    allow(FeatureToggle).to receive(:enabled?).with('APPOINTMENT_REMINDERS').and_return(true)
     allow(ENV).to receive(:[]).with('APPOINTMENT_NOTIFICATION_FAN_OUT_BATCH_SIZE').and_return(250)
   end
 
