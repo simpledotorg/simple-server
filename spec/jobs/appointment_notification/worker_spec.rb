@@ -18,17 +18,33 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
 
   before do
     notification_response = double('NotificationServiceResponse')
+    allow_any_instance_of(NotificationService).to receive(:send_sms).and_return(notification_response)
     allow_any_instance_of(NotificationService).to receive(:send_whatsapp).and_return(notification_response)
     allow(notification_response).to receive(:sid).and_return(SecureRandom.uuid)
     allow(notification_response).to receive(:status).and_return('queued')
+
+    allow(FeatureToggle).to receive(:enabled?).with("WHATSAPP_APPOINTMENT_REMINDERS").and_return(false)
   end
 
   describe "#perform" do
-    it "sends a reminder whatsapp" do
-      expect_any_instance_of(NotificationService).to receive(:send_whatsapp).with(appointment_phone_number, expected_message, callback_url)
+    context "if WHATSAPP_APPOINTMENT_REMINDERS feature is disabled" do
+      it "sends a reminder SMS" do
+        expect_any_instance_of(NotificationService).to receive(:send_sms).with(appointment_phone_number, expected_message, callback_url)
 
-      described_class.perform_async(appointment.id, communication_type, locale)
-      described_class.drain
+        described_class.perform_async(appointment.id, communication_type, locale)
+        described_class.drain
+      end
+    end
+
+    context "if WHATSAPP_APPOINTMENT_REMINDERS feature is enabled" do
+      it "sends a reminder whatsapp" do
+        allow(FeatureToggle).to receive(:enabled?).with("WHATSAPP_APPOINTMENT_REMINDERS").and_return(true)
+
+        expect_any_instance_of(NotificationService).to receive(:send_whatsapp).with(appointment_phone_number, expected_message, callback_url)
+
+        described_class.perform_async(appointment.id, communication_type, locale)
+        described_class.drain
+      end
     end
 
     it "records a Communication log if successful" do
@@ -48,10 +64,8 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     end
 
     it "does not record a Communication log if any errors occur" do
-      allow_any_instance_of(NotificationService).to receive(:send_whatsapp) do
-        raise Twilio::REST::TwilioError
-        notification_response
-      end
+      allow_any_instance_of(NotificationService).to receive(:send_sms).and_raise(Twilio::REST::TwilioError)
+      allow_any_instance_of(NotificationService).to receive(:send_whatsapp).and_raise(Twilio::REST::TwilioError)
 
       expect {
         described_class.perform_async(appointment.id, communication_type, locale)
@@ -59,15 +73,31 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       }.not_to change { Communication.count }
     end
 
-    context "uses message translations" do
-      it "should have the message text in Marathi" do
-        locale = "mr-IN"
-        expected_message = 'आमचे Simple Facility येथील कर्मचारी तुमच्‍याबद्दल आणि तुमच्‍या ह्रदयाच्‍या आरोग्‍याबद्दल विचार करीत आहेत. कृपया आपल्या रक्तदाबाची औषधे चालू ठेवा. जवळच्या उपकेंद्रामधून आपले औषध घ्या. आपल्या ANM किंवा ASHA शी संपर्क साधा.'
+    describe "uses message translations" do
+      context "if WHATSAPP_APPOINTMENT_REMINDERS feature is disabled" do
+        it "should have the message text in Marathi" do
+          locale = "mr-IN"
+          expected_message = 'आमचे Simple Facility येथील कर्मचारी तुमच्‍याबद्दल आणि तुमच्‍या ह्रदयाच्‍या आरोग्‍याबद्दल विचार करीत आहेत. कृपया आपल्या रक्तदाबाची औषधे चालू ठेवा. जवळच्या उपकेंद्रामधून आपले औषध घ्या. आपल्या ANM किंवा ASHA शी संपर्क साधा.'
 
-        expect_any_instance_of(NotificationService).to receive(:send_whatsapp).with(appointment_phone_number, expected_message, callback_url)
+          expect_any_instance_of(NotificationService).to receive(:send_sms).with(appointment_phone_number, expected_message, callback_url)
 
-        described_class.perform_async(appointment.id, communication_type, locale)
-        described_class.drain
+          described_class.perform_async(appointment.id, communication_type, locale)
+          described_class.drain
+        end
+      end
+
+      context "if WHATSAPP_APPOINTMENT_REMINDERS feature is disabled" do
+        it "should have the message text in Marathi" do
+          allow(FeatureToggle).to receive(:enabled?).with("WHATSAPP_APPOINTMENT_REMINDERS").and_return(true)
+
+          locale = "mr-IN"
+          expected_message = 'आमचे Simple Facility येथील कर्मचारी तुमच्‍याबद्दल आणि तुमच्‍या ह्रदयाच्‍या आरोग्‍याबद्दल विचार करीत आहेत. कृपया आपल्या रक्तदाबाची औषधे चालू ठेवा. जवळच्या उपकेंद्रामधून आपले औषध घ्या. आपल्या ANM किंवा ASHA शी संपर्क साधा.'
+
+          expect_any_instance_of(NotificationService).to receive(:send_whatsapp).with(appointment_phone_number, expected_message, callback_url)
+
+          described_class.perform_async(appointment.id, communication_type, locale)
+          described_class.drain
+        end
       end
     end
 

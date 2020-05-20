@@ -15,7 +15,13 @@ class AppointmentNotification::Worker
     message = appointment_message(appointment, communication_type, locale)
 
     begin
-      response = NotificationService.new.send_whatsapp(patient_phone_number, message, callback_url)
+      notification_service = NotificationService.new
+
+      if FeatureToggle.enabled?("WHATSAPP_APPOINTMENT_REMINDERS")
+        response = notification_service.send_whatsapp(patient_phone_number, message, callback_url)
+      else
+        response = notification_service.send_sms(patient_phone_number, message, callback_url)
+      end
 
       Communication.create_with_twilio_details!(
         appointment: appointment,

@@ -96,6 +96,9 @@
     "ENABLE_SMS_REMINDERS": {
       "value": "true"
     },
+    "ENABLE_WHATSAPP_APPOINTMENT_REMINDERS": {
+      "value": "false"
+    },
     "ENABLE_SYNC_ENCOUNTERS": {
       "value": "false"
     },
