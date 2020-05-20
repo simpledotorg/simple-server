@@ -69,25 +69,25 @@ RSpec.describe User, type: :model do
       let!(:user_2) { create(:user, full_name: "Priya Sri Gupta") }
 
       ["Sri", "sri", "SRi", "sRi", "SRI", "sRI"].each do |term|
-        it "returns results for case-insensitive searches" do
+        it "returns results for case-insensitive searches: #{term.inspect}" do
           expect(User.send(search_method, term)).to match_array([user_1, user_2])
         end
       end
 
       ["Priyanka", "John", "Priyanka John"].each do |term|
-        it "matches on first name, last name or full names" do
+        it "matches on first name, last name or full names: #{term.inspect}" do
           expect(User.send(search_method, term)).to match_array(user_1)
         end
       end
 
       ["Pri", ""].each do |term|
-        it "returns nothing for unmatched searches" do
+        it "returns nothing for unmatched searches: #{term.inspect}" do
           expect(User.send(search_method, term)).to be_empty
         end
       end
 
       ["gupta\n\n\r", "\bpriya", "      gupta         "].each do |term|
-        it "ignores escape characters and whitespace around words" do
+        it "ignores escape characters and whitespace around words: #{term.inspect}" do
           expect(User.send(search_method, term)).to match_array(user_2)
         end
       end
@@ -102,20 +102,20 @@ RSpec.describe User, type: :model do
         let!(:user_1) { create(:user, full_name: "Sri Priyanka John", phone_number: user_1_phone) }
         let!(:user_2) { create(:user, full_name: "Priya Sri Gupta", phone_number: user_2_phone) }
 
-        it "returns the matched user with an exact match on phone_number" do
+        it "matches a user with a phone number" do
           expect(User.search_by_name_or_phone(user_1_phone)).to match_array(user_1)
         end
 
-        it "returns no results for a combination of multiple phone_numbers" do
+        it "returns nothing for a combination of multiple phone numbers" do
           expect(User.search_by_name_or_phone(user_1_phone + user_2_phone)).to be_empty
           expect(User.search_by_name_or_phone(user_1_phone + " " + user_2_phone)).to be_empty
         end
 
-        it "returns no results for a combination of full_name and phone_number from different users" do
+        it "returns nothing for a combination of name and phone number from different users" do
           expect(User.search_by_name_or_phone("Priya" + " " + user_1_phone)).to be_empty
         end
 
-        it "returns the first match for a combination of full_name and phone_number from the same user" do
+        it "matches a combination of name and phone numer from the same user" do
           expect(User.search_by_name_or_phone(user_1_phone + " " + "John")).to match_array(user_1)
           expect(User.search_by_name_or_phone("Priya" + " " + user_2_phone)).to match_array(user_2)
         end
