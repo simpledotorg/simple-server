@@ -77,6 +77,21 @@ RSpec.describe AppointmentNotificationService do
       expect(eligible_appointments.count).to eq(1)
     end
 
+    it 'should skip sending reminders to patients who are marked dead' do
+      appointment_ids =
+        [create(:patient), create(:patient, status: 'dead')].map do |patient|
+          create(:appointment, :overdue, patient: patient).id
+        end
+
+      overdue_appointments = Appointment.where(id: appointment_ids).includes(facility: { facility_group: :organization })
+
+      AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
+      AppointmentNotification::Worker.drain
+
+      eligible_appointments = overdue_appointments.select { |a| a.communications.present? }
+      expect(eligible_appointments.pluck(:id)).to match_array(appointment_ids.first)
+    end
+
     context 'when a patient has just landline or invalid numbers' do
       let!(:landline_number) { create(:patient_phone_number, phone_type: :landline) }
       let!(:invalid_number)  { create(:patient_phone_number, phone_type: :invalid) }

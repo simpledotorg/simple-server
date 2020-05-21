@@ -12,9 +12,10 @@ class AppointmentNotificationService
 
   def send_after_missed_visit
     overdue_with_patient_consent = appointments.overdue_by(days_overdue)
-                        .includes(patient: [:phone_numbers])
-                        .where(patients: { reminder_consent: 'granted' })
-                        .merge(PatientPhoneNumber.phone_type_mobile)
+                                     .includes(patient: [:phone_numbers])
+                                     .where(patients: { reminder_consent: 'granted' })
+                                     .where.not(patients: { status: 'dead' })
+                                     .merge(PatientPhoneNumber.phone_type_mobile)
 
     overdue_with_patient_consent.each do |appointment|
       next if appointment.previously_communicated_via?(communication_type)
