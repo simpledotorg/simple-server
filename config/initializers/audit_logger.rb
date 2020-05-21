@@ -1,5 +1,5 @@
 class AuditLogFormatter
-  def call(severity, time, progname, msg = '')
+  def call(severity, time, progname, msg = "")
     msg + "\n" if msg.present?
   end
 end
