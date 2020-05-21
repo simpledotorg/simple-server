@@ -1,5 +1,4 @@
 class Admin::CSV::FacilityValidator
-
   def self.validate(*args)
     new(*args).validate
   end
@@ -24,7 +23,7 @@ class Admin::CSV::FacilityValidator
 
   def duplicate_rows
     facilities_slice = @facilities.map { |facility| facility.slice(:organization_name, :facility_group_name, :name) }
-    @errors << 'Uploaded file has duplicate facilities' if facilities_slice.count != facilities_slice.uniq.count
+    @errors << "Uploaded file has duplicate facilities" if facilities_slice.count != facilities_slice.uniq.count
   end
 
   def facilities
@@ -42,7 +41,7 @@ class Admin::CSV::FacilityValidator
     unique_errors = row_errors.map { |row, message| message }.uniq
     unique_errors.map do |error|
       rows = row_errors.select { |row, message| row if error == message }.map { |row, message| row }
-      "Row(s) #{rows.join(', ')}: #{error}"
+      "Row(s) #{rows.join(", ")}: #{error}"
     end
   end
 end
