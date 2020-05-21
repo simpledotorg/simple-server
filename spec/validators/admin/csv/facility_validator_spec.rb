@@ -2,6 +2,20 @@ require 'rails_helper'
 
 RSpec.describe Admin::CSV::FacilityValidator do
 
+  describe '.validate' do
+    it 'calls all the validation methods' do
+      facilities = []
+      validator = described_class.new(facilities)
+      allow(described_class).to receive(:new).and_return(validator)
+
+      expect(validator).to receive(:at_least_one_facility)
+      expect(validator).to receive(:duplicate_rows)
+      expect(validator).to receive(:facilities)
+
+      described_class.validate(facilities)
+    end
+  end
+
   describe '#at_least_one_facility' do
     context 'with no facilities ' do
       let!(:validator) { described_class.new([]) }
@@ -76,20 +90,6 @@ RSpec.describe Admin::CSV::FacilityValidator do
                                                "Row(s) 5: Facility size not in #{Facility::facility_sizes.values.join(', ')}",
                                                "Row(s) 6: Enable diabetes management is not included in the list",
                                                "Row(s) 7: Enable teleconsultation is not included in the list"]
-    end
-  end
-
-  describe '.validate' do
-    it 'calls all the validation methods' do
-      facilities = []
-      validator = described_class.new(facilities)
-      allow(described_class).to receive(:new).and_return(validator)
-
-      expect(validator).to receive(:at_least_one_facility)
-      expect(validator).to receive(:duplicate_rows)
-      expect(validator).to receive(:facilities)
-
-      described_class.validate(facilities)
     end
   end
 end
