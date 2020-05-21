@@ -133,57 +133,30 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
   end
 
   describe 'POST #upload' do
-    context 'with valid organization and facility group' do
-      let(:organization) { FactoryBot.create(:organization, name: 'OrgOne') }
-      let!(:facility_group_2) do
-        FactoryBot.create(:facility_group, name: 'FGTwo',
-                                           organization_id: organization.id)
-      end
+    let!(:organization) { create(:organization, name: 'OrgOne') }
+    let!(:facility_group) { create(:facility_group, name: 'FGTwo', organization_id: organization.id) }
+
+    context 'with valid data in file' do
       let(:upload_file) { fixture_file_upload('files/upload_facilities_test.csv', 'text/csv') }
+
       it 'uploads facilities file and passes validations' do
         post :upload, params: { upload_facilities_file: upload_file }
         expect(flash[:notice]).to match(/File upload successful, your facilities will be created shortly./)
       end
     end
 
-    context 'with duplicate rows' do
-      let(:organization) { FactoryBot.create(:organization, name: 'OrgOne') }
-      let!(:facility_group_2) do
-        FactoryBot.create(:facility_group, name: 'FGTwo',
-                                           organization_id: organization.id)
-      end
-      let(:upload_file) { fixture_file_upload('files/upload_facilities_test_2.csv', 'text/csv') }
-      it 'uploads facilities file and fails validations' do
-        post :upload, params: { upload_facilities_file: upload_file }
-        expect(assigns(:errors)).to eq(['Uploaded file has duplicate facilities',
-                                        "Row(s) 2, 4: Facility group doesn't exist for the organization",
-                                        "Row(s) 3: Organization doesn't exist",
-                                        "Row(s) 5: Facility group doesn't exist for the organization and District can't be blank"])
-      end
-    end
+    context 'with invalid data in file' do
+      let(:upload_file) { fixture_file_upload('files/upload_facilities_invalid_test.csv', 'text/csv') }
 
-    context 'with invalid organization and facility group' do
-      let(:organization) { FactoryBot.create(:organization, name: 'OrgOne') }
-      let!(:facility_group_2) do
-        FactoryBot.create(:facility_group, name: 'FGTwo',
-                                           organization_id: organization.id)
-      end
-      let(:upload_file) { fixture_file_upload('files/upload_facilities_test_3.csv', 'text/csv') }
-      it 'uploads facilities file and fails validations' do
+      it 'fails validations and returns a 400' do
         post :upload, params: { upload_facilities_file: upload_file }
-        expect(assigns(:errors)).to eq(["Row(s) 2: Facility group doesn't exist for the organization",
-                                        "Row(s) 3: Organization doesn't exist",
-                                        "Row(s) 4: Facility group doesn't exist for the organization and District can't be blank",
-                                        "Row(s) 5: Organization name can't be blank",
-                                        "Row(s) 6: Facility size not in #{Facility::facility_sizes.values.join(', ')}",
-                                        "Row(s) 7: Enable teleconsultation is not included in the list",
-                                        "Row(s) 8: Enable diabetes management is not included in the list"])
+        expect(response).to have_http_status(:bad_request)
       end
     end
 
     context 'with unsupported file type' do
       let(:upload_file) do
-        fixture_file_upload('files/upload_facilities.docx',
+        fixture_file_upload('files/upload_facilities_test.docx',
                             'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
       end
       it 'uploads facilities file and fails validations' do
