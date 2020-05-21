@@ -16,7 +16,7 @@ RSpec.describe 'Filter parameter logging spec', type: :request do
 
   include_examples 'v3 API sync requests'
 
-  fit 'pushes 3 new patients, updates only address or phone numbers, and pulls updated ones' do
+  it "does not log any non-whitelisted parameters" do
     output = StringIO.new
     test_logger = Logger.new(output)
     allow(ActionController::Base).to receive(:logger).and_return(test_logger)

@@ -11,8 +11,6 @@ Rails.application.config.filter_parameters << lambda do |key, value|
     case value
     when String
       value.replace(SANITIZED_VALUE)
-    when Integer
-      value = SANITIZED_VALUE
     end
   end
 end
