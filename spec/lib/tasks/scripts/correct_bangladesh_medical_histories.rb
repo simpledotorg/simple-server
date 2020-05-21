@@ -27,7 +27,7 @@ RSpec.describe CorrectBangladeshMedicalHistories do
         expect(medical_history.reload.hypertension).to eq("no")
       end
 
-       Rails.application.config.country[:abbreviation] = original_country
+      Rails.application.config.country[:abbreviation] = original_country
     end
 
     context "outside of Bangladesh" do
