@@ -61,35 +61,21 @@ RSpec.describe AppointmentNotificationService do
       end.to change(AppointmentNotification::Worker.jobs, :size).by(4)
     end
 
-    it 'should only send reminders to patients who have granted consent' do
-      overdue_appointment_ids =
-        [create(:patient), create(:patient, :denied)].map do |patient|
-          create(:appointment, :overdue, patient: patient).id
-        end
+    it 'should only send reminders to patients who are eligible' do
+      patients = [create(:patient), create(:patient, :denied), create(:patient, status: 'dead')]
+      appointments = patients.map { |patient| create(:appointment, :overdue, patient: patient) }
 
-      overdue_appointments = Appointment.where(id: overdue_appointment_ids)
-                                        .includes(patient: [:phone_numbers], facility: { facility_group: :organization })
+      overdue_appointments = Appointment.where(id: appointments)
+                                        .includes(patient: [:phone_numbers])
+                                        .includes(facility: { facility_group: :organization })
 
-      AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
-      AppointmentNotification::Worker.drain
-
-      eligible_appointments = overdue_appointments.select { |a| a.communications.present? }
-      expect(eligible_appointments.count).to eq(1)
-    end
-
-    it 'should skip sending reminders to patients who are marked dead' do
-      appointment_ids =
-        [create(:patient), create(:patient, status: 'dead')].map do |patient|
-          create(:appointment, :overdue, patient: patient).id
-        end
-
-      overdue_appointments = Appointment.where(id: appointment_ids).includes(facility: { facility_group: :organization })
+      eligible_appointments = overdue_appointments.eligible_for_reminders(3)
 
       AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
       AppointmentNotification::Worker.drain
 
-      eligible_appointments = overdue_appointments.select { |a| a.communications.present? }
-      expect(eligible_appointments.pluck(:id)).to match_array(appointment_ids.first)
+      selected_appointments = overdue_appointments.select { |a| a.communications.present? }
+      expect(selected_appointments).to match_array(eligible_appointments)
     end
 
     context 'when a patient has just landline or invalid numbers' do
