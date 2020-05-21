@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Admin::CSV::FacilityValidator do
 
   describe '.validate' do
-    it 'calls all the validation methods' do
+    it 'calls the validation methods' do
       facilities = []
       validator = described_class.new(facilities)
       allow(described_class).to receive(:new).and_return(validator)
