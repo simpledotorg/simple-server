@@ -1,13 +1,13 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe PhoneNumberAuthentication, type: :model do
-  describe 'Associations' do
+  describe "Associations" do
     it { should have_one(:user_authentication) }
     it { should have_one(:user).through(:user_authentication) }
-    it { should belong_to(:facility).with_foreign_key('registration_facility_id') }
+    it { should belong_to(:facility).with_foreign_key("registration_facility_id") }
   end
 
-  describe 'Validations' do
+  describe "Validations" do
     let(:user) { create(:user) }
     let(:registration_facility) { create(:facility) }
     let(:subject) { user.phone_number_authentication }
@@ -15,18 +15,18 @@ RSpec.describe PhoneNumberAuthentication, type: :model do
     it { should validate_presence_of(:phone_number) }
     it { should validate_uniqueness_of(:phone_number).ignoring_case_sensitivity }
 
-    context 'presence of password' do
-      it 'validates with a password' do
-        auth = build(:phone_number_authentication, password: '1234')
+    context "presence of password" do
+      it "validates with a password" do
+        auth = build(:phone_number_authentication, password: "1234")
         expect(auth).to be_valid
       end
 
-      it 'validates with a password_digest' do
+      it "validates with a password_digest" do
         auth = build(:phone_number_authentication, :with_password_digest)
         expect(auth).to be_valid
       end
 
-      it 'invalidates without a password or a password_digest' do
+      it "invalidates without a password or a password_digest" do
         auth = build(:phone_number_authentication, password: nil, password_digest: nil)
         expect(auth).to be_invalid
         expect(auth.errors[:password]).to match_array(["can't be blank", "Either password_digest or password should be present"])
@@ -63,10 +63,10 @@ RSpec.describe PhoneNumberAuthentication, type: :model do
     end
   end
 
-  describe 'invalidate_otp' do
-    subject(:authentication) { described_class.new(otp: '123456', otp_expires_at: Time.now) }
+  describe "invalidate_otp" do
+    subject(:authentication) { described_class.new(otp: "123456", otp_expires_at: Time.now) }
 
-    it 'clears the otp fields' do
+    it "clears the otp fields" do
       authentication.invalidate_otp
       expect(authentication.otp_expires_at.to_i).to eq(0)
     end

@@ -2,7 +2,7 @@ class PhoneNumberAuthentication
   class Authenticate
     class Result < Struct.new(:authentication, :success, :error_message)
       def success?
-        self.success
+        success
       end
 
       def user
@@ -43,25 +43,24 @@ class PhoneNumberAuthentication
     end
 
     def verify_auth
-      case
-      when authentication.nil?
-        failure('login.error_messages.unknown_user')
-      when authentication.locked_at
+      if authentication.nil?
+        failure("login.error_messages.unknown_user")
+      elsif authentication.locked_at
         if authentication.in_lockout_period?
           failure("login.error_messages.account_locked", minutes: authentication.minutes_left_on_lockout)
         else
           authentication.unlock
           verify_auth
         end
-      when authentication.otp != otp
+      elsif authentication.otp != otp
         track_failed_attempt
-        failure('login.error_messages.invalid_otp')
-      when !authentication.otp_valid?
+        failure("login.error_messages.invalid_otp")
+      elsif !authentication.otp_valid?
         track_failed_attempt
-        failure('login.error_messages.expired_otp')
-      when !authentication.authenticate(password)
+        failure("login.error_messages.expired_otp")
+      elsif !authentication.authenticate(password)
         track_failed_attempt
-        failure('login.error_messages.invalid_password')
+        failure("login.error_messages.invalid_password")
       else
         success
       end

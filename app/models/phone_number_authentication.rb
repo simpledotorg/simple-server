@@ -7,21 +7,21 @@ class PhoneNumberAuthentication < ApplicationRecord
   has_one :user_authentication, as: :authenticatable
   has_one :user, through: :user_authentication
 
-  belongs_to :facility, foreign_key: 'registration_facility_id'
+  belongs_to :facility, foreign_key: "registration_facility_id"
 
   delegate :facility_group, to: :facility
   delegate :organization, to: :facility_group
 
   validates :phone_number, presence: true, uniqueness: true, case_sensitive: false
-  validates :password, allow_blank: true, length: { is: 4 }, format: { with: /[0-9]/, message: 'only allows numbers' }
-  validates :failed_attempts, numericality: { only_integer: true, less_than_or_equal_to: 5 }
+  validates :password, allow_blank: true, length: {is: 4}, format: {with: /[0-9]/, message: "only allows numbers"}
+  validates :failed_attempts, numericality: {only_integer: true, less_than_or_equal_to: 5}
   validate :presence_of_password
 
-  alias_method :registration_facility, :facility
+  alias registration_facility facility
 
   def presence_of_password
     unless password_digest.present? || password.present?
-      errors.add(:password, 'Either password_digest or password should be present')
+      errors.add(:password, "Either password_digest or password should be present")
     end
   end
 
@@ -57,7 +57,7 @@ class PhoneNumberAuthentication < ApplicationRecord
 
   def minutes_left_on_lockout
     minutes_left = (lockout_time - (Time.current - locked_at)) / 1.minute
-    minutes_left = minutes_left.round
+    minutes_left.round
   end
 
   def otp_valid?
@@ -79,14 +79,14 @@ class PhoneNumberAuthentication < ApplicationRecord
   end
 
   def self.generate_otp
-    digits = FeatureToggle.enabled?('FIXED_OTP_ON_REQUEST_FOR_QA') ? [0] : (0..9).to_a
-    otp = ''
+    digits = FeatureToggle.enabled?("FIXED_OTP_ON_REQUEST_FOR_QA") ? [0] : (0..9).to_a
+    otp = ""
     6.times do
       otp += digits.sample.to_s
     end
-    otp_expires_at = Time.current + ENV['USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES'].to_i.minutes
+    otp_expires_at = Time.current + ENV["USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES"].to_i.minutes
 
-    { otp: otp, otp_expires_at: otp_expires_at }
+    {otp: otp, otp_expires_at: otp_expires_at}
   end
 
   def self.generate_access_token
