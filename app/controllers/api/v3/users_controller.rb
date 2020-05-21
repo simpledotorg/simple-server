@@ -37,9 +37,11 @@ class Api::V3::UsersController < APIController
     phone_number_authentication.set_otp
     phone_number_authentication.save
 
-    SmsNotificationService
-      .new(user.phone_number, ENV['TWILIO_PHONE_NUMBER'])
-      .send_request_otp_sms(user.otp) unless FeatureToggle.auto_approve_for_qa?
+    unless FeatureToggle.auto_approve_for_qa?
+      SmsNotificationService
+        .new(user.phone_number, ENV["TWILIO_PHONE_NUMBER"])
+        .send_request_otp_sms(user.otp)
+    end
 
     head :ok
   end
@@ -64,7 +66,7 @@ class Api::V3::UsersController < APIController
   def approve_and_save(user)
     FeatureToggle.auto_approve_for_qa? ?
       user.sync_approval_allowed :
-      user.sync_approval_requested(I18n.t('registration'))
+      user.sync_approval_requested(I18n.t("registration"))
 
     user.save
   end
@@ -99,7 +101,7 @@ class Api::V3::UsersController < APIController
     validator = Api::V3::UserRegistrationPayloadValidator.new(registration_params)
     logger.debug "User registration params had errors: #{validator.errors_hash}" if validator.invalid?
     if validator.invalid?
-      render json: { errors: validator.errors }, status: :bad_request
+      render json: {errors: validator.errors}, status: :bad_request
     end
   end
 
@@ -112,7 +114,8 @@ class Api::V3::UsersController < APIController
         :password_digest,
         :updated_at,
         :created_at,
-        :registration_facility_id)
+        :registration_facility_id
+      )
   end
 
   def find_params

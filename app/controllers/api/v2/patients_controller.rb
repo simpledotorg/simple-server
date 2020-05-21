@@ -7,13 +7,13 @@ class Api::V2::PatientsController < Api::V3::PatientsController
     validator = Api::V2::PatientPayloadValidator.new(single_patient_params)
     logger.debug "Patient had errors: #{validator.errors_hash}" if validator.invalid?
     if validator.invalid?
-      NewRelic::Agent.increment_metric('Merge/Patient/schema_invalid')
-      { errors_hash: validator.errors_hash }
+      NewRelic::Agent.increment_metric("Merge/Patient/schema_invalid")
+      {errors_hash: validator.errors_hash}
     else
       patients_params_with_metadata = single_patient_params.merge(metadata: metadata)
       transformed_params = Api::V2::PatientTransformer.from_nested_request(patients_params_with_metadata)
       patient = MergePatientService.new(transformed_params).merge
-      { record: patient }
+      {record: patient}
     end
   end
 

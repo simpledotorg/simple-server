@@ -1,27 +1,27 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe Api::V2::LoginsController, type: :controller do
-  describe '#login_user' do
-    let(:password) { '1234' }
+  describe "#login_user" do
+    let(:password) { "1234" }
     let(:db_user) { FactoryBot.create(:user, password: password) }
-    describe 'request with valid phone number, password and otp' do
+    describe "request with valid phone number, password and otp" do
       let(:request_params) do
-        { user:
-            { phone_number: db_user.phone_number,
-              password: password,
-              otp: db_user.otp } }
+        {user:
+            {phone_number: db_user.phone_number,
+             password: password,
+             otp: db_user.otp}}
       end
 
-      it 'should respond with access token for the user' do
+      it "should respond with access token for the user" do
         post :login_user, params: request_params
 
         db_user.reload
-        expect(response.code).to eq('200')
-        expect(JSON(response.body)['user']['id']).to eq(db_user.id)
-        expect(JSON(response.body)['access_token']).to eq(db_user.access_token)
+        expect(response.code).to eq("200")
+        expect(JSON(response.body)["user"]["id"]).to eq(db_user.id)
+        expect(JSON(response.body)["access_token"]).to eq(db_user.access_token)
       end
 
-      it 'should update the access token for the user' do
+      it "should update the access token for the user" do
         old_access_token = db_user.access_token
         post :login_user, params: request_params
 
@@ -31,96 +31,96 @@ RSpec.describe Api::V2::LoginsController, type: :controller do
       end
     end
 
-    describe 'request with valid phone number, password and otp, but otp is expired' do
+    describe "request with valid phone number, password and otp, but otp is expired" do
       let(:db_user) do
         Timecop.freeze(Date.current - 3) { FactoryBot.create(:user, password: password) }
       end
       let(:request_params) do
-        { user:
-            { phone_number: db_user.phone_number,
-              password: password,
-              otp: db_user.otp } }
+        {user:
+            {phone_number: db_user.phone_number,
+             password: password,
+             otp: db_user.otp}}
       end
-      it 'should respond with http status 401' do
+      it "should respond with http status 401" do
         post :login_user, params: request_params
         expect(response.status).to eq(401)
         expect(JSON(response.body))
-          .to eq('errors' => {
-                   'user' => [I18n.t('login.error_messages.expired_otp')]
-                 })
+          .to eq("errors" => {
+            "user" => [I18n.t("login.error_messages.expired_otp")]
+          })
       end
     end
 
-    describe 'request with valid phone number and password but otp mismatches' do
+    describe "request with valid phone number and password but otp mismatches" do
       let(:request_params) do
-        { user:
-            { phone_number: db_user.phone_number,
-              password: '1234',
-              otp: 'wrong otp' } }
+        {user:
+            {phone_number: db_user.phone_number,
+             password: "1234",
+             otp: "wrong otp"}}
       end
-      it 'should respond with http status 401' do
+      it "should respond with http status 401" do
         post :login_user, params: request_params
         expect(response.status).to eq(401)
         expect(JSON(response.body))
-          .to eq('errors' => {
-                   'user' => [I18n.t('login.error_messages.invalid_otp')]
-                 })
+          .to eq("errors" => {
+            "user" => [I18n.t("login.error_messages.invalid_otp")]
+          })
       end
     end
 
-    describe 'request with valid phone number and otp but password mismatches' do
+    describe "request with valid phone number and otp but password mismatches" do
       let(:request_params) do
-        { user:
-            { phone_number: db_user.phone_number,
-              password: 'wrong password',
-              otp: db_user.otp } }
+        {user:
+            {phone_number: db_user.phone_number,
+             password: "wrong password",
+             otp: db_user.otp}}
       end
-      it 'should respond with http status 401' do
+      it "should respond with http status 401" do
         post :login_user, params: request_params
         expect(response.status).to eq(401)
         expect(JSON(response.body))
-          .to eq('errors' => {
-                   'user' => [I18n.t('login.error_messages.invalid_password')]
-                 })
+          .to eq("errors" => {
+            "user" => [I18n.t("login.error_messages.invalid_password")]
+          })
       end
     end
 
-    describe 'request with invalid phone number' do
+    describe "request with invalid phone number" do
       let(:request_params) do
-        { user:
-            { phone_number: 'wrong phone number',
-              password: '1234',
-              otp: db_user.otp } }
+        {user:
+            {phone_number: "wrong phone number",
+             password: "1234",
+             otp: db_user.otp}}
       end
-      it 'should respond with http status 401' do
+      it "should respond with http status 401" do
         post :login_user, params: request_params
         expect(response.status).to eq(401)
         expect(JSON(response.body))
-          .to eq('errors' => {
-                   'user' => [I18n.t('login.error_messages.unknown_user')]
-                 })
+          .to eq("errors" => {
+            "user" => [I18n.t("login.error_messages.unknown_user")]
+          })
       end
     end
 
-    describe 'audit logs for login' do
-      let(:password) { '1234' }
+    describe "audit logs for login" do
+      let(:password) { "1234" }
       let(:db_user) { FactoryBot.create(:user, password: password) }
 
       let(:request_params) do
-        { user:
-            { phone_number: db_user.phone_number,
-              password: password,
-              otp: db_user.otp } }
+        {user:
+            {phone_number: db_user.phone_number,
+             password: password,
+             otp: db_user.otp}}
       end
 
-      it 'creates an audit log of the user login' do
+      it "creates an audit log of the user login" do
         Timecop.freeze do
           expect(AuditLogger)
-            .to receive(:info).with({ user: db_user.id,
-                                      auditable_type: 'User',
-                                      auditable_id: db_user.id,
-                                      action: 'login',
-                                      time: Time.current }.to_json)
+            .to receive(:info).with({user: db_user.id,
+                                     auditable_type: "User",
+                                     auditable_id: db_user.id,
+                                     action: "login",
+                                     time: Time.current}.to_json)
 
           post :login_user, params: request_params
         end
