@@ -1,7 +1,7 @@
-require 'rails_helper'
+require "rails_helper"
 
 def login_user
-  @request.env['devise.mapping'] = Devise.mappings[:admin]
+  @request.env["devise.mapping"] = Devise.mappings[:admin]
   admin = FactoryBot.create(:admin, :owner)
   sign_in admin.email_authentication
 end
@@ -28,94 +28,94 @@ RSpec.describe Admin::UsersController, type: :controller do
   # UsersController. Be sure to keep this updated too.
   let(:valid_session) { {} }
 
-  describe 'GET #index' do
-    it 'returns a success response' do
+  describe "GET #index" do
+    it "returns a success response" do
       user = create(:user)
-      get :index, params: { facility_id: facility.id }
+      get :index, params: {facility_id: facility.id}
       expect(response).to be_successful
     end
   end
 
-  describe 'GET #show' do
-    it 'returns a success response' do
+  describe "GET #show" do
+    it "returns a success response" do
       user = create(:user)
-      get :show, params: { id: user.to_param, facility_id: facility.id }
+      get :show, params: {id: user.to_param, facility_id: facility.id}
       expect(response).to be_successful
     end
   end
 
-  describe 'GET #edit' do
-    it 'returns a success response' do
+  describe "GET #edit" do
+    it "returns a success response" do
       user = create(:user)
-      get :edit, params: { id: user.to_param, facility_id: facility.id }
+      get :edit, params: {id: user.to_param, facility_id: facility.id}
       expect(response).to be_successful
     end
   end
 
-  describe 'PUT #update' do
-    context 'with valid params' do
+  describe "PUT #update" do
+    context "with valid params" do
       let(:new_attributes) do
         register_user_request_params(registration_facility_id: facility.id)
           .except(:id, :password_digest)
       end
 
-      it 'updates the requested user' do
+      it "updates the requested user" do
         user = create(:user)
-        put :update, params: { id: user.to_param, user: new_attributes, facility_id: facility.id }
+        put :update, params: {id: user.to_param, user: new_attributes, facility_id: facility.id}
         user.reload
         expect(user.full_name).to eq(new_attributes[:full_name])
         expect(user.phone_number).to eq(new_attributes[:phone_number])
       end
 
-      it 'redirects to the user' do
+      it "redirects to the user" do
         user = create(:user)
-        put :update, params: { id: user.to_param, user: valid_attributes }
+        put :update, params: {id: user.to_param, user: valid_attributes}
         expect(response).to redirect_to(admin_user_url(user))
       end
     end
 
-    context 'with invalid params' do
+    context "with invalid params" do
       it "returns a success response (i.e. to display the 'edit' template)" do
         user = create(:user)
-        put :update, params: { id: user.to_param, user: invalid_attributes, facility_id: facility.id }
+        put :update, params: {id: user.to_param, user: invalid_attributes, facility_id: facility.id}
         expect(response.status).to eq(400)
       end
     end
   end
 
-  describe 'PUT #disable_access' do
-    it 'disables the access token for the user' do
+  describe "PUT #disable_access" do
+    it "disables the access token for the user" do
       user = create(:user)
-      put :disable_access, params: { user_id: user.id, facility_id: user.facility.id }
+      put :disable_access, params: {user_id: user.id, facility_id: user.facility.id}
       user.reload
       expect(user.access_token_valid?).to be false
     end
   end
 
-  describe 'PUT #enable_access' do
+  describe "PUT #enable_access" do
     let(:user) { FactoryBot.create(:user, registration_facility: facility) }
 
-    it 'sets sync_approval_status to allowed' do
-      put :enable_access, params: { user_id: user.id, facility_id: facility.id }
+    it "sets sync_approval_status to allowed" do
+      put :enable_access, params: {user_id: user.id, facility_id: facility.id}
       user.reload
       expect(user.sync_approval_status_allowed?).to be true
     end
   end
 
-  describe 'PUT #reset_otp' do
+  describe "PUT #reset_otp" do
     let(:user) { FactoryBot.create(:user, registration_facility: facility) }
 
     before :each do
       sms_notification_service = double(SmsNotificationService.new(nil, nil))
       allow(SmsNotificationService).to receive(:new)
-        .with(user.phone_number, ENV['TWILIO_PHONE_NUMBER'])
+        .with(user.phone_number, ENV["TWILIO_PHONE_NUMBER"])
         .and_return(sms_notification_service)
       expect(sms_notification_service).to receive(:send_request_otp_sms)
     end
 
-    it 'resets OTP' do
+    it "resets OTP" do
       old_otp = user.otp
-      put :reset_otp, params: { user_id: user.id, facility_id: facility.id }
+      put :reset_otp, params: {user_id: user.id, facility_id: facility.id}
       user.reload
       expect(user.otp_valid?).to be true
       expect(user.otp).not_to eq(old_otp)

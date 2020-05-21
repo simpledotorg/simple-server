@@ -23,7 +23,7 @@ class Admin::ProtocolsController < AdminController
     authorize([:manage, @protocol])
 
     if @protocol.save
-      redirect_to [:admin, @protocol], notice: 'Protocol was successfully created.'
+      redirect_to [:admin, @protocol], notice: "Protocol was successfully created."
     else
       render :new
     end
@@ -31,7 +31,7 @@ class Admin::ProtocolsController < AdminController
 
   def update
     if @protocol.update(protocol_params)
-      redirect_to [:admin, @protocol], notice: 'Protocol was successfully updated.'
+      redirect_to [:admin, @protocol], notice: "Protocol was successfully updated."
     else
       render :edit
     end
@@ -39,7 +39,7 @@ class Admin::ProtocolsController < AdminController
 
   def destroy
     @protocol.destroy
-    redirect_to admin_protocols_url, notice: 'Protocol was successfully deleted.'
+    redirect_to admin_protocols_url, notice: "Protocol was successfully deleted."
   end
 
   private

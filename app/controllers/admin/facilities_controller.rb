@@ -3,8 +3,8 @@ class Admin::FacilitiesController < AdminController
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
   before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy]
   before_action :initialize_upload, :validate_file_type, :validate_file_size, :parse_file,
-                :validate_at_least_one_facility, :validate_duplicate_rows, :validate_facilities,
-                :if => :file_exists?, only: [:upload]
+    :validate_at_least_one_facility, :validate_duplicate_rows, :validate_facilities,
+    if: :file_exists?, only: [:upload]
 
   def index
     authorize([:manage, :facility, Facility])
@@ -27,7 +27,7 @@ class Admin::FacilitiesController < AdminController
     authorize([:manage, :facility, @facility])
 
     if @facility.save
-      redirect_to [:admin, @facility_group, @facility], notice: 'Facility was successfully created.'
+      redirect_to [:admin, @facility_group, @facility], notice: "Facility was successfully created."
     else
       render :new
     end
@@ -35,7 +35,7 @@ class Admin::FacilitiesController < AdminController
 
   def update
     if @facility.update(facility_params)
-      redirect_to [:admin, @facility_group, @facility], notice: 'Facility was successfully updated.'
+      redirect_to [:admin, @facility_group, @facility], notice: "Facility was successfully updated."
     else
       render :edit
     end
@@ -43,16 +43,16 @@ class Admin::FacilitiesController < AdminController
 
   def destroy
     @facility.destroy
-    redirect_to admin_facilities_url, notice: 'Facility was successfully deleted.'
+    redirect_to admin_facilities_url, notice: "Facility was successfully deleted."
   end
 
   def upload
     authorize([:manage, :facility, Facility])
-    return render :upload, :status => :bad_request if @errors.present?
+    return render :upload, status: :bad_request if @errors.present?
 
     if @facilities.present?
       ImportFacilitiesJob.perform_later(@facilities)
-      flash.now[:notice] = 'File upload successful, your facilities will be created shortly.'
+      flash.now[:notice] = "File upload successful, your facilities will be created shortly."
     end
     render :upload
   end
@@ -102,7 +102,7 @@ class Admin::FacilitiesController < AdminController
   end
 
   def parse_file
-    return render :upload, :status => :bad_request if @errors.present?
+    return render :upload, status: :bad_request if @errors.present?
 
     @file_contents = read_xlsx_or_csv_file(@file)
     @facilities = Facility.parse_facilities(@file_contents)
@@ -114,8 +114,9 @@ class Admin::FacilitiesController < AdminController
 
   def validate_duplicate_rows
     facilities_slice = @facilities.map { |facility|
-      facility.slice(:organization_name, :facility_group_name, :name) }
-    @errors << 'Uploaded file has duplicate facilities' if
+      facility.slice(:organization_name, :facility_group_name, :name)
+    }
+    @errors << "Uploaded file has duplicate facilities" if
         facilities_slice.count != facilities_slice.uniq.count
   end
 
@@ -143,10 +144,10 @@ class Admin::FacilitiesController < AdminController
 
   def group_row_errors
     grouped_errors = []
-    unique_errors = @row_errors.map { |row, message | message }.uniq
+    unique_errors = @row_errors.map { |row, message| message }.uniq
     unique_errors.each do |error|
       rows = @row_errors.select { |row, message| row if error == message }.map { |row, message| row }
-      grouped_errors << "Row(s) #{rows.join(', ')}: #{error}"
+      grouped_errors << "Row(s) #{rows.join(", ")}: #{error}"
     end
     grouped_errors
   end
