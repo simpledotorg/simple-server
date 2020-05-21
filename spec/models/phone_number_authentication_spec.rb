@@ -33,6 +33,28 @@ RSpec.describe PhoneNumberAuthentication, type: :model do
     end
   end
 
+  describe "lockouts" do
+    it "is in lockout period if lockout time is in past" do
+      auth = build(:phone_number_authentication, locked_at: 10.minutes.ago)
+      expect(auth).to be_in_lockout_period
+    end
+
+    it "clears lockout tracking if unlocked" do
+      auth = create(:phone_number_authentication, locked_at: 10.minutes.ago, failed_attempts: 5)
+      expect(auth).to be_in_lockout_period
+      auth.unlock
+      expect(auth).to_not be_in_lockout_period
+    end
+
+    it "can calculate minutes left in lockout" do
+      Timecop.freeze do
+        auth = build(:phone_number_authentication, locked_at: 15.minutes.ago, failed_attempts: 5)
+        expect(auth).to be_in_lockout_period
+        expect(auth.minutes_left_on_lockout).to eq(5)
+      end
+    end
+  end
+
   describe 'invalidate_otp' do
     subject(:authentication) { described_class.new(otp: '123456', otp_expires_at: Time.now) }
 

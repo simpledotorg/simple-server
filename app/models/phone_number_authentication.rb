@@ -41,7 +41,7 @@ class PhoneNumberAuthentication < ApplicationRecord
   end
 
   def in_lockout_period?
-    locked_at >= lockout_time.ago
+    locked_at && locked_at >= lockout_time.ago
   end
 
   def lockout_time
