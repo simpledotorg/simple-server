@@ -51,17 +51,32 @@ class Patient < ApplicationRecord
 
   attribute :call_result, :string
 
-  #
-  # Note: This scope expects a join(:blood_pressures) to exist.
-  # For eg, Patient.joins(:blood_pressures).follow_ups(:month).
-  #
-  # It doesn't include the join in this scope to play well with certain parent scopes (eg. Facility).
-  # Parent scopes might auto add this join and the final query would end up with unnecessary joins, affecting perf.
-  #
-  scope :follow_ups, -> (period, last: nil) {
-    where("patients.recorded_at < #{BloodPressure.date_to_period_sql(period)}")
-      .group_by_period(period, 'blood_pressures.recorded_at', last: last)
+  scope :with_diabetes, -> { joins(:medical_history).merge(MedicalHistory.diabetes_yes) }
+  scope :with_hypertension, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes) }
+
+  scope :follow_ups_by_period, -> (period, last: nil) {
+    follow_ups_with(Encounter, period, time_column: 'encountered_on', last: last)
   }
+
+  scope :diabetes_follow_ups_by_period, -> (period, last: nil) {
+    follow_ups_with(BloodSugar, period, last: last)
+      .with_diabetes
+  }
+
+  scope :hypertension_follow_ups_by_period, -> (period, last: nil) {
+    follow_ups_with(BloodPressure, period, last: last)
+      .with_hypertension
+  }
+
+  def self.follow_ups_with(model_name, period, time_column: 'recorded_at', last: nil)
+    table_name = model_name.table_name.to_sym
+    time_column_with_table_name = "#{table_name}.#{time_column}"
+
+    joins(table_name)
+      .where("patients.recorded_at < #{model_name.date_to_period_sql(time_column_with_table_name, period)}")
+      .group_by_period(period, time_column_with_table_name, last: last)
+      .distinct
+  end
 
   enum could_not_contact_reasons: {
     not_responding: 'not_responding',

@@ -5,6 +5,8 @@ class Facility < ApplicationRecord
   include QuarterHelper
   extend FriendlyId
 
+  before_save :clear_isd_code, unless: -> { teleconsultation_phone_number.present? }
+
   attribute :import, :boolean, default: false
   attribute :organization_name, :string
   attribute :facility_group_name, :string
@@ -18,10 +20,20 @@ class Facility < ApplicationRecord
   has_many :blood_pressures, through: :encounters, source: :blood_pressures
   has_many :blood_sugars, through: :encounters, source: :blood_sugars
   has_many :patients, -> { distinct }, through: :encounters
-  has_many :hypertension_patients, -> { distinct }, through: :blood_pressures, source: :patient
   has_many :prescription_drugs
   has_many :appointments
-  has_many :registered_patients, class_name: "Patient", foreign_key: "registration_facility_id"
+
+  has_many :registered_patients,
+           class_name: "Patient",
+           foreign_key: "registration_facility_id"
+  has_many :registered_diabetes_patients,
+           -> { with_diabetes },
+           class_name: "Patient",
+           foreign_key: "registration_facility_id"
+  has_many :registered_hypertension_patients,
+           -> { with_hypertension },
+           class_name: "Patient",
+           foreign_key: "registration_facility_id"
 
   enum facility_size: {
     community: "community",
@@ -47,15 +59,20 @@ class Facility < ApplicationRecord
   validates :state, presence: true
   validates :country, presence: true
   validates :pin, numericality: true, allow_blank: true
+  validates :teleconsultation_isd_code, presence: true, if: :teleconsultation_enabled?
+  validates :teleconsultation_phone_number, presence: true, if: :teleconsultation_enabled?
+  validates :enable_teleconsultation, inclusion: { in: [true, false] }
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, to: :facility_group, allow_nil: true
-  delegate :follow_ups, to: :hypertension_patients, prefix: :patient
+  delegate :follow_ups_by_period, to: :patients, prefix: :patient
+  delegate :diabetes_follow_ups_by_period, to: :patients
+  delegate :hypertension_follow_ups_by_period, to: :patients
 
   friendly_id :name, use: :slugged
 
   def cohort_analytics(period, prev_periods)
-    query = CohortAnalyticsQuery.new(self.registered_patients)
+    query = CohortAnalyticsQuery.new(self.registered_hypertension_patients)
     query.patient_counts_by_period(period, prev_periods)
   end
 
@@ -107,14 +124,17 @@ class Facility < ApplicationRecord
 
   def facility_group_exists
     organization = Organization.find_by(name: organization_name)
-    facility_group = FacilityGroup.find_by(name: facility_group_name, organization_id: organization.id) if organization.present?
-    errors.add(:facility_group, "doesn't exist for the organization") if organization.present? && facility_group_name.present? && facility_group.blank?
-
+    facility_group = FacilityGroup.find_by(name: facility_group_name,
+                                           organization_id: organization.id) if organization.present?
+    if organization.present? && facility_group_name.present? && facility_group.blank?
+      errors.add(:facility_group, "doesn't exist for the organization")
+    end
   end
 
   def facility_is_unique
     organization = Organization.find_by(name: organization_name)
-    facility_group = FacilityGroup.find_by(name: facility_group_name, organization_id: organization.id) if organization.present?
+    facility_group = FacilityGroup.find_by(name: facility_group_name,
+                                           organization_id: organization.id) if organization.present?
     facility = Facility.find_by(name: name, facility_group: facility_group.id) if facility_group.present?
     errors.add(:facility, 'already exists') if organization.present? && facility_group.present? && facility.present?
 
@@ -130,5 +150,21 @@ class Facility < ApplicationRecord
     enable_diabetes_management.present?
   end
 
+  def teleconsultation_enabled?
+    enable_teleconsultation.present?
+  end
+
+  def teleconsultation_phone_number_with_isd
+    return if teleconsultation_isd_code.blank? || teleconsultation_phone_number.blank?
+
+    Phonelib.parse(teleconsultation_isd_code + teleconsultation_phone_number).full_e164
+  end
+
   CSV::Converters[:strip_whitespace] = ->(value) { value.strip rescue value }
+
+  private
+
+  def clear_isd_code
+    self.teleconsultation_isd_code = ""
+  end
 end

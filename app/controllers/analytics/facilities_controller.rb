@@ -14,7 +14,7 @@ class Analytics::FacilitiesController < AnalyticsController
     @recent_blood_pressures = @facility
                                 .blood_pressures
                                 .includes(:patient, :user)
-                                .order("DATE(recorded_at) DESC, recorded_at ASC")
+                                .order(Arel.sql("DATE(recorded_at) DESC, recorded_at ASC"))
 
     @recent_blood_pressures = paginate(@recent_blood_pressures)
 
