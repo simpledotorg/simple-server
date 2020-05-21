@@ -1,4 +1,4 @@
-class Admin::FacilityCSVValidator
+class Admin::CSV::FacilityValidator
 
   def self.validate(*args)
     new(*args).validate

@@ -108,7 +108,7 @@ class Admin::FacilitiesController < AdminController
   end
 
   def validate_facility_rows
-    @errors = Admin::FacilityCSVValidator.validate(@facilities).errors
+    @errors = Admin::CSV::FacilityValidator.validate(@facilities).errors
   end
 
   def file_exists?
