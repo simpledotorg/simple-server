@@ -1,6 +1,6 @@
 class SetLocalTimezone
   def call(_worker, _job, _queue)
-    Time.use_zone(Rails.application.config.country[:time_zone] || 'UTC') { yield }
+    Time.use_zone(Rails.application.config.country[:time_zone] || "UTC") { yield }
   end
 end
 
@@ -10,9 +10,9 @@ module SidekiqConfig
   Sidekiq::Extensions.enable_delay!
 
   def self.connection_pool
-    ConnectionPool.new(size: Config.get_int('SIDEKIQ_REDIS_POOL_SIZE', DEFAULT_REDIS_POOL_SIZE)) do
-      if ENV['SIDEKIQ_REDIS_HOST'].present?
-        Redis.new(host: ENV['SIDEKIQ_REDIS_HOST'])
+    ConnectionPool.new(size: Config.get_int("SIDEKIQ_REDIS_POOL_SIZE", DEFAULT_REDIS_POOL_SIZE)) do
+      if ENV["SIDEKIQ_REDIS_HOST"].present?
+        Redis.new(host: ENV["SIDEKIQ_REDIS_HOST"])
       else
         Redis.new
       end
