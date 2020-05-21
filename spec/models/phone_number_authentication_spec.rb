@@ -16,19 +16,27 @@ RSpec.describe PhoneNumberAuthentication, type: :model do
     it { should validate_uniqueness_of(:phone_number).ignoring_case_sensitivity }
 
     context 'presence of password' do
-      it 'validates a PhoneNumberAuthentication with a password' do
-        phone_number_authentication = build(:phone_number_authentication, password: '1234')
-        expect(phone_number_authentication).to be_valid
+      it 'validates with a password' do
+        auth = build(:phone_number_authentication, password: '1234')
+        expect(auth).to be_valid
       end
 
-      it 'validates a PhoneNumberAuthentication with a password_digest' do
-        phone_number_authentication = build(:phone_number_authentication, :with_password_digest)
-        expect(phone_number_authentication).to be_valid
+      it 'validates with a password_digest' do
+        auth = build(:phone_number_authentication, :with_password_digest)
+        expect(auth).to be_valid
       end
 
-      it 'invalidates a PhoneNumberAuthentication without a password or a password_digest' do
-        phone_number_authentication = build(:phone_number_authentication, password: nil, password_digest: nil)
-        expect(phone_number_authentication).to be_invalid
+      it 'invalidates without a password or a password_digest' do
+        auth = build(:phone_number_authentication, password: nil, password_digest: nil)
+        expect(auth).to be_invalid
+        expect(auth.errors[:password]).to match_array(["can't be blank", "Either password_digest or password should be present"])
+      end
+
+      it "invalidates with more than USER_AUTH_MAX_FAILED_ATTEMPTS failed_attempts" do
+        attempts = PhoneNumberAuthentication::USER_AUTH_MAX_FAILED_ATTEMPTS + 1
+        auth = build(:phone_number_authentication, failed_attempts: attempts)
+        expect(auth).to be_invalid
+        expect(auth.errors[:failed_attempts]).to eq(["must be less than or equal to 5"])
       end
     end
   end
