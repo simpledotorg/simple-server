@@ -12,4 +12,3 @@ class Protocol < ApplicationRecord
     self.id = SecureRandom.uuid
   end
 end
-

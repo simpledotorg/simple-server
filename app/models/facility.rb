@@ -1,4 +1,4 @@
-require 'roo'
+require "roo"
 
 class Facility < ApplicationRecord
   include Mergeable
@@ -13,7 +13,7 @@ class Facility < ApplicationRecord
 
   belongs_to :facility_group, optional: true
 
-  has_many :phone_number_authentications, foreign_key: 'registration_facility_id'
+  has_many :phone_number_authentications, foreign_key: "registration_facility_id"
   has_many :users, through: :phone_number_authentications
 
   has_many :encounters
@@ -24,16 +24,16 @@ class Facility < ApplicationRecord
   has_many :appointments
 
   has_many :registered_patients,
-           class_name: "Patient",
-           foreign_key: "registration_facility_id"
+    class_name: "Patient",
+    foreign_key: "registration_facility_id"
   has_many :registered_diabetes_patients,
-           -> { with_diabetes },
-           class_name: "Patient",
-           foreign_key: "registration_facility_id"
+    -> { with_diabetes },
+    class_name: "Patient",
+    foreign_key: "registration_facility_id"
   has_many :registered_hypertension_patients,
-           -> { with_hypertension },
-           class_name: "Patient",
-           foreign_key: "registration_facility_id"
+    -> { with_hypertension },
+    class_name: "Patient",
+    foreign_key: "registration_facility_id"
 
   enum facility_size: {
     community: "community",
@@ -61,7 +61,7 @@ class Facility < ApplicationRecord
   validates :pin, numericality: true, allow_blank: true
   validates :teleconsultation_isd_code, presence: true, if: :teleconsultation_enabled?
   validates :teleconsultation_phone_number, presence: true, if: :teleconsultation_enabled?
-  validates :enable_teleconsultation, inclusion: { in: [true, false] }
+  validates :enable_teleconsultation, inclusion: {in: [true, false]}
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, to: :facility_group, allow_nil: true
@@ -72,15 +72,15 @@ class Facility < ApplicationRecord
   friendly_id :name, use: :slugged
 
   def cohort_analytics(period, prev_periods)
-    query = CohortAnalyticsQuery.new(self.registered_hypertension_patients)
+    query = CohortAnalyticsQuery.new(registered_hypertension_patients)
     query.patient_counts_by_period(period, prev_periods)
   end
 
   def dashboard_analytics(period: :month, prev_periods: 3, include_current_period: false)
     query = FacilityAnalyticsQuery.new(self,
-                                       period,
-                                       prev_periods,
-                                       include_current_period: include_current_period)
+      period,
+      prev_periods,
+      include_current_period: include_current_period)
 
     results = [
       query.registered_patients_by_period,
@@ -96,20 +96,20 @@ class Facility < ApplicationRecord
   def self.parse_facilities(file_contents)
     facilities = []
     CSV.parse(file_contents, headers: true, converters: :strip_whitespace) do |row|
-      facility = { organization_name: row['organization'],
-                   facility_group_name: row['facility_group'],
-                   name: row['facility_name'],
-                   facility_type: row['facility_type'],
-                   street_address: row['street_address (optional)'],
-                   village_or_colony: row['village_or_colony (optional)'],
-                   zone: row['zone_or_block (optional)'],
-                   district: row['district'],
-                   state: row['state'],
-                   country: row['country'],
-                   pin: row['pin (optional)'],
-                   latitude: row['latitude (optional)'],
-                   longitude: row['longitude (optional)'],
-                   import: true }
+      facility = {organization_name: row["organization"],
+                  facility_group_name: row["facility_group"],
+                  name: row["facility_name"],
+                  facility_type: row["facility_type"],
+                  street_address: row["street_address (optional)"],
+                  village_or_colony: row["village_or_colony (optional)"],
+                  zone: row["zone_or_block (optional)"],
+                  district: row["district"],
+                  state: row["state"],
+                  country: row["country"],
+                  pin: row["pin (optional)"],
+                  latitude: row["latitude (optional)"],
+                  longitude: row["longitude (optional)"],
+                  import: true}
       next if facility.except(:import).values.all?(&:blank?)
 
       facilities << facility
@@ -124,8 +124,10 @@ class Facility < ApplicationRecord
 
   def facility_group_exists
     organization = Organization.find_by(name: organization_name)
-    facility_group = FacilityGroup.find_by(name: facility_group_name,
-                                           organization_id: organization.id) if organization.present?
+    if organization.present?
+      facility_group = FacilityGroup.find_by(name: facility_group_name,
+                                             organization_id: organization.id)
+    end
     if organization.present? && facility_group_name.present? && facility_group.blank?
       errors.add(:facility_group, "doesn't exist for the organization")
     end
@@ -133,11 +135,12 @@ class Facility < ApplicationRecord
 
   def facility_is_unique
     organization = Organization.find_by(name: organization_name)
-    facility_group = FacilityGroup.find_by(name: facility_group_name,
-                                           organization_id: organization.id) if organization.present?
+    if organization.present?
+      facility_group = FacilityGroup.find_by(name: facility_group_name,
+                                             organization_id: organization.id)
+    end
     facility = Facility.find_by(name: name, facility_group: facility_group.id) if facility_group.present?
-    errors.add(:facility, 'already exists') if organization.present? && facility_group.present? && facility.present?
-
+    errors.add(:facility, "already exists") if organization.present? && facility_group.present? && facility.present?
   end
 
   def facility_name_presence
@@ -160,7 +163,13 @@ class Facility < ApplicationRecord
     Phonelib.parse(teleconsultation_isd_code + teleconsultation_phone_number).full_e164
   end
 
-  CSV::Converters[:strip_whitespace] = ->(value) { value.strip rescue value }
+  CSV::Converters[:strip_whitespace] = ->(value) {
+    begin
+                value.strip
+    rescue
+      value
+              end
+  }
 
   private
 

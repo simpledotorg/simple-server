@@ -4,8 +4,8 @@ class Patient < ApplicationRecord
   include Hashable
 
   enum reminder_consent: {
-    granted: 'granted',
-    denied: 'denied'
+    granted: "granted",
+    denied: "denied"
   }, _prefix: true
 
   GENDERS = Rails.application.config.country[:supported_genders].freeze
@@ -18,8 +18,8 @@ class Patient < ApplicationRecord
   ANONYMIZED_DATA_FIELDS = %w[id created_at registration_date registration_facility_name user_id age gender]
 
   belongs_to :address, optional: true
-  has_many :phone_numbers, class_name: 'PatientPhoneNumber'
-  has_many :business_identifiers, class_name: 'PatientBusinessIdentifier'
+  has_many :phone_numbers, class_name: "PatientPhoneNumber"
+  has_many :business_identifiers, class_name: "PatientBusinessIdentifier"
   has_many :passport_authentications, through: :business_identifiers
 
   has_many :blood_pressures, inverse_of: :patient
@@ -36,39 +36,39 @@ class Patient < ApplicationRecord
   belongs_to :registration_facility, class_name: "Facility", optional: true
   belongs_to :registration_user, class_name: "User"
 
-  has_many :latest_blood_pressures, -> { order(recorded_at: :desc) }, class_name: 'BloodPressure'
-  has_many :latest_blood_sugars, -> { order(recorded_at: :desc) }, class_name: 'BloodSugar'
+  has_many :latest_blood_pressures, -> { order(recorded_at: :desc) }, class_name: "BloodPressure"
+  has_many :latest_blood_sugars, -> { order(recorded_at: :desc) }, class_name: "BloodSugar"
 
   has_many :latest_scheduled_appointments,
-           -> { where(status: 'scheduled').order(scheduled_date: :desc) },
-           class_name: 'Appointment'
+    -> { where(status: "scheduled").order(scheduled_date: :desc) },
+    class_name: "Appointment"
 
   has_many :latest_bp_passports,
-           -> { where(identifier_type: 'simple_bp_passport').order(device_created_at: :desc) },
-           class_name: 'PatientBusinessIdentifier'
+    -> { where(identifier_type: "simple_bp_passport").order(device_created_at: :desc) },
+    class_name: "PatientBusinessIdentifier"
 
-  has_many :current_prescription_drugs, -> { where(is_deleted: false) }, class_name: 'PrescriptionDrug'
+  has_many :current_prescription_drugs, -> { where(is_deleted: false) }, class_name: "PrescriptionDrug"
 
   attribute :call_result, :string
 
   scope :with_diabetes, -> { joins(:medical_history).merge(MedicalHistory.diabetes_yes) }
   scope :with_hypertension, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes) }
 
-  scope :follow_ups_by_period, -> (period, last: nil) {
-    follow_ups_with(Encounter, period, time_column: 'encountered_on', last: last)
+  scope :follow_ups_by_period, ->(period, last: nil) {
+    follow_ups_with(Encounter, period, time_column: "encountered_on", last: last)
   }
 
-  scope :diabetes_follow_ups_by_period, -> (period, last: nil) {
+  scope :diabetes_follow_ups_by_period, ->(period, last: nil) {
     follow_ups_with(BloodSugar, period, last: last)
       .with_diabetes
   }
 
-  scope :hypertension_follow_ups_by_period, -> (period, last: nil) {
+  scope :hypertension_follow_ups_by_period, ->(period, last: nil) {
     follow_ups_with(BloodPressure, period, last: last)
       .with_hypertension
   }
 
-  def self.follow_ups_with(model_name, period, time_column: 'recorded_at', last: nil)
+  def self.follow_ups_with(model_name, period, time_column: "recorded_at", last: nil)
     table_name = model_name.table_name.to_sym
     time_column_with_table_name = "#{table_name}.#{time_column}"
 
@@ -79,13 +79,13 @@ class Patient < ApplicationRecord
   end
 
   enum could_not_contact_reasons: {
-    not_responding: 'not_responding',
-    moved: 'moved',
-    dead: 'dead',
-    invalid_phone_number: 'invalid_phone_number',
-    public_hospital_transfer: 'public_hospital_transfer',
-    moved_to_private: 'moved_to_private',
-    other: 'other'
+    not_responding: "not_responding",
+    moved: "moved",
+    dead: "dead",
+    invalid_phone_number: "invalid_phone_number",
+    public_hospital_transfer: "public_hospital_transfer",
+    moved_to_private: "moved_to_private",
+    other: "other"
   }
 
   validate :past_date_of_birth
@@ -168,15 +168,15 @@ class Patient < ApplicationRecord
   end
 
   def call_result=(new_call_result)
-    if new_call_result == 'contacted'
+    if new_call_result == "contacted"
       self.contacted_by_counsellor = true
-    elsif Patient.could_not_contact_reasons.values.include?(new_call_result)
+    elsif Patient.could_not_contact_reasons.value?(new_call_result)
       self.contacted_by_counsellor = false
       self.could_not_contact_reason = new_call_result
     end
 
-    if new_call_result == 'dead'
-      self.status = 'dead'
+    if new_call_result == "dead"
+      self.status = "dead"
     end
 
     super(new_call_result)
@@ -185,18 +185,17 @@ class Patient < ApplicationRecord
   def self.not_contacted
     where(contacted_by_counsellor: false)
       .where(could_not_contact_reason: nil)
-      .where('device_created_at <= ?', 2.days.ago)
+      .where("device_created_at <= ?", 2.days.ago)
   end
 
   def anonymized_data
-    { id: hash_uuid(id),
-      created_at: created_at,
-      registration_date: recorded_at,
-      registration_facility_name: registration_facility&.name,
-      user_id: hash_uuid(registration_user&.id),
-      age: age,
-      gender: gender
-    }
+    {id: hash_uuid(id),
+     created_at: created_at,
+     registration_date: recorded_at,
+     registration_facility_name: registration_facility&.name,
+     user_id: hash_uuid(registration_user&.id),
+     age: age,
+     gender: gender}
   end
 
   def discard_data

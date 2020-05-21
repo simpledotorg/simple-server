@@ -1,6 +1,6 @@
 class EmailAuthentication < ApplicationRecord
   devise :database_authenticatable, :invitable, :lockable, :recoverable,
-         :rememberable, :timeoutable, :trackable, :validatable, validate_on_invite: true
+    :rememberable, :timeoutable, :trackable, :validatable, validate_on_invite: true
 
   has_one :user_authentication, as: :authenticatable
   has_one :user, through: :user_authentication
@@ -21,5 +21,4 @@ class EmailAuthentication < ApplicationRecord
       errors.add(:password, I18n.translate("errors.messages.password.password_strength"))
     end
   end
-
 end
