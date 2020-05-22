@@ -13,6 +13,16 @@
         <span class="font-bold">0.8%</span> of estimated 4,234,456 hypertensive population
       </p>
       <canvas id="controlledPatientsTrend"></canvas>
+      <div class="flex justify-between">
+        <div>
+          <p>Start</p>
+          <p>Jan 2017</p>
+        </div>
+        <div>
+          <p>End</p>
+          <p>May 2020</p>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -45,20 +55,14 @@
       },
       scales: {
         xAxes: [{
-          ticks: {
-            autoSkip: false,
-            fontFamily: "Roboto",
-            fontSize: 14,
-          },
+          display: false,
           gridLines: {
             display: false,
             drawBorder: false,
           },
         }],
         yAxes: [{
-          ticks: {
-            display: false,
-          },
+          display: false,
           gridLines: {
             display: false,
             drawBorder: false,
