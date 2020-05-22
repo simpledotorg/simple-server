@@ -132,7 +132,7 @@ RSpec.describe Facility, type: :model do
 
     it 'defaults enable_teleconsultation to false if blank' do
       facilities = described_class.parse_facilities(upload_file)
-      expect(facilities.first[:enable_diabetes_management]).to be false
+      expect(facilities.first[:enable_teleconsultation]).to be false
     end
 
     it 'defaults enable_diabetes_management to false if blank' do
