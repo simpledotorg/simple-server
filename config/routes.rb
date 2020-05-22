@@ -178,7 +178,8 @@ Rails.application.routes.draw do
   resources :appointments, only: [:index, :update]
   resources :patients, only: [:index, :update]
   resources :organizations, only: [:index], path: "dashboard"
-
+  resources :reports
+  
   namespace :my_facilities do
     root to: "/my_facilities#index", as: "overview"
     get "ranked_facilities", to: "ranked_facilities"
