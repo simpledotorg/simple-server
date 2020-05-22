@@ -126,4 +126,18 @@ RSpec.describe Facility, type: :model do
       facility.cohort_analytics(:month, 3)
     end
   end
+
+  describe '.parse_facilities' do
+    let(:upload_file) { fixture_file_upload('files/upload_facilities_test.csv', 'text/csv') }
+
+    it 'defaults enable_teleconsultation to false if blank' do
+      facilities = described_class.parse_facilities(upload_file)
+      expect(facilities.first[:enable_teleconsultation]).to be false
+    end
+
+    it 'defaults enable_diabetes_management to false if blank' do
+      facilities = described_class.parse_facilities(upload_file)
+      expect(facilities.second[:enable_diabetes_management]).to be false
+    end
+  end
 end
