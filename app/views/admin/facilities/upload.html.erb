@@ -24,6 +24,7 @@
       <%= link_to '+ Facility group', new_admin_facility_group_path, class: "btn btn-sm btn-outline-primary" %>
     <% end %></li>
   <li>Ensure that the Organization (Column A) and Facility Group (Column B) are entered correctly.</li>
+  <li class="mt-1">The enable_diabetes_management and enable_teleconsultation fields will be treated as "not enabled" if blank.</li>
 </ol>
 <%= bootstrap_form_tag(url: upload_admin_facilities_url, multipart: true) do |f| %>
   <%= f.file_field :upload_facilities_file, required: true, accept: '.csv, .xlsx', label:'Upload your filled in facilities file'%>
