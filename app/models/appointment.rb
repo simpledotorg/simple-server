@@ -54,7 +54,7 @@ class Appointment < ApplicationRecord
     overdue.where('scheduled_date <= ?', Date.current - number_of_days.days)
   end
 
-  def self.eligible_for_reminders(days_overdue)
+  def self.eligible_for_reminders(days_overdue: 3)
     overdue_by(days_overdue)
       .includes(:patient)
       .where(patients: { reminder_consent: 'granted' })

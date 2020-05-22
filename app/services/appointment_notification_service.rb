@@ -12,7 +12,7 @@ class AppointmentNotificationService
 
   def send_after_missed_visit
     eligible_appointments = appointments
-                             .eligible_for_reminders(days_overdue)
+                             .eligible_for_reminders(days_overdue: days_overdue)
                              .includes(patient: [:phone_numbers])
                              .merge(PatientPhoneNumber.phone_type_mobile)
 

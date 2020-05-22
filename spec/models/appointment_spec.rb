@@ -55,7 +55,7 @@ describe Appointment, type: :model do
       let!(:recently_overdue_appointment) { create(:appointment, scheduled_date: 2.days.ago, status: :scheduled) }
       let!(:overdue_appointment) { create(:appointment, :overdue) }
 
-      specify { expect(Appointment.eligible_for_reminders(3)).to contain_exactly overdue_appointment }
+      specify { expect(Appointment.eligible_for_reminders(days_overdue: 3)).to contain_exactly overdue_appointment }
     end
   end
 

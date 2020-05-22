@@ -69,7 +69,7 @@ RSpec.describe AppointmentNotificationService do
                                         .includes(patient: [:phone_numbers])
                                         .includes(facility: { facility_group: :organization })
 
-      eligible_appointments = overdue_appointments.eligible_for_reminders(3)
+      eligible_appointments = overdue_appointments.eligible_for_reminders(days_overdue: 3)
 
       AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
       AppointmentNotification::Worker.drain
