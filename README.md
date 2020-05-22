@@ -126,6 +126,18 @@ Alternatively, you can start these services locally _without_ foreman by using t
 RAILS_ENV=test bundle exec rspec
 ```
 
+### Code
+
+We use the [standard](https://github.com/testdouble/standard#how-do-i-run-standard-in-my-editor) gem as our default formatter and linter. To enable it directly in your editor, follow [this](https://github.com/testdouble/standard#how-do-i-run-standard-in-my-editor).
+
+To check all the offenses throughout the codebase:
+
+```bash
+bundle exec rails standard
+```
+**Note**: The codebase is currently undergoing a slow linting process and hence most files that have offenses have been ignored under a `.standard_todo.yml`. As we fix these files, remove them from the `yml` file so that they can be picked up by `standard` again for future offenses. Refer to [usage](https://github.com/testdouble/standard#usage) on how to generate todo files.
+
+
 ### Generating seed data
 
 To generate seed data, execute the following command from the project root
