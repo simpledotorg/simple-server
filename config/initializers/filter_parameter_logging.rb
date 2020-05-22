@@ -1,6 +1,6 @@
 # Be sure to restart your server when you modify this file.
 module ParameterFiltering
-  ATTRIBUTE_WHITELIST = %w[
+  ALLOWED_ATTRIBUTES = %w[
     action
     active
     code
@@ -15,13 +15,13 @@ module ParameterFiltering
     updated_at
   ].freeze
 
-  WHITELIST_REGEX = /(^|_)ids?|#{Regexp.union(ATTRIBUTE_WHITELIST)}/.freeze
+  ALLOWED_REGEX = /(^|_)ids?|#{Regexp.union(ALLOWED_ATTRIBUTES)}/.freeze
   SANITIZED_VALUE = "[FILTERED]".freeze
 end
 
 Rails.application.config.filter_parameters += [:password, :age]
 Rails.application.config.filter_parameters << lambda do |key, value|
-  unless key.match(ParameterFiltering::WHITELIST_REGEX)
+  unless key.match(ParameterFiltering::ALLOWED_REGEX)
     case value
     when String
       value.replace(ParameterFiltering::SANITIZED_VALUE)

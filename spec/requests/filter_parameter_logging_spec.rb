@@ -36,7 +36,7 @@ RSpec.describe "Filter parameter logging spec", type: :request do
     end
   end
 
-  it "only logs whitelisted parameters and filters out everything else" do
+  it "only logs allowed parameters and filters out everything else" do
     stringio = StringIO.new
     test_logger = Logger.new(stringio)
     allow(ActionController::Base).to receive(:logger).and_return(test_logger)
@@ -73,7 +73,7 @@ RSpec.describe "Filter parameter logging spec", type: :request do
         regex = /\b#{value}\b/
       end
 
-      if ParameterFiltering::WHITELIST_REGEX.match(attr)
+      if ParameterFiltering::ALLOWED_REGEX.match(attr)
         expect(output).to match(regex), "#{output}\n\nLog output should include #{value.inspect} for attribute #{attr}"
       else
         expect(output).to_not match(regex), "#{output}\n\nLog output should not include #{value.inspect} for attribute #{attr}"
