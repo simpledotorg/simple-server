@@ -59,6 +59,8 @@ class Appointment < ApplicationRecord
       .includes(:patient)
       .where(patients: { reminder_consent: 'granted' })
       .where.not(patients: { status: 'dead' })
+      .includes(patient: [:phone_numbers])
+      .merge(PatientPhoneNumber.phone_type_mobile)
   end
 
   def days_overdue
