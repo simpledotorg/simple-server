@@ -19,7 +19,7 @@ RSpec.describe "Filter parameter logging spec", type: :request do
     test_logger = Logger.new(stringio)
     allow(ActionController::Base).to receive(:logger).and_return(test_logger)
 
-    patient_payloads = (1..3).map { build_payload.call }
+    patient_payloads = 3.times.map { build_payload.call }
     post sync_route, params: {patients: patient_payloads}.to_json, headers: headers
     get sync_route, params: {}, headers: headers
 
@@ -32,6 +32,11 @@ RSpec.describe "Filter parameter logging spec", type: :request do
       if patient.address
         expect(output).to_not match(/\b#{patient.address.street_address}\b/)
         expect(output).to_not match(/\b#{patient.address.village_or_colony}\b/)
+        expect(output).to_not match(/\b#{patient.address.district}\b/)
+        expect(output).to_not match(/\b#{patient.address.state}\b/)
+      end
+      patient.phone_numbers.each do |phone_number|
+        expect(output).to_not match(/\b#{phone_number}\b/)
       end
     end
   end
