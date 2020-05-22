@@ -33,6 +33,8 @@ RSpec.describe Api::ManifestsController, type: :controller do
         get :show
 
         expect(response).to be_not_found
+
+        ENV["SIMPLE_SERVER_ENV"] = original_env
       end
     end
 
@@ -55,22 +57,22 @@ RSpec.describe Api::ManifestsController, type: :controller do
           expect(JSON.parse(response.body)).to eq(
             "v1" => [
               {
-                "country_code"=>"IN",
-                "display_name"=>"India",
-                "endpoint"=>"https://simple.example.com/api/",
-                "isd_code"=>"91"
+                "country_code" => "IN",
+                "display_name" => "India",
+                "endpoint" => "https://simple.example.com/api/",
+                "isd_code" => "91"
               },
               {
-                "country_code"=>"BD",
-                "display_name"=>"Bangladesh",
-                "endpoint"=>"https://simple.example.com/api/",
-                "isd_code"=>"880"
+                "country_code" => "BD",
+                "display_name" => "Bangladesh",
+                "endpoint" => "https://simple.example.com/api/",
+                "isd_code" => "880"
               },
               {
-                "country_code"=>"ET",
-                "display_name"=>"Ethiopia",
-                "endpoint"=>"https://simple.example.com/api/",
-                "isd_code"=>"251"
+                "country_code" => "ET",
+                "display_name" => "Ethiopia",
+                "endpoint" => "https://simple.example.com/api/",
+                "isd_code" => "251"
               }
             ]
           )

@@ -29,7 +29,6 @@ class CountryConfig
     }
   }.with_indifferent_access.freeze
 
-
   def self.for(abbreviation)
     CONFIGS[abbreviation]
   end
