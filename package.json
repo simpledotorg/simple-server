@@ -2,6 +2,11 @@
   "name": "simple-server",
   "private": true,
   "dependencies": {
-    "tablesort": "^5.2.0"
+    "@rails/webpacker": "5.1.1",
+    "tablesort": "^5.2.0",
+    "tailwindcss": "^1.4.6"
+  },
+  "devDependencies": {
+    "webpack-dev-server": "^3.11.0"
   }
 }

@@ -1,5 +1,70 @@
-<h1>Test</h1>
+<div class="p-4">
+  <div class="p-4 rounded-md bg-white shadow-md">
+    <div class="mb-6">
+      <p class="mb-1 font-roboto font-bold text-lg">
+        Controlled patients trend
+      </p>
+      <p class="font-roboto font-normal text-sm">
+        Registered patients with BP &gt;140/90 at their most recent visit in the past 90 days.
+      </p>
+    </div>
+    <div class="relative">
+      <p class="absolute font-roboto font-normal text-sm">
+        <span class="font-bold">0.8%</span> of estimated 4,234,456 hypertensive population
+      </p>
+      <canvas id="controlledPatientsTrend"></canvas>
+    </div>
+  </div>
+</div>
+<script>
+  var ctx = document.getElementById("controlledPatientsTrend").getContext("2d");
+  var gradientFill = ctx.createLinearGradient(0, 300, 0, -200);
+  gradientFill.addColorStop(0, "rgba(81, 205, 130, 0)");
+  gradientFill.addColorStop(1, "rgba(81, 205, 130, 0.2)");
 
-here is our json:
-
-<%= @data %>
+  var chart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: ["January", "", "", "", "", "", "Today"],
+      lineTension: 0,
+      datasets: [{
+        backgroundColor: gradientFill,
+        borderColor: "rgba(81, 205, 130, 1)",
+        pointStyle: "dash",
+        data: [0, 10, 5, 2, 20, 30, 45],
+      }],
+    },
+    options: {
+      elements: {
+        line: {
+          tension: 0,
+        },
+      },
+      legend: {
+        display: false,
+      },
+      scales: {
+        xAxes: [{
+          ticks: {
+            autoSkip: false,
+            fontFamily: "Roboto",
+            fontSize: 14,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+        }],
+        yAxes: [{
+          ticks: {
+            display: false,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+        }],
+      },
+    }
+  })
+</script>

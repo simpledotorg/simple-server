@@ -18,10 +18,8 @@
 
     <meta charset="utf-8">
 
-    <%= stylesheet_link_tag    'application', media: 'all' %>
-    <%= stylesheet_link_tag    'print', media: 'print' %>
-
-    <%= javascript_include_tag 'application' %>
+    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <%= stylesheet_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
 
     <link rel="apple-touch-icon" sizes="180x180" href="<%= apple_logo_for_environment %>">
     <link rel="icon" sizes="192x192" href="<%= android_logo_for_environment(size: '192') %>">
@@ -39,8 +37,9 @@
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, shrink-to-fit=no"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
   </head>
-  <body>
+  <body class="bg-grey-100">
     <%= yield %>
   </body>
 </html>
