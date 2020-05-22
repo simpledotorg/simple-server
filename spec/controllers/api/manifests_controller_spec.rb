@@ -11,8 +11,7 @@ RSpec.describe Api::ManifestsController, type: :controller do
 
       environments.each do |env|
         it "return 200 for #{env}" do
-          original_env = ENV["SIMPLE_SERVER_ENV"]
-          ENV["SIMPLE_SERVER_ENV"] = env
+          allow(ENV).to receive(:[]).with("SIMPLE_SERVER_ENV").and_return(env)
           allow(File).to receive(:read).with("public/manifest/#{env}.json").and_call_original
 
           expect(File).to receive(:read).with("public/manifest/#{env}.json")
@@ -21,20 +20,18 @@ RSpec.describe Api::ManifestsController, type: :controller do
 
           expect(response).to be_ok
           expect(response.body).to eq(File.read("public/manifest/#{env}.json"))
-
-          ENV["SIMPLE_SERVER_ENV"] = original_env
         end
       end
 
       it "return 404 for an unknown env" do
         original_env = ENV["SIMPLE_SERVER_ENV"]
-        ENV["SIMPLE_SERVER_ENV"] = "unknown"
+        allow(ENV).to receive(:[]).with("SIMPLE_SERVER_ENV").and_return("unknown")
 
         get :show
 
         expect(response).to be_not_found
 
-        ENV["SIMPLE_SERVER_ENV"] = original_env
+        allow(ENV).to receive(:[]).with("SIMPLE_SERVER_ENV").and_return(original_env)
       end
     end
 
@@ -43,13 +40,9 @@ RSpec.describe Api::ManifestsController, type: :controller do
 
       environments.each do |env|
         it "returns a dynamic manifest for #{env}" do
-          original_env = ENV["SIMPLE_SERVER_ENV"]
-          original_host = ENV["SIMPLE_SERVER_HOST"]
-          original_protocol = ENV["SIMPLE_SERVER_HOST_PROTOCOL"]
-
-          ENV["SIMPLE_SERVER_ENV"] = env
-          ENV["SIMPLE_SERVER_HOST"] = "simple.example.com"
-          ENV["SIMPLE_SERVER_HOST_PROTOCOL"] = "https"
+          allow(ENV).to receive(:[]).with("SIMPLE_SERVER_ENV").and_return(env)
+          allow(ENV).to receive(:[]).with("SIMPLE_SERVER_HOST").and_return("simple.example.com")
+          allow(ENV).to receive(:[]).with("SIMPLE_SERVER_HOST_PROTOCOL").and_return("https")
 
           get :show
 
@@ -76,10 +69,6 @@ RSpec.describe Api::ManifestsController, type: :controller do
               }
             ]
           )
-
-          ENV["SIMPLE_SERVER_ENV"] = original_env
-          ENV["SIMPLE_SERVER_HOST"] = original_host
-          ENV["SIMPLE_SERVER_HOST_PROTOCOL"] = original_protocol
         end
       end
     end
