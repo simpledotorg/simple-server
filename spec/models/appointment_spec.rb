@@ -46,6 +46,49 @@ describe Appointment, type: :model do
         expect(Appointment.overdue).not_to include(upcoming_appointment)
       end
     end
+
+    describe '.eligible_for_reminders' do
+      it 'includes only appointments overdue by days_overdue' do
+        overdue_appointment = create(:appointment, :overdue, scheduled_date: 3.days.ago)
+        recently_overdue_appointment = create(:appointment, scheduled_date: 2.days.ago, status: :scheduled)
+
+        expect(described_class.eligible_for_reminders(days_overdue: 3)).to include overdue_appointment
+        expect(described_class.eligible_for_reminders(days_overdue: 3)).not_to include recently_overdue_appointment
+      end
+
+      context 'for patients marked as dead' do
+        let!(:patient) { create(:patient, status: 'dead') }
+        let!(:appointment) { create(:appointment, :overdue, patient: patient, scheduled_date: 3.days.ago) }
+
+        it 'excludes appointments' do
+          expect(described_class.eligible_for_reminders(days_overdue: 3)).not_to include appointment
+        end
+      end
+
+      context 'for patients who have denied consent' do
+        let!(:patient) { create(:patient, :denied) }
+        let!(:appointment) { create(:appointment, :overdue, patient: patient, scheduled_date: 3.days.ago) }
+
+        it 'excludes appointments' do
+          expect(described_class.eligible_for_reminders(days_overdue: 3)).not_to include appointment
+        end
+      end
+
+      it 'includes only appointments with mobile numbers' do
+        mobile_number = create(:patient_phone_number, phone_type: :mobile)
+        landline_number = create(:patient_phone_number, phone_type: :landline)
+        invalid_number = create(:patient_phone_number, phone_type: :invalid)
+
+        patient_with_mobile = create(:patient, phone_numbers: [mobile_number, invalid_number])
+        patient_with_landline = create(:patient, phone_numbers: [landline_number])
+
+        appointment_with_mobile = create(:appointment, :overdue, patient: patient_with_mobile, scheduled_date: 3.days.ago)
+        appointment_with_landline = create(:appointment, :overdue, patient: patient_with_landline, scheduled_date: 3.days.ago)
+
+        expect(described_class.eligible_for_reminders(days_overdue: 3)).to include appointment_with_mobile
+        expect(described_class.eligible_for_reminders(days_overdue: 3)).not_to include appointment_with_landline
+      end
+    end
   end
 
   context 'For discarded patients' do
