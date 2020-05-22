@@ -50,10 +50,14 @@ describe Appointment, type: :model do
     describe '.eligible_for_reminders' do
       let!(:dead_patient) { create(:patient, status: 'dead') }
       let!(:patient_with_consent_denied) { create(:patient, :denied) }
-      let!(:overdue_appointment_for_dead_patient) { create(:appointment, :overdue, patient: dead_patient) }
-      let!(:overdue_appointment_for_denied_patient) { create(:appointment, :overdue, patient: patient_with_consent_denied) }
+      let!(:overdue_appointment_for_dead_patient) do
+        create(:appointment, :overdue, patient: dead_patient, scheduled_date: 3.days.ago)
+      end
+      let!(:overdue_appointment_for_denied_patient) do
+        create(:appointment, :overdue, patient: patient_with_consent_denied, scheduled_date: 3.days.ago)
+      end
       let!(:recently_overdue_appointment) { create(:appointment, scheduled_date: 2.days.ago, status: :scheduled) }
-      let!(:overdue_appointment) { create(:appointment, :overdue) }
+      let!(:overdue_appointment) { create(:appointment, :overdue, scheduled_date: 3.days.ago) }
 
       specify { expect(Appointment.eligible_for_reminders(days_overdue: 3)).to contain_exactly overdue_appointment }
     end
