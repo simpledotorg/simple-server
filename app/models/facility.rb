@@ -124,12 +124,11 @@ class Facility < ApplicationRecord
     facilities = []
     CSV.parse(file_contents, headers: true, converters: :strip_whitespace) do |row|
       facility = CSV_IMPORT_COLUMNS.map { |attribute, column_name| [attribute, row[column_name]] }.to_h
+      next if facility.values.all?(&:blank?)
 
-      unless facility.values.all?(&:blank?)
-        facilities << facility.merge(enable_diabetes_management: facility[:enable_diabetes] || false,
-                                     enable_teleconsultation: facility[:enable_teleconsultation] || false,
-                                     import: true)
-      end
+      facilities << facility.merge(enable_diabetes_management: facility[:enable_diabetes] || false,
+                                   enable_teleconsultation: facility[:enable_teleconsultation] || false,
+                                   import: true)
     end
     facilities
   end
