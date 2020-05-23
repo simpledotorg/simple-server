@@ -7,9 +7,7 @@ describe 'Patient v4 API', swagger_doc: 'v4/swagger.json' do
       parameter name: :request_body, in: :body, schema: Api::V4::Schema.patient_activate_request, description: 'Patient\'s BP Passport UUID'
 
       before :each do
-        sms_notification_service = double(SmsNotificationService.new(nil, nil))
-        allow(SmsNotificationService).to receive(:new).and_return(sms_notification_service)
-        allow(sms_notification_service).to receive(:send_patient_activate_sms).and_return(true)
+        allow(SendPatientOtpSmsJob).to receive(:perform_later).with(instance_of(PassportAuthentication))
       end
 
       response '200', 'Patient is found and an OTP is sent to their phone' do
