@@ -4,44 +4,45 @@ class AppointmentNotification::Worker
 
   sidekiq_options queue: 'high'
 
-  def perform(appointments, communication_type)
-    Appointment.where(id: appointments).each do |appointment|
-      next if appointment.previously_communicated_via?(communication_type)
+  DEFAULT_LOCALE = :en
 
-      begin
-        sms_response = send_sms(appointment, communication_type)
-        Communication.create_with_twilio_details!(appointment: appointment,
-                                                  twilio_sid: sms_response.sid,
-                                                  twilio_msg_status: sms_response.status,
-                                                  communication_type: communication_type)
+  def perform(appointment_id, communication_type, locale = DEFAULT_LOCALE)
+    appointment = Appointment.find(appointment_id)
 
-      rescue Twilio::REST::TwilioError => e
-        report_error(e)
+    return if appointment.previously_communicated_via?(communication_type)
+
+    patient_phone_number = appointment.patient.latest_mobile_number
+    message = appointment_message(appointment, communication_type, locale)
+
+    begin
+      notification_service = NotificationService.new
+
+      if communication_type == "missed_visit_whatsapp_reminder"
+        response = notification_service.send_whatsapp(patient_phone_number, message, callback_url)
+      else
+        response = notification_service.send_sms(patient_phone_number, message, callback_url)
       end
+
+      Communication.create_with_twilio_details!(
+        appointment: appointment,
+        twilio_sid: response.sid,
+        twilio_msg_status: response.status,
+        communication_type: communication_type
+      )
+    rescue Twilio::REST::TwilioError => e
+      report_error(e)
     end
   end
 
   private
 
-  SMS_CLIENT = Twilio::REST::Client.new(ENV.fetch('TWILIO_REMINDERS_ACCOUNT_SID'),
-                                        ENV.fetch('TWILIO_REMINDERS_ACCOUNT_AUTH_TOKEN'))
-
-  def send_sms(appointment, type)
-    SmsNotificationService
-      .new(appointment.patient.latest_mobile_number,
-           ENV.fetch('TWILIO_REMINDERS_ACCOUNT_PHONE_NUMBER'),
-           SMS_CLIENT)
-      .send_reminder_sms(type,
-                         appointment,
-                         sms_delivery_callback_url,
-                         appointment.patient.address.locale)
+  def appointment_message(appointment, communication_type, locale)
+    I18n.t(
+      "sms.appointment_reminders.#{communication_type}",
+      facility_name: appointment.facility.name,
+      locale: locale
+    )
   end
-
-  def sms_delivery_callback_url
-    api_v3_twilio_sms_delivery_url(host: ENV.fetch('SIMPLE_SERVER_HOST'),
-                                        protocol: ENV.fetch('SIMPLE_SERVER_HOST_PROTOCOL'))
-  end
-
 
   def report_error(e)
     Raven.capture_message(
@@ -50,6 +51,16 @@ class AppointmentNotification::Worker
       extra: {
         exception: e.to_s
       },
-      tags: { type: 'appointment-notification-job' })
+      tags: {
+        type: 'appointment-notification-job'
+      }
+    )
+  end
+
+  def callback_url
+    api_v3_twilio_sms_delivery_url(
+      host: ENV.fetch('SIMPLE_SERVER_HOST'),
+      protocol: ENV.fetch('SIMPLE_SERVER_HOST_PROTOCOL')
+    )
   end
 end
