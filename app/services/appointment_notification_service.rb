@@ -16,12 +16,9 @@ class AppointmentNotificationService
   end
 
   def send_after_missed_visit
-    overdue_with_patient_consent = appointments.overdue_by(days_overdue)
-                        .includes(patient: [:phone_numbers])
-                        .where(patients: { reminder_consent: 'granted' })
-                        .merge(PatientPhoneNumber.phone_type_mobile)
+    eligible_appointments = appointments.eligible_for_reminders(days_overdue: days_overdue)
 
-    overdue_with_patient_consent.each do |appointment|
+    eligible_appointments.each do |appointment|
       next if appointment.previously_communicated_via?(communication_type)
 
       AppointmentNotification::Worker.perform_at(schedule_at, appointment.id, communication_type)

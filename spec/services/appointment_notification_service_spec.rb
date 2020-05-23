@@ -76,37 +76,27 @@ RSpec.describe AppointmentNotificationService do
       end.to change(AppointmentNotification::Worker.jobs, :size).by(4)
     end
 
-    it 'should only send reminders to patients who have granted consent' do
-      overdue_appointment_ids =
-        [create(:patient), create(:patient, :denied)].map do |patient|
-          create(:appointment, :overdue, patient: patient).id
-        end
+    it 'should only send reminders to patients who are eligible' do
+      mobile_number = create(:patient_phone_number, phone_type: :mobile)
+      landline_number = create(:patient_phone_number, phone_type: :landline)
+      invalid_number = create(:patient_phone_number, phone_type: :invalid)
 
-      overdue_appointments = Appointment.where(id: overdue_appointment_ids)
+      patients = [create(:patient),
+                  create(:patient, :denied),
+                  create(:patient, status: 'dead'),
+                  create(:patient, phone_numbers: [mobile_number, landline_number, invalid_number])]
 
-      expect do
-        AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
-      end.to change(AppointmentNotification::Worker.jobs, :size).by(1)
-    end
+      appointments = patients.map { |patient| create(:appointment, :overdue, patient: patient) }
+      overdue_appointments = Appointment.where(id: appointments)
+                                        .includes(patient: [:phone_numbers])
+                                        .includes(facility: { facility_group: :organization })
+      eligible_appointments = overdue_appointments.eligible_for_reminders(days_overdue: 3)
 
-    context 'when a patient has just landline or invalid numbers' do
-      let!(:landline_number) { create(:patient_phone_number, phone_type: :landline) }
-      let!(:invalid_number)  { create(:patient_phone_number, phone_type: :invalid) }
-      let!(:patient) { create(:patient, phone_numbers: [landline_number, invalid_number]) }
+      AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
+      AppointmentNotification::Worker.drain
 
-      let!(:overdue_appointments) do
-        overdue_appointment_id = create(:appointment, :overdue, patient: patient)[:id]
-        Appointment.where(id: overdue_appointment_id)
-                   .includes(patient: [:phone_numbers], facility: { facility_group: :organization })
-      end
-
-      it 'should skip sending reminders' do
-        AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
-        AppointmentNotification::Worker.drain
-
-        eligible_appointments = overdue_appointments.select { |a| a.communications.present? }
-        expect(eligible_appointments.count).to eq(0)
-      end
+      selected_appointments = overdue_appointments.select { |a| a.communications.present? }
+      expect(selected_appointments).to match_array(eligible_appointments)
     end
   end
 end
