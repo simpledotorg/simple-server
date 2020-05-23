@@ -18,18 +18,16 @@ RSpec.describe AppointmentNotificationService do
       allow_any_instance_of(AppointmentNotification::Worker).to receive(:perform)
     end
 
-    it 'should spawn a sms reminder job for each appointment' do
+    it 'should spawn a reminder job for each appointment' do
       expect do
         AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
       end.to change(AppointmentNotification::Worker.jobs, :size).by(4)
     end
 
     it 'should ignore appointments which are recently overdue (< 3 days)' do
-      AppointmentNotificationService.send_after_missed_visit(appointments: recently_overdue_appointments, days_overdue: 3, schedule_at: Time.current)
-      AppointmentNotification::Worker.drain
-
-      ineligible_appointments = recently_overdue_appointments.select { |a| a.communications.present? }
-      expect(ineligible_appointments).to be_empty
+      expect do
+        AppointmentNotificationService.send_after_missed_visit(appointments: recently_overdue_appointments, schedule_at: Time.current)
+      end.to change(AppointmentNotification::Worker.jobs, :size).by(0)
     end
 
     context "if WHATSAPP_APPOINTMENT_REMINDERS feature is disabled" do
@@ -92,11 +90,9 @@ RSpec.describe AppointmentNotificationService do
                                         .includes(facility: { facility_group: :organization })
       eligible_appointments = overdue_appointments.eligible_for_reminders(days_overdue: 3)
 
-      AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
-      AppointmentNotification::Worker.drain
-
-      selected_appointments = overdue_appointments.select { |a| a.communications.present? }
-      expect(selected_appointments).to match_array(eligible_appointments)
+      expect do
+        AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
+      end.to change(AppointmentNotification::Worker.jobs, :size).by(eligible_appointments.size)
     end
   end
 end
