@@ -1,26 +1,27 @@
-<%= bootstrap_form_with(url: form_url, method: :get, layout: :horizontal, class: "mt-4", local: true) do |form| %>
-  <div class="form-row">
-    <div id="district-selector" class="form-group col-md-2">
+<%= bootstrap_form_with(url: form_url, method: :get, class: "mt-3", local: true) do |form| %>
+  <div class="row mb-5">
+    <div class="col col-12 col-md-2 mb-2">
       <%= form.select :district,
                       policy_scope(scope_namespace).sort_by(&:district).map { |facility| [facility.district, facility.district] }.uniq,
-                      {
-                          hide_label: true,
-                          include_blank: "All districts",
-                          selected: district,
-                          wrapper: false
-                      }
-      %>
+                      hide_label: true,
+                      include_blank: "All districts",
+                      selected: district,
+                      wrapper: false,
+                      class: 'pr-0',
+                      tabindex: 3 %>
     </div>
-
-    <div class="form-group col-md-8">
+    <div class="col col-12 col-md-9 mb-2 pl-md-0">
       <%= form.search_field :search_query,
                             hide_label: true,
-                            placeholder: "Search by name...".html_safe,
-                            value: params[:search_query] %>
+                            prepend: "<i class='fa fa-search'></i>".html_safe,
+                            placeholder: " Search by name...",
+                            value: params[:search_query],
+                            autofocus: params[:search_query].blank?,
+                            tabindex: 2,
+                            wrapper: false %>
     </div>
-
-    <div class="form-group">
-      <%= form.submit "Search", class: "btn btn-success" %>
+    <div class="col col-12 col-md-1 mb-2 pl-md-0">
+      <%= form.submit "Search", class: "btn btn-success btn-block", wrapper: false, tabindex: 3 %>
     </div>
   </div>
 <% end %>
