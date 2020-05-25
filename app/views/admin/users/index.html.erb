@@ -76,7 +76,9 @@
       <div class="d-flex justify-content-center pb-3">
         <i class="fa fa-search"></i>
       </div>
-      <span>There are no users named "<%= params[:search_query] %>" in "<%= params[:district] %>"</span>
+      <span>
+        There are no users named "<%= params[:search_query] %>" in "<%= params[:district].presence || "All districts" %>"
+      </span>
     </div>
   </div>
 <% end %>
