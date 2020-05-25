@@ -1,6 +1,6 @@
-<%= bootstrap_form_with(url: form_url, method: :get, layout: :horizontal, class: "mt-4") do |form| %>
+<%= bootstrap_form_with(url: form_url, method: :get, layout: :horizontal, class: "mt-4", local: true) do |form| %>
   <div class="form-row">
-    <div id="district-selector" class="form-group col-md-6">
+    <div id="district-selector" class="form-group col-md-2">
       <%= form.select :district,
                       policy_scope(scope_namespace).sort_by(&:district).map { |facility| [facility.district, facility.district] }.uniq,
                       {
@@ -8,20 +8,19 @@
                           include_blank: "All districts",
                           selected: district,
                           wrapper: false
-                      },
-                      onchange: "this.form.submit();"
+                      }
       %>
     </div>
-    <div id="limit-selector" class="form-group col-md-3">
-      <%= form.select :per_page,
-                      ["20 per page", "50 per page"],
-                      {
-                          hide_label: true,
-                          selected: per_page,
-                      },
-                      onchange: "this.form.submit();"
-      %>
+
+    <div class="form-group col-md-8">
+      <%= form.search_field :search_query,
+                            hide_label: true,
+                            placeholder: "Search by name...".html_safe,
+                            value: params[:search_query] %>
+    </div>
+
+    <div class="form-group">
+      <%= form.submit "Search", class: "btn btn-success" %>
     </div>
   </div>
-  <%= form.submit "Filter", style: "position: absolute; left: -9999px; width: 1px; height: 1px;" %>
 <% end %>

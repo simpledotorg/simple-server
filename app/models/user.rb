@@ -38,6 +38,7 @@ class User < ApplicationRecord
 
   has_many :user_permissions, foreign_key: :user_id, dependent: :delete_all
 
+  pg_search_scope :search_by_name, against: [:full_name]
   pg_search_scope :search_by_name_or_phone,
                   against: [:full_name],
                   associated_against: { phone_number_authentications: [:phone_number] }

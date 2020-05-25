@@ -9,13 +9,15 @@ class Admin::UsersController < AdminController
     authorize([:manage, :user, User])
     @users = policy_scope([:manage, :user, User])
                .joins(phone_number_authentications: :facility)
-               .where(
-                 'phone_number_authentications.registration_facility_id IN (?)',
-                 selected_district_facilities([:manage, :user]).map(&:id)
-               )
+               .where('phone_number_authentications.registration_facility_id IN (?)',
+                      selected_district_facilities([:manage, :user]).map(&:id))
                .order('facilities.name', 'users.full_name', 'users.device_created_at')
 
-    @users = paginate(@users)
+    @users = if search_query.present?
+               paginate(@users.search_by_name(search_query))
+             else
+               paginate(@users)
+             end
   end
 
   def show
@@ -79,6 +81,10 @@ class Admin::UsersController < AdminController
   def set_time_zone
     time_zone = Rails.application.config.country[:time_zone] || AnalyticsController::DEFAULT_ANALYTICS_TIME_ZONE
     Time.use_zone(time_zone) { yield }
+  end
+
+  def search_query
+    params[:search_query]
   end
 
   def user_params
