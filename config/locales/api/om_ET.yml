@@ -1,0 +1,50 @@
+om:
+  date:
+    month_names: [~, 'Amajji', 'Guraandhala', 'Bitootessa', 'Ebla', 'Caamsaa', 'Waxabajjii', 'Adoolessa', 'Hagayya', 'Fulbaana', 'Onkoloolessa', 'Sadaasa', 'Muddee']
+    abbr_month_names: [~, 'Amajjii', 'Guraandhala', 'Bitootessa', 'Ebla', 'Caamsaa', 'Waxabajjii', 'Adooleessa', 'Hagayya', 'Fulbaana', 'Onkoloolessa', 'Sadaasa', 'Mud']
+  today_str: 'Har’a'
+  registration: 'Galmee haaraa'
+  reset_password: 'PIN deebisii sirreessi'
+  login:
+    error_messages:
+      unknown_user: "Fayyadamaa sana hubachuu hin dandeenye. Maaloo sakatta’ii fii deebisii yaali"
+      invalid_otp: 'OTP’n kee hin firoomu Deebisii yaali?'
+      expired_otp: 'OTP haaraa si barbaachisa. Haaraa gaafadhu.'
+      invalid_password: 'Jechi darbaan kee wal hin fakkaatu Deebisii yaali?'
+  sms:
+    request_otp: '<#> %{otp} Koodii mirkaneeffannaa kee salphaadha\n%{app_signature}'
+    appointment_reminders:
+      missed_visit_sms_reminder: 'Hojjattoonni %{facility_name} waa’ee kee fii fayyummaa onnee keetii yaadu Tuutni fayyaa keenyaa yaaddoo yookan gaaffilee hordoffii kamiiyyuuu yoo qabaatte as siif jiru.'
+      missed_visit_whatsapp_reminder: 'Hojjattoonni %{facility_name} waa’ee kee fii fayyummaa onnee keetii yaadu Tuutni fayyaa keenyaa yaaddoo yookan gaaffilee hordoffii kamiiyyuuu yoo qabaatte as siif jiru.'
+    patient_request_otp: '%{otp} ‘n koodii mirkaneeffannaa keeti\n'
+  analytics:
+    followup_patients: "Dhukkubsattoota hordoffii meeqatu ilaalame %{facility_name}?"
+    patients_enrolled: "Dhubsattoota haaraa meeqatu %{facility_name}tti makame?"
+    all_time_patients: "Yeroo hunda: Dhukkubsattoota %{count}"
+    updated_at: "%{time}rratti haaromfame"
+  user_analytics:
+    hypertension: 'Baayyina dhiiga'
+    diabetes: 'Sukkaara'
+    genders: ['Hunda', Dhiira, 'Dubara', 'Saaldarba']
+    all_time: 'Yeroo hunda'
+    follow_up_patients: 'Dhukkubsattoota baayyina dhiigaa hordofi'
+    registered_patients: 'Dhukkubsattoota galmaa’an'
+    hypertension_control: 'Too’annoo baayyina dhiiga'
+    hypertension_control_desc: 'Dhukkansattoota baayyina dhiigaa meeqatu hordoffii isaanii darbe irratti ji’a sarbee keessatti BP 140/90 gadi qaba?'
+    notes: 'Yaaddannoowwan'
+    footer_note_1: 'Guyyaa gochoota %{facility_name} ttii hundaaf. Daataan yeroodhan ala yoo ta’e, fuulmanee irratti geessituu "Sync pending" irratti cuqaasi.'
+    footer_note_2: 'Dhukkubsataan hordoffii ji’atti yeroo tokko qofaaf lakkaa’ama. Yoo dhukkubsataan ji’a keessatti yeroo hedduuf hrdofame, inni yookan ishiin yeroo tokko qofaaf lakkaawamti.'
+    thank_you: 'Galatoomi'
+    thank_you_note: 'Hojii cimaa dhukkubsattoota baayyina dhiiigaa tajaajiluudhaf taasistuuf galatoomi. Hojiin kee lubbuu balaa onnee fii dhiigni sammutti jiguu irraa baraara.'
+    updated: 'Haaromfameera: %{time}'
+    ratio_string: '%{value_1} of %{value_2}'
+  dashboard:
+    graphics:
+      graphics_title_html: "<b>%{current_quarter_string}</b> keessatti dhukkubsattoota %{patients_in_previous_quarter} yeroo <b>%{previous_quarter_string}</b> keessatti galmaa’an irratti maaltu ta’e?"
+      report_name: "Gabaasa baayyina dhiiga"
+      patients_controlled_in_quarter_html: "Dhukkubsattoota BP wajjiin daawwataman &lt;"
+      patients_uncontrolled_in_quarter_html: "Dhukkubsattoota BP wajjiin daawwataman &ge;"
+      patients_defaulted_in_quarter_html: "Dhukkubsattoonni hordoffii eegame hin hirmaanne"
+      new_patients_registered: "Galmeewwan haaraa"
+      patients_called_for_followup: "Dhukkubsattoota hordoffiidhaf"
+      patients_called_for_missed_followup: "Dhukkubsattoota bilbilameef"
