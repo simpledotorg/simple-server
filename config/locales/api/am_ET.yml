@@ -15,6 +15,7 @@ am_ET:
     request_otp: '<#> %{otp} የእርስዎ ቀላል የማረጋገጫ ኮድ ነው \n%{app_signature}'
     appointment_reminders:
       missed_visit_sms_reminder: 'በ %{facility_name} ያሉት ሰራተኞቻችን እርስዎን እና የልብዎን ጤንነት እያሰቡ ናቸው። ምንም ዓይነት ክትትል ወይም አሳሳቢ ጉዳይ ካለዎት የጤና ቡድናችን ሁልጊዜ እዚህ ይገኛል።'
+      missed_visit_whatsapp_reminder: 'በ %{facility_name} ያሉት ሰራተኞቻችን እርስዎን እና የልብዎን ጤንነት እያሰቡ ናቸው። ምንም ዓይነት ክትትል ወይም አሳሳቢ ጉዳይ ካለዎት የጤና ቡድናችን ሁልጊዜ እዚህ ይገኛል።'
     patient_request_otp: '%{otp} የእርስዎ ቀላል ማረጋገጫ ኮድ ነው\n'
   analytics:
     followup_patients: "ስንት ህመምተኞች %{facility_name} ጎብኝተዋል?"
