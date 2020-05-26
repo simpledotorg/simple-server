@@ -57,6 +57,7 @@ gem 'uglifier', '>= 1.3.0'
 gem 'uuidtools', require: false
 gem 'whenever', require: false
 gem 'wkhtmltoimage-binary'
+gem 'active_record_union'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
