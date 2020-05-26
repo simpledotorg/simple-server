@@ -93,8 +93,11 @@
     "ENABLE_SMS_NOTIFICATION_FOR_OTP": {
       "value": "true"
     },
-    "ENABLE_SMS_REMINDERS": {
+    "ENABLE_APPOINTMENT_REMINDERS": {
       "value": "true"
+    },
+    "ENABLE_WHATSAPP_APPOINTMENT_REMINDERS": {
+      "value": "false"
     },
     "ENABLE_SYNC_ENCOUNTERS": {
       "value": "false"

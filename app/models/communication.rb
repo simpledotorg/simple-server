@@ -11,7 +11,8 @@ class Communication < ApplicationRecord
   enum communication_type: {
     voip_call: 'voip_call',
     manual_call: 'manual_call',
-    missed_visit_sms_reminder: 'missed_visit_sms_reminder'
+    missed_visit_sms_reminder: 'missed_visit_sms_reminder',
+    missed_visit_whatsapp_reminder: 'missed_visit_whatsapp_reminder'
   }
 
   COMMUNICATION_RESULTS = {
