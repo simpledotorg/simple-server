@@ -37,9 +37,10 @@ class Api::V3::UsersController < APIController
     phone_number_authentication.set_otp
     phone_number_authentication.save
 
-    SmsNotificationService
-      .new(user.phone_number, ENV['TWILIO_PHONE_NUMBER'])
-      .send_request_otp_sms(user.otp) unless FeatureToggle.auto_approve_for_qa?
+    unless FeatureToggle.auto_approve_for_qa?
+      delay_seconds = (ENV['USER_OTP_SMS_DELAY_IN_SECONDS'] || DEFAULT_USER_OTP_DELAY_IN_SECONDS).to_i.seconds
+      RequestOtpSmsJob.set(wait: delay_seconds).perform_later(user)
+    end
 
     head :ok
   end
