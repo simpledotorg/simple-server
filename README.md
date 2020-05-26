@@ -43,8 +43,8 @@ rails db:setup
 
 #### Developing with the Android app
 
-To run [simple-android](https://github.com/simpledotorg/simple-android/) app
-with the server running locally, you can use [ngrok](https://ngrok.com).
+To run [simple-android](https://github.com/simpledotorg/simple-android/) app with the server running locally, you can
+use [ngrok](https://ngrok.com).
 
 ```bash
 brew cask install ngrok
@@ -52,8 +52,19 @@ rails server
 ngrok http 3000
 ```
 
-The output of the ngrok command will have an url that can be used to access
-local-server. This url should be set as `qaApiEndpoint` in gradle.properties.
+The output of the ngrok command is HTTP and HTTPS URLs that can be used to access your local server. The HTTP URL cannot
+be used since HTTP traffic will not be supported by the emulator. Configure the following places with the HTTPS URL.
+
+In the `gradle.properties` file in the `simple-android` repository,
+```
+qaManifestEndpoint=<HTTPS URL>
+```
+
+In the `.env.development.local` (you can create this file if it doesn't exist),
+```
+SIMPLE_SERVER_HOST=<HTTPS URL>
+SIMPLE_SERVER_HOST_PROTOCOL=https
+```
 
 #### Workers
 
