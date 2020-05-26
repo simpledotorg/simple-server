@@ -19,8 +19,14 @@ module.exports = {
         '13': '13px',
         '16': '16px',
       },
+      flexGrow: {
+        '2': '2',
+      },
       borderWidth: {
         '3': '3px',
+      },
+      height: {
+        '96': '24rem',
       },
     },
     fontFamily: {
