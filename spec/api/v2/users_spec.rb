@@ -71,9 +71,7 @@ describe 'Users V2 API', swagger_doc: 'v2/swagger.json' do
       let!(:user) { FactoryBot.create(:user, registration_facility: facility) }
 
       before :each do
-        sms_notification_service = double(SmsNotificationService.new(nil, nil))
-        allow(SmsNotificationService).to receive(:new).and_return(sms_notification_service)
-        allow(sms_notification_service).to receive(:send_request_otp_sms).and_return(true)
+        allow(RequestOtpSmsJob).to receive(:perform_later).with(instance_of(User))
       end
 
       response '200', 'user otp is reset and new otp is sent as an sms' do

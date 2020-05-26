@@ -15,6 +15,7 @@ ti-ET:
     request_otp: '<#> %{otp} ናትካ/ኪ ቀሊል ናይ መረጋገጺ ኮድ እዩ\n%{app_signature}'
     appointment_reminders:
       missed_visit_sms_reminder: 'ኣብ %{facility_name} ዘለዉ ኣባላትና ብዛዕባኻን/ኺን ጥዕናኻን/ኺን ይሓስቡ ኣለዉ። ክትትል ዘድልዮም ሕቶታት ወይ ጸገማት ምስ ዝህልዉ ናትና ጉጅለ ሰብ ሞያ ጥዕና ኩሉ ግዜ ኣለዉ።'
+      missed_visit_whatsapp_reminder: 'ኣብ %{facility_name} ዘለዉ ኣባላትና ብዛዕባኻን/ኺን ጥዕናኻን/ኺን ይሓስቡ ኣለዉ። ክትትል ዘድልዮም ሕቶታት ወይ ጸገማት ምስ ዝህልዉ ናትና ጉጅለ ሰብ ሞያ ጥዕና ኩሉ ግዜ ኣለዉ።'
     patient_request_otp: '%{otp} እዚ ቀሊል ናይ መፍለዪ ኮድኩም እዩ\n'
   analytics:
     followup_patients: "ክንደይ ክትትል ዘድልዮም ተሓከምቲ ኣብ %{facility_name} ተመርሚሮም?"
