@@ -5,7 +5,7 @@
         Controlled patients trend
       </p>
       <p class="font-roboto font-normal text-sm text-grey-400">
-        Registered patients with BP &gt;140/90 at their most recent visit in the past 90 days.
+        Registered patients with BP &lt;140/90 at their most recent visit in the past 90 days.
       </p>
     </div>
     <div>
@@ -338,6 +338,13 @@
           displayColors: false,
           yPadding: 12,
           xPadding: 12,
+          callbacks: {
+            label: function(tooltipItem, data) {
+              var value = tooltipItem.value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+              value += " controlled patients";
+              return value;
+            },
+          },
         }
       }
     }
