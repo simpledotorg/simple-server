@@ -1,0 +1,50 @@
+ti:
+  date:
+    month_names: [~, 'ጥሪ', 'ለካቲት', 'መጋቢት', 'ሚያዝያ', 'ግንቦት', 'ሰነ', 'ሓምለ', 'ነሓሰ', 'መስከረም', 'ጥቕምቲ', 'ሕዳር', 'ታሕሳስ']
+    abbr_month_names: [~, 'ጥሪ', 'ለካቲት', 'መጋቢት', 'ሚያዝያ', 'ግንቦት', 'ሰነ', 'ሓምለ', 'ነሓሰ', 'መስከረም', 'ጥቅምቲ', 'ሕዳር', 'ታሕ']
+  today_str: 'ሎሚ መዓልቲ'
+  registration: 'ሓድሽ ምዝገባ'
+  reset_password: 'ውልቃዊ ቁጽሪ መንነት ኣዕርይ/ዪ'
+  login:
+    error_messages:
+      unknown_user: "ንተጠቃሚ ኣይፈለጥናዮን። ኣረጋጊጽካ ዳግማይ ፈትን።"
+      invalid_otp: 'ዘቕረብካዮ ጽምዲ ኣይሳነን እዩ። መሊስካ/ኪ ፈትን/ኒ?'
+      expired_otp: 'ሓድሽ ጽምዲ የድልየካ/ኪ ኣሎ። ሓድሽ ጠይቕ'
+      invalid_password: 'ዘቕረብካዮ ቃል-ይሕለፍ ኣይሳነይን እዩ። መሊስካ/ኪ ፈትን/ኒ?'
+  sms:
+    request_otp: '<#> %{otp} ናትካ/ኪ ቀሊል ናይ መረጋገጺ ኮድ እዩ\n%{app_signature}'
+    appointment_reminders:
+      missed_visit_sms_reminder: 'ኣብ %{facility_name} ዘለዉ ኣባላትና ብዛዕባኻን/ኺን ጥዕናኻን/ኺን ይሓስቡ ኣለዉ። ክትትል ዘድልዮም ሕቶታት ወይ ጸገማት ምስ ዝህልዉ ናትና ጉጅለ ሰብ ሞያ ጥዕና ኩሉ ግዜ ኣለዉ።'
+      missed_visit_whatsapp_reminder: 'ኣብ %{facility_name} ዘለዉ ኣባላትና ብዛዕባኻን/ኺን ጥዕናኻን/ኺን ይሓስቡ ኣለዉ። ክትትል ዘድልዮም ሕቶታት ወይ ጸገማት ምስ ዝህልዉ ናትና ጉጅለ ሰብ ሞያ ጥዕና ኩሉ ግዜ ኣለዉ።'
+    patient_request_otp: '%{otp} እዚ ቀሊል ናይ መፍለዪ ኮድኩም እዩ\n'
+  analytics:
+    followup_patients: "ክንደይ ክትትል ዘድልዮም ተሓከምቲ ኣብ %{facility_name} ተመርሚሮም?"
+    patients_enrolled: "ክንደይ ሓደሽቲ ተሓከምቲ ተመዝጊቦም ይርከቡ ኣብ %{facility_name} ?"
+    all_time_patients: "ካብ ዝኾነ (ይኹን) እዋን፡ %{count} ተሓከምቲ"
+    updated_at: "ዘመናዊ ዝተገብረ ኣብ %{time}"
+  user_analytics:
+    hypertension: 'ልዑል ጸቕጢ ደም'
+    diabetes: 'ሕማም ሽኮር'
+    genders: ['ኩሉ', ተባዕታይ, 'አነስተይቲ', 'ፆታ ዝቐየረ']
+    all_time: 'ኩሉ ጊዜ'
+    follow_up_patients: 'ክትትል ናይ ደም ፀቕጢ ዝግበረሎም ሕሙማት'
+    registered_patients: 'ዝተመዝገቡ ሕሙማት'
+    hypertension_control: 'ቁፅፅር ናይ ደም ፀቕጢ'
+    hypertension_control_desc: 'አብዚ ወርሒ አብዝነበሮም ናይ መወዳእታ ክትትል  ናይ ፀቕጢ ደም መጠኖም(BP) ትሕቲ  140/90 ዘመዝገቡ ክንደይ ሕሙማት አለው?'
+    notes: 'መዘኻኸሪታት'
+    footer_note_1: 'እዚ ዳታ ንኹሎም አብ %{facility_name} ዘለው ተግባራት እዩ እቲ ዳታ መዓልቲ ዝሓለፎ ኮይኑ እተተራእዩኩም፣ አብ ሆም ስክሪን ዘሎ "Sync pending" ዝብል ሊንክ ይጠውቑ'
+    footer_note_2: 'ክትትል ዝግበረሉ ሕሙም አብ ወርሒ ሓደ  ቆፀሮ  ጥረሕ  እዩ ዝቑፀረሉ ሓደ ሕሙም/ቲ እንድሕር ደአ አብ ውሽጢ ሓደ ወርሒ ብተደጋጋሚ ክትትል ገይሩ/ራ፣ እታ ሓንቲ ክትትል ጥራሕ እያ እትቑፀረሉ/ላ'
+    thank_you: 'የቐንየልና'
+    thank_you_note: 'ሕሙማት በዚ  ብምሕካም ንዘርአኹምዎ ብርቱዕ ስራሕ የቐንየልና። ስራሕኩም ን ብዙሓት ሂወታት ካብ ድኻም ልቢን ካብ ናይ ውሽጢ ሓንጎል ደም ምፍሳስ ዘድሕን እዩ።'
+    updated: 'ተሓዲሱ:%{time}'
+    ratio_string: '%{value_1} ካብ %{value_2}'
+  dashboard:
+    graphics:
+      graphics_title_html: "እቶም ኣብ <b>%{current_quarter_string}</b> ኣብ-እዋን <b>%{previous_quarter_string}</b> ዝተመዝገቡ %{patients_in_previous_quarter} ተሓከምቲ እንታይ ኮይኖም?"
+      report_name: "ጸብጻብ ጸቕጢ-ደም"
+      patients_controlled_in_quarter_html: "ክትትል እተገበረሎም ሕሙማት BP ኦም &lt;"
+      patients_uncontrolled_in_quarter_html: "ክትትል እተገበረሎም ሕሙማት BP ኦም &ge;"
+      patients_defaulted_in_quarter_html: "ንክትትል ኣብ ቆጸራኦም ክመጽኡ ትጽቢት ተገይሩሎም ዘይመጽኡ ተሓከምቲ"
+      new_patients_registered: "ሓድሽ ምዝገባታት"
+      patients_called_for_followup: "ናይ ክትትል ተሓከምቲ"
+      patients_called_for_missed_followup: "ዝተጸውዑ ትሓከምቲ"
