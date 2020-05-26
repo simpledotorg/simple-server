@@ -1,9 +1,9 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe NotificationService do
-  let(:twilio_client) { double('TwilioClientDouble') }
+  let(:twilio_client) { double("TwilioClientDouble") }
   let(:fake_callback_url) { "http://localhost/callback" }
-  let(:sender_phone_number) { ENV.fetch('TWILIO_PHONE_NUMBER') }
+  let(:sender_phone_number) { ENV.fetch("TWILIO_PHONE_NUMBER") }
 
   subject(:notification_service) { NotificationService.new }
 
@@ -13,11 +13,11 @@ RSpec.describe NotificationService do
   end
 
   describe "#send_sms" do
-    let(:recipient_phone_number) { '8585858585' }
-    let(:expected_sms_recipient_phone_number) { '+918585858585' }
+    let(:recipient_phone_number) { "8585858585" }
+    let(:expected_sms_recipient_phone_number) { "+918585858585" }
 
     it "correctly calls the Twilio API" do
-      expect(twilio_client).to receive_message_chain('messages.create').with(
+      expect(twilio_client).to receive_message_chain("messages.create").with(
         from: sender_phone_number,
         to: expected_sms_recipient_phone_number,
         status_callback: fake_callback_url,
@@ -29,11 +29,11 @@ RSpec.describe NotificationService do
   end
 
   describe "#send_whatsapp" do
-    let(:recipient_phone_number) { '8182838485' }
-    let(:expected_sms_recipient_phone_number) { '+918182838485' }
+    let(:recipient_phone_number) { "8182838485" }
+    let(:expected_sms_recipient_phone_number) { "+918182838485" }
 
     it "correctly calls the Twilio API" do
-      expect(twilio_client).to receive_message_chain('messages.create').with(
+      expect(twilio_client).to receive_message_chain("messages.create").with(
         from: "whatsapp:#{sender_phone_number}",
         to: "whatsapp:#{expected_sms_recipient_phone_number}",
         status_callback: fake_callback_url,
@@ -47,7 +47,7 @@ RSpec.describe NotificationService do
   describe "#parse_phone_number" do
     before do
       @original_country = Rails.application.config.country
-      Rails.application.config.country = { sms_country_code: '+880' }
+      Rails.application.config.country = {sms_country_code: "+880"}
     end
 
     after do
