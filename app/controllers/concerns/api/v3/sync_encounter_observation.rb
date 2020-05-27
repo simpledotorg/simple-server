@@ -1,7 +1,6 @@
 module Api::V3::SyncEncounterObservation
   extend ActiveSupport::Concern
   included do
-
     def merge_encounter_observation(observation_name, params)
       ActiveRecord::Base.transaction do
         add_encounter_and_merge_record(observation_name, params)
