@@ -370,6 +370,8 @@ ActiveRecord::Schema.define(version: 2020_05_15_101844) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
+    t.integer "failed_attempts", default: 0, null: false
+    t.datetime "locked_at"
   end
 
   create_table "prescription_drugs", id: :uuid, default: nil, force: :cascade do |t|
