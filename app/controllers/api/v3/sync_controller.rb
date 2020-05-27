@@ -40,6 +40,7 @@ class Api::V3::SyncController < APIController
 
   # This is a hook method for subclasses that need to operate on the results after the merge but before the response
   # is sent back to the client.
+  # results will be an array of Hashes, with the key values of either { :record => [Model] } or { :errors_hash => Hash }
   def after_merge_completed(results)
   end
 

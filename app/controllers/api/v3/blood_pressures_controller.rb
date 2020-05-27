@@ -26,6 +26,26 @@ class Api::V3::BloodPressuresController < Api::V3::SyncController
     end
   end
 
+  def after_merge_completed(results)
+    records = results.flat_map { |r| r[:record] }.compact
+    send_to_job(records)
+  end
+
+  def send_to_job(records)
+    records.each do |record|
+      attrs = {
+        assigned_facility: record.patient.registration_facility_id,
+        blood_pressure_id: record.id,
+        diastolic: record.diastolic,
+        patient_id: record.patient_id,
+        recorded_at: record.recorded_at,
+        recorded_at_facility: record.facility_id,
+        systolic: record.systolic,
+      }
+      puts "attrs for rollup: #{attrs}"
+    end
+  end
+
   def transform_to_response(blood_pressure)
     Api::V3::Transformer.to_response(blood_pressure)
   end
