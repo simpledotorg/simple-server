@@ -9,8 +9,9 @@ en:
     error_messages:
       unknown_user: "We don't recognize that user. Please check and try again."
       invalid_otp: 'Your OTP does not match. Try again?'
-      expired_otp: 'You need a fresh OTP. Request a new one.'
+      expired_otp: "Your OTP is expired. Request a new one."
       invalid_password: 'Your password does not match. Try again?'
+      account_locked: "Your account has been locked for the next %{minutes} minutes. Please wait and try again."
   sms:
     request_otp: '<#> %{otp} is your Simple verification code\n%{app_signature}'
     appointment_reminders:
