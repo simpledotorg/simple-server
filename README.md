@@ -91,6 +91,22 @@ mailcatcher
 
 Now you should be able to see test emails at http://localhost:1080
 
+### Review Apps
+
+#### Testing messages
+
+Messages sent through Twilio are currently fixed to specific countries. To override this setting, go to the [heroku console](https://dashboard.heroku.com/pipelines/30a12deb-f419-4dca-ad4a-6f26bf192e6f) and [add/update](https://devcenter.heroku.com/articles/config-vars#managing-config-vars) the `DEFAULT_COUNTRY` config variable on your review app to your desired country. The supported country codes are listed [here](https://github.com/simpledotorg/simple-server/blob/master/config/initializers/countries.rb).
+
+```
+# for US/Canada
+DEFAULT_COUNTRY = US
+
+# for UK
+DEFAULT_COUNTRY = UK
+```
+
+Updating this config will automatically restart the review app and should allow one to receive messages in their appropriate ISD codes. 
+
 ### Configuration
 
 The app uses a base development configuration using `.env.development`. To add or override any configurations during
