@@ -1,10 +1,13 @@
 class PhoneNumberAuthentication < ApplicationRecord
+  include PgSearch::Model
   has_secure_password
 
   has_one :user_authentication, as: :authenticatable
   has_one :user, through: :user_authentication
 
   belongs_to :facility, foreign_key: 'registration_facility_id'
+
+  pg_search_scope :search_by_phone, against: [:phone_number], using: { tsearch: { any_word: true } }
 
   delegate :facility_group, to: :facility
   delegate :organization, to: :facility_group
