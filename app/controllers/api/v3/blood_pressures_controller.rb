@@ -34,15 +34,16 @@ class Api::V3::BloodPressuresController < Api::V3::SyncController
   def send_to_job(records)
     records.each do |record|
       attrs = {
-        assigned_facility: record.patient.registration_facility_id,
+        assigned_facility_id: record.patient.registration_facility_id,
+        blood_pressure_facility_id: record.facility_id,
         blood_pressure_id: record.id,
         diastolic: record.diastolic,
         patient_id: record.patient_id,
         recorded_at: record.recorded_at,
-        recorded_at_facility: record.facility_id,
         systolic: record.systolic,
       }
       puts "attrs for rollup: #{attrs}"
+      BloodPressureRollup.create!(attrs)
     end
   end
 
