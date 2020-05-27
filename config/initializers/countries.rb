@@ -34,7 +34,7 @@ class CountryConfig
       faker_locale: "en-IND",
       time_zone: "America/New_York",
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+1",
-      supported_genders: %w[male female transgender],
+      supported_genders: %w[male female transgender]
     },
     UK: {
       abbreviation: "UK",
@@ -43,7 +43,7 @@ class CountryConfig
       faker_locale: "en-IND",
       time_zone: "Europe/London",
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+44",
-      supported_genders: %w[male female transgender],
+      supported_genders: %w[male female transgender]
     }
   }.with_indifferent_access.freeze
 
