@@ -17,18 +17,6 @@
       "endpoint": "https://api-sandbox.simple.org/api/",
       "display_name": "Ethiopia",
       "isd_code": "251"
-    },
-    {
-      "country_code": "US",
-      "endpoint": "https://api-sandbox.simple.org/api/",
-      "display_name": "United States",
-      "isd_code": "1"
-    },
-    {
-      "country_code": "UK",
-      "endpoint": "https://api-sandbox.simple.org/api/",
-      "display_name": "United Kingdom",
-      "isd_code": "44"
     }
   ]
 }
