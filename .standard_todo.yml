@@ -166,6 +166,7 @@ ignore:
 - app/services/merge_encounter_service.rb
 - app/services/merge_patient_service.rb
 - app/services/sms_notification_service.rb
+- app/services/notification_service.rb
 - app/transformers/api/v2/appointment_transformer.rb
 - app/transformers/api/v2/blood_pressure_transformer.rb
 - app/transformers/api/v2/patient_transformer.rb
@@ -480,6 +481,7 @@ ignore:
 - spec/services/exotel_api_service_spec.rb
 - spec/services/redis_service_spec.rb
 - spec/services/sms_notification_service_spec.rb
+- spec/services/notification_service_spec.rb
 - spec/spec_helper.rb
 - spec/support/rake_test_helper.rb
 - spec/support/twilio_sms_delivery_helper.rb

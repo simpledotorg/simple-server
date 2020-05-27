@@ -26,6 +26,24 @@ class CountryConfig
       time_zone: ENV["DEFAULT_TIME_ZONE"] || "Africa/Addis_Ababa",
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+251",
       supported_genders: %w[male female]
+    },
+    US: {
+      abbreviation: "US",
+      name: "United States",
+      dashboard_locale: "en",
+      faker_locale: "en-IND",
+      time_zone: "America/New_York",
+      sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+1",
+      supported_genders: %w[male female transgender]
+    },
+    UK: {
+      abbreviation: "UK",
+      name: "United Kingdom",
+      dashboard_locale: "en",
+      faker_locale: "en-IND",
+      time_zone: "Europe/London",
+      sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+44",
+      supported_genders: %w[male female transgender]
     }
   }.with_indifferent_access.freeze
 
