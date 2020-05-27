@@ -7,12 +7,11 @@ class Api::V3::SyncController < APIController
   end
 
   def __sync_from_user__(params)
-    errors = params.flat_map { |single_entity_params|
-      res = merge_if_valid(single_entity_params)
-      AuditLog.merge_log(current_user, res[:record]) if res[:record].present?
-      res[:errors_hash] || []
-    }
+    results = merge_records(params)
 
+    after_merge_completed(results)
+
+    errors = results.flat_map { |result| result[:errors_hash] || [] }
     capture_errors params, errors
     response = {errors: errors.nil? ? nil : errors}
     render json: response, status: :ok
@@ -30,6 +29,19 @@ class Api::V3::SyncController < APIController
   end
 
   private
+
+  def merge_records(params)
+    params.flat_map { |single_entity_params|
+      result = merge_if_valid(single_entity_params)
+      AuditLog.merge_log(current_user, result[:record]) if result[:record].present?
+      result
+    }
+  end
+
+  # This is a hook method for subclasses that need to operate on the results after the merge but before the response
+  # is sent back to the client.
+  def after_merge_completed(results)
+  end
 
   def disable_audit_logs?
     false
