@@ -14,7 +14,7 @@ class Admin::UsersController < AdminController
                .order('facilities.name', 'users.full_name', 'users.device_created_at')
 
     @users = if search_query.present?
-               paginate(@users.search_by_name(search_query))
+               paginate(@users.search_by_name_or_phone(search_query))
              else
                paginate(@users)
              end
