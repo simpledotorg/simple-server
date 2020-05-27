@@ -25,5 +25,4 @@ class EmailAuthentication < ApplicationRecord
       errors.add(:password, I18n.translate("errors.messages.password.password_strength"))
     end
   end
-
 end

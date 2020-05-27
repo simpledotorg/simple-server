@@ -4,6 +4,7 @@ class Facility < ApplicationRecord
   include Mergeable
   include QuarterHelper
   extend FriendlyId
+  include PgSearch::Model
 
   before_save :clear_isd_code, unless: -> { teleconsultation_phone_number.present? }
 
@@ -34,6 +35,8 @@ class Facility < ApplicationRecord
            -> { with_hypertension },
            class_name: "Patient",
            foreign_key: "registration_facility_id"
+
+  pg_search_scope :search_by_name, against: { name: 'A', slug: 'B' }, using: { tsearch: { prefix: true, any_word: true } }
 
   enum facility_size: {
     community: "community",
