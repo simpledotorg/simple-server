@@ -6,7 +6,12 @@ class AdminsController < AdminController
 
   def index
     authorize([:manage, :admin, User])
-    @admins = policy_scope([:manage, :admin, User]).sort_by(&:email)
+    @admins = policy_scope([:manage, :admin, User])
+    @admins = if search_query.present?
+                @admins.search_by_name_or_email(search_query).sort_by(&:email)
+              else
+                @admins.sort_by(&:email)
+              end
   end
 
   def show
@@ -54,6 +59,10 @@ class AdminsController < AdminController
 
   def permission_params
     params[:permissions]
+  end
+
+  def search_query
+    params[:search_query]
   end
 
   def user_params
