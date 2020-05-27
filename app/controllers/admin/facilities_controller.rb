@@ -8,7 +8,23 @@ class Admin::FacilitiesController < AdminController
 
   def index
     authorize([:manage, :facility, Facility])
-    @organizations = policy_scope([:manage, :facility, Organization])
+
+    if search_query.present?
+      facilities = policy_scope([:manage, :facility, Facility]).search_by_name(search_query)
+      facility_groups = FacilityGroup.where(facilities: facilities)
+
+      @organizations = Organization.where(facility_groups: facility_groups)
+      @facility_groups = facility_groups.group_by(&:organization)
+      @facilities = facilities.group_by(&:facility_group)
+    else
+      @organizations = policy_scope([:manage, :facility, Organization])
+      @facility_groups = @organizations.map { |organization|
+        [organization, policy_scope([:manage, :facility, organization.facility_groups])]
+      }.to_h
+      @facilities = @facility_groups.values.flatten.map { |facility_group|
+        [facility_group, policy_scope([:manage, :facility, facility_group.facilities])]
+      }.to_h
+    end
   end
 
   def show
@@ -58,6 +74,10 @@ class Admin::FacilitiesController < AdminController
   end
 
   private
+
+  def search_query
+    params[:search_query]
+  end
 
   def new_facility(attributes = nil)
     @facility_group.facilities.new(attributes).tap do |facility|
@@ -115,8 +135,7 @@ class Admin::FacilitiesController < AdminController
   def validate_duplicate_rows
     facilities_slice = @facilities.map { |facility|
       facility.slice(:organization_name, :facility_group_name, :name) }
-    @errors << 'Uploaded file has duplicate facilities' if
-        facilities_slice.count != facilities_slice.uniq.count
+    @errors << 'Uploaded file has duplicate facilities' if facilities_slice.count != facilities_slice.uniq.count
   end
 
   def validate_facilities
@@ -124,8 +143,7 @@ class Admin::FacilitiesController < AdminController
     row_num = 2
     @facilities.each do |facility|
       import_facility = Facility.new(facility)
-      @row_errors << [row_num, import_facility.errors.full_messages.to_sentence] if
-          import_facility.invalid?
+      @row_errors << [row_num, import_facility.errors.full_messages.to_sentence] if import_facility.invalid?
       row_num += 1
     end
     if @row_errors.present?
@@ -143,7 +161,7 @@ class Admin::FacilitiesController < AdminController
 
   def group_row_errors
     grouped_errors = []
-    unique_errors = @row_errors.map { |row, message | message }.uniq
+    unique_errors = @row_errors.map { |row, message| message }.uniq
     unique_errors.each do |error|
       rows = @row_errors.select { |row, message| row if error == message }.map { |row, message| row }
       grouped_errors << "Row(s) #{rows.join(', ')}: #{error}"

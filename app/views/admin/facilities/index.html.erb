@@ -14,6 +14,24 @@
   </div>
 </div>
 
+<%= bootstrap_form_with(url: admin_facilities_path, method: :get, class: "mt-3", local: true) do |form| %>
+  <div class="row mb-5">
+    <div class="col col-12 col-md-11 mb-2">
+      <%= form.search_field :search_query,
+                            hide_label: true,
+                            prepend: "<i class='fa fa-search'></i>".html_safe,
+                            placeholder: "Search by facility name ...",
+                            value: params[:search_query],
+                            autofocus: params[:search_query].blank?,
+                            tabindex: 2,
+                            wrapper: false %>
+    </div>
+    <div class="col col-12 col-md-1 mb-2 pl-md-0">
+      <%= form.submit "Search", class: "btn btn-success btn-block", wrapper: false, tabindex: 3 %>
+    </div>
+  </div>
+<% end %>
+
 <div class="alert alert-info alert-dismissible fade show" role="alert">
     <i class="far fa-question-circle mr-2"></i> A <span class="term">Facility Group</span> is usually a <span class="term">District</span>. First, add a new facility group and then add facilities inside it.
   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -25,7 +43,7 @@
   <% if @organizations.size > 1 %><h2 class="mt-5 mb-3"><span class="heading-label">Organization</span><%= organization.name %></h2>
   <% end %>
 
-  <% policy_scope([:manage, :facility, organization.facility_groups]).order(:name).each do |facility_group| %>
+  <% @facility_groups.dig(organization).sort_by(&:name).each do |facility_group| %>
     <div class="card">
       <div class="row">
         <div class="col-10">
@@ -52,8 +70,7 @@
           </div>
       </div>
 
-      <% policy_scope([:manage, :facility, facility_group.facilities]).order(:name).each do |facility| %>
-
+      <% @facilities.dig(facility_group).sort_by(&:name).each do |facility| %>
         <div class="row card-row">
           <div class="col-md-4">
             <h5>
