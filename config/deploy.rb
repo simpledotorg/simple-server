@@ -14,7 +14,7 @@ set :branch, ENV["BRANCH"] || "master"
 
 # sidekiq configuration
 set :sidekiq_roles, :sidekiq
-set :sidekiq_processes, 1
+set :sidekiq_processes, 4
 set :bundler_path, "/home/deploy/.rbenv/shims/bundle"
 set :init_system, :systemd
 set :pty, false
