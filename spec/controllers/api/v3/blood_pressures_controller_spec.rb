@@ -48,7 +48,7 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
       end
 
       describe "updates records" do
-        fit "with updated record attributes" do
+        it "with updated record attributes" do
           post :sync_from_user, params: updated_payload, as: :json
 
           updated_records.each do |record|
@@ -67,7 +67,7 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
         request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
       end
 
-      fit "creates new blood pressures with associated patient" do
+      it "creates new blood pressures with associated patient" do
         patient = FactoryBot.create(:patient)
         blood_pressures = (1..3).map {
           build_blood_pressure_payload(FactoryBot.build(:blood_pressure, patient: patient))
