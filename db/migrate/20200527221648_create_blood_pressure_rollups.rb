@@ -1,7 +1,6 @@
 class CreateBloodPressureRollups < ActiveRecord::Migration[5.2]
   def change
-    create_table :blood_pressure_rollups, id: false do |t|
-      t.uuid :id, primary_key: true
+    create_table :blood_pressure_rollups, id: :uuid do |t|
       t.references :assigned_facility, type: :uuid, null: false, foreign_key: {to_table: :facilities}
       t.references :blood_pressure_facility, type: :uuid, null: false, foreign_key: {to_table: :facilities}
       t.references :blood_pressure, type: :uuid, null: false, foreign_key: true
