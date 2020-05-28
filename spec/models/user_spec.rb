@@ -64,47 +64,49 @@ RSpec.describe User, type: :model do
   end
 
   describe "Search" do
-    shared_examples "searches whole words against full_names" do |search_method|
-      let(:user_1) { create(:user, full_name: "Sri Priyanka John") }
-      let(:user_2) { create(:user, full_name: "Priya Sri Gupta") }
+    shared_examples "full_name search" do |search_method|
+      context 'searches whole words against full names' do
+        let!(:user_1) { create(:user, full_name: "Sri Priyanka John") }
+        let!(:user_2) { create(:user, full_name: "Priya Sri Gupta") }
 
-      ["Sri", "sri", "SRi", "sRi", "SRI", "sRI"].each do |term|
-        it "returns results for case-insensitive searches: #{term.inspect}" do
-          expect(User.public_send(search_method, term)).to match_array([user_1, user_2])
+        ["Sri", "sri", "SRi", "sRi", "SRI", "sRI"].each do |term|
+          it "returns results for case-insensitive searches: #{term.inspect}" do
+            expect(User.public_send(search_method, term)).to match_array([user_1, user_2])
+          end
         end
-      end
 
-      ["Priyanka", "John", "Priyanka John"].each do |term|
-        it "matches on first name, last name or full names: #{term.inspect}" do
-          expect(User.public_send(search_method, term)).to match_array(user_1)
+        ["Priyanka", "John", "Priyanka John"].each do |term|
+          it "matches on first name, last name or full names: #{term.inspect}" do
+            expect(User.public_send(search_method, term)).to match_array(user_1)
+          end
         end
-      end
 
-      ["pri", "sr"].each do |term|
-        it "partially matches on first name, last name or full names: #{term.inspect}" do
-          expect(User.public_send(search_method, term)).to match_array([user_1, user_2])
+        ["pri", "sr"].each do |term|
+          it "partially matches on first name, last name or full names: #{term.inspect}" do
+            expect(User.public_send(search_method, term)).to match_array([user_1, user_2])
+          end
         end
-      end
 
-      ["\n\n", ""].each do |term|
-        it "returns nothing for unmatched searches: #{term.inspect}" do
-          expect(User.public_send(search_method, term)).to be_empty
+        ["\n\n", ""].each do |term|
+          it "returns nothing for unmatched searches: #{term.inspect}" do
+            expect(User.public_send(search_method, term)).to be_empty
+          end
         end
-      end
 
-      ["gupta\n\n\r", "\b      gupta         "].each do |term|
-        it "ignores escape characters and whitespace around words: #{term.inspect}" do
-          expect(User.public_send(search_method, term)).to match_array(user_2)
+        ["gupta\n\n\r", "\b      gupta         "].each do |term|
+          it "ignores escape characters and whitespace around words: #{term.inspect}" do
+            expect(User.public_send(search_method, term)).to match_array(user_2)
+          end
         end
       end
     end
 
     describe ".search_by_name_or_phone" do
-      include_examples "searches whole words against full_names", :search_by_name_or_phone
+      include_examples "full_name search", :search_by_name_or_phone
 
       context "searches against phone_number" do
-        let(:user_1) { create(:user, full_name: "Sri Priyanka John") }
-        let(:user_2) { create(:user, full_name: "Priya Sri Gupta") }
+        let!(:user_1) { create(:user, full_name: "Sri Priyanka John") }
+        let!(:user_2) { create(:user, full_name: "Priya Sri Gupta") }
 
         it "matches a user with a phone number" do
           expect(User.search_by_name_or_phone(user_1.phone_number)).to match_array(user_1)
@@ -137,7 +139,7 @@ RSpec.describe User, type: :model do
     end
 
     describe ".search_by_name_or_email" do
-      include_examples "searches whole words against full_names", :search_by_name_or_email
+      include_examples "full_name search", :search_by_name_or_email
 
       context "searches against email" do
         let!(:admin_1) { create(:admin, full_name: "Sri Priyanka John") }
@@ -156,8 +158,6 @@ RSpec.describe User, type: :model do
         end
 
         it "matches a combination of name and email from the same admin" do
-          p User.count
-
           expect(User.search_by_name_or_email(admin_1.email + " " + "John"))
             .to match_array(admin_1)
 
