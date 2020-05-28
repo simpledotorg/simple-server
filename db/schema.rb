@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_27_182353) do
+ActiveRecord::Schema.define(version: 2020_05_28_113844) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -221,6 +221,8 @@ ActiveRecord::Schema.define(version: 2020_05_27_182353) do
     t.boolean "enable_teleconsultation", default: false, null: false
     t.string "teleconsultation_phone_number"
     t.string "teleconsultation_isd_code"
+    t.index "to_tsvector('simple'::regconfig, COALESCE((name)::text, ''::text))", name: "index_gin_facilities_on_name", using: :gin
+    t.index "to_tsvector('simple'::regconfig, COALESCE((slug)::text, ''::text))", name: "index_gin_facilities_on_slug", using: :gin
     t.index ["deleted_at"], name: "index_facilities_on_deleted_at"
     t.index ["enable_diabetes_management"], name: "index_facilities_on_enable_diabetes_management"
     t.index ["facility_group_id"], name: "index_facilities_on_facility_group_id"
@@ -374,6 +376,7 @@ ActiveRecord::Schema.define(version: 2020_05_27_182353) do
     t.integer "failed_attempts", default: 0, null: false
     t.datetime "locked_at"
     t.index "to_tsvector('simple'::regconfig, COALESCE((phone_number)::text, ''::text))", name: "index_gin_phone_number_authentications_on_phone_number", using: :gin
+    t.index ["deleted_at"], name: "index_phone_number_authentications_on_deleted_at"
   end
 
   create_table "prescription_drugs", id: :uuid, default: nil, force: :cascade do |t|
@@ -460,6 +463,7 @@ ActiveRecord::Schema.define(version: 2020_05_27_182353) do
     t.string "role"
     t.uuid "organization_id"
     t.index "to_tsvector('simple'::regconfig, COALESCE((full_name)::text, ''::text))", name: "index_gin_users_on_full_name", using: :gin
+    t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["organization_id"], name: "index_users_on_organization_id"
   end
 
