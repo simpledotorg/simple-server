@@ -19,7 +19,7 @@ class CreateBloodPressureRollups < ActiveRecord::Migration[5.2]
     end
 
     add_index :blood_pressure_rollups,
-      [:blood_pressure_id, :patient_id, :period_number, :period_type, :year],
+      [:patient_id, :period_number, :period_type, :year],
       name: "one_blood_pressure_per_patient_per_period",
       unique: true
   end

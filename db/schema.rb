@@ -73,8 +73,8 @@ ActiveRecord::Schema.define(version: 2020_05_27_221648) do
     t.datetime "updated_at", null: false
     t.index ["assigned_facility_id"], name: "index_blood_pressure_rollups_on_assigned_facility_id"
     t.index ["blood_pressure_facility_id"], name: "index_blood_pressure_rollups_on_blood_pressure_facility_id"
-    t.index ["blood_pressure_id", "patient_id", "period_number", "period_type", "year"], name: "one_blood_pressure_per_patient_per_period", unique: true
     t.index ["blood_pressure_id"], name: "index_blood_pressure_rollups_on_blood_pressure_id"
+    t.index ["patient_id", "period_number", "period_type", "year"], name: "one_blood_pressure_per_patient_per_period", unique: true
     t.index ["patient_id"], name: "index_blood_pressure_rollups_on_patient_id"
   end
 
