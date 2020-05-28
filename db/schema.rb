@@ -57,7 +57,7 @@ ActiveRecord::Schema.define(version: 2020_05_27_221648) do
     t.index ["user_id"], name: "index_appointments_on_user_id"
   end
 
-  create_table "blood_pressure_rollups", id: :uuid, default: nil, force: :cascade do |t|
+  create_table "blood_pressure_rollups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "assigned_facility_id", null: false
     t.uuid "blood_pressure_facility_id", null: false
     t.uuid "blood_pressure_id", null: false
