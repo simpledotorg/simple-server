@@ -177,9 +177,4 @@ class User < ApplicationRecord
   def resources
     user_permissions.map(&:resource)
   end
-
-  def bench_data
-    $unames = User.all.map(&:full_name)
-    $phones = User.all.map(&:phone_number)
-  end
 end
