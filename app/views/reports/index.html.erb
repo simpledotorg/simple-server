@@ -275,6 +275,8 @@
     controlledPatientsTrendCanvas.createLinearGradient(0, 400, 0, -300);
   greenGradientFill.addColorStop(0, "rgba(81, 205, 130, 0)");
   greenGradientFill.addColorStop(1, "rgba(81, 205, 130, 0.2)");
+  var controlled_patients = JSON.parse('<%= raw(@controlled_patients.to_json) %>');
+  console.log(controlled_patients);
   const trendData = [
     3409,
     3712,
