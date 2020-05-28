@@ -117,7 +117,7 @@
       <div class="mt-8 md:flex-grow md:flex md:items-center md:justify-between md:mt-0">
         <div class="mb-6 text-center md:flex-grow md:mb-0">
           <p class="font-roboto font-bold leading-tight text-6xl text-green-200 md:h-20 md:mb-4">
-            <%= @control_rate.values.last %>%
+            <%= @control_rate.values.last.to_f %>%
           </p>
           <p class="font-roboto font-bold text-xl text-black md:text-base">
             <%= number_with_delimiter(@controlled_patients.values.last, :delimiter => ",") %> of <%= number_with_delimiter(@registrations.values.last, :delimiter => ",") %> patients
