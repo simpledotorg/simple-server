@@ -1,5 +1,5 @@
 class BloodPressureRollup < ApplicationRecord
-  upsert_keys ["blood_pressure_id", "patient_id", "period_number", "period_type", "year"]
+  upsert_keys ["patient_id", "period_number", "period_type", "year"]
 
   belongs_to :blood_pressure
   belongs_to :patient
@@ -32,9 +32,11 @@ class BloodPressureRollup < ApplicationRecord
     month_attrs = attrs.merge(period_type: :month, period_number: month)
     quarter_attrs = attrs.merge(period_type: :quarter, period_number: quarter)
     month_rollup = BloodPressureRollup.new(month_attrs)
-    month_rollup.upsert(attributes: [:diastolic, :systolic, :recorded_at])
+    month_rollup.upsert(attributes: [:blood_pressure_id, :diastolic, :systolic, :recorded_at],
+      arel_condition: BloodPressureRollup.arel_table[:recorded_at].lt(blood_pressure.recorded_at))
     quarter_rollup = BloodPressureRollup.new(quarter_attrs)
-    quarter_rollup.upsert(attributes: [:diastolic, :systolic, :recorded_at])
+    quarter_rollup.upsert(attributes: [:blood_pressure_id, :diastolic, :systolic, :recorded_at],
+      arel_condition: BloodPressureRollup.arel_table[:recorded_at].lt(blood_pressure.recorded_at))
   end
 
   def self.quarter_for_month(month)
