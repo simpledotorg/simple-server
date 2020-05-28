@@ -1,22 +1,129 @@
 class ReportsController < ApplicationController
   layout "reports"
   def index
+    @district_name = "North Stateland"
+    @report_period = "APR-2020"
+    # 20% Bathinda population
+    @hypertensive_population = 57162
     @controlled_patients = {
-      "Jan 2017" => 323423,
-      "Feb 2017" => 23423,
+      "Jan 2018" => 59,
+      "Feb 2018" => 154,
+      "Mar 2018" => 239,
+      "Apr 2018" => 329,
+      "May 2018" => 331,
+      "Jun 2018" => 378,
+      "Jul 2018" => 468,
+      "Aug 2018" => 547,
+      "Sep 2018" => 678,
+      "Oct 2018" => 684,
+      "Nov 2018" => 763,
+      "Dec 2018" => 705,
+      "Jan 2019" => 867,
+      "Feb 2019" => 1153,
+      "Mar 2019" => 1518,
+      "Apr 2019" => 1850,
+      "May 2019" => 2149,
+      "Jun 2019" => 2366,
+      "Jul 2019" => 2622,
+      "Aug 2019" => 2782,
+      "Sep 2019" => 3541,
+      "Oct 2019" => 3675,
+      "Nov 2019" => 3766,
+      "Dec 2019" => 3596,
+      "Jan 2020" => 3746,
+      "Feb 2020" => 4515,
+      "Mar 2020" => 5239,
+      "Apr 2020" => 5452,
+    }
+    @control_rate = {
+      "Jan 2018" => 10,
+      "Feb 2018" => 12,
+      "Mar 2018" => 15,
+      "Apr 2018" => 17,
+      "May 2018" => 16,
+      "Jun 2018" => 17,
+      "Jul 2018" => 19,
+      "Aug 2018" => 20,
+      "Sep 2018" => 23,
+      "Oct 2018" => 20,
+      "Nov 2018" => 19,
+      "Dec 2018" => 15,
+      "Jan 2019" => 16,
+      "Feb 2019" => 17,
+      "Mar 2019" => 19,
+      "Apr 2019" => 22,
+      "May 2019" => 23,
+      "Jun 2019" => 24,
+      "Jul 2019" => 24,
+      "Aug 2019" => 25,
+      "Sep 2019" => 29,
+      "Oct 2019" => 28,
+      "Nov 2019" => 27,
+      "Dec 2019" => 24,
+      "Jan 2020" => 23,
+      "Feb 2020" => 26,
+      "Mar 2020" => 29,
+      "Apr 2020" => 29,
     }
     @registrations = {
-      "Jan 2017" => 323423,
-      "Feb 2017" => 23423,
+      "Jan 2018" => 606,
+      "Feb 2018" => 1282,
+      "Mar 2018" => 1636,
+      "Apr 2018" => 1919,
+      "May 2018" => 2112,
+      "Jun 2018" => 2239,
+      "Jul 2018" => 2468,
+      "Aug 2018" => 2732,
+      "Sep 2018" => 2955,
+      "Oct 2018" => 3354,
+      "Nov 2018" => 3994,
+      "Dec 2018" => 4726,
+      "Jan 2019" => 5537,
+      "Feb 2019" => 6653,
+      "Mar 2019" => 7808,
+      "Apr 2019" => 8587,
+      "May 2019" => 9431,
+      "Jun 2019" => 9998,
+      "Jul 2019" => 10725,
+      "Aug 2019" => 11308,
+      "Sep 2019" => 12223,
+      "Oct 2019" => 13092,
+      "Nov 2019" => 14027,
+      "Dec 2019" => 15174,
+      "Jan 2020" => 16218,
+      "Feb 2020" => 17450,
+      "Mar 2020" => 18223,
+      "Apr 2020" => 18587,
     }
-    @quarterly_registrations = {
-      "Q2-2019" => {
-        "visisted_and_controlled" => 324234,
-        "visisted_and_uncontrolled" => 23423,
-        "no_bp_measure" => 234234
-      }
-
-
-    }
+    @quarterly_registrations = [
+      {
+        "results_in" => "Q3-2019",
+        "patients_registered" => "Q2-2019",
+        "visited_and_controlled" => 33000,
+        "visited_and_uncontrolled" => 25000,
+        "no_bp_measure" => 42000,
+      },
+      {
+        "results_in" => "Q2-2019",
+        "patients_registered" => "Q1-2019",
+        "visited_and_controlled" => 40000,
+        "visited_and_uncontrolled" => 21000,
+        "no_bp_measure" => 39000,
+      },
+      {
+        "results_in" => "Q1-2019",
+        "patients_registered" => "Q4-2018",
+        "visited_and_controlled" => 20000,
+        "visited_and_uncontrolled" => 50000,
+        "no_bp_measure" => 30000,
+      },
+      {
+        "results_in" => "Q4-2018",
+        "patients_registered" => "Q3-2018",
+        "visited_and_controlled" => 75000,
+        "visited_and_uncontrolled" => 10000,
+        "no_bp_measure" => 15000,
+      },
+    ]
   end
 end

@@ -14,17 +14,17 @@
       </div>
       <div class="ml-1">
         <p class="font-roboto font-bold text-xs text-blue-200">
-          North Stateland
+          <%= @district_name %>
         </p>
       </div>
     </div>
     <h1 class="mb-2 font-roboto font-bold text-4xl text-black">
-      North Stateland
+      <%= @district_name %>
     </h1>
     <div class="flex items-center mb-4">
       <div class="mr-1">
         <p class="font-roboto font-bold text-lg text-black">
-          Report for OCT-2019
+          Report for <%= @report_period %>
         </p>
       </div>
       <div>
@@ -48,7 +48,7 @@
       </div>
     </div>
     <p class="font-roboto font-normal text-base text-grey-400">
-      Last updated 12-NOV-2019
+      Last updated <%= @report_period %>
     </p>
   </div>
 </div>
@@ -63,15 +63,17 @@
             Controlled patients trend
           </p>
           <p class="font-roboto font-normal text-sm text-grey-400">
-            Registered patients with BP &lt;140/90 at their most recent visit in the past 90 days.
+            Registered patients with BP &lt;140/90 at their most recent visit in the past <%= @controlled_patients.length %> months
           </p>
         </div>
         <div>
           <p class="font-roboto font-bold text-4xl text-green-200">
-            14,200
+            <%= number_with_delimiter(@controlled_patients.values.last, :delimiter => ",") %>
           </p>
           <p class="font-roboto font-normal text-sm text-grey-400">
-            <span class="font-bold">0.3%</span> of estimated 4,200,000 hypertensive population
+            <% controlled_patient_trend_percentage = ((@controlled_patients.values.last.to_f/@hypertensive_population.to_f)*100).round(2) %>
+            <% formatted_htn_pop = number_with_delimiter(@hypertensive_population, :delimiter => ",") %>
+            <span class="font-bold"><%= controlled_patient_trend_percentage %>%</span> of estimated <%= formatted_htn_pop %> hypertensive population
           </p>
         </div>
       </div>
@@ -85,7 +87,7 @@
               Start
             </p>
             <p class="font-roboto font-normal text-sm text-black">
-              Jan 2017
+              <%= @controlled_patients.keys[0] %>
             </p>
           </div>
           <div class="text-right">
@@ -93,7 +95,8 @@
               Current
             </p>
             <p class="font-roboto font-normal text-sm text-black">
-              Apr 2020
+              <% total_controlled_patient_periods = @controlled_patients.length - 1 %>
+              <%= @controlled_patients.keys[total_controlled_patient_periods] %>
             </p>
           </div>
         </div>
@@ -108,16 +111,16 @@
           Control rate of all registered HTN patients
         </p>
         <p class="font-roboto font-normal text-sm text-grey-400">
-          Proportion of registered patients with BP &gt;140/90 at their most recent visit in the past 90 days
+          Proportion of registered patients with BP &gt;140/90 at their most recent visit in the past <%= @control_rate.length %> months
         </p>
       </div>
       <div class="mt-8 md:flex-grow md:flex md:items-center md:justify-between md:mt-0">
         <div class="mb-6 text-center md:flex-grow md:mb-0">
           <p class="font-roboto font-bold leading-tight text-6xl text-green-200 md:h-20 md:mb-4">
-            48.9%
+            <%= @control_rate.values.last %>%
           </p>
           <p class="font-roboto font-bold text-xl text-black md:text-base">
-            14,200 of 28,400 patients
+            <%= number_with_delimiter(@controlled_patients.values.last, :delimiter => ",") %> of <%= number_with_delimiter(@registrations.values.last, :delimiter => ",") %> patients
           </p>
         </div>
         <div class="md:flex md:flex-col md:items-center md:flex-grow">
@@ -125,7 +128,7 @@
             <canvas id="controlRateOfAllRegisteredPatients"></canvas>
           </div>
           <p class="font-roboto font-bold text-sm text-black md:text-base md:font-medium md:text-grey-400">
-            Last 12 months
+            Last <%= @control_rate.length %> months
           </p>
         </div>
       </div>
@@ -145,10 +148,12 @@
         </div>
         <div>
           <p class="font-roboto font-bold text-4xl text-purple-200">
-            28,400
+            <%= number_with_delimiter(@registrations.values.last, :delimiter => ",") %>
           </p>
           <p class="font-roboto font-normal text-sm text-grey-400">
-            <span class="font-bold">0.6%</span> of estimated 4,200,000 hypertensive population
+            <% formatted_htn_pop = number_with_delimiter(@hypertensive_population, :delimiter => ",") %>
+            <% cumulative_registrations_percentage = ((@registrations.values.last.to_f/@hypertensive_population.to_f)*100).round(2) %>
+            <span class="font-bold"><%= cumulative_registrations_percentage %>%</span> of estimated <%= formatted_htn_pop %> hypertensive population
           </p>
         </div>
       </div>
@@ -162,7 +167,7 @@
               Start
             </p>
             <p class="font-roboto font-normal text-sm text-black">
-              Jan 2017
+              <%= @registrations.keys[0] %>
             </p>
           </div>
           <div class="text-right">
@@ -170,7 +175,8 @@
               Current
             </p>
             <p class="font-roboto font-normal text-sm text-black">
-              May 2020
+              <% total_controlled_patient_periods = @registrations.length - 1 %>
+              <%= @registrations.keys[total_controlled_patient_periods] %>
             </p>
           </div>
         </div>
@@ -211,63 +217,34 @@
         </div>
       </div>
       <div class="md:flex md:flex-wrap">
-        <div class="mb-4 md:w-1/2 md:pr-2">
-          <div>
-            <p class="font-roboto font-bold text-sm text-black">
-              Results in Q3-2019
-            </p>
-            <p class="font-roboto font-medium text-sm text-black">
-              Patients registered Q2-2019
-            </p>
+        <% @quarterly_registrations.each_with_index do |cohort, index| %>
+          <div class="mb-4 md:w-1/2 <%= index.even? ? "md:pr-2" : "md:pl-2" %> <%= @quarterly_registrations.length - 2 >= index ? "md:mb-0" : "" %>">
+            <div>
+              <p class="font-roboto font-bold text-sm text-black">
+                Results in <%= cohort["results_in"] %>
+              </p>
+              <p class="font-roboto font-medium text-sm text-black">
+                Patients registered <%= cohort["patients_registered"] %>
+              </p>
+            </div>
+            <div class="relative h-12">
+              <canvas id="quarterlyCohortResults<%= index+1 %>"></canvas>
+            </div>
           </div>
-          <div class="relative h-12">
-            <canvas id="quarterlyCohortResults1"></canvas>
-          </div>
-        </div>
-        <div class="mb-4 md:w-1/2 md:pl-2">
-          <div>
-            <p class="font-roboto font-bold text-sm text-black">
-              Results in Q2-2019
-            </p>
-            <p class="font-roboto font-medium text-sm text-black">
-              Patients registered Q1-2019
-            </p>
-          </div>
-          <div class="relative h-12">
-            <canvas id="quarterlyCohortResults2"></canvas>
-          </div>
-        </div>
-        <div class="mb-4 md:w-1/2 md:pr-2 md:mb-0">
-          <div>
-            <p class="font-roboto font-bold text-sm text-black">
-              Results in Q1-2019
-            </p>
-            <p class="font-roboto font-medium text-sm text-black">
-              Patients registered Q4-2018
-            </p>
-          </div>
-          <div class="relative h-12">
-            <canvas id="quarterlyCohortResults3"></canvas>
-          </div>
-        </div>
-        <div class="md:w-1/2 md:pl-2">
-          <div>
-            <p class="font-roboto font-bold text-sm text-black">
-              Results in Q4-2018
-            </p>
-            <p class="font-roboto font-medium text-sm text-black">
-              Patients registered Q3-2018
-            </p>
-          </div>
-          <div class="relative h-12">
-            <canvas id="quarterlyCohortResults4"></canvas>
-          </div>
-        </div>
+        <% end %>
       </div>
     </div>
   </div>
 </div>
 <script>
+  // Data
+  const controlledPatientData = JSON.parse('<%= raw(@controlled_patients.to_json) %>');
+  const registrationsData = JSON.parse('<%= raw(@registrations.to_json) %>');
+  const controlRateData = JSON.parse('<%= raw(@control_rate.to_json) %>');
+  const quarterlyRegistrationsData = JSON.parse('<%= raw(@quarterly_registrations.to_json) %>');
+  const controlledPatients = Object.entries(controlledPatientData);
+  const registrations = Object.entries(registrationsData);
+  const controlRate = Object.entries(controlRateData);
   // Controlled patients trend
   var controlledPatientsTrendCanvas =
     document.getElementById("controlledPatientsTrend").getContext("2d");
@@ -275,106 +252,22 @@
     controlledPatientsTrendCanvas.createLinearGradient(0, 400, 0, -300);
   greenGradientFill.addColorStop(0, "rgba(81, 205, 130, 0)");
   greenGradientFill.addColorStop(1, "rgba(81, 205, 130, 0.2)");
-  var controlled_patients = JSON.parse('<%= raw(@controlled_patients.to_json) %>');
-  console.log(controlled_patients);
-  const trendData = [
-    3409,
-    3712,
-    3901,
-    4001,
-    4051,
-    4200,
-    7004,
-    7120,
-    7707,
-    8020,
-    8102,
-    8600,
-    9000,
-    9500,
-    9967,
-    9999,
-    10001,
-    10451,
-    10781,
-    10800,
-    10801,
-    10802,
-    11501,
-    11550,
-    11599,
-    11700,
-    11800,
-    11900,
-    11900,
-    11999,
-    11999,
-    12000,
-    12001,
-    12002,
-    12100,
-    14200,
-  ];
-  const trendLabels = [
-    "May 2017",
-    "Jun 2017",
-    "Jul 2017",
-    "Aug 2017",
-    "Sep 2017",
-    "Oct 2017",
-    "Nov 2017",
-    "Dec 2017",
-    "Jan 2018",
-    "Feb 2018",
-    "Mar 2018",
-    "Apr 2018",
-    "May 2018",
-    "Jun 2018",
-    "Jul 2018",
-    "Aug 2018",
-    "Sep 2018",
-    "Oct 2018",
-    "Nov 2018",
-    "Dec 2018",
-    "Jan 2019",
-    "Feb 2019",
-    "Mar 2019",
-    "Apr 2019",
-    "May 2019",
-    "Jun 2019",
-    "Jul 2019",
-    "Aug 2019",
-    "Sep 2019",
-    "Oct 2019",
-    "Nov 2019",
-    "Dec 2019",
-    "Jan 2020",
-    "Feb 2020",
-    "Mar 2020",
-    "Apr 2020",
-  ];
   var controlledPatientsTrendChart = new Chart(
     controlledPatientsTrendCanvas,
     {
       type: "line",
       data: {
-        labels: trendLabels,
-        lineTension: 0,
+        labels: controlledPatients.map(key => key[0]),
         datasets: [{
           backgroundColor: greenGradientFill,
           borderColor: "rgba(81, 205, 130, 1)",
           pointStyle: "dash",
-          data: trendData,
+          data: controlledPatients.map(key => key[1]),
         }],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        elements: {
-          line: {
-            tension: 0,
-          },
-        },
         legend: {
           display: false,
         },
@@ -426,23 +319,17 @@
     {
       type: "line",
       data: {
-        labels: trendLabels,
-        lineTension: 0,
+        labels: registrations.map(key => key[0]),
         datasets: [{
           backgroundColor: purpleGradientFill,
           borderColor: "rgba(157, 74, 199, 1)",
           pointStyle: "dash",
-          data: trendData.map(point => point * 2),
+          data: registrations.map(key => key[1]),
         }],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        elements: {
-          line: {
-            tension: 0,
-          },
-        },
         legend: {
           display: false,
         },
@@ -490,39 +377,13 @@
     {
       type: "line",
       data: {
-        labels: [
-          "May 2019",
-          "Jun 2019",
-          "Jul 2019",
-          "Aug 2019",
-          "Sep 2019",
-          "Oct 2019",
-          "Nov 2019",
-          "Dec 2019",
-          "Jan 2020",
-          "Feb 2020",
-          "Mar 2020",
-          "Apr 2020",
-        ],
+        labels: controlRate.map(key => key[0]),
         lineTension: 0,
         datasets: [{
           backgroundColor: "#ffffff",
           borderColor: "rgba(81, 205, 130, 1)",
           pointStyle: "dash",
-          data: [
-            16.8,
-            16.9,
-            17.4,
-            16.8,
-            17.0,
-            17.2,
-            17.9,
-            18.2,
-            17.6,
-            18.5,
-            19.2,
-            19.4,
-          ],
+          data: controlRate.map(key => key[1]),
         }],
       },
       options: {
@@ -604,17 +465,45 @@
   // Quarterly cohort trend 1
   var quarterlyCohortResults1Canvas =
     document.getElementById("quarterlyCohortResults1").getContext("2d");
-  var quarterlyCohortResults1Chart = new Chart(quarterlyCohortResults1Canvas, createCohortConfig(37,31,32));
+  var quarterlyCohortResults1Chart = new Chart(
+    quarterlyCohortResults1Canvas,
+    createCohortConfig(
+      quarterlyRegistrationsData[0]["visited_and_controlled"],
+      quarterlyRegistrationsData[0]["visited_and_uncontrolled"],
+      quarterlyRegistrationsData[0]["no_bp_measure"],
+    ),
+  );
   // Quarterly cohort trend 2
   var quarterlyCohortResults2Canvas =
     document.getElementById("quarterlyCohortResults2").getContext("2d");
-  var quarterlyCohortResults2Chart = new Chart(quarterlyCohortResults2Canvas, createCohortConfig(25,33,42));
+  var quarterlyCohortResults2Chart = new Chart(
+    quarterlyCohortResults2Canvas,
+    createCohortConfig(
+      quarterlyRegistrationsData[1]["visited_and_controlled"],
+      quarterlyRegistrationsData[1]["visited_and_uncontrolled"],
+      quarterlyRegistrationsData[1]["no_bp_measure"],
+    ),
+  );
   // Quarterly cohort trend 3
   var quarterlyCohortResults3Canvas =
     document.getElementById("quarterlyCohortResults3").getContext("2d");
-  var quarterlyCohortResults3Chart = new Chart(quarterlyCohortResults3Canvas, createCohortConfig(24,52,24));
+  var quarterlyCohortResults3Chart = new Chart(
+    quarterlyCohortResults3Canvas,
+    createCohortConfig(
+      quarterlyRegistrationsData[2]["visited_and_controlled"],
+      quarterlyRegistrationsData[2]["visited_and_uncontrolled"],
+      quarterlyRegistrationsData[2]["no_bp_measure"],
+    ),
+  );
   // Quarterly cohort trend 4
   var quarterlyCohortResults4Canvas =
     document.getElementById("quarterlyCohortResults4").getContext("2d");
-  var quarterlyCohortResults4Chart = new Chart(quarterlyCohortResults4Canvas, createCohortConfig(52,17,31));
+  var quarterlyCohortResults4Chart = new Chart(
+    quarterlyCohortResults4Canvas,
+    createCohortConfig(
+      quarterlyRegistrationsData[3]["visited_and_controlled"],
+      quarterlyRegistrationsData[3]["visited_and_uncontrolled"],
+      quarterlyRegistrationsData[3]["no_bp_measure"],
+    ),
+  );
 </script>
