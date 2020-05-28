@@ -20,7 +20,7 @@ RSpec.describe Facility, type: :model do
         create(:blood_sugar, :with_encounter, facility: facility, patient: dm_patient)
         create(:blood_sugar, :with_encounter, facility: facility, patient: htn_patient)
         create(:blood_pressure, :with_encounter, facility: facility, patient: htn_patient)
-        create(:blood_pressure, :with_encounter,facility: facility, patient: dm_patient)
+        create(:blood_pressure, :with_encounter, facility: facility, patient: dm_patient)
 
         expect(facility.patients.count).to eq(2)
       end
@@ -124,6 +124,46 @@ RSpec.describe Facility, type: :model do
       expect(CohortAnalyticsQuery).to receive(:new).with(match_array(htn_patients)).and_call_original
 
       facility.cohort_analytics(:month, 3)
+    end
+  end
+
+  describe "Search" do
+    let(:facility_1) { create(:facility, name: "HWC Bahadurgarh") }
+    let(:facility_2) { create(:facility, name: "CHC Docomo", slug: "chc-docomo") }
+    let(:facility_3) { create(:facility, name: "CHC Porla Docomo") }
+
+    ["CHC", "DoCoMo", "DOCOMO", "docomo", "cHc", "chc"].each do |term|
+      it "returns results for case-insensitive searches: #{term.inspect}" do
+        expect(Facility.search_by_name(term)).to match_array(facility_2)
+      end
+    end
+
+    ["Bahadurgarh", "hwc", "HWC Bahadurgarh"].each do |term|
+      it "matches on facility name: #{term.inspect}" do
+        expect(Facility.search_by_name(term)).to match_array(facility_1)
+      end
+    end
+
+    it "matches on facility slugs" do
+      expect(Facility.search_by_name("chc-docomo")).to match_array(facility_2)
+    end
+
+    ["ch", "doco"].each do |term|
+      it "partially matches on facility names: #{term.inspect}" do
+        expect(Facility.search_by_name(term)).to match_array([facility_2, facility_3])
+      end
+    end
+
+    ["\n\n", ""].each do |term|
+      it "returns nothing for unmatched searches: #{term.inspect}" do
+        expect(Facility.search_by_name(term)).to be_empty
+      end
+    end
+
+    ["chc\n\n\r", "\b      chc         "].each do |term|
+      it "ignores escape characters and whitespace around words: #{term.inspect}" do
+        expect(Facility.search_by_name(term)).to match_array([facility_2, facility_3])
+      end
     end
   end
 end
