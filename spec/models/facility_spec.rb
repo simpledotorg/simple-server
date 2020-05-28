@@ -128,13 +128,13 @@ RSpec.describe Facility, type: :model do
   end
 
   describe "Search" do
-    let(:facility_1) { create(:facility, name: "HWC Bahadurgarh") }
-    let(:facility_2) { create(:facility, name: "CHC Docomo", slug: "chc-docomo") }
-    let(:facility_3) { create(:facility, name: "CHC Porla Docomo") }
+    let!(:facility_1) { create(:facility, name: "HWC Bahadurgarh") }
+    let!(:facility_2) { create(:facility, name: "CHC Docomo", slug: "chc-docomo") }
+    let!(:facility_3) { create(:facility, name: "CHC Porla Docomo") }
 
     ["CHC", "DoCoMo", "DOCOMO", "docomo", "cHc", "chc"].each do |term|
-      it "returns results for case-insensitive searches: #{term.inspect}" do
-        expect(Facility.search_by_name(term)).to match_array(facility_2)
+      it "matches on case-insensitive searches: #{term.inspect}" do
+        expect(Facility.search_by_name(term)).to match_array([facility_2, facility_3])
       end
     end
 
