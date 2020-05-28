@@ -2,11 +2,9 @@ class Api::V2::Models < Api::V3::Models
   class << self
     def patient
       super
-        .tap do |d|
-        d[:properties]
-          .delete(:recorded_at)
-          .delete(:reminder_consent)
-      end
+        .tap { |d| d[:properties].delete(:reminder_consent) }
+        .tap { |d| d[:properties].delete(:recorded_at) }
+        .tap { |d| d[:properties].delete(:deleted_reason) }
     end
 
     def blood_pressure

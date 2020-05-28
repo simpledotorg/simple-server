@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_15_101844) do
+ActiveRecord::Schema.define(version: 2020_05_21_143843) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -352,6 +352,8 @@ ActiveRecord::Schema.define(version: 2020_05_15_101844) do
     t.string "could_not_contact_reason"
     t.datetime "recorded_at"
     t.string "reminder_consent", default: "denied", null: false
+    t.uuid "deleted_by_user_id"
+    t.string "deleted_reason"
     t.index ["deleted_at"], name: "index_patients_on_deleted_at"
     t.index ["recorded_at"], name: "index_patients_on_recorded_at"
     t.index ["registration_facility_id"], name: "index_patients_on_registration_facility_id"

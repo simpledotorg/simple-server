@@ -5,6 +5,7 @@ class Api::V2::PatientTransformer < Api::V3::PatientTransformer
                               .except('business_identifiers')
                               .except('recorded_at')
                               .except('reminder_consent')
+                              .except('deleted_reason')
       transformed_address = transformed_patient['address'].except('zone') if transformed_patient['address'].present?
       transformed_patient.merge('address' => transformed_address)
     end

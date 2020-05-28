@@ -18,7 +18,8 @@ class Api::V3::PatientPayloadValidator < Api::V3::PayloadValidator
     :contacted_by_counsellor,
     :could_not_contact_reason,
     :call_result,
-    :reminder_consent
+    :reminder_consent,
+    :deleted_reason
   )
 
   validate :validate_schema, unless: -> { FeatureToggle.enabled?('SKIP_API_VALIDATION') }

@@ -119,7 +119,9 @@ RSpec.describe Api::V2::PatientsController, type: :controller do
                    .except('registration_user_id')
                    .except('registration_facility_id')
                    .except('recorded_at')
-                   .except('test_data'))
+                   .except('test_data')
+                   .except('deleted_by_user_id')
+                   .except('deleted_reason'))
             .to eq(updated_patient.with_int_timestamps)
         end
       end
@@ -162,7 +164,9 @@ RSpec.describe Api::V2::PatientsController, type: :controller do
                    .except('registration_user_id')
                    .except('registration_facility_id')
                    .except('recorded_at')
-                   .except('test_data'))
+                   .except('test_data')
+                   .except('deleted_by_user_id')
+                   .except('deleted_reason'))
             .to eq(updated_patient.except('address', 'phone_numbers', 'business_identifiers'))
 
           expect(db_patient.address.attributes.with_payload_keys.with_int_timestamps)

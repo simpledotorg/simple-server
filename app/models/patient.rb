@@ -16,6 +16,7 @@ class Patient < ApplicationRecord
   }.freeze
 
   ANONYMIZED_DATA_FIELDS = %w[id created_at registration_date registration_facility_name user_id age gender]
+  DELETED_REASONS = %w[duplicate unknown accidental_registration].freeze
 
   belongs_to :address, optional: true
   has_many :phone_numbers, class_name: 'PatientPhoneNumber'
@@ -49,6 +50,7 @@ class Patient < ApplicationRecord
 
   has_many :current_prescription_drugs, -> { where(is_deleted: false) }, class_name: 'PrescriptionDrug'
 
+  belongs_to :deleted_by_user, class_name: "User", optional: true
   attribute :call_result, :string
 
   scope :with_diabetes, -> { joins(:medical_history).merge(MedicalHistory.diabetes_yes) }
