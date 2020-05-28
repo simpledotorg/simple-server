@@ -295,7 +295,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
         expect(Patient.with_discarded.find_by(id: existing_patient.id).present?).to eq(true)
       end
 
-      it 'sets deleted_reason and deleted_user_id' do
+      it "sets the patient's deleted_reason and deleted_user_id" do
         expect(Patient.find(existing_patient.id).present?).to eq(true)
         post :sync_from_user, params: { patients: [delete_patient_payload] }, as: :json
 
@@ -303,41 +303,101 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
         expect(Patient.with_discarded.find_by(id: existing_patient.id).deleted_by_user_id).to eq(request_user.id)
       end
 
-      it 'soft deletes associated resources' do
-        bp_encounters = create_list(:encounter, 3, :with_observables, patient: existing_patient)
-        bps = bp_encounters.map { |e| e.observations.map(&:observable) }.flatten.to_set
-        bps.each { |bp| bp.update(patient_id: existing_patient.id) }
-        appointments = create_list(:appointment, 2, patient: existing_patient)
-        prescription_drugs = create_list(:prescription_drug, 2, patient: existing_patient)
-        blood_sugar = create(:blood_sugar, patient: existing_patient)
-        sugar_encounters =  [create(:encounter, :with_observables, observable: blood_sugar)]
-        encounters = bp_encounters + sugar_encounters
-
+      it "soft deletes the patient's encounters" do
+        bps = create_list(:blood_pressure, 2, :with_encounter, patient: existing_patient)
+        sugars = create_list(:blood_sugar, 2, :with_encounter, patient: existing_patient)
+        encounters = (bps + sugars).map(&:encounter)
 
         expect(Patient.find(existing_patient.id).encounters.to_set).to eq(encounters.to_set)
+
+
+        post :sync_from_user, params: { patients: [delete_patient_payload] }, as: :json
+
+        expect(Patient.with_discarded.find(existing_patient.id).encounters).to be_empty
+      end
+
+      it "soft deletes the patient's observations" do
+        bps = create_list(:blood_pressure, 2, :with_encounter, patient: existing_patient)
+        sugars = create_list(:blood_sugar, 2, :with_encounter, patient: existing_patient)
+        encounters = (bps + sugars).map(&:encounter)
+
         expect(Patient.find(existing_patient.id).observations.to_set).to eq(encounters.map(&:observations).flatten.to_set)
+
+        post :sync_from_user, params: { patients: [delete_patient_payload] }, as: :json
+
+        expect(Patient.with_discarded.find(existing_patient.id).observations).to be_empty
+      end
+
+
+      it "soft deletes the patient's blood pressures" do
+        bps = create_list(:blood_pressure, 2, :with_encounter, patient: existing_patient)
+
         expect(Patient.find(existing_patient.id).blood_pressures.to_set).to eq(bps.to_set)
-        expect(Patient.with_discarded.find(existing_patient.id).blood_sugars.to_set).to eq([blood_sugar].to_set)
+
+        post :sync_from_user, params: { patients: [delete_patient_payload] }, as: :json
+
+        expect(Patient.with_discarded.find(existing_patient.id).blood_pressures).to be_empty
+      end
+
+
+      it "soft deletes the patient's blood_sugars" do
+        sugars = create_list(:blood_sugar, 2, :with_encounter, patient: existing_patient)
+
+        expect(Patient.with_discarded.find(existing_patient.id).blood_sugars.to_set).to eq(sugars.to_set)
+
+        post :sync_from_user, params: { patients: [delete_patient_payload] }, as: :json
+
+        expect(Patient.with_discarded.find(existing_patient.id).blood_sugars).to be_empty
+      end
+
+      it "soft deletes the patient's appointments" do
+        appointments = create_list(:appointment, 2, patient: existing_patient)
         expect(Patient.find(existing_patient.id).appointments.to_set).to eq(appointments.to_set)
+
+        post :sync_from_user, params: { patients: [delete_patient_payload] }, as: :json
+
+        expect(Patient.with_discarded.find(existing_patient.id).appointments).to be_empty
+      end
+
+      it "soft deletes the patient's prescription drugs" do
+        prescription_drugs = create_list(:prescription_drug, 2, patient: existing_patient)
         expect(Patient.find(existing_patient.id).prescription_drugs.to_set).to eq(prescription_drugs.to_set)
-        expect(Patient.find(existing_patient.id).medical_history).to_not be_nil
+
+        post :sync_from_user, params: { patients: [delete_patient_payload] }, as: :json
+
+        expect(Patient.with_discarded.find(existing_patient.id).prescription_drugs).to be_empty
+      end
+
+      it "soft deletes the patient's business identifiers" do
         expect(Patient.find(existing_patient.id).business_identifiers).to_not be_empty
+
+        post :sync_from_user, params: { patients: [delete_patient_payload] }, as: :json
+
+        expect(Patient.with_discarded.find(existing_patient.id).business_identifiers).to be_empty
+      end
+
+      it "soft deletes the patient's phone numbers" do
         expect(Patient.find(existing_patient.id).phone_numbers).to_not be_empty
+
+        post :sync_from_user, params: { patients: [delete_patient_payload] }, as: :json
+
+        expect(Patient.with_discarded.find(existing_patient.id).phone_numbers).to be_empty
+      end
+
+      it "soft deletes the patient's medical history" do
+        expect(Patient.find(existing_patient.id).medical_history).to_not be_nil
+
+        post :sync_from_user, params: { patients: [delete_patient_payload] }, as: :json
+
+        expect(Patient.with_discarded.find(existing_patient.id).medical_history ).to be_nil
+      end
+
+      it "soft deletes the patient's address" do
         expect(Patient.find(existing_patient.id).address).to_not be_nil
 
         post :sync_from_user, params: { patients: [delete_patient_payload] }, as: :json
 
-        expect(Patient.with_discarded.find(existing_patient.id).encounters).to eq([])
-        expect(Patient.with_discarded.find(existing_patient.id).observations).to eq([])
-        expect(Patient.with_discarded.find(existing_patient.id).blood_pressures).to eq([])
-        expect(Patient.with_discarded.find(existing_patient.id).blood_sugars).to eq([])
-        expect(Patient.with_discarded.find(existing_patient.id).prescription_drugs).to eq([])
-        expect(Patient.with_discarded.find(existing_patient.id).appointments).to eq([])
-        expect(Patient.with_discarded.find(existing_patient.id).business_identifiers).to eq([])
-        expect(Patient.with_discarded.find(existing_patient.id).phone_numbers).to eq([])
-        expect(Patient.with_discarded.find(existing_patient.id).medical_history ).to be_nil
         expect(Patient.with_discarded.find(existing_patient.id).address).to be_nil
-
       end
     end
   end
