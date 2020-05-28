@@ -97,32 +97,58 @@ class ReportsController < ApplicationController
     }
     @quarterly_registrations = [
       {
-        "results_in" => "Q3-2019",
-        "patients_registered" => "Q2-2019",
-        "visited_and_controlled" => 33000,
-        "visited_and_uncontrolled" => 25000,
-        "no_bp_measure" => 42000,
+        "results_in" => "Q2-2020",
+        "patients_registered" => "Q1-2020",
+        "cohort_trend" => [
+          {
+            "period" => "Dec 2019",
+            "registered" => 1147,
+            "no_bp" => 36,
+            "uncontrolled" => 25,
+            "controlled" => 39,
+          },
+          {
+            "period" => "Nov 2019",
+            "registered" => 934,
+            "no_bp" => 48,
+            "uncontrolled" => 28,
+            "controlled" => 24,
+          },
+          {
+            "period" => "Oct 2019",
+            "registered" => 866,
+            "no_bp" => 48,
+            "uncontrolled" => 28,
+            "controlled" => 24,
+          },
+        ]
       },
       {
-        "results_in" => "Q2-2019",
-        "patients_registered" => "Q1-2019",
-        "visited_and_controlled" => 40000,
-        "visited_and_uncontrolled" => 21000,
-        "no_bp_measure" => 39000,
-      },
-      {
-        "results_in" => "Q1-2019",
-        "patients_registered" => "Q4-2018",
-        "visited_and_controlled" => 20000,
-        "visited_and_uncontrolled" => 50000,
-        "no_bp_measure" => 30000,
-      },
-      {
-        "results_in" => "Q4-2018",
-        "patients_registered" => "Q3-2018",
-        "visited_and_controlled" => 75000,
-        "visited_and_uncontrolled" => 10000,
-        "no_bp_measure" => 15000,
+        "results_in" => "Q1-2020",
+        "patients_registered" => "Q4-2019",
+        "cohort_trend" => [
+          {
+            "period" => "Mar 2020",
+            "registered" => 773,
+            "no_bp" => 52,
+            "uncontrolled" => 10,
+            "controlled" => 38
+          },
+          {
+            "period" => "Feb 2020",
+            "registered" => 1232,
+            "no_bp" => 46,
+            "uncontrolled" => 14,
+            "controlled" => 40,
+          },
+          {
+            "period" => "Jan 2020",
+            "registered" => 1043,
+            "no_bp" => 39,
+            "uncontrolled" => 20,
+            "controlled" => 41,
+          },
+        ],
       },
     ]
   end
