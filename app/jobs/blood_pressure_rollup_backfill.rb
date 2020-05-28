@@ -3,8 +3,12 @@ class BloodPressureRollupBackfill < ApplicationJob
   self.queue_adapter = :sidekiq
 
   def perform(patients)
-    patients.find_each do |patient|
-      bps = patient.blood_pressures.group_by(:month, :recorded_at)
+    patients.each do |patient|
+      latest_bps = LatestBloodPressuresPerPatientPerMonth.where(patient: patient)
+      latest_bps.each do |latest|
+        blood_pressure = BloodPressure.find(latest.bp_id)
+        BloodPressureRollup.from_blood_pressure blood_pressure
+      end
     end
   end
 end
