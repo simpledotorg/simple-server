@@ -185,7 +185,7 @@
   </div>
   <!-- Quarterly cohort trend -->
   <div class="md:w-1/2 md:pl-2">
-    <div class="p-4 rounded-md bg-white shadow-md md:flex md:flex-col md:justify-between md:h-96">
+    <div class="p-4 rounded-md bg-white shadow-md md:flex md:flex-col md:h-96">
       <div class="mb-6">
         <div class="mb-2">
           <p class="mb-1 font-roboto font-bold text-lg text-black">
@@ -219,7 +219,7 @@
       <div class="md:flex md:flex-wrap">
         <% @quarterly_registrations.each_with_index do |cohort, index| %>
           <div class="mb-4 md:w-1/2 <%= index.even? ? "md:pr-2" : "md:pl-2" %> <%= @quarterly_registrations.length - 2 >= index ? "md:mb-0" : "" %>">
-            <div>
+            <div class="mb-4">
               <p class="font-roboto font-bold text-sm text-black">
                 Results in <%= cohort["results_in"] %>
               </p>
@@ -227,8 +227,22 @@
                 Patients registered <%= cohort["patients_registered"] %>
               </p>
             </div>
-            <div class="relative h-12">
-              <canvas id="quarterlyCohortResults<%= index+1 %>"></canvas>
+            <div class="flex items-center w-full">
+              <div class="flex items-center justify-center h-12 bg-green-200 rounded-l" style="width: <%= cohort["cohort_trend"][0]["controlled"] %>%">
+                <p class="font-roboto font-bold text-sm text-white">
+                  <%= cohort["cohort_trend"][0]["controlled"] %>%
+                </p>
+              </div>
+              <div class="flex items-center justify-center h-12 bg-yellow-300" style="width: <%= cohort["cohort_trend"][0]["uncontrolled"] %>%">
+                <p class="font-roboto font-bold text-sm text-white">
+                  <%= cohort["cohort_trend"][0]["uncontrolled"] %>%
+                </p>
+              </div>
+              <div class="flex items-center justify-center h-12 bg-red-200 rounded-r" style="width: <%= cohort["cohort_trend"][0]["no_bp"] %>%">
+                <p class="font-roboto font-bold text-sm text-white">
+                  <%= cohort["cohort_trend"][0]["no_bp"] %>%
+                </p>
+              </div>
             </div>
           </div>
         <% end %>
@@ -261,13 +275,17 @@
         datasets: [{
           backgroundColor: greenGradientFill,
           borderColor: "rgba(81, 205, 130, 1)",
-          pointStyle: "dash",
           data: controlledPatients.map(key => key[1]),
         }],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        elements: {
+          point: {
+            radius: 0,
+          },
+        },
         legend: {
           display: false,
         },
@@ -323,13 +341,17 @@
         datasets: [{
           backgroundColor: purpleGradientFill,
           borderColor: "rgba(157, 74, 199, 1)",
-          pointStyle: "dash",
           data: registrations.map(key => key[1]),
         }],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        elements: {
+          point: {
+            radius: 0,
+          },
+        },
         legend: {
           display: false,
         },
@@ -382,13 +404,17 @@
         datasets: [{
           backgroundColor: "#ffffff",
           borderColor: "rgba(81, 205, 130, 1)",
-          pointStyle: "dash",
           data: controlRate.map(key => key[1]),
         }],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        elements: {
+          point: {
+            radius: 0,
+          },
+        },
         legend: {
           display: false,
         },
@@ -413,97 +439,5 @@
         }
       }
     }
-  );
-  // Quarterly cohort trends
-  const createCohortConfig = (p1, p2, p3) => {
-    return {
-      type: "horizontalBar",
-      data: {
-        labels: ["Results in Q3-2019"],
-        datasets: [
-          { backgroundColor: "#3db26c", data: [p1] },
-          { backgroundColor: "#e0b000", data: [p2] },
-          { backgroundColor: "#ff3355", data: [p3] },
-        ]
-      },
-      options: {
-        tooltips: {
-          position: "nearest",
-          bodyAlign: "left",
-          callbacks: {
-            label: function(tooltipItem, data) {
-              return tooltipItem.value + "%";
-            },
-          },
-        },
-        responsive: true,
-        maintainAspectRatio: false,
-        legend: {
-          display: false,
-        },
-        scales: {
-          xAxes: [{
-            display: false,
-            stacked: true,
-            gridLines: {
-              display: false,
-              drawBorder: false,
-            },
-          }],
-          yAxes: [{
-            stacked: true,
-            display: false,
-            gridLines: {
-              display: false,
-              drawBorder: false,
-            },
-          }],
-        },
-      },
-    };
-  };
-  // Quarterly cohort trend 1
-  var quarterlyCohortResults1Canvas =
-    document.getElementById("quarterlyCohortResults1").getContext("2d");
-  var quarterlyCohortResults1Chart = new Chart(
-    quarterlyCohortResults1Canvas,
-    createCohortConfig(
-      quarterlyRegistrationsData[0]["visited_and_controlled"],
-      quarterlyRegistrationsData[0]["visited_and_uncontrolled"],
-      quarterlyRegistrationsData[0]["no_bp_measure"],
-    ),
-  );
-  // Quarterly cohort trend 2
-  var quarterlyCohortResults2Canvas =
-    document.getElementById("quarterlyCohortResults2").getContext("2d");
-  var quarterlyCohortResults2Chart = new Chart(
-    quarterlyCohortResults2Canvas,
-    createCohortConfig(
-      quarterlyRegistrationsData[1]["visited_and_controlled"],
-      quarterlyRegistrationsData[1]["visited_and_uncontrolled"],
-      quarterlyRegistrationsData[1]["no_bp_measure"],
-    ),
-  );
-  // Quarterly cohort trend 3
-  var quarterlyCohortResults3Canvas =
-    document.getElementById("quarterlyCohortResults3").getContext("2d");
-  var quarterlyCohortResults3Chart = new Chart(
-    quarterlyCohortResults3Canvas,
-    createCohortConfig(
-      quarterlyRegistrationsData[2]["visited_and_controlled"],
-      quarterlyRegistrationsData[2]["visited_and_uncontrolled"],
-      quarterlyRegistrationsData[2]["no_bp_measure"],
-    ),
-  );
-  // Quarterly cohort trend 4
-  var quarterlyCohortResults4Canvas =
-    document.getElementById("quarterlyCohortResults4").getContext("2d");
-  var quarterlyCohortResults4Chart = new Chart(
-    quarterlyCohortResults4Canvas,
-    createCohortConfig(
-      quarterlyRegistrationsData[3]["visited_and_controlled"],
-      quarterlyRegistrationsData[3]["visited_and_uncontrolled"],
-      quarterlyRegistrationsData[3]["no_bp_measure"],
-    ),
   );
 </script>
