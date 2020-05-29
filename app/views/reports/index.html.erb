@@ -436,12 +436,12 @@
     {
       type: "line",
       data: {
-        labels: controlRate.slice(0,12).map(key => key[0]),
+        labels: controlRate.slice(controlRate.length - 13,controlRate.length - 1).map(key => key[0]),
         lineTension: 0,
         datasets: [{
           backgroundColor: "#ffffff",
           borderColor: "rgba(81, 205, 130, 1)",
-          data: controlRate.slice(0,12).map(key => key[1]),
+          data: controlRate.slice(controlRate.length - 13,controlRate.length - 1).map(key => key[1]),
         }],
       },
       options: {
