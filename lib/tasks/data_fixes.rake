@@ -17,4 +17,14 @@ namespace :data_fixes do
          "patients: #{patient_count}, BPs: #{bp_count}, blood sugars: #{bs_count}, "\
          "appointments: #{appointment_count}, prescriptions: #{prescription_drug_count}"
   end
+
+  desc "Clean up records with ancient dates that break reporting"
+  task :clean_ancient_dates => :environment do
+    puts "Clean up records with ancient dates that break reporting"
+  end
+
+  desc "Clean up records with ancient dates that break reporting (dryrun)"
+  task :clean_ancient_dates_dryrun => :environment do
+    puts "Clean up records with ancient dates that break reporting (dryrun)"
+  end
 end
