@@ -282,6 +282,7 @@
         }],
       },
       options: {
+        animation: false,
         responsive: true,
         maintainAspectRatio: false,
         elements: {
@@ -338,16 +339,19 @@
   var cumulativeRegistrationsChart = new Chart(
     cumulativeRegistrationsCanvas,
     {
-      type: "line",
+      type: "bar",
       data: {
         labels: registrations.map(key => key[0]),
         datasets: [{
-          backgroundColor: purpleGradientFill,
+          backgroundColor: "rgba(157, 74, 199, 0.7)",
+          barThickness: "12px",
+          hoverBackgroundColor: "rgba(157, 74, 199, 1)",
           borderColor: "rgba(157, 74, 199, 1)",
           data: registrations.map(key => key[1]),
         }],
       },
       options: {
+        animation: false,
         responsive: true,
         maintainAspectRatio: false,
         elements: {
@@ -360,6 +364,7 @@
         },
         scales: {
           xAxes: [{
+            barPercentage: 1,
             display: false,
             gridLines: {
               display: false,
@@ -411,6 +416,7 @@
         }],
       },
       options: {
+        animation: false,
         responsive: true,
         maintainAspectRatio: false,
         elements: {
