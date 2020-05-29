@@ -14,6 +14,24 @@ class BloodPressureRollup < ApplicationRecord
   validates :period_type, presence: true
   validates :year, presence: true, numericality: {greater_than_or_equal_to: 2000, only_integer: true}
 
+  def self.controlled_in_month(time)
+    range = [time.month, time.advance(months: -1).month, time.advance(months: -2).month]
+    sql = <<-SQL
+      SELECT count(1)
+      FROM (
+        SELECT DISTINCT ON (patient_id) *
+        FROM #{table_name}
+        WHERE period_number in (?)
+        AND period_type = 0
+        ORDER BY patient_id ASC, (year, period_number) DESC
+      ) AS counts
+      WHERE diastolic >= 90
+      and systolic >= 140
+    SQL
+    query = sanitize_sql_array([sql, range])
+    connection.select_all(query).to_hash
+  end
+
   def self.from_blood_pressure(blood_pressure)
     attrs = {
       assigned_facility_id: blood_pressure.patient.registration_facility_id,

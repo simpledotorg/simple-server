@@ -1,9 +1,21 @@
 require "rails_helper"
 
 RSpec.describe BloodPressureRollup, type: :model do
-  context "counts per month" do
-    it "can count things" do
-      BloodPressureRollup.controlled_in_month(Time.parse("March 5th 2020"))
+  context "counts of controlled per month" do
+    fit "can count things" do
+      Timecop.freeze("March 15th 2020") do
+        controlled_patient_1 = create(:patient)
+        controlled_patient_2 = create(:patient)
+        bp1 = create(:blood_pressure, :hypertensive, patient: controlled_patient_1, recorded_at: 20.days.ago)
+        bp2 = create(:blood_pressure, :under_control, patient: controlled_patient_1, recorded_at: 20.days.ago)
+        bp3 = create(:blood_pressure, :hypertensive, recorded_at: 1.days.ago)
+        bp4 = create(:blood_pressure, :under_control, patient: controlled_patient_2, recorded_at: Time.parse("January 15th, 2020"))
+        [bp1, bp2, bp3, bp4].each do |blood_pressure|
+          BloodPressureRollup.from_blood_pressure(blood_pressure)
+        end
+        result = BloodPressureRollup.controlled_in_month(Time.parse("March 30 2020"))
+        expect(result.first["count"]).to eq(2)
+      end
     end
   end
 
