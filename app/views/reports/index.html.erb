@@ -218,7 +218,7 @@
                 <p class="font-roboto font-bold text-base text-white">
                   <%= cohort["cohort_trend"][0]["controlled"]["percent"] %>%
                 </p>
-                <div class="hidden absolute -top-74 p-3 bg-black rounded-md md:-top-68" data-element="tooltip" data-id="<%= cohort["results_in"].parameterize %>-controlled">
+                <div class="hidden absolute -top-74 p-3 text-center bg-black rounded-md md:-top-68" data-element="tooltip" data-id="<%= cohort["results_in"].parameterize %>-controlled" style="width: 160px;">
                   <p class="font-roboto font-medium text-sm text-white">
                     <%= cohort["cohort_trend"][0]["controlled"]["total"] %> patients visited with controlled BP
                   </p>
@@ -229,7 +229,7 @@
                 <p class="font-roboto font-bold text-base text-white" style="color: #AB8600;">
                   <%= cohort["cohort_trend"][0]["uncontrolled"]["percent"] %>%
                 </p>
-                <div class="hidden absolute -top-74 p-3 bg-black rounded-md md:-top-68" data-element="tooltip" data-id="<%= cohort["results_in"].parameterize %>-uncontrolled" style="width: 240px;">
+                <div class="hidden absolute -top-74 p-3 text-center bg-black rounded-md md:-top-68" data-element="tooltip" data-id="<%= cohort["results_in"].parameterize %>-uncontrolled" style="width: 160px;">
                   <p class="font-roboto font-medium text-sm text-white">
                     <%= cohort["cohort_trend"][0]["uncontrolled"]["total"] %> patients visited with uncontrolled BP
                   </p>
@@ -240,7 +240,7 @@
                 <p class="font-roboto font-bold text-base text-white">
                   <%= cohort["cohort_trend"][0]["no_bp"]["percent"] %>%
                 </p>
-                <div class="hidden absolute -top-74 p-3 bg-black rounded-md md:-top-68" data-element="tooltip" data-id="<%= cohort["results_in"].parameterize %>-no-bp">
+                <div class="hidden absolute -top-74 p-3 text-center bg-black rounded-md md:-top-68" data-element="tooltip" data-id="<%= cohort["results_in"].parameterize %>-no-bp" style="width: 160px;">
                   <p class="font-roboto font-medium text-sm text-white">
                     <%= cohort["cohort_trend"][0]["no_bp"]["total"] %> patients visited with no BP
                   </p>
@@ -472,6 +472,10 @@
   // Cohort tooltips
   const barChartNodes = document.querySelectorAll('[data-element="bar-chart"]');
   const tooltipNodes = document.querySelectorAll('[data-element="tooltip"]');
+  // Position nodes
+  Array.from(tooltipNodes).forEach(node => {
+
+  });
   barChartNodes.forEach(node => {
     const tooltipId = node.getAttribute("data-id");
     node.addEventListener("mouseenter", () => {
