@@ -14,52 +14,39 @@
   </div>
 </div>
 
-<%= bootstrap_form_with(url: admin_facilities_path, method: :get, class: "mt-3", local: true) do |form| %>
-  <div class="row mb-5">
-    <div class="col col-12 col-md-11 mb-2">
-      <%= form.search_field :search_query,
-                            hide_label: true,
-                            prepend: "<i class='fa fa-search'></i>".html_safe,
-                            placeholder: "Search by facility name ...",
-                            value: params[:search_query],
-                            autofocus: params[:search_query].blank?,
-                            tabindex: 2,
-                            wrapper: false %>
-    </div>
-    <div class="col col-12 col-md-1 mb-2 pl-md-0">
-      <%= form.submit "Search", class: "btn btn-success btn-block", wrapper: false, tabindex: 3 %>
-    </div>
-  </div>
-<% end %>
+<%= render 'shared/search_form', path: admin_facilities_path, placeholder: "Search by facility name ..." %>
 
-<div class="alert alert-info alert-dismissible fade show" role="alert">
+<% if searching? and @facilities.blank? %>
+  <%= render "shared/no_search_results", message: "There are no facilities named '#{search_query}'" %>
+<% else %>
+  <div class="alert alert-info alert-dismissible fade show" role="alert">
     <i class="far fa-question-circle mr-2"></i> A <span class="term">Facility Group</span> is usually a <span class="term">District</span>. First, add a new facility group and then add facilities inside it.
-  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true"><i class="fas fa-times"></i></span>
-  </button>
-</div>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true"><i class="fas fa-times"></i></span>
+    </button>
+  </div>
 
-<% @organizations.order(:name).each do |organization| %>
-  <% if @organizations.size > 1 %><h2 class="mt-5 mb-3"><span class="heading-label">Organization</span><%= organization.name %></h2>
-  <% end %>
+  <% @organizations.order(:name).each do |organization| %>
+    <% if @organizations.size > 1 %><h2 class="mt-5 mb-3"><span class="heading-label">Organization</span><%= organization.name %></h2>
+    <% end %>
 
-  <% @facility_groups.dig(organization).sort_by(&:name).each do |facility_group| %>
-    <div class="card">
-      <div class="row">
-        <div class="col-10">
-          <h3><span class="heading-label">Facility group</span><%= facility_group.name %></h3>
+    <% @facility_groups.dig(organization).sort_by(&:name).each do |facility_group| %>
+      <div class="card">
+        <div class="row">
+          <div class="col-10">
+            <h3><span class="heading-label">Facility group</span><%= facility_group.name %></h3>
+          </div>
+
+          <% if policy([:manage, facility_group]).edit? %>
+            <div class="col-2 text-right">
+              <strong><%= link_to 'Edit group', edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %></strong>
+            </div>
+          <% end %>
         </div>
 
-        <% if policy([:manage, facility_group]).edit? %>
-        <div class="col-2 text-right">
-          <strong><%= link_to 'Edit group', edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %></strong>
-        </div>
-        <% end %>
-      </div>
+        <h3 class="mb-0"><span class="mt-3 mb-0 heading-label">Facilities</span></h3>
 
-      <h3 class="mb-0"><span class="mt-3 mb-0 heading-label">Facilities</span></h3>
-
-      <div class="row card-row">
+        <div class="row card-row">
           <div class="col-md-4">
             <% if policy([:manage, :facility, facility_group.facilities.new]).new? %>
               <%= link_to new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-outline-success" do %>
@@ -68,25 +55,26 @@
               <% end %>
             <% end %>
           </div>
-      </div>
-
-      <% @facilities.dig(facility_group).sort_by(&:name).each do |facility| %>
-        <div class="row card-row">
-          <div class="col-md-4">
-            <h5>
-              <% if policy([:manage, :facility, facility]).show? %>
-                <%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %>
-              <% else %>
-                <%= facility.name %>
-              <% end %>
-            </h5>
-          </div>
-          <div class="col-md-1"><span class="text-muted"><%= facility.facility_type %></span></div>
-          <div class="col-md-2"><span class="text-muted"><%= facility.facility_size&.capitalize || "No size set" %></span></div>
-          <div class="col-md-2"><span class="text-muted">OPD: <%= facility.monthly_estimated_opd_load || "N/A" %></span></div>
         </div>
 
-      <% end %>
-    </div>
+        <% @facilities.dig(facility_group).sort_by(&:name).each do |facility| %>
+          <div class="row card-row">
+            <div class="col-md-4">
+              <h5>
+                <% if policy([:manage, :facility, facility]).show? %>
+                  <%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %>
+                <% else %>
+                  <%= facility.name %>
+                <% end %>
+              </h5>
+            </div>
+            <div class="col-md-1"><span class="text-muted"><%= facility.facility_type %></span></div>
+            <div class="col-md-2"><span class="text-muted"><%= facility.facility_size&.capitalize || "No size set" %></span></div>
+            <div class="col-md-2"><span class="text-muted">OPD: <%= facility.monthly_estimated_opd_load || "N/A" %></span></div>
+          </div>
+
+        <% end %>
+      </div>
+    <% end %>
   <% end %>
 <% end %>

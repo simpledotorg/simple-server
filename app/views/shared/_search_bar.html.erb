@@ -1,0 +1,12 @@
+<div class="col col-12 col-md-11 mb-2">
+  <%= form.search_field :search_query,
+      {
+          hide_label: true,
+          prepend: "<i class='fa fa-search'></i>".html_safe,
+          placeholder: placeholder,
+          value: search_query,
+          autofocus: search_query.blank?,
+          tabindex: 2,
+          wrapper: false
+      } %>
+</div>
