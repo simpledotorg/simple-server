@@ -19,14 +19,14 @@ module.exports = {
         '13': '13px',
         '16': '16px',
       },
-      flexGrow: {
-        '2': '2',
-      },
       borderWidth: {
         '3': '3px',
       },
       height: {
         '96': '24rem',
+      },
+      fontSize: {
+        'xxs': '0.625rem',
       },
     },
     fontFamily: {
@@ -49,14 +49,14 @@ module.exports = {
         '200': "#9d4ac7",
       },
       yellow: {
-        '100': '#fff8e0',
+        '100': '#fff4cd',
         '200': '#ffc800',
-        '300': '#e0b000',
+        '300': '#c5a122',
       },
       green: {
         '100': '#007a31',
         '200': '#00b849',
-        '300': '#5cff9d',
+        '300': '#51cd82',
         '400': '#e0ffed',
       },
       grey: {

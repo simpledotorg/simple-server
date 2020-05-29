@@ -1,10 +1,12 @@
 class ReportsController < ApplicationController
   layout "reports"
   def index
+    @state_name = "Punjab"
     @district_name = "Bathinda"
     @report_period = "APR-2020"
+    @last_updated = "28-MAY-2020"
     # 20% Bathinda population
-    @hypertensive_population = 57162
+    @hypertensive_population = 277705
     @controlled_patients = {
       "Jan 2018" => 59,
       "Feb 2018" => 154,

@@ -1,30 +1,36 @@
 <!-- Header -->
-<div class="mb-4 p-4 md:flex md:items-center md:justify-between md:max-w-6xl md:m-auto md:text-right">
+<div class="mb-2 pt-4 px-4 md:flex md:items-center md:justify-between md:max-w-6xl md:m-auto">
   <div>
-    <div class="flex items-center mb-2">
+    <div class="flex items-center mb-4">
       <div class="mr-1">
-        <p class="font-roboto font-bold text-xs text-black">
+        <p class="font-roboto font-bold text-xs text-blue-200">
           All states
         </p>
       </div>
-      <div>
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-          <path d="M3.26651 1.26308C2.91116 1.61235 2.91116 2.17655 3.26651 2.52581L6.80182 6.00056L3.26651 9.47532C2.91116 9.82458 2.91116 10.3888 3.26651 10.738C3.62187 11.0873 4.1959 11.0873 4.55125 10.738L8.73349 6.62745C9.08884 6.27819 9.08884 5.71399 8.73349 5.36472L4.55125 1.25412C4.20501 0.913814 3.62187 0.913814 3.26651 1.26308Z" fill="black" fill-opacity="0.18"/>
-        </svg>
-      </div>
-      <div class="ml-1">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <path d="M3.26651 1.26308C2.91116 1.61235 2.91116 2.17655 3.26651 2.52581L6.80182 6.00056L3.26651 9.47532C2.91116 9.82458 2.91116 10.3888 3.26651 10.738C3.62187 11.0873 4.1959 11.0873 4.55125 10.738L8.73349 6.62745C9.08884 6.27819 9.08884 5.71399 8.73349 5.36472L4.55125 1.25412C4.20501 0.913814 3.62187 0.913814 3.26651 1.26308Z" fill="black" fill-opacity="0.18"/>
+      </svg>
+      <div class="mr-1 ml-1">
         <p class="font-roboto font-bold text-xs text-blue-200">
+          <%= @state_name %>
+        </p>
+      </div>
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <path d="M3.26651 1.26308C2.91116 1.61235 2.91116 2.17655 3.26651 2.52581L6.80182 6.00056L3.26651 9.47532C2.91116 9.82458 2.91116 10.3888 3.26651 10.738C3.62187 11.0873 4.1959 11.0873 4.55125 10.738L8.73349 6.62745C9.08884 6.27819 9.08884 5.71399 8.73349 5.36472L4.55125 1.25412C4.20501 0.913814 3.62187 0.913814 3.26651 1.26308Z" fill="black" fill-opacity="0.18"/>
+      </svg>
+      <div class="ml-1">
+        <p class="font-roboto font-bold text-xs text-black">
           <%= @district_name %>
         </p>
       </div>
     </div>
-    <h1 class="mb-2 font-roboto font-bold text-4xl text-black">
+    <h1 class="font-roboto font-bold text-4xl text-black">
       <%= @district_name %>
     </h1>
-    <div class="flex items-center mb-4">
+    <div class="flex items-center mb-2">
       <div class="mr-1">
         <p class="font-roboto font-bold text-lg text-black">
-          Report for <%= @report_period %>
+          Monthly report for <%= @report_period %>
         </p>
       </div>
       <div>
@@ -35,8 +41,8 @@
     </div>
   </div>
   <div>
-    <div class="flex items-center mb-4 md:flex-col md:items-end md:justify-end md:mb-2">
-      <div class="mr-4 md:mr-0 md:mb-2">
+    <div class="hidden md:flex md:flex-col md:items-end md:justify-end md:mb-2">
+      <div class="md:mr-0 md:mb-2">
         <p class="font-roboto font-bold text-base text-blue-200 uppercase tracking-wider">
           Print
         </p>
@@ -48,7 +54,7 @@
       </div>
     </div>
     <p class="font-roboto font-normal text-base text-grey-400">
-      Last updated <%= @report_period %>
+      Last updated <%= @last_updated %>
     </p>
   </div>
 </div>
@@ -186,7 +192,7 @@
   <!-- Quarterly cohort trend -->
   <div class="md:w-1/2 md:pl-2">
     <div class="p-4 rounded-md bg-white shadow-md md:flex md:flex-col md:h-96">
-      <div class="mb-6">
+      <div class="mb-4">
         <div class="mb-2">
           <p class="mb-1 font-roboto font-bold text-lg text-black">
             Quarterly cohort trend
@@ -195,50 +201,30 @@
             The result for patients registered in a quarter at their follow-up visit in the following quarter
           </p>
         </div>
-        <div class="flex">
-          <div class="flex items-center mr-6">
-            <div class="h-2 w-2 mr-2 rounded-full bg-green-200"></div>
-            <p class="font-roboto font-bold text-xs text-green-200">
-              Visited and BP &lt;140/90
-            </p>
-          </div>
-          <div class="flex items-center mr-6">
-            <div class="h-2 w-2 mr-2 rounded-full bg-yellow-300"></div>
-            <p class="font-roboto font-bold text-xs text-yellow-300">
-              Visited and BP &ge;140/90
-            </p>
-          </div>
-          <div class="flex items-center">
-            <div class="h-2 w-2 mr-2 rounded-full bg-red-200"></div>
-            <p class="font-roboto font-bold text-xs text-red-200">
-              No BP measure
-            </p>
-          </div>
-        </div>
       </div>
-      <div class="md:flex md:flex-wrap">
+      <div class="md:flex-grow">
         <% @quarterly_registrations.each_with_index do |cohort, index| %>
-          <div class="mb-4 md:w-1/2 <%= index.even? ? "md:pr-2" : "md:pl-2" %> <%= @quarterly_registrations.length - 2 >= index ? "md:mb-0" : "" %>">
-            <div class="mb-4">
-              <p class="font-roboto font-bold text-sm text-black">
+          <div class="mb-4 md:flex md:items-center">
+            <div class="mb-2 md:mb-0 md:w-1/3">
+              <p class="font-roboto font-bold text-sm text-black md:text-xs">
                 Results in <%= cohort["results_in"] %>
               </p>
-              <p class="font-roboto font-medium text-sm text-black">
+              <p class="font-roboto font-medium text-sm text-black md:text-xs">
                 Patients registered <%= cohort["patients_registered"] %>
               </p>
             </div>
-            <div class="flex items-center w-full">
-              <div class="flex items-center justify-center h-12 bg-green-200 rounded-l" style="width: <%= cohort["cohort_trend"][0]["controlled"] %>%">
+            <div class="flex items-center w-full md:w-2/3">
+              <div class="flex items-center justify-center h-8 bg-green-200 rounded-l md:h-12" style="width: <%= cohort["cohort_trend"][0]["controlled"] %>%; background-color: #51CD82;">
                 <p class="font-roboto font-bold text-sm text-white">
                   <%= cohort["cohort_trend"][0]["controlled"] %>%
                 </p>
               </div>
-              <div class="flex items-center justify-center h-12 bg-yellow-300" style="width: <%= cohort["cohort_trend"][0]["uncontrolled"] %>%">
-                <p class="font-roboto font-bold text-sm text-white">
+              <div class="flex items-center justify-center h-8 bg-yellow-300 md:h-12" style="width: <%= cohort["cohort_trend"][0]["uncontrolled"] %>%; background-color: #FFF4CD;">
+                <p class="font-roboto font-bold text-sm text-white" style="color: #AB8600;">
                   <%= cohort["cohort_trend"][0]["uncontrolled"] %>%
                 </p>
               </div>
-              <div class="flex items-center justify-center h-12 bg-red-200 rounded-r" style="width: <%= cohort["cohort_trend"][0]["no_bp"] %>%">
+              <div class="flex items-center justify-center h-8 bg-red-200 rounded-r md:h-12" style="width: <%= cohort["cohort_trend"][0]["no_bp"] %>%; background-color: #FF1F57;">
                 <p class="font-roboto font-bold text-sm text-white">
                   <%= cohort["cohort_trend"][0]["no_bp"] %>%
                 </p>
@@ -246,6 +232,23 @@
             </div>
           </div>
         <% end %>
+      </div>
+      <div class="flex pt-4 border-t border-grey-200 md:justify-end">
+        <div class="flex items-center mr-6">
+          <p class="font-roboto font-bold text-xs text-green-200 leading-tight">
+            Visited and BP &lt;140/90
+          </p>
+        </div>
+        <div class="flex items-center mr-6">
+          <p class="font-roboto font-bold text-xs text-yellow-300 leading-tight" style="color: #AB8600;">
+            Visited and BP &ge;140/90
+          </p>
+        </div>
+        <div class="flex items-center">
+          <p class="font-roboto font-bold text-xs text-red-200 leading-tight">
+            No BP measure
+          </p>
+        </div>
       </div>
     </div>
   </div>
