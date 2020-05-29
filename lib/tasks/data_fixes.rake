@@ -1,4 +1,5 @@
 require 'tasks/scripts/move_user_recorded_data_to_registration_facility'
+require 'tasks/scripts/clean_ancient_dates'
 
 namespace :data_fixes do
   desc 'Move all data recorded by a user from a source facility to a destination facility'
@@ -20,11 +21,11 @@ namespace :data_fixes do
 
   desc "Clean up records with ancient dates that break reporting"
   task :clean_ancient_dates => :environment do
-    puts "Clean up records with ancient dates that break reporting"
+    CleanAncientDates.call
   end
 
   desc "Clean up records with ancient dates that break reporting (dryrun)"
   task :clean_ancient_dates_dryrun => :environment do
-    puts "Clean up records with ancient dates that break reporting (dryrun)"
+    CleanAncientDates.call(dryrun: true)
   end
 end
