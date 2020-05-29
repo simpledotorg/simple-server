@@ -68,8 +68,8 @@
           <p class="mb-1 font-roboto font-bold text-lg text-black">
             Controlled patients trend
           </p>
-          <p class="font-roboto font-normal text-sm text-grey-400">
-            Registered patients with BP &lt;140/90 at their most recent visit in the past <%= @controlled_patients.length %> months
+          <p class="font-roboto font-normal text-sm text-black md:w-2/3">
+            Registered patients with BP &lt;140/90 at their most recent visit in the previous 90 days
           </p>
         </div>
         <div>
@@ -116,8 +116,8 @@
         <p class="mb-1 font-roboto font-bold text-lg text-black">
           Control rate of all registered HTN patients
         </p>
-        <p class="font-roboto font-normal text-sm text-grey-400">
-          Proportion of registered patients with BP &gt;140/90 at their most recent visit in the past <%= @control_rate.length %> months
+        <p class="font-roboto font-normal text-sm text-black md:w-2/3">
+          Proportion of registered patients with BP &lt;140/90 at their most recent visit in the previous 90 days
         </p>
       </div>
       <div class="mt-8 md:flex-grow md:flex md:items-center md:justify-between md:mt-0">
@@ -129,12 +129,12 @@
             <%= number_with_delimiter(@controlled_patients.values.last, :delimiter => ",") %> of <%= number_with_delimiter(@registrations.values.last, :delimiter => ",") %> patients
           </p>
         </div>
-        <div class="md:flex md:flex-col md:items-center md:flex-grow">
+        <div class="mb-4 md:flex md:flex-col md:items-center md:flex-grow">
           <div class="relative h-40 md:h-20 md:w-2/3 md:mb-4">
             <canvas id="controlRateOfAllRegisteredPatients"></canvas>
           </div>
-          <p class="font-roboto font-bold text-sm text-black md:text-base md:font-medium md:text-grey-400">
-            Last <%= @control_rate.length %> months
+          <p class="font-roboto font-bold text-center text-md text-grey-400 md:text-base md:font-medium md:text-grey-400">
+            Last 12 months
           </p>
         </div>
       </div>
@@ -146,10 +146,10 @@
       <div>
         <div class="mb-4">
           <p class="mb-1 font-roboto font-bold text-lg text-black">
-            Cumulative registration
+            Total number of patient registrations in all facilities
           </p>
-          <p class="font-roboto font-normal text-sm text-grey-400">
-            Total number of patient registrations in all state facilities
+          <p class="font-roboto font-normal text-sm text-black md:w-2/3">
+            Total patient registrations across all facilities 
           </p>
         </div>
         <div>
@@ -197,7 +197,7 @@
           <p class="mb-1 font-roboto font-bold text-lg text-black">
             Quarterly cohort trend
           </p>
-          <p class="font-roboto font-normal text-sm text-grey-400">
+          <p class="font-roboto font-normal text-sm text-black md:w-2/3">
             The result for patients registered in a quarter at their follow-up visit in the following quarter
           </p>
         </div>
@@ -287,7 +287,9 @@
         maintainAspectRatio: false,
         elements: {
           point: {
-            radius: 0,
+            pointStyle: "circle",
+            backgroundColor: "rgba(81, 205, 130, 1)",
+            hoverRadius: 5,
           },
         },
         legend: {
@@ -343,12 +345,10 @@
       data: {
         labels: registrations.map(key => key[0]),
         datasets: [{
-          backgroundColor: "rgba(157, 74, 199, 0.7)",
-          barThickness: "12px",
-          hoverBackgroundColor: "rgba(157, 74, 199, 1)",
-          borderColor: "rgba(157, 74, 199, 1)",
           data: registrations.map(key => key[1]),
-        }],
+          backgroundColor: "rgba(157, 74, 199, 0.7)",
+          hoverBackgroundColor: "rgba(157, 74, 199, 1)",
+        },],
       },
       options: {
         animation: false,
@@ -364,6 +364,7 @@
         },
         scales: {
           xAxes: [{
+            stacked: true,
             barPercentage: 1,
             display: false,
             gridLines: {
@@ -372,6 +373,7 @@
             },
           }],
           yAxes: [{
+            stacked: true,
             display: false,
             gridLines: {
               display: false,
@@ -407,12 +409,12 @@
     {
       type: "line",
       data: {
-        labels: controlRate.map(key => key[0]),
+        labels: controlRate.slice(0,12).map(key => key[0]),
         lineTension: 0,
         datasets: [{
           backgroundColor: "#ffffff",
           borderColor: "rgba(81, 205, 130, 1)",
-          data: controlRate.map(key => key[1]),
+          data: controlRate.slice(0,12).map(key => key[1]),
         }],
       },
       options: {
