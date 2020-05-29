@@ -47,7 +47,8 @@ class CleanAncientDates
   def registration_date_for(patient)
     [
       *patient.reload.blood_pressures.map(&:recorded_at),
-      *patient.reload.blood_sugars.map(&:recorded_at)
+      *patient.reload.blood_sugars.map(&:recorded_at),
+      patient.device_created_at
     ].min
   end
 
