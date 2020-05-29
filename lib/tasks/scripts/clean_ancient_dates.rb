@@ -29,13 +29,13 @@ class CleanAncientDates
   private
 
   def clean_blood_pressures_for(patient)
-    ancient_blood_pressures = patient.blood_pressures.where('recorded_at < ?', DATE_CUTOFF)
+    ancient_blood_pressures = patient.blood_pressures.where("recorded_at < ?", DATE_CUTOFF)
 
     ancient_blood_pressures.each(&:discard!)
   end
 
   def clean_blood_sugars_for(patient)
-    ancient_blood_sugars = patient.blood_sugars.where('recorded_at < ?', DATE_CUTOFF)
+    ancient_blood_sugars = patient.blood_sugars.where("recorded_at < ?", DATE_CUTOFF)
 
     ancient_blood_sugars.each(&:discard!)
   end
@@ -53,7 +53,7 @@ class CleanAncientDates
   end
 
   def eligible_patients
-    @eligible_patients ||= Patient.where('recorded_at < ?', DATE_CUTOFF)
+    @eligible_patients ||= Patient.where("recorded_at < ?", DATE_CUTOFF)
   end
 
   def log(message)

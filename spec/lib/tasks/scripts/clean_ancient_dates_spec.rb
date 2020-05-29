@@ -30,11 +30,11 @@ RSpec.describe CleanAncientDates do
 
       patient = create(:patient, recorded_at: ancient_date)
 
-      ancient_blood_pressure = create(:blood_pressure, patient: patient, recorded_at: ancient_date)
-      ancient_blood_sugar = create(:blood_sugar, patient: patient, recorded_at: ancient_date)
+      create(:blood_pressure, patient: patient, recorded_at: ancient_date)
+      create(:blood_sugar, patient: patient, recorded_at: ancient_date)
 
-      normal_blood_pressure = create(:blood_pressure, patient: patient, recorded_at: registration_date)
-      normal_blood_sugar = create(:blood_sugar, patient: patient, recorded_at: registration_date + 30.days)
+      create(:blood_pressure, patient: patient, recorded_at: registration_date)
+      create(:blood_sugar, patient: patient, recorded_at: registration_date + 30.days)
 
       CleanAncientDates.call(verbose: false)
 
