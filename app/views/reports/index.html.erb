@@ -472,10 +472,6 @@
   // Cohort tooltips
   const barChartNodes = document.querySelectorAll('[data-element="bar-chart"]');
   const tooltipNodes = document.querySelectorAll('[data-element="tooltip"]');
-  // Position nodes
-  Array.from(tooltipNodes).forEach(node => {
-
-  });
   barChartNodes.forEach(node => {
     const tooltipId = node.getAttribute("data-id");
     node.addEventListener("mouseenter", () => {
