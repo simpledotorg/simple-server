@@ -10,6 +10,8 @@ module.exports = {
         '350': '350ms',
       },
       inset: {
+        '-68': '-68px',
+        '-74': '-74px',
         '-1': '-1px',
         '1': '1px',
         '2': '2px',
@@ -43,6 +45,7 @@ module.exports = {
         '100': '#ffd6dd',
         '200': '#ff3355',
         '300': '#b81631',
+        'hover': '#f50440',
       },
       purple: {
         '100': "#f3e1fc",
@@ -52,12 +55,14 @@ module.exports = {
         '100': '#fff4cd',
         '200': '#ffc800',
         '300': '#c5a122',
+        'hover': '#ffeba3',
       },
       green: {
         '100': '#007a31',
         '200': '#00b849',
         '300': '#51cd82',
         '400': '#e0ffed',
+        'hover': '#45bf75',
       },
       grey: {
         '100': '#f0f2f5',
@@ -70,6 +75,8 @@ module.exports = {
       black: '#000000'
     },
   },
-  variants: {},
+  variants: {
+    backgroundColor: ['hover'],
+  },
   plugins: [],
 }

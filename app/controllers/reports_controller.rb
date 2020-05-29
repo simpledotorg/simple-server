@@ -105,23 +105,50 @@ class ReportsController < ApplicationController
           {
             "period" => "Dec 2019",
             "registered" => 1147,
-            "no_bp" => 36,
-            "uncontrolled" => 25,
-            "controlled" => 39,
+            "no_bp" => {
+              "total" => 413,
+              "percent" => 36,
+            },
+            "uncontrolled" => {
+              "total" => 286,
+              "percent" => 25,
+            },
+            "controlled" => {
+              "total" => 448,
+              "percent" => 39,
+            },
           },
           {
             "period" => "Nov 2019",
             "registered" => 934,
-            "no_bp" => 48,
-            "uncontrolled" => 28,
-            "controlled" => 24,
+            "no_bp" => {
+              "total" => 448,
+              "percent" => 48,
+            },
+            "uncontrolled" => {
+              "total" => 262,
+              "percent" => 28,
+            },
+            "controlled" => {
+              "total" => 224,
+              "percent" => 24,
+            },
           },
           {
             "period" => "Oct 2019",
             "registered" => 866,
-            "no_bp" => 48,
-            "uncontrolled" => 28,
-            "controlled" => 24,
+            "no_bp" => {
+              "total" => 416,
+              "percent" => 48,
+            },
+            "uncontrolled" => {
+              "total" => 242,
+              "percent" => 28,
+            },
+            "controlled" => {
+              "total" => 208,
+              "percent" => 24,
+            },
           },
         ]
       },
@@ -132,23 +159,50 @@ class ReportsController < ApplicationController
           {
             "period" => "Mar 2020",
             "registered" => 773,
-            "no_bp" => 52,
-            "uncontrolled" => 10,
-            "controlled" => 38
+            "no_bp" => {
+              "total" => 402,
+              "percent" => 52,
+            },
+            "uncontrolled" => {
+              "total" => 77,
+              "percent" => 10,
+            },
+            "controlled" => {
+              "total" => 294,
+              "percent" => 38,
+            }
           },
           {
             "period" => "Feb 2020",
             "registered" => 1232,
-            "no_bp" => 46,
-            "uncontrolled" => 14,
-            "controlled" => 40,
+            "no_bp" => {
+              "total" => 567,
+              "percent" => 46,
+            },
+            "uncontrolled" => {
+              "total" => 172,
+              "percent" => 14,
+            },
+            "controlled" => {
+              "total" => 493,
+              "percent" => 40,
+            },
           },
           {
             "period" => "Jan 2020",
             "registered" => 1043,
-            "no_bp" => 39,
-            "uncontrolled" => 20,
-            "controlled" => 41,
+            "no_bp" => {
+              "total" => 407,
+              "percent" => 39,
+            },
+            "uncontrolled" => {
+              "total" => 208,
+              "percent" => 20,
+            },
+            "controlled" => {
+              "total" => 428,
+              "percent" => 41,
+            },
           },
         ],
       },
