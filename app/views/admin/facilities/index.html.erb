@@ -17,7 +17,7 @@
 <%= render 'shared/search_form', path: admin_facilities_path, placeholder: "Search by facility name ..." %>
 
 <% if searching? and @facilities.blank? %>
-  <%= render "shared/no_search_results", message: "There are no facilities named '#{search_query}'" %>
+  <%= render "shared/no_search_results", message: "No results for '#{content_tag(:strong, search_query)}'" %>
 <% else %>
   <div class="alert alert-info alert-dismissible fade show" role="alert">
     <i class="far fa-question-circle mr-2"></i> A <span class="term">Facility Group</span> is usually a <span class="term">District</span>. First, add a new facility group and then add facilities inside it.
@@ -72,7 +72,6 @@
             <div class="col-md-2"><span class="text-muted"><%= facility.facility_size&.capitalize || "No size set" %></span></div>
             <div class="col-md-2"><span class="text-muted">OPD: <%= facility.monthly_estimated_opd_load || "N/A" %></span></div>
           </div>
-
         <% end %>
       </div>
     <% end %>

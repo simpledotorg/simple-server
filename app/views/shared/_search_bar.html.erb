@@ -1,4 +1,4 @@
-<div class="col col-12 col-md-11 mb-2">
+<div class="col-md-auto flex-grow-1">
   <%= form.search_field :search_query,
       {
           hide_label: true,
@@ -9,4 +9,8 @@
           tabindex: 2,
           wrapper: false
       } %>
+</div>
+
+<div class="col-md-auto">
+  <%= form.primary "Search", wrapper: false, tabindex: 3 %>
 </div>

@@ -12,7 +12,7 @@
 <%= render 'shared/search_form', path: admins_path, placeholder: 'Search by name or email...' %>
 
 <% if @admins.present? %>
-  <h2>Search Results</h2>
+  <span><%= search_entries_info(@admins) %></span>
 
   <% @admins.each do |admin| %>
     <div class="card" title="<%= admin.email %>">
@@ -42,5 +42,7 @@
     </div>
   <% end %>
 <% else %>
-  <%= render "shared/no_search_results", message: "There are no admins named #{search_query}" %>
+  <%= render "shared/no_search_results", message: "No results for '#{content_tag(:strong, search_query)}'" %>
 <% end %>
+
+<%= paginate @admins %>

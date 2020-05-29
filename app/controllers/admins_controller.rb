@@ -8,14 +8,14 @@ class AdminsController < AdminController
 
   def index
     authorize([:manage, :admin, User])
-    @admins = policy_scope([:manage, :admin, User])
-    @admins = if searching?
-                @admins.search_by_name_or_email(search_query)
-              else
-                @admins
-              end
+    admins = policy_scope([:manage, :admin, User])
 
-    @admins = paginate(@admins).sort_by(&:email)
+    @admins =
+      if searching?
+        paginate(admins.search_by_name_or_email(search_query))
+      else
+        paginate(admins.order("email_authentications.email"))
+      end
   end
 
   def show

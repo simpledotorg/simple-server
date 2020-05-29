@@ -10,7 +10,7 @@
     scope_namespace: [:manage, :user, Facility] %>
 
 <% if @users.exists? %>
-  <span><%= search_entries_info(@users) %></span>
+  <span><%= search_entries_info(@users) + " across '#{params[:district].presence || 'All districts'}'" %></span>
 
   <% @users.group_by(&:facility).each do |facility, users| %>
     <h3 class="mt-3" id="facility_name"><%= facility.name %></h3>
@@ -25,6 +25,7 @@
                 <span class="ml-2 badge badge-pill badge-primary <%= user.sync_approval_status %>"><%= user.sync_approval_status&.capitalize %></span>
               <% end %>
             </h5>
+
             <div>
               <% unless user.sync_approval_status == 'allowed' %>
                 <%= user.sync_approval_status_reason %>.
@@ -41,11 +42,13 @@
                 <% end %>
               <% end %>
             </div>
+
             <div class="mt-2">
               <a href="tel:<%= user.phone_number %>" class="btn btn-sm btn-outline-primary btn-phone"><i class="fas fa-phone"></i> <%= user.phone_number %>
               </a>
             </div>
           </div>
+
           <div class="col-md-5 text-right">
             <% unless user.sync_approval_status == 'denied' %>
               <% if policy([:manage, :user, user]).disable_access? %>
@@ -77,7 +80,7 @@
   <% end %>
 <% else %>
   <%= render "shared/no_search_results",
-      message: "There are no users named #{search_query} in #{params[:district].presence || 'All districts'}" %>
+      message: "No results for '#{content_tag(:strong, search_query)}' in '#{content_tag(:strong, params[:district].presence || 'All districts')}'" %>
 <% end %>
 
 <%= paginate(@users) %>

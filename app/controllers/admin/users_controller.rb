@@ -8,17 +8,18 @@ class Admin::UsersController < AdminController
 
   def index
     authorize([:manage, :user, User])
-    @users = policy_scope([:manage, :user, User])
-               .joins(phone_number_authentications: :facility)
-               .where('phone_number_authentications.registration_facility_id IN (?)',
-                      selected_district_facilities([:manage, :user]).map(&:id))
-               .order('facilities.name', 'users.full_name', 'users.device_created_at')
+    users = policy_scope([:manage, :user, User])
+              .joins(phone_number_authentications: :facility)
+              .where('phone_number_authentications.registration_facility_id IN (?)',
+                selected_district_facilities([:manage, :user]).map(&:id))
+              .order('facilities.name', 'users.full_name', 'users.device_created_at')
 
-    @users = if searching?
-               paginate(@users.search_by_name_or_phone(search_query))
-             else
-               paginate(@users)
-             end
+    @users =
+      if searching?
+        paginate(users.search_by_name_or_phone(search_query))
+      else
+        paginate(users)
+      end
   end
 
   def show

@@ -8,8 +8,8 @@ module SearchHelper
   end
 
   def search_entries_info(records)
-    info = page_entries_info(records)
-    info += " for #{search_query}" if search_query.present?
+    info = page_entries_info(records, entry_name: "result".pluralize(records.length))
+    info += " for '#{search_query}'" if search_query.present?
     info
   end
 end
