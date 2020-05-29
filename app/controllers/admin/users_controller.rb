@@ -1,6 +1,7 @@
 class Admin::UsersController < AdminController
   include DistrictFiltering
   include Pagination
+  include SearchHelper
 
   before_action :set_user, except: [:index, :new, :create]
   around_action :set_time_zone, only: [:show]
@@ -13,7 +14,7 @@ class Admin::UsersController < AdminController
                       selected_district_facilities([:manage, :user]).map(&:id))
                .order('facilities.name', 'users.full_name', 'users.device_created_at')
 
-    @users = if search_query.present?
+    @users = if searching?
                paginate(@users.search_by_name_or_phone(search_query))
              else
                paginate(@users)
@@ -81,10 +82,6 @@ class Admin::UsersController < AdminController
   def set_time_zone
     time_zone = Rails.application.config.country[:time_zone] || AnalyticsController::DEFAULT_ANALYTICS_TIME_ZONE
     Time.use_zone(time_zone) { yield }
-  end
-
-  def search_query
-    params[:search_query]
   end
 
   def user_params
