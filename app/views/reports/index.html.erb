@@ -214,17 +214,17 @@
               </p>
             </div>
             <div class="flex items-center w-full md:w-2/3">
-              <div class="flex items-center justify-center h-8 bg-green-200 rounded-l md:h-12" style="width: <%= cohort["cohort_trend"][0]["controlled"] %>%; background-color: #51CD82;">
+              <div class="flex items-center justify-center h-8 bg-green-300 rounded-l md:h-12" style="width: <%= cohort["cohort_trend"][0]["controlled"] %>%;">
                 <p class="font-roboto font-bold text-sm text-white">
                   <%= cohort["cohort_trend"][0]["controlled"] %>%
                 </p>
               </div>
-              <div class="flex items-center justify-center h-8 bg-yellow-300 md:h-12" style="width: <%= cohort["cohort_trend"][0]["uncontrolled"] %>%; background-color: #FFF4CD;">
+              <div class="flex items-center justify-center h-8 bg-yellow-100 md:h-12" style="width: <%= cohort["cohort_trend"][0]["uncontrolled"] %>%;">
                 <p class="font-roboto font-bold text-sm text-white" style="color: #AB8600;">
                   <%= cohort["cohort_trend"][0]["uncontrolled"] %>%
                 </p>
               </div>
-              <div class="flex items-center justify-center h-8 bg-red-200 rounded-r md:h-12" style="width: <%= cohort["cohort_trend"][0]["no_bp"] %>%; background-color: #FF1F57;">
+              <div class="flex items-center justify-center h-8 bg-red-200 rounded-r md:h-12" style="width: <%= cohort["cohort_trend"][0]["no_bp"] %>%;">
                 <p class="font-roboto font-bold text-sm text-white">
                   <%= cohort["cohort_trend"][0]["no_bp"] %>%
                 </p>
