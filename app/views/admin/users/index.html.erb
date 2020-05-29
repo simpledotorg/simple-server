@@ -10,7 +10,9 @@
     scope_namespace: [:manage, :user, Facility] %>
 
 <% if @users.exists? %>
-  <span><%= search_entries_info(@users) + " across '#{params[:district].presence || 'All districts'}'" %></span>
+  <% if searching? %>
+    <span><%= search_entries_info(@users) + " across '#{params[:district].presence || 'All districts'}'" %></span>
+  <% end %>
 
   <% @users.group_by(&:facility).each do |facility, users| %>
     <h3 class="mt-3" id="facility_name"><%= facility.name %></h3>

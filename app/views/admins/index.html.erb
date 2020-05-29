@@ -12,7 +12,9 @@
 <%= render 'shared/search_form', path: admins_path, placeholder: 'Search by name or email...' %>
 
 <% if @admins.present? %>
-  <span><%= search_entries_info(@admins) %></span>
+  <% if searching? %>
+    <span><%= search_entries_info(@admins) %></span>
+  <% end %>
 
   <% @admins.each do |admin| %>
     <div class="card" title="<%= admin.email %>">
