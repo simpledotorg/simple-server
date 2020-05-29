@@ -4,8 +4,8 @@ namespace :sidekiq do
   desc "Install sidekiq systemd files"
   task :install do
     on roles :sidekiq do
-      template 'sidekiq@.service', "~/.config/systemd/user/sidekiq@.service"
-      template 'sidekiq.service', "~/.config/systemd/user/sidekiq.service"
+      template "sidekiq@.service", "~/.config/systemd/user/sidekiq@.service"
+      template "sidekiq.service", "~/.config/systemd/user/sidekiq.service"
 
       execute :systemctl, :enable, fetch(:sidekiq_service_name), "--user"
     end
@@ -25,7 +25,7 @@ namespace :sidekiq do
     end
   end
 
-  desc 'Stop sidekiq (graceful shutdown within timeout, put unfinished tasks back to Redis)'
+  desc "Stop sidekiq (graceful shutdown within timeout, put unfinished tasks back to Redis)"
   task :stop do
     on roles :sidekiq do
       execute :systemctl, "--user", "stop", fetch(:sidekiq_service_name)
@@ -43,9 +43,9 @@ namespace :sidekiq do
   end
 
   task :add_default_hooks do
-    after 'deploy:starting', 'sidekiq:quiet'
-    after 'deploy:updated', 'sidekiq:stop'
-    after 'deploy:published', 'sidekiq:restart'
-    after 'deploy:failed', 'sidekiq:restart'
+    after "deploy:starting", "sidekiq:quiet"
+    after "deploy:updated", "sidekiq:stop"
+    after "deploy:published", "sidekiq:restart"
+    after "deploy:failed", "sidekiq:restart"
   end
 end
