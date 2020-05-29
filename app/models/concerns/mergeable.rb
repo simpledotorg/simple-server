@@ -8,16 +8,15 @@ module Mergeable
   class_methods do
     def compute_merge_status(attributes)
       new_record = new(attributes)
-      existing_record = with_discarded.find_by(id: attributes['id'])
+      existing_record = with_discarded.find_by(id: attributes["id"])
 
-      case
-      when new_record.invalid?
+      if new_record.invalid?
         :invalid
-      when existing_record.nil?
+      elsif existing_record.nil?
         :new
-      when existing_record.discarded?
+      elsif existing_record.discarded?
         :discarded
-      when new_record.device_updated_at > existing_record.device_updated_at
+      elsif new_record.device_updated_at > existing_record.device_updated_at
         :updated
       else
         :old
@@ -26,7 +25,7 @@ module Mergeable
 
     def merge(attributes)
       new_record = new(attributes)
-      existing_record = with_discarded.find_by(id: attributes['id'])
+      existing_record = with_discarded.find_by(id: attributes["id"])
 
       case compute_merge_status(attributes)
       when :discarded
@@ -45,7 +44,7 @@ module Mergeable
     private
 
     def existing_record(attributes)
-      find(attributes['id'])
+      find(attributes["id"])
     end
 
     def discarded_record(record)
@@ -63,7 +62,7 @@ module Mergeable
     end
 
     def create_new_record(attributes)
-      logger.debug "#{self} with id #{attributes['id']} is new, creating."
+      logger.debug "#{self} with id #{attributes["id"]} is new, creating."
       NewRelic::Agent.increment_metric("Merge/#{self}/new")
       record = create(attributes)
       record.merge_status = :new
