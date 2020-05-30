@@ -43,17 +43,17 @@
   <div>
     <div class="hidden md:flex md:flex-col md:items-end md:justify-end md:mb-2">
       <div class="md:mr-0 md:mb-2">
-        <p class="font-roboto font-bold text-base text-blue-200 uppercase tracking-wider">
+        <p class="font-roboto font-bold text-sm text-blue-200 uppercase tracking-wider">
           Print
         </p>
       </div>
       <div>
-        <p class="font-roboto font-bold text-base text-blue-200 uppercase tracking-wider">
+        <p class="font-roboto font-bold text-sm text-blue-200 uppercase tracking-wider">
           Download
         </p>
       </div>
     </div>
-    <p class="font-roboto font-normal text-base text-grey-400">
+    <p class="font-roboto font-normal text-sm text-grey-400">
       Last updated <%= @last_updated %>
     </p>
   </div>
@@ -69,7 +69,7 @@
             Controlled patients trend
           </p>
           <p class="font-roboto font-normal text-sm text-black md:w-2/3">
-            Registered patients with BP &lt;140/90 at their most recent visit in the previous 3 months
+            Registered patients with BP &lt;140/90 at their most recent visit in the last 3 months
           </p>
         </div>
         <div>
@@ -117,7 +117,7 @@
           Control rate of all registered HTN patients
         </p>
         <p class="font-roboto font-normal text-sm text-black md:w-2/3">
-          Proportion of registered patients with BP &lt;140/90 at their most recent visit in the previous 3 months
+          Proportion of registered patients with BP &lt;140/90 at their most recent visit in the last 3 months
         </p>
       </div>
       <div class="mt-8 md:flex-grow md:flex md:items-center md:justify-between md:mt-0">
@@ -130,10 +130,10 @@
           </p>
         </div>
         <div class="mb-4 md:flex md:flex-col md:items-center md:flex-grow">
-          <div class="relative h-40 md:h-20 md:w-2/3 md:mb-4">
+          <div class="relative h-40 md:h-20 md:w-2/3 md:mb-6">
             <canvas id="controlRateOfAllRegisteredPatients"></canvas>
           </div>
-          <p class="font-roboto font-bold text-center text-md text-grey-400 md:text-base md:font-medium md:text-grey-400">
+          <p class="font-roboto font-bold text-center text-md text-grey-400 md:text-sm md:font-medium md:text-grey-400 md:mt-1">
             Last 12 months
           </p>
         </div>
@@ -242,7 +242,7 @@
                 </p>
                 <div class="hidden absolute -top-74 p-3 text-center bg-black rounded-md md:-top-68" data-element="tooltip" data-id="<%= cohort["results_in"].parameterize %>-no-bp" style="width: 160px;">
                   <p class="font-roboto font-medium text-sm text-white">
-                    <%= cohort["cohort_trend"][0]["no_bp"]["total"] %> patients visited with no BP
+                    <%= cohort["cohort_trend"][0]["no_bp"]["total"] %> patients didn’t have a BP taken
                   </p>
                   <span class="absolute right-0 left-0 w-2 h-2 my-0 mx-auto" style="border-left: 17px solid transparent; border-right: 17px solid transparent; border-top: 17px solid #000000;"></span>
                 </div>
