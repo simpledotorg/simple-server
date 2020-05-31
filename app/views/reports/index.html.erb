@@ -73,8 +73,8 @@
           </p>
         </div>
         <div>
-          <p class="font-roboto font-bold text-4xl text-green-200">
-            <%= number_with_delimiter(@controlled_patients.values.last, :delimiter => ",") %>
+          <p class="font-roboto font-bold text-3xl text-green-200">
+            <%= number_with_delimiter(@controlled_patients.values.last, :delimiter => ",") %> patients
           </p>
           <p class="font-roboto font-normal text-sm text-black">
             <% controlled_patient_trend_percentage = ((@controlled_patients.values.last.to_f/@hypertensive_population.to_f)*100).round(2) %>
@@ -153,8 +153,8 @@
           </p>
         </div>
         <div>
-          <p class="font-roboto font-bold text-4xl text-purple-200">
-            <%= number_with_delimiter(@registrations.values.last, :delimiter => ",") %>
+          <p class="font-roboto font-bold text-3xl text-purple-200">
+            <%= number_with_delimiter(@registrations.values.last, :delimiter => ",") %> patients
           </p>
           <p class="font-roboto font-normal text-sm text-black">
             <% formatted_htn_pop = number_with_delimiter(@hypertensive_population, :delimiter => ",") %>
