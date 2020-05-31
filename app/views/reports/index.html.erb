@@ -208,57 +208,10 @@
           <div class="mb-3 md:flex md:items-center">
             <div class="mb-2 md:mb-0 md:w-2/5">
               <p class="font-roboto font-bold text-sm text-black">
-                Results in <%= cohort["results_in"] %>
+                <%= cohort["results_in"] %> results for patients
               </p>
               <p class="font-roboto font-medium text-sm text-black">
-                Patients registered <%= cohort["patients_registered"] %>
-              </p>
-            </div>
-            <div class="relative flex items-center w-full md:w-3/5">
-              <div class="flex items-center justify-center h-8 bg-green-300 hover:bg-green-hover rounded-l md:h-10" style="box-sizing: content-box; padding: 0 4px; width: <%= cohort["cohort_trend"][0]["controlled"]["percent"] %>%;" data-element="bar-chart" data-id="<%= cohort["results_in"].parameterize %>-controlled">
-                <p class="font-roboto font-bold text-sm text-white">
-                  <%= cohort["cohort_trend"][0]["controlled"]["percent"] %>%
-                </p>
-                <div class="hidden absolute -top-74 p-3 text-center bg-black rounded-md md:-top-68" data-element="tooltip" data-id="<%= cohort["results_in"].parameterize %>-controlled" style="width: 160px;">
-                  <p class="font-roboto font-medium text-sm text-white">
-                    <%= cohort["cohort_trend"][0]["controlled"]["total"] %> patients visited with controlled BP
-                  </p>
-                  <span class="absolute right-0 left-0 w-2 h-2 my-0 mx-auto" style="border-left: 17px solid transparent; border-right: 17px solid transparent; border-top: 17px solid #000000;"></span>
-                </div>
-              </div>
-              <div class="flex items-center justify-center h-8 bg-yellow-100 hover:bg-yellow-hover md:h-10" style="box-sizing: content-box; padding: 0 4px; width: <%= cohort["cohort_trend"][0]["uncontrolled"]["percent"] %>%;" data-element="bar-chart" data-id="<%= cohort["results_in"].parameterize %>-uncontrolled">
-                <p class="font-roboto font-bold text-sm text-white" style="color: #AB8600;">
-                   <%= cohort["cohort_trend"][0]["uncontrolled"]["percent"] %>%
-                </p>
-                <div class="hidden absolute -top-74 p-3 text-center bg-black rounded-md md:-top-68" data-element="tooltip" data-id="<%= cohort["results_in"].parameterize %>-uncontrolled" style="width: 160px;">
-                  <p class="font-roboto font-medium text-sm text-white">
-                    <%= cohort["cohort_trend"][0]["uncontrolled"]["total"] %> patients visited with uncontrolled BP
-                  </p>
-                  <span class="absolute right-0 left-0 w-2 h-2 my-0 mx-auto" style="border-left: 17px solid transparent; border-right: 17px solid transparent; border-top: 17px solid #000000;"></span>
-                </div>
-              </div>
-              <div class="flex items-center justify-center h-8 bg-red-200 rounded-r hover:bg-red-hover md:h-10" style="box-sizing: content-box; padding: 0 4px; width: <%= cohort["cohort_trend"][0]["no_bp"]["percent"] %>%;" data-element="bar-chart" data-id="<%= cohort["results_in"].parameterize %>-no-bp">
-                <p class="font-roboto font-bold text-sm text-white">
-                    <%= cohort["cohort_trend"][0]["no_bp"]["percent"] %>%
-                </p>
-                <div class="hidden absolute -top-74 p-3 text-center bg-black rounded-md md:-top-68" data-element="tooltip" data-id="<%= cohort["results_in"].parameterize %>-no-bp" style="width: 160px;">
-                  <p class="font-roboto font-medium text-sm text-white">
-                    <%= cohort["cohort_trend"][0]["no_bp"]["total"] %> patients didn’t have a BP taken
-                  </p>
-                  <span class="absolute right-0 left-0 w-2 h-2 my-0 mx-auto" style="border-left: 17px solid transparent; border-right: 17px solid transparent; border-top: 17px solid #000000;"></span>
-                </div>
-              </div>
-            </div>
-          </div>
-        <% end %>
-        <% @quarterly_registrations.each_with_index do |cohort, index| %>
-          <div class="mb-3 md:flex md:items-center">
-            <div class="mb-2 md:mb-0 md:w-2/5">
-              <p class="font-roboto font-bold text-sm text-black">
-                Results in <%= cohort["results_in"] %>
-              </p>
-              <p class="font-roboto font-medium text-sm text-black">
-                Patients registered <%= cohort["patients_registered"] %>
+                registered in <%= cohort["patients_registered"] %>
               </p>
             </div>
             <div class="relative flex items-center w-full md:w-3/5">
