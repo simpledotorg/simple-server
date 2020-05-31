@@ -49,7 +49,7 @@
       </div>
       <div>
         <p class="font-roboto font-bold text-sm text-blue-200 uppercase tracking-wider">
-          Download
+          Download data
         </p>
       </div>
     </div>
@@ -130,10 +130,10 @@
           </p>
         </div>
         <div class="mb-4 md:flex md:flex-col md:items-center md:flex-grow">
-          <div class="relative h-40 md:h-20 md:w-2/3 md:mb-6">
+          <div class="relative ml-auto mr-auto h-20 w-1/2 md:h-20 md:w-2/3 md:mb-6">
             <canvas id="controlRateOfAllRegisteredPatients"></canvas>
           </div>
-          <p class="font-roboto font-bold text-center text-md text-grey-400 md:text-sm md:font-medium md:text-grey-400 md:mt-1">
+          <p class="font-roboto text-center text-sm md:text-sm md:font-medium md:mt-1">
             Last 12 months
           </p>
         </div>
@@ -413,7 +413,9 @@
         labels: registrations.map(key => key[0]),
         datasets: [{
           data: registrations.map(key => key[1]),
-          backgroundColor: "rgba(157, 74, 199, 0.7)",
+          backgroundColor: purpleGradientFill,
+          borderColor: "rgba(157, 74, 199, 1)",
+          borderWidth:{ top:2, right:0, bottom:0, left:0 },
           hoverBackgroundColor: "rgba(157, 74, 199, 1)",
         },],
       },
