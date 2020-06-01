@@ -32,9 +32,7 @@ describe 'Users v4 API', swagger_doc: 'v4/swagger.json' do
       parameter name: :user, in: :body, schema: Api::V4::Schema.user_activate_request
 
       before :each do
-        sms_notification_service = double(SmsNotificationService.new(nil, nil))
-        allow(SmsNotificationService).to receive(:new).and_return(sms_notification_service)
-        allow(sms_notification_service).to receive(:send_request_otp_sms).and_return(true)
+        allow(RequestOtpSmsJob).to receive(:perform_later).with(instance_of(User))
       end
 
       response '200', 'user is authenticated' do
@@ -77,7 +75,7 @@ describe 'Users v4 API', swagger_doc: 'v4/swagger.json' do
 
     get 'Fetch user information' do
       tags 'User'
-      security [basic: []]
+      security [access_token: [], user_id: [], facility_id: []]
       let(:facility) { create(:facility) }
       let(:user) { create(:user, registration_facility: facility) }
       let(:HTTP_X_USER_ID) { user.id }

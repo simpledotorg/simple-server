@@ -34,10 +34,10 @@ $font-small: 11px;
 @import "tablesort/tablesort";
 
 // Local imports
-@import "dashboard";
-@import "resources";
-@import "graphs";
-@import "snapshots";
+@import "partials/dashboard";
+@import "partials/resources";
+@import "partials/graphs";
+@import "partials/snapshots";
 
 body {
     padding-top: 5rem;
@@ -768,7 +768,9 @@ th sup {
       background: #F1DBFF;
       color: #BE72E3;
       border-radius: 100px;
-      padding: 2px 10px;
+      padding: 2px;
+      width: 3.5em;
+      display: block;
     }
 
     .row-total td.type-percent em {
@@ -903,6 +905,11 @@ nav.breadcrumb i {
     font-size: 85%;
     top: 5px;
     position: relative;
+}
+
+form.edit_email_authentication .invalid-feedback {
+    font-size: 100%;
+    font-weight: bold;
 }
 
 /******************

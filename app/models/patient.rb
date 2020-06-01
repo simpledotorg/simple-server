@@ -8,13 +8,11 @@ class Patient < ApplicationRecord
     denied: 'denied'
   }, _prefix: true
 
-  GENDERS = %w[male female transgender].freeze
+  GENDERS = Rails.application.config.country[:supported_genders].freeze
   STATUSES = %w[active dead migrated unresponsive inactive].freeze
   RISK_PRIORITIES = {
     HIGH: 0,
-    REGULAR: 1,
-    LOW: 2,
-    NONE: 3
+    REGULAR: 1
   }.freeze
 
   ANONYMIZED_DATA_FIELDS = %w[id created_at registration_date registration_facility_name user_id age gender]
@@ -22,17 +20,18 @@ class Patient < ApplicationRecord
   belongs_to :address, optional: true
   has_many :phone_numbers, class_name: 'PatientPhoneNumber'
   has_many :business_identifiers, class_name: 'PatientBusinessIdentifier'
-
-  has_many :encounters
-  has_many :observations, through: :encounters
+  has_many :passport_authentications, through: :business_identifiers
 
   has_many :blood_pressures, inverse_of: :patient
+  has_many :blood_sugars
   has_many :prescription_drugs
   has_many :facilities, -> { distinct }, through: :blood_pressures
   has_many :users, -> { distinct }, through: :blood_pressures
-  has_many :blood_sugars
   has_many :appointments
   has_one :medical_history
+
+  has_many :encounters
+  has_many :observations, through: :encounters
 
   belongs_to :registration_facility, class_name: "Facility", optional: true
   belongs_to :registration_user, class_name: "User"
@@ -48,7 +47,36 @@ class Patient < ApplicationRecord
            -> { where(identifier_type: 'simple_bp_passport').order(device_created_at: :desc) },
            class_name: 'PatientBusinessIdentifier'
 
+  has_many :current_prescription_drugs, -> { where(is_deleted: false) }, class_name: 'PrescriptionDrug'
+
   attribute :call_result, :string
+
+  scope :with_diabetes, -> { joins(:medical_history).merge(MedicalHistory.diabetes_yes) }
+  scope :with_hypertension, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes) }
+
+  scope :follow_ups_by_period, -> (period, last: nil) {
+    follow_ups_with(Encounter, period, time_column: 'encountered_on', last: last)
+  }
+
+  scope :diabetes_follow_ups_by_period, -> (period, last: nil) {
+    follow_ups_with(BloodSugar, period, last: last)
+      .with_diabetes
+  }
+
+  scope :hypertension_follow_ups_by_period, -> (period, last: nil) {
+    follow_ups_with(BloodPressure, period, last: last)
+      .with_hypertension
+  }
+
+  def self.follow_ups_with(model_name, period, time_column: 'recorded_at', last: nil)
+    table_name = model_name.table_name.to_sym
+    time_column_with_table_name = "#{table_name}.#{time_column}"
+
+    joins(table_name)
+      .where("patients.recorded_at < #{model_name.date_to_period_sql(time_column_with_table_name, period)}")
+      .group_by_period(period, time_column_with_table_name, last: last)
+      .distinct
+  end
 
   enum could_not_contact_reasons: {
     not_responding: 'not_responding',
@@ -98,6 +126,10 @@ class Patient < ApplicationRecord
     latest_bp_passports.first
   end
 
+  def access_tokens
+    passport_authentications.map(&:access_token)
+  end
+
   def phone_number?
     latest_phone_number.present?
   end
@@ -107,7 +139,7 @@ class Patient < ApplicationRecord
   end
 
   def risk_priority
-    return RISK_PRIORITIES[:NONE] if latest_scheduled_appointment&.overdue_for_under_a_month?
+    return RISK_PRIORITIES[:REGULAR] if latest_scheduled_appointment&.overdue_for_under_a_month?
 
     if latest_blood_pressure&.critical?
       RISK_PRIORITIES[:HIGH]
@@ -115,12 +147,8 @@ class Patient < ApplicationRecord
       RISK_PRIORITIES[:HIGH]
     elsif latest_blood_sugar&.diabetic?
       RISK_PRIORITIES[:HIGH]
-    elsif latest_blood_pressure&.hypertensive?
-      RISK_PRIORITIES[:REGULAR]
-    elsif low_priority?
-      RISK_PRIORITIES[:LOW]
     else
-      RISK_PRIORITIES[:NONE]
+      RISK_PRIORITIES[:REGULAR]
     end
   end
 
@@ -183,12 +211,5 @@ class Patient < ApplicationRecord
     phone_numbers.discard_all
     prescription_drugs.discard_all
     discard
-  end
-
-  private
-
-  def low_priority?
-    latest_scheduled_appointment&.overdue_for_over_a_year? &&
-      latest_blood_pressure&.under_control?
   end
 end

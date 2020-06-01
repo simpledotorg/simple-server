@@ -1,46 +1,98 @@
-<!-- the "all" table -->
-<table class="progress-table <%= data_table_name %> hypertension:all">
+<!-- load up the tables for totals and diabetes only if diabetes is on -->
+<% if user_analytics.diabetes_enabled? %>
+  <!-- the "all" table for both HTN & DM across genders -->
+  <table class="progress-table <%= data_table_name %> all">
+    <tr class="total">
+      <td class="row-label">All-time</td>
+      <td>
+        <%= user_analytics.all_time_htn_or_dm_count(stat) %>
+      </td>
+    </tr>
+    <% user_analytics.monthly_period_list.each do |month_date| %>
+      <tr>
+        <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
+        <td>
+          <%= user_analytics.monthly_htn_or_dm_stats_by_date(stat, month_date) %>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+
+  <!-- diabetes-only -->
+  <!-- the "all genders" table -->
+  <table class="progress-table <%= data_table_name %> diabetes:all" style="display: none">
+    <tr class="total">
+      <td class="row-label">All-time</td>
+      <td>
+        <%= user_analytics.all_time_dm_count(stat) %>
+      </td>
+    </tr>
+    <% user_analytics.monthly_period_list.each do |month_date| %>
+      <tr>
+        <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
+        <td>
+          <%= user_analytics.monthly_dm_stats_by_date(stat, month_date) %>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>
+
+<% Patient::GENDERS.each do |gender| %>
+  <!-- gender-wise tables -->
+  <table class="progress-table <%= data_table_name %> diabetes:<%= gender %>" style="display: none">
+    <tr class="total">
+      <td class="row-label">All-time</td>
+      <td>
+        <%= user_analytics.all_time_dm_stats_by_gender(stat, gender) %>
+      </td>
+    </tr>
+    <% user_analytics.monthly_period_list.each do |month_date| %>
+      <tr>
+        <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
+        <td>
+          <%= user_analytics.monthly_dm_stats_by_date_and_gender(stat, month_date, gender) %>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>
+
+<!-- hypertension-only -->
+<!-- the "all genders" table -->
+<table class="progress-table <%= data_table_name %> hypertension:all"
+       style="<%= user_analytics.diabetes_enabled? ? 'display: none' : '' %>">
+
   <tr class="total">
     <td class="row-label">All-time</td>
     <td>
-      <%= zero_if_unavailable(@statistics.dig(:all_time,
-                                              :grouped_by_gender,
-                                              resource)
-                                  .values
-                                  .sum) %>
+      <%= user_analytics.all_time_htn_count(stat) %>
     </td>
   </tr>
-  <% @user_analytics.monthly_period_list.each do |month_date| %>
+  <% user_analytics.monthly_period_list.each do |month_date| %>
     <tr>
       <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
       <td>
-        <%= zero_if_unavailable(@user_analytics.stats_across_genders_for_month(resource, month_date)) %>
+        <%= user_analytics.monthly_htn_stats_by_date(stat, month_date) %>
       </td>
     </tr>
   <% end %>
 </table>
 
-<!-- gender-wise tables -->
 <% Patient::GENDERS.each do |gender| %>
+  <!-- gender-wise tables -->
   <table class="progress-table <%= data_table_name %> hypertension:<%= gender %>" style="display: none">
     <tr class="total">
       <td class="row-label">All-time</td>
       <td>
-        <%= zero_if_unavailable(@statistics.dig(:all_time,
-                                                :grouped_by_gender,
-                                                resource,
-                                                gender)) %>
+        <%= user_analytics.all_time_htn_stats_by_gender(stat, gender) %>
       </td>
     </tr>
-    <% @user_analytics.monthly_period_list.each do |month_date| %>
+    <% user_analytics.monthly_period_list.each do |month_date| %>
       <tr>
         <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
         <td>
-          <%= zero_if_unavailable(@statistics.dig(:monthly,
-                                                  :grouped_by_gender_and_date,
-                                                  resource,
-                                                  gender,
-                                                  month_date)) %>
+          <%= user_analytics.monthly_htn_stats_by_date_and_gender(stat, month_date, gender) %>
         </td>
       </tr>
     <% end %>

@@ -32,7 +32,7 @@ RSpec.describe Admin::UsersController, type: :controller do
     it 'returns a success response' do
       user = create(:user)
       get :index, params: { facility_id: facility.id }
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
@@ -40,7 +40,7 @@ RSpec.describe Admin::UsersController, type: :controller do
     it 'returns a success response' do
       user = create(:user)
       get :show, params: { id: user.to_param, facility_id: facility.id }
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
@@ -48,7 +48,7 @@ RSpec.describe Admin::UsersController, type: :controller do
     it 'returns a success response' do
       user = create(:user)
       get :edit, params: { id: user.to_param, facility_id: facility.id }
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
@@ -106,14 +106,12 @@ RSpec.describe Admin::UsersController, type: :controller do
     let(:user) { FactoryBot.create(:user, registration_facility: facility) }
 
     before :each do
-      sms_notification_service = double(SmsNotificationService.new(nil, nil))
-      allow(SmsNotificationService).to receive(:new)
-        .with(user.phone_number, ENV['TWILIO_PHONE_NUMBER'])
-        .and_return(sms_notification_service)
-      expect(sms_notification_service).to receive(:send_request_otp_sms)
+      allow(RequestOtpSmsJob).to receive(:perform_later).with(instance_of(User))
     end
 
     it 'resets OTP' do
+      expect(RequestOtpSmsJob).to receive(:perform_later).with(user)
+
       old_otp = user.otp
       put :reset_otp, params: { user_id: user.id, facility_id: facility.id }
       user.reload

@@ -1,91 +1,95 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
-ruby '2.5.1'
+ruby "2.5.1"
 
 git_source(:github) do |repo_name|
   repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
   "https://github.com/#{repo_name}.git"
 end
 
-gem 'rails', '~> 5.1.6.2'
-gem 'pg', '>= 0.18', '< 2.0'
-gem 'passenger'
-gem 'sassc-rails'
-gem 'uglifier', '>= 1.3.0'
-gem 'jbuilder', '~> 2.5'
-gem 'pry-rails'
-gem 'sentry-raven'
-gem 'dotenv-rails'
-gem 'rswag', '~> 1.6.0'
-gem 'rspec-rails', '~> 3.7'
-gem 'newrelic_rpm'
-gem 'bcrypt', '~> 3.1', '>= 3.1.11'
+gem "activerecord-import"
+gem "bcrypt", "~> 3.1", ">= 3.1.11"
+gem "bootsnap", require: false
+gem "bootstrap", "~> 4.3.1"
+gem "bootstrap_form", ">= 4.1.0"
+gem "connection_pool"
+gem "data-anonymization", require: false
+gem "data_migrate"
 gem "devise", ">= 4.7.1"
-gem 'devise_invitable', '~> 1.7.0'
-gem 'twilio-ruby', '~> 5.10', '>= 5.10.3'
-gem 'pundit'
-gem 'bootstrap', '~> 4.3.1'
-gem 'jquery-rails'
-gem 'bootstrap_form', '>= 4.1.0'
-gem 'groupdate'
-gem 'data_migrate'
-gem 'data-anonymization', require: false
-gem 'uuidtools', require: false
-gem 'discard', '~> 1.0'
-gem 'friendly_id', '~> 5.2.4'
-gem 'kaminari'
-gem 'phonelib'
-gem 'http'
-gem 'sidekiq'
-gem "sidekiq-throttled"
-gem 'connection_pool'
-gem 'whenever', require: false
-gem 'redis'
-gem 'redis-rails'
-gem 'activerecord-import'
+gem "devise_invitable", "~> 1.7.0"
+gem "discard", "~> 1.0"
+gem "dotenv-rails"
+gem "factory_bot_rails", "~> 4.8", require: false
+gem "faker", require: false
+gem "friendly_id", "~> 5.2.4"
+gem "groupdate"
+gem "http"
+gem "http_accept_language"
+gem "imgkit"
+gem "jbuilder", "~> 2.5"
+gem "jquery-rails"
+gem "kaminari"
+gem "lodash-rails"
+gem "newrelic_rpm"
+gem "passenger"
+gem "pg", ">= 0.18", "< 2.0"
+gem "phonelib"
+gem "pry-rails"
+gem "pundit"
+gem "rails", "5.2.4.2"
+gem "react-rails"
+gem "redis"
+gem "redis-rails"
 gem "roo", "~> 2.8.0"
-gem 'wkhtmltoimage-binary'
-gem 'imgkit'
-gem 'scenic'
-gem 'factory_bot_rails', require: false
-gem 'faker', require: false
-gem 'timecop', '~> 0.9.0', require: false
-gem 'http_accept_language'
-gem 'react-rails'
-gem 'lodash-rails'
+gem "rspec-rails", "~> 3.7"
+gem "rswag", "~> 1.6.0"
+gem "sassc-rails"
+gem "scenic"
+gem "sentry-raven"
+gem "sidekiq"
+gem "sidekiq-throttled"
+gem "strong_password", "~> 0.0.8"
+gem "timecop", "~> 0.9.0", require: false
+gem "twilio-ruby", "~> 5.10", ">= 5.10.3"
+gem "uglifier", ">= 1.3.0"
+gem "uuidtools", require: false
+gem "whenever", require: false
+gem "wkhtmltoimage-binary"
 
 group :development, :test do
-  gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
-  gem 'shoulda-matchers', '~> 4.1.2'
-  gem 'capistrano', '~> 3.10'
-  gem 'capistrano-rails'
-  gem 'capistrano-rbenv'
-  gem 'capistrano-passenger'
-  gem 'capistrano-rails-console', require: false
-  gem 'capistrano-sidekiq', require: false
-  gem 'capistrano-db-tasks', require: false
-  gem 'capistrano-multiconfig', require: true
-  gem 'parallel_tests', group: [:development, :test]
-  gem 'rails-controller-testing'
-  gem 'rb-readline'
+  gem "byebug", platforms: [:mri, :mingw, :x64_mingw]
+  gem "capistrano", "3.11.0"
+  gem "capistrano-db-tasks", require: false
+  gem "capistrano-multiconfig", require: true
+  gem "capistrano-passenger"
+  gem "capistrano-rails"
+  gem "capistrano-rails-console", require: false
+  gem "capistrano-rbenv"
+  gem "capistrano-sidekiq", require: false
+  gem "parallel_tests", group: %i[development test]
+  gem "rails-controller-testing"
+  gem "rb-readline"
+  gem "shoulda-matchers", "~> 4.1.2"
+  gem "standard"
 end
 
 group :development do
-  gem 'web-console', '>= 3.3.0'
-  gem 'listen', '>= 3.0.5', '< 3.2'
-  gem 'rails-erd'
+  gem "guard-rspec", require: false
+  gem "listen", ">= 3.0.5", "< 3.2"
+  gem "rails-erd"
+  gem "spring"
+  gem "spring-commands-rspec"
+  gem "web-console", ">= 3.3.0"
 end
 
 group :test do
-  gem 'capybara'
-  gem 'simplecov', require: false
-  gem 'launchy'
-  gem 'webmock'
-  gem 'fakeredis', require:  false
-  gem 'generator_spec'
-  gem 'puma'
-  gem 'webdrivers'
-  gem 'rspec-sidekiq'
+  gem "capybara"
+  gem "fakeredis", require: false
+  gem "generator_spec"
+  gem "launchy"
+  gem "puma"
+  gem "rspec-sidekiq"
+  gem "simplecov", require: false
+  gem "webdrivers"
+  gem "webmock"
 end
-
-gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]

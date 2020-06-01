@@ -1,4 +1,6 @@
 module PeriodHelper
+  include MonthHelper
+
   def period_list(period, last_n)
     case period
       when :quarter

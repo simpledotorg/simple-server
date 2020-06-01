@@ -14,6 +14,7 @@ class Analytics::DistrictsController < AnalyticsController
     respond_to do |format|
       format.html
       format.csv do
+        set_facility_keys
         send_data render_to_string('show.csv.erb'), filename: download_filename
       end
     end
@@ -82,12 +83,21 @@ class Analytics::DistrictsController < AnalyticsController
       end
   end
 
+  def set_facility_keys
+    facilities = @organization_district.facilities.order(:name).pluck(:id, :name).to_h
+
+    @facility_keys = { total: "Total" }.merge(facilities).with_indifferent_access
+  end
+
   def analytics_cache_key
     sanitized_district_name = @organization_district.district_name.downcase.split(' ').join('-')
     "analytics/organization/#{@organization_district.organization.id}/district/#{sanitized_district_name}"
   end
 
   def download_filename
-    "district-cohort-report_#{@organization_district.district_name}_#{Time.current.to_s(:number)}.csv"
+    period = @period == :quarter ? "quarterly" : "monthly"
+    district = @organization_district.district_name
+    time = Time.current.to_s(:number)
+    "district-#{period}-cohort-report_#{district}_#{time}.csv"
   end
 end

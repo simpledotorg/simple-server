@@ -24,26 +24,21 @@ RSpec.describe Api::V4::UsersController, type: :controller do
 
   describe '#activate' do
     let!(:user) { create(:user, password: '1234') }
-    let!(:sms_notification_service) { double(SmsNotificationService.new(nil, nil)) }
 
     before do
       allow(Api::V4::UserTransformer).to receive(:to_response)
         .with(user)
         .and_return({ expected: 'response' }.as_json)
 
-      allow(SmsNotificationService).to receive(:new).and_return(sms_notification_service)
-      allow(sms_notification_service).to receive(:send_request_otp_sms).and_return(true)
+      allow(RequestOtpSmsJob).to receive_message_chain("set.perform_later")
     end
 
     it 'authenticates a registered user with the correct password, returns the users info, and sends a new OTP as an SMS' do
       existing_otp = user.otp
-      expect(SmsNotificationService).to receive(:new).and_return(sms_notification_service)
-      expect(sms_notification_service).to receive(:send_request_otp_sms).and_return(true)
+
+      expect(RequestOtpSmsJob).to receive_message_chain("set.perform_later").with(user)
 
       post :activate, params: { user: { id: user.id, password: '1234' } }
-
-      # execute the RequestOtpSmsJob
-      Sidekiq::Worker.drain_all
 
       expect(response.status).to eq(200)
       expect(JSON(response.body).with_int_timestamps).to eq('user' => { expected: 'response' }.as_json)
@@ -55,8 +50,7 @@ RSpec.describe Api::V4::UsersController, type: :controller do
     it "doesn't authenticate a registered user with the wrong password, returns a 401" do
       existing_otp = user.otp
 
-      expect(SmsNotificationService).not_to receive(:new)
-      expect(sms_notification_service).not_to receive(:send_request_otp_sms)
+      expect(RequestOtpSmsJob).not_to receive(:set)
 
       post :activate, params: { user: { id: user.id, password: '1235' } }
 

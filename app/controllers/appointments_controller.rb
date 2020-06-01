@@ -4,25 +4,31 @@ class AppointmentsController < AdminController
 
   before_action :set_appointment, only: [:update]
 
+  DEFAULT_SEARCH_FILTERS = ["only_less_than_year_overdue"]
+
   def index
     authorize [:overdue_list, Appointment], :index?
 
-    @appointments = policy_scope([:overdue_list, Appointment])
-                      .joins(patient: { latest_blood_pressures: :facility })
-                      .includes(patient: [
-                        :address,
-                        :phone_numbers,
-                        :medical_history,
-                        { latest_blood_pressures: :facility }
-                      ])
-                      .overdue
-                      .distinct
-                      .order(scheduled_date: :asc)
+    @search_filters = index_params[:search_filters] || []
+    # We have to check to see this is the first page load where we want to apply default search filters. This
+    # is the case where the form is _not_ submitted and there are no search filters passed in.
+    if @search_filters.blank? && !index_params[:submitted]
+      @search_filters = DEFAULT_SEARCH_FILTERS
+    end
 
-    @appointments = @appointments.where(facility: current_facility) if current_facility
+    scope = policy_scope([:overdue_list, PatientSummary])
+    @patient_summaries = PatientSummaryQuery.call(relation: scope, filters: @search_filters)
+
+    if current_facility
+      @patient_summaries = @patient_summaries.where(next_appointment_facility_id: current_facility.id)
+    end
+    @patient_summaries = @patient_summaries.order(risk_level: :desc, next_appointment_scheduled_date: :desc, id: :asc)
 
     respond_to do |format|
-      format.html { @appointments = paginate(@appointments) }
+      format.html do
+        @patient_summaries = paginate(@patient_summaries).includes(:next_appointment, patient: :appointments)
+        render layout: "overdue"
+      end
       format.csv do
         send_data render_to_string('index.csv.erb'), filename: download_filename
       end
@@ -41,6 +47,10 @@ class AppointmentsController < AdminController
   end
 
   private
+
+  def index_params
+    @index_params ||= params.permit(:facility_id, :per_page, :submitted, search_filters: [])
+  end
 
   def set_appointment
     @appointment = Appointment.find(params[:id] || params[:appointment_id])

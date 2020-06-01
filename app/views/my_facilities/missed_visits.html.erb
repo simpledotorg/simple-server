@@ -3,7 +3,7 @@
     <div class="card card-responsive">
       <div class="row">
         <div class="col-lg-9 pr-5 pr-md-0">
-          <h3>Missed visit</h3>
+          <h3>Missed visits</h3>
           <% case @selected_period %>
           <% when :quarter %>
             <% example_quarter = @display_periods.first %>
@@ -58,24 +58,24 @@
               <th colspan="2"><%= "Reg in #{month_short_name_and_year(local_month_start(year, month))}" %></th>
             <% end %>
           <% end %>
-          <th>Calls made <sup>1</sup></th>
+          <th>Calls&nbsp;made<sup>1</sup></th>
           <th>Total</th>
         </tr>
         <tr data-sort-method="thead" class="sorts">
           <th class="row-label sort-label">Facilities</th>
           <% @display_periods.reverse.each do |(year, period)| %>
-            <th class="row-label sort-label" data-sort-default>Percent</th>
+            <th class="row-label sort-label" data-sort-default>%</th>
             <% case @selected_period %>
               <% when :quarter %>
                 <% visited_in_year, visited_in_quarter = next_year_and_quarter(year, period) %>
-                <th class="row-label sort-label">Missed visit in <%= "Q#{visited_in_quarter}-#{visited_in_year}" %></th>
+                <th class="row-label sort-label">No BP taken in <%= "Q#{visited_in_quarter}-#{visited_in_year}" %></th>
 
               <% when :month %>
                 <% visited_in_months =
                        month_short_name(month_start(year, period) + 1.months) +
                            '/' +
                            month_short_name(month_start(year, period) + 2.months) %>
-                <th class="row-label sort-label">Missed visit in <%= visited_in_months %></th>
+                <th class="row-label sort-label">No BP taken in <%= visited_in_months %></th>
             <% end %>
           <% end %>
           <th class="row-label sort-label">

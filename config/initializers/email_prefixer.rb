@@ -3,7 +3,6 @@ class EmailSubjectPrefixInterceptor
     prefix = ENV.fetch("EMAIL_SUBJECT_PREFIX")
     message.subject.prepend("#{prefix} ")
   end
-
 end
 
 if ENV["EMAIL_SUBJECT_PREFIX"].present?

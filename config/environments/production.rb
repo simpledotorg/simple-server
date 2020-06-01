@@ -2,8 +2,8 @@ Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Set correct host name dynamically in Heroku Review Apps
-  if ENV['HEROKU_APP_NAME'].present?
-    ENV['SIMPLE_SERVER_HOST'] = "#{ENV['HEROKU_APP_NAME']}.herokuapp.com"
+  if ENV["HEROKU_APP_NAME"].present?
+    ENV["SIMPLE_SERVER_HOST"] = "#{ENV["HEROKU_APP_NAME"]}.herokuapp.com"
   end
 
   # Code is not reloaded between requests.
@@ -16,7 +16,7 @@ Rails.application.configure do
   config.eager_load = true
 
   # Full error reports are disabled and caching is turned on.
-  config.consider_all_requests_local       = false
+  config.consider_all_requests_local = false
   config.action_controller.perform_caching = true
 
   # Attempt to read encrypted secrets from `config/secrets.yml.enc`.
@@ -26,7 +26,7 @@ Rails.application.configure do
 
   # Disable serving static files from the `/public` folder by default since
   # Apache or NGINX already handles this.
-  config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
+  config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
 
   # Compress JavaScripts and CSS.
   config.assets.js_compressor = Uglifier.new(harmony: true)
@@ -50,24 +50,24 @@ Rails.application.configure do
   # config.action_cable.allowed_request_origins = [ 'http://example.com', /http:\/\/example.*/ ]
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-   config.force_ssl = true
+  config.force_ssl = true
 
   # Use the lowest log level to ensure availability of diagnostic information
   # when problems arise.
   config.log_level = :info
 
   # Prepend all log lines with the following tags.
-  config.log_tags = [ :request_id ]
+  config.log_tags = [:request_id]
 
   # Use a different cache store in production.
-  if ENV['RAILS_CACHE_REDIS_URL'].present?
-    config.cache_store = :redis_store, { host: ENV['RAILS_CACHE_REDIS_URL'] }
+  config.cache_store = if ENV["RAILS_CACHE_REDIS_URL"].present?
+    [:redis_store, {host: ENV["RAILS_CACHE_REDIS_URL"]}]
   else
-    config.cache_store = :redis_store, ENV['REDIS_URL']
+    [:redis_store, ENV["REDIS_URL"]]
   end
 
   # Use a real queuing backend for Active Job (and separate queues per environment)
-  config.active_job.queue_adapter     = :inline
+  config.active_job.queue_adapter = :inline
   # config.active_job.queue_name_prefix = "simple-server_#{Rails.env}"
   config.action_mailer.perform_caching = false
 
@@ -76,7 +76,7 @@ Rails.application.configure do
   # config.action_mailer.raise_delivery_errors = false
 
   # Set the default URL to use in mailer URL helpers
-  config.action_mailer.default_url_options = { host: ENV.fetch("SIMPLE_SERVER_HOST") }
+  config.action_mailer.default_url_options = {host: ENV.fetch("SIMPLE_SERVER_HOST")}
   config.action_mailer.asset_host = "#{ENV.fetch("SIMPLE_SERVER_HOST_PROTOCOL")}://#{ENV.fetch("SIMPLE_SERVER_HOST")}"
 
   # Use SendGrid as our SMTP provider
@@ -105,9 +105,9 @@ Rails.application.configure do
   # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new 'app-name')
 
   if ENV["RAILS_LOG_TO_STDOUT"].present?
-    logger           = ActiveSupport::Logger.new(STDOUT)
+    logger = ActiveSupport::Logger.new(STDOUT)
     logger.formatter = config.log_formatter
-    config.logger    = ActiveSupport::TaggedLogging.new(logger)
+    config.logger = ActiveSupport::TaggedLogging.new(logger)
   end
 
   # Do not dump schema after migrations.

@@ -7,6 +7,7 @@ module PatientsExporter
 
   def self.csv(patients)
     CSV.generate(headers: true) do |csv|
+      csv << timestamp
       csv << csv_headers
 
       patients.in_batches(of: BATCH_SIZE).each do |batch|
@@ -27,10 +28,18 @@ module PatientsExporter
     end
   end
 
+  def self.timestamp
+    [
+      'Report generated at:',
+      Time.current
+    ]
+  end
+
   def self.csv_headers
     [
       'Registration Date',
       'Registration Quarter',
+      'Patient died?',
       'Patient Name',
       'Patient Age',
       'Patient Gender',
@@ -71,12 +80,15 @@ module PatientsExporter
 
   def self.csv_fields(patient)
     registration_facility = patient.registration_facility
-    latest_bp = patient.latest_blood_pressure
+    latest_bp = patient.latest_blood_pressures.order(recorded_at: :desc).first
     latest_bp_facility = latest_bp&.facility
+    latest_appointment = patient.latest_scheduled_appointments.order(scheduled_date: :desc).first
+    latest_bp_passport = patient.latest_bp_passports.order(device_created_at: :desc).first
 
     [
       patient.recorded_at.presence && I18n.l(patient.recorded_at),
       patient.recorded_at.presence && quarter_string(patient.recorded_at),
+      ('Died' if patient.status == 'dead'),
       patient.full_name,
       patient.current_age,
       patient.gender.capitalize,
@@ -96,11 +108,11 @@ module PatientsExporter
       latest_bp_facility&.facility_type,
       latest_bp_facility&.district,
       latest_bp_facility&.state,
-      patient.latest_scheduled_appointment&.facility&.name,
-      patient.latest_scheduled_appointment&.scheduled_date&.to_s(:rfc822),
-      patient.latest_scheduled_appointment&.days_overdue,
+      latest_appointment&.facility&.name,
+      latest_appointment&.scheduled_date&.to_s(:rfc822),
+      latest_appointment&.days_overdue,
       ('High' if patient.high_risk?),
-      patient.latest_bp_passport&.shortcode,
+      latest_bp_passport&.shortcode,
       patient.id,
       *medications_for(patient)
     ]

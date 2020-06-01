@@ -2,6 +2,9 @@ ta-IN:
   date:
     month_names: [~, 'ஜன', 'பிப்', 'மார்ச்', 'ஏப்', 'மே', 'ஜூன்', 'ஜூலை', 'ஆக', 'செப்', 'அக்', 'நவ', 'டிச']
     abbr_month_names: [~, 'ஜன', 'பிப்', 'மார்ச்', 'ஏப்', 'மே', 'ஜூன்', 'ஜூலை', 'ஆக', 'செப்', 'அக்', 'நவ', 'டிச']
+  today_str: 'இன்று'
+  registration: 'புதிய பதிவு'
+  reset_password: 'PIN-ஐ மீட்டமை'
   login:
     error_messages:
       unknown_user: "அந்தப் பயனர் பெயரை அடையாளம் காண முடியவில்லை. சரிபார்த்து, மீண்டும் முயலவும்."
@@ -10,24 +13,38 @@ ta-IN:
       invalid_password: 'உங்கள் கடவுச்சொல் பொருந்தவில்லை. மீண்டும் முயலவா?'
   sms:
     request_otp: '<#> %{otp} தான் உங்கள் சிம்பிள் சரிபார்ப்புக் குறியீடு\n%{app_signature}'
+    appointment_reminders:
+      missed_visit_sms_reminder: '%{facility_name}-இல் பணியாற்றும் எங்கள் பணியாளர் உங்களைப் பற்றியும், உங்கள் இதய ஆரோக்கியத்தைப் பற்றியும் நினைவு கூர்ந்துள்ளார். இது தொடர்பாக உங்களுக்கு இனி ஏதாவது கேள்விகள் அல்லது கவலைகள் இருந்தால், உதவுவதற்கு எங்கள் சுகாதாரக் குழு எப்போதும் இங்கு இருக்கும்.'
+      missed_visit_whatsapp_reminder: '%{facility_name}-இல் பணியாற்றும் எங்கள் பணியாளர் உங்களைப் பற்றியும், உங்கள் இதய ஆரோக்கியத்தைப் பற்றியும் நினைவு கூர்ந்துள்ளார். இது தொடர்பாக உங்களுக்கு இனி ஏதாவது கேள்விகள் அல்லது கவலைகள் இருந்தால், உதவுவதற்கு எங்கள் சுகாதாரக் குழு எப்போதும் இங்கு இருக்கும்.'
+    patient_request_otp: '%{otp} தான் உங்கள் பிபி கடவுச்சீட்டு சரிபார்ப்புக் குறியீடு'
   analytics:
     followup_patients: "%{facility_name} இல்எத்தனைநோயாளிகளுக்குபிபிபதிவுசெய்யப்பட்டுள்ளது?"
     patients_enrolled: "%{facility_name} இல்எத்தனைநோயாளிகள்பதிவுசெய்துள்ளனர்?"
     all_time_patients: "எல்லாநேரமும்: %{count} நோயாளிகள்"
     updated_at: "Updated at %{time}"
   user_analytics:
-    hypertension:
-    diabetes:
-    genders:
-    all_time:
-    follow_up_patients:
-    registered_patients:
-    hypertension_control:
-    hypertension_control_desc:
-    notes:
-    footer_note_1:
-    footer_note_2:
-    thank_you:
-    thank_you_note:
-    updated:
-    ratio_string:
+    hypertension: 'உயர் இரத்த அழுத்தம்'
+    diabetes: 'நீரிழிவு'
+    genders: ['எல்லோரும்', ஆண், 'பெண்', 'திருநங்கை']
+    all_time: 'எல்லா நேரமும்'
+    follow_up_patients: 'மீண்டும் வர வேண்டிய உயர் இரத்த அழுத்த நோயாளிகள்'
+    registered_patients: 'பதிவு செய்த நோயாளிகள்'
+    hypertension_control: 'உயர் இரத்த அழுத்தக் கட்டுப்பாடு'
+    hypertension_control_desc: 'உயர் இரத்த அழுத்தம் உள்ள எத்தனை நோயாளிகளுக்கு மாதத்தின் கடைசி மீண்டும் வர வேண்டிய வருகையின் போது 140/90-க்குக் கீழே பிபி இருந்தது?'
+    notes: 'குறிப்புகள்'
+    footer_note_1: '%{facility_name}-இல் நடைபெற்ற எல்லாச் செயல்பாடு தொடர்பான தரவு. தரவு காலாவதியானதாகத் தோன்றினால், முகப்புத் திரையில் "நிலுவை தகவலை ஒத்திசை" என்ற இணைப்பைத் தொடவும்.'
+    footer_note_2: 'மீண்டும் வர வேண்டிய நோயாளி ஒவ்வொரு மாதமும் ஒரு வருகைக்கு மட்டுமே கணக்கிடப்படுவார். ஒரு நோயாளி ஒரு மாதத்தில் பல முறை மீண்டும் வந்திருந்தாலும், அவர் ஒருமுறை மட்டுமே கணக்கிடப்படுவார்.'
+    thank_you: 'நன்றி'
+    thank_you_note: 'உயர் இரத்த அழுத்த நோயாளிகளுக்குச் சிகிச்சையளிக்கும் உங்கள் கடின உழைப்புக்கு நன்றி. மாரடைப்புகள் மற்றும் பக்கவாதங்களிலிருந்து மக்களை உங்கள் பணி பாதுகாக்கிறது.'
+    updated: 'புதுப்பிக்கப்பட்டது: %{time}'
+    ratio_string: '%{value_2}-இல் %{value_1}'
+  dashboard:
+    graphics:
+      graphics_title_html: "<b>%{previous_quarter_string}</b>-இன் போது %{patients_in_previous_quarter} நோயாளிகளுக்கு <b>%{current_quarter_string}</b>-இல் என்ன நடந்தது?"
+      report_name: "உயர் இரத்த அழுத்த அறிக்கை"
+      patients_controlled_in_quarter_html: "பிபி உடன் வருகை தந்த நோயாளிகள் &lt;"
+      patients_uncontrolled_in_quarter_html: "பிபி உடன் வருகை தந்த நோயாளிகள் &ge;"
+      patients_defaulted_in_quarter_html: "நோயாளிகள் எதிர்பார்க்கப்பட்ட பின்தொடர் வருகையில் கலந்துகொள்ளவில்லை"
+      new_patients_registered: "புதிய பதிவுகள்"
+      patients_called_for_followup: "மீண்டும் வர வேண்டிய நோயாளிகள்"
+      patients_called_for_missed_followup: "அழைக்கப்பட்ட நோயாளிகள்"

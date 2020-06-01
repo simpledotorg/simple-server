@@ -4,21 +4,21 @@ module ApplicationHelper
 
   def bootstrap_class_for_flash(flash_type)
     case flash_type
-      when 'success'
-        'alert-success'
-      when 'error'
-        'alert-danger'
-      when 'alert'
-        'alert-warning'
-      when 'notice'
-        'alert-primary'
-      else
-        flash_type.to_s
+    when 'success'
+      'alert-success'
+    when 'error'
+      'alert-danger'
+    when 'alert'
+      'alert-warning'
+    when 'notice'
+      'alert-primary'
+    else
+      flash_type.to_s
     end
   end
 
   def display_date(date)
-    date.strftime(STANDARD_DATE_DISPLAY_FORMAT)
+    date&.strftime(STANDARD_DATE_DISPLAY_FORMAT)
   end
 
   def rounded_time_ago_in_words(date)
@@ -42,9 +42,11 @@ module ApplicationHelper
   end
 
   def show_last_interaction_date_and_result(patient)
-    return if patient.appointments.count < 2
+    ordered_appointments = patient.appointments.sort_by(&:scheduled_date).reverse
+    last_interaction = ordered_appointments.second
 
-    last_interaction = patient.appointments.order(scheduled_date: :desc).second
+    return unless last_interaction.present?
+
     last_interaction_date = last_interaction.created_at.strftime(STANDARD_DATE_DISPLAY_FORMAT)
     interaction_result = "" + last_interaction_date
 
@@ -59,4 +61,3 @@ module ApplicationHelper
     interaction_result
   end
 end
-

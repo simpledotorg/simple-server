@@ -24,7 +24,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
   describe 'GET #index' do
     it 'returns a success response' do
       get :index, params: { facility_group_id: facility_group.id }
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
@@ -32,14 +32,14 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
     it 'returns a success response' do
       facility = Facility.create! valid_attributes
       get :show, params: { id: facility.to_param, facility_group_id: facility_group.id }
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
   describe 'GET #new' do
     it 'returns a success response' do
       get :new, params: { facility_group_id: facility_group.id }
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
@@ -47,7 +47,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
     it 'returns a success response' do
       facility = Facility.create! valid_attributes
       get :edit, params: { id: facility.to_param, facility_group_id: facility_group.id }
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
@@ -68,7 +68,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
     context 'with invalid params' do
       it "returns a success response (i.e. to display the 'new' template)" do
         post :create, params: { facility: invalid_attributes, facility_group_id: facility_group.id }
-        expect(response).to be_success
+        expect(response).to be_successful
       end
     end
   end
@@ -81,7 +81,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
           facility_group_id: facility_group.id,
           pin: '999999',
           monthly_estimated_opd_load: 500
-        ).except(:id)
+        ).except(:id, :slug)
       end
 
       it 'updates the requested facility' do
@@ -105,7 +105,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
       it "returns a success response (i.e. to display the 'edit' template)" do
         facility = Facility.create! valid_attributes
         put :update, params: { id: facility.to_param, facility: invalid_attributes, facility_group_id: facility_group.id }
-        expect(response).to be_success
+        expect(response).to be_successful
       end
     end
   end
@@ -128,57 +128,35 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
   describe 'GET #upload' do
     it 'returns a successful response' do
       get :upload
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
   describe 'POST #upload' do
-    context 'with valid organization and facility group' do
-      let(:organization) { FactoryBot.create(:organization, name: 'OrgOne') }
-      let!(:facility_group_2) do
-        FactoryBot.create(:facility_group, name: 'FGTwo',
-                                           organization_id: organization.id)
-      end
+    let!(:organization) { create(:organization, name: 'OrgOne') }
+    let!(:facility_group) { create(:facility_group, name: 'FGTwo', organization_id: organization.id) }
+
+    context 'with valid data in file' do
       let(:upload_file) { fixture_file_upload('files/upload_facilities_test.csv', 'text/csv') }
+
       it 'uploads facilities file and passes validations' do
         post :upload, params: { upload_facilities_file: upload_file }
         expect(flash[:notice]).to match(/File upload successful, your facilities will be created shortly./)
       end
     end
 
-    context 'with duplicate rows' do
-      let(:organization) { FactoryBot.create(:organization, name: 'OrgOne') }
-      let!(:facility_group_2) do
-        FactoryBot.create(:facility_group, name: 'FGTwo',
-                                           organization_id: organization.id)
-      end
-      let(:upload_file) { fixture_file_upload('files/upload_facilities_test_2.csv', 'text/csv') }
-      it 'uploads facilities file and fails validations' do
+    context 'with invalid data in file' do
+      let(:upload_file) { fixture_file_upload('files/upload_facilities_invalid_test.csv', 'text/csv') }
+
+      it 'fails validations and returns a 400' do
         post :upload, params: { upload_facilities_file: upload_file }
-        expect(assigns(:errors)).to eq(['Uploaded file has duplicate facilities',
-                                        "Row(s) 2, 4: Facility group doesn't exist for the organization",
-                                        "Row(s) 3: Organization doesn't exist",
-                                        "Row(s) 5: Facility group doesn't exist for the organization and District can't be blank"])
+        expect(response).to have_http_status(:bad_request)
       end
     end
-    context 'with invalid organization and facility group' do
-      let(:organization) { FactoryBot.create(:organization, name: 'OrgOne') }
-      let!(:facility_group_2) do
-        FactoryBot.create(:facility_group, name: 'FGTwo',
-                                           organization_id: organization.id)
-      end
-      let(:upload_file) { fixture_file_upload('files/upload_facilities_test_3.csv', 'text/csv') }
-      it 'uploads facilities file and fails validations' do
-        post :upload, params: { upload_facilities_file: upload_file }
-        expect(assigns(:errors)).to eq(["Row(s) 2: Facility group doesn't exist for the organization",
-                                        "Row(s) 3: Organization doesn't exist",
-                                        "Row(s) 4: Facility group doesn't exist for the organization and District can't be blank",
-                                        "Row(s) 5: Organization name can't be blank"])
-      end
-    end
+
     context 'with unsupported file type' do
       let(:upload_file) do
-        fixture_file_upload('files/upload_facilities.docx',
+        fixture_file_upload('files/upload_facilities_test.docx',
                             'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
       end
       it 'uploads facilities file and fails validations' do

@@ -2,6 +2,7 @@ bn-BD:
   date:
     month_names: [~, 'জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর']
     abbr_month_names: [~, 'জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর']
+  today_str: 'আজ'
   registration: 'নতুন নিবন্ধীকরণ'
   reset_password: 'PIN রিসেট করুন'
   login:
@@ -14,27 +15,29 @@ bn-BD:
     request_otp: '<#> %{otp} হল আপনার সিম্পিল যাচাইকরণ কোড\n%{app_signature}'
     appointment_reminders:
       missed_visit_sms_reminder: '%{facility_name} এ আমাদের কর্মীরা আপনার এবং আপনার হার্টের স্বাস্থ্য নিয়ে চিন্তাভাবনা করছেন। আপনার কোনও ফলো-আপ প্রশ্ন বা উদ্বেগ থাকলে তার উত্তর দেওয়ার জন্য আমাদের স্বাস্থ্য দল সবসময় এখানে আছে।'
+      missed_visit_whatsapp_reminder: '%{facility_name} এ আমাদের কর্মীরা আপনার এবং আপনার হার্টের স্বাস্থ্য নিয়ে চিন্তাভাবনা করছেন। আপনার কোনও ফলো-আপ প্রশ্ন বা উদ্বেগ থাকলে তার উত্তর দেওয়ার জন্য আমাদের স্বাস্থ্য দল সবসময় এখানে আছে।'
+    patient_request_otp: '%{otp} হল আপনার বিপি পাসপোর্ট যাচাইকরণ কোড'
   analytics:
     followup_patients: "কতজন ফলো-আপ রোগী %{facility_name} ভিজিট করেছেন?"
     patients_enrolled: "কতজন নতুন রোগী %{facility_name} এ নথিভুক্ত রয়েছেন?"
     all_time_patients: "সব সময়: %{count} জন রোগী"
     updated_at: "%{time} এ আপডেট করা হয়েছে"
   user_analytics:
-    hypertension:
-    diabetes:
-    genders:
-    all_time:
-    follow_up_patients:
-    registered_patients:
-    hypertension_control:
-    hypertension_control_desc:
-    notes:
-    footer_note_1:
-    footer_note_2:
-    thank_you:
-    thank_you_note:
-    updated:
-    ratio_string:
+    hypertension: 'হাইপারটেনশন'
+    diabetes: 'ডায়াবেটিস'
+    genders: ['সমস্ত', পুরুষ, 'মহিলা', 'ট্রান্সজেন্ডার']
+    all_time: 'সব সময়'
+    follow_up_patients: 'উচ্চ রক্তচাপ জনিত রোগীদের পর্যালোচনা'
+    registered_patients: 'নিবন্ধিত রোগীসমূহ'
+    hypertension_control: 'উচ্চ রক্তচাপ নিয়ন্ত্রণ'
+    hypertension_control_desc: 'কতজন উচ্চ রক্তচাপ জনিত রোগীর বিপি 140/90 এর কম ছিল তাদের এই মাসের সাম্প্রতিক পর্যালোচনায়?'
+    notes: 'দ্রষ্টব্য'
+    footer_note_1: 'তে হওয়া সমস্ত কার্যকলাপের জন্য ডেটা %{facility_name}। যদি ডেটার সময় উত্তীর্ণ হয়ে যায়, হোম স্ক্রিনের "সিঙ্ক পেন্ডিং" লিঙ্কে ট্যাপ করুন।'
+    footer_note_2: 'একজন পর্যালোচিত রোগীকে প্রতি মাসে একবার দেখানোর জন্য বিবেচনা করা হবে। যদি একজন রোগী একমাসের মধ্যে বহুবার দেখাতে আসেন, তাঁকে একবার মাত্র গণনা করা হবে।'
+    thank_you: 'ধন্যবাদ'
+    thank_you_note: 'উচ্চ রক্তচাপ জনিত রোগীদের চিকিৎসা করতে আপনাদের কঠোর শ্রমের জন্য ধন্যবাদ। আপনাদের শ্রম হৃদরোগ এবং স্ট্রোক থেকে যবন রক্ষা করেছে।'
+    updated: 'আপডেট করা হয়েছে: %{time}'
+    ratio_string: '%{value_1} এর %{value_2}'
   dashboard:
     graphics:
       graphics_title_html: "<b>%{previous_quarter_string}</b> এর সময় নিবন্ধন করা %{patients_in_previous_quarter} জন রোগীর <b>%{current_quarter_string}</b> এ কী হয়েছিল?"

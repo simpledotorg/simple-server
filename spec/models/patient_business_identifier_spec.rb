@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe PatientBusinessIdentifier, type: :model do
   describe 'Associations' do
     it { should belong_to(:patient) }
+    it { should have_one(:passport_authentication) }
   end
 
   describe 'Validations' do
@@ -10,9 +11,16 @@ RSpec.describe PatientBusinessIdentifier, type: :model do
     it { should validate_presence_of(:identifier_type) }
 
     context 'for bangladesh national IDs' do
-      subject { described_class.new(identifier_type: 'bangladesh_national_id') }
+      it "cannot be nil" do
+        identifier = build(:patient_business_identifier, identifier: nil, identifier_type: "bangladesh_national_id")
+        expect(identifier).to_not be_valid
+        expect(identifier.errors[:identifier]).to eq(["can't be blank"])
+      end
 
-      it { should validate_presence_of(:identifier).allow_nil }
+      it "can be blank" do
+        identifier = build(:patient_business_identifier, identifier: "", identifier_type: "bangladesh_national_id")
+        expect(identifier).to be_valid
+      end
     end
 
     it_behaves_like 'a record that validates device timestamps'

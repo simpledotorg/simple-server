@@ -14,7 +14,7 @@ class Analytics::FacilitiesController < AnalyticsController
     @recent_blood_pressures = @facility
                                 .blood_pressures
                                 .includes(:patient, :user)
-                                .order("DATE(recorded_at) DESC, recorded_at ASC")
+                                .order(Arel.sql("DATE(recorded_at) DESC, recorded_at ASC"))
 
     @recent_blood_pressures = paginate(@recent_blood_pressures)
 
@@ -88,6 +88,9 @@ class Analytics::FacilitiesController < AnalyticsController
   end
 
   def download_filename
-    "facility-cohort-report_#{@facility.name}_#{Time.current.to_s(:number)}.csv"
+    period = @period == :quarter ? "quarterly" : "monthly"
+    facility = @facility.name
+    time = Time.current.to_s(:number)
+    "facility-#{period}-cohort-report_#{facility}_#{time}.csv"
   end
 end

@@ -19,13 +19,13 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
 
   def create_record(options = {})
     facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
-    patient = FactoryBot.create(:patient, registration_facility: facility)
+    patient = FactoryBot.build(:patient, registration_facility: facility)
     FactoryBot.create(:medical_history, options.merge(patient: patient))
   end
 
   def create_record_list(n, options = {})
     facility = FactoryBot.create(:facility, facility_group_id: request_user.facility.facility_group.id)
-    patient = FactoryBot.create(:patient, registration_facility_id: facility.id)
+    patient = FactoryBot.build(:patient, registration_facility_id: facility.id)
     FactoryBot.create_list(:medical_history, n, options.merge(patient: patient))
   end
 
@@ -45,9 +45,9 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
     let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
     let(:facility_in_another_group) { FactoryBot.create(:facility) }
 
-    let(:patient_in_request_facility) { FactoryBot.create(:patient, registration_facility: request_facility) }
-    let(:patient_in_same_group) { FactoryBot.create(:patient, registration_facility: facility_in_same_group) }
-    let(:patient_in_another_group) { FactoryBot.create(:patient, registration_facility: facility_in_another_group) }
+    let(:patient_in_request_facility) { FactoryBot.build(:patient, registration_facility: request_facility) }
+    let(:patient_in_same_group) { FactoryBot.build(:patient, registration_facility: facility_in_same_group) }
+    let(:patient_in_another_group) { FactoryBot.build(:patient, registration_facility: facility_in_another_group) }
 
     before :each do
       set_authentication_headers

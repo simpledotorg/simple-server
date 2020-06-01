@@ -16,6 +16,7 @@ class DistrictAnalyticsQuery
   def total_registered_patients
     @total_registered_patients ||=
       Patient
+        .with_hypertension
         .joins(:registration_facility)
         .where(facilities: { id: facilities })
         .group('facilities.id')
@@ -31,6 +32,7 @@ class DistrictAnalyticsQuery
   def registered_patients_by_period
     @registered_patients_by_period ||=
       Patient
+        .with_hypertension
         .joins(:registration_facility)
         .where(facilities: { id: facilities })
         .group('facilities.id')
@@ -41,28 +43,12 @@ class DistrictAnalyticsQuery
   end
 
   def follow_up_patients_by_period
-    #
-    # this is similar to what the group_by_period query already gives us,
-    # however, groupdate does not allow us to use these "groups" in a where clause
-    # hence, we've replicated its grouping behaviour in order to remove the patients
-    # that were registered prior to the period bucket
-    #
-    date_truncate_string =
-      "(DATE_TRUNC('#{@period}', blood_pressures.recorded_at::timestamptz AT TIME ZONE '#{Groupdate.time_zone || 'Etc/UTC'}'))"
-
     @follow_up_patients_by_period ||=
-      BloodPressure
-        .left_outer_joins(:user)
-        .left_outer_joins(:patient)
-        .joins(:facility)
-        .where(facilities: { id: facilities })
-        .where(deleted_at: nil)
-        .group('facilities.id')
-        .group_by_period(@period, 'blood_pressures.recorded_at')
-        .where("patients.recorded_at < #{date_truncate_string}")
-        .order('facilities.id')
-        .distinct
-        .count('patients.id')
+      Patient
+        .group('blood_pressures.facility_id')
+        .hypertension_follow_ups_by_period(@period, last: @prev_periods)
+        .where(blood_pressures: { facility: facilities })
+        .count
 
     group_by_facility_and_date(@follow_up_patients_by_period, :follow_up_patients_by_period)
   end
@@ -71,7 +57,8 @@ class DistrictAnalyticsQuery
     @total_calls_made_by_period ||=
       CallLog
         .result_completed
-        .joins('INNER JOIN phone_number_authentications ON phone_number_authentications.phone_number = call_logs.caller_phone_number')
+        .joins(%Q(INNER JOIN phone_number_authentications
+                  ON phone_number_authentications.phone_number = call_logs.caller_phone_number))
         .joins('INNER JOIN facilities ON facilities.id = phone_number_authentications.registration_facility_id')
         .where(phone_number_authentications: { registration_facility_id: facilities })
         .group('facilities.id::uuid')

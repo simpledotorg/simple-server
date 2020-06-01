@@ -40,15 +40,27 @@ class Appointment < ApplicationRecord
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
-  def self.overdue
+  def self.all_overdue
     where(status: 'scheduled')
-      .where('scheduled_date < ?', Date.current)
-      .where("scheduled_date >= ?", 365.days.ago)
-      .where('remind_on IS NULL OR remind_on <= ?', Date.current)
+      .where(arel_table[:scheduled_date].lt(Date.current))
+      .where(arel_table[:remind_on].eq(nil).or(arel_table[:remind_on].lteq(Date.current)))
+  end
+
+  def self.overdue
+    all_overdue.where(arel_table[:scheduled_date].gteq(365.days.ago))
   end
 
   def self.overdue_by(number_of_days)
     overdue.where('scheduled_date <= ?', Date.current - number_of_days.days)
+  end
+
+  def self.eligible_for_reminders(days_overdue: 3)
+    overdue_by(days_overdue)
+      .includes(:patient)
+      .where(patients: { reminder_consent: 'granted' })
+      .where.not(patients: { status: 'dead' })
+      .includes(patient: [:phone_numbers])
+      .merge(PatientPhoneNumber.phone_type_mobile)
   end
 
   def days_overdue

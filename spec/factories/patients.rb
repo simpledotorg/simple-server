@@ -12,7 +12,7 @@ FactoryBot.define do
     gender { Patient::GENDERS.sample }
     full_name { common_names[gender].sample + ' ' + common_names[gender].sample }
     status { Patient::STATUSES[0] }
-    date_of_birth { Date.current if has_date_of_birth? }
+    date_of_birth { rand(18..80).years.ago if has_date_of_birth? }
     age { rand(18..100) unless has_date_of_birth? }
     age_updated_at { Time.current }
     device_created_at { Time.current }
@@ -26,10 +26,27 @@ FactoryBot.define do
       build_list(:patient_business_identifier,
                  1,
                  patient_id: id,
-                 metadata: {assigning_facility_id: registration_facility.id,
-                            assigning_user_id: registration_user.id})
+                 metadata: { assigning_facility_id: registration_facility.id,
+                             assigning_user_id: registration_user.id })
     end
     reminder_consent { Patient.reminder_consents[:granted] }
+    medical_history { build(:medical_history, :hypertension_yes, patient_id: id) }
+
+    trait :without_hypertension do
+      medical_history { build(:medical_history, :hypertension_no, patient_id: id) }
+    end
+
+    trait :diabetes do
+      medical_history { build(:medical_history, :diabetes_yes, patient_id: id) }
+    end
+
+    trait :hypertension do
+      medical_history { build(:medical_history, :hypertension_yes, patient_id: id) }
+    end
+
+    trait :diabetes do
+      medical_history { build(:medical_history, :diabetes_yes, patient_id: id) }
+    end
 
     trait :denied do
       reminder_consent { Patient.reminder_consents[:denied] }
@@ -38,24 +55,30 @@ FactoryBot.define do
     trait(:with_sanitized_phone_number) do
       phone_numbers { build_list(:patient_phone_number, 1, patient_id: id, number: '9876543210') }
     end
+    trait(:with_appointments) do
+      appointments { build_list(:appointment, 2, facility: registration_facility) }
+    end
+    trait(:with_overdue_appointments) do
+      appointments { build_list(:appointment, 2, :overdue, facility: registration_facility) }
+    end
   end
 end
 
 def build_patient_payload(patient = FactoryBot.build(:patient))
   patient.attributes.with_payload_keys
-         .except('address_id')
-         .except('registration_user_id')
-         .except('registration_facility_id')
-         .except('test_data')
-         .merge(
-           'address' => patient.address.attributes.with_payload_keys,
-           'phone_numbers' => patient.phone_numbers.map { |phno| phno.attributes.with_payload_keys.except('patient_id', 'dnd_status') },
-           'business_identifiers' => patient.business_identifiers.map do |bid|
-             bid.attributes.with_payload_keys
-               .except('patient_id')
-               .merge('metadata' => bid.metadata&.to_json)
-           end
-         )
+    .except('address_id')
+    .except('registration_user_id')
+    .except('registration_facility_id')
+    .except('test_data')
+    .merge(
+      'address' => patient.address.attributes.with_payload_keys,
+      'phone_numbers' => patient.phone_numbers.map { |phno| phno.attributes.with_payload_keys.except('patient_id', 'dnd_status') },
+      'business_identifiers' => patient.business_identifiers.map do |bid|
+        bid.attributes.with_payload_keys
+          .except('patient_id')
+          .merge('metadata' => bid.metadata&.to_json)
+      end
+    )
 end
 
 def build_invalid_patient_payload
