@@ -127,7 +127,6 @@ RSpec.describe Facility, type: :model do
     end
   end
 
-
   describe "Search" do
     let!(:facility_1) { create(:facility, name: "HWC Bahadurgarh") }
     let!(:facility_2) { create(:facility, name: "CHC Docomo", slug: "chc-docomo") }
@@ -165,6 +164,8 @@ RSpec.describe Facility, type: :model do
       it "ignores escape characters and whitespace around words: #{term.inspect}" do
         expect(Facility.search_by_name(term)).to match_array([facility_2, facility_3])
       end
+    end
+  end
 
   describe '.parse_facilities' do
     let(:upload_file) { fixture_file_upload('files/upload_facilities_test.csv', 'text/csv') }
