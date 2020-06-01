@@ -28,7 +28,7 @@ Some places already have patient IDs. Like kerala, and maharashtra (dell system)
 
 ## Decision
 
-We will use [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifiehttps://en.wikipedia.org/wiki/Universally_unique_identifier)s as simple card IDs.
+We will use [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier)s as simple card IDs.
 
 UUIDs (version 4) are random, unique, and can be generated algorithmically. These are used as IDs in distributed systems for the same reasons.
 

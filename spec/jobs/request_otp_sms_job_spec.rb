@@ -2,24 +2,17 @@ require 'rails_helper'
 require 'sidekiq/testing'
 
 RSpec.describe RequestOtpSmsJob, type: :job do
-  Sidekiq::Testing.fake!
-
   let!(:user) { create(:user, phone_number: '1234567890') }
-  let!(:sms_notification_service) { double(SmsNotificationService.new(nil, nil)) }
+  let(:app_signature) { ENV["SIMPLE_APP_SIGNATURE"] }
+  let(:otp_message) { "<#> #{user.otp} is your Simple verification code\\n#{app_signature}" }
 
-  it 'calls off to the SMSNotificationService to deliver the otp SMS' do
-    expect(SmsNotificationService)
-      .to receive(:new)
-            .with(user.phone_number, ENV['TWILIO_PHONE_NUMBER'])
-            .and_return(sms_notification_service)
+  before do
+    allow_any_instance_of(NotificationService).to receive(:send_sms)
+  end
 
-    expect(sms_notification_service)
-      .to receive(:send_request_otp_sms)
-            .with(user.otp)
-            .and_return(true)
+  it 'sends the OTP via SMS' do
+    expect_any_instance_of(NotificationService).to receive(:send_sms).with(user.phone_number, otp_message)
 
-    described_class.perform_later(user)
-
-    Sidekiq::Worker.drain_all
+    described_class.perform_now(user)
   end
 end

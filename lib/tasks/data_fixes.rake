@@ -1,6 +1,5 @@
 require 'tasks/scripts/move_user_recorded_data_to_registration_facility'
-require 'tasks/scripts/correct_bangladesh_medication_dosages'
-require 'tasks/scripts/correct_bangladesh_medical_histories'
+require 'tasks/scripts/clean_ancient_dates'
 
 namespace :data_fixes do
   desc 'Move all data recorded by a user from a source facility to a destination facility'
@@ -20,23 +19,13 @@ namespace :data_fixes do
          "appointments: #{appointment_count}, prescriptions: #{prescription_drug_count}"
   end
 
-  desc 'Correct zero dosage medication in Bangladesh'
-  task :correct_bangladesh_medication_dosages => :environment do
-    CorrectBangladeshMedicationDosages.call
+  desc "Clean up records with ancient dates that break reporting"
+  task :clean_ancient_dates => :environment do
+    CleanAncientDates.call
   end
 
-  desc 'Correct zero dosage medication in Bangladesh (dryrun)'
-  task :correct_bangladesh_medication_dosages_dryrun => :environment do
-    CorrectBangladeshMedicationDosages.call(dryrun: true)
-  end
-
-  desc 'Correct medical histories in Bangladesh'
-  task :correct_bangladesh_medical_histories => :environment do
-    CorrectBangladeshMedicalHistories.call
-  end
-
-  desc 'Correct medical histories in Bangladesh (dryrun)'
-  task :correct_bangladesh_medical_histories_dryrun => :environment do
-    CorrectBangladeshMedicalHistories.call(dryrun: true)
+  desc "Clean up records with ancient dates that break reporting (dryrun)"
+  task :clean_ancient_dates_dryrun => :environment do
+    CleanAncientDates.call(dryrun: true)
   end
 end

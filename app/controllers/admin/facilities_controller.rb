@@ -6,8 +6,7 @@ class Admin::FacilitiesController < AdminController
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
   before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy]
   before_action :initialize_upload, :validate_file_type, :validate_file_size, :parse_file,
-                :validate_at_least_one_facility, :validate_duplicate_rows, :validate_facilities,
-                :if => :file_exists?, only: [:upload]
+                :validate_facility_rows, :if => :file_exists?, only: [:upload]
 
   def index
     authorize([:manage, :facility, Facility])
@@ -127,44 +126,11 @@ class Admin::FacilitiesController < AdminController
     @facilities = Facility.parse_facilities(@file_contents)
   end
 
-  def validate_at_least_one_facility
-    @errors << "Uploaded file doesn't contain any valid facilities" if @facilities.blank?
-  end
-
-  def validate_duplicate_rows
-    facilities_slice = @facilities.map { |facility|
-      facility.slice(:organization_name, :facility_group_name, :name) }
-    @errors << 'Uploaded file has duplicate facilities' if facilities_slice.count != facilities_slice.uniq.count
-  end
-
-  def validate_facilities
-    @row_errors = []
-    row_num = 2
-    @facilities.each do |facility|
-      import_facility = Facility.new(facility)
-      @row_errors << [row_num, import_facility.errors.full_messages.to_sentence] if import_facility.invalid?
-      row_num += 1
-    end
-    if @row_errors.present?
-      group_row_errors.each { |error| @errors << error }
-    end
+  def validate_facility_rows
+    @errors = Admin::CSV::FacilityValidator.validate(@facilities).errors
   end
 
   def file_exists?
     params[:upload_facilities_file].present?
-  end
-
-  def file_valid?
-    params[:upload_facilities_file].present? && @errors.blank?
-  end
-
-  def group_row_errors
-    grouped_errors = []
-    unique_errors = @row_errors.map { |row, message| message }.uniq
-    unique_errors.each do |error|
-      rows = @row_errors.select { |row, message| row if error == message }.map { |row, message| row }
-      grouped_errors << "Row(s) #{rows.join(', ')}: #{error}"
-    end
-    grouped_errors
   end
 end
