@@ -197,25 +197,27 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   #
   # i.e. increment by TROPHY_MILESTONE_INCR
   def trophy_stats
-    follow_ups =
-      all_time_htn_stats.dig(:grouped_by_gender, :hypertension, :follow_ups).values.sum
+    follow_ups = all_time_htn_stats.dig(:grouped_by_gender, :hypertension, :follow_ups).values.sum
+    trophy_milestone = trophy_milestone(follow_ups)
 
+    {
+      locked_trophy_value:
+        all_trophies[trophy_milestone],
+
+      unlocked_trophy_values:
+        all_trophies[0, trophy_milestone]
+    }
+  end
+
+  def trophy_milestone(follow_ups)
     all_trophies = if follow_ups > TROPHY_MILESTONES.last
                      [*TROPHY_MILESTONES,
-                      *(TROPHY_MILESTONE_INCR..(follow_ups + TROPHY_MILESTONE_INCR)).step(TROPHY_MILESTONE_INCR)]
+                       *(TROPHY_MILESTONE_INCR..(follow_ups + TROPHY_MILESTONE_INCR)).step(TROPHY_MILESTONE_INCR)]
                    else
                      TROPHY_MILESTONES
                    end
 
-    unlocked_trophies_until = all_trophies.index { |v| follow_ups < v }
-
-    {
-      locked_trophy_value:
-        all_trophies[unlocked_trophies_until],
-
-      unlocked_trophy_values:
-        all_trophies[0, unlocked_trophies_until]
-    }
+    all_trophies.index { |v| follow_ups < v }
   end
 
   def monthly_htn_or_dm_stats

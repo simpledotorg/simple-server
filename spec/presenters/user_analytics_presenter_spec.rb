@@ -727,6 +727,10 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
         expect(data[:trophies]).to eq(expected_output)
       end
 
+      it 'unlocks additional trophies if follow ups cross the baseline' do
+        allow
+      end
+
       it 'has only 1 locked trophy if there are no achievements' do
         data = described_class.new(current_facility).statistics
 
