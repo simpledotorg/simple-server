@@ -7,23 +7,23 @@ class Api::V3::SyncController < APIController
   end
 
   def __sync_from_user__(params)
-    errors = params.flat_map do |single_entity_params|
+    errors = params.flat_map { |single_entity_params|
       res = merge_if_valid(single_entity_params)
       AuditLog.merge_log(current_user, res[:record]) if res[:record].present?
       res[:errors_hash] || []
-    end
+    }
 
     capture_errors params, errors
-    response = { errors: errors.nil? ? nil : errors }
+    response = {errors: errors.nil? ? nil : errors}
     render json: response, status: :ok
   end
 
   def __sync_to_user__(response_key)
-    AuditLog.create_logs_async(current_user, records_to_sync, 'fetch', Time.current) unless disable_audit_logs?
+    AuditLog.create_logs_async(current_user, records_to_sync, "fetch", Time.current) unless disable_audit_logs?
     render(
       json: {
         response_key => records_to_sync.map { |record| transform_to_response(record) },
-        'process_token' => encode_process_token(response_process_token)
+        "process_token" => encode_process_token(response_process_token)
       },
       status: :ok
     )
@@ -36,7 +36,7 @@ class Api::V3::SyncController < APIController
   end
 
   def sync_api_toggled_on?
-    FeatureToggle.enabled_for_regex?('MATCHING_SYNC_APIS', controller_name)
+    FeatureToggle.enabled_for_regex?("MATCHING_SYNC_APIS", controller_name)
   end
 
   def params_with_errors(params, errors)
@@ -50,13 +50,13 @@ class Api::V3::SyncController < APIController
     return unless errors.present?
 
     Raven.capture_message(
-      'Validation Error',
-      logger: 'logger',
+      "Validation Error",
+      logger: "logger",
       extra: {
         params_with_errors: params_with_errors(params, errors),
         errors: errors
       },
-      tags: { type: 'validation' }
+      tags: {type: "validation"}
     )
   end
 
@@ -73,13 +73,13 @@ class Api::V3::SyncController < APIController
   end
 
   def limit
-    return ENV['DEFAULT_NUMBER_OF_RECORDS'].to_i unless params[:limit].present?
+    return ENV["DEFAULT_NUMBER_OF_RECORDS"].to_i unless params[:limit].present?
     params_limit = params[:limit].to_i
 
     params_limit < max_limit ? params_limit : max_limit
   end
 
   def instrument_process_token
-    ::NewRelic::Agent.add_custom_attributes({ process_token: process_token })
+    ::NewRelic::Agent.add_custom_attributes({process_token: process_token})
   end
 end
