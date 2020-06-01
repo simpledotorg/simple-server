@@ -27,8 +27,10 @@ RSpec.describe PatientsExporter do
       'Patient Age',
       'Patient Gender',
       'Patient Phone Number',
+      'Patient Street Address',
       'Patient Village/Colony',
       'Patient District',
+      'Patient Zone',
       'Patient State',
       'Registration Facility Name',
       'Registration Facility Type',
@@ -70,8 +72,10 @@ RSpec.describe PatientsExporter do
       patient.current_age,
       patient.gender.capitalize,
       patient.phone_numbers.last&.number,
+      patient.address.street_address,
       patient.address.village_or_colony,
       patient.address.district,
+      patient.address.zone,
       patient.address.state,
       facility.name,
       facility.facility_type,
@@ -100,6 +104,7 @@ RSpec.describe PatientsExporter do
 
   before do
     allow(patient).to receive(:high_risk?).and_return(true)
+    allow(Rails.application.config.country).to receive(:[]).with(:patient_line_list_show_zone).and_return(true)
   end
 
   describe '#csv' do
@@ -122,6 +127,13 @@ RSpec.describe PatientsExporter do
         .to receive(:in_batches).and_return([patient_batch])
 
       subject.csv(facility.registered_patients)
+    end
+
+    it "does not include the zone column if the country config is set to false" do
+      allow(Rails.application.config.country).to receive(:[]).with(:patient_line_list_show_zone).and_return(false)
+
+      expect(subject.csv_headers).not_to include("Patient #{Address.human_attribute_name :zone}")
+      expect(subject.csv_fields(patient)).not_to include(patient.address.zone)
     end
   end
 end
