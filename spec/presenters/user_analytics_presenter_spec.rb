@@ -727,10 +727,6 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
         expect(data[:trophies]).to eq(expected_output)
       end
 
-      it 'unlocks additional trophies if follow ups cross the baseline' do
-        allow
-      end
-
       it 'has only 1 locked trophy if there are no achievements' do
         data = described_class.new(current_facility).statistics
 
@@ -740,6 +736,50 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
         }
 
         expect(data[:trophies]).to eq(expected_output)
+      end
+
+      context 'unlocks additional trophies' do
+        it 'unlocks a milestone of 10_000 if follow_ups are 5_000' do
+          user_analytics = described_class.new(current_facility)
+
+          all_time_htn_stats = {grouped_by_gender: {hypertension: {follow_ups: {"male" => 5_000}}}}
+          allow(user_analytics).to receive(:all_time_htn_stats).and_return(all_time_htn_stats)
+
+          expected_output = {
+            locked_trophy_value: 10_000,
+            unlocked_trophy_values: [10, 25, 50, 100, 250, 500, 1_000, 2_000, 3_000, 4_000, 5_000]
+          }
+
+          expect(user_analytics.statistics[:trophies]).to eq(expected_output)
+        end
+
+        it 'unlocks a milestone of 10_000 if follow_ups are between 5_000...10_000' do
+          user_analytics = described_class.new(current_facility)
+
+          all_time_htn_stats = {grouped_by_gender: {hypertension: {follow_ups: {"male" => 5_001}}}}
+          allow(user_analytics).to receive(:all_time_htn_stats).and_return(all_time_htn_stats)
+
+          expected_output = {
+            locked_trophy_value: 10_000,
+            unlocked_trophy_values: [10, 25, 50, 100, 250, 500, 1_000, 2_000, 3_000, 4_000, 5_000]
+          }
+
+          expect(user_analytics.statistics[:trophies]).to eq(expected_output)
+        end
+
+        it 'unlocks milestones in increments of 10_000 after reaching 10_000' do
+          user_analytics = described_class.new(current_facility)
+
+          all_time_htn_stats = {grouped_by_gender: {hypertension: {follow_ups: {"male" => 10_000}}}}
+          allow(user_analytics).to receive(:all_time_htn_stats).and_return(all_time_htn_stats)
+
+          expected_output = {
+            locked_trophy_value: 20_000,
+            unlocked_trophy_values: [10, 25, 50, 100, 250, 500, 1_000, 2_000, 3_000, 4_000, 5_000, 10_000]
+          }
+
+          expect(user_analytics.statistics[:trophies]).to eq(expected_output)
+        end
       end
     end
   end
