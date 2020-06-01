@@ -1,4 +1,4 @@
-module Api::V2::LogApiUsageByUsers
+module Api::V3::LogApiUsageByUsers
   extend ActiveSupport::Concern
   included do
     before_action :log_api_usage
