@@ -376,7 +376,6 @@ ignore:
 - spec/models/address_spec.rb
 - spec/models/appointment_spec.rb
 - spec/models/audit_log_spec.rb
-- spec/models/blood_pressure_spec.rb
 - spec/models/blood_pressures_per_facility_per_day_spec.rb
 - spec/models/blood_sugar_spec.rb
 - spec/models/call_log_spec.rb
