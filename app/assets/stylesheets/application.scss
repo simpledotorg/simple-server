@@ -38,6 +38,7 @@ $font-small: 11px;
 @import "partials/resources";
 @import "partials/graphs";
 @import "partials/snapshots";
+@import "partials/search";
 
 body {
     padding-top: 5rem;
@@ -938,23 +939,3 @@ nav.navbar-demo { box-shadow: inset 0 2px 0 0 #FFC800; }
 nav.navbar-production a.nav-link { color: $grey-darkest !important; }
 nav.navbar-production a.nav-link:hover { color: $grey-mid !important; }
 nav.navbar-demo { box-shadow: none; }
-
-
-/*****************
-Admin UI
-*****************/
-
-.no-search-results {
-  i.fa-search {
-    background: $grey-mid;
-    color: white;
-    border-radius: 50%;
-    padding: 20px;
-    font-size: 30px;
-  }
-
-  span {
-    font-size: 18px;
-    color: $grey-mid;
-  }
-}
