@@ -35,8 +35,10 @@ $font-small: 11px;
 
 // Local imports
 @import "partials/dashboard";
-@import "partials/resources";
 @import "partials/graphs";
+@import "partials/navigation";
+@import "partials/overdue";
+@import "partials/resources";
 @import "partials/snapshots";
 
 body {
