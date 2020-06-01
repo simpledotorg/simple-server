@@ -61,7 +61,7 @@ Rails.application.routes.draw do
     end
 
     namespace :v2 do
-      match '*all', via: [:get, :post, :put, :delete, :patch], to: proc { [410, {}, ['']] }
+      match "*all", via: [:get, :post, :put, :delete, :patch], to: proc { [410, {}, [""]] }
     end
 
     namespace :v3, path: "v3" do
