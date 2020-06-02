@@ -38,7 +38,7 @@ class User < ApplicationRecord
 
   has_many :user_permissions, foreign_key: :user_id, dependent: :delete_all
 
-  pg_search_scope :search_by_name, against: [:full_name], using: {tsearch: {prefix: true}}
+  pg_search_scope :search_by_name, against: [:full_name], using: {tsearch: {prefix: true, any_word: true}}
   scope :search_by_email,
     ->(term) { joins(:email_authentications).merge(EmailAuthentication.search_by_email(term)) }
   scope :search_by_phone,
