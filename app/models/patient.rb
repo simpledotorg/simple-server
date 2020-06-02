@@ -207,9 +207,9 @@ class Patient < ApplicationRecord
     blood_pressures.discard_all
     blood_sugars.discard_all
     business_identifiers.discard_all
+    observations.discard_all
     encounters.discard_all
     medical_history&.discard
-    observations.discard_all
     phone_numbers.discard_all
     prescription_drugs.discard_all
     discard
