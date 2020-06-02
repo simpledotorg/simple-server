@@ -18,8 +18,8 @@
 
     <meta charset="utf-8">
 
-    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
-    <%= stylesheet_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <%= stylesheet_link_tag    'application', media: 'all' %>
+    <%= stylesheet_link_tag    'print', media: 'print' %>
 
     <link rel="apple-touch-icon" sizes="180x180" href="<%= apple_logo_for_environment %>">
     <link rel="icon" sizes="192x192" href="<%= android_logo_for_environment(size: '192') %>">
