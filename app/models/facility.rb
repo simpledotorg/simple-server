@@ -3,6 +3,7 @@ require 'roo'
 class Facility < ApplicationRecord
   include Mergeable
   include QuarterHelper
+  include PgSearch::Model
   include LiberalEnum
   extend FriendlyId
 
@@ -35,6 +36,8 @@ class Facility < ApplicationRecord
            -> { with_hypertension },
            class_name: "Patient",
            foreign_key: "registration_facility_id"
+
+  pg_search_scope :search_by_name, against: {name: "A", slug: "B"}, using: {tsearch: {prefix: true, any_word: true}}
 
   enum facility_size: {
     community: "community",

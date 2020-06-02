@@ -8,7 +8,7 @@ class Api::V3::BloodPressuresController < Api::V3::SyncController
   end
 
   def sync_to_user
-    __sync_to_user__('blood_pressures')
+    __sync_to_user__("blood_pressures")
   end
 
   private
@@ -17,12 +17,12 @@ class Api::V3::BloodPressuresController < Api::V3::SyncController
     validator = Api::V3::BloodPressurePayloadValidator.new(bp_params)
     logger.debug "Blood Pressure had errors: #{validator.errors_hash}" if validator.invalid?
     if validator.invalid?
-      NewRelic::Agent.increment_metric('Merge/BloodPressure/schema_invalid')
-      { errors_hash: validator.errors_hash }
+      NewRelic::Agent.increment_metric("Merge/BloodPressure/schema_invalid")
+      {errors_hash: validator.errors_hash}
     else
       set_patient_recorded_at(bp_params)
       transformed_params = Api::V3::BloodPressureTransformer.from_request(bp_params)
-      { record: merge_encounter_observation(:blood_pressures, transformed_params) }
+      {record: merge_encounter_observation(:blood_pressures, transformed_params)}
     end
   end
 
