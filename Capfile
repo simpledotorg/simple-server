@@ -9,7 +9,7 @@ require "capistrano/multiconfig"
 require "capistrano/rbenv"
 require "capistrano/rails"
 require "capistrano/passenger"
-require "capistrano/sidekiq"
+require "capistrano/capistrano_plugin_template"
 require "capistrano-db-tasks"
 require "capistrano/data_migrate"
 

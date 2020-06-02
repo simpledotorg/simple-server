@@ -12,14 +12,8 @@ set :default_env, {
 set :rails_env, "production"
 set :branch, ENV["BRANCH"] || "master"
 
-# sidekiq configuration
-set :sidekiq_roles, :sidekiq
-set :sidekiq_processes, 1
 set :bundler_path, "/home/deploy/.rbenv/shims/bundle"
-set :init_system, :systemd
-set :pty, false
-
-set :sidekiq_config, -> { File.join(shared_path, "config", "sidekiq.yml") }
+set :sidekiq_processes, 4
 
 set :db_local_clean, false
 set :db_remote_clean, true
