@@ -7,6 +7,7 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
+gem "active_record_union"
 gem "activerecord-import"
 gem "bcrypt", "~> 3.1", ">= 3.1.11"
 gem "bootsnap", require: false
@@ -33,6 +34,7 @@ gem "lodash-rails"
 gem "newrelic_rpm"
 gem "passenger"
 gem "pg", ">= 0.18", "< 2.0"
+gem "pg_search"
 gem "phonelib"
 gem "pry-rails"
 gem "pundit"
@@ -65,7 +67,7 @@ group :development, :test do
   gem "capistrano-rails"
   gem "capistrano-rails-console", require: false
   gem "capistrano-rbenv"
-  gem "capistrano-sidekiq", require: false
+  gem "capistrano-template", require: false
   gem "parallel_tests", group: %i[development test]
   gem "rails-controller-testing"
   gem "rb-readline"

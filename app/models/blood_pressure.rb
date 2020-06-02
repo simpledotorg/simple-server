@@ -5,11 +5,11 @@ class BloodPressure < ApplicationRecord
   include SQLHelpers
 
   ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at bp_date registration_facility_name user_id
-                              bp_systolic bp_diastolic]
+    bp_systolic bp_diastolic]
 
   THRESHOLDS = {
-    critical: { systolic: 180, diastolic: 110 },
-    hypertensive: { systolic: 140, diastolic: 90 }
+    critical: {systolic: 180, diastolic: 110},
+    hypertensive: {systolic: 140, diastolic: 90}
   }.freeze
 
   belongs_to :patient, optional: true
@@ -53,14 +53,13 @@ class BloodPressure < ApplicationRecord
   end
 
   def anonymized_data
-    { id: hash_uuid(id),
-      patient_id: hash_uuid(patient_id),
-      created_at: created_at,
-      bp_date: recorded_at,
-      registration_facility_name: facility.name,
-      user_id: hash_uuid(user_id),
-      bp_systolic: systolic,
-      bp_diastolic: diastolic
-    }
+    {id: hash_uuid(id),
+     patient_id: hash_uuid(patient_id),
+     created_at: created_at,
+     bp_date: recorded_at,
+     registration_facility_name: facility.name,
+     user_id: hash_uuid(user_id),
+     bp_systolic: systolic,
+     bp_diastolic: diastolic}
   end
 end
