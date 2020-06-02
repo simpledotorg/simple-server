@@ -1,6 +1,6 @@
 <%= bootstrap_form_with(url: form_url, method: :get, class: "mt-4", layout: :horizontal, local: true) do |form| %>
   <div class="form-row mb-5">
-    <div class="col col-md-2 mb-2">
+    <div id="district-selector" class="col col-md-2 mb-2">
       <%= form.select :district,
           policy_scope(scope_namespace)
               .sort_by(&:district)
@@ -13,7 +13,7 @@
               wrapper: false,
               tabindex: 3
           },
-          onchange: "Rails.fire(this.form, 'submit');" %>
+          onchange: "this.form.submit()" %>
     </div>
 
     <%= render "shared/search_bar", form: form, placeholder: "Search by name or phone number..." %>
