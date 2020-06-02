@@ -12,7 +12,7 @@ class Admin::UsersController < AdminController
               .joins(phone_number_authentications: :facility)
               .where('phone_number_authentications.registration_facility_id IN (?)',
                 selected_district_facilities([:manage, :user]).map(&:id))
-              .order('facilities.name', 'users.full_name', 'users.device_created_at')
+              .order('users.full_name', 'facilities.name', 'users.device_created_at')
 
     @users =
       if searching?
