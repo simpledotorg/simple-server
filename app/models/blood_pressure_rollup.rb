@@ -44,17 +44,29 @@ class BloodPressureRollup < ApplicationRecord
       year: blood_pressure.recorded_at.year
     }
 
+    previous_rollup_recorded_at = if blood_pressure.merge_status == :updated
+      BloodPressureRollup.where(blood_pressure: blood_pressure).pluck(:recorded_at)
+    end
+
     month = blood_pressure.recorded_at.month
     quarter = quarter_for_month(month)
 
     month_attrs = attrs.merge(period_type: :month, period_number: month)
     quarter_attrs = attrs.merge(period_type: :quarter, period_number: quarter)
     month_rollup = BloodPressureRollup.new(month_attrs)
-    month_rollup.upsert(attributes: [:blood_pressure_id, :diastolic, :systolic, :recorded_at],
-      arel_condition: BloodPressureRollup.arel_table[:recorded_at].lt(blood_pressure.recorded_at))
+    result = month_rollup.upsert(attributes: [:blood_pressure_id, :diastolic, :period_number, :systolic, :recorded_at],
+                        arel_condition: BloodPressureRollup.arel_table[:recorded_at].lt(blood_pressure.recorded_at))
+    logger.info "result for month upsert #{result.attributes}"
     quarter_rollup = BloodPressureRollup.new(quarter_attrs)
     quarter_rollup.upsert(attributes: [:blood_pressure_id, :diastolic, :systolic, :recorded_at],
-      arel_condition: BloodPressureRollup.arel_table[:recorded_at].lt(blood_pressure.recorded_at))
+                          arel_condition: BloodPressureRollup.arel_table[:recorded_at].lt(blood_pressure.recorded_at))
+
+    recorded_at = previous_rollup_recorded_at&.first
+    if recorded_at
+      logger.info "in previous rollups with #{recorded_at}"
+      most_recent_bp_for_period = BloodPressure.recent_in_month(recorded_at, patients: blood_pressure.patient_id).first
+      from_blood_pressure(most_recent_bp_for_period)
+    end
   end
 
   def self.quarter_for_month(month)

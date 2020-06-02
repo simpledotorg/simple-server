@@ -32,6 +32,14 @@ class BloodPressure < ApplicationRecord
       .where(arel_table[:diastolic].lt(THRESHOLDS[:hypertensive][:diastolic]))
   }
 
+  def self.recent_in_month(time, patients: nil)
+    query = select("DISTINCT ON (patient_id) *")
+      .order(:patient_id, "recorded_at desc")
+      .where("recorded_at >= ? AND recorded_at <= ?", time.beginning_of_month, time.end_of_month)
+    query.where(patient: patients) if patients
+    query
+  end
+
   def critical?
     systolic >= THRESHOLDS[:critical][:systolic] || diastolic >= THRESHOLDS[:critical][:diastolic]
   end

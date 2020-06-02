@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe BloodPressureRollup, type: :model do
   context "counts of controlled per month" do
-    fit "can count things" do
+    it "can count things" do
       Timecop.freeze("March 15th 2020") do
         controlled_patient_1 = create(:patient)
         controlled_patient_2 = create(:patient)
@@ -31,6 +31,11 @@ RSpec.describe BloodPressureRollup, type: :model do
         expect(rollup.diastolic).to eq(110)
         expect(rollup.systolic).to eq(180)
       end
+
+      bp1 = create(:blood_pressure, diastolic: 110, systolic: 180, recorded_at: 2.days.ago)
+      expect {
+        BloodPressureRollup.from_blood_pressure(bp1)
+      }.to change { BloodPressureRollup.count }.by(2)
     end
 
     it "updates more recent blood pressures" do
@@ -122,6 +127,30 @@ RSpec.describe BloodPressureRollup, type: :model do
         end
       end
     end
-  end
 
+    it "removes old rollups for an updated blood pressure that gets back-dated" do
+      patient = create(:patient)
+      Timecop.freeze("June 5th 2020") do
+        june_4th_bp = create(:blood_pressure, patient: patient, diastolic: 100, systolic: 170, recorded_at: 1.day.ago)
+        bp1 = create(:blood_pressure, patient: patient, diastolic: 110, systolic: 180, recorded_at: Time.current)
+
+        expect {
+          BloodPressureRollup.from_blood_pressure(june_4th_bp)
+          BloodPressureRollup.from_blood_pressure(bp1)
+        }.to change { BloodPressureRollup.count }.by(2)
+        rollup = BloodPressureRollup.month.find_by(patient: patient, period_number: 6)
+
+        expect(rollup.diastolic).to eq(110)
+        expect(rollup.systolic).to eq(180)
+
+        bp1.update!(recorded_at: 25.days.ago, merge_status: :updated)
+        BloodPressureRollup.from_blood_pressure(bp1)
+
+        rollup = BloodPressureRollup.month.reload.find_by(patient: patient, period_number: 6)
+
+        expect(rollup.diastolic).to eq(100)
+        expect(rollup.systolic).to eq(170)
+      end
+    end
+  end
 end
