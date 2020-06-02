@@ -58,6 +58,7 @@
         </div>
 
         <% @facilities.dig(facility_group).sort_by(&:name).each do |facility| %>
+
           <div class="row card-row">
             <div class="col-md-4">
               <h5>
@@ -72,6 +73,7 @@
             <div class="col-md-2"><span class="text-muted"><%= facility.facility_size&.capitalize || "No size set" %></span></div>
             <div class="col-md-2"><span class="text-muted">OPD: <%= facility.monthly_estimated_opd_load || "N/A" %></span></div>
           </div>
+
         <% end %>
       </div>
     <% end %>
