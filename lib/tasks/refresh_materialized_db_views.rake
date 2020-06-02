@@ -1,30 +1,45 @@
 # frozen_string_literal: true
 
-desc 'Refresh materialized views for dashboards'
+desc "Refresh materialized views for dashboards"
 task refresh_materialized_db_views: :environment do
+  include ActiveSupport::Benchmarkable
+
   tz = Rails.application.config.country[:time_zone]
 
-  # LatestBloodPressuresPerPatientPerMonth should be refreshed before
-  # LatestBloodPressuresPerPatientPerQuarter and LatestBloodPressuresPerPatient
-  ActiveRecord::Base.transaction do
-    ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{tz}'")
+  # We need to have a logger in scope for the benchmark method below to work
+  def logger
+    Rails.logger
+  end
 
-    Rails.logger.info 'Refreshing LatestBloodPressuresPerPatientPerDay'
-    LatestBloodPressuresPerPatientPerDay.refresh
+  benchmark("refresh_materialized_views") do
+    # LatestBloodPressuresPerPatientPerMonth should be refreshed before
+    # LatestBloodPressuresPerPatientPerQuarter and LatestBloodPressuresPerPatient
+    ActiveRecord::Base.transaction do
+      ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{tz}'")
 
-    Rails.logger.info 'Refreshing LatestBloodPressuresPerPatientPerMonth'
-    LatestBloodPressuresPerPatientPerMonth.refresh
+      benchmark("refresh_materialized_views LatestBloodPressuresPerPatientPerDay") do
+        LatestBloodPressuresPerPatientPerDay.refresh
+      end
 
-    Rails.logger.info 'Refreshing LatestBloodPressuresPerPatient'
-    LatestBloodPressuresPerPatient.refresh
+      benchmark("refresh_materialized_views LatestBloodPressuresPerPatientPerMonth") do
+        LatestBloodPressuresPerPatientPerMonth.refresh
+      end
 
-    Rails.logger.info 'Refreshing LatestBloodPressuresPerPatientPerQuarter'
-    LatestBloodPressuresPerPatientPerQuarter.refresh
+      benchmark("refresh_materialized_views LatestBloodPressuresPerPatient") do
+        LatestBloodPressuresPerPatient.refresh
+      end
 
-    Rails.logger.info 'Refreshing BloodPressuresPerFacilityPerDay'
-    BloodPressuresPerFacilityPerDay.refresh
+      benchmark("refresh_materialized_views LatestBloodPressuresPerPatientPerQuarter") do
+        LatestBloodPressuresPerPatientPerQuarter.refresh
+      end
 
-    Rails.logger.info 'Refreshing PatientRegistrationsPerDayPerFacility'
-    PatientRegistrationsPerDayPerFacility.refresh
+      benchmark("refresh_materialized_views BloodPressuresPerFacilityPerDay") do
+        BloodPressuresPerFacilityPerDay.refresh
+      end
+
+      benchmark("refresh_materialized_views PatientRegistrationsPerDayPerFacility") do
+        PatientRegistrationsPerDayPerFacility.refresh
+      end
+    end
   end
 end

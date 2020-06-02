@@ -1,4 +1,8 @@
 namespace :deploy do
+  before :starting, :check_sidekiq_hooks do
+    invoke 'sidekiq:add_default_hooks'
+  end
+
   desc 'Runs any rake task, example: cap deploy:rake task=db:seed'
   task rake: [:set_rails_env] do
     on release_roles([:db]) do
