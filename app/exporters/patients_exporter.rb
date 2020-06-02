@@ -119,6 +119,6 @@ module PatientsExporter
   end
 
   def self.medications_for(patient)
-    patient.prescription_drugs.flat_map { |drug| [drug.name, drug.dosage] }
+    patient.current_prescription_drugs.flat_map { |drug| [drug.name, drug.dosage] }
   end
 end

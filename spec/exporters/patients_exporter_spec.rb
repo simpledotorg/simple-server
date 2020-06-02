@@ -9,6 +9,7 @@ RSpec.describe PatientsExporter do
   let!(:appointment) { create(:appointment, :overdue, facility: facility, patient: patient) }
   let!(:prescription_drug_1) { create(:prescription_drug, patient: patient) }
   let!(:prescription_drug_2) { create(:prescription_drug, patient: patient) }
+  let!(:prescription_drug_3) { create(:prescription_drug, patient: patient, is_deleted: true) }
   let(:now) { Time.current }
 
   let(:timestamp) do
