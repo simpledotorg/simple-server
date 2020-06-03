@@ -1,9 +1,6 @@
 {
   "name": "simple-server",
   "private": true,
-  "scripts": {
-    "build":
-  },
   "dependencies": {
     "autoprefixer": "^9.8.0",
     "postcss-cli": "^7.1.1",
