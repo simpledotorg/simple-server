@@ -176,7 +176,11 @@ Rails.application.routes.draw do
   end
 
   resources :appointments, only: [:index, :update]
-  resources :patients, only: [:index, :update]
+  resources :patients, only: [:index, :update] do
+    collection do
+      get :lookup
+    end
+  end
   resources :organizations, only: [:index], path: "dashboard"
 
   namespace :my_facilities do

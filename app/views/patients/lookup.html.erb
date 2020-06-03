@@ -1,0 +1,36 @@
+<h1>Lookup Patients</h1>
+
+<p class="info">
+  <i class="fas fa-question-circle"></i>
+  This is a hidden page and is only visible to you because you have the
+  <em><%= Permissions::ALL_PERMISSIONS.dig(:view_adherence_follow_up_list, :slug) %></em>
+  permission.
+</p>
+
+<%= render 'shared/search_form', path: lookup_patients_path, placeholder: 'Search by village or street address...' %>
+
+<div id="patients-to-followup">
+  <% if @patients.exists? %>
+    <% @patients.each do |patient| %>
+      <div class="card">
+        <h5 class="mb-2">
+          <%= patient.full_name %>,
+          <%= patient.gender.capitalize %>,
+          <%= patient.current_age %>
+        </h5>
+
+        <div>
+          <span class="text-secondary">Address:</span>
+          <% if patient.address.has_street_address? %><%= patient.address.street_address %>,
+          <% end %>
+          <%= patient.address.village_or_colony %>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <%= render "shared/no_search_results",
+        message: "No results for '#{content_tag(:strong, search_query)}'" %>
+  <% end %>
+</div>
+
+<%= paginate @patients %>

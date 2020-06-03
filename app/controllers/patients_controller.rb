@@ -1,6 +1,7 @@
 class PatientsController < AdminController
   include FacilityFiltering
   include Pagination
+  include SearchHelper
 
   before_action :set_patient, only: [:update]
 
@@ -18,10 +19,18 @@ class PatientsController < AdminController
     @patients = paginate(@patients)
   end
 
+  def lookup
+    set_page
+    set_per_page
+    authorize([:adherence_follow_up, Patient])
+
+    @patients = paginate(policy_scope([:adherence_follow_up, Patient]).search_by_address(search_query))
+  end
+
   def update
     if @patient.update(patient_params)
-      redirect_to patients_url(params: { facility_id: selected_facility_id, page: page }),
-                  notice: "Saved. #{@patient.full_name} marked as \"#{@patient.call_result.humanize}\""
+      redirect_to patients_url(params: {facility_id: selected_facility_id, page: page}),
+        notice: "Saved. #{@patient.full_name} marked as \"#{@patient.call_result.humanize}\""
     else
       redirect_back fallback_location: root_path, alert: 'Something went wrong!'
     end

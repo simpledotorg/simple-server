@@ -5,6 +5,8 @@ class AdherenceFollowUp::PatientPolicy < ApplicationPolicy
       .present?
   end
 
+  alias_method :lookup?, :index?
+
   def update?
     user_has_any_permissions?(
       [:view_adherence_follow_up_list, nil],

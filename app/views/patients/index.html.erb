@@ -1,40 +1,33 @@
 <h1>Adherence follow-ups</h1>
-<p class="info"><i class="fas fa-question-circle"></i> Patients that are newly registered and need 48-hour adherence follow-up.</p>
-  
-    <%= render(
-      'shared/paginate_and_filter_by_facility',
-      form_url: patients_path,
-      current_admin: current_admin,
-      facility_id: @facility_id,
-      per_page: @per_page,
-      scope_namespace: [:adherence_follow_up, Facility]
-    ) %>
 
+<p class="info">
+  <i class="fas fa-question-circle"></i> Patients that are newly registered and need 48-hour adherence follow-up.
+</p>
 
-    <div id="patients-to-followup">
-      <% if @patients.present? %>
-        <% @patients.each do |patient| %>
-          <% call_result_options = {
-              'Patient contacted' => [['Contacted', 'contacted']],
-              'Remove from list' => Patient.could_not_contact_reasons.map { |key, value| [key.humanize, value] }
-          } %>
+<div id="patients-to-followup">
+  <% if @patients.present? %>
+    <% @patients.each do |patient| %>
+      <% call_result_options = {
+          'Patient contacted' => [['Contacted', 'contacted']],
+          'Remove from list' => Patient.could_not_contact_reasons.map { |key, value| [key.humanize, value] }
+      } %>
 
-          <%= render(
-            'shared/followup_patient_card',
-            patient: patient,
-            call_result_options: call_result_options,
-            days_overdue: nil,
-            show_registration_date: true,
-            show_last_interaction: false,
-            form_model: patient
+      <%= render(
+              'shared/followup_patient_card',
+              patient: patient,
+              call_result_options: call_result_options,
+              days_overdue: nil,
+              show_registration_date: true,
+              show_last_interaction: false,
+              form_model: patient
           ) %>
-        <% end %>
-      <% else %>
-        <div class="overdue-patient">
-          <p class="overdue-title" style="color: #999;">No patients found for follow up</p>
-        </div>
-      <% end %>
+    <% end %>
+  <% else %>
+    <div class="overdue-patient">
+      <p class="overdue-title" style="color: #999;">No patients found for follow up</p>
     </div>
+  <% end %>
+</div>
 
 
 <%= paginate @patients %>

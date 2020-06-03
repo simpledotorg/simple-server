@@ -49,6 +49,9 @@ class Patient < ApplicationRecord
 
   has_many :current_prescription_drugs, -> { where(is_deleted: false) }, class_name: 'PrescriptionDrug'
 
+  scope :search_by_address,
+    ->(term) { joins(:address).merge(Address.search_by_street_or_village(term)) }
+
   attribute :call_result, :string
 
   scope :with_diabetes, -> { joins(:medical_history).merge(MedicalHistory.diabetes_yes) }
