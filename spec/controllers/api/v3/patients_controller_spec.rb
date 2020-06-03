@@ -287,6 +287,29 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
                  deleted_reason: 'duplicate')
       end
 
+        it 'calls #discard_data on a a patient when the patient payload has the deleted_at field set' do
+          patient = instance_double("Patient")
+          phone_number = create(:patient_phone_number, patient: existing_patient)
+          pbi = create(:patient_business_identifier, patient: existing_patient)
+          allow(Patient).to receive_messages(find: patient, merge: patient)
+          allow(PatientPhoneNumber).to receive(:merge).and_return(phone_number)
+          allow(PatientBusinessIdentifier).to receive(:merge).and_return(pbi)
+
+          allow(patient).to receive(:slice)
+                              .with("registration_user_id", "registration_facility_id")
+                              .and_return(existing_patient.slice("registration_user_id",
+                                                                 "registration_facility_id"))
+          allow(patient).to receive_messages(id: existing_patient.id,
+                                             merge_status: :updated,
+                                             deleted_at: deleted_time,
+                                             update: patient)
+
+          allow(patient).to receive(:address=).and_return(existing_patient.address)
+
+          expect(patient).to receive(:discard_data)
+          post :sync_from_user, params: { patients: [delete_patient_payload] }, as: :json
+        end
+
       it 'deletes a patient when the patient payload has the deleted_at field set' do
         expect(Patient.find(existing_patient.id)).to be_present
         post :sync_from_user, params: { patients: [delete_patient_payload] }, as: :json
