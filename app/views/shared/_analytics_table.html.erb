@@ -1,6 +1,6 @@
 <div class="card pr-0 pr-md-3">
   <h2><%= row_resource_description %></h2>
-    
+
   <div class="table-responsive">
     <table id="analytics-table" class="table-compact">
       <colgroup>
@@ -9,20 +9,23 @@
         <col class="table-divider">
         <col>
         <col>
+        <col>
+        <col>
+        <col>
         <col class="table-divider">
         <col>
         <col>
+        <col>
+        <col>
+        <col>
         <col class="table-divider">
-        <col>
-        <col>
       </colgroup>
       <thead>
       <tr>
         <th></th>
         <th class="row-label"><strong>Registered</strong></th>
-        <th class="row-label" colspan="3"><strong>Follow-up patients</strong></th>
-        <th class="row-label" colspan="3"><strong>New registrations</strong></th>
-        <th class="row-label" colspan="3"><strong>Patients called</strong></th>
+        <th class="row-label" colspan="6"><strong>Follow-up patients</strong></th>
+        <th class="row-label" colspan="6"><strong>New registrations</strong></th>
       </tr>
 
       <tr class="sorts" data-sort-method="thead">
@@ -31,21 +34,14 @@
         <th class="row-label sort-label" data-sort-default data-sort-method="number">Total</th>
 
         <!--Follow-up patients-->
-        <% dates_for_periods(@period, 3, include_current_period: @show_current_period).each do |date| %>
+        <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
           <th class="row-label sort-label" style="padding: 8px 4px;" data-sort-method="number">
             <%= format_period(@period, date) %>
           </th>
         <% end %>
 
         <!--New registrations-->
-        <% dates_for_periods(@period, 3, include_current_period: @show_current_period).each do |date| %>
-          <th class="row-label sort-label" style="padding: 8px 4px;" data-sort-method="number">
-            <%= format_period(@period, date) %>
-          </th>
-        <% end %>
-
-        <!--Calls made -->
-        <% dates_for_periods(@period, 3, include_current_period: @show_current_period).each do |date| %>
+        <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
           <th class="row-label sort-label" style="padding: 8px 4px;" data-sort-method="number">
             <%= format_period(@period, date) %>
           </th>
@@ -64,23 +60,16 @@
         </td>
 
         <!--Follow-up patients-->
-        <% dates_for_periods(@period, 3, include_current_period: @show_current_period).each do |date| %>
+        <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
           <td class="row-total" style="text-align: center;">
             <%= dash_if_zero(analytics_totals(dashboard_analytics, :follow_up_patients_by_period, date)) %>
           </td>
         <% end %>
 
         <!--New registrations-->
-        <% dates_for_periods(@period, 3, include_current_period: @show_current_period).each do |date| %>
+        <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
           <td class="row-total" style="text-align: center;">
             <%= dash_if_zero(analytics_totals(dashboard_analytics, :registered_patients_by_period, date)) %>
-          </td>
-        <% end %>
-
-        <!--Calls made -->
-        <% dates_for_periods(@period, 3, include_current_period: @show_current_period).each do |date| %>
-          <td class="row-total" style="text-align: center;">
-            <%= dash_if_zero(analytics_totals(dashboard_analytics, :total_calls_made_by_period, date)) %>
           </td>
         <% end %>
       </tr>
@@ -103,23 +92,16 @@
             </td>
 
             <!--Follow-up patients-->
-            <% dates_for_periods(@period, 3, include_current_period: @show_current_period).each do |date| %>
+            <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
               <td style="text-align: center;">
                 <%= dash_if_zero(dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, date)) %>
               </td>
             <% end %>
 
             <!--New registrations-->
-            <% dates_for_periods(@period, 3, include_current_period: @show_current_period).each do |date| %>
+            <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
               <td style="text-align: center;">
                 <%= dash_if_zero(dashboard_analytics.dig(resource.id, :registered_patients_by_period, date)) %>
-              </td>
-            <% end %>
-
-            <!--Calls made -->
-            <% dates_for_periods(@period, 3, include_current_period: @show_current_period).each do |date| %>
-              <td style="text-align: center;">
-                <%= dash_if_zero(dashboard_analytics.dig(resource.id, :total_calls_made_by_period, date)) %>
               </td>
             <% end %>
           </tr>
