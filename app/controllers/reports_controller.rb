@@ -1,6 +1,11 @@
-class ReportsController < ApplicationController
+class ReportsController < AdminController
   layout "reports"
+  skip_after_action :verify_policy_scoped
+  around_action :set_time_zone
+
   def index
+    authorize :dashboard, :view_my_facilities?
+
     @state_name = "Punjab"
     @district_name = "Bathinda"
     @report_period = "APR-2020"
@@ -315,5 +320,13 @@ class ReportsController < ApplicationController
         ]
       }
     ]
+  end
+
+  private
+
+  def set_time_zone
+    time_zone = Rails.application.config.country[:time_zone] || DEFAULT_ANALYTICS_TIME_ZONE
+
+    Time.use_zone(time_zone) { yield }
   end
 end
