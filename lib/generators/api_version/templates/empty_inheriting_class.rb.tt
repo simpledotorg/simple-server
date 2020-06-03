@@ -1,2 +1,0 @@
-class <%= @new_class_name %> < <%= @inheriting_class_name %>
-end
