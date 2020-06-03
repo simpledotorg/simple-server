@@ -3,14 +3,22 @@ FactoryBot.define do
     id { SecureRandom.uuid }
     name { Faker::Dessert.topping }
     dosage { rand(1..10).to_s + ' mg' }
-    is_protocol_drug { [true, false].sample }
-    is_deleted { [true, false].sample }
+    is_protocol_drug { false }
+    is_deleted { false }
     rxnorm_code { Faker::Code.npi }
     device_created_at { Time.current }
     device_updated_at { Time.current }
     association :facility, strategy: :build
     association :patient, strategy: :build
     user
+
+    trait :deleted do
+      is_deleted { true }
+    end
+
+    trait :protocol do
+      is_protocol_drug { true }
+    end
   end
 end
 
