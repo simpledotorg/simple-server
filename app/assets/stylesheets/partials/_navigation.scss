@@ -1,0 +1,47 @@
+/*****************
+Navigation
+*****************/
+
+nav.breadcrumb {
+    background: transparent;
+    padding-left: 0;
+    margin: 0 0 8px 0;
+}
+
+nav.breadcrumb .arrow,
+nav.breadcrumb i {
+   font-weight: 900;
+   color: $grey-mid;
+    margin: 0 6px;
+    font-size: 85%;
+    top: 5px;
+    position: relative;
+}
+
+form.edit_email_authentication .invalid-feedback {
+    font-size: 100%;
+    font-weight: bold;
+}
+
+nav a.nav-link { color: $grey-darkest !important; }
+nav a.nav-link:hover { color: $grey-mid !important; }
+
+nav.navbar-development a.nav-link { color: #265788 !important; }
+nav.navbar-development a.nav-link:hover { color: #4D86BF !important; }
+nav.navbar-development { box-shadow: inset 0 2px 0 0 #265788; }
+
+nav.navbar-qa a.nav-link { color: #00B849 !important; }
+nav.navbar-qa a.nav-link:hover { color: #4BE287 !important; }
+nav.navbar-qa { box-shadow: inset 0 2px 0 0 #00B849; }
+
+nav.navbar-sandbox a.nav-link { color: #5300E0 !important; }
+nav.navbar-sandbox a.nav-link:hover { color: #935EEC !important; }
+nav.navbar-sandbox { box-shadow: inset 0 2px 0 0 #5300E0; }
+
+nav.navbar-demo a.nav-link { color: #8E6F0C !important; }
+nav.navbar-demo a.nav-link:hover { color: #977600 !important; }
+nav.navbar-demo { box-shadow: inset 0 2px 0 0 #FFC800; }
+
+nav.navbar-production a.nav-link { color: $grey-darkest !important; }
+nav.navbar-production a.nav-link:hover { color: $grey-mid !important; }
+nav.navbar-demo { box-shadow: none; }
