@@ -11,7 +11,7 @@
 
 <%= render 'shared/search_form', path: admins_path, placeholder: 'Search by name or email...' %>
 
-<% if @admins.present? %>
+<% if @admins.exists? %>
   <% if searching? %>
     <span><%= search_entries_info(@admins) %></span>
   <% end %>
