@@ -8,7 +8,7 @@
     "tailwindcss": "^1.4.6"
   },
   "scripts": {
-    "build": "postcss app/assets/stylesheets/tailwind.css -o public/tailwind.css"
+    "tailwind": "postcss app/assets/stylesheets/tailwind.css -o public/tailwind.css"
   },
   "devDependencies": {}
 }
