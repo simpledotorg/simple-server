@@ -27,6 +27,9 @@
         </div>
       </div>
     <% end %>
+  <% elsif !@patients.exists? && !searching? %>
+    <%= render "shared/no_search_results",
+        message: "Search for something to populate a list of matching patients..." %>
   <% else %>
     <%= render "shared/no_search_results",
         message: "No results for '#{content_tag(:strong, search_query)}'" %>
