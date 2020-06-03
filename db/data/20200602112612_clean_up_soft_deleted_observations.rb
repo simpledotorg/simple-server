@@ -1,4 +1,4 @@
-class CleanUpBadObservations < ActiveRecord::Migration[5.2]
+class CleanUpSoftDeletedObservations < ActiveRecord::Migration[5.2]
   def up
     Encounter.with_discarded.discarded.in_batches(of: 1_000) do |batch|
       batch.each do |encounter|
