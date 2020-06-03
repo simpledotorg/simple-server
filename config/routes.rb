@@ -61,35 +61,7 @@ Rails.application.routes.draw do
     end
 
     namespace :v2 do
-      get "ping", to: "pings#show"
-      post "login", to: "logins#login_user"
-
-      # Exotel requires all endpoints to be GET
-      scope :exotel_call_sessions do
-        get "fetch", to: "exotel_call_sessions#fetch"
-        get "create", to: "exotel_call_sessions#create"
-        get "terminate", to: "exotel_call_sessions#terminate"
-      end
-
-      scope :users do
-        get "find", to: "users#find"
-        post "register", to: "users#register"
-        post "/:id/request_otp", to: "users#request_otp"
-        post "/me/reset_password", to: "users#reset_password"
-      end
-
-      scope "/communications" do
-        get "sync", to: "communications#sync_to_user"
-        post "sync", to: "communications#sync_from_user"
-      end
-
-      concerns :sync_routes
-
-      resource :help, only: [:show], controller: "help"
-
-      namespace :analytics do
-        resource :user_analytics, only: [:show]
-      end
+      match "*all", via: [:get, :post, :put, :delete, :patch], to: proc { [410, {}, [""]] }
     end
 
     namespace :v3, path: "v3" do

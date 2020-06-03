@@ -82,15 +82,6 @@ def build_patient_payload(patient = FactoryBot.build(:patient))
     )
 end
 
-def build_patient_payload_v2(patient = FactoryBot.build(:patient))
-  payload = build_patient_payload(patient)
-  payload.merge('address' => payload['address'].except('zone'))
-    .except('recorded_at')
-    .except('reminder_consent')
-    .except('deleted_by_user_id')
-    .except('deleted_reason')
-end
-
 def build_invalid_patient_payload
   patient = build_patient_payload
   patient['created_at'] = nil
@@ -120,11 +111,4 @@ def updated_patient_payload(existing_patient)
       'metadata' => business_identifier.metadata&.to_json
     )]
   )
-end
-
-def updated_patient_payload_v2(existing_patient)
-  updated_patient_payload(existing_patient)
-    .except('recorded_at')
-    .except('deleted_by_user_id')
-    .except('deleted_reason')
 end

@@ -83,7 +83,7 @@ RSpec.feature 'Overdue appointments', type: :feature do
       end
 
       it 'does not allow you to download the overdue list for all facilities' do
-        expect(page).to have_content('Select a facility to download Overdue Patients list')
+        expect(page).to have_content(/select a facility/i)
         expect(page).not_to have_selector('a', text: 'Download Overdue List')
       end
     end
