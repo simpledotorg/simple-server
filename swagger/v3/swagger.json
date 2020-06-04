@@ -1531,6 +1531,18 @@
             "granted",
             "denied"
           ]
+        },
+        "deleted_reason": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "enum": [
+            "duplicate",
+            "unknown",
+            "accidental_registration",
+            null
+          ]
         }
       },
       "required": [
@@ -1715,6 +1727,18 @@
           "enum": [
             "granted",
             "denied"
+          ]
+        },
+        "deleted_reason": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "enum": [
+            "duplicate",
+            "unknown",
+            "accidental_registration",
+            null
           ]
         },
         "address": {

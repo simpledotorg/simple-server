@@ -138,7 +138,8 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
                    .except('address_id')
                    .except('registration_user_id')
                    .except('registration_facility_id')
-                   .except('test_data'))
+                   .except('test_data')
+                   .except('deleted_by_user_id'))
             .to eq(updated_patient.with_int_timestamps)
         end
       end
@@ -184,7 +185,8 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
                      .except('address_id')
                      .except('registration_user_id')
                      .except('registration_facility_id')
-                     .except('test_data'))
+                     .except('test_data')
+                     .except('deleted_by_user_id'))
               .to eq(updated_patient.except('address', 'phone_numbers', 'business_identifiers'))
           end
         end
@@ -266,6 +268,73 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
         expect(patient.registration_facility.id).to eq previous_registration_facility_id
         expect(patient.registration_user.id).to_not eq current_user.id
         expect(patient.registration_facility.id).to_not eq current_facility.id
+      end
+    end
+
+    describe 'soft deletes patients' do
+      before :each do
+        request.env['HTTP_X_USER_ID'] = request_user.id
+        request.env['HTTP_X_FACILITY_ID'] = request_facility.id
+        request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
+      end
+
+      let(:existing_patient) { FactoryBot.create(:patient) }
+      let(:deleted_time) { Time.current }
+      let(:delete_patient_payload) do
+        build_patient_payload(existing_patient)
+          .merge(deleted_at: deleted_time,
+                 updated_at: deleted_time,
+                 deleted_reason: 'duplicate')
+      end
+
+        it 'calls #discard_data on a a patient when the patient payload has the deleted_at field set' do
+          patient = instance_double("Patient")
+          phone_number = create(:patient_phone_number, patient: existing_patient)
+          pbi = create(:patient_business_identifier, patient: existing_patient)
+          allow(Patient).to receive_messages(find: patient, merge: patient)
+          allow(PatientPhoneNumber).to receive(:merge).and_return(phone_number)
+          allow(PatientBusinessIdentifier).to receive(:merge).and_return(pbi)
+
+          allow(patient).to receive(:slice)
+                              .with("registration_user_id", "registration_facility_id")
+                              .and_return(existing_patient.slice("registration_user_id",
+                                                                 "registration_facility_id"))
+          allow(patient).to receive_messages(id: existing_patient.id,
+                                             merge_status: :updated,
+                                             deleted_at: deleted_time,
+                                             update: patient,
+                                             "address=": existing_patient.address)
+
+          expect(patient).to receive(:discard_data)
+          post :sync_from_user, params: { patients: [delete_patient_payload] }, as: :json
+        end
+
+      it 'deletes a patient when the patient payload has the deleted_at field set' do
+        expect(Patient.find(existing_patient.id)).to be_present
+        post :sync_from_user, params: { patients: [delete_patient_payload] }, as: :json
+
+        expect(Patient.find_by(id: existing_patient.id)).to be_nil
+        expect(Patient.with_discarded.find_by(id: existing_patient.id)).to be_present
+      end
+
+      it "sets the patient's deleted_reason and deleted_user_id" do
+        expect(Patient.find(existing_patient.id)).to be_present
+        post :sync_from_user, params: { patients: [delete_patient_payload] }, as: :json
+
+        expect(Patient.with_discarded.find_by(id: existing_patient.id).deleted_reason).to eq('duplicate')
+        expect(Patient.with_discarded.find_by(id: existing_patient.id).deleted_by_user_id).to eq(request_user.id)
+      end
+
+      it "doesn't update soft deleted patient's attributes" do
+        existing_patient_name = existing_patient.full_name
+
+        existing_patient.discard_data
+        update_payload_for_discarded_patient = build_patient_payload(existing_patient)
+                                                 .merge(full_name: "Test Patient Name Xcad7asd")
+
+        post :sync_from_user, params: { patients: [update_payload_for_discarded_patient] }, as: :json
+
+        expect(Patient.with_discarded.find_by(id: existing_patient.id).full_name).to eq(existing_patient_name)
       end
     end
   end
