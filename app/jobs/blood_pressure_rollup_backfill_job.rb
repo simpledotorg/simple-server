@@ -7,7 +7,7 @@ class BloodPressureRollupBackfillJob < ApplicationJob
       latest_bps = LatestBloodPressuresPerPatientPerMonth.where(patient: patient)
       latest_bps.each do |latest|
         blood_pressure = BloodPressure.find(latest.bp_id)
-        BloodPressureRollup.from_blood_pressure blood_pressure
+        blood_pressure.create_or_update_rollup
       end
     end
   end

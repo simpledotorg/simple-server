@@ -16,7 +16,7 @@ RSpec.describe BloodPressureRollupBackfillJob, type: :job do
 
     perform_enqueued_jobs do
       expect {
-        BloodPressureRollupBackfill.perform_later([bp1.patient, bp2.patient])
+        BloodPressureRollupBackfillJob.perform_later([bp1.patient, bp2.patient])
       }.to change { BloodPressureRollup.count }.by(4)
     end
   end

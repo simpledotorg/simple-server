@@ -33,7 +33,7 @@ class BloodPressureRollup < ApplicationRecord
   end
 
   def self.from_blood_pressure(blood_pressure)
-    blood_pressure.to_rollup
+    blood_pressure.create_or_update_rollup
   end
 
   def self.quarter_for_month(month)

@@ -75,7 +75,7 @@ class BloodPressure < ApplicationRecord
     end
   end
 
-  def to_rollup
+  def create_or_update_rollup
     month = recorded_at.month
     quarter = quarter_for_month(month)
     month_attrs = rollup_attributes(period_type: :month, period_number: month)
