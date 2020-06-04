@@ -44,8 +44,10 @@ module PatientsExporter
       'Patient Age',
       'Patient Gender',
       'Patient Phone Number',
+      'Patient Street Address',
       'Patient Village/Colony',
       'Patient District',
+      (zone_column if Rails.application.config.country[:patient_line_list_show_zone]),
       'Patient State',
       'Registration Facility Name',
       'Registration Facility Type',
@@ -75,7 +77,7 @@ module PatientsExporter
       'Dosage 4',
       'Medication 5',
       'Dosage 5'
-    ]
+    ].compact
   end
 
   def self.csv_fields(patient)
@@ -84,8 +86,9 @@ module PatientsExporter
     latest_bp_facility = latest_bp&.facility
     latest_appointment = patient.latest_scheduled_appointments.order(scheduled_date: :desc).first
     latest_bp_passport = patient.latest_bp_passports.order(device_created_at: :desc).first
+    zone_column_index = csv_headers.index(zone_column)
 
-    [
+    csv_fields = [
       patient.recorded_at.presence && I18n.l(patient.recorded_at),
       patient.recorded_at.presence && quarter_string(patient.recorded_at),
       ('Died' if patient.status == 'dead'),
@@ -93,6 +96,7 @@ module PatientsExporter
       patient.current_age,
       patient.gender.capitalize,
       patient.phone_numbers.last&.number,
+      patient.address.street_address,
       patient.address.village_or_colony,
       patient.address.district,
       patient.address.state,
@@ -116,9 +120,18 @@ module PatientsExporter
       patient.id,
       *medications_for(patient)
     ]
+
+    csv_fields.insert(zone_column_index, patient.address.zone) if zone_column_index
+    csv_fields
   end
 
   def self.medications_for(patient)
-    patient.prescription_drugs.flat_map { |drug| [drug.name, drug.dosage] }
+    patient.current_prescription_drugs.flat_map { |drug| [drug.name, drug.dosage] }
+  end
+
+  private
+
+  def self.zone_column
+    "Patient #{Address.human_attribute_name :zone}"
   end
 end

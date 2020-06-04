@@ -14,6 +14,7 @@ bn-IN:
     request_otp: '<#> %{otp} হল আপনার সিম্পিল যাচাইকরণ কোড\n%{app_signature}'
     appointment_reminders:
       missed_visit_sms_reminder:
+      missed_visit_whatsapp_reminder:
   analytics:
     followup_patients: "কতজন ফলো-আপ রোগী %{facility_name} ভিজিট করেছেন?"
     patients_enrolled: "কতজন নতুন রোগী %{facility_name} এ নথিভুক্ত রয়েছেন?"
