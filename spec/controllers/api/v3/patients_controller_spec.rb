@@ -302,9 +302,8 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
           allow(patient).to receive_messages(id: existing_patient.id,
                                              merge_status: :updated,
                                              deleted_at: deleted_time,
-                                             update: patient)
-
-          allow(patient).to receive(:address=).and_return(existing_patient.address)
+                                             update: patient,
+                                             "address=": existing_patient.address)
 
           expect(patient).to receive(:discard_data)
           post :sync_from_user, params: { patients: [delete_patient_payload] }, as: :json
