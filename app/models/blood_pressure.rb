@@ -60,6 +60,50 @@ class BloodPressure < ApplicationRecord
     [systolic, diastolic].join("/")
   end
 
+  def quarter_for_month(month)
+    case month
+    when 1, 2, 3
+      1
+    when 4, 5, 6
+      2
+    when 7, 8, 9
+      3
+    when 10, 11, 12
+      4
+    else
+      raise ArgumentError
+    end
+  end
+
+  def to_rollup
+    month = recorded_at.month
+    quarter = quarter_for_month(month)
+    month_attrs = rollup_attributes(period_type: :month, period_number: month)
+    quarter_attrs = rollup_attributes(period_type: :quarter, period_number: quarter)
+
+    rollups = BloodPressureRollup.arel_table
+    month_conditions = rollups[:recorded_at].lt(recorded_at).and(rollups[:period_type].eq(0)).and(rollups[:period_number].eq(month))
+    month_rollup  = BloodPressureRollup.upsert(month_attrs, arel_condition: month_conditions)
+    logger.info "result for month upsert #{month_rollup.attributes}"
+    quarter_conditions = rollups[:recorded_at].lt(recorded_at).and(rollups[:period_type].eq(1)).and(rollups[:period_number].eq(quarter))
+    quarter_rollup = BloodPressureRollup.upsert(quarter_attrs, arel_condition: quarter_conditions)
+    logger.info "result for quarter upsert #{quarter_rollup.attributes}"
+  end
+
+  def rollup_attributes(period_type:, period_number:)
+    attrs = {
+      assigned_facility_id: patient.registration_facility_id,
+      blood_pressure_facility_id: facility_id,
+      blood_pressure_id: id,
+      diastolic: diastolic,
+      patient_id: patient_id,
+      recorded_at: recorded_at,
+      systolic: systolic,
+      year: recorded_at.year
+    }
+    attrs.merge(period_type: period_type, period_number: period_number)
+  end
+
   def anonymized_data
     {id: hash_uuid(id),
      patient_id: hash_uuid(patient_id),
