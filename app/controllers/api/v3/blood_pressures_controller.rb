@@ -28,10 +28,10 @@ class Api::V3::BloodPressuresController < Api::V3::SyncController
 
   def after_merge_completed(results)
     records = results.flat_map { |r| r[:record] }.compact
-    send_to_job(records)
+    rollup_blood_pressures(records)
   end
 
-  def send_to_job(records)
+  def rollup_blood_pressures(records)
     records.each do |record|
       BloodPressureRollup.from_blood_pressure(record)
     end
