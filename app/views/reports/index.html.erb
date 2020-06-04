@@ -30,7 +30,7 @@
     <div class="flex items-center mb-2">
       <div class="mr-1">
         <p class="font-roboto font-bold text-lg text-black">
-          Monthly report for <%= @report_period %>
+          Monthly hypertension report for <%= @report_period %>
         </p>
       </div>
       <div>
@@ -66,7 +66,7 @@
       <div>
         <div class="mb-4">
           <p class="mb-1 font-roboto font-bold text-lg text-black">
-            Controlled patients trend
+            Control rate of all HTN patients
           </p>
           <p class="font-roboto font-normal text-sm text-black md:w-2/3">
             Registered HTN patients with BP &lt;140/90 at their most recent visit in the last 3 months
@@ -74,7 +74,10 @@
         </div>
         <div>
           <p class="font-roboto font-bold text-3xl text-green-200">
-            <%= number_with_delimiter(@controlled_patients.values.last, :delimiter => ",") %> patients
+            <%= @control_rate.values.last.to_f %>%
+          </p>
+          <p class="font-roboto font-normal text-sm text-black mb-1">
+              <span class="font-bold"><%= number_with_delimiter(@controlled_patients.values.last, :delimiter => ",") %></span> of <%= number_with_delimiter(@registrations.values.last, :delimiter => ",") %> registered patients
           </p>
           <p class="font-roboto font-normal text-sm text-black">
             <% controlled_patient_trend_percentage = ((@controlled_patients.values.last.to_f/@hypertensive_population.to_f)*100).round(2) %>
@@ -109,8 +112,59 @@
       </div>
     </div>
   </div>
-  <!-- Control rate of all registered HTN patients -->
   <div class="md:w-1/2 md:pl-2">
+    <div class="mb-4 p-4 rounded-md bg-white shadow-md md:flex md:flex-col md:justify-between md:h-96">
+      <div class="mb-4">
+        <table style="width: 100%;">
+            <thead>
+                <tr>
+                    <th style="text-align: left; padding-bottom: 8px;"><p class="mb-1 font-roboto font-bold text-lg text-black">
+                        Benchmarks
+                        </p>
+                    </th>
+                    <th class="text-sm" style="text-align: left; padding-bottom: 8px;">Top district</th>
+                    <th class="text-sm" style="text-align: left; padding: 2px 16px 8px 16px;">Bathinda</th>
+                    <th></th>
+                </tr>
+            </thead> 
+            <tbody>
+                <tr style="border-top: 1px solid rgba(0,0,0,0.06);" class="text-sm">
+                    <td class="text-sm">Control of registered patients</td>
+                    <td class="text-sm">34.0%</td>
+                    <td class="text-sm" style="padding: 12px 16px;"><%= @control_rate.values.last.to_f %>%</td>
+                    <td class="text-sm" style="color: red;">-5.0%</td>
+                </tr>
+                <tr style="border-top: 1px solid rgba(0,0,0,0.06);">
+                    <td class="text-sm">Control of estimated hypertensive pop.</td>
+                    <td class="text-sm">4.3%</td>
+                    <td class="text-sm" style="padding: 16px 16px;">1.96%</td>
+                    <td class="text-sm" style="color: red;">-2.3%</td>
+                </tr>
+                <tr style="border-top: 1px solid rgba(0,0,0,0.06);">
+                    <td class="text-sm">Registered % of estimated pop.</td>
+                    <td class="text-sm">8.1%</td>
+                    <td class="text-sm" style="padding: 16px 16px;">6.69%</td>
+                    <td class="text-sm" style="color: red;">-1.4%</td>
+                </tr>
+                <tr style="border-top: 1px solid rgba(0,0,0,0.06);">
+                    <td class="text-sm">Q2-2020 cohort BP control</td>
+                    <td class="text-sm">38%</td>
+                    <td class="text-sm" style="padding: 16px 16px;">39%</td>
+                    <td class="text-sm" style="color: green;">1%</td>
+                </tr>
+                <tr style="border-top: 1px solid rgba(0,0,0,0.06);">
+                    <td class="text-sm">Q2-2020 cohort BP missed visit</td>
+                    <td class="text-sm">27%</td>
+                    <td class="text-sm" style="padding: 16px 16px;">36%</td>
+                    <td class="text-sm" style="color: red;">-9%</td>
+                </tr>
+            </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- Control rate of all registered HTN patients -->
+  <!--div class="md:w-1/2 md:pl-2">
     <div class="mb-4 p-4 rounded-md bg-white shadow-md md:flex md:flex-col md:justify-between md:h-96">
       <div class="mb-4">
         <p class="mb-1 font-roboto font-bold text-lg text-black">
@@ -139,7 +193,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div-->
   <!-- Cumulative registration -->
   <div class="md:w-1/2 md:pr-2">
     <div class="mb-4 p-4 rounded-md bg-white shadow-md md:flex md:flex-col md:justify-between md:h-96">
