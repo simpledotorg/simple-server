@@ -1,4 +1,4 @@
-class BloodPressureRollupBackfill < ApplicationJob
+class BloodPressureRollupBackfillJob < ApplicationJob
   queue_as :default
   self.queue_adapter = :sidekiq
 
