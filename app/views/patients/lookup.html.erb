@@ -9,8 +9,10 @@
 
 <%= render 'shared/search_form', path: lookup_patients_path, placeholder: 'Search by village or street address...' %>
 
-<div id="patients-to-followup">
+<div>
   <% if @patients.exists? %>
+    <%= search_entries_info(@patients) %>
+
     <% @patients.each do |patient| %>
       <div class="card">
         <h5 class="mb-2">
