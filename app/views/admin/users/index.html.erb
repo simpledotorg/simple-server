@@ -13,7 +13,7 @@
 
 <% if @users.exists? %>
   <% if searching? %>
-    <span><%= search_entries_info(@users) + " across '#{currently_selected_district}'" %></span>
+    <span><%= "#{search_entries_info(@users)} across '#{currently_selected_district}'" %></span>
   <% end %>
 
   <% @users.group_by(&:facility).each do |facility, users| %>
