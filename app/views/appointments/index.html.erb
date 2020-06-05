@@ -1,5 +1,5 @@
 <h1>Overdue patients</h1>
-<p class="info"><i class="fas fa-question-circle"></i> Patients that are overdue for follow-up BP measure.</p>
+<p>Patients that are overdue for a follow-up visit.</p>
 
 <%= render('shared/paginate_and_filter_by_facility',
            form_url: appointments_path,
@@ -25,7 +25,7 @@
   <% end %>
 <% else %>
   <div class="card" title="no overdue patient">
-    <p>No overdue patients found</p>
+    <p class="no-results">No overdue patients found</p>
   </div>
 <% end %>
 
