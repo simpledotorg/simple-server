@@ -10,7 +10,7 @@ class Organization < ApplicationRecord
 
   friendly_id :name, use: :slugged
 
-  auto_strip_attributes :name, squish: true
+  auto_strip_attributes :name, squish: true, upcase_first: true
 
   def districts
     facilities.select(:district).distinct.pluck(:district)
