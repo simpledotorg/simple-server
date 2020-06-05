@@ -29,7 +29,7 @@ class BloodPressureRollup < ApplicationRecord
       and systolic >= 140
     SQL
     query = sanitize_sql_array([sql, range])
-    connection.select_all(query).to_hash
+    connection.select_all(query).to_hash.first
   end
 
   def self.from_blood_pressure(blood_pressure)

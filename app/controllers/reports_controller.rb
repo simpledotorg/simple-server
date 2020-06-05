@@ -15,13 +15,24 @@ class ReportsController < AdminController
     # 20% Bathinda population
     @hypertensive_population = 277705
 
-    example_data = File.read(EXAMPLE_DATA_FILE)
-    data = JSON.parse(example_data)
+    example_data_file = File.read(EXAMPLE_DATA_FILE)
+    example_data = JSON.parse(example_data_file)
 
-    @controlled_patients = data["controlled_patients"]
-    @control_rate = data["control_rate"]
-    @registrations = data["registrations"]
-    @quarterly_registrations = data["quarterly_registrations"]
+    today = Time.current
+    @data = {
+      controlled_patients: {}
+    }.with_indifferent_access
+    (0..11).each { |n|
+      time = today.prev_month(n)
+      formatted_period = time.strftime("%b %Y")
+      @data[:controlled_patients][formatted_period] = BloodPressureRollup.controlled_in_month(time)["count"]
+    }
+
+    today.month
+    @controlled_patients = @data["controlled_patients"]
+    @control_rate = example_data["control_rate"]
+    @registrations = example_data["registrations"]
+    @quarterly_registrations = example_data["quarterly_registrations"]
   end
 
   private
