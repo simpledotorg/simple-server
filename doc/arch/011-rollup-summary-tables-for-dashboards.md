@@ -62,4 +62,5 @@ Proposed
 ### Disadvantages
 * We will have to iterate quite a bit to get the schemas right for the first round of reports. Adding new columns later on will be expensive in terms of backfills, so we should try to iterate quickly for the first round to flush out problems or missing fields
 * We may have to implement some sort of full, back-dated period refresh to handle exceptional cases like large imports of old data.
+* Handling `updated` blood pressures where the recorded_at is changed such that the month or quarter changes is tricky, because it involves updating the rollup for the _old_ periods as well. We can handle this if need be but it will require some careful backfill logic.
 * We won't be able to handle arbitrary date ranges - i.e. show me a trend report from Jan 20th to March 5th.
