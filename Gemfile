@@ -22,6 +22,7 @@ gem "discard", "~> 1.0"
 gem "dotenv-rails"
 gem "factory_bot_rails", "~> 4.8", require: false
 gem "faker", require: false
+gem "flipper"
 gem "friendly_id", "~> 5.2.4"
 gem "groupdate"
 gem "http"

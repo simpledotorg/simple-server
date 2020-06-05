@@ -161,6 +161,7 @@ GEM
     ffi-compiler (1.0.1)
       ffi (>= 1.0.0)
       rake
+    flipper (0.17.2)
     formatador (0.2.5)
     friendly_id (5.2.5)
       activerecord (>= 4.0.0)
@@ -536,6 +537,7 @@ DEPENDENCIES
   factory_bot_rails (~> 4.8)
   faker
   fakeredis
+  flipper
   friendly_id (~> 5.2.4)
   generator_spec
   groupdate
