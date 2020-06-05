@@ -165,6 +165,11 @@ GEM
     flipper-active_record (0.17.2)
       activerecord (>= 4.2, < 7)
       flipper (~> 0.17.2)
+    flipper-ui (0.17.2)
+      erubi (>= 1.0.0, < 2.0.0)
+      flipper (~> 0.17.2)
+      rack (>= 1.4, < 3)
+      rack-protection (>= 1.5.3, < 2.1.0)
     formatador (0.2.5)
     friendly_id (5.2.5)
       activerecord (>= 4.0.0)
@@ -542,6 +547,7 @@ DEPENDENCIES
   fakeredis
   flipper
   flipper-active_record
+  flipper-ui
   friendly_id (~> 5.2.4)
   generator_spec
   groupdate

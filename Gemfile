@@ -24,6 +24,7 @@ gem "factory_bot_rails", "~> 4.8", require: false
 gem "faker", require: false
 gem "flipper"
 gem "flipper-active_record"
+gem "flipper-ui"
 gem "friendly_id", "~> 5.2.4"
 gem "groupdate"
 gem "http"
