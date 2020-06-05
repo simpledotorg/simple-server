@@ -1,0 +1,16 @@
+<div class="col-md-auto flex-grow-1 mb-2">
+  <%= form.search_field :search_query,
+      {
+          hide_label: true,
+          prepend: "<i class='fa fa-search'></i>".html_safe,
+          placeholder: placeholder,
+          value: search_query,
+          autofocus: search_query.blank?,
+          tabindex: 2,
+          wrapper: false
+      } %>
+</div>
+
+<div class="col-md-auto mb-2 d-none d-md-block">
+  <%= form.primary "Search", wrapper: false, tabindex: 3 %>
+</div>

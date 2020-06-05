@@ -3,36 +3,49 @@
   <nav class="page-nav">
     <div class="dropdown">
       <%= link_to "Add new admin",
-                  new_email_authentication_invitation_path,
-                  class: "btn btn-sm btn-primary" %>
+          new_email_authentication_invitation_path,
+          class: "btn btn-sm btn-primary" %>
     </div>
   </nav>
 </div>
 
-<% @admins.each do |admin| %>
-  <div class="card" title="<%= admin.email %>">
-    <div class="row">
-      <div class="col col-md-6">
-        <h5>
-          <%= link_to admin.full_name, admin_path(admin) %>
-        </h5>
-        <div class="mt-2"><%= admin.email %></div>
-      </div>
-      <div class="col-md-6 text-right">
-        <% if admin.invited_to_sign_up? %>
-          <span class="badge badge-success badge-pill mr-4 mt-1" style="font-size: 90%; font-weight: normal;">Invite sent</span>
-        <% end %>
+<%= render 'shared/search_form', path: admins_path, placeholder: 'Search by name or email...' %>
 
-        <% if policy([:manage, :admin, admin]).edit? %>
-          <%= link_to 'Edit', edit_admin_path(admin), class: "btn btn-sm btn-outline-primary" %>
-        <% end %>
+<% if @admins.exists? %>
+  <% if searching? %>
+    <span><%= search_entries_info(@admins) %></span>
+  <% end %>
 
-        <% if policy([:manage, :admin, admin]).destroy? %>
-          <%= link_to(admin_path(admin), method: :delete, data: { confirm: "Are you sure you want to delete #{admin.email}?" }, class: "btn btn-sm btn-outline-danger") do %>
-            <i class="fas fa-trash-alt"></i>
+  <% @admins.each do |admin| %>
+    <div class="card" title="<%= admin.email %>">
+      <div class="row">
+        <div class="col col-md-6">
+          <h5>
+            <%= link_to admin.full_name, admin_path(admin) %>
+          </h5>
+          <div class="mt-2"><%= admin.email %></div>
+        </div>
+        <div class="col-md-6 text-right">
+          <% if admin.invited_to_sign_up? %>
+            <span class="badge badge-success badge-pill mr-4 mt-1" style="font-size: 90%; font-weight: normal;">Invite sent</span>
           <% end %>
-        <% end %>
+
+          <% if policy([:manage, :admin, admin]).edit? %>
+            <%= link_to 'Edit', edit_admin_path(admin), class: "btn btn-sm btn-outline-primary" %>
+          <% end %>
+
+          <% if policy([:manage, :admin, admin]).destroy? %>
+            <%= link_to(admin_path(admin), method: :delete, data: { confirm: "Are you sure you want to delete #{admin.email}?" }, class: "btn btn-sm btn-outline-danger") do %>
+              <i class="fas fa-trash-alt"></i>
+            <% end %>
+          <% end %>
+        </div>
       </div>
     </div>
-  </div>
+  <% end %>
+<% else %>
+  <%= render "shared/no_search_results", message: "No results for '#{content_tag(:strong, search_query)}'" %>
 <% end %>
+
+<%= paginate @admins %>
+
