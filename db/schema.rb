@@ -355,6 +355,8 @@ ActiveRecord::Schema.define(version: 2020_05_28_113844) do
     t.string "could_not_contact_reason"
     t.datetime "recorded_at"
     t.string "reminder_consent", default: "denied", null: false
+    t.uuid "deleted_by_user_id"
+    t.string "deleted_reason"
     t.index ["deleted_at"], name: "index_patients_on_deleted_at"
     t.index ["recorded_at"], name: "index_patients_on_recorded_at"
     t.index ["registration_facility_id"], name: "index_patients_on_registration_facility_id"
