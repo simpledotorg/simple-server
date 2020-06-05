@@ -48,6 +48,7 @@ class Facility < ApplicationRecord
 
   liberal_enum :facility_size
 
+  auto_strip_attributes :name, squish: true
   auto_strip_attributes :district, squish: true, titleize: true
 
   with_options if: :import do |facility|

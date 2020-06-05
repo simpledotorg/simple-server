@@ -10,6 +10,8 @@ class Organization < ApplicationRecord
 
   friendly_id :name, use: :slugged
 
+  auto_strip_attributes :name, squish: true
+
   def districts
     facilities.select(:district).distinct.pluck(:district)
   end
