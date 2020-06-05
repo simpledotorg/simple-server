@@ -8,7 +8,7 @@ class Analytics::FacilitiesController < AnalyticsController
   def show
     @show_current_period = true
 
-    set_dashboard_analytics(@period, 3)
+    set_dashboard_analytics(@period, 6)
     set_cohort_analytics(@period, @prev_periods)
 
     @recent_blood_pressures = @facility

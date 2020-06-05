@@ -8,7 +8,7 @@ class Analytics::DistrictsController < AnalyticsController
   def show
     @show_current_period = true
 
-    set_dashboard_analytics(@period, 3)
+    set_dashboard_analytics(@period, 6)
     set_cohort_analytics(@period, @prev_periods)
 
     respond_to do |format|

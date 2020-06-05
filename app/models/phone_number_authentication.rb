@@ -1,4 +1,6 @@
 class PhoneNumberAuthentication < ApplicationRecord
+  include PgSearch::Model
+
   USER_AUTH_MAX_FAILED_ATTEMPTS = Integer(ENV["USER_AUTH_MAX_FAILED_ATTEMPTS"] || 5).freeze
   USER_AUTH_LOCKOUT_IN_MINUTES = Integer(ENV["USER_AUTH_LOCKOUT_IN_MINUTES"] || 20).freeze
 
@@ -8,6 +10,10 @@ class PhoneNumberAuthentication < ApplicationRecord
   has_one :user, through: :user_authentication
 
   belongs_to :facility, foreign_key: "registration_facility_id"
+
+  pg_search_scope :search_by_phone, against: [:phone_number], using: {tsearch: {any_word: true}}
+
+  pg_search_scope :search_by_phone, against: [:phone_number], using: {tsearch: {any_word: true}}
 
   delegate :facility_group, to: :facility
   delegate :organization, to: :facility_group

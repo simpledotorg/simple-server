@@ -7,7 +7,8 @@ class CountryConfig
       time_zone: ENV["DEFAULT_TIME_ZONE"] || "Asia/Kolkata",
       faker_locale: "en-IND",
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+91",
-      supported_genders: %w[male female transgender]
+      supported_genders: %w[male female transgender],
+      patient_line_list_show_zone: false
     },
     BD: {
       abbreviation: "BD",
@@ -16,7 +17,8 @@ class CountryConfig
       time_zone: ENV["DEFAULT_TIME_ZONE"] || "Asia/Dhaka",
       faker_locale: "en-IND",
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+880",
-      supported_genders: %w[male female transgender]
+      supported_genders: %w[male female transgender],
+      patient_line_list_show_zone: true
     },
     ET: {
       abbreviation: "ET",
@@ -25,7 +27,28 @@ class CountryConfig
       faker_locale: "en-IND",
       time_zone: ENV["DEFAULT_TIME_ZONE"] || "Africa/Addis_Ababa",
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+251",
-      supported_genders: %w[male female]
+      supported_genders: %w[male female],
+      patient_line_list_show_zone: false
+    },
+    US: {
+      abbreviation: "US",
+      name: "United States",
+      dashboard_locale: "en",
+      faker_locale: "en-IND",
+      time_zone: "America/New_York",
+      sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+1",
+      supported_genders: %w[male female transgender],
+      patient_line_list_show_zone: false
+    },
+    UK: {
+      abbreviation: "UK",
+      name: "United Kingdom",
+      dashboard_locale: "en",
+      faker_locale: "en-IND",
+      time_zone: "Europe/London",
+      sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+44",
+      supported_genders: %w[male female transgender],
+      patient_line_list_show_zone: false
     }
   }.with_indifferent_access.freeze
 

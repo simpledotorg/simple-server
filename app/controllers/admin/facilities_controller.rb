@@ -1,5 +1,8 @@
 class Admin::FacilitiesController < AdminController
   include FileUploadable
+  include Pagination
+  include SearchHelper
+
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
   before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy]
   before_action :initialize_upload, :validate_file_type, :validate_file_size, :parse_file,
@@ -7,7 +10,23 @@ class Admin::FacilitiesController < AdminController
 
   def index
     authorize([:manage, :facility, Facility])
-    @organizations = policy_scope([:manage, :facility, Organization])
+
+    if searching?
+      facilities = policy_scope([:manage, :facility, Facility]).search_by_name(search_query)
+      facility_groups = FacilityGroup.where(facilities: facilities)
+
+      @organizations = Organization.where(facility_groups: facility_groups)
+      @facility_groups = facility_groups.group_by(&:organization)
+      @facilities = facilities.group_by(&:facility_group)
+    else
+      @organizations = policy_scope([:manage, :facility, Organization])
+      @facility_groups = @organizations.map { |organization|
+        [organization, policy_scope([:manage, :facility, organization.facility_groups])]
+      }.to_h
+      @facilities = @facility_groups.values.flatten.map { |facility_group|
+        [facility_group, policy_scope([:manage, :facility, facility_group.facilities])]
+      }.to_h
+    end
   end
 
   def show

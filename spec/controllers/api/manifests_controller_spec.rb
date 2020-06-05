@@ -66,6 +66,18 @@ RSpec.describe Api::ManifestsController, type: :controller do
                 "display_name" => "Ethiopia",
                 "endpoint" => "https://simple.example.com/api/",
                 "isd_code" => "251"
+              },
+              {
+                "country_code" => "US",
+                "display_name" => "United States",
+                "endpoint" => "https://simple.example.com/api/",
+                "isd_code" => "1"
+              },
+              {
+                "country_code" => "UK",
+                "display_name" => "United Kingdom",
+                "endpoint" => "https://simple.example.com/api/",
+                "isd_code" => "44"
               }
             ]
           )

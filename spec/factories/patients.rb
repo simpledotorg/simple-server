@@ -70,6 +70,7 @@ def build_patient_payload(patient = FactoryBot.build(:patient))
     .except('registration_user_id')
     .except('registration_facility_id')
     .except('test_data')
+    .except('deleted_by_user_id')
     .merge(
       'address' => patient.address.attributes.with_payload_keys,
       'phone_numbers' => patient.phone_numbers.map { |phno| phno.attributes.with_payload_keys.except('patient_id', 'dnd_status') },
@@ -79,13 +80,6 @@ def build_patient_payload(patient = FactoryBot.build(:patient))
           .merge('metadata' => bid.metadata&.to_json)
       end
     )
-end
-
-def build_patient_payload_v2(patient = FactoryBot.build(:patient))
-  payload = build_patient_payload(patient)
-  payload.merge('address' => payload['address'].except('zone'))
-    .except('recorded_at')
-    .except('reminder_consent')
 end
 
 def build_invalid_patient_payload
@@ -117,9 +111,4 @@ def updated_patient_payload(existing_patient)
       'metadata' => business_identifier.metadata&.to_json
     )]
   )
-end
-
-def updated_patient_payload_v2(existing_patient)
-  updated_patient_payload(existing_patient)
-    .except('recorded_at')
 end
