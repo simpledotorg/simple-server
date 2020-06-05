@@ -60,12 +60,6 @@ module Permissions
       resource_priority: %i[facility_group organization global],
       required_permissions: %i[view_overdue_list]
     },
-    view_adherence_follow_up_list: {
-      slug: :view_adherence_follow_up_list,
-      description: 'View adherence follow up list',
-      resource_priority: %i[facility_group organization global],
-      required_permissions: []
-    },
     download_patient_line_list: {
       slug: :download_patient_line_list,
       description: 'Download patient line list',
@@ -94,7 +88,6 @@ module Permissions
         manage_facilities
         approve_health_workers
         view_overdue_list
-        view_adherence_follow_up_list
         view_cohort_reports
         manage_admins
         view_health_worker_activity
@@ -106,7 +99,6 @@ module Permissions
       description: "Call center staff",
       default_permissions: %i[
         view_overdue_list
-        view_adherence_follow_up_list
       ]
     },
     { name: :supervisor,
@@ -115,7 +107,6 @@ module Permissions
         manage_facilities
         view_overdue_list
         download_overdue_list
-        view_adherence_follow_up_list
         approve_health_workers
         view_cohort_reports
         view_health_worker_activity
@@ -136,7 +127,6 @@ module Permissions
         manage_facilities
         view_overdue_list
         download_overdue_list
-        view_adherence_follow_up_list
         approve_health_workers
         view_health_worker_activity
         download_patient_line_list
@@ -152,7 +142,6 @@ module Permissions
         manage_protocols
         approve_health_workers
         view_overdue_list
-        view_adherence_follow_up_list
         view_cohort_reports
         manage_admins
         view_health_worker_activity

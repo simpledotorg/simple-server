@@ -148,7 +148,6 @@ Rails.application.routes.draw do
   end
 
   resources :appointments, only: [:index, :update]
-  resources :patients, only: [:index, :update]
   resources :organizations, only: [:index], path: "dashboard"
 
   namespace :my_facilities do

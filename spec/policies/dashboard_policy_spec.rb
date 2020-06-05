@@ -34,14 +34,6 @@ RSpec.describe DashboardPolicy do
     other_permissions.each { |slug| include_examples 'deny permission', slug }
   end
 
-  permissions :adherence_follow_up? do
-    allowed_permissions = [:view_adherence_follow_up_list]
-    other_permissions = Permissions::ALL_PERMISSIONS.keys - allowed_permissions
-
-    allowed_permissions.each { |slug| include_examples 'grant permission', slug }
-    other_permissions.each { |slug| include_examples 'deny permission', slug }
-  end
-
   permissions :manage_organizations? do
     allowed_permissions = [:manage_organizations]
     other_permissions = Permissions::ALL_PERMISSIONS.keys - allowed_permissions

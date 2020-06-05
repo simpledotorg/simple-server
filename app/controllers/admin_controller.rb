@@ -34,7 +34,6 @@ class AdminController < ApplicationController
 
   def default_root_paths
     { :show? => organizations_path,
-      :adherence_follow_up? => patients_path,
       :overdue_list? => appointments_path,
       :manage_organizations? => admin_organizations_path,
       :manage_facilities? => admin_facilities_path,

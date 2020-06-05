@@ -74,12 +74,6 @@
                 </li>
               <% end %>
 
-              <% if policy(:dashboard).adherence_follow_up? %>
-                <li class="nav-item">
-                  <%= link_to "Adherence patients", patients_path, class: "nav-link #{active_controller?("patients")}" %>
-                </li>
-              <% end %>
-
               <li class="nav-item">
                 <%= link_to "Resources", resources_path, class: "nav-link #{active_controller?("resources")}" %>
               </li>
