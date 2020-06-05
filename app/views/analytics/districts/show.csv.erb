@@ -13,9 +13,9 @@
     'Patients controlled',
     'Patients uncontrolled',
     "Patients didn't attend",
-    'Control rate',
-    'Uncontrolled rate',
-    'Default rate',
+    'Control rate %',
+    'Uncontrolled rate %',
+    'Default rate %',
     nil
   ]
 end).to_csv -%>
@@ -53,9 +53,9 @@ end).to_csv -%>
     controlled,
     uncontrolled,
     defaulted,
-    "#{controlled_percent}%",
-    "#{uncontrolled_percent}%",
-    "#{default_percent}%",
+    controlled_percent,
+    uncontrolled_percent,
+    default_percent,
     nil
   ]
 end).to_csv -%>
