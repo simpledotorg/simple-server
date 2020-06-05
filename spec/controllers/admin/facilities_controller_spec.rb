@@ -26,6 +26,24 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
       get :index, params: { facility_group_id: facility_group.id }
       expect(response).to be_successful
     end
+
+    it 'returns a subset of filtered facilities by search term' do
+      _f = create(:facility, name: 'HWC Dewa', facility_group: facility_group)
+      f1 = create(:facility, name: 'CH Jahangir', facility_group: facility_group)
+
+      get :index, params: { facility_group_id: facility_group.id, search_query: 'Jahangir' }
+      expect(assigns(:facilities)).to eq({facility_group => [f1]})
+      expect(response).to be_successful
+    end
+
+    it 'fetches no facilities for search term with no matches' do
+      create(:facility, name: 'HWC Dewa', facility_group: facility_group)
+      create(:facility, name: 'CH Jahangir', facility_group: facility_group)
+
+      get :index, params: { facility_group_id: facility_group.id, search_query: 'CWC' }
+      expect(assigns(:facilities)).to eq({})
+      expect(response).to be_successful
+    end
   end
 
   describe 'GET #show' do
