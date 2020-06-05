@@ -38,6 +38,11 @@ class User < ApplicationRecord
 
   has_many :user_permissions, foreign_key: :user_id, dependent: :delete_all
 
+  has_many :deleted_patients,
+           inverse_of: :deleted_by_user,
+           class_name: 'Patient',
+           foreign_key: :deleted_by_user_id
+
   pg_search_scope :search_by_name, against: [:full_name], using: {tsearch: {prefix: true, any_word: true}}
   scope :search_by_email,
     ->(term) { joins(:email_authentications).merge(EmailAuthentication.search_by_email(term)) }
@@ -45,6 +50,7 @@ class User < ApplicationRecord
     ->(term) { joins(:phone_number_authentications).merge(PhoneNumberAuthentication.search_by_phone(term)) }
   scope :search_by_name_or_email, ->(term) { search_by_name(term).union(search_by_email(term)) }
   scope :search_by_name_or_phone, ->(term) { search_by_name(term).union(search_by_phone(term)) }
+
 
   validates :full_name, presence: true
   validates :role, presence: true, if: -> { email_authentication.present? }
