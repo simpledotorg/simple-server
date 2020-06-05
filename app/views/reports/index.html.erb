@@ -335,7 +335,7 @@
 </div>
 <script>
   // Data
-  const controlledPatientData = JSON.parse('<%= raw(@controlled_patients.to_json) %>');
+  const controlledPatientData = JSON.parse('<%= raw(@control_rate.to_json) %>');
   const registrationsData = JSON.parse('<%= raw(@registrations.to_json) %>');
   const controlRateData = JSON.parse('<%= raw(@control_rate.to_json) %>');
   const quarterlyRegistrationsData = JSON.parse('<%= raw(@quarterly_registrations.to_json) %>');
@@ -402,9 +402,12 @@
           xPadding: 12,
           callbacks: {
             label: function(tooltipItem, data) {
-              var value = tooltipItem.value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-              value += " controlled patients";
-              return value;
+              value = parseInt(tooltipItem.value).toFixed(1);
+              return value + "%";
+              // return tooltipItem.value.toFixed(1);
+              // var value = tooltipItem.value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+              // value += "% controlled patients";
+              // return value;
             },
           },
         }
