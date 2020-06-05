@@ -484,55 +484,55 @@
     }
   );
   // Control rate of all registered HTN patients
-  var controlRateOfAllRegisteredPatientsCanvas =
-    document.getElementById("controlRateOfAllRegisteredPatients").getContext("2d");
-  var controlRateOfAllRegisteredPatientsChart = new Chart(
-    controlRateOfAllRegisteredPatientsCanvas,
-    {
-      type: "line",
-      data: {
-        labels: controlRate.slice(controlRate.length - 13,controlRate.length - 1).map(key => key[0]),
-        lineTension: 0,
-        datasets: [{
-          backgroundColor: "#ffffff",
-          borderColor: "rgba(81, 205, 130, 1)",
-          data: controlRate.slice(controlRate.length - 13,controlRate.length - 1).map(key => key[1]),
-        }],
-      },
-      options: {
-        animation: false,
-        responsive: true,
-        maintainAspectRatio: false,
-        elements: {
-          point: {
-            radius: 0,
-          },
-        },
-        legend: {
-          display: false,
-        },
-        scales: {
-          xAxes: [{
-            display: false,
-            gridLines: {
-              display: false,
-              drawBorder: false,
-            },
-          }],
-          yAxes: [{
-            display: false,
-            gridLines: {
-              display: false,
-              drawBorder: false,
-            },
-          }],
-        },
-        tooltips: {
-          enabled: false,
-        }
-      }
-    }
-  );
+  // var controlRateOfAllRegisteredPatientsCanvas =
+  //   document.getElementById("controlRateOfAllRegisteredPatients").getContext("2d");
+  // var controlRateOfAllRegisteredPatientsChart = new Chart(
+  //   controlRateOfAllRegisteredPatientsCanvas,
+  //   {
+  //     type: "line",
+  //     data: {
+  //       labels: controlRate.slice(controlRate.length - 13,controlRate.length - 1).map(key => key[0]),
+  //       lineTension: 0,
+  //       datasets: [{
+  //         backgroundColor: "#ffffff",
+  //         borderColor: "rgba(81, 205, 130, 1)",
+  //         data: controlRate.slice(controlRate.length - 13,controlRate.length - 1).map(key => key[1]),
+  //       }],
+  //     },
+  //     options: {
+  //       animation: false,
+  //       responsive: true,
+  //       maintainAspectRatio: false,
+  //       elements: {
+  //         point: {
+  //           radius: 0,
+  //         },
+  //       },
+  //       legend: {
+  //         display: false,
+  //       },
+  //       scales: {
+  //         xAxes: [{
+  //           display: false,
+  //           gridLines: {
+  //             display: false,
+  //             drawBorder: false,
+  //           },
+  //         }],
+  //         yAxes: [{
+  //           display: false,
+  //           gridLines: {
+  //             display: false,
+  //             drawBorder: false,
+  //           },
+  //         }],
+  //       },
+  //       tooltips: {
+  //         enabled: false,
+  //       }
+  //     }
+  //   }
+  // );
   // Cohort tooltips
   const barChartNodes = document.querySelectorAll('[data-element="bar-chart"]');
   const tooltipNodes = document.querySelectorAll('[data-element="tooltip"]');
