@@ -142,6 +142,13 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
         get :show, params: { organization_id: organization.id, id: district_name, period: :quarter }
       end
     end
+
+    context 'csv download' do
+      it 'renders a csv' do
+        get :show, params: { organization_id: organization.id, id: district_name }, format: :csv
+        expect(response).to be_successful
+      end
+    end
   end
 
   describe '#whatsapp_graphics' do
