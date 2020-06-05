@@ -28,20 +28,20 @@
       </tr>
 
       <tr class="sorts" data-sort-method="thead">
-        <th class="row-label sort-label" style="text-align: left; padding: 8px 4px; min-width: 40px;" data-sort-default>Name</th>
+        <th class="row-label sort-label sort-label-small" style="text-align: left;" data-sort-default>Name</th>
         <!--Registered patients-->
         <th class="row-label sort-label" data-sort-default data-sort-method="number">Total</th>
 
         <!--Follow-up patients-->
         <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
-          <th class="row-label sort-label" style="padding: 8px 4px; min-width: 40px;" data-sort-method="number">
+          <th class="row-label sort-label sort-label-small" data-sort-method="number">
             <%= format_period(@period, date) %>
           </th>
         <% end %>
 
         <!--New registrations-->
         <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
-          <th class="row-label sort-label" style="padding: 8px 4px; min-width: 40px;" data-sort-method="number">
+          <th class="row-label sort-label sort-label-small" data-sort-method="number">
             <%= format_period(@period, date) %>
           </th>
         <% end %>
