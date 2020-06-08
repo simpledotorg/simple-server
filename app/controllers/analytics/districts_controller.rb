@@ -86,14 +86,14 @@ class Analytics::DistrictsController < AnalyticsController
   def set_facility_keys
     district = {
       id: :total,
-      name: "Total",
-      type: "District"
+      name: "Total"
     }.with_indifferent_access
 
     facilities = @organization_district.facilities.order(:name).map { |facility|
       {
         id: facility.id,
-        name: facility.name
+        name: facility.name,
+        type: facility.facility_type
       }.with_indifferent_access
     }
 
