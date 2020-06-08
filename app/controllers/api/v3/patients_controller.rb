@@ -107,6 +107,8 @@ class Api::V3::PatientsController < Api::V3::SyncController
         :updated_at,
         :recorded_at,
         :reminder_consent,
+        :deleted_at,
+        :deleted_reason,
         phone_numbers: [permitted_phone_number_params],
         address: permitted_address_params,
         business_identifiers: [permitted_business_identifier_params]

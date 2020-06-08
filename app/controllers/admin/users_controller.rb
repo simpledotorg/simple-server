@@ -1,21 +1,25 @@
 class Admin::UsersController < AdminController
   include DistrictFiltering
   include Pagination
+  include SearchHelper
 
   before_action :set_user, except: [:index, :new, :create]
   around_action :set_time_zone, only: [:show]
 
   def index
     authorize([:manage, :user, User])
-    @users = policy_scope([:manage, :user, User])
-               .joins(phone_number_authentications: :facility)
-               .where(
-                 'phone_number_authentications.registration_facility_id IN (?)',
-                 selected_district_facilities([:manage, :user]).map(&:id)
-               )
-               .order('facilities.name', 'users.full_name', 'users.device_created_at')
+    users = policy_scope([:manage, :user, User])
+              .joins(phone_number_authentications: :facility)
+              .where('phone_number_authentications.registration_facility_id IN (?)',
+                selected_district_facilities([:manage, :user]).map(&:id))
+              .order('users.full_name', 'facilities.name', 'users.device_created_at')
 
-    @users = paginate(@users)
+    @users =
+      if searching?
+        paginate(users.search_by_name_or_phone(search_query))
+      else
+        paginate(users)
+      end
   end
 
   def show
@@ -43,7 +47,7 @@ class Admin::UsersController < AdminController
     phone_number_authentication.set_otp
     phone_number_authentication.save
 
-    SmsNotificationService.new(@user.phone_number, ENV['TWILIO_PHONE_NUMBER']).send_request_otp_sms(@user.otp)
+    RequestOtpSmsJob.perform_later(@user)
     redirect_to admin_user_url(@user), notice: 'User OTP has been reset.'
   end
 

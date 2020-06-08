@@ -2,7 +2,7 @@ class PhoneNumberAuthentication
   class Authenticate
     class Result < Struct.new(:authentication, :success, :error_message)
       def success?
-        self.success
+        success
       end
 
       def user
@@ -26,7 +26,8 @@ class PhoneNumberAuthentication
       if result.success?
         authentication.set_access_token
         authentication.invalidate_otp
-        authentication.save
+        authentication.failed_attempts = 0
+        authentication.save!
       end
       result
     end
@@ -35,24 +36,38 @@ class PhoneNumberAuthentication
 
     attr_accessor :authentication
     attr_reader :otp, :password, :phone_number
+    delegate :track_failed_attempt, to: :authentication
+
+    def lockout_time
+      USER_AUTH_LOCKOUT_IN_MINUTES.minutes
+    end
 
     def verify_auth
-      case
-      when authentication.nil?
-        failure('login.error_messages.unknown_user')
-      when authentication.otp != otp
-        failure('login.error_messages.invalid_otp')
-      when !authentication.otp_valid?
-        failure('login.error_messages.expired_otp')
-      when !authentication.authenticate(password)
-        failure('login.error_messages.invalid_password')
+      if authentication.nil?
+        failure("login.error_messages.unknown_user")
+      elsif authentication.locked_at
+        if authentication.in_lockout_period?
+          failure("login.error_messages.account_locked", minutes: authentication.minutes_left_on_lockout)
+        else
+          authentication.unlock
+          verify_auth
+        end
+      elsif authentication.otp != otp
+        track_failed_attempt
+        failure("login.error_messages.invalid_otp")
+      elsif !authentication.otp_valid?
+        track_failed_attempt
+        failure("login.error_messages.expired_otp")
+      elsif !authentication.authenticate(password)
+        track_failed_attempt
+        failure("login.error_messages.invalid_password")
       else
         success
       end
     end
 
-    def failure(message_key)
-      error_string = I18n.t(message_key)
+    def failure(message_key, opts = {})
+      error_string = I18n.t(message_key, opts)
       Result.new(authentication, false, error_string)
     end
 

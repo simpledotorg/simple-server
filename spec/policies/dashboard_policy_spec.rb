@@ -96,4 +96,34 @@ RSpec.describe DashboardPolicy do
     allowed_permissions.each { |slug| include_examples 'grant permission', slug }
     other_permissions.each { |slug| include_examples 'deny permission', slug }
   end
+
+  permissions :view_my_facilities? do
+    allowed_permissions = %i[
+      view_my_facilities
+    ]
+    other_permissions = Permissions::ALL_PERMISSIONS.keys - allowed_permissions
+
+    allowed_permissions.each { |slug| include_examples 'grant permission', slug }
+    other_permissions.each { |slug| include_examples 'deny permission', slug }
+  end
+
+  permissions :view_sidekiq_ui? do
+    allowed_permissions = %i[
+      view_sidekiq_ui
+    ]
+    other_permissions = Permissions::ALL_PERMISSIONS.keys - allowed_permissions
+
+    allowed_permissions.each { |slug| include_examples 'grant permission', slug }
+    other_permissions.each { |slug| include_examples 'deny permission', slug }
+  end
+
+  permissions :view_flipper_ui? do
+    allowed_permissions = %i[
+      view_flipper_ui
+    ]
+    other_permissions = Permissions::ALL_PERMISSIONS.keys - allowed_permissions
+
+    allowed_permissions.each { |slug| include_examples 'grant permission', slug }
+    other_permissions.each { |slug| include_examples 'deny permission', slug }
+  end
 end

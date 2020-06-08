@@ -30,8 +30,26 @@ RSpec.describe Admin::UsersController, type: :controller do
 
   describe 'GET #index' do
     it 'returns a success response' do
-      user = create(:user)
+      create(:user)
       get :index, params: { facility_id: facility.id }
+      expect(response).to be_successful
+    end
+
+    it 'returns a subset of filtered users by search term' do
+      user1 = create(:user, full_name: 'Doctor Jack')
+      _user = create(:user, full_name: 'Jack')
+
+      get :index, params: { facility_id: facility.id, search_query: 'Doctor' }
+      expect(assigns(:users)).to match_array(user1)
+      expect(response).to be_successful
+    end
+
+    it 'fetches no users for search term with no matches' do
+      create(:user, full_name: 'Doctor Jack')
+      create(:user, full_name: 'Jack')
+
+      get :index, params: { facility_id: facility.id, search_query: 'Shephard' }
+      expect(assigns(:users)).to match_array([])
       expect(response).to be_successful
     end
   end
@@ -106,14 +124,12 @@ RSpec.describe Admin::UsersController, type: :controller do
     let(:user) { FactoryBot.create(:user, registration_facility: facility) }
 
     before :each do
-      sms_notification_service = double(SmsNotificationService.new(nil, nil))
-      allow(SmsNotificationService).to receive(:new)
-        .with(user.phone_number, ENV['TWILIO_PHONE_NUMBER'])
-        .and_return(sms_notification_service)
-      expect(sms_notification_service).to receive(:send_request_otp_sms)
+      allow(RequestOtpSmsJob).to receive(:perform_later).with(instance_of(User))
     end
 
     it 'resets OTP' do
+      expect(RequestOtpSmsJob).to receive(:perform_later).with(user)
+
       old_otp = user.otp
       put :reset_otp, params: { user_id: user.id, facility_id: facility.id }
       user.reload

@@ -29,13 +29,18 @@
         <%= form.check_box :enable_diabetes_management, id: :facility_enable_diabetes_management %>
         <h3 class="mt-5">Teleconsultation enabled?</h3>
         <%= form.check_box :enable_teleconsultation, id: :facility_enable_teleconsultation, onclick: "toggleTeleconsultationFields(this)" %>
-        <div class="row mt-2" id="teleconsultation_fields" style=<%= "#{'display:none' unless @facility[:enable_teleconsultation]}" %> >
-          <div class="col col-md-4">
-            <%= form.text_field :teleconsultation_isd_code, id: :facility_teleconsultation_isd_code, label: 'Country Code',
-                                value: @facility[:teleconsultation_isd_code].presence || Rails.application.config.country['sms_country_code'] %>
+        <div id="teleconsultation_fields" style=<%= "#{'display:none' unless @facility[:enable_teleconsultation]}" %> >
+          <div class="alert alert-primary mt-3" role="alert">
+              <strong>How does the teleconsultation pilot work?</strong><br>Healthcare workers at this facility can make a teleconsult request to a medical officer at a higher level facility by searching for a patient in Simple and tapping a new "WhatsApp Doctor" button. Enter the MO's WhatsApp number below.
           </div>
-          <div class="col-md-8">
-            <%= form.text_field :teleconsultation_phone_number, id: :facility_teleconsultation_phone_number, label: 'Mobile Number' %>
+          <div class="row mt-2">
+              <div class="col col-md-4">
+                <%= form.text_field :teleconsultation_isd_code, id: :facility_teleconsultation_isd_code, label: 'Country code',
+                                    value: @facility[:teleconsultation_isd_code].presence || Rails.application.config.country['sms_country_code'] %>
+              </div>
+              <div class="col-md-8">
+                <%= form.text_field :teleconsultation_phone_number, id: :facility_teleconsultation_phone_number, label: 'Medical officer\'s WhatsApp number' %>
+              </div>
           </div>
         </div>
       </div>

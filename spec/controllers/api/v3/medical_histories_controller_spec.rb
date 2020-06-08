@@ -11,10 +11,10 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
 
   let(:model) { MedicalHistory }
 
-  let(:build_payload) { -> { build_medical_history_payload_current } }
-  let(:build_invalid_payload) { -> { build_invalid_medical_history_payload_current } }
+  let(:build_payload) { -> { build_medical_history_payload } }
+  let(:build_invalid_payload) { -> { build_invalid_medical_history_payload } }
   let(:invalid_record) { build_invalid_payload.call }
-  let(:update_payload) { ->(medical_history) { updated_medical_history_payload_current medical_history } }
+  let(:update_payload) { ->(medical_history) { updated_medical_history_payload medical_history } }
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
   def create_record(options = {})
@@ -38,7 +38,7 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
   end
 
   describe 'GET sync: send data from server to device;' do
-    it_behaves_like 'a working Current sync controller sending records'
+    it_behaves_like 'a working V3 sync controller sending records'
   end
 
   describe 'syncing within a facility group' do

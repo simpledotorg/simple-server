@@ -57,9 +57,9 @@
   DESKTOP NAV
   --------------------->
   <div class="row">
-    <div class="col-lg-2 pl-lg-0 desktop">
+    <div class="col-md-2 pl-lg-0 desktop pt-5">
       <section class="secondary-nav-filters">
-        <h4>Patients</h4>
+        <h4 class="mt-5">Patients</h4>
 
         <%= form_tag appointments_path, method: :get, id: "search-filters" do %>
           <%= hidden_field_tag :submitted, true %>
@@ -79,19 +79,21 @@
         <% end %>
       </section>
 
-      <section>
+      <section class="mt-5">
         <% if current_facility %>
           <% if @patient_summaries.present? && policy([:overdue_list, @patient_summaries.first]).download? %>
+            <h4>Download</h4>
             <%= link_to(@index_params.merge(format: "csv"), class: "", data: { confirm: I18n.t('admin.phi_download_alert') }) do %>
-              <h4>Download Results</h4>
+              Download Results
             <% end %>
           <% end %>
         <% else %>
-          <em>Select a facility to download Overdue Patients list</em>
+          <h4>Download</h4>
+          <em>Select a facility to download patients list</em>
         <% end %>
       </section>
     </div>
-    <div class="col-lg-10 pr-lg-0">
+    <div class="col-md-10 pr-lg-0">
       <%= yield %>
     </div>
   </div>

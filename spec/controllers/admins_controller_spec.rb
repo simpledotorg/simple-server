@@ -22,6 +22,24 @@ RSpec.describe AdminsController, type: :controller do
         get :index
         expect(response).to be_ok
       end
+
+      it 'populates a subset of filtered admins by search term' do
+        admin1 = create(:admin, full_name: 'Doctor Jack')
+        _admin = create(:admin, full_name: 'Jack')
+
+        get :index, params: { search_query: 'Doctor' }
+        expect(assigns(:admins)).to match_array(admin1)
+        expect(response).to be_successful
+      end
+
+      it 'fetches no admins for search term with no matches' do
+        create(:admin, full_name: 'Doctor Jack')
+        create(:admin, full_name: 'Jack')
+
+        get :index, params: { search_query: 'Shephard' }
+        expect(assigns(:admins)).to match_array([])
+        expect(response).to be_successful
+      end
     end
   end
 
