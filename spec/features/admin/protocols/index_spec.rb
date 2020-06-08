@@ -23,7 +23,7 @@ RSpec.feature 'test protocol screen functionality', type: :feature do
       protocol_show.verify_successful_message('Protocol was successfully created.')
       protocol_show.click_message_cross_button
 
-      expect(page).to have_content('testProtocol')
+      expect(page).to have_content('TestProtocol')
     end
 
     it 'edit protocol' do
