@@ -14,7 +14,7 @@ RSpec.describe BloodPressureRollup, type: :model do
           BloodPressureRollup.from_blood_pressure(blood_pressure)
         end
         result = BloodPressureRollup.controlled_in_month(Time.parse("March 30 2020"))
-        expect(result.first["count"]).to eq(2)
+        expect(result["count"]).to eq(2)
       end
     end
   end
