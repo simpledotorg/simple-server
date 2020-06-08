@@ -197,4 +197,8 @@ Rails.application.routes.draw do
     require "sidekiq/web"
     mount Sidekiq::Web => "/sidekiq"
   end
+
+  authenticate :email_authentication, ->(a) { a.user.has_permission?(:view_flipper_ui) } do
+    mount Flipper::UI.app(Flipper) => "/flipper"
+  end
 end
