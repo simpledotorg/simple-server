@@ -1,8 +1,15 @@
 <h1>Adherence follow-ups</h1>
+<p>Patients that are newly registered and need 48-hour adherence follow-up.</p>
 
-<p class="info">
-  <i class="fas fa-question-circle"></i> Patients that are newly registered and need 48-hour adherence follow-up.
-</p>
+<%= render(
+        'shared/paginate_and_filter_by_facility',
+        form_url: patients_path,
+        current_admin: current_admin,
+        facility_id: @facility_id,
+        per_page: @per_page,
+        scope_namespace: [:adherence_follow_up, Facility]
+    ) %>
+
 
 <div id="patients-to-followup">
   <% if @patients.present? %>

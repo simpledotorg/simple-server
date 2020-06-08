@@ -83,7 +83,13 @@ module Permissions
       description: 'View My Facilities Dashboard',
       resource_priority: %i[global],
       required_permissions: []
-    }
+    },
+    view_flipper_ui: {
+      slug: :view_flipper_ui,
+      description: 'View Flipper UI',
+      resource_priority: %i[global],
+      required_permissions: []
+    },
   }.freeze
 
   ACCESS_LEVELS = [

@@ -53,21 +53,6 @@ class DistrictAnalyticsQuery
     group_by_facility_and_date(@follow_up_patients_by_period, :follow_up_patients_by_period)
   end
 
-  def total_calls_made_by_period
-    @total_calls_made_by_period ||=
-      CallLog
-        .result_completed
-        .joins(%Q(INNER JOIN phone_number_authentications
-                  ON phone_number_authentications.phone_number = call_logs.caller_phone_number))
-        .joins('INNER JOIN facilities ON facilities.id = phone_number_authentications.registration_facility_id')
-        .where(phone_number_authentications: { registration_facility_id: facilities })
-        .group('facilities.id::uuid')
-        .group_by_period(@period, :end_time)
-        .count
-
-    group_by_facility_and_date(@total_calls_made_by_period, :total_calls_made_by_period)
-  end
-
   private
 
   def group_by_facility_and_date(query_results, key)

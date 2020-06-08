@@ -48,7 +48,8 @@ class Api::V3::Models
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' },
           recorded_at: { '$ref' => '#/definitions/timestamp' },
-          reminder_consent: { type: :string, enum: Patient.reminder_consents.keys }, },
+          reminder_consent: { type: :string, enum: Patient.reminder_consents.keys },
+          deleted_reason: { type: ['null', :string], enum: Patient::DELETED_REASONS + [nil] } },
         required: %w[id gender full_name created_at updated_at status] }
     end
 
