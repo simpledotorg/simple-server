@@ -10,7 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_28_113844) do
+ActiveRecord::Schema.define(version: 2020_06_05_103543) do
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -264,6 +265,22 @@ ActiveRecord::Schema.define(version: 2020_05_28_113844) do
     t.index ["slug"], name: "index_facility_groups_on_slug", unique: true
   end
 
+  create_table "flipper_features", force: :cascade do |t|
+    t.string "key", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_flipper_features_on_key", unique: true
+  end
+
+  create_table "flipper_gates", force: :cascade do |t|
+    t.string "feature_key", null: false
+    t.string "key", null: false
+    t.string "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["feature_key", "key", "value"], name: "index_flipper_gates_on_feature_key_and_key_and_value", unique: true
+  end
+
   create_table "medical_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "patient_id", null: false
     t.boolean "prior_heart_attack_boolean"
@@ -375,6 +392,8 @@ ActiveRecord::Schema.define(version: 2020_05_28_113844) do
     t.string "could_not_contact_reason"
     t.datetime "recorded_at"
     t.string "reminder_consent", default: "denied", null: false
+    t.uuid "deleted_by_user_id"
+    t.string "deleted_reason"
     t.index ["deleted_at"], name: "index_patients_on_deleted_at"
     t.index ["recorded_at"], name: "index_patients_on_recorded_at"
     t.index ["registration_facility_id"], name: "index_patients_on_registration_facility_id"

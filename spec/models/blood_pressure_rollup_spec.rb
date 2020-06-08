@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe BloodPressureRollup, type: :model do
   context "counts of controlled per month" do
-    it "can count things" do
+    fit "can count things" do
       Timecop.freeze("March 15th 2020") do
         controlled_patient_1 = create(:patient)
         controlled_patient_2 = create(:patient)

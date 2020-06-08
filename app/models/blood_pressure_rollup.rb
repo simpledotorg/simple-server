@@ -14,7 +14,7 @@ class BloodPressureRollup < ApplicationRecord
   validates :period_type, presence: true
   validates :year, presence: true, numericality: {greater_than_or_equal_to: 2000, only_integer: true}
 
-  def self.controlled_in_month(time)
+  def self.controlled_in_month(time, facilities: nil)
     range = [time.month, time.advance(months: -1).month, time.advance(months: -2).month]
     sql = <<-SQL
       SELECT count(1)
@@ -23,12 +23,15 @@ class BloodPressureRollup < ApplicationRecord
         FROM #{table_name}
         WHERE period_number in (?)
         AND period_type = 0
+        #{"AND assigned_facility_id in (?)" if facilities}
         ORDER BY patient_id ASC, (year, period_number) DESC
       ) AS counts
       WHERE diastolic >= 90
       and systolic >= 140
     SQL
-    query = sanitize_sql_array([sql, range])
+    params = [sql, range]
+    params << facilities if facilities
+    query = sanitize_sql_array(params)
     connection.select_all(query).to_hash.first
   end
 
