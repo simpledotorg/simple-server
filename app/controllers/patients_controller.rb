@@ -22,9 +22,19 @@ class PatientsController < AdminController
   def lookup
     set_page
     set_per_page
+    set_facility_id
     authorize([:adherence_follow_up, Patient])
 
-    @patients = paginate(policy_scope([:adherence_follow_up, Patient]).search_by_address(search_query))
+    if current_facility
+      @patients =
+        paginate(policy_scope([:adherence_follow_up, Patient])
+                   .where(registration_facility: current_facility)
+                   .search_by_address(search_query))
+    else
+      @patients =
+        paginate(policy_scope([:adherence_follow_up, Patient])
+                   .search_by_address(search_query))
+    end
   end
 
   def update

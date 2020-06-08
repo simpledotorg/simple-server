@@ -7,7 +7,24 @@
   permission.
 </p>
 
-<%= render 'shared/search_form', path: lookup_patients_path, placeholder: 'Search by village or street address...' %>
+<%= bootstrap_form_with(url: lookup_patients_path, method: :get, layout: :horizontal, class: "mt-4", local: true) do |form| %>
+  <div class="form-row mb-5">
+    <div id="facility-selector" class="col col-md-2 mb-2">
+      <%= form.select :facility_id,
+          policy_scope([:overdue_list, Facility]).sort_by(&:name).map { |facility| [facility.name, facility.id] },
+          {
+              hide_label: true,
+              include_blank: "All facilities",
+              selected: @facility_id,
+              wrapper: false
+          },
+          { onchange: "this.form.submit();" }
+      %>
+    </div>
+
+    <%= render 'shared/search_bar', form: form, placeholder: 'Search by village or street address...' %>
+  </div>
+<% end %>
 
 <div>
   <% if @patients.exists? %>
