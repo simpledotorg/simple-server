@@ -4,7 +4,7 @@
 ].to_csv -%>
 <% period = @period == :quarter ? 'Quarterly' : 'Monthly' %>
 <%= ["#{@organization_district.district_name} #{period} Cohort Report"].to_csv -%>
-<%= ['Facility', 'Facility Type'].concat(@cohort_analytics.each_with_index.flat_map do |(report_dates, analytics), index|
+<%= ['Facility', 'Facility type'].concat(@cohort_analytics.each_with_index.flat_map do |(report_dates, analytics), index|
   [
     'Cohort period',
     'Follow up period',
@@ -15,7 +15,7 @@
     "Patients didn't attend",
     '% BP Control %',
     '% BP Uncontrolled',
-    '% Defaulted %',
+    '% Defaulted',
     nil
   ]
 end).to_csv -%>
@@ -79,6 +79,7 @@ end).to_csv -%>
 <%=
   [
     "All",
+    nil,
     @dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 },
     *dates.map { |period| analytics_totals(@dashboard_analytics, :follow_up_patients_by_period, period) },
     *dates.map { |period| analytics_totals(@dashboard_analytics, :registered_patients_by_period, period) }

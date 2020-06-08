@@ -93,8 +93,7 @@ class Analytics::DistrictsController < AnalyticsController
     facilities = @organization_district.facilities.order(:name).map { |facility|
       {
         id: facility.id,
-        name: facility.name,
-        facility_type: facility.facility_type
+        name: facility.name
       }.with_indifferent_access
     }
 
