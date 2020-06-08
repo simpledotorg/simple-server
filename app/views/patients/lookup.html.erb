@@ -15,17 +15,27 @@
 
     <% @patients.each do |patient| %>
       <div class="card">
-        <h5 class="mb-2">
+        <h5 class="mb-3">
           <%= patient.full_name %>,
           <%= patient.gender.capitalize %>,
           <%= patient.current_age %>
         </h5>
 
+        <span class="text-secondary">Address:</span>
+        <address>
+          <%= patient.address.street_address %><br/>
+          <%= patient.address.village_or_colony %><br/>
+          <%= patient.address.district %><br/>
+          <%= patient.address.state %>
+        </address>
+
         <div>
-          <span class="text-secondary">Address:</span>
-          <% if patient.address.has_street_address? %><%= patient.address.street_address %>,
-          <% end %>
-          <%= patient.address.village_or_colony %>
+          <span class="text-secondary">Registered at:</span>
+          <%= patient.registration_facility.name %>
+        </div>
+        <div>
+          <span class="text-secondary">District:</span>
+          <%= patient.address.district %>
         </div>
       </div>
     <% end %>
