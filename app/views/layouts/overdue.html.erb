@@ -82,8 +82,9 @@
       <section class="mt-5">
         <% if current_facility %>
           <% if @patient_summaries.present? && policy([:overdue_list, @patient_summaries.first]).download? %>
+            <h4>Download</h4>
             <%= link_to(@index_params.merge(format: "csv"), class: "", data: { confirm: I18n.t('admin.phi_download_alert') }) do %>
-              <h4>Download</h4>
+              Download Results
             <% end %>
           <% end %>
         <% else %>
