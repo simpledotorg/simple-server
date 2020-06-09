@@ -99,6 +99,12 @@
                   <% if policy([:dashboard]).manage_users? %>
                     <%= link_to "Users", admin_users_path, class: "dropdown-item #{active_controller?("users")}" %>
                   <% end %>
+                  <% if policy([:dashboard]).view_sidekiq_ui? %>
+                    <%= link_to "Sidekiq", "/sidekiq", class: "dropdown-item #{active_controller?("users")}" %>
+                  <% end %>
+                  <% if policy([:dashboard]).view_flipper_ui? %>
+                    <%= link_to "Flipper", "/flipper", class: "dropdown-item #{active_controller?("users")}" %>
+                  <% end %>
                 </div>
               </li>
               <% end %>

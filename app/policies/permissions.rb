@@ -77,8 +77,16 @@ module Permissions
       description: 'View My Facilities Dashboard',
       resource_priority: %i[global],
       required_permissions: []
-    }
+    },
+    view_flipper_ui: {
+      slug: :view_flipper_ui,
+      description: 'View Flipper UI',
+      resource_priority: %i[global],
+      required_permissions: []
+    },
   }.freeze
+
+  VALID_PERMISSION_SLUGS = ALL_PERMISSIONS.keys.map(&:to_s).freeze
 
   ACCESS_LEVELS = [
     { name: :organization_owner,
@@ -148,6 +156,8 @@ module Permissions
         download_overdue_list
         download_patient_line_list
         view_my_facilities
+        view_sidekiq_ui
+        view_flipper_ui
       ]
     },
     { name: :custom,
