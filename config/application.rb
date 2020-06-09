@@ -30,7 +30,6 @@ module SimpleServer
       g.helper false
     end
 
-    config.middleware.use Flipper::Middleware::Memoizer
     config.autoload_paths += %W[#{config.root}/lib]
 
     # Locale configuration
