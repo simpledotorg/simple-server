@@ -34,6 +34,6 @@ class ReportsController < AdminController
 
   def compute_percentage numerator, denominator
     quotient = numerator.to_f / denominator.to_f
-    (quotient * 100).round(0)
+    quotient * 100
   end
 end

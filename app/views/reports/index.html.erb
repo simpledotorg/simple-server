@@ -71,13 +71,13 @@
         </div>
         <div>
           <p class="font-roboto font-bold text-3xl text-green-200">
-            <%= ((@controlled_patients.values.last.to_f/@registrations.values.last.to_f)*100).round(2) %>%
+            <%= compute_percentage(@controlled_patients.values.last.to_f, @registrations.values.last.to_f).round(2) %>%
           </p>
           <p class="font-roboto font-normal text-sm text-black mb-1">
               <span class="font-bold"><%= number_with_delimiter(@controlled_patients.values.last, :delimiter => ",") %></span> of <%= number_with_delimiter(@registrations.values.last, :delimiter => ",") %> registered patients
           </p>
           <p class="font-roboto font-normal text-sm text-black">
-            <% controlled_patient_trend_percentage = ((@controlled_patients.values.last.to_f/@hypertensive_population.to_f)*100).round(2) %>
+            <% controlled_patient_trend_percentage = compute_percentage(@controlled_patients.values.last.to_f, @hypertensive_population.to_f).round(2) %>
             <% formatted_htn_pop = number_with_delimiter(@hypertensive_population, :delimiter => ",") %>
             <span class="font-bold"><%= controlled_patient_trend_percentage %>%</span> of estimated <%= formatted_htn_pop %> hypertensive population
           </p>
@@ -132,35 +132,35 @@
             <tbody>
                 <tr style="border-top: 1px solid rgba(0,0,0,0.06);" class="text-sm">
                     <td class="text-sm">Control of registered patients</td>
-                    <td class="text-sm">34.0%</td>
+                    <td class="text-sm">34.3%</td>
                     <td class="text-sm" style="padding: 12px 16px;">
-                      <%= ((@controlled_patients.values.last.to_f/@registrations.values.last.to_f)*100).round(2) %>%
+                      <%= compute_percentage(@controlled_patients.values.last.to_f, @registrations.values.last.to_f).round(1) %>%
                     </td>
                     <td class="text-sm" style="color: red;">-5.0%</td>
                 </tr>
                 <tr style="border-top: 1px solid rgba(0,0,0,0.06);">
                     <td class="text-sm">Control of estimated hypertensive pop.</td>
                     <td class="text-sm">4.3%</td>
-                    <td class="text-sm" style="padding: 16px 16px;">1.96%</td>
+                    <td class="text-sm" style="padding: 16px 16px;">1.9%</td>
                     <td class="text-sm" style="color: red;">-2.3%</td>
                 </tr>
                 <tr style="border-top: 1px solid rgba(0,0,0,0.06);">
                     <td class="text-sm">Registered % of estimated pop.</td>
                     <td class="text-sm">8.1%</td>
-                    <td class="text-sm" style="padding: 16px 16px;">6.69%</td>
+                    <td class="text-sm" style="padding: 16px 16px;">6.7%</td>
                     <td class="text-sm" style="color: red;">-1.4%</td>
                 </tr>
                 <tr style="border-top: 1px solid rgba(0,0,0,0.06);">
                     <td class="text-sm">Q2-2020 cohort BP control</td>
-                    <td class="text-sm">38%</td>
-                    <td class="text-sm" style="padding: 16px 16px;">39%</td>
-                    <td class="text-sm" style="color: green;">1%</td>
+                    <td class="text-sm">38.0%</td>
+                    <td class="text-sm" style="padding: 16px 16px;">39.0%</td>
+                    <td class="text-sm" style="color: green;">1.0%</td>
                 </tr>
                 <tr style="border-top: 1px solid rgba(0,0,0,0.06);">
                     <td class="text-sm">Q2-2020 cohort BP missed visit</td>
-                    <td class="text-sm">27%</td>
-                    <td class="text-sm" style="padding: 16px 16px;">36%</td>
-                    <td class="text-sm" style="color: red;">-9%</td>
+                    <td class="text-sm">27.0%</td>
+                    <td class="text-sm" style="padding: 16px 16px;">36.0%</td>
+                    <td class="text-sm" style="color: red;">-9.0%</td>
                 </tr>
             </tbody>
         </table>
@@ -184,7 +184,7 @@
           </p>
           <p class="font-roboto font-normal text-sm text-black">
             <% formatted_htn_pop = number_with_delimiter(@hypertensive_population, :delimiter => ",") %>
-            <% cumulative_registrations_percentage = ((@registrations.values.last.to_f/@hypertensive_population.to_f)*100).round(2) %>
+            <% cumulative_registrations_percentage = compute_percentage(@registrations.values.last.to_f, @hypertensive_population.to_f).round(2) %>
             <span class="font-bold"><%= cumulative_registrations_percentage %>%</span> of estimated <%= formatted_htn_pop %> hypertensive population
           </p>
         </div>
@@ -239,9 +239,9 @@
               </p>
             </div>
             <div class="relative flex items-center w-full md:w-3/5">
-              <div class="flex items-center justify-center h-8 bg-green-300 hover:bg-green-hover rounded-l md:h-10" style="box-sizing: content-box; padding: 0 4px; width: <%= compute_percentage(cohort["controlled"], cohort["registered"]) %>%;" data-element="bar-chart" data-id="<%= cohort["results_in"].parameterize %>-controlled">
+              <div class="flex items-center justify-center h-8 bg-green-300 hover:bg-green-hover rounded-l md:h-10" style="box-sizing: content-box; padding: 0 4px; width: <%= compute_percentage(cohort["controlled"], cohort["registered"]).round(0) %>%;" data-element="bar-chart" data-id="<%= cohort["results_in"].parameterize %>-controlled">
                 <p class="font-roboto font-bold text-sm text-white">
-                  <%= compute_percentage(cohort["controlled"], cohort["registered"]) %>%
+                  <%= compute_percentage(cohort["controlled"], cohort["registered"]).round(0) %>%
                 </p>
                 <div class="hidden absolute -top-74 p-3 text-center bg-black rounded-md md:-top-68" data-element="tooltip" data-id="<%= cohort["results_in"].parameterize %>-controlled" style="width: 160px;">
                   <p class="font-roboto font-medium text-sm text-white">
@@ -250,9 +250,9 @@
                   <span class="absolute right-0 left-0 w-2 h-2 my-0 mx-auto" style="border-left: 17px solid transparent; border-right: 17px solid transparent; border-top: 17px solid #000000;"></span>
                 </div>
               </div>
-              <div class="flex items-center justify-center h-8 bg-yellow-100 hover:bg-yellow-hover md:h-10" style="box-sizing: content-box; padding: 0 4px; width: <%= compute_percentage(cohort["uncontrolled"], cohort["registered"]) %>%;" data-element="bar-chart" data-id="<%= cohort["results_in"].parameterize %>-uncontrolled">
+              <div class="flex items-center justify-center h-8 bg-yellow-100 hover:bg-yellow-hover md:h-10" style="box-sizing: content-box; padding: 0 4px; width: <%= compute_percentage(cohort["uncontrolled"], cohort["registered"]).round(0) %>%;" data-element="bar-chart" data-id="<%= cohort["results_in"].parameterize %>-uncontrolled">
                 <p class="font-roboto font-bold text-sm text-white" style="color: #AB8600;">
-                   <%= compute_percentage(cohort["uncontrolled"], cohort["registered"]) %>%
+                   <%= compute_percentage(cohort["uncontrolled"], cohort["registered"]).round(0) %>%
                 </p>
                 <div class="hidden absolute -top-74 p-3 text-center bg-black rounded-md md:-top-68" data-element="tooltip" data-id="<%= cohort["results_in"].parameterize %>-uncontrolled" style="width: 160px;">
                   <p class="font-roboto font-medium text-sm text-white">
@@ -261,9 +261,9 @@
                   <span class="absolute right-0 left-0 w-2 h-2 my-0 mx-auto" style="border-left: 17px solid transparent; border-right: 17px solid transparent; border-top: 17px solid #000000;"></span>
                 </div>
               </div>
-              <div class="flex items-center justify-center h-8 bg-red-200 rounded-r hover:bg-red-hover md:h-10" style="box-sizing: content-box; padding: 0 4px; width: <%= compute_percentage(cohort["no_bp"], cohort["registered"]) %>%;" data-element="bar-chart" data-id="<%= cohort["results_in"].parameterize %>-no-bp">
+              <div class="flex items-center justify-center h-8 bg-red-200 rounded-r hover:bg-red-hover md:h-10" style="box-sizing: content-box; padding: 0 4px; width: <%= compute_percentage(cohort["no_bp"], cohort["registered"]).round(0) %>%;" data-element="bar-chart" data-id="<%= cohort["results_in"].parameterize %>-no-bp">
                 <p class="font-roboto font-bold text-sm text-white">
-                    <%= compute_percentage(cohort["no_bp"], cohort["registered"]) %>%
+                    <%= compute_percentage(cohort["no_bp"], cohort["registered"]).round(0) %>%
                 </p>
                 <div class="hidden absolute -top-74 p-3 text-center bg-black rounded-md md:-top-68" data-element="tooltip" data-id="<%= cohort["results_in"].parameterize %>-no-bp" style="width: 160px;">
                   <p class="font-roboto font-medium text-sm text-white">
