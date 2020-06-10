@@ -180,4 +180,16 @@ RSpec.describe Facility, type: :model do
       expect(facilities.second[:enable_diabetes_management]).to be false
     end
   end
+
+  describe 'Attribute sanitization' do
+    it 'squishes and upcases the first letter of the name' do
+      facility = FactoryBot.create(:facility, name: " cH name  1  ")
+      expect(facility.name).to eq("CH name 1")
+    end
+
+    it 'squishes and titleizes the district name' do
+      facility = FactoryBot.create(:facility, district: " district name   chennai  ")
+      expect(facility.district).to eq("District Name Chennai")
+    end
+  end
 end
