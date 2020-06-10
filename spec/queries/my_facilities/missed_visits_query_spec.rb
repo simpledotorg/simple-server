@@ -1,9 +1,9 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe MyFacilities::MissedVisitsQuery do
   include QuarterHelper
 
-  context '#missed_visits_by_facility quarter' do
+  context "#missed_visits_by_facility quarter" do
     let!(:facilities) { create_list(:facility, 3) }
     let!(:quarters) do
       last_n_quarters(n: 3, inclusive: false).map { |year_quarter| local_quarter_start(*year_quarter) }.reverse
@@ -11,9 +11,9 @@ RSpec.describe MyFacilities::MissedVisitsQuery do
 
     let!(:patients) do
       [create(:patient, registration_facility: facilities.first, recorded_at: quarters.first.beginning_of_quarter),
-       create(:patient, registration_facility: facilities.second, recorded_at: quarters.first.beginning_of_quarter),
-       create(:patient, registration_facility: facilities.first, recorded_at: quarters.third.beginning_of_quarter - 1.month),
-       create(:patient, registration_facility: facilities.second, recorded_at: quarters.second.beginning_of_quarter + 10.days)]
+        create(:patient, registration_facility: facilities.second, recorded_at: quarters.first.beginning_of_quarter),
+        create(:patient, registration_facility: facilities.first, recorded_at: quarters.third.beginning_of_quarter - 1.month),
+        create(:patient, registration_facility: facilities.second, recorded_at: quarters.second.beginning_of_quarter + 10.days)]
     end
 
     let!(:bp_1) { create(:blood_pressure, patient: patients.first, facility: facilities.third, recorded_at: quarters.second.beginning_of_quarter) }
@@ -30,7 +30,7 @@ RSpec.describe MyFacilities::MissedVisitsQuery do
     let!(:query) { described_class.new(period: :quarter) }
     let!(:periods) { query.periods.reverse }
 
-    it 'calculates missed visits' do
+    it "calculates missed visits" do
       expect(query.missed_visits_by_facility[[facilities.first.id, *periods.first]]).to eq(patients: 1, missed: 0)
       expect(query.missed_visits_by_facility[[facilities.second.id, *periods.first]]).to eq(patients: 1, missed: 0)
       expect(query.missed_visits_by_facility[[facilities.first.id, *periods.second]]).to eq(patients: 1, missed: 0)
@@ -43,7 +43,7 @@ RSpec.describe MyFacilities::MissedVisitsQuery do
     end
   end
 
-  context '#missed_visits_by_facility month' do
+  context "#missed_visits_by_facility month" do
     let!(:facilities) { create_list(:facility, 3) }
     let!(:months) do
       [3, 2, 1].map { |n| n.months.ago.beginning_of_month }
@@ -51,9 +51,9 @@ RSpec.describe MyFacilities::MissedVisitsQuery do
 
     let!(:patients) do
       [create(:patient, registration_facility: facilities.first, recorded_at: months.first.beginning_of_month),
-       create(:patient, registration_facility: facilities.second, recorded_at: months.second.beginning_of_month),
-       create(:patient, registration_facility: facilities.first, recorded_at: months.third.beginning_of_month),
-       create(:patient, registration_facility: facilities.second, recorded_at: months.first.beginning_of_month)]
+        create(:patient, registration_facility: facilities.second, recorded_at: months.second.beginning_of_month),
+        create(:patient, registration_facility: facilities.first, recorded_at: months.third.beginning_of_month),
+        create(:patient, registration_facility: facilities.second, recorded_at: months.first.beginning_of_month)]
     end
 
     let!(:bp_1) { create(:blood_pressure, patient: patients.first, facility: facilities.third, recorded_at: months.second.beginning_of_month) }
@@ -69,7 +69,7 @@ RSpec.describe MyFacilities::MissedVisitsQuery do
     let!(:query) { described_class.new(period: :month) }
     let!(:periods) { query.periods.reverse }
 
-    it 'calculates missed visits' do
+    it "calculates missed visits" do
       expect(query.missed_visits_by_facility[[facilities.first.id, *periods.first]]).to eq(patients: 1, missed: 0)
       expect(query.missed_visits_by_facility[[facilities.second.id, *periods.first]]).to eq(patients: 1, missed: 1)
       expect(query.missed_visits_by_facility[[facilities.first.id, *periods.second]]).to be_nil

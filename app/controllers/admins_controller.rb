@@ -1,12 +1,21 @@
 class AdminsController < AdminController
+  include Pagination
+  include SearchHelper
+
   before_action :set_admin, only: [:show, :edit, :update, :destroy]
   before_action :verify_params, only: [:update]
-
   after_action :verify_policy_scoped, only: :index
 
   def index
     authorize([:manage, :admin, User])
-    @admins = policy_scope([:manage, :admin, User]).sort_by(&:email)
+    admins = policy_scope([:manage, :admin, User])
+
+    @admins =
+      if searching?
+        paginate(admins.search_by_name_or_email(search_query))
+      else
+        paginate(admins.order("email_authentications.email"))
+      end
   end
 
   def show

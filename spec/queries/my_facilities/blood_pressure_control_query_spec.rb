@@ -1,10 +1,10 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe MyFacilities::BloodPressureControlQuery do
   include QuarterHelper
 
-  describe 'BP control queries' do
-    context 'Quarterly cohorts' do
+  describe "BP control queries" do
+    context "Quarterly cohorts" do
       let!(:facility) { create(:facility) }
       let!(:user) { create(:user) }
 
@@ -32,15 +32,15 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
 
       let!(:patients_with_uncontrolled_bp) do
         [create(:patient,
-                recorded_at: cohort_range.sample,
-                registration_facility: facility, registration_user: user),
-         create(:patient,
-                recorded_at: registration_quarter_start,
-                registration_facility: facility,
-                registration_user: user),
-         create(:patient,
-                recorded_at: registration_quarter_start.end_of_quarter,
-                registration_facility: facility, registration_user: user)]
+          recorded_at: cohort_range.sample,
+          registration_facility: facility, registration_user: user),
+          create(:patient,
+            recorded_at: registration_quarter_start,
+            registration_facility: facility,
+            registration_user: user),
+          create(:patient,
+            recorded_at: registration_quarter_start.end_of_quarter,
+            registration_facility: facility, registration_user: user)]
       end
 
       let!(:patients_with_missed_visit) do
@@ -56,45 +56,45 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       let!(:controlled_blood_pressures) do
         patients_with_controlled_bp.map do |patient|
           create(:blood_pressure,
-                 :under_control,
-                 facility: facility,
-                 patient: patient,
-                 recorded_at: current_quarter_range.sample,
-                 user: user)
+            :under_control,
+            facility: facility,
+            patient: patient,
+            recorded_at: current_quarter_range.sample,
+            user: user)
         end
       end
 
       let!(:uncontrolled_blood_pressures) do
         patients_with_uncontrolled_bp.map do |patient|
           create(:blood_pressure,
-                 :hypertensive,
-                 facility: facility,
-                 patient: patient,
-                 recorded_at: current_quarter_range.sample,
-                 user: user)
+            :hypertensive,
+            facility: facility,
+            patient: patient,
+            recorded_at: current_quarter_range.sample,
+            user: user)
         end
       end
 
       let!(:bps_for_non_htn_patient) do
         [create(:blood_pressure,
-                :under_control,
-                facility: facility,
-                patient: non_htn_patient,
-                recorded_at: current_quarter_range.sample,
-                user: user),
-         create(:blood_pressure,
-                :hypertensive,
-                facility: facility,
-                patient: non_htn_patient,
-                recorded_at: current_quarter_range.sample,
-                user: user)]
+          :under_control,
+          facility: facility,
+          patient: non_htn_patient,
+          recorded_at: current_quarter_range.sample,
+          user: user),
+          create(:blood_pressure,
+            :hypertensive,
+            facility: facility,
+            patient: non_htn_patient,
+            recorded_at: current_quarter_range.sample,
+            user: user)]
       end
 
       let!(:query) do
         described_class.new(facilities: Facility.all,
-                            cohort_period: { cohort_period: :quarter,
-                                             registration_quarter: registration_quarter,
-                                             registration_year: registration_quarter_year })
+                            cohort_period: {cohort_period: :quarter,
+                                            registration_quarter: registration_quarter,
+                                            registration_year: registration_quarter_year})
       end
 
       before do
@@ -104,8 +104,8 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
         end
       end
 
-      context 'considers only htn diagnosed patients' do
-        describe '#cohort_registrations' do
+      context "considers only htn diagnosed patients" do
+        describe "#cohort_registrations" do
           specify do
             expect(query.cohort_registrations).to match_array(patients_with_controlled_bp +
                                                                 patients_with_uncontrolled_bp +
@@ -113,19 +113,19 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
           end
         end
 
-        describe '#cohort_controlled_bps' do
+        describe "#cohort_controlled_bps" do
           specify do
             expect(query.cohort_controlled_bps.pluck(:bp_id)).to match_array(controlled_blood_pressures.pluck(:id))
           end
         end
 
-        describe '#cohort_uncontrolled_bps' do
+        describe "#cohort_uncontrolled_bps" do
           specify do
             expect(query.cohort_uncontrolled_bps.pluck(:bp_id)).to match_array(uncontrolled_blood_pressures.pluck(:id))
           end
         end
 
-        describe '#cohort_missed_visits_count' do
+        describe "#cohort_missed_visits_count" do
           specify do
             expect(query.cohort_missed_visits_count).to eq(2)
           end
@@ -133,7 +133,7 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       end
     end
 
-    context 'Monthly cohorts' do
+    context "Monthly cohorts" do
       let!(:facility) { create(:facility) }
       let!(:user) { create(:user) }
 
@@ -167,16 +167,16 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
 
       let!(:patients_with_uncontrolled_bp) do
         [create(:patient,
-                recorded_at: registration_month_start,
-                registration_facility: facility,
-                registration_user: user),
-         create(:patient,
-                recorded_at: cohort_range.sample,
-                registration_facility: facility,
-                registration_user: user),
-         create(:patient,
-                recorded_at: registration_month_start.end_of_month,
-                registration_facility: facility, registration_user: user)]
+          recorded_at: registration_month_start,
+          registration_facility: facility,
+          registration_user: user),
+          create(:patient,
+            recorded_at: cohort_range.sample,
+            registration_facility: facility,
+            registration_user: user),
+          create(:patient,
+            recorded_at: registration_month_start.end_of_month,
+            registration_facility: facility, registration_user: user)]
       end
 
       let!(:patients_with_missed_visit) do
@@ -190,59 +190,59 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       let!(:controlled_blood_pressures) do
         patients_with_controlled_bp.map do |patient|
           create(:blood_pressure,
-                 :under_control,
-                 facility: facility,
-                 patient: patient,
-                 recorded_at: previous_month_range.sample,
-                 user: user)
+            :under_control,
+            facility: facility,
+            patient: patient,
+            recorded_at: previous_month_range.sample,
+            user: user)
           create(:blood_pressure,
-                 :under_control,
-                 facility: facility,
-                 patient: patient,
-                 recorded_at: current_month_range.sample,
-                 user: user)
+            :under_control,
+            facility: facility,
+            patient: patient,
+            recorded_at: current_month_range.sample,
+            user: user)
         end
       end
 
       let!(:uncontrolled_blood_pressures) do
         patients_with_uncontrolled_bp.map do |patient|
           create(:blood_pressure,
-                 :hypertensive,
-                 facility: facility,
-                 patient: patient,
-                 recorded_at: bp_recorded_range.sample,
-                 user: user)
+            :hypertensive,
+            facility: facility,
+            patient: patient,
+            recorded_at: bp_recorded_range.sample,
+            user: user)
         end
       end
 
       let!(:bps_for_non_htn_patient) do
         [create(:blood_pressure,
-                :under_control,
-                facility: facility,
-                patient: non_htn_patient,
-                recorded_at: current_month_range.sample,
-                user: user),
-         create(:blood_pressure,
-                :hypertensive,
-                facility: facility,
-                patient: non_htn_patient,
-                recorded_at: previous_month_range.sample,
-                user: user)]
+          :under_control,
+          facility: facility,
+          patient: non_htn_patient,
+          recorded_at: current_month_range.sample,
+          user: user),
+          create(:blood_pressure,
+            :hypertensive,
+            facility: facility,
+            patient: non_htn_patient,
+            recorded_at: previous_month_range.sample,
+            user: user)]
       end
 
       let!(:query) do
         described_class.new(facilities: Facility.all,
-                            cohort_period: { cohort_period: :month,
-                                             registration_month: registration_month,
-                                             registration_year: registration_year })
+                            cohort_period: {cohort_period: :month,
+                                            registration_month: registration_month,
+                                            registration_year: registration_year})
       end
 
       before do
         LatestBloodPressuresPerPatientPerMonth.refresh
       end
 
-      context 'considers only htn diagnosed patients' do
-        describe '#cohort_registrations' do
+      context "considers only htn diagnosed patients" do
+        describe "#cohort_registrations" do
           specify do
             expect(query.cohort_registrations).to match_array(patients_with_controlled_bp +
                                                                 patients_with_uncontrolled_bp +
@@ -250,19 +250,19 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
           end
         end
 
-        describe '#cohort_controlled_bps' do
+        describe "#cohort_controlled_bps" do
           specify do
             expect(query.cohort_controlled_bps.pluck(:bp_id)).to match_array(controlled_blood_pressures.pluck(:id))
           end
         end
 
-        describe '#cohort_uncontrolled_bps' do
+        describe "#cohort_uncontrolled_bps" do
           specify do
             expect(query.cohort_uncontrolled_bps.pluck(:bp_id)).to match_array(uncontrolled_blood_pressures.pluck(:id))
           end
         end
 
-        describe '#cohort_missed_visits_count' do
+        describe "#cohort_missed_visits_count" do
           specify do
             expect(query.cohort_missed_visits_count).to eq(2)
           end
@@ -270,7 +270,7 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       end
     end
 
-    context 'Overall queries' do
+    context "Overall queries" do
       let!(:facility) { create(:facility) }
       let!(:user) { create(:user) }
 
@@ -304,65 +304,65 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
 
       let!(:bp_for_recent_patient) do
         create(:blood_pressure,
-               :under_control,
-               patient: recent_patient,
-               recorded_at: 1.week.ago,
-               facility: facility,
-               user: user)
+          :under_control,
+          patient: recent_patient,
+          recorded_at: 1.week.ago,
+          facility: facility,
+          user: user)
       end
 
       let!(:bp_for_patient_with_recent_bp) do
         create(:blood_pressure,
-               :under_control,
-               patient: patient_with_recent_bp,
-               recorded_at: 1.week.ago,
-               facility: facility,
-               user: user)
+          :under_control,
+          patient: patient_with_recent_bp,
+          recorded_at: 1.week.ago,
+          facility: facility,
+          user: user)
       end
 
       let!(:bp_for_patient_without_recent_bp) do
         create(:blood_pressure,
-               :under_control,
-               patient: patient_without_recent_bp,
-               recorded_at: 4.months.ago,
-               facility: facility,
-               user: user)
+          :under_control,
+          patient: patient_without_recent_bp,
+          recorded_at: 4.months.ago,
+          facility: facility,
+          user: user)
       end
 
       let!(:bp_for_patient_with_uncontrolled_bp) do
         create(:blood_pressure,
-               :hypertensive,
-               patient: patients_with_uncontrolled_bp,
-               recorded_at: 4.months.ago,
-               facility: facility,
-               user: user)
+          :hypertensive,
+          patient: patients_with_uncontrolled_bp,
+          recorded_at: 4.months.ago,
+          facility: facility,
+          user: user)
       end
 
       let!(:bp_for_patient_with_uncontrolled_bp) do
         create(:blood_pressure,
-               :hypertensive,
-               patient: patients_with_uncontrolled_bp,
-               recorded_at: 4.months.ago,
-               facility: facility,
-               user: user)
+          :hypertensive,
+          patient: patients_with_uncontrolled_bp,
+          recorded_at: 4.months.ago,
+          facility: facility,
+          user: user)
       end
 
       let!(:bp_for_non_htn_patient_with_recent_bp) do
         create(:blood_pressure,
-               :under_control,
-               patient: non_htn_patient_with_recent_bp,
-               recorded_at: 1.week.ago,
-               facility: facility,
-               user: user)
+          :under_control,
+          patient: non_htn_patient_with_recent_bp,
+          recorded_at: 1.week.ago,
+          facility: facility,
+          user: user)
       end
 
       let!(:old_bp_for_old_patient) do
         create(:blood_pressure,
-               :under_control,
-               facility: facility,
-               patient: old_patient,
-               recorded_at: old_patient.recorded_at,
-               user: user)
+          :under_control,
+          facility: facility,
+          patient: old_patient,
+          recorded_at: old_patient.recorded_at,
+          user: user)
       end
 
       before do
@@ -372,16 +372,18 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
         end
       end
 
-      context 'considers only htn diagnosed patients' do
-        describe '#overall_patients' do
-          specify { expect(described_class.new.overall_patients).to contain_exactly(patient_with_recent_bp,
-                                                                                    patient_without_recent_bp,
-                                                                                    patients_with_uncontrolled_bp,
-                                                                                    patients_with_missed_visit,
-                                                                                    old_patient) }
+      context "considers only htn diagnosed patients" do
+        describe "#overall_patients" do
+          specify {
+            expect(described_class.new.overall_patients).to contain_exactly(patient_with_recent_bp,
+              patient_without_recent_bp,
+              patients_with_uncontrolled_bp,
+              patients_with_missed_visit,
+              old_patient)
+          }
         end
 
-        describe '#overall_controlled_bps' do
+        describe "#overall_controlled_bps" do
           specify do
             expect(described_class.new.overall_controlled_bps.pluck(:bp_id)).to contain_exactly(bp_for_patient_with_recent_bp.id)
           end

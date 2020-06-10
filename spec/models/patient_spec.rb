@@ -459,32 +459,61 @@ describe Patient, type: :model do
   context '.discard_data' do
     before do
       create_list(:prescription_drug, 2, patient: patient)
-      create(:medical_history, patient: patient)
       create_list(:appointment, 2, patient: patient)
       create_list(:blood_pressure,  2, :with_encounter, patient: patient)
       create_list(:blood_sugar, 2, :with_encounter, patient: patient)
     end
 
-    it "should discard a patient's address" do
+    it "soft deletes the patient's encounters" do
       patient.discard_data
-      expect(patient.address).to be_discarded
-      expect(Address.find_by(id: patient.address.id)).to be nil
+      expect(Encounter.where(patient: patient)).to be_empty
     end
 
-    it "should discard a patient's medical history" do
+    it "soft deletes the patient's observations" do
       patient.discard_data
-      expect(patient.medical_history).to be_discarded
-      expect(MedicalHistory.find_by(id: patient.medical_history.id)).to be nil
+      encounter_ids = Encounter.with_discarded.where(patient: patient).map(&:id)
+      expect(Observation.where(encounter_id: encounter_ids)).to be_empty
     end
 
-    specify { expect { patient.discard_data }.to change { patient.appointments.count }.by(-2) }
-    specify { expect { patient.discard_data }.to change { patient.blood_pressures.count }.by(-2) }
-    specify { expect { patient.discard_data }.to change { patient.blood_sugars.count }.by(-2) }
-    specify { expect { patient.discard_data }.to change { patient.business_identifiers.count }.by(-1) }
-    specify { expect { patient.discard_data }.to change { patient.encounters.count }.by(-4) }
-    specify { expect { patient.discard_data }.to change { patient.phone_numbers.count }.by(-1) }
-    specify { expect { patient.discard_data }.to change { patient.observations.count }.by(-4) }
-    specify { expect { patient.discard_data }.to change { patient.prescription_drugs.count }.by(-2) }
-    specify { expect { patient.discard_data }.to change { Patient.count }.by(-1) }
+    it "soft deletes the patient's blood pressures" do
+      patient.discard_data
+      expect(BloodPressure.where(patient: patient)).to be_empty
+    end
+
+
+    it "soft deletes the patient's blood_sugars" do
+      patient.discard_data
+      expect(BloodSugar.where(patient: patient)).to be_empty
+    end
+
+    it "soft deletes the patient's appointments" do
+      patient.discard_data
+      expect(Appointment.where(patient: patient)).to be_empty
+    end
+
+    it "soft deletes the patient's prescription drugs" do
+      patient.discard_data
+      expect(PrescriptionDrug.where(patient: patient)).to be_empty
+    end
+
+    it "soft deletes the patient's business identifiers" do
+      patient.discard_data
+      expect(PatientBusinessIdentifier.where(patient: patient)).to be_empty
+    end
+
+    it "soft deletes the patient's phone numbers" do
+      patient.discard_data
+      expect(PatientPhoneNumber.where(patient: patient)).to be_empty
+    end
+
+    it "soft deletes the patient's medical history" do
+      patient.discard_data
+      expect(MedicalHistory.where(patient: patient)).to be_empty
+    end
+
+    it "soft deletes the patient's address" do
+      patient.discard_data
+      expect(Address.where(id: patient.address_id)).to be_empty
+    end
   end
 end

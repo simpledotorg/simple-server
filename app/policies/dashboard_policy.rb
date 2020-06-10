@@ -45,4 +45,12 @@ class DashboardPolicy < Struct.new(:user, :dashboard)
   def view_my_facilities?
     user.has_permission?(:view_my_facilities)
   end
+
+  def view_sidekiq_ui?
+    user.has_permission?(:view_sidekiq_ui)
+  end
+
+  def view_flipper_ui?
+    user.has_permission?(:view_flipper_ui)
+  end
 end

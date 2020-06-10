@@ -48,4 +48,3 @@ en:
       patients_defaulted_in_quarter_html: "patients didn't attend for an expected follow-up visit"
       new_patients_registered: "New registrations"
       patients_called_for_followup: "Follow-up patients"
-      patients_called_for_missed_followup: "Patients called"

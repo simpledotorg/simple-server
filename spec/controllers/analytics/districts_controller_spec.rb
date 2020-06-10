@@ -72,6 +72,7 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
       let(:cohort_date3) { (today - (2 * 3).months).beginning_of_quarter }
       let(:cohort_date4) { (today - (3 * 3).months).beginning_of_quarter }
       let(:cohort_date5) { (today - (4 * 3).months).beginning_of_quarter }
+      let(:cohort_date6) { (today - (5 * 3).months).beginning_of_quarter }
 
       it 'caches the district correctly' do
         expected_cache_value =
@@ -118,7 +119,12 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
               facility.id => {
                 registered_patients_by_period: { cohort_date3 => 3 },
                 total_registered_patients: 3,
-                follow_up_patients_by_period: { cohort_date1 => 0, cohort_date2 => 3, cohort_date3 => 0 }
+                follow_up_patients_by_period: { cohort_date1 => 0,
+                                                cohort_date2 => 3,
+                                                cohort_date3 => 0,
+                                                cohort_date4 => 0,
+                                                cohort_date5 => 0,
+                                                cohort_date6 => 0 }
               }
             }
           }
@@ -140,6 +146,13 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
 
         # this get should always have cached values
         get :show, params: { organization_id: organization.id, id: district_name, period: :quarter }
+      end
+    end
+
+    context 'csv download' do
+      it 'renders a csv' do
+        get :show, params: { organization_id: organization.id, id: district_name }, format: :csv
+        expect(response).to be_successful
       end
     end
   end
