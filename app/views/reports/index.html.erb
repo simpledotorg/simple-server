@@ -71,7 +71,7 @@
         </div>
         <div>
           <p class="font-roboto font-bold text-3xl text-green-200">
-            <%= @control_rate.values.last.to_f %>%
+            <%= ((@controlled_patients.values.last.to_f/@registrations.values.last.to_f)*100).round(2) %>%
           </p>
           <p class="font-roboto font-normal text-sm text-black mb-1">
               <span class="font-bold"><%= number_with_delimiter(@controlled_patients.values.last, :delimiter => ",") %></span> of <%= number_with_delimiter(@registrations.values.last, :delimiter => ",") %> registered patients
@@ -133,7 +133,9 @@
                 <tr style="border-top: 1px solid rgba(0,0,0,0.06);" class="text-sm">
                     <td class="text-sm">Control of registered patients</td>
                     <td class="text-sm">34.0%</td>
-                    <td class="text-sm" style="padding: 12px 16px;"><%= @control_rate.values.last.to_f %>%</td>
+                    <td class="text-sm" style="padding: 12px 16px;">
+                      <%= ((@controlled_patients.values.last.to_f/@registrations.values.last.to_f)*100).round(2) %>%
+                    </td>
                     <td class="text-sm" style="color: red;">-5.0%</td>
                 </tr>
                 <tr style="border-top: 1px solid rgba(0,0,0,0.06);">
@@ -302,11 +304,14 @@
 <script>
   const controlledPatientData = JSON.parse('<%= raw(@controlled_patients.to_json) %>');
   const registrationsData = JSON.parse('<%= raw(@registrations.to_json) %>');
-  const controlRateData = JSON.parse('<%= raw(@control_rate.to_json) %>');
   const quarterlyRegistrationsData = JSON.parse('<%= raw(@quarterly_registrations.to_json) %>');
   const controlledPatients = Object.entries(controlledPatientData);
   const registrations = Object.entries(registrationsData);
-  const controlRate = Object.entries(controlRateData);
+  const controlRate = controlledPatients.map((key, index) => {
+    const registrationData = registrations[index];
+    const controlRate = parseFloat(((key[1]/registrationData[1])*100).toFixed(2));
+    return [key[0], controlRate];
+  });
   var controlledPatientsTrendCanvas =
     document.getElementById("controlledPatientsTrend").getContext("2d");
   var greenGradientFill =

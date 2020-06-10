@@ -19,7 +19,6 @@ class ReportsController < AdminController
     data = JSON.parse(example_data)
 
     @controlled_patients = data["controlled_patients"]
-    @control_rate = data["control_rate"]
     @registrations = data["registrations"]
     @quarterly_registrations = data["quarterly_registrations"]
   end
