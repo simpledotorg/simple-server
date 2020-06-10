@@ -2,6 +2,7 @@ class ReportsController < AdminController
   layout "reports"
   skip_after_action :verify_policy_scoped
   around_action :set_time_zone
+  helper_method :compute_percentage
 
   EXAMPLE_DATA_FILE = "db/data/example_dashboard_data.json"
 
@@ -29,5 +30,10 @@ class ReportsController < AdminController
     time_zone = Rails.application.config.country[:time_zone] || DEFAULT_ANALYTICS_TIME_ZONE
 
     Time.use_zone(time_zone) { yield }
+  end
+
+  def compute_percentage numerator, denominator
+    quotient = numerator.to_f / denominator.to_f
+    (quotient * 100).round(0)
   end
 end
