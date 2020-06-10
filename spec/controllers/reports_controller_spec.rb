@@ -7,6 +7,10 @@ RSpec.describe ReportsController, type: :controller do
     end
   end
 
+  before do
+    @facility = create(:facility, name: "CHC Barnagar")
+  end
+
   context "rendering" do
     render_views
 
@@ -24,8 +28,11 @@ RSpec.describe ReportsController, type: :controller do
 
   it "retrieves data" do
     jan_2020 = Time.parse("January 1 2020")
-    create(:blood_pressure, :under_control, recorded_at: jan_2020).create_or_update_rollup
-    create(:blood_pressure, :hypertensive, recorded_at: jan_2020).create_or_update_rollup
+    create(:blood_pressure, :under_control, recorded_at: jan_2020, facility: @facility).create_or_update_rollup
+    create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility).create_or_update_rollup
+    LatestBloodPressuresPerPatient.refresh
+    LatestBloodPressuresPerPatientPerMonth.refresh
+
     sign_in(supervisor.email_authentication)
     get :index
     expect(response).to be_successful

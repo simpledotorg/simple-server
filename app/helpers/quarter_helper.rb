@@ -1,4 +1,6 @@
 module QuarterHelper
+  module_function
+
   def quarter(date)
     ((date.month - 1) / 3) + 1
   end
