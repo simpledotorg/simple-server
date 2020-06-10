@@ -215,7 +215,6 @@
               </p>
             </div>
             <div class="relative flex items-center w-full md:w-3/5">
-            <% puts cohort.inspect %>
               <div class="flex items-center justify-center h-8 bg-green-300 hover:bg-green-hover rounded-l md:h-10" style="box-sizing: content-box; padding: 0 4px; width: <%= cohort["cohort_trend"][0]["controlled"]["percent"] %>%;" data-element="bar-chart" data-id="<%= cohort["results_in"].parameterize %>-controlled">
                 <p class="font-roboto font-bold text-sm text-white">
                   <%= cohort["cohort_trend"][0]["controlled"]["percent"] %>%
