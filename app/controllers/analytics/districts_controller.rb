@@ -8,7 +8,7 @@ class Analytics::DistrictsController < AnalyticsController
   def show
     @show_current_period = true
 
-    set_dashboard_analytics(@period, 3)
+    set_dashboard_analytics(@period, 6)
     set_cohort_analytics(@period, @prev_periods)
 
     respond_to do |format|
@@ -84,9 +84,20 @@ class Analytics::DistrictsController < AnalyticsController
   end
 
   def set_facility_keys
-    facilities = @organization_district.facilities.order(:name).pluck(:id, :name).to_h
+    district = {
+      id: :total,
+      name: "Total"
+    }.with_indifferent_access
 
-    @facility_keys = { total: "Total" }.merge(facilities).with_indifferent_access
+    facilities = @organization_district.facilities.order(:name).map { |facility|
+      {
+        id: facility.id,
+        name: facility.name,
+        type: facility.facility_type
+      }.with_indifferent_access
+    }
+
+    @facility_keys = [district, *facilities]
   end
 
   def analytics_cache_key

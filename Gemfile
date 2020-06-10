@@ -12,8 +12,8 @@ gem "activerecord-import"
 gem "auto_strip_attributes"
 gem "bcrypt", "~> 3.1", ">= 3.1.11"
 gem "bootsnap", require: false
-gem "bootstrap", "~> 4.3.1"
-gem "bootstrap_form", ">= 4.1.0"
+gem "bootstrap", "~> 4.5.0"
+gem "bootstrap_form", ">= 4.5.0"
 gem "connection_pool"
 gem "data-anonymization", require: false
 gem "data_migrate"
@@ -23,6 +23,9 @@ gem "discard", "~> 1.0"
 gem "dotenv-rails"
 gem "factory_bot_rails", "~> 4.8", require: false
 gem "faker", require: false
+gem "flipper"
+gem "flipper-active_record"
+gem "flipper-ui"
 gem "friendly_id", "~> 5.2.4"
 gem "groupdate"
 gem "http"

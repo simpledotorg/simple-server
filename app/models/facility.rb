@@ -98,8 +98,7 @@ class Facility < ApplicationRecord
     results = [
       query.registered_patients_by_period,
       query.total_registered_patients,
-      query.follow_up_patients_by_period,
-      query.total_calls_made_by_period
+      query.follow_up_patients_by_period
     ].compact
 
     return {} if results.blank?
