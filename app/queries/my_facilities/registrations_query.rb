@@ -27,8 +27,8 @@ class MyFacilities::RegistrationsQuery
   def total_registrations
     @total_registrations ||=
       Patient
-      .with_hypertension
-      .where(registration_facility: @facilities)
+        .with_hypertension
+        .where(registration_facility: @facilities)
   end
 
   private
@@ -46,6 +46,6 @@ class MyFacilities::RegistrationsQuery
   end
 
   def periods_as_sql_list
-    @periods.map { |year, period| "('#{year}', '#{period}')" }.join(',')
+    @periods.map { |year, period| "('#{year}', '#{period}')" }.join(",")
   end
 end
