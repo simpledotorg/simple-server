@@ -84,9 +84,20 @@ class Analytics::DistrictsController < AnalyticsController
   end
 
   def set_facility_keys
-    facilities = @organization_district.facilities.order(:name).pluck(:id, :name).to_h
+    district = {
+      id: :total,
+      name: "Total"
+    }.with_indifferent_access
 
-    @facility_keys = { total: "Total" }.merge(facilities).with_indifferent_access
+    facilities = @organization_district.facilities.order(:name).map { |facility|
+      {
+        id: facility.id,
+        name: facility.name,
+        type: facility.facility_type
+      }.with_indifferent_access
+    }
+
+    @facility_keys = [district, *facilities]
   end
 
   def analytics_cache_key
