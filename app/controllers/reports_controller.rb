@@ -10,6 +10,7 @@ class ReportsController < AdminController
     authorize :dashboard, :view_my_facilities?
 
     @facility_groups = policy_scope([:manage, FacilityGroup]).order(:name)
+    @facility_group = FacilityGroup.find_by(name: "Darrang")
     @facility = Facility.find_by(name: "CHC Barnagar")
 
     @state_name = "Punjab"
