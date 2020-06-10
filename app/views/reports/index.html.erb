@@ -245,7 +245,7 @@
                 </p>
                 <div class="hidden absolute -top-74 p-3 text-center bg-black rounded-md md:-top-68" data-element="tooltip" data-id="<%= cohort["results_in"].parameterize %>-controlled" style="width: 160px;">
                   <p class="font-roboto font-medium text-sm text-white">
-                    <%= cohort["controlled"] %> patients visited with controlled BP
+                    <%= number_with_delimiter(cohort["controlled"], :delimiter => ",") %> patients visited with controlled BP
                   </p>
                   <span class="absolute right-0 left-0 w-2 h-2 my-0 mx-auto" style="border-left: 17px solid transparent; border-right: 17px solid transparent; border-top: 17px solid #000000;"></span>
                 </div>
@@ -256,7 +256,7 @@
                 </p>
                 <div class="hidden absolute -top-74 p-3 text-center bg-black rounded-md md:-top-68" data-element="tooltip" data-id="<%= cohort["results_in"].parameterize %>-uncontrolled" style="width: 160px;">
                   <p class="font-roboto font-medium text-sm text-white">
-                    <%= cohort["uncontrolled"] %> patients visited with uncontrolled BP
+                    <%= number_with_delimiter(cohort["uncontrolled"], :delimiter => ",") %> patients visited with uncontrolled BP
                   </p>
                   <span class="absolute right-0 left-0 w-2 h-2 my-0 mx-auto" style="border-left: 17px solid transparent; border-right: 17px solid transparent; border-top: 17px solid #000000;"></span>
                 </div>
@@ -267,7 +267,7 @@
                 </p>
                 <div class="hidden absolute -top-74 p-3 text-center bg-black rounded-md md:-top-68" data-element="tooltip" data-id="<%= cohort["results_in"].parameterize %>-no-bp" style="width: 160px;">
                   <p class="font-roboto font-medium text-sm text-white">
-                    <%= cohort["no_bp"] %> patients didn’t have a BP taken
+                    <%= number_with_delimiter(cohort["no_bp"], :delimiter => ",") %> patients didn’t have a BP taken
                   </p>
                   <span class="absolute right-0 left-0 w-2 h-2 my-0 mx-auto" style="border-left: 17px solid transparent; border-right: 17px solid transparent; border-top: 17px solid #000000;"></span>
                 </div>
