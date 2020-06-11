@@ -31,6 +31,14 @@ module ApplicationHelper
     end
   end
 
+  # Calculate a percentage and then pass on the result to number_to_percentage.
+  # Defaults to precision of 0.
+  def compute_percentage(numerator, denominator, options = {})
+    options = options.with_defaults(precision: 0)
+    quotient = numerator.to_f / denominator.to_f
+    number_to_percentage(quotient * 100, options)
+  end
+
   def handle_impossible_registration_date(date)
     program_inception_date =
       ENV["PROGRAM_INCEPTION_DATE"] ? ENV["PROGRAM_INCEPTION_DATE"].to_time : DEFAULT_PROGRAM_INCEPTION_DATE
