@@ -6,11 +6,11 @@ class Api::V3::PrescriptionDrugsController < Api::V3::SyncController
   end
 
   def sync_to_user
-    __sync_to_user__('prescription_drugs')
+    __sync_to_user__("prescription_drugs")
   end
 
   def metadata
-    { user_id: current_user.id }
+    {user_id: current_user.id}
   end
 
   private
@@ -19,15 +19,15 @@ class Api::V3::PrescriptionDrugsController < Api::V3::SyncController
     validator = Api::V3::PrescriptionDrugPayloadValidator.new(prescription_drug_params)
     logger.debug "Prescription Drug had errors: #{validator.errors_hash}" if validator.invalid?
     if validator.invalid?
-      NewRelic::Agent.increment_metric('Merge/PrescriptionDrug/schema_invalid')
-      { errors_hash: validator.errors_hash }
+      NewRelic::Agent.increment_metric("Merge/PrescriptionDrug/schema_invalid")
+      {errors_hash: validator.errors_hash}
     else
       record_params = Api::V3::PrescriptionDrugTransformer
-                        .from_request(prescription_drug_params)
-                        .merge(metadata)
+        .from_request(prescription_drug_params)
+        .merge(metadata)
 
       prescription_drug = PrescriptionDrug.merge(record_params)
-      { record: prescription_drug }
+      {record: prescription_drug}
     end
   end
 

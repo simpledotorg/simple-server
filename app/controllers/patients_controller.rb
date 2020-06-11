@@ -8,8 +8,8 @@ class PatientsController < AdminController
     authorize([:adherence_follow_up, Patient])
 
     @patients = policy_scope([:adherence_follow_up, Patient])
-                  .not_contacted
-                  .order(device_created_at: :asc)
+      .not_contacted
+      .order(device_created_at: :asc)
 
     if current_facility.present?
       @patients = @patients.where(registration_facility: current_facility)
@@ -20,10 +20,10 @@ class PatientsController < AdminController
 
   def update
     if @patient.update(patient_params)
-      redirect_to patients_url(params: { facility_id: selected_facility_id, page: page }),
-                  notice: "Saved. #{@patient.full_name} marked as \"#{@patient.call_result.humanize}\""
+      redirect_to patients_url(params: {facility_id: selected_facility_id, page: page}),
+        notice: "Saved. #{@patient.full_name} marked as \"#{@patient.call_result.humanize}\""
     else
-      redirect_back fallback_location: root_path, alert: 'Something went wrong!'
+      redirect_back fallback_location: root_path, alert: "Something went wrong!"
     end
   end
 
