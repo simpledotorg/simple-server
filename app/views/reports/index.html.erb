@@ -745,14 +745,6 @@
   const $sidebar = document.querySelector('[data-js="sidebar"]');
   const $accountButton = document.querySelector('[data-js="account-button"]');
   const $accountDropdown = document.querySelector('[data-js="account-dropdown"]');
-  const $bpControlButton = document.querySelector('[data-js="bp-control-button"]');
-  const $bpControlTooltip = document.querySelector('[data-js="bp-control-tooltip"]');
-  const $missedVisitButton = document.querySelector('[data-js="missed-visit-button"]');
-  const $missedVisitTooltip = document.querySelector('[data-js="missed-visit-tooltip"]');
-
-  window.addEventListener("load", () => {
-    toggleClasses($body, ["preload"]);
-  });
 
   document.addEventListener('click', (event) => {
     const wasAccountDropdownClicked = $accountDropdown.contains(event.target);
@@ -788,24 +780,6 @@
   $accountButton.addEventListener('click', () => {
     toggleAccountDropdownPosition();
   });
-
-  $bpControlButton.addEventListener('click', () => {
-    toggleBpControlTooltipPosition();
-  });
-
-  $missedVisitButton.addEventListener('click', () => {
-    toggleMissedVisitTooltipPosition();
-  });
-
-  function toggleMissedVisitTooltipPosition() {
-    toggleClasses($missedVisitTooltip, translateYToggle);
-    toggleClasses($missedVisitTooltip, fullOpacityToggle);
-  }
-
-  function toggleBpControlTooltipPosition() {
-    toggleClasses($bpControlTooltip, translateYToggle);
-    toggleClasses($bpControlTooltip, fullOpacityToggle);
-  }
 
   function toggleAccountDropdownPosition() {
     if (isUserDropdownVisible) {
