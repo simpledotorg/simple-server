@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe AppointmentsController, type: :controller do
   let(:facility_group) { create(:facility_group) }
@@ -8,7 +8,7 @@ RSpec.describe AppointmentsController, type: :controller do
     sign_in(counsellor.email_authentication)
   end
 
-  describe 'GET #index' do
+  describe "GET #index" do
     render_views
 
     let!(:facility_1) { create(:facility, facility_group: facility_group) }
@@ -31,12 +31,12 @@ RSpec.describe AppointmentsController, type: :controller do
       appointments
     end
 
-    it 'returns a success response' do
+    it "returns a success response" do
       get :index, params: {}
       expect(response).to be_successful
     end
 
-    it 'populates a list of overdue appointments' do
+    it "populates a list of overdue appointments" do
       get :index, params: {}
       expected_ids = (overdue_appointments_in_facility_1 + overdue_appointments_in_facility_2).map(&:id)
       patient_ids = (overdue_appointments_in_facility_1 + overdue_appointments_in_facility_2).map(&:patient_id)
@@ -44,18 +44,18 @@ RSpec.describe AppointmentsController, type: :controller do
       expect(assigns(:patient_summaries).map(&:id)).to match_array(patient_ids)
     end
 
-    describe 'filtering by facility' do
-      it 'displays appointments for all facilities if none is selected' do
-        get :index, params: { per_page: 'All' }
+    describe "filtering by facility" do
+      it "displays appointments for all facilities if none is selected" do
+        get :index, params: {per_page: "All"}
 
         expect(response.body).to include("recorded at #{facility_1.name}")
         expect(response.body).to include("recorded at #{facility_2.name}")
       end
 
-      it 'displays appointments for only the selected facility' do
+      it "displays appointments for only the selected facility" do
         get :index, params: {
           facility_id: facility_1.id,
-          per_page: 'All'
+          per_page: "All"
         }
 
         expect(response.body).to include("recorded at #{facility_1.name}")
@@ -68,14 +68,13 @@ RSpec.describe AppointmentsController, type: :controller do
         really_overdue_appointment = create(:appointment,
           facility: facility_2,
           scheduled_date: 380.days.ago,
-          status: 'scheduled'
-        )
+          status: "scheduled")
         create(:blood_pressure, patient: really_overdue_appointment.patient, facility: facility_2)
         really_overdue_patient_id = really_overdue_appointment.patient_id
 
         get :index, params: {
           search_filters: ["only_less_than_year_overdue"],
-          per_page: 'All'
+          per_page: "All"
         }
 
         patient_ids = (overdue_appointments_in_facility_1 + overdue_appointments_in_facility_2).map(&:patient_id)
@@ -87,14 +86,13 @@ RSpec.describe AppointmentsController, type: :controller do
         really_overdue_appointment = create(:appointment,
           facility: facility_2,
           scheduled_date: 380.days.ago,
-          status: 'scheduled'
-        )
+          status: "scheduled")
         create(:blood_pressure, patient: really_overdue_appointment.patient, facility: facility_2)
         really_overdue_patient_id = really_overdue_appointment.patient_id
 
         get :index, params: {
-          per_page: 'All',
-          submitted: 'true'
+          per_page: "All",
+          submitted: "true"
         }
 
         patient_ids = (overdue_appointments_in_facility_1 + overdue_appointments_in_facility_2).map(&:patient_id)
@@ -103,23 +101,23 @@ RSpec.describe AppointmentsController, type: :controller do
       end
     end
 
-    describe 'pagination' do
+    describe "pagination" do
       it 'shows "Pagination::DEFAULT_PAGE_SIZE" records per page' do
-        stub_const('Pagination::DEFAULT_PAGE_SIZE', 5)
+        stub_const("Pagination::DEFAULT_PAGE_SIZE", 5)
         get :index, params: {}
 
         expect(response.body.scan(/recorded at/).length).to be(5)
       end
 
-      it 'shows the selected number of records per page' do
-        stub_const('Pagination::DEFAULT_PAGE_SIZE', 5)
-        get :index, params: { per_page: 50 }
+      it "shows the selected number of records per page" do
+        stub_const("Pagination::DEFAULT_PAGE_SIZE", 5)
+        get :index, params: {per_page: 50}
 
         expect(response.body.scan(/recorded at/).length).to be(6)
       end
 
-      it 'shows all records if All is selected' do
-        get :index, params: { per_page: 'All' }
+      it "shows all records if All is selected" do
+        get :index, params: {per_page: "All"}
 
         total_records = overdue_appointments_in_facility_1.size + overdue_appointments_in_facility_2.size
 
@@ -128,7 +126,7 @@ RSpec.describe AppointmentsController, type: :controller do
     end
   end
 
-  describe 'PUT #update' do
+  describe "PUT #update" do
     let!(:facility) { create(:facility, facility_group: facility_group) }
 
     let!(:patient_with_overdue_appointment) do
@@ -139,8 +137,8 @@ RSpec.describe AppointmentsController, type: :controller do
 
     let!(:overdue_appointment) do
       create(:appointment, :overdue,
-             patient: patient_with_overdue_appointment,
-             facility: facility)
+        patient: patient_with_overdue_appointment,
+        facility: facility)
     end
 
     let!(:patient_without_overdue_appointment) do
@@ -148,13 +146,13 @@ RSpec.describe AppointmentsController, type: :controller do
       create(:appointment, patient: patient, facility: facility)
     end
 
-    it 'remind_to_call_later updates remind_on' do
+    it "remind_to_call_later updates remind_on" do
       new_remind_date = Date.current + 7.days
 
       put :update, params: {
         id: overdue_appointment.id,
         appointment: {
-          call_result: 'remind_to_call_later'
+          call_result: "remind_to_call_later"
         }
       }
 
@@ -164,13 +162,13 @@ RSpec.describe AppointmentsController, type: :controller do
       expect(response).to redirect_to(appointments_path)
     end
 
-    it 'agreed_to_visit updates agreed_to_visit and remind_on' do
+    it "agreed_to_visit updates agreed_to_visit and remind_on" do
       new_remind_date = Date.current + 30.days
 
       put :update, params: {
         id: overdue_appointment.id,
         appointment: {
-          call_result: 'agreed_to_visit'
+          call_result: "agreed_to_visit"
         }
       }
 
@@ -181,25 +179,25 @@ RSpec.describe AppointmentsController, type: :controller do
       expect(response).to redirect_to(appointments_path)
     end
 
-    it 'patient_has_already_visited updates appointment status to visited' do
+    it "patient_has_already_visited updates appointment status to visited" do
       put :update, params: {
         id: overdue_appointment.id,
         appointment: {
-          call_result: 'patient_has_already_visited'
+          call_result: "patient_has_already_visited"
         }
       }
 
       overdue_appointment.reload
 
-      expect(overdue_appointment.status).to eq 'visited'
+      expect(overdue_appointment.status).to eq "visited"
       expect(response).to redirect_to(appointments_path)
     end
 
-    it 'patient_has_already_visited updates agreed_to_visit and remind_on to nil' do
+    it "patient_has_already_visited updates agreed_to_visit and remind_on to nil" do
       put :update, params: {
         id: overdue_appointment.id,
         appointment: {
-          call_result: 'patient_has_already_visited'
+          call_result: "patient_has_already_visited"
         }
       }
 
@@ -210,7 +208,7 @@ RSpec.describe AppointmentsController, type: :controller do
       expect(response).to redirect_to(appointments_path)
     end
 
-    it 'marking the appointment as cancelled updates the relevant fields' do
+    it "marking the appointment as cancelled updates the relevant fields" do
       Appointment.cancel_reasons.values.each do |cancel_reason|
         put :update, params: {
           id: overdue_appointment.id,
@@ -224,7 +222,7 @@ RSpec.describe AppointmentsController, type: :controller do
         expect(overdue_appointment.agreed_to_visit).to be false
         expect(overdue_appointment.remind_on).to be nil
         expect(overdue_appointment.cancel_reason).to eq cancel_reason
-        expect(overdue_appointment.status).to eq 'cancelled'
+        expect(overdue_appointment.status).to eq "cancelled"
         expect(response).to redirect_to(appointments_path)
       end
     end

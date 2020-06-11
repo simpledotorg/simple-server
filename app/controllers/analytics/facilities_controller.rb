@@ -12,31 +12,31 @@ class Analytics::FacilitiesController < AnalyticsController
     set_cohort_analytics(@period, @prev_periods)
 
     @recent_blood_pressures = @facility
-                                .blood_pressures
-                                .includes(:patient, :user)
-                                .order(Arel.sql("DATE(recorded_at) DESC, recorded_at ASC"))
+      .blood_pressures
+      .includes(:patient, :user)
+      .order(Arel.sql("DATE(recorded_at) DESC, recorded_at ASC"))
 
     @recent_blood_pressures = paginate(@recent_blood_pressures)
 
     respond_to do |format|
       format.html
       format.csv do
-        send_data render_to_string('show.csv.erb'), filename: download_filename
+        send_data render_to_string("show.csv.erb"), filename: download_filename
       end
     end
   end
 
   def share_anonymized_data
     recipient_email = current_admin.email
-    recipient_name = recipient_email.split('@').first
+    recipient_name = recipient_email.split("@").first
 
     AnonymizedDataDownloadJob.perform_later(recipient_name,
-                                            recipient_email,
-                                            { facility_id: @facility.id },
-                                            'facility')
+      recipient_email,
+      {facility_id: @facility.id},
+      "facility")
 
     redirect_to analytics_facility_path(id: @facility.id),
-                notice: I18n.t('anonymized_data_download_email.facility_notice', facility_name: @facility.name)
+      notice: I18n.t("anonymized_data_download_email.facility_notice", facility_name: @facility.name)
   end
 
   def patient_list
@@ -46,7 +46,7 @@ class Analytics::FacilitiesController < AnalyticsController
 
     redirect_to(
       analytics_facility_path(@facility),
-      notice: I18n.t('patient_list_email.notice', model_type: "facility", model_name: @facility.name)
+      notice: I18n.t("patient_list_email.notice", model_type: "facility", model_name: @facility.name)
     )
   end
 
@@ -56,7 +56,8 @@ class Analytics::FacilitiesController < AnalyticsController
 
     whatsapp_graphics_handler(
       @facility.organization.name,
-      @facility.name)
+      @facility.name
+    )
   end
 
   private
@@ -69,18 +70,18 @@ class Analytics::FacilitiesController < AnalyticsController
 
   def set_cohort_analytics(period, prev_periods)
     @cohort_analytics =
-      set_analytics_cache(analytics_cache_key_cohort(period)) do
+      set_analytics_cache(analytics_cache_key_cohort(period)) {
         @facility.cohort_analytics(period, prev_periods)
-      end
+      }
   end
 
   def set_dashboard_analytics(period, prev_periods)
     @dashboard_analytics =
-      set_analytics_cache(analytics_cache_key_dashboard(period)) do
+      set_analytics_cache(analytics_cache_key_dashboard(period)) {
         @facility.dashboard_analytics(period: period,
                                       prev_periods: prev_periods,
                                       include_current_period: @show_current_period)
-      end
+      }
   end
 
   def analytics_cache_key

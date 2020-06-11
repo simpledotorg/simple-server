@@ -6,11 +6,11 @@ class Api::V3::AppointmentsController < Api::V3::SyncController
   end
 
   def sync_to_user
-    __sync_to_user__('appointments')
+    __sync_to_user__("appointments")
   end
 
   def metadata
-    { user_id: current_user.id }
+    {user_id: current_user.id}
   end
 
   private
@@ -19,15 +19,15 @@ class Api::V3::AppointmentsController < Api::V3::SyncController
     validator = Api::V3::AppointmentPayloadValidator.new(appointment_params)
     logger.debug "Follow Up Schedule had errors: #{validator.errors_hash}" if validator.invalid?
     if validator.invalid?
-      NewRelic::Agent.increment_metric('Merge/Appointment/schema_invalid')
-      { errors_hash: validator.errors_hash }
+      NewRelic::Agent.increment_metric("Merge/Appointment/schema_invalid")
+      {errors_hash: validator.errors_hash}
     else
       record_params = Api::V3::AppointmentTransformer
-                        .from_request(appointment_params)
-                        .merge(metadata)
+        .from_request(appointment_params)
+        .merge(metadata)
 
       appointment = Appointment.merge(record_params)
-      { record: appointment }
+      {record: appointment}
     end
   end
 
@@ -49,7 +49,8 @@ class Api::V3::AppointmentsController < Api::V3::SyncController
         :agreed_to_visit,
         :appointment_type,
         :created_at,
-        :updated_at)
+        :updated_at
+      )
     end
   end
 end

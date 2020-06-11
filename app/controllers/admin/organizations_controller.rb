@@ -19,7 +19,7 @@ class Admin::OrganizationsController < AdminController
     authorize([:manage, @organization])
 
     if @organization.save
-      redirect_to admin_organizations_url, notice: 'Organization was successfully created.'
+      redirect_to admin_organizations_url, notice: "Organization was successfully created."
     else
       render :new
     end
@@ -27,7 +27,7 @@ class Admin::OrganizationsController < AdminController
 
   def update
     if @organization.update(organization_params)
-      redirect_to admin_organizations_url, notice: 'Organization was successfully updated.'
+      redirect_to admin_organizations_url, notice: "Organization was successfully updated."
     else
       render :edit
     end
@@ -35,7 +35,7 @@ class Admin::OrganizationsController < AdminController
 
   def destroy
     @organization.destroy
-    redirect_to admin_organizations_url, notice: 'Organization was successfully deleted.'
+    redirect_to admin_organizations_url, notice: "Organization was successfully deleted."
   end
 
   private

@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe PatientsController, type: :controller do
   let(:facility_group) { create(:facility_group) }
@@ -8,14 +8,14 @@ RSpec.describe PatientsController, type: :controller do
     sign_in(counsellor.email_authentication)
   end
 
-  describe 'GET #index' do
+  describe "GET #index" do
     render_views
 
     let!(:facility_1) { create(:facility, facility_group: facility_group) }
     let!(:patients_to_followup_in_facility_1) do
       patients = create_list(:patient, 3,
-                             registration_facility: facility_1,
-                             device_created_at: 10.days.ago)
+        registration_facility: facility_1,
+        device_created_at: 10.days.ago)
       patients.each do |patient|
         create(:blood_pressure, patient: patient, facility: facility_1)
       end
@@ -25,32 +25,32 @@ RSpec.describe PatientsController, type: :controller do
     let!(:facility_2) { create(:facility, facility_group: facility_group) }
     let!(:patients_to_followup_in_facility_2) do
       patients = create_list(:patient, 3,
-                             registration_facility: facility_2,
-                             device_created_at: 10.days.ago)
+        registration_facility: facility_2,
+        device_created_at: 10.days.ago)
       patients.each do |patient|
         create(:blood_pressure, patient: patient, facility: facility_2)
       end
       patients
     end
 
-    it 'returns a success response' do
+    it "returns a success response" do
       get :index, params: {}
 
       expect(response).to be_successful
     end
 
-    describe 'filtering by facility' do
-      it 'displays followups for all facilities if none is selected' do
-        get :index, params: { per_page: 'All' }
+    describe "filtering by facility" do
+      it "displays followups for all facilities if none is selected" do
+        get :index, params: {per_page: "All"}
 
         expect(response.body).to include("recorded at #{facility_1.name}")
         expect(response.body).to include("recorded at #{facility_2.name}")
       end
 
-      it 'displays followups for only the selected facility' do
+      it "displays followups for only the selected facility" do
         get :index, params: {
           facility_id: facility_1.id,
-          per_page: 'All'
+          per_page: "All"
         }
 
         expect(response.body).to include("recorded at #{facility_1.name}")
@@ -58,23 +58,23 @@ RSpec.describe PatientsController, type: :controller do
       end
     end
 
-    describe 'pagination' do
+    describe "pagination" do
       it 'shows "Pagination::DEFAULT_PAGE_SIZE" records per page by default' do
-        stub_const('Pagination::DEFAULT_PAGE_SIZE', 5)
+        stub_const("Pagination::DEFAULT_PAGE_SIZE", 5)
         get :index, params: {}
 
         expect(response.body.scan(/recorded at/).length).to be(5)
       end
 
-      it 'shows the selected number of records per page' do
-        stub_const('Pagination::DEFAULT_PAGE_SIZE', 5)
-        get :index, params: { per_page: 50 }
+      it "shows the selected number of records per page" do
+        stub_const("Pagination::DEFAULT_PAGE_SIZE", 5)
+        get :index, params: {per_page: 50}
 
         expect(response.body.scan(/recorded at/).length).to be(6)
       end
 
-      it 'shows all records if All is selected' do
-        get :index, params: { per_page: 'All' }
+      it "shows all records if All is selected" do
+        get :index, params: {per_page: "All"}
 
         total_records = patients_to_followup_in_facility_1.size + patients_to_followup_in_facility_2.size
 
@@ -83,7 +83,7 @@ RSpec.describe PatientsController, type: :controller do
     end
   end
 
-  describe 'PUT #update' do
+  describe "PUT #update" do
     let!(:patient) do
       facility = create(:facility, facility_group: facility_group)
       patient = create(:patient, registration_facility: facility)
@@ -91,11 +91,11 @@ RSpec.describe PatientsController, type: :controller do
       patient
     end
 
-    it 'marks the patient as contacted' do
+    it "marks the patient as contacted" do
       put :update, params: {
         id: patient.id,
         patient: {
-          call_result: 'contacted'
+          call_result: "contacted"
         }
       }
 
@@ -105,32 +105,32 @@ RSpec.describe PatientsController, type: :controller do
       expect(response).to redirect_to(patients_path)
     end
 
-    it 'sets reason why the patient could not be contacted' do
+    it "sets reason why the patient could not be contacted" do
       put :update, params: {
         id: patient.id,
         patient: {
-          call_result: 'moved'
+          call_result: "moved"
         }
       }
 
       patient.reload
 
-      expect(patient.could_not_contact_reason).to eq('moved')
+      expect(patient.could_not_contact_reason).to eq("moved")
       expect(response).to redirect_to(patients_path)
     end
 
-    it 'updates the status if dead' do
+    it "updates the status if dead" do
       put :update, params: {
         id: patient.id,
         patient: {
-          call_result: 'dead'
+          call_result: "dead"
         }
       }
 
       patient.reload
 
-      expect(patient.could_not_contact_reason).to eq('dead')
-      expect(patient.status).to eq('dead')
+      expect(patient.could_not_contact_reason).to eq("dead")
+      expect(patient.status).to eq("dead")
       expect(response).to redirect_to(patients_path)
     end
   end

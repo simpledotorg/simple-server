@@ -23,7 +23,7 @@ class Admin::ProtocolDrugsController < AdminController
     authorize([:manage, @protocol_drug])
 
     if @protocol_drug.save
-      redirect_to [:admin, @protocol], notice: 'Protocol drug was successfully created.'
+      redirect_to [:admin, @protocol], notice: "Protocol drug was successfully created."
     else
       render :new
     end
@@ -31,7 +31,7 @@ class Admin::ProtocolDrugsController < AdminController
 
   def update
     if @protocol_drug.update(protocol_drug_params)
-      redirect_to [:admin, @protocol], notice: 'Protocol drug was successfully updated.'
+      redirect_to [:admin, @protocol], notice: "Protocol drug was successfully updated."
     else
       render :edit
     end
@@ -39,7 +39,7 @@ class Admin::ProtocolDrugsController < AdminController
 
   def destroy
     @protocol_drug.destroy
-    redirect_to [:admin, @protocol], notice: 'Protocol drug was successfully deleted.'
+    redirect_to [:admin, @protocol], notice: "Protocol drug was successfully deleted."
   end
 
   private
