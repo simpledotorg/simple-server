@@ -14,8 +14,8 @@ RSpec.describe PatientSummaryQuery do
   end
 
   it "ignores phone number filters if both filters are set" do
-    patient_1 = create(:patient, :with_overdue_appointments)
-    patient_2 = create(:patient, :with_overdue_appointments, phone_numbers: [])
+    create(:patient, :with_overdue_appointments)
+    create(:patient, :with_overdue_appointments, phone_numbers: [])
 
     result = PatientSummaryQuery.call(filters: ["phone_number", "no_phone_number"])
     expected_patients = result.map(&:patient)
