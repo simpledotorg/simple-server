@@ -26,7 +26,7 @@ class Admin::FacilityGroupsController < AdminController
     authorize([:manage, @facility_group])
 
     if @facility_group.save
-      redirect_to admin_facilities_url, notice: 'FacilityGroup was successfully created.'
+      redirect_to admin_facilities_url, notice: "FacilityGroup was successfully created."
     else
       render :new
     end
@@ -34,7 +34,7 @@ class Admin::FacilityGroupsController < AdminController
 
   def update
     if @facility_group.update(facility_group_params)
-      redirect_to admin_facilities_url, notice: 'FacilityGroup was successfully updated.'
+      redirect_to admin_facilities_url, notice: "FacilityGroup was successfully updated."
     else
       render :edit
     end
@@ -42,9 +42,9 @@ class Admin::FacilityGroupsController < AdminController
 
   def destroy
     if @facility_group.discard
-      redirect_to admin_facilities_url, notice: 'FacilityGroup was successfully deleted.'
+      redirect_to admin_facilities_url, notice: "FacilityGroup was successfully deleted."
     else
-      redirect_to admin_facilities_url, alert: 'FacilityGroup could not be deleted'
+      redirect_to admin_facilities_url, alert: "FacilityGroup could not be deleted"
     end
   end
 

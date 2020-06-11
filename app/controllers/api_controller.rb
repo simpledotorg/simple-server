@@ -1,11 +1,11 @@
 class APIController < ApplicationController
   before_action :current_user_present?,
-                :validate_sync_approval_status_allowed,
-                :authenticate,
-                :validate_facility,
-                :validate_current_facility_belongs_to_users_facility_group
+    :validate_sync_approval_status_allowed,
+    :authenticate,
+    :validate_facility,
+    :validate_current_facility_belongs_to_users_facility_group
 
-  TIME_WITHOUT_TIMEZONE_FORMAT = '%FT%T.%3NZ'.freeze
+  TIME_WITHOUT_TIMEZONE_FORMAT = "%FT%T.%3NZ".freeze
 
   skip_before_action :verify_authenticity_token
 
@@ -20,11 +20,11 @@ class APIController < ApplicationController
   private
 
   def current_user
-    @current_user ||= User.find_by(id: request.headers['HTTP_X_USER_ID'])
+    @current_user ||= User.find_by(id: request.headers["HTTP_X_USER_ID"])
   end
 
   def current_facility
-    @current_facility ||= Facility.find_by(id: request.headers['HTTP_X_FACILITY_ID'])
+    @current_facility ||= Facility.find_by(id: request.headers["HTTP_X_FACILITY_ID"])
   end
 
   def current_facility_group
@@ -32,7 +32,7 @@ class APIController < ApplicationController
   end
 
   def current_timezone_offset
-    request.headers['HTTP_X_TIMEZONE_OFFSET'].to_i || 0
+    request.headers["HTTP_X_TIMEZONE_OFFSET"].to_i || 0
   end
 
   def validate_facility
@@ -41,7 +41,7 @@ class APIController < ApplicationController
 
   def validate_current_facility_belongs_to_users_facility_group
     return head :unauthorized unless current_user.present? &&
-                                       current_facility_group.facilities.where(id: current_facility.id).present?
+      current_facility_group.facilities.where(id: current_facility.id).present?
   end
 
   def current_user_present?
@@ -65,8 +65,8 @@ class APIController < ApplicationController
 
   def set_sentry_context
     Raven.user_context(
-      id: request.headers['HTTP_X_USER_ID'],
-      request_facility_id: request.headers['HTTP_X_FACILITY_ID']
+      id: request.headers["HTTP_X_USER_ID"],
+      request_facility_id: request.headers["HTTP_X_FACILITY_ID"]
     )
   end
 end

@@ -92,6 +92,8 @@ module Permissions
     },
   }.freeze
 
+  VALID_PERMISSION_SLUGS = ALL_PERMISSIONS.keys.map(&:to_s).freeze
+
   ACCESS_LEVELS = [
     { name: :organization_owner,
       description: "Admin for an organization",
@@ -165,6 +167,8 @@ module Permissions
         download_overdue_list
         download_patient_line_list
         view_my_facilities
+        view_sidekiq_ui
+        view_flipper_ui
       ]
     },
     { name: :custom,

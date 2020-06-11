@@ -24,8 +24,8 @@ class MyFacilities::OverviewQuery
 
   def inactive_facilities
     active_facilities = bps_per_day_in_last_n_days(n: INACTIVITY_THRESHOLD_DAYS)
-                        .group(:facility_id)
-                        .having('SUM(bp_count) >= ?', INACTIVITY_THRESHOLD_BPS)
+      .group(:facility_id)
+      .having("SUM(bp_count) >= ?", INACTIVITY_THRESHOLD_BPS)
 
     @inactive_facilities ||= facilities.where.not(id: active_facilities.pluck(:facility_id))
   end
@@ -40,6 +40,6 @@ class MyFacilities::OverviewQuery
   end
 
   def days_as_sql_list(days)
-    days.map { |(year, day)| "('#{year}', '#{day}')" }.join(',')
+    days.map { |(year, day)| "('#{year}', '#{day}')" }.join(",")
   end
 end

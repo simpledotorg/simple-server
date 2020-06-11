@@ -11,7 +11,6 @@ class Api::V3::AnalyticsController < APIController
     Time.use_zone(time_zone) do
       yield
     end
-
   ensure
     Groupdate.time_zone = "UTC"
   end
