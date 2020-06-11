@@ -19,6 +19,10 @@ class PatientsController < AdminController
     @patients = paginate(@patients)
   end
 
+  #
+  # This controller / page does not have unit-tests since it's potentially throwaway work.
+  # If we decide to continue using this, we should invest in testing it.
+  #
   def lookup
     set_page
     set_per_page
