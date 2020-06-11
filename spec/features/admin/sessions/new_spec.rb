@@ -30,7 +30,7 @@ RSpec.feature 'Owner Login as Admin', type: :feature do
     end
 
     it 'Logs in ' do
-      expect(page).to have_content('Patients that are newly registered and need 48-hour adherence follow-up.')
+      expect(page).to have_content('Patients that are overdue for a follow-up visit.')
       expect(page).to have_content(counsellor.email)
     end
 
