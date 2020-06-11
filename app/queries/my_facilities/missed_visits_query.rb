@@ -24,53 +24,53 @@ class MyFacilities::MissedVisitsQuery
 
     @calls_made ||=
       CallLog
-      .result_completed
-      .joins('INNER JOIN phone_number_authentications
+        .result_completed
+        .joins('INNER JOIN phone_number_authentications
               ON phone_number_authentications.phone_number = call_logs.caller_phone_number')
-      .joins('INNER JOIN facilities ON facilities.id = phone_number_authentications.registration_facility_id')
-      .where(phone_number_authentications: { registration_facility_id: @facilities })
-      .where('call_logs.created_at >= ? AND call_logs.created_at <= ?', period_start, period_end)
-      .group('facilities.id::uuid')
+        .joins("INNER JOIN facilities ON facilities.id = phone_number_authentications.registration_facility_id")
+        .where(phone_number_authentications: {registration_facility_id: @facilities})
+        .where("call_logs.created_at >= ? AND call_logs.created_at <= ?", period_start, period_end)
+        .group("facilities.id::uuid")
   end
 
   def bp_query_by_cohort
     @bp_query_by_cohort ||=
-      @periods.map do |year, period|
-        if @period == :month
-          bp_query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
-                                                                 cohort_period: { cohort_period: :month,
-                                                                                  registration_year: year,
-                                                                                  registration_month: period })
+      @periods.map { |year, period|
+        bp_query = if @period == :month
+          MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
+                                                      cohort_period: {cohort_period: :month,
+                                                                      registration_year: year,
+                                                                      registration_month: period})
         else
-          bp_query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
-                                                                 cohort_period: { cohort_period: :quarter,
-                                                                                  registration_year: year,
-                                                                                  registration_quarter: period })
+          MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
+                                                      cohort_period: {cohort_period: :quarter,
+                                                                      registration_year: year,
+                                                                      registration_quarter: period})
         end
         [[year, period], bp_query]
-      end.to_h
+      }.to_h
   end
 
   def missed_visits_by_facility
     @missed_visits_by_facility ||=
-      bp_query_by_cohort.map do |(year, period), bp_query|
-        bp_query.cohort_registrations.group(:registration_facility_id).count.map do |facility_id, patient_count|
+      bp_query_by_cohort.map { |(year, period), bp_query|
+        bp_query.cohort_registrations.group(:registration_facility_id).count.map { |facility_id, patient_count|
           [[facility_id, year, period],
-           { patients: patient_count.to_i,
-             missed: bp_query.cohort_missed_visits_count_by_facility[facility_id].to_i }]
-        end.to_h
-      end.reduce(:merge)
+            {patients: patient_count.to_i,
+             missed: bp_query.cohort_missed_visits_count_by_facility[facility_id].to_i}]
+        }.to_h
+      }.reduce(:merge)
   end
 
   def missed_visit_totals
     @missed_visit_totals ||=
-      bp_query_by_cohort.map do |(year, period), bp_query|
+      bp_query_by_cohort.map { |(year, period), bp_query|
         cohort_registrations = bp_query.cohort_registrations.count
         cohort_missed_visits_count = bp_query.cohort_missed_visits_count
         [[year, period],
-         { patients: cohort_registrations.to_i,
-           missed: cohort_missed_visits_count.to_i }]
-      end.to_h
+          {patients: cohort_registrations.to_i,
+           missed: cohort_missed_visits_count.to_i}]
+      }.to_h
   end
 
   def total_registrations

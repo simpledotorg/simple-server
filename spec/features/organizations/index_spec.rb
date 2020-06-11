@@ -41,12 +41,12 @@ RSpec.feature 'Verify Dashboard', type: :feature do
 
     # assertion at organization screen
     expect(page).to have_content('Organization was successfully created.')
-    org_page.is_organization_name_present('test')
+    org_page.is_organization_name_present('Test')
 
     dashboard_navigation.select_main_menu_tab('Dashboard')
 
     # assertion at dashboard screen
-    expect(page).to have_content('test')
+    expect(page).to have_content('Test')
     expect(dashboard.get_organization_count).to eq(var_organization_count + 1)
   end
 
