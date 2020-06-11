@@ -1,11 +1,11 @@
-class ReportsController < AdminController
+class Dashboard::DistrictsController < AdminController
   layout "reports"
   skip_after_action :verify_policy_scoped
   around_action :set_time_zone
 
   EXAMPLE_DATA_FILE = "db/data/example_dashboard_data.json"
 
-  def index
+  def preview
     authorize :dashboard, :view_my_facilities?
 
     @state_name = "Punjab"

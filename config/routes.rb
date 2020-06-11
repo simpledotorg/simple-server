@@ -150,7 +150,12 @@ Rails.application.routes.draw do
   resources :appointments, only: [:index, :update]
   resources :patients, only: [:index, :update]
   resources :organizations, only: [:index], path: "dashboard"
-  resources :reports
+
+  namespace :dashboard do
+    resources :districts do
+      get "preview", on: :collection
+    end
+  end
 
   namespace :my_facilities do
     root to: "/my_facilities#index", as: "overview"
