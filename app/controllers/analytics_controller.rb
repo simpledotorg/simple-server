@@ -3,7 +3,7 @@ class AnalyticsController < AdminController
   before_action :set_quarter, only: [:whatsapp_graphics]
   before_action :set_period
 
-  DEFAULT_ANALYTICS_TIME_ZONE = 'Asia/Kolkata'
+  DEFAULT_ANALYTICS_TIME_ZONE = "Asia/Kolkata"
 
   def set_time_zone
     time_zone = Rails.application.config.country[:time_zone] || DEFAULT_ANALYTICS_TIME_ZONE
@@ -28,7 +28,7 @@ class AnalyticsController < AdminController
     else
       :month
     end
-    if !([:quarter, :month].include?(@period))
+    unless [:quarter, :month].include?(@period)
       raise ArgumentError, "Invalid period set #{@period}"
     end
 
@@ -44,7 +44,7 @@ class AnalyticsController < AdminController
   end
 
   def set_analytics_cache(key)
-    Rails.cache.fetch(key, expires_in: ENV.fetch('ANALYTICS_DASHBOARD_CACHE_TTL')) { yield }
+    Rails.cache.fetch(key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL")) { yield }
   end
 
   def analytics_cache_key_cohort(period)

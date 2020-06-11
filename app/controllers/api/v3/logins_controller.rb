@@ -8,9 +8,8 @@ class Api::V3::LoginsController < APIController
 
   def login_user
     result = PhoneNumberAuthentication::Authenticate.call(otp: login_params[:otp],
-      password: login_params[:password],
-      phone_number: login_params[:phone_number],
-    )
+                                                          password: login_params[:password],
+                                                          phone_number: login_params[:phone_number])
 
     if result.success?
       user = result.user
@@ -41,7 +40,7 @@ class Api::V3::LoginsController < APIController
     validator = Api::V3::UserLoginPayloadValidator.new(login_params)
     logger.debug "User login params had errors: #{validator.errors_hash}" if validator.invalid?
     if validator.invalid?
-      render json: { errors: validator.errors }, status: :unauthorized
+      render json: {errors: validator.errors}, status: :unauthorized
     end
   end
 
@@ -50,13 +49,12 @@ class Api::V3::LoginsController < APIController
   end
 
   def notify_sentry(result)
-    Raven.capture_message('Login Error',
-      logger: 'logger',
+    Raven.capture_message("Login Error",
+      logger: "logger",
       extra: {
         login_params: login_params,
-        errors: result.error_message,
+        errors: result.error_message
       },
-      tags: { type: 'login' }
-    )
+      tags: {type: "login"})
   end
 end

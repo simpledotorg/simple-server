@@ -1,7 +1,6 @@
 module Api::V3::SyncToUser
   extend ActiveSupport::Concern
   included do
-
     def facility_group_records
       current_facility_group
         .send(model_name.name.underscore.pluralize.to_sym)
@@ -30,10 +29,10 @@ module Api::V3::SyncToUser
     end
 
     def response_process_token
-      { current_facility_id: current_facility.id,
-        current_facility_processed_since: processed_until(current_facility_records) || current_facility_processed_since,
-        other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
-        resync_token: resync_token }
+      {current_facility_id: current_facility.id,
+       current_facility_processed_since: processed_until(current_facility_records) || current_facility_processed_since,
+       other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
+       resync_token: resync_token}
     end
 
     def encode_process_token(process_token)
@@ -52,7 +51,7 @@ module Api::V3::SyncToUser
         other_facilities_processed_since
       elsif process_token[:current_facility_id] != current_facility.id
         [process_token[:current_facility_processed_since].to_time,
-         other_facilities_processed_since].min
+          other_facilities_processed_since].min
       else
         process_token[:current_facility_processed_since].to_time
       end
@@ -63,7 +62,7 @@ module Api::V3::SyncToUser
     end
 
     def resync_token
-      request.headers['HTTP_X_RESYNC_TOKEN']
+      request.headers["HTTP_X_RESYNC_TOKEN"]
     end
   end
 end

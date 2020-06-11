@@ -5,7 +5,7 @@ class Api::V3::ExotelCallSessionsController < ApplicationController
 
   def create
     unless valid_patient_phone_number?
-      respond_in_plain_text(:bad_request) and return
+      respond_in_plain_text(:bad_request) && return
     end
 
     session = CallSession.new(params[:CallSid], params[:From], parse_patient_phone_number)
@@ -47,7 +47,7 @@ class Api::V3::ExotelCallSessionsController < ApplicationController
   def call_status
     status = params[:CallStatus] || params[:DialCallStatus]
 
-    if status.blank? || status == 'null'
+    if status.blank? || status == "null"
       CallLog.results[:unknown]
     else
       status.underscore
@@ -59,14 +59,14 @@ class Api::V3::ExotelCallSessionsController < ApplicationController
   end
 
   def parse_patient_phone_number
-    params[:digits].tr('"', '')
+    params[:digits].tr('"', "")
   end
 
   def valid_patient_phone_number?
     parse_patient_phone_number.scan(/\D/).empty?
   end
 
-  def respond_in_plain_text(status, text = '')
+  def respond_in_plain_text(status, text = "")
     render plain: text, status: status
   end
 
@@ -83,8 +83,8 @@ class Api::V3::ExotelCallSessionsController < ApplicationController
     ExotelCallDetailsJob
       .set(wait: SCHEDULE_CALL_LOG_JOB_AFTER)
       .perform_later(params[:CallSid],
-                     user_phone_number,
-                     callee_phone_number,
-                     call_status)
+        user_phone_number,
+        callee_phone_number,
+        call_status)
   end
 end

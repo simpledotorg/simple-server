@@ -7,8 +7,8 @@ class MyFacilitiesController < AdminController
   include CohortPeriodSelection
   include PeriodSelection
 
-  DEFAULT_ANALYTICS_TIME_ZONE = 'Asia/Kolkata'
-  PERIODS_TO_DISPLAY = { quarter: 3, month: 3, day: 14 }.freeze
+  DEFAULT_ANALYTICS_TIME_ZONE = "Asia/Kolkata"
+  PERIODS_TO_DISPLAY = {quarter: 3, month: 3, day: 14}.freeze
 
   around_action :set_time_zone
   before_action :authorize_my_facilities
@@ -24,12 +24,12 @@ class MyFacilitiesController < AdminController
     overview_query = MyFacilities::OverviewQuery.new(facilities: @facilities)
     @inactive_facilities = overview_query.inactive_facilities
 
-    @facility_counts_by_size = { total: @facilities.group(:facility_size).count,
-                                 inactive: @inactive_facilities.group(:facility_size).count }
+    @facility_counts_by_size = {total: @facilities.group(:facility_size).count,
+                                inactive: @inactive_facilities.group(:facility_size).count}
 
     @inactive_facilities_bp_counts =
-      { last_week: overview_query.total_bps_in_last_n_days(n: 7),
-        last_month: overview_query.total_bps_in_last_n_days(n: 30) }
+      {last_week: overview_query.total_bps_in_last_n_days(n: 7),
+       last_month: overview_query.total_bps_in_last_n_days(n: 30)}
   end
 
   def blood_pressure_control
@@ -38,12 +38,12 @@ class MyFacilitiesController < AdminController
     bp_query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
                                                            cohort_period: @selected_cohort_period)
 
-    @totals = { registered: bp_query.cohort_registrations.count,
-                controlled: bp_query.cohort_controlled_bps.count,
-                uncontrolled: bp_query.cohort_uncontrolled_bps.count,
-                missed: bp_query.cohort_missed_visits_count,
-                overall_patients: bp_query.overall_patients.count,
-                overall_controlled_bps: bp_query.overall_controlled_bps.count }
+    @totals = {registered: bp_query.cohort_registrations.count,
+               controlled: bp_query.cohort_controlled_bps.count,
+               uncontrolled: bp_query.cohort_uncontrolled_bps.count,
+               missed: bp_query.cohort_missed_visits_count,
+               overall_patients: bp_query.overall_patients.count,
+               overall_controlled_bps: bp_query.overall_controlled_bps.count}
 
     @registered_patients_per_facility = bp_query.cohort_registrations.group(:registration_facility_id).count
     @controlled_bps_per_facility = bp_query.cohort_controlled_bps.group(:registration_facility_id).count
@@ -61,16 +61,16 @@ class MyFacilitiesController < AdminController
                                                                last_n: PERIODS_TO_DISPLAY[@selected_period])
 
     @registrations = registrations_query.registrations
-                                        .group(:facility_id, :year, @selected_period)
-                                        .sum(:registration_count)
+      .group(:facility_id, :year, @selected_period)
+      .sum(:registration_count)
 
     @total_registrations = registrations_query.total_registrations.group(:registration_facility_id).count
     @total_registrations_by_period =
-      @registrations.each_with_object({}) do |(key, registrations), total_registrations_by_period|
+      @registrations.each_with_object({}) { |(key, registrations), total_registrations_by_period|
         period = [key.second.to_i, key.third.to_i]
         total_registrations_by_period[period] ||= 0
         total_registrations_by_period[period] += registrations
-      end
+      }
     @display_periods = registrations_query.periods
   end
 
