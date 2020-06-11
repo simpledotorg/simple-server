@@ -1,0 +1,849 @@
+<nav class="fixed w-full z-30 flex items-center justify-between top-0 right-0 left-0 py-3 pr-3 pl-2 bg-white shadow-sm md:py-0">
+  <div class="flex items-center">
+    <%= image_tag "simple_logo.svg", :width => '32', :class => 'mr-1 md:mr-4' %>
+    <p class="block font-sans font-semibold text-lg text-grey-500 md:hidden">
+      Simple Dashboard
+    </p>
+    <div class="hidden md:flex">
+      <a class="relative mr-5 py-5 font-sans font-medium text-base text-grey-500 h-full">
+        My facilities
+      </a>
+      <a class="mr-5 py-5 font-sans font-medium text-base text-red-200">
+        Reports
+      </a>
+      <a class="mr-5 py-5 font-sans font-medium text-base text-grey-500">
+        Overdue patients
+      </a>
+      <a class="mr-5 py-5 font-sans font-medium text-base text-grey-500">
+        Manage
+      </a>
+      <a class="mr-5 py-5 font-sans font-medium text-base text-grey-500">
+        Resources
+      </a>
+    </div>
+  </div>
+  <div data-js="menu-button" class="flex py-1 px-2 rounded-md border border-grey-200 bg-white cursor-pointer md:hidden md:pointer-events-none">
+    <div class="relative top-2 mr-2">
+      <svg class="stroke-current text-grey-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </div>
+    <p class="flex font-sans font-semibold text-sm text-grey-500 select-none">
+      Menu
+    </p>
+  </div>
+  <div class="hidden md:block md:relative md:cursor-pointer">
+    <div data-js="account-button" class="flex">
+      <p class="mr-2 font-sans font-medium text-base text-grey-500">
+        cvho@simple.org
+      </p>
+      <div class="relative top-4">
+        <svg class="stroke-current text-grey-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </div>
+    </div>
+    <div data-js="account-dropdown" class="absolute py-3 right-0 border border-grey-200 rounded-md bg-white shadow-lg opacity-0 transform translate-y-1 transition duration-350 ease-cubic" style="width: 192px; top: 32px;">
+      <a class="block mx-3 mb-1 py-1 px-2" href="/my_facilities">
+        <p class="font-sans font-medium text-md text-grey-400">
+          Privacy policy
+        </p>
+      </a>
+      <a class="block mx-3 mb-1 py-1 px-2" href="/my_facilities">
+        <p class="font-sans font-medium text-md text-grey-400">
+          License
+        </p>
+      </a>
+      <div class="my-3 border-t border-grey-200"></div>
+      <a class="block mx-3 mb-1 py-1 px-2" href="/my_facilities">
+        <p class="font-sans font-medium text-md text-grey-400">
+          Logout
+        </p>
+      </a>
+    </div>
+  </div>
+</nav>
+<div data-js="overlay" class="z-40 fixed top-0 right-0 left-0 bottom-0 w-full h-full bg-grey-400 opacity-0 transition-opacity duration-350 ease-cubic pointer-events-none md:hidden md:pointer-events-none"></div>
+<div data-js="sidebar" class="z-50 fixed top-0 right-0 bottom-0 w-4/5 h-full pt-2 pb-5 bg-white rounded-tl-lg rounded-bl-lg transform translate-x-full transition-transform duration-350 ease-cubic overflow-y-scroll">
+  <div data-js="sidebar-button" class="flex justify-end px-2">
+    <div class="flex items-center justify-center p-1 bg-grey-100 rounded-md cursor-pointer">
+      <svg class="stroke-current text-grey-300" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </div>
+  </div>
+  <div class="mb-2 px-2">
+    <a class="block" href="/my_facilities">
+      <div class="flex py-2 px-3 bg-white rounded-md transition-bg duration-250 ease-in-expo">
+        <div class="relative top-1 mr-2">
+          <svg class="stroke-current text-grey-300" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+        </div>
+        <p class="font-sans font-semibold text-md text-grey-500">
+          My facilities
+        </p>
+      </div>
+    </a>
+    <div class="ml-8">
+      <a class="block mb-1 py-1 px-2" href="/my_facilities">
+        <p class="font-sans font-medium text-md text-grey-400">
+          Overdue
+        </p>
+      </a>
+      <a class="block mb-1 py-1 px-2" href="/my_facilities/blood_pressure_control">
+        <p class="font-sans font-medium text-md text-grey-400">
+          BP control
+        </p>
+      </a>
+      <a class="block mb-1 py-1 px-2" href="/my_facilities/missed_visits">
+        <p class="font-sans font-medium text-md text-grey-400">
+          Missed visits
+        </p>
+      </a>
+      <a class="block mb-1 py-1 px-2" href="/my_facilities/registrations">
+        <p class="font-sans font-medium text-md text-grey-400">
+          Registrations
+        </p>
+      </a>
+    </div>
+  </div>
+  <div class="mb-1 px-2">
+    <a class="block" href="/reports">
+      <div class="flex py-2 px-3 bg-white rounded-md transition-bg duration-250 ease-in-expo">
+        <div class="relative top-1 mr-2">
+          <svg class="stroke-current text-grey-300" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+        </div>
+        <p class="font-sans font-semibold text-md text-grey-500">
+          Reports
+        </p>
+      </div>
+    </a>
+  </div>
+  <div class="mb-1 px-2">
+    <a class="block" href="/appointments">
+      <div class="flex py-2 px-3 bg-white rounded-md transition-bg duration-250 ease-in-expo">
+        <div class="relative top-1 mr-2">
+          <svg class="stroke-current text-grey-300" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
+        <p class="font-sans font-semibold text-md text-grey-500">
+          Overdue patients
+        </p>
+      </div>
+    </a>
+  </div>
+  <div class="mb-2 px-2">
+    <a class="block" href="/admin/organizations">
+      <div class="flex py-2 px-3 bg-white rounded-md transition-bg duration-250 ease-in-expo">
+        <div class="relative top-1 mr-2">
+          <svg class="stroke-current text-grey-300" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+          </svg>
+        </div>
+        <p class="font-sans font-semibold text-md text-grey-500">
+          Manage
+        </p>
+      </div>
+    </a>
+    <div class="ml-8">
+      <a class="block mb-1 py-1 px-2" href="/admin/organizations">
+        <p class="font-sans font-medium text-md text-grey-400">
+          Organizations
+        </p>
+      </a>
+      <a class="block mb-1 py-1 px-2" href="/admin/facilities">
+        <p class="font-sans font-medium text-md text-grey-400">
+          Facilities
+        </p>
+      </a>
+      <a class="block mb-1 py-1 px-2" href="/admin/protocols">
+        <p class="font-sans font-medium text-md text-grey-400">
+          Protocols
+        </p>
+      </a>
+      <a class="block mb-1 py-1 px-2" href="/admins">
+        <p class="font-sans font-medium text-md text-grey-400">
+          Admins
+        </p>
+      </a>
+      <a class="block mb-1 py-1 px-2" href="/admin/users">
+        <p class="font-sans font-medium text-md text-grey-400">
+          Users
+        </p>
+      </a>
+    </div>
+  </div>
+  <div class="mb-1 px-2">
+    <a class="block" href="/resources">
+      <div class="flex py-2 px-3 bg-white rounded-md transition-bg duration-250 ease-in-expo">
+        <div class="relative top-1 mr-2">
+          <svg class="stroke-current text-grey-300" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+          </svg>
+        </div>
+        <p class="font-sans font-semibold text-md text-grey-500">
+          Resources
+        </p>
+      </div>
+    </a>
+  </div>
+  <div class="mb-1 px-2">
+    <a class="block" href="https://www.simple.org/privacy">
+      <div class="flex py-2 px-3 bg-white rounded-md transition-bg duration-250 ease-in-expo">
+        <div class="relative top-1 mr-2">
+          <svg class="stroke-current text-grey-300" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+        </div>
+        <p class="font-sans font-semibold text-md text-grey-500">
+          Privacy Policy
+        </p>
+      </div>
+    </a>
+  </div>
+  <div class="mb-3 px-2">
+    <a class="block" href="https://www.simple.org/privacy">
+      <div class="flex py-2 px-3 bg-white rounded-md transition-bg duration-250 ease-in-expo">
+        <div class="relative top-1 mr-2">
+          <svg class="stroke-current text-grey-300" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        </div>
+        <p class="font-sans font-semibold text-md text-grey-500">
+          License
+        </p>
+      </div>
+    </a>
+  </div>
+  <div class="mb-1 pt-4 px-6 border-t border-grey-200">
+    <div class="mb-3">
+      <p class="font-sans font-semibold text-md text-grey-500">
+        Account
+      </p>
+      <p class="font-sans font-medium text-sm text-grey-400">
+        Signed in as
+        <span class="font-semibold">
+          cvho@simple.org
+        </span>
+      </p>
+    </div>
+    <a class="flex align-center justify-center py-2 px-4 bg-white rounded-md border border-grey-200" href="/" type="button">
+      <div class="flex">
+        <div class="relative top-1 mr-2 opacity-50">
+          <svg class="stroke-current text-red-200" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+        </div>
+        <p class="font-sans text-md font-semibold text-red-200">
+          Logout
+        </p>
+      </div>
+    </a>
+  </div>
+</div>
+<div class="mb-2 pt-8 px-4 md:flex md:items-center md:justify-between md:max-w-6xl md:m-auto md:pt-24">
+  <div>
+    <div class="flex items-center mb-4">
+      <div class="mr-2">
+        <p class="font-roboto font-bold text-sm text-blue-200">
+          All states
+        </p>
+      </div>
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <path d="M3.26651 1.26308C2.91116 1.61235 2.91116 2.17655 3.26651 2.52581L6.80182 6.00056L3.26651 9.47532C2.91116 9.82458 2.91116 10.3888 3.26651 10.738C3.62187 11.0873 4.1959 11.0873 4.55125 10.738L8.73349 6.62745C9.08884 6.27819 9.08884 5.71399 8.73349 5.36472L4.55125 1.25412C4.20501 0.913814 3.62187 0.913814 3.26651 1.26308Z" fill="black" fill-opacity="0.18"/>
+      </svg>
+      <div class="mr-2 ml-2">
+        <p class="font-roboto font-bold text-sm text-blue-200">
+          <%= @state_name %>
+        </p>
+      </div>
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <path d="M3.26651 1.26308C2.91116 1.61235 2.91116 2.17655 3.26651 2.52581L6.80182 6.00056L3.26651 9.47532C2.91116 9.82458 2.91116 10.3888 3.26651 10.738C3.62187 11.0873 4.1959 11.0873 4.55125 10.738L8.73349 6.62745C9.08884 6.27819 9.08884 5.71399 8.73349 5.36472L4.55125 1.25412C4.20501 0.913814 3.62187 0.913814 3.26651 1.26308Z" fill="black" fill-opacity="0.18"/>
+      </svg>
+      <div class="ml-1">
+        <p class="font-roboto font-bold text-sm text-black">
+          <%= @district_name %>
+        </p>
+      </div>
+    </div>
+    <h1 class="font-roboto font-bold text-4xl text-black">
+      <%= @district_name %>
+    </h1>
+    <div class="flex items-center mb-2">
+      <div class="mr-1">
+        <p class="font-roboto font-bold text-lg text-black">
+          Monthly hypertension report for <%= @report_period %>
+        </p>
+      </div>
+      <div>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M2.33031 5.23408L5.21591 8.61786C5.65042 9.12738 6.35232 9.12738 6.78684 8.61786L9.67243 5.23408C10.3743 4.411 9.87298 3 8.8814 3H3.11021C2.11863 3 1.62841 4.411 2.33031 5.23408Z" fill="black" fill-opacity="0.54"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div class="hidden md:flex md:flex-col md:items-end md:justify-end md:mb-2">
+      <div class="md:mr-0 md:mb-2">
+        <p class="font-roboto font-bold text-sm text-blue-200 uppercase tracking-wider">
+          Print
+        </p>
+      </div>
+      <div>
+        <p class="font-roboto font-bold text-sm text-blue-200 uppercase tracking-wider">
+          Download data
+        </p>
+      </div>
+    </div>
+    <p class="font-roboto font-normal text-sm text-grey-400">
+      Last updated <%= @last_updated %>
+    </p>
+  </div>
+</div>
+<div class="pt-4 px-4 pb-4 md:flex md:flex-wrap md:max-w-6xl md:m-auto md:pb-0">
+  <div class="md:w-1/2 md:pr-2">
+    <div class="mb-4 p-4 rounded-md bg-white shadow-md md:flex md:flex-col md:justify-between md:h-96">
+      <div>
+        <div class="mb-4">
+          <p class="mb-1 font-roboto font-bold text-lg text-black">
+            Control rate of all HTN patients
+          </p>
+          <p class="font-roboto font-normal text-sm text-black md:w-2/3">
+            Registered HTN patients with BP &lt;140/90 at their most recent visit in the last 3 months
+          </p>
+        </div>
+        <div>
+          <p class="font-roboto font-bold text-3xl text-green-200">
+            <%= compute_percentage(@controlled_patients.values.last.to_f, @registrations.values.last.to_f, precision: 2) %>
+          </p>
+          <p class="font-roboto font-normal text-sm text-black mb-1">
+              <span class="font-bold"><%= number_with_delimiter(@controlled_patients.values.last) %></span> of <%= number_with_delimiter(@registrations.values.last) %> registered patients
+          </p>
+          <p class="font-roboto font-normal text-sm text-black">
+            <% controlled_patient_trend_percentage = compute_percentage(@controlled_patients.values.last.to_f, @hypertensive_population.to_f, precision: 2) %>
+            <% formatted_htn_pop = number_with_delimiter(@hypertensive_population) %>
+            <span class="font-bold"><%= controlled_patient_trend_percentage %></span> of estimated <%= formatted_htn_pop %> hypertensive population
+          </p>
+        </div>
+      </div>
+      <div>
+        <div class="md:relative md:h-32">
+          <canvas id="controlledPatientsTrend"></canvas>
+        </div>
+        <div class="flex justify-between mt-2">
+          <div>
+            <p class="font-roboto font-bold text-sm text-black">
+              Start
+            </p>
+            <p class="font-roboto font-normal text-sm text-black">
+              <%= @controlled_patients.keys[0] %>
+            </p>
+          </div>
+          <div class="text-right">
+            <p class="font-roboto font-bold text-sm text-black">
+              Current
+            </p>
+            <p class="font-roboto font-normal text-sm text-black">
+              <% total_controlled_patient_periods = @controlled_patients.length - 1 %>
+              <%= @controlled_patients.keys[total_controlled_patient_periods] %>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="md:w-1/2 md:pl-2">
+    <div class="mb-4 p-4 rounded-md bg-white shadow-md md:flex md:flex-col md:justify-start md:h-96">
+      <div class="mb-2">
+        <p class="mb-1 font-roboto font-bold text-lg text-black">
+          Benchmarks
+        </p>
+      </div>
+      <div class="overflow-x-scroll md:overflow-x-hidden">
+        <div class="inline-flex flex-col md:flex">
+          <div class="inline-flex py-2 border-t border-b border-grey-200 md:flex">
+            <p class="w-48 mr-4 font-roboto font-semibold text-sm text-grey-400">
+              Benchmark
+            </p>
+            <p class="w-24 mr-4 font-roboto font-semibold text-sm text-grey-400 md:w-auto md:flex-1">
+              Top district
+            </p>
+            <p class="w-24 mr-4 font-roboto font-semibold text-sm text-grey-400 md:w-auto md:flex-1">
+              Bathinda
+            </p>
+            <p class="w-12 font-roboto font-semibold text-sm text-grey-400 md:w-auto md:flex-1">
+              Difference
+            </p>
+          </div>
+          <div class="inline-flex py-2 border-b border-grey-100">
+            <p class="w-48 mr-4 font-roboto text-sm font-semibold text-black">
+              Control of registered patients
+            </p>
+            <p class="w-24 mr-4 font-roboto text-sm text-black md:w-auto md:flex-1">
+              34.3%
+            </p>
+            <p class="w-24 mr-4 font-roboto text-sm text-black md:w-auto md:flex-1">
+              29.3%
+            </p>
+            <p class="w-12 font-roboto text-sm text-red-200 md:w-auto md:flex-1">
+              -5.0%
+            </p>
+          </div>
+          <div class="inline-flex py-2 border-b border-grey-100">
+            <p class="w-48 mr-4 font-roboto font-semibold text-sm text-black">
+              Control of estimated hypertensive pop.
+            </p>
+            <p class="w-24 mr-4 font-roboto text-sm text-black md:w-auto md:flex-1">
+              4.3%
+            </p>
+            <p class="w-24 mr-4 font-roboto text-sm text-black md:w-auto md:flex-1">
+              1.9%
+            </p>
+            <p class="w-12 font-roboto text-sm text-red-200 md:w-auto md:flex-1">
+              -2.4%
+            </p>
+          </div>
+          <div class="inline-flex py-2 border-b border-grey-100">
+            <p class="w-48 mr-4 font-roboto font-semibold text-sm text-black">
+              Registered % of estimated pop.
+            </p>
+            <p class="w-24 mr-4 font-roboto text-sm text-black md:w-auto md:flex-1">
+              8.1%
+            </p>
+            <p class="w-24 mr-4 font-roboto text-sm text-black md:w-auto md:flex-1">
+              6.7%
+            </p>
+            <p class="w-12 font-roboto text-sm text-red-200 md:w-auto md:flex-1">
+              -1.4%
+            </p>
+          </div>
+          <div class="inline-flex py-2 border-b border-grey-100">
+            <p class="w-48 mr-4 font-roboto font-semibold text-sm text-black">
+              Q2-2020 cohort BP control
+            </p>
+            <p class="w-24 mr-4 font-roboto text-sm text-black md:w-auto md:flex-1">
+              38.0%
+            </p>
+            <p class="w-24 mr-4 font-roboto text-sm text-black md:w-auto md:flex-1">
+              39.0%
+            </p>
+            <p class="w-12 font-roboto text-sm text-green-200 md:w-auto md:flex-1">
+              +1.0%
+            </p>
+          </div>
+          <div class="inline-flex py-2 border-b border-grey-100">
+            <p class="w-48 mr-4 font-roboto font-semibold text-sm text-black">
+              Q2-2020 cohort BP missed visit
+            </p>
+            <p class="w-24 mr-4 font-roboto text-sm text-black md:w-auto md:flex-1">
+              27.0%
+            </p>
+            <p class="w-24 mr-4 font-roboto text-sm text-black md:w-auto md:flex-1">
+              36.0%
+            </p>
+            <p class="w-12 font-roboto text-sm text-red-200 md:w-auto md:flex-1">
+              -9.0%
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="md:w-1/2 md:pr-2">
+    <div class="mb-4 p-4 rounded-md bg-white shadow-md md:flex md:flex-col md:justify-between md:h-96">
+      <div>
+        <div class="mb-4">
+          <p class="mb-1 font-roboto font-bold text-lg text-black">
+            Cumulative registrations
+          </p>
+          <p class="font-roboto font-normal text-sm text-black md:w-2/3">
+            Total number of HTN patient registrations across all facilities
+          </p>
+        </div>
+        <div>
+          <p class="font-roboto font-bold text-3xl text-purple-200">
+            <%= number_with_delimiter(@registrations.values.last) %> patients
+          </p>
+          <p class="font-roboto font-normal text-sm text-black">
+            <% formatted_htn_pop = number_with_delimiter(@hypertensive_population) %>
+            <% cumulative_registrations_percentage = compute_percentage(@registrations.values.last.to_f, @hypertensive_population.to_f, precision: 2) %>
+            <span class="font-bold"><%= cumulative_registrations_percentage %></span> of estimated <%= formatted_htn_pop %> hypertensive population
+          </p>
+        </div>
+      </div>
+      <div>
+        <div class="md:relative md:h-32">
+          <canvas id="cumulativeRegistrations"></canvas>
+        </div>
+        <div class="flex justify-between mt-2">
+          <div>
+            <p class="font-roboto font-bold text-sm text-black">
+              Start
+            </p>
+            <p class="font-roboto font-normal text-sm text-black">
+              <%= @registrations.keys[0] %>
+            </p>
+          </div>
+          <div class="text-right">
+            <p class="font-roboto font-bold text-sm text-black">
+              Current
+            </p>
+            <p class="font-roboto font-normal text-sm text-black">
+              <% total_controlled_patient_periods = @registrations.length - 1 %>
+              <%= @registrations.keys[total_controlled_patient_periods] %>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="md:w-1/2 md:pl-2">
+    <div class="p-4 rounded-md bg-white shadow-md md:flex md:flex-col md:h-96">
+      <div class="mb-4">
+        <div class="mb-1">
+          <p class="mb-1 font-roboto font-bold text-lg text-black">
+            Quarterly cohort trend
+          </p>
+          <p class="font-roboto font-normal text-sm text-black md:w-2/3">
+            The result for all HTN patients registered in a quarter at their follow-up visit in the following quarter
+          </p>
+        </div>
+      </div>
+      <div class="md:flex-grow">
+        <% @quarterly_registrations.each_with_index do |cohort, index| %>
+          <div class="mb-3 md:flex md:items-center">
+            <div class="mb-2 md:mb-0 md:w-2/5">
+              <p class="font-roboto font-bold text-sm text-black">
+                <%= cohort["results_in"] %> results for patients
+              </p>
+              <p class="font-roboto font-medium text-sm text-black">
+                registered in <%= cohort["patients_registered"] %>
+              </p>
+            </div>
+            <div class="relative flex items-center w-full md:w-3/5">
+              <div class="flex items-center justify-center h-8 bg-green-300 hover:bg-green-hover rounded-l md:h-10" style="box-sizing: content-box; padding: 0 4px; width: <%= compute_percentage(cohort["controlled"], cohort["registered"]) %>;" data-element="bar-chart" data-id="<%= cohort["results_in"].parameterize %>-controlled">
+                <p class="font-roboto font-bold text-sm text-white">
+                  <%= compute_percentage(cohort["controlled"], cohort["registered"]) %>
+                </p>
+                <div class="hidden absolute -top-74 p-3 text-center bg-black rounded-md md:-top-68" data-element="tooltip" data-id="<%= cohort["results_in"].parameterize %>-controlled" style="width: 160px;">
+                  <p class="font-roboto font-medium text-sm text-white">
+                    <%= number_with_delimiter(cohort["controlled"]) %> patients visited with controlled BP
+                  </p>
+                  <span class="absolute right-0 left-0 w-2 h-2 my-0 mx-auto" style="border-left: 17px solid transparent; border-right: 17px solid transparent; border-top: 17px solid #000000;"></span>
+                </div>
+              </div>
+              <div class="flex items-center justify-center h-8 bg-yellow-100 hover:bg-yellow-hover md:h-10" style="box-sizing: content-box; padding: 0 4px; width: <%= compute_percentage(cohort["uncontrolled"], cohort["registered"]) %>;" data-element="bar-chart" data-id="<%= cohort["results_in"].parameterize %>-uncontrolled">
+                <p class="font-roboto font-bold text-sm text-white" style="color: #AB8600;">
+                   <%= compute_percentage(cohort["uncontrolled"], cohort["registered"]) %>
+                </p>
+                <div class="hidden absolute -top-74 p-3 text-center bg-black rounded-md md:-top-68" data-element="tooltip" data-id="<%= cohort["results_in"].parameterize %>-uncontrolled" style="width: 160px;">
+                  <p class="font-roboto font-medium text-sm text-white">
+                    <%= number_with_delimiter(cohort["uncontrolled"]) %> patients visited with uncontrolled BP
+                  </p>
+                  <span class="absolute right-0 left-0 w-2 h-2 my-0 mx-auto" style="border-left: 17px solid transparent; border-right: 17px solid transparent; border-top: 17px solid #000000;"></span>
+                </div>
+              </div>
+              <div class="flex items-center justify-center h-8 bg-red-200 rounded-r hover:bg-red-hover md:h-10" style="box-sizing: content-box; padding: 0 4px; width: <%= compute_percentage(cohort["no_bp"], cohort["registered"]) %>;" data-element="bar-chart" data-id="<%= cohort["results_in"].parameterize %>-no-bp">
+                <p class="font-roboto font-bold text-sm text-white">
+                    <%= compute_percentage(cohort["no_bp"], cohort["registered"]) %>
+                </p>
+                <div class="hidden absolute -top-74 p-3 text-center bg-black rounded-md md:-top-68" data-element="tooltip" data-id="<%= cohort["results_in"].parameterize %>-no-bp" style="width: 160px;">
+                  <p class="font-roboto font-medium text-sm text-white">
+                    <%= number_with_delimiter(cohort["no_bp"]) %> patients didn’t have a BP taken
+                  </p>
+                  <span class="absolute right-0 left-0 w-2 h-2 my-0 mx-auto" style="border-left: 17px solid transparent; border-right: 17px solid transparent; border-top: 17px solid #000000;"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <div class="flex pt-4 border-t border-grey-200 md:justify-end">
+        <div class="flex items-center mr-6">
+          <p class="font-roboto font-bold text-sm text-green-200 leading-tight">
+            Visited and BP &lt;140/90
+          </p>
+        </div>
+        <div class="flex items-center mr-6">
+          <p class="font-roboto font-bold text-sm text-yellow-300 leading-tight" style="color: #AB8600;">
+            Visited and BP &ge;140/90
+          </p>
+        </div>
+        <div class="flex items-center">
+          <p class="font-roboto font-bold text-sm text-red-200 leading-tight">
+            No BP measure
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="px-4 pb-4 md:flex md:m-auto md:max-w-6xl md:pb-20">
+  <div class="p-2 rounded-md bg-white shadow-md">
+    <%= image_tag("screenshot.png") %>
+  </div>
+</div>
+<script>
+  const controlledPatientData = JSON.parse('<%= raw(@controlled_patients.to_json) %>');
+  const registrationsData = JSON.parse('<%= raw(@registrations.to_json) %>');
+  const quarterlyRegistrationsData = JSON.parse('<%= raw(@quarterly_registrations.to_json) %>');
+  const controlledPatients = Object.entries(controlledPatientData);
+  const registrations = Object.entries(registrationsData);
+  const controlRate = controlledPatients.map((key, index) => {
+    const registrationData = registrations[index];
+    const controlRate = parseFloat(((key[1]/registrationData[1])*100).toFixed(2));
+    return [key[0], controlRate];
+  });
+  var controlledPatientsTrendCanvas =
+    document.getElementById("controlledPatientsTrend").getContext("2d");
+  var greenGradientFill =
+    controlledPatientsTrendCanvas.createLinearGradient(0, 400, 0, -300);
+  greenGradientFill.addColorStop(0, "rgba(81, 205, 130, 0)");
+  greenGradientFill.addColorStop(1, "rgba(81, 205, 130, 0.2)");
+  var controlledPatientsTrendChart = new Chart(
+    controlledPatientsTrendCanvas,
+    {
+      type: "line",
+      data: {
+        labels: controlRate.map(key => key[0]),
+        datasets: [{
+          backgroundColor: greenGradientFill,
+          borderColor: "rgba(81, 205, 130, 1)",
+          data: controlRate.map(key => key[1]),
+        }],
+      },
+      options: {
+        animation: false,
+        responsive: true,
+        maintainAspectRatio: false,
+        elements: {
+          point: {
+            pointStyle: "circle",
+            backgroundColor: "rgba(81, 205, 130, 1)",
+            hoverRadius: 5,
+          },
+        },
+        legend: {
+          display: false,
+        },
+        scales: {
+          xAxes: [{
+            display: false,
+            gridLines: {
+              display: false,
+              drawBorder: false,
+            },
+          }],
+          yAxes: [{
+            display: false,
+            gridLines: {
+              display: false,
+              drawBorder: false,
+            },
+          }],
+        },
+        tooltips: {
+          titleFontFamily: "Roboto",
+          bodyFontFamily: "Roboto",
+          backgroundColor: "rgb(0, 0, 0)",
+          titleFontSize: 16,
+          bodyFontSize: 14,
+          displayColors: false,
+          yPadding: 12,
+          xPadding: 12,
+          callbacks: {
+            label: function(tooltipItem, data) {
+              const controlledPatientValue = controlledPatients.map(key => key[1])[tooltipItem.index];
+              const formattedValue = controlledPatientValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+              let value = parseInt(tooltipItem.value).toFixed(1);
+              return `${value}% (${formattedValue} patients)`;
+            },
+          },
+        }
+      }
+    }
+  );
+  var cumulativeRegistrationsCanvas =
+    document.getElementById("cumulativeRegistrations").getContext("2d");
+  var purpleGradientFill =
+    cumulativeRegistrationsCanvas.createLinearGradient(0, 400, 0, -300);
+    purpleGradientFill.addColorStop(0, "rgba(157, 74, 199, 0)");
+    purpleGradientFill.addColorStop(1, "rgba(157, 74, 199, 0.2)");
+  var cumulativeRegistrationsChart = new Chart(
+    cumulativeRegistrationsCanvas,
+    {
+      type: "bar",
+      data: {
+        labels: registrations.map(key => key[0]),
+        datasets: [{
+          data: registrations.map(key => key[1]),
+          backgroundColor: purpleGradientFill,
+          borderColor: "rgba(157, 74, 199, 1)",
+          borderWidth:{ top:2, right:0, bottom:0, left:0 },
+          hoverBackgroundColor: "rgba(157, 74, 199, 1)",
+        },],
+      },
+      options: {
+        animation: false,
+        responsive: true,
+        maintainAspectRatio: false,
+        elements: {
+          point: {
+            radius: 0,
+          },
+        },
+        legend: {
+          display: false,
+        },
+        scales: {
+          xAxes: [{
+            stacked: true,
+            barPercentage: 1,
+            display: false,
+            gridLines: {
+              display: false,
+              drawBorder: false,
+            },
+          }],
+          yAxes: [{
+            stacked: true,
+            display: false,
+            gridLines: {
+              display: false,
+              drawBorder: false,
+            },
+          }],
+        },
+        tooltips: {
+          titleFontFamily: "Roboto",
+          bodyFontFamily: "Roboto",
+          backgroundColor: "rgb(0, 0, 0)",
+          titleFontSize: 16,
+          bodyFontSize: 14,
+          displayColors: false,
+          yPadding: 12,
+          xPadding: 12,
+          callbacks: {
+            label: function(tooltipItem, data) {
+              var value = tooltipItem.value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+              value += " registered patients";
+              return value;
+            },
+          },
+        }
+      }
+    }
+  );
+  const barChartNodes = document.querySelectorAll('[data-element="bar-chart"]');
+  const tooltipNodes = document.querySelectorAll('[data-element="tooltip"]');
+  barChartNodes.forEach(node => {
+    const tooltipId = node.getAttribute("data-id");
+    node.addEventListener("mouseenter", () => {
+      toggleTooltipVisibility(tooltipId);
+    });
+    node.addEventListener("mouseleave", () => {
+      toggleTooltipVisibility(tooltipId);
+    });
+  });
+  function toggleTooltipVisibility(tooltipId) {
+    const tooltipNode =
+      Array.from(tooltipNodes).find(node => node.getAttribute("data-id") === tooltipId);
+    tooltipNode.classList.toggle("hidden");
+    tooltipNode.classList.toggle("block");
+  }
+  // Nav
+  let isUserDropdownVisible = false;
+  const lightBackgroundToggle = ['bg-white', 'bg-grey-100'];
+  const lightOpacityToggle = ['opacity-0', 'opacity-25'];
+  const fullOpacityToggle = ['opacity-0', 'opacity-100'];
+  const translateXFullToggle = ['translate-x-0', 'translate-x-full'];
+  const pointerEventToggle = ['pointer-events-none', 'pointer-events-auto'];
+  const translateYToggle = ['translate-y-0', 'translate-y-1'];
+  const $body = document.getElementsByTagName('body')[0];
+  const $menuButton = document.querySelector('[data-js="menu-button"]');
+  const $sidebarButton = document.querySelector('[data-js="sidebar-button"]');
+  const $overlay = document.querySelector('[data-js="overlay"]');
+  const $sidebar = document.querySelector('[data-js="sidebar"]');
+  const $accountButton = document.querySelector('[data-js="account-button"]');
+  const $accountDropdown = document.querySelector('[data-js="account-dropdown"]');
+
+  document.addEventListener('click', (event) => {
+    const wasAccountDropdownClicked = $accountDropdown.contains(event.target);
+    const wasAccountButtonClicked = $accountButton.contains(event.target);
+
+    if (!wasAccountDropdownClicked && !wasAccountButtonClicked && isUserDropdownVisible) {
+      toggleAccountDropdownPosition();
+    }
+  });
+
+  $menuButton.addEventListener('click', () => {
+    toggleMenuBackground();
+    toggleSidebarPosition();
+  });
+
+  $menuButton.addEventListener('touchstart', () => {
+    toggleMenuBackground();
+  });
+
+  $menuButton.addEventListener('touchend', () => {
+    toggleMenuBackground();
+    toggleSidebarPosition();
+  });
+
+  $overlay.addEventListener('touchend', () => {
+    toggleSidebarPosition();
+  });
+
+  $sidebarButton.addEventListener('click', () => {
+    toggleSidebarPosition();
+  });
+
+  $accountButton.addEventListener('click', () => {
+    toggleAccountDropdownPosition();
+  });
+
+  function toggleAccountDropdownPosition() {
+    if (isUserDropdownVisible) {
+      isUserDropdownVisible = false;
+    } else {
+      isUserDropdownVisible = true;
+    };
+
+    toggleClasses($accountDropdown, translateYToggle);
+    toggleClasses($accountDropdown, fullOpacityToggle);
+  }
+
+  function toggleMenuBackground() {
+    toggleClasses($menuButton, lightBackgroundToggle);
+  }
+
+  function toggleSidebarPosition() {
+    toggleClasses($overlay, lightOpacityToggle);
+    toggleClasses($overlay, pointerEventToggle);
+    toggleClasses($sidebar, translateXFullToggle);
+  }
+
+  function toggleClasses($element, cssClasses) {
+    cssClasses.forEach(cssClass => {
+      $element.classList.toggle(cssClass);
+    });
+  }
+</script>
