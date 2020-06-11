@@ -40,7 +40,7 @@ RSpec.feature 'Facility page functionality', type: :feature do
         facility_group.add_new_facility_group_without_assigningfacility('IHMI', 'testfacilitygroup', 'testDescription', protocol_01.name)
 
         expect(page).to have_content('Bathinda')
-        expect(page).to have_content('testfacilitygroup')
+        expect(page).to have_content('Testfacilitygroup')
       end
 
       it 'create new facility group with facility' do
@@ -50,8 +50,8 @@ RSpec.feature 'Facility page functionality', type: :feature do
         facility_group.add_new_facility_group('IHMI', 'testfacilitygroup', 'testDescription', unassociated_facility.name, protocol_01.name)
 
         expect(page).to have_content('Bathinda')
-        expect(page).to have_content('testfacilitygroup')
-        facility_page.is_edit_button_present_for_facilitygroup('testfacilitygroup')
+        expect(page).to have_content('Testfacilitygroup')
+        facility_page.is_edit_button_present_for_facilitygroup('Testfacilitygroup')
       end
 
       it 'admin should be able to delete facility group without facility ' do
@@ -63,7 +63,7 @@ RSpec.feature 'Facility page functionality', type: :feature do
       it 'admin should be able to edit facility group info ' do
         facility_page.click_add_facility_group_button
         facility_group.add_new_facility_group('IHMI', 'testfacilitygroup', 'testDescription', unassociated_facility.name, protocol_01.name)
-        facility_page.click_edit_button_present_for_facilitygroup('testfacilitygroup')
+        facility_page.click_edit_button_present_for_facilitygroup('Testfacilitygroup')
 
         # deselecting previously selected facility
         facility_group.select_unassociated_facility(unassociated_facility.name)
