@@ -32,9 +32,9 @@ RSpec.describe FacilityGroup, type: :model do
   end
 
   describe 'Attribute sanitization' do
-    it 'squishes and upcases the first letter of the name' do
-      facility_group = FactoryBot.create(:facility_group, name: "facility  Group  ")
-      expect(facility_group.name).to eq("Facility Group")
+    it 'squishes and titleizes the first letter of the name' do
+      facility_group = FactoryBot.create(:facility_group, name: "facility  group name  ")
+      expect(facility_group.name).to eq("Facility Group Name")
     end
   end
 end

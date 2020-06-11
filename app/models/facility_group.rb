@@ -23,7 +23,7 @@ class FacilityGroup < ApplicationRecord
 
   friendly_id :name, use: :slugged
 
-  auto_strip_attributes :name, squish: true, upcase_first: true
+  auto_strip_attributes :name, squish: true, titleize: true
 
   def report_on_patients
     Patient.where(registration_facility: facilities)
