@@ -23,16 +23,16 @@ class PatientsController < AdminController
     set_page
     set_per_page
     set_facility_id
-    authorize([:adherence_follow_up, Patient])
+    authorize([:overdue_list, Patient])
 
     if current_facility
       @patients =
-        paginate(policy_scope([:adherence_follow_up, Patient])
+        paginate(policy_scope([:overdue_list, Patient])
                    .where(registration_facility: current_facility)
                    .search_by_address(search_query))
     else
       @patients =
-        paginate(policy_scope([:adherence_follow_up, Patient])
+        paginate(policy_scope([:overdue_list, Patient])
                    .search_by_address(search_query))
     end
   end
