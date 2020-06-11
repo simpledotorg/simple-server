@@ -730,4 +730,107 @@
     tooltipNode.classList.toggle("hidden");
     tooltipNode.classList.toggle("block");
   }
+  // Nav
+  let isUserDropdownVisible = false;
+  const lightBackgroundToggle = ['bg-white', 'bg-grey-100'];
+  const lightOpacityToggle = ['opacity-0', 'opacity-25'];
+  const fullOpacityToggle = ['opacity-0', 'opacity-100'];
+  const translateXFullToggle = ['translate-x-0', 'translate-x-full'];
+  const pointerEventToggle = ['pointer-events-none', 'pointer-events-auto'];
+  const translateYToggle = ['translate-y-0', 'translate-y-1'];
+  const $body = document.getElementsByTagName('body')[0];
+  const $menuButton = document.querySelector('[data-js="menu-button"]');
+  const $sidebarButton = document.querySelector('[data-js="sidebar-button"]');
+  const $overlay = document.querySelector('[data-js="overlay"]');
+  const $sidebar = document.querySelector('[data-js="sidebar"]');
+  const $accountButton = document.querySelector('[data-js="account-button"]');
+  const $accountDropdown = document.querySelector('[data-js="account-dropdown"]');
+  const $bpControlButton = document.querySelector('[data-js="bp-control-button"]');
+  const $bpControlTooltip = document.querySelector('[data-js="bp-control-tooltip"]');
+  const $missedVisitButton = document.querySelector('[data-js="missed-visit-button"]');
+  const $missedVisitTooltip = document.querySelector('[data-js="missed-visit-tooltip"]');
+
+  window.addEventListener("load", () => {
+    toggleClasses($body, ["preload"]);
+  });
+
+  document.addEventListener('click', (event) => {
+    const wasAccountDropdownClicked = $accountDropdown.contains(event.target);
+    const wasAccountButtonClicked = $accountButton.contains(event.target);
+
+    if (!wasAccountDropdownClicked && !wasAccountButtonClicked && isUserDropdownVisible) {
+      toggleAccountDropdownPosition();
+    }
+  });
+
+  $menuButton.addEventListener('click', () => {
+    toggleMenuBackground();
+    toggleSidebarPosition();
+  });
+
+  $menuButton.addEventListener('touchstart', () => {
+    toggleMenuBackground();
+  });
+
+  $menuButton.addEventListener('touchend', () => {
+    toggleMenuBackground();
+    toggleSidebarPosition();
+  });
+
+  $overlay.addEventListener('touchend', () => {
+    toggleSidebarPosition();
+  });
+
+  $sidebarButton.addEventListener('click', () => {
+    toggleSidebarPosition();
+  });
+
+  $accountButton.addEventListener('click', () => {
+    toggleAccountDropdownPosition();
+  });
+
+  $bpControlButton.addEventListener('click', () => {
+    toggleBpControlTooltipPosition();
+  });
+
+  $missedVisitButton.addEventListener('click', () => {
+    toggleMissedVisitTooltipPosition();
+  });
+
+  function toggleMissedVisitTooltipPosition() {
+    toggleClasses($missedVisitTooltip, translateYToggle);
+    toggleClasses($missedVisitTooltip, fullOpacityToggle);
+  }
+
+  function toggleBpControlTooltipPosition() {
+    toggleClasses($bpControlTooltip, translateYToggle);
+    toggleClasses($bpControlTooltip, fullOpacityToggle);
+  }
+
+  function toggleAccountDropdownPosition() {
+    if (isUserDropdownVisible) {
+      isUserDropdownVisible = false;
+    } else {
+      isUserDropdownVisible = true;
+    };
+
+    toggleClasses($accountDropdown, translateYToggle);
+    toggleClasses($accountDropdown, fullOpacityToggle);
+  }
+
+  function toggleMenuBackground() {
+    toggleClasses($menuButton, lightBackgroundToggle);
+  }
+
+  function toggleSidebarPosition() {
+    toggleClasses($overlay, lightOpacityToggle);
+    toggleClasses($overlay, pointerEventToggle);
+    toggleClasses($sidebar, translateXFullToggle);
+  }
+
+  function toggleClasses($element, cssClasses) {
+    cssClasses.forEach(cssClass => {
+      $element.classList.toggle(cssClass);
+    });
+  }
 </script>
