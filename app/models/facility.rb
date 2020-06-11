@@ -49,7 +49,7 @@ class Facility < ApplicationRecord
   liberal_enum :facility_size
 
   auto_strip_attributes :name, squish: true, upcase_first: true
-  auto_strip_attributes :district, squish: true, titleize: true
+  auto_strip_attributes :district, squish: true, upcase_first: true
 
   with_options if: :import do |facility|
     facility.validates :organization_name, presence: true

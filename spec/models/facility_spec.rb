@@ -187,9 +187,9 @@ RSpec.describe Facility, type: :model do
       expect(facility.name).to eq("CH name 1")
     end
 
-    it 'squishes and titleizes the district name' do
+    it 'squishes and upcases the first letter of the district name' do
       facility = FactoryBot.create(:facility, district: " district name   chennai  ")
-      expect(facility.district).to eq("District Name Chennai")
+      expect(facility.district).to eq("District name chennai")
     end
   end
 end
