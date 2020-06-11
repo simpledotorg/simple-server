@@ -68,7 +68,7 @@ class AppointmentsController < AdminController
       appointment.mark_patient_already_visited
     elsif call_result == :remind_to_call_later
       appointment.mark_remind_to_call_later
-    elsif Appointment.cancel_reasons.values.include? call_result.to_s
+    elsif Appointment.cancel_reasons.value? call_result.to_s
       appointment.mark_appointment_cancelled(call_result)
     end
 

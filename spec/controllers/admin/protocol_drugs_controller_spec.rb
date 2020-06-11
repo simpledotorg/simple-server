@@ -17,7 +17,7 @@ RSpec.describe Admin::ProtocolDrugsController, type: :controller do
 
   describe "GET #index" do
     it "returns a success response" do
-      protocol_drug = ProtocolDrug.create! valid_attributes
+      ProtocolDrug.create! valid_attributes
       get :index, params: {protocol_id: protocol.id}
       expect(response).to be_successful
     end

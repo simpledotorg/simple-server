@@ -26,7 +26,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
 
   describe "GET #index" do
     it "returns a success response" do
-      facility_group = FacilityGroup.create! valid_attributes
+      FacilityGroup.create! valid_attributes
       get :index, params: {organization_id: organization.id}
       expect(response).to be_successful
     end
