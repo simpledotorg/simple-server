@@ -21,7 +21,7 @@ class Api::V3::TwilioSmsDeliveryController < ApplicationController
   end
 
   def validate_request
-    validator = Twilio::Security::RequestValidator.new(ENV.fetch("TWILIO_REMINDERS_ACCOUNT_AUTH_TOKEN"))
+    validator = Twilio::Security::RequestValidator.new(ENV.fetch("TWILIO_AUTH_TOKEN"))
     unless validator.validate(request.original_url,
       request.request_parameters,
       request.headers["X-Twilio-Signature"])
