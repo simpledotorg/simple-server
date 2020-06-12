@@ -14,7 +14,7 @@
     },
     {
       "country_code": "ET",
-      "endpoint": "https://api-qa.simple.org/api/",
+      "endpoint": "https://api.et.simple.org/api/",
       "display_name": "Ethiopia",
       "isd_code": "251"
     }
