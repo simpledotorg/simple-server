@@ -9,19 +9,20 @@ om-ET:
     error_messages:
       unknown_user: "Fayyadamaa sana hubachuu hin dandeenye. Maaloo sakatta’ii fii deebisii yaali"
       invalid_otp: 'OTP’n kee hin firoomu Deebisii yaali?'
-      expired_otp: 'OTP haaraa si barbaachisa. Haaraa gaafadhu.'
+      expired_otp: "OTP kee yeroon itti darbeera. Haaraa gaafadhu."
       invalid_password: 'Jechi darbaan kee wal hin fakkaatu Deebisii yaali?'
+      account_locked: "Heddi kee yeroowwan %{minutes} daqiiqaawwan dhufaniif cufamee jira. Maaloo xiqqoo turii akkasumas deebisii yaali"
   sms:
-    request_otp: '<#> %{otp} Koodii mirkaneeffannaa kee salphaadha\n%{app_signature}'
+    request_otp: '<#> %{otp} koodii mirkaneeffannaa kee isa salphaadha\n%{app_signature}'
     appointment_reminders:
-      missed_visit_sms_reminder: 'Hojjattoonni %{facility_name} waa’ee kee fii fayyummaa onnee keetii yaadu Tuutni fayyaa keenyaa yaaddoo yookan gaaffilee hordoffii kamiiyyuuu yoo qabaatte as siif jiru.'
-      missed_visit_whatsapp_reminder: 'Hojjattoonni %{facility_name} waa’ee kee fii fayyummaa onnee keetii yaadu Tuutni fayyaa keenyaa yaaddoo yookan gaaffilee hordoffii kamiiyyuuu yoo qabaatte as siif jiru.'
-    patient_request_otp: '%{otp} ‘n koodii mirkaneeffannaa keeti\n'
+      missed_visit_sms_reminder: 'Hojjattoonni keenya kan %{facility_name} waa’ee kee fii waa’e fayyummaa onnee keetii yaaddaa jiru. Maaloo dawaa dhiibbaa dhiigaa kee itti fufi. Dawaa kee jiddu gala dhiyeenyaa jiru irraa walitti qabadhu. ANM yookan ASHA kee qunnami.'
+      missed_visit_whatsapp_reminder: 'Hojjattoonni keenya kan %{facility_name} waa’ee kee fii waa’e fayyummaa onnee keetii yaaddaa jiru. Maaloo dawaa dhiibbaa dhiigaa kee itti fufi. Dawaa kee jiddu gala dhiyeenyaa jiru irraa walitti qabadhu. ANM yookan ASHA kee qunnami.'
+    patient_request_otp: '<#> %{otp} koodii rageeffannaa BP keetiiti \n%{app_signature}'
   analytics:
-    followup_patients: "Dhukkubsattoota hordoffii meeqatu ilaalame %{facility_name}?"
+    followup_patients: "Dhukkubsattoota hordoffii meeqatu %{facility_name}ilaalame ?"
     patients_enrolled: "Dhubsattoota haaraa meeqatu %{facility_name}tti makame?"
-    all_time_patients: "Yeroo hunda: Dhukkubsattoota %{count}"
-    updated_at: "%{time}rratti haaromfame"
+    all_time_patients: "Yeroo hunda: dhukkubsattoota %{count}"
+    updated_at: "Yeoo %{time} kan haaroomfame"
   user_analytics:
     hypertension: 'Baayyina dhiiga'
     diabetes: 'Sukkaara'
@@ -32,18 +33,18 @@ om-ET:
     hypertension_control: 'Too’annoo baayyina dhiiga'
     hypertension_control_desc: 'Dhukkansattoota baayyina dhiigaa meeqatu hordoffii isaanii darbe irratti ji’a sarbee keessatti BP 140/90 gadi qaba?'
     notes: 'Yaaddannoowwan'
-    footer_note_1: 'Guyyaa gochoota %{facility_name} ttii hundaaf. Daataan yeroodhan ala yoo ta’e, fuulmanee irratti geessituu "Sync pending" irratti cuqaasi.'
+    footer_note_1: 'Ragaan kan goochoota hunda %{facility_name} raawwatamaniiti. Daataan yeroodhan ala yoo ta’e, fuulmanee irratti geessituu "Sync pending" irratti cuqaasi.'
     footer_note_2: 'Dhukkubsataan hordoffii ji’atti yeroo tokko qofaaf lakkaa’ama. Yoo dhukkubsataan ji’a keessatti yeroo hedduuf hrdofame, inni yookan ishiin yeroo tokko qofaaf lakkaawamti.'
     thank_you: 'Galatoomi'
     thank_you_note: 'Hojii cimaa dhukkubsattoota baayyina dhiiigaa tajaajiluudhaf taasistuuf galatoomi. Hojiin kee lubbuu balaa onnee fii dhiigni sammutti jiguu irraa baraara.'
-    updated: 'Haaromfameera: %{time}'
-    ratio_string: '%{value_1} of %{value_2}'
+    updated: 'Haaromfameera:  %{time}'
+    ratio_string: '%{value_1} kan {value_2}'
   dashboard:
     graphics:
-      graphics_title_html: "<b>%{current_quarter_string}</b> keessatti dhukkubsattoota %{patients_in_previous_quarter} yeroo <b>%{previous_quarter_string}</b> keessatti galmaa’an irratti maaltu ta’e?"
+      graphics_title_html: "Maalyu ta’e dhukkubsattoota <b>%{current_quarter_string}</b> kan %{patients_in_previous_quarter} galmee yeroo <b>%{previous_quarter_string}</b> taasisan irratti?"
       report_name: "Gabaasa baayyina dhiiga"
-      patients_controlled_in_quarter_html: "Dhukkubsattoota BP wajjiin daawwataman &lt;"
-      patients_uncontrolled_in_quarter_html: "Dhukkubsattoota BP wajjiin daawwataman &ge;"
+      patients_controlled_in_quarter_html: "Dhukkubsattoota BP &lt wajjiin daawwataman"
+      patients_uncontrolled_in_quarter_html: "Dhukkubsattoota BP &ge wajjiin daawwataman"
       patients_defaulted_in_quarter_html: "Dhukkubsattoonni hordoffii eegame hin hirmaanne"
       new_patients_registered: "Galmeewwan haaraa"
       patients_called_for_followup: "Dhukkubsattoota hordoffiidhaf"
