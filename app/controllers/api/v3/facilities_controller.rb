@@ -6,7 +6,7 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
   skip_before_action :validate_current_facility_belongs_to_users_facility_group, only: [:sync_to_user]
 
   def sync_to_user
-    __sync_to_user__('facilities')
+    __sync_to_user__("facilities")
   end
 
   private
@@ -20,8 +20,8 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
   end
 
   def response_process_token
-    { other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
-      resync_token: resync_token }
+    {other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
+     resync_token: resync_token}
   end
 
   def records_to_sync

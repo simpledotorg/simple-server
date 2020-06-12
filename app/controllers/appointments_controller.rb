@@ -30,7 +30,7 @@ class AppointmentsController < AdminController
         render layout: "overdue"
       end
       format.csv do
-        send_data render_to_string('index.csv.erb'), filename: download_filename
+        send_data render_to_string("index.csv.erb"), filename: download_filename
       end
     end
   end
@@ -39,10 +39,10 @@ class AppointmentsController < AdminController
     call_result = appointment_params[:call_result].to_sym
 
     if set_appointment_status_from_call_result(@appointment, call_result)
-      redirect_to appointments_url(params: { facility_id: selected_facility_id, page: page}),
-                  notice: "Saved. #{@appointment.patient.full_name} marked as \"#{call_result.to_s.humanize}\""
+      redirect_to appointments_url(params: {facility_id: selected_facility_id, page: page}),
+        notice: "Saved. #{@appointment.patient.full_name} marked as \"#{call_result.to_s.humanize}\""
     else
-      redirect_back fallback_location: root_path, alert: 'Something went wrong!'
+      redirect_back fallback_location: root_path, alert: "Something went wrong!"
     end
   end
 
@@ -68,7 +68,7 @@ class AppointmentsController < AdminController
       appointment.mark_patient_already_visited
     elsif call_result == :remind_to_call_later
       appointment.mark_remind_to_call_later
-    elsif Appointment.cancel_reasons.values.include? call_result.to_s
+    elsif Appointment.cancel_reasons.value? call_result.to_s
       appointment.mark_appointment_cancelled(call_result)
     end
 
@@ -88,7 +88,7 @@ class AppointmentsController < AdminController
   end
 
   def download_filename
-    facility_name = current_facility.present? ? current_facility.name.parameterize : 'all'
+    facility_name = current_facility.present? ? current_facility.name.parameterize : "all"
     "overdue-patients_#{facility_name}_#{Time.current.to_s(:number)}.csv"
   end
 end

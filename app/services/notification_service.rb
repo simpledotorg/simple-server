@@ -40,14 +40,14 @@ class NotificationService
   end
 
   def twilio_account_sid
-    ENV.fetch("TWILIO_REMINDERS_ACCOUNT_SID")
+    ENV.fetch("TWILIO_ACCOUNT_SID")
   end
 
   def twilio_auth_token
-    ENV.fetch("TWILIO_REMINDERS_ACCOUNT_AUTH_TOKEN")
+    ENV.fetch("TWILIO_AUTH_TOKEN")
   end
 
   def twilio_sender_number
-    ENV.fetch("TWILIO_REMINDERS_ACCOUNT_PHONE_NUMBER")
+    ENV.fetch("TWILIO_PHONE_NUMBER")
   end
 end

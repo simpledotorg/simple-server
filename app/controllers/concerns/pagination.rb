@@ -21,7 +21,7 @@ module Pagination
       paged_records = records.page(@page)
       return paged_records if records.size.zero?
 
-      paged_records.per(@per_page == 'All' ? records.size : @per_page.to_i)
+      paged_records.per(@per_page == "All" ? records.size : @per_page.to_i)
     end
   end
 end
