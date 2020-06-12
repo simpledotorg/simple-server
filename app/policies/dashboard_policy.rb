@@ -1,5 +1,4 @@
 class DashboardPolicy < Struct.new(:user, :dashboard)
-
   def show?
     Pundit.policy(user, [:cohort_report, Organization]).index? ||
       Pundit.policy(user, [:manage, :user, User]).index?
@@ -7,10 +6,6 @@ class DashboardPolicy < Struct.new(:user, :dashboard)
 
   def overdue_list?
     Pundit.policy(user, [:overdue_list, Appointment]).index?
-  end
-
-  def adherence_follow_up?
-    Pundit.policy(user, [:adherence_follow_up, Patient]).index?
   end
 
   def manage_organizations?
@@ -44,5 +39,13 @@ class DashboardPolicy < Struct.new(:user, :dashboard)
 
   def view_my_facilities?
     user.has_permission?(:view_my_facilities)
+  end
+
+  def view_sidekiq_ui?
+    user.has_permission?(:view_sidekiq_ui)
+  end
+
+  def view_flipper_ui?
+    user.has_permission?(:view_flipper_ui)
   end
 end

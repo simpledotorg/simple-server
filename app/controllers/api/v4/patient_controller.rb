@@ -7,7 +7,7 @@ class Api::V4::PatientController < PatientAPIController
       identifier: passport_id,
       identifier_type: "simple_bp_passport"
     )
-    patient  = passport&.patient
+    patient = passport&.patient
     return head :not_found unless patient.present? && patient.latest_mobile_number.present?
 
     authentication = PassportAuthentication.find_or_create_by!(patient_business_identifier: passport)
@@ -17,7 +17,7 @@ class Api::V4::PatientController < PatientAPIController
       authentication.save!
     end
 
-    unless FeatureToggle.enabled?('FIXED_OTP_ON_REQUEST_FOR_QA')
+    unless FeatureToggle.enabled?("FIXED_OTP_ON_REQUEST_FOR_QA")
       SendPatientOtpSmsJob.perform_later(authentication)
     end
 
@@ -29,7 +29,7 @@ class Api::V4::PatientController < PatientAPIController
       identifier: passport_id,
       identifier_type: "simple_bp_passport"
     )
-    patient  = passport&.patient
+    patient = passport&.patient
     return head :unauthorized unless patient.present?
 
     authentication = PassportAuthentication.find_by!(patient_business_identifier: passport)
@@ -37,7 +37,7 @@ class Api::V4::PatientController < PatientAPIController
     if authentication.validate_otp(otp)
       render json: access_token_response(authentication), status: :ok
     else
-      return head :unauthorized
+      head :unauthorized
     end
   end
 

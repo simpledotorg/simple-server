@@ -131,6 +131,11 @@ th sup {
             border: none !important;
         }
 
+        th.sort-label.sort-label-small {
+          padding: 8px 4px;
+          min-width: 40px;
+        }
+
         a {
             display: block;
             white-space: nowrap;

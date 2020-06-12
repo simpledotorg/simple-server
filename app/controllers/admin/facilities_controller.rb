@@ -1,13 +1,32 @@
 class Admin::FacilitiesController < AdminController
   include FileUploadable
+  include Pagination
+  include SearchHelper
+
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
   before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy]
   before_action :initialize_upload, :validate_file_type, :validate_file_size, :parse_file,
-                :validate_facility_rows, :if => :file_exists?, only: [:upload]
+    :validate_facility_rows, if: :file_exists?, only: [:upload]
 
   def index
     authorize([:manage, :facility, Facility])
-    @organizations = policy_scope([:manage, :facility, Organization])
+
+    if searching?
+      facilities = policy_scope([:manage, :facility, Facility]).search_by_name(search_query)
+      facility_groups = FacilityGroup.where(facilities: facilities)
+
+      @organizations = Organization.where(facility_groups: facility_groups)
+      @facility_groups = facility_groups.group_by(&:organization)
+      @facilities = facilities.group_by(&:facility_group)
+    else
+      @organizations = policy_scope([:manage, :facility, Organization])
+      @facility_groups = @organizations.map { |organization|
+        [organization, policy_scope([:manage, :facility, organization.facility_groups])]
+      }.to_h
+      @facilities = @facility_groups.values.flatten.map { |facility_group|
+        [facility_group, policy_scope([:manage, :facility, facility_group.facilities])]
+      }.to_h
+    end
   end
 
   def show
@@ -26,7 +45,7 @@ class Admin::FacilitiesController < AdminController
     authorize([:manage, :facility, @facility])
 
     if @facility.save
-      redirect_to [:admin, @facility_group, @facility], notice: 'Facility was successfully created.'
+      redirect_to [:admin, @facility_group, @facility], notice: "Facility was successfully created."
     else
       render :new
     end
@@ -34,7 +53,7 @@ class Admin::FacilitiesController < AdminController
 
   def update
     if @facility.update(facility_params)
-      redirect_to [:admin, @facility_group, @facility], notice: 'Facility was successfully updated.'
+      redirect_to [:admin, @facility_group, @facility], notice: "Facility was successfully updated."
     else
       render :edit
     end
@@ -42,16 +61,16 @@ class Admin::FacilitiesController < AdminController
 
   def destroy
     @facility.destroy
-    redirect_to admin_facilities_url, notice: 'Facility was successfully deleted.'
+    redirect_to admin_facilities_url, notice: "Facility was successfully deleted."
   end
 
   def upload
     authorize([:manage, :facility, Facility])
-    return render :upload, :status => :bad_request if @errors.present?
+    return render :upload, status: :bad_request if @errors.present?
 
     if @facilities.present?
       ImportFacilitiesJob.perform_later(@facilities)
-      flash.now[:notice] = 'File upload successful, your facilities will be created shortly.'
+      flash.now[:notice] = "File upload successful, your facilities will be created shortly."
     end
     render :upload
   end
@@ -101,7 +120,7 @@ class Admin::FacilitiesController < AdminController
   end
 
   def parse_file
-    return render :upload, :status => :bad_request if @errors.present?
+    return render :upload, status: :bad_request if @errors.present?
 
     @file_contents = read_xlsx_or_csv_file(@file)
     @facilities = Facility.parse_facilities(@file_contents)

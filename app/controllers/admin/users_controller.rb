@@ -1,28 +1,32 @@
 class Admin::UsersController < AdminController
   include DistrictFiltering
   include Pagination
+  include SearchHelper
 
   before_action :set_user, except: [:index, :new, :create]
   around_action :set_time_zone, only: [:show]
 
   def index
     authorize([:manage, :user, User])
-    @users = policy_scope([:manage, :user, User])
-               .joins(phone_number_authentications: :facility)
-               .where(
-                 'phone_number_authentications.registration_facility_id IN (?)',
-                 selected_district_facilities([:manage, :user]).map(&:id)
-               )
-               .order('facilities.name', 'users.full_name', 'users.device_created_at')
+    users = policy_scope([:manage, :user, User])
+      .joins(phone_number_authentications: :facility)
+      .where("phone_number_authentications.registration_facility_id IN (?)",
+        selected_district_facilities([:manage, :user]).map(&:id))
+      .order("users.full_name", "facilities.name", "users.device_created_at")
 
-    @users = paginate(@users)
+    @users =
+      if searching?
+        paginate(users.search_by_name_or_phone(search_query))
+      else
+        paginate(users)
+      end
   end
 
   def show
     @recent_blood_pressures = @user
-                                .blood_pressures
-                                .includes(:patient, :facility)
-                                .order(Arel.sql("DATE(recorded_at) DESC, recorded_at ASC"))
+      .blood_pressures
+      .includes(:patient, :facility)
+      .order(Arel.sql("DATE(recorded_at) DESC, recorded_at ASC"))
 
     @recent_blood_pressures = paginate(@recent_blood_pressures)
   end
@@ -32,7 +36,7 @@ class Admin::UsersController < AdminController
 
   def update
     if @user.update_with_phone_number_authentication(user_params)
-      redirect_to admin_user_url(@user), notice: 'User was successfully updated.'
+      redirect_to admin_user_url(@user), notice: "User was successfully updated."
     else
       render :edit
     end
@@ -44,31 +48,31 @@ class Admin::UsersController < AdminController
     phone_number_authentication.save
 
     RequestOtpSmsJob.perform_later(@user)
-    redirect_to admin_user_url(@user), notice: 'User OTP has been reset.'
+    redirect_to admin_user_url(@user), notice: "User OTP has been reset."
   end
 
   def disable_access
     reason_for_denial =
-      I18n.t('admin.denied_access_to_user', admin_name: current_admin.email.split('@').first) + "; " +
-        params[:reason_for_denial].to_s
+      I18n.t("admin.denied_access_to_user", admin_name: current_admin.email.split("@").first) + "; " +
+      params[:reason_for_denial].to_s
 
     @user.sync_approval_denied(reason_for_denial)
     @user.save
-    redirect_to request.referer || admin_user_url(@user), notice: 'User access has been disabled.'
+    redirect_to request.referer || admin_user_url(@user), notice: "User access has been disabled."
   end
 
   def enable_access
     @user.sync_approval_allowed(
-      I18n.t('admin.allowed_access_to_user', admin_name: current_admin.email.split('@').first)
+      I18n.t("admin.allowed_access_to_user", admin_name: current_admin.email.split("@").first)
     )
     @user.save
-    redirect_to request.referer || admin_user_url(@user), notice: 'User access has been enabled.'
+    redirect_to request.referer || admin_user_url(@user), notice: "User access has been enabled."
   end
 
   private
 
   def ordered_sync_approval_statuses
-    { requested: 0, denied: 1, allowed: 2 }.with_indifferent_access
+    {requested: 0, denied: 1, allowed: 2}.with_indifferent_access
   end
 
   def set_user

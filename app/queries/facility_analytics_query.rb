@@ -13,14 +13,14 @@ class FacilityAnalyticsQuery
     @total_registered_patients ||=
       @facility
         .registered_hypertension_patients
-        .group('registration_user_id')
-        .distinct('patients.id')
+        .group("registration_user_id")
+        .distinct("patients.id")
         .count
 
     return if @total_registered_patients.blank?
 
     @total_registered_patients
-      .map { |user_id, count| [user_id, { :total_registered_patients => count }] }
+      .map { |user_id, count| [user_id, {total_registered_patients: count}] }
       .to_h
   end
 
@@ -28,9 +28,9 @@ class FacilityAnalyticsQuery
     @registered_patients_by_period ||=
       @facility
         .registered_hypertension_patients
-        .group('registration_user_id')
+        .group("registration_user_id")
         .group_by_period(@period, :recorded_at)
-        .distinct('patients.id')
+        .distinct("patients.id")
         .count
 
     group_by_user_and_date(@registered_patients_by_period, :registered_patients_by_period)
@@ -53,59 +53,39 @@ class FacilityAnalyticsQuery
                 .joins(:blood_pressures)
                 .hypertension_follow_ups_by_period(@period, last: @prev_periods)
                 .distinct(false) # this removes the distinct from hypertension_follow_ups so we can apply DISTINCT ON
-                .group('bp_user_id',
-                       'blood_pressures.patient_id',
-                       BloodPressure.date_to_period_sql('blood_pressures.recorded_at', @period),
-                       'blood_pressures.recorded_at',
-                       'patients.deleted_at')
-                .where(blood_pressures: { facility: @facility })
-                .select(%Q(
+                .group("bp_user_id",
+                  "blood_pressures.patient_id",
+                  BloodPressure.date_to_period_sql("blood_pressures.recorded_at", @period),
+                  "blood_pressures.recorded_at",
+                  "patients.deleted_at")
+                .where(blood_pressures: {facility: @facility})
+                .select(%(
                     DISTINCT ON (blood_pressures.patient_id,
-                    #{BloodPressure.date_to_period_sql('blood_pressures.recorded_at', @period)})
+                    #{BloodPressure.date_to_period_sql("blood_pressures.recorded_at", @period)})
                     blood_pressures.user_id AS bp_user_id,
                     patients.deleted_at))
                 .select("blood_pressures.recorded_at AS bp_recorded_at")
-                .order('blood_pressures.patient_id',
-                       Arel.sql(BloodPressure.date_to_period_sql('blood_pressures.recorded_at', @period)),
-                       'blood_pressures.recorded_at'),
-              'patients')
-        .group('bp_user_id')
-        .group_by_period(:month, 'bp_recorded_at')
+                .order("blood_pressures.patient_id",
+                  Arel.sql(BloodPressure.date_to_period_sql("blood_pressures.recorded_at", @period)),
+                  "blood_pressures.recorded_at"),
+          "patients")
+        .group("bp_user_id")
+        .group_by_period(:month, "bp_recorded_at")
         .count
 
     group_by_user_and_date(@follow_up_patients_by_period, :follow_up_patients_by_period)
-  end
-
-  def total_calls_made_by_period
-    @total_calls_made_by_period ||=
-      CallLog
-        .result_completed
-        .joins(%Q(INNER JOIN phone_number_authentications
-                  ON phone_number_authentications.phone_number = call_logs.caller_phone_number))
-        .joins(%Q(INNER JOIN facilities
-                  ON facilities.id = phone_number_authentications.registration_facility_id))
-        .joins(%Q(INNER JOIN user_authentications
-                  ON user_authentications.authenticatable_id = phone_number_authentications.id))
-        .where(phone_number_authentications: { registration_facility_id: @facility.id })
-        .group('user_authentications.user_id::uuid')
-        .group_by_period(@period, :end_time)
-        .count
-
-    group_by_user_and_date(@total_calls_made_by_period, :total_calls_made_by_period)
   end
 
   private
 
   def group_by_user_and_date(query_results, key)
     valid_dates = dates_for_periods(@period,
-                                    @prev_periods,
-                                    from_time: @from_time,
-                                    include_current_period: @include_current_period)
+      @prev_periods,
+      from_time: @from_time,
+      include_current_period: @include_current_period)
 
-    query_results.map do |(user_id, date), value|
-      { user_id => { key => { date.to_date => value }.slice(*valid_dates) } }
-    end.inject(&:deep_merge)
+    query_results.map { |(user_id, date), value|
+      {user_id => {key => {date.to_date => value}.slice(*valid_dates)}}
+    }.inject(&:deep_merge)
   end
 end
-
-

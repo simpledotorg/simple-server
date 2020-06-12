@@ -5,13 +5,13 @@ class Api::V3::PatientsController < Api::V3::SyncController
 
   def sync_to_user
     unscope_associations do
-      __sync_to_user__('patients')
+      __sync_to_user__("patients")
     end
   end
 
   def metadata
-    { registration_user_id: current_user.id,
-      registration_facility_id: current_facility.id }
+    {registration_user_id: current_user.id,
+     registration_facility_id: current_facility.id}
   end
 
   def current_facility_records
@@ -45,13 +45,13 @@ class Api::V3::PatientsController < Api::V3::SyncController
     validator = Api::V3::PatientPayloadValidator.new(single_patient_params)
     logger.debug "Patient had errors: #{validator.errors_hash}" if validator.invalid?
     if validator.invalid?
-      NewRelic::Agent.increment_metric('Merge/Patient/schema_invalid')
-      { errors_hash: validator.errors_hash }
+      NewRelic::Agent.increment_metric("Merge/Patient/schema_invalid")
+      {errors_hash: validator.errors_hash}
     else
       patients_params_with_metadata = single_patient_params.merge(metadata: metadata)
       transformed_params = Api::V3::PatientTransformer.from_nested_request(patients_params_with_metadata)
       patient = MergePatientService.new(transformed_params).merge
-      { record: patient }
+      {record: patient}
     end
   end
 
@@ -107,6 +107,8 @@ class Api::V3::PatientsController < Api::V3::SyncController
         :updated_at,
         :recorded_at,
         :reminder_consent,
+        :deleted_at,
+        :deleted_reason,
         phone_numbers: [permitted_phone_number_params],
         address: permitted_address_params,
         business_identifiers: [permitted_business_identifier_params]

@@ -148,8 +148,18 @@ Rails.application.routes.draw do
   end
 
   resources :appointments, only: [:index, :update]
-  resources :patients, only: [:index, :update]
+  resources :patients do
+    collection do
+      get :lookup
+    end
+  end
   resources :organizations, only: [:index], path: "dashboard"
+
+  namespace :dashboard do
+    resources :districts do
+      get "preview", on: :collection
+    end
+  end
 
   namespace :my_facilities do
     root to: "/my_facilities#index", as: "overview"
@@ -196,5 +206,9 @@ Rails.application.routes.draw do
   authenticate :email_authentication, ->(a) { a.user.has_permission?(:view_sidekiq_ui) } do
     require "sidekiq/web"
     mount Sidekiq::Web => "/sidekiq"
+  end
+
+  authenticate :email_authentication, ->(a) { a.user.has_permission?(:view_flipper_ui) } do
+    mount Flipper::UI.app(Flipper) => "/flipper"
   end
 end

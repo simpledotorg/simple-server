@@ -28,7 +28,7 @@ RSpec.feature 'Organization management', type: :feature do
       organization_page.click_on_add_organization_button
 
       AdminPage::Organizations::New.new.create_new_organization('test', 'testDescription')
-      organization_page.delete_organization('test')
+      organization_page.delete_organization('Test')
     end
   end
 end

@@ -48,6 +48,9 @@ class Facility < ApplicationRecord
 
   liberal_enum :facility_size
 
+  auto_strip_attributes :name, squish: true, upcase_first: true
+  auto_strip_attributes :district, squish: true, upcase_first: true
+
   with_options if: :import do |facility|
     facility.validates :organization_name, presence: true
     facility.validates :facility_group_name, presence: true
@@ -95,8 +98,7 @@ class Facility < ApplicationRecord
     results = [
       query.registered_patients_by_period,
       query.total_registered_patients,
-      query.follow_up_patients_by_period,
-      query.total_calls_made_by_period
+      query.follow_up_patients_by_period
     ].compact
 
     return {} if results.blank?
