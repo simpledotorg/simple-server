@@ -51,7 +51,11 @@ class Patient < ApplicationRecord
   has_many :current_prescription_drugs, -> { where(is_deleted: false) }, class_name: 'PrescriptionDrug'
 
   belongs_to :deleted_by_user, class_name: "User", optional: true
+
   attribute :call_result, :string
+
+  scope :search_by_address,
+    ->(term) { joins(:address).merge(Address.search_by_street_or_village(term)) }
 
   scope :with_diabetes, -> { joins(:medical_history).merge(MedicalHistory.diabetes_yes) }
   scope :with_hypertension, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes) }
