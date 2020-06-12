@@ -1,12 +1,12 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
   let(:request_user) { FactoryBot.create(:user) }
   let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
   before :each do
-    request.env['X_USER_ID'] = request_user.id
-    request.env['X_FACILITY_ID'] = request_facility.id
-    request.env['HTTP_AUTHORIZATION'] = "Bearer #{request_user.access_token}"
+    request.env["X_USER_ID"] = request_user.id
+    request.env["X_FACILITY_ID"] = request_facility.id
+    request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
   end
 
   let(:model) { MedicalHistory }
@@ -29,19 +29,19 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
     FactoryBot.create_list(:medical_history, n, options.merge(patient: patient))
   end
 
-  it_behaves_like 'a sync controller that authenticates user requests'
-  it_behaves_like 'a sync controller that audits the data access'
+  it_behaves_like "a sync controller that authenticates user requests"
+  it_behaves_like "a sync controller that audits the data access"
 
-  describe 'POST sync: send data from device to server;' do
-    it_behaves_like 'a working sync controller creating records'
-    it_behaves_like 'a working sync controller updating records'
+  describe "POST sync: send data from device to server;" do
+    it_behaves_like "a working sync controller creating records"
+    it_behaves_like "a working sync controller updating records"
   end
 
-  describe 'GET sync: send data from server to device;' do
-    it_behaves_like 'a working V3 sync controller sending records'
+  describe "GET sync: send data from server to device;" do
+    it_behaves_like "a working V3 sync controller sending records"
   end
 
-  describe 'syncing within a facility group' do
+  describe "syncing within a facility group" do
     let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
     let(:facility_in_another_group) { FactoryBot.create(:facility) }
 
@@ -58,10 +58,10 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
     end
 
     it "only sends data for facilities belonging in the sync group of user's registration facility" do
-      get :sync_to_user, params: { limit: 15 }
+      get :sync_to_user, params: {limit: 15}
 
-      response_medical_histories = JSON(response.body)['medical_histories']
-      response_patients = response_medical_histories.map { |medical_history| medical_history['patient_id'] }.to_set
+      response_medical_histories = JSON(response.body)["medical_histories"]
+      response_patients = response_medical_histories.map { |medical_history| medical_history["patient_id"] }.to_set
 
       expect(response_medical_histories.count).to eq 4
       expect(response_patients).not_to include(patient_in_another_group.id)

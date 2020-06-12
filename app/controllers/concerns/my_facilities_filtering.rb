@@ -6,7 +6,7 @@ module MyFacilitiesFiltering
 
   included do
     before_action :populate_facility_sizes, :populate_zones,
-                  :set_selected_sizes, :set_selected_zones, :set_only_new_facilities
+      :set_selected_sizes, :set_selected_zones, :set_only_new_facilities
 
     def filter_facilities(scope_namespace = [])
       facilities = policy_scope(scope_namespace.concat([Facility]))
@@ -33,7 +33,7 @@ module MyFacilitiesFiltering
     end
 
     def set_only_new_facilities
-      @only_new_facilities = params[:only_new_facilities] ? params[:only_new_facilities] : false
+      @only_new_facilities = params[:only_new_facilities] || false
     end
 
     def facilities_by_size(facilities)
@@ -45,7 +45,7 @@ module MyFacilitiesFiltering
     end
 
     def facilities_by_created_at(facilities)
-      @only_new_facilities ? facilities.where('created_at > ? ', NEW_FACILITY_THRESHOLD) : facilities
+      @only_new_facilities ? facilities.where("created_at > ? ", NEW_FACILITY_THRESHOLD) : facilities
     end
   end
 end

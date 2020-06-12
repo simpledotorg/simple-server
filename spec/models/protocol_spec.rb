@@ -21,4 +21,11 @@ RSpec.describe Protocol, type: :model do
   describe 'Behavior' do
     it_behaves_like 'a record that is deletable'
   end
+
+  describe 'Attribute sanitization' do
+    it 'squishes and upcases the first letter of the name' do
+      protocol = FactoryBot.create(:protocol, name: " protocol  name 1  ")
+      expect(protocol.name).to eq("Protocol name 1")
+    end
+  end
 end

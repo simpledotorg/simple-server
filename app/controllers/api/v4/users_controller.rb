@@ -22,13 +22,13 @@ class Api::V4::UsersController < APIController
     errors = errors_in_user_login(authentication)
 
     if errors.present?
-      render json: { errors: errors }, status: :unauthorized
+      render json: {errors: errors}, status: :unauthorized
     else
       authentication.set_otp
       authentication.save
 
       unless FeatureToggle.auto_approve_for_qa?
-        delay_seconds = (ENV['USER_OTP_SMS_DELAY_IN_SECONDS'] || DEFAULT_USER_OTP_DELAY_IN_SECONDS).to_i.seconds
+        delay_seconds = (ENV["USER_OTP_SMS_DELAY_IN_SECONDS"] || DEFAULT_USER_OTP_DELAY_IN_SECONDS).to_i.seconds
         RequestOtpSmsJob.set(wait: delay_seconds).perform_later(user)
       end
 
@@ -48,24 +48,24 @@ class Api::V4::UsersController < APIController
   end
 
   def to_find_response(user)
-    { user: Api::V4::UserTransformer.to_find_response(user) }
+    {user: Api::V4::UserTransformer.to_find_response(user)}
   end
 
   def to_response(user)
-    { 'user' => Api::V4::UserTransformer.to_response(user) }
+    {"user" => Api::V4::UserTransformer.to_response(user)}
   end
 
   def errors_in_user_login(user)
     error_string = if user.blank? || !user.authenticate(activate_params[:password])
-                     I18n.t('login.error_messages.invalid_password')
-                   end
+      I18n.t("login.error_messages.invalid_password")
+    end
 
     if error_string.present?
-      Raven.capture_message('Login Error',
-                            logger: 'logger',
-                            extra: { activate_params: activate_params, errors: error_string },
-                            tags: { type: 'login' })
-      { user: [error_string] }
+      Raven.capture_message("Login Error",
+        logger: "logger",
+        extra: {activate_params: activate_params, errors: error_string},
+        tags: {type: "login"})
+      {user: [error_string]}
     end
   end
 end

@@ -10,39 +10,39 @@ class Api::V3::EncountersController < Api::V3::SyncController
   end
 
   def sync_to_user
-    __sync_to_user__('encounters')
+    __sync_to_user__("encounters")
   end
 
   def generate_id
     params.require([:facility_id, :patient_id, :encountered_on])
 
     render plain: Encounter.generate_id(params[:facility_id].strip,
-                                        params[:patient_id].strip,
-                                        params[:encountered_on].strip),
+      params[:patient_id].strip,
+      params[:encountered_on].strip),
            status: :ok
   end
 
   private
 
   def encounter_facility_id(encounter_params)
-    return current_facility.id if encounter_params['observations'].values.flatten.empty?
+    return current_facility.id if encounter_params["observations"].values.flatten.empty?
 
-    encounter_params['observations'].values.flatten.first[:facility_id]
+    encounter_params["observations"].values.flatten.first[:facility_id]
   end
 
   def merge_if_valid(encounter_params)
     validator = Api::V3::EncounterPayloadValidator.new(encounter_params)
     logger.debug "Encounter had errors: #{validator.errors_hash}" if validator.invalid?
     if validator.invalid?
-      NewRelic::Agent.increment_metric('Merge/Encounter/schema_invalid')
-      { errors_hash: validator.errors_hash }
+      NewRelic::Agent.increment_metric("Merge/Encounter/schema_invalid")
+      {errors_hash: validator.errors_hash}
     else
       transformed_params = Api::V3::EncounterTransformer
-                             .from_nested_request(encounter_params)
-                             .merge(facility_id: encounter_facility_id(encounter_params))
-      { record: MergeEncounterService.new(transformed_params,
-                                          current_user,
-                                          current_timezone_offset).merge[:encounter] }
+        .from_nested_request(encounter_params)
+        .merge(facility_id: encounter_facility_id(encounter_params))
+      {record: MergeEncounterService.new(transformed_params,
+        current_user,
+        current_timezone_offset).merge[:encounter]}
     end
   end
 
@@ -63,19 +63,21 @@ class Api::V3::EncountersController < Api::V3::SyncController
         :deleted_at,
         :notes,
         :encountered_on,
-        observations: [:"blood_pressures" => [permitted_bp_params]],
+        observations: ["blood_pressures": [permitted_bp_params]]
       )
     end
   end
 
   def stub_syncing_from_user
-    render(json: { errors: nil }, status: :ok) unless FeatureToggle.enabled?('SYNC_ENCOUNTERS')
+    render(json: {errors: nil}, status: :ok) unless FeatureToggle.enabled?("SYNC_ENCOUNTERS")
   end
 
   def stub_syncing_to_user
-    render(
-      json: { 'encounters' => [], 'process_token' => encode_process_token({}) },
-      status: :ok
-    ) unless FeatureToggle.enabled?('SYNC_ENCOUNTERS')
+    unless FeatureToggle.enabled?("SYNC_ENCOUNTERS")
+      render(
+        json: {"encounters" => [], "process_token" => encode_process_token({})},
+        status: :ok
+      )
+    end
   end
 end
