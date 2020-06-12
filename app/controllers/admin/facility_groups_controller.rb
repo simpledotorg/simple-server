@@ -69,7 +69,12 @@ class Admin::FacilityGroupsController < AdminController
       :name,
       :description,
       :protocol_id,
+      :enable_diabetes_management,
       facility_ids: []
     )
+  end
+
+  def enable_diabetes_management
+
   end
 end

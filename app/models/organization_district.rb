@@ -40,12 +40,4 @@ class OrganizationDistrict < Struct.new(:district_name, :organization)
     return {} if results.blank?
     results.inject(&:deep_merge)
   end
-
-  def enable_teleconsultation!
-    facilities.update(enable_teleconsultation: true)
-  end
-
-  def enable_diabetes!
-    facilities.update(enable_diabetes_management: true)
-  end
 end
