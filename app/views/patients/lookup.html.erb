@@ -1,10 +1,8 @@
-<h1>Lookup Patients</h1>
+<h1>Lookup Patients (by address)</h1>
 
 <p class="info">
   <i class="fas fa-question-circle"></i>
-  This is a hidden page and is only visible to you because you have the
-  <em><%= Permissions::ALL_PERMISSIONS.dig(:view_overdue_list, :slug) %></em>
-  permission.
+  This page is still a work-in-progress and is available as an early-access to try out Patient search by address.
 </p>
 
 <%= bootstrap_form_with(url: lookup_patients_path, method: :get, layout: :horizontal, class: "mt-4", local: true) do |form| %>
