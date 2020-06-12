@@ -34,9 +34,7 @@ class DistrictReportService
                 registration_year: time.year}
       monthly_bps = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities, cohort_period: period)
 
-      p [formatted_period, monthly_bps.cohort_controlled_bps.count]
       controlled_bps = Integer(monthly_bps.cohort_controlled_bps.count || 0)
-      p controlled_bps
       @data[:controlled_patients][formatted_period] = controlled_bps
       @data[:cumulative_registrations] += registrations.fetch(key, 0).to_i.round
       @data[:registrations][formatted_period] = @data[:cumulative_registrations]

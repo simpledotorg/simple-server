@@ -66,7 +66,7 @@ describe DistrictReportService, type: :model do
     facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group)
 
     Timecop.freeze(4.months.ago) do
-      other_patients = create_list(:patient, 2, recorded_at: Time.current, registration_facility: facility, registration_user: user)
+      other_patients = create_list(:patient, 2, recorded_at: 1.month.ago, registration_facility: facility, registration_user: user)
       other_patients.map do |patient|
         create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: Time.current)
         create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: Time.current)
@@ -94,7 +94,8 @@ describe DistrictReportService, type: :model do
     #   quarterly_registrations: []
     # }.with_indifferent_access
     expect(result[:controlled_patients].size).to eq(12)
+    expect(result[:controlled_patients]["Jan 2020"]).to eq(2)
+    expect(result[:controlled_patients]["Feb 2020"]).to eq(0)
     expect(result[:controlled_patients]["Apr 2020"]).to eq(2)
-    p result[:controlled_patients]
   end
 end
