@@ -30,4 +30,11 @@ RSpec.describe FacilityGroup, type: :model do
   describe 'Behavior' do
     it_behaves_like 'a record that is deletable'
   end
+
+  describe 'Attribute sanitization' do
+    it 'squishes and upcases the first letter of the name' do
+      facility_group = FactoryBot.create(:facility_group, name: "facility  Group  ")
+      expect(facility_group.name).to eq("Facility Group")
+    end
+  end
 end

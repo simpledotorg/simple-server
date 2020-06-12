@@ -3,7 +3,7 @@ class PatientSummaryQuery
     "only_less_than_year_overdue" => "< 365 days overdue",
     "phone_number" => "Has phone number",
     "no_phone_number" => "No phone number",
-    "high_risk" => "High risk only",
+    "high_risk" => "High risk only"
   }.freeze
 
   def self.call(*args)

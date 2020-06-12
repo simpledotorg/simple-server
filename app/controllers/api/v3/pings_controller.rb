@@ -6,6 +6,6 @@ class Api::V3::PingsController < APIController
   skip_before_action :validate_sync_approval_status_allowed, only: [:show]
 
   def show
-    render json: { status: 'ok' }, status: :ok
+    render json: {status: "ok"}, status: :ok
   end
 end

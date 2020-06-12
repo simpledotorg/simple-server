@@ -9,11 +9,11 @@ module FacilityFiltering
     private
 
     def set_facility_id
-      @facility_id = params[:facility_id].present? ? params[:facility_id] : 'All'
+      @facility_id = params[:facility_id].present? ? params[:facility_id] : "All"
     end
 
     def current_facility
-      @facility_id == 'All' ? nil : Facility.find(@facility_id)
+      @facility_id == "All" ? nil : Facility.find(@facility_id)
     end
   end
 end

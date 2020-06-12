@@ -92,7 +92,6 @@ RSpec.describe AddPermissionToAccessLevel do
                                                       default_permissions: %i[manage_facilities
                                                                               view_overdue_list
                                                                               download_overdue_list
-                                                                              view_adherence_follow_up_list
                                                                               approve_health_workers
                                                                               view_cohort_reports
                                                                               view_health_worker_activity

@@ -17,15 +17,16 @@ class AdminController < ApplicationController
   def switch_locale(&action)
     locale =
       Rails.application.config.country[:dashboard_locale].presence ||
-        http_accept_language.compatible_language_from(I18n.available_locales) ||
-        I18n.default_locale
+      http_accept_language.compatible_language_from(I18n.available_locales) ||
+      I18n.default_locale
 
     I18n.with_locale(locale, &action)
   end
 
   def root
     redirect_to default_root_paths.find { |policy, _path|
-      DashboardPolicy.new(pundit_user, :dashboard).send(policy) }.second
+                  DashboardPolicy.new(pundit_user, :dashboard).send(policy)
+                }.second
   end
 
   helper_method :current_admin
@@ -33,14 +34,13 @@ class AdminController < ApplicationController
   private
 
   def default_root_paths
-    { :show? => organizations_path,
-      :adherence_follow_up? => patients_path,
-      :overdue_list? => appointments_path,
-      :manage_organizations? => admin_organizations_path,
-      :manage_facilities? => admin_facilities_path,
-      :manage_protocols? => admin_protocols_path,
-      :manage_admins? => admins_path,
-      :manage_users? => admin_users_path }
+    {show?: organizations_path,
+     overdue_list?: appointments_path,
+     manage_organizations?: admin_organizations_path,
+     manage_facilities?: admin_facilities_path,
+     manage_protocols?: admin_protocols_path,
+     manage_admins?: admins_path,
+     manage_users?: admin_users_path}
   end
 
   def current_admin

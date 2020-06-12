@@ -8,10 +8,6 @@ class DashboardPolicy < Struct.new(:user, :dashboard)
     Pundit.policy(user, [:overdue_list, Appointment]).index?
   end
 
-  def adherence_follow_up?
-    Pundit.policy(user, [:adherence_follow_up, Patient]).index?
-  end
-
   def manage_organizations?
     Pundit.policy(user, [:manage, Organization]).index?
   end

@@ -5,8 +5,8 @@ class OrganizationsController < AdminController
     authorize(:dashboard, :show?)
 
     @users_requesting_approval = policy_scope([:manage, :user, User])
-                                   .requested_sync_approval
-                                   .order(updated_at: :desc)
+      .requested_sync_approval
+      .order(updated_at: :desc)
 
     @users_requesting_approval = paginate(@users_requesting_approval)
 

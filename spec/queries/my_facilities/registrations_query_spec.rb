@@ -1,8 +1,8 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe MyFacilities::RegistrationsQuery do
-  context 'Registrations queries' do
-    describe '#total_registrations' do
+  context "Registrations queries" do
+    describe "#total_registrations" do
       let!(:registrations_query) { described_class.new }
 
       let!(:included_timestamps) { [1.year.ago, 2.years.ago, 1.day.ago, 1.months.ago] }
@@ -16,8 +16,8 @@ RSpec.describe MyFacilities::RegistrationsQuery do
       specify { expect(registrations_query.total_registrations.count).to eq(patients.count) }
     end
 
-    describe '#registrations' do
-      context 'quarterly' do
+    describe "#registrations" do
+      context "quarterly" do
         let!(:registrations_query) { described_class.new(period: :quarter, last_n: 3) }
 
         let!(:included_timestamps) { [1.month.ago, 4.months.ago] }
@@ -33,12 +33,12 @@ RSpec.describe MyFacilities::RegistrationsQuery do
           PatientRegistrationsPerDayPerFacility.refresh
         end
 
-        context 'considers only htn diagnosed patients' do
+        context "considers only htn diagnosed patients" do
           specify { expect(registrations_query.registrations.count).to eq(included_timestamps.count) }
         end
       end
 
-      context 'monthly' do
+      context "monthly" do
         let!(:registrations_query) { described_class.new(period: :month, last_n: 3) }
 
         let!(:included_timestamps) { [1.month.ago, 2.months.ago] }
@@ -54,12 +54,12 @@ RSpec.describe MyFacilities::RegistrationsQuery do
           PatientRegistrationsPerDayPerFacility.refresh
         end
 
-        context 'considers only htn diagnosed patients' do
+        context "considers only htn diagnosed patients" do
           specify { expect(registrations_query.registrations.count).to eq(included_timestamps.count) }
         end
       end
 
-      context 'daily' do
+      context "daily" do
         let!(:registrations_query) { described_class.new(period: :day, last_n: 7) }
 
         let!(:included_timestamps) { [1.day.ago, 7.days.ago] }
@@ -73,7 +73,7 @@ RSpec.describe MyFacilities::RegistrationsQuery do
           PatientRegistrationsPerDayPerFacility.refresh
         end
 
-        context 'considers only htn diagnosed patients' do
+        context "considers only htn diagnosed patients" do
           specify { expect(registrations_query.registrations.count).to eq(included_timestamps.count) }
         end
       end

@@ -1,8 +1,8 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe Api::V4::PatientController, type: :controller do
-  describe '#activate' do
-    let!(:bp_passport) { create(:patient_business_identifier, identifier_type: 'simple_bp_passport') }
+  describe "#activate" do
+    let!(:bp_passport) { create(:patient_business_identifier, identifier_type: "simple_bp_passport") }
     let(:patient) { bp_passport.patient }
     let!(:passport_authentication) { create(:passport_authentication, patient_business_identifier: bp_passport) }
 
@@ -10,40 +10,40 @@ RSpec.describe Api::V4::PatientController, type: :controller do
       allow(SendPatientOtpSmsJob).to receive(:perform_later)
     end
 
-    it 'returns a successful response' do
-      post :activate, params: { passport_id: bp_passport.identifier }
+    it "returns a successful response" do
+      post :activate, params: {passport_id: bp_passport.identifier}
       expect(response.status).to eq(200)
     end
 
-    it 'send an OTP SMS' do
+    it "send an OTP SMS" do
       expect(SendPatientOtpSmsJob).to receive(:perform_later).with(passport_authentication)
-      post :activate, params: { passport_id: bp_passport.identifier }
+      post :activate, params: {passport_id: bp_passport.identifier}
     end
 
-    context 'when BP passport ID does not exist' do
-      it 'returns a 404 response' do
-        post :activate, params: { passport_id: 'some-identifier' }
+    context "when BP passport ID does not exist" do
+      it "returns a 404 response" do
+        post :activate, params: {passport_id: "some-identifier"}
         expect(response.status).to eq(404)
       end
     end
 
-    context 'when patient does not have any mobile numbers' do
-      it 'returns a 404 response' do
+    context "when patient does not have any mobile numbers" do
+      it "returns a 404 response" do
         patient.phone_numbers.destroy_all
 
-        post :activate, params: { passport_id: bp_passport.identifier }
+        post :activate, params: {passport_id: bp_passport.identifier}
         expect(response.status).to eq(404)
       end
     end
   end
 
-  describe '#login' do
-    let!(:bp_passport) { create(:patient_business_identifier, identifier_type: 'simple_bp_passport') }
+  describe "#login" do
+    let!(:bp_passport) { create(:patient_business_identifier, identifier_type: "simple_bp_passport") }
     let(:patient) { bp_passport.patient }
     let!(:passport_authentication) { create(:passport_authentication, patient_business_identifier: bp_passport) }
 
-    it 'returns a successful response' do
-      post :login, params: { passport_id: bp_passport.identifier, otp: passport_authentication.otp }
+    it "returns a successful response" do
+      post :login, params: {passport_id: bp_passport.identifier, otp: passport_authentication.otp}
       expect(response.status).to eq(200)
 
       response_data = JSON.parse(response.body)
@@ -59,60 +59,60 @@ RSpec.describe Api::V4::PatientController, type: :controller do
       )
     end
 
-    context 'when otp is wrong' do
-      it 'returns an unauthorized response' do
-        post :login, params: { passport_id: bp_passport.identifier, otp: 'wrong-otp' }
+    context "when otp is wrong" do
+      it "returns an unauthorized response" do
+        post :login, params: {passport_id: bp_passport.identifier, otp: "wrong-otp"}
         expect(response.status).to eq(401)
       end
     end
 
-    context 'when BP passport ID is wrong' do
-      it 'returns an unauthorized response' do
-        post :login, params: { passport_id: 'wrong-identifier', otp: passport_authentication.otp }
+    context "when BP passport ID is wrong" do
+      it "returns an unauthorized response" do
+        post :login, params: {passport_id: "wrong-identifier", otp: passport_authentication.otp}
         expect(response.status).to eq(401)
       end
     end
 
-    context 'when an OTP is expired' do
+    context "when an OTP is expired" do
       before { passport_authentication.tap(&:expire_otp).save! }
 
-      it 'returns an unauthorized response' do
-        post :login, params: { passport_id: bp_passport.identifier, otp: passport_authentication.otp }
+      it "returns an unauthorized response" do
+        post :login, params: {passport_id: bp_passport.identifier, otp: passport_authentication.otp}
         expect(response.status).to eq(401)
       end
     end
 
-    context 'when an OTP is re-used' do
-      it 'returns an unauthorized response' do
-        post :login, params: { passport_id: bp_passport.identifier, otp: passport_authentication.otp }
-        post :login, params: { passport_id: bp_passport.identifier, otp: passport_authentication.otp }
+    context "when an OTP is re-used" do
+      it "returns an unauthorized response" do
+        post :login, params: {passport_id: bp_passport.identifier, otp: passport_authentication.otp}
+        post :login, params: {passport_id: bp_passport.identifier, otp: passport_authentication.otp}
 
         expect(response.status).to eq(401)
       end
     end
   end
 
-  describe '#show' do
-    let!(:bp_passport) { create(:patient_business_identifier, identifier_type: 'simple_bp_passport') }
+  describe "#show" do
+    let!(:bp_passport) { create(:patient_business_identifier, identifier_type: "simple_bp_passport") }
     let(:patient) { bp_passport.patient }
     let!(:passport_authentication) { create(:passport_authentication, patient_business_identifier: bp_passport) }
     let!(:access_token) { passport_authentication.access_token }
 
     before do
-      request.headers['Accept'] = 'application/json'
-      request.headers['Authorization'] = "Bearer #{access_token}"
-      request.headers['X-Patient-Id'] = patient.id
+      request.headers["Accept"] = "application/json"
+      request.headers["Authorization"] = "Bearer #{access_token}"
+      request.headers["X-Patient-Id"] = patient.id
     end
 
-    it 'returns a successful response' do
+    it "returns a successful response" do
       get :show
       expect(response.status).to eq(200)
     end
 
-    context 'response schema' do
+    context "response schema" do
       render_views
 
-      it 'returns patient information in the correct schema' do
+      it "returns patient information in the correct schema" do
         get :show
         response_data = JSON.parse(response.body)
         expected_schema = Api::V4::Schema.patient_response.merge(definitions: Api::V4::Schema.all_definitions)
@@ -120,23 +120,23 @@ RSpec.describe Api::V4::PatientController, type: :controller do
       end
     end
 
-    context 'when Authorization header is incorrect' do
+    context "when Authorization header is incorrect" do
       before do
-        request.headers['Authorization'] = "Bearer nope-wrong-token-sorry"
+        request.headers["Authorization"] = "Bearer nope-wrong-token-sorry"
       end
 
-      it 'returns an unauthorized response' do
+      it "returns an unauthorized response" do
         get :show
         expect(response.status).to eq(401)
       end
     end
 
-    context 'when X-Patient-Id header is incorrect' do
+    context "when X-Patient-Id header is incorrect" do
       before do
-        request.headers['X-Patient-Id'] = "nope-wrong-id-sorry"
+        request.headers["X-Patient-Id"] = "nope-wrong-id-sorry"
       end
 
-      it 'returns an unauthorized response' do
+      it "returns an unauthorized response" do
         get :show
         expect(response.status).to eq(401)
       end
