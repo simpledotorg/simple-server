@@ -10,8 +10,9 @@ class Dashboard::DistrictsController < AdminController
     authorize :dashboard, :view_my_facilities?
 
     @facility_groups = policy_scope([:manage, FacilityGroup]).order(:name)
-    @facility_group = FacilityGroup.find_by(name: "Darrang")
-    @facility = Facility.find_by(name: "CHC Barnagar")
+    # Grab an arbitrary FacilityGroup for use in dev / sandbox
+    live_district_name = report_params[:district_name] || FacilityGroup.order(:created_at).first.name
+    @facility_group = FacilityGroup.find_by!(name: live_district_name)
 
     @state_name = "Punjab"
     @district_name = "Bathinda"
@@ -22,15 +23,14 @@ class Dashboard::DistrictsController < AdminController
 
     example_data_file = File.read(EXAMPLE_DATA_FILE)
     example_data = JSON.parse(example_data_file)
-
     selected_date = Date.current
-    service = DistrictReportService.new(facilities: @facility, selected_date: selected_date)
-    @data = service.call
 
     if report_params[:source] == "live"
-      @controlled_patients = @data["controlled_patients"]
-      @control_rate = example_data["control_rate"]
-      @registrations = @data["registrations"]
+      service = DistrictReportService.new(facilities: @facility_group.facilities, selected_date: selected_date)
+      @data = service.call
+      @controlled_patients = @data[:controlled_patients]
+      @control_rate = example_data[:control_rate]
+      @registrations = @data[:registrations]
       @quarterly_registrations = @data[:quarterly_registrations]
     else
       @controlled_patients = example_data["controlled_patients"]
@@ -43,8 +43,9 @@ class Dashboard::DistrictsController < AdminController
   private
 
   def report_params
-    params.permit(:source)
+    params.permit(:source, :district_name)
   end
+  helper_method :report_params
 
   def set_time_zone
     time_zone = Rails.application.config.country[:time_zone] || DEFAULT_ANALYTICS_TIME_ZONE

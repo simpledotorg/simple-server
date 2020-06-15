@@ -1,9 +1,6 @@
 class DistrictReportService
   def initialize(facilities:, selected_date:)
     @facilities = Array(facilities)
-    # TODO will we ever have multiple facilities? Probably for the District wide reports that
-    # encompass FacilityGroups?
-    @facility = @facilities.first
     @selected_date = selected_date
     @data = {
       controlled_patients: {},
@@ -53,7 +50,7 @@ class DistrictReportService
       period = {cohort_period: :quarter,
                 registration_quarter: quarter,
                 registration_year: year}
-      query = MyFacilities::BloodPressureControlQuery.new(facilities: [@facility], cohort_period: period)
+      query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities, cohort_period: period)
       @data[:quarterly_registrations] << {
         results_in: formatted_next_quarter,
         patients_registered: formatted_current_quarter,
