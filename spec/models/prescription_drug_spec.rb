@@ -1,5 +1,4 @@
 require "rails_helper"
-include Hashable
 
 RSpec.describe PrescriptionDrug, type: :model do
   describe "Validations" do
@@ -21,11 +20,11 @@ RSpec.describe PrescriptionDrug, type: :model do
         prescription_drug = create(:prescription_drug)
 
         anonymised_data =
-          {id: hash_uuid(prescription_drug.id),
-           patient_id: hash_uuid(prescription_drug.patient_id),
+          {id: Hashable.hash_uuid(prescription_drug.id),
+           patient_id: Hashable.hash_uuid(prescription_drug.patient_id),
            created_at: prescription_drug.created_at,
            registration_facility_name: prescription_drug.facility.name,
-           user_id: hash_uuid(prescription_drug.patient.registration_user.id),
+           user_id: Hashable.hash_uuid(prescription_drug.patient.registration_user.id),
            medicine_name: prescription_drug.name,
            dosage: prescription_drug.dosage}
 

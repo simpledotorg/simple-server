@@ -1,5 +1,4 @@
 require "rails_helper"
-include Hashable
 
 RSpec.describe CallLog, type: :model do
   describe "Validations" do
@@ -13,7 +12,7 @@ RSpec.describe CallLog, type: :model do
         call_log = create(:call_log)
 
         anonymised_data =
-          {id: hash_uuid(call_log.id),
+          {id: Hashable.hash_uuid(call_log.id),
            created_at: call_log.created_at,
            result: call_log.result,
            duration: call_log.duration,

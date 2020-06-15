@@ -1,5 +1,4 @@
 require "rails_helper"
-include Hashable
 
 describe Communication, type: :model do
   context "Associations" do
@@ -68,10 +67,10 @@ describe Communication, type: :model do
           detailable: create(:twilio_sms_delivery_detail, :sent))
 
         anonymised_data =
-          {id: hash_uuid(communication.id),
-           appointment_id: hash_uuid(communication.appointment_id),
-           patient_id: hash_uuid(communication.appointment.patient_id),
-           user_id: hash_uuid(communication.user_id),
+          {id: Hashable.hash_uuid(communication.id),
+           appointment_id: Hashable.hash_uuid(communication.appointment_id),
+           patient_id: Hashable.hash_uuid(communication.appointment.patient_id),
+           user_id: Hashable.hash_uuid(communication.user_id),
            created_at: communication.created_at,
            communication_type: communication.communication_type,
            communication_result: communication.communication_result}

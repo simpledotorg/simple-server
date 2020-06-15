@@ -1,5 +1,4 @@
 require "rails_helper"
-include Hashable
 
 describe Appointment, type: :model do
   subject(:appointment) { create(:appointment) }
@@ -228,11 +227,11 @@ describe Appointment, type: :model do
     describe "anonymized_data" do
       it "correctly retrieves the anonymised data for an appointment" do
         anonymised_data =
-          {id: hash_uuid(appointment.id),
-           patient_id: hash_uuid(appointment.patient_id),
+          {id: Hashable.hash_uuid(appointment.id),
+           patient_id: Hashable.hash_uuid(appointment.patient_id),
            created_at: appointment.created_at,
            registration_facility_name: appointment.facility.name,
-           user_id: hash_uuid(appointment.patient.registration_user.id),
+           user_id: Hashable.hash_uuid(appointment.patient.registration_user.id),
            scheduled_date: appointment.scheduled_date,
            overdue: appointment.days_overdue > 0 ? "Yes" : "No",
            status: appointment.status,
