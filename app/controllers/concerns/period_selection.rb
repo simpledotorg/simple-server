@@ -4,10 +4,10 @@ module PeriodSelection
   extend ActiveSupport::Concern
 
   included do
-    PERIODS = { missed_visits: { quarter: 'Quarterly', month: 'Monthly' },
-                registrations: { quarter: 'Quarterly', month: 'Monthly', day: 'Daily' } }
-              .with_indifferent_access
-              .freeze
+    PERIODS = {missed_visits: {quarter: "Quarterly", month: "Monthly"},
+               registrations: {quarter: "Quarterly", month: "Monthly", day: "Daily"}}
+      .with_indifferent_access
+      .freeze
 
     def set_selected_period
       @selected_period = params[:period].blank? || invalid_period? ? :quarter : params[:period].to_sym
