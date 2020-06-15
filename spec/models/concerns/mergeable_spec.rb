@@ -1,7 +1,7 @@
-require 'rails_helper'
+require "rails_helper"
 
 describe Mergeable do
-  it 'returns record with errors if invalid, and does not merge' do
+  it "returns record with errors if invalid, and does not merge" do
     invalid_patient = FactoryBot.build(:patient, device_created_at: nil)
     patient = Patient.merge(invalid_patient.attributes)
     expect(patient).to be_invalid
@@ -9,7 +9,7 @@ describe Mergeable do
     expect(Patient).to_not receive(:create)
   end
 
-  it 'does not update a discarded record' do
+  it "does not update a discarded record" do
     discarded_patient = FactoryBot.create(:patient, deleted_at: Time.now)
     update_attributes = discarded_patient.attributes.merge(age: discarded_patient.current_age + 3,
                                                            updated_at: 3.years.from_now)
@@ -18,25 +18,25 @@ describe Mergeable do
       .to eq(discarded_patient.attributes.with_int_timestamps)
   end
 
-  it 'creates a new record if there is no existing record' do
+  it "creates a new record if there is no existing record" do
     new_patient = FactoryBot.build(:patient, address: FactoryBot.create(:address))
     Patient.merge(new_patient.attributes)
-    expect(Patient.first.attributes.except('updated_at', 'created_at').with_int_timestamps)
-      .to eq(new_patient.attributes.except('updated_at', 'created_at').with_int_timestamps)
+    expect(Patient.first.attributes.except("updated_at", "created_at").with_int_timestamps)
+      .to eq(new_patient.attributes.except("updated_at", "created_at").with_int_timestamps)
   end
 
-  it 'updates the existing record, if it exists' do
+  it "updates the existing record, if it exists" do
     existing_patient = FactoryBot.create(:patient, address: FactoryBot.create(:address))
     updated_patient = Patient.find(existing_patient.id)
     updated_patient.updated_at = 10.minutes.from_now
     patient = Patient.merge(updated_patient.attributes)
     expect(patient).to_not have_changes_to_save
-    expect(Patient.find(existing_patient.id).attributes.with_int_timestamps.except('updated_at'))
-      .to eq(updated_patient.attributes.with_int_timestamps.except('updated_at'))
+    expect(Patient.find(existing_patient.id).attributes.with_int_timestamps.except("updated_at"))
+      .to eq(updated_patient.attributes.with_int_timestamps.except("updated_at"))
     expect(Patient.count).to eq 1
   end
 
-  it 'returns the existing record if input record is older' do
+  it "returns the existing record if input record is older" do
     existing_patient = FactoryBot.create(:patient, address: FactoryBot.create(:address))
     updated_patient = Patient.find(existing_patient.id)
     updated_patient.updated_at = 10.minutes.ago
@@ -45,22 +45,22 @@ describe Mergeable do
     expect(Patient.count).to eq 1
   end
 
-  it 'works for all models' do
+  it "works for all models" do
     new_address = FactoryBot.build(:address)
     Address.merge(new_address.attributes)
-    expect(Address.first.attributes.except('updated_at', 'created_at').with_int_timestamps)
-      .to eq(new_address.attributes.except('updated_at', 'created_at').with_int_timestamps)
+    expect(Address.first.attributes.except("updated_at", "created_at").with_int_timestamps)
+      .to eq(new_address.attributes.except("updated_at", "created_at").with_int_timestamps)
 
     new_patient = FactoryBot.create(:patient, phone_numbers: [])
     new_phone_number = FactoryBot.build(:patient_phone_number, patient: new_patient)
     PatientPhoneNumber.merge(new_phone_number.attributes)
-    expect(PatientPhoneNumber.first.attributes.except('updated_at', 'created_at').with_int_timestamps)
-      .to eq(new_phone_number.attributes.except('updated_at', 'created_at').with_int_timestamps)
+    expect(PatientPhoneNumber.first.attributes.except("updated_at", "created_at").with_int_timestamps)
+      .to eq(new_phone_number.attributes.except("updated_at", "created_at").with_int_timestamps)
 
     facility = FactoryBot.create(:facility)
     new_blood_pressure = FactoryBot.build(:blood_pressure, facility: facility)
     BloodPressure.merge(new_blood_pressure.attributes)
-    expect(BloodPressure.first.attributes.except('updated_at', 'created_at').with_int_timestamps)
-      .to eq(new_blood_pressure.attributes.except('updated_at', 'created_at').with_int_timestamps)
+    expect(BloodPressure.first.attributes.except("updated_at", "created_at").with_int_timestamps)
+      .to eq(new_blood_pressure.attributes.except("updated_at", "created_at").with_int_timestamps)
   end
 end

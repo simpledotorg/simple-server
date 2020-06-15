@@ -1,7 +1,7 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe FacilityGroup, type: :model do
-  describe 'Associations' do
+  describe "Associations" do
     it { should belong_to(:organization) }
     it { should have_many(:facilities) }
 
@@ -15,7 +15,7 @@ RSpec.describe FacilityGroup, type: :model do
 
     it { belong_to(:protocol) }
 
-    it 'nullifies facility_group_id in facilities' do
+    it "nullifies facility_group_id in facilities" do
       facility_group = FactoryBot.create(:facility_group)
       FactoryBot.create_list(:facility, 5, facility_group: facility_group)
       expect { facility_group.destroy }.not_to change { Facility.count }
@@ -23,16 +23,16 @@ RSpec.describe FacilityGroup, type: :model do
     end
   end
 
-  describe 'Validations' do
+  describe "Validations" do
     it { should validate_presence_of(:name) }
   end
 
-  describe 'Behavior' do
-    it_behaves_like 'a record that is deletable'
+  describe "Behavior" do
+    it_behaves_like "a record that is deletable"
   end
 
-  describe 'Attribute sanitization' do
-    it 'squishes and upcases the first letter of the name' do
+  describe "Attribute sanitization" do
+    it "squishes and upcases the first letter of the name" do
       facility_group = FactoryBot.create(:facility_group, name: "facility  Group  ")
       expect(facility_group.name).to eq("Facility Group")
     end

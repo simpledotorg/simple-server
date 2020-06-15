@@ -5,9 +5,9 @@ class PatientBusinessIdentifier < ApplicationRecord
   has_one :passport_authentication
 
   enum identifier_type: {
-    simple_bp_passport: 'simple_bp_passport',
-    bangladesh_national_id: 'bangladesh_national_id',
-    ethiopia_medical_record: 'ethiopia_medical_record'
+    simple_bp_passport: "simple_bp_passport",
+    bangladesh_national_id: "bangladesh_national_id",
+    ethiopia_medical_record: "ethiopia_medical_record"
   }
 
   validate :identifier_present
@@ -32,7 +32,7 @@ class PatientBusinessIdentifier < ApplicationRecord
 
   def shortcode
     if simple_bp_passport?
-      identifier.split(/[^\d]/).join[0..6].insert(3, '-')
+      identifier.split(/[^\d]/).join[0..6].insert(3, "-")
     else
       identifier
     end
