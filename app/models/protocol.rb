@@ -8,6 +8,8 @@ class Protocol < ApplicationRecord
   validates :name, presence: true
   validates :follow_up_days, numericality: true, presence: true
 
+  auto_strip_attributes :name, squish: true, upcase_first: true
+
   def assign_id
     self.id = SecureRandom.uuid
   end

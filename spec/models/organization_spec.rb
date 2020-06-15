@@ -28,4 +28,11 @@ RSpec.describe Organization, type: :model do
   describe 'Behavior' do
     it_behaves_like 'a record that is deletable'
   end
+
+  describe 'Attribute sanitization' do
+    it 'squishes and upcases the first letter of the name' do
+      org = FactoryBot.create(:organization, name: " org name  1  ")
+      expect(org.name).to eq("Org name 1")
+    end
+  end
 end

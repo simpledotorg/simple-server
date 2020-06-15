@@ -1,0 +1,66 @@
+<h1>Lookup Patients (by address)</h1>
+
+<p class="info">
+  <i class="fas fa-question-circle"></i>
+  This page is still a work-in-progress and is available as an early-access to try out Patient search by address.
+</p>
+
+<%= bootstrap_form_with(url: lookup_patients_path, method: :get, layout: :horizontal, class: "mt-4", local: true) do |form| %>
+  <div class="form-row mb-5">
+    <div id="facility-selector" class="col col-md-2 mb-2">
+      <%= form.select :facility_id,
+          policy_scope([:overdue_list, Facility]).sort_by(&:name).map { |facility| [facility.name, facility.id] },
+          {
+              hide_label: true,
+              include_blank: "All facilities",
+              selected: @facility_id,
+              wrapper: false
+          },
+          { onchange: "this.form.submit();" }
+      %>
+    </div>
+
+    <%= render 'shared/search_bar', form: form, placeholder: 'Search by village or street address...' %>
+  </div>
+<% end %>
+
+<div>
+  <% if @patients.exists? %>
+    <%= search_entries_info(@patients) %>
+
+    <% @patients.each do |patient| %>
+      <div class="card">
+        <h5 class="mb-3">
+          <%= patient.full_name %>,
+          <%= patient.gender.capitalize %>,
+          <%= patient.current_age %>
+        </h5>
+
+        <span class="text-secondary">Address:</span>
+        <address>
+          <%= patient.address.street_address %><br/>
+          <%= patient.address.village_or_colony %><br/>
+          <%= patient.address.district %><br/>
+          <%= patient.address.state %>
+        </address>
+
+        <div>
+          <span class="text-secondary">Registered at:</span>
+          <%= patient.registration_facility.name %>
+        </div>
+        <div>
+          <span class="text-secondary">District:</span>
+          <%= patient.address.district %>
+        </div>
+      </div>
+    <% end %>
+  <% elsif !@patients.exists? && !searching? %>
+    <%= render "shared/no_search_results",
+        message: "Search for something to populate a list of matching patients..." %>
+  <% else %>
+    <%= render "shared/no_search_results",
+        message: "No results for '#{content_tag(:strong, search_query)}'" %>
+  <% end %>
+</div>
+
+<%= paginate @patients %>

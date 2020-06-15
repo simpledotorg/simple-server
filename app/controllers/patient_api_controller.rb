@@ -27,7 +27,7 @@ class PatientAPIController < ApplicationController
   end
 
   def current_patient
-    @current_patient ||= Patient.find_by(id: request.headers['HTTP_X_PATIENT_ID'])
+    @current_patient ||= Patient.find_by(id: request.headers["HTTP_X_PATIENT_ID"])
   end
 
   def validate_current_patient

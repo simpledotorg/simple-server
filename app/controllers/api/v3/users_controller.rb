@@ -38,7 +38,7 @@ class Api::V3::UsersController < APIController
     phone_number_authentication.save
 
     unless FeatureToggle.auto_approve_for_qa?
-      delay_seconds = (ENV['USER_OTP_SMS_DELAY_IN_SECONDS'] || DEFAULT_USER_OTP_DELAY_IN_SECONDS).to_i.seconds
+      delay_seconds = (ENV["USER_OTP_SMS_DELAY_IN_SECONDS"] || DEFAULT_USER_OTP_DELAY_IN_SECONDS).to_i.seconds
       RequestOtpSmsJob.set(wait: delay_seconds).perform_later(user)
     end
 
@@ -65,7 +65,7 @@ class Api::V3::UsersController < APIController
   def approve_and_save(user)
     FeatureToggle.auto_approve_for_qa? ?
       user.sync_approval_allowed :
-      user.sync_approval_requested(I18n.t('registration'))
+      user.sync_approval_requested(I18n.t("registration"))
 
     user.save
   end
@@ -100,7 +100,7 @@ class Api::V3::UsersController < APIController
     validator = Api::V3::UserRegistrationPayloadValidator.new(registration_params)
     logger.debug "User registration params had errors: #{validator.errors_hash}" if validator.invalid?
     if validator.invalid?
-      render json: { errors: validator.errors }, status: :bad_request
+      render json: {errors: validator.errors}, status: :bad_request
     end
   end
 
@@ -113,7 +113,8 @@ class Api::V3::UsersController < APIController
         :password_digest,
         :updated_at,
         :created_at,
-        :registration_facility_id)
+        :registration_facility_id
+      )
   end
 
   def find_params
