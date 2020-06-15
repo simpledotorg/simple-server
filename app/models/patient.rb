@@ -176,7 +176,7 @@ class Patient < ApplicationRecord
   def call_result=(new_call_result)
     if new_call_result == "contacted"
       self.contacted_by_counsellor = true
-    elsif Patient.could_not_contact_reasons.values.include?(new_call_result)
+    elsif Patient.could_not_contact_reasons.value?(new_call_result)
       self.contacted_by_counsellor = false
       self.could_not_contact_reason = new_call_result
     end

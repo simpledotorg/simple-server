@@ -23,10 +23,8 @@ class PatientBusinessIdentifier < ApplicationRecord
       if identifier.nil?
         errors.add(:identifier, "can't be blank")
       end
-    else
-      if identifier.blank?
-        errors.add(:identifier, "can't be blank")
-      end
+    elsif identifier.blank?
+      errors.add(:identifier, "can't be blank")
     end
   end
 
