@@ -27,6 +27,20 @@ class SeedUsersDataJob
 
   SYNC_PAYLOAD_SIZE = 20
 
+  # Add traits here that pertain to creating patients.
+  #
+  # For every trait, these are the following attributes,
+  #
+  # time_fn:     this should ideally be a time range, its realized value is passed to build_fn as args[:time]
+  # size_fn:     how many records should be created (ideally a range as well)
+  # build_fn:    define how to build the API attributes for this trait (typically Factory attributes)
+  # request_key: the appropriate sync resource for the trait
+  # api_version: the api version of the sync resource to be used
+  #
+  # Note:
+  # If you do not want to create traits through APIs and simply use FactoryBot.create;
+  # Just ignore request_key and api_version
+  #
   def patient_traits
     @patient_traits ||=
       {
@@ -65,6 +79,12 @@ class SeedUsersDataJob
       }
   end
 
+  # Add traits here that define a property on patient.
+  #
+  # The attributes here are a superset of the patient_traits,
+  #
+  # patient_sample_size: how many patients for the user to apply this trait to (factor between 0 to 1)
+  #
   def per_patient_traits
     @per_patient_traits ||=
       {
