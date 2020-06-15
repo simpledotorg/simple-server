@@ -38,7 +38,8 @@ RSpec.describe Dashboard::DistrictsController, type: :controller do
     expect(response).to be_successful
     data = assigns(:data)
     expect(data[:controlled_patients].size).to eq(12) # 1 year of data
-    expect(data[:controlled_patients]["Jan 2020"]).to eq(1)
+    p data[:controlled_patients]
+    expect(data[:controlled_patients]["Feb 2020"]).to eq(1)
     expect(data[:controlled_patients]["Mar 2020"]).to eq(1)
   end
 end

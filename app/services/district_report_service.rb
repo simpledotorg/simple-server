@@ -27,7 +27,7 @@ class DistrictReportService
     -11.upto(0).each do |n|
       time = selected_date.advance(months: n)
       formatted_period = time.strftime("%b %Y")
-      key = [@facility.id, time.year.to_s, time.month.to_s]
+      key = [time.year.to_s, time.month.to_s]
 
       period = {cohort_period: :month,
                 registration_month: time.month,
@@ -57,32 +57,17 @@ class DistrictReportService
       @data[:quarterly_registrations] << {
         results_in: formatted_next_quarter,
         patients_registered: formatted_current_quarter,
-        cohort_trend: [
-          {
-            period: formatted_current_quarter,
-            registered: query.cohort_registrations.count,
-            controlled: {
-              total: query.cohort_controlled_bps.count,
-              percent: 22,
-            },
-            no_bp: {
-              total: query.cohort_missed_visits_count,
-              percent: 22,
-            },
-            uncontrolled: {
-              total: query.cohort_uncontrolled_bps.count,
-              percent: 22,
-            }
-          }.with_indifferent_access
-        ]
+        registered: query.cohort_registrations.count,
+        controlled: query.cohort_controlled_bps.count,
+        no_bp: query.cohort_missed_visits_count,
+        uncontrolled: query.cohort_uncontrolled_bps.count,
       }.with_indifferent_access
     end
   end
 
   def registrations
-    registrations_query = MyFacilities::RegistrationsQuery.new(facilities: @facilities, period: :month, last_n: 12)
-    @result ||= registrations_query.registrations.group(:facility_id, :year, :month).sum(:registration_count)
-    @result
+    registrations_query ||= MyFacilities::RegistrationsQuery.new(facilities: @facilities, period: :month, last_n: 12)
+    registrations_query.registrations.group(:year, :month).sum(:registration_count)
   end
 
 end
