@@ -7,11 +7,7 @@ RSpec.describe Dashboard::DistrictsController, type: :controller do
     end
   end
 
-  before do
-    @facility = create(:facility, name: "CHC Barnagar")
-  end
-
-  context "rendering" do
+  context "preview" do
     render_views
 
     it "does not render for anonymous" do
@@ -26,19 +22,25 @@ RSpec.describe Dashboard::DistrictsController, type: :controller do
     end
   end
 
-  it "retrieves data" do
-    jan_2020 = Time.parse("January 1 2020")
-    patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
-    create(:blood_pressure, :under_control, recorded_at: jan_2020, patient: patient, facility: @facility).create_or_update_rollup
-    create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility).create_or_update_rollup
-    LatestBloodPressuresPerPatient.refresh
-    LatestBloodPressuresPerPatientPerMonth.refresh
+  context "show" do
+    before do
+      @facility = create(:facility, name: "CHC Barnagar")
+    end
 
-    sign_in(supervisor.email_authentication)
-    get :preview, params: {source: "live", district_name: @facility.facility_group.name}
-    expect(response).to be_successful
-    data = assigns(:data)
-    expect(data[:controlled_patients].size).to eq(12) # 1 year of data
-    expect(data[:controlled_patients]["Dec 2019"]).to eq(1)
+    it "retrieves data" do
+      jan_2020 = Time.parse("January 1 2020")
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+      create(:blood_pressure, :under_control, recorded_at: jan_2020, patient: patient, facility: @facility).create_or_update_rollup
+      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility).create_or_update_rollup
+      LatestBloodPressuresPerPatient.refresh
+      LatestBloodPressuresPerPatientPerMonth.refresh
+
+      sign_in(supervisor.email_authentication)
+      get :show, params: {id: @facility.facility_group.slug}
+      expect(response).to be_successful
+      data = assigns(:data)
+      expect(data[:controlled_patients].size).to eq(12) # 1 year of data
+      expect(data[:controlled_patients]["Dec 2019"]).to eq(1)
+    end
   end
 end
