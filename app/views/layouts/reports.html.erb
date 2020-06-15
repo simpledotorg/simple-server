@@ -18,7 +18,11 @@
 
     <meta charset="utf-8">
 
-    <%= stylesheet_link_tag '/tailwind', media: 'all' %>
+    <%= stylesheet_link_tag    'application', media: 'all' %>
+    <%= stylesheet_link_tag    'print', media: 'print' %>
+    <%= stylesheet_link_tag    '/tailwind', media: 'all' %>
+
+    <%= javascript_include_tag 'application' %>
 
     <link rel="apple-touch-icon" sizes="180x180" href="<%= apple_logo_for_environment %>">
     <link rel="icon" sizes="192x192" href="<%= android_logo_for_environment(size: '192') %>">

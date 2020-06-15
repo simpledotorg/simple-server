@@ -1,265 +1,4 @@
-<nav class="fixed w-full z-30 flex items-center justify-between top-0 right-0 left-0 py-3 pr-3 pl-2 bg-white shadow-sm md:py-0">
-  <div class="flex items-center">
-    <%= image_tag "simple_logo.svg", :width => '32', :class => 'mr-1 md:mr-4' %>
-    <p class="block font-sans font-semibold text-lg text-grey-500 md:hidden">
-      Simple Dashboard
-    </p>
-    <div class="hidden md:flex">
-      <a class="relative mr-5 py-5 font-sans font-medium text-base text-grey-500 h-full">
-        My facilities
-      </a>
-      <a class="mr-5 py-5 font-sans font-medium text-base text-red-200">
-        Reports
-      </a>
-      <a class="mr-5 py-5 font-sans font-medium text-base text-grey-500">
-        Overdue patients
-      </a>
-      <a class="mr-5 py-5 font-sans font-medium text-base text-grey-500">
-        Manage
-      </a>
-      <a class="mr-5 py-5 font-sans font-medium text-base text-grey-500">
-        Resources
-      </a>
-    </div>
-  </div>
-  <div data-js="menu-button" class="flex py-1 px-2 rounded-md border border-grey-200 bg-white cursor-pointer md:hidden md:pointer-events-none">
-    <div class="relative top-2 mr-2">
-      <svg class="stroke-current text-grey-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="3" y1="12" x2="21" y2="12"></line>
-        <line x1="3" y1="6" x2="21" y2="6"></line>
-        <line x1="3" y1="18" x2="21" y2="18"></line>
-      </svg>
-    </div>
-    <p class="flex font-sans font-semibold text-sm text-grey-500 select-none">
-      Menu
-    </p>
-  </div>
-  <div class="hidden md:block md:relative md:cursor-pointer">
-    <div data-js="account-button" class="flex">
-      <p class="mr-2 font-sans font-medium text-base text-grey-500">
-        cvho@simple.org
-      </p>
-      <div class="relative top-4">
-        <svg class="stroke-current text-grey-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
-      </div>
-    </div>
-    <div data-js="account-dropdown" class="absolute py-3 right-0 border border-grey-200 rounded-md bg-white shadow-lg opacity-0 transform translate-y-1 transition duration-350 ease-cubic" style="width: 192px; top: 32px;">
-      <a class="block mx-3 mb-1 py-1 px-2" href="/my_facilities">
-        <p class="font-sans font-medium text-md text-grey-400">
-          Privacy policy
-        </p>
-      </a>
-      <a class="block mx-3 mb-1 py-1 px-2" href="/my_facilities">
-        <p class="font-sans font-medium text-md text-grey-400">
-          License
-        </p>
-      </a>
-      <div class="my-3 border-t border-grey-200"></div>
-      <a class="block mx-3 mb-1 py-1 px-2" href="/my_facilities">
-        <p class="font-sans font-medium text-md text-grey-400">
-          Logout
-        </p>
-      </a>
-    </div>
-  </div>
-</nav>
-<div data-js="overlay" class="z-40 fixed top-0 right-0 left-0 bottom-0 w-full h-full bg-grey-400 opacity-0 transition-opacity duration-350 ease-cubic pointer-events-none md:hidden md:pointer-events-none"></div>
-<div data-js="sidebar" class="z-50 fixed top-0 right-0 bottom-0 w-4/5 h-full pt-2 pb-5 bg-white rounded-tl-lg rounded-bl-lg transform translate-x-full transition-transform duration-350 ease-cubic overflow-y-scroll">
-  <div data-js="sidebar-button" class="flex justify-end px-2">
-    <div class="flex items-center justify-center p-1 bg-grey-100 rounded-md cursor-pointer">
-      <svg class="stroke-current text-grey-300" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
-    </div>
-  </div>
-  <div class="mb-2 px-2">
-    <a class="block" href="/my_facilities">
-      <div class="flex py-2 px-3 bg-white rounded-md transition-bg duration-250 ease-in-expo">
-        <div class="relative top-1 mr-2">
-          <svg class="stroke-current text-grey-300" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-          </svg>
-        </div>
-        <p class="font-sans font-semibold text-md text-grey-500">
-          My facilities
-        </p>
-      </div>
-    </a>
-    <div class="ml-8">
-      <a class="block mb-1 py-1 px-2" href="/my_facilities">
-        <p class="font-sans font-medium text-md text-grey-400">
-          Overdue
-        </p>
-      </a>
-      <a class="block mb-1 py-1 px-2" href="/my_facilities/blood_pressure_control">
-        <p class="font-sans font-medium text-md text-grey-400">
-          BP control
-        </p>
-      </a>
-      <a class="block mb-1 py-1 px-2" href="/my_facilities/missed_visits">
-        <p class="font-sans font-medium text-md text-grey-400">
-          Missed visits
-        </p>
-      </a>
-      <a class="block mb-1 py-1 px-2" href="/my_facilities/registrations">
-        <p class="font-sans font-medium text-md text-grey-400">
-          Registrations
-        </p>
-      </a>
-    </div>
-  </div>
-  <div class="mb-1 px-2">
-    <a class="block" href="/reports">
-      <div class="flex py-2 px-3 bg-white rounded-md transition-bg duration-250 ease-in-expo">
-        <div class="relative top-1 mr-2">
-          <svg class="stroke-current text-grey-300" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="20" x2="18" y2="10"></line>
-            <line x1="12" y1="20" x2="12" y2="4"></line>
-            <line x1="6" y1="20" x2="6" y2="14"></line>
-          </svg>
-        </div>
-        <p class="font-sans font-semibold text-md text-grey-500">
-          Reports
-        </p>
-      </div>
-    </a>
-  </div>
-  <div class="mb-1 px-2">
-    <a class="block" href="/appointments">
-      <div class="flex py-2 px-3 bg-white rounded-md transition-bg duration-250 ease-in-expo">
-        <div class="relative top-1 mr-2">
-          <svg class="stroke-current text-grey-300" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-        </div>
-        <p class="font-sans font-semibold text-md text-grey-500">
-          Overdue patients
-        </p>
-      </div>
-    </a>
-  </div>
-  <div class="mb-2 px-2">
-    <a class="block" href="/admin/organizations">
-      <div class="flex py-2 px-3 bg-white rounded-md transition-bg duration-250 ease-in-expo">
-        <div class="relative top-1 mr-2">
-          <svg class="stroke-current text-grey-300" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
-          </svg>
-        </div>
-        <p class="font-sans font-semibold text-md text-grey-500">
-          Manage
-        </p>
-      </div>
-    </a>
-    <div class="ml-8">
-      <a class="block mb-1 py-1 px-2" href="/admin/organizations">
-        <p class="font-sans font-medium text-md text-grey-400">
-          Organizations
-        </p>
-      </a>
-      <a class="block mb-1 py-1 px-2" href="/admin/facilities">
-        <p class="font-sans font-medium text-md text-grey-400">
-          Facilities
-        </p>
-      </a>
-      <a class="block mb-1 py-1 px-2" href="/admin/protocols">
-        <p class="font-sans font-medium text-md text-grey-400">
-          Protocols
-        </p>
-      </a>
-      <a class="block mb-1 py-1 px-2" href="/admins">
-        <p class="font-sans font-medium text-md text-grey-400">
-          Admins
-        </p>
-      </a>
-      <a class="block mb-1 py-1 px-2" href="/admin/users">
-        <p class="font-sans font-medium text-md text-grey-400">
-          Users
-        </p>
-      </a>
-    </div>
-  </div>
-  <div class="mb-1 px-2">
-    <a class="block" href="/resources">
-      <div class="flex py-2 px-3 bg-white rounded-md transition-bg duration-250 ease-in-expo">
-        <div class="relative top-1 mr-2">
-          <svg class="stroke-current text-grey-300" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-          </svg>
-        </div>
-        <p class="font-sans font-semibold text-md text-grey-500">
-          Resources
-        </p>
-      </div>
-    </a>
-  </div>
-  <div class="mb-1 px-2">
-    <a class="block" href="https://www.simple.org/privacy">
-      <div class="flex py-2 px-3 bg-white rounded-md transition-bg duration-250 ease-in-expo">
-        <div class="relative top-1 mr-2">
-          <svg class="stroke-current text-grey-300" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-          </svg>
-        </div>
-        <p class="font-sans font-semibold text-md text-grey-500">
-          Privacy Policy
-        </p>
-      </div>
-    </a>
-  </div>
-  <div class="mb-3 px-2">
-    <a class="block" href="https://www.simple.org/privacy">
-      <div class="flex py-2 px-3 bg-white rounded-md transition-bg duration-250 ease-in-expo">
-        <div class="relative top-1 mr-2">
-          <svg class="stroke-current text-grey-300" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-            <polyline points="14 2 14 8 20 8"></polyline>
-            <line x1="16" y1="13" x2="8" y2="13"></line>
-            <line x1="16" y1="17" x2="8" y2="17"></line>
-            <polyline points="10 9 9 9 8 9"></polyline>
-          </svg>
-        </div>
-        <p class="font-sans font-semibold text-md text-grey-500">
-          License
-        </p>
-      </div>
-    </a>
-  </div>
-  <div class="mb-1 pt-4 px-6 border-t border-grey-200">
-    <div class="mb-3">
-      <p class="font-sans font-semibold text-md text-grey-500">
-        Account
-      </p>
-      <p class="font-sans font-medium text-sm text-grey-400">
-        Signed in as
-        <span class="font-semibold">
-          cvho@simple.org
-        </span>
-      </p>
-    </div>
-    <a class="flex align-center justify-center py-2 px-4 bg-white rounded-md border border-grey-200" href="/" type="button">
-      <div class="flex">
-        <div class="relative top-1 mr-2 opacity-50">
-          <svg class="stroke-current text-red-200" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-            <polyline points="16 17 21 12 16 7"></polyline>
-            <line x1="21" y1="12" x2="9" y2="12"></line>
-          </svg>
-        </div>
-        <p class="font-sans text-md font-semibold text-red-200">
-          Logout
-        </p>
-      </div>
-    </a>
-  </div>
-</div>
-<div class="mb-2 pt-8 px-4 md:flex md:items-center md:justify-between md:max-w-6xl md:m-auto md:pt-24">
+<div class="mb-2 pt-4 px-4 md:flex md:items-center md:justify-between md:max-w-6xl md:m-auto">
   <div>
     <div class="flex items-center mb-4">
       <div class="mr-2">
@@ -288,10 +27,41 @@
       <%= @district_name %>
     </h1>
     <div class="flex items-center mb-2">
-      <div class="mr-1">
-        <p class="font-roboto font-bold text-lg text-black">
+      <div class="mr-1 dropdown show">
+        <p class="font-roboto font-bold text-lg text-black dropdown" id="dropdownMenuLink"
+          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Monthly hypertension report for <%= @report_period %>
         </p>
+      </div>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+        <h6 class="dropdown-header">Quarterly</h6>
+        <% last_n_quarters(n: 6).each do |year, quarter| %>
+          <%# selected = (year == @registration_year && quarter == @registration_quarter && cohort_period == :quarter) %>
+          <% selected = (year == @registration_year && quarter == @registration_quarter) %>
+          <button class="dropdown-item query-filter-quarter <%= 'active' if selected %>"
+                  type="submit" data-quarter="<%= quarter %>" data-year="<%= year %>" form="query-filters">
+            <%= "Q#{quarter}-#{year}" %>
+          </button>
+        <% end %>
+        <div class="dropdown-divider"></div>
+        <h6 class="dropdown-header">Monthly</h6>
+        <% last_n_months(n: 6).each do |month| %>
+          <%# selected = (month.year == @registration_year && month.month == @registration_month && cohort_period == :month) %>
+          <% selected = (month.year == @registration_year && month.month == @registration_month) %>
+          <button class="dropdown-item query-filter-month <%= 'active' if selected %>"
+                  type="submit" data-month="<%= month.month %>" data-year="<%= month.year %>" form="query-filters">
+            <%= month_short_name_and_year(month) %>
+          </button>
+        <% end %>
+
+        <input class="selected-quarter" name="registration_quarter" value="<%= @registration_quarter %>" form="query-filters" hidden>
+        <input class="selected-month" name="registration_month" value="<%= @registration_month %>" form="query-filters" hidden>
+        <input class="selected-year" name="registration_year" value="<%= @registration_year %>" form="query-filters" hidden>
+        <input class="selected-cohort-period" name="cohort_period" value="<%= :quarter %>" form="query-filters" hidden>
+        <input class="selected-quarter" name="registration_quarter" value="<%= @registration_quarter %>" form="query-filters-mobile" hidden>
+        <input class="selected-month" name="registration_month" value="<%= @registration_month %>" form="query-filters-mobile" hidden>
+        <input class="selected-year" name="registration_year" value="<%= @registration_year %>" form="query-filters-mobile" hidden>
+        <input class="selected-cohort-period" name="cohort_period" value="<%= :quarter %>" form="query-filters-mobile" hidden>
       </div>
       <div>
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
