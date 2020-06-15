@@ -35,8 +35,12 @@ module ApplicationHelper
   # Defaults to precision of 0.
   def compute_percentage(numerator, denominator, options = {})
     options = options.with_defaults(precision: 0)
-    quotient = numerator.to_f / denominator.to_f
-    number_to_percentage(quotient * 100, options)
+    if denominator == 0
+      "N/A"
+    else
+      quotient = numerator.to_f / denominator.to_f
+      number_to_percentage(quotient * 100, options)
+    end
   end
 
   def handle_impossible_registration_date(date)
