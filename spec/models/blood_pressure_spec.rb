@@ -1,5 +1,8 @@
 require "rails_helper"
+<<<<<<< HEAD
 include Hashable
+=======
+>>>>>>> origin/master
 
 RSpec.describe BloodPressure, type: :model do
   describe "Validations" do
@@ -121,12 +124,12 @@ RSpec.describe BloodPressure, type: :model do
         blood_pressure = create(:blood_pressure)
 
         anonymised_data =
-          {id: hash_uuid(blood_pressure.id),
-           patient_id: hash_uuid(blood_pressure.patient_id),
+          {id: Hashable.hash_uuid(blood_pressure.id),
+           patient_id: Hashable.hash_uuid(blood_pressure.patient_id),
            created_at: blood_pressure.created_at,
            bp_date: blood_pressure.recorded_at,
            registration_facility_name: blood_pressure.facility.name,
-           user_id: hash_uuid(blood_pressure.user.id),
+           user_id: Hashable.hash_uuid(blood_pressure.user.id),
            bp_systolic: blood_pressure.systolic,
            bp_diastolic: blood_pressure.diastolic}
 

@@ -1,9 +1,9 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe EmailAuthentication, type: :model do
   WEAK_PASSWORD_ERROR = "Please choose a stronger password with at least 8 characters. Try a mix of letters, numbers, and symbols."
 
-  describe 'Associations' do
+  describe "Associations" do
     it { should have_one(:user_authentication) }
     it { should have_one(:user).through(:user_authentication) }
   end
@@ -16,7 +16,7 @@ RSpec.describe EmailAuthentication, type: :model do
 
   it "requires a strong password" do
     auth = build(:email_authentication)
-    bad_passwords = ["password", "passw0rd", "12345678", "1234abcd", "aaaaaaaa", "catsdogs"].each do |password|
+    ["password", "passw0rd", "12345678", "1234abcd", "aaaaaaaa", "catsdogs"].each do |password|
       auth.password = password
       expect(auth).to_not be_valid, "password #{password} should not be valid"
       expect(auth.errors.messages[:password]).to eq [WEAK_PASSWORD_ERROR]
@@ -25,7 +25,7 @@ RSpec.describe EmailAuthentication, type: :model do
 
   it "allows strong passwords" do
     auth = build(:email_authentication)
-    good_passwords = ["three word passphrase", "speaker imac coverage flower", "@zadlfj4809574zk.vd", "long-pass-phrase-verklempt-basketball"].each do |password|
+    ["three word passphrase", "speaker imac coverage flower", "@zadlfj4809574zk.vd", "long-pass-phrase-verklempt-basketball"].each do |password|
       auth.password = password
       expect(auth).to be_valid, "password #{password.inspect} should not be valid"
     end
