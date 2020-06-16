@@ -27,14 +27,6 @@ class Api::V3::BloodPressuresController < Api::V3::SyncController
   end
 
   def after_merge_completed(results)
-    records = results.flat_map { |r| r[:record] }.compact
-    rollup_blood_pressures(records)
-  end
-
-  def rollup_blood_pressures(records)
-    records.each do |record|
-      BloodPressureRollup.from_blood_pressure(record)
-    end
   end
 
   def transform_to_response(blood_pressure)
