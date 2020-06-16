@@ -1,8 +1,4 @@
 require "rails_helper"
-<<<<<<< HEAD
-include Hashable
-=======
->>>>>>> origin/master
 
 RSpec.describe BloodPressure, type: :model do
   describe "Validations" do
