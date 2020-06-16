@@ -39,12 +39,6 @@ describe DistrictReportService, type: :model do
     service = DistrictReportService.new(facilities: [facility], selected_date: june_1)
     result = service.call
 
-    # @data = {
-    #   controlled_patients: {},
-    #   registrations: {},
-    #   cumulative_registrations: 0,
-    #   quarterly_registrations: []
-    # }.with_indifferent_access
     expect(result[:controlled_patients].size).to eq(12)
     expect(result[:controlled_patients]["Jan 2020"]).to eq(2)
     expect(result[:controlled_patients]["Feb 2020"]).to eq(0)
