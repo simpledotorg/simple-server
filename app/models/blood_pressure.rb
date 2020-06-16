@@ -60,24 +60,9 @@ class BloodPressure < ApplicationRecord
     [systolic, diastolic].join("/")
   end
 
-  def quarter_for_month(month)
-    case month
-    when 1, 2, 3
-      1
-    when 4, 5, 6
-      2
-    when 7, 8, 9
-      3
-    when 10, 11, 12
-      4
-    else
-      raise ArgumentError
-    end
-  end
-
   def create_or_update_rollup
     month = recorded_at.month
-    quarter = quarter_for_month(month)
+    quarter = QuarterHelper.quarter(month)
     month_attrs = rollup_attributes(period_type: :month, period_number: month)
     quarter_attrs = rollup_attributes(period_type: :quarter, period_number: quarter)
 
