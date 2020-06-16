@@ -16,7 +16,7 @@ RSpec.describe Admin::OrganizationsController, type: :controller do
 
   describe "GET #index" do
     it "returns a success response" do
-      Organization.create! valid_attributes
+      _organization = Organization.create! valid_attributes
       get :index, params: {}
       expect(response).to be_successful
     end
