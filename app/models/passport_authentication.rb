@@ -28,7 +28,7 @@ class PassportAuthentication < ActiveRecord::Base
     self.otp ||= new_otp[:otp]
     self.otp_expires_at ||= new_otp[:otp_expires_at]
 
-    { otp: otp, otp_expires_at: otp_expires_at }
+    {otp: otp, otp_expires_at: otp_expires_at}
   end
 
   def reset_otp
@@ -37,7 +37,7 @@ class PassportAuthentication < ActiveRecord::Base
     self.otp = new_otp[:otp]
     self.otp_expires_at = new_otp[:otp_expires_at]
 
-    { otp: otp, otp_expires_at: otp_expires_at }
+    {otp: otp, otp_expires_at: otp_expires_at}
   end
 
   def expire_otp
@@ -58,14 +58,14 @@ class PassportAuthentication < ActiveRecord::Base
   private
 
   def build_otp
-    new_otp = if FeatureToggle.enabled?('FIXED_OTP_ON_REQUEST_FOR_QA')
+    new_otp = if FeatureToggle.enabled?("FIXED_OTP_ON_REQUEST_FOR_QA")
       "000000"
     else
       SecureRandom.random_number.to_s[2..7]
     end
 
-    new_otp_expires_at = Time.current + ENV['USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES'].to_i.minutes
+    new_otp_expires_at = Time.current + ENV["USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES"].to_i.minutes
 
-    { otp: new_otp, otp_expires_at: new_otp_expires_at }
+    {otp: new_otp, otp_expires_at: new_otp_expires_at}
   end
 end

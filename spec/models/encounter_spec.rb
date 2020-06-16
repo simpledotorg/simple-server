@@ -1,7 +1,7 @@
-require 'rails_helper'
+require "rails_helper"
 
 describe Encounter, type: :model do
-  describe 'Associations' do
+  describe "Associations" do
     it { should belong_to(:patient).optional }
     it { should belong_to(:facility) }
     it { should have_many(:observations) }
@@ -14,16 +14,16 @@ describe Encounter, type: :model do
   let!(:blood_pressure) { create(:blood_pressure, patient: patient) }
   let!(:timezone_offset) { 3600 }
 
-  context '#encountered_on' do
-    it 'returns the encountered_on in the correct timezone' do
+  context "#encountered_on" do
+    it "returns the encountered_on in the correct timezone" do
       Timecop.travel(DateTime.new(2019, 1, 1)) do
         expect(Encounter.generate_encountered_on(Time.now, 24 * 60 * 60)).to eq(Date.new(2019, 1, 2))
       end
     end
   end
 
-  context '#generate_id' do
-    it 'generates the same encounter id consistently' do
+  context "#generate_id" do
+    it "generates the same encounter id consistently" do
       encountered_on = Encounter.generate_encountered_on(blood_pressure.recorded_at, timezone_offset)
 
       id_1 = Encounter.generate_id(facility.id, patient.id, encountered_on)
