@@ -37,9 +37,9 @@ class DistrictReportService
       date = selected_date.advance(months: quarter * 3)
       quarter = QuarterHelper.quarter(date)
       year = date.year
-      next_quarter = QuarterHelper.next_year_and_quarter(year, quarter)
+      next_year, next_quarter = QuarterHelper.next_year_and_quarter(year, quarter)
       formatted_current_quarter = "Q#{quarter}-#{year}"
-      formatted_next_quarter = "Q#{next_quarter[1]}-#{next_quarter[0]}"
+      formatted_next_quarter = "Q#{next_quarter}-#{next_year}"
 
       period = {cohort_period: :quarter,
                 registration_quarter: quarter,
