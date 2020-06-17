@@ -26,12 +26,19 @@ class FacilityGroup < ApplicationRecord
   auto_strip_attributes :name, squish: true, upcase_first: true
   attribute :enable_diabetes_management
 
+  before_save :enable_diabetes_management!, if: -> { enable_diabetes_management }
+  before_save :disable_diabetes_management, if: -> { !enable_diabetes_management && diabetes_enabled? }
+
   def report_on_patients
     Patient.where(registration_facility: facilities)
   end
 
-  def enable_diabetes!
+  def enable_diabetes_management!
     facilities.update(enable_diabetes_management: true)
+  end
+
+  def disable_diabetes_management
+    facilities.update(enable_diabetes_management: false)
   end
 
   def diabetes_enabled?

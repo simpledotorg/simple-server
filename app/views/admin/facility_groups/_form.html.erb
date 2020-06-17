@@ -24,8 +24,7 @@
         <div class="alert alert-primary mt-3" role="alert">
           This will enable Diabetes Management for all associated facilities in this group.
         </div>
-
-        <%= form.check_box :enable_diabetes_management, id: :facility_group_enable_diabetes_management %>
+        <%= form.check_box :enable_diabetes_management, {id: :facility_group_enable_diabetes_management, checked: facility_group.diabetes_enabled?}, true, false %>
       </div>
 
       <%= form.select(:protocol_id, protocols.order(:name).map { |protocol| [protocol.name, protocol.id] }) %>

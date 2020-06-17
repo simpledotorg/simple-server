@@ -73,8 +73,4 @@ class Admin::FacilityGroupsController < AdminController
       facility_ids: []
     )
   end
-
-  def enable_diabetes_management
-
-  end
 end
