@@ -163,7 +163,7 @@ RSpec.describe PatientsExporter do
       expect(subject.csv_fields(patient)).not_to include(patient.address.zone)
     end
 
-    it "does not include blood sugars from older appointments" do
+    it "does not include blood sugars from older visits" do
       blood_sugar.destroy
       other_blood_sugar = create(:blood_sugar, :fasting, :with_encounter, blood_sugar_value: 150, facility: facility, patient: patient)
 
