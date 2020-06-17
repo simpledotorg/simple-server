@@ -176,7 +176,7 @@ class Facility < ApplicationRecord
 
   def teleconsultation_phone_number_with_isd
     teleconsultation_phone_number = teleconsultation_phone_numbers.first
-    return if teleconsultation_phone_number.isd_code.blank? || teleconsultation_phone_number.phone_number.blank?
+    return if teleconsultation_phone_number.blank?
 
     Phonelib.parse(teleconsultation_phone_number.isd_code + teleconsultation_phone_number.phone_number).full_e164
   end
