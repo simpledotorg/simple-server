@@ -3,9 +3,9 @@ class Address < ApplicationRecord
   include PgSearch::Model
 
   STATE_TO_LOCALE = {
-    punjab: 'pa-Guru-IN',
-    maharashtra: 'mr-IN',
-    karnataka: 'kn-IN'
+    punjab: "pa-Guru-IN",
+    maharashtra: "mr-IN",
+    karnataka: "kn-IN"
   }
 
   pg_search_scope :search_by_street_or_village,
@@ -25,6 +25,6 @@ class Address < ApplicationRecord
   private
 
   def state_to_sym
-    state.strip.split(' ').join('_').downcase.to_sym
+    state.strip.split(" ").join("_").downcase.to_sym
   end
 end
