@@ -57,27 +57,6 @@ ActiveRecord::Schema.define(version: 2020_06_05_103543) do
     t.index ["user_id"], name: "index_appointments_on_user_id"
   end
 
-  create_table "blood_pressure_rollups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "assigned_facility_id", null: false
-    t.uuid "blood_pressure_facility_id", null: false
-    t.uuid "blood_pressure_id", null: false
-    t.uuid "patient_id", null: false
-    t.integer "systolic", null: false
-    t.integer "diastolic", null: false
-    t.integer "period_number", null: false
-    t.integer "period_type", null: false
-    t.integer "year", null: false
-    t.datetime "deleted_at"
-    t.datetime "recorded_at", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["assigned_facility_id"], name: "index_blood_pressure_rollups_on_assigned_facility_id"
-    t.index ["blood_pressure_facility_id"], name: "index_blood_pressure_rollups_on_blood_pressure_facility_id"
-    t.index ["blood_pressure_id"], name: "index_blood_pressure_rollups_on_blood_pressure_id"
-    t.index ["patient_id", "period_number", "period_type", "year"], name: "one_blood_pressure_per_patient_per_period", unique: true
-    t.index ["patient_id"], name: "index_blood_pressure_rollups_on_patient_id"
-  end
-
   create_table "blood_pressures", id: :uuid, default: nil, force: :cascade do |t|
     t.integer "systolic", null: false
     t.integer "diastolic", null: false
@@ -508,10 +487,6 @@ ActiveRecord::Schema.define(version: 2020_06_05_103543) do
   end
 
   add_foreign_key "appointments", "facilities"
-  add_foreign_key "blood_pressure_rollups", "blood_pressures"
-  add_foreign_key "blood_pressure_rollups", "facilities", column: "assigned_facility_id"
-  add_foreign_key "blood_pressure_rollups", "facilities", column: "blood_pressure_facility_id"
-  add_foreign_key "blood_pressure_rollups", "patients"
   add_foreign_key "blood_sugars", "facilities"
   add_foreign_key "blood_sugars", "users"
   add_foreign_key "encounters", "facilities"
