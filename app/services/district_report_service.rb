@@ -32,22 +32,25 @@ class DistrictReportService
     end
   end
 
+  def format_quarter(quarter)
+    "Q#{quarter.number}-#{quarter.year}"
+  end
+
+  # We want to return date for the last current quarter for the selected date, and then
+  # the previous three quarters. Each quarter cohort is made up of patients registered
+  # in the previous quarter, who has had a follow up visit in the quarter.
   def compile_cohort_trend_data
-    -1.downto(-4).each do |quarter|
-      date = selected_date.advance(months: quarter * 3)
-      quarter = QuarterHelper.quarter(date)
-      year = date.year
-      next_year, next_quarter = QuarterHelper.next_year_and_quarter(year, quarter)
-      formatted_current_quarter = "Q#{quarter}-#{year}"
-      formatted_next_quarter = "Q#{next_quarter}-#{next_year}"
+    Quarter.create(date: selected_date).downto(3).each do |quarter|
+      results_in_quarter_and_year = quarter
+      registered_in_quarter_and_year = quarter.previous_quarter
 
       period = {cohort_period: :quarter,
-                registration_quarter: quarter,
-                registration_year: year}
+                registration_quarter: registered_in_quarter_and_year.number,
+                registration_year: registered_in_quarter_and_year.year}
       query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities, cohort_period: period)
       @data[:quarterly_registrations] << {
-        results_in: formatted_next_quarter,
-        patients_registered: formatted_current_quarter,
+        results_in: format_quarter(results_in_quarter_and_year),
+        patients_registered: format_quarter(registered_in_quarter_and_year),
         registered: query.cohort_registrations.count,
         controlled: query.cohort_controlled_bps.count,
         no_bp: query.cohort_missed_visits_count,
