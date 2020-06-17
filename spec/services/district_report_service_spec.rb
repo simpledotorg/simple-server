@@ -56,7 +56,7 @@ describe DistrictReportService, type: :model do
     expect(service.controlled_patients(june_1).map(&:patient)).to match_array(june_controlled)
   end
 
-  it "returns counts per month / year for controlled patients and registrations" do
+  it "returns counts for last 12 months for controlled patients and registrations" do
     facility_group = FactoryBot.create(:facility_group, name: "Darrang")
     facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group)
     facility = facilities.first
@@ -83,15 +83,25 @@ describe DistrictReportService, type: :model do
     service = DistrictReportService.new(facilities: facility_group.facilities, selected_date: june_1)
     result = service.call
 
+    expected_controlled_patients = {
+      "Feb 2020" => 2, "Mar 2020" => 2, "Apr 2020" => 4, "May 2020" => 2, "Jun 2020" => 2
+    }
+    expected_controlled_patients.default = 0
+    expected_registrations = {
+      "Jan 2020" => 2, "Feb 2020" => 2, "Mar 2020" => 4, "Apr 2020" => 4, "May 2020" => 4, "Jun 2020" => 4
+    }
+    expected_registrations.default = 0
     expect(result[:controlled_patients].size).to eq(12)
-    expect(result[:controlled_patients]["Jan 2020"]).to eq(0)
-    expect(result[:controlled_patients]["Feb 2020"]).to eq(2)
-    expect(result[:controlled_patients]["Mar 2020"]).to eq(2)
-    expect(result[:controlled_patients]["Apr 2020"]).to eq(4)
-    expect(result[:controlled_patients]["May 2020"]).to eq(2)
+    expect(result[:registrations].size).to eq(12)
 
-    expect(result[:registrations]["Jan 2020"]).to eq(2)
-    expect(result[:registrations]["May 2020"]).to eq(4)
+    result[:controlled_patients].each do |month, count|
+      expect(count).to eq(expected_controlled_patients[month]),
+        "expected count for #{month} to eq #{count}, but was #{expected_controlled_patients[month].inspect}"
+    end
+    result[:registrations].each do |month, count|
+      expect(count).to eq(expected_registrations[month]),
+        "expected count for #{month} to eq #{count}, but was #{expected_registrations[month].inspect}"
+    end
     expect(result[:cumulative_registrations]).to eq(4)
   end
 end

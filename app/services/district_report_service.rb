@@ -23,7 +23,7 @@ class DistrictReportService
   def compile_control_and_registration_data
     -11.upto(0).each do |n|
       time = selected_date.advance(months: n)
-      formatted_period = time.strftime("%b %Y")
+      formatted_period = time.to_s(:month_year)
       key = [time.year.to_s, time.month.to_s]
 
       @data[:controlled_patients][formatted_period] = controlled_patients(time).count
@@ -36,21 +36,20 @@ class DistrictReportService
     "Q#{quarter.number}-#{quarter.year}"
   end
 
-  # We want to return date for the last current quarter for the selected date, and then
+  # We want to return cohort data for the current quarter for the selected date, and then
   # the previous three quarters. Each quarter cohort is made up of patients registered
-  # in the previous quarter, who has had a follow up visit in the quarter.
+  # in the previous quarter who has had a follow up visit in the current quarter.
   def compile_cohort_trend_data
-    Quarter.create(date: selected_date).downto(3).each do |quarter|
-      results_in_quarter_and_year = quarter
-      registered_in_quarter_and_year = quarter.previous_quarter
+    Quarter.create(date: selected_date).downto(3).each do |results_quarter|
+      cohort_quarter = results_quarter.previous_quarter
 
       period = {cohort_period: :quarter,
-                registration_quarter: registered_in_quarter_and_year.number,
-                registration_year: registered_in_quarter_and_year.year}
+                registration_quarter: cohort_quarter.number,
+                registration_year: cohort_quarter.year}
       query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities, cohort_period: period)
       @data[:quarterly_registrations] << {
-        results_in: format_quarter(results_in_quarter_and_year),
-        patients_registered: format_quarter(registered_in_quarter_and_year),
+        results_in: format_quarter(results_quarter),
+        patients_registered: format_quarter(cohort_quarter),
         registered: query.cohort_registrations.count,
         controlled: query.cohort_controlled_bps.count,
         no_bp: query.cohort_missed_visits_count,
@@ -79,6 +78,4 @@ class DistrictReportService
     registrations_query ||= MyFacilities::RegistrationsQuery.new(facilities: @facilities, period: :month, last_n: 12)
     registrations_query.registrations.group(:year, :month).sum(:registration_count)
   end
-
-
 end
