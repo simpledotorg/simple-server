@@ -26,10 +26,6 @@ class DistrictReportService
       formatted_period = time.strftime("%b %Y")
       key = [time.year.to_s, time.month.to_s]
 
-      period = {cohort_period: :month,
-                registration_month: time.month,
-                registration_year: time.year}
-
       @data[:controlled_patients][formatted_period] = controlled_patients(time).count
       @data[:cumulative_registrations] += registrations.fetch(key, 0).to_i.round
       @data[:registrations][formatted_period] = @data[:cumulative_registrations]
