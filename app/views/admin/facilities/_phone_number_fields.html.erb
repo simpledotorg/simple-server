@@ -1,0 +1,26 @@
+<fieldset>
+  <div id=<%= "mo_row_#{f.index}" %> class="row">
+    <div class="col col-md-4">
+      <% if @facility.errors["teleconsultation_phone_numbers_attributes_#{f.index}_isd_code"].present? %>
+        <%= f.text_field :isd_code, label: "Country code #{@facility.errors["teleconsultation_phone_numbers_attributes_#{f.index}_isd_code"].first}", label_class: 'text-danger',
+                         class: 'is_invalid' %>
+      <% else %>
+        <%= f.text_field :isd_code, hide_label: true %>
+      <% end %>
+    </div>
+    <div class="col col-md-7">
+      <% if @facility.errors["teleconsultation_phone_numbers_attributes_#{f.index}_phone_number"].present? %>
+        <%= f.label :phone_number, "Phone number #{@facility.errors["teleconsultation_phone_numbers_attributes_#{f.index}_phone_number"].first}", class: "text-danger" %>
+        <%= f.text_field :phone_number, class: "is_invalid", hide_label: true %>
+      <% else %>
+        <%= f.text_field :phone_number, hide_label: true %>
+      <% end %>
+    </div>
+    <div class="col col-md-1">
+      <%= f.hidden_field :_destroy %>
+      <%= button_tag type: "button", name: "delete_button", class: "btn btn-sm btn-outline-danger", onclick: "deletePhoneNumber(this)" do %>
+        <i class="fas fa-trash-alt"></i>
+      <% end %>
+    </div>
+  </div>
+</fieldset>

@@ -71,10 +71,9 @@ class Facility < ApplicationRecord
   validates :facility_size, inclusion: { in: facility_sizes.values,
                                          message: "not in #{facility_sizes.values.join(", ")}",
                                          allow_blank: true }
-  validates :teleconsultation_isd_code, presence: true, if: :teleconsultation_enabled?
-  validates :teleconsultation_phone_number, presence: true, if: :teleconsultation_enabled?
   validates :enable_teleconsultation, inclusion: { in: [true, false] }
   validates :enable_diabetes_management, inclusion: { in: [true, false] }
+  validate :teleconsultation_phone_numbers_valid?, if: :teleconsultation_enabled?
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, to: :facility_group, allow_nil: true
@@ -183,9 +182,59 @@ class Facility < ApplicationRecord
 
   CSV::Converters[:strip_whitespace] = ->(value) { value.strip rescue value }
 
+  def teleconsultation_phone_numbers
+    read_attribute(:teleconsultation_phone_numbers)&.map { |t| TeleconsultationPhoneNumber.new(t) }
+  end
+
+  def teleconsultation_phone_numbers_attributes=(attributes)
+    teleconsultation_phone_numbers = []
+    attributes.each do |_index, attrs|
+      next if attrs.delete("_destroy") == "true"
+
+      teleconsultation_phone_numbers << TeleconsultationPhoneNumber.new(attrs)
+    end
+
+    write_attribute(:teleconsultation_phone_numbers, teleconsultation_phone_numbers)
+  end
+
+  def build_teleconsultation_phone_number
+    numbers = self.teleconsultation_phone_numbers.dup || []
+    numbers << TeleconsultationPhoneNumber.new({})
+    self.teleconsultation_phone_numbers = numbers
+  end
+
+  class TeleconsultationPhoneNumber
+    include ActiveModel::Validations
+    attr_accessor :isd_code, :phone_number
+
+    def initialize(hash)
+      @isd_code = hash['isd_code'] || Rails.application.config.country['sms_country_code']
+      @phone_number = hash['phone_number']
+    end
+
+    validates :isd_code, presence: true
+    validates :phone_number, presence: true
+
+    def persisted?() false; end
+    def new_record?() false; end
+    def marked_for_destruction?() false; end
+    def _destroy() false; end
+  end
+
   private
 
   def clear_isd_code
     self.teleconsultation_isd_code = ""
+  end
+
+  def teleconsultation_phone_numbers_valid?
+    teleconsultation_phone_numbers.each_with_index do |mo, index|
+      if mo.isd_code.blank?
+        errors.add("teleconsultation_phone_numbers_attributes_#{index}_isd_code", "can't be blank")
+      end
+      if mo.phone_number.blank?
+        errors.add("teleconsultation_phone_numbers_attributes_#{index}_phone_number", "can't be blank")
+      end
+    end
   end
 end
