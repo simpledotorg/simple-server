@@ -20,8 +20,8 @@ class CallSession
       RedisService
         .new(connection)
         .hmset_with_expiry(CallSession.session_key(@call_id),
-                           session_data,
-                           EXPIRE_CALL_SESSION_IN_SECONDS)
+          session_data,
+          EXPIRE_CALL_SESSION_IN_SECONDS)
     end
   end
 
@@ -35,30 +35,32 @@ class CallSession
 
   class << self
     def fetch(call_id)
-      data = CallSessionStore::CONNECTION_POOL.with do |connection|
+      data = CallSessionStore::CONNECTION_POOL.with { |connection|
         RedisService
           .new(connection)
           .hgetall(session_key(call_id))
-      end
+      }
 
-      CallSession.new(call_id,
-                      data[:user_phone_number],
-                      data[:patient_phone_number]) if data.present?
+      if data.present?
+        CallSession.new(call_id,
+          data[:user_phone_number],
+          data[:patient_phone_number])
+      end
     end
 
     def session_key(call_id)
-      [self.name, call_id].join('/')
+      [name, call_id].join("/")
     end
   end
 
   private
 
   def sanitized_phone_number(phone_number)
-    Phonelib.parse(phone_number, Rails.application.config.country[:abbreviation] || 'IN').raw_national
+    Phonelib.parse(phone_number, Rails.application.config.country[:abbreviation] || "IN").raw_national
   end
 
   def session_data
-    { patient_phone_number: patient_phone_number.number,
-      user_phone_number: user_phone_number }
+    {patient_phone_number: patient_phone_number.number,
+     user_phone_number: user_phone_number}
   end
 end

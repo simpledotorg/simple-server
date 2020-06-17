@@ -6,5 +6,5 @@ class LatestBloodPressuresPerPatientPerMonth < ApplicationRecord
   end
 
   belongs_to :patient
-  belongs_to :facility, class_name: 'Facility', foreign_key: 'bp_facility_id'
+  belongs_to :facility, class_name: "Facility", foreign_key: "bp_facility_id"
 end
