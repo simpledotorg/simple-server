@@ -221,16 +221,12 @@ class Facility < ApplicationRecord
   end
 
   class TeleconsultationPhoneNumber
-    include ActiveModel::Validations
     attr_accessor :isd_code, :phone_number
 
     def initialize(hash)
       @isd_code = hash["isd_code"] || Rails.application.config.country["sms_country_code"]
       @phone_number = hash["phone_number"]
     end
-
-    validates :isd_code, presence: true
-    validates :phone_number, presence: true
 
     def persisted?
       false
@@ -256,12 +252,12 @@ class Facility < ApplicationRecord
   end
 
   def teleconsultation_phone_numbers_valid?
-    teleconsultation_phone_numbers.each_with_index do |mo, index|
+    teleconsultation_phone_numbers.each do |mo|
       if mo.isd_code.blank?
-        errors.add("teleconsultation_phone_numbers_attributes_#{index}_isd_code", "can't be blank")
+        errors.add("teleconsultation_phone_numbers_attributes", "can't be blank")
       end
       if mo.phone_number.blank?
-        errors.add("teleconsultation_phone_numbers_attributes_#{index}_phone_number", "can't be blank")
+        errors.add("teleconsultation_phone_numbers_attributes", "can't be blank")
       end
     end
   end

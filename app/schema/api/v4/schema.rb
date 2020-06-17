@@ -144,8 +144,9 @@ class Api::V4::Schema
         properties: { teleconsultation_phone_number: { type: [:string, 'null'] },
                       teleconsultation_phone_numbers: { type: :array,
                                                         items: { type: :object,
-                                                                 properties: { phone_number: { type: :string}}}}},
-        required: %i[teleconsultation_phone_number] }
+                                                                 properties: { phone_number: { type: :string}},
+                                                                 required: %i[phone_number]}}},
+        required: %i[teleconsultation_phone_number teleconsultation_phone_numbers] }
     end
 
     def definitions

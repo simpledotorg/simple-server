@@ -218,12 +218,16 @@
                       "phone_number": {
                         "type": "string"
                       }
-                    }
+                    },
+                    "required": [
+                      "phone_number"
+                    ]
                   }
                 }
               },
               "required": [
-                "teleconsultation_phone_number"
+                "teleconsultation_phone_number",
+                "teleconsultation_phone_numbers"
               ]
             }
           },

@@ -35,6 +35,11 @@
             <br>Healthcare workers at this facility can make a teleconsult request to a medical officer at a higher level facility by searching for a patient in Simple and tapping a new "WhatsApp Doctor" button. Enter the MO's WhatsApp number below.
             <br>You can also enter multiple MOs for this facility by clicking on the "Add a Medical Officer" button.
           </div>
+          <% if @facility.errors["teleconsultation_phone_numbers_attributes"].present? %>
+            <div id="errors" class="col col-md-12">
+              <%= form.label "All teleconsultation numbers must have a country code and phone number", class: "text-danger" %>
+            </div>
+          <% end %>
          <div id="mo_rows">
            <div id="header_row" class="row mt-2">
            <div class="col col-md-4">
