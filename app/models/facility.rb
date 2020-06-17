@@ -1,4 +1,4 @@
-require 'roo'
+require "roo"
 
 class Facility < ApplicationRecord
   include Mergeable
@@ -15,7 +15,7 @@ class Facility < ApplicationRecord
 
   belongs_to :facility_group, optional: true
 
-  has_many :phone_number_authentications, foreign_key: 'registration_facility_id'
+  has_many :phone_number_authentications, foreign_key: "registration_facility_id"
   has_many :users, through: :phone_number_authentications
 
   has_many :encounters
@@ -26,16 +26,16 @@ class Facility < ApplicationRecord
   has_many :appointments
 
   has_many :registered_patients,
-           class_name: "Patient",
-           foreign_key: "registration_facility_id"
+    class_name: "Patient",
+    foreign_key: "registration_facility_id"
   has_many :registered_diabetes_patients,
-           -> { with_diabetes },
-           class_name: "Patient",
-           foreign_key: "registration_facility_id"
+    -> { with_diabetes },
+    class_name: "Patient",
+    foreign_key: "registration_facility_id"
   has_many :registered_hypertension_patients,
-           -> { with_hypertension },
-           class_name: "Patient",
-           foreign_key: "registration_facility_id"
+    -> { with_hypertension },
+    class_name: "Patient",
+    foreign_key: "registration_facility_id"
 
   pg_search_scope :search_by_name, against: {name: "A", slug: "B"}, using: {tsearch: {prefix: true, any_word: true}}
 
@@ -68,6 +68,7 @@ class Facility < ApplicationRecord
   validates :state, presence: true
   validates :country, presence: true
   validates :pin, numericality: true, allow_blank: true
+
   validates :facility_size, inclusion: { in: facility_sizes.values,
                                          message: "not in #{facility_sizes.values.join(", ")}",
                                          allow_blank: true }
@@ -84,15 +85,15 @@ class Facility < ApplicationRecord
   friendly_id :name, use: :slugged
 
   def cohort_analytics(period, prev_periods)
-    query = CohortAnalyticsQuery.new(self.registered_hypertension_patients)
+    query = CohortAnalyticsQuery.new(registered_hypertension_patients)
     query.patient_counts_by_period(period, prev_periods)
   end
 
   def dashboard_analytics(period: :month, prev_periods: 3, include_current_period: false)
     query = FacilityAnalyticsQuery.new(self,
-                                       period,
-                                       prev_periods,
-                                       include_current_period: include_current_period)
+      period,
+      prev_periods,
+      include_current_period: include_current_period)
 
     results = [
       query.registered_patients_by_period,
@@ -105,24 +106,24 @@ class Facility < ApplicationRecord
   end
 
   CSV_IMPORT_COLUMNS =
-    { organization_name: 'organization',
-      facility_group_name: 'facility_group',
-      name: 'facility_name',
-      facility_type: 'facility_type',
-      street_address: 'street_address (optional)',
-      village_or_colony: 'village_or_colony (optional)',
-      zone: 'zone_or_block (optional)',
-      district: 'district',
-      state: 'state',
-      country: 'country',
-      pin: 'pin (optional)',
-      latitude: 'latitude (optional)',
-      longitude: 'longitude (optional)',
-      facility_size: 'size (optional)',
-      enable_diabetes_management: 'enable_diabetes_management (true/false)',
-      enable_teleconsultation: 'enable_teleconsultation (true/false)',
-      teleconsultation_phone_number: 'teleconsultation_phone_number',
-      teleconsultation_isd_code: 'teleconsultation_isd_code' }
+    {organization_name: "organization",
+     facility_group_name: "facility_group",
+     name: "facility_name",
+     facility_type: "facility_type",
+     street_address: "street_address (optional)",
+     village_or_colony: "village_or_colony (optional)",
+     zone: "zone_or_block (optional)",
+     district: "district",
+     state: "state",
+     country: "country",
+     pin: "pin (optional)",
+     latitude: "latitude (optional)",
+     longitude: "longitude (optional)",
+     facility_size: "size (optional)",
+     enable_diabetes_management: "enable_diabetes_management (true/false)",
+     enable_teleconsultation: "enable_teleconsultation (true/false)",
+     teleconsultation_phone_number: "teleconsultation_phone_number",
+     teleconsultation_isd_code: "teleconsultation_isd_code"}
 
   def self.parse_facilities(file_contents)
     facilities = []
@@ -144,8 +145,10 @@ class Facility < ApplicationRecord
 
   def facility_group_exists
     organization = Organization.find_by(name: organization_name)
-    facility_group = FacilityGroup.find_by(name: facility_group_name,
-                                           organization_id: organization.id) if organization.present?
+    if organization.present?
+      facility_group = FacilityGroup.find_by(name: facility_group_name,
+                                             organization_id: organization.id)
+    end
     if organization.present? && facility_group_name.present? && facility_group.blank?
       errors.add(:facility_group, "doesn't exist for the organization")
     end
@@ -153,11 +156,12 @@ class Facility < ApplicationRecord
 
   def facility_is_unique
     organization = Organization.find_by(name: organization_name)
-    facility_group = FacilityGroup.find_by(name: facility_group_name,
-                                           organization_id: organization.id) if organization.present?
+    if organization.present?
+      facility_group = FacilityGroup.find_by(name: facility_group_name,
+                                             organization_id: organization.id)
+    end
     facility = Facility.find_by(name: name, facility_group: facility_group.id) if facility_group.present?
-    errors.add(:facility, 'already exists') if organization.present? && facility_group.present? && facility.present?
-
+    errors.add(:facility, "already exists") if organization.present? && facility_group.present? && facility.present?
   end
 
   def facility_name_presence
@@ -187,7 +191,13 @@ class Facility < ApplicationRecord
     end
   end
 
-  CSV::Converters[:strip_whitespace] = ->(value) { value.strip rescue value }
+  CSV::Converters[:strip_whitespace] = ->(value) {
+    begin
+                value.strip
+    rescue
+      value
+              end
+  }
 
   def teleconsultation_phone_numbers
     read_attribute(:teleconsultation_phone_numbers).map { |t| TeleconsultationPhoneNumber.new(t) }

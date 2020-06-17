@@ -5,15 +5,15 @@ module BloodPressureable
 
   included do
     scope :hypertensive, (lambda do
-      where('systolic >= ? OR diastolic >= ?',
-            THRESHOLDS[:hypertensive][:systolic],
-            THRESHOLDS[:hypertensive][:diastolic])
+      where("systolic >= ? OR diastolic >= ?",
+        THRESHOLDS[:hypertensive][:systolic],
+        THRESHOLDS[:hypertensive][:diastolic])
     end)
 
     scope :under_control, (lambda do
-      where('systolic < ? AND diastolic < ?',
-            THRESHOLDS[:hypertensive][:systolic],
-            THRESHOLDS[:hypertensive][:diastolic])
+      where("systolic < ? AND diastolic < ?",
+        THRESHOLDS[:hypertensive][:systolic],
+        THRESHOLDS[:hypertensive][:diastolic])
     end)
   end
 end

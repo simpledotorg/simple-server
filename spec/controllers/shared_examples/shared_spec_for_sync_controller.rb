@@ -24,7 +24,7 @@ RSpec.shared_examples "a sync controller that authenticates user requests" do
     let(:empty_payload) { Hash[request_key, []] }
 
     before :each do
-      request_user = FactoryBot.create(:user)
+      _request_user = FactoryBot.create(:user)
       set_authentication_headers
     end
 
