@@ -69,11 +69,11 @@ class Facility < ApplicationRecord
   validates :country, presence: true
   validates :pin, numericality: true, allow_blank: true
 
-  validates :facility_size, inclusion: { in: facility_sizes.values,
-                                         message: "not in #{facility_sizes.values.join(", ")}",
-                                         allow_blank: true }
-  validates :enable_teleconsultation, inclusion: { in: [true, false] }
-  validates :enable_diabetes_management, inclusion: { in: [true, false] }
+  validates :facility_size, inclusion: {in: facility_sizes.values,
+                                        message: "not in #{facility_sizes.values.join(", ")}",
+                                        allow_blank: true}
+  validates :enable_teleconsultation, inclusion: {in: [true, false]}
+  validates :enable_diabetes_management, inclusion: {in: [true, false]}
   validate :teleconsultation_phone_numbers_valid?, if: :teleconsultation_enabled?
 
   delegate :protocol, to: :facility_group, allow_nil: true
@@ -187,7 +187,7 @@ class Facility < ApplicationRecord
 
   def teleconsultation_phone_numbers_with_isd
     teleconsultation_phone_numbers.map do |phone_number|
-      { phone_number: Phonelib.parse(phone_number.isd_code + phone_number.phone_number).full_e164 }
+      {phone_number: Phonelib.parse(phone_number.isd_code + phone_number.phone_number).full_e164}
     end
   end
 
@@ -215,7 +215,7 @@ class Facility < ApplicationRecord
   end
 
   def build_teleconsultation_phone_number
-    numbers = self.teleconsultation_phone_numbers.dup || []
+    numbers = teleconsultation_phone_numbers.dup || []
     numbers << TeleconsultationPhoneNumber.new({})
     self.teleconsultation_phone_numbers = numbers
   end
@@ -225,17 +225,28 @@ class Facility < ApplicationRecord
     attr_accessor :isd_code, :phone_number
 
     def initialize(hash)
-      @isd_code = hash['isd_code'] || Rails.application.config.country['sms_country_code']
-      @phone_number = hash['phone_number']
+      @isd_code = hash["isd_code"] || Rails.application.config.country["sms_country_code"]
+      @phone_number = hash["phone_number"]
     end
 
     validates :isd_code, presence: true
     validates :phone_number, presence: true
 
-    def persisted?() false; end
-    def new_record?() false; end
-    def marked_for_destruction?() false; end
-    def _destroy() false; end
+    def persisted?
+      false
+    end
+
+    def new_record?
+      false
+    end
+
+    def marked_for_destruction?
+      false
+    end
+
+    def _destroy
+      false
+    end
   end
 
   private

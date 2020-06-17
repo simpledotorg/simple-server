@@ -37,7 +37,7 @@ RSpec.describe Api::V4::FacilityTeleconsultationsController, type: :controller d
           expect(response).to have_http_status(200)
           expect(JSON.parse(response.body)["teleconsultation_phone_number"]).to eq(Phonelib.parse("+91" + "11111111").full_e164)
           expect(JSON.parse(response.body)["teleconsultation_phone_numbers"]).to eq([{"phone_number" => Phonelib.parse("+91" + "11111111").full_e164},
-                                                                                     {"phone_number" => Phonelib.parse("+91" + "22222222").full_e164}])
+            {"phone_number" => Phonelib.parse("+91" + "22222222").full_e164}])
         end
       end
 
