@@ -9,7 +9,6 @@ end
 
 gem "active_record_union"
 gem "activerecord-import"
-gem "active_record_upsert"
 gem "auto_strip_attributes"
 gem "bcrypt", "~> 3.1", ">= 3.1.11"
 gem "bootsnap", require: false
