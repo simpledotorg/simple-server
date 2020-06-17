@@ -12,6 +12,25 @@ RSpec.describe PatientsExporter do
   let!(:prescription_drug_3) { create(:prescription_drug, :deleted, patient: patient) }
   let(:now) { Time.current }
 
+  let!(:old_blood_pressure) { create(:blood_pressure, recorded_at: 1.year.ago, patient: patient) }
+  let!(:old_appointment) {
+    create(
+      :appointment,
+      :overdue,
+      facility: facility,
+      patient: patient,
+      scheduled_date: appointment.scheduled_date - 5.days
+    )
+  }
+  let!(:old_bp_passport) {
+    create(
+      :patient_business_identifier,
+      identifier_type: 'simple_bp_passport',
+      device_created_at: 1.year.ago,
+      patient: patient
+    )
+  }
+
   let(:timestamp) do
     [
       'Report generated at:',

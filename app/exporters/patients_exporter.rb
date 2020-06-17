@@ -16,10 +16,10 @@ module PatientsExporter
           :phone_numbers,
           :address,
           :medical_history,
-          :prescription_drugs,
+          :current_prescription_drugs,
           :latest_bp_passports,
           { latest_scheduled_appointments: :facility },
-          { latest_blood_pressures: :facility },
+          { latest_blood_pressures: [:facility, :encounter] },
           :latest_blood_sugars
         ).each do |patient|
           csv << csv_fields(patient)
@@ -82,10 +82,10 @@ module PatientsExporter
 
   def self.csv_fields(patient)
     registration_facility = patient.registration_facility
-    latest_bp = patient.latest_blood_pressures.order(recorded_at: :desc).first
+    latest_bp = patient.latest_blood_pressures.first
     latest_bp_facility = latest_bp&.facility
-    latest_appointment = patient.latest_scheduled_appointments.order(scheduled_date: :desc).first
-    latest_bp_passport = patient.latest_bp_passports.order(device_created_at: :desc).first
+    latest_appointment = patient.latest_scheduled_appointments.first
+    latest_bp_passport = patient.latest_bp_passports.first
     zone_column_index = csv_headers.index(zone_column)
 
     csv_fields = [
