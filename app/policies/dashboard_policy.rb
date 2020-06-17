@@ -1,5 +1,4 @@
 class DashboardPolicy < Struct.new(:user, :dashboard)
-
   def show?
     Pundit.policy(user, [:cohort_report, Organization]).index? ||
       Pundit.policy(user, [:manage, :user, User]).index?
