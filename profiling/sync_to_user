@@ -1,0 +1,6 @@
+GET http://localhost:3000/api/v3/blood_pressures/sync
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer b39acde1fc73fba7326670f6f88b473436413ba5c614de6daa59fd824b8ff85e
+X-USER-ID: 00ae4b22-37cb-495b-8f82-aa9421664d8a
+X-FACILITY-ID: 28194c99-3a9a-4478-a79c-c6c2f2366df2
