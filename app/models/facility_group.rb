@@ -33,6 +33,8 @@ class FacilityGroup < ApplicationRecord
     Patient.where(registration_facility: facilities)
   end
 
+  private
+
   def enable_diabetes_management!
     facilities.update(enable_diabetes_management: true)
   end
