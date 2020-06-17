@@ -1,6 +1,11 @@
 <div class="row">
   <div class="col-md-6">
     <%= bootstrap_form_with(model: [:admin, facility_group, facility], local: true, autocomplete: "off", label_errors: true) do |form| %>
+      <% if @facility.errors.any? %>
+        <div id="errors">
+          <%= form.label "Please fix the indicated errors", class: "text-danger" %>
+        </div>
+      <% end %>
       <%= form.text_field :name, id: :facility_name, required: true, autocomplete: "off", help: "Include the facility type in the name. Example: PHC Brooklyn", label: "Facility name *" %>
       <%= form.text_field :facility_type, id: :facility_type, help: "Examples: DH, SDH, CHC, PHC, UPHC, HWC, SC", required: true %>
       <%= form.select :facility_size, Facility.facility_sizes.map { |key, value| [key.capitalize, value] }, id: :facility_size, help: "Select the closest relative size", required: true %>
@@ -33,11 +38,11 @@
           <div class="alert alert-primary mt-3" role="alert">
             <strong>How does the teleconsultation pilot work?</strong>
             <br>Healthcare workers at this facility can make a teleconsult request to a medical officer at a higher level facility by searching for a patient in Simple and tapping a new "WhatsApp Doctor" button. Enter the MO's WhatsApp number below.
-            <br>You can also enter multiple MOs for this facility by clicking on the "Add a Medical Officer" button.
+            <br>You can enter multiple MOs for this facility by clicking on the "Add a Medical Officer" button.
           </div>
           <% if @facility.errors["teleconsultation_phone_numbers_attributes"].present? %>
-            <div id="errors" class="col col-md-12">
-              <%= form.label "All teleconsultation numbers must have a country code and phone number", class: "text-danger" %>
+            <div id="teleconsultation-errors" class="col col-md-12 pl-0">
+              <%= form.label @facility.errors["teleconsultation_phone_numbers_attributes"].first, class: "text-danger" %>
             </div>
           <% end %>
          <div id="mo_rows">
@@ -52,7 +57,7 @@
              <%= label_tag "delete" %>
            </div>
          </div>
-           <% if @facility[:teleconsultation_phone_numbers].blank? %>
+           <% if @facility[:teleconsultation_phone_numbers].empty? %>
              <% @facility.build_teleconsultation_phone_number %>
            <% end %>
            <%= form.fields_for :teleconsultation_phone_numbers do |phone_number_form| %>

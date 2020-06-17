@@ -221,7 +221,7 @@ ActiveRecord::Schema.define(version: 2020_06_12_054350) do
     t.boolean "enable_teleconsultation", default: false, null: false
     t.string "teleconsultation_phone_number"
     t.string "teleconsultation_isd_code"
-    t.jsonb "teleconsultation_phone_numbers", default: []
+    t.jsonb "teleconsultation_phone_numbers", default: [], null: false
     t.index "to_tsvector('simple'::regconfig, COALESCE((name)::text, ''::text))", name: "index_gin_facilities_on_name", using: :gin
     t.index "to_tsvector('simple'::regconfig, COALESCE((slug)::text, ''::text))", name: "index_gin_facilities_on_slug", using: :gin
     t.index ["deleted_at"], name: "index_facilities_on_deleted_at"

@@ -193,10 +193,10 @@ class Facility < ApplicationRecord
 
   CSV::Converters[:strip_whitespace] = ->(value) {
     begin
-                value.strip
+      value.strip
     rescue
       value
-              end
+    end
   }
 
   def teleconsultation_phone_numbers
@@ -215,8 +215,9 @@ class Facility < ApplicationRecord
   end
 
   def build_teleconsultation_phone_number
-    numbers = teleconsultation_phone_numbers.dup || []
-    numbers << TeleconsultationPhoneNumber.new({})
+    numbers = teleconsultation_phone_numbers.dup
+    numbers << TeleconsultationPhoneNumber.new({isd_code: Rails.application.config.country["sms_country_code"],
+                                                phone_number: ""})
     self.teleconsultation_phone_numbers = numbers
   end
 
@@ -224,8 +225,9 @@ class Facility < ApplicationRecord
     attr_accessor :isd_code, :phone_number
 
     def initialize(hash)
-      @isd_code = hash["isd_code"] || Rails.application.config.country["sms_country_code"]
-      @phone_number = hash["phone_number"]
+      hash = hash.with_indifferent_access
+      @isd_code = hash[:isd_code]
+      @phone_number = hash[:phone_number]
     end
 
     def persisted?
@@ -252,12 +254,17 @@ class Facility < ApplicationRecord
   end
 
   def teleconsultation_phone_numbers_valid?
+    if teleconsultation_phone_numbers.blank?
+      errors.add("teleconsultation_phone_numbers_attributes", "At least one medical officer must be added to enable teleconsultation")
+      return
+    end
+
     teleconsultation_phone_numbers.each do |mo|
       if mo.isd_code.blank?
-        errors.add("teleconsultation_phone_numbers_attributes", "can't be blank")
+        errors.add("teleconsultation_phone_numbers_attributes", "All teleconsultation numbers must have a country code and a phone number")
       end
       if mo.phone_number.blank?
-        errors.add("teleconsultation_phone_numbers_attributes", "can't be blank")
+        errors.add("teleconsultation_phone_numbers_attributes", "All teleconsultation numbers must have a country code and a phone number")
       end
     end
   end
