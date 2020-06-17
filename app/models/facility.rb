@@ -175,15 +175,22 @@ class Facility < ApplicationRecord
   end
 
   def teleconsultation_phone_number_with_isd
-    return if teleconsultation_isd_code.blank? || teleconsultation_phone_number.blank?
+    teleconsultation_phone_number = teleconsultation_phone_numbers.first
+    return if teleconsultation_phone_number.isd_code.blank? || teleconsultation_phone_number.phone_number.blank?
 
-    Phonelib.parse(teleconsultation_isd_code + teleconsultation_phone_number).full_e164
+    Phonelib.parse(teleconsultation_phone_number.isd_code + teleconsultation_phone_number.phone_number).full_e164
+  end
+
+  def teleconsultation_phone_numbers_with_isd
+    teleconsultation_phone_numbers.map do |phone_number|
+      { phone_number: Phonelib.parse(phone_number.isd_code + phone_number.phone_number).full_e164 }
+    end
   end
 
   CSV::Converters[:strip_whitespace] = ->(value) { value.strip rescue value }
 
   def teleconsultation_phone_numbers
-    read_attribute(:teleconsultation_phone_numbers)&.map { |t| TeleconsultationPhoneNumber.new(t) }
+    read_attribute(:teleconsultation_phone_numbers).map { |t| TeleconsultationPhoneNumber.new(t) }
   end
 
   def teleconsultation_phone_numbers_attributes=(attributes)

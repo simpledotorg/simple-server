@@ -16,12 +16,28 @@ RSpec.describe Api::V4::FacilityTeleconsultationsController, type: :controller d
       context "Requested facility is user's registration facility" do
         it "returns the phone number" do
           user.registration_facility.update!(enable_teleconsultation: true,
-                                             teleconsultation_isd_code: isd_code,
-                                             teleconsultation_phone_number: phone_number)
+                                             teleconsultation_phone_numbers: [{isd_code: "+91", phone_number: "11111111"}])
 
           get :show, params: {facility_id: user.registration_facility.id}
           expect(response).to have_http_status(200)
-          expect(JSON.parse(response.body)["teleconsultation_phone_number"]).to eq(Phonelib.parse(isd_code + phone_number).full_e164)
+          expect(JSON.parse(response.body)["teleconsultation_phone_number"]).to eq(Phonelib.parse("+91" + "11111111").full_e164)
+          expect(JSON.parse(response.body)["teleconsultation_phone_numbers"]).to eq([{"phone_number" => Phonelib.parse("+91" + "11111111").full_e164}])
+        end
+      end
+
+      context "Requested facility is user's registration facility" do
+        it "returns multiple phone numbers" do
+          user.registration_facility.update!(enable_teleconsultation: true,
+                                             teleconsultation_phone_numbers: [
+                                               {isd_code: "+91", phone_number: "11111111"},
+                                               {isd_code: "+91", phone_number: "22222222"}
+                                             ])
+
+          get :show, params: {facility_id: user.registration_facility.id}
+          expect(response).to have_http_status(200)
+          expect(JSON.parse(response.body)["teleconsultation_phone_number"]).to eq(Phonelib.parse("+91" + "11111111").full_e164)
+          expect(JSON.parse(response.body)["teleconsultation_phone_numbers"]).to eq([{"phone_number" => Phonelib.parse("+91" + "11111111").full_e164},
+                                                                                     {"phone_number" => Phonelib.parse("+91" + "22222222").full_e164}])
         end
       end
 
@@ -29,8 +45,7 @@ RSpec.describe Api::V4::FacilityTeleconsultationsController, type: :controller d
         it "returns the phone number" do
           facility = create(:facility, facility_group: user.registration_facility.facility_group)
           facility.update!(enable_teleconsultation: true,
-                           teleconsultation_isd_code: isd_code,
-                           teleconsultation_phone_number: phone_number)
+                           teleconsultation_phone_numbers: [{isd_code: isd_code, phone_number: phone_number}])
 
           get :show, params: {facility_id: facility.id}
           expect(response).to have_http_status(200)
@@ -42,8 +57,7 @@ RSpec.describe Api::V4::FacilityTeleconsultationsController, type: :controller d
         it "fails authorization" do
           facility = create(:facility)
           facility.update!(enable_teleconsultation: true,
-                           teleconsultation_isd_code: isd_code,
-                           teleconsultation_phone_number: phone_number)
+                           teleconsultation_phone_numbers: [{isd_code: isd_code, phone_number: phone_number}])
 
           get :show, params: {facility_id: facility.id}
           expect(response).to have_http_status(401)
@@ -55,36 +69,11 @@ RSpec.describe Api::V4::FacilityTeleconsultationsController, type: :controller d
       context "teleconsultation is disabled" do
         it "returns the phone number" do
           user.registration_facility.update!(enable_teleconsultation: false,
-                                             teleconsultation_isd_code: isd_code,
-                                             teleconsultation_phone_number: phone_number)
+                                             teleconsultation_phone_numbers: [{isd_code: isd_code, phone_number: phone_number}])
 
           get :show, params: {facility_id: user.registration_facility.id}
           expect(response).to have_http_status(200)
           expect(JSON.parse(response.body)["teleconsultation_phone_number"]).to eq(Phonelib.parse(isd_code + phone_number).full_e164)
-        end
-      end
-
-      context "ISD code is nil" do
-        it "returns a null phone number" do
-          user.registration_facility.update_columns(enable_teleconsultation: true,
-                                                    teleconsultation_isd_code: nil,
-                                                    teleconsultation_phone_number: phone_number)
-
-          get :show, params: {facility_id: user.registration_facility.id}
-          expect(response).to have_http_status(200)
-          expect(JSON.parse(response.body)["teleconsultation_phone_number"]).to be_nil
-        end
-      end
-
-      context "phone number is nil" do
-        it "returns a null phone number" do
-          user.registration_facility.update_columns(enable_teleconsultation: true,
-                                                    teleconsultation_isd_code: isd_code,
-                                                    teleconsultation_phone_number: nil)
-
-          get :show, params: {facility_id: user.registration_facility.id}
-          expect(response).to have_http_status(200)
-          expect(JSON.parse(response.body)["teleconsultation_phone_number"]).to be_nil
         end
       end
     end

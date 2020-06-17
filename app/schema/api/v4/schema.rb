@@ -141,7 +141,10 @@ class Api::V4::Schema
 
     def facility_teleconsultations_response
       { type: :object,
-        properties: { teleconsultation_phone_number: { type: [:string, 'null'] } },
+        properties: { teleconsultation_phone_number: { type: [:string, 'null'] },
+                      teleconsultation_phone_numbers: { type: :array,
+                                                        items: { type: :object,
+                                                                 properties: { phone_number: { type: :string}}}}},
         required: %i[teleconsultation_phone_number] }
     end
 
