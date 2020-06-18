@@ -1,19 +1,18 @@
 class CohortReport::FacilityPolicy < ApplicationPolicy
-
   def show?
     user_has_any_permissions?(
       [:view_cohort_reports, nil],
       [:view_cohort_reports, record.organization],
-      [:view_cohort_reports, record.facility_group],
-      )
+      [:view_cohort_reports, record.facility_group]
+    )
   end
 
   def view_health_worker_activity?
     user_has_any_permissions?(
       [:view_health_worker_activity, nil],
       [:view_health_worker_activity, record.organization],
-      [:view_health_worker_activity, record.facility_group],
-      )
+      [:view_health_worker_activity, record.facility_group]
+    )
   end
 
   def whatsapp_graphics?
@@ -24,8 +23,8 @@ class CohortReport::FacilityPolicy < ApplicationPolicy
     user_has_any_permissions?(
       [:download_patient_line_list, nil],
       [:download_patient_line_list, record.organization],
-      [:download_patient_line_list, record.facility_group],
-      )
+      [:download_patient_line_list, record.facility_group]
+    )
   end
 
   class Scope < Scope

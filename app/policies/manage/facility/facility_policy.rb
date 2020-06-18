@@ -9,7 +9,7 @@ class Manage::Facility::FacilityPolicy < ApplicationPolicy
     user_has_any_permissions?(
       [:manage_facilities, nil],
       [:manage_facilities, record.organization],
-      [:manage_facilities, record.facility_group],
+      [:manage_facilities, record.facility_group]
     )
   end
 
@@ -21,7 +21,7 @@ class Manage::Facility::FacilityPolicy < ApplicationPolicy
     user_has_any_permissions?(
       [:manage_facilities, nil],
       [:manage_facilities, record.organization],
-      [:manage_facilities, record.facility_group],
+      [:manage_facilities, record.facility_group]
     )
   end
 

@@ -3,7 +3,7 @@ class OverdueList::FacilityPolicy < ApplicationPolicy
     user_has_any_permissions?(
       [:download_overdue_list, nil],
       [:download_overdue_list, record.organization],
-      [:download_overdue_list, record.facility_group],
+      [:download_overdue_list, record.facility_group]
     )
   end
 
