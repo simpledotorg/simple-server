@@ -33,7 +33,7 @@ module PatientsExporter
           :current_prescription_drugs,
           :latest_bp_passports,
           { latest_scheduled_appointments: :facility },
-          { latest_blood_pressures: [:facility, {encounter: :blood_sugars}] },
+          { latest_blood_pressures: :facility },
           :latest_blood_sugars
         ).each do |patient|
           csv << csv_fields(patient)
@@ -67,16 +67,17 @@ module PatientsExporter
       'Registration Facility Type',
       'Registration Facility District',
       'Registration Facility State',
-      'Latest Visit Date',
-      'Latest Visit Systolic BP',
-      'Latest Visit Diastolic BP',
-      'Latest Visit Blood Sugar Value',
-      'Latest Visit Blood Sugar Type',
-      'Latest Visit Quarter',
-      'Latest Visit Facility Name',
-      'Latest Visit Facility Type',
-      'Latest Visit Facility District',
-      'Latest Visit Facility State',
+      'Latest BP Date',
+      'Latest BP Systolic BP',
+      'Latest BP Diastolic BP',
+      'Latest BP Quarter',
+      'Latest BP Facility Name',
+      'Latest BP Facility Type',
+      'Latest BP Facility District',
+      'Latest BP Facility State',
+      'Latest Blood Sugar Date',
+      'Latest Blood Sugar Value',
+      'Latest Blood Sugar Type',
       'Follow-up Facility',
       'Follow-up Date',
       'Days Overdue',
@@ -98,11 +99,11 @@ module PatientsExporter
 
   def self.csv_fields(patient)
     registration_facility = patient.registration_facility
-    latest_bp = patient.latest_blood_pressures.first
+    latest_bp = patient.latest_blood_pressure
     latest_bp_facility = latest_bp&.facility
-    latest_blood_sugar = latest_bp&.encounter&.blood_sugars&.max_by(&:recorded_at)
-    latest_appointment = patient.latest_scheduled_appointments.first
-    latest_bp_passport = patient.latest_bp_passports.first
+    latest_blood_sugar = patient.latest_blood_sugar
+    latest_appointment = patient.latest_scheduled_appointment
+    latest_bp_passport = patient.latest_bp_passport
     zone_column_index = csv_headers.index(zone_column)
 
     csv_fields = [
@@ -124,13 +125,14 @@ module PatientsExporter
       latest_bp&.recorded_at.presence && I18n.l(latest_bp&.recorded_at),
       latest_bp&.systolic,
       latest_bp&.diastolic,
-      blood_sugar_value_with_unit(latest_blood_sugar),
-      blood_sugar_type(latest_blood_sugar),
       latest_bp&.recorded_at.presence && quarter_string(latest_bp&.recorded_at),
       latest_bp_facility&.name,
       latest_bp_facility&.facility_type,
       latest_bp_facility&.district,
       latest_bp_facility&.state,
+      latest_blood_sugar&.recorded_at.presence && I18n.l(latest_bp&.recorded_at),
+      blood_sugar_value_with_unit(latest_blood_sugar),
+      blood_sugar_type(latest_blood_sugar),
       latest_appointment&.facility&.name,
       latest_appointment&.scheduled_date&.to_s(:rfc822),
       latest_appointment&.days_overdue,

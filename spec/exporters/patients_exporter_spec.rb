@@ -57,16 +57,17 @@ RSpec.describe PatientsExporter do
       'Registration Facility Type',
       'Registration Facility District',
       'Registration Facility State',
-      'Latest Visit Date',
-      'Latest Visit Systolic BP',
-      'Latest Visit Diastolic BP',
-      'Latest Visit Blood Sugar Value',
-      'Latest Visit Blood Sugar Type',
-      'Latest Visit Quarter',
-      'Latest Visit Facility Name',
-      'Latest Visit Facility Type',
-      'Latest Visit Facility District',
-      'Latest Visit Facility State',
+      'Latest BP Date',
+      'Latest BP Systolic BP',
+      'Latest BP Diastolic BP',
+      'Latest BP Quarter',
+      'Latest BP Facility Name',
+      'Latest BP Facility Type',
+      'Latest BP Facility District',
+      'Latest BP Facility State',
+      'Latest Blood Sugar Date',
+      'Latest Blood Sugar Value',
+      'Latest Blood Sugar Type',
       'Follow-up Facility',
       'Follow-up Date',
       'Days Overdue',
@@ -107,13 +108,14 @@ RSpec.describe PatientsExporter do
       I18n.l(blood_pressure.recorded_at),
       blood_pressure.systolic,
       blood_pressure.diastolic,
-      "#{blood_sugar.blood_sugar_value} mg/dL",
-      "Fasting",
       quarter_string(blood_pressure.recorded_at),
       blood_pressure.facility.name,
       blood_pressure.facility.facility_type,
       blood_pressure.facility.district,
       blood_pressure.facility.state,
+      I18n.l(blood_sugar.recorded_at),
+      "#{blood_sugar.blood_sugar_value} mg/dL",
+      "Fasting",
       appointment.facility.name,
       appointment.scheduled_date.to_s(:rfc822),
       appointment.days_overdue,
@@ -163,12 +165,12 @@ RSpec.describe PatientsExporter do
       expect(subject.csv_fields(patient)).not_to include(patient.address.zone)
     end
 
-    it "does not include blood sugars from older appointments" do
+    it "includes blood sugars from other visits" do
       blood_sugar.destroy
-      other_blood_sugar = create(:blood_sugar, :fasting, :with_encounter, blood_sugar_value: 150, facility: facility, patient: patient)
+      other_blood_sugar = create(:blood_sugar, :fasting, :with_encounter, facility: facility, patient: patient)
 
-      expect(subject.csv_fields(patient)).not_to include("150 mg/dL")
-      expect(subject.csv_fields(patient)).not_to include("Fasting")
+      expect(subject.csv_fields(patient)).to include("#{blood_sugar.blood_sugar_value} mg/dL")
+      expect(subject.csv_fields(patient)).to include("Fasting")
     end
   end
 end
