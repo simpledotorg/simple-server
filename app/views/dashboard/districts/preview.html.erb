@@ -9,14 +9,6 @@
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
         <path d="M3.26651 1.26308C2.91116 1.61235 2.91116 2.17655 3.26651 2.52581L6.80182 6.00056L3.26651 9.47532C2.91116 9.82458 2.91116 10.3888 3.26651 10.738C3.62187 11.0873 4.1959 11.0873 4.55125 10.738L8.73349 6.62745C9.08884 6.27819 9.08884 5.71399 8.73349 5.36472L4.55125 1.25412C4.20501 0.913814 3.62187 0.913814 3.26651 1.26308Z" fill="black" fill-opacity="0.18"/>
       </svg>
-      <div class="mr-2 ml-2">
-        <p class="font-roboto font-bold text-sm text-blue-200">
-          <%= @state_name %>
-        </p>
-      </div>
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-        <path d="M3.26651 1.26308C2.91116 1.61235 2.91116 2.17655 3.26651 2.52581L6.80182 6.00056L3.26651 9.47532C2.91116 9.82458 2.91116 10.3888 3.26651 10.738C3.62187 11.0873 4.1959 11.0873 4.55125 10.738L8.73349 6.62745C9.08884 6.27819 9.08884 5.71399 8.73349 5.36472L4.55125 1.25412C4.20501 0.913814 3.62187 0.913814 3.26651 1.26308Z" fill="black" fill-opacity="0.18"/>
-      </svg>
       <div class="ml-1">
         <p class="font-roboto font-bold text-sm text-black">
           <%= @district_name %>
@@ -52,9 +44,6 @@
         </p>
       </div>
     </div>
-    <p class="font-roboto font-normal text-sm text-grey-400">
-      Last updated <%= @last_updated %>
-    </p>
   </div>
 </div>
 <div class="pt-4 px-4 pb-4 md:flex md:flex-wrap md:max-w-6xl md:m-auto md:pb-0">
@@ -71,15 +60,10 @@
         </div>
         <div>
           <p class="font-roboto font-bold text-3xl text-green-200">
-            <%= compute_percentage(@controlled_patients.values.last.to_f, @registrations.values.last.to_f, precision: 2) %>
+            <%= compute_percentage(@controlled_patients.values.last.to_f, @registrations.values.last.to_f, precision: 1) %>
           </p>
           <p class="font-roboto font-normal text-sm text-black mb-1">
               <span class="font-bold"><%= number_with_delimiter(@controlled_patients.values.last) %></span> of <%= number_with_delimiter(@registrations.values.last) %> registered patients
-          </p>
-          <p class="font-roboto font-normal text-sm text-black">
-            <% controlled_patient_trend_percentage = compute_percentage(@controlled_patients.values.last.to_f, @hypertensive_population.to_f, precision: 2) %>
-            <% formatted_htn_pop = number_with_delimiter(@hypertensive_population) %>
-            <span class="font-bold"><%= controlled_patient_trend_percentage %></span> of estimated <%= formatted_htn_pop %> hypertensive population
           </p>
         </div>
       </div>
@@ -220,11 +204,6 @@
         <div>
           <p class="font-roboto font-bold text-3xl text-purple-200">
             <%= number_with_delimiter(@registrations.values.last) %> patients
-          </p>
-          <p class="font-roboto font-normal text-sm text-black">
-            <% formatted_htn_pop = number_with_delimiter(@hypertensive_population) %>
-            <% cumulative_registrations_percentage = compute_percentage(@registrations.values.last.to_f, @hypertensive_population.to_f, precision: 2) %>
-            <span class="font-bold"><%= cumulative_registrations_percentage %></span> of estimated <%= formatted_htn_pop %> hypertensive population
           </p>
         </div>
       </div>

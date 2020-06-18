@@ -14,11 +14,9 @@ class Dashboard::DistrictsController < AdminController
     authorize :dashboard, :view_my_facilities?
     @district = FacilityGroup.find_by!(slug: params[:id])
 
-    @state_name = "state TODO"
     @district_name = @district.name
-    @report_period = Date.current
-    @last_updated = "28-MAY-2020"
-    @hypertensive_population = 100_000
+
+    @report_period = Date.current.advance(months: -1)
 
     @data = DistrictReportService.new(facilities: @district.facilities, selected_date: @report_period).call
     @controlled_patients = @data[:controlled_patients]
