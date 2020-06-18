@@ -27,7 +27,7 @@ class FacilityGroup < ApplicationRecord
   attribute :enable_diabetes_management
 
   before_save :enable_diabetes_management!, if: -> { enable_diabetes_management }
-  before_save :disable_diabetes_management, if: -> { !enable_diabetes_management && diabetes_enabled? }
+  before_save :disable_diabetes_management!, if: -> { !enable_diabetes_management && diabetes_enabled? }
 
   def report_on_patients
     Patient.where(registration_facility: facilities)
@@ -43,7 +43,7 @@ class FacilityGroup < ApplicationRecord
     facilities.update(enable_diabetes_management: true)
   end
 
-  def disable_diabetes_management
+  def disable_diabetes_management!
     facilities.update(enable_diabetes_management: false)
   end
 end
