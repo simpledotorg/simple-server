@@ -1,5 +1,4 @@
 class CohortReport::OrganizationPolicy < ApplicationPolicy
-
   def index?
     user.has_permission?(:view_cohort_reports)
   end
