@@ -34,7 +34,7 @@ class FacilityGroup < ApplicationRecord
   end
 
   def diabetes_enabled?
-    facilities.all?(&:enable_diabetes_management)
+    facilities.where(enable_diabetes_management: false).count == 0
   end
 
   private
