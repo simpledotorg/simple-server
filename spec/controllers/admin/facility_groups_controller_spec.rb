@@ -91,7 +91,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
         facility_group = FacilityGroup.create! valid_attributes
         put :update, params: {id: facility_group.to_param, facility_group: new_attributes, organization_id: organization.id}
         facility_group.reload
-        expect(facility_group.attributes.except("id", "created_at", "updated_at", "deleted_at", "slug", "enable_diabetes_management"))
+        expect(facility_group.attributes.except("id", "created_at", "updated_at", "deleted_at", "slug"))
           .to eq new_attributes.with_indifferent_access
       end
 
