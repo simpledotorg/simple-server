@@ -100,20 +100,6 @@ RSpec.describe BloodPressure, type: :model do
     end
   end
 
-  context "recent_in_month" do
-    it "returns most recent BP for patients in a month" do
-      patient = create(:patient)
-      Timecop.freeze("June 30th 2020") do
-        bp1 = create(:blood_pressure, patient: patient, recorded_at: 3.days.ago)
-        bp2 = create(:blood_pressure, patient: patient, recorded_at: 2.months.ago)
-        bp3 = create(:blood_pressure, patient: patient, recorded_at: 1.days.ago)
-        other_bp = create(:blood_pressure, recorded_at: 10.days.ago)
-        recent = BloodPressure.recent_in_month(Time.current)
-        expect(recent).to match_array([bp3, other_bp])
-      end
-    end
-  end
-
   context "anonymised data for blood pressures" do
     describe "anonymized_data" do
       it "correctly retrieves the anonymised data for the blood pressure" do
