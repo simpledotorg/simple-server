@@ -2,6 +2,7 @@
 # Remove from this list as you refactor files.
 ---
 ignore:
+- bundle/bin/*
 - app/exporters/patients_exporter.rb
 - app/helpers/application_helper.rb
 - app/helpers/assets_helper.rb
