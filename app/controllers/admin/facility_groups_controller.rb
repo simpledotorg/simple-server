@@ -26,6 +26,8 @@ class Admin::FacilityGroupsController < AdminController
     authorize([:manage, @facility_group])
 
     if @facility_group.save
+      @facility_group.toggle_diabetes_management(enable_diabetes_management)
+
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully created."
     else
       render :new
@@ -34,6 +36,8 @@ class Admin::FacilityGroupsController < AdminController
 
   def update
     if @facility_group.update(facility_group_params)
+      @facility_group.toggle_diabetes_management(enable_diabetes_management)
+
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully updated."
     else
       render :edit
@@ -69,8 +73,11 @@ class Admin::FacilityGroupsController < AdminController
       :name,
       :description,
       :protocol_id,
-      :enable_diabetes_management,
       facility_ids: []
     )
+  end
+
+  def enable_diabetes_management
+    params[:enable_diabetes_management]
   end
 end
