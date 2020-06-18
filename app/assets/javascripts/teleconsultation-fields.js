@@ -6,7 +6,6 @@ function $MORowsContainer() {
     return document.getElementById('mo_rows');
 }
 
-
 function toggleTeleconsultationFields(checkbox) {
     let teleconsultationFields = $teleconsultationFields();
     
