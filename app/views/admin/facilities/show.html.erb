@@ -26,8 +26,8 @@
   </div>
 </div>
 <div class="row">
-  <div class="col-md-4">
-    <div class="card">
+  <div class="col-md-3 d-flex">
+    <div class="card flex-fill">
       <h3>Latitude/longitude</h3>
       <% if @facility.latitude.present? && @facility.longitude.present? %>
         <div><i class="fas fa-map-marker-alt light mr-2"></i> <%= @facility.latitude %>, <%= @facility.longitude %></div>
@@ -36,16 +36,23 @@
       <% end %>
     </div>
   </div>
-  <div class="col-md-4">
-    <div class="card">
+  <div class="col-md-3 d-flex">
+    <div class="card flex-fill">
       <h3>Estimated OPD load</h3>
       <div><%= @facility.monthly_estimated_opd_load || "(N/A)" %> adult patients per month</div>
     </div>
   </div>
-  <div class="col-md-4">
-    <div class="card">
+  <div class="col-md-3 d-flex">
+    <div class="card flex-fill">
       <h3>Facility type &amp; size</h3>
       <%= @facility.facility_type || "(No type set)" %> (<%= @facility.facility_size&.capitalize || "No size set" %>)
+    </div>
+  </div>
+  <div class="col-md-3 d-flex">
+    <div class="card flex-fill">
+      <h3>Features</h3>
+      Diabetes Management: <%= @facility.diabetes_enabled? ? "Enabled" : "Disabled"  %>
+      Teleconsultation:    <%= @facility.teleconsultation_enabled? ? "Enabled" : "Disabled" %>
     </div>
   </div>
 </div>
