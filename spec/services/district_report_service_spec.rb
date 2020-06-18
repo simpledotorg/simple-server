@@ -61,6 +61,12 @@ describe DistrictReportService, type: :model do
     facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group)
     facility = facilities.first
 
+    jan_2019 = Time.parse("January 1st 2019")
+    old_patients = create_list(:patient, 2, recorded_at: jan_2019, registration_facility: facility, registration_user: user)
+    old_patients.each do |patient|
+      create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: Time.current)
+    end
+
     Timecop.freeze(Time.parse("February 15th 2020")) do
       other_patients = create_list(:patient, 2, recorded_at: 1.month.ago, registration_facility: facility, registration_user: user)
       other_patients.map do |patient|
@@ -102,6 +108,6 @@ describe DistrictReportService, type: :model do
       expect(count).to eq(expected_registrations[month]),
         "expected count for #{month} to eq #{count}, but was #{expected_registrations[month].inspect}"
     end
-    expect(result[:cumulative_registrations]).to eq(4)
+    expect(result[:cumulative_registrations]).to eq(6)
   end
 end
