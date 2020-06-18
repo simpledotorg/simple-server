@@ -1,5 +1,4 @@
 class CohortReport::OrganizationDistrictPolicy < ApplicationPolicy
-
   def show?
     view_cohort_reports? || patient_list?
   end
