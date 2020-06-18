@@ -229,7 +229,7 @@ class Facility < ApplicationRecord
     self.teleconsultation_phone_numbers = numbers
   end
 
-  TeleconsultationPhoneNumber = Struct.new(:isd_code, :phone_number) do
+  TeleconsultationPhoneNumber = Struct.new(:isd_code, :phone_number) {
     def persisted?
       false
     end
@@ -237,7 +237,7 @@ class Facility < ApplicationRecord
     def _destroy
       false
     end
-  end
+  }
 
   private
 

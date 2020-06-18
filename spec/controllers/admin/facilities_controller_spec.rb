@@ -102,9 +102,9 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
       it "updates the requested facility" do
         facility = Facility.create! valid_attributes
         update_attributes = new_attributes
-                              .merge(teleconsultation_phone_numbers_attributes:
+          .merge(teleconsultation_phone_numbers_attributes:
                                        {"0" => new_attributes[:teleconsultation_phone_numbers].first})
-                              .except(:teleconsultation_phone_numbers)
+          .except(:teleconsultation_phone_numbers)
         put :update, params: {id: facility.to_param, facility: update_attributes, facility_group_id: facility_group.id}
         facility.reload
         expect(facility.attributes.except("id", "created_at", "updated_at", "deleted_at", "slug",
