@@ -3,7 +3,7 @@
     <%= bootstrap_form_with(model: [:admin, facility_group, facility], local: true, autocomplete: "off", label_errors: true) do |form| %>
       <% if @facility.errors.any? %>
         <div id="errors">
-          <%= form.label "Please fix the indicated errors", class: "text-danger" %>
+          <%= form.label "Update failed. Please fix the indicated errors", class: "text-danger" %>
         </div>
       <% end %>
       <%= form.text_field :name, id: :facility_name, required: true, autocomplete: "off", help: "Include the facility type in the name. Example: PHC Brooklyn", label: "Facility name *" %>
@@ -61,7 +61,7 @@
              <% @facility.build_teleconsultation_phone_number %>
            <% end %>
            <%= form.fields_for :teleconsultation_phone_numbers do |phone_number_form| %>
-            <%= render 'phone_number_fields', f: phone_number_form %>
+             <%= render 'phone_number_fields', f: phone_number_form %>
            <% end %>
          </div>
           <%= button_tag type: "button", class: "btn btn-sm btn-outline-success", onclick: "addPhoneNumberFields()" do %>

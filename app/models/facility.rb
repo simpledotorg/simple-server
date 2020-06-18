@@ -200,45 +200,37 @@ class Facility < ApplicationRecord
   }
 
   def teleconsultation_phone_numbers
-    read_attribute(:teleconsultation_phone_numbers).map { |t| TeleconsultationPhoneNumber.new(t) }
+    read_attribute(:teleconsultation_phone_numbers).map do |phone_number|
+      TeleconsultationPhoneNumber.new(phone_number["isd_code"], phone_number["phone_number"])
+    end
   end
 
-  def teleconsultation_phone_numbers_attributes=(attributes)
-    teleconsultation_phone_numbers = []
-    attributes.each do |_index, attrs|
-      next if attrs.delete("_destroy") == "true"
+  def teleconsultation_phone_numbers_attributes=(numbers)
+    phone_numbers = []
+    numbers.each do |_index, number|
+      next if number&.dig("_destroy") == "true"
 
-      teleconsultation_phone_numbers << TeleconsultationPhoneNumber.new(attrs)
+      phone_numbers << TeleconsultationPhoneNumber.new(number[:isd_code], number[:phone_number])
     end
+    write_attribute(:teleconsultation_phone_numbers, phone_numbers)
+  end
 
-    write_attribute(:teleconsultation_phone_numbers, teleconsultation_phone_numbers)
+  def teleconsultation_phone_numbers=(numbers)
+    phone_numbers = []
+    numbers.each do |number|
+      phone_numbers << TeleconsultationPhoneNumber.new(number[:isd_code], number[:phone_number])
+    end
+    write_attribute(:teleconsultation_phone_numbers, phone_numbers)
   end
 
   def build_teleconsultation_phone_number
     numbers = teleconsultation_phone_numbers.dup
-    numbers << TeleconsultationPhoneNumber.new({isd_code: Rails.application.config.country["sms_country_code"],
-                                                phone_number: ""})
+    numbers << TeleconsultationPhoneNumber.new(Rails.application.config.country["sms_country_code"])
     self.teleconsultation_phone_numbers = numbers
   end
 
-  class TeleconsultationPhoneNumber
-    attr_accessor :isd_code, :phone_number
-
-    def initialize(hash)
-      hash = hash.with_indifferent_access
-      @isd_code = hash[:isd_code]
-      @phone_number = hash[:phone_number]
-    end
-
+  TeleconsultationPhoneNumber = Struct.new(:isd_code, :phone_number) do
     def persisted?
-      false
-    end
-
-    def new_record?
-      false
-    end
-
-    def marked_for_destruction?
       false
     end
 

@@ -3,10 +3,9 @@ require "rails_helper"
 RSpec.describe Admin::FacilitiesController, type: :controller do
   let(:facility_group) { create(:facility_group) }
   let(:valid_attributes) do
-    attributes_for(
-      :facility,
-      facility_group_id: facility_group.id
-    )
+    attributes_for(:facility,
+      facility_group_id: facility_group.id,
+      enable_teleconsultation: false)
   end
 
   let(:invalid_attributes) do
@@ -94,21 +93,22 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
   describe "PUT #update" do
     context "with valid params" do
       let(:new_attributes) do
-        attributes_for(
-          :facility,
+        attributes_for(:facility,
           facility_group_id: facility_group.id,
           pin: "999999",
-          monthly_estimated_opd_load: 500
-        ).except(:id, :slug)
+          monthly_estimated_opd_load: 500).except(:id, :slug)
       end
 
       it "updates the requested facility" do
         facility = Facility.create! valid_attributes
-        put :update, params: {id: facility.to_param, facility: new_attributes, facility_group_id: facility_group.id}
+        update_attributes = new_attributes
+                              .merge(teleconsultation_phone_numbers_attributes:
+                                       {"0" => new_attributes[:teleconsultation_phone_numbers].first})
+                              .except(:teleconsultation_phone_numbers)
+        put :update, params: {id: facility.to_param, facility: update_attributes, facility_group_id: facility_group.id}
         facility.reload
         expect(facility.attributes.except("id", "created_at", "updated_at", "deleted_at", "slug",
-          "facility_group_name", "import", "latitude", "longitude",
-          "organization_name", "teleconsultation_phone_numbers"))
+          "facility_group_name", "import", "latitude", "longitude", "organization_name"))
           .to eq new_attributes.with_indifferent_access
       end
 
