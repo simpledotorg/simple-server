@@ -1,6 +1,13 @@
-GET http://localhost:3000/api/v3/blood_pressures/sync
+GET https://api-sandbox.simple.org/api/v3/blood_pressures/sync
 Accept: application/json
 Content-Type: application/json
-Authorization: Bearer b39acde1fc73fba7326670f6f88b473436413ba5c614de6daa59fd824b8ff85e
-X-USER-ID: 00ae4b22-37cb-495b-8f82-aa9421664d8a
-X-FACILITY-ID: 28194c99-3a9a-4478-a79c-c6c2f2366df2
+Authorization: Bearer aa9fdd9072e8c1726e5382170b2ae815c607d8d6718b223d1b0a9a8c2e7f8f55
+X-USER-ID: 18fa33d3-4f18-476a-8d63-51406352ba13
+X-FACILITY-ID: 36266c5b-490f-490f-8472-b8759aac0ace
+
+GET https://api-sandbox.simple.org/api/v3/blood_pressures/sync
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer f76ca1d67730a44e7f16d6d6e347a9852903d43791c48c28a7bffe3519411266
+X-USER-ID: 32ca1761-9120-4171-8ef3-86cdcfab30a1
+X-FACILITY-ID: c7e3e9ab-4d43-47c2-b188-436b7466b0bf
