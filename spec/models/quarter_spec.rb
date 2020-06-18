@@ -5,7 +5,7 @@ RSpec.describe Quarter, type: :model do
 
   it "can create from date" do
     date = Time.parse("January 1st, 2020")
-    quarter = Quarter.create(date: date)
+    quarter = Quarter.new(date: date)
     expect(quarter.number).to eq(1)
     expect(quarter.year).to eq(2020)
     expect(quarter.date).to eq(date)
@@ -13,7 +13,7 @@ RSpec.describe Quarter, type: :model do
 
   it "can return previous and next quarter" do
     date = Time.parse("January 1st, 2020")
-    quarter = Quarter.create(date: date)
+    quarter = Quarter.new(date: date)
     next_quarter = quarter.next_quarter
     expect(next_quarter.number).to eq(2)
     expect(next_quarter.year).to eq(2020)

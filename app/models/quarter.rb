@@ -1,10 +1,6 @@
 class Quarter
-  def self.create(date:)
-    new(date: date)
-  end
-
   def self.current
-    create(date: Date.current)
+    new(date: Date.current)
   end
 
   attr_reader :date
@@ -18,11 +14,11 @@ class Quarter
   end
 
   def next_quarter
-    self.class.create(date: date.advance(months: 3))
+    self.class.new(date: date.advance(months: 3))
   end
 
   def previous_quarter
-    self.class.create(date: date.advance(months: -3))
+    self.class.new(date: date.advance(months: -3))
   end
 
   def downto(number)
