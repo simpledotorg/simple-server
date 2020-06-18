@@ -130,7 +130,7 @@ module PatientsExporter
       latest_bp_facility&.facility_type,
       latest_bp_facility&.district,
       latest_bp_facility&.state,
-      latest_blood_sugar&.recorded_at.presence && I18n.l(latest_bp&.recorded_at),
+      latest_blood_sugar&.recorded_at.presence && I18n.l(latest_blood_sugar&.recorded_at),
       blood_sugar_value_with_unit(latest_blood_sugar),
       blood_sugar_type(latest_blood_sugar),
       latest_appointment&.facility&.name,
