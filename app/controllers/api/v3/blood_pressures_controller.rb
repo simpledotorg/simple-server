@@ -26,9 +26,6 @@ class Api::V3::BloodPressuresController < Api::V3::SyncController
     end
   end
 
-  def after_merge_completed(results)
-  end
-
   def transform_to_response(blood_pressure)
     Api::V3::Transformer.to_response(blood_pressure)
   end
