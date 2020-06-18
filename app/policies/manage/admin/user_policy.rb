@@ -1,5 +1,4 @@
 class Manage::Admin::UserPolicy < ApplicationPolicy
-
   def index?
     user.user_permissions
       .where(permission_slug: :manage_admins)
@@ -9,13 +8,15 @@ class Manage::Admin::UserPolicy < ApplicationPolicy
   def show?
     user_has_any_permissions?(
       [:manage_admins, nil],
-      [:manage_admins, record.organization])
+      [:manage_admins, record.organization]
+    )
   end
 
   def create?
     user_has_any_permissions?(
       [:manage_admins, nil],
-      [:manage_admins, record.organization])
+      [:manage_admins, record.organization]
+    )
   end
 
   def new?
@@ -53,7 +54,7 @@ class Manage::Admin::UserPolicy < ApplicationPolicy
     def resolve
       return scope.none unless user.has_permission?(:manage_admins)
 
-      admin_scope = scope.joins(:email_authentications).where.not(email_authentications: { id: nil })
+      admin_scope = scope.joins(:email_authentications).where.not(email_authentications: {id: nil})
       required_permissions = user.user_permissions.where(permission_slug: :manage_admins)
       resources = required_permissions.map(&:resource).compact
       return admin_scope.all unless resources.present?

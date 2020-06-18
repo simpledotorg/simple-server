@@ -31,10 +31,10 @@ class DashboardPolicy < Struct.new(:user, :dashboard)
 
   def manage?
     [manage_organizations?,
-     manage_facilities?,
-     manage_protocols?,
-     manage_admins?,
-     manage_users?].any?
+      manage_facilities?,
+      manage_protocols?,
+      manage_admins?,
+      manage_users?].any?
   end
 
   def view_my_facilities?

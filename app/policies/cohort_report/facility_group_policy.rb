@@ -1,5 +1,4 @@
 class CohortReport::FacilityGroupPolicy < ApplicationPolicy
-
   class Scope < Scope
     attr_reader :user, :scope
 
