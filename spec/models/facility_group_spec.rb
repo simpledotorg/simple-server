@@ -43,25 +43,29 @@ RSpec.describe FacilityGroup, type: :model do
     let!(:facilities) { create_list(:facility, 2, facility_group: facility_group) }
     before { facility_group.reload }
 
-    context "when enable_diabetes_management is true" do
+    context "when enable_diabetes_management is set to true" do
+      before { facility_group.enable_diabetes_management = true }
+
       it "enables diabetes management for all facilities" do
         facility_group.facilities.update(enable_diabetes_management: false)
-        facility_group.toggle_diabetes_management(true)
+        facility_group.toggle_diabetes_management
         expect(Facility.pluck(:enable_diabetes_management)).to all be true
       end
     end
 
-    context "when enable_diabetes_management is false" do
+    context "when enable_diabetes_management is set to false" do
+      before { facility_group.enable_diabetes_management = false }
+
       it "disables diabetes management for all facilities if it is enabled for all facilities" do
         facility_group.facilities.update(enable_diabetes_management: true)
-        facility_group.toggle_diabetes_management(false)
+        facility_group.toggle_diabetes_management
         expect(Facility.pluck(:enable_diabetes_management)).to all be false
       end
 
       it "does not disable diabetes management for all facilities if it is enabled for some facilities" do
         facilities.first.update(enable_diabetes_management: true)
         facilities.second.update(enable_diabetes_management: false)
-        facility_group.toggle_diabetes_management(false)
+        facility_group.toggle_diabetes_management
 
         expect(Facility.pluck(:enable_diabetes_management)).to match_array [true, false]
       end
