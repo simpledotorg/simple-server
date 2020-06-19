@@ -1,6 +1,6 @@
 class CopyTeleconsultationPhoneNumbersToJsonFixed < ActiveRecord::Migration[5.2]
   def up
-    Facility.all.each do |facility|
+    Facility.find_each do |facility|
       next if facility.teleconsultation_phone_number.blank? || facility.teleconsultation_isd_code.blank?
 
       facility.teleconsultation_phone_numbers = [{isd_code: facility.teleconsultation_isd_code,
@@ -10,7 +10,7 @@ class CopyTeleconsultationPhoneNumbersToJsonFixed < ActiveRecord::Migration[5.2]
   end
 
   def down
-    Facility.all.each do |facility|
+    Facility.find_each do |facility|
       facility.teleconsultation_phone_numbers = []
       facility.save
     end
