@@ -1,17 +1,17 @@
 <div class="container">
   <div class="row">
     <div class="col-sm-5 col-lg-7">
-      <h2>PENDING ORG NAME</h2>
-      <% @districts.each do |district| %>
-        <section>
-          <div class="card" title="<%= district.name %>">
+      <section>
+        <div class="card">
+          <h2>PENDING ORG NAME</h2>
+          <% @districts.each do |district| %>
             <%= link_to(dashboard_district_path(district.slug), class: "link-row") do %>
               <i class='fas fa-angle-right light'></i>
               <%= district.name %>
             <% end %>
-          </div>
-        </section>
-      <% end %>
+          <% end %>
+        </div>
+      </section>
     </div>
   </div>
 </div>
