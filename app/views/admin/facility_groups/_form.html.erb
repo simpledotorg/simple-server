@@ -29,6 +29,15 @@
                 checked: facility_group.diabetes_enabled?,
                 onclick: "confirmDisableDM(this)"},
             true, false %>
+        <% if @facility_group.facilities.map(&:invalid?).any? %>
+          <div class="alert alert-warning">
+            <% @facility_group.facilities.each do |f| %>
+              <% if f.errors.present? %>
+                <li><%= f.errors.full_messages.to_sentence %> in <%= f.name %></li>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
       </div>
 
       <%= form.select(:protocol_id, protocols.order(:name).map { |protocol| [protocol.name, protocol.id] }) %>
