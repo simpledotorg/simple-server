@@ -42,13 +42,7 @@
               <% end %>
               <div class="dropdown-divider"></div>
               <h6 class="dropdown-header">Monthly</h6>
-              <% n = n
-                 range = false ? (0..(n - 1)) : (1..n)
-
-                 last_n_months_value = range.map do |i|
-                   Time.current.beginning_of_month - i.months
-                 end
-                 last_n_months_value.each do |month| %>
+              <% last_n_months(n: 6).each do |month| %>
                 <% selected = (month.year == registration_year && month.month == registration_month && cohort_period == :month) %>
                 <button class="dropdown-item query-filter-month <%= 'active' if selected %>"
                         type="submit" data-month="<%= month.month %>" data-year="<%= month.year %>" form="query-filters">
