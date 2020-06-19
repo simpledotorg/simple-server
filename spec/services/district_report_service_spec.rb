@@ -94,9 +94,9 @@ describe DistrictReportService, type: :model do
     }
     expected_controlled_patients.default = 0
     expected_registrations = {
-      "Jan 2020" => 2, "Feb 2020" => 2, "Mar 2020" => 4, "Apr 2020" => 4, "May 2020" => 4, "Jun 2020" => 4
+      "Jan 2020" => 4, "Feb 2020" => 4, "Mar 2020" => 6, "Apr 2020" => 6, "May 2020" => 6, "Jun 2020" => 6
     }
-    expected_registrations.default = 0
+    expected_registrations.default = 2
     expect(result[:controlled_patients].size).to eq(12)
     expect(result[:registrations].size).to eq(12)
 
