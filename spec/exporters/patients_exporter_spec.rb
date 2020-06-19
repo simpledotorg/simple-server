@@ -5,12 +5,32 @@ RSpec.describe PatientsExporter do
 
   let!(:facility) { create(:facility) }
   let!(:patient) { create(:patient, registration_facility: facility, status: 'dead') }
-  let!(:blood_pressure) { create(:blood_pressure, :critical, facility: facility, patient: patient) }
+  let!(:blood_pressure) { create(:blood_pressure, :with_encounter, :critical, facility: facility, patient: patient) }
+  let!(:blood_sugar) { create(:blood_sugar, :fasting, :with_encounter, facility: facility, patient: patient) }
   let!(:appointment) { create(:appointment, :overdue, facility: facility, patient: patient) }
   let!(:prescription_drug_1) { create(:prescription_drug, patient: patient) }
   let!(:prescription_drug_2) { create(:prescription_drug, patient: patient) }
   let!(:prescription_drug_3) { create(:prescription_drug, :deleted, patient: patient) }
   let(:now) { Time.current }
+
+  let!(:old_blood_pressure) { create(:blood_pressure, recorded_at: 1.year.ago, patient: patient) }
+  let!(:old_appointment) {
+    create(
+      :appointment,
+      :overdue,
+      facility: facility,
+      patient: patient,
+      scheduled_date: appointment.scheduled_date - 5.days
+    )
+  }
+  let!(:old_bp_passport) {
+    create(
+      :patient_business_identifier,
+      identifier_type: 'simple_bp_passport',
+      device_created_at: 1.year.ago,
+      patient: patient
+    )
+  }
 
   let(:timestamp) do
     [
@@ -37,14 +57,17 @@ RSpec.describe PatientsExporter do
       'Registration Facility Type',
       'Registration Facility District',
       'Registration Facility State',
+      'Latest BP Date',
       'Latest BP Systolic',
       'Latest BP Diastolic',
-      'Latest BP Date',
       'Latest BP Quarter',
       'Latest BP Facility Name',
       'Latest BP Facility Type',
       'Latest BP Facility District',
       'Latest BP Facility State',
+      'Latest Blood Sugar Date',
+      'Latest Blood Sugar Value',
+      'Latest Blood Sugar Type',
       'Follow-up Facility',
       'Follow-up Date',
       'Days Overdue',
@@ -82,14 +105,17 @@ RSpec.describe PatientsExporter do
       facility.facility_type,
       facility.district,
       facility.state,
+      I18n.l(blood_pressure.recorded_at),
       blood_pressure.systolic,
       blood_pressure.diastolic,
-      I18n.l(blood_pressure.recorded_at),
       quarter_string(blood_pressure.recorded_at),
       blood_pressure.facility.name,
       blood_pressure.facility.facility_type,
       blood_pressure.facility.district,
       blood_pressure.facility.state,
+      I18n.l(blood_sugar.recorded_at),
+      "#{blood_sugar.blood_sugar_value} mg/dL",
+      "Fasting",
       appointment.facility.name,
       appointment.scheduled_date.to_s(:rfc822),
       appointment.days_overdue,
@@ -106,6 +132,8 @@ RSpec.describe PatientsExporter do
   before do
     allow(patient).to receive(:high_risk?).and_return(true)
     allow(Rails.application.config.country).to receive(:[]).with(:patient_line_list_show_zone).and_return(true)
+
+    blood_sugar.update!(encounter: blood_pressure.encounter)
   end
 
   describe '#csv' do
@@ -135,6 +163,14 @@ RSpec.describe PatientsExporter do
 
       expect(subject.csv_headers).not_to include("Patient #{Address.human_attribute_name :zone}")
       expect(subject.csv_fields(patient)).not_to include(patient.address.zone)
+    end
+
+    it "includes blood sugars from other visits" do
+      blood_sugar.destroy
+      other_blood_sugar = create(:blood_sugar, :fasting, :with_encounter, facility: facility, patient: patient)
+
+      expect(subject.csv_fields(patient)).to include("#{blood_sugar.blood_sugar_value} mg/dL")
+      expect(subject.csv_fields(patient)).to include("Fasting")
     end
   end
 end
