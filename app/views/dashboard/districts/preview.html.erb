@@ -1,49 +1,17 @@
-<div class="mb-2 pt-8 px-4 md:flex md:items-center md:justify-between md:max-w-6xl md:m-auto md:pt-24">
+<div class="dashboard">
+  <nav class="breadcrumb">
+    <%= link_to 'All reports', dashboard_districts_path %>
+    <i class="fas fa-chevron-right"></i>
+    <%= @district.name %>
+  </nav>
+  <%#= render "period_dropdown" %>
   <div>
-    <div class="flex items-center mb-4">
-      <div class="mr-2">
-        <p class="font-roboto font-bold text-sm text-blue-200">
-          <%= link_to "All districts", dashboard_districts_path %>
-        </p>
-      </div>
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-        <path d="M3.26651 1.26308C2.91116 1.61235 2.91116 2.17655 3.26651 2.52581L6.80182 6.00056L3.26651 9.47532C2.91116 9.82458 2.91116 10.3888 3.26651 10.738C3.62187 11.0873 4.1959 11.0873 4.55125 10.738L8.73349 6.62745C9.08884 6.27819 9.08884 5.71399 8.73349 5.36472L4.55125 1.25412C4.20501 0.913814 3.62187 0.913814 3.26651 1.26308Z" fill="black" fill-opacity="0.18"/>
-      </svg>
-      <div class="ml-1">
-        <p class="font-roboto font-bold text-sm text-black">
-          <%= @district_name %>
-        </p>
-      </div>
-    </div>
-    <h1 class="font-roboto font-bold text-4xl text-black">
-      <%= @district_name %>
+    <h1>
+      <%= @district.name %>
     </h1>
-    <div class="flex items-center mb-2">
-      <div class="mr-1">
-        <p class="font-roboto font-bold text-lg text-black">
-          Monthly hypertension report for <%= @report_period.strftime("%b %Y") %>
-        </p>
-      </div>
-      <div>
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-          <path d="M2.33031 5.23408L5.21591 8.61786C5.65042 9.12738 6.35232 9.12738 6.78684 8.61786L9.67243 5.23408C10.3743 4.411 9.87298 3 8.8814 3H3.11021C2.11863 3 1.62841 4.411 2.33031 5.23408Z" fill="black" fill-opacity="0.54"/>
-        </svg>
-      </div>
-    </div>
-  </div>
-  <div>
-    <div class="hidden md:flex md:flex-col md:items-end md:justify-end md:mb-2">
-      <div class="md:mr-0 md:mb-2">
-        <p class="font-roboto font-bold text-sm text-blue-200 uppercase tracking-wider">
-          Print
-        </p>
-      </div>
-      <div>
-        <p class="font-roboto font-bold text-sm text-blue-200 uppercase tracking-wider">
-          Download data
-        </p>
-      </div>
-    </div>
+    <p class="grey-dark">
+      Last updated PENDING
+    </p>
   </div>
 </div>
 <div class="pt-4 px-4 pb-4 md:flex md:flex-wrap md:max-w-6xl md:m-auto md:pb-0">
