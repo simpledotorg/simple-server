@@ -3,7 +3,7 @@ require 'csv'
 module PatientsExporter
   extend QuarterHelper
 
-  BATCH_SIZE = 1000
+  BATCH_SIZE = 20
 
   BLOOD_SUGAR_UNITS = {
     random: "mg/dL",
