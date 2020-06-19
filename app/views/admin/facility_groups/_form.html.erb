@@ -37,17 +37,18 @@
       <div class="mt-5 mb-5">
         <h3>Diabetes enabled?</h3>
         <div class="alert alert-primary mt-3" role="alert">
-          <% if facility_group.diabetes_enabled? %>
+          <% is_diabetes_enabled = facility_group.diabetes_enabled? %>
+
+          <% if is_diabetes_enabled %>
             Diabetes management is already enabled for all facilities in this group.
           <% else %>
             This will enable Diabetes management for all associated facilities in this group.
           <% end %>
-
         </div>
         <%= form.check_box :enable_diabetes_management,
             {id: :facility_group_enable_diabetes_management,
-                checked: facility_group.diabetes_enabled?,
-                disabled: facility_group.diabetes_enabled?,
+                checked: is_diabetes_enabled,
+                disabled: is_diabetes_enabled,
                 onclick: "confirmDisableDM(this)"},
             true, false %>
       </div>
