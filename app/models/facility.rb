@@ -250,17 +250,17 @@ class Facility < ApplicationRecord
   end
 
   def teleconsultation_phone_numbers_valid?
+    message = "At least one medical officer must be added to enable teleconsultation, all teleconsultation numbers"\
+      " must have a country code and a phone number"
     if teleconsultation_phone_numbers.blank?
-      errors.add("teleconsultation_phone_numbers_attributes", "At least one medical officer must be added to enable teleconsultation")
+      errors.add("teleconsultation_phone_numbers_attributes", message)
       return
     end
 
     teleconsultation_phone_numbers.each do |mo|
-      if mo.isd_code.blank?
-        errors.add("teleconsultation_phone_numbers_attributes", "All teleconsultation numbers must have a country code and a phone number")
-      end
-      if mo.phone_number.blank?
-        errors.add("teleconsultation_phone_numbers_attributes", "All teleconsultation numbers must have a country code and a phone number")
+      if mo.isd_code.blank? || mo.phone_number.blank?
+        errors.add("teleconsultation_phone_numbers_attributes", message)
+        break
       end
     end
   end
