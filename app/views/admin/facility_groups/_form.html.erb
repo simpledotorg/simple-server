@@ -24,7 +24,11 @@
         <div class="alert alert-primary mt-3" role="alert">
           This will enable Diabetes Management for all associated facilities in this group.
         </div>
-        <%= form.check_box :enable_diabetes_management, {id: :facility_group_enable_diabetes_management, checked: facility_group.diabetes_enabled?, onclick: "confirmDisableDM(this)"}, true, false %>
+        <%= form.check_box :enable_diabetes_management,
+            {id: :facility_group_enable_diabetes_management,
+                checked: facility_group.diabetes_enabled?,
+                onclick: "confirmDisableDM(this)"},
+            true, false %>
       </div>
 
       <%= form.select(:protocol_id, protocols.order(:name).map { |protocol| [protocol.name, protocol.id] }) %>
@@ -33,9 +37,10 @@
     <% end %>
   </div>
 </div>
+
 <script>
   function confirmDisableDM(el) {
-    if(!el.checked)
-        confirm("Are you sure? This will disable diabetes management for all associated facilities.")
+    if (!el.checked)
+      confirm("Are you sure? This will disable diabetes management for all associated facilities.")
   }
 </script>

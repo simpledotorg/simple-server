@@ -24,12 +24,13 @@ class FacilityGroup < ApplicationRecord
   friendly_id :name, use: :slugged
 
   auto_strip_attributes :name, squish: true, upcase_first: true
+  attribute :enable_diabetes_management, :boolean
 
-  def toggle_diabetes_management(enable_diabetes_management)
+  def toggle_diabetes_management
     if enable_diabetes_management
-      enable_diabetes_management!
+      set_diabetes_management(true)
     elsif diabetes_enabled?
-      disable_diabetes_management!
+      set_diabetes_management(false)
     end
   end
 
@@ -43,11 +44,7 @@ class FacilityGroup < ApplicationRecord
 
   private
 
-  def enable_diabetes_management!
-    facilities.update(enable_diabetes_management: true)
-  end
-
-  def disable_diabetes_management!
-    facilities.update(enable_diabetes_management: false)
+  def set_diabetes_management(value)
+    facilities.update(enable_diabetes_management: value)
   end
 end

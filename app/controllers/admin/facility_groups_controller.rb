@@ -1,6 +1,6 @@
 class Admin::FacilityGroupsController < AdminController
-  before_action :set_facility_group, only: [:show, :edit, :update, :destroy]
   before_action :set_organizations, only: [:new, :edit]
+  before_action :set_facility_group, only: [:show, :edit, :update, :destroy]
   before_action :set_protocols, only: [:new, :edit]
 
   def index
@@ -25,9 +25,7 @@ class Admin::FacilityGroupsController < AdminController
     @facility_group = FacilityGroup.new(facility_group_params)
     authorize([:manage, @facility_group])
 
-    if @facility_group.save
-      @facility_group.toggle_diabetes_management(enable_diabetes_management)
-
+    if @facility_group.save && @facility_group.toggle_diabetes_management
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully created."
     else
       render :new
@@ -35,9 +33,7 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def update
-    if @facility_group.update(facility_group_params)
-      @facility_group.toggle_diabetes_management(enable_diabetes_management)
-
+    if @facility_group.update(facility_group_params) && @facility_group.toggle_diabetes_management
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully updated."
     else
       render :edit
@@ -73,6 +69,7 @@ class Admin::FacilityGroupsController < AdminController
       :name,
       :description,
       :protocol_id,
+      :enable_diabetes_management,
       facility_ids: []
     )
   end
