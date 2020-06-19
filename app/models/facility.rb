@@ -208,6 +208,7 @@ class Facility < ApplicationRecord
   def teleconsultation_phone_numbers_attributes=(numbers)
     phone_numbers = []
     numbers.each do |_index, number|
+      number = number.with_indifferent_access
       next if number&.dig("_destroy") == "true"
 
       phone_numbers << TeleconsultationPhoneNumber.new(number[:isd_code], number[:phone_number])
@@ -218,6 +219,7 @@ class Facility < ApplicationRecord
   def teleconsultation_phone_numbers=(numbers)
     phone_numbers = []
     numbers.each do |number|
+      number = number.with_indifferent_access
       phone_numbers << TeleconsultationPhoneNumber.new(number[:isd_code], number[:phone_number])
     end
     write_attribute(:teleconsultation_phone_numbers, phone_numbers)
