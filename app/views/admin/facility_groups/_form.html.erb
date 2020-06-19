@@ -40,7 +40,7 @@
 
 <script>
   function confirmDisableDM(el) {
-    if (!el.checked)
+    if (!el.checked && <%= facility_group.diabetes_enabled? %>)
       confirm("Are you sure? This will disable diabetes management for all associated facilities.")
   }
 </script>
