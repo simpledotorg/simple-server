@@ -209,7 +209,7 @@ class Facility < ApplicationRecord
     phone_numbers = []
     numbers.each do |_index, number|
       number = number.with_indifferent_access
-      next if number&.dig("_destroy") == "true"
+      next if number[:_destroy] == "true" || number[:isd_code].blank? || number[:phone_number].blank?
 
       phone_numbers << TeleconsultationPhoneNumber.new(number[:isd_code], number[:phone_number])
     end
@@ -220,6 +220,8 @@ class Facility < ApplicationRecord
     phone_numbers = []
     numbers.each do |number|
       number = number.with_indifferent_access
+      next if number[:isd_code].blank? || number[:phone_number].blank?
+
       phone_numbers << TeleconsultationPhoneNumber.new(number[:isd_code], number[:phone_number])
     end
     write_attribute(:teleconsultation_phone_numbers, phone_numbers)
@@ -228,7 +230,7 @@ class Facility < ApplicationRecord
   def build_teleconsultation_phone_number
     numbers = teleconsultation_phone_numbers.dup
     numbers << TeleconsultationPhoneNumber.new(Rails.application.config.country["sms_country_code"])
-    self.teleconsultation_phone_numbers = numbers
+    self[:teleconsultation_phone_numbers] = numbers
   end
 
   TeleconsultationPhoneNumber = Struct.new(:isd_code, :phone_number) {
