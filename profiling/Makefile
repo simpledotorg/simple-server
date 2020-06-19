@@ -1,3 +1,6 @@
+gen-requests:
+	cp $(for).example $(for)
+
 plot:
 	cat $(request) | vegeta attack -duration=$(duration)s -rate=$(rate) > results.bin
 	vegeta report -type=json results.bin > metrics.json
