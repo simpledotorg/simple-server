@@ -1,7 +1,16 @@
+// Overflow
+.o-hidden { overflow: hidden; }
 // Font size
+.fs-small { font-size: 14px; }
 .fs-xlarge { font-size: 24px; }
 // Font weight
 .fw-bold { font-weight: 700; }
+// Line height
+.lh-1 { line-height: 1; }
 // Font color
 .c-grey-dark { color: $grey-dark; }
+.c-grey-medium { color: $grey-mid; }
+.c-grey-light { color: $grey-light; }
 .c-green-dark { color :$green-dark; }
+.c-purple { color: $purple; }
+.c-red { color: $red; }
