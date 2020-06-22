@@ -7,6 +7,8 @@
 .fw-bold { font-weight: 700; }
 // Line height
 .lh-1 { line-height: 1; }
+// Letter spacing
+.ls-145 { letter-spacing: 1.45; }
 // Font color
 .c-grey-dark { color: $grey-dark; }
 .c-grey-medium { color: $grey-mid; }
@@ -14,3 +16,5 @@
 .c-green-dark { color :$green-dark; }
 .c-purple { color: $purple; }
 .c-red { color: $red; }
+.c-black { color: $black; }
+.tt-uppercase { text-transform: uppercase; }
