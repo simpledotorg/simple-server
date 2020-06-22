@@ -17,7 +17,7 @@ class OverdueList::PatientPolicy < ApplicationPolicy
       facility_ids = facility_ids_for_permission(:view_overdue_list)
       return scope.all unless facility_ids.present?
 
-      scope.where(facility_id: facility_ids)
+      scope.where(registration_facility_id: facility_ids)
     end
   end
 end
