@@ -22,8 +22,10 @@
 // Large
 @media screen and (min-width: 992px) {
   .flex-lg { display: flex; }
+  .flex-lg-column { flex-direction: column; }
   .align-lg-center { align-items: center; }
   .justify-lg-end { justify-content: flex-end; }
+  .justify-lg-between { justify-content: space-between; }
   .flex-lg-wrap { flex-wrap: wrap; }
   .order-lg-1 { order: 1; }
   .order-lg-2 { order: 2; }
