@@ -1,0 +1,13 @@
+GET https://api-sandbox.simple.org/api/v3/blood_pressures/sync
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer XXXXX
+X-USER-ID: XXXXX
+X-FACILITY-ID: XXXXX
+
+GET https://api-sandbox.simple.org/api/v3/blood_pressures/sync
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer XXXXX
+X-USER-ID: XXXXX
+X-FACILITY-ID: XXXXX

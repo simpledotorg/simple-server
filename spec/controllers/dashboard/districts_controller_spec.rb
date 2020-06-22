@@ -1,8 +1,9 @@
 require "rails_helper"
 
 RSpec.describe Dashboard::DistrictsController, type: :controller do
+  let(:organization) { FactoryBot.create(:organization) }
   let(:supervisor) do
-    create(:admin, :supervisor).tap do |user|
+    create(:admin, :organization_owner, organization: organization).tap do |user|
       user.user_permissions.create!(permission_slug: "view_my_facilities")
     end
   end
@@ -24,8 +25,9 @@ RSpec.describe Dashboard::DistrictsController, type: :controller do
 
   context "show" do
     before do
-      @facility = create(:facility, name: "CHC Barnagar")
-    end
+      @facility_group = create(:facility_group, organization: organization)
+      @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
+  end
 
     it "retrieves data" do
       jan_2020 = Time.parse("January 1 2020")
