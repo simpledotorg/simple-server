@@ -16,6 +16,7 @@ FactoryBot.define do
     enable_teleconsultation { true }
     teleconsultation_phone_number { Faker::PhoneNumber.phone_number }
     teleconsultation_isd_code { Faker::PhoneNumber.country_code }
+    teleconsultation_phone_numbers { [{isd_code: Faker::PhoneNumber.country_code, phone_number: Faker::PhoneNumber.phone_number}] }
     monthly_estimated_opd_load { 300 }
 
     sequence :slug do |n|

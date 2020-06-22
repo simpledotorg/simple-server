@@ -7,8 +7,8 @@ class OverdueList::AppointmentPolicy < ApplicationPolicy
     user_has_any_permissions?(
       [:view_overdue_list, nil],
       [:view_overdue_list, record.facility.organization],
-      [:view_overdue_list, record.facility.facility_group],
-      )
+      [:view_overdue_list, record.facility.facility_group]
+    )
   end
 
   def edit?
