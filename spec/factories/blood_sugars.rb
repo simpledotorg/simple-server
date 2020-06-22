@@ -28,6 +28,26 @@ FactoryBot.define do
         rand(threshold * 0.9..threshold * 1.1).round(2)
       end
     end
+
+    trait :random do
+      blood_sugar_type { "random" }
+      blood_sugar_value { 160 }
+    end
+
+    trait :post_prandial do
+      blood_sugar_type { "post_prandial" }
+      blood_sugar_value { 180 }
+    end
+
+    trait :fasting do
+      blood_sugar_type { "fasting" }
+      blood_sugar_value { 140 }
+    end
+
+    trait :hba1c do
+      blood_sugar_type { "hba1c" }
+      blood_sugar_value { 8.5 }
+    end
   end
 end
 
