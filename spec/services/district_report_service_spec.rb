@@ -64,7 +64,7 @@ describe DistrictReportService, type: :model do
     jan_2019 = Time.parse("January 1st 2019")
     old_patients = create_list(:patient, 2, recorded_at: jan_2019, registration_facility: facility, registration_user: user)
     old_patients.each do |patient|
-      create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: Time.current)
+      create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: jan_2019)
     end
 
     Timecop.freeze(Time.parse("February 15th 2020")) do

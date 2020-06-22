@@ -197,16 +197,16 @@ RSpec.describe Facility, type: :model do
     it "returns the first teleconsultation phone number with isd code" do
       facility = FactoryBot.create(:facility,
         enable_teleconsultation: true,
-        teleconsultation_phone_numbers: [Facility::TeleconsultationPhoneNumber.new("+91", "00000000"),
-          Facility::TeleconsultationPhoneNumber.new("+91", "11111111")])
+        teleconsultation_phone_numbers: [{isd_code: "+91", phone_number: "00000000"},
+          {isd_code: "+91", phone_number: "11111111"}])
       expect(facility.teleconsultation_phone_number_with_isd).to eq("+9100000000")
     end
 
     it "returns all the teleconsultation phone numbers with isd code" do
       facility = FactoryBot.create(:facility,
         enable_teleconsultation: true,
-        teleconsultation_phone_numbers: [Facility::TeleconsultationPhoneNumber.new("+91", "00000000"),
-          Facility::TeleconsultationPhoneNumber.new("+91", "11111111")])
+        teleconsultation_phone_numbers: [{isd_code: "+91", phone_number: "00000000"},
+          {isd_code: "+91", phone_number: "11111111"}])
       expect(facility.teleconsultation_phone_numbers_with_isd).to eq([{phone_number: "+9100000000"}, {phone_number: "+9111111111"}])
     end
   end
