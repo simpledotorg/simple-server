@@ -21,7 +21,8 @@ class DistrictReportService
   end
 
   def compile_control_and_registration_data
-    @data[:cumulative_registrations] = Patient.where(registration_facility: @facilities).where("recorded_at <= ?", selected_date.end_of_month).count
+    @data[:cumulative_registrations] = Patient.where(registration_facility: @facilities).
+      with_hypertension.where("recorded_at <= ?", selected_date.end_of_month).count
     -11.upto(0).each do |n|
       time = selected_date.advance(months: n).end_of_month
       formatted_period = time.to_s(:month_year)
