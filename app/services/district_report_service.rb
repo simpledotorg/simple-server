@@ -27,7 +27,7 @@ class DistrictReportService
       time = selected_date.advance(months: n).end_of_month
       formatted_period = time.to_s(:month_year)
 
-      count = Patient.where(registration_facility: @facilities).where("recorded_at <= ?", time).count
+      count = Patient.where(registration_facility: @facilities).with_hypertension.where("recorded_at <= ?", time).count
 
       @data[:controlled_patients][formatted_period] = controlled_patients(time).count
       @data[:registrations][formatted_period] = count
