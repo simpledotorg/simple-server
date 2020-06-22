@@ -27,7 +27,7 @@ RSpec.describe Dashboard::DistrictsController, type: :controller do
     before do
       @facility_group = create(:facility_group, organization: organization)
       @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
-  end
+    end
 
     it "retrieves data" do
       jan_2020 = Time.parse("January 1 2020")
