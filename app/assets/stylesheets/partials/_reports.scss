@@ -18,3 +18,18 @@
 .c-red { color: $red; }
 .c-black { color: $black; }
 .tt-uppercase { text-transform: uppercase; }
+// Media queries
+// Large
+@media screen and (min-width: 992px) {
+  .flex-lg { display: flex; }
+  .align-lg-center { align-items: center; }
+  .justify-lg-end { justify-content: flex-end; }
+  .flex-lg-wrap { flex-wrap: wrap; }
+  .order-lg-1 { order: 1; }
+  .order-lg-2 { order: 2; }
+  .order-lg-3 { order: 3; }
+  .order-lg-4 { order: 4; }
+  .w-lg-50 { width: 50%; }
+  .w-lg-full { width: 100%; }
+  .h-lg-full { width: 100%; }
+}

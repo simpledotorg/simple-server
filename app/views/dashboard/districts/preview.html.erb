@@ -1,4 +1,3 @@
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 <div class="dashboard">
   <nav class="breadcrumb">
     <%= link_to 'All reports', dashboard_districts_path %>
@@ -15,211 +14,219 @@
     </p>
   </div>
 </div>
-<div>
-  <div class="card pb-4">
-    <div class="mb-2">
-      <h3>
-        Control rate of all HTN patients
-      </h3>
-      <p class="c-grey-dark">
-        Registered HTN patients with BP &lt;140/90 at their most recent visit in the last 3 months
-      </p>
-    </div>
-    <div>
-      <h3 class="mb-0 fs-xlarge fw-bold c-green-dark">
-        <%= compute_percentage(
-          @controlled_patients.values.last.to_f,
-          @registrations.values.last.to_f, precision: 1
-        ) %>
-      </h3>
-      <p>
-        <span class="fw-bold"><%= number_with_delimiter(@controlled_patients.values.last) %></span> of <%= number_with_delimiter(@registrations.values.last) %> registered patients
-      </p>
-    </div>
-    <div>
-      <div>
-        <canvas id="controlledPatientsTrend"></canvas>
+<div class="flex-lg flex-lg-wrap">
+  <div class="flex-lg order-lg-1 w-lg-50 pr-lg-2">
+    <div class="card pb-4 h-lg-full w-lg-full mt-lg-0">
+      <div class="mb-2">
+        <h3>
+          Control rate of all HTN patients
+        </h3>
+        <p class="c-grey-dark">
+          Registered HTN patients with BP &lt;140/90 at their most recent visit in the last 3 months
+        </p>
       </div>
-      <div class="d-flex justify-content-between mt-2">
-        <p class="mb-0">
-          <%= @controlled_patients.keys[0] %>
+      <div>
+        <h3 class="mb-0 fs-xlarge fw-bold c-green-dark">
+          <%= compute_percentage(
+            @controlled_patients.values.last.to_f,
+            @registrations.values.last.to_f, precision: 1
+          ) %>
+        </h3>
+        <p>
+          <span class="fw-bold"><%= number_with_delimiter(@controlled_patients.values.last) %></span> of <%= number_with_delimiter(@registrations.values.last) %> registered patients
         </p>
-        <p class="mb-0">
-          <% total_controlled_patient_periods = @registrations.length - 1 %>
-          <%= @registrations.keys[total_controlled_patient_periods] %>
-        </p>
+      </div>
+      <div>
+        <div>
+          <canvas id="controlledPatientsTrend"></canvas>
+        </div>
+        <div class="d-flex justify-content-between mt-2">
+          <p class="mb-0">
+            <%= @controlled_patients.keys[0] %>
+          </p>
+          <p class="mb-0">
+            <% total_controlled_patient_periods = @registrations.length - 1 %>
+            <%= @registrations.keys[total_controlled_patient_periods] %>
+          </p>
+        </div>
       </div>
     </div>
   </div>
-  <div class="card pb-4">
-    <div class="mb-2">
-      <h3>
-        Cumulative registrations
-      </h3>
-      <p class="c-grey-dark">
-        Total number of HTN patient registrations across all facilities
-      </p>
-    </div>
-    <div>
-      <h3 class="mb-0 fs-xlarge fw-bold c-purple">
-        <%= number_with_delimiter(@registrations.values.last) %> patients
-      </h3>
-    </div>
-    <div>
-      <div>
-        <canvas id="cumulativeRegistrations"></canvas>
+  <div class="flex-lg order-lg-3 w-lg-50 pr-lg-2">
+    <div class="card pb-4 h-lg-full w-lg-full mt-lg-0">
+      <div class="mb-2">
+        <h3>
+          Cumulative registrations
+        </h3>
+        <p class="c-grey-dark">
+          Total number of HTN patient registrations across all facilities
+        </p>
       </div>
-      <div class="d-flex justify-content-between mt-2">
-        <p class="mb-0">
-          <%= @registrations.keys[0] %>
-        </p>
-        <p class="mb-0">
-          <% total_controlled_patient_periods = @controlled_patients.length - 1 %>
-          <%= @controlled_patients.keys[total_controlled_patient_periods] %>
-        </p>
+      <div>
+        <h3 class="mb-0 fs-xlarge fw-bold c-purple">
+          <%= number_with_delimiter(@registrations.values.last) %> patients
+        </h3>
+      </div>
+      <div>
+        <div>
+          <canvas id="cumulativeRegistrations"></canvas>
+        </div>
+        <div class="d-flex justify-content-between mt-2">
+          <p class="mb-0">
+            <%= @registrations.keys[0] %>
+          </p>
+          <p class="mb-0">
+            <% total_controlled_patient_periods = @controlled_patients.length - 1 %>
+            <%= @controlled_patients.keys[total_controlled_patient_periods] %>
+          </p>
+        </div>
       </div>
     </div>
   </div>
-  <div class="card pb-4">
-    <div>
-      <h3>
-        Quarterly cohort trend
-      </h3>
-      <p class="mb-0 c-grey-dark">
-        The result for all HTN patients registered in a quarter at their follow-up visit in the following quarter
-      </p>
-    </div>
-    <div>
-      <div class="md:flex-grow">
-        <% @quarterly_registrations.each_with_index do |cohort, index| %>
-          <div class="split-row"> 
-            <div class="row px-lg-0">
-              <div class="col-lg-3 nowrap order-lg-1">
-                <h6>
-                  <%= cohort["results_in"] %> results for patients
-                </h6>
-                <p class="mb-2 fs-small c-grey-medium">
-                  registered in <%= cohort["patients_registered"] %>
-                </p>
-              </div>
-              <div class="col-lg-9 order-lg-2">
-                <table class="split-bars"> 
-                  <tr>
-                    <% if cohort["registered"] > 0 %>
-                      <%
-                        controlled_percent = compute_percentage(cohort["controlled"], cohort["registered"])
-                        uncontrolled_percent = compute_percentage(cohort["uncontrolled"], cohort["registered"])
-                        no_bp_percent = compute_percentage(cohort["no_bp"], cohort["registered"])
-                      %>
-                      <td
-                        class="bar bar-1"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        data-trigger="hover focus click"
-                        title="<%= number_with_delimiter(cohort["no_bp"]) %> patients didn't have their BP taken"
-                        style="width: <%= no_bp_percent %>;"
-                      >
-                        <%= (cohort["no_bp"] > 0 && no_bp_percent == 0) ? "< 1" : no_bp_percent %>
-                      </td>
-                      <td
-                        class="bar bar-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        data-trigger="hover focus click"
-                        title="<%= number_with_delimiter(cohort["uncontrolled"]) %> patients visited with uncontrolled BP"
-                        style="width: <%= uncontrolled_percent %>;"
-                      >
-                        <%= (cohort["uncontrolled"] > 0 && uncontrolled_percent == 0) ? "< 1" : uncontrolled_percent %>
-                      </td>
-                      <td
-                        class="bar bar-3"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        data-trigger="hover focus click"
-                        title="<%= number_with_delimiter(cohort["controlled"]) %> patients visited with controlled BP"
-                        style="width: <%= controlled_percent %>;"
-                      >
-                        <%= (cohort["controlled"] > 0 && controlled_percent == 0) ? "< 1" : controlled_percent %>
-                      </td>
-                    <% else %>
-                      <td class="bar bar-none" style="width: 100%;">
-                        No data available
-                      </td>
-                    <% end %>
-                  </tr>
-                </table>
+  <div class="flex-lg order-lg-4 w-lg-50 pl-lg-2">
+    <div class="card pb-4 h-lg-full w-lg-full mt-lg-0">
+      <div class="mb-lg-2">
+        <h3>
+          Quarterly cohort trend
+        </h3>
+        <p class="mb-0 c-grey-dark">
+          The result for all HTN patients registered in a quarter at their follow-up visit in the following quarter
+        </p>
+      </div>
+      <div>
+        <div class="">
+          <% @quarterly_registrations.each_with_index do |cohort, index| %>
+            <div class="split-row mt-lg-1 pt-lg-1"> 
+              <div class="row px-lg-0">
+                <div class="col-lg-4 nowrap order-lg-1">
+                  <h6>
+                    <%= cohort["results_in"] %> results for patients
+                  </h6>
+                  <p class="mb-2 fs-small c-grey-medium">
+                    registered in <%= cohort["patients_registered"] %>
+                  </p>
+                </div>
+                <div class="col-lg-8 order-lg-2">
+                  <table class="split-bars"> 
+                    <tr>
+                      <% if cohort["registered"] > 0 %>
+                        <%
+                          controlled_percent = compute_percentage(cohort["controlled"], cohort["registered"])
+                          uncontrolled_percent = compute_percentage(cohort["uncontrolled"], cohort["registered"])
+                          no_bp_percent = compute_percentage(cohort["no_bp"], cohort["registered"])
+                        %>
+                        <td
+                          class="bar bar-1"
+                          data-toggle="tooltip"
+                          data-placement="top"
+                          data-trigger="hover focus click"
+                          title="<%= number_with_delimiter(cohort["no_bp"]) %> patients didn't have their BP taken"
+                          style="width: <%= no_bp_percent %>;"
+                        >
+                          <%= (cohort["no_bp"] > 0 && no_bp_percent == 0) ? "< 1" : no_bp_percent %>
+                        </td>
+                        <td
+                          class="bar bar-2"
+                          data-toggle="tooltip"
+                          data-placement="top"
+                          data-trigger="hover focus click"
+                          title="<%= number_with_delimiter(cohort["uncontrolled"]) %> patients visited with uncontrolled BP"
+                          style="width: <%= uncontrolled_percent %>;"
+                        >
+                          <%= (cohort["uncontrolled"] > 0 && uncontrolled_percent == 0) ? "< 1" : uncontrolled_percent %>
+                        </td>
+                        <td
+                          class="bar bar-3"
+                          data-toggle="tooltip"
+                          data-placement="top"
+                          data-trigger="hover focus click"
+                          title="<%= number_with_delimiter(cohort["controlled"]) %> patients visited with controlled BP"
+                          style="width: <%= controlled_percent %>;"
+                        >
+                          <%= (cohort["controlled"] > 0 && controlled_percent == 0) ? "< 1" : controlled_percent %>
+                        </td>
+                      <% else %>
+                        <td class="bar bar-none" style="width: 100%;">
+                          No data available
+                        </td>
+                      <% end %>
+                    </tr>
+                  </table>
+                </div>
               </div>
             </div>
+          <% end %>
+        </div>
+        <div class="mt-4 pt-4 border-top flex-lg align-lg-center justify-lg-end mt-lg-3 pt-lg-3">
+          <div class="">
+            <p class="mb-2 c-grey-dark mb-lg-0 mr-lg-4">
+              No BP measure
+            </p>
           </div>
-        <% end %>
+          <div class="">
+            <p class="mb-3 c-red mb-lg-0 mr-lg-4">
+              Visited and BP &ge;140/90
+            </p>
+          </div>
+          <div class="">
+            <p class="mb-0 lh-1 c-green-dark mb-lg-0">
+              Visited and BP &lt;140/90
+            </p>
+          </div>
+        </div>
       </div>
-      <div class="mt-4 pt-4 border-top">
-        <div class="">
+    </div>
+  </div> 
+  <div class="flex-lg order-lg-2 w-lg-50 pl-lg-2">
+    <div class="card pb-4 h-lg-full w-lg-full mt-lg-0">
+      <div class="mb-2">
+        <h3>
+          Benchmarks
+        </h3>
+      </div>
+      <div>
+        <div class="mb-3 pb-2 border-bottom">
+          <p class="mb-1 fw-bold tt-uppercase ls-145">
+            Control of registered patients
+          </p>
+          <p class="mb-1 c-grey-dark">
+            <span class="fw-bold tt-uppercase ls-145">Bathinda: </span> PENDING
+          </p>
+          <p class="mb-1 c-grey-dark">
+            <span class="fw-bold tt-uppercase ls-145">Top district: </span> PENDING
+          </p>
+          <p class="mb-1 c-grey-dark">
+            <span class="fw-bold tt-uppercase ls-145">Difference: </span> PENDING
+          </p>
+        </div>
+        <div class="mb-3 pb-2 border-bottom">
+          <p class="mb-1 fw-bold tt-uppercase ls-145">
+            Q2 cohort BP control
+          </p>
+          <p class="mb-1 c-grey-dark">
+            <span class="fw-bold tt-uppercase ls-145">Bathinda: </span> PENDING
+          </p>
+          <p class="mb-1 c-grey-dark">
+            <span class="fw-bold tt-uppercase ls-145">Top district: </span> PENDING
+          </p>
+          <p class="mb-1 c-grey-dark">
+            <span class="fw-bold tt-uppercase ls-145">Difference: </span> PENDING
+          </p>
+        </div>
+        <div class="mb-0">
+          <p class="mb-1 fw-bold tt-uppercase ls-145">
+            Q2 cohort missed visit 
+          </p>
+          <p class="mb-1 c-grey-dark">
+            <span class="fw-bold tt-uppercase ls-145">Bathinda: </span> PENDING
+          </p>
           <p class="mb-2 c-grey-dark">
-            No BP measure
+            <span class="fw-bold tt-uppercase ls-145">Top district: </span> PENDING
+          </p>
+          <p class="mb-0 lh-1 c-grey-dark">
+            <span class="fw-bold tt-uppercase ls-145">Difference: </span> PENDING
           </p>
         </div>
-        <div class="">
-          <p class="mb-3 c-red">
-            Visited and BP &ge;140/90
-          </p>
-        </div>
-        <div class="">
-          <p class="mb-0 lh-1 c-green-dark">
-            Visited and BP &lt;140/90
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="card pb-4">
-    <div class="mb-2">
-      <h3>
-        Benchmarks
-      </h3>
-    </div>
-    <div>
-      <div class="mb-3 pb-2 border-bottom">
-        <p class="mb-1 fw-bold tt-uppercase ls-145">
-          Control of registered patients
-        </p>
-        <p class="mb-1 c-grey-dark">
-          <span class="fw-bold tt-uppercase ls-145">Bathinda: </span> PENDING
-        </p>
-        <p class="mb-1 c-grey-dark">
-          <span class="fw-bold tt-uppercase ls-145">Top district: </span> PENDING
-        </p>
-        <p class="mb-1 c-grey-dark">
-          <span class="fw-bold tt-uppercase ls-145">Difference: </span> PENDING
-        </p>
-      </div>
-      <div class="mb-3 pb-2 border-bottom">
-        <p class="mb-1 fw-bold tt-uppercase ls-145">
-          Q2 cohort BP control
-        </p>
-        <p class="mb-1 c-grey-dark">
-          <span class="fw-bold tt-uppercase ls-145">Bathinda: </span> PENDING
-        </p>
-        <p class="mb-1 c-grey-dark">
-          <span class="fw-bold tt-uppercase ls-145">Top district: </span> PENDING
-        </p>
-        <p class="mb-1 c-grey-dark">
-          <span class="fw-bold tt-uppercase ls-145">Difference: </span> PENDING
-        </p>
-      </div>
-      <div class="mb-0">
-        <p class="mb-1 fw-bold tt-uppercase ls-145">
-          Q2 cohort missed visit 
-        </p>
-        <p class="mb-1 c-grey-dark">
-          <span class="fw-bold tt-uppercase ls-145">Bathinda: </span> PENDING
-        </p>
-        <p class="mb-2 c-grey-dark">
-          <span class="fw-bold tt-uppercase ls-145">Top district: </span> PENDING
-        </p>
-        <p class="mb-0 lh-1 c-grey-dark">
-          <span class="fw-bold tt-uppercase ls-145">Difference: </span> PENDING
-        </p>
       </div>
     </div>
   </div>
@@ -231,3 +238,4 @@
   </div>
 </div>
 -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
