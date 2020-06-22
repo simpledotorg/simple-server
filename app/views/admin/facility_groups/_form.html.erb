@@ -39,7 +39,7 @@
         <div class="alert alert-primary mt-3" role="alert">
           <% is_diabetes_enabled = facility_group.diabetes_enabled? %>
 
-          <% if is_diabetes_enabled %>
+          <% if is_diabetes_enabled && facility_group.facilities.present? %>
             Diabetes management is already enabled for all facilities in this group.
           <% else %>
             This will enable Diabetes management for all associated facilities in this group.
@@ -48,7 +48,7 @@
         <%= form.check_box :enable_diabetes_management,
             {id: :facility_group_enable_diabetes_management,
                 checked: is_diabetes_enabled,
-                disabled: is_diabetes_enabled,
+                disabled: is_diabetes_enabled && facility_group.facilities.present?,
                 onclick: "confirmDisableDM(this)"},
             true, false %>
       </div>
@@ -62,7 +62,7 @@
 
 <script>
   function confirmDisableDM(el) {
-    if (!el.checked && <%= facility_group.diabetes_enabled? %>)
+    if (!el.checked && <%= facility_group.diabetes_enabled? && facility_group.facilities.present? %>)
       confirm("Are you sure? This will disable diabetes management for all associated facilities.")
   }
 </script>
