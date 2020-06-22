@@ -6,13 +6,13 @@ class Dashboard::DistrictsController < AdminController
   EXAMPLE_DATA_FILE = "db/data/example_dashboard_data.json"
 
   def index
-    authorize :dashboard, :view_my_facilities?
-    @districts = FacilityGroup.all.order(:name)
+    authorize([:manage, FacilityGroup])
+    @districts = policy_scope([:manage, FacilityGroup]).order(:name)
   end
 
   def show
-    authorize :dashboard, :view_my_facilities?
-    @district = FacilityGroup.find_by!(slug: params[:id])
+    @district = FacilityGroup.find_by(slug: params[:id])
+    authorize([:manage, @district])
 
     @district_name = @district.name
 
