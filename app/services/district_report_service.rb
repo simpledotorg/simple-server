@@ -21,24 +21,15 @@ class DistrictReportService
   end
 
   def compile_control_and_registration_data
-    beginning_of_period = selected_date.advance(months: -11)
-    previous_registrations = 0
-    registrations.each do |(period, count)|
-      year, month = period[0].to_i, period[1].to_i
-      break if year > beginning_of_period.year
-      break if year == beginning_of_period.year && month >= beginning_of_period.month
-      previous_registrations += count
-    end
-
+    @data[:cumulative_registrations] = Patient.where(registration_facility: @facilities).where("recorded_at <= ?", selected_date.end_of_month).count
     -11.upto(0).each do |n|
-      time = selected_date.advance(months: n)
+      time = selected_date.advance(months: n).end_of_month
       formatted_period = time.to_s(:month_year)
-      key = [time.year.to_s, time.month.to_s]
+
+      count = Patient.where(registration_facility: @facilities).where("recorded_at <= ?", time).count
 
       @data[:controlled_patients][formatted_period] = controlled_patients(time).count
-      @data[:cumulative_registrations] ||= previous_registrations
-      @data[:cumulative_registrations] = @data[:cumulative_registrations] + registrations.fetch(key, 0).to_i.round
-      @data[:registrations][formatted_period] = @data[:cumulative_registrations]
+      @data[:registrations][formatted_period] = count
     end
   end
 
@@ -82,10 +73,5 @@ class DistrictReportService
         mid_range.year.to_s, mid_range.month.to_s,
         end_range.year.to_s, end_range.month.to_s)
     LatestBloodPressuresPerPatientPerMonth.from(sub_query, "latest_blood_pressures_per_patient_per_months")
-  end
-
-  def registrations
-    @registrations ||=
-      PatientRegistrationsPerDayPerFacility.where(facility: @facilities).group(:year, :month).sum(:registration_count)
   end
 end
