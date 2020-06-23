@@ -14,7 +14,7 @@ class PrescriptionDrug < ApplicationRecord
   validates :is_deleted, inclusion: {in: [true, false]}
 
   def self.prescribed_as_on(date: Date.today)
-    where("device_created_at < ?", date.end_of_day)
+    where("device_created_at <= ?", date.end_of_day)
       .where(%(prescription_drugs.is_deleted = false OR
               (prescription_drugs.is_deleted = true AND
                prescription_drugs.device_updated_at > ?)), date.end_of_day)
