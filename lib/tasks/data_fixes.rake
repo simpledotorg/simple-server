@@ -28,4 +28,14 @@ namespace :data_fixes do
   task :clean_ancient_dates_dryrun => :environment do
     CleanAncientDates.call(dryrun: true)
   end
+
+  desc "Delete Bangladesh demo facility"
+  task :delete_bangladesh_demo_facility => :environment do
+    DeleteBangladeshDemoFacility.call
+  end
+
+  desc "Delete Bangladesh demo facility (dryrun)"
+  task :delete_bangladesh_demo_facility_dryrun => :environment do
+    DeleteBangladeshDemoFacility.call(dryrun: true)
+  end
 end
