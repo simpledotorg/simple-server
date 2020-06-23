@@ -16,7 +16,7 @@
               selected: @facility_id,
               wrapper: false
           },
-          { onchange: "this.form.submit();" }
+          {onchange: "this.form.submit();"}
       %>
     </div>
 
@@ -38,7 +38,10 @@
 
         <span class="text-secondary">Address:</span>
         <address>
-          <%= patient.address.street_address %><br/>
+          <% if patient.address.has_street_address? %>
+            <%= patient.address.street_address %><br/>
+          <% end %>
+
           <%= patient.address.village_or_colony %><br/>
           <%= patient.address.district %><br/>
           <%= patient.address.state %>
@@ -46,7 +49,7 @@
 
         <div>
           <span class="text-secondary">Registered at:</span>
-          <%= patient.registration_facility.name %>
+          <%= patient.registration_facility&.name || "Unknown" %>
         </div>
         <div>
           <span class="text-secondary">District:</span>
