@@ -148,7 +148,6 @@ RSpec.describe Api::V3::UsersController, type: :controller do
     it "updates the user otp and sends an sms to the user's phone number with the new otp" do
       existing_otp = user.otp
 
-      allow(RequestOtpSmsJob).to receive_message_chain("set.perform_later")
       expect(RequestOtpSmsJob).to receive_message_chain("set.perform_later").with(user)
 
       post :request_otp, params: {id: user.id}
@@ -161,7 +160,6 @@ RSpec.describe Api::V3::UsersController, type: :controller do
 
       existing_otp = user.otp
 
-      allow(RequestOtpSmsJob).to receive_message_chain("set.perform_later")
       expect(RequestOtpSmsJob).to receive_message_chain("set.perform_later").with(user)
 
       post :request_otp, params: {id: user.id}
