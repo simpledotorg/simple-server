@@ -34,6 +34,7 @@ module ApplicationHelper
   # Calculate a percentage and then pass on the result to number_to_percentage.
   # Defaults to precision of 0.
   def compute_percentage(numerator, denominator, options = {})
+    return "N/A" if denominator == 0
     options = options.with_defaults(precision: 0)
     quotient = numerator.to_f / denominator.to_f
     number_to_percentage(quotient * 100, options)

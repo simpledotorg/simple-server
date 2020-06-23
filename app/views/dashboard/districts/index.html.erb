@@ -1,0 +1,14 @@
+
+<div class="mb-2 pt-8 px-4 md:flex md:items-center md:justify-between md:max-w-6xl md:m-auto md:pt-24">
+  <div>
+    <div class="flex items-center mb-4">
+      <div class="mr-2">
+      <% @districts.each do |district| %>
+        <p class="font-roboto font-bold text-md text-blue-200">
+          <%= link_to district.name, dashboard_district_path(district.slug) %>
+        </p>
+      <% end %>
+      </div>
+    </div>
+  </div>
+</div>
