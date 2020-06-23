@@ -155,6 +155,19 @@ RSpec.describe Api::V3::UsersController, type: :controller do
       user.reload
       expect(user.otp).not_to eq(existing_otp)
     end
+
+    it "uses a sensible default when the OTP delay is not configured" do
+      ENV["USER_OTP_SMS_DELAY_IN_SECONDS"] = nil
+
+      existing_otp = user.otp
+
+      allow(RequestOtpSmsJob).to receive_message_chain("set.perform_later")
+      expect(RequestOtpSmsJob).to receive_message_chain("set.perform_later").with(user)
+
+      post :request_otp, params: {id: user.id}
+      user.reload
+      expect(user.otp).not_to eq(existing_otp)
+    end
   end
 
   describe "#reset_password" do
