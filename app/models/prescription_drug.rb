@@ -13,6 +13,13 @@ class PrescriptionDrug < ApplicationRecord
   validates :is_protocol_drug, inclusion: {in: [true, false]}
   validates :is_deleted, inclusion: {in: [true, false]}
 
+  def self.prescribed_as_on(date: Date.today)
+    where("device_created_at < ?", date.end_of_day)
+      .where(%(prescription_drugs.is_deleted = false OR
+              (prescription_drugs.is_deleted = true AND
+               prescription_drugs.device_updated_at > ?)), date.end_of_day)
+  end
+
   def anonymized_data
     {id: hash_uuid(id),
      patient_id: hash_uuid(patient_id),
