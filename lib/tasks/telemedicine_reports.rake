@@ -3,7 +3,7 @@
 require "tasks/scripts/telemedicine_reports"
 
 desc "Generates the telemedicine report, takes the mixpanel report as input"
-task :telemedicine_reports, [:mixpanel_report,:p1_start, :p1_end, :p2_start, :p2_end] => :environment do |_t, args|
+task :telemedicine_reports, [:mixpanel_report, :p1_start, :p1_end, :p2_start, :p2_end] => :environment do |_t, args|
   # bundle exec telemedicine_reports[<path_to_mixpanel_report>,'2020-06-07','2020-06-13','2020-06-14','2020-06-21']
 
   mixpanel_csv = args[:mixpanel_report]
@@ -15,5 +15,6 @@ task :telemedicine_reports, [:mixpanel_report,:p1_start, :p1_end, :p2_start, :p2
   abort "Requires a valid file path." unless mixpanel_csv.present?
   abort "Requires a valid file path." unless File.file?(mixpanel_csv)
 
-  TelemedicineReports.parse_mixpanel(mixpanel_csv, p1_start, p1_end, p2_start, p2_end)
+  mixpanel_data = TelemedicineReports.parse_mixpanel(mixpanel_csv)
+  TelemedicineReports.generate_report(mixpanel_data, p1_start, p1_end, p2_start, p2_end)
 end
