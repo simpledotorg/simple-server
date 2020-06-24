@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 require "csv"
 
 module TelemedicineReports
@@ -9,7 +8,7 @@ module TelemedicineReports
       mixpanel = CSV.parse(mixpanel_csv, headers: false)
 
       mixpanel.drop(1).map { |row|
-        facility = User.joins(:phone_number_authentications).where("registration_facility_id is not null").order(Arel.sql("RANDOM()")).first.registration_facility
+        facility = User.find(row[1]).registration_facility
         {user_id: row[1],
          date: Date.parse(row[2]),
          clicks: [row[3].to_i, row[4].to_i].max,
