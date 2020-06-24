@@ -27,7 +27,7 @@
           </p>
         </div>
         <div>
-          <h3 class="mb-0 fs-xlarge fw-bold c-green-dark">
+          <h3 class="mb-1 fs-xlarge fw-bold c-green-dark">
             <%= compute_percentage(
               @controlled_patients.values.last.to_f,
               @registrations.values.last.to_f, precision: 1
@@ -66,9 +66,12 @@
           </p>
         </div>
         <div>
-          <h3 class="mb-0 fs-xlarge fw-bold c-purple">
+          <h3 class="mb-1 fs-xlarge fw-bold c-purple">
             <%= number_with_delimiter(@registrations.values.last) %> patients
           </h3>
+          <p>
+            <span class="fw-bold"><%= number_with_delimiter(@controlled_patients.values.last) %></span> of <%= number_with_delimiter(@registrations.values.last) %> registered patients
+          </p>
         </div>
       </div>
       <div>
