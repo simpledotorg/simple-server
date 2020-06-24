@@ -20,6 +20,7 @@ class MessagePatients
     return if dryrun
 
     send_message
+    print_report
   end
 
   private
@@ -28,15 +29,16 @@ class MessagePatients
     valid_patients.each do |patient|
       phone_number = patient.latest_phone_number
 
-      response = if message_type == :whatsapp
-                   NotificationService.new.send_whatsapp(phone_number, message)
-                 elsif message_type == :sms
-                   NotificationService.new.send_sms(phone_number, message)
-                 else
-                   raise ArgumentError, "Invalid communication_type #{message_type}"
-                 end
+      response =
+        if message_type == :whatsapp
+          NotificationService.new.send_whatsapp(phone_number, message)
+        elsif message_type == :sms
+          NotificationService.new.send_sms(phone_number, message)
+        else
+          raise ArgumentError, "Invalid communication_type #{message_type}"
+        end
 
-      process_response(response)
+      prepare_report(response, patient)
     end
   end
 
@@ -44,12 +46,12 @@ class MessagePatients
     @valid_patients ||= patients.contactable
   end
 
-  def process_response(patient, response)
+  def prepare_report(response, patient)
     @result.merge(patient: response.status)
   end
 
-  def print_result
-
+  def print_report
+    log ""
   end
 
   def log(message)
@@ -57,4 +59,4 @@ class MessagePatients
   end
 end
 
-MessagePatients.call(patients, message)
+# MessagePatients.call(patients, message)
