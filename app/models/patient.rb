@@ -189,7 +189,7 @@ class Patient < ApplicationRecord
   end
 
   def prescribed_drugs(date: Date.today)
-    prescription_drugs.prescribed_as_on(date: date)
+    prescription_drugs.prescribed_as_of(date)
   end
 
   def self.not_contacted

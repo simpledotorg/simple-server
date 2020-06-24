@@ -14,7 +14,7 @@ RSpec.describe PrescriptionDrug, type: :model do
     it_behaves_like "a record that is deletable"
   end
 
-  describe ".prescribed_as_on" do
+  describe ".prescribed_as_of" do
     def remove_drug(prescription_drug, time)
       prescription_drug.update(is_deleted: true, device_updated_at: time)
     end
@@ -33,15 +33,15 @@ RSpec.describe PrescriptionDrug, type: :model do
     end
 
     it "returns no prescription drugs for dates before the initial visit" do
-      expect(described_class.prescribed_as_on(date: initial_visit_time.to_date - 1.day)).to be_empty
+      expect(described_class.prescribed_as_of(date: initial_visit_time.to_date - 1.day)).to be_empty
     end
 
     it "returns all prescription drugs for the day of initial visit" do
-      expect(described_class.prescribed_as_on(date: initial_visit_time.to_date)).to match_array prescription_drugs
+      expect(described_class.prescribed_as_of(date: initial_visit_time.to_date)).to match_array prescription_drugs
     end
 
     it "returns all prescription drugs for later visit dates" do
-      expect(described_class.prescribed_as_on(date: latest_visit_time.to_date)).to match_array prescription_drugs
+      expect(described_class.prescribed_as_of(date: latest_visit_time.to_date)).to match_array prescription_drugs
     end
 
     context "when a drug is removed in a visit" do
@@ -49,15 +49,15 @@ RSpec.describe PrescriptionDrug, type: :model do
       before { remove_drug(prescription_drugs.first, visit_time) }
 
       it "returns all prescription drugs for dates before the visit" do
-        expect(described_class.prescribed_as_on(date: visit_time.to_date - 1.day)).to match_array prescription_drugs
+        expect(described_class.prescribed_as_of(date: visit_time.to_date - 1.day)).to match_array prescription_drugs
       end
 
       it "does not return the removed prescription drug for the visit date" do
-        expect(described_class.prescribed_as_on(date: visit_time.to_date)).to contain_exactly prescription_drugs.second
+        expect(described_class.prescribed_as_of(date: visit_time.to_date)).to contain_exactly prescription_drugs.second
       end
 
       it "does not return the removed prescription drug on later visit dates" do
-        expect(described_class.prescribed_as_on(date: latest_visit_time.to_date)).to contain_exactly prescription_drugs.second
+        expect(described_class.prescribed_as_of(date: latest_visit_time.to_date)).to contain_exactly prescription_drugs.second
       end
     end
   end
