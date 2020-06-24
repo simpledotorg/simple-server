@@ -2,7 +2,6 @@ require "rails_helper"
 
 RSpec.describe OverdueList::PatientSummaryPolicy do
   subject { described_class }
-
   let(:user_with_permission) do
     create(
       :admin,
@@ -24,25 +23,23 @@ end
 
 RSpec.describe OverdueList::AppointmentPolicy::Scope do
   let(:subject) { described_class }
-
   let(:organization) { create(:organization) }
   let(:facility_group) { create(:facility_group, organization: organization) }
-
   let(:facility1) { create(:facility, facility_group: facility_group) }
   let(:facility2) { create(:facility) }
-  let(:appointment1) { create(:appointment, :overdue, facility: facility1) }
-  let(:appointment2) { create(:appointment, :overdue, facility: facility2) }
+  let!(:appointment1) { create(:appointment, :overdue, facility: facility1) }
+  let!(:appointment2) { create(:appointment, :overdue, facility: facility2) }
 
-  context "user with permission to access appointment information for all organizations" do
+  context "user with permission to access patient summaries for all organizations" do
     let(:user) { create(:admin, user_permissions: [build(:user_permission, permission_slug: :view_overdue_list)]) }
 
     it "resolves all patient summaries for users who can access appointment information for all organizations" do
       resolved_records = subject.new(user, Appointment.all).resolve
-      expect(resolved_records.map(&:id)).to match_array(Appointment.all.map(&:patient_id))
+      expect(resolved_records.map(&:patient_id)).to match_array(Appointment.all.map(&:patient_id))
     end
   end
 
-  context "user with permission to access appointment information for an organization" do
+  context "user with permission to access patient summaries for an organization" do
     let(:user) do
       create(
         :admin,
@@ -52,7 +49,7 @@ RSpec.describe OverdueList::AppointmentPolicy::Scope do
 
     it "resolves all patient summaries in the organization" do
       resolved_records = subject.new(user, Appointment.all).resolve
-      expect(resolved_records.map(&:id)).to match_array(
+      expect(resolved_records.map(&:patient_id)).to match_array(
         Appointment.where(facility: organization.facilities).map(&:patient_id)
       )
     end
@@ -68,7 +65,7 @@ RSpec.describe OverdueList::AppointmentPolicy::Scope do
 
     it "resolves all patient summaries in the facility group" do
       resolved_records = subject.new(user, Appointment.all).resolve
-      expect(resolved_records.map(&:id)).to match_array(
+      expect(resolved_records.map(&:patient_id)).to match_array(
         Appointment.where(facility: facility_group.facilities).map(&:patient_id)
       )
     end

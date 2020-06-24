@@ -56,7 +56,6 @@ RSpec.describe CohortReport::OrganizationPolicy::Scope do
 
       it "resolves nothing" do
         result = described_class.new(user, Organization).resolve
-
         expect(result).to be_empty
       end
     end
