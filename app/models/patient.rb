@@ -188,6 +188,10 @@ class Patient < ApplicationRecord
     super(new_call_result)
   end
 
+  def prescribed_drugs(date: Date.current)
+    prescription_drugs.prescribed_as_of(date)
+  end
+
   def self.not_contacted
     where(contacted_by_counsellor: false)
       .where(could_not_contact_reason: nil)

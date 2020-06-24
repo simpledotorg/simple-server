@@ -414,6 +414,22 @@ describe Patient, type: :model do
         expect(patient.reload.latest_mobile_number).to eq(number_1.number)
       end
     end
+
+    describe "#prescribed_drugs" do
+      let!(:date) { Date.parse "01-01-2020" }
+
+      it "returns the prescribed drugs for a patient as of a date" do
+        dbl = double("patient.prescribed_as_of")
+        allow(patient.prescription_drugs).to receive(:prescribed_as_of).and_return dbl
+
+        expect(patient.prescribed_drugs(date: date)).to be dbl
+      end
+
+      it "defaults to current date when no date is passed" do
+        expect(patient.prescription_drugs).to receive(:prescribed_as_of).with(Date.current)
+        patient.prescribed_drugs
+      end
+    end
   end
 
   context "Virtual params" do
