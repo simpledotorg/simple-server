@@ -3,5 +3,5 @@
   "private": true,
   "dependencies": {
     "tablesort": "^5.2.0"
-  },
+  }
 }
