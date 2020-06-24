@@ -44,7 +44,8 @@ module Mergeable
         end
       rescue ActiveRecord::RecordNotUnique
         retries += 1
-        retry unless retries > 1
+
+        retries <= 1 ? retry : raise
       end
     end
 
