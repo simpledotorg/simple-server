@@ -2,7 +2,7 @@ class Communication < ApplicationRecord
   include Mergeable
   include Hashable
 
-  belongs_to :appointment
+  belongs_to :appointment, optional: true
   belongs_to :user, optional: true
   belongs_to :detailable, polymorphic: true, optional: true
 
@@ -12,7 +12,8 @@ class Communication < ApplicationRecord
     voip_call: "voip_call",
     manual_call: "manual_call",
     missed_visit_sms_reminder: "missed_visit_sms_reminder",
-    missed_visit_whatsapp_reminder: "missed_visit_whatsapp_reminder"
+    missed_visit_whatsapp_reminder: "missed_visit_whatsapp_reminder",
+    telemedicine_notice: "telemedicine_notice"
   }
 
   COMMUNICATION_RESULTS = {
@@ -24,8 +25,7 @@ class Communication < ApplicationRecord
     unknown: "unknown"
   }
 
-  ANONYMIZED_DATA_FIELDS = %w[id appointment_id patient_id user_id created_at communication_type
-    communication_result]
+  ANONYMIZED_DATA_FIELDS = %w[id appointment_id patient_id user_id created_at communication_type communication_result]
 
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
@@ -37,14 +37,19 @@ class Communication < ApplicationRecord
   def self.create_with_twilio_details!(appointment:, twilio_sid:, twilio_msg_status:, communication_type:)
     transaction do
       sms_delivery_details =
-        TwilioSmsDeliveryDetail.create!(session_id: twilio_sid,
-                                        result: twilio_msg_status,
-                                        callee_phone_number: appointment.patient.latest_mobile_number)
-      Communication.create!(communication_type: communication_type,
-                            detailable: sms_delivery_details,
-                            appointment: appointment,
-                            device_created_at: DateTime.current,
-                            device_updated_at: DateTime.current)
+        TwilioSmsDeliveryDetail.create!(
+          session_id: twilio_sid,
+          result: twilio_msg_status,
+          callee_phone_number: appointment.patient.latest_mobile_number
+        )
+
+      Communication.create!(
+        communication_type: communication_type,
+        detailable: sms_delivery_details,
+        appointment: appointment,
+        device_created_at: DateTime.current,
+        device_updated_at: DateTime.current
+      )
     end
   end
 
@@ -65,12 +70,13 @@ class Communication < ApplicationRecord
   end
 
   def anonymized_data
-    {id: hash_uuid(id),
-     appointment_id: hash_uuid(appointment_id),
-     patient_id: hash_uuid(appointment.patient_id),
-     user_id: hash_uuid(user_id),
-     created_at: created_at,
-     communication_type: communication_type,
-     communication_result: communication_result}
+    {
+      id: hash_uuid(id),
+      appointment_id: hash_uuid(appointment_id),
+      patient_id: hash_uuid(appointment.patient_id),
+      user_id: hash_uuid(user_id),
+      created_at: created_at,
+      communication_type: communication_type,
+      communication_result: communication_result}
   end
 end

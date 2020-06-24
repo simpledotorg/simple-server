@@ -74,6 +74,13 @@ class Patient < ApplicationRecord
       .with_hypertension
   }
 
+  scope :contactable, -> {
+    where(reminder_consent: "granted")
+      .where.not(status: "dead")
+      .includes(:phone_numbers)
+      .merge(PatientPhoneNumber.phone_type_mobile)
+  }
+
   def self.follow_ups_with(model_name, period, time_column: "recorded_at", last: nil)
     table_name = model_name.table_name.to_sym
     time_column_with_table_name = "#{table_name}.#{time_column}"
@@ -200,12 +207,12 @@ class Patient < ApplicationRecord
 
   def anonymized_data
     {id: hash_uuid(id),
-     created_at: created_at,
-     registration_date: recorded_at,
-     registration_facility_name: registration_facility&.name,
-     user_id: hash_uuid(registration_user&.id),
-     age: age,
-     gender: gender}
+      created_at: created_at,
+      registration_date: recorded_at,
+      registration_facility_name: registration_facility&.name,
+      user_id: hash_uuid(registration_user&.id),
+      age: age,
+      gender: gender}
   end
 
   def discard_data
