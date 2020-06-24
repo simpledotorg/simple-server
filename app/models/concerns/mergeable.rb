@@ -24,20 +24,27 @@ module Mergeable
     end
 
     def merge(attributes)
-      new_record = new(attributes)
-      existing_record = with_discarded.find_by(id: attributes["id"])
+      retries = 0
 
-      case compute_merge_status(attributes)
-      when :discarded
-        discarded_record(existing_record)
-      when :invalid
-        invalid_record(new_record)
-      when :new
-        create_new_record(attributes)
-      when :updated
-        update_existing_record(existing_record, attributes)
-      when :old
-        return_old_record(existing_record)
+      begin
+        new_record = new(attributes)
+        existing_record = with_discarded.find_by(id: attributes["id"])
+
+        case compute_merge_status(attributes)
+        when :discarded
+          discarded_record(existing_record)
+        when :invalid
+          invalid_record(new_record)
+        when :new
+          create_new_record(attributes)
+        when :updated
+          update_existing_record(existing_record, attributes)
+        when :old
+          return_old_record(existing_record)
+        end
+      rescue ActiveRecord::RecordNotUnique
+        retries += 1
+        retry unless retries > 1
       end
     end
 
