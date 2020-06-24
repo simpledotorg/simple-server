@@ -3,21 +3,32 @@ class Api::V3::TwilioSmsDeliveryController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def create
-    TwilioSmsDeliveryDetail.where(session_id: params["SmsSid"]).first.update(update_params)
+    twilio_message = TwilioSmsDeliveryDetail.find_by(session_id: message_session_id).update(update_params)
+    communication_type = twilio_message.communication.communication_type
+    appointment_id = twilio_message.communication.appointment_id
+
+    if communication_type == "missed_visit_whatsapp_reminder" && twilio_message.unsuccessful?
+      AppointmentNotification::Worker.perform(appointment_id, "missed_visit_sms_reminder")
+    end
+
     head :ok
   end
 
   private
 
   def update_params
-    details = {result: delivery_status}
-    details[:delivered_on] = DateTime.current if delivery_status == TwilioSmsDeliveryDetail.results[:delivered]
+    details = { result: message_status }
+    details[:delivered_on] = DateTime.current if message_status == TwilioSmsDeliveryDetail.results[:delivered]
 
     details
   end
 
-  def delivery_status
-    params["SmsStatus"] || params["MessageStatus"] || TwilioSmsDeliveryDetail.results[:unknown]
+  def message_session_id
+    params["MessageSid"]
+  end
+
+  def message_status
+    params["MessageStatus"] || TwilioSmsDeliveryDetail.results[:unknown]
   end
 
   def validate_request
