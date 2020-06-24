@@ -188,7 +188,7 @@ class Patient < ApplicationRecord
     super(new_call_result)
   end
 
-  def prescribed_drugs(date: Date.today)
+  def prescribed_drugs(date: Date.current)
     prescription_drugs.prescribed_as_of(date)
   end
 
