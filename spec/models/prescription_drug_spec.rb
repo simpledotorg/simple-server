@@ -19,14 +19,16 @@ RSpec.describe PrescriptionDrug, type: :model do
       prescription_drug.update(is_deleted: true, device_updated_at: time)
     end
 
-    let!(:facility) { create(:facility) }
     let!(:patient) { create(:patient) }
-    let!(:user) { create(:user) }
     let!(:initial_visit_time) { Time.parse "01 Jan 2020 14:30" }
     let!(:latest_visit_time) { Time.parse "15 Jan 2020 14:30" }
     let!(:prescription_drugs) do
       Timecop.freeze(initial_visit_time) do
-        create_list(:prescription_drug, 2, is_protocol_drug: true, patient: patient, facility: facility, user: user)
+        create_list(:prescription_drug, 2,
+          is_protocol_drug: true,
+          patient: patient,
+          facility: patient.registration_facility,
+          user: patient.registration_user)
       end
     end
 
@@ -66,13 +68,13 @@ RSpec.describe PrescriptionDrug, type: :model do
         prescription_drug = create(:prescription_drug)
 
         anonymised_data =
-          {id: Hashable.hash_uuid(prescription_drug.id),
-           patient_id: Hashable.hash_uuid(prescription_drug.patient_id),
-           created_at: prescription_drug.created_at,
-           registration_facility_name: prescription_drug.facility.name,
-           user_id: Hashable.hash_uuid(prescription_drug.patient.registration_user.id),
-           medicine_name: prescription_drug.name,
-           dosage: prescription_drug.dosage}
+            {id: Hashable.hash_uuid(prescription_drug.id),
+             patient_id: Hashable.hash_uuid(prescription_drug.patient_id),
+             created_at: prescription_drug.created_at,
+             registration_facility_name: prescription_drug.facility.name,
+             user_id: Hashable.hash_uuid(prescription_drug.patient.registration_user.id),
+             medicine_name: prescription_drug.name,
+             dosage: prescription_drug.dosage}
 
         expect(prescription_drug.anonymized_data).to eq anonymised_data
       end
