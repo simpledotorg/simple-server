@@ -292,4 +292,14 @@
   </div>
 </div>
 -->
+<!-- Dump all reporting data in a hidden div to parse in JS -->
+<%= content_tag :div,
+                id: "reporting",
+                data: {
+                  controlled_patients: @controlled_patients,
+                  registrations: @registrations,
+                  quarterly_registrations: @quarterly_registrations
+                },
+                style: "display: none;" do %>
+<% end %>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
