@@ -26,7 +26,7 @@ hi-IN:
   user_analytics:
     hypertension: 'हाइपरटेंशन'
     diabetes: 'मधुमेह'
-    genders: ['सभी', पुरुष', 'महिला', 'ट्रांसजेंडर']
+    genders: ['सभी', 'पुरुष', 'महिला', 'ट्रांसजेंडर']
     all_time: 'हमेशा'
     follow_up_patients: 'हाइपरटेंशन के रोगियों को फ़ॉलो-अप करें'
     registered_patients: 'रजिस्टर किए गए रोगी'
