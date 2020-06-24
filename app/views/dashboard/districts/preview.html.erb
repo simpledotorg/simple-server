@@ -30,7 +30,7 @@
           <h3 class="mb-1 fs-xlarge fw-bold c-green-dark">
             <%= compute_percentage(
               @controlled_patients.values.last.to_f,
-              @registrations.values.last.to_f, precision: 1
+              @registrations.values.last.to_f, precision: 0
             ) %>
           </h3>
           <p>
