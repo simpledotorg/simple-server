@@ -68,13 +68,13 @@ RSpec.describe PrescriptionDrug, type: :model do
         prescription_drug = create(:prescription_drug)
 
         anonymised_data =
-            {id: Hashable.hash_uuid(prescription_drug.id),
-             patient_id: Hashable.hash_uuid(prescription_drug.patient_id),
-             created_at: prescription_drug.created_at,
-             registration_facility_name: prescription_drug.facility.name,
-             user_id: Hashable.hash_uuid(prescription_drug.patient.registration_user.id),
-             medicine_name: prescription_drug.name,
-             dosage: prescription_drug.dosage}
+          {id: Hashable.hash_uuid(prescription_drug.id),
+           patient_id: Hashable.hash_uuid(prescription_drug.patient_id),
+           created_at: prescription_drug.created_at,
+           registration_facility_name: prescription_drug.facility.name,
+           user_id: Hashable.hash_uuid(prescription_drug.patient.registration_user.id),
+           medicine_name: prescription_drug.name,
+           dosage: prescription_drug.dosage}
 
         expect(prescription_drug.anonymized_data).to eq anonymised_data
       end
