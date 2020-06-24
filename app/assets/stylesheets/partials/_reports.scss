@@ -1,7 +1,14 @@
 // Display
 .d-none { display: none; }
+.d-flex { display: flex; }
+// Flex
+.flex-1 { flex: 1; }
+.fd-column { flex-direction: column; }
+.jc-flex-end { justify-content: flex-end; }
 // Overflow
 .o-hidden { overflow: hidden; }
+// Spacing
+.px-1px { padding-right: 1px; padding-left: 1px; }
 // Typography
 .fs-small { font-size: 14px; }
 .fs-xlarge { font-size: 24px; }
@@ -11,7 +18,7 @@
 .c-grey-dark { color: $grey-dark; }
 .c-grey-medium { color: $grey-mid; }
 .c-grey-light { color: $grey-light; }
-.c-green-dark { color :$green-dark; }
+.c-green-dark { color: $green-dark; }
 .c-purple { color: $purple; }
 .c-red { color: $red; }
 .c-black { color: $black; }
@@ -21,6 +28,10 @@
 .bb { border-bottom: 1px solid; }
 .bt-grey-light { border-top-color: $grey-light; }
 .bb-grey-light { border-bottom-color: $grey-light; }
+// Background colors
+.bg-purple-medium { background-color: $purple-mid; }
+.bg-purple-light { background-color: $purple-light; }
+.bg-grey-light { background-color: $grey-light; } 
 // Media queries
 // Large
 @media screen and (min-width: 992px) {
