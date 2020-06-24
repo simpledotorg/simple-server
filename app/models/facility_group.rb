@@ -24,8 +24,27 @@ class FacilityGroup < ApplicationRecord
   friendly_id :name, use: :slugged
 
   auto_strip_attributes :name, squish: true, upcase_first: true
+  attribute :enable_diabetes_management, :boolean
+
+  def toggle_diabetes_management
+    if enable_diabetes_management
+      set_diabetes_management(true)
+    elsif diabetes_enabled?
+      set_diabetes_management(false)
+    end
+  end
 
   def report_on_patients
     Patient.where(registration_facility: facilities)
+  end
+
+  def diabetes_enabled?
+    facilities.where(enable_diabetes_management: false).count.zero?
+  end
+
+  private
+
+  def set_diabetes_management(value)
+    facilities.update(enable_diabetes_management: value).map(&:valid?).all?
   end
 end
