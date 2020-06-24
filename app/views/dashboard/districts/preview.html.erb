@@ -14,9 +14,9 @@
     </p>
   </div>
 </div>
-<div class="flex-lg flex-lg-wrap">
-  <div class="flex-lg order-lg-1 w-lg-50 pr-lg-2">
-    <div class="card pb-4 flex-lg flex-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+<div class="d-lg-flex flex-lg-wrap">
+  <div class="d-lg-flex order-lg-1 w-lg-50 pr-lg-2">
+    <div class="card pb-4 d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div>
         <div class="mb-2">
           <h3>
@@ -54,8 +54,8 @@
       </div>
     </div>
   </div>
-  <div class="flex-lg order-lg-3 w-lg-50 pr-lg-2">
-    <div class="card pb-4 flex-lg justify-lg-between h-lg-full w-lg-full mt-lg-0">
+  <div class="d-lg-flex order-lg-3 w-lg-50 pr-lg-2">
+    <div class="card pb-4 d-lg-flex justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div>
         <div class="mb-2">
           <h3>
@@ -87,8 +87,8 @@
       </div>
     </div>
   </div>
-  <div class="flex-lg order-lg-4 w-lg-50 pl-lg-2">
-    <div class="card pb-4 flex-lg justify-lg-between h-lg-full w-lg-full mt-lg-0">
+  <div class="d-lg-flex order-lg-4 w-lg-50 pl-lg-2">
+    <div class="card pb-4 d-lg-flex justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div>
         <div class="mb-lg-2">
           <h3>
@@ -138,7 +138,7 @@
                             title="<%= number_with_delimiter(cohort["uncontrolled"]) %> patients visited with uncontrolled BP"
                             style="width: <%= uncontrolled_percent %>;"
                           >
-                            <%= (cohort["uncontrolled"] > 0 && uncontrolled_percent == 0) ? "< 1" : uncontrolled_percent %>
+                            <%= (cohort["uncontrolled"] > 1 && uncontrolled_percent == 0) ? "< 1" : uncontrolled_percent %>
                           </td>
                           <td
                             class="bar bar-3"
@@ -165,7 +165,7 @@
         </div>
       </div>
       <div>
-        <div class="mt-4 pt-4 border-top flex-lg align-lg-center justify-lg-end mt-lg-3 pt-lg-3">
+        <div class="mt-4 pt-4 bt bt-grey-light d-lg-flex align-lg-center justify-lg-end mt-lg-3 pt-lg-3">
           <div class="">
             <p class="mb-2 c-grey-dark mb-lg-0 mr-lg-4">
               No BP measure
@@ -185,7 +185,7 @@
       </div>
     </div>
   </div> 
-  <div class="flex-lg order-lg-2 w-lg-50 pl-lg-2">
+  <div class="d-lg-flex order-lg-2 w-lg-50 pl-lg-2">
     <div class="card pb-4 h-lg-full w-lg-full mt-lg-0">
       <div class="mb-2">
         <h3>
@@ -193,47 +193,93 @@
         </h3>
       </div>
       <div>
-        <div class="mb-3 pb-2 border-bottom">
-          <p class="mb-1 fw-bold tt-uppercase ls-145">
-            Control of registered patients
-          </p>
-          <p class="mb-1 c-grey-dark">
-            <span class="fw-bold tt-uppercase ls-145">Bathinda: </span> PENDING
-          </p>
-          <p class="mb-1 c-grey-dark">
-            <span class="fw-bold tt-uppercase ls-145">Top district: </span> PENDING
-          </p>
-          <p class="mb-1 c-grey-dark">
-            <span class="fw-bold tt-uppercase ls-145">Difference: </span> PENDING
-          </p>
+        <div class="d-none d-lg-block d-lg-flex bb bb-grey-light">
+          <div class="pt-lg-4 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center br-lg br-lg-grey-light">
+            <p class="mb-lg-0 c-lg-grey-dark">
+              Benchmark
+            </p>
+          </div>
+          <div class="pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
+            <p class="ta-lg-center mb-lg-0 c-lg-grey-dark">
+              Top district
+            </p>
+          </div>
+          <div class="pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
+            <p class="ta-lg-center mb-lg-0 c-lg-grey-dark">
+              <%= @district.name %>
+            </p>
+          </div>
+          <div class="pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
+            <p class="ta-lg-center mb-lg-0 c-lg-grey-dark">
+              Difference
+            </p>
+          </div>
         </div>
-        <div class="mb-3 pb-2 border-bottom">
-          <p class="mb-1 fw-bold tt-uppercase ls-145">
-            Q2 cohort BP control
-          </p>
-          <p class="mb-1 c-grey-dark">
-            <span class="fw-bold tt-uppercase ls-145">Bathinda: </span> PENDING
-          </p>
-          <p class="mb-1 c-grey-dark">
-            <span class="fw-bold tt-uppercase ls-145">Top district: </span> PENDING
-          </p>
-          <p class="mb-1 c-grey-dark">
-            <span class="fw-bold tt-uppercase ls-145">Difference: </span> PENDING
-          </p>
+        <div class="mb-3 pb-3 bb bb-grey-light d-lg-flex mb-lg-0 pb-lg-0">
+          <div class="mb-1 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center br-lg br-lg-grey-light">
+            <p class="mb-0 ls-145">
+              Control of registered patients
+            </p>
+          </div>
+          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
+            <p class="mb-0 ta-lg-center c-grey-dark">
+              <span class="fw-bold d-lg-none">Bathinda: </span> PENDING
+            </p>
+          </div>
+          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
+            <p class="mb-0 ta-lg-center c-grey-dark">
+              <span class="fw-bold d-lg-none">Top district: </span> PENDING
+            </p>
+          </div>
+          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
+            <p class="mb-0 ta-lg-center c-grey-dark">
+              <span class="fw-bold d-lg-none">Difference: </span> PENDING
+            </p>
+          </div>
         </div>
-        <div class="mb-0">
-          <p class="mb-1 fw-bold tt-uppercase ls-145">
-            Q2 cohort missed visit 
-          </p>
-          <p class="mb-1 c-grey-dark">
-            <span class="fw-bold tt-uppercase ls-145">Bathinda: </span> PENDING
-          </p>
-          <p class="mb-2 c-grey-dark">
-            <span class="fw-bold tt-uppercase ls-145">Top district: </span> PENDING
-          </p>
-          <p class="mb-0 lh-1 c-grey-dark">
-            <span class="fw-bold tt-uppercase ls-145">Difference: </span> PENDING
-          </p>
+        <div class="mb-3 pb-3 bb bb-grey-light d-lg-flex mb-lg-0 pb-lg-0">
+          <div class="mb-1 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center br-lg br-lg-grey-light">
+            <p class="mb-0 ls-145">
+              Q2 cohort BP control
+            </p>
+          </div>
+          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
+            <p class="mb-0 ta-lg-center c-grey-dark">
+              <span class="fw-bold d-lg-none">Bathinda: </span> PENDING
+            </p>
+          </div>
+          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
+            <p class="mb-0 ta-lg-center c-grey-dark">
+              <span class="fw-bold d-lg-none">Top district: </span> PENDING
+            </p>
+          </div>
+          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
+            <p class="mb-0 ta-lg-center c-grey-dark">
+              <span class="fw-bold d-lg-none">Difference: </span> PENDING
+            </p>
+          </div>
+        </div>
+        <div class="d-lg-flex mb-lg-0 pb-lg-0">
+          <div class="mb-1 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center br-lg br-lg-grey-light">
+            <p class="mb-0 ls-145">
+              Q2 cohort missed visit
+            </p>
+          </div>
+          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
+            <p class="mb-0 ta-lg-center c-grey-dark">
+              <span class="fw-bold d-lg-none">Bathinda: </span> PENDING
+            </p>
+          </div>
+          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
+            <p class="mb-0 ta-lg-center c-grey-dark">
+              <span class="fw-bold d-lg-none">Top district: </span> PENDING
+            </p>
+          </div>
+          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
+            <p class="mb-0 ta-lg-center c-grey-dark">
+              <span class="fw-bold d-lg-none">Difference: </span> PENDING
+            </p>
+          </div>
         </div>
       </div>
     </div>

@@ -1,15 +1,13 @@
+// Display
+.d-none { display: none; }
 // Overflow
 .o-hidden { overflow: hidden; }
-// Font size
+// Typography
 .fs-small { font-size: 14px; }
 .fs-xlarge { font-size: 24px; }
-// Font weight
 .fw-bold { font-weight: 700; }
-// Line height
 .lh-1 { line-height: 1; }
-// Letter spacing
 .ls-145 { letter-spacing: 1.45; }
-// Font color
 .c-grey-dark { color: $grey-dark; }
 .c-grey-medium { color: $grey-mid; }
 .c-grey-light { color: $grey-light; }
@@ -18,20 +16,45 @@
 .c-red { color: $red; }
 .c-black { color: $black; }
 .tt-uppercase { text-transform: uppercase; }
+// Borders
+.bt { border-top: 1px solid; }
+.bb { border-bottom: 1px solid; }
+.bt-grey-light { border-top-color: $grey-light; }
+.bb-grey-light { border-bottom-color: $grey-light; }
 // Media queries
 // Large
 @media screen and (min-width: 992px) {
-  .flex-lg { display: flex; }
-  .flex-lg-column { flex-direction: column; }
+  // Display
+  .d-lg-block { display: block; }
+  .d-lg-none { display: none; }
+  .d-lg-flex { display: flex; }
+  // Flexbox
+  .fd-lg-column { flex-direction: column; }
+  .flex-lg-1 { flex: 1; }
+  .flex-lg-2 { flex: 2; }
+  .flex-lg-3 { flex: 3; }
+  .flex-lg-4 { flex: 4; }
   .align-lg-center { align-items: center; }
   .justify-lg-end { justify-content: flex-end; }
+  .justify-lg-center { justify-content: center; }
   .justify-lg-between { justify-content: space-between; }
   .flex-lg-wrap { flex-wrap: wrap; }
   .order-lg-1 { order: 1; }
   .order-lg-2 { order: 2; }
   .order-lg-3 { order: 3; }
   .order-lg-4 { order: 4; }
+  // Sizing
   .w-lg-50 { width: 50%; }
   .w-lg-full { width: 100%; }
   .h-lg-full { width: 100%; }
+  // Spacing
+  .mb-lg-0 { margin-bottom: 0; }
+  .pb-lg-0 { padding-bottom: 0; }
+  // Typography
+  .ta-lg-center { text-align: center; }
+  .c-lg-grey-dark { color: $grey-dark; }
+  // Borders
+  .br-lg { border-right: 1px solid; }
+  .br-lg-grey-light { border-right-color: $grey-light; }
+  .bb-lg-none { border-bottom: none; }
 }
