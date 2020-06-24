@@ -1,8 +1,58 @@
 window.addEventListener("DOMContentLoaded", initializeCharts);
 
+const lineGraphOptions = {
+  animation: false,
+  responsive: true,
+  maintainAspectRatio: false,
+  elements: {
+    point: {
+      pointStyle: "circle",
+      backgroundColor: "rgba(81, 205, 130, 1)",
+      hoverRadius: 5,
+    },
+  },
+  legend: {
+    display: false,
+  },
+  scales: {
+    xAxes: [{
+      display: false,
+      gridLines: {
+        display: false,
+        drawBorder: false,
+      },
+    }],
+    yAxes: [{
+      display: false,
+      gridLines: {
+        display: false,
+        drawBorder: false,
+      },
+    }],
+  },
+  tooltips: {
+    titleFontFamily: "Roboto",
+    bodyFontFamily: "Roboto",
+    backgroundColor: "rgb(0, 0, 0)",
+    titleFontSize: 16,
+    bodyFontSize: 14,
+    displayColors: false,
+    yPadding: 12,
+    xPadding: 12,
+    callbacks: {
+      label: function(tooltipItem, data) {
+        const controlledPatientValue = controlledPatients.map(key => key[1])[tooltipItem.index];
+        const formattedValue = controlledPatientValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        let value = parseInt(tooltipItem.value).toFixed(1);
+        return `${value}% (${formattedValue} patients)`;
+      },
+    },
+  }
+};
+
 function initializeCharts() {
   const data = getReportingData();
-  console.log(data);
+  initializeControlledPatientsChart(HTMLTableDataCellElement);
 };
 
 function getReportingData() {
@@ -36,77 +86,29 @@ function computeControlRate(controlledPatients, registrations) {
 
 function numberToPercent(numerator, denominator) {
   return parseFloat(((numerator/denominator)*100).toFixed(0));
-}; 
+};
 
-// var controlledPatientsTrendCanvas =
-//   document.getElementById("controlledPatientsTrend").getContext("2d");
-// var greenGradientFill =
-//   controlledPatientsTrendCanvas.createLinearGradient(0, 400, 0, -300);
-// greenGradientFill.addColorStop(0, "rgba(81, 205, 130, 0)");
-// greenGradientFill.addColorStop(1, "rgba(81, 205, 130, 0.2)");
-// var controlledPatientsTrendChart = new Chart(
-//   controlledPatientsTrendCanvas,
-//   {
-//     type: "line",
-//     data: {
-//       labels: controlRate.map(key => key[0]),
-//       datasets: [{
-//         backgroundColor: greenGradientFill,
-//         borderColor: "rgba(81, 205, 130, 1)",
-//         data: controlRate.map(key => key[1]),
-//       }],
-//     },
-//     options: {
-//       animation: false,
-//       responsive: true,
-//       maintainAspectRatio: false,
-//       elements: {
-//         point: {
-//           pointStyle: "circle",
-//           backgroundColor: "rgba(81, 205, 130, 1)",
-//           hoverRadius: 5,
-//         },
-//       },
-//       legend: {
-//         display: false,
-//       },
-//       scales: {
-//         xAxes: [{
-//           display: false,
-//           gridLines: {
-//             display: false,
-//             drawBorder: false,
-//           },
-//         }],
-//         yAxes: [{
-//           display: false,
-//           gridLines: {
-//             display: false,
-//             drawBorder: false,
-//           },
-//         }],
-//       },
-//       tooltips: {
-//         titleFontFamily: "Roboto",
-//         bodyFontFamily: "Roboto",
-//         backgroundColor: "rgb(0, 0, 0)",
-//         titleFontSize: 16,
-//         bodyFontSize: 14,
-//         displayColors: false,
-//         yPadding: 12,
-//         xPadding: 12,
-//         callbacks: {
-//           label: function(tooltipItem, data) {
-//             const controlledPatientValue = controlledPatients.map(key => key[1])[tooltipItem.index];
-//             const formattedValue = controlledPatientValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-//             let value = parseInt(tooltipItem.value).toFixed(1);
-//             return `${value}% (${formattedValue} patients)`;
-//           },
-//         },
-//       }
-//     }
-//   }
-// );
+function initializeControlledPatientsChart(labels, data) {
+  var controlledPatientsTrendCanvas =
+    document.getElementById("controlledPatientsTrend").getContext("2d");
+
+  new Chart(canvas, setLineChartConfig(labels, data));
+};
+
+var controlledPatientsTrendChart = new Chart(
+  controlledPatientsTrendCanvas,
+  {
+    type: "line",
+    data: {
+      labels: controlRate.map(key => key[0]),
+      datasets: [{
+        backgroundColor: "rgba(242, 248, 245, 1)",
+        borderColor: "rgba(81, 205, 130, 1)",
+        data: controlRate.map(key => key[1]),
+      }],
+    },
+  }
+);
 // var cumulativeRegistrationsCanvas =
 //   document.getElementById("cumulativeRegistrations").getContext("2d");
 // var purpleGradientFill =
