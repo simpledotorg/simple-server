@@ -23,7 +23,7 @@ RSpec.describe PrescriptionDrug, type: :model do
     let!(:patient) { create(:patient) }
     let!(:user) { create(:user) }
     let!(:initial_visit_time) { Time.parse "01 Jan 2020 14:30" }
-    let!(:latest_visit_date) { Time.parse "15 Jan 2020 14:30" }
+    let!(:latest_visit_time) { Time.parse "15 Jan 2020 14:30" }
     let!(:prescription_drugs) do
       Timecop.freeze(initial_visit_time) do
         create_list(:prescription_drug, 2, is_protocol_drug: true, patient: patient, facility: facility, user: user)
@@ -39,7 +39,7 @@ RSpec.describe PrescriptionDrug, type: :model do
     end
 
     it "returns all prescription drugs for later visit dates" do
-      expect(described_class.prescribed_as_on(date: latest_visit_date)).to match_array prescription_drugs
+      expect(described_class.prescribed_as_on(date: latest_visit_time.to_date)).to match_array prescription_drugs
     end
 
     context "when a drug is removed in a visit" do
@@ -55,7 +55,7 @@ RSpec.describe PrescriptionDrug, type: :model do
       end
 
       it "does not return the removed prescription drug on later visit dates" do
-        expect(described_class.prescribed_as_on(date: latest_visit_date)).to contain_exactly prescription_drugs.second
+        expect(described_class.prescribed_as_on(date: latest_visit_time.to_date)).to contain_exactly prescription_drugs.second
       end
     end
   end
