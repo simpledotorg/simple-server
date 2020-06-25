@@ -19,9 +19,10 @@ RSpec.describe PatientsWithHistoryExporter do
 
   let!(:bp_3) { create(:blood_pressure, :with_encounter, recorded_at: 4.months.ago, facility: facility, patient: patient, user: user) }
   let!(:bp_3_follow_up) { create(:appointment, device_created_at: 4.month.ago, scheduled_date: 3.months.ago, creation_facility: facility, patient: patient, user: user) }
-  let!(:prescription_drugs) { create_list(:prescription_drug, 7, facility: facility, patient: patient, device_created_at: 2.months.ago, user: user) }
 
-  let(:timestamp) { ["Report generated at:", now] }
+  let!(:prescription_drugs) { create_list(:prescription_drug, 7, facility: facility, patient: patient, device_created_at: 3.months.ago) }
+
+  let!(:timestamp) { ["Report generated at:", now] }
   let(:headers) do
     [
       "Registration Date",
@@ -118,7 +119,7 @@ RSpec.describe PatientsWithHistoryExporter do
     ]
   end
 
-  let!(:fields) do
+  let(:fields) do
     [
       I18n.l(patient.recorded_at),
       quarter_string(patient.recorded_at),
@@ -150,6 +151,7 @@ RSpec.describe PatientsWithHistoryExporter do
       bp_1_follow_up.facility.name,
       bp_1_follow_up.scheduled_date,
       bp_1_follow_up.follow_up_days,
+      "placeholder - BP 1 Medication Updated",
       prescription_drugs[0].name,
       prescription_drugs[0].dosage,
       prescription_drugs[1].name,
@@ -160,7 +162,7 @@ RSpec.describe PatientsWithHistoryExporter do
       prescription_drugs[3].dosage,
       prescription_drugs[4].name,
       prescription_drugs[4].dosage,
-      "prescription_drugs[5].name-prescription_drugs[5].dosage, prescription_drugs[6].name-prescription_drugs[6].dosage,",
+      "#{prescription_drugs[5].name}-#{prescription_drugs[5].dosage}, #{prescription_drugs[6].name}-#{prescription_drugs[6].dosage}",
       I18n.l(bp_2.recorded_at),
       quarter_string(bp_2.recorded_at),
       bp_2.systolic,
@@ -183,7 +185,7 @@ RSpec.describe PatientsWithHistoryExporter do
       prescription_drugs[3].dosage,
       prescription_drugs[4].name,
       prescription_drugs[4].dosage,
-      "prescription_drugs[5].name-prescription_drugs[5].dosage, prescription_drugs[6].name-prescription_drugs[6].dosage,",
+      "#{prescription_drugs[5].name}-#{prescription_drugs[5].dosage}, #{prescription_drugs[6].name}-#{prescription_drugs[6].dosage}",
       I18n.l(bp_3.recorded_at),
       quarter_string(bp_3.recorded_at),
       bp_3.systolic,
@@ -217,17 +219,10 @@ RSpec.describe PatientsWithHistoryExporter do
     allow(Rails.application.config.country).to receive(:[]).with(:patient_line_list_show_zone).and_return(true)
   end
 
-  describe "#csv_fields" do
-    specify { expect(subject.csv_fields(patient)).to match_array fields }
-  end
-
-
   describe "#csv" do
     let(:patient_batch) { Patient.where(id: patient.id) }
 
     it "generates a CSV of patient records" do
-      puts subject.csv(Patient.all)
-
       travel_to now do
         expect(subject.csv(Patient.all)).to eq(timestamp.to_csv + headers.to_csv + fields.to_csv)
       end
