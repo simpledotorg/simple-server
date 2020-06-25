@@ -127,7 +127,7 @@ module PatientsWithHistoryExporter
       ("High" if patient.high_risk?),
       (1..DISPLAY_BLOOD_PRESSURES).map do |i|
         bp = latest_bps[i-1]
-        appointment = appointment_created_on(bp&.recorded_at)
+        appointment = appointment_created_on(patient, bp&.recorded_at)
 
         [bp&.recorded_at.presence && I18n.l(bp&.recorded_at),
           bp&.recorded_at.presence && quarter_string(bp&.recorded_at),
@@ -168,9 +168,9 @@ module PatientsWithHistoryExporter
     "Patient #{Address.human_attribute_name :zone}"
   end
 
-  def appointment_created_on(date)
+  def self.appointment_created_on(patient, date)
     patient.appointments
-      .where(device_created_at: date)
+      .where(device_created_at: date&.all_day)
       .order(device_created_at: :asc)
       .first
   end
