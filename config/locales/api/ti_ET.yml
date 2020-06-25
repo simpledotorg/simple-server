@@ -26,7 +26,7 @@ ti-ET:
   user_analytics:
     hypertension: "ልዑል ጸቕጢ ደም"
     diabetes: "ሕማም ሽኮር"
-    genders: ["ኩሉ", "ተባዕታይ, "አነስተይቲ", "ፆታ ዝቐየረ"]
+    genders: ["ኩሉ", "ተባዕታይ", "አነስተይቲ", "ፆታ ዝቐየረ"]
     all_time: "ኩሉ ጊዜ"
     follow_up_patients: "ክትትል ናይ ደም ፀቕጢ ዝግበረሎም ሕሙማት"
     registered_patients: "ዝተመዝገቡ ሕሙማት"

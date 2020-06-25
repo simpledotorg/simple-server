@@ -7,7 +7,7 @@ en:
   reset_password: "Reset PIN"
   login:
     error_messages:
-      unknown_user: "We don"t recognize that user. Please check and try again."
+      unknown_user: "We don't recognize that user. Please check and try again."
       invalid_otp: "Your OTP does not match. Try again?"
       expired_otp: "Your OTP is expired. Request a new one."
       invalid_password: "Your password does not match. Try again?"
