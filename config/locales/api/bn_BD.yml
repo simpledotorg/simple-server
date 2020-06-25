@@ -26,7 +26,7 @@ bn-BD:
   user_analytics:
     hypertension: 'হাইপারটেনশন'
     diabetes: 'ডায়াবেটিস'
-    genders: ['সমস্ত', পুরুষ, 'মহিলা', 'ট্রান্সজেন্ডার']
+    genders: ['সমস্ত', 'পুরুষ', 'মহিলা', 'ট্রান্সজেন্ডার']
     all_time: 'সব সময়'
     follow_up_patients: 'উচ্চ রক্তচাপ জনিত রোগীদের পর্যালোচনা'
     registered_patients: 'নিবন্ধিত রোগীসমূহ'

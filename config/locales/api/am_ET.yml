@@ -26,7 +26,7 @@ am-ET:
   user_analytics:
     hypertension: 'የደም ብዛት'
     diabetes: 'የስኳር በሽታ'
-    genders: ['ሁሉም', ወንድ, 'ሴት', 'ጾታእሊፍ']
+    genders: ['ሁሉም', 'ወንድ, 'ሴት', 'ጾታእሊፍ']
     all_time: 'ሁል፟፟ግዜ'
     follow_up_patients: 'ተከታታይ የደም ግፊት ህመምተኞች'
     registered_patients: 'የተመዘገቡ በሽተኞች'

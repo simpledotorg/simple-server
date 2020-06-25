@@ -26,7 +26,7 @@ om-ET:
   user_analytics:
     hypertension: 'Baayyina dhiiga'
     diabetes: 'Sukkaara'
-    genders: ['Hunda', Dhiira, 'Dubara', 'Saaldarba']
+    genders: ['Hunda', 'Dhiira', 'Dubara', 'Saaldarba']
     all_time: 'Yeroo hunda'
     follow_up_patients: 'Dhukkubsattoota baayyina dhiigaa hordofi'
     registered_patients: 'Dhukkubsattoota galmaa’an'

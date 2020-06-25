@@ -26,7 +26,7 @@ ta-IN:
   user_analytics:
     hypertension: 'உயர் இரத்த அழுத்தம்'
     diabetes: 'நீரிழிவு'
-    genders: ['எல்லோரும்', ஆண்', 'பெண்', 'திருநங்கை']
+    genders: ['எல்லோரும்', 'ஆண்', 'பெண்', 'திருநங்கை']
     all_time: 'எல்லா நேரமும்'
     follow_up_patients: 'மீண்டும் வர வேண்டிய உயர் இரத்த அழுத்த நோயாளிகள்'
     registered_patients: 'பதிவு செய்த நோயாளிகள்'

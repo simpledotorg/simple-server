@@ -26,7 +26,7 @@ mr-IN:
   user_analytics:
     hypertension: 'हायपरटेंशन'
     diabetes: 'डायबिटिस'
-    genders: ['सर्व', पुरुष’, 'स्त्री', 'तृतीयपंथी']
+    genders: ['सर्व', 'पुरुष’, 'स्त्री', 'तृतीयपंथी']
     all_time: 'सर्वकाळ'
     follow_up_patients: 'उच्च रक्तदाब रुग्णांचा फॉलो-अप करा'
     registered_patients: 'नोंदणीकृत रुग्ण'

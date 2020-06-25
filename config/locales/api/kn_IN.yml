@@ -26,7 +26,7 @@ kn-IN:
   user_analytics:
     hypertension: 'ಅಧಿಕ ರಕ್ತದೊತ್ತಡ'
     diabetes: 'ಡಯಾಬಿಟಿಸ್'
-    genders: ['ಎಲ್ಲಾ', ಪುರುಷ', 'ಮಹಿಳೆ', 'ತೃತೀಯ ಲಿಂಗಿ']
+    genders: ['ಎಲ್ಲಾ', 'ಪುರುಷ', 'ಮಹಿಳೆ', 'ತೃತೀಯ ಲಿಂಗಿ']
     all_time: 'ಎಲ್ಲಾ-ಸಮಯದಲ್ಲಿ'
     follow_up_patients: 'ಹೈಪರ್‌ಟೆನ್ಶನ್ ರೋಗಿಗಳನ್ನು ಫಾಲೋ-ಅಪ್ ಮಾಡಿ'
     registered_patients: 'ನೋಂದಾಯಿತ ರೋಗಿಗಳು'

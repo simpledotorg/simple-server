@@ -26,7 +26,7 @@ en:
   user_analytics:
     hypertension: 'Hypertension'
     diabetes: 'Diabetes'
-    genders: ['all', male', 'female', 'transgender']
+    genders: ['all', 'male', 'female', 'transgender']
     all_time: 'All-time'
     follow_up_patients: 'Follow-up hypertension patients'
     registered_patients: 'Registered Patients'

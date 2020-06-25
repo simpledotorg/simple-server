@@ -26,7 +26,7 @@ pa:
   user_analytics:
     hypertension: 'ਹਾਈਪਰਟੈਂਸ਼ਨ'
     diabetes: 'ਸ਼ੂਗਰ'
-    genders: ['ਸਾਰੇ', ਮਰਦ', 'ਔਰਤ', 'ਦੁਲਿੰਗੀ']
+    genders: ['ਸਾਰੇ', 'ਮਰਦ', 'ਔਰਤ', 'ਦੁਲਿੰਗੀ']
     all_time: 'ਹਰ ਸਮੇਂ'
     follow_up_patients: 'ਫਾਲੋ-ਅਪ ਹਾਈਪਰਟੈਂਛਨ ਮਰੀਜ਼'
     registered_patients: 'ਰਜਿਸਟਰ ਕੀਤੇ ਮਰੀਜ਼'

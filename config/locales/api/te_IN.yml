@@ -26,7 +26,7 @@ te-IN:
   user_analytics:
     hypertension: 'అధిక రక్తపోటు'
     diabetes: 'మధుమేహం'
-    genders: ['అందరూ', పురుషుడు', 'మహిళ', 'ట్రాన్స్‌జండర్']
+    genders: ['అందరూ', 'పురుషుడు', 'మహిళ', 'ట్రాన్స్‌జండర్']
     all_time: 'మొత్తం సమయం'
     follow_up_patients: 'అధిక రక్తపోటు రోగులను అనుసరించండి'
     registered_patients: 'నమోదు చేయబడిన రోగులు'
