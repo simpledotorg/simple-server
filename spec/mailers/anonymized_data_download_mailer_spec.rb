@@ -1,7 +1,7 @@
 require "rails_helper"
-include ActiveJob::TestHelper
 
 RSpec.describe AnonymizedDataDownloadMailer, type: :mailer do
+  include ActiveJob::TestHelper
   let(:sender_email) { "help@simple.org" }
   let(:recipient_name) { "Example User" }
   let(:recipient_email) { "user@example.com" }

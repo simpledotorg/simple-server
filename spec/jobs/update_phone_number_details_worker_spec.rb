@@ -8,8 +8,8 @@ RSpec.describe UpdatePhoneNumberDetailsWorker, type: :job do
   let(:account_sid) { Faker::Internet.user_name }
   let(:token) { SecureRandom.base64 }
   let(:auth_token) { Base64.strict_encode64([account_sid, token].join(":")) }
-  let(:whitelist_details_url) { URI.parse("https://api.exotel.com/v1/Accounts/#{account_sid}/CustomerWhitelist/#{URI.encode(phone_number)}.json") }
-  let(:numbers_metadata_url) { URI.parse("https://api.exotel.com/v1/Accounts/#{account_sid}/Numbers/#{URI.encode(phone_number)}.json") }
+  let(:whitelist_details_url) { URI.parse("https://api.exotel.com/v1/Accounts/#{account_sid}/CustomerWhitelist/#{CGI.escape(phone_number)}.json") }
+  let(:numbers_metadata_url) { URI.parse("https://api.exotel.com/v1/Accounts/#{account_sid}/Numbers/#{CGI.escape(phone_number)}.json") }
 
   let(:request_headers) do
     {

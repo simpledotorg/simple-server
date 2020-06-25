@@ -26,7 +26,7 @@ RSpec.describe SoftDeleteDuplicatePatients do
 
   context ".discard_patients" do
     let!(:patient_ids) do
-      patients_csv = open(file_path)
+      patients_csv = File.open(file_path)
       CSV.parse(patients_csv, headers: true)
         .map { |patient| patient["Simple Patient ID"] }
     end

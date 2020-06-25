@@ -44,14 +44,13 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
     it "landing page -patient list - with all facility category" do
       patients = create_list(:patient, 2, registration_facility: test_facility)
 
-      appointments = patients.each do |patient|
+      patients.each do |patient|
         create(:appointment, :overdue, facility: test_facility, patient: patient, scheduled_date: 10.days.ago)
       end
 
-      blood_pressures =
-        patients.each do |patient|
-          create(:blood_pressure, :critical, facility: test_facility, patient: patient)
-        end
+      patients.each do |patient|
+        create(:blood_pressure, :critical, facility: test_facility, patient: patient)
+      end
 
       nav_page.click_main_menu_tab("Overdue patients")
       expect(appoint_page.get_all_patient_count.size).to eq(2)
@@ -60,14 +59,13 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
     it "landing page -pagination" do
       patients = create_list(:patient, 22, registration_facility: test_facility)
 
-      appointments = patients.each do |patient|
+      patients.each do |patient|
         create(:appointment, :overdue, facility: test_facility, patient: patient, scheduled_date: 10.days.ago)
       end
 
-      blood_pressures =
-        patients.each do |patient|
-          create(:blood_pressure, :critical, facility: test_facility, patient: patient)
-        end
+      patients.each do |patient|
+        create(:blood_pressure, :critical, facility: test_facility, patient: patient)
+      end
 
       nav_page.click_main_menu_tab("Overdue patients")
       expect(page).to have_content("All facilities")
@@ -119,15 +117,13 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
         # creating overdue patient test data for test_facility, belongs to IHMI
         patients = create_list(:patient, 5, registration_facility: test_facility)
 
-        appointments =
-          patients.each do |patient|
-            create(:appointment, :overdue, facility: test_facility, patient: patient, scheduled_date: 10.days.ago)
-          end
+        patients.each do |patient|
+          create(:appointment, :overdue, facility: test_facility, patient: patient, scheduled_date: 10.days.ago)
+        end
 
-        blood_pressures =
-          patients.each do |patient|
-            create(:blood_pressure, :critical, facility: test_facility, patient: patient)
-          end
+        patients.each do |patient|
+          create(:blood_pressure, :critical, facility: test_facility, patient: patient)
+        end
 
         puts Capybara.default_selector
 

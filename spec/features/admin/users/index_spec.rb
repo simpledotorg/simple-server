@@ -52,8 +52,8 @@ RSpec.feature "Admin User page functionality", type: :feature do
     edit_page = AdminPage::Users::Edit.new
 
     it " should display user list for - different district for IHMI" do
-      user = create_list(:user, 5, registration_facility: facility_hoshiarpur)
-      user1 = create_list(:user, 4, registration_facility: facility_buchho)
+      create_list(:user, 5, registration_facility: facility_hoshiarpur)
+      create_list(:user, 4, registration_facility: facility_buchho)
 
       visit root_path
       login_page.do_login(owner.email, owner.password)
@@ -97,7 +97,7 @@ RSpec.feature "Admin User page functionality", type: :feature do
     end
 
     it " should display user list for - Path Dr Amir Sen" do
-      user = create_list(:user, 5, registration_facility: var_amir)
+      create_list(:user, 5, registration_facility: var_amir)
 
       visit root_path
       login_page.do_login(owner.email, owner.password)
