@@ -22,7 +22,7 @@ class Dashboard::DistrictsController < AdminController
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
-    render :preview, layout: "reports"
+    render :preview
   end
 
   def preview
@@ -40,7 +40,6 @@ class Dashboard::DistrictsController < AdminController
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
-    render layout: "reports"
   end
 
   private
