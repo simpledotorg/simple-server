@@ -22,25 +22,6 @@ class Dashboard::DistrictsController < AdminController
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
-    render :preview, layout: "reports"
-  end
-
-  def preview
-    authorize :dashboard, :view_my_facilities?
-
-    @state_name = "Punjab"
-    @district_name = "Bathinda"
-    @report_period = Date.current
-    @last_updated = "28-MAY-2020"
-    # 20% Bathinda population
-    @hypertensive_population = 277705
-
-    example_data_file = File.read(EXAMPLE_DATA_FILE)
-    @data = JSON.parse(example_data_file).with_indifferent_access
-    @controlled_patients = @data[:controlled_patients]
-    @registrations = @data[:registrations]
-    @quarterly_registrations = @data[:quarterly_registrations]
-    render layout: "reports"
   end
 
   private
