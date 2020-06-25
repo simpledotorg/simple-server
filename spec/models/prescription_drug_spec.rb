@@ -14,6 +14,54 @@ RSpec.describe PrescriptionDrug, type: :model do
     it_behaves_like "a record that is deletable"
   end
 
+  describe ".prescribed_as_of" do
+    def remove_drug(prescription_drug, time)
+      prescription_drug.update(is_deleted: true, device_updated_at: time)
+    end
+
+    let!(:patient) { create(:patient) }
+    let!(:initial_visit_time) { Time.parse "01 Jan 2020 14:30" }
+    let!(:latest_visit_time) { Time.parse "15 Jan 2020 14:30" }
+    let!(:prescription_drugs) do
+      Timecop.freeze(initial_visit_time) do
+        create_list(:prescription_drug, 2,
+          is_protocol_drug: true,
+          patient: patient,
+          facility: patient.registration_facility,
+          user: patient.registration_user)
+      end
+    end
+
+    it "returns no prescription drugs for dates before the initial visit" do
+      expect(described_class.prescribed_as_of(initial_visit_time.to_date - 1.day)).to be_empty
+    end
+
+    it "returns all prescription drugs for the day of initial visit" do
+      expect(described_class.prescribed_as_of(initial_visit_time.to_date)).to match_array prescription_drugs
+    end
+
+    it "returns all prescription drugs for later visit dates" do
+      expect(described_class.prescribed_as_of(latest_visit_time.to_date)).to match_array prescription_drugs
+    end
+
+    context "when a drug is removed in a visit" do
+      let!(:visit_time) { Time.parse "10 Jan 2020 14:30" }
+      before { remove_drug(prescription_drugs.first, visit_time) }
+
+      it "returns all prescription drugs for dates before the visit" do
+        expect(described_class.prescribed_as_of(visit_time.to_date - 1.day)).to match_array prescription_drugs
+      end
+
+      it "does not return the removed prescription drug for the visit date" do
+        expect(described_class.prescribed_as_of(visit_time.to_date)).to contain_exactly prescription_drugs.second
+      end
+
+      it "does not return the removed prescription drug on later visit dates" do
+        expect(described_class.prescribed_as_of(latest_visit_time.to_date)).to contain_exactly prescription_drugs.second
+      end
+    end
+  end
+
   context "anonymised data for prescription drugs" do
     describe "anonymized_data" do
       it "correctly retrieves the anonymised data for the prescription drug" do
