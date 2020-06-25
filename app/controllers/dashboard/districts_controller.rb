@@ -1,5 +1,5 @@
 class Dashboard::DistrictsController < AdminController
-  layout "reports"
+  layout "application"
   skip_after_action :verify_policy_scoped
   around_action :set_time_zone
 

@@ -1,14 +1,17 @@
-
-<div class="mb-2 pt-8 px-4 md:flex md:items-center md:justify-between md:max-w-6xl md:m-auto md:pt-24">
-  <div>
-    <div class="flex items-center mb-4">
-      <div class="mr-2">
-      <% @districts.each do |district| %>
-        <p class="font-roboto font-bold text-md text-blue-200">
-          <%= link_to district.name, dashboard_district_path(district.slug) %>
-        </p>
-      <% end %>
-      </div>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-5 col-lg-7">
+      <section>
+        <div class="card">
+          <h2>PENDING ORG NAME</h2>
+          <% @districts.each do |district| %>
+            <%= link_to(dashboard_district_path(district.slug), class: "link-row") do %>
+              <i class='fas fa-angle-right light'></i>
+              <%= district.name %>
+            <% end %>
+          <% end %>
+        </div>
+      </section>
     </div>
   </div>
 </div>
