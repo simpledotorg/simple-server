@@ -33,11 +33,15 @@ function initializeCharts() {
         },
         ticks: {
           suggestedMin: 0,
-          suggestedMax: 100
+          suggestedMax: 60
         }
       }],
     },
     tooltips: {
+      caretSize: 6,
+      position: "average",
+      yAlign: "bottom",
+      xAlign: "center",
       titleFontFamily: "Roboto Condensed",
       bodyFontFamily: "Roboto Condensed",
       backgroundColor: "rgb(0, 0, 0)",
@@ -49,11 +53,13 @@ function initializeCharts() {
       yPadding: 12,
       xPadding: 12,
       callbacks: {
+        title: function() {},
         label: function(tooltipItem, _) {
+          const controlledPatientDate = data.controlledPatients.map(key => key[0])[tooltipItem.index];
           const controlledPatientValue = data.controlledPatients.map(key => key[1])[tooltipItem.index];
           const formattedValue = controlledPatientValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
           let value = parseInt(tooltipItem.value).toFixed(0);
-          return `${value}% (${formattedValue} patients)`;
+          return `${controlledPatientDate}, ${value}% (${formattedValue} patients)`;
         },
       },
     }
