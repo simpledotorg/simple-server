@@ -26,32 +26,101 @@ module TelemedicineReports
 
       facilities = Facility.where(enable_teleconsultation: true).map { |facility|
         if facility.facility_type == "HWC" || facility.facility_type == "SC"
-          {id: facility.id, state: facility.state, district: facility.district, type: facility.facility_type,
+          {id: facility.id,
+           state: facility.state,
+           district: facility.district,
+           type: facility.facility_type,
            p1: facility_measures(facility, p1_start, p1_end),
            p2: facility_measures(facility, p2_start, p2_end),
            users: facility.users.count}
         else
-          {id: facility.id, state: facility.state, district: facility.district, type: facility.facility_type}
+          {id: facility.id,
+           state: facility.state,
+           district: facility.district,
+           type: facility.facility_type}
         end
       }
 
       facilities_data = format_facility_data(facilities)
 
       CSV.open("telemedicine_report.csv", "w") do |csv|
-        csv << ["", "", "", "", "", "", "Between #{p1_start.strftime("%d %b %Y")} and #{p1_end.strftime("%d %b %Y")}", "", "",
-          "", "", "", "Between #{p2_start.strftime("%d %b %Y")} and #{p2_end.strftime("%d %b %Y")}"]
-        csv << ["State", "District", "Facilities with TM", "HWCs & SCs with TM", "Users at HWCs & SCs", "",
-          "Patients who visited", "Patients with High BP", "Patients with High Blood Sugar", "Patients with High BP or Sugar", "Teleconsult Button Clicks", "",
-          "Patients who visited", "Patients with High BP", "Patients with High Blood Sugar", "Patients with High BP or Sugar", "Teleconsult Button Clicks"]
+        csv << [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "Between #{p1_start.strftime("%d %b %Y")} and #{p1_end.strftime("%d %b %Y")}",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "Between #{p2_start.strftime("%d %b %Y")} and #{p2_end.strftime("%d %b %Y")}"
+        ]
+
+        csv << [
+          "State",
+          "District",
+          "Facilities with TM",
+          "HWCs & SCs with TM",
+          "Users at HWCs & SCs",
+          "",
+          "Patients who visited",
+          "Patients with High BP",
+          "Patients with High Blood Sugar",
+          "Patients with High BP or Sugar",
+          "Teleconsult Button Clicks",
+          "",
+          "Patients who visited",
+          "Patients with High BP",
+          "Patients with High Blood Sugar",
+          "Patients with High BP or Sugar",
+          "Teleconsult Button Clicks"
+        ]
+
         facilities_data.each do |state|
-          csv << [state[:state], "", state[:count], state[:hwc_and_sc], state[:users], "",
-            state[:p1][:visits], state[:p1][:high_bp], state[:p1][:high_bs], state[:p1][:high_bp_or_bs], fetch_clicks(p1_mixpanel_data, state, true), "",
-            state[:p2][:visits], state[:p2][:high_bp], state[:p2][:high_bs], state[:p2][:high_bp_or_bs], fetch_clicks(p2_mixpanel_data, state, true)]
+          csv << [
+            state[:state],
+            "",
+            state[:count],
+            state[:hwc_and_sc],
+            state[:users],
+            "",
+            state[:p1][:visits],
+            state[:p1][:high_bp],
+            state[:p1][:high_bs],
+            state[:p1][:high_bp_or_bs],
+            fetch_clicks(p1_mixpanel_data, state, true),
+            "",
+            state[:p2][:visits],
+            state[:p2][:high_bp],
+            state[:p2][:high_bs],
+            state[:p2][:high_bp_or_bs],
+            fetch_clicks(p2_mixpanel_data, state, true)
+          ]
 
           state[:districts].each do |district|
-            csv << ["", district[:district], district[:count], district[:hwc_and_sc], district[:users], "",
-              district[:p1][:visits], district[:p1][:high_bp], district[:p1][:high_bs], district[:p1][:high_bp_or_bs], fetch_clicks(p1_mixpanel_data, district, false), "",
-              district[:p2][:visits], district[:p2][:high_bp], district[:p2][:high_bs], district[:p2][:high_bp_or_bs], fetch_clicks(p2_mixpanel_data, district, false)]
+            csv << [
+              "",
+              district[:district],
+              district[:count],
+              district[:hwc_and_sc],
+              district[:users],
+              "",
+              district[:p1][:visits],
+              district[:p1][:high_bp],
+              district[:p1][:high_bs],
+              district[:p1][:high_bp_or_bs],
+              fetch_clicks(p1_mixpanel_data, district, false),
+              "",
+              district[:p2][:visits],
+              district[:p2][:high_bp],
+              district[:p2][:high_bs],
+              district[:p2][:high_bp_or_bs],
+              fetch_clicks(p2_mixpanel_data, district, false)
+            ]
           end
         end
 
@@ -61,6 +130,7 @@ module TelemedicineReports
         daily_activity_data = mixpanel_data.group_by { |row| row[:date] }.sort_by { |date, _rows| date }.map { |date, rows|
           [date.strftime("%d %b %Y"), rows.uniq { |row| row[:user_id] }.count, sum_rows(rows, :clicks)]
         }
+
         csv << ["Date", "Unique users", "Total TC requests"]
         daily_activity_data.each do |row|
           csv << row
@@ -72,23 +142,31 @@ module TelemedicineReports
 
     def format_mixpanel_data(period_data)
       period_data.group_by { |row| row[:state] }.map { |state, districts|
-        {state: state, clicks: sum_rows(districts, :clicks), districts: districts.group_by { |row|
-          row[:district]
-        }.map { |district, users|
-          {district: district, clicks: sum_rows(users, :clicks)}
-        }}
+        {state: state,
+         clicks: sum_rows(districts, :clicks),
+         districts: districts.group_by { |row| row[:district] }.map { |district, users|
+                      {district: district,
+                       clicks: sum_rows(users, :clicks)}
+                    }}
       }
     end
 
     def format_facility_data(facility_data)
       facility_data.group_by { |row| row[:state] }.map { |state, districts|
-        {state: state, count: districts.count, hwc_and_sc: hwc_and_sc_count(districts),
-         p1: aggregate_period(:p1, districts), p2: aggregate_period(:p2, districts),
+        {state: state,
+         count: districts.count,
+         hwc_and_sc: hwc_and_sc_count(districts),
+         p1: aggregate_period(:p1, districts),
+         p2: aggregate_period(:p2, districts),
          users: sum_rows(districts, :users),
          districts: districts.group_by { |row| row[:district] }.map { |district, facilities|
-           {district: district, state: state, count: facilities.count,
-            hwc_and_sc: hwc_and_sc_count(facilities), p1: aggregate_period(:p1, facilities),
-            p2: aggregate_period(:p2, facilities), users: sum_rows(facilities, :users)}
+           {district: district,
+            state: state,
+            count: facilities.count,
+            hwc_and_sc: hwc_and_sc_count(facilities),
+            p1: aggregate_period(:p1, facilities),
+            p2: aggregate_period(:p2, facilities),
+            users: sum_rows(facilities, :users)}
          }.sort_by { |district| district[:district] }}
       }.sort_by { |state| state[:state] }
     end
@@ -132,8 +210,8 @@ module TelemedicineReports
        visits: sum_rows(hwc_and_sc_data, :visits)}
     end
 
-    def fetch_clicks(data, record, state)
-      if state
+    def fetch_clicks(data, record, is_state)
+      if is_state
         return data.find { |state| state[:state] == record[:state] }&.dig(:clicks) || 0
       end
       districts = data.find { |state| state[:state] == record[:state] }&.dig(:districts) || []
