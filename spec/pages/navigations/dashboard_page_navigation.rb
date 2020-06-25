@@ -14,8 +14,8 @@ module Navigations
     end
 
     def validate_owners_home_page
-      mainMenuTabs = all_elements(MAIN_MENU_TABS)
-      mainMenuTabs.each(&:visible?)
+      main_menu_tabs = all_elements(MAIN_MENU_TABS)
+      main_menu_tabs.each(&:visible?)
     end
 
     def select_manage_option(option)
