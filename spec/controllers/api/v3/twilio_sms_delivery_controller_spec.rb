@@ -41,7 +41,7 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
             session_id: session_id,
             result: "queued")
           params = base_callback_params.except("MessageSid", "MessageStatus")
-                                       .merge("SmsSid" => session_id, "SmsStatus" => "sent")
+            .merge("SmsSid" => session_id, "SmsStatus" => "sent")
 
           set_twilio_signature_header(callback_url, params)
           post :create, params: params
