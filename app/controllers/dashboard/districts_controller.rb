@@ -6,8 +6,8 @@ class Dashboard::DistrictsController < AdminController
   EXAMPLE_DATA_FILE = "db/data/example_dashboard_data.json"
 
   def index
-    authorize([:manage, FacilityGroup])
-    @districts = policy_scope([:manage, FacilityGroup]).order(:name)
+    authorize([:manage, Organization])
+    @organizations = policy_scope([:manage, Organization]).order(:name)
   end
 
   def show
