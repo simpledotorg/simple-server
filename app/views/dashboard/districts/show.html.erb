@@ -11,9 +11,9 @@
     </h1>
   </div>
 </div>
-<div class="d-lg-flex flex-lg-wrap">
+<div class="d-lg-flex wrap-lg-wrap">
   <div class="d-lg-flex order-lg-1 w-lg-50 pr-lg-2">
-    <div class="card pb-4 d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+    <div class="card pb-4 d-lg-flex direction-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div>
         <div class="mb-2">
           <h3>
@@ -225,46 +225,38 @@
   </div>
   <div class="d-lg-flex order-lg-2 w-lg-50 pl-lg-2">
     <div class="card pb-4 h-lg-full w-lg-full mt-lg-0">
-      <div class="mb-2">
-        <h3>
-          Benchmarks
-        </h3>
+      <div class="mb-3 d-lg-flex align-lg-baseline bb-1px bb-grey-light mb-lg-0 pb-lg-3">
+        <div class="flex-lg-2 align-lg-center justify-lg-center">
+          <h3 class="mb-lg-0 pb-lg-0">
+            Benchmarks
+          </h3>
+        </div>
+        <div class="d-none d-lg-block flex-lg-1 align-lg-center justify-lg-center">
+          <p class="fs-lg-small fw-lg-bold ls-lg-1px tt-lg-uppercase ta-lg-center mb-lg-0 c-lg-grey-dark">
+            Top district
+          </p>
+        </div>
+        <div class="d-none d-lg-block flex-lg-1 align-lg-center justify-lg-center">
+          <p class="fs-lg-small fw-lg-bold ls-lg-1px tt-lg-uppercase ta-lg-center mb-lg-0 c-lg-grey-dark">
+            <%= @district.name %>
+          </p>
+        </div>
+        <div class="d-none d-lg-block flex-lg-1 align-lg-center justify-lg-center">
+        </div>
       </div>
       <div>
-        <div class="d-none d-lg-block d-lg-flex bb-1px bb-grey-light">
-          <div class="pt-lg-4 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center br-lg br-lg-grey-light">
-            <p class="mb-lg-0 c-lg-grey-dark">
-              Benchmark
-            </p>
-          </div>
-          <div class="pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
-            <p class="ta-lg-center mb-lg-0 c-lg-grey-dark">
-              Top district
-            </p>
-          </div>
-          <div class="pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
-            <p class="ta-lg-center mb-lg-0 c-lg-grey-dark">
-              <%= @district.name %>
-            </p>
-          </div>
-          <div class="pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
-            <p class="ta-lg-center mb-lg-0 c-lg-grey-dark">
-              Difference
-            </p>
-          </div>
-        </div>
         <div class="mb-3 pb-3 bb-1px bb-grey-light d-lg-flex mb-lg-0 pb-lg-0">
-          <div class="mb-1 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center br-lg br-lg-grey-light">
+          <div class="mb-1 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center">
             <p class="mb-0 ls-145">
               Control of registered patients
             </p>
           </div>
-          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
+          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
               <span class="fw-bold d-lg-none">Bathinda: </span> Coming Soon...
             </p>
           </div>
-          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
+          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
               <span class="fw-bold d-lg-none">Top district: </span> Coming Soon...
             </p>
@@ -276,17 +268,17 @@
           </div>
         </div>
         <div class="mb-3 pb-3 bb-1px bb-grey-light d-lg-flex mb-lg-0 pb-lg-0">
-          <div class="mb-1 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center br-lg br-lg-grey-light">
+          <div class="mb-1 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center">
             <p class="mb-0 ls-145">
               Q2 cohort BP control
             </p>
           </div>
-          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
+          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
               <span class="fw-bold d-lg-none">Bathinda: </span> Coming Soon...
             </p>
           </div>
-          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
+          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
               <span class="fw-bold d-lg-none">Top district: </span> Coming Soon...
             </p>
@@ -298,17 +290,17 @@
           </div>
         </div>
         <div class="d-lg-flex mb-lg-0 pb-lg-0">
-          <div class="mb-1 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center br-lg br-lg-grey-light">
+          <div class="mb-1 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center">
             <p class="mb-0 ls-145">
               Q2 cohort missed visit
             </p>
           </div>
-          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
+          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
               <span class="fw-bold d-lg-none">Bathinda: </span> Coming Soon...
             </p>
           </div>
-          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
+          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
               <span class="fw-bold d-lg-none">Top district: </span> Coming Soon...
             </p>
