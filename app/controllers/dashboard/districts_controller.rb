@@ -28,7 +28,7 @@ class Dashboard::DistrictsController < AdminController
   private
 
   def district_params
-    params.permit(:selected_date, :id, :cohort_period)
+    params.permit(:selected_date, :id)
   end
 
   def set_time_zone
