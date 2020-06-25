@@ -4,19 +4,22 @@ RSpec.describe PatientsWithHistoryExporter do
   include QuarterHelper
 
   let!(:now) { Time.current }
-  let!(:facility) { create(:facility) }
-  let!(:patient) { create(:patient, registration_facility: facility, status: "dead") }
 
-  let!(:bp_1) { create(:blood_pressure, :with_encounter, :critical, recorded_at: 2.months.ago, facility: facility, patient: patient) }
-  let!(:blood_sugar) { create(:blood_sugar, :fasting, :with_encounter, recorded_at: 2.months.ago, facility: facility, patient: patient) }
-  let!(:bp_1_follow_up) { create(:appointment, :overdue, device_created_at: 2.months.ago, scheduled_date: 40.days.ago, facility: facility, patient: patient) }
+  let!(:patient) { create(:patient, status: "dead") }
+  let!(:facility) { patient.registration_facility }
+  let!(:user) { patient.registration_user }
 
-  let!(:bp_2) { create(:blood_pressure, :with_encounter, recorded_at: 3.months.ago, facility: facility, patient: patient) }
-  let!(:old_blood_sugar) { create(:blood_sugar, :with_encounter, recorded_at: 3.months.ago, facility: facility, patient: patient) }
-  let!(:bp_2_follow_up) { create(:appointment, device_created_at: 3.months.ago, scheduled_date: 2.months.ago, facility: facility, patient: patient) }
+  let!(:bp_1) { create(:blood_pressure, :with_encounter, :critical, recorded_at: 2.months.ago, facility: facility, patient: patient, user: user) }
+  let!(:blood_sugar) { create(:blood_sugar, :fasting, :with_encounter, recorded_at: 2.months.ago, facility: facility, patient: patient, user: user) }
+  let!(:bp_1_follow_up) { create(:appointment, :overdue, device_created_at: 2.months.ago, scheduled_date: 40.days.ago, creation_facility: facility, patient: patient, user: user) }
 
-  let!(:bp_3) { create(:blood_pressure, :with_encounter, recorded_at: 4.months.ago, facility: facility, patient: patient) }
-  let!(:bp_3_follow_up) { create(:appointment, device_created_at: 4.month.ago, scheduled_date: 3.months.ago, facility: facility, patient: patient) }
+  let!(:bp_2) { create(:blood_pressure, :with_encounter, recorded_at: 3.months.ago, facility: facility, patient: patient, user: user) }
+  let!(:old_blood_sugar) { create(:blood_sugar, :with_encounter, recorded_at: 3.months.ago, facility: facility, patient: patient, user: user) }
+  let!(:bp_2_follow_up) { create(:appointment, device_created_at: 3.months.ago, scheduled_date: 2.months.ago, creation_facility: facility, patient: patient, user: user) }
+
+  let!(:bp_3) { create(:blood_pressure, :with_encounter, recorded_at: 4.months.ago, facility: facility, patient: patient, user: user) }
+  let!(:bp_3_follow_up) { create(:appointment, device_created_at: 4.month.ago, scheduled_date: 3.months.ago, creation_facility: facility, patient: patient, user: user) }
+  let!(:prescription_drugs) { create_list(:prescription_drug, 7, facility: facility, patient: patient, device_created_at: 2.months.ago, user: user) }
 
   let(:timestamp) { ["Report generated at:", now] }
   let(:headers) do
@@ -115,7 +118,7 @@ RSpec.describe PatientsWithHistoryExporter do
     ]
   end
 
-  let(:fields) do
+  let!(:fields) do
     [
       I18n.l(patient.recorded_at),
       quarter_string(patient.recorded_at),
@@ -147,18 +150,17 @@ RSpec.describe PatientsWithHistoryExporter do
       bp_1_follow_up.facility.name,
       bp_1_follow_up.scheduled_date,
       bp_1_follow_up.follow_up_days,
-      "placeholder - BP 1 Medication Updated",
-      "placeholder - BP 1 Medication 1",
-      "placeholder - BP 1 Dosage 1",
-      "placeholder - BP 1 Medication 2",
-      "placeholder - BP 1 Dosage 2",
-      "placeholder - BP 1 Medication 3",
-      "placeholder - BP 1 Dosage 3",
-      "placeholder - BP 1 Medication 4",
-      "placeholder - BP 1 Dosage 4",
-      "placeholder - BP 1 Medication 5",
-      "placeholder - BP 1 Dosage 5",
-      "placeholder - BP 1 Other Medications",
+      prescription_drugs[0].name,
+      prescription_drugs[0].dosage,
+      prescription_drugs[1].name,
+      prescription_drugs[1].dosage,
+      prescription_drugs[2].name,
+      prescription_drugs[2].dosage,
+      prescription_drugs[3].name,
+      prescription_drugs[3].dosage,
+      prescription_drugs[4].name,
+      prescription_drugs[4].dosage,
+      "prescription_drugs[5].name-prescription_drugs[5].dosage, prescription_drugs[6].name-prescription_drugs[6].dosage,",
       I18n.l(bp_2.recorded_at),
       quarter_string(bp_2.recorded_at),
       bp_2.systolic,
@@ -171,17 +173,17 @@ RSpec.describe PatientsWithHistoryExporter do
       bp_2_follow_up.scheduled_date,
       bp_2_follow_up.follow_up_days,
       "placeholder - BP 2 Medication Updated",
-      "placeholder - BP 2 Medication 1",
-      "placeholder - BP 2 Dosage 1",
-      "placeholder - BP 2 Medication 2",
-      "placeholder - BP 2 Dosage 2",
-      "placeholder - BP 2 Medication 3",
-      "placeholder - BP 2 Dosage 3",
-      "placeholder - BP 2 Medication 4",
-      "placeholder - BP 2 Dosage 4",
-      "placeholder - BP 2 Medication 5",
-      "placeholder - BP 2 Dosage 5",
-      "placeholder - BP 2 Other Medications",
+      prescription_drugs[0].name,
+      prescription_drugs[0].dosage,
+      prescription_drugs[1].name,
+      prescription_drugs[1].dosage,
+      prescription_drugs[2].name,
+      prescription_drugs[2].dosage,
+      prescription_drugs[3].name,
+      prescription_drugs[3].dosage,
+      prescription_drugs[4].name,
+      prescription_drugs[4].dosage,
+      "prescription_drugs[5].name-prescription_drugs[5].dosage, prescription_drugs[6].name-prescription_drugs[6].dosage,",
       I18n.l(bp_3.recorded_at),
       quarter_string(bp_3.recorded_at),
       bp_3.systolic,
@@ -194,17 +196,17 @@ RSpec.describe PatientsWithHistoryExporter do
       bp_3_follow_up.scheduled_date,
       bp_3_follow_up.follow_up_days,
       "placeholder - BP 3 Medication Updated",
-      "placeholder - BP 3 Medication 1",
-      "placeholder - BP 3 Dosage 1",
-      "placeholder - BP 3 Medication 2",
-      "placeholder - BP 3 Dosage 2",
-      "placeholder - BP 3 Medication 3",
-      "placeholder - BP 3 Dosage 3",
-      "placeholder - BP 3 Medication 4",
-      "placeholder - BP 3 Dosage 4",
-      "placeholder - BP 3 Medication 5",
-      "placeholder - BP 3 Dosage 5",
-      "placeholder - BP 3 Other Medications",
+      nil,
+      nil,
+      nil,
+      nil,
+      nil,
+      nil,
+      nil,
+      nil,
+      nil,
+      nil,
+      nil,
       I18n.l(blood_sugar.recorded_at),
       "#{blood_sugar.blood_sugar_value} mg/dL",
       "Fasting"
@@ -219,10 +221,13 @@ RSpec.describe PatientsWithHistoryExporter do
     specify { expect(subject.csv_fields(patient)).to match_array fields }
   end
 
+
   describe "#csv" do
     let(:patient_batch) { Patient.where(id: patient.id) }
 
     it "generates a CSV of patient records" do
+      puts subject.csv(Patient.all)
+
       travel_to now do
         expect(subject.csv(Patient.all)).to eq(timestamp.to_csv + headers.to_csv + fields.to_csv)
       end

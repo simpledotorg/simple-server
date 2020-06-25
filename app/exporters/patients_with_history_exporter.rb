@@ -4,6 +4,7 @@ module PatientsWithHistoryExporter
   extend QuarterHelper
 
   DISPLAY_BLOOD_PRESSURES = 3
+  DISPLAY_MEDICATION_COLUMNS = 5
   BATCH_SIZE = 20
 
   BLOOD_SUGAR_UNITS = {
@@ -141,17 +142,7 @@ module PatientsWithHistoryExporter
           appointment&.scheduled_date,
           appointment&.follow_up_days,
           "placeholder - BP #{i} Medication Updated",
-          "placeholder - BP #{i} Medication 1",
-          "placeholder - BP #{i} Dosage 1",
-          "placeholder - BP #{i} Medication 2",
-          "placeholder - BP #{i} Dosage 2",
-          "placeholder - BP #{i} Medication 3",
-          "placeholder - BP #{i} Dosage 3",
-          "placeholder - BP #{i} Medication 4",
-          "placeholder - BP #{i} Dosage 4",
-          "placeholder - BP #{i} Medication 5",
-          "placeholder - BP #{i} Dosage 5",
-          "placeholder - BP #{i} Other Medications"]
+          *medications_for(patient, bp)]
       end,
       latest_blood_sugar&.recorded_at.presence && I18n.l(latest_blood_sugar&.recorded_at),
       blood_sugar_value_with_unit(latest_blood_sugar),
@@ -173,6 +164,16 @@ module PatientsWithHistoryExporter
       .where(device_created_at: date&.all_day)
       .order(device_created_at: :asc)
       .first
+  end
+
+  def self.medications_for(patient, bp)
+    medications = bp ? patient.prescribed_drugs(date: bp.recorded_at) : []
+    result = (0...DISPLAY_MEDICATION_COLUMNS).flat_map do |i|
+      [medications[i]&.name, medications[i]&.dosage]
+    end
+
+    other_medications = medications[DISPLAY_MEDICATION_COLUMNS..medications.length]
+    result << other_medications&.map { |medication| "#{medication.name}-#{medication.dosage}" }&.join(", ")
   end
 
   def self.blood_sugar_value_with_unit(blood_sugar)
