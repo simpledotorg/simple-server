@@ -7,7 +7,7 @@ module AdminPage
       def is_organization_name_present(expected_org_name)
         org_name = all_elements(ORGANIZATION_NAME)
         org_name.each do |name|
-          name.text.include? expected_org_nane
+          name.text.include? expected_org_name
         end
       end
 
