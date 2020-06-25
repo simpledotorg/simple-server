@@ -80,7 +80,7 @@ module PatientsWithHistoryExporter
           "BP #{i} Facility State",
           "BP #{i} Follow-up Facility",
           "BP #{i} Follow-up Date",
-          "BP #{i} Follow up visit",
+          "BP #{i} Follow up Days",
           "BP #{i} Medication Updated",
           "BP #{i} Medication 1",
           "BP #{i} Dosage 1",
@@ -126,9 +126,9 @@ module PatientsWithHistoryExporter
       registration_facility&.state,
       ("High" if patient.high_risk?),
       (1..DISPLAY_BLOOD_PRESSURES).map do |i|
-        bp = latest_bps[i]
+        bp = latest_bps[i-1]
         appointment = patient.appointments
-          .where(created_at: bp&.recorded_at&.all_day)
+          .where(device_created_at: bp&.recorded_at&.all_day)
           .order(device_created_at: :asc)
           .first
 
