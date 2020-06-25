@@ -1,13 +1,13 @@
 class Dashboard::DistrictsController < AdminController
-  layout "reports"
+  layout "application"
   skip_after_action :verify_policy_scoped
   around_action :set_time_zone
 
   EXAMPLE_DATA_FILE = "db/data/example_dashboard_data.json"
 
   def index
-    authorize([:manage, FacilityGroup])
-    @districts = policy_scope([:manage, FacilityGroup]).order(:name)
+    authorize([:manage, Organization])
+    @organizations = policy_scope([:manage, Organization]).order(:name)
   end
 
   def show
@@ -22,7 +22,7 @@ class Dashboard::DistrictsController < AdminController
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
-    render :preview
+    render :preview, layout: "reports"
   end
 
   def preview
@@ -40,6 +40,7 @@ class Dashboard::DistrictsController < AdminController
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
+    render layout: "reports"
   end
 
   private
