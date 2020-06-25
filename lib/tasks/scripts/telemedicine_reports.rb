@@ -43,7 +43,7 @@ module TelemedicineReports
 
       facilities_data = format_facility_data(facilities)
 
-      CSV.open("telemedicine_report.csv", "w") do |csv|
+      CSV.open("telemedicine_report_#{p1_start.strftime("%d_%b")}_to_#{p2_end.strftime("%d_%b")}.csv", "w") do |csv|
         csv << [
           "",
           "",
@@ -57,7 +57,12 @@ module TelemedicineReports
           "",
           "",
           "",
-          "Between #{p2_start.strftime("%d %b %Y")} and #{p2_end.strftime("%d %b %Y")}"
+          "Between #{p2_start.strftime("%d %b %Y")} and #{p2_end.strftime("%d %b %Y")}",
+          "",
+          "",
+          "",
+          "",
+          ""
         ]
 
         csv << [
@@ -72,15 +77,19 @@ module TelemedicineReports
           "Patients with High Blood Sugar",
           "Patients with High BP or Sugar",
           "Teleconsult Button Clicks",
+          "Teleconsult requests percentage",
           "",
           "Patients who visited",
           "Patients with High BP",
           "Patients with High Blood Sugar",
           "Patients with High BP or Sugar",
-          "Teleconsult Button Clicks"
+          "Teleconsult Button Clicks",
+          "Teleconsult requests percentage"
         ]
 
         facilities_data.each do |state|
+          p1_clicks = fetch_clicks(p1_mixpanel_data, state, true)
+          p2_clicks = fetch_clicks(p2_mixpanel_data, state, true)
           csv << [
             state[:state],
             "",
@@ -92,16 +101,20 @@ module TelemedicineReports
             state[:p1][:high_bp],
             state[:p1][:high_bs],
             state[:p1][:high_bp_or_bs],
-            fetch_clicks(p1_mixpanel_data, state, true),
+            p1_clicks,
+            percentage(p1_clicks, state[:p1][:high_bp_or_bs]),
             "",
             state[:p2][:visits],
             state[:p2][:high_bp],
             state[:p2][:high_bs],
             state[:p2][:high_bp_or_bs],
-            fetch_clicks(p2_mixpanel_data, state, true)
+            p2_clicks,
+            percentage(p2_clicks, state[:p2][:high_bp_or_bs])
           ]
 
           state[:districts].each do |district|
+            p1_clicks = fetch_clicks(p1_mixpanel_data, district, false)
+            p2_clicks = fetch_clicks(p2_mixpanel_data, district, false)
             csv << [
               "",
               district[:district],
@@ -113,19 +126,21 @@ module TelemedicineReports
               district[:p1][:high_bp],
               district[:p1][:high_bs],
               district[:p1][:high_bp_or_bs],
-              fetch_clicks(p1_mixpanel_data, district, false),
+              p1_clicks,
+              percentage(p1_clicks, district[:p1][:high_bp_or_bs]),
               "",
               district[:p2][:visits],
               district[:p2][:high_bp],
               district[:p2][:high_bs],
               district[:p2][:high_bp_or_bs],
-              fetch_clicks(p2_mixpanel_data, district, false)
+              p2_clicks,
+              percentage(p2_clicks, district[:p2][:high_bp_or_bs])
             ]
           end
         end
 
-        csv << ["", "", "", "", "", "", "", "", "", "", "", "", ""]
-        csv << ["", "", "", "", "", "", "", "", "", "", "", "", ""]
+        csv << []
+        csv << []
 
         daily_activity_data = mixpanel_data.group_by { |row| row[:date] }.sort_by { |date, _rows| date }.map { |date, rows|
           [date.strftime("%d %b %Y"), rows.uniq { |row| row[:user_id] }.count, sum_rows(rows, :clicks)]
@@ -216,6 +231,18 @@ module TelemedicineReports
       end
       districts = data.find { |state| state[:state] == record[:state] }&.dig(:districts) || []
       districts.find { |district| district[:district] == record[:district] }&.dig(:clicks) || 0
+    end
+
+    def percentage(numerator, denominator)
+      return "NA" if denominator.nil? || denominator == 0 || numerator.nil?
+
+      percentage = (numerator * 100.0) / denominator
+
+      return "0%" if percentage.zero?
+      return "NA" if percentage.infinite?
+      return "< 1%" if percentage < 1
+
+      "#{percentage.round(0)}%"
     end
   end
 end
