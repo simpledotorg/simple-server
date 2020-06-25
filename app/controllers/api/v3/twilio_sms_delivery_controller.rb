@@ -21,7 +21,7 @@ class Api::V3::TwilioSmsDeliveryController < ApplicationController
   end
 
   def delivery_status
-    params["SmsStatus"] || params["MessageStatus"] || TwilioSmsDeliveryDetail.results[:unknown]
+    params["MessageStatus"] || params["SmsStatus"] || TwilioSmsDeliveryDetail.results[:unknown]
   end
 
   def validate_request
