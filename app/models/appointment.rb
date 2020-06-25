@@ -68,7 +68,7 @@ class Appointment < ApplicationRecord
   end
 
   def follow_up_days
-    [0, (scheduled_date - created_at.to_date).to_i].max
+    [0, (scheduled_date - device_created_at.to_date).to_i].max
   end
 
   def scheduled?

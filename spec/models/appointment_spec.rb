@@ -46,6 +46,12 @@ describe Appointment, type: :model do
       end
     end
 
+    describe "#follow_up_days" do
+      let(:appointment) { create(:appointment, scheduled_date: 30.days.ago, device_created_at: 40.days.ago) }
+
+      specify { expect(appointment.follow_up_days).to eq(10) }
+    end
+
     describe ".eligible_for_reminders" do
       it "includes only appointments overdue by days_overdue" do
         overdue_appointment = create(:appointment, :overdue, scheduled_date: 3.days.ago)
