@@ -67,6 +67,10 @@ class Appointment < ApplicationRecord
     [0, (Date.current - scheduled_date).to_i].max
   end
 
+  def follow_up_days
+    [0, (scheduled_date - created_at.to_date).to_i].max
+  end
+
   def scheduled?
     status.to_sym == :scheduled
   end
