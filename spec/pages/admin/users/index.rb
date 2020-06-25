@@ -22,7 +22,7 @@ module AdminPage
 
       def get_all_districts_name
         click_on_district_dropdown
-        options = find(:css, "select[name='district']").all("option").collect(&:text)
+        find(:css, "select[name='district']").all("option").collect(&:text)
       end
 
       def select_district(name)

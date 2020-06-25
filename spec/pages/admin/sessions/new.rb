@@ -12,14 +12,14 @@ module AdminPage
       MESSAGE_CROSS_BUTTON = {css: "button.close"}.freeze
       SUCCESSFUL_LOGOUT_MESSAGE = {css: "div.alert-primary"}.freeze
 
-      def do_login(emailID, password)
-        type(EMAIL_TEXT_BOX, emailID)
+      def do_login(email_id, password)
+        type(EMAIL_TEXT_BOX, email_id)
         type(PASSWORD_TEXT_BOX, password)
         click(LOGIN_BUTTON)
       end
 
-      def set_email_text_box(emailId)
-        type(EMAIL_TEXT_BOX, emailId)
+      def set_email_text_box(email_id)
+        type(EMAIL_TEXT_BOX, email_id)
       end
 
       def set_password_text_box(password)

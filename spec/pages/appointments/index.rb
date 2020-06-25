@@ -6,7 +6,7 @@ module AppointmentsPage
     DOWNLOAD_HEADING = {css: "download_text"}.freeze
     DOWNLOAD_INFO_TEXT = {css: "div.text-grey"}.freeze
     PATIENT_CARD = {css: "div.card"}.freeze
-    List = {xpath: "//select[@name='facility_id']/option"}.freeze
+    LIST = {xpath: "//select[@name='facility_id']/option"}.freeze
     DOWNLOAD_LINK = {css: "i.fa-file-excel.mr-2"}.freeze
     PAGE_LINK = {css: "a.page-link"}.freeze
     # OVERDUE_DAYS={css: "div.card-date"}.freeze

@@ -167,7 +167,7 @@ RSpec.describe PatientsExporter do
 
     it "includes blood sugars from other visits" do
       blood_sugar.destroy
-      other_blood_sugar = create(:blood_sugar, :fasting, :with_encounter, facility: facility, patient: patient)
+      _other_blood_sugar = create(:blood_sugar, :fasting, :with_encounter, facility: facility, patient: patient)
 
       expect(subject.csv_fields(patient)).to include("#{blood_sugar.blood_sugar_value} mg/dL")
       expect(subject.csv_fields(patient)).to include("Fasting")

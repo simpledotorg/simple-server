@@ -4,10 +4,10 @@ module AdminPage
       ADD_NEW_ORGANIZATION_BUTTON = {css: "nav.page-nav>a"}.freeze
       ORGANIZATION_NAME = {css: "div.card"}.freeze
 
-      def is_organization_name_present(orgName)
+      def is_organization_name_present(expected_org_name)
         org_name = all_elements(ORGANIZATION_NAME)
         org_name.each do |name|
-          name.text.include? orgName
+          name.text.include? expected_org_nane
         end
       end
 
