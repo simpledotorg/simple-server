@@ -14,13 +14,12 @@ class Dashboard::DistrictsController < AdminController
     @district = FacilityGroup.find_by(slug: district_params[:id])
     authorize([:manage, @district])
 
-    @district_name = @district.name
-
-    selected_report_period = Time.parse(district_params[:report_period]) unless district_params[:report_period].blank?
-    @report_period = selected_report_period || Date.current.advance(months: -1)
-    @cohort_period = district_params[:cohort_period] || :month
-
-    @data = DistrictReportService.new(facilities: @district.facilities, selected_date: @report_period).call
+    @selected_date = if district_params[:selected_date]
+      Time.parse(district_params[:selected_date])
+    else
+      Date.current.advance(months: -1)
+    end
+    @data = DistrictReportService.new(facilities: @district.facilities, selected_date: @selected_date).call
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
@@ -29,7 +28,7 @@ class Dashboard::DistrictsController < AdminController
   private
 
   def district_params
-    params.permit(:report_period, :id, :cohort_period)
+    params.permit(:selected_date, :id, :cohort_period)
   end
 
   def set_time_zone

@@ -11,14 +11,14 @@
     <div class="dropdown show">
       <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">
-        Patients registered in <%= @report_period.to_s(:month_year) %>
+        Patients registered in <%= @selected_date.to_s(:month_year) %>
       </a>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
         <%= form_tag dashboard_district_path(@district), method: :get do %>
           <% last_n_months(n: 12).each do |time| %>
-            <% selected = (time.year == @report_period.year && time.month == @report_period.month) %>
+            <% selected = (time.year == @selected_date.year && time.month == @selected_date.month) %>
             <button class="dropdown-item query-filter-month <%= 'active' if selected %>"
-                    name="report_period"
+                    name="selected_date"
                     type="submit" value="<%= time %>">
               <%= time.to_s(:month_year) %>
             </button>
