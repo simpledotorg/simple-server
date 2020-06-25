@@ -227,5 +227,24 @@ RSpec.describe PatientsWithHistoryExporter do
         expect(subject.csv(Patient.all)).to eq(timestamp.to_csv + headers.to_csv + fields.to_csv)
       end
     end
+
+    it "generates a blank CSV (only headers) if no patients exist" do
+      travel_to now do
+        expect(subject.csv(Patient.none)).to eq(timestamp.to_csv + headers.to_csv)
+      end
+    end
+
+    it "uses fetches patients in batches" do
+      expect_any_instance_of(facility.registered_patients.class).to receive(:in_batches).and_return([patient_batch])
+
+      subject.csv(facility.registered_patients)
+    end
+
+    it "does not include the zone column if the country config is set to false" do
+      allow(Rails.application.config.country).to receive(:[]).with(:patient_line_list_show_zone).and_return(false)
+
+      expect(subject.csv_headers).not_to include("Patient #{Address.human_attribute_name :zone}")
+      expect(subject.csv_fields(patient)).not_to include(patient.address.zone)
+    end
   end
 end
