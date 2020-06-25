@@ -2,13 +2,13 @@ FactoryBot.define do
   factory :patient_business_identifier do
     id { SecureRandom.uuid }
     identifier { SecureRandom.uuid }
-    identifier_type { 'simple_bp_passport' }
+    identifier_type { "simple_bp_passport" }
     device_created_at { Time.current }
     device_updated_at { Time.current }
-    metadata_version { 'org.simple.bppassport.meta.v1' }
+    metadata_version { "org.simple.bppassport.meta.v1" }
     metadata do
-      { assigning_user_id: SecureRandom.uuid,
-        assigning_facility_id: SecureRandom.uuid }
+      {assigning_user_id: SecureRandom.uuid,
+       assigning_facility_id: SecureRandom.uuid}
     end
 
     patient

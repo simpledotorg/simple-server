@@ -1,16 +1,16 @@
 module AdminPage
   module Sessions
     class New < ApplicationPage
-      EMAIL_TEXT_BOX = { id: 'email_authentication_email' }.freeze
-      PASSWORD_TEXT_BOX = { id: 'email_authentication_password' }.freeze
-      LOGIN_BUTTON = { css: 'input.btn.btn-primary' }.freeze
-      REMEMBER_ME_CHECKBOX = { id: 'admin_remember_me' }.freeze
-      FORGOT_PASSWORD_LINK = { xpath: "//a[@href='/email_authentications/password/new']" }.freeze
-      UNLOCK_INSTRUCTION_LINK = { xpath: "//a[@href='/email_authentications/unlock/new']" }.freeze
-      LOGIN_LINK = { css: '.nav-link' }.freeze
-      ERROR_MESSAGE = { css: 'div.alert-warning' }.freeze
-      MESSAGE_CROSS_BUTTON = { css: 'button.close' }.freeze
-      SUCCESSFUL_LOGOUT_MESSAGE = { css: 'div.alert-primary' }.freeze
+      EMAIL_TEXT_BOX = {id: "email_authentication_email"}.freeze
+      PASSWORD_TEXT_BOX = {id: "email_authentication_password"}.freeze
+      LOGIN_BUTTON = {css: "input.btn.btn-primary"}.freeze
+      REMEMBER_ME_CHECKBOX = {id: "admin_remember_me"}.freeze
+      FORGOT_PASSWORD_LINK = {xpath: "//a[@href='/email_authentications/password/new']"}.freeze
+      UNLOCK_INSTRUCTION_LINK = {xpath: "//a[@href='/email_authentications/unlock/new']"}.freeze
+      LOGIN_LINK = {css: ".nav-link"}.freeze
+      ERROR_MESSAGE = {css: "div.alert-warning"}.freeze
+      MESSAGE_CROSS_BUTTON = {css: "button.close"}.freeze
+      SUCCESSFUL_LOGOUT_MESSAGE = {css: "div.alert-primary"}.freeze
 
       def do_login(emailID, password)
         type(EMAIL_TEXT_BOX, emailID)

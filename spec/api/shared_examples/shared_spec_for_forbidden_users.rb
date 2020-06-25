@@ -1,7 +1,7 @@
-require 'rails_helper'
+require "rails_helper"
 
-RSpec.shared_examples 'returns 403 for post requests for forbidden users' do |request_key|
-  response '403', 'user is not allowed to sync' do
+RSpec.shared_examples "returns 403 for post requests for forbidden users" do |request_key|
+  response "403", "user is not allowed to sync" do
     let(:request_user) do
       user = create(:user)
       user.update(sync_approval_status: :denied)
@@ -12,13 +12,13 @@ RSpec.shared_examples 'returns 403 for post requests for forbidden users' do |re
     let(:HTTP_X_FACILITY_ID) { request_facility.id }
     let(:Authorization) { "Bearer #{request_user.access_token}" }
 
-    let(request_key.to_sym) { { request_key => [] } }
+    let(request_key.to_sym) { {request_key => []} }
     run_test!
   end
 end
 
-RSpec.shared_examples 'returns 403 for get requests for forbidden users' do
-  response '403', 'user is not allowed to sync' do
+RSpec.shared_examples "returns 403 for get requests for forbidden users" do
+  response "403", "user is not allowed to sync" do
     let(:request_user) do
       user = create(:user)
       user.update(sync_approval_status: :denied)
@@ -30,7 +30,7 @@ RSpec.shared_examples 'returns 403 for get requests for forbidden users' do
     let(:HTTP_X_FACILITY_ID) { request_facility.id }
     let(:Authorization) { "Bearer #{request_user.access_token}" }
 
-    let(:process_token) { Base64.encode64({ other_facilities_processed_since: 10.minutes.ago }.to_json) }
+    let(:process_token) { Base64.encode64({other_facilities_processed_since: 10.minutes.ago}.to_json) }
     let(:limit) { 10 }
     run_test!
   end
