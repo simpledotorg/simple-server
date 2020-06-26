@@ -8,7 +8,7 @@ class AddPermissionToAccessLevel
     @permission_name = permission_name
     @access_level_name = access_level_name
     @permission = Permissions::ALL_PERMISSIONS[permission_name]
-    @access_level = Permissions::ACCESS_LEVELS.select { |level| level[:name] == access_level_name }.first
+    @access_level = Permissions::ACCESS_LEVELS.find { |level| level[:name] == access_level_name }
     @users = eligible_users
   end
 
