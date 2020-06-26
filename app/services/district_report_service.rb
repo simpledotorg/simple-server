@@ -38,12 +38,16 @@ class DistrictReportService
   end
 
   def registration_counts
-    where_clause = ActiveRecord::Base.sanitize_sql_array(["registration_facility_id in (?)", @facilities])
+    where_clause = ActiveRecord::Base.sanitize_sql_array([
+      "registration_facility_id in (?) and medical_histories.hypertension = ?",
+      @facilities, "yes"
+    ])
 
     @registration_counts ||= Patient.connection.select_all(<<-SQL)
       WITH cte AS (
         SELECT date_trunc('month', "recorded_at") AS month, count(*) AS month_ct
         FROM   patients
+        INNER JOIN medical_histories on patients.id = medical_histories.patient_id
         WHERE #{where_clause}
         GROUP  BY 1)
       SELECT date(m.month), COALESCE(sum(cte.month_ct) OVER (ORDER BY m.month), 0) AS running_ct
