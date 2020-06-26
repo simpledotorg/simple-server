@@ -6,7 +6,7 @@ require "csv"
 # discard_patients(ids) will soft-delete patients and their associated records
 module SoftDeleteDuplicatePatients
   def self.parse(patients_csv_path)
-    patients_csv = open(patients_csv_path)
+    patients_csv = File.open(patients_csv_path)
     patients = CSV.parse(patients_csv, headers: true)
     patient_headers = patients.headers
 
