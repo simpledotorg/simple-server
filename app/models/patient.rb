@@ -77,7 +77,7 @@ class Patient < ApplicationRecord
   scope :contactable, -> {
     where(reminder_consent: "granted")
       .where.not(status: "dead")
-      .includes(:phone_numbers)
+      .joins(:phone_numbers)
       .merge(PatientPhoneNumber.phone_type_mobile)
   }
 
