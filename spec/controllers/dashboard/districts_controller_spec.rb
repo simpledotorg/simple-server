@@ -8,22 +8,9 @@ RSpec.describe Dashboard::DistrictsController, type: :controller do
     end
   end
 
-  context "preview" do
+  context "show" do
     render_views
 
-    it "does not render for anonymous" do
-      get :preview
-      expect(response).to_not be_successful
-    end
-
-    it "renders for admins" do
-      sign_in(supervisor.email_authentication)
-      get :preview
-      expect(response).to be_successful
-    end
-  end
-
-  context "show" do
     before do
       @facility_group = create(:facility_group, organization: organization)
       @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)

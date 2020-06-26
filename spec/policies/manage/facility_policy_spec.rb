@@ -2,10 +2,8 @@ require "rails_helper"
 
 RSpec.describe Manage::Facility::FacilityPolicy do
   subject { described_class }
-
   let(:organization) { create(:organization) }
   let(:facility_group) { create(:facility_group, organization: organization) }
-
   let(:facility_1) { build(:facility, facility_group: facility_group) }
   let(:facility_2) { build(:facility) }
 

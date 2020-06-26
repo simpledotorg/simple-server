@@ -178,10 +178,10 @@
       "value": "review"
     },
     "SIDEKIQ_CONCURRENCY": {
-      "value": "15"
+      "value": "2"
     },
     "SIDEKIQ_REDIS_POOL_SIZE": {
-      "value": "20"
+      "value": "1"
     },
     "SIMPLE_SERVER_DATABASE_HOST": {
       "value": "invalid"
