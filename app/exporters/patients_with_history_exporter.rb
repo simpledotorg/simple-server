@@ -37,6 +37,7 @@ module PatientsWithHistoryExporter
           {latest_blood_pressures: :facility},
           :latest_blood_sugars
         ).each do |patient|
+          @medications = {}
           csv << csv_fields(patient)
         end
       end
@@ -128,6 +129,7 @@ module PatientsWithHistoryExporter
       ("High" if patient.high_risk?),
       (1..DISPLAY_BLOOD_PRESSURES).map do |i|
         bp = latest_bps[i-1]
+        previous_bp = latest_bps[i]
         appointment = appointment_created_on(patient, bp&.recorded_at)
 
         [bp&.recorded_at.presence && I18n.l(bp&.recorded_at),
@@ -141,7 +143,7 @@ module PatientsWithHistoryExporter
           appointment&.facility&.name,
           appointment&.scheduled_date,
           appointment&.follow_up_days,
-          "placeholder - BP #{i} Medication Updated",
+          medication_updated?(patient, bp&.recorded_at, previous_bp&.recorded_at),
           *medications_for(patient, bp&.recorded_at)]
       end,
       latest_blood_sugar&.recorded_at.presence && I18n.l(latest_blood_sugar&.recorded_at),
@@ -166,8 +168,19 @@ module PatientsWithHistoryExporter
       .first
   end
 
+  def self.medication_updated?(patient, date, previous_date)
+    current_drugs = date ? patient.prescribed_drugs(date: date) : PrescriptionDrug.none
+    previous_drugs = previous_date ? patient.prescribed_drugs(date: previous_date) : PrescriptionDrug.none
+
+    @medications[patient] ||= {}
+    @medications[patient][date] = current_drugs
+    @medications[patient][previous_date] = previous_drugs
+
+    current_drugs&.to_set == previous_drugs&.to_set ? "No" : "Yes"
+  end
+
   def self.medications_for(patient, date)
-    medications = date ? patient.prescribed_drugs(date: date) : PrescriptionDrug.none
+    medications = @medications[patient][date]
     sorted_medications = medications.order(is_protocol_drug: :desc, name: :asc)
     other_medications = sorted_medications[DISPLAY_MEDICATION_COLUMNS..medications.length]
                             &.map { |medication| "#{medication.name}-#{medication.dosage}" }
