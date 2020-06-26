@@ -17,7 +17,7 @@ module CreateMasterUser
     end
   end
 
-  private
+  private_class_method
 
   def self.master_user_id(email)
     UUIDTools::UUID.md5_create(
