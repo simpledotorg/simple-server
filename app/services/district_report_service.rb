@@ -57,9 +57,9 @@ class DistrictReportService
   end
 
   def lookup_registration_count(date)
-    lookup_date = date.beginning_of_month.to_s
+    lookup_date = date.beginning_of_month.to_date.to_s
     row = registration_counts.find { |r| r["date"] == lookup_date }
-    raise "No registration found for #{lookup_date} in #{all_registrations_count.to_a}" unless row
+    return 0 unless row
     row["running_ct"].to_i
   end
 

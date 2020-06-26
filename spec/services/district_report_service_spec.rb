@@ -56,7 +56,7 @@ describe DistrictReportService, type: :model do
     expect(service.controlled_patients(june_1).map(&:patient)).to match_array(june_controlled)
   end
 
-  fit "returns counts for last 12 months for controlled patients and registrations" do
+  it "returns counts for last 12 months for controlled patients and registrations" do
     facility_group = FactoryBot.create(:facility_group, name: "Darrang")
     facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group)
     facility = facilities.first
