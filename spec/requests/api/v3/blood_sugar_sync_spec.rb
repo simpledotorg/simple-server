@@ -1,7 +1,7 @@
-require 'rails_helper'
+require "rails_helper"
 
-RSpec.describe 'BloodSugars sync', type: :request do
-  let(:sync_route) { '/api/v3/blood_sugars/sync' }
+RSpec.describe "BloodSugars sync", type: :request do
+  let(:sync_route) { "/api/v3/blood_sugars/sync" }
   let(:request_user) { FactoryBot.create(:user) }
 
   let(:model) { BloodSugar }
@@ -14,5 +14,5 @@ RSpec.describe 'BloodSugars sync', type: :request do
     Api::V3::BloodSugarTransformer.to_response(blood_sugar)
   end
 
-  include_examples 'v3 API sync requests'
+  include_examples "v3 API sync requests"
 end
