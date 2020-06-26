@@ -5,6 +5,7 @@ RSpec.describe CohortReport::FacilityGroupPolicy::Scope do
   let!(:facility_group1) { create(:facility_group, organization: organization) }
   let!(:facility_group2) { create(:facility_group, organization: organization) }
   let!(:facility_group3) { create(:facility_group) }
+
   describe "#resolve" do
     context "user has permission to view cohort reports" do
       context "for all organizations" do
@@ -55,7 +56,6 @@ RSpec.describe CohortReport::FacilityGroupPolicy::Scope do
 
       it "resolves nothing" do
         result = described_class.new(user, FacilityGroup).resolve
-
         expect(result).to be_empty
       end
     end
