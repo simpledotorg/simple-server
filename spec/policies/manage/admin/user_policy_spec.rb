@@ -83,16 +83,10 @@ RSpec.describe Manage::Admin::UserPolicy do
       end
     end
 
-    it "includes all the permissions the user can access" do
+    it "includes all the permissions" do
       allowed_permissions = subject.new(user, nil).allowed_permissions
       expect(allowed_permissions.map { |permission| permission[:slug] })
-        .to match_array(user_permission_slugs)
-    end
-
-    it "does not include other permissions" do
-      allowed_permissions = subject.new(user, nil).allowed_permissions
-      expect(allowed_permissions.map { |permission| permission[:slug] })
-        .not_to include(*(Permissions::ALL_PERMISSIONS.keys - user_permission_slugs))
+        .to match_array(Permissions::ALL_PERMISSIONS.keys)
     end
   end
 

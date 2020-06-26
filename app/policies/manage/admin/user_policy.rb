@@ -40,7 +40,7 @@ class Manage::Admin::UserPolicy < ApplicationPolicy
   end
 
   def allowed_permissions
-    Permissions::ALL_PERMISSIONS.slice(*user_permissions).values
+    Permissions::ALL_PERMISSIONS.values
   end
 
   class Scope < Scope
