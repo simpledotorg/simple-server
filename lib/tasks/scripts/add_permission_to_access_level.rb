@@ -2,7 +2,6 @@
 
 # Creates the specified permission for users who have the specified access_level
 class AddPermissionToAccessLevel
-
   attr_reader :permission_name, :access_level_name, :access_level, :permission, :users
 
   def initialize(permission_name, access_level_name)
@@ -36,20 +35,20 @@ class AddPermissionToAccessLevel
   private
 
   def eligible_users
-    User.includes(:user_permissions).where.not(user_permissions: { id: nil })
-        .select(&method(:eligible?))
+    User.includes(:user_permissions).where.not(user_permissions: {id: nil})
+      .select(&method(:eligible?))
   end
 
   def permission_resources(user)
-    return [{ resource_type: nil, resource_id: nil }] if permission[:resource_priority] == [:global]
+    return [{resource_type: nil, resource_id: nil}] if permission[:resource_priority] == [:global]
 
     case permission_resource_type(user.user_permissions.map(&:resource_type).uniq)
     when :facility_group
-      user.user_permissions.where(resource_type: 'FacilityGroup').map(&method(:permission_resource)).uniq
+      user.user_permissions.where(resource_type: "FacilityGroup").map(&method(:permission_resource)).uniq
     when :organization
-      user.user_permissions.where(resource_type: 'Organization').map(&method(:permission_resource)).uniq
+      user.user_permissions.where(resource_type: "Organization").map(&method(:permission_resource)).uniq
     when :global
-      [{ resource_type: nil, resource_id: nil }]
+      [{resource_type: nil, resource_id: nil}]
     else
       []
     end
@@ -61,13 +60,13 @@ class AddPermissionToAccessLevel
 
   def permission_resource_type(user_resource_types)
     return :facility_group if permission[:resource_priority].include?(:facility_group) &&
-                              user_resource_types.include?('FacilityGroup')
+      user_resource_types.include?("FacilityGroup")
 
     return :organization if permission[:resource_priority].include?(:organization) &&
-                            user_resource_types.include?('Organization')
+      user_resource_types.include?("Organization")
 
     :global if permission[:resource_priority].include?(:global) &&
-               user_resource_types.include?(nil)
+      user_resource_types.include?(nil)
   end
 
   def eligible?(user)
