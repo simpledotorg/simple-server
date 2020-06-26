@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe ImportFacilitiesJob, type: :job do
+RSpec.describe PatientListDownloadJob, type: :job do
   include ActiveJob::TestHelper
 
   let!(:admin) { create(:admin) }
