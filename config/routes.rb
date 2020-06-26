@@ -155,9 +155,9 @@ Rails.application.routes.draw do
   end
   resources :organizations, only: [:index], path: "dashboard"
 
+  get "/dashboard/districts/preview", to: redirect("/dashboard/districts")
   namespace :dashboard do
     resources :districts do
-      get "preview", on: :collection
     end
   end
 
