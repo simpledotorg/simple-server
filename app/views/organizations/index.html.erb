@@ -8,7 +8,7 @@
                 <h2><%= organization.name %></h2>
 
 
-                    <% policy_scope([:cohort_report, organization.facility_groups])
+                    <% policy_scope([:cohort_report, organization.facility_groups.includes(:facilities)])
                            .flat_map(&:facilities)
                            .group_by(&:district)
                            .keys
