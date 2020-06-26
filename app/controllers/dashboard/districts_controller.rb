@@ -1,5 +1,6 @@
 class Dashboard::DistrictsController < AdminController
   layout "application"
+  before_action :feature_flag_required
   skip_after_action :verify_policy_scoped
   around_action :set_time_zone
 
@@ -26,6 +27,10 @@ class Dashboard::DistrictsController < AdminController
   end
 
   private
+
+  def feature_flag_required
+    redirect_to root_url unless current_admin.feature_enabled?(:dashboard_v2)
+  end
 
   def district_params
     params.permit(:selected_date, :id)
