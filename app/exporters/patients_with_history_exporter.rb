@@ -37,7 +37,6 @@ module PatientsWithHistoryExporter
           {latest_blood_pressures: :facility},
           :latest_blood_sugars
         ).each do |patient|
-          @medications = {}
           csv << csv_fields(patient)
         end
       end
@@ -107,6 +106,7 @@ module PatientsWithHistoryExporter
     latest_blood_sugar = patient.latest_blood_sugar
     latest_bp_passport = patient.latest_bp_passport
     zone_column_index = csv_headers.index(zone_column)
+    cache_medication_history(patient, latest_bps.map(&:recorded_at))
 
     csv_fields = [
       patient.recorded_at.presence && I18n.l(patient.recorded_at),
@@ -168,15 +168,17 @@ module PatientsWithHistoryExporter
       .first
   end
 
+  def self.cache_medication_history(patient, dates)
+    @medications = dates.each_with_object({patient => {}}) do |date, cache|
+      cache[patient][date] = date ? patient.prescribed_drugs(date: date) : PrescriptionDrug.none
+    end
+  end
+
   def self.medication_updated?(patient, date, previous_date)
-    current_drugs = date ? patient.prescribed_drugs(date: date) : PrescriptionDrug.none
-    previous_drugs = previous_date ? patient.prescribed_drugs(date: previous_date) : PrescriptionDrug.none
+    current_medications = @medications[patient][date]
+    previous_medications = previous_date ? @medications[patient][previous_date] : PrescriptionDrug.none
 
-    @medications[patient] ||= {}
-    @medications[patient][date] = current_drugs
-    @medications[patient][previous_date] = previous_drugs
-
-    current_drugs&.to_set == previous_drugs&.to_set ? "No" : "Yes"
+    current_medications&.to_set == previous_medications&.to_set ? "No" : "Yes"
   end
 
   def self.medications_for(patient, date)
