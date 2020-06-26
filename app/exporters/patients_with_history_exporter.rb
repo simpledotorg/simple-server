@@ -169,20 +169,26 @@ module PatientsWithHistoryExporter
   end
 
   def self.cache_medication_history(patient, dates)
-    @medications = dates.each_with_object({patient => {}}) do |date, cache|
-      cache[patient][date] = date ? patient.prescribed_drugs(date: date) : PrescriptionDrug.none
+    @medications = {patient => {}}
+
+    dates.each do |date|
+      @medications[patient][date] = date ? patient.prescribed_drugs(date: date) : PrescriptionDrug.none
     end
   end
 
-  def self.medication_updated?(patient, date, previous_date)
-    current_medications = @medications[patient][date]
-    previous_medications = previous_date ? @medications[patient][previous_date] : PrescriptionDrug.none
+  def self.medications(patient, date)
+    date ? @medications[patient][date] : PrescriptionDrug.none
+  end
 
-    current_medications&.to_set == previous_medications&.to_set ? "No" : "Yes"
+  def self.medication_updated?(patient, date, previous_date)
+    current_medications = medications(patient, date).to_set
+    previous_medications = medications(patient, previous_date).to_set
+
+    current_medications == previous_medications ? "No" : "Yes"
   end
 
   def self.medications_for(patient, date)
-    medications = @medications[patient][date]
+    medications = medications(patient, date)
     sorted_medications = medications.order(is_protocol_drug: :desc, name: :asc)
     other_medications = sorted_medications[DISPLAY_MEDICATION_COLUMNS..medications.length]
                             &.map { |medication| "#{medication.name}-#{medication.dosage}" }
