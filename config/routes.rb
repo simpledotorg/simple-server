@@ -135,6 +135,7 @@ Rails.application.routes.draw do
     resources :facilities, only: [:show] do
       get "graphics", to: "facilities#whatsapp_graphics"
       get "patient_list", to: "facilities#patient_list"
+      get "patient_list_with_history", to: "facilities#patient_list"
       get "share", to: "facilities#share_anonymized_data"
     end
 
