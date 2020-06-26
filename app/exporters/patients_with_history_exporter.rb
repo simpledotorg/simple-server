@@ -105,8 +105,8 @@ module PatientsWithHistoryExporter
     latest_bps = patient.latest_blood_pressures.first(DISPLAY_BLOOD_PRESSURES)
     latest_blood_sugar = patient.latest_blood_sugar
     latest_bp_passport = patient.latest_bp_passport
-    zone_column_index = csv_headers.index(zone_column)
     cache_medication_history(patient, latest_bps.map(&:recorded_at))
+    zone_column_index = csv_headers.index(zone_column)
 
     csv_fields = [
       patient.recorded_at.presence && I18n.l(patient.recorded_at),
