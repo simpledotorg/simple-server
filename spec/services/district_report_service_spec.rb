@@ -56,7 +56,7 @@ describe DistrictReportService, type: :model do
     expect(service.controlled_patients(june_1).map(&:patient)).to match_array(june_controlled)
   end
 
-  it "returns counts for last 12 months for controlled patients and registrations" do
+  fit "returns counts for last 12 months for controlled patients and registrations" do
     facility_group = FactoryBot.create(:facility_group, name: "Darrang")
     facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group)
     facility = facilities.first
@@ -102,11 +102,11 @@ describe DistrictReportService, type: :model do
 
     result[:controlled_patients].each do |month, count|
       expect(count).to eq(expected_controlled_patients[month]),
-        "expected count for #{month} to eq #{count}, but was #{expected_controlled_patients[month].inspect}"
+        "expected count for #{month} to eq to #{count}, but was #{expected_controlled_patients[month].inspect}"
     end
     result[:registrations].each do |month, count|
       expect(count).to eq(expected_registrations[month]),
-        "expected count for #{month} to eq #{count}, but was #{expected_registrations[month].inspect}"
+        "expected count for #{month} to be #{expected_registrations[month]}, but was #{count}"
     end
     expect(result[:cumulative_registrations]).to eq(6)
   end
