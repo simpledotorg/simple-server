@@ -56,7 +56,7 @@ describe DistrictReportService, type: :model do
     expect(service.controlled_patients(june_1).map(&:patient)).to match_array(june_controlled)
   end
 
-  it "returns counts for last 12 months for controlled patients and registrations" do
+  it "returns counts for last n months for controlled patients and registrations" do
     facility_group = FactoryBot.create(:facility_group, name: "Darrang")
     facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group)
     facility = facilities.first
@@ -90,15 +90,15 @@ describe DistrictReportService, type: :model do
     result = service.call
 
     expected_controlled_patients = {
-      "Feb 2020" => 2, "Mar 2020" => 2, "Apr 2020" => 4, "May 2020" => 2, "Jun 2020" => 2
+      "Jan 2019" => 2, "Feb 2019" => 2, "Mar 2019" => 2, "Feb 2020" => 2, "Mar 2020" => 2, "Apr 2020" => 4, "May 2020" => 2, "Jun 2020" => 2
     }
     expected_controlled_patients.default = 0
     expected_registrations = {
       "Jan 2020" => 4, "Feb 2020" => 4, "Mar 2020" => 6, "Apr 2020" => 6, "May 2020" => 6, "Jun 2020" => 6
     }
     expected_registrations.default = 2
-    expect(result[:controlled_patients].size).to eq(12)
-    expect(result[:registrations].size).to eq(12)
+    expect(result[:controlled_patients].size).to eq(18)
+    expect(result[:registrations].size).to eq(18)
 
     result[:controlled_patients].each do |month, count|
       expect(count).to eq(expected_controlled_patients[month]),

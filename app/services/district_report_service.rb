@@ -23,8 +23,9 @@ class DistrictReportService
   end
 
   def compile_control_and_registration_data
+    months_of_data = registration_counts.to_a.size
     @data[:cumulative_registrations] = lookup_registration_count(selected_date)
-    -11.upto(0).each do |n|
+    (-months_of_data + 1).upto(0).each do |n|
       time = selected_date.advance(months: n).end_of_month
       formatted_period = time.to_s(:month_year)
 
@@ -52,7 +53,7 @@ class DistrictReportService
         GROUP  BY 1)
       SELECT date(m.month), COALESCE(sum(cte.month_ct) OVER (ORDER BY m.month), 0) AS running_ct
       FROM  (
-          SELECT generate_series(min(month), current_date, interval '1 month')
+          SELECT generate_series(min(month), '#{selected_date}'::timestamp, interval '1 month')
           FROM   cte
           ) m(month)
       LEFT JOIN cte USING (month)
