@@ -1,5 +1,6 @@
 class DistrictReportService
   include SQLHelpers
+  MAX_MONTHS_OF_DATA = 24
 
   def initialize(facilities:, selected_date:)
     @facilities = Array(facilities)
@@ -23,7 +24,7 @@ class DistrictReportService
   end
 
   def compile_control_and_registration_data
-    months_of_data = registration_counts.to_a.size
+    months_of_data = [registration_counts.to_a.size, MAX_MONTHS_OF_DATA].min
     @data[:cumulative_registrations] = lookup_registration_count(selected_date)
     (-months_of_data + 1).upto(0).each do |n|
       time = selected_date.advance(months: n).end_of_month
@@ -36,6 +37,13 @@ class DistrictReportService
 
   def format_quarter(quarter)
     "Q#{quarter.number}-#{quarter.year}"
+  end
+
+  def lookup_registration_count(date)
+    lookup_date = date.beginning_of_month.to_date.to_s
+    row = registration_counts.find { |r| r["date"] == lookup_date }
+    return 0 unless row
+    row["running_ct"].to_i
   end
 
   def registration_counts
@@ -59,13 +67,6 @@ class DistrictReportService
       LEFT JOIN cte USING (month)
       ORDER BY 1;
     SQL
-  end
-
-  def lookup_registration_count(date)
-    lookup_date = date.beginning_of_month.to_date.to_s
-    row = registration_counts.find { |r| r["date"] == lookup_date }
-    return 0 unless row
-    row["running_ct"].to_i
   end
 
   # We want to return cohort data for the current quarter for the selected date, and then
