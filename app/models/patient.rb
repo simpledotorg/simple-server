@@ -207,12 +207,12 @@ class Patient < ApplicationRecord
 
   def anonymized_data
     {id: hash_uuid(id),
-      created_at: created_at,
-      registration_date: recorded_at,
-      registration_facility_name: registration_facility&.name,
-      user_id: hash_uuid(registration_user&.id),
-      age: age,
-      gender: gender}
+     created_at: created_at,
+     registration_date: recorded_at,
+     registration_facility_name: registration_facility&.name,
+     user_id: hash_uuid(registration_user&.id),
+     age: age,
+     gender: gender}
   end
 
   def discard_data

@@ -38,13 +38,13 @@ class Communication < ApplicationRecord
     transaction do
       sms_delivery_details =
         TwilioSmsDeliveryDetail.create!(session_id: twilio_sid,
-          result: twilio_msg_status,
-          callee_phone_number: appointment.patient.latest_mobile_number)
+                                        result: twilio_msg_status,
+                                        callee_phone_number: appointment.patient.latest_mobile_number)
       Communication.create!(communication_type: communication_type,
-        detailable: sms_delivery_details,
-        appointment: appointment,
-        device_created_at: DateTime.current,
-        device_updated_at: DateTime.current)
+                            detailable: sms_delivery_details,
+                            appointment: appointment,
+                            device_created_at: DateTime.current,
+                            device_updated_at: DateTime.current)
     end
   end
 
@@ -66,11 +66,11 @@ class Communication < ApplicationRecord
 
   def anonymized_data
     {id: hash_uuid(id),
-      appointment_id: hash_uuid(appointment_id),
-      patient_id: hash_uuid(appointment.patient_id),
-      user_id: hash_uuid(user_id),
-      created_at: created_at,
-      communication_type: communication_type,
-      communication_result: communication_result}
+     appointment_id: hash_uuid(appointment_id),
+     patient_id: hash_uuid(appointment.patient_id),
+     user_id: hash_uuid(user_id),
+     created_at: created_at,
+     communication_type: communication_type,
+     communication_result: communication_result}
   end
 end
