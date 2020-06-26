@@ -83,5 +83,3 @@ class MessagePatients
     puts "#{message}\n" if verbose
   end
 end
-
-# MessagePatients.call(patients, message)
