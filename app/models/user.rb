@@ -176,7 +176,7 @@ class User < ApplicationRecord
   end
 
   def destroy_email_authentications
-    destroyable_email_authentications = self.email_authentications
+    destroyable_email_authentications = email_authentications
 
     user_authentications.each(&:destroy)
     destroyable_email_authentications.each(&:destroy)
