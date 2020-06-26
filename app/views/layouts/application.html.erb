@@ -68,7 +68,7 @@
                 </li>
                 <% if current_admin.feature_enabled?(:dashboard_v2) %>
                 <li class="nav-item">
-                  <%= link_to "Dashboard v2", dashboard_districts_path, class: "nav-link #{active_controller?("organizations", "facility_groups")}" %>
+                  <%= link_to "Dashboard v2", dashboard_districts_path, class: "nav-link #{active_controller?("dashboard/districts")}" %>
                 </li>
                 <% end %>
               <% end %>
