@@ -11,20 +11,25 @@ class Dashboard::DistrictsController < AdminController
   end
 
   def show
-    @district = FacilityGroup.find_by(slug: params[:id])
+    @district = FacilityGroup.find_by(slug: district_params[:id])
     authorize([:manage, @district])
 
-    @district_name = @district.name
-
-    @report_period = Date.current.advance(months: -1)
-
-    @data = DistrictReportService.new(facilities: @district.facilities, selected_date: @report_period).call
+    @selected_date = if district_params[:selected_date]
+      Time.parse(district_params[:selected_date])
+    else
+      Date.current.advance(months: -1)
+    end
+    @data = DistrictReportService.new(facilities: @district.facilities, selected_date: @selected_date).call
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
   end
 
   private
+
+  def district_params
+    params.permit(:selected_date, :id)
+  end
 
   def set_time_zone
     time_zone = Rails.application.config.country[:time_zone] || DEFAULT_ANALYTICS_TIME_ZONE
