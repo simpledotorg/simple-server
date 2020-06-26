@@ -19,9 +19,9 @@ namespace :dell_demo do
     unless ENV["AUTH_TOKEN"].present?
       abort <<~NOTE
         Requires ENV['AUTH_TOKEN']
-        
+
         This auth-token is currently not straightforward to acquire:
-        
+
         * Login to https://ncd-staging.nhp.gov.in/#/portal/enrollment
         * Enroll dummy patient
         * Check the network tab and look at the request headers for the `addScreening` POST request
@@ -164,9 +164,9 @@ namespace :dell_demo do
 
         response_body = JSON.parse(response.body, symbolize_names: true)
         logger.info "#{log_patient} ==> #{response_body[:individualId]}"
-      rescue HTTP::Error => _err
+      rescue HTTP::Error => err
         logger.info "Could not push patient: #{patient.id} | #{patient.full_name}"
-        raise _err
+        raise err
       end
     end
   end

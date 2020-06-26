@@ -4,7 +4,7 @@ namespace :import do
   task :facilities_from_csv, [:facilities_file] => :environment do |_t, args|
     facilities_file = args.facilities_file
     created_facilities = 0
-    facilities_csv = open(facilities_file)
+    facilities_csv = File.open(facilities_file)
     CSV.parse(facilities_csv, headers: true) do |row|
       facility_attributes = {
         name: row["name"],
