@@ -2,7 +2,7 @@ class PatientListDownloadJob < ApplicationJob
   queue_as :default
   self.queue_adapter = :sidekiq
 
-  def perform(recipient_email, model_type, params)
+  def perform(recipient_email, model_type, params, with_medical_history: false)
     case model_type
     when 'district' then
       district_name = params[:district_name]
@@ -14,7 +14,8 @@ class PatientListDownloadJob < ApplicationJob
       model_name = model.name
     end
 
-    patients_csv = PatientsExporter.csv(
+    exporter = with_medical_history ? PatientsWithHistoryExporter : PatientsExporter
+    patients_csv = exporter.csv(
       model
         .registered_patients
         .order("facilities.state, facilities.district, facilities.name, patients.recorded_at ASC")
