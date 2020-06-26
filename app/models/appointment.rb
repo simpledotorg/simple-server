@@ -56,7 +56,7 @@ class Appointment < ApplicationRecord
 
   def self.eligible_for_reminders(days_overdue: 3)
     overdue_by(days_overdue)
-      .includes(:patient)
+      .joins(:patient)
       .merge(Patient.contactable)
   end
 
