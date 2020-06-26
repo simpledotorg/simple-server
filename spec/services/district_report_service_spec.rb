@@ -102,7 +102,7 @@ describe DistrictReportService, type: :model do
 
     result[:controlled_patients].each do |month, count|
       expect(count).to eq(expected_controlled_patients[month]),
-        "expected count for #{month} to eq to #{count}, but was #{expected_controlled_patients[month].inspect}"
+        "expected count for #{month} to be #{expected_controlled_patients[month]}, but was #{count}"
     end
     result[:registrations].each do |month, count|
       expect(count).to eq(expected_registrations[month]),
