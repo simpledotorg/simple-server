@@ -73,6 +73,14 @@ class User < ApplicationRecord
     :authenticatable_salt,
     :invited_to_sign_up?, to: :email_authentication, allow_nil: true
 
+  def feature_enabled?(feature)
+    Flipper.enabled?(feature, self)
+  end
+
+  def flipper_id
+    "User;#{id}"
+  end
+
   def phone_number_authentication
     phone_number_authentications.first
   end

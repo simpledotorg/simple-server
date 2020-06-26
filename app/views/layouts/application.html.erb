@@ -66,7 +66,13 @@
                 <li class="nav-item">
                   <%= link_to "Dashboard", root_path, class: "nav-link #{active_controller?("organizations", "facility_groups")}" %>
                 </li>
+                <% if current_admin.feature_enabled?(:dashboard_v2) %>
+                <li class="nav-item">
+                  <%= link_to "Dashboard v2", dashboard_districts_path, class: "nav-link #{active_controller?("organizations", "facility_groups")}" %>
+                </li>
+                <% end %>
               <% end %>
+
 
               <% if policy(:dashboard).overdue_list? %>
                 <li class="nav-item">
