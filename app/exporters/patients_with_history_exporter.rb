@@ -11,14 +11,14 @@ module PatientsWithHistoryExporter
     random: "mg/dL",
     post_prandial: "mg/dL",
     fasting: "mg/dL",
-    hba1c: "%",
+    hba1c: "%"
   }.with_indifferent_access.freeze
 
   BLOOD_SUGAR_TYPES = {
     random: "Random",
     post_prandial: "Postprandial",
     fasting: "Fasting",
-    hba1c: "HbA1c",
+    hba1c: "HbA1c"
   }.with_indifferent_access.freeze
 
   def self.csv(patients)
@@ -128,7 +128,7 @@ module PatientsWithHistoryExporter
       registration_facility&.state,
       ("High" if patient.high_risk?),
       (1..DISPLAY_BLOOD_PRESSURES).map do |i|
-        bp = latest_bps[i-1]
+        bp = latest_bps[i - 1]
         previous_bp = latest_bps[i]
         appointment = appointment_created_on(patient, bp&.recorded_at)
 

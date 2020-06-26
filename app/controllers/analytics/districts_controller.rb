@@ -56,14 +56,14 @@ class Analytics::DistrictsController < AnalyticsController
 
     PatientListDownloadJob.perform_later(recipient_email, "district", {
       district_name: @organization_district.district_name,
-      organization_id: @organization_district.organization.id,
+      organization_id: @organization_district.organization.id
     }, with_medical_history: true)
 
     redirect_to(
       analytics_organization_district_path(id: @organization_district.district_name),
       notice: I18n.t("patient_list_email.notice",
-                     model_type: "district",
-                     model_name: @organization_district.district_name)
+        model_type: "district",
+        model_name: @organization_district.district_name)
     )
   end
 
