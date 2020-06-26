@@ -169,13 +169,13 @@ module PatientsWithHistoryExporter
   def self.medications_for(patient, date)
     medications = date ? patient.prescribed_drugs(date: date) : PrescriptionDrug.none
     sorted_medications = medications.order(is_protocol_drug: :desc, name: :asc)
-
-    result = (0...DISPLAY_MEDICATION_COLUMNS).flat_map do |i|
-      [sorted_medications[i]&.name, sorted_medications[i]&.dosage]
-    end
-
     other_medications = sorted_medications[DISPLAY_MEDICATION_COLUMNS..medications.length]
-    result << other_medications&.map { |medication| "#{medication.name}-#{medication.dosage}" }&.join(", ")
+                            &.map { |medication| "#{medication.name}-#{medication.dosage}" }
+                            &.join(", ")
+
+    (0...DISPLAY_MEDICATION_COLUMNS).flat_map do |i|
+      [sorted_medications[i]&.name, sorted_medications[i]&.dosage]
+    end << other_medications
   end
 
   def self.blood_sugar_value_with_unit(blood_sugar)
