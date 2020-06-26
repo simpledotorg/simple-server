@@ -142,7 +142,7 @@ module PatientsWithHistoryExporter
           appointment&.scheduled_date,
           appointment&.follow_up_days,
           "placeholder - BP #{i} Medication Updated",
-          *medications_for(patient, bp)]
+          *medications_for(patient, bp&.recorded_at)]
       end,
       latest_blood_sugar&.recorded_at.presence && I18n.l(latest_blood_sugar&.recorded_at),
       blood_sugar_value_with_unit(latest_blood_sugar),
@@ -166,13 +166,15 @@ module PatientsWithHistoryExporter
       .first
   end
 
-  def self.medications_for(patient, bp)
-    medications = bp ? patient.prescribed_drugs(date: bp.recorded_at) : []
+  def self.medications_for(patient, date)
+    medications = date ? patient.prescribed_drugs(date: date) : PrescriptionDrug.none
+    sorted_medications = medications.order(is_protocol_drug: :desc, name: :asc)
+
     result = (0...DISPLAY_MEDICATION_COLUMNS).flat_map do |i|
-      [medications[i]&.name, medications[i]&.dosage]
+      [sorted_medications[i]&.name, sorted_medications[i]&.dosage]
     end
 
-    other_medications = medications[DISPLAY_MEDICATION_COLUMNS..medications.length]
+    other_medications = sorted_medications[DISPLAY_MEDICATION_COLUMNS..medications.length]
     result << other_medications&.map { |medication| "#{medication.name}-#{medication.dosage}" }&.join(", ")
   end
 
