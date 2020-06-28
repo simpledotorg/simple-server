@@ -29,7 +29,7 @@ am_ET:
     genders: ["ሁሉም", "ወንድ", "ሴት", "ጾታእሊፍ"]
     all_time: "ሁልግዜ"
     follow_up_patients: "ተከታታይ ህክምና ላይ ያሉ የደም ግፊት ታካሚዎች"
-    registered_patients: "የተመዘገቡ በሽተኞች"
+    registered_patients: "የተመዘገቡ ታካሚዎች"
     hypertension_control: "የደም ግፊት መቆጣጠሪያ"
     hypertension_control_desc: "በወሩ ለመጨረሻ ጊዜ ክትትል ጊዜ ስንት የደም ግፊት ያላቸው ሕመምተኞች ከ 140/90 በታች ነበሩ?"
     notes: "ማስታወሻዎች"
