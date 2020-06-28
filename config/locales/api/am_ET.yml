@@ -45,6 +45,6 @@ am_ET:
       report_name: "ከፍተኛ የደም ግፊት ሪፖርት"
       patients_controlled_in_quarter_html: "ከ BP &lt ጋር የተጎበኙ ታካሚዎች፤"
       patients_uncontrolled_in_quarter_html: "ከ BP &ge ጋር የተጎበኙ ታካሚዎች፤"
-      patients_defaulted_in_quarter_html: "ታካሚዎች በተጠበቀው ቀጣይ ጉብኝት አልተገኙም"
+      patients_defaulted_in_quarter_html: "ታካሚዎች በተጠበቀው ተከታታይ ህከምና ጉብኝት አልተገኙም"
       new_patients_registered: "አዳዲስ ምዝገባዎች"
       patients_called_for_followup: "ህመምተኞችን ተከታተል"
