@@ -42,7 +42,7 @@ am_ET:
   dashboard:
     graphics:
       graphics_title_html: "በ <b>%{current_quarter_string}</b> ውስጥ በ <b>%{previous_quarter_string}</b> የተመዘገቡት %{patients_in_previous_quarter} ታካሚዎች ላይ ምን ተከስቷል?"
-      report_name: "የደም ግፊት መግለጫ"
+      report_name: "ከፍተኛ የደም ግፊት ሪፖርት"
       patients_controlled_in_quarter_html: "ከ BP &lt ጋር የተጎበኙ ታካሚዎች፤"
       patients_uncontrolled_in_quarter_html: "ከ BP &ge ጋር የተጎበኙ ታካሚዎች፤"
       patients_defaulted_in_quarter_html: "ታካሚዎች በተጠበቀው ቀጣይ ጉብኝት አልተገኙም"
