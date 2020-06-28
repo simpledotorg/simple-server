@@ -1,30 +1,30 @@
-am-ET:
+am_ET:
   date:
-    month_names: [~, "ጃንዋሪ", "ፌብሯሪ", "ማርች", "ኤፕሪል", "ሜይ", "ጁን", "ጁላይ", "ኦገስት", "ሴፕቴምበር", "ኦክቶበር", "ኖቬምበር", "ታህሳስ"]
-    abbr_month_names: [~, "ጃን", "ፌብ", "ማር", "አፕር", "ሜይ", "ጁን", "ጁል", "አገ", "ሰፕት", "ኦክት", "ኖቭ", "ታህ"]
+    month_names: [~, "ጥር", "የካቲት", "መጋቢት", "ሚያዚያ", "ግንቦት", "ሰኔ", "ሃምሌ", "ነሃሴ", "መስከረም", "ጥቅምት", "ህዳር", "ታህሳስ"]
+    abbr_month_names: [~, "ጥር", "የካ", "መጋ", "ሚያ", "ግን", "ሰኔ", "ሃም", "ነሃ", "መስከ", "ጥቅም", "ህዳር", "ታህ"]
   today_str: "ዛሬ"
   registration: "አዲስ ምዝገባ"
   reset_password: "PIN ዳግም ያስጀምሩ"
   login:
     error_messages:
-      unknown_user: "ያንን ተጠቃሚ አናውቀውም። እባክዎ ይፈትሹ እና እንደገና ይሞክሩ።"
-      invalid_otp: "የእርስዎ OTP አይዛመድም። ድጋሚ ሞክር?"
+      unknown_user: "ያህን ተጠቃሚ አናውቀውም። እባክዎ ይፈትሹ እና እንደገና ይሞክሩ።"
+      invalid_otp: "የእርስዎ OTP አይዛመድም። ድጋሚ ይሞክሩ?"
       expired_otp: "OTPዎ ጊዜው አልፏል። አዲስ ይጠይቁ።"
-      invalid_password: "የይለፍ ቃልዎ አይዛመድም። ድጋሚ ሞክር?"
+      invalid_password: "የይለፍ ቃልዎ አይዛመድም። ድጋሚ ይሞክሩ?"
       account_locked: "መለያዎ ለሚቀጥሉት %{minutes} ደቂቃዎች ተቆልፏል። እባክዎ ይቆዩ እና እንደገና ይሞክሩ።"
   sms:
-    request_otp: "<#> %{otp} የSimple ማረጋገጫ ኮድዎ ነው\n%{app_signature}"
+    request_otp: "<#>%{otp}የእርስዎ ሲምፕል መተግበሪያ የማረጋገጫ የሚስጥር ቁጥር ነው\n%{app_signature}"
     appointment_reminders:
-      missed_visit_sms_reminder: "በ %{facility_name} ያሉት ሰራተኞቻችን ስለ እርስዎ እና የልብዎ ጤንነት እያሰቡ ይገኛሉ። እባክዎ የደም ግፊት መድሃኒቶችዎን ይቀጥሉ። መድሃኒትዎን ከቅርቡ ጤና ጣቢያ ይውሰዱ። ANM ወይም ASHA ያግኙ።"
-      missed_visit_whatsapp_reminder: "በ %{facility_name} ያሉት ሰራተኞቻችን ስለ እርስዎ እና የልብዎ ጤንነት እያሰቡ ይገኛሉ። እባክዎ የደም ግፊት መድሃኒቶችዎን ይቀጥሉ። መድሃኒትዎን ከቅርቡ ጤና ጣቢያ ይውሰዱ። ANM ወይም ASHA ያግኙ።"
-    patient_request_otp: "<#> %{otp} የBP ፓስፖርት ማረጋገጫ ኮድዎ ነው\n%{app_signature}"
+      missed_visit_sms_reminder: "በ %{facility_name} ያሉት ሰራተኞቻችን ስለ እርስዎ እና የልብዎ ጤንነት እያሰቡ ይገኛሉ። እባክዎ የደም ግፊት መድሃኒቶችዎን ይቀጥሉ። መድሃኒትዎን ከቅርቡ ጤና ተቋም ይውሰዱ። ANM ወይም ASHA ያግኙ።"
+      missed_visit_whatsapp_reminder: "በ %{facility_name} ያሉት ሰራተኞቻችን ስለ እርስዎ እና የልብዎ ጤንነት እያሰቡ ይገኛሉ። እባክዎ የደም ግፊት መድሃኒቶችዎን ይቀጥሉ። መድሃኒትዎን ከቅርቡ ጤና ተቋም ይውሰዱ። ANM ወይም ASHA ያግኙ።"
+    patient_request_otp: "<#>%{otp} የእርስዎ ያደም ግፊት ፓስፖርት የማረጋገጫ የሚስጥር ቁጥር ነው\n%{app_signature}"
   analytics:
-    followup_patients: "ስንት ተከታታይ ታካሚዎች %{facility_name} ጎብኝተዋል?"
-    patients_enrolled: "ስንት አዲስ ታካሚዎች በ %{facility_name} ተመዝግበዋል?"
+    followup_patients: " %{facility_name} ተቋምን በተከታታይ ህክምና የጎበኙ ታካሚዎች ምን ያህል ናቸው ?"
+    patients_enrolled: "ምን ያህል አዲስ ታካሚዎች በ %{facility_name} ተቋም ተመዝግበዋል?"
     all_time_patients: "ሁል ግዜ: %{count} ታካሚዎች"
     updated_at: "በ %{time} ዘምኗል"
   user_analytics:
-    hypertension: "የደም ብዛት"
+    hypertension: "ከፍተኛ የደም ግፊት"
     diabetes: "የስኳር በሽታ"
     genders: ["ሁሉም", "ወንድ", "ሴት", "ጾታእሊፍ"]
     all_time: "ሁል፟፟ግዜ"
