@@ -27,7 +27,7 @@ am_ET:
     hypertension: "ከፍተኛ የደም ግፊት"
     diabetes: "የስኳር በሽታ"
     genders: ["ሁሉም", "ወንድ", "ሴት", "ጾታእሊፍ"]
-    all_time: "ሁል፟፟ግዜ"
+    all_time: "ሁልግዜ"
     follow_up_patients: "ተከታታይ የደም ግፊት ህመምተኞች"
     registered_patients: "የተመዘገቡ በሽተኞች"
     hypertension_control: "የደም ግፊት መቆጣጠሪያ"
