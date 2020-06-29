@@ -12,7 +12,6 @@ class DropAuditLogs < ActiveRecord::Migration[5.1]
       t.uuid :auditable_id, null: false
       t.timestamps
       t.datetime :deleted_at
-
     end
 
     add_index :audit_logs, [:auditable_type, :auditable_id]
