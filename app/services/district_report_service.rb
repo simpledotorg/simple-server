@@ -99,22 +99,15 @@ class DistrictReportService
   end
 
   def top_district
-    districts_by_rate = FacilityGroup.all.inject({}) do |sum, district|
+    districts_by_rate = FacilityGroup.all.each_with_object({}) { |district, hsh|
       controlled = ControlledPatientsQuery.call(facilities: district.facilities, time: selected_date)
 
       registration_count = Patient.with_hypertension.where(registration_facility: district.facilities).where("recorded_at <= ?", selected_date).count
-
-      puts "controlled count #{controlled.count}"
-      puts "registration count for #{district.name} #{registration_count}"
       percentage_controlled = controlled.count.to_f / registration_count
-      puts "percentage_controlled #{percentage_controlled}"
 
-      sum[district] = percentage_controlled
-      sum
-    end
-    pp districts_by_rate
+      hsh[district] = percentage_controlled
+    }
     top = districts_by_rate.select { |district, rate| rate.present? && !rate.nan? }.max_by { |district, rate| rate }
-    {top[0] => top[1]}
+    {top[0] => top[1] * 100}
   end
-
 end

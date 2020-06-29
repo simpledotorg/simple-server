@@ -108,7 +108,7 @@ describe DistrictReportService, type: :model do
     expect(result[:cumulative_registrations]).to eq(6)
   end
 
-  fit "gets top district" do
+  it "gets top district" do
     darrang = FactoryBot.create(:facility_group, name: "Darrang")
     darrang_facilities = FactoryBot.create_list(:facility, 2, facility_group: darrang)
     kadapa = FactoryBot.create(:facility_group, name: "Kadapa")
@@ -126,7 +126,6 @@ describe DistrictReportService, type: :model do
     refresh_views
 
     service = DistrictReportService.new(facilities: darrang.facilities, selected_date: june_1)
-    p service.top_district
     expect(service.top_district).to eq({koriya => 100.0})
 
   end
