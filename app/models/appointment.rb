@@ -56,11 +56,8 @@ class Appointment < ApplicationRecord
 
   def self.eligible_for_reminders(days_overdue: 3)
     overdue_by(days_overdue)
-      .includes(:patient)
-      .where(patients: {reminder_consent: "granted"})
-      .where.not(patients: {status: "dead"})
-      .includes(patient: [:phone_numbers])
-      .merge(PatientPhoneNumber.phone_type_mobile)
+      .joins(:patient)
+      .merge(Patient.contactable)
   end
 
   def days_overdue
