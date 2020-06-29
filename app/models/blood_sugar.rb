@@ -24,7 +24,7 @@ class BloodSugar < ApplicationRecord
     random: "mg/dL",
     post_prandial: "mg/dL",
     fasting: "mg/dL",
-    hba1c: "%",
+    hba1c: "%"
   }.with_indifferent_access.freeze
 
   V3_TYPES = %i[random post_prandial fasting].freeze
