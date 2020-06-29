@@ -7,7 +7,7 @@ class Dashboard::DistrictsController < AdminController
 
   def index
     authorize([:manage, Organization])
-    @organizations = policy_scope([:manage, Organization]).order(:name)
+    @organizations = policy_scope([:manage, :facility, Organization])
   end
 
   def show
