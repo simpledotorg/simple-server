@@ -30,7 +30,7 @@ class DistrictReportService
       time = selected_date.advance(months: n).end_of_month
       formatted_period = time.to_s(:month_year)
 
-      @data[:controlled_patients][formatted_period] = controlled_patients(time).count
+      @data[:controlled_patients][formatted_period] = controlled_patients_count(time)
       @data[:registrations][formatted_period] = lookup_registration_count(time)
     end
   end
@@ -91,19 +91,10 @@ class DistrictReportService
     end
   end
 
-  def controlled_patients(time)
-    end_range = time.end_of_month
-    mid_range = time.advance(months: -1).end_of_month
-    beg_range = time.advance(months: -2).end_of_month
-    sub_query = LatestBloodPressuresPerPatientPerMonth
-      .select("distinct on (patient_id) *")
-      .under_control
-      .order("patient_id, bp_recorded_at DESC, bp_id")
-      .where(registration_facility_id: facilities)
-      .where("(year = ? AND month = ?) OR (year = ? AND month = ?) OR (year = ? AND month = ?)",
-        beg_range.year.to_s, beg_range.month.to_s,
-        mid_range.year.to_s, mid_range.month.to_s,
-        end_range.year.to_s, end_range.month.to_s)
-    LatestBloodPressuresPerPatientPerMonth.from(sub_query, "latest_blood_pressures_per_patient_per_months")
+  def controlled_patients_count(time)
+    ControlledPatientsQuery.call(facilities: facilities, time: time).count
+  end
+
+  def top_district
   end
 end

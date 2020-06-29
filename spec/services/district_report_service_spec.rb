@@ -49,11 +49,9 @@ describe DistrictReportService, type: :model do
     refresh_views
 
     service = DistrictReportService.new(facilities: facility_group.facilities, selected_date: june_1)
-    expect(service.controlled_patients(jan_1).count).to eq(controlled_in_jan_and_june.size)
-    expect(service.controlled_patients(jan_1).map(&:patient)).to match_array(controlled_in_jan_and_june)
+    expect(service.controlled_patients_count(jan_1)).to eq(controlled_in_jan_and_june.size)
     june_controlled = controlled_in_jan_and_june << controlled_just_for_june
-    expect(service.controlled_patients(june_1).count).to eq(june_controlled.size)
-    expect(service.controlled_patients(june_1).map(&:patient)).to match_array(june_controlled)
+    expect(service.controlled_patients_count(june_1)).to eq(june_controlled.size)
   end
 
   it "returns counts for last n months for controlled patients and registrations" do
