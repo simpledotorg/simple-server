@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe PatientListDownloadJob, type: :job do
   include ActiveJob::TestHelper
