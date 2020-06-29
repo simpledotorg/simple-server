@@ -1,7 +1,7 @@
-require 'rails_helper'
+require "rails_helper"
 
-RSpec.describe 'Encounters sync', type: :request do
-  let(:sync_route) { '/api/v3/encounters/sync' }
+RSpec.describe "Encounters sync", type: :request do
+  let(:sync_route) { "/api/v3/encounters/sync" }
   let(:facility) { create(:facility) }
   let(:request_user) { create(:user, registration_facility: facility) }
   let(:patient) { create(:patient, registration_user: request_user, registration_facility: facility) }
@@ -21,5 +21,5 @@ RSpec.describe 'Encounters sync', type: :request do
     Api::V3::EncounterTransformer.to_response(encounter)
   end
 
-  include_examples 'v3 API sync requests'
+  include_examples "v3 API sync requests"
 end
