@@ -155,59 +155,61 @@ module PatientsWithHistoryExporter
     csv_fields
   end
 
-  private
+  class << self
+    private
 
-  def self.zone_column
-    "Patient #{Address.human_attribute_name :zone}"
-  end
-
-  def self.appointment_created_on(patient, date)
-    patient.appointments
-      .where(device_created_at: date&.all_day)
-      .order(device_created_at: :asc)
-      .first
-  end
-
-  def self.cache_medication_history(patient, dates)
-    @medications = {patient => {}}
-
-    dates.each do |date|
-      @medications[patient][date] = date ? patient.prescribed_drugs(date: date) : PrescriptionDrug.none
+    def zone_column
+      "Patient #{Address.human_attribute_name :zone}"
     end
-  end
 
-  def self.medications(patient, date)
-    date ? @medications[patient][date] : PrescriptionDrug.none
-  end
+    def appointment_created_on(patient, date)
+      patient.appointments
+        .where(device_created_at: date&.all_day)
+        .order(device_created_at: :asc)
+        .first
+    end
 
-  def self.medication_updated?(patient, date, previous_date)
-    current_medications = medications(patient, date).to_set
-    previous_medications = medications(patient, previous_date).to_set
+    def cache_medication_history(patient, dates)
+      @medications = {patient => {}}
 
-    current_medications == previous_medications ? "No" : "Yes"
-  end
+      dates.each do |date|
+        @medications[patient][date] = date ? patient.prescribed_drugs(date: date) : PrescriptionDrug.none
+      end
+    end
 
-  def self.medications_for(patient, date)
-    medications = medications(patient, date)
-    sorted_medications = medications.order(is_protocol_drug: :desc, name: :asc)
-    other_medications = sorted_medications[DISPLAY_MEDICATION_COLUMNS..medications.length]
+    def medications(patient, date)
+      date ? @medications[patient][date] : PrescriptionDrug.none
+    end
+
+    def medication_updated?(patient, date, previous_date)
+      current_medications = medications(patient, date).to_set
+      previous_medications = medications(patient, previous_date).to_set
+
+      current_medications == previous_medications ? "No" : "Yes"
+    end
+
+    def medications_for(patient, date)
+      medications = medications(patient, date)
+      sorted_medications = medications.order(is_protocol_drug: :desc, name: :asc)
+      other_medications = sorted_medications[DISPLAY_MEDICATION_COLUMNS..medications.length]
                             &.map { |medication| "#{medication.name}-#{medication.dosage}" }
                             &.join(", ")
 
-    (0...DISPLAY_MEDICATION_COLUMNS).flat_map { |i|
-      [sorted_medications[i]&.name, sorted_medications[i]&.dosage]
-    } << other_medications
-  end
+      (0...DISPLAY_MEDICATION_COLUMNS).flat_map { |i|
+        [sorted_medications[i]&.name, sorted_medications[i]&.dosage]
+      } << other_medications
+    end
 
-  def self.blood_sugar_value_with_unit(blood_sugar)
-    return unless blood_sugar.present?
+    def blood_sugar_value_with_unit(blood_sugar)
+      return unless blood_sugar.present?
 
-    "#{blood_sugar.blood_sugar_value} #{BLOOD_SUGAR_UNITS[blood_sugar.blood_sugar_type]}"
-  end
+      "#{blood_sugar.blood_sugar_value} #{BLOOD_SUGAR_UNITS[blood_sugar.blood_sugar_type]}"
+    end
 
-  def self.blood_sugar_type(blood_sugar)
-    return unless blood_sugar.present?
+    def blood_sugar_type(blood_sugar)
+      return unless blood_sugar.present?
 
-    BLOOD_SUGAR_TYPES[blood_sugar.blood_sugar_type]
+      BLOOD_SUGAR_TYPES[blood_sugar.blood_sugar_type]
+    end
   end
 end
