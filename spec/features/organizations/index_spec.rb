@@ -1,8 +1,8 @@
-require 'rails_helper'
+require "rails_helper"
 
-RSpec.feature 'Verify Dashboard', type: :feature do
-  let!(:ihmi) { create(:organization, name: 'IHMI') }
-  let!(:path) { create(:organization, name: 'PATH') }
+RSpec.feature "Verify Dashboard", type: :feature do
+  let!(:ihmi) { create(:organization, name: "IHMI") }
+  let!(:path) { create(:organization, name: "PATH") }
   let!(:owner) { create(:admin) }
   let!(:permissions) do
     [
@@ -17,40 +17,40 @@ RSpec.feature 'Verify Dashboard', type: :feature do
   dashboard_navigation = Navigations::DashboardPageNavigation.new
   org_page = AdminPage::Organizations::Index.new
 
-  xit 'Verify organization is displayed in dashboard' do
+  xit "Verify organization is displayed in dashboard" do
     visit root_path
     login_page.do_login(owner.email, owner.password)
 
     # assertion
     expect(dashboard.get_organization_count).to eq(2)
-    expect(page).to have_content('IHMI')
-    expect(page).to have_content('PATH')
+    expect(page).to have_content("IHMI")
+    expect(page).to have_content("PATH")
   end
 
-  it 'Verify organisation name/count get updated in dashboard when new org is added via manage section' do
+  it "Verify organisation name/count get updated in dashboard when new org is added via manage section" do
     visit root_path
     login_page.do_login(owner.email, owner.password)
 
     # total number of organization present in dashboard
     var_organization_count = dashboard.get_organization_count
 
-    dashboard_navigation.select_manage_option('Organizations')
+    dashboard_navigation.select_manage_option("Organizations")
 
     org_page.click_on_add_organization_button
-    AdminPage::Organizations::New.new.create_new_organization('test', 'testDescription')
+    AdminPage::Organizations::New.new.create_new_organization("test", "testDescription")
 
     # assertion at organization screen
-    expect(page).to have_content('Organization was successfully created.')
-    org_page.is_organization_name_present('Test')
+    expect(page).to have_content("Organization was successfully created.")
+    org_page.is_organization_name_present("Test")
 
-    dashboard_navigation.select_main_menu_tab('Dashboard')
+    dashboard_navigation.select_main_menu_tab("Dashboard")
 
     # assertion at dashboard screen
-    expect(page).to have_content('Test')
+    expect(page).to have_content("Test")
     expect(dashboard.get_organization_count).to eq(var_organization_count + 1)
   end
 
-  it 'SignIn as Owner and verify approval request in dashboard' do
+  it "SignIn as Owner and verify approval request in dashboard" do
     user = create(:user, :with_phone_number_authentication)
     user.sync_approval_status = User.sync_approval_statuses[:requested]
     user.save!
@@ -58,8 +58,8 @@ RSpec.feature 'Verify Dashboard', type: :feature do
     visit root_path
     login_page.do_login(owner.email, owner.password)
 
-    expect(page).to have_content('Allow access')
-    expect(page).to have_selector('i.fa-times')
+    expect(page).to have_content("Allow access")
+    expect(page).to have_selector("i.fa-times")
 
     # check for user info
     expect(page).to have_content(user.full_name)
