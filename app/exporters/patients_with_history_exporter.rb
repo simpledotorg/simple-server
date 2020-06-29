@@ -62,6 +62,7 @@ module PatientsWithHistoryExporter
       "Registration Facility District",
       "Registration Facility State",
       "Risk Level",
+      "Days Overdue For Next Follow-up",
       (1..DISPLAY_BLOOD_PRESSURES).map do |i|
         ["BP #{i} Date",
           "BP #{i} Quarter",
@@ -96,6 +97,7 @@ module PatientsWithHistoryExporter
     registration_facility = patient.registration_facility
     latest_bps = patient.latest_blood_pressures.first(DISPLAY_BLOOD_PRESSURES)
     latest_blood_sugar = patient.latest_blood_sugar
+    latest_appointment = patient.latest_scheduled_appointment
     latest_bp_passport = patient.latest_bp_passport
     cache_medication_history(patient, latest_bps.map(&:recorded_at))
     zone_column_index = csv_headers.index(zone_column)
@@ -119,6 +121,7 @@ module PatientsWithHistoryExporter
       registration_facility&.district,
       registration_facility&.state,
       ("High" if patient.high_risk?),
+      latest_appointment&.days_overdue,
       (1..DISPLAY_BLOOD_PRESSURES).map do |i|
         bp = latest_bps[i - 1]
         previous_bp = latest_bps[i]
