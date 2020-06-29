@@ -41,4 +41,8 @@ class BloodSugar < ApplicationRecord
   def diabetic?
     blood_sugar_value >= THRESHOLDS[:high][blood_sugar_type]
   end
+
+  def to_s
+    "#{blood_sugar_value} #{BLOOD_SUGAR_UNITS[blood_sugar_type]}"
+  end
 end

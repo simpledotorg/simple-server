@@ -123,7 +123,7 @@ module PatientsExporter
       latest_bp_facility&.district,
       latest_bp_facility&.state,
       latest_blood_sugar&.recorded_at.presence && I18n.l(latest_blood_sugar&.recorded_at),
-      blood_sugar_value_with_unit(latest_blood_sugar),
+      latest_blood_sugar&.to_s,
       blood_sugar_type(latest_blood_sugar),
       latest_appointment&.facility&.name,
       latest_appointment&.scheduled_date&.to_s(:rfc822),
@@ -146,12 +146,6 @@ module PatientsExporter
 
   def self.zone_column
     "Patient #{Address.human_attribute_name :zone}"
-  end
-
-  def self.blood_sugar_value_with_unit(blood_sugar)
-    return unless blood_sugar.present?
-
-    "#{blood_sugar.blood_sugar_value} #{BloodSugar::BLOOD_SUGAR_UNITS[blood_sugar.blood_sugar_type]}"
   end
 
   def self.blood_sugar_type(blood_sugar)

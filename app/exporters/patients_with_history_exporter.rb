@@ -139,7 +139,7 @@ module PatientsWithHistoryExporter
           *medications_for(patient, bp&.recorded_at)]
       end,
       latest_blood_sugar&.recorded_at.presence && I18n.l(latest_blood_sugar&.recorded_at),
-      blood_sugar_value_with_unit(latest_blood_sugar),
+      latest_blood_sugar&.to_s,
       blood_sugar_type(latest_blood_sugar)
     ].flatten
 
@@ -190,12 +190,6 @@ module PatientsWithHistoryExporter
       (0...DISPLAY_MEDICATION_COLUMNS).flat_map { |i|
         [sorted_medications[i]&.name, sorted_medications[i]&.dosage]
       } << other_medications
-    end
-
-    def blood_sugar_value_with_unit(blood_sugar)
-      return unless blood_sugar.present?
-
-      "#{blood_sugar.blood_sugar_value} #{BloodSugar::BLOOD_SUGAR_UNITS[blood_sugar.blood_sugar_type]}"
     end
 
     def blood_sugar_type(blood_sugar)
