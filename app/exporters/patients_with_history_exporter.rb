@@ -194,9 +194,9 @@ module PatientsWithHistoryExporter
                             &.map { |medication| "#{medication.name}-#{medication.dosage}" }
                             &.join(", ")
 
-    (0...DISPLAY_MEDICATION_COLUMNS).flat_map do |i|
+    (0...DISPLAY_MEDICATION_COLUMNS).flat_map { |i|
       [sorted_medications[i]&.name, sorted_medications[i]&.dosage]
-    end << other_medications
+    } << other_medications
   end
 
   def self.blood_sugar_value_with_unit(blood_sugar)
