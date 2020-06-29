@@ -14,10 +14,10 @@ FactoryBot.define do
     trait(:with_encounter) do
       after :build do |blood_pressure|
         create(:encounter,
-               :with_observables,
-               patient: blood_pressure.patient,
-               observable: blood_pressure,
-               facility: blood_pressure.facility)
+          :with_observables,
+          patient: blood_pressure.patient,
+          observable: blood_pressure,
+          facility: blood_pressure.facility)
       end
     end
 
@@ -44,16 +44,16 @@ end
 
 def build_invalid_blood_pressure_payload
   build_blood_pressure_payload.merge(
-    'created_at' => nil,
-    'systolic' => nil,
-    'diastolic' => 'foo'
+    "created_at" => nil,
+    "systolic" => nil,
+    "diastolic" => "foo"
   )
 end
 
 def updated_blood_pressure_payload(existing_blood_pressure)
   update_time = 10.days.from_now
   build_blood_pressure_payload(existing_blood_pressure).merge(
-    'updated_at' => update_time,
-    'systolic' => rand(80..240)
+    "updated_at" => update_time,
+    "systolic" => rand(80..240)
   )
 end
