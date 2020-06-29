@@ -1,14 +1,14 @@
 module AdminPage
   module FacilityGroups
     class New < ApplicationPage
-      CREATE_FACILITY_GROUP_BUTTON = { css: "input[value='Save facility group']" }.freeze
-      FACILITY_NAME = { id: 'facility_name' }.freeze
-      DELETE_FACILITY_GROUP_BUTTON = { css: 'a.ml-4' }.freeze
-      PROTOCOL_DROPDOWN = { xpath: "//select[@name='facility_group[protocol_id]']" }.freeze
-      UNASSOCIATED_FACILITY_CHECKBOX = { css: "input[type='checkbox']" }.freeze
-      SUCCESSFUL_MESSAGE = { css: 'div.alert-primary' }.freeze
-      MESSAGE_CROSS_BUTTON = { css: 'button.close' }.freeze
-      UPDATE_FACILITY_GROUP_BUTTON = { css: "input[value='Save facility group']" }.freeze
+      CREATE_FACILITY_GROUP_BUTTON = {css: "input[value='Save facility group']"}.freeze
+      FACILITY_NAME = {id: "facility_name"}.freeze
+      DELETE_FACILITY_GROUP_BUTTON = {css: "a.ml-4"}.freeze
+      PROTOCOL_DROPDOWN = {xpath: "//select[@name='facility_group[protocol_id]']"}.freeze
+      UNASSOCIATED_FACILITY_CHECKBOX = {css: "input[type='checkbox']"}.freeze
+      SUCCESSFUL_MESSAGE = {css: "div.alert-primary"}.freeze
+      MESSAGE_CROSS_BUTTON = {css: "button.close"}.freeze
+      UPDATE_FACILITY_GROUP_BUTTON = {css: "input[value='Save facility group']"}.freeze
 
       def select_organisation_name_dropdown(value)
         find(:xpath, "//select[@name='facility_group[organization_id]']").find(:option, value).select_option
