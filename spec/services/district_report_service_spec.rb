@@ -2,6 +2,7 @@ require "rails_helper"
 
 describe DistrictReportService, type: :model do
   let(:user) { create(:user) }
+  let(:june_1) { Time.parse("June 1, 2020") }
 
   def refresh_views
     ActiveRecord::Base.transaction do
@@ -17,7 +18,6 @@ describe DistrictReportService, type: :model do
     facility_2 = create(:facility)
 
     jan_1 = Time.parse("January 1st, 2020")
-    june_1 = Date.parse("June 1, 2020")
 
     controlled_in_jan_and_june = create_list(:patient, 2, full_name: "controlled", recorded_at: Time.current, registration_facility: facility, registration_user: user)
     controlled_just_for_june = create(:patient, full_name: "just for june", registration_facility: facility, registration_user: user)
@@ -83,7 +83,6 @@ describe DistrictReportService, type: :model do
 
     refresh_views
 
-    june_1 = Date.parse("June 1, 2020")
     service = DistrictReportService.new(facilities: facility_group.facilities, selected_date: june_1)
     result = service.call
 
@@ -107,5 +106,28 @@ describe DistrictReportService, type: :model do
         "expected count for #{month} to be #{expected_registrations[month]}, but was #{count}"
     end
     expect(result[:cumulative_registrations]).to eq(6)
+  end
+
+  fit "gets top district" do
+    darrang = FactoryBot.create(:facility_group, name: "Darrang")
+    darrang_facilities = FactoryBot.create_list(:facility, 2, facility_group: darrang)
+    kadapa = FactoryBot.create(:facility_group, name: "Kadapa")
+    kadapa_facilities = FactoryBot.create_list(:facility, 2, facility_group: kadapa)
+    koriya = FactoryBot.create(:facility_group, name: "Koriya")
+    koriya_facilities = FactoryBot.create_list(:facility, 2, facility_group: koriya)
+
+    Timecop.freeze("April 15th 2020") do
+      patients_with_controlled_bp = create_list(:patient, 4, recorded_at: 1.month.ago, registration_facility: koriya_facilities.first, registration_user: user)
+      patients_with_controlled_bp.map do |patient|
+        create(:blood_pressure, :under_control, facility: koriya_facilities.first, patient: patient, recorded_at: Time.current)
+      end
+    end
+
+    refresh_views
+
+    service = DistrictReportService.new(facilities: darrang.facilities, selected_date: june_1)
+    p service.top_district
+    expect(service.top_district).to eq({koriya => 100.0})
+
   end
 end

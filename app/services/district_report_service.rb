@@ -9,7 +9,8 @@ class DistrictReportService
       controlled_patients: {},
       registrations: {},
       cumulative_registrations: 0,
-      quarterly_registrations: []
+      quarterly_registrations: [],
+      benchmarks: {}
     }.with_indifferent_access
   end
 
@@ -19,6 +20,8 @@ class DistrictReportService
     compile_control_and_registration_data
 
     compile_cohort_trend_data
+
+    @data[:benchmarks][:top_district] = top_district
 
     data
   end
@@ -96,5 +99,22 @@ class DistrictReportService
   end
 
   def top_district
+    districts_by_rate = FacilityGroup.all.inject({}) do |sum, district|
+      controlled = ControlledPatientsQuery.call(facilities: district.facilities, time: selected_date)
+
+      registration_count = Patient.with_hypertension.where(registration_facility: district.facilities).where("recorded_at <= ?", selected_date).count
+
+      puts "controlled count #{controlled.count}"
+      puts "registration count for #{district.name} #{registration_count}"
+      percentage_controlled = controlled.count.to_f / registration_count
+      puts "percentage_controlled #{percentage_controlled}"
+
+      sum[district] = percentage_controlled
+      sum
+    end
+    pp districts_by_rate
+    top = districts_by_rate.select { |district, rate| rate.present? && !rate.nan? }.max_by { |district, rate| rate }
+    {top[0] => top[1]}
   end
+
 end

@@ -256,7 +256,7 @@
           </div>
           <div class="pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
             <p class="ta-lg-center mb-lg-0 c-lg-grey-dark">
-              Top district
+              Top district: <%= @benchmarks[:top_district].keys.first.name %>
             </p>
           </div>
           <div class="pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
@@ -278,17 +278,19 @@
           </div>
           <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
             <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">Bathinda: </span> Coming Soon...
+              <span class="fw-bold d-lg-none"> </span> <%= number_to_percentage(@benchmarks[:top_district].values.first * 100, precision: 0) %>
             </p>
           </div>
           <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
             <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">Top district: </span> Coming Soon...
+              <span class="fw-bold d-lg-none"> </span>
+              <%= compute_percentage(@controlled_patients.values.last.to_f, @registrations.values.last.to_f, precision: 0) %>
             </p>
           </div>
           <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">Difference: </span> Coming Soon...
+              <span class="fw-bold d-lg-none">Difference: </span>
+                <%= ((@benchmarks[:top_district].values.first * 100) - (@controlled_patients.values.last.to_f / @registrations.values.last.to_f * 100)).round %>%
             </p>
           </div>
         </div>
@@ -305,7 +307,7 @@
           </div>
           <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
             <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">Top district: </span> Coming Soon...
+              <span class="fw-bold d-lg-none">Top district: </span> <%= @quarterly_registrations.first[:controlled] %> TODO percentage?
             </p>
           </div>
           <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
