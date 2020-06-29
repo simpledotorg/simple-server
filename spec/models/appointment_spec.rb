@@ -237,7 +237,8 @@ describe Appointment, type: :model do
     describe "anonymized_data" do
       it "correctly retrieves the anonymised data for an appointment" do
         anonymised_data =
-          {id: Hashable.hash_uuid(appointment.id),
+          {
+            id: Hashable.hash_uuid(appointment.id),
             patient_id: Hashable.hash_uuid(appointment.patient_id),
             created_at: appointment.created_at,
             registration_facility_name: appointment.facility.name,
@@ -246,7 +247,8 @@ describe Appointment, type: :model do
             overdue: appointment.days_overdue > 0 ? "Yes" : "No",
             status: appointment.status,
             agreed_to_visit: appointment.agreed_to_visit,
-            remind_on: appointment.remind_on}
+            remind_on: appointment.remind_on
+          }
 
         expect(appointment.anonymized_data).to eq anonymised_data
       end

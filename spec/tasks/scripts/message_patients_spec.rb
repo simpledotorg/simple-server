@@ -34,7 +34,7 @@ RSpec.describe MessagePatients do
         mock_notification_service(patients.first)
         mock_notification_service(patients.second)
 
-        expect(MessagePatients.call(Patient.all, message, whatsapp: false, verbose: false).report)
+        expect(MessagePatients.call(Patient.all, message, channel: :sms, verbose: false).report)
           .to eq({queued: [patients.first.id, patients.second.id]})
       end
 
@@ -44,7 +44,7 @@ RSpec.describe MessagePatients do
         mock_notification_service(patients.first)
         mock_notification_service(patients.second, exception: true)
 
-        expect(MessagePatients.call(Patient.all, message, whatsapp: false, verbose: false).report)
+        expect(MessagePatients.call(Patient.all, message, channel: :sms, verbose: false).report)
           .to eq({queued: [patients.first.id], exception: [patients.second.id]})
       end
     end
@@ -54,6 +54,14 @@ RSpec.describe MessagePatients do
 
       expect {
         MessagePatients.call(patients, message, verbose: false)
+      }.to raise_error(ArgumentError)
+    end
+
+    it "only accepts valid messaging channels" do
+      _patients = create_list(:patient, 2)
+
+      expect {
+        MessagePatients.call(Patient.all, message, channel: :phone, verbose: false)
       }.to raise_error(ArgumentError)
     end
   end

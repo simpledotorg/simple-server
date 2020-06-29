@@ -3,12 +3,13 @@ class MessagePatients
     new(*args).call
   end
 
-  attr_reader :patients, :message, :whatsapp, :dryrun, :verbose, :report
+  attr_reader :patients, :message, :channel, :dryrun, :verbose, :report
+  VALID_CHANNELS = [:whatsapp, :sms]
 
-  def initialize(patients, message, whatsapp: true, dryrun: false, verbose: true)
+  def initialize(patients, message, channel: :whatsapp, dryrun: false, verbose: true)
     @patients = patients
     @message = message
-    @whatsapp = whatsapp
+    @channel = channel
     @dryrun = dryrun
     @verbose = verbose
     @report = {}
@@ -19,45 +20,57 @@ class MessagePatients
       raise ArgumentError, "Patients should be passed in as an ActiveRecord::Relation."
     end
 
-    log("Total patients that will be contacted via #{whatsapp ? "whatsapp" : "sms"}: #{valid_patients.count}.")
+    unless VALID_CHANNELS.include?(channel)
+      raise ArgumentError, "Message channels can only be of types: #{VALID_CHANNELS}"
+    end
+
+    log("Total patients that will be contacted via #{channel}: #{contactable_patients.count}.")
 
     return if dryrun
 
-    send_messages!
+    send_messages
     print_report
     self
   end
 
   private
 
-  def send_messages!
-    valid_patients.each do |patient|
-      phone_number = patient.latest_phone_number
+  def send_messages
+    contactable_patients.each do |patient|
+      phone_number = patient.latest_mobile_number
 
       begin
         response =
-          if whatsapp
+          if whatsapp?
             NotificationService
               .new
               .send_whatsapp(phone_number, message)
-          else
+          elsif sms?
             NotificationService
               .new
               .send_sms(phone_number, message)
           end
-      rescue Twilio::REST::TwilioError => _
-        update_report!(:exception, patient: patient)
+      rescue Twilio::REST::TwilioError
+        update_report(:exception, patient: patient)
       else
-        update_report!(:responses, response: response, patient: patient)
+        update_report(:responses, response: response, patient: patient)
       end
     end
   end
 
-  def valid_patients
-    @valid_patients ||= patients.contactable
+  def contactable_patients
+    @contactable_patients ||= patients.contactable
   end
 
-  def update_report!(response_type, params)
+  def whatsapp?
+    channel == :whatsapp
+  end
+
+  def sms?
+    channel == :sms
+  end
+
+  def update_report(response_type, params)
     status =
       case response_type
         when :exception
