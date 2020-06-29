@@ -4,14 +4,6 @@ module PatientsExporter
   extend QuarterHelper
 
   BATCH_SIZE = 20
-
-  BLOOD_SUGAR_UNITS = {
-    random: "mg/dL",
-    post_prandial: "mg/dL",
-    fasting: "mg/dL",
-    hba1c: "%",
-  }.with_indifferent_access.freeze
-
   BLOOD_SUGAR_TYPES = {
     random: "Random",
     post_prandial: "Postprandial",
@@ -159,7 +151,7 @@ module PatientsExporter
   def self.blood_sugar_value_with_unit(blood_sugar)
     return unless blood_sugar.present?
 
-    "#{blood_sugar.blood_sugar_value} #{BLOOD_SUGAR_UNITS[blood_sugar.blood_sugar_type]}"
+    "#{blood_sugar.blood_sugar_value} #{BloodSugar::BLOOD_SUGAR_UNITS[blood_sugar.blood_sugar_type]}"
   end
 
   def self.blood_sugar_type(blood_sugar)

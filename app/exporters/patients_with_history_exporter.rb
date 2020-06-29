@@ -3,23 +3,15 @@ require "csv"
 module PatientsWithHistoryExporter
   extend QuarterHelper
 
-  DISPLAY_BLOOD_PRESSURES = 3
-  DISPLAY_MEDICATION_COLUMNS = 5
   BATCH_SIZE = 20
-
-  BLOOD_SUGAR_UNITS = {
-    random: "mg/dL",
-    post_prandial: "mg/dL",
-    fasting: "mg/dL",
-    hba1c: "%"
-  }.with_indifferent_access.freeze
-
   BLOOD_SUGAR_TYPES = {
     random: "Random",
     post_prandial: "Postprandial",
     fasting: "Fasting",
     hba1c: "HbA1c"
   }.with_indifferent_access.freeze
+  DISPLAY_BLOOD_PRESSURES = 3
+  DISPLAY_MEDICATION_COLUMNS = 5
 
   def self.csv(patients)
     CSV.generate(headers: true) do |csv|
@@ -203,7 +195,7 @@ module PatientsWithHistoryExporter
     def blood_sugar_value_with_unit(blood_sugar)
       return unless blood_sugar.present?
 
-      "#{blood_sugar.blood_sugar_value} #{BLOOD_SUGAR_UNITS[blood_sugar.blood_sugar_type]}"
+      "#{blood_sugar.blood_sugar_value} #{BloodSugar::BLOOD_SUGAR_UNITS[blood_sugar.blood_sugar_type]}"
     end
 
     def blood_sugar_type(blood_sugar)
