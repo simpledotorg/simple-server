@@ -1,6 +1,6 @@
-require 'rails_helper'
+require "rails_helper"
 
-RSpec.feature 'Facility analytics', type: :feature do
+RSpec.feature "Facility analytics", type: :feature do
   let!(:owner) { create(:admin) }
   let!(:user_permission) do
     [
@@ -10,8 +10,8 @@ RSpec.feature 'Facility analytics', type: :feature do
   end
   let!(:facility) { create(:facility) }
   let!(:other_facility) { create(:facility) }
-  let!(:bp_1) { create(:blood_pressure, facility: facility, systolic: 145, diastolic: 95, recorded_at: Time.zone.parse('2019-03-15 8:00am +05:30')) }
-  let!(:bp_2) { create(:blood_pressure, facility: facility, systolic: 115, diastolic: 75, recorded_at: Time.zone.parse('2019-03-15 2:15pm +05:30')) }
+  let!(:bp_1) { create(:blood_pressure, facility: facility, systolic: 145, diastolic: 95, recorded_at: Time.zone.parse("2019-03-15 8:00am +05:30")) }
+  let!(:bp_2) { create(:blood_pressure, facility: facility, systolic: 115, diastolic: 75, recorded_at: Time.zone.parse("2019-03-15 2:15pm +05:30")) }
 
   let!(:encounter_1) { create(:encounter, :with_observables, observable: bp_1) }
   let!(:encounter_2) { create(:encounter, :with_observables, observable: bp_2) }
@@ -20,12 +20,12 @@ RSpec.feature 'Facility analytics', type: :feature do
     sign_in(owner.email_authentication)
   end
 
-  describe 'show a facility' do
+  describe "show a facility" do
     before do
       visit analytics_facility_path(facility)
     end
 
-    context 'recent BP log' do
+    context "recent BP log" do
       it "displays the facility's recent BPs", :aggregate_failures do
         within("#recent-bps") do
           expect(page).to have_selector("th", text: /recorded by/i)
@@ -34,32 +34,32 @@ RSpec.feature 'Facility analytics', type: :feature do
         end
       end
 
-      it 'only displays one date per day, but multiple times', :aggregate_failures do
-        within('#recent-bps') do
-          expect(page).to have_content('15-MAR-2019', count: 1)
-          expect(page).to have_content('8:00 AM')
-          expect(page).to have_content('2:15 PM')
+      it "only displays one date per day, but multiple times", :aggregate_failures do
+        within("#recent-bps") do
+          expect(page).to have_content("15-MAR-2019", count: 1)
+          expect(page).to have_content("8:00 AM")
+          expect(page).to have_content("2:15 PM")
         end
       end
     end
   end
 
-  describe 'allows period switching' do
+  describe "allows period switching" do
     before do
       visit analytics_facility_path(facility)
-      click_link 'Monthly report'
-      click_link 'Quarterly report'
+      click_link "Monthly report"
+      click_link "Quarterly report"
     end
 
-    it 'shows quarterly metrics' do
-      expect(page).to have_content('patients registered in')
-      expect(page).to have_content('Result from last visit in')
+    it "shows quarterly metrics" do
+      expect(page).to have_content("patients registered in")
+      expect(page).to have_content("Result from last visit in")
     end
 
-    it 'persists period selection across views' do
+    it "persists period selection across views" do
       visit analytics_facility_path(other_facility)
-      expect(page).to have_content('patients registered in')
-      expect(page).to have_content('Result from last visit in')
+      expect(page).to have_content("patients registered in")
+      expect(page).to have_content("Result from last visit in")
     end
   end
 end
