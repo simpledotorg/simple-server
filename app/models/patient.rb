@@ -74,6 +74,13 @@ class Patient < ApplicationRecord
       .with_hypertension
   }
 
+  scope :contactable, -> {
+    where(reminder_consent: "granted")
+      .where.not(status: "dead")
+      .joins(:phone_numbers)
+      .merge(PatientPhoneNumber.phone_type_mobile)
+  }
+
   def self.follow_ups_with(model_name, period, time_column: "recorded_at", last: nil)
     table_name = model_name.table_name.to_sym
     time_column_with_table_name = "#{table_name}.#{time_column}"

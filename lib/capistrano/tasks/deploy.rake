@@ -1,20 +1,20 @@
 namespace :deploy do
   before :starting, :check_sidekiq_hooks do
-    invoke 'sidekiq:add_default_hooks'
+    invoke "sidekiq:add_default_hooks"
   end
 
-  desc 'Runs any rake task, example: cap deploy:rake task=db:seed'
+  desc "Runs any rake task, example: cap deploy:rake task=db:seed"
   task rake: [:set_rails_env] do
     on release_roles([:db]) do
       within release_path do
         with rails_env: fetch(:rails_env) do
-          execute :rake, ENV['task']
+          execute :rake, ENV["task"]
         end
       end
     end
   end
 
-  desc 'Print the latest deployed revision SHA'
+  desc "Print the latest deployed revision SHA"
   task :get_latest_deployed_sha do
     on release_roles([:app]) do
       invoke!("deploy:set_previous_revision")
@@ -22,13 +22,13 @@ namespace :deploy do
     end
   end
 
-  desc 'Confirm if you really want to execute the task'
+  desc "Confirm if you really want to execute the task"
   task :confirmation do
     puts <<-WARN
 
     ===============================================================================
 
-      WARNING: You're about to run tasks on #{fetch(:envs_for_confirmation_step).join('/')} server(s)
+      WARNING: You're about to run tasks on #{fetch(:envs_for_confirmation_step).join("/")} server(s)
       Please confirm that all your intentions are kind and friendly.
 
       READ THIS IF YOU ARE RUNNING A DEPLOY TASK:
@@ -45,7 +45,7 @@ namespace :deploy do
     WARN
     ask :value, "Are you sure you want to continue? (Y)"
 
-    if fetch(:value) != 'Y'
+    if fetch(:value) != "Y"
       puts "\nDeploy canceled!"
       exit
     end

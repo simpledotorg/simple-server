@@ -1,21 +1,21 @@
 namespace :cohort_reports do
-  desc 'Generate cohort report CSV for each state'
+  desc "Generate cohort report CSV for each state"
   task :generate, [:year, :quarter, :organization_name] => :environment do |_t, args|
     include QuarterHelper
 
-    abort 'Requires [year, quarter] arguments' unless args[:year].present? && args[:quarter].present?
-    abort 'Requires [organization_name]' unless args[:organization_name].present?
+    abort "Requires [year, quarter] arguments" unless args[:year].present? && args[:quarter].present?
+    abort "Requires [organization_name]" unless args[:organization_name].present?
 
-    year    = args[:year].to_i
+    year = args[:year].to_i
     quarter = args[:quarter].to_i
     organization_name = args[:organization_name]
 
-    Time.zone = 'Asia/Kolkata'
+    Time.zone = "Asia/Kolkata"
 
     report_start = quarter_start(year, quarter)
-    report_end   = report_start.end_of_quarter
+    report_end = report_start.end_of_quarter
     cohort_start = (report_start - 3.months).beginning_of_quarter
-    cohort_end   = cohort_start.end_of_quarter
+    cohort_end = cohort_start.end_of_quarter
 
     organization = Organization.find_by(name: organization_name)
     states = organization.facilities.pluck(:state).uniq
@@ -27,7 +27,7 @@ namespace :cohort_reports do
 
       headers = [
         "Facility", "Type", "District", "State",
-        "Registered", "Followed Up", "Controlled", "Uncontrolled", "Defaulted",
+        "Registered", "Followed Up", "Controlled", "Uncontrolled", "Defaulted"
       ]
 
       puts "Generating CSV for #{state}, Q#{quarter} #{year}"
