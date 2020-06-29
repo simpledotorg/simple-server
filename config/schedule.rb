@@ -6,7 +6,7 @@ env :PATH, ENV["PATH"]
 DEFAULT_CRON_TIME_ZONE = "Asia/Kolkata"
 
 def local(time)
-  TZInfo::Timezone.get(DEFAULT_CRON_TIME_ZONE)
+  TZInfo::Timezone.get(ENV["CRON_TIME_ZONE"] || DEFAULT_CRON_TIME_ZONE)
     .local_to_utc(Time.parse(time))
 end
 
