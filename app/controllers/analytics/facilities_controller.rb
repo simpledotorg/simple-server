@@ -56,7 +56,7 @@ class Analytics::FacilitiesController < AnalyticsController
     PatientListDownloadJob.perform_later(recipient_email,
       "facility",
       {facility_id: @facility.id},
-      with_medical_history: true)
+      with_medication_history: true)
 
     redirect_to(
       analytics_facility_path(@facility),

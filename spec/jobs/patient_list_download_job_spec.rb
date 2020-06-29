@@ -6,10 +6,10 @@ RSpec.describe PatientListDownloadJob, type: :job do
   let!(:admin) { create(:admin) }
   let!(:facility) { create(:facility) }
 
-  context "when with_medical_history is false" do
+  context "when with_medication_history is false" do
     it "should queue a PatientsExporter export" do
       expect(PatientsExporter).to receive(:csv)
-      PatientListDownloadJob.perform_now(admin.email, "facility", {facility_id: facility.id}, with_medical_history: false)
+      PatientListDownloadJob.perform_now(admin.email, "facility", {facility_id: facility.id}, with_medication_history: false)
     end
 
     it "should queue a PatientsExporter export by default" do
@@ -18,10 +18,10 @@ RSpec.describe PatientListDownloadJob, type: :job do
     end
   end
 
-  context "when with_medical_history is true" do
+  context "when with_medication_history is true" do
     it "should queue a PatientsWithHistoryExporter export" do
       expect(PatientsWithHistoryExporter).to receive(:csv)
-      PatientListDownloadJob.perform_now(admin.email, "facility", {facility_id: facility.id}, with_medical_history: true)
+      PatientListDownloadJob.perform_now(admin.email, "facility", {facility_id: facility.id}, with_medication_history: true)
     end
   end
 end
