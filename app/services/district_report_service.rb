@@ -18,12 +18,8 @@ class DistrictReportService
 
   def call
     compile_control_and_registration_data
-
     compile_cohort_trend_data
-
-    @data[:top_district_benchmarks].merge!(top_district_benchmarks)
-    top_district = @data[:top_district_benchmarks][:district]
-    @data[:top_district_benchmarks].merge!(top_district_quarter_stats(top_district))
+    compile_benchmarks
 
     data
   end
@@ -38,6 +34,34 @@ class DistrictReportService
       @data[:controlled_patients][formatted_period] = controlled_patients_count(time)
       @data[:registrations][formatted_period] = lookup_registration_count(time)
     end
+  end
+
+  # We want to return cohort data for the current quarter for the selected date, and then
+  # the previous three quarters. Each quarter cohort is made up of patients registered
+  # in the previous quarter who has had a follow up visit in the current quarter.
+  def compile_cohort_trend_data
+    Quarter.new(date: selected_date).downto(3).each do |results_quarter|
+      cohort_quarter = results_quarter.previous_quarter
+
+      period = {cohort_period: :quarter,
+                registration_quarter: cohort_quarter.number,
+                registration_year: cohort_quarter.year}
+      query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities, cohort_period: period)
+      @data[:quarterly_registrations] << {
+        results_in: format_quarter(results_quarter),
+        patients_registered: format_quarter(cohort_quarter),
+        registered: query.cohort_registrations.count,
+        controlled: query.cohort_controlled_bps.count,
+        no_bp: query.cohort_missed_visits_count,
+        uncontrolled: query.cohort_uncontrolled_bps.count
+      }.with_indifferent_access
+    end
+  end
+
+  def compile_benchmarks
+    @data[:top_district_benchmarks].merge!(top_district_benchmarks)
+    top_district = @data[:top_district_benchmarks][:district]
+    @data[:top_district_benchmarks].merge!(top_district_quarter_stats(top_district))
   end
 
   def format_quarter(quarter)
@@ -72,28 +96,6 @@ class DistrictReportService
       LEFT JOIN cte USING (month)
       ORDER BY 1;
     SQL
-  end
-
-  # We want to return cohort data for the current quarter for the selected date, and then
-  # the previous three quarters. Each quarter cohort is made up of patients registered
-  # in the previous quarter who has had a follow up visit in the current quarter.
-  def compile_cohort_trend_data
-    Quarter.new(date: selected_date).downto(3).each do |results_quarter|
-      cohort_quarter = results_quarter.previous_quarter
-
-      period = {cohort_period: :quarter,
-                registration_quarter: cohort_quarter.number,
-                registration_year: cohort_quarter.year}
-      query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities, cohort_period: period)
-      @data[:quarterly_registrations] << {
-        results_in: format_quarter(results_quarter),
-        patients_registered: format_quarter(cohort_quarter),
-        registered: query.cohort_registrations.count,
-        controlled: query.cohort_controlled_bps.count,
-        no_bp: query.cohort_missed_visits_count,
-        uncontrolled: query.cohort_uncontrolled_bps.count
-      }.with_indifferent_access
-    end
   end
 
   def controlled_patients_count(time)
