@@ -15,6 +15,7 @@ class ControlledPatientsQuery
     mid_range = time.advance(months: -1).end_of_month
     beg_range = time.advance(months: -2).end_of_month
     # We need to avoid the default scope to avoid ambiguous column errors, hence the `with_discarded`
+    # Note that the deleted_at scoping piece is applied when the SQL view is created, so we don't need to worry about it here
     sub_query = LatestBloodPressuresPerPatientPerMonth
       .with_discarded
       .select("distinct on (latest_blood_pressures_per_patient_per_months.patient_id) *")
