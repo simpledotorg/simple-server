@@ -60,8 +60,6 @@ class DistrictReportService
 
   def compile_benchmarks
     @data[:top_district_benchmarks].merge!(top_district_benchmarks)
-    top_district = @data[:top_district_benchmarks][:district]
-    @data[:top_district_benchmarks].merge!(top_district_quarter_stats(top_district))
   end
 
   def format_quarter(quarter)
@@ -105,21 +103,6 @@ class DistrictReportService
   def percentage(numerator, denominator)
     return 0 if denominator == 0
     (numerator.to_f / denominator) * 100
-  end
-
-  def top_district_quarter_stats(district)
-    cohort_quarter = Quarter.current.previous_quarter
-    period = {cohort_period: :quarter,
-              registration_quarter: cohort_quarter.number,
-              registration_year: cohort_quarter.year}
-    query = MyFacilities::BloodPressureControlQuery.new(facilities: district.facilities, cohort_period: period)
-    controlled_count = query.cohort_controlled_bps.count
-    registrations_count = query.cohort_registrations.count
-    missed_visits_count = query.cohort_missed_visits_count
-    {
-      quarter_controlled_percentage: percentage(controlled_count, registrations_count),
-      quarter_missed_visits_percentage: percentage(missed_visits_count, registrations_count)
-    }
   end
 
   def top_district_benchmarks
