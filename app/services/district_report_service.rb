@@ -1,4 +1,7 @@
 class DistrictReportService
+  include SQLHelpers
+  MAX_MONTHS_OF_DATA = 24
+
   def initialize(facilities:, selected_date:)
     @facilities = Array(facilities)
     @selected_date = selected_date
@@ -20,23 +23,50 @@ class DistrictReportService
     data
   end
 
-  def registrations_count(time)
-    Patient.where(registration_facility: @facilities).with_hypertension.where("recorded_at <= ?", time).count
-  end
-
   def compile_control_and_registration_data
-    @data[:cumulative_registrations] = registrations_count(selected_date.end_of_month)
-    -11.upto(0).each do |n|
+    months_of_data = [registration_counts.to_a.size, MAX_MONTHS_OF_DATA].min
+    @data[:cumulative_registrations] = lookup_registration_count(selected_date)
+    (-months_of_data + 1).upto(0).each do |n|
       time = selected_date.advance(months: n).end_of_month
       formatted_period = time.to_s(:month_year)
 
       @data[:controlled_patients][formatted_period] = controlled_patients(time).count
-      @data[:registrations][formatted_period] = registrations_count(time)
+      @data[:registrations][formatted_period] = lookup_registration_count(time)
     end
   end
 
   def format_quarter(quarter)
     "#{quarter.year} Q#{quarter.number}"
+  end
+
+  def lookup_registration_count(date)
+    lookup_date = date.beginning_of_month.to_date.to_s
+    row = registration_counts.find { |r| r["date"] == lookup_date }
+    return 0 unless row
+    row["running_ct"].to_i
+  end
+
+  def registration_counts
+    where_clause = ActiveRecord::Base.sanitize_sql_array([
+      "registration_facility_id in (?) and medical_histories.hypertension = ?",
+      @facilities, "yes"
+    ])
+
+    @registration_counts ||= Patient.connection.select_all(<<-SQL)
+      WITH cte AS (
+        SELECT date_trunc('month', "recorded_at") AS month, count(*) AS month_ct
+        FROM   patients
+        INNER JOIN medical_histories on patients.id = medical_histories.patient_id
+        WHERE #{where_clause}
+        GROUP  BY 1)
+      SELECT date(m.month), COALESCE(sum(cte.month_ct) OVER (ORDER BY m.month), 0) AS running_ct
+      FROM  (
+          SELECT generate_series(min(month), '#{selected_date}'::timestamp, interval '1 month')
+          FROM   cte
+          ) m(month)
+      LEFT JOIN cte USING (month)
+      ORDER BY 1;
+    SQL
   end
 
   # We want to return cohort data for the current quarter for the selected date, and then

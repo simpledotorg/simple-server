@@ -11,7 +11,7 @@
     <div class="dropdown show">
       <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">
-        Patients registered in <%= @selected_date.to_s(:month_year) %>
+        Report: <%= @selected_date.to_s(:month_year) %>
       </a>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
         <%= form_tag dashboard_district_path(@district), method: :get do %>
@@ -81,7 +81,7 @@
         </div>
         <div>
           <h3 class="mb-1 fs-xlarge fw-bold c-purple">
-            <%= number_with_delimiter(@registrations.values.last) %> patients
+            <%= number_with_delimiter(@registrations.values.last) || "N/A" %> patients
           </h3>
           <p>
             <span class="fw-bold"><%= @controlled_patients.values.last %> (<%= compute_percentage(@controlled_patients.values.last, @registrations.values.last, precision: 0) %>)</span> controlled patients
@@ -91,7 +91,7 @@
       <div>
         <%
           percent = 1.05
-          max_y_value = (@registrations.values.last * percent).round
+          max_y_value = ((@registrations.values&.last || 0) * percent).round
         %>
         <div class="d-flex h-200px">
           <% @registrations.each_with_index do |registrations, index| %>
