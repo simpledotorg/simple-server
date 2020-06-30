@@ -6,19 +6,19 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-require_relative '../lib/tasks/scripts/create_admin_user'
-require 'factory_bot_rails'
-require 'faker'
+require_relative "../lib/tasks/scripts/create_admin_user"
+require "factory_bot_rails"
+require "faker"
 
 NUM_OF_FACILITY_GROUPS = 1
 NUM_OF_FACILITIES = 4
 MAX_NUM_OF_USERS_PER_FACILITY = 2
 NUM_OF_USERS_PER_FACILITY_FN = -> { rand(1..MAX_NUM_OF_USERS_PER_FACILITY) }
-ADMIN_USER_NAME = 'Admin User'
-ADMIN_USER_EMAIL = 'admin@simple.org'
+ADMIN_USER_NAME = "Admin User"
+ADMIN_USER_EMAIL = "admin@simple.org"
 
 org = {
-  :name => "IHCI"
+  name: "IHCI"
 }
 
 facility_size_map = {
@@ -43,34 +43,34 @@ facility_size_map = {
 }
 
 protocol_data = {
-  name: 'Simple Hypertension Protocol',
+  name: "Simple Hypertension Protocol",
   follow_up_days: 30
 }
 
 protocol_drugs_data = [
   {
-    name: 'Amlodipine',
-    dosage: '5 mg'
+    name: "Amlodipine",
+    dosage: "5 mg"
   },
   {
-    name: 'Amlodipine',
-    dosage: '10 mg'
+    name: "Amlodipine",
+    dosage: "10 mg"
   },
   {
-    name: 'Telmisartan',
-    dosage: '40 mg'
+    name: "Telmisartan",
+    dosage: "40 mg"
   },
   {
-    name: 'Telmisartan',
-    dosage: '80 mg'
+    name: "Telmisartan",
+    dosage: "80 mg"
   },
   {
-    name: 'Chlorthalidone',
-    dosage: '12.5 mg'
+    name: "Chlorthalidone",
+    dosage: "12.5 mg"
   },
   {
-    name: 'Chlorthalidone',
-    dosage: '25 mg'
+    name: "Chlorthalidone",
+    dosage: "25 mg"
   }
 ]
 
@@ -81,44 +81,44 @@ organization = Organization.find_by(org) || FactoryBot.create(:organization, org
 protocol = Protocol.find_or_create_by!(protocol_data)
 protocol_drugs_data.each { |drug_data| ProtocolDrug.find_or_create_by!(drug_data.merge(protocol_id: protocol.id)) }
 
-facility_groups = (1..NUM_OF_FACILITY_GROUPS).to_a.map do
+facility_groups = (1..NUM_OF_FACILITY_GROUPS).to_a.map {
   facility_group_params = {
     organization: organization, protocol: protocol
   }
 
   FactoryBot.create(:facility_group, facility_group_params)
-end
+}
 
 #
 # create facility and facility_groups
 #
 facilities =
-  facility_groups.map do |fg|
+  facility_groups.map { |fg|
     (1..NUM_OF_FACILITIES).to_a.map do
       type = facility_size_map.keys.sample
       size = facility_size_map[type]
 
       FactoryBot.create(:facility,
-                        :seed,
-                        facility_group_id: fg.id,
-                        district: fg.name,
-                        facility_type: type,
-                        facility_size: size)
+        :seed,
+        facility_group_id: fg.id,
+        district: fg.name,
+        facility_type: type,
+        facility_size: size)
     end
-  end.flatten
+  }.flatten
 
 #
 # create users
 #
 facilities.each do |facility|
   if facility.users.size < MAX_NUM_OF_USERS_PER_FACILITY
-    role = rand > 0.1 ? ENV['SEED_GENERATED_ACTIVE_USER_ROLE'] : ENV['SEED_GENERATED_INACTIVE_USER_ROLE']
+    role = rand > 0.1 ? ENV["SEED_GENERATED_ACTIVE_USER_ROLE"] : ENV["SEED_GENERATED_INACTIVE_USER_ROLE"]
     FactoryBot.create_list(:user,
-                           NUM_OF_USERS_PER_FACILITY_FN.call,
-                           :with_phone_number_authentication,
-                           registration_facility: facility,
-                           organization: organization,
-                           role: role)
+      NUM_OF_USERS_PER_FACILITY_FN.call,
+      :with_phone_number_authentication,
+      registration_facility: facility,
+      organization: organization,
+      role: role)
   end
 end
 
@@ -126,5 +126,5 @@ end
 # create admin user
 #
 unless EmailAuthentication.find_by_email(ADMIN_USER_EMAIL)
-  CreateAdminUser.create_owner(ADMIN_USER_NAME, ADMIN_USER_EMAIL, ENV['SEED_GENERATED_ADMIN_PASSWORD'])
+  CreateAdminUser.create_owner(ADMIN_USER_NAME, ADMIN_USER_EMAIL, ENV["SEED_GENERATED_ADMIN_PASSWORD"])
 end
