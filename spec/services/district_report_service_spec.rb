@@ -112,10 +112,16 @@ describe DistrictReportService, type: :model do
     darrang = FactoryBot.create(:facility_group, name: "Darrang")
     darrang_facilities = FactoryBot.create_list(:facility, 2, facility_group: darrang)
     kadapa = FactoryBot.create(:facility_group, name: "Kadapa")
-    kadapa_facilities = FactoryBot.create_list(:facility, 2, facility_group: kadapa)
+    _kadapa_facilities = FactoryBot.create_list(:facility, 2, facility_group: kadapa)
     koriya = FactoryBot.create(:facility_group, name: "Koriya")
     koriya_facilities = FactoryBot.create_list(:facility, 2, facility_group: koriya)
 
+    Timecop.freeze("April 1sth 2020") do
+      darrang_patients = create_list(:patient, 2, recorded_at: 1.month.ago, registration_facility: darrang_facilities.first, registration_user: user)
+      darrang_patients.each do |patient|
+        create(:blood_pressure, :hypertensive, facility: darrang_facilities.first, patient: patient, recorded_at: Time.current)
+      end
+    end
     Timecop.freeze("April 15th 2020") do
       patients_with_controlled_bp = create_list(:patient, 4, recorded_at: 1.month.ago, registration_facility: koriya_facilities.first, registration_user: user)
       patients_with_controlled_bp.map do |patient|
