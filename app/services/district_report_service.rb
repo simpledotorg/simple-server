@@ -2,8 +2,9 @@ class DistrictReportService
   include SQLHelpers
   MAX_MONTHS_OF_DATA = 24
 
-  def initialize(facilities:, selected_date:)
-    @facilities = Array(facilities)
+  def initialize(district: nil, selected_date:)
+    @district = district
+    @facilities = district.facilities
     @selected_date = selected_date
     @data = {
       controlled_patients: {},
@@ -14,7 +15,7 @@ class DistrictReportService
     }.with_indifferent_access
   end
 
-  attr_reader :selected_date, :facilities, :data
+  attr_reader :district, :selected_date, :facilities, :data
 
   def call
     compile_control_and_registration_data
@@ -67,33 +68,18 @@ class DistrictReportService
   end
 
   def lookup_registration_count(date)
-    lookup_date = date.beginning_of_month.to_date.to_s
-    row = registration_counts.find { |r| r["date"] == lookup_date }
-    return 0 unless row
-    row["running_ct"].to_i
+    lookup_date = date.beginning_of_month.to_date
+    registration_counts[lookup_date]
   end
 
   def registration_counts
-    where_clause = ActiveRecord::Base.sanitize_sql_array([
-      "registration_facility_id in (?) and medical_histories.hypertension = ?",
-      @facilities, "yes"
-    ])
-
-    @registration_counts ||= Patient.connection.select_all(<<-SQL)
-      WITH cte AS (
-        SELECT date_trunc('month', "recorded_at") AS month, count(*) AS month_ct
-        FROM   patients
-        INNER JOIN medical_histories on patients.id = medical_histories.patient_id
-        WHERE #{where_clause}
-        GROUP  BY 1)
-      SELECT date(m.month), COALESCE(sum(cte.month_ct) OVER (ORDER BY m.month), 0) AS running_ct
-      FROM  (
-          SELECT generate_series(min(month), '#{selected_date}'::timestamp, interval '1 month')
-          FROM   cte
-          ) m(month)
-      LEFT JOIN cte USING (month)
-      ORDER BY 1;
-    SQL
+    @registration_counts ||= district.patients.with_hypertension
+      .group_by_period(:month, :recorded_at, range: 24.months.ago..selected_date)
+      .count
+      .each_with_object(Hash.new(0)) { |(key, value), acc|
+        acc[:total] += value
+        acc[key] = acc[:total]
+      }.delete_if { |k,v| v == 0 }.except(:total)
   end
 
   def controlled_patients_count(time)

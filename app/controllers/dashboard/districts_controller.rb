@@ -19,7 +19,7 @@ class Dashboard::DistrictsController < AdminController
     else
       Date.current.advance(months: -1)
     end
-    @data = DistrictReportService.new(facilities: @district.facilities, selected_date: @selected_date).call
+    @data = DistrictReportService.new(district: @district, selected_date: @selected_date).call
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
@@ -35,6 +35,9 @@ class Dashboard::DistrictsController < AdminController
   def set_time_zone
     time_zone = Rails.application.config.country[:time_zone] || DEFAULT_ANALYTICS_TIME_ZONE
 
+    Groupdate.time_zone = time_zone
+
     Time.use_zone(time_zone) { yield }
+    Groupdate.time_zone = "UTC"
   end
 end
