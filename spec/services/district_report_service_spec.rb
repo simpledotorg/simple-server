@@ -108,7 +108,7 @@ describe DistrictReportService, type: :model do
     expect(result[:cumulative_registrations]).to eq(6)
   end
 
-  it "gets top district" do
+  it "gets top district benchmarks" do
     darrang = FactoryBot.create(:facility_group, name: "Darrang")
     darrang_facilities = FactoryBot.create_list(:facility, 2, facility_group: darrang)
     kadapa = FactoryBot.create(:facility_group, name: "Kadapa")
