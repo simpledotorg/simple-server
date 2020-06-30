@@ -7,7 +7,7 @@ class Dashboard::DistrictsController < AdminController
 
   def index
     authorize([:manage, Organization])
-    @organizations = policy_scope([:manage, Organization]).order(:name)
+    @organizations = policy_scope([:manage, :facility, Organization])
   end
 
   def show
@@ -23,6 +23,7 @@ class Dashboard::DistrictsController < AdminController
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
+    @top_district_benchmarks = @data[:top_district_benchmarks]
   end
 
   private
