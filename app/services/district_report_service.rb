@@ -36,7 +36,7 @@ class DistrictReportService
   end
 
   def format_quarter(quarter)
-    "Q#{quarter.number}-#{quarter.year}"
+    "#{quarter.year} Q#{quarter.number}"
   end
 
   def lookup_registration_count(date)
