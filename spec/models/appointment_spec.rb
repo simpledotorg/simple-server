@@ -79,7 +79,7 @@ describe Appointment, type: :model do
         end
       end
 
-      it "includes only appointments with mobile numbers" do
+      it "only includes appointments with mobile numbers" do
         mobile_number = create(:patient_phone_number, phone_type: :mobile)
         landline_number = create(:patient_phone_number, phone_type: :landline)
         invalid_number = create(:patient_phone_number, phone_type: :invalid)
@@ -87,11 +87,21 @@ describe Appointment, type: :model do
         patient_with_mobile = create(:patient, phone_numbers: [mobile_number, invalid_number])
         patient_with_landline = create(:patient, phone_numbers: [landline_number])
 
-        appointment_with_mobile = create(:appointment, :overdue, patient: patient_with_mobile, scheduled_date: 3.days.ago)
-        appointment_with_landline = create(:appointment, :overdue, patient: patient_with_landline, scheduled_date: 3.days.ago)
+        appointment_with_mobile =
+          create(:appointment, :overdue, patient: patient_with_mobile, scheduled_date: 3.days.ago)
+        appointment_with_landline =
+          create(:appointment, :overdue, patient: patient_with_landline, scheduled_date: 3.days.ago)
 
         expect(described_class.eligible_for_reminders(days_overdue: 3)).to include appointment_with_mobile
         expect(described_class.eligible_for_reminders(days_overdue: 3)).not_to include appointment_with_landline
+      end
+
+      it "only includes appointments with phone numbers" do
+        patient_with_no_number = create(:patient, phone_numbers: [])
+        _appointment_with_no_number =
+          create(:appointment, :overdue, patient: patient_with_no_number, scheduled_date: 3.days.ago)
+
+        expect(described_class.eligible_for_reminders(days_overdue: 3)).to be_empty
       end
     end
   end
@@ -233,16 +243,18 @@ describe Appointment, type: :model do
     describe "anonymized_data" do
       it "correctly retrieves the anonymised data for an appointment" do
         anonymised_data =
-          {id: Hashable.hash_uuid(appointment.id),
-           patient_id: Hashable.hash_uuid(appointment.patient_id),
-           created_at: appointment.created_at,
-           registration_facility_name: appointment.facility.name,
-           user_id: Hashable.hash_uuid(appointment.patient.registration_user.id),
-           scheduled_date: appointment.scheduled_date,
-           overdue: appointment.days_overdue > 0 ? "Yes" : "No",
-           status: appointment.status,
-           agreed_to_visit: appointment.agreed_to_visit,
-           remind_on: appointment.remind_on}
+          {
+            id: Hashable.hash_uuid(appointment.id),
+            patient_id: Hashable.hash_uuid(appointment.patient_id),
+            created_at: appointment.created_at,
+            registration_facility_name: appointment.facility.name,
+            user_id: Hashable.hash_uuid(appointment.patient.registration_user.id),
+            scheduled_date: appointment.scheduled_date,
+            overdue: appointment.days_overdue > 0 ? "Yes" : "No",
+            status: appointment.status,
+            agreed_to_visit: appointment.agreed_to_visit,
+            remind_on: appointment.remind_on
+          }
 
         expect(appointment.anonymized_data).to eq anonymised_data
       end

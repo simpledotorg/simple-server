@@ -23,10 +23,6 @@ module PatientsExporter
           :address,
           :medical_history,
           :current_prescription_drugs,
-          :latest_bp_passports,
-          { latest_scheduled_appointments: :facility },
-          { latest_blood_pressures: :facility },
-          :latest_blood_sugars
         ).each do |patient|
           csv << csv_fields(patient)
         end
@@ -90,12 +86,14 @@ module PatientsExporter
   end
 
   def self.csv_fields(patient)
+    # We cannot rely on the ordered scopes on Patient (eg. latest_blood_pressures) to find most recent records because
+    # the batching done here will invalidate any ordering on patients, as well as its associations.
     registration_facility = patient.registration_facility
-    latest_bp = patient.latest_blood_pressure
+    latest_bp = patient.blood_pressures.order(recorded_at: :desc).first
     latest_bp_facility = latest_bp&.facility
-    latest_blood_sugar = patient.latest_blood_sugar
-    latest_appointment = patient.latest_scheduled_appointment
-    latest_bp_passport = patient.latest_bp_passport
+    latest_blood_sugar = patient.blood_sugars.order(recorded_at: :desc).first
+    latest_appointment = patient.latest_scheduled_appointments.order(scheduled_date: :desc).first
+    latest_bp_passport = patient.latest_bp_passports.order(device_created_at: :desc).first
     zone_column_index = csv_headers.index(zone_column)
 
     csv_fields = [

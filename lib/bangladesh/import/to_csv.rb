@@ -1,8 +1,8 @@
-require File.expand_path('../../config/boot', __dir__)
-require 'roo'
+require File.expand_path("../../config/boot", __dir__)
+require "roo"
 
-from = File.expand_path('data/bangladesh.xlsx', __dir__)
-to = File.expand_path('data/bangladesh.csv', __dir__)
+from = File.expand_path("data/bangladesh.xlsx", __dir__)
+to = File.expand_path("data/bangladesh.csv", __dir__)
 
 spreadsheet = Roo::Spreadsheet.open(from)
 sheet = spreadsheet.sheet(spreadsheet.sheets.first)
@@ -12,7 +12,7 @@ last_row = sheet.last_row
 first_column = sheet.first_column
 last_column = sheet.last_column
 
-CSV.open(to, 'w') do |csv|
+CSV.open(to, "w") do |csv|
   (first_row..last_row).each do |row|
     row_data = sheet.row(row)[first_column..last_column]
 
