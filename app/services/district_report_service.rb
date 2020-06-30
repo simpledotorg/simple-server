@@ -36,7 +36,7 @@ class DistrictReportService
   end
 
   def format_quarter(quarter)
-    "Q#{quarter.number}-#{quarter.year}"
+    "#{quarter.year} Q#{quarter.number}"
   end
 
   # We want to return cohort data for the current quarter for the selected date, and then
