@@ -17,12 +17,12 @@ module CreateMasterUser
     end
   end
 
-  private
+  private_class_method
 
   def self.master_user_id(email)
     UUIDTools::UUID.md5_create(
       UUIDTools::UUID_DNS_NAMESPACE,
-      { email: email }.to_s
+      {email: email}.to_s
     ).to_s
   end
 
@@ -32,11 +32,11 @@ module CreateMasterUser
     user_attributes =
       admin_attributes
         .slice(:role, :created_at, :updated_at, :deleted_at)
-        .merge(id:  master_user_id(admin.email),
-               full_name: admin.email.split('@').first,
+        .merge(id: master_user_id(admin.email),
+               full_name: admin.email.split("@").first,
                organization: get_organization(admin),
-               sync_approval_status: 'denied',
-               sync_approval_status_reason: 'User is an admin',
+               sync_approval_status: "denied",
+               sync_approval_status_reason: "User is an admin",
                device_created_at: admin.created_at,
                device_updated_at: admin.updated_at)
 
@@ -56,13 +56,12 @@ module CreateMasterUser
     organizations.first
   end
 
-  #@todo: User should be enough here
+  # @todo: User should be enough here
   def self.assign_permissions!(user, admin)
     access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
     user_permissions = access_level[:default_permissions]
     resources = admin.admin_access_controls
     user_permissions.each do |permission_slug|
-
       permission = Permissions::ALL_PERMISSIONS[permission_slug]
 
       throw "#{permission_slug} is an unknown permission" unless permission.present?
