@@ -22,7 +22,8 @@ class DistrictReportService
     compile_cohort_trend_data
 
     @data[:top_district_benchmarks].merge!(top_district_benchmarks)
-    @data[:top_district_benchmarks].merge!(top_district_quarter_stats)
+    top_district = @data[:top_district_benchmarks][:district]
+    @data[:top_district_benchmarks].merge!(top_district_quarter_stats(top_district))
 
     data
   end
@@ -104,12 +105,12 @@ class DistrictReportService
     (numerator.to_f / denominator) * 100
   end
 
-  def top_district_quarter_stats
+  def top_district_quarter_stats(district)
     cohort_quarter = Quarter.current.previous_quarter
     period = {cohort_period: :quarter,
               registration_quarter: cohort_quarter.number,
               registration_year: cohort_quarter.year}
-    query = MyFacilities::BloodPressureControlQuery.new(facilities: facilities, cohort_period: period)
+    query = MyFacilities::BloodPressureControlQuery.new(facilities: district.facilities, cohort_period: period)
     controlled_count = query.cohort_controlled_bps.count
     registrations_count = query.cohort_registrations.count
     missed_visits_count = query.cohort_missed_visits_count
@@ -127,7 +128,7 @@ class DistrictReportService
     }
     district, percentage = districts_by_rate.max_by { |district, rate| rate }
     {
-      district: district.name,
+      district: district,
       controlled_percentage: percentage
     }
   end

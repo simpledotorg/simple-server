@@ -256,7 +256,7 @@
           </div>
           <div class="pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
             <p class="ta-lg-center mb-lg-0 c-lg-grey-dark">
-            <!-- <%= @benchmarks[:top_district].keys.first.name %> -->
+            <!-- <%= @top_district_benchmarks[:district].name %> -->
               Top district
             </p>
           </div>
@@ -279,19 +279,21 @@
           </div>
           <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
             <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">Top District: </span> <%= number_to_percentage(@benchmarks[:top_district].values.first * 100, precision: 0) %>
+              <span class="fw-bold d-lg-none">Top District: </span>
+              <%= number_to_percentage(@top_district_benchmarks[:controlled_percentage], precision: 0) %>
             </p>
           </div>
           <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
             <p class="mb-0 ta-lg-center c-grey-dark">
               <span class="fw-bold d-lg-none"><%= @district.name %></span>
-              <%= compute_percentage(@controlled_patients.values.last.to_f, @registrations.values.last.to_f, precision: 0) %>
+              <% control_rate = compute_percentage(@controlled_patients.values.last.to_f, @registrations.values.last.to_f) %>
+              <%= control_rate %>
             </p>
           </div>
           <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
               <span class="fw-bold d-lg-none">Difference: </span>
-                <%= ((@benchmarks[:top_district].values.first * 100) - (@controlled_patients.values.last.to_f / @registrations.values.last.to_f * 100)).round %>%
+                <%= (@top_district_benchmarks[:controlled_percentage] - control_rate.to_f).round %>%
             </p>
           </div>
         </div>
@@ -303,17 +305,21 @@
           </div>
           <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
             <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">Top District: </span> Coming Soon...
+              <span class="fw-bold d-lg-none">Top District: </span>
+              <%= number_to_percentage @top_district_benchmarks[:quarter_controlled_percentage], precision: 0 %>
             </p>
           </div>
           <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
             <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none"><%= @district.name %>: </span> <%= @quarterly_registrations.first[:controlled] %> TODO percentage?
+              <span class="fw-bold d-lg-none"><%= @district.name %>: </span>
+              <% quarter_percentage = compute_percentage(@quarterly_registrations.first[:controlled], @quarterly_registrations.first[:registered]) %>
+              <%= quarter_percentage %>
             </p>
           </div>
           <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">Difference: </span> 5%
+              <span class="fw-bold d-lg-none">Difference: </span>
+              <%= (@top_district_benchmarks[:quarter_controlled_percentage] - quarter_percentage.to_f).round %>%
             </p>
           </div>
         </div>
@@ -325,17 +331,21 @@
           </div>
           <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
             <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">Top District: </span> Coming Soon...
+              <span class="fw-bold d-lg-none">Top District: </span>
+              <%= number_to_percentage(@top_district_benchmarks[:quarter_missed_visits_percentage], precision: 0) %>
             </p>
           </div>
           <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
             <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none"><%= @district.name %>: </span> Coming Soon...
+              <span class="fw-bold d-lg-none"><%= @district.name %>: </span>
+              <% quarter_missed_visits_percentage = compute_percentage(@quarterly_registrations.first[:no_bp], @quarterly_registrations.first[:registered]) %>
+              <%= quarter_missed_visits_percentage %>
             </p>
           </div>
           <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">Difference: </span> Coming Soon...
+              <span class="fw-bold d-lg-none">Difference: </span>
+              <%= (@top_district_benchmarks[:quarter_missed_visits_percentage] - quarter_missed_visits_percentage.to_f).round %>%
             </p>
           </div>
         </div>

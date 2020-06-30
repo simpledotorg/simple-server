@@ -23,7 +23,7 @@ class Dashboard::DistrictsController < AdminController
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
-    @benchmarks = @data[:benchmarks]
+    @top_district_benchmarks = @data[:top_district_benchmarks]
   end
 
   private

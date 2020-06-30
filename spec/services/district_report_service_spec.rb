@@ -133,7 +133,7 @@ describe DistrictReportService, type: :model do
 
     service = DistrictReportService.new(facilities: darrang.facilities, selected_date: june_1)
     result = service.call
-    expect(result[:top_district_benchmarks][:district]).to eq("Koriya")
+    expect(result[:top_district_benchmarks][:district]).to eq(koriya)
     expect(result[:top_district_benchmarks][:controlled_percentage]).to eq(100.0)
   end
 end
