@@ -10,7 +10,7 @@ class DistrictReportService
       registrations: {},
       cumulative_registrations: 0,
       quarterly_registrations: [],
-      benchmarks: {}
+      top_district_benchmarks: {}
     }.with_indifferent_access
   end
 
@@ -21,7 +21,8 @@ class DistrictReportService
 
     compile_cohort_trend_data
 
-    @data[:benchmarks][:top_district] = top_district
+    @data[:top_district_benchmarks].merge!(top_district_benchmarks)
+    @data[:top_district_benchmarks].merge!(top_district_quarter_stats)
 
     data
   end
@@ -98,16 +99,36 @@ class DistrictReportService
     ControlledPatientsQuery.call(facilities: facilities, time: time).count
   end
 
-  def top_district
-    districts_by_rate = FacilityGroup.all.each_with_object({}) { |district, hsh|
-      controlled = ControlledPatientsQuery.call(facilities: district.facilities, time: selected_date)
+  def percentage(numerator, denominator)
+    return 0 if denominator == 0
+    (numerator.to_f / denominator) * 100
+  end
 
-      registration_count = Patient.with_hypertension.where(registration_facility: district.facilities).where("recorded_at <= ?", selected_date).count
-      percentage_controlled = controlled.count.to_f / registration_count
-
-      hsh[district] = percentage_controlled
+  def top_district_quarter_stats
+    cohort_quarter = Quarter.current.previous_quarter
+    period = {cohort_period: :quarter,
+              registration_quarter: cohort_quarter.number,
+              registration_year: cohort_quarter.year}
+    query = MyFacilities::BloodPressureControlQuery.new(facilities: facilities, cohort_period: period)
+    controlled_count = query.cohort_controlled_bps.count
+    registrations_count = query.cohort_registrations.count
+    missed_visits_count = query.cohort_missed_visits_count
+    {
+      quarter_controlled_percentage: percentage(controlled_count, registrations_count),
+      quarter_missed_visits_percentage: percentage(missed_visits_count, registrations_count)
     }
-    top = districts_by_rate.select { |district, rate| rate.present? && !rate.nan? }.max_by { |district, rate| rate }
-    {top[0] => top[1] * 100}
+  end
+
+  def top_district_benchmarks
+    districts_by_rate = FacilityGroup.all.each_with_object({}) { |district, hsh|
+      controlled = ControlledPatientsQuery.call(facilities: district.facilities, time: selected_date).count
+      registration_count = Patient.with_hypertension.where(registration_facility: district.facilities).where("recorded_at <= ?", selected_date).count
+      hsh[district] = percentage(controlled, registration_count)
+    }
+    district, percentage = districts_by_rate.max_by { |district, rate| rate }
+    {
+      district: district.name,
+      controlled_percentage: percentage
+    }
   end
 end
