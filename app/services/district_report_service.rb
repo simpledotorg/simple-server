@@ -74,12 +74,12 @@ class DistrictReportService
 
   def registration_counts
     @registration_counts ||= district.patients.with_hypertension
-      .group_by_period(:month, :recorded_at, range: 24.months.ago..selected_date)
+      .group_by_period(:month, :recorded_at, range: MAX_MONTHS_OF_DATA.months.ago..selected_date)
       .count
-      .each_with_object(Hash.new(0)) { |(key, value), acc|
-        acc[:total] += value
-        acc[key] = acc[:total]
-      }.delete_if { |k,v| v == 0 }.except(:total)
+      .each_with_object(Hash.new(0)) { |(date, count), hsh|
+        hsh[:running_total] += count
+        hsh[date] = hsh[:running_total]
+      }.delete_if { |date, count| count == 0 }.except(:running_total)
   end
 
   def controlled_patients_count(time)
