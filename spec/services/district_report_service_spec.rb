@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe DistrictReportService, type: :model do
+RSpec.describe DistrictReportService, type: :model do
   let(:user) { create(:user) }
   let(:june_1) { Time.parse("June 1, 2020") }
 
