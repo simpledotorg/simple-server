@@ -44,19 +44,9 @@ class DistrictReportService
     Quarter.new(date: selected_date).downto(3).each do |results_quarter|
       cohort_quarter = results_quarter.previous_quarter
 
-      period = {cohort_period: :quarter,
-                registration_quarter: cohort_quarter.number,
-                registration_year: cohort_quarter.year}
-      query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities, cohort_period: period)
-      @data[:quarterly_registrations] << {
-        results_in: format_quarter(results_quarter),
-        patients_registered: format_quarter(cohort_quarter),
-        registered: query.cohort_registrations.count,
-        controlled: query.cohort_controlled_bps.count,
-        no_bp: query.cohort_missed_visits_count,
-        uncontrolled: query.cohort_uncontrolled_bps.count
-      }.with_indifferent_access
-    end
+  def percentage(numerator, denominator)
+    return 0 if denominator == 0
+    (numerator.to_f / denominator) * 100
   end
 
   def compile_benchmarks

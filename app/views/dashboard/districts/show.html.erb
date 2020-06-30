@@ -160,10 +160,10 @@
                 <div class="row px-lg-0">
                   <div class="col-lg-5 nowrap order-lg-1">
                     <h6>
-                      <%= cohort["registered"] %> patients registered in <%= cohort["results_in"] %>
+                      <%= cohort["registered"] %> patients registered in <%= cohort["patients_registered"] %>
                     </h6>
                     <p class="mb-2 fs-small c-grey-medium">
-                      Result from last visit in <%= cohort["patients_registered"] %>
+                      Result from last visit in <%= cohort["results_in"] %>
                     </p>
                   </div>
                   <div class="col-lg-7 order-lg-2">
@@ -223,7 +223,7 @@
         <div class="mt-4 pt-4 bt-1px bt-grey-light d-lg-flex align-lg-center justify-lg-end mt-lg-3 pt-lg-3">
           <div class="">
             <p class="mb-2 c-grey-dark mb-lg-0 mr-lg-4">
-              No BP taken 
+              No BP taken
             </p>
           </div>
           <div class="">
@@ -275,7 +275,7 @@
           <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
               <span class="fw-bold d-lg-none">
-                Top District: 
+                Top District:
               </span>
               <span>
                 <%= number_to_percentage(
@@ -288,7 +288,7 @@
           <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
               <span class="fw-bold d-lg-none">
-                <%= @district.name %>: 
+                <%= @district.name %>:
               </span>
               <span>
                 <% control_rate = compute_percentage(@controlled_patients.values.last.to_f, @registrations.values.last.to_f) %>
@@ -299,7 +299,7 @@
           <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
               <span class="fw-bold d-lg-none">
-                Difference: 
+                Difference:
               </span>
               <% controlled_percentage = (control_rate.to_f - @top_district_benchmarks[:controlled_percentage]).round %>
               <span class="<%= controlled_percentage > 0 ? "c-green-dark" : "c-red" %>">
@@ -311,7 +311,7 @@
         <div class="mb-3 pb-3 d-lg-flex mb-lg-2 pb-lg-0">
           <div class="mb-1 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center">
             <p class="mb-0 ls-145 c-grey-dark">
-              More benchmarks TBD
+              More benchmarks coming soon
             </p>
           </div>
           <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">

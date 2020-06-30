@@ -2,6 +2,7 @@ require "rails_helper"
 
 describe DistrictReportService, type: :model do
   let(:user) { create(:user) }
+  let(:june_1) { Time.parse("June 1, 2020") }
 
   let(:jan_2019) { Time.parse("January 1st, 2019") }
   let(:jan_2020) { Time.parse("January 1st, 2020") }
