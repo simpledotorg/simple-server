@@ -308,7 +308,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 
   def release_tag_regex
-    %r{(\d{4}-\d{2}-\d{2}-\d+)}
+    %r{([0-9]{4})-([0][0-9]|[1][0-2])-([0][0-9]|[1][0-9]|[2][0-9]|[3][0-1])-([0-9]{1,})}
   end
 
   def prompt_for_confirmation(msg, prompt_codes, color)

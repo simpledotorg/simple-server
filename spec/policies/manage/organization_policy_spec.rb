@@ -2,7 +2,6 @@ require "rails_helper"
 
 RSpec.describe Manage::OrganizationPolicy do
   subject { described_class }
-
   let(:organization_1) { create(:organization) }
   let(:organization_2) { create(:organization) }
 
@@ -59,8 +58,8 @@ end
 
 RSpec.describe Manage::OrganizationPolicy::Scope do
   let(:subject) { described_class }
-  let(:organization_1) { create(:organization) }
-  let(:organization_2) { create(:organization) }
+  let!(:organization_1) { create(:organization) }
+  let!(:organization_2) { create(:organization) }
 
   context "user can manage all organizations" do
     let(:user_with_permission) do

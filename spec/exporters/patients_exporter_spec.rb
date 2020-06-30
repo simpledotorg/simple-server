@@ -1,10 +1,10 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe PatientsExporter do
   include QuarterHelper
 
   let!(:facility) { create(:facility) }
-  let!(:patient) { create(:patient, registration_facility: facility, status: 'dead') }
+  let!(:patient) { create(:patient, registration_facility: facility, status: "dead") }
   let!(:blood_pressure) { create(:blood_pressure, :with_encounter, :critical, facility: facility, patient: patient) }
   let!(:blood_sugar) { create(:blood_sugar, :fasting, :with_encounter, facility: facility, patient: patient) }
   let!(:appointment) { create(:appointment, :overdue, facility: facility, patient: patient) }
@@ -26,7 +26,7 @@ RSpec.describe PatientsExporter do
   let!(:old_bp_passport) {
     create(
       :patient_business_identifier,
-      identifier_type: 'simple_bp_passport',
+      identifier_type: "simple_bp_passport",
       device_created_at: 1.year.ago,
       patient: patient
     )
@@ -34,56 +34,56 @@ RSpec.describe PatientsExporter do
 
   let(:timestamp) do
     [
-      'Report generated at:',
+      "Report generated at:",
       now
     ]
   end
 
   let(:headers) do
     [
-      'Registration Date',
-      'Registration Quarter',
-      'Patient died?',
-      'Patient Name',
-      'Patient Age',
-      'Patient Gender',
-      'Patient Phone Number',
-      'Patient Street Address',
-      'Patient Village/Colony',
-      'Patient District',
-      'Patient Zone',
-      'Patient State',
-      'Registration Facility Name',
-      'Registration Facility Type',
-      'Registration Facility District',
-      'Registration Facility State',
-      'Latest BP Date',
-      'Latest BP Systolic',
-      'Latest BP Diastolic',
-      'Latest BP Quarter',
-      'Latest BP Facility Name',
-      'Latest BP Facility Type',
-      'Latest BP Facility District',
-      'Latest BP Facility State',
-      'Latest Blood Sugar Date',
-      'Latest Blood Sugar Value',
-      'Latest Blood Sugar Type',
-      'Follow-up Facility',
-      'Follow-up Date',
-      'Days Overdue',
-      'Risk Level',
-      'BP Passport ID',
-      'Simple Patient ID',
-      'Medication 1',
-      'Dosage 1',
-      'Medication 2',
-      'Dosage 2',
-      'Medication 3',
-      'Dosage 3',
-      'Medication 4',
-      'Dosage 4',
-      'Medication 5',
-      'Dosage 5'
+      "Registration Date",
+      "Registration Quarter",
+      "Patient died?",
+      "Patient Name",
+      "Patient Age",
+      "Patient Gender",
+      "Patient Phone Number",
+      "Patient Street Address",
+      "Patient Village/Colony",
+      "Patient District",
+      "Patient Zone",
+      "Patient State",
+      "Registration Facility Name",
+      "Registration Facility Type",
+      "Registration Facility District",
+      "Registration Facility State",
+      "Latest BP Date",
+      "Latest BP Systolic",
+      "Latest BP Diastolic",
+      "Latest BP Quarter",
+      "Latest BP Facility Name",
+      "Latest BP Facility Type",
+      "Latest BP Facility District",
+      "Latest BP Facility State",
+      "Latest Blood Sugar Date",
+      "Latest Blood Sugar Value",
+      "Latest Blood Sugar Type",
+      "Follow-up Facility",
+      "Follow-up Date",
+      "Days Overdue",
+      "Risk Level",
+      "BP Passport ID",
+      "Simple Patient ID",
+      "Medication 1",
+      "Dosage 1",
+      "Medication 2",
+      "Dosage 2",
+      "Medication 3",
+      "Dosage 3",
+      "Medication 4",
+      "Dosage 4",
+      "Medication 5",
+      "Dosage 5"
     ]
   end
 
@@ -91,7 +91,7 @@ RSpec.describe PatientsExporter do
     [
       I18n.l(patient.recorded_at),
       quarter_string(patient.recorded_at),
-      'Died',
+      "Died",
       patient.full_name,
       patient.current_age,
       patient.gender.capitalize,
@@ -119,7 +119,7 @@ RSpec.describe PatientsExporter do
       appointment.facility.name,
       appointment.scheduled_date.to_s(:rfc822),
       appointment.days_overdue,
-      'High',
+      "High",
       patient.latest_bp_passport&.shortcode,
       patient.id,
       prescription_drug_1.name,
@@ -136,22 +136,22 @@ RSpec.describe PatientsExporter do
     blood_sugar.update!(encounter: blood_pressure.encounter)
   end
 
-  describe '#csv' do
+  describe "#csv" do
     let(:patient_batch) { Patient.where(id: patient.id) }
 
-    it 'generates a CSV of patient records' do
+    it "generates a CSV of patient records" do
       travel_to now do
         expect(subject.csv(Patient.all)).to eq(timestamp.to_csv + headers.to_csv + fields.to_csv)
       end
     end
 
-    it 'generates a blank CSV (only headers) if no patients exist' do
+    it "generates a blank CSV (only headers) if no patients exist" do
       travel_to now do
         expect(subject.csv(Patient.none)).to eq(timestamp.to_csv + headers.to_csv)
       end
     end
 
-    it 'uses fetches patients in batches' do
+    it "uses fetches patients in batches" do
       expect_any_instance_of(facility.registered_patients.class)
         .to receive(:in_batches).and_return([patient_batch])
 
@@ -167,7 +167,7 @@ RSpec.describe PatientsExporter do
 
     it "includes blood sugars from other visits" do
       blood_sugar.destroy
-      other_blood_sugar = create(:blood_sugar, :fasting, :with_encounter, facility: facility, patient: patient)
+      _other_blood_sugar = create(:blood_sugar, :fasting, :with_encounter, facility: facility, patient: patient)
 
       expect(subject.csv_fields(patient)).to include("#{blood_sugar.blood_sugar_value} mg/dL")
       expect(subject.csv_fields(patient)).to include("Fasting")

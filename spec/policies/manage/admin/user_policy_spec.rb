@@ -4,10 +4,8 @@ RSpec.describe Manage::Admin::UserPolicy do
   subject { described_class }
   let(:organization1) { create(:organization) }
   let(:organization2) { create(:organization) }
-
   let(:admin1) { create(:admin, organization: organization1) }
   let(:admin2) { create(:admin, organization: organization2) }
-
   let(:user) { create(:admin) }
 
   context "user has permission to manage admins for all organizations" do
@@ -133,10 +131,10 @@ RSpec.describe Manage::Admin::UserPolicy::Scope do
   let(:organization1) { create(:organization) }
   let(:organization2) { create(:organization) }
 
-  let(:admin1) { create(:admin, organization: organization1) }
-  let(:admin2) { create(:admin, organization: organization2) }
+  let!(:admin1) { create(:admin, organization: organization1) }
+  let!(:admin2) { create(:admin, organization: organization2) }
 
-  let(:user) { create(:admin) }
+  let!(:user) { create(:admin) }
 
   context "user has permission to manage admins for all organizations" do
     let!(:permission) { create(:user_permission, user: user, permission_slug: :manage_admins) }

@@ -2,7 +2,7 @@ class BloodPressure < ApplicationRecord
   include Mergeable
   include Hashable
   include Observeable
-  include SQLHelpers
+  extend SQLHelpers
 
   ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at bp_date registration_facility_name user_id
     bp_systolic bp_diastolic]

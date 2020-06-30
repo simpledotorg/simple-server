@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :exotel_phone_number_detail, class: 'ExotelPhoneNumberDetail' do
+  factory :exotel_phone_number_detail, class: "ExotelPhoneNumberDetail" do
     transient do
       status { ExotelPhoneNumberDetail.whitelist_statuses[:whitelist] }
     end
