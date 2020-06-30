@@ -45,7 +45,7 @@ class SeedUsersDataJob
     @patient_traits ||=
       {
         registered_patient: {
-          time_fn: -> { Faker::Time.between(from: 24.months.ago, to: Time.now) },
+          time_fn: -> { Faker::Time.between(from: 9.month.ago, to: Time.now) },
           size_fn: -> { rand(1..10) },
           build_fn: -> (args) {
             build_patient_payload(
@@ -89,7 +89,7 @@ class SeedUsersDataJob
     @per_patient_traits ||=
       {
         ongoing_bp: {
-          time_fn: -> { Faker::Time.between(from: 12.months.ago, to: Time.now) },
+          time_fn: -> { Faker::Time.between(from: 3.month.ago, to: Time.now) },
           size_fn: -> { rand(1..3) },
           build_fn: -> (args) {
             build_blood_pressure_payload(
@@ -106,7 +106,7 @@ class SeedUsersDataJob
         },
 
         retroactive_bp: {
-          time_fn: -> { Faker::Time.between(from: 24.months.ago, to: 1.month.ago.beginning_of_month) },
+          time_fn: -> { Faker::Time.between(from: 9.months.ago, to: 1.month.ago.beginning_of_month) },
           size_fn: -> { rand(1..2) },
           build_fn: -> (args) {
             build_blood_pressure_payload(
@@ -124,7 +124,7 @@ class SeedUsersDataJob
         },
 
         ongoing_blood_sugar: {
-          time_fn: -> { Faker::Time.between(from: 12.months.ago, to: Time.now) },
+          time_fn: -> { Faker::Time.between(from: 3.month.ago, to: Time.now) },
           size_fn: -> { rand(1..3) },
           build_fn: -> (args) {
             build_blood_sugar_payload(
@@ -142,7 +142,7 @@ class SeedUsersDataJob
         },
 
         retroactive_blood_sugar: {
-          time_fn: -> { Faker::Time.between(from: 24.months.ago, to: 1.month.ago.beginning_of_month) },
+          time_fn: -> { Faker::Time.between(from: 9.months.ago, to: 1.month.ago.beginning_of_month) },
           size_fn: -> { rand(1..3) },
           build_fn: -> (args) {
             build_blood_sugar_payload(
@@ -198,7 +198,7 @@ class SeedUsersDataJob
         },
 
         completed_phone_call: {
-          time_fn: -> { Faker::Time.between(from: 24.months.ago, to: Date.today) },
+          time_fn: -> { Faker::Time.between(from: 9.months.ago, to: Date.today) },
           size_fn: -> { rand(1..1) },
           build_fn: -> (args) {
             FactoryBot.create(:call_log,
