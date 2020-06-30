@@ -308,76 +308,22 @@
             </p>
           </div>
         </div>
-        <div class="mb-3 pb-3 bb-1px bb-grey-light d-lg-flex mb-lg-2 pb-lg-0">
+        <div class="mb-3 pb-3 d-lg-flex mb-lg-2 pb-lg-0">
           <div class="mb-1 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center">
-            <p class="mb-0 ls-145">
-              <%= @quarterly_registrations.first["results_in"] %> cohort BP control
+            <p class="mb-0 ls-145 c-grey-dark">
+              More benchmarks TBD
             </p>
           </div>
           <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">
-                Top District: 
-              </span>
-              <%= number_to_percentage @top_district_benchmarks[:quarter_controlled_percentage], precision: 0 %>
             </p>
           </div>
           <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">
-                <%= @district.name %>: 
-              </span>
-              <% quarter_percentage = compute_percentage(@quarterly_registrations.first[:controlled], @quarterly_registrations.first[:registered]) %>
-              <%= quarter_percentage %>
             </p>
           </div>
           <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">
-                Difference: 
-              </span>
-              <% quarter_controlled_percentage = (quarter_percentage.to_f - @top_district_benchmarks[:quarter_controlled_percentage]).round %>
-              <span class="<%= quarter_controlled_percentage > 0 ? "c-green-dark" : "c-red" %>">
-                <%= quarter_controlled_percentage > 0 ? "+" : "" %><%= quarter_controlled_percentage %>%
-              </span>
-            </p>
-          </div>
-        </div>
-        <div class="d-lg-flex mb-lg-0 pb-lg-0">
-          <div class="mb-1 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center">
-            <p class="mb-0 ls-145">
-              <%= @quarterly_registrations.first["results_in"] %> cohort missed visit
-            </p>
-          </div>
-          <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
-            <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">
-                Top District: 
-              </span>
-              <span>
-                <%= number_to_percentage(
-                  @top_district_benchmarks[:quarter_missed_visits_percentage],
-                  precision: 0
-                ) %>
-              </span>
-            </p>
-          </div>
-          <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
-            <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none"><%= @district.name %>: </span>
-              <% quarter_missed_visits_percentage = compute_percentage(@quarterly_registrations.first[:no_bp], @quarterly_registrations.first[:registered]) %>
-              <%= quarter_missed_visits_percentage %>
-            </p>
-          </div>
-          <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
-            <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">
-                Difference: 
-              </span>
-              <% quarter_missed_visits_percentage = (@top_district_benchmarks[:quarter_missed_visits_percentage] - quarter_missed_visits_percentage.to_f).round %>
-              <span class="<%= quarter_missed_visits_percentage > 0 ? "c-green-dark" : "c-red" %>">
-                <%= quarter_missed_visits_percentage %>%
-              </span>
             </p>
           </div>
         </div>
