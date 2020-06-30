@@ -3,8 +3,6 @@ class Dashboard::DistrictsController < AdminController
   skip_after_action :verify_policy_scoped
   around_action :set_time_zone
 
-  EXAMPLE_DATA_FILE = "db/data/example_dashboard_data.json"
-
   def index
     authorize([:manage, Organization])
     @organizations = policy_scope([:manage, :facility, Organization])
