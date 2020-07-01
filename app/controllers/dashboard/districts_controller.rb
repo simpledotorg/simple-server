@@ -6,13 +6,14 @@ class Dashboard::DistrictsController < AdminController
   EXAMPLE_DATA_FILE = "db/data/example_dashboard_data.json"
 
   def index
-    authorize([:manage, Organization])
-    @organizations = policy_scope([:manage, :facility, Organization])
+    authorize(:dashboard, :show?)
+
+    @organizations = policy_scope([:cohort_report, Organization]).order(:name)
   end
 
   def show
     @district = FacilityGroup.find_by(slug: district_params[:id])
-    authorize([:manage, @district])
+    authorize(:dashboard, :show?)
 
     @selected_date = if district_params[:selected_date]
       Time.parse(district_params[:selected_date])
