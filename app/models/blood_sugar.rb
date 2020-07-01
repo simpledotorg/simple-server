@@ -1,7 +1,7 @@
 class BloodSugar < ApplicationRecord
   include Mergeable
   include Observeable
-  include SQLHelpers
+  extend SQLHelpers
 
   belongs_to :patient, optional: true
   belongs_to :user, optional: true
