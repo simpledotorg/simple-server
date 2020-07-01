@@ -28,7 +28,7 @@ class SeedUsersDataJob
   SYNC_PAYLOAD_SIZE = 20
 
   SEED_DATA_AGE = 24.months
-  ONGOING_SEED_DATA_AGE = 12.months
+  ONGOING_SEED_DATA_AGE = 3.months
 
   # Add traits here that pertain to creating patients.
   #
