@@ -61,11 +61,11 @@ class Appointment < ApplicationRecord
   end
 
   def self.reminder_start_hour
-    @reminder_start ||= ENV.fetch("APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_START").to_i
+    @reminder_start_hour ||= ENV.fetch("APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_START").to_i
   end
 
   def self.reminder_end_hour
-    @reminder_end ||= ENV.fetch("APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_FINISH").to_i
+    @reminder_end_hour ||= ENV.fetch("APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_FINISH").to_i
   end
 
   def self.next_reminder_time
