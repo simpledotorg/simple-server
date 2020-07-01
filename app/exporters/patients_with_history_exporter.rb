@@ -95,7 +95,7 @@ module PatientsWithHistoryExporter
 
   def self.csv_fields(patient)
     registration_facility = patient.registration_facility
-    latest_bps = patient.latest_blood_pressures.first(DISPLAY_BLOOD_PRESSURES)
+    latest_bps = patient.latest_blood_pressures.first(DISPLAY_BLOOD_PRESSURES + 1)
     latest_blood_sugar = patient.latest_blood_sugar
     latest_appointment = patient.latest_scheduled_appointment
     latest_bp_passport = patient.latest_bp_passport

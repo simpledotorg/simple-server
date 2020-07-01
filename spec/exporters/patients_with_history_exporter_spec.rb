@@ -20,6 +20,9 @@ RSpec.describe PatientsWithHistoryExporter do
   let!(:bp_3) { create(:blood_pressure, :with_encounter, recorded_at: 4.months.ago, facility: facility, patient: patient, user: user) }
   let!(:bp_3_follow_up) { create(:appointment, device_created_at: 4.month.ago, scheduled_date: 3.months.ago, creation_facility: facility, patient: patient, user: user) }
 
+  let!(:bp_4) { create(:blood_pressure, :with_encounter, recorded_at: 5.months.ago, facility: facility, patient: patient, user: user) }
+  let(:old_prescription_drug) { create(:prescription_drug, device_created_at: 5.months.ago, facility: facility, patient: patient)}
+
   let!(:prescription_drugs) do
     [
       *create_list(:prescription_drug,
@@ -28,11 +31,12 @@ RSpec.describe PatientsWithHistoryExporter do
         device_created_at: 3.months.ago,
         facility: facility,
         patient: patient).sort_by(&:name),
-      *create_list(:prescription_drug,
-        3,
+      *[create_list(:prescription_drug,
+        2,
         device_created_at: 3.months.ago,
         facility: facility,
-        patient: patient).sort_by(&:name)
+        patient: patient),
+        old_prescription_drug].flatten.sort_by(&:name)
     ]
   end
 
@@ -214,8 +218,8 @@ RSpec.describe PatientsWithHistoryExporter do
       bp_3_follow_up.scheduled_date,
       bp_3_follow_up.follow_up_days,
       "No",
-      nil,
-      nil,
+      old_prescription_drug.name,
+      old_prescription_drug.dosage,
       nil,
       nil,
       nil,
