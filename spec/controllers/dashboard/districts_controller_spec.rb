@@ -3,9 +3,9 @@ require "rails_helper"
 RSpec.describe Dashboard::DistrictsController, type: :controller do
   let(:organization) { FactoryBot.create(:organization) }
   let(:cvho) do
-    create(:admin, :supervisor, organization: organization).tap { |user|
+    create(:admin, :supervisor, organization: organization).tap do |user|
       user.user_permissions << build(:user_permission, permission_slug: :view_cohort_reports, resource: organization)
-    }
+    end
   end
 
   context "show" do
