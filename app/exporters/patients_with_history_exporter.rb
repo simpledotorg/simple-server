@@ -70,7 +70,7 @@ module PatientsWithHistoryExporter
           "BP #{i} Follow-up Facility",
           "BP #{i} Follow-up Date",
           "BP #{i} Follow up Days",
-          "BP #{i} Medication Updated",
+          "BP #{i} Medication Titrated",
           "BP #{i} Medication 1",
           "BP #{i} Dosage 1",
           "BP #{i} Medication 2",
