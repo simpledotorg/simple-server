@@ -23,7 +23,7 @@ class Dashboard::DistrictsController < AdminController
     end
     @data = DistrictReportService.new(facilities: @district.facilities,
                                       selected_date: @selected_date,
-                                      organizations: @organizations).call
+                                      current_user: current_user).call
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:registrations]
     @quarterly_registrations = @data[:quarterly_registrations]

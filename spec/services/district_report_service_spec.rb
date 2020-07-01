@@ -1,9 +1,13 @@
 require "rails_helper"
 
 describe DistrictReportService, type: :model do
-  let(:user) { create(:user, organization: organization) }
-  let(:june_1) { Time.parse("June 1, 2020") }
   let(:organization) { create(:organization, name: "org-1") }
+  let(:user) do
+    create(:admin, :supervisor, organization: organization).tap { |user|
+      user.user_permissions << build(:user_permission, permission_slug: :view_cohort_reports, resource: organization)
+    }
+  end
+  let(:june_1) { Time.parse("June 1, 2020") }
   let(:facility_group_1) { FactoryBot.create(:facility_group, name: "facility_group_1", organization: organization) }
 
   def refresh_views
@@ -14,7 +18,7 @@ describe DistrictReportService, type: :model do
   end
 
   it "normalizes the selected_date" do
-    service = DistrictReportService.new(facilities: facility_group_1.facilities, selected_date: june_1, organizations: [organization])
+    service = DistrictReportService.new(facilities: facility_group_1.facilities, selected_date: june_1, current_user: user)
     Timecop.freeze("June 30 2020 5:00 PM EST") do
       expect(service.selected_date).to eq(june_1.end_of_month)
     end
@@ -56,7 +60,7 @@ describe DistrictReportService, type: :model do
 
     refresh_views
 
-    service = DistrictReportService.new(facilities: facility_group_1.facilities, selected_date: june_1, organizations: [organization])
+    service = DistrictReportService.new(facilities: facility_group_1.facilities, selected_date: june_1, current_user: user)
     expect(service.controlled_patients_count(jan_1)).to eq(controlled_in_jan_and_june.size)
     june_controlled = controlled_in_jan_and_june << controlled_just_for_june
     expect(service.controlled_patients_count(june_1)).to eq(june_controlled.size)
@@ -90,7 +94,7 @@ describe DistrictReportService, type: :model do
 
     refresh_views
 
-    service = DistrictReportService.new(facilities: facility_group_1.facilities, selected_date: june_1, organizations: [organization])
+    service = DistrictReportService.new(facilities: facility_group_1.facilities, selected_date: june_1, current_user: user)
     result = service.call
 
     expected_controlled_patients = {
@@ -138,9 +142,9 @@ describe DistrictReportService, type: :model do
 
     refresh_views
 
-    service = DistrictReportService.new(facilities: darrang.facilities, selected_date: june_1, organizations: [organization])
+    service = DistrictReportService.new(facilities: darrang.facilities, selected_date: june_1, current_user: user)
     result = service.call
-    expect(result[:top_district_benchmarks][:district]).to eq(koriya)
     expect(result[:top_district_benchmarks][:controlled_percentage]).to eq(100.0)
+    expect(result[:top_district_benchmarks][:district]).to eq(koriya)
   end
 end

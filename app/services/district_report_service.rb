@@ -2,8 +2,9 @@ class DistrictReportService
   include SQLHelpers
   MAX_MONTHS_OF_DATA = 24
 
-  def initialize(facilities:, selected_date:, organizations:)
-    @organizations = organizations
+  def initialize(facilities:, selected_date:, current_user:)
+    @current_user = current_user
+    @organizations = Pundit.policy_scope(current_user, [:cohort_report, Organization]).order(:name)
     @facilities = Array(facilities)
     @selected_date = selected_date.end_of_month
     @data = {
@@ -15,7 +16,11 @@ class DistrictReportService
     }.with_indifferent_access
   end
 
-  attr_reader :selected_date, :facilities, :data, :organizations
+  attr_reader :current_user
+  attr_reader :data
+  attr_reader :facilities
+  attr_reader :organizations
+  attr_reader :selected_date
 
   def call
     compile_control_and_registration_data
