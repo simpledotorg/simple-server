@@ -12,6 +12,7 @@ class Dashboard::DistrictsController < AdminController
   end
 
   def show
+    @organizations = policy_scope([:cohort_report, Organization]).order(:name)
     @district = FacilityGroup.find_by(slug: district_params[:id])
     authorize(:dashboard, :show?)
 
@@ -20,7 +21,9 @@ class Dashboard::DistrictsController < AdminController
     else
       Date.current.advance(months: -1)
     end
-    @data = DistrictReportService.new(facilities: @district.facilities, selected_date: @selected_date).call
+    @data = DistrictReportService.new(facilities: @district.facilities,
+                                      selected_date: @selected_date,
+                                      organizations: @organizations).call
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:registrations]
     @quarterly_registrations = @data[:quarterly_registrations]

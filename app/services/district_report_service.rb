@@ -2,9 +2,10 @@ class DistrictReportService
   include SQLHelpers
   MAX_MONTHS_OF_DATA = 24
 
-  def initialize(facilities:, selected_date:)
+  def initialize(facilities:, selected_date:, organizations:)
+    @organizations = organizations
     @facilities = Array(facilities)
-    @selected_date = selected_date
+    @selected_date = selected_date.end_of_month
     @data = {
       controlled_patients: {},
       registrations: {},
@@ -14,7 +15,7 @@ class DistrictReportService
     }.with_indifferent_access
   end
 
-  attr_reader :selected_date, :facilities, :data
+  attr_reader :selected_date, :facilities, :data, :organizations
 
   def call
     compile_control_and_registration_data
@@ -106,7 +107,7 @@ class DistrictReportService
   end
 
   def top_district_benchmarks
-    districts_by_rate = FacilityGroup.all.each_with_object({}) { |district, hsh|
+    districts_by_rate = organizations.flat_map { |o| o.facility_groups }.each_with_object({}) { |district, hsh|
       controlled = ControlledPatientsQuery.call(facilities: district.facilities, time: selected_date).count
       registration_count = Patient.with_hypertension.where(registration_facility: district.facilities).where("recorded_at <= ?", selected_date).count
       hsh[district] = percentage(controlled, registration_count)
