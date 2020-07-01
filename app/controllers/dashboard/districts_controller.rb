@@ -20,7 +20,9 @@ class Dashboard::DistrictsController < AdminController
     else
       Date.current.advance(months: -1)
     end
-    @data = DistrictReportService.new(facilities: @district.facilities, selected_date: @selected_date).call
+    @data = DistrictReportService.new(facilities: @district.facilities,
+                                      selected_date: @selected_date,
+                                      current_user: current_admin).call
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
