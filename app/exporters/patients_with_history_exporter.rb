@@ -175,8 +175,8 @@ module PatientsWithHistoryExporter
     end
 
     def medication_updated?(date, previous_date)
-      current_medications = medications(date).to_set
-      previous_medications = medications(previous_date).to_set
+      current_medications = medications(date)
+      previous_medications = medications(previous_date)
 
       current_medications == previous_medications ? "No" : "Yes"
     end
