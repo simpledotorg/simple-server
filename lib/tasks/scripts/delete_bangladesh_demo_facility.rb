@@ -22,8 +22,12 @@ class DeleteBangladeshDemoFacility
     13a746ac-46c6-4d3f-96aa-aa6d7996b621
   ].freeze
 
-  def self.call(*args)
-    new(*args).call
+  def self.handle_patients(*args)
+    new(*args).handle_patients
+  end
+
+  def self.delete_facility(*args)
+    new(*args).delete_facility
   end
 
   attr_reader :verbose, :dryrun
@@ -33,14 +37,14 @@ class DeleteBangladeshDemoFacility
     @dryrun = dryrun
   end
 
-  def call
-    log "Moving real patients to Beanibazar..."
+  def handle_patients
     move_real_patients_to_beanibazar
-
-    log "Discarding test patients..."
     discard_test_patients
 
-    log "Discarding demo facility..."
+    log "Complete. Goodbye."
+  end
+
+  def delete_facility
     discard_demo_facility
 
     log "Complete. Goodbye."
@@ -49,14 +53,17 @@ class DeleteBangladeshDemoFacility
   private
 
   def move_real_patients_to_beanibazar
+    log "Moving real patients to Beanibazar..."
     real_patients.update(registration_facility: beanibazar)
   end
 
   def discard_test_patients
+    log "Discarding test patients..."
     demo_facility.reload.patients.each(&:discard_data)
   end
 
   def discard_demo_facility
+    log "Discarding demo facility..."
     demo_facility.discard
   end
 
