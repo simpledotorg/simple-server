@@ -22,12 +22,7 @@ module PatientsWithHistoryExporter
         batch.includes(
           :registration_facility,
           :phone_numbers,
-          :address,
-          :medical_history,
-          :latest_bp_passports,
-          {appointments: :facility},
-          {latest_blood_pressures: :facility},
-          :latest_blood_sugars
+          :address
         ).each do |patient|
           csv << csv_fields(patient)
         end
