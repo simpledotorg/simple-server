@@ -28,9 +28,9 @@ module MonthHelper
 
     range.map do |i|
       if end_of_month
-        Time.current.end_of_month - i.months
+        Time.current.end_of_month.advance(months: -i)
       else
-        Time.current.beginning_of_month - i.months
+        Time.current.beginning_of_month.advance(months: -i)
       end
     end
   end
