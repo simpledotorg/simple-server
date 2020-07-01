@@ -23,11 +23,15 @@ module MonthHelper
     Date.civil(year.to_i, moy.to_i)
   end
 
-  def last_n_months(n:, inclusive: false)
+  def last_n_months(n:, inclusive: false, end_of_month: false)
     range = inclusive ? (0..(n - 1)) : (1..n)
 
     range.map do |i|
-      Time.current.beginning_of_month - i.months
+      if end_of_month
+        Time.current.end_of_month - i.months
+      else
+        Time.current.beginning_of_month - i.months
+      end
     end
   end
 end
