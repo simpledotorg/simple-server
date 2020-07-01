@@ -106,21 +106,7 @@ class DistrictReportService
     ControlledPatientsQuery.call(facilities: facilities, time: time).count
   end
 
-  def percentage(numerator, denominator)
-    return 0 if denominator == 0
-    (numerator.to_f / denominator) * 100
-  end
-
   def top_district_benchmarks
-    districts_by_rate = organizations.flat_map { |o| o.facility_groups }.each_with_object({}) { |district, hsh|
-      controlled = ControlledPatientsQuery.call(facilities: district.facilities, time: selected_date).count
-      registration_count = Patient.with_hypertension.where(registration_facility: district.facilities).where("recorded_at <= ?", selected_date).count
-      hsh[district] = percentage(controlled, registration_count)
-    }
-    district, percentage = districts_by_rate.max_by { |district, rate| rate }
-    {
-      district: district,
-      controlled_percentage: percentage
-    }
+    TopDistrictService.new(organizations, selected_date).call
   end
 end
