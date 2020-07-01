@@ -60,6 +60,27 @@ class Appointment < ApplicationRecord
       .merge(Patient.contactable)
   end
 
+  def self.reminder_start_hour
+    @reminder_start ||= ENV.fetch("APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_START").to_i
+  end
+
+  def self.reminder_end_hour
+    @reminder_end ||= ENV.fetch("APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_FINISH").to_i
+  end
+
+  def self.next_reminder_time
+    now = DateTime.now.in_time_zone(Rails.application.config.country[:time_zone])
+
+    case
+    when now.hour < reminder_start_hour
+      now.change(hour: reminder_start_hour)
+    when now.hour >= reminder_end_hour
+      now.change(hour: reminder_start_hour).advance(days: 1)
+    else
+      now
+    end
+  end
+
   def days_overdue
     [0, (Date.current - scheduled_date).to_i].max
   end
