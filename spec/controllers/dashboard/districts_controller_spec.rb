@@ -24,11 +24,13 @@ RSpec.describe Dashboard::DistrictsController, type: :controller do
       LatestBloodPressuresPerPatient.refresh
       LatestBloodPressuresPerPatientPerMonth.refresh
 
-      sign_in(supervisor.email_authentication)
-      get :show, params: {id: @facility.facility_group.slug}
+      Timecop.freeze("June 1 2020") do
+        sign_in(supervisor.email_authentication)
+        get :show, params: {id: @facility.facility_group.slug}
+      end
       expect(response).to be_successful
       data = assigns(:data)
-      expect(data[:controlled_patients].size).to eq(12) # 1 year of data
+      expect(data[:controlled_patients].size).to eq(6) # retrieves data back to first registration
       expect(data[:controlled_patients]["Dec 2019"]).to eq(1)
     end
   end
