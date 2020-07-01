@@ -99,7 +99,7 @@ module PatientsWithHistoryExporter
     latest_blood_sugar = patient.latest_blood_sugar
     latest_appointment = patient.latest_scheduled_appointment
     latest_bp_passport = patient.latest_bp_passport
-    cache_medication_history(patient, latest_bps.map(&:recorded_at))
+    fetch_medication_history(patient, latest_bps.map(&:recorded_at))
     zone_column_index = csv_headers.index(zone_column)
 
     csv_fields = [
@@ -138,8 +138,8 @@ module PatientsWithHistoryExporter
           appointment&.facility&.name,
           appointment&.scheduled_date,
           appointment&.follow_up_days,
-          medication_updated?(patient, bp&.recorded_at, previous_bp&.recorded_at),
-          *medications_for(patient, bp&.recorded_at)]
+          medication_updated?(bp&.recorded_at, previous_bp&.recorded_at),
+          *formatted_medications(bp&.recorded_at)]
       end,
       latest_blood_sugar&.recorded_at.presence && I18n.l(latest_blood_sugar&.recorded_at),
       latest_blood_sugar&.to_s,
@@ -164,27 +164,25 @@ module PatientsWithHistoryExporter
         .first
     end
 
-    def cache_medication_history(patient, dates)
-      @medications = {patient => {}}
-
-      dates.each do |date|
-        @medications[patient][date] = date ? patient.prescribed_drugs(date: date) : PrescriptionDrug.none
-      end
+    def fetch_medication_history(patient, dates)
+      @medications = dates.each_with_object({}) { |date, cache|
+        cache[date] = date ? patient.prescribed_drugs(date: date) : PrescriptionDrug.none
+      }
     end
 
-    def medications(patient, date)
-      date ? @medications[patient][date] : PrescriptionDrug.none
+    def medications(date)
+      date ? @medications[date] : PrescriptionDrug.none
     end
 
-    def medication_updated?(patient, date, previous_date)
-      current_medications = medications(patient, date).to_set
-      previous_medications = medications(patient, previous_date).to_set
+    def medication_updated?(date, previous_date)
+      current_medications = medications(date).to_set
+      previous_medications = medications(previous_date).to_set
 
       current_medications == previous_medications ? "No" : "Yes"
     end
 
-    def medications_for(patient, date)
-      medications = medications(patient, date)
+    def formatted_medications(date)
+      medications = medications(date)
       sorted_medications = medications.order(is_protocol_drug: :desc, name: :asc)
       other_medications = sorted_medications[DISPLAY_MEDICATION_COLUMNS..medications.length]
                             &.map { |medication| "#{medication.name}-#{medication.dosage}" }
