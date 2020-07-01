@@ -12,7 +12,6 @@ class Dashboard::DistrictsController < AdminController
   end
 
   def show
-    @organizations = policy_scope([:cohort_report, Organization]).order(:name)
     @district = FacilityGroup.find_by(slug: district_params[:id])
     authorize(:dashboard, :show?)
 
