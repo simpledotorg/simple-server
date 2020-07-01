@@ -3,7 +3,7 @@ class AppointmentNotificationService
     new(*args).send_after_missed_visit
   end
 
-  def initialize(appointments:, days_overdue: 3, schedule_at:)
+  def initialize(appointments:, days_overdue: 3)
     @appointments = appointments
     @days_overdue = days_overdue
     @schedule_at = schedule_at
@@ -21,7 +21,9 @@ class AppointmentNotificationService
     eligible_appointments.each do |appointment|
       next if appointment.previously_communicated_via?(communication_type)
 
-      AppointmentNotification::Worker.perform_at(schedule_at, appointment.id, communication_type)
+      next_reminder_time = Appointment.next_reminder_time
+
+      AppointmentNotification::Worker.perform_at(next_reminder_time, appointment.id, communication_type)
     end
   end
 
