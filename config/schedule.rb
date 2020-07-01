@@ -1,6 +1,5 @@
 require "tzinfo"
-
-require File.expand_path('../config/environment', __dir__)
+require File.expand_path("../config/environment", __dir__)
 
 set :output, "/home/deploy/apps/simple-server/shared/log/cron.log"
 
