@@ -29,13 +29,23 @@ namespace :data_fixes do
     CleanAncientDates.call(dryrun: true)
   end
 
+  desc "Handle Bangladesh demo patients"
+  task :handle_bangladesh_demo_patients => :environment do
+    DeleteBangladeshDemoFacility.handle_patients
+  end
+
+  desc "Handle Bangladesh demo patients (dryrun)"
+  task :handle_bangladesh_demo_patients_dryrun => :environment do
+    DeleteBangladeshDemoFacility.handle_patients(dryrun: true)
+  end
+
   desc "Delete Bangladesh demo facility"
-  task :delete_bangladesh_demo_facility => :environment do
-    DeleteBangladeshDemoFacility.call
+  task :handle_bangladesh_demo_patients => :environment do
+    DeleteBangladeshDemoFacility.delete_facility
   end
 
   desc "Delete Bangladesh demo facility (dryrun)"
-  task :delete_bangladesh_demo_facility_dryrun => :environment do
-    DeleteBangladeshDemoFacility.call(dryrun: true)
+  task :handle_bangladesh_demo_patients_dryrun => :environment do
+    DeleteBangladeshDemoFacility.delete_facility(dryrun: true)
   end
 end
