@@ -62,3 +62,8 @@ Rails.application.configure do
 
   config.active_job.queue_adapter = :inline
 end
+
+# Set a longer session timeout to make things easier on developers
+Devise.setup do |config|
+  config.timeout_in = 8.hours
+end

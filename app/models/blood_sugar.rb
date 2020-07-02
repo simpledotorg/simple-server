@@ -20,6 +20,13 @@ class BloodSugar < ApplicationRecord
     hba1c: "hba1c"
   }, _prefix: true
 
+  BLOOD_SUGAR_UNITS = {
+    random: "mg/dL",
+    post_prandial: "mg/dL",
+    fasting: "mg/dL",
+    hba1c: "%"
+  }.with_indifferent_access.freeze
+
   V3_TYPES = %i[random post_prandial fasting].freeze
 
   scope :for_v3, -> { where(blood_sugar_type: V3_TYPES) }
@@ -33,5 +40,9 @@ class BloodSugar < ApplicationRecord
 
   def diabetic?
     blood_sugar_value >= THRESHOLDS[:high][blood_sugar_type]
+  end
+
+  def to_s
+    "#{blood_sugar_value} #{BLOOD_SUGAR_UNITS[blood_sugar_type]}"
   end
 end
