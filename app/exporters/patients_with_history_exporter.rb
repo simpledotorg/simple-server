@@ -98,8 +98,8 @@ module PatientsWithHistoryExporter
     zone_column_index = csv_headers.index(zone_column)
 
     csv_fields = [
-      patient.recorded_at.presence && I18n.l(patient.recorded_at),
-      patient.recorded_at.presence && quarter_string(patient.recorded_at),
+      patient.recorded_at.presence && I18n.l(patient.recorded_at.to_date),
+      patient.recorded_at.presence && quarter_string(patient.recorded_at.to_date),
       ("Died" if patient.status == "dead"),
       patient.id,
       latest_bp_passport&.shortcode,
@@ -122,8 +122,8 @@ module PatientsWithHistoryExporter
         previous_bp = latest_bps[i]
         appointment = appointment_created_on(patient, bp&.recorded_at)
 
-        [bp&.recorded_at.presence && I18n.l(bp&.recorded_at),
-          bp&.recorded_at.presence && quarter_string(bp&.recorded_at),
+        [bp&.recorded_at.presence && I18n.l(bp&.recorded_at&.to_date),
+          bp&.recorded_at.presence && quarter_string(bp&.recorded_at&.to_date),
           bp&.systolic,
           bp&.diastolic,
           bp&.facility&.name,
@@ -131,12 +131,12 @@ module PatientsWithHistoryExporter
           bp&.facility&.district,
           bp&.facility&.state,
           appointment&.facility&.name,
-          appointment&.scheduled_date,
+          appointment&.scheduled_date.presence && I18n.l(appointment&.scheduled_date&.to_date),
           appointment&.follow_up_days,
           medication_updated?(bp&.recorded_at, previous_bp&.recorded_at),
           *formatted_medications(bp&.recorded_at)]
       end,
-      latest_blood_sugar&.recorded_at.presence && I18n.l(latest_blood_sugar&.recorded_at),
+      latest_blood_sugar&.recorded_at.presence && I18n.l(latest_blood_sugar&.recorded_at&.to_date),
       latest_blood_sugar&.to_s,
       blood_sugar_type(latest_blood_sugar)
     ].flatten

@@ -140,8 +140,8 @@ RSpec.describe PatientsWithHistoryExporter do
 
   let(:fields) do
     [
-      I18n.l(patient.recorded_at),
-      quarter_string(patient.recorded_at),
+      I18n.l(patient.recorded_at.to_date),
+      quarter_string(patient.recorded_at.to_date),
       "Died",
       patient.id,
       patient.latest_bp_passport&.shortcode,
@@ -160,8 +160,8 @@ RSpec.describe PatientsWithHistoryExporter do
       facility.state,
       "High",
       bp_1_follow_up.days_overdue,
-      I18n.l(bp_1.recorded_at),
-      quarter_string(bp_1.recorded_at),
+      I18n.l(bp_1.recorded_at.to_date),
+      quarter_string(bp_1.recorded_at.to_date),
       bp_1.systolic,
       bp_1.diastolic,
       bp_1.facility.name,
@@ -169,7 +169,7 @@ RSpec.describe PatientsWithHistoryExporter do
       bp_1.facility.district,
       bp_1.facility.state,
       bp_1_follow_up.facility.name,
-      bp_1_follow_up.scheduled_date,
+      I18n.l(bp_1_follow_up.scheduled_date.to_date),
       bp_1_follow_up.follow_up_days,
       "No",
       prescription_drugs[0].name,
@@ -183,8 +183,8 @@ RSpec.describe PatientsWithHistoryExporter do
       prescription_drugs[4].name,
       prescription_drugs[4].dosage,
       "#{prescription_drugs[5].name}-#{prescription_drugs[5].dosage}, #{prescription_drugs[6].name}-#{prescription_drugs[6].dosage}",
-      I18n.l(bp_2.recorded_at),
-      quarter_string(bp_2.recorded_at),
+      I18n.l(bp_2.recorded_at.to_date),
+      quarter_string(bp_2.recorded_at.to_date),
       bp_2.systolic,
       bp_2.diastolic,
       bp_2.facility.name,
@@ -192,7 +192,7 @@ RSpec.describe PatientsWithHistoryExporter do
       bp_2.facility.district,
       bp_2.facility.state,
       bp_2_follow_up.facility.name,
-      bp_2_follow_up.scheduled_date,
+      I18n.l(bp_2_follow_up.scheduled_date),
       bp_2_follow_up.follow_up_days,
       "Yes",
       prescription_drugs[0].name,
@@ -206,8 +206,8 @@ RSpec.describe PatientsWithHistoryExporter do
       prescription_drugs[4].name,
       prescription_drugs[4].dosage,
       "#{prescription_drugs[5].name}-#{prescription_drugs[5].dosage}, #{prescription_drugs[6].name}-#{prescription_drugs[6].dosage}",
-      I18n.l(bp_3.recorded_at),
-      quarter_string(bp_3.recorded_at),
+      I18n.l(bp_3.recorded_at.to_date),
+      quarter_string(bp_3.recorded_at.to_date),
       bp_3.systolic,
       bp_3.diastolic,
       bp_3.facility.name,
@@ -215,7 +215,7 @@ RSpec.describe PatientsWithHistoryExporter do
       bp_3.facility.district,
       bp_3.facility.state,
       bp_3_follow_up.facility.name,
-      bp_3_follow_up.scheduled_date,
+      I18n.l(bp_3_follow_up.scheduled_date.to_date),
       bp_3_follow_up.follow_up_days,
       "No",
       old_prescription_drug.name,
@@ -229,7 +229,7 @@ RSpec.describe PatientsWithHistoryExporter do
       nil,
       nil,
       nil,
-      I18n.l(blood_sugar.recorded_at),
+      I18n.l(blood_sugar.recorded_at.to_date),
       "#{blood_sugar.blood_sugar_value} mg/dL",
       "Fasting"
     ]
@@ -244,6 +244,7 @@ RSpec.describe PatientsWithHistoryExporter do
 
     it "generates a CSV of patient records" do
       travel_to now do
+        puts subject.csv(Patient.all)
         expect(subject.csv(Patient.all)).to eq(timestamp.to_csv + headers.to_csv + fields.to_csv)
       end
     end
