@@ -10,7 +10,9 @@ class TopRegionService
   def call
     districts_by_rate = organizations.flat_map { |o| o.facility_groups }.each_with_object({}) { |district, hsh|
       controlled = ControlledPatientsQuery.call(facilities: district.facilities, time: date).count
-      registration_count = Patient.with_hypertension.where(registration_facility: district.facilities).where("recorded_at <= ?", date).count
+      registration_count = Patient.with_hypertension
+        .where(registration_facility: district.facilities)
+        .where("recorded_at <= ?", date).count
       hsh[district] = percentage(controlled, registration_count)
     }
     district, percentage = districts_by_rate.max_by { |district, rate| rate }
