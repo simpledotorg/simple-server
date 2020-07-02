@@ -1,4 +1,4 @@
-class TopDistrictService
+class TopRegionService
   def initialize(organizations, date)
     @organizations = organizations
     @date = date

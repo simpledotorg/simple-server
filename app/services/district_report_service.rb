@@ -107,6 +107,6 @@ class DistrictReportService
   end
 
   def top_district_benchmarks
-    TopDistrictService.new(organizations, selected_date).call
+    TopRegionService.new(organizations, selected_date).call
   end
 end
