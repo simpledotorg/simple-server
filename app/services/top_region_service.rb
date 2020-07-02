@@ -1,3 +1,4 @@
+# Currently this object returns the "top district (aka facility group)" by control rate from a set of organizations.
 class TopRegionService
   def initialize(organizations, date)
     @organizations = organizations
