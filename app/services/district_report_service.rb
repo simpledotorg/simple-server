@@ -66,17 +66,12 @@ class DistrictReportService
     end
   end
 
-  def percentage(numerator, denominator)
-    return 0 if denominator == 0
-    (numerator.to_f / denominator) * 100
-  end
-
   def compile_benchmarks
     @data[:top_district_benchmarks].merge!(top_district_benchmarks)
   end
 
   def format_quarter(quarter)
-    "Q#{quarter.number}-#{quarter.year}"
+    "#{quarter.year} Q#{quarter.number}"
   end
 
   def lookup_registration_count(date)
