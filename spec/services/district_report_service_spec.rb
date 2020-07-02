@@ -1,7 +1,14 @@
 require "rails_helper"
 
 describe DistrictReportService, type: :model do
-  let(:user) { create(:user) }
+  let(:organization) { create(:organization, name: "org-1") }
+  let(:user) do
+    create(:admin, :supervisor, organization: organization).tap do |user|
+      user.user_permissions << build(:user_permission, permission_slug: :view_cohort_reports, resource: organization)
+    end
+  end
+  let(:june_1) { Time.parse("June 1, 2020") }
+  let(:facility_group_1) { FactoryBot.create(:facility_group, name: "facility_group_1", organization: organization) }
 
   def refresh_views
     ActiveRecord::Base.transaction do
@@ -10,14 +17,19 @@ describe DistrictReportService, type: :model do
     end
   end
 
+  it "normalizes the selected_date" do
+    service = DistrictReportService.new(facilities: facility_group_1.facilities, selected_date: june_1, current_user: user)
+    Timecop.freeze("June 30 2020 5:00 PM EST") do
+      expect(service.selected_date).to eq(june_1.end_of_month)
+    end
+  end
+
   it "correctly returns controlled patients from three month window" do
-    facility_group = FactoryBot.create(:facility_group, name: "Darrang")
-    facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group)
+    facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group_1)
     facility = facilities.first
     facility_2 = create(:facility)
 
     jan_1 = Time.parse("January 1st, 2020")
-    june_1 = Date.parse("June 1, 2020")
 
     controlled_in_jan_and_june = create_list(:patient, 2, full_name: "controlled", recorded_at: Time.current, registration_facility: facility, registration_user: user)
     controlled_just_for_june = create(:patient, full_name: "just for june", registration_facility: facility, registration_user: user)
@@ -48,17 +60,14 @@ describe DistrictReportService, type: :model do
 
     refresh_views
 
-    service = DistrictReportService.new(facilities: facility_group.facilities, selected_date: june_1)
-    expect(service.controlled_patients(jan_1).count).to eq(controlled_in_jan_and_june.size)
-    expect(service.controlled_patients(jan_1).map(&:patient)).to match_array(controlled_in_jan_and_june)
+    service = DistrictReportService.new(facilities: facility_group_1.facilities, selected_date: june_1, current_user: user)
+    expect(service.controlled_patients_count(jan_1)).to eq(controlled_in_jan_and_june.size)
     june_controlled = controlled_in_jan_and_june << controlled_just_for_june
-    expect(service.controlled_patients(june_1).count).to eq(june_controlled.size)
-    expect(service.controlled_patients(june_1).map(&:patient)).to match_array(june_controlled)
+    expect(service.controlled_patients_count(june_1)).to eq(june_controlled.size)
   end
 
-  it "returns counts for last 12 months for controlled patients and registrations" do
-    facility_group = FactoryBot.create(:facility_group, name: "Darrang")
-    facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group)
+  it "returns counts for last n months for controlled patients and registrations" do
+    facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group_1)
     facility = facilities.first
 
     jan_2019 = Time.parse("January 1st 2019")
@@ -85,29 +94,57 @@ describe DistrictReportService, type: :model do
 
     refresh_views
 
-    june_1 = Date.parse("June 1, 2020")
-    service = DistrictReportService.new(facilities: facility_group.facilities, selected_date: june_1)
+    service = DistrictReportService.new(facilities: facility_group_1.facilities, selected_date: june_1, current_user: user)
     result = service.call
 
     expected_controlled_patients = {
-      "Feb 2020" => 2, "Mar 2020" => 2, "Apr 2020" => 4, "May 2020" => 2, "Jun 2020" => 2
+      "Jan 2019" => 2, "Feb 2019" => 2, "Mar 2019" => 2, "Feb 2020" => 2, "Mar 2020" => 2, "Apr 2020" => 4, "May 2020" => 2, "Jun 2020" => 2
     }
     expected_controlled_patients.default = 0
     expected_registrations = {
       "Jan 2020" => 4, "Feb 2020" => 4, "Mar 2020" => 6, "Apr 2020" => 6, "May 2020" => 6, "Jun 2020" => 6
     }
     expected_registrations.default = 2
-    expect(result[:controlled_patients].size).to eq(12)
-    expect(result[:registrations].size).to eq(12)
+    expect(result[:controlled_patients].size).to eq(18)
+    expect(result[:registrations].size).to eq(18)
 
     result[:controlled_patients].each do |month, count|
       expect(count).to eq(expected_controlled_patients[month]),
-        "expected count for #{month} to eq #{count}, but was #{expected_controlled_patients[month].inspect}"
+        "expected count for #{month} to be #{expected_controlled_patients[month]}, but was #{count}"
     end
     result[:registrations].each do |month, count|
       expect(count).to eq(expected_registrations[month]),
-        "expected count for #{month} to eq #{count}, but was #{expected_registrations[month].inspect}"
+        "expected count for #{month} to be #{expected_registrations[month]}, but was #{count}"
     end
     expect(result[:cumulative_registrations]).to eq(6)
+  end
+
+  it "gets top district benchmarks" do
+    darrang = FactoryBot.create(:facility_group, name: "Darrang", organization: organization)
+    darrang_facilities = FactoryBot.create_list(:facility, 2, facility_group: darrang)
+    kadapa = FactoryBot.create(:facility_group, name: "Kadapa", organization: organization)
+    _kadapa_facilities = FactoryBot.create_list(:facility, 2, facility_group: kadapa)
+    koriya = FactoryBot.create(:facility_group, name: "Koriya", organization: organization)
+    koriya_facilities = FactoryBot.create_list(:facility, 2, facility_group: koriya)
+
+    Timecop.freeze("April 1sth 2020") do
+      darrang_patients = create_list(:patient, 2, recorded_at: 1.month.ago, registration_facility: darrang_facilities.first, registration_user: user)
+      darrang_patients.each do |patient|
+        create(:blood_pressure, :hypertensive, facility: darrang_facilities.first, patient: patient, recorded_at: Time.current)
+      end
+    end
+    Timecop.freeze("April 15th 2020") do
+      patients_with_controlled_bp = create_list(:patient, 4, recorded_at: 1.month.ago, registration_facility: koriya_facilities.first, registration_user: user)
+      patients_with_controlled_bp.map do |patient|
+        create(:blood_pressure, :under_control, facility: koriya_facilities.first, patient: patient, recorded_at: Time.current)
+      end
+    end
+
+    refresh_views
+
+    service = DistrictReportService.new(facilities: darrang.facilities, selected_date: june_1, current_user: user)
+    result = service.call
+    expect(result[:top_district_benchmarks][:controlled_percentage]).to eq(100.0)
+    expect(result[:top_district_benchmarks][:district]).to eq(koriya)
   end
 end

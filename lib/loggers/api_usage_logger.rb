@@ -1,5 +1,5 @@
-require 'active_support/tagged_logging'
-require 'logger'
+require "active_support/tagged_logging"
+require "logger"
 
 class Loggers::ApiUsageLogger < ::Logger
   include ActiveSupport::TaggedLogging
@@ -18,4 +18,3 @@ class Loggers::ApiUsageLogger < ::Logger
     self.formatter = Formatter.new
   end
 end
-

@@ -1,3 +1,6 @@
+<div class="alert alert-primary">
+  <span class="fw-bold">Early access:</span> This page is under active development, thanks for your patience as we work on improving it
+</div>
 <div class="dashboard">
   <nav class="breadcrumb">
     <%= link_to 'All reports', dashboard_districts_path %>
@@ -11,11 +14,11 @@
     <div class="dropdown show">
       <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">
-        Patients registered in <%= @selected_date.to_s(:month_year) %>
+        Report: <%= @selected_date.to_s(:month_year) %>
       </a>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
         <%= form_tag dashboard_district_path(@district), method: :get do %>
-          <% last_n_months(n: 12).each do |time| %>
+          <% last_n_months(n: 12, end_of_month: true).each do |time| %>
             <% selected = (time.year == @selected_date.year && time.month == @selected_date.month) %>
             <button class="dropdown-item query-filter-month <%= 'active' if selected %>"
                     name="selected_date"
@@ -30,7 +33,7 @@
 </div>
 <div class="d-lg-flex flex-lg-wrap">
   <div class="d-lg-flex order-lg-1 w-lg-50 pr-lg-2">
-    <div class="card pb-4 d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+    <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div>
         <div class="mb-2">
           <h3>
@@ -69,7 +72,7 @@
     </div>
   </div>
   <div class="d-lg-flex order-lg-3 w-lg-50 pr-lg-2">
-    <div class="card pb-4 d-lg-flex justify-lg-between h-lg-full w-lg-full mt-lg-0">
+    <div class="card d-lg-flex justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div>
         <div class="mb-2">
           <h3>
@@ -81,17 +84,17 @@
         </div>
         <div>
           <h3 class="mb-1 fs-xlarge fw-bold c-purple">
-            <%= number_with_delimiter(@registrations.values.last) %> patients
+            <%= number_with_delimiter(@registrations.values.last) || "N/A" %> patients
           </h3>
           <p>
-            <span class="fw-bold"><%= number_with_delimiter(@controlled_patients.values.last) %></span> of <%= number_with_delimiter(@registrations.values.last) %> registered patients
+            <span class="fw-bold"><%= @controlled_patients.values.last %> (<%= compute_percentage(@controlled_patients.values.last, @registrations.values.last, precision: 0) %>)</span> controlled patients
           </p>
         </div>
       </div>
       <div>
         <%
           percent = 1.05
-          max_y_value = (@registrations.values.last * percent).round
+          max_y_value = ((@registrations.values&.last || 0) * percent).round
         %>
         <div class="d-flex h-200px">
           <% @registrations.each_with_index do |registrations, index| %>
@@ -108,7 +111,7 @@
                       data-toggle="tooltip"
                       data-placement="top"
                       data-trigger="hover focus click"
-                      title="<%= registrations[0] %>, <%= number_with_delimiter(registrations[1]) %> registrations"
+                      title="<%= number_with_delimiter(registrations[1]) %> patients in <%= registrations[0] %>"
                     >
                     </td>
                   </tr>
@@ -143,7 +146,7 @@
     </div>
   </div>
   <div class="d-lg-flex order-lg-4 w-lg-50 pl-lg-2">
-    <div class="card pb-4 d-lg-flex justify-lg-between h-lg-full w-lg-full mt-lg-0">
+    <div class="card d-lg-flex justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div>
         <div class="mb-lg-2">
           <h3>
@@ -158,15 +161,15 @@
             <% @quarterly_registrations.each_with_index do |cohort, index| %>
               <div class="split-row mt-lg-1 pt-lg-1">
                 <div class="row px-lg-0">
-                  <div class="col-lg-4 nowrap order-lg-1">
+                  <div class="col-lg-5 nowrap order-lg-1">
                     <h6>
-                      <%= cohort["results_in"] %> results for patients
+                      <%= cohort["registered"] %> patients registered in <%= cohort["patients_registered"] %>
                     </h6>
                     <p class="mb-2 fs-small c-grey-medium">
-                      registered in <%= cohort["patients_registered"] %>
+                      Result from last visit in <%= cohort["results_in"] %>
                     </p>
                   </div>
-                  <div class="col-lg-8 order-lg-2">
+                  <div class="col-lg-7 order-lg-2">
                     <table class="split-bars">
                       <tr>
                         <% if cohort["registered"] > 0 %>
@@ -180,7 +183,7 @@
                             data-toggle="tooltip"
                             data-placement="top"
                             data-trigger="hover focus click"
-                            title="<%= number_with_delimiter(cohort["no_bp"]) %> patients didn't have their BP taken"
+                            title="<%= number_with_delimiter(cohort["no_bp"]) %> patients didn't have a BP taken"
                             style="width: <%= no_bp_percent %>;"
                           >
                             <%= (cohort["no_bp"] > 0 && no_bp_percent == 0) ? "< 1" : no_bp_percent %>
@@ -223,7 +226,7 @@
         <div class="mt-4 pt-4 bt-1px bt-grey-light d-lg-flex align-lg-center justify-lg-end mt-lg-3 pt-lg-3">
           <div class="">
             <p class="mb-2 c-grey-dark mb-lg-0 mr-lg-4">
-              No BP measure
+              No BP taken
             </p>
           </div>
           <div class="">
@@ -241,98 +244,89 @@
     </div>
   </div>
   <div class="d-lg-flex order-lg-2 w-lg-50 pl-lg-2">
-    <div class="card pb-4 h-lg-full w-lg-full mt-lg-0">
+    <div class="card h-lg-full w-lg-full mt-lg-0">
       <div class="mb-2">
-        <h3>
-          Benchmarks
-        </h3>
-      </div>
-      <div>
-        <div class="d-none d-lg-block d-lg-flex bb-1px bb-grey-light">
-          <div class="pt-lg-4 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center br-lg br-lg-grey-light">
-            <p class="mb-lg-0 c-lg-grey-dark">
-              Benchmark
-            </p>
+        <div class="d-lg-flex align-lg-baseline pb-lg-3 bb-1px bb-grey-light">
+          <div class="flex-lg-2 align-lg-center justify-lg-center">
+            <h3 class="mb-lg-0">
+              Benchmarks
+            </h3>
           </div>
-          <div class="pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
-            <p class="ta-lg-center mb-lg-0 c-lg-grey-dark">
+          <div class="d-none d-lg-block flex-lg-1 align-lg-center justify-lg-center">
+            <p class="ta-lg-center mb-lg-0 fw-lg-bold tt-lg-uppercase ls-lg-145 c-lg-grey-dark">
+            <!-- <%= @top_district_benchmarks[:district].name %> -->
               Top district
             </p>
           </div>
-          <div class="pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
-            <p class="ta-lg-center mb-lg-0 c-lg-grey-dark">
+          <div class="d-none d-lg-block flex-lg-1 align-lg-center justify-lg-center">
+            <p class="ta-lg-center mb-lg-0 fw-lg-bold tt-lg-uppercase ls-lg-145 c-lg-grey-dark">
               <%= @district.name %>
             </p>
           </div>
-          <div class="pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
-            <p class="ta-lg-center mb-lg-0 c-lg-grey-dark">
-              Difference
+          <div class="d-none d-lg-block flex-lg-1 align-lg-center justify-lg-center">
+            <p class="ta-lg-center mb-lg-0 c-lg-grey-dark"></p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="mb-3 pb-3 bb-1px bb-grey-light d-lg-flex mb-lg-2 pb-lg-0">
+          <div class="mb-1 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center">
+            <p class="mb-0 ls-145">
+              Control rate of all HTN patients
+            </p>
+          </div>
+          <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
+            <p class="mb-0 ta-lg-center c-grey-dark">
+              <span class="fw-bold d-lg-none">
+                Top District:
+              </span>
+              <span>
+                <%= number_to_percentage(
+                   @top_district_benchmarks[:controlled_percentage],
+                   precision: 0
+                ) %>
+              </span>
+            </p>
+          </div>
+          <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
+            <p class="mb-0 ta-lg-center c-grey-dark">
+              <span class="fw-bold d-lg-none">
+                <%= @district.name %>:
+              </span>
+              <span>
+                <% control_rate = compute_percentage(@controlled_patients.values.last.to_f, @registrations.values.last.to_f) %>
+                <%= control_rate %>
+              </span>
+            </p>
+          </div>
+          <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
+            <p class="mb-0 ta-lg-center c-grey-dark">
+              <span class="fw-bold d-lg-none">
+                Difference:
+              </span>
+              <% controlled_percentage = (control_rate.to_f - @top_district_benchmarks[:controlled_percentage]).round %>
+              <span class="<%= controlled_percentage > 0 ? "c-green-dark" : "c-red" %>">
+                <%= controlled_percentage > 0 ? "+" : "" %><%= controlled_percentage %>%
+              </span>
             </p>
           </div>
         </div>
-        <div class="mb-3 pb-3 bb-1px bb-grey-light d-lg-flex mb-lg-0 pb-lg-0">
-          <div class="mb-1 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center br-lg br-lg-grey-light">
-            <p class="mb-0 ls-145">
-              Control of registered patients
+        <div class="mb-2 d-lg-flex mb-lg-2 pb-lg-0">
+          <div class="mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center">
+            <p class="mb-0 ls-145 c-grey-dark">
+              More benchmarks coming soon
             </p>
           </div>
-          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
+          <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">Bathinda: </span> Coming Soon...
             </p>
           </div>
-          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
+          <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">Top district: </span> Coming Soon...
             </p>
           </div>
-          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
+          <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">Difference: </span> Coming Soon...
-            </p>
-          </div>
-        </div>
-        <div class="mb-3 pb-3 bb-1px bb-grey-light d-lg-flex mb-lg-0 pb-lg-0">
-          <div class="mb-1 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center br-lg br-lg-grey-light">
-            <p class="mb-0 ls-145">
-              Q2 cohort BP control
-            </p>
-          </div>
-          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
-            <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">Bathinda: </span> Coming Soon...
-            </p>
-          </div>
-          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
-            <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">Top district: </span> Coming Soon...
-            </p>
-          </div>
-          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
-            <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">Difference: </span> Coming Soon...
-            </p>
-          </div>
-        </div>
-        <div class="d-lg-flex mb-lg-0 pb-lg-0">
-          <div class="mb-1 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center br-lg br-lg-grey-light">
-            <p class="mb-0 ls-145">
-              Q2 cohort missed visit
-            </p>
-          </div>
-          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
-            <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">Bathinda: </span> Coming Soon...
-            </p>
-          </div>
-          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center br-lg br-lg-grey-light">
-            <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">Top district: </span> Coming Soon...
-            </p>
-          </div>
-          <div class="mb-0 mb-lg-0 pt-lg-4 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
-            <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">Difference: </span> Coming Soon...
             </p>
           </div>
         </div>
@@ -340,13 +334,9 @@
     </div>
   </div>
 </div>
-<!--
-<div class="px-4 pb-4 md:flex md:m-auto md:max-w-6xl md:pb-20">
-  <div class="p-2 rounded-md bg-white shadow-md">
-    <%= image_tag("screenshot.png") %>
-  </div>
+<div class="card o-hidden mt-0 p-0">
+  <%= image_tag("screenshot.png", :class => "mw-100pt") %>
 </div>
--->
 <!-- Dump all reporting data in a hidden div to parse in JS -->
 <%= content_tag :div,
                 id: "reporting",
