@@ -15,4 +15,8 @@ class Organization < ApplicationRecord
   def districts
     facilities.select(:district).distinct.pluck(:district)
   end
+
+  def appointments
+    Appointment.where(facility: self.facilities)
+  end
 end
