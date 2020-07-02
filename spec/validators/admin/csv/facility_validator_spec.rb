@@ -74,12 +74,13 @@ RSpec.describe Admin::CSV::FacilityValidator do
     end
 
     it "adds an error when attributes are invalid" do
-      facilities = [build(:facility, district: nil),
-        build(:facility, state: nil),
-        build(:facility, country: nil),
-        build(:facility, facility_size: "invalid size"),
-        build(:facility, enable_diabetes_management: nil),
-        build(:facility, enable_teleconsultation: nil)].map(&:attributes)
+      facilities = [build(:facility, district: nil, enable_teleconsultation: false),
+        build(:facility, state: nil, enable_teleconsultation: false),
+        build(:facility, country: nil, enable_teleconsultation: false),
+        build(:facility, facility_size: "invalid size", enable_teleconsultation: false),
+        build(:facility, enable_diabetes_management: nil, enable_teleconsultation: false),
+        build(:facility, enable_teleconsultation: nil),
+        build(:facility, enable_teleconsultation: true, teleconsultation_phone_numbers: [{isd_code: "+91"}])].map(&:attributes)
       validator = described_class.new(facilities)
       validator.facilities
 
@@ -88,7 +89,9 @@ RSpec.describe Admin::CSV::FacilityValidator do
         "Row(s) 4: Country can't be blank",
         "Row(s) 5: Facility size not in #{Facility.facility_sizes.values.join(", ")}",
         "Row(s) 6: Enable diabetes management is not included in the list",
-        "Row(s) 7: Enable teleconsultation is not included in the list"]
+        "Row(s) 7: Enable teleconsultation is not included in the list",
+        "Row(s) 8: Teleconsultation phone numbers attributes At least one medical officer must be added to enable "\
+        "teleconsultation, all teleconsultation numbers must have a country code and a phone number"]
     end
   end
 end

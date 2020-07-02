@@ -1,7 +1,7 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe Facility, type: :model do
-  describe 'Associations' do
+  describe "Associations" do
     it { should have_many(:users) }
     it { should have_many(:blood_pressures).through(:encounters).source(:blood_pressures) }
     it { should have_many(:blood_sugars).through(:encounters).source(:blood_sugars) }
@@ -9,10 +9,10 @@ RSpec.describe Facility, type: :model do
     it { should have_many(:patients).through(:encounters) }
     it { should have_many(:appointments) }
 
-    it { should have_many(:registered_patients).class_name('Patient').with_foreign_key('registration_facility_id') }
+    it { should have_many(:registered_patients).class_name("Patient").with_foreign_key("registration_facility_id") }
 
-    context 'patients' do
-      it 'has distinct patients' do
+    context "patients" do
+      it "has distinct patients" do
         facility = create(:facility)
         dm_patient = create(:patient, :diabetes)
         htn_patient = create(:patient)
@@ -30,9 +30,9 @@ RSpec.describe Facility, type: :model do
     it { should delegate_method(:follow_ups_by_period).to(:patients).with_prefix(:patient) }
   end
 
-  describe 'Delegates' do
-    context '#patient_follow_ups_by_period' do
-      it 'counts follow_ups across HTN and DM' do
+  describe "Delegates" do
+    context "#patient_follow_ups_by_period" do
+      it "counts follow_ups across HTN and DM" do
         registration_date = Time.new(2018, 4, 8)
         first_follow_up_date = registration_date + 1.month
         second_follow_up_date = first_follow_up_date + 1.month
@@ -55,8 +55,8 @@ RSpec.describe Facility, type: :model do
       end
     end
 
-    context '#hypertension_follow_ups_by_period' do
-      it 'counts follow_ups only for hypertensive patients' do
+    context "#hypertension_follow_ups_by_period" do
+      it "counts follow_ups only for hypertensive patients" do
         registration_date = Time.new(2018, 4, 8)
         first_follow_up_date = registration_date + 1.month
         second_follow_up_date = first_follow_up_date + 1.month
@@ -78,8 +78,8 @@ RSpec.describe Facility, type: :model do
       end
     end
 
-    context '#diabetes_follow_ups_by_period' do
-      it 'counts follow_ups only for diabetic patients' do
+    context "#diabetes_follow_ups_by_period" do
+      it "counts follow_ups only for diabetic patients" do
         registration_date = Time.new(2018, 4, 8)
         first_follow_up_date = registration_date + 1.month
         second_follow_up_date = first_follow_up_date + 1.month
@@ -102,7 +102,7 @@ RSpec.describe Facility, type: :model do
     end
   end
 
-  describe 'Validations' do
+  describe "Validations" do
     it { should validate_presence_of(:name) }
     it { should validate_presence_of(:district) }
     it { should validate_presence_of(:state) }
@@ -110,12 +110,12 @@ RSpec.describe Facility, type: :model do
     it { should validate_numericality_of(:pin) }
   end
 
-  describe 'Behavior' do
-    it_behaves_like 'a record that is deletable'
+  describe "Behavior" do
+    it_behaves_like "a record that is deletable"
   end
 
-  describe '#cohort_analytics' do
-    it 'considers only registered hypertensive patients' do
+  describe "#cohort_analytics" do
+    it "considers only registered hypertensive patients" do
       facility = create(:facility)
 
       _non_htn_patients = create_list(:patient, 2, :without_hypertension, registration_facility: facility)
@@ -167,29 +167,47 @@ RSpec.describe Facility, type: :model do
     end
   end
 
-  describe '.parse_facilities' do
-    let(:upload_file) { fixture_file_upload('files/upload_facilities_test.csv', 'text/csv') }
+  describe ".parse_facilities" do
+    let(:upload_file) { fixture_file_upload("files/upload_facilities_test.csv", "text/csv") }
 
-    it 'defaults enable_teleconsultation to false if blank' do
+    it "defaults enable_teleconsultation to false if blank" do
       facilities = described_class.parse_facilities(upload_file)
       expect(facilities.first[:enable_teleconsultation]).to be false
     end
 
-    it 'defaults enable_diabetes_management to false if blank' do
+    it "defaults enable_diabetes_management to false if blank" do
       facilities = described_class.parse_facilities(upload_file)
       expect(facilities.second[:enable_diabetes_management]).to be false
     end
   end
 
-  describe 'Attribute sanitization' do
-    it 'squishes and upcases the first letter of the name' do
+  describe "Attribute sanitization" do
+    it "squishes and upcases the first letter of the name" do
       facility = FactoryBot.create(:facility, name: " cH name  1  ")
       expect(facility.name).to eq("CH name 1")
     end
 
-    it 'squishes and upcases the first letter of the district name' do
+    it "squishes and upcases the first letter of the district name" do
       facility = FactoryBot.create(:facility, district: " district name   chennai  ")
       expect(facility.district).to eq("District name chennai")
+    end
+  end
+
+  describe "Teleconsultation methods" do
+    it "returns the first teleconsultation phone number with isd code" do
+      facility = FactoryBot.create(:facility,
+        enable_teleconsultation: true,
+        teleconsultation_phone_numbers: [{isd_code: "+91", phone_number: "00000000"},
+          {isd_code: "+91", phone_number: "11111111"}])
+      expect(facility.teleconsultation_phone_number_with_isd).to eq("+9100000000")
+    end
+
+    it "returns all the teleconsultation phone numbers with isd code" do
+      facility = FactoryBot.create(:facility,
+        enable_teleconsultation: true,
+        teleconsultation_phone_numbers: [{isd_code: "+91", phone_number: "00000000"},
+          {isd_code: "+91", phone_number: "11111111"}])
+      expect(facility.teleconsultation_phone_numbers_with_isd).to eq([{phone_number: "+9100000000"}, {phone_number: "+9111111111"}])
     end
   end
 end

@@ -1,4 +1,9 @@
+# NOTE: The Quarter value object is preferred over these static methods, consider using
+# that object for a more object oriented apporach if you need to iterate over quarters or
+# get previous / next quarters.
 module QuarterHelper
+  module_function
+
   def quarter(date)
     ((date.month - 1) / 3) + 1
   end

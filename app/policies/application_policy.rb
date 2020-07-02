@@ -38,16 +38,15 @@ class ApplicationPolicy
         .compact
     end
 
-
     def organization_ids_for_permission(slug)
       resources = resources_for_permission(slug)
-      resources.map do |resource|
+      resources.map { |resource|
         if resource.is_a? Organization
           resource.id
         else
           resource.organization.id
         end
-      end.uniq.compact
+      }.uniq.compact
     end
 
     def facility_group_ids_for_permission(slug)
@@ -64,9 +63,9 @@ class ApplicationPolicy
     def facility_ids_for_permission(slug)
       resources = resources_for_permission(slug)
 
-      resources.flat_map do |resource|
+      resources.flat_map { |resource|
         resource.facilities.map(&:id)
-      end.uniq.compact
+      }.uniq.compact
     end
   end
 end

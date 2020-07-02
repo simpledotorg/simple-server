@@ -179,6 +179,10 @@ Run the following command from the project root to create a new dashboard admin:
 bundle exec rails 'create_admin_user[<name>,<email>,<password>]'
 ```
 
+### Profiling
+
+We use the [vegeta](https://github.com/tsenart/vegeta) utility to run performance benchmarks. The suite and additional instructions are [here](./profiling/README.md).
+
 ## Documentation
 
 ### API

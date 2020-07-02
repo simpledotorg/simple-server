@@ -1,4 +1,4 @@
-require 'csv'
+require "csv"
 
 class Appointment < ApplicationRecord
   include ApplicationHelper
@@ -8,32 +8,32 @@ class Appointment < ApplicationRecord
   belongs_to :patient, optional: true
   belongs_to :user, optional: true
   belongs_to :facility
-  belongs_to :creation_facility, class_name: 'Facility', optional: true
+  belongs_to :creation_facility, class_name: "Facility", optional: true
 
   has_many :communications
 
   ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at registration_facility_name user_id scheduled_date
-                              overdue status agreed_to_visit remind_on]
+    overdue status agreed_to_visit remind_on]
 
   enum status: {
-    scheduled: 'scheduled',
-    cancelled: 'cancelled',
-    visited: 'visited'
+    scheduled: "scheduled",
+    cancelled: "cancelled",
+    visited: "visited"
   }, _prefix: true
 
   enum cancel_reason: {
-    not_responding: 'not_responding',
-    moved: 'moved',
-    dead: 'dead',
-    invalid_phone_number: 'invalid_phone_number',
-    public_hospital_transfer: 'public_hospital_transfer',
-    moved_to_private: 'moved_to_private',
-    other: 'other'
+    not_responding: "not_responding",
+    moved: "moved",
+    dead: "dead",
+    invalid_phone_number: "invalid_phone_number",
+    public_hospital_transfer: "public_hospital_transfer",
+    moved_to_private: "moved_to_private",
+    other: "other"
   }
 
   enum appointment_type: {
-    manual: 'manual',
-    automatic: 'automatic'
+    manual: "manual",
+    automatic: "automatic"
   }, _prefix: true
 
   validate :cancel_reason_is_present_if_cancelled
@@ -41,7 +41,7 @@ class Appointment < ApplicationRecord
   validates :device_updated_at, presence: true
 
   def self.all_overdue
-    where(status: 'scheduled')
+    where(status: "scheduled")
       .where(arel_table[:scheduled_date].lt(Date.current))
       .where(arel_table[:remind_on].eq(nil).or(arel_table[:remind_on].lteq(Date.current)))
   end
@@ -51,16 +51,13 @@ class Appointment < ApplicationRecord
   end
 
   def self.overdue_by(number_of_days)
-    overdue.where('scheduled_date <= ?', Date.current - number_of_days.days)
+    overdue.where("scheduled_date <= ?", Date.current - number_of_days.days)
   end
 
   def self.eligible_for_reminders(days_overdue: 3)
     overdue_by(days_overdue)
-      .includes(:patient)
-      .where(patients: { reminder_consent: 'granted' })
-      .where.not(patients: { status: 'dead' })
-      .includes(patient: [:phone_numbers])
-      .merge(PatientPhoneNumber.phone_type_mobile)
+      .joins(:patient)
+      .merge(Patient.contactable)
   end
 
   def days_overdue
@@ -85,7 +82,7 @@ class Appointment < ApplicationRecord
 
   def cancel_reason_is_present_if_cancelled
     if status == :cancelled && !cancel_reason.present?
-      errors.add(:cancel_reason, 'should be present for cancelled appointments')
+      errors.add(:cancel_reason, "should be present for cancelled appointments")
     end
   end
 
@@ -112,22 +109,21 @@ class Appointment < ApplicationRecord
   end
 
   def mark_patient_as_dead
-    self.patient.status = :dead
-    self.patient.save
+    patient.status = :dead
+    patient.save
   end
 
   def anonymized_data
-    { id: hash_uuid(id),
-      patient_id: hash_uuid(patient_id),
-      created_at: created_at,
-      registration_facility_name: facility.name,
-      user_id: hash_uuid(patient&.registration_user&.id),
-      scheduled_date: scheduled_date,
-      overdue: days_overdue > 0 ? 'Yes' : 'No',
-      status: status,
-      agreed_to_visit: agreed_to_visit,
-      remind_on: remind_on
-    }
+    {id: hash_uuid(id),
+     patient_id: hash_uuid(patient_id),
+     created_at: created_at,
+     registration_facility_name: facility.name,
+     user_id: hash_uuid(patient&.registration_user&.id),
+     scheduled_date: scheduled_date,
+     overdue: days_overdue > 0 ? "Yes" : "No",
+     status: status,
+     agreed_to_visit: agreed_to_visit,
+     remind_on: remind_on}
   end
 
   def previously_communicated_via?(communication_type)

@@ -1,0 +1,16 @@
+<fieldset>
+  <div id=<%= "mo_row_#{f.index}" %> class="row">
+    <div class="col col-md-4">
+        <%= f.text_field :isd_code, hide_label: true %>
+    </div>
+    <div class="col col-md-7">
+        <%= f.text_field :phone_number, hide_label: true %>
+    </div>
+    <div class="col col-md-1">
+      <%= f.hidden_field :_destroy %>
+      <%= button_tag type: "button", name: "delete_button", class: "btn btn-sm btn-outline-danger", onclick: "deletePhoneNumber(this)" do %>
+        <i class="fas fa-trash-alt"></i>
+      <% end %>
+    </div>
+  </div>
+</fieldset>

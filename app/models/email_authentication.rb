@@ -2,7 +2,7 @@ class EmailAuthentication < ApplicationRecord
   include PgSearch::Model
 
   devise :database_authenticatable, :invitable, :lockable, :recoverable,
-         :rememberable, :timeoutable, :trackable, :validatable, validate_on_invite: true
+    :rememberable, :timeoutable, :trackable, :validatable, validate_on_invite: true
 
   has_one :user_authentication, as: :authenticatable
   has_one :user, through: :user_authentication
