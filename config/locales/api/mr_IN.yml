@@ -13,11 +13,11 @@ mr-IN:
       invalid_password: "तुमचा पासवर्ड जुळत नाही. पुन्हा प्रयत्न करायचा?"
       account_locked: "तुमचे खाते पुढील %{minutes} मिनिटांसाठी लॉक करण्यात आले आहे. कृपया तपासा आणि पुन्हा प्रयत्न करा."
   sms:
-    request_otp: "<#> %{otp} तुमचा सामान्य सत्यापन कोड आहे\n%{app_signature}"
+    request_otp: "<#> %{otp} तुमचा सिम्पल व्हेरिफिकेशन कोड आहे\n%{app_signature}"
     appointment_reminders:
       missed_visit_sms_reminder: "आमचा %{facility_name} येथील कर्मचारी तुमच्याबद्दल आणि तुमच्या ह्रदयाच्या आरोग्याबद्दल विचार करीत आहेत. कृपया आपल्या रक्तदाबाची औषधे चालू ठेवा. जवळच्या उपकेंद्रामधून आपले औषध घ्या. आपल्या ANM किंवा ASHA शी संपर्क साधा."
       missed_visit_whatsapp_reminder: "आमचा %{facility_name} येथील कर्मचारी तुमच्याबद्दल आणि तुमच्या ह्रदयाच्या आरोग्याबद्दल विचार करीत आहेत. कृपया आपल्या रक्तदाबाची औषधे चालू ठेवा. जवळच्या उपकेंद्रामधून आपले औषध घ्या. आपल्या ANM किंवा ASHA शी संपर्क साधा."
-    patient_request_otp: "<#> %{otp} तुमचा बीपी पासपोर्ट सत्यापन कोड आहे\n%{app_signature}"
+    patient_request_otp: "<#> %{otp} तुमचा बीपी पासपोर्ट व्हेरिफिकेशन कोड आहे\n%{app_signature}"
   analytics:
     followup_patients: "%{facility_name} येथे किती फॉलो-अप रुग्णांनी भेट दिली?"
     patients_enrolled: "%{facility_name} येथे किती नवीन रुग्ण भरती झाले?"
