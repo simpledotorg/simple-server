@@ -20,13 +20,13 @@ RSpec.describe AppointmentNotificationService do
 
     it "should spawn a reminder job for each appointment" do
       expect {
-        AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
+        AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments)
       }.to change(AppointmentNotification::Worker.jobs, :size).by(4)
     end
 
     it "should ignore appointments which are recently overdue (< 3 days)" do
       expect {
-        AppointmentNotificationService.send_after_missed_visit(appointments: recently_overdue_appointments, schedule_at: Time.current)
+        AppointmentNotificationService.send_after_missed_visit(appointments: recently_overdue_appointments)
       }.to change(AppointmentNotification::Worker.jobs, :size).by(0)
     end
 
@@ -41,7 +41,7 @@ RSpec.describe AppointmentNotificationService do
         end
 
         expect {
-          AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
+          AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments)
         }.to change(AppointmentNotification::Worker.jobs, :size).by(0)
       end
     end
@@ -57,7 +57,7 @@ RSpec.describe AppointmentNotificationService do
         end
 
         expect {
-          AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
+          AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments)
         }.to change(AppointmentNotification::Worker.jobs, :size).by(0)
       end
     end
@@ -70,7 +70,7 @@ RSpec.describe AppointmentNotificationService do
       end
 
       expect {
-        AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
+        AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments)
       }.to change(AppointmentNotification::Worker.jobs, :size).by(4)
     end
 
@@ -91,7 +91,7 @@ RSpec.describe AppointmentNotificationService do
       eligible_appointments = overdue_appointments.eligible_for_reminders(days_overdue: 3)
 
       expect {
-        AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments, schedule_at: Time.current)
+        AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments)
       }.to change(AppointmentNotification::Worker.jobs, :size).by(eligible_appointments.size)
     end
   end

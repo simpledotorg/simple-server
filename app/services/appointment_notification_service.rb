@@ -6,7 +6,6 @@ class AppointmentNotificationService
   def initialize(appointments:, days_overdue: 3)
     @appointments = appointments
     @days_overdue = days_overdue
-    @schedule_at = schedule_at
 
     if FeatureToggle.enabled?("WHATSAPP_APPOINTMENT_REMINDERS")
       @communication_type = Communication.communication_types[:missed_visit_whatsapp_reminder]
@@ -29,5 +28,5 @@ class AppointmentNotificationService
 
   private
 
-  attr_reader :appointments, :communication_type, :days_overdue, :schedule_at
+  attr_reader :appointments, :communication_type, :days_overdue
 end
