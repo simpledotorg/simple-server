@@ -1,3 +1,6 @@
+<div class="alert alert-primary">
+  <span class="fw-bold">Early access:</span> This page is under active development, thanks for your patience as we work on improving it
+</div>
 <div class="dashboard">
   <nav class="breadcrumb">
     <%= link_to 'All reports', dashboard_districts_path %>
@@ -15,7 +18,7 @@
       </a>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
         <%= form_tag dashboard_district_path(@district), method: :get do %>
-          <% last_n_months(n: 12).each do |time| %>
+          <% last_n_months(n: 12, end_of_month: true).each do |time| %>
             <% selected = (time.year == @selected_date.year && time.month == @selected_date.month) %>
             <button class="dropdown-item query-filter-month <%= 'active' if selected %>"
                     name="selected_date"
@@ -108,7 +111,7 @@
                       data-toggle="tooltip"
                       data-placement="top"
                       data-trigger="hover focus click"
-                      title="<%= number_with_delimiter(registrations[1]) %> total registrations in <%= registrations[0] %>"
+                      title="<%= number_with_delimiter(registrations[1]) %> patients in <%= registrations[0] %>"
                     >
                     </td>
                   </tr>
@@ -308,8 +311,8 @@
             </p>
           </div>
         </div>
-        <div class="mb-3 pb-3 d-lg-flex mb-lg-2 pb-lg-0">
-          <div class="mb-1 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center">
+        <div class="mb-2 d-lg-flex mb-lg-2 pb-lg-0">
+          <div class="mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center">
             <p class="mb-0 ls-145 c-grey-dark">
               More benchmarks coming soon
             </p>
