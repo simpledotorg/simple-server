@@ -53,6 +53,12 @@
         Patient line list
       <% end %>
     </p>
+    <p>
+      <%= link_to analytics_facility_patient_list_with_history_path(@facility) do %>
+        <i class="far fa-file-excel mr-2"></i>
+        Patient line list (with medication history)
+      <% end %>
+    </p>
   <% end %>
 
   <% if FeatureToggle.enabled?('DASHBOARD_SNAPSHOT') %>

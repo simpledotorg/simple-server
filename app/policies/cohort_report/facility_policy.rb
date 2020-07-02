@@ -27,6 +27,10 @@ class CohortReport::FacilityPolicy < ApplicationPolicy
     )
   end
 
+  def patient_list_with_history?
+    patient_list?
+  end
+
   class Scope < Scope
     attr_reader :user, :scope
 

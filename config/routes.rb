@@ -135,6 +135,7 @@ Rails.application.routes.draw do
     resources :facilities, only: [:show] do
       get "graphics", to: "facilities#whatsapp_graphics"
       get "patient_list", to: "facilities#patient_list"
+      get "patient_list_with_history", to: "facilities#patient_list_with_history"
       get "share", to: "facilities#share_anonymized_data"
     end
 
@@ -142,6 +143,7 @@ Rails.application.routes.draw do
       resources :districts, only: [:show] do
         get "graphics", to: "districts#whatsapp_graphics"
         get "patient_list", to: "districts#patient_list"
+        get "patient_list_with_history", to: "districts#patient_list_with_history"
         get "share", to: "districts#share_anonymized_data"
       end
     end
