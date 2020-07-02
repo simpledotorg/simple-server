@@ -21,9 +21,9 @@ class AppointmentNotificationService
     eligible_appointments.each do |appointment|
       next if appointment.previously_communicated_via?(communication_type)
 
-      next_reminder_time = Appointment.next_reminder_time
+      next_messaging_time = Communication.next_messaging_time
 
-      AppointmentNotification::Worker.perform_at(next_reminder_time, appointment.id, communication_type)
+      AppointmentNotification::Worker.perform_at(next_messaging_time, appointment.id, communication_type)
     end
   end
 

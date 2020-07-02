@@ -100,34 +100,6 @@ describe Appointment, type: :model do
     end
   end
 
-  context "Utilities" do
-    describe ".next_appointment_time" do
-      before do
-        Time.zone = Rails.application.config.country[:time_zone]
-        allow(Appointment).to receive(:reminder_window_start_hour).and_return(10)
-        allow(Appointment).to receive(:reminder_window_end_hour).and_return(16)
-      end
-
-      it "returns the current time if within the reminder window" do
-        Timecop.freeze(Time.zone.parse("January 1, 2020 12:00pm")) do
-          expect(Appointment.next_reminder_time).to eq(Time.zone.parse("January 1, 2020 12:00pm"))
-        end
-      end
-
-      it "returns the next time today if before the reminder window" do
-        Timecop.freeze(Time.zone.parse("January 1, 2020 9:00am")) do
-          expect(Appointment.next_reminder_time).to eq(Time.zone.parse("January 1, 2020 10:00am"))
-        end
-      end
-
-      it "returns the next time tomorrow if after the reminder window" do
-        Timecop.freeze(Time.zone.parse("January 1, 2020 4:30pm")) do
-          expect(Appointment.next_reminder_time).to eq(Time.zone.parse("January 2, 2020 10:00am"))
-        end
-      end
-    end
-  end
-
   context "For discarded patients" do
     let!(:discard_patient) { create(:patient) }
     let!(:overdue_appointment) { create(:appointment, :overdue) }

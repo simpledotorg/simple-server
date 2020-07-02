@@ -48,6 +48,27 @@ class Communication < ApplicationRecord
     end
   end
 
+  def self.messaging_start_hour
+    @messaging_start_hour ||= ENV.fetch("APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_START").to_i
+  end
+
+  def self.messaging_end_hour
+    @messaging_end_hour ||= ENV.fetch("APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_FINISH").to_i
+  end
+
+  def self.next_messaging_time
+    now = DateTime.now.in_time_zone(Rails.application.config.country[:time_zone])
+
+    case
+    when now.hour < messaging_start_hour
+      now.change(hour: messaging_start_hour)
+    when now.hour >= messaging_end_hour
+      now.change(hour: messaging_start_hour).advance(days: 1)
+    else
+      now
+    end
+  end
+
   def communication_result
     if successful?
       COMMUNICATION_RESULTS[:successful]
