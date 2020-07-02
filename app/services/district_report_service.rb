@@ -66,6 +66,16 @@ class DistrictReportService
     end
   end
 
+  def registration_counts
+    @registration_counts ||= district.patients.with_hypertension
+      .group_by_period(:month, :recorded_at, range: MAX_MONTHS_OF_DATA.months.ago..selected_date)
+      .count
+      .each_with_object(Hash.new(0)) { |(date, count), hsh|
+        hsh[:running_total] += count
+        hsh[date] = hsh[:running_total]
+      }.delete_if { |date, count| count == 0 }.except(:running_total)
+  end
+
   def compile_benchmarks
     @data[:top_district_benchmarks].merge!(top_district_benchmarks)
   end
@@ -77,16 +87,6 @@ class DistrictReportService
   def lookup_registration_count(date)
     lookup_date = date.beginning_of_month.to_date
     registration_counts[lookup_date]
-  end
-
-  def registration_counts
-    @registration_counts ||= district.patients.with_hypertension
-      .group_by_period(:month, :recorded_at, range: MAX_MONTHS_OF_DATA.months.ago..selected_date)
-      .count
-      .each_with_object(Hash.new(0)) { |(date, count), hsh|
-        hsh[:running_total] += count
-        hsh[date] = hsh[:running_total]
-      }.delete_if { |date, count| count == 0 }.except(:running_total)
   end
 
   def controlled_patients_count(time)
