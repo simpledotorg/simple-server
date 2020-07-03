@@ -21,6 +21,7 @@ FactoryBot.define do
     association :address, strategy: :build
     phone_numbers { build_list(:patient_phone_number, 1, patient_id: id) }
     association :registration_facility, factory: :facility
+    assigned_facility { registration_facility }
     association :registration_user, factory: :user_created_on_device
     business_identifiers do
       build_list(:patient_business_identifier,
