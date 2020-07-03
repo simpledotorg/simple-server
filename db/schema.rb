@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_06_16_111304) do
+ActiveRecord::Schema.define(version: 2020_07_03_070251) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -214,8 +214,8 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
     t.datetime "updated_at", null: false
     t.float "latitude"
     t.float "longitude"
-    t.datetime "deleted_at"
     t.uuid "facility_group_id"
+    t.datetime "deleted_at"
     t.string "slug"
     t.string "zone"
     t.boolean "enable_diabetes_management", default: false, null: false
@@ -377,6 +377,8 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
     t.string "reminder_consent", default: "denied", null: false
     t.uuid "deleted_by_user_id"
     t.string "deleted_reason"
+    t.uuid "assigned_facility_id"
+    t.index ["assigned_facility_id"], name: "index_patients_on_assigned_facility_id"
     t.index ["deleted_at"], name: "index_patients_on_deleted_at"
     t.index ["recorded_at"], name: "index_patients_on_recorded_at"
     t.index ["registration_facility_id"], name: "index_patients_on_registration_facility_id"
