@@ -1,14 +1,18 @@
 class ControlRateService
   PERCENTAGE_PRECISION = 1
 
+  # Can be initialized with _either_ a date range or a single date to calculate
+  # control rates. Note that for the date range the returned values will be for each month going back
+  # to the beginning of registrations for the region.
   def initialize(region, range: nil, date: nil)
+    raise ArgumentError, "Cannot provide both a range and date" if range && date
+    raise ArgumentError, "Must provide either a range or a single date" if range.nil? && date.nil?
     @region = region
     @facilities = if @region.respond_to?(:facilities)
       @region.facilities
     else
       [region]
     end
-    raise ArgumentError, "Cannot provide both a range and date" if range && date
     @range = range
     @date = date
     @end_of_date_range = date || range.end
@@ -42,9 +46,10 @@ class ControlRateService
     registration_counts[time.beginning_of_month.to_date]
   end
 
+  # Calculate all registration counts for entire range, or for the single date provided
   def registration_counts
-    if range
-      @registration_counts ||= region.patients.with_hypertension
+    @registration_counts ||= if range
+      region.patients.with_hypertension
         .group_by_period(:month, :recorded_at, range: range)
         .count
         .each_with_object(Hash.new(0)) { |(date, count), hsh|
@@ -52,7 +57,10 @@ class ControlRateService
           hsh[date] = hsh[:running_total]
         }.delete_if { |date, count| count == 0 }.except(:running_total)
     else
-      @registration_counts ||= { date => region.patients.with_hypertension.where("recorded_at <= ?", date).count }
+      count = region.patients.with_hypertension.where("recorded_at <= ?", date).count
+      {
+        date => count
+      }
     end
   end
 
