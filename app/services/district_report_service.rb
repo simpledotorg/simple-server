@@ -33,14 +33,17 @@ class DistrictReportService
   end
 
   def compile_control_and_registration_data
-    months_of_data = [registration_counts.to_a.size, MAX_MONTHS_OF_DATA].min
-    @data[:cumulative_registrations] = lookup_registration_count(selected_date)
+    start_range = selected_date.advance(months: -MAX_MONTHS_OF_DATA)
+    query = ControlRateService.new(district, range: (start_range..selected_date))
+
+    months_of_data = [query.registration_counts.to_a.size, MAX_MONTHS_OF_DATA].min
+    @data[:cumulative_registrations] = query.registrations(selected_date)
     (-months_of_data + 1).upto(0).each do |n|
       time = selected_date.advance(months: n).end_of_month
       formatted_period = time.to_s(:month_year)
 
-      @data[:controlled_patients][formatted_period] = controlled_patients_count(time)
-      @data[:registrations][formatted_period] = lookup_registration_count(time)
+      @data[:controlled_patients][formatted_period] = query.controlled_patients(time).count
+      @data[:registrations][formatted_period] = query.registrations(time)
     end
   end
 
@@ -66,31 +69,12 @@ class DistrictReportService
     end
   end
 
-  def registration_counts
-    @registration_counts ||= district.patients.with_hypertension
-      .group_by_period(:month, :recorded_at, range: MAX_MONTHS_OF_DATA.months.ago..selected_date)
-      .count
-      .each_with_object(Hash.new(0)) { |(date, count), hsh|
-        hsh[:running_total] += count
-        hsh[date] = hsh[:running_total]
-      }.delete_if { |date, count| count == 0 }.except(:running_total)
-  end
-
   def compile_benchmarks
     @data[:top_district_benchmarks].merge!(top_district_benchmarks)
   end
 
   def format_quarter(quarter)
     "#{quarter.year} Q#{quarter.number}"
-  end
-
-  def lookup_registration_count(date)
-    lookup_date = date.beginning_of_month.to_date
-    registration_counts[lookup_date]
-  end
-
-  def controlled_patients_count(time)
-    ControlledPatientsQuery.call(facilities: facilities, time: time).count
   end
 
   def top_district_benchmarks

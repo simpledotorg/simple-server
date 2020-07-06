@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :prescription_drug do
     id { SecureRandom.uuid }
-    name { Faker::Dessert.topping }
+    sequence(:name) { |n| "#{Faker::Dessert.topping} #{n}" }
     dosage { rand(1..10).to_s + " mg" }
     is_protocol_drug { false }
     is_deleted { false }
