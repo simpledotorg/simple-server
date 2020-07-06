@@ -1,4 +1,6 @@
 class ControlRateService
+  PERCENTAGE_PRECISION = 1
+
   def initialize(region, range:)
     @region = region
     @facilities = if @region.respond_to?(:facilities)
@@ -19,6 +21,7 @@ class ControlRateService
   def call
     data = {
       controlled_patients: {},
+      controlled_patients_rate: {},
       registrations: {}
     }
 
@@ -26,6 +29,7 @@ class ControlRateService
     registration_counts.each do |(date, count)|
       formatted_period = date.to_s(:month_year)
       data[:controlled_patients][formatted_period] = controlled_patients(date).count
+      data[:controlled_patients_rate][formatted_period] = percentage(controlled_patients(date).count, count)
       data[:registrations][formatted_period] = count
     end
     data
@@ -66,4 +70,9 @@ class ControlRateService
   attr_reader :facilities
   attr_reader :range
   attr_reader :region
+
+  def percentage(numerator, denominator)
+    return 0 if denominator == 0
+    ((numerator.to_f / denominator) * 100).truncate(PERCENTAGE_PRECISION)
+  end
 end
