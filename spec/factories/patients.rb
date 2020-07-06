@@ -69,7 +69,6 @@ def build_patient_payload(patient = FactoryBot.build(:patient))
   patient.attributes.with_payload_keys
     .except("address_id")
     .except("registration_user_id")
-    .except("registration_facility_id")
     .except("test_data")
     .except("deleted_by_user_id")
     .merge(

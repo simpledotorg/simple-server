@@ -48,6 +48,7 @@ class Api::V3::Models
           created_at: { '$ref' => '#/definitions/timestamp' },
           updated_at: { '$ref' => '#/definitions/timestamp' },
           recorded_at: { '$ref' => '#/definitions/timestamp' },
+          registration_facility_id: { '$ref' => '#/definitions/uuid' },
           assigned_facility_id: { '$ref' => '#/definitions/uuid' },
           reminder_consent: { type: :string, enum: Patient.reminder_consents.keys },
           deleted_reason: { type: ['null', :string], enum: Patient::DELETED_REASONS + [nil] } },

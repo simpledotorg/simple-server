@@ -14,6 +14,7 @@ class Api::V3::PatientPayloadValidator < Api::V3::PayloadValidator
     :recorded_at,
     :address,
     :phone_numbers,
+    :registration_facility_id,
     :assigned_facility_id,
     :business_identifiers,
     :contacted_by_counsellor,

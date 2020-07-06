@@ -11,7 +11,7 @@ class Api::V3::PatientsController < Api::V3::SyncController
 
   def metadata
     {registration_user_id: current_user.id,
-     registration_facility_id: current_facility.id}
+      registration_facility_id: current_facility.id}
   end
 
   def current_facility_records
@@ -109,6 +109,7 @@ class Api::V3::PatientsController < Api::V3::SyncController
         :reminder_consent,
         :deleted_at,
         :deleted_reason,
+        :registration_facility_id,
         :assigned_facility_id,
         phone_numbers: [permitted_phone_number_params],
         address: permitted_address_params,
