@@ -7,7 +7,10 @@ class ControlRateService
       [region]
     end
     @range = range
+    logger.info "#{self.class} created for range: #{range} region: #{region.id} #{region.name}"
   end
+
+  delegate :logger, to: Rails
 
   def registrations(time)
     registration_counts[time.beginning_of_month.to_date]

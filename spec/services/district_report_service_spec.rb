@@ -33,8 +33,8 @@ RSpec.describe DistrictReportService, type: :model do
     facility = facilities.first
     facility_2 = create(:facility)
 
-    controlled_in_jan_and_june = create_list(:patient, 2, full_name: "controlled", recorded_at: Time.current, registration_facility: facility, registration_user: user)
-    controlled_just_for_june = create(:patient, full_name: "just for june", registration_facility: facility, registration_user: user)
+    controlled_in_jan_and_june = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2020, registration_facility: facility, registration_user: user)
+    controlled_just_for_june = create(:patient, full_name: "just for june", recorded_at: june_1, registration_facility: facility, registration_user: user)
     patient_from_other_facility = create(:patient, full_name: "other facility", recorded_at: 8.months.ago, registration_facility: facility_2, registration_user: user)
 
     Timecop.freeze(jan_2020) do
