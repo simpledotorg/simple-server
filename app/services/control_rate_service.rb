@@ -1,22 +1,25 @@
 class ControlRateService
   PERCENTAGE_PRECISION = 1
 
-  def initialize(region, range:)
+  def initialize(region, range: nil, date: nil)
     @region = region
     @facilities = if @region.respond_to?(:facilities)
       @region.facilities
     else
       [region]
     end
+    raise ArgumentError, "Cannot provide both a range and date" if range && date
     @range = range
+    @date = date
+    @end_of_date_range = date || range.end
     logger.info "#{self.class} created for range: #{range} region: #{region.id} #{region.name}"
   end
 
   delegate :logger, to: Rails
-
-  def registrations(time)
-    registration_counts[time.beginning_of_month.to_date]
-  end
+  attr_reader :date
+  attr_reader :facilities
+  attr_reader :range
+  attr_reader :region
 
   def call
     data = {
@@ -25,7 +28,7 @@ class ControlRateService
       registrations: {}
     }
 
-    data[:cumulative_registrations] = registrations(range.end)
+    data[:cumulative_registrations] = registrations(@end_of_date_range)
     registration_counts.each do |(date, count)|
       formatted_period = date.to_s(:month_year)
       data[:controlled_patients][formatted_period] = controlled_patients(date).count
@@ -35,14 +38,22 @@ class ControlRateService
     data
   end
 
+  def registrations(time)
+    registration_counts[time.beginning_of_month.to_date]
+  end
+
   def registration_counts
-    @registration_counts ||= region.patients.with_hypertension
-      .group_by_period(:month, :recorded_at, range: range)
-      .count
-      .each_with_object(Hash.new(0)) { |(date, count), hsh|
-        hsh[:running_total] += count
-        hsh[date] = hsh[:running_total]
-      }.delete_if { |date, count| count == 0 }.except(:running_total)
+    if range
+      @registration_counts ||= region.patients.with_hypertension
+        .group_by_period(:month, :recorded_at, range: range)
+        .count
+        .each_with_object(Hash.new(0)) { |(date, count), hsh|
+          hsh[:running_total] += count
+          hsh[date] = hsh[:running_total]
+        }.delete_if { |date, count| count == 0 }.except(:running_total)
+    else
+      @registration_counts ||= { date => region.patients.with_hypertension.where("recorded_at <= ?", date).count }
+    end
   end
 
   def controlled_patients(time)
@@ -66,10 +77,6 @@ class ControlRateService
   end
 
   private
-
-  attr_reader :facilities
-  attr_reader :range
-  attr_reader :region
 
   def percentage(numerator, denominator)
     return 0 if denominator == 0
