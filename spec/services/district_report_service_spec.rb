@@ -62,6 +62,11 @@ RSpec.describe DistrictReportService, type: :model do
     refresh_views
 
     service = DistrictReportService.new(district: facility_group_1, selected_date: june_1, current_user: user)
+    result = service.call
+
+    p result[:controlled_patients]
+    expect(result[:controlled_patients][jan_2020.to_s(:month_year)]).to eq(controlled_in_jan_and_june.size)
+
     expect(service.controlled_patients_count(jan_2020)).to eq(controlled_in_jan_and_june.size)
     june_controlled = controlled_in_jan_and_june << controlled_just_for_june
     expect(service.controlled_patients_count(june_1)).to eq(june_controlled.size)
