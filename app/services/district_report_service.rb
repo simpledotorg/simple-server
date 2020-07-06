@@ -33,18 +33,9 @@ class DistrictReportService
   end
 
   def compile_control_and_registration_data
-    start_range = selected_date.advance(months: -MAX_MONTHS_OF_DATA)
-    query = ControlRateService.new(district, range: (start_range..selected_date))
-
-    months_of_data = [query.registration_counts.to_a.size, MAX_MONTHS_OF_DATA].min
-    @data[:cumulative_registrations] = query.registrations(selected_date)
-    (-months_of_data + 1).upto(0).each do |n|
-      time = selected_date.advance(months: n).end_of_month
-      formatted_period = time.to_s(:month_year)
-
-      @data[:controlled_patients][formatted_period] = query.controlled_patients(time).count
-      @data[:registrations][formatted_period] = query.registrations(time)
-    end
+    start_range = selected_date.advance(months: -MAX_MONTHS_OF_DATA).to_date
+    result = ControlRateService.new(district, range: (start_range..selected_date.to_date)).call
+    @data.merge! result
   end
 
   # We want to return cohort data for the current quarter for the selected date, and then

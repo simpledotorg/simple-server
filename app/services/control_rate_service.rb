@@ -7,7 +7,6 @@ class ControlRateService
       [region]
     end
     @range = range
-    puts "range: #{@range}"
   end
 
   def registrations(time)
@@ -15,17 +14,16 @@ class ControlRateService
   end
 
   def call
-    start = range.begin
     data = {
       controlled_patients: {},
       registrations: {}
     }
 
-    0.upto(23).each do |n|
-      time = start.advance(months: n)
-      formatted_period = time.to_s(:month_year)
-      data[:controlled_patients][formatted_period] = controlled_patients(time).count
-      data[:registrations][formatted_period] = registrations(time)
+    data[:cumulative_registrations] = registrations(range.end)
+    registration_counts.each do |(date, count)|
+      formatted_period = date.to_s(:month_year)
+      data[:controlled_patients][formatted_period] = controlled_patients(date).count
+      data[:registrations][formatted_period] = count
     end
     data
   end
