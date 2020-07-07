@@ -18,7 +18,7 @@ class Reports::FacilitiesController < AdminController
     else
       Date.current.advance(months: -1)
     end
-    @data = DistrictReportService.new(region: @region,
+    @data = RegionReportService.new(region: @region,
                                       selected_date: @selected_date,
                                       current_user: current_admin).call
     @controlled_patients = @data[:controlled_patients]

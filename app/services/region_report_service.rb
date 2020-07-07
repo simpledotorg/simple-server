@@ -1,4 +1,4 @@
-class DistrictReportService
+class RegionReportService
   include SQLHelpers
   MAX_MONTHS_OF_DATA = 24
 
