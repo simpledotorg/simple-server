@@ -59,7 +59,7 @@ class DeleteBangladeshDemoFacility
 
   def discard_test_patients
     log "Discarding test patients..."
-    demo_facility.reload.patients.each(&:discard_data)
+    demo_facility.reload.registered_patients.where.not(id: REAL_PATIENT_IDS).each(&:discard_data)
   end
 
   def discard_demo_facility
