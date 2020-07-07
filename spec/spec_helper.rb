@@ -1,10 +1,10 @@
-require 'simplecov'
-require 'utils'
-require 'webmock/rspec'
-require 'fakeredis/rspec'
-require 'sidekiq/testing'
-require 'capybara'
-require 'webdrivers'
+require "simplecov"
+require "utils"
+require "webmock/rspec"
+require "fakeredis/rspec"
+require "sidekiq/testing"
+require "capybara"
+require "webdrivers"
 
 WebMock.allow_net_connect!
 
@@ -38,9 +38,9 @@ RSpec.configure do |config|
 
   Capybara.register_driver :headless_chrome do |app|
     Capybara::Selenium::Driver.new app, browser: :chrome,
-                                   options: Selenium::WebDriver::Chrome::Options.new(args: %w[headless
-                                    disable-gpu
-                                    window-size=1280,800])
+                                        options: Selenium::WebDriver::Chrome::Options.new(args: %w[headless
+                                          disable-gpu
+                                          window-size=1280,800])
   end
 
   Capybara.default_driver = :headless_chrome
