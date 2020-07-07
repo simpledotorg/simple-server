@@ -2,11 +2,15 @@ class DistrictReportService
   include SQLHelpers
   MAX_MONTHS_OF_DATA = 24
 
-  def initialize(district:, selected_date:, current_user:)
+  def initialize(region:, selected_date:, current_user:)
     @current_user = current_user
     @organizations = Pundit.policy_scope(current_user, [:cohort_report, Organization]).order(:name)
-    @district = district
-    @facilities = district.facilities
+    @district = region
+    @facilities = if @district.is_a?(FacilityGroup)
+      district.facilities
+    else
+      [@district]
+    end
     @selected_date = selected_date.end_of_month
     @data = {
       controlled_patients: {},

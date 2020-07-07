@@ -11,12 +11,12 @@ class ControlRateService
     @facilities = if @region.respond_to?(:facilities)
       @region.facilities
     else
-      [region]
+      [@region]
     end
     @range = range
     @date = date
     @end_of_date_range = date || range.end
-    logger.info "#{self.class} created for range: #{range} region: #{region.id} #{region.name}"
+    logger.info "#{self.class} created for range: #{range} facilities: #{facilities.map(&:id)} #{facilities.map(&:name)}"
   end
 
   delegate :logger, to: Rails
