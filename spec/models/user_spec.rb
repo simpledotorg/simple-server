@@ -175,4 +175,17 @@ RSpec.describe User, type: :model do
       end
     end
   end
+
+  describe "destroying email authentications" do
+    it "destroys associated email authentications and join records when destroyed" do
+      user = create(:admin)
+      email_authentication_ids = user.email_authentications.map(&:id)
+      user_authentication_ids = user.user_authentications.map(&:id)
+
+      user.destroy
+
+      expect(EmailAuthentication.exists?(id: email_authentication_ids)).to eq(false)
+      expect(UserAuthentication.exists?(id: user_authentication_ids)).to eq(false)
+    end
+  end
 end

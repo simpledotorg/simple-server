@@ -59,7 +59,7 @@ function initializeCharts() {
           const controlledPatientValue = data.controlledPatients.map(key => key[1])[tooltipItem.index];
           const formattedValue = controlledPatientValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
           let value = parseInt(tooltipItem.value).toFixed(0);
-          return `${controlledPatientDate}, ${value}% (${formattedValue} patients)`;
+          return `${value}% control rate (${formattedValue} patients) in ${controlledPatientDate}`;
         },
       },
     }
