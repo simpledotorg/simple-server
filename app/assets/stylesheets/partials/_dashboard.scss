@@ -283,6 +283,12 @@ th sup {
 
 .split-bars {
     font-family: $font-condensed;
+    height: 40px;
+}
+
+.split-bars table {
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
 .split-bars td {
@@ -310,9 +316,8 @@ th sup {
 }
 
 .split-row {
-    margin-top: 4px;
-    border-top:  1px solid $grey-lightest;
-    padding-top: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
 }
 
 .bar-total {

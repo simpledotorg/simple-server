@@ -73,6 +73,8 @@ class User < ApplicationRecord
     :authenticatable_salt,
     :invited_to_sign_up?, to: :email_authentication, allow_nil: true
 
+  after_destroy :destroy_email_authentications
+
   def phone_number_authentication
     phone_number_authentications.first
   end
@@ -171,5 +173,14 @@ class User < ApplicationRecord
 
   def resources
     user_permissions.map(&:resource)
+  end
+
+  def destroy_email_authentications
+    destroyable_email_authentications = email_authentications.load
+
+    user_authentications.each(&:destroy)
+    destroyable_email_authentications.each(&:destroy)
+
+    true
   end
 end

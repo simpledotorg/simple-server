@@ -4,14 +4,6 @@ module PatientsExporter
   extend QuarterHelper
 
   BATCH_SIZE = 20
-
-  BLOOD_SUGAR_UNITS = {
-    random: "mg/dL",
-    post_prandial: "mg/dL",
-    fasting: "mg/dL",
-    hba1c: "%",
-  }.with_indifferent_access.freeze
-
   BLOOD_SUGAR_TYPES = {
     random: "Random",
     post_prandial: "Postprandial",
@@ -31,10 +23,6 @@ module PatientsExporter
           :address,
           :medical_history,
           :current_prescription_drugs,
-          :latest_bp_passports,
-          { latest_scheduled_appointments: :facility },
-          { latest_blood_pressures: :facility },
-          :latest_blood_sugars
         ).each do |patient|
           csv << csv_fields(patient)
         end
@@ -98,12 +86,14 @@ module PatientsExporter
   end
 
   def self.csv_fields(patient)
+    # We cannot rely on the ordered scopes on Patient (eg. latest_blood_pressures) to find most recent records because
+    # the batching done here will invalidate any ordering on patients, as well as its associations.
     registration_facility = patient.registration_facility
-    latest_bp = patient.latest_blood_pressure
+    latest_bp = patient.blood_pressures.order(recorded_at: :desc).first
     latest_bp_facility = latest_bp&.facility
-    latest_blood_sugar = patient.latest_blood_sugar
-    latest_appointment = patient.latest_scheduled_appointment
-    latest_bp_passport = patient.latest_bp_passport
+    latest_blood_sugar = patient.blood_sugars.order(recorded_at: :desc).first
+    latest_appointment = patient.latest_scheduled_appointments.order(scheduled_date: :desc).first
+    latest_bp_passport = patient.latest_bp_passports.order(device_created_at: :desc).first
     zone_column_index = csv_headers.index(zone_column)
 
     csv_fields = [
@@ -131,7 +121,7 @@ module PatientsExporter
       latest_bp_facility&.district,
       latest_bp_facility&.state,
       latest_blood_sugar&.recorded_at.presence && I18n.l(latest_blood_sugar&.recorded_at),
-      blood_sugar_value_with_unit(latest_blood_sugar),
+      latest_blood_sugar&.to_s,
       blood_sugar_type(latest_blood_sugar),
       latest_appointment&.facility&.name,
       latest_appointment&.scheduled_date&.to_s(:rfc822),
@@ -154,12 +144,6 @@ module PatientsExporter
 
   def self.zone_column
     "Patient #{Address.human_attribute_name :zone}"
-  end
-
-  def self.blood_sugar_value_with_unit(blood_sugar)
-    return unless blood_sugar.present?
-
-    "#{blood_sugar.blood_sugar_value} #{BLOOD_SUGAR_UNITS[blood_sugar.blood_sugar_type]}"
   end
 
   def self.blood_sugar_type(blood_sugar)

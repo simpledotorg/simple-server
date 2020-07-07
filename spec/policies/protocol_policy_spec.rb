@@ -2,8 +2,8 @@ require "rails_helper"
 
 RSpec.describe Manage::ProtocolPolicy do
   subject { described_class }
-
   let(:protocol) { build(:protocol) }
+
   context "user can manage all protocols" do
     let(:user_with_permission) do
       create(:admin, user_permissions: [build(:user_permission, permission_slug: :manage_protocols)])
@@ -44,16 +44,15 @@ end
 RSpec.describe Manage::ProtocolPolicy::Scope do
   let(:subject) { described_class }
   let(:organization) { create(:organization) }
-
-  let(:protocol_1) { create(:protocol) }
-  let(:protocol_2) { create(:protocol) }
+  let!(:protocol_1) { create(:protocol) }
+  let!(:protocol_2) { create(:protocol) }
 
   context "user can manage all protocols" do
     let(:user_with_permission) do
       create(:admin, user_permissions: [build(:user_permission, permission_slug: :manage_protocols)])
     end
 
-    it "resolves all the protocol durgs" do
+    it "resolves all the protocol drugs" do
       resolved_records = subject.new(user_with_permission, Protocol.all).resolve
       expect(resolved_records).to match_array(Protocol.all)
     end

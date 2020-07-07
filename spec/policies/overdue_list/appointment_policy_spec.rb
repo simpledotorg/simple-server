@@ -111,8 +111,8 @@ RSpec.describe OverdueList::AppointmentPolicy::Scope do
 
   let(:facility1) { create(:facility, facility_group: facility_group) }
   let(:facility2) { create(:facility) }
-  let(:appointment1) { create(:appointment, :overdue, facility: facility1) }
-  let(:appointment2) { create(:appointment, :overdue, facility: facility2) }
+  let!(:appointment1) { create(:appointment, :overdue, facility: facility1) }
+  let!(:appointment2) { create(:appointment, :overdue, facility: facility2) }
 
   context "user with permission to access appointment information for all organizations" do
     let(:user) do

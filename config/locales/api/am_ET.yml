@@ -1,50 +1,50 @@
 am-ET:
   date:
-    month_names: [~, 'ጃንዋሪ', 'ፌብሯሪ', 'ማርች', 'ኤፕሪል', 'ሜይ', 'ጁን', 'ጁላይ', 'ኦገስት', 'ሴፕቴምበር', 'ኦክቶበር', 'ኖቬምበር', 'ታህሳስ']
-    abbr_month_names: [~, 'ጃን', 'ፌብ', 'ማር', 'አፕር', 'ሜይ', 'ጁን', 'ጁል', 'አገ', 'ሰፕት', 'ኦክት', 'ኖቭ', 'ታህ']
-  today_str: 'ዛሬ'
-  registration: 'አዲስ ምዝገባ'
-  reset_password: 'PIN ዳግም ያስጀምሩ'
+    month_names: [~, "ጥር", "የካቲት", "መጋቢት", "ሚያዚያ", "ግንቦት", "ሰኔ", "ሃምሌ", "ነሃሴ", "መስከረም", "ጥቅምት", "ህዳር", "ታህሳስ"]
+    abbr_month_names: [~, "ጥር", "የካቲ", "መጋ", "ሚያ", "ግን", "ሰኔ", "ሃም", "ነሃ", "መስከ", "ጥቅም", "ህዳር", "ታህ"]
+  today_str: "ዛሬ"
+  registration: "አዲስ ምዝገባ"
+  reset_password: "PIN ዳግም ያስጀምሩ"
   login:
     error_messages:
-      unknown_user: "ያንን ተጠቃሚ አናውቀውም። እባክዎ ይፈትሹ እና እንደገና ይሞክሩ።"
-      invalid_otp: 'የእርስዎ OTP አይዛመድም። ድጋሚ ሞክር?'
+      unknown_user: "ያህን ተጠቃሚ አናውቀውም። እባክዎ ይፈትሹ እና እንደገና ይሞክሩ።"
+      invalid_otp: "የእርስዎ OTP አይዛመድም። ድጋሚ ይሞክሩ?"
       expired_otp: "OTPዎ ጊዜው አልፏል። አዲስ ይጠይቁ።"
-      invalid_password: 'የይለፍ ቃልዎ አይዛመድም። ድጋሚ ሞክር?'
+      invalid_password: "የይለፍ ቃልዎ አይዛመድም። ድጋሚ ይሞክሩ?"
       account_locked: "መለያዎ ለሚቀጥሉት %{minutes} ደቂቃዎች ተቆልፏል። እባክዎ ይቆዩ እና እንደገና ይሞክሩ።"
   sms:
-    request_otp: '<#> %{otp} የSimple ማረጋገጫ ኮድዎ ነው\n%{app_signature}'
+    request_otp: "<#>%{otp}የእርስዎ ሲምፕል መተግበሪያ የማረጋገጫ የሚስጥር ቁጥር ነው\n%{app_signature}"
     appointment_reminders:
-      missed_visit_sms_reminder: 'በ %{facility_name} ያሉት ሰራተኞቻችን ስለ እርስዎ እና የልብዎ ጤንነት እያሰቡ ይገኛሉ። እባክዎ የደም ግፊት መድሃኒቶችዎን ይቀጥሉ። መድሃኒትዎን ከቅርቡ ጤና ጣቢያ ይውሰዱ። ANM ወይም ASHA ያግኙ።'
-      missed_visit_whatsapp_reminder: 'በ %{facility_name} ያሉት ሰራተኞቻችን ስለ እርስዎ እና የልብዎ ጤንነት እያሰቡ ይገኛሉ። እባክዎ የደም ግፊት መድሃኒቶችዎን ይቀጥሉ። መድሃኒትዎን ከቅርቡ ጤና ጣቢያ ይውሰዱ። ANM ወይም ASHA ያግኙ።'
-    patient_request_otp: '<#> %{otp} የBP ፓስፖርት ማረጋገጫ ኮድዎ ነው\n%{app_signature}'
+      missed_visit_sms_reminder: "በ %{facility_name} ያሉት ሰራተኞቻችን ስለ እርስዎ እና የልብዎ ጤንነት እያሰቡ ይገኛሉ። እባክዎ የደም ግፊት መድሃኒቶችዎን ይቀጥሉ። መድሃኒትዎን ከቅርቡ ጤና ተቋም ይውሰዱ። ANM ወይም ASHA ያግኙ።"
+      missed_visit_whatsapp_reminder: "በ %{facility_name} ያሉት ሰራተኞቻችን ስለ እርስዎ እና የልብዎ ጤንነት እያሰቡ ይገኛሉ። እባክዎ የደም ግፊት መድሃኒቶችዎን ይቀጥሉ። መድሃኒትዎን ከቅርቡ ጤና ተቋም ይውሰዱ። ANM ወይም ASHA ያግኙ።"
+    patient_request_otp: "<#>%{otp} የእርስዎ ያደም ግፊት ፓስፖርት የማረጋገጫ የሚስጥር ቁጥር ነው\n%{app_signature}"
   analytics:
-    followup_patients: "ስንት ተከታታይ ታካሚዎች %{facility_name} ጎብኝተዋል?"
-    patients_enrolled: "ስንት አዲስ ታካሚዎች በ %{facility_name} ተመዝግበዋል?"
+    followup_patients: " %{facility_name} ተቋምን በተከታታይ ህክምና የጎበኙ ታካሚዎች ምን ያህል ናቸው ?"
+    patients_enrolled: "ምን ያህል አዲስ ታካሚዎች በ %{facility_name} ተቋም ተመዝግበዋል?"
     all_time_patients: "ሁል ግዜ: %{count} ታካሚዎች"
     updated_at: "በ %{time} ዘምኗል"
   user_analytics:
-    hypertension: 'የደም ብዛት'
-    diabetes: 'የስኳር በሽታ'
-    genders: ['ሁሉም', ወንድ, 'ሴት', 'ጾታእሊፍ']
-    all_time: 'ሁል፟፟ግዜ'
-    follow_up_patients: 'ተከታታይ የደም ግፊት ህመምተኞች'
-    registered_patients: 'የተመዘገቡ በሽተኞች'
-    hypertension_control: 'የደም ግፊት መቆጣጠሪያ'
-    hypertension_control_desc: 'በወሩ ለመጨረሻ ጊዜ ክትትል ጊዜ ስንት የደም ግፊት ያላቸው ሕመምተኞች ከ 140/90 በታች ነበሩ?'
-    notes: 'ማስታወሻዎች'
-    footer_note_1: 'ውሂቡ በ %{facility_name} ውስጥ ላሉት ሁሉም እንቅስቃሴዎች ነው። ውሂቡ ጊዜ ያለፈበት ከሆነ "Sync pending" አገናኙን መነሻ ገጽ ላይ መታ ያድርጉ።'
-    footer_note_2: 'ተከታይ ህመምተኛ የሚቆጠረው በየወሩ ለአንድ ጉብኝት ብቻ ነው ፡፡ አንድ ህመምተኛ በአንድ ወር ውስጥ ብዙ ጊዜ የሚከታተል ከሆነ እሱ ወይም እሷ አንድ ጊዜ ብቻ ይቆጠራሉ ፡፡'
-    thank_you: 'አመሰግናለሁ'
-    thank_you_note: 'ከፍተኛ የደም ግፊት ላላቸው በሽተኞች ለማከም በትጋት በትጋት ስለሠሩ እናመሰግናለን። ሥራዎ ከልብ ድካም እና ከቁስል ያድናል ፡፡'
-    updated: 'የዘመነው: %{time}'
-    ratio_string: '%{value_1} ከ %{value_2}'
+    hypertension: "ከፍተኛ የደም ግፊት"
+    diabetes: "የስኳር በሽታ"
+    genders: ["ሁሉም", "ወንድ", "ሴት", "ጾታእሊፍ"]
+    all_time: "ሁልግዜ"
+    follow_up_patients: "ተከታታይ ህክምና ላይ ያሉ የደም ግፊት ታካሚዎች"
+    registered_patients: "የተመዘገቡ ታካሚዎች"
+    hypertension_control: "የደም ግፊት መቆጣጠሪያ"
+    hypertension_control_desc: "በወሩ መጨረሻ ላይ ለክትትል ከመጡት የደም ግፊት ካላቸው ታካሚዎች ውስጥ የደም ግፊታቸው ከ 140/90 በታች  የሆነት ስንት ነበሩ?"
+    notes: "ማስታወሻዎች"
+    footer_note_1: "ጥሬ መረጃው በ%{facility_name} ተቋም ውስጥ ላሉት ሁሉም እንቅስቃሴዎች ነው። ጥሬ መረጃው ጊዜ ያለፈበት ከሆነ \"ማጣመር በመጠባበቅ ላይ\"  የሚለውን አገናኝ መነሻ ገጽ ላይ መታ ያድርጉ።"
+    footer_note_2: "ተከታይ ህመምና ላይ ያለ ታካሚ የሚቆጠረው በየወሩ እንደ አንድ ጉብኝት ብቻ ነው ፡፡ አንድ ህመምተኛ በአንድ ወር ውስጥ ብዙ ጊዜ የሚከታተል ከሆነ እሱ ወይም እሷ አንድ ጊዜ ብቻ ይቆጠራሉ ፡፡"
+    thank_you: "አመሰግናለሁ"
+    thank_you_note: "ከፍተኛ የደም ግፊት ያላቸው ታካሚዎችን ለማከም በትጋት  ስለሠሩ እናመሰግናለን። ሥራዎ ከልብ ድካም እና ከስትሮክ ህይወትን ያድናል። ፡፡"
+    updated: "የዘመነው: %{time}"
+    ratio_string: "%{value_1} ከ %{value_2}"
   dashboard:
     graphics:
       graphics_title_html: "በ <b>%{current_quarter_string}</b> ውስጥ በ <b>%{previous_quarter_string}</b> የተመዘገቡት %{patients_in_previous_quarter} ታካሚዎች ላይ ምን ተከስቷል?"
-      report_name: "የደም ግፊት መግለጫ"
+      report_name: "ከፍተኛ የደም ግፊት ሪፖርት"
       patients_controlled_in_quarter_html: "ከ BP &lt ጋር የተጎበኙ ታካሚዎች፤"
       patients_uncontrolled_in_quarter_html: "ከ BP &ge ጋር የተጎበኙ ታካሚዎች፤"
-      patients_defaulted_in_quarter_html: "ታካሚዎች በተጠበቀው ቀጣይ ጉብኝት አልተገኙም"
+      patients_defaulted_in_quarter_html: "ታካሚዎች በተጠበቀው ተከታታይ ህከምና ጉብኝት አልተገኙም"
       new_patients_registered: "አዳዲስ ምዝገባዎች"
-      patients_called_for_followup: "ህመምተኞችን ተከታተል"
+      patients_called_for_followup: "ተከታታይ ታካሚዎች"
