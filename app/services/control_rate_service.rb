@@ -57,7 +57,7 @@ class ControlRateService
           hsh[date] = hsh[:running_total]
         }.delete_if { |date, count| count == 0 }.except(:running_total)
     else
-      count = region.patients.with_hypertension.where("recorded_at <= ?", date).count
+      count = region.registered_patients.with_hypertension.where("recorded_at <= ?", date).count
       {
         date => count
       }
