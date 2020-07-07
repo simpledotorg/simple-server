@@ -335,7 +335,7 @@
   </div>
 </div>
 
-<% if @region.respond_to?(:facilities) %>
+<% if @region.is_a?(FacilityGroup) %>
   <div class="d-lg-flex flex-lg-wrap card">
     <div class="d-lg-flex order-lg-1 w-lg-100 pr-lg-2">
       <div class="mb-2">

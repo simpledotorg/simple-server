@@ -8,11 +8,7 @@ class ControlRateService
     raise ArgumentError, "Cannot provide both a range and date" if range && date
     raise ArgumentError, "Must provide either a range or a single date" if range.nil? && date.nil?
     @region = region
-    @facilities = if @region.respond_to?(:facilities)
-      @region.facilities
-    else
-      [@region]
-    end
+    @facilities = region.facilities
     @range = range
     @date = date
     @end_of_date_range = date || range.end

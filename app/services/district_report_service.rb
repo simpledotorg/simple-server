@@ -6,11 +6,7 @@ class DistrictReportService
     @current_user = current_user
     @organizations = Pundit.policy_scope(current_user, [:cohort_report, Organization]).order(:name)
     @district = region
-    @facilities = if @district.is_a?(FacilityGroup)
-      district.facilities
-    else
-      [@district]
-    end
+    @facilities = region.facilities
     @selected_date = selected_date.end_of_month
     @data = {
       controlled_patients: {},
