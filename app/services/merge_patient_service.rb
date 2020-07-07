@@ -7,10 +7,13 @@ class MergePatientService
     existing_patient_attributes = Patient.with_discarded.find_by(id: payload['id'])&.attributes
     merged_address = Address.merge(payload[:address]) if payload[:address].present?
 
-    patient_attributes = payload.except(:address, :phone_numbers, :business_identifiers)
+    patient_attributes = payload
+                           .except(:address, :phone_numbers, :business_identifiers)
+                           .yield_self { |attrs| set_patient_address(attrs, merged_address) }
+                           .yield_self { |attrs| merge_metadata(attrs) }
+                           .yield_self { |attrs| set_assigned_facility(attrs) }
 
-    patient_attributes['address_id'] = merged_address.id if merged_address.present?
-    merged_patient = Patient.merge(attributes_with_metadata(patient_attributes))
+    merged_patient = Patient.merge(patient_attributes)
     merged_patient.address = merged_address
 
     merged_phone_numbers = merge_phone_numbers(payload[:phone_numbers], merged_patient)
@@ -43,7 +46,7 @@ class MergePatientService
 
   private
 
-  def attributes_with_metadata(patient_attributes)
+  def merge_metadata(patient_attributes)
     with_request_metadata = patient_attributes.merge(patient_attributes[:metadata]).except(:metadata)
     metadata_keys = patient_attributes[:metadata].keys
 
@@ -59,6 +62,18 @@ class MergePatientService
   end
 
   attr_reader :payload
+
+  def set_patient_address(patient_attributes, address)
+    patient_attributes["address_id"] = address.id if address.present?
+    patient_attributes
+  end
+
+  def set_assigned_facility(patient_attributes)
+    if patient_attributes[:assigned_facility_id].nil?
+      patient_attributes[:assigned_facility_id] = patient_attributes[:registration_facility_id]
+    end
+    patient_attributes
+  end
 
   def merge_phone_numbers(phone_number_params, patient)
     return [] unless phone_number_params.present?
