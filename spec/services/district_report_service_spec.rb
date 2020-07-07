@@ -22,7 +22,7 @@ RSpec.describe DistrictReportService, type: :model do
   end
 
   it "normalizes the selected_date" do
-    service = DistrictReportService.new(district: facility_group_1, selected_date: june_1, current_user: user)
+    service = DistrictReportService.new(region: facility_group_1, selected_date: june_1, current_user: user)
     Timecop.freeze("June 30 2020 5:00 PM EST") do
       expect(service.selected_date).to eq(june_1.end_of_month)
     end
@@ -62,7 +62,7 @@ RSpec.describe DistrictReportService, type: :model do
 
     refresh_views
 
-    service = DistrictReportService.new(district: facility_group_1, selected_date: july_2020, current_user: user)
+    service = DistrictReportService.new(region: facility_group_1, selected_date: july_2020, current_user: user)
     result = service.call
 
     expect(result[:controlled_patients][jan_2020.to_s(:month_year)]).to eq(controlled_in_jan_and_june.size)
@@ -97,7 +97,7 @@ RSpec.describe DistrictReportService, type: :model do
 
     refresh_views
 
-    service = DistrictReportService.new(district: facility_group_1, selected_date: june_1, current_user: user)
+    service = DistrictReportService.new(region: facility_group_1, selected_date: june_1, current_user: user)
     result = service.call
 
     expected_controlled_patients = {
@@ -145,7 +145,7 @@ RSpec.describe DistrictReportService, type: :model do
 
     refresh_views
 
-    service = DistrictReportService.new(district: darrang, selected_date: june_1, current_user: user)
+    service = DistrictReportService.new(region: darrang, selected_date: june_1, current_user: user)
     result = service.call
     expect(result[:top_district_benchmarks][:controlled_percentage]).to eq(100.0)
     expect(result[:top_district_benchmarks][:district]).to eq(koriya)
