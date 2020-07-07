@@ -108,8 +108,8 @@ RSpec.describe DistrictReportService, type: :model do
       "Dec 2018" => 0, "Jan 2020" => 4, "Feb 2020" => 4, "Mar 2020" => 6, "Apr 2020" => 6, "May 2020" => 6, "Jun 2020" => 6
     }
     expected_registrations.default = 2
-    # expect(result[:controlled_patients].size).to eq(19)
-    # expect(result[:registrations].size).to eq(19)
+    expect(result[:controlled_patients].size).to eq(18)
+    expect(result[:registrations].size).to eq(18)
 
     result[:controlled_patients].each do |month, count|
       expect(count).to eq(expected_controlled_patients[month]),
