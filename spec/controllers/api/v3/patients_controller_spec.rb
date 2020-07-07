@@ -55,6 +55,29 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
         expect(patient_in_db.recorded_at.to_i).to eq(time.to_i)
       end
 
+      it "picks up the registration_facility_id param if its available" do
+        new_registration_facility = create(:facility)
+        patient = FactoryBot.build(:patient, registration_facility: new_registration_facility)
+        patient_payload = build_patient_payload(patient)
+
+        post :sync_from_user, params: {patients: [patient_payload]}, as: :json
+
+        expect(response).to have_http_status(200)
+        expect(Patient.first.registration_facility).to eq new_registration_facility
+      end
+
+      it "assigns the registration_facility_id from the headers if the param is missing" do
+        new_registration_facility = create(:facility, facility_group: request_user.facility.facility_group)
+        request.env["HTTP_X_FACILITY_ID"] = new_registration_facility.id
+        patient = FactoryBot.build(:patient)
+        patient_payload = build_patient_payload(patient).except(:registration_facility_id)
+
+        post :sync_from_user, params: {patients: [patient_payload]}, as: :json
+
+        expect(response).to have_http_status(200)
+        expect(Patient.first.registration_facility).to eq new_registration_facility
+      end
+
       context "recorded_at is not sent" do
         it "defaults recorded_at to device_created_at" do
           patient = FactoryBot.build(:patient)
@@ -281,8 +304,8 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
       let(:delete_patient_payload) do
         build_patient_payload(existing_patient)
           .merge(deleted_at: deleted_time,
-                 updated_at: deleted_time,
-                 deleted_reason: "duplicate")
+            updated_at: deleted_time,
+            deleted_reason: "duplicate")
       end
 
       it "calls #discard_data on a a patient when the patient payload has the deleted_at field set" do
@@ -294,14 +317,14 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
         allow(PatientBusinessIdentifier).to receive(:merge).and_return(pbi)
 
         allow(patient).to receive(:slice)
-          .with("registration_user_id", "registration_facility_id")
-          .and_return(existing_patient.slice("registration_user_id",
-            "registration_facility_id"))
+                            .with("registration_user_id", "registration_facility_id")
+                            .and_return(existing_patient.slice("registration_user_id",
+                              "registration_facility_id"))
         allow(patient).to receive_messages(id: existing_patient.id,
-                                           merge_status: :updated,
-                                           deleted_at: deleted_time,
-                                           update: patient,
-                                           "address=": existing_patient.address)
+          merge_status: :updated,
+          deleted_at: deleted_time,
+          update: patient,
+          "address=": existing_patient.address)
 
         expect(patient).to receive(:discard_data)
         post :sync_from_user, params: {patients: [delete_patient_payload]}, as: :json
@@ -328,7 +351,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
 
         existing_patient.discard_data
         update_payload_for_discarded_patient = build_patient_payload(existing_patient)
-          .merge(full_name: "Test Patient Name Xcad7asd")
+                                                 .merge(full_name: "Test Patient Name Xcad7asd")
 
         post :sync_from_user, params: {patients: [update_payload_for_discarded_patient]}, as: :json
 

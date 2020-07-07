@@ -19,11 +19,11 @@ RSpec.describe MergePatientService, type: :model do
           build_patient_payload(
             build(:patient,
               registration_facility: registration_facility,
-              assigned_facility: assigned_facility))
-            .merge(metadata: metadata)
+              assigned_facility: assigned_facility)
+          ).merge(metadata)
 
         payload = Api::V3::PatientTransformer.from_nested_request(patient_attributes)
-        merged_patient = described_class.new(payload).merge
+        merged_patient = described_class.new(payload, metadata_keys: metadata.keys).merge
 
         expect(merged_patient[:assigned_facility_id]).to eq(assigned_facility.id)
       end
@@ -33,8 +33,8 @@ RSpec.describe MergePatientService, type: :model do
           build_patient_payload(
             build(:patient,
               registration_facility: registration_facility,
-              assigned_facility: nil))
-            .merge(metadata: metadata)
+              assigned_facility: nil)
+          ).merge(metadata)
 
         payload = Api::V3::PatientTransformer.from_nested_request(patient_attributes)
         merged_patient = described_class.new(payload).merge
@@ -46,9 +46,9 @@ RSpec.describe MergePatientService, type: :model do
         patient_attributes =
           build_patient_payload(
             build(:patient,
-                  registration_facility: registration_facility,
-                  assigned_facility: nil))
-            .merge(metadata: metadata)
+              registration_facility: registration_facility,
+              assigned_facility: nil)
+          ).merge(metadata)
 
         payload = Api::V3::PatientTransformer.from_nested_request(patient_attributes)
         described_class.new(payload).merge

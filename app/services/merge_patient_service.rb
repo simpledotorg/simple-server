@@ -1,6 +1,7 @@
 class MergePatientService
-  def initialize(payload)
+  def initialize(payload, metadata_keys: [])
     @payload = payload
+    @metadata_keys = metadata_keys
   end
 
   def merge
@@ -10,7 +11,7 @@ class MergePatientService
     patient_attributes = payload
                            .except(:address, :phone_numbers, :business_identifiers)
                            .yield_self { |attrs| set_patient_address(attrs, merged_address) }
-                           .yield_self { |attrs| merge_metadata(attrs) }
+                           .yield_self { |attrs| set_metadata(attrs) }
                            .yield_self { |attrs| set_assigned_facility(attrs) }
 
     merged_patient = Patient.merge(patient_attributes)
@@ -46,22 +47,16 @@ class MergePatientService
 
   private
 
-  def merge_metadata(patient_attributes)
-    with_request_metadata = patient_attributes.merge(patient_attributes[:metadata]).except(:metadata)
-    metadata_keys = patient_attributes[:metadata].keys
+  attr_reader :metadata_keys, :payload
 
-    case Patient.compute_merge_status(with_request_metadata)
-    when :new
-      with_request_metadata
-    when Set[:updated, :old]
-      existing_metadata = Patient.find(patient_attributes[:id]).slice(*metadata_keys)
-      patient_attributes.merge(existing_metadata).except(:metadata)
+  def set_metadata(single_patient_params)
+    if Patient.compute_merge_status(single_patient_params) == Set[:updated, :old]
+      existing_metadata = Patient.find(single_patient_params[:id]).slice(*metadata_keys)
+      single_patient_params.merge(existing_metadata)
     else
-      patient_attributes.except(:metadata)
+      single_patient_params
     end
   end
-
-  attr_reader :payload
 
   def set_patient_address(patient_attributes, address)
     patient_attributes["address_id"] = address.id if address.present?
@@ -72,6 +67,7 @@ class MergePatientService
     if patient_attributes[:assigned_facility_id].nil?
       patient_attributes[:assigned_facility_id] = patient_attributes[:registration_facility_id]
     end
+
     patient_attributes
   end
 
