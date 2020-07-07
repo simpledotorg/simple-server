@@ -49,7 +49,7 @@ class ControlRateService
   # Calculate all registration counts for entire range, or for the single date provided
   def registration_counts
     @registration_counts ||= if range
-      region.patients.with_hypertension
+      region.registered_patients.with_hypertension
         .group_by_period(:month, :recorded_at, range: range)
         .count
         .each_with_object(Hash.new(0)) { |(date, count), hsh|
