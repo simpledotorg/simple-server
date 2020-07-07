@@ -19,8 +19,8 @@ class Reports::FacilitiesController < AdminController
       Date.current.advance(months: -1)
     end
     @data = RegionReportService.new(region: @region,
-                                      selected_date: @selected_date,
-                                      current_user: current_admin).call
+                                    selected_date: @selected_date,
+                                    current_user: current_admin).call
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
