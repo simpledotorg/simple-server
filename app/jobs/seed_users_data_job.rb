@@ -260,8 +260,8 @@ class SeedUsersDataJob
     api_version = trait[:api_version]
     return if request_key.blank?
 
-    logger.info("Creating #{trait_name} for #{user.full_name} " +
-      "with #{trait_data.size} #{request_key} – facility: #{user.facility.name}")
+    logger.info("Creating #{trait_name} for #{user.full_name} \
+      with #{trait_data.size} #{request_key} – facility: #{user.facility.name}")
 
     trait_data.each_slice(SYNC_PAYLOAD_SIZE) do |data_slice|
       api_post("/api/#{api_version}/#{request_key}/sync", request_key => data_slice) if data_slice.present?
