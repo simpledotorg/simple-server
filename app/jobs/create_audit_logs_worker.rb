@@ -5,7 +5,7 @@ class CreateAuditLogsWorker
 
   def perform(log_json)
     log_hash = JSON.parse(log_json)
-    audit_logs = log_hash["record_ids"].map { |record_id|
+    log_hash["record_ids"].map { |record_id|
       audit_log = {user: log_hash["user_id"],
                    auditable_type: log_hash["record_class"],
                    auditable_id: record_id,
