@@ -334,23 +334,17 @@
     </div>
   </div>
 </div>
-
 <% if @region.is_a?(FacilityGroup) %>
-  <div class="d-lg-flex flex-lg-wrap card">
-    <div class="d-lg-flex order-lg-1 w-lg-100 pr-lg-2">
-      <div class="mb-2">
-        <h3>
-          Facilities
-        </h3>
-        <div class="d-flex flex-column">
-        <% @region.facilities.order(:name).each do |facility| %>
-          <div class="px-4 py-2 border">
-            <%= link_to facility.name, reports_facility_path(facility.friendly_id) %>
-          </div>
-        <% end %>
-        </div>
-      </div>
-    </div>
+  <div class="card">
+    <h2>
+      Facilities
+    </h2>
+    <% @region.facilities.order(:name).each do |facility| %>
+      <%= link_to(reports_facility_path(facility.friendly_id), class: "link-row") do %>
+        <i class='fas fa-angle-right light'></i>
+        <%= facility.name %>
+      <% end %>
+    <% end %>
   </div>
 <% end %>
 <div class="card o-hidden mt-0 p-0">
