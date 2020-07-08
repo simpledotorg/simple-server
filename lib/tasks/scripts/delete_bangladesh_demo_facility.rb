@@ -38,6 +38,14 @@ class DeleteBangladeshDemoFacility
   end
 
   def handle_patients
+    log "Moving #{real_patients.count} real patients to Beanibazar"
+    log "Discarding #{test_patients.count} test patients"
+
+    if dryrun
+      log "Dryrun. Aborting."
+      return
+    end
+
     move_real_patients_to_beanibazar
     discard_test_patients
 
@@ -45,6 +53,13 @@ class DeleteBangladeshDemoFacility
   end
 
   def delete_facility
+    log "Discarding #{demo_facility.name} facility"
+
+    if dryrun
+      log "Dryrun. Aborting."
+      return
+    end
+
     discard_demo_facility
 
     log "Complete. Goodbye."
@@ -59,7 +74,7 @@ class DeleteBangladeshDemoFacility
 
   def discard_test_patients
     log "Discarding test patients..."
-    demo_facility.reload.registered_patients.where.not(id: REAL_PATIENT_IDS).each(&:discard_data)
+    test_patients.each(&:discard_data)
   end
 
   def discard_demo_facility
@@ -69,6 +84,10 @@ class DeleteBangladeshDemoFacility
 
   def real_patients
     @real_patients ||= Patient.where(id: REAL_PATIENT_IDS)
+  end
+
+  def test_patients
+    @test_patients ||= demo_facility.registered_patients.where.not(id: REAL_PATIENT_IDS)
   end
 
   def beanibazar

@@ -40,12 +40,12 @@ namespace :data_fixes do
   end
 
   desc "Delete Bangladesh demo facility"
-  task :handle_bangladesh_demo_patients => :environment do
+  task :delete_bangladesh_demo_facility => :environment do
     DeleteBangladeshDemoFacility.delete_facility
   end
 
   desc "Delete Bangladesh demo facility (dryrun)"
-  task :handle_bangladesh_demo_patients_dryrun => :environment do
+  task :delete_bangladesh_demo_facility_dryrun => :environment do
     DeleteBangladeshDemoFacility.delete_facility(dryrun: true)
   end
 end
