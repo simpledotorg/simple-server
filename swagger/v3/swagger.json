@@ -1451,6 +1451,14 @@
       "format": "uuid",
       "pattern": "[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}"
     },
+    "nullable_uuid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid",
+      "pattern": "[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}"
+    },
     "non_empty_string": {
       "type": "string",
       "minLength": 1,
@@ -1525,8 +1533,11 @@
         "recorded_at": {
           "$ref": "#/definitions/timestamp"
         },
+        "registration_facility_id": {
+          "$ref": "#/definitions/nullable_uuid"
+        },
         "assigned_facility_id": {
-          "$ref": "#/definitions/uuid"
+          "$ref": "#/definitions/nullable_uuid"
         },
         "reminder_consent": {
           "type": "string",
@@ -1725,8 +1736,11 @@
         "recorded_at": {
           "$ref": "#/definitions/timestamp"
         },
+        "registration_facility_id": {
+          "$ref": "#/definitions/nullable_uuid"
+        },
         "assigned_facility_id": {
-          "$ref": "#/definitions/uuid"
+          "$ref": "#/definitions/nullable_uuid"
         },
         "reminder_consent": {
           "type": "string",
