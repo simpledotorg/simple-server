@@ -4,12 +4,12 @@ class MergePatientService
   end
 
   def merge
-    existing_patient_attributes = Patient.with_discarded.find_by(id: payload['id'])&.attributes
+    existing_patient_attributes = Patient.with_discarded.find_by(id: payload["id"])&.attributes
     merged_address = Address.merge(payload[:address]) if payload[:address].present?
 
     patient_attributes = payload.except(:address, :phone_numbers, :business_identifiers)
 
-    patient_attributes['address_id'] = merged_address.id if merged_address.present?
+    patient_attributes["address_id"] = merged_address.id if merged_address.present?
     merged_patient = Patient.merge(attributes_with_metadata(patient_attributes))
     merged_patient.address = merged_address
 
@@ -31,7 +31,7 @@ class MergePatientService
       log_update_discarded_patient(merged_patient)
     end
 
-    if (merged_patient.deleted_at.present? && existing_patient_attributes&.dig('deleted_at').nil?)
+    if merged_patient.deleted_at.present? && existing_patient_attributes&.dig("deleted_at").nil?
       # Patient has been soft-deleted by the client, server should soft-delete the patient and their associated data
       # patient_attributes[:metadata][:registration_user_id] contains the current user's id
       merged_patient.update(deleted_by_user_id: patient_attributes[:metadata][:registration_user_id])
@@ -75,6 +75,6 @@ class MergePatientService
   end
 
   def log_update_discarded_patient(merged_patient)
-    NewRelic::Agent.increment_metric('MergePatientService/update_discarded_patient') if merged_patient.discarded?
+    NewRelic::Agent.increment_metric("MergePatientService/update_discarded_patient") if merged_patient.discarded?
   end
 end

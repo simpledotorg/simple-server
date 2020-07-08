@@ -2,9 +2,11 @@ class Api::V3::EncounterTransformer
   class << self
     def from_nested_request(payload_attributes)
       blood_pressures = payload_attributes[:observations][:blood_pressures]
-      blood_pressures_attributes = blood_pressures.map do |blood_pressure|
-        Api::V3::BloodPressureTransformer.from_request(blood_pressure)
-      end if blood_pressures.present? || []
+      if blood_pressures.present? || []
+        blood_pressures_attributes = blood_pressures.map { |blood_pressure|
+          Api::V3::BloodPressureTransformer.from_request(blood_pressure)
+        }
+      end
 
       encounter_attributes = Api::V3::Transformer.from_request(payload_attributes)
 
@@ -17,11 +19,13 @@ class Api::V3::EncounterTransformer
     def to_response(encounter)
       Api::V3::Transformer.to_response(encounter)
         .merge(
-          'observations' => {
-            'blood_pressures' =>
+          "observations" => {
+            "blood_pressures" =>
               encounter.blood_pressures.map { |blood_pressure|
                 Api::V3::BloodPressureTransformer.to_response(blood_pressure)
-              } })
+              }
+          }
+        )
     end
   end
 end

@@ -1,4 +1,4 @@
-require 'csv'
+require "csv"
 
 class AnonymizedData::DownloadService
   def run_for_district(recipient_name, recipient_email, district_name, organization_id)
@@ -6,16 +6,16 @@ class AnonymizedData::DownloadService
     names_of_facilities = organization_district.facilities.flat_map(&:name).sort
 
     send_email(recipient_name, recipient_email,
-               anonymize(AnonymizedData::DistrictData.new(organization_district).fetch),
-               { district_name: district_name, facilities: names_of_facilities })
+      anonymize(AnonymizedData::DistrictData.new(organization_district).fetch),
+      {district_name: district_name, facilities: names_of_facilities})
   end
 
   def run_for_facility(recipient_name, recipient_email, facility_id)
     facility = Facility.find(facility_id)
 
     send_email(recipient_name, recipient_email,
-               anonymize(AnonymizedData::FacilityData.new(facility).fetch),
-               { facility_name: facility.name, facilities: [facility.name] })
+      anonymize(AnonymizedData::FacilityData.new(facility).fetch),
+      {facility_name: facility.name, facilities: [facility.name]})
   end
 
   private
@@ -51,9 +51,9 @@ class AnonymizedData::DownloadService
 
       resources.map do |r|
         values = r.anonymized_data
-        csv << headers.map do |h|
+        csv << headers.map { |h|
           values[h.to_sym] || AnonymizedData::Constants::UNAVAILABLE
-        end
+        }
       end
     end
   end
