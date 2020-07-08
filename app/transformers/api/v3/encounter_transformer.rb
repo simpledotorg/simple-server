@@ -2,10 +2,12 @@ class Api::V3::EncounterTransformer
   class << self
     def from_nested_request(payload_attributes)
       blood_pressures = payload_attributes[:observations][:blood_pressures]
-      if blood_pressures.present? || []
-        blood_pressures_attributes = blood_pressures.map { |blood_pressure|
+      blood_pressures_attributes = if blood_pressures.present?
+        blood_pressures.map { |blood_pressure|
           Api::V3::BloodPressureTransformer.from_request(blood_pressure)
         }
+      else
+        []
       end
 
       encounter_attributes = Api::V3::Transformer.from_request(payload_attributes)
