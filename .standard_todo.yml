@@ -3,10 +3,5 @@
 ---
 ignore:
 - bundle/bin/*
-- app/schema/api/schema.rb
-- app/schema/api/v3/models.rb
-- app/schema/api/v3/schema.rb
-- app/schema/api/v4/models.rb
-- app/schema/api/v4/schema.rb
 - db/schema.rb
 - lib/bangladesh/import/to_patients.rb
