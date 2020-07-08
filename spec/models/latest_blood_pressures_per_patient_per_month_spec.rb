@@ -93,7 +93,7 @@ RSpec.describe LatestBloodPressuresPerPatientPerMonth, type: :model do
   end
 
   describe "patient status and medical history fields" do
-    fit "stores and updates patient status" do
+    it "stores and updates patient status" do
       patient_1 = create(:patient, status: :migrated)
       patient_2 = create(:patient, status: :dead)
 
