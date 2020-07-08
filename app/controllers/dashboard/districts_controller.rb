@@ -11,6 +11,7 @@ class Dashboard::DistrictsController < AdminController
 
   def show
     @region = FacilityGroup.find_by(slug: district_params[:id])
+    @scope = :facility_group
     authorize(:dashboard, :show?)
 
     @selected_date = if district_params[:selected_date]

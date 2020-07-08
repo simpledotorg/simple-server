@@ -256,7 +256,7 @@
           <div class="d-none d-lg-block flex-lg-1 align-lg-center justify-lg-center">
             <p class="ta-lg-center mb-lg-0 fw-lg-bold tt-lg-uppercase ls-lg-145 c-lg-grey-dark">
             <!-- <%= @top_district_benchmarks[:district].name %> -->
-              Top district
+              Top <%= @scope == :facility_group ? "District" : "Facility" %>
             </p>
           </div>
           <div class="d-none d-lg-block flex-lg-1 align-lg-center justify-lg-center">
@@ -279,7 +279,7 @@
           <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
               <span class="fw-bold d-lg-none">
-                Top District:
+                Top <%= @scope == :facility_group ? "District" : "Facility" %>
               </span>
               <span>
                 <%= number_to_percentage(
