@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_06_16_111304) do
+ActiveRecord::Schema.define(version: 2020_07_08_113205) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -385,6 +385,19 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
     t.index ["updated_at"], name: "index_patients_on_updated_at"
   end
 
+  create_table "permissions", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+  end
+
+  create_table "permissions_roles", id: false, force: :cascade do |t|
+    t.bigint "role_id", null: false
+    t.bigint "permission_id", null: false
+    t.index ["permission_id", "role_id"], name: "index_permissions_roles_on_permission_id_and_role_id"
+  end
+
   create_table "phone_number_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "phone_number", null: false
     t.string "password_digest", null: false
@@ -441,6 +454,13 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
     t.index ["deleted_at"], name: "index_protocols_on_deleted_at"
   end
 
+  create_table "roles", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+  end
+
   create_table "twilio_sms_delivery_details", force: :cascade do |t|
     t.string "session_id"
     t.string "result"
@@ -474,6 +494,18 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
     t.index ["resource_type", "resource_id"], name: "index_user_permissions_on_resource_type_and_resource_id"
   end
 
+  create_table "user_resources", force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.uuid "resource_id", null: false
+    t.string "resource_type", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["resource_id"], name: "index_user_resources_on_resource_id"
+    t.index ["resource_type"], name: "index_user_resources_on_resource_type"
+    t.index ["user_id"], name: "index_user_resources_on_user_id"
+  end
+
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "full_name"
     t.string "sync_approval_status", null: false
@@ -483,8 +515,9 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
-    t.string "role"
+    t.string "designation"
     t.uuid "organization_id"
+    t.uuid "role_id"
     t.index "to_tsvector('simple'::regconfig, COALESCE((full_name)::text, ''::text))", name: "index_gin_users_on_full_name", using: :gin
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["organization_id"], name: "index_users_on_organization_id"
