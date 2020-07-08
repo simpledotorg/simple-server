@@ -15,7 +15,7 @@ WITH latest_bp_per_patient_per_month AS (
         cast(EXTRACT(QUARTER FROM blood_pressures.recorded_at at time zone 'utc' at time zone (SELECT current_setting('TIMEZONE'))) as text) AS quarter,
         cast(EXTRACT(YEAR FROM blood_pressures.recorded_at at time zone 'utc' at time zone (SELECT current_setting('TIMEZONE'))) as text) AS year
     FROM blood_pressures JOIN patients ON patients.id = blood_pressures.patient_id
-    LEFT JOIN medical_histories ON patients.id = medical_histories.patient_id
+    LEFT JOIN medical_histories ON medical_histories.patient_id = blood_pressures.patient_id
     WHERE blood_pressures.deleted_at IS NULL
     ORDER BY patient_id, year, month, blood_pressures.recorded_at DESC, bp_id
 )

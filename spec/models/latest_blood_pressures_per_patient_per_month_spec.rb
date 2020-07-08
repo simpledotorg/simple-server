@@ -91,4 +91,47 @@ RSpec.describe LatestBloodPressuresPerPatientPerMonth, type: :model do
       expect(query_results.where(bp_id: bp_7.id).first.responsible_facility_id).to eq(facilities.first.id)
     end
   end
+
+  describe "patient status and medical history fields" do
+    fit "stores and updates patient status" do
+      patient_1 = create(:patient, status: :migrated)
+      patient_2 = create(:patient, status: :dead)
+
+      create(:blood_pressure, patient: patient_1)
+      create(:blood_pressure, patient: patient_2)
+
+      LatestBloodPressuresPerPatientPerMonth.refresh
+
+      bp_per_month_1 = LatestBloodPressuresPerPatientPerMonth.find_by!(patient_id: patient_1.id)
+      expect(bp_per_month_1.patient_status).to eq("migrated")
+      bp_per_month_2 = LatestBloodPressuresPerPatientPerMonth.find_by!(patient_id: patient_2.id)
+      expect(bp_per_month_2.patient_status).to eq("dead")
+
+      patient_1.update!(status: :active)
+
+      LatestBloodPressuresPerPatientPerMonth.refresh
+
+      bp_per_month_1 = LatestBloodPressuresPerPatientPerMonth.find_by!(patient_id: patient_1.id)
+      expect(bp_per_month_1.patient_status).to eq("active")
+    end
+
+    it "stores and updates medical_history_hypertension" do
+      patient_1 = create(:patient)
+      patient_2 = create(:patient, :without_hypertension)
+      patient_3 = create(:patient, :without_medical_history)
+
+      create(:blood_pressure, patient: patient_1)
+      create(:blood_pressure, patient: patient_2)
+      create(:blood_pressure, patient: patient_3)
+
+      LatestBloodPressuresPerPatientPerMonth.refresh
+
+      bp_per_month_1 = LatestBloodPressuresPerPatientPerMonth.find_by!(patient_id: patient_1.id)
+      expect(bp_per_month_1.medical_history_hypertension).to eq("yes")
+      bp_per_month_2 = LatestBloodPressuresPerPatientPerMonth.find_by!(patient_id: patient_2.id)
+      expect(bp_per_month_2.medical_history_hypertension).to eq("no")
+      bp_per_month_3 = LatestBloodPressuresPerPatientPerMonth.find_by!(patient_id: patient_3.id)
+      expect(bp_per_month_3.medical_history_hypertension).to be_nil
+    end
+  end
 end
