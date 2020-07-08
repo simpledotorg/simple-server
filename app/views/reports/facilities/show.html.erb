@@ -49,10 +49,11 @@
         </div>
         <div>
           <h3 class="mb-1 fs-xlarge fw-bold c-green-dark">
-            <%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>
+          <% current_control_rate = number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) || "N/A" %>
+            <%= current_control_rate %>
           </h3>
           <p>
-            <span class="fw-bold"><%= number_with_delimiter(@data[:controlled_patients].values.last) %></span> of <%= number_with_delimiter(@registrations.values.last) %> registered patients
+            <span class="fw-bold"><%= current_control_rate %></span> of <%= number_with_delimiter(@registrations.values.last) %> registered patients
           </p>
         </div>
       </div>
@@ -88,7 +89,7 @@
             <%= number_with_delimiter(@registrations.values.last) || "N/A" %> patients
           </h3>
           <p>
-            <span class="fw-bold"><%= @controlled_patients.values.last %> (<%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>)</span> controlled patients
+            <span class="fw-bold"><%= @controlled_patients.values.last %> (<%= current_control_rate %>)</span> controlled patients
           </p>
         </div>
       </div>
