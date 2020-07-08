@@ -140,7 +140,7 @@ module PatientsExporter
     patient.current_prescription_drugs.flat_map { |drug| [drug.name, drug.dosage] }
   end
 
-  private
+  private_class_method
 
   def self.zone_column
     "Patient #{Address.human_attribute_name :zone}"
