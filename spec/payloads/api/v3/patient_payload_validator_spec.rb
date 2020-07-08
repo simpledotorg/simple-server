@@ -1,12 +1,17 @@
 require "rails_helper"
 
-def new_patient_payload(attrs = {})
-  payload = Api::V3::PatientPayloadValidator.new(build_patient_payload.deep_merge(attrs))
-  payload.validate
-  payload
-end
-
 describe Api::V3::PatientPayloadValidator, type: :model do
+  let!(:facility) { create(:facility) }
+  let!(:user) { create(:user, registration_facility: facility) }
+  let!(:patient) { create(:patient, registration_facility: facility, registration_user: user) }
+
+  def new_patient_payload(attrs = {})
+    attrs = attrs.merge(request_user_id: user.id)
+    payload = Api::V3::PatientPayloadValidator.new(build_patient_payload(patient).deep_merge(attrs))
+    payload.validate
+    payload
+  end
+
   describe "Validations" do
     it "Validates that either age or date of birth is present" do
       expect(new_patient_payload("address" => nil,

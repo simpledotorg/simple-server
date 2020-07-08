@@ -55,27 +55,31 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
         expect(patient_in_db.recorded_at.to_i).to eq(time.to_i)
       end
 
-      it "picks up the registration_facility_id param if its available" do
-        new_registration_facility = create(:facility)
-        patient = FactoryBot.build(:patient, registration_facility: new_registration_facility)
-        patient_payload = build_patient_payload(patient)
+      context "registration_facility_id param is available" do
+        xit "is assigned to the patient" do
+          new_registration_facility = create(:facility)
+          patient = FactoryBot.build(:patient, registration_facility: new_registration_facility)
+          patient_payload = build_patient_payload(patient)
 
-        post :sync_from_user, params: {patients: [patient_payload]}, as: :json
+          post :sync_from_user, params: {patients: [patient_payload]}, as: :json
 
-        expect(response).to have_http_status(200)
-        expect(Patient.first.registration_facility).to eq new_registration_facility
+          expect(response).to have_http_status(200)
+          expect(Patient.first.registration_facility).to eq new_registration_facility
+        end
       end
 
-      it "assigns the registration_facility_id from the headers if the param is missing" do
-        new_registration_facility = create(:facility, facility_group: request_user.facility.facility_group)
-        request.env["HTTP_X_FACILITY_ID"] = new_registration_facility.id
-        patient = FactoryBot.build(:patient)
-        patient_payload = build_patient_payload(patient).except(:registration_facility_id)
+      context "registration_facility_id param is missing" do
+        it "assigns the registration_facility_id from the headers" do
+          new_registration_facility = create(:facility, facility_group: request_user.facility.facility_group)
+          request.env["HTTP_X_FACILITY_ID"] = new_registration_facility.id
+          patient = FactoryBot.build(:patient)
+          patient_payload = build_patient_payload(patient).except(:registration_facility_id)
 
-        post :sync_from_user, params: {patients: [patient_payload]}, as: :json
+          post :sync_from_user, params: {patients: [patient_payload]}, as: :json
 
-        expect(response).to have_http_status(200)
-        expect(Patient.first.registration_facility).to eq new_registration_facility
+          expect(response).to have_http_status(200)
+          expect(Patient.first.registration_facility).to eq new_registration_facility
+        end
       end
 
       context "recorded_at is not sent" do
@@ -129,13 +133,6 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
         expect(response).to have_http_status(200)
         expect(Patient.count).to eq 1
         expect(Patient.first.registration_user).to eq request_user
-      end
-
-      it "associates registration facility with the patients" do
-        post(:sync_from_user, params: {patients: [build_patient_payload.except("phone_numbers")]}, as: :json)
-        expect(response).to have_http_status(200)
-        expect(Patient.count).to eq 1
-        expect(Patient.first.registration_facility).to eq request_facility
       end
     end
 
