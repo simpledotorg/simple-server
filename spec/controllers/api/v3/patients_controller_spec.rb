@@ -164,7 +164,6 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
 
       it "with only updated address" do
         patients_payload = updated_patients_payload.map { |patient| patient.except("phone_numbers") }
-
         post :sync_from_user, params: {patients: patients_payload}, as: :json
 
         patients_payload.each do |updated_patient|
@@ -301,8 +300,8 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
       let(:delete_patient_payload) do
         build_payload.call(existing_patient)
           .merge(deleted_at: deleted_time,
-            updated_at: deleted_time,
-            deleted_reason: "duplicate")
+                 updated_at: deleted_time,
+                 deleted_reason: "duplicate")
       end
 
       it "deletes a patient when the patient payload has the deleted_at field set" do
