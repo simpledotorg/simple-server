@@ -34,12 +34,7 @@ class MergePatientService
       log_update_discarded_patient(merged_patient)
     end
 
-    if merged_patient.deleted_at.present? && existing_patient&.deleted_at.nil?
-      # Patient has been soft-deleted by the client, server should soft-delete the patient and their associated data
-      merged_patient.update(deleted_by_user_id: request_metadata[:request_user_id])
-      merged_patient.discard_data
-    end
-    merged_patient
+    discard_patient_data(merged_patient, existing_patient)
   end
 
   private
@@ -70,7 +65,6 @@ class MergePatientService
     patient_attributes
   end
 
-
   def merge_phone_numbers(phone_number_params, patient)
     return [] unless phone_number_params.present?
     phone_number_params.map do |single_phone_number_params|
@@ -83,6 +77,16 @@ class MergePatientService
     business_identifier_params.map do |single_business_identifier_params|
       PatientBusinessIdentifier.merge(single_business_identifier_params.merge(patient: patient))
     end
+  end
+
+  def discard_patient_data(patient, existing_patient)
+    if patient.deleted_at.present? && existing_patient&.deleted_at.nil?
+      # Patient has been soft-deleted by the client, server should soft-delete the patient and their associated data
+      patient.update(deleted_by_user_id: request_metadata[:request_user_id])
+      patient.discard_data
+    end
+
+    patient
   end
 
   def new_patient_metadata

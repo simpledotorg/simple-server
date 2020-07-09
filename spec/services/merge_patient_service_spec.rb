@@ -2,11 +2,11 @@ require "rails_helper"
 
 RSpec.describe MergePatientService, type: :model do
   describe "#merge" do
-    context "Assigned facility" do
-      let!(:user) { create(:user) }
-      let!(:registration_facility) { user.facility }
-      let!(:metadata) { {request_facility_id: registration_facility.id, request_user_id: user.id} }
+    let!(:user) { create(:user) }
+    let!(:registration_facility) { user.facility }
+    let!(:metadata) { {request_facility_id: registration_facility.id, request_user_id: user.id} }
 
+    context "Assigned facility" do
       it "keeps assigned_facility_id if it is already present" do
         assigned_facility = build(:facility)
         patient_attributes =
@@ -37,19 +37,18 @@ RSpec.describe MergePatientService, type: :model do
       end
     end
 
-    it "should discard_data" do
+    it "should discard_data when deleted_at exists and is not already deleted" do
+      patient = create(:patient)
+      now = Time.current
+      patient_attributes = build_patient_payload(patient).merge(updated_at: now, deleted_at: now)
+      payload = Api::V3::PatientTransformer.from_nested_request(patient_attributes)
+
+      expect_any_instance_of(Patient).to receive(:discard_data)
+      described_class.new(payload, request_metadata: metadata).merge
     end
 
-    it "should not update phone numbers or address for discarded patients" do
-
-    end
-
-    it "sets metadata for a new patient" do
-
-    end
-
-    it "doesn't change metadata for existing patient" do
-
-    end
+    it "should not update phone numbers or address for discarded patients"
+    it "sets metadata for a new patient"
+    it "doesn't change metadata for existing patient"
   end
 end
