@@ -176,11 +176,19 @@
               <div class="split-row mt-lg-1 pt-lg-1">
                 <div class="row px-lg-0">
                   <div class="col-lg-5 nowrap order-lg-1">
-                    <h6>
-                      <%= cohort["registered"] %> patients registered in <%= cohort["patients_registered"] %>
+                    <h6 class="<% unless cohort["registered"] == 0 %>c-black<% else %>c-grey-medium<% end %>">
+                      <% unless cohort["registered"] == 0 %>
+                        <%= cohort["registered"] %> patients registered in <%= cohort["patients_registered"] %>
+                      <% else %>
+                        <span class="fw-bold">No data</span>
+                      <% end %>
                     </h6>
                     <p class="mb-2 fs-small c-grey-medium">
-                      Result from last visit in <%= cohort["results_in"] %>
+                      <% unless cohort["registered"] == 0 %>
+                        Result from last visit in <%= cohort["results_in"] %>
+                      <% else %>
+                        No data available for <%= cohort["results_in"] %>
+                      <% end %>
                     </p>
                   </div>
                   <div class="col-lg-7 order-lg-2">
