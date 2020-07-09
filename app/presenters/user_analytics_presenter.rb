@@ -28,7 +28,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
 
   def monthly_htn_control_rate(month_date)
     display_percentage(monthly_htn_stats_by_date(:controlled_visits, month_date),
-                       monthly_htn_stats_by_date(:follow_ups, month_date))
+      monthly_htn_stats_by_date(:follow_ups, month_date))
   end
 
   def monthly_dm_stats_by_date_and_gender(stat, month_date, gender)
@@ -72,7 +72,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def diabetes_enabled?
-    FeatureToggle.enabled?('DIABETES_SUPPORT_IN_PROGRESS_TAB') && current_facility.diabetes_enabled?
+    FeatureToggle.enabled?("DIABETES_SUPPORT_IN_PROGRESS_TAB") && current_facility.diabetes_enabled?
   end
 
   def daily_period_list
@@ -84,7 +84,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def display_percentage(numerator, denominator)
-    return '0%' if denominator.nil? || denominator.zero? || numerator.nil?
+    return "0%" if denominator.nil? || denominator.zero? || numerator.nil?
     percentage = (numerator * 100.0) / denominator
 
     "#{percentage.round(0)}%"
@@ -96,7 +96,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
 
   def statistics
     @statistics ||=
-      Rails.cache.fetch(statistics_cache_key, expires_in: EXPIRE_STATISTICS_CACHE_IN) do
+      Rails.cache.fetch(statistics_cache_key, expires_in: EXPIRE_STATISTICS_CACHE_IN) {
         {
           daily: daily_stats,
           monthly: monthly_stats,
@@ -109,7 +109,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
             today_string: I18n.t(:today_str)
           }
         }
-      end
+      }
   end
 
   private
@@ -164,16 +164,16 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
     return monthly_htn_stats unless diabetes_enabled?
 
     [monthly_htn_or_dm_stats,
-     monthly_htn_stats,
-     monthly_dm_stats].inject(:deep_merge)
+      monthly_htn_stats,
+      monthly_dm_stats].inject(:deep_merge)
   end
 
   def all_time_stats
     return all_time_htn_stats unless diabetes_enabled?
 
     [all_time_htn_or_dm_stats,
-     all_time_htn_stats,
-     all_time_dm_stats].inject(:deep_merge)
+      all_time_htn_stats,
+      all_time_dm_stats].inject(:deep_merge)
   end
 
   #
@@ -306,7 +306,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
           follow_ups: sum_by_date(follow_ups),
           registrations: sum_by_date(registrations)
         }
-      },
+      }
     }
   end
 
