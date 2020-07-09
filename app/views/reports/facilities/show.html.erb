@@ -349,7 +349,10 @@
   </div>
 <% end %>
 <div class="card o-hidden mt-0 p-0">
-  <%= image_tag("screenshot.png", :class => "mw-100pt") %>
+  <%= image_tag(
+      @region.is_a?(FacilityGroup) ? "screenshot.png" : "facility-screenshot.png",
+      :class => "mw-100pt"
+  )%>
 </div>
 <!-- Dump all reporting data in a hidden div to parse in JS -->
 <%= content_tag :div,
