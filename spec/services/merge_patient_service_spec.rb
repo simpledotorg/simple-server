@@ -58,7 +58,7 @@ RSpec.describe MergePatientService, type: :model do
         build_patient_payload(patient)
           .merge(
             "phone_numbers" => [build_patient_phone_number_payload(updated_phone_numbers)],
-            "address" => updated_address.attributes,
+            "address" => updated_address.attributes.with_payload_keys,
             "business_identifiers" => [build_business_identifier_payload(updated_business_ids)]
           )
 
