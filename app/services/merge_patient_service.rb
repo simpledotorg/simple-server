@@ -2,10 +2,10 @@ class MergePatientService
   def initialize(payload, request_metadata:)
     @payload = payload
     @request_metadata = request_metadata
+    @existing_patient = Patient.with_discarded.find_by(id: payload['id'])
   end
 
   def merge
-    existing_patient = existing_patient(payload['id'])
     merged_address = Address.merge(payload[:address]) if payload[:address].present?
 
     patient_attributes = payload
@@ -25,7 +25,7 @@ class MergePatientService
 
   private
 
-  attr_reader :payload, :request_metadata
+  attr_reader :existing_patient, :payload, :request_metadata
 
   def set_metadata(patient_params)
     new_patient_params = patient_params.merge(new_patient_metadata)
@@ -102,9 +102,6 @@ class MergePatientService
     existing_patient.slice(*new_patient_metadata.keys)
   end
 
-  def existing_patient(id)
-    Patient.with_discarded.find_by(id: id)
-  end
 
   def log_update_discarded_patient(merged_patient)
     NewRelic::Agent.increment_metric('MergePatientService/update_discarded_patient') if merged_patient.discarded?
