@@ -103,6 +103,16 @@ describe Api::V3::PatientPayloadValidator, type: :model do
       end
     end
 
+    describe "Data validations" do
+      it "validates that the request user can access the patient's registration facility" do
+
+      end
+
+      it "validates that the request user can access the patient's assigned facility" do
+
+      end
+    end
+
     context "when schema validations are disabled" do
       before do
         @original_env_var = ENV["ENABLE_SKIP_API_VALIDATION"]
