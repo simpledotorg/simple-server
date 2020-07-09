@@ -5,10 +5,11 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
   let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
 
   let(:model) { Patient }
+  let(:patient_metadata) { {registration_facility_id: request_facility.id, assigned_facility_id: request_facility.id} }
 
-  let(:build_payload) { -> { build_patient_payload } }
+  let(:build_payload) { ->(patient = build(:patient)) { build_patient_payload(patient).merge(patient_metadata) } }
   let(:build_invalid_payload) { -> { build_invalid_patient_payload } }
-  let(:update_payload) { lamda { |record| updated_patient_payload record } }
+  let(:update_payload) { ->(record) { updated_patient_payload record } }
   let(:invalid_record) { build_invalid_payload.call }
 
   let(:number_of_schema_errors_in_invalid_payload) { 2 + invalid_record["phone_numbers"].count }
@@ -37,8 +38,9 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
       end
 
       it "creates new patients" do
-        patients = (1..3).map { build_patient_payload }
+        patients = (1..3).map { build_payload.call }
         post(:sync_from_user, params: {patients: patients}, as: :json)
+
         expect(Patient.count).to eq 3
         expect(Address.count).to eq 3
         expect(PatientPhoneNumber.count).to eq(patients.sum { |patient| patient["phone_numbers"].count })
@@ -48,7 +50,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
       it "sets the recorded_at sent in the params" do
         time = Time.current
         patient = FactoryBot.build(:patient, recorded_at: time)
-        patient_payload = build_patient_payload(patient)
+        patient_payload = build_payload.call(patient)
         post(:sync_from_user, params: {patients: [patient_payload]}, as: :json)
 
         patient_in_db = Patient.find(patient.id)
@@ -59,7 +61,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
         xit "is assigned to the patient" do
           new_registration_facility = create(:facility)
           patient = FactoryBot.build(:patient, registration_facility: new_registration_facility)
-          patient_payload = build_patient_payload(patient)
+          patient_payload = build_payload.call(patient)
 
           post :sync_from_user, params: {patients: [patient_payload]}, as: :json
 
@@ -73,7 +75,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
           new_registration_facility = create(:facility, facility_group: request_user.facility.facility_group)
           request.env["HTTP_X_FACILITY_ID"] = new_registration_facility.id
           patient = FactoryBot.build(:patient)
-          patient_payload = build_patient_payload(patient).except(:registration_facility_id)
+          patient_payload = build_payload.call(patient).except(:registration_facility_id)
 
           post :sync_from_user, params: {patients: [patient_payload]}, as: :json
 
@@ -85,7 +87,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
       context "recorded_at is not sent" do
         it "defaults recorded_at to device_created_at" do
           patient = FactoryBot.build(:patient)
-          patient_payload = build_patient_payload(patient).except("recorded_at")
+          patient_payload = build_payload.call(patient).except("recorded_at")
           post(:sync_from_user, params: {patients: [patient_payload]}, as: :json)
 
           patient_in_db = Patient.find(patient.id)
@@ -99,7 +101,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
             patient_id: patient.id,
             recorded_at: blood_pressure_recorded_at)
 
-          patient_payload = build_patient_payload(patient).except("recorded_at")
+          patient_payload = build_payload.call(patient).except("recorded_at")
           post :sync_from_user, params: {patients: [patient_payload]}, as: :json
 
           patient_in_db = Patient.find(patient.id)
@@ -108,28 +110,28 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
       end
 
       it "creates new patients without address" do
-        post(:sync_from_user, params: {patients: [build_patient_payload.except("address")]}, as: :json)
+        post(:sync_from_user, params: {patients: [build_payload.call.except("address")]}, as: :json)
         expect(Patient.count).to eq 1
         expect(Address.count).to eq 0
         expect(response).to have_http_status(200)
       end
 
       it "creates new patients without phone numbers" do
-        post(:sync_from_user, params: {patients: [build_patient_payload.except("phone_numbers")]}, as: :json)
+        post(:sync_from_user, params: {patients: [build_payload.call.except("phone_numbers")]}, as: :json)
         expect(Patient.count).to eq 1
         expect(PatientPhoneNumber.count).to eq 0
         expect(response).to have_http_status(200)
       end
 
       it "creates new patients without business identifiers" do
-        post(:sync_from_user, params: {patients: [build_patient_payload.except("business_identifiers")]}, as: :json)
+        post(:sync_from_user, params: {patients: [build_payload.call.except("business_identifiers")]}, as: :json)
         expect(Patient.count).to eq 1
         expect(PatientBusinessIdentifier.count).to eq 0
         expect(response).to have_http_status(200)
       end
 
       it "associates registration user with the patients" do
-        post(:sync_from_user, params: {patients: [build_patient_payload.except("phone_numbers")]}, as: :json)
+        post(:sync_from_user, params: {patients: [build_payload.call.except("phone_numbers")]}, as: :json)
         expect(response).to have_http_status(200)
         expect(Patient.count).to eq 1
         expect(Patient.first.registration_user).to eq request_user
@@ -143,8 +145,8 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
         request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
       end
 
-      let(:existing_patients) { FactoryBot.create_list(:patient, 3) }
-      let(:updated_patients_payload) { existing_patients.map { |patient| updated_patient_payload patient } }
+      let(:existing_patients) { FactoryBot.create_list(:patient, 3, patient_metadata) }
+      let(:updated_patients_payload) { existing_patients.map { |patient| updated_patient_payload(patient) } }
 
       it "with only updated patient attributes" do
         patients_payload = updated_patients_payload.map { |patient|
@@ -165,6 +167,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
 
       it "with only updated address" do
         patients_payload = updated_patients_payload.map { |patient| patient.except("phone_numbers") }
+
         post :sync_from_user, params: {patients: patients_payload}, as: :json
 
         patients_payload.each do |updated_patient|
@@ -251,7 +254,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
 
       describe "patient business_identifier" do
         it "disallows missing identifier for bangladesh_national_id" do
-          patients_payload = build_patient_payload(FactoryBot.create(:patient))
+          patients_payload = build_payload.call(FactoryBot.create(:patient))
           business_identifier = build_business_identifier_payload
           business_identifier.delete("identifier")
           payload_without_biz_id = patients_payload.deep_merge("business_identifiers" => [business_identifier])
@@ -299,32 +302,10 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
       let(:existing_patient) { FactoryBot.create(:patient) }
       let(:deleted_time) { Time.current }
       let(:delete_patient_payload) do
-        build_patient_payload(existing_patient)
+        build_payload.call(existing_patient)
           .merge(deleted_at: deleted_time,
-            updated_at: deleted_time,
-            deleted_reason: "duplicate")
-      end
-
-      it "calls #discard_data on a a patient when the patient payload has the deleted_at field set" do
-        patient = instance_double("Patient")
-        phone_number = create(:patient_phone_number, patient: existing_patient)
-        pbi = create(:patient_business_identifier, patient: existing_patient)
-        allow(Patient).to receive_messages(find: patient, merge: patient)
-        allow(PatientPhoneNumber).to receive(:merge).and_return(phone_number)
-        allow(PatientBusinessIdentifier).to receive(:merge).and_return(pbi)
-
-        allow(patient).to receive(:slice)
-                            .with("registration_user_id", "registration_facility_id")
-                            .and_return(existing_patient.slice("registration_user_id",
-                              "registration_facility_id"))
-        allow(patient).to receive_messages(id: existing_patient.id,
-          merge_status: :updated,
-          deleted_at: deleted_time,
-          update: patient,
-          "address=": existing_patient.address)
-
-        expect(patient).to receive(:discard_data)
-        post :sync_from_user, params: {patients: [delete_patient_payload]}, as: :json
+                 updated_at: deleted_time,
+                 deleted_reason: "duplicate")
       end
 
       it "deletes a patient when the patient payload has the deleted_at field set" do
@@ -347,7 +328,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
         existing_patient_name = existing_patient.full_name
 
         existing_patient.discard_data
-        update_payload_for_discarded_patient = build_patient_payload(existing_patient)
+        update_payload_for_discarded_patient = build_payload.call(existing_patient)
                                                  .merge(full_name: "Test Patient Name Xcad7asd")
 
         post :sync_from_user, params: {patients: [update_payload_for_discarded_patient]}, as: :json

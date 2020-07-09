@@ -4,12 +4,8 @@ class MergePatientService
     @request_metadata = request_metadata
   end
 
-  def new_registration_metadata
-    {registration_facility_id: request_metadata[:request_facility_id],
-     registration_user_id: request_metadata[:request_user_id]}
-  end
-
   def merge
+    existing_patient = Patient.with_discarded.find_by(id: payload['id'])
     merged_address = Address.merge(payload[:address]) if payload[:address].present?
 
     patient_attributes = payload
@@ -26,7 +22,6 @@ class MergePatientService
 
     if (merged_address.present? && merged_address.merged?) || merged_phone_numbers.any?(&:merged?) || merged_business_identifiers.any?(&:merged?)
       merged_patient.touch
-
       #
       # This is a rare scenario that might be possible in the future.
       # If the client allows the user to update the patient's address or phone_number,
@@ -39,7 +34,11 @@ class MergePatientService
       log_update_discarded_patient(merged_patient)
     end
 
-    set_deleted_at(merged_patient, patient_attributes)
+    if merged_patient.deleted_at.present? && existing_patient&.deleted_at.nil?
+      # Patient has been soft-deleted by the client, server should soft-delete the patient and their associated data
+      merged_patient.update(deleted_by_user_id: request_metadata[:request_user_id])
+      merged_patient.discard_data
+    end
     merged_patient
   end
 
@@ -48,10 +47,14 @@ class MergePatientService
   attr_reader :request_metadata, :payload
 
   def set_metadata(patient_params)
-    new_patient_params = patient_params.merge(new_registration_metadata)
+    new_patient_params = patient_params.merge(new_patient_metadata)
     merge_status = Patient.compute_merge_status(new_patient_params)
 
-    merge_status == :new ? new_patient_params : patient_params
+    if merge_status == :new
+      new_patient_params
+    else
+      patient_params.merge(existing_patient_metadata(patient_params[:id]))
+    end
   end
 
   def set_patient_address(patient_attributes, address)
@@ -67,15 +70,6 @@ class MergePatientService
     patient_attributes
   end
 
-  def set_deleted_at(patient, patient_attributes)
-    existing_patient = Patient.with_discarded.find_by(id: patient_attributes['id'])
-    if patient.deleted_at.present? && existing_patient&.deleted_at.nil?
-      # Patient has been soft-deleted by the client, server should soft-delete the patient and their associated data
-      # patient_attributes[:registration_user_id] contains the current user's id
-      patient.update(deleted_by_user_id: patient_attributes[:registration_user_id])
-      patient.discard_data
-    end
-  end
 
   def merge_phone_numbers(phone_number_params, patient)
     return [] unless phone_number_params.present?
@@ -89,6 +83,15 @@ class MergePatientService
     business_identifier_params.map do |single_business_identifier_params|
       PatientBusinessIdentifier.merge(single_business_identifier_params.merge(patient: patient))
     end
+  end
+
+  def new_patient_metadata
+    {registration_facility_id: request_metadata[:request_facility_id],
+     registration_user_id: request_metadata[:request_user_id]}
+  end
+
+  def existing_patient_metadata(id)
+    Patient.find(id).slice(*new_patient_metadata.keys)
   end
 
   def log_update_discarded_patient(merged_patient)

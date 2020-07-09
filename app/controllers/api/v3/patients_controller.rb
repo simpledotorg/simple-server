@@ -9,6 +9,10 @@ class Api::V3::PatientsController < Api::V3::SyncController
     end
   end
 
+  def request_metadata
+    {request_user_id: current_user.id, request_facility_id: current_facility.id}
+  end
+
   def current_facility_records
     facility_group_records
       .includes(:address, :phone_numbers, :business_identifiers)
@@ -34,10 +38,6 @@ class Api::V3::PatientsController < Api::V3::SyncController
         end
       end
     end
-  end
-
-  def request_metadata
-    {request_user_id: current_user.id, request_facility_id: current_facility.id}
   end
 
   def merge_if_valid(single_patient_params)

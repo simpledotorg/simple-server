@@ -29,8 +29,8 @@ class Api::V3::PatientPayloadValidator < Api::V3::PayloadValidator
   validate :validate_schema, unless: -> { FeatureToggle.enabled?('SKIP_API_VALIDATION') }
   validate :presence_of_age
   validate :past_date_of_birth
-  # validate :user_can_access_assigned_facility
-  # validate :user_can_access_registration_facility
+  validate :user_can_access_assigned_facility
+  validate :user_can_access_registration_facility
 
   def presence_of_age
     unless date_of_birth.present? || (age.present? && age_updated_at.present?)
