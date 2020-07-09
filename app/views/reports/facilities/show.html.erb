@@ -378,10 +378,12 @@
 <%= content_tag :div,
                 id: "reporting",
                 data: {
+                  control_rate: @data[:controlled_patients_rate],
                   controlled_patients: @controlled_patients,
-                  registrations: @registrations,
-                  quarterly_registrations: @quarterly_registrations
+                  registrations: @registrations
                 },
                 style: "display: none;" do %>
 <% end %>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<!-- <%= @data[:controlled_patients_rate].length %> -->
+<!-- <%= @registrations.length %> -->
