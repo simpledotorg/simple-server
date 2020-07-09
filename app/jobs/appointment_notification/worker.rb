@@ -2,7 +2,7 @@ class AppointmentNotification::Worker
   include Rails.application.routes.url_helpers
   include Sidekiq::Worker
 
-  sidekiq_options queue: 'high'
+  sidekiq_options queue: "high"
 
   DEFAULT_LOCALE = :en
 
@@ -17,10 +17,10 @@ class AppointmentNotification::Worker
     begin
       notification_service = NotificationService.new
 
-      if communication_type == "missed_visit_whatsapp_reminder"
-        response = notification_service.send_whatsapp(patient_phone_number, message, callback_url)
+      response = if communication_type == "missed_visit_whatsapp_reminder"
+        notification_service.send_whatsapp(patient_phone_number, message, callback_url)
       else
-        response = notification_service.send_sms(patient_phone_number, message, callback_url)
+        notification_service.send_sms(patient_phone_number, message, callback_url)
       end
 
       Communication.create_with_twilio_details!(
@@ -46,21 +46,21 @@ class AppointmentNotification::Worker
 
   def report_error(e)
     Raven.capture_message(
-      'Error while processing appointment notifications',
-      logger: 'logger',
+      "Error while processing appointment notifications",
+      logger: "logger",
       extra: {
         exception: e.to_s
       },
       tags: {
-        type: 'appointment-notification-job'
+        type: "appointment-notification-job"
       }
     )
   end
 
   def callback_url
     api_v3_twilio_sms_delivery_url(
-      host: ENV.fetch('SIMPLE_SERVER_HOST'),
-      protocol: ENV.fetch('SIMPLE_SERVER_HOST_PROTOCOL')
+      host: ENV.fetch("SIMPLE_SERVER_HOST"),
+      protocol: ENV.fetch("SIMPLE_SERVER_HOST_PROTOCOL")
     )
   end
 end
