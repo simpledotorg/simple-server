@@ -49,7 +49,7 @@ RSpec.describe MergePatientService, type: :model do
     end
 
     it "if patient associations are updated, updated the patient updated_at" do
-      patient = create(:patient, deleted_at: Time.current)
+      patient = create(:patient)
 
       updated_phone_numbers = build(:patient_phone_number, patient: patient)
       updated_business_ids = build(:patient_business_identifier, patient: patient)
