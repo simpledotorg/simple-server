@@ -12,11 +12,11 @@ module MonthHelper
   end
 
   def month_short_name(month_start)
-    month_start.strftime('%b')
+    month_start.strftime("%b")
   end
 
   def month_short_name_and_year(month_start)
-    month_start.strftime('%b-%Y')
+    month_start.strftime("%b-%Y")
   end
 
   def moy_to_date(year, moy)
