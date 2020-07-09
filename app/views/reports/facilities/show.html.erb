@@ -21,7 +21,8 @@
         Report: <%= @selected_date.to_s(:month_year) %>
       </a>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-        <%= form_tag reports_facility_path(@region), method: :get do %>
+      <% url = @scope == :facility_group ? dashboard_district_path(@region) : reports_facility_path(@region) %>
+        <%= form_tag url, method: :get do %>
           <% last_n_months(n: 12, end_of_month: true).each do |time| %>
             <% selected = (time.year == @selected_date.year && time.month == @selected_date.month) %>
             <button class="dropdown-item query-filter-month <%= 'active' if selected %>"
@@ -54,7 +55,7 @@
           </h3>
           <p class="<% if @data[:controlled_patients_rate].values.last %>c-black<% else %>c-grey-medium<% end %>">
             <% if @data[:controlled_patients_rate].values.last %>
-              <span class="fw-bold"><%= current_control_rate %></span> of <%= number_with_delimiter(@registrations.values.last) %> registered patients
+              <span class="fw-bold"><%= number_with_delimiter(@data[:controlled_patients].values.last) %></span> of <%= number_with_delimiter(@last_registration_value) %> registered patients
             <% else %>
               No control rate data available
             <% end %>
@@ -108,22 +109,22 @@
             Cumulative registrations
           </h3>
           <p class="c-grey-dark">
-            Total number of HTN patient registrations across all facilities
+            Total number of HTN patient registrations in <%= @region.name %>
           </p>
         </div>
         <div>
-          <h3 class="mb-1 fs-xlarge fw-bold <% if @registrations.values.last %>c-purple<% else %>c-grey-medium<% end %>">
-            <% if @registrations.values.last %>
-              <%= number_with_delimiter(@registrations.values.last) %> patients
-            <% else %>
+          <h3 class="mb-1 fs-xlarge fw-bold <% if @last_registration_value.zero? %>c-grey-medium<% else %>c-purple<% end %>">
+            <% if @last_registration_value.zero? %>
               No data
+            <% else %>
+              <%= number_with_delimiter(@last_registration_value) %> patients
             <% end %>
           </h3>
-          <p class="<% if @registrations.values.last %>c-black<% else %>c-grey-medium<% end %>">
-            <% if @registrations.values.last %>
-              <span class="fw-bold"><%= @controlled_patients.values.last %> (<%= current_control_rate %>)</span> controlled patients
-            <% else %>
+          <p class="<% if @last_registration_value.zero? %>c-grey-medium<% else %>c-black<% end %>">
+            <% if @last_registration_value.zero? %>
               No registration data available
+            <% else %>
+              <span class="fw-bold"><%= @controlled_patients.values.last %> (<%= current_control_rate %>)</span> controlled patients
             <% end %>
           </p>
         </div>
@@ -131,7 +132,14 @@
       <div>
         <%
           percent = 1.05
-          max_y_value = ((@registrations.values&.last || 0) * percent).round(-2)
+          max_y_value = case
+          when @last_registration_value >= 100
+            (@last_registration_value * percent).round(-2)
+          when @last_registration_value >= 0
+            (@last_registration_value * percent).round
+          else
+            0
+          end
         %>
         <div class="p-relative">
           <div class="d-flex h-200px">
@@ -172,13 +180,13 @@
             <% end %>
           </div>
           <div class="p-absolute t-0 l-0 pe-none d-flex ai-center jc-center w-100pt h-100pt bb-1px bl-1px bb-grey-medium bl-grey-medium">
-            <% unless @registrations.values.last %>
+            <% if @last_registration_value.zero? %>
               <p class="c-grey-medium">
                 No data available
               </p>
             <% end %>
           </div>
-          <% if @registrations.values.last %>
+          <% if @last_registration_value.nonzero? %>
             <div class="p-absolute t-0 l-0 pe-none d-flex fd-column h-100pt">
               <div class="flex-1 ml-8px">
                 <p class="c-grey-medium">
