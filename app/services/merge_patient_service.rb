@@ -87,7 +87,7 @@ class MergePatientService
       #
       # We can fix this issue, but it requires re-working the merge function, so we'll currently just
       # track the incidence rate, so we can plan for a fix if necessary.
-      log_update_discarded_patient(patient)
+      log_update_discarded_patient if patient.discarded?
     end
 
     patient
@@ -102,8 +102,7 @@ class MergePatientService
     existing_patient.slice(*new_patient_metadata.keys)
   end
 
-
-  def log_update_discarded_patient(merged_patient)
-    NewRelic::Agent.increment_metric('MergePatientService/update_discarded_patient') if merged_patient.discarded?
+  def log_update_discarded_patient
+    NewRelic::Agent.increment_metric('MergePatientService/update_discarded_patient')
   end
 end
