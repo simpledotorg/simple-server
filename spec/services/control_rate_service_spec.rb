@@ -14,6 +14,7 @@ RSpec.describe ControlRateService, type: :model do
   let(:june_30_2020) { Time.parse("June 30, 2020") }
   let(:jan_2019) { Time.parse("January 1st, 2019") }
   let(:jan_2020) { Time.parse("January 1st, 2020") }
+  let(:july_2020) { Time.parse("July 1st, 2020") }
 
   def refresh_views
     ActiveRecord::Base.transaction do
@@ -81,7 +82,6 @@ RSpec.describe ControlRateService, type: :model do
 
     refresh_views
 
-    july_2020 = Time.parse("July 1st, 2020")
     start_range = july_2020.advance(months: -24)
     service = ControlRateService.new(facility_group_1, range: (start_range..july_2020))
     result = service.call
@@ -94,5 +94,37 @@ RSpec.describe ControlRateService, type: :model do
     expect(result[:controlled_patients][june_1_key]).to eq(3)
     expect(result[:registrations][june_1_key]).to eq(9)
     expect(result[:controlled_patients_rate][june_1_key]).to eq(33.3)
+  end
+
+  it "returns control rate for a single facility" do
+    facilities = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1)
+    facility = facilities.first
+
+    controlled, uncontrolled = nil, nil
+    with_options(registration_facility: facility, registration_user: user) do |defaults|
+      controlled = defaults.create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2020)
+      uncontrolled = defaults.create_list(:patient, 4, full_name: "uncontrolled", recorded_at: jan_2020)
+    end
+
+    patient_from_other_facility = create(:patient, full_name: "other facility", recorded_at: 8.months.ago, registration_facility: facilities.last, registration_user: user)
+
+    Timecop.freeze(jan_2020) do
+      controlled.map do |patient|
+        create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago)
+        create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago)
+      end
+      uncontrolled.map { |patient| create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago) }
+      create(:blood_pressure, :under_control, facility: facility, patient: patient_from_other_facility, recorded_at: 2.days.ago)
+    end
+
+    refresh_views
+
+    start_range = july_2020.advance(months: -24)
+    service = ControlRateService.new(facility, range: (start_range..july_2020))
+    result = service.call
+
+    expect(result[:controlled_patients][jan_2020.to_s(:month_year)]).to eq(controlled.size)
+    expect(result[:registrations][jan_2020.to_s(:month_year)]).to eq(6)
+    expect(result[:controlled_patients_rate][jan_2020.to_s(:month_year)]).to eq(33.3)
   end
 end
