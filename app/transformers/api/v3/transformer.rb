@@ -19,8 +19,8 @@ class Api::V3::Transformer
 
     def key_mapping
       {
-        'created_at' => 'device_created_at',
-        'updated_at' => 'device_updated_at'
+        "created_at" => "device_created_at",
+        "updated_at" => "device_updated_at"
       }
     end
 

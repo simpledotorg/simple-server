@@ -8,10 +8,10 @@ class AppointmentNotificationService
     @days_overdue = days_overdue
     @schedule_at = schedule_at
 
-    if FeatureToggle.enabled?("WHATSAPP_APPOINTMENT_REMINDERS")
-      @communication_type = Communication.communication_types[:missed_visit_whatsapp_reminder]
+    @communication_type = if FeatureToggle.enabled?("WHATSAPP_APPOINTMENT_REMINDERS")
+      Communication.communication_types[:missed_visit_whatsapp_reminder]
     else
-      @communication_type = Communication.communication_types[:missed_visit_sms_reminder]
+      Communication.communication_types[:missed_visit_sms_reminder]
     end
   end
 
