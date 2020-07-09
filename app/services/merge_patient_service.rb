@@ -16,24 +16,10 @@ class MergePatientService
 
     merged_patient = Patient.merge(patient_attributes)
     merged_patient.address = merged_address
-
     merged_phone_numbers = merge_phone_numbers(payload[:phone_numbers], merged_patient)
-    merged_business_identifiers = merge_business_identifiers(payload[:business_identifiers], merged_patient)
+    merged_business_ids = merge_business_identifiers(payload[:business_identifiers], merged_patient)
 
-    if (merged_address.present? && merged_address.merged?) || merged_phone_numbers.any?(&:merged?) || merged_business_identifiers.any?(&:merged?)
-      merged_patient.touch
-      #
-      # This is a rare scenario that might be possible in the future.
-      # If the client allows the user to update the patient's address or phone_number,
-      # there might be a case where the address or phone_number for a patient is updated for a discarded patient.
-      #
-      # These updates should not ideally be made at all because they will be invisible to the user.
-      #
-      # We can fix this issue, but it requires re-working the merge function, so we'll currently just
-      # track the incidence rate, so we can plan for a fix if necessary.
-      log_update_discarded_patient(merged_patient)
-    end
-
+    merged_patient = touch_patient(merged_patient, merged_address, merged_phone_numbers, merged_business_ids)
     discard_patient_data(merged_patient, existing_patient)
   end
 
@@ -84,6 +70,24 @@ class MergePatientService
       # Patient has been soft-deleted by the client, server should soft-delete the patient and their associated data
       patient.update(deleted_by_user_id: request_metadata[:request_user_id])
       patient.discard_data
+    end
+
+    patient
+  end
+
+  def touch_patient(patient, address, phone_numbers, business_ids)
+    if (address.present? && address.merged?) || phone_numbers.any?(&:merged?) || business_ids.any?(&:merged?)
+      patient.touch
+      #
+      # This is a rare scenario that might be possible in the future.
+      # If the client allows the user to update the patient's address or phone_number,
+      # there might be a case where the address or phone_number for a patient is updated for a discarded patient.
+      #
+      # These updates should not ideally be made at all because they will be invisible to the user.
+      #
+      # We can fix this issue, but it requires re-working the merge function, so we'll currently just
+      # track the incidence rate, so we can plan for a fix if necessary.
+      log_update_discarded_patient(patient)
     end
 
     patient

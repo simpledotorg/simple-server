@@ -47,8 +47,27 @@ RSpec.describe MergePatientService, type: :model do
       described_class.new(payload, request_metadata: metadata).merge
     end
 
-    it "should not update phone numbers or address for discarded patients"
-    it "sets metadata for a new patient"
-    it "doesn't change metadata for existing patient"
+    it "should not update phone numbers, address or business identifiers for discarded patients"
+
+    it "sets metadata for a new patient" do
+      new_patient_attrs = build_patient_payload
+      payload = Api::V3::PatientTransformer.from_nested_request(new_patient_attrs)
+
+      merged_patient = described_class.new(payload, request_metadata: metadata).merge
+
+      expect(merged_patient.registration_user).to eq(user)
+      expect(merged_patient.registration_facility).to eq(registration_facility)
+    end
+
+    it "doesn't change metadata for existing patient" do
+      existing_patient = create(:patient)
+      existing_patient_attrs = build_patient_payload(existing_patient)
+      payload = Api::V3::PatientTransformer.from_nested_request(existing_patient_attrs)
+
+      merged_patient = described_class.new(payload, request_metadata: metadata).merge
+
+      expect(merged_patient.registration_user).to eq(existing_patient.registration_user)
+      expect(merged_patient.registration_facility).to eq(existing_patient.registration_facility)
+    end
   end
 end
