@@ -3,8 +3,6 @@ class Dashboard::DistrictsController < AdminController
   skip_after_action :verify_policy_scoped
   around_action :set_time_zone
 
-  EXAMPLE_DATA_FILE = "db/data/example_dashboard_data.json"
-
   def index
     authorize(:dashboard, :show?)
 
@@ -20,7 +18,7 @@ class Dashboard::DistrictsController < AdminController
     else
       Date.current.advance(months: -1)
     end
-    @data = DistrictReportService.new(facilities: @district.facilities,
+    @data = DistrictReportService.new(district: @district,
                                       selected_date: @selected_date,
                                       current_user: current_admin).call
     @controlled_patients = @data[:controlled_patients]
@@ -38,6 +36,9 @@ class Dashboard::DistrictsController < AdminController
   def set_time_zone
     time_zone = Rails.application.config.country[:time_zone] || DEFAULT_ANALYTICS_TIME_ZONE
 
+    Groupdate.time_zone = time_zone
+
     Time.use_zone(time_zone) { yield }
+    Groupdate.time_zone = "UTC"
   end
 end

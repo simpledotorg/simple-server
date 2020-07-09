@@ -1,14 +1,18 @@
 require "rails_helper"
 
-describe DistrictReportService, type: :model do
+RSpec.describe DistrictReportService, type: :model do
   let(:organization) { create(:organization, name: "org-1") }
   let(:user) do
     create(:admin, :supervisor, organization: organization).tap do |user|
       user.user_permissions << build(:user_permission, permission_slug: :view_cohort_reports, resource: organization)
     end
   end
-  let(:june_1) { Time.parse("June 1, 2020") }
   let(:facility_group_1) { FactoryBot.create(:facility_group, name: "facility_group_1", organization: organization) }
+
+  let(:jan_2019) { Time.parse("January 1st, 2019") }
+  let(:jan_2020) { Time.parse("January 1st, 2020") }
+  let(:june_1) { Time.parse("June 1st, 2020") }
+  let(:july_2020) { Time.parse("July 1st, 2020") }
 
   def refresh_views
     ActiveRecord::Base.transaction do
@@ -18,7 +22,7 @@ describe DistrictReportService, type: :model do
   end
 
   it "normalizes the selected_date" do
-    service = DistrictReportService.new(facilities: facility_group_1.facilities, selected_date: june_1, current_user: user)
+    service = DistrictReportService.new(district: facility_group_1, selected_date: june_1, current_user: user)
     Timecop.freeze("June 30 2020 5:00 PM EST") do
       expect(service.selected_date).to eq(june_1.end_of_month)
     end
@@ -29,13 +33,11 @@ describe DistrictReportService, type: :model do
     facility = facilities.first
     facility_2 = create(:facility)
 
-    jan_1 = Time.parse("January 1st, 2020")
-
-    controlled_in_jan_and_june = create_list(:patient, 2, full_name: "controlled", recorded_at: Time.current, registration_facility: facility, registration_user: user)
-    controlled_just_for_june = create(:patient, full_name: "just for june", registration_facility: facility, registration_user: user)
+    controlled_in_jan_and_june = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2020, registration_facility: facility, registration_user: user)
+    controlled_just_for_june = create(:patient, full_name: "just for june", recorded_at: june_1, registration_facility: facility, registration_user: user)
     patient_from_other_facility = create(:patient, full_name: "other facility", recorded_at: 8.months.ago, registration_facility: facility_2, registration_user: user)
 
-    Timecop.freeze(jan_1) do
+    Timecop.freeze(jan_2020) do
       controlled_in_jan_and_june.map do |patient|
         create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago)
         create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago)
@@ -60,17 +62,18 @@ describe DistrictReportService, type: :model do
 
     refresh_views
 
-    service = DistrictReportService.new(facilities: facility_group_1.facilities, selected_date: june_1, current_user: user)
-    expect(service.controlled_patients_count(jan_1)).to eq(controlled_in_jan_and_june.size)
+    service = DistrictReportService.new(district: facility_group_1, selected_date: july_2020, current_user: user)
+    result = service.call
+
+    expect(result[:controlled_patients][jan_2020.to_s(:month_year)]).to eq(controlled_in_jan_and_june.size)
     june_controlled = controlled_in_jan_and_june << controlled_just_for_june
-    expect(service.controlled_patients_count(june_1)).to eq(june_controlled.size)
+    expect(result[:controlled_patients][june_1.to_s(:month_year)]).to eq(june_controlled.size)
   end
 
   it "returns counts for last n months for controlled patients and registrations" do
     facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group_1)
     facility = facilities.first
 
-    jan_2019 = Time.parse("January 1st 2019")
     old_patients = create_list(:patient, 2, recorded_at: jan_2019, registration_facility: facility, registration_user: user)
     old_patients.each do |patient|
       create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: jan_2019)
@@ -94,7 +97,7 @@ describe DistrictReportService, type: :model do
 
     refresh_views
 
-    service = DistrictReportService.new(facilities: facility_group_1.facilities, selected_date: june_1, current_user: user)
+    service = DistrictReportService.new(district: facility_group_1, selected_date: june_1, current_user: user)
     result = service.call
 
     expected_controlled_patients = {
@@ -102,7 +105,7 @@ describe DistrictReportService, type: :model do
     }
     expected_controlled_patients.default = 0
     expected_registrations = {
-      "Jan 2020" => 4, "Feb 2020" => 4, "Mar 2020" => 6, "Apr 2020" => 6, "May 2020" => 6, "Jun 2020" => 6
+      "Dec 2018" => 0, "Jan 2020" => 4, "Feb 2020" => 4, "Mar 2020" => 6, "Apr 2020" => 6, "May 2020" => 6, "Jun 2020" => 6
     }
     expected_registrations.default = 2
     expect(result[:controlled_patients].size).to eq(18)
@@ -142,7 +145,7 @@ describe DistrictReportService, type: :model do
 
     refresh_views
 
-    service = DistrictReportService.new(facilities: darrang.facilities, selected_date: june_1, current_user: user)
+    service = DistrictReportService.new(district: darrang, selected_date: june_1, current_user: user)
     result = service.call
     expect(result[:top_district_benchmarks][:controlled_percentage]).to eq(100.0)
     expect(result[:top_district_benchmarks][:district]).to eq(koriya)

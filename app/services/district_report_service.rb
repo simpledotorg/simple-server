@@ -2,10 +2,11 @@ class DistrictReportService
   include SQLHelpers
   MAX_MONTHS_OF_DATA = 24
 
-  def initialize(facilities:, selected_date:, current_user:)
+  def initialize(district:, selected_date:, current_user:)
     @current_user = current_user
     @organizations = Pundit.policy_scope(current_user, [:cohort_report, Organization]).order(:name)
-    @facilities = Array(facilities)
+    @district = district
+    @facilities = district.facilities
     @selected_date = selected_date.end_of_month
     @data = {
       controlled_patients: {},
@@ -18,6 +19,7 @@ class DistrictReportService
 
   attr_reader :current_user
   attr_reader :data
+  attr_reader :district
   attr_reader :facilities
   attr_reader :organizations
   attr_reader :selected_date
@@ -31,15 +33,9 @@ class DistrictReportService
   end
 
   def compile_control_and_registration_data
-    months_of_data = [registration_counts.to_a.size, MAX_MONTHS_OF_DATA].min
-    @data[:cumulative_registrations] = lookup_registration_count(selected_date)
-    (-months_of_data + 1).upto(0).each do |n|
-      time = selected_date.advance(months: n).end_of_month
-      formatted_period = time.to_s(:month_year)
-
-      @data[:controlled_patients][formatted_period] = controlled_patients_count(time)
-      @data[:registrations][formatted_period] = lookup_registration_count(time)
-    end
+    start_range = selected_date.advance(months: -MAX_MONTHS_OF_DATA).to_date
+    result = ControlRateService.new(district, range: (start_range..selected_date.to_date)).call
+    @data.merge! result
   end
 
   # We want to return cohort data for the current quarter for the selected date, and then
@@ -72,55 +68,7 @@ class DistrictReportService
     "#{quarter.year} Q#{quarter.number}"
   end
 
-  def lookup_registration_count(date)
-    lookup_date = date.beginning_of_month.to_date.to_s
-    row = registration_counts.find { |r| r["date"] == lookup_date }
-    return 0 unless row
-    row["running_ct"].to_i
-  end
-
-  def registration_counts
-    where_clause = ActiveRecord::Base.sanitize_sql_array([
-      "registration_facility_id in (?) and medical_histories.hypertension = ?",
-      @facilities, "yes"
-    ])
-
-    @registration_counts ||= Patient.connection.select_all(<<-SQL)
-      WITH cte AS (
-        SELECT date_trunc('month', "recorded_at") AS month, count(*) AS month_ct
-        FROM   patients
-        INNER JOIN medical_histories on patients.id = medical_histories.patient_id
-        WHERE #{where_clause}
-        GROUP  BY 1)
-      SELECT date(m.month), COALESCE(sum(cte.month_ct) OVER (ORDER BY m.month), 0) AS running_ct
-      FROM  (
-          SELECT generate_series(min(month), '#{selected_date}'::timestamp, interval '1 month')
-          FROM   cte
-          ) m(month)
-      LEFT JOIN cte USING (month)
-      ORDER BY 1;
-    SQL
-  end
-
-  def controlled_patients_count(time)
-    ControlledPatientsQuery.call(facilities: facilities, time: time).count
-  end
-
-  def percentage(numerator, denominator)
-    return 0 if denominator == 0
-    (numerator.to_f / denominator) * 100
-  end
-
   def top_district_benchmarks
-    districts_by_rate = organizations.flat_map { |o| o.facility_groups }.each_with_object({}) { |district, hsh|
-      controlled = ControlledPatientsQuery.call(facilities: district.facilities, time: selected_date).count
-      registration_count = Patient.with_hypertension.where(registration_facility: district.facilities).where("recorded_at <= ?", selected_date).count
-      hsh[district] = percentage(controlled, registration_count)
-    }
-    district, percentage = districts_by_rate.max_by { |district, rate| rate }
-    {
-      district: district,
-      controlled_percentage: percentage
-    }
+    TopRegionService.new(organizations, selected_date).call
   end
 end
