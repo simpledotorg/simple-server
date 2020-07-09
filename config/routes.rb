@@ -162,6 +162,10 @@ Rails.application.routes.draw do
     resources :districts do
     end
   end
+  namespace :reports do
+    resources :facilities do
+    end
+  end
 
   namespace :my_facilities do
     root to: "/my_facilities#index", as: "overview"

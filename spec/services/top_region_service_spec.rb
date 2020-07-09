@@ -44,4 +44,51 @@ RSpec.describe TopRegionService, type: :model do
     expect(result[:district]).to eq(koriya)
     expect(result[:controlled_percentage]).to eq(100.0)
   end
+
+  it "gets top facility benchmarks" do
+    darrang = FactoryBot.create(:facility_group, name: "Darrang", organization: organization)
+    darrang_facility_1 = FactoryBot.create(:facility, name: "darrang-1", facility_group: darrang)
+    darrang_facility_2 = FactoryBot.create(:facility, name: "darrang-2", facility_group: darrang)
+    kadapa = FactoryBot.create(:facility_group, name: "Kadapa", organization: organization)
+    kadapa_facility = FactoryBot.create(:facility, name: "kadapa-facility", facility_group: kadapa)
+    other_org_district = FactoryBot.create(:facility_group, name: "other-org-district", organization: create(:organization))
+    other_org_facility = FactoryBot.create(:facility, name: "other-org-facility", facility_group: other_org_district)
+
+    Timecop.freeze("April 15th 2020") do
+      # darrang_facility_1 control rate is 75% control
+      top_facility_patients = create_list(:patient, 4, recorded_at: 1.month.ago, registration_facility: darrang_facility_1, registration_user: user)
+      top_facility_patients.each_with_index do |patient, num|
+        create(:blood_pressure, :hypertensive, facility: darrang_facility_1, patient: patient, recorded_at: 3.days.ago)
+        create(:blood_pressure, :under_control, facility: darrang_facility_1, patient: patient, recorded_at: 2.days.ago)
+        if num == 0
+          create(:blood_pressure, :hypertensive, facility: darrang_facility_1, patient: patient, recorded_at: Time.current)
+        end
+      end
+      # kadapa facility control rate is 33%
+      kadapa_patients = create_list(:patient, 3, recorded_at: 1.month.ago, registration_facility: kadapa_facility, registration_user: user)
+      kadapa_patients.each_with_index do |patient, num|
+        create(:blood_pressure, :hypertensive, facility: kadapa_facility, patient: patient, recorded_at: 1.day.ago)
+        if num == 0
+          create(:blood_pressure, :under_control, facility: kadapa_facility, patient: patient, recorded_at: Time.current)
+        end
+      end
+      # darrang_facility_2 control rate is 0%
+      other_darrang_patients = create_list(:patient, 2, recorded_at: 1.month.ago, registration_facility: darrang_facility_2, registration_user: user)
+      other_darrang_patients.each do |patient|
+        create(:blood_pressure, :hypertensive, facility: darrang_facility_2, patient: patient, recorded_at: Time.current)
+      end
+      # other org control rate is 100%, but in a different org that is not included in benchmark
+      other_org_patients = create_list(:patient, 2, recorded_at: 1.month.ago, registration_facility: other_org_facility, registration_user: user)
+      other_org_patients.each do |patient|
+        create(:blood_pressure, :under_control, facility: other_org_facility, patient: patient, recorded_at: Time.current)
+      end
+    end
+
+    refresh_views
+
+    service = TopRegionService.new([organization], june_1.end_of_month, scope: :facility)
+    result = service.call
+    expect(result[:controlled_percentage]).to eq(75.0)
+    expect(result[:region]).to eq(darrang_facility_1)
+  end
 end

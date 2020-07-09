@@ -4,12 +4,16 @@
 <div class="dashboard">
   <nav class="breadcrumb">
     <%= link_to 'All reports', dashboard_districts_path %>
+    <% if @region.respond_to?(:facility_group) %>
+      <i class="fas fa-chevron-right"></i>
+      <%= link_to @region.facility_group.name, dashboard_district_path(@region.facility_group) %>
+    <% end %>
     <i class="fas fa-chevron-right"></i>
-    <%= @district.name %>
+    <%= @region.name %>
   </nav>
   <div class="d-flex ai-center jc-between mb-3">
     <h1>
-      <%= @district.name %>
+      <%= @region.name %>
     </h1>
     <div class="dropdown show">
       <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
@@ -17,7 +21,7 @@
         Report: <%= @selected_date.to_s(:month_year) %>
       </a>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-        <%= form_tag dashboard_district_path(@district), method: :get do %>
+        <%= form_tag reports_facility_path(@region), method: :get do %>
           <% last_n_months(n: 12, end_of_month: true).each do |time| %>
             <% selected = (time.year == @selected_date.year && time.month == @selected_date.month) %>
             <button class="dropdown-item query-filter-month <%= 'active' if selected %>"
@@ -44,17 +48,45 @@
           </p>
         </div>
         <div>
-          <h3 class="mb-1 fs-xlarge fw-bold c-green-dark">
-            <%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>
+          <h3 class="mb-1 fs-xlarge fw-bold <% if @data[:controlled_patients_rate].values.last %>c-green-dark<% else %>c-grey-medium<% end %>">
+            <% current_control_rate = number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) || "No data" %>
+            <%= current_control_rate %>
           </h3>
-          <p>
-            <span class="fw-bold"><%= number_with_delimiter(@data[:controlled_patients].values.last) %></span> of <%= number_with_delimiter(@registrations.values.last) %> registered patients
+          <p class="<% if @data[:controlled_patients_rate].values.last %>c-black<% else %>c-grey-medium<% end %>">
+            <% if @data[:controlled_patients_rate].values.last %>
+              <span class="fw-bold"><%= current_control_rate %></span> of <%= number_with_delimiter(@registrations.values.last) %> registered patients
+            <% else %>
+              No control rate data available
+            <% end %>
           </p>
         </div>
       </div>
       <div>
-        <div class="h-200px">
-          <canvas id="controlledPatientsTrend"></canvas>
+        <div class="p-relative">
+          <div class="h-200px">
+            <canvas id="controlledPatientsTrend"></canvas>
+          </div>
+          <div class="p-absolute t-0 l-0 pe-none d-flex ai-center jc-center w-100pt h-100pt bb-1px bl-1px bb-grey-medium bl-grey-medium">
+            <% unless @data[:controlled_patients_rate].values.last %>
+              <p class="c-grey-medium">
+                No data available
+              </p>
+            <% end %>
+          </div>
+          <% if @data[:controlled_patients_rate].values.last %>
+            <div class="p-absolute t-0 l-0 pe-none d-flex fd-column h-100pt">
+              <div class="flex-1 ml-8px">
+                <p class="c-grey-medium">
+                  60%
+                </p>
+              </div>
+              <div class="flex-1 ml-8px">
+                <p class="c-grey-medium">
+                  30%
+                </p>
+              </div>
+            </div>
+          <% end %>
         </div>
         <div class="d-flex justify-content-between mt-2">
           <p class="mb-0">
@@ -80,53 +112,84 @@
           </p>
         </div>
         <div>
-          <h3 class="mb-1 fs-xlarge fw-bold c-purple">
-            <%= number_with_delimiter(@registrations.values.last) || "N/A" %> patients
+          <h3 class="mb-1 fs-xlarge fw-bold <% if @registrations.values.last %>c-purple<% else %>c-grey-medium<% end %>">
+            <% if @registrations.values.last %>
+              <%= number_with_delimiter(@registrations.values.last) %> patients
+            <% else %>
+              No data
+            <% end %>
           </h3>
-          <p>
-            <span class="fw-bold"><%= @controlled_patients.values.last %> (<%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>)</span> controlled patients
+          <p class="<% if @registrations.values.last %>c-black<% else %>c-grey-medium<% end %>">
+            <% if @registrations.values.last %>
+              <span class="fw-bold"><%= @controlled_patients.values.last %> (<%= current_control_rate %>)</span> controlled patients
+            <% else %>
+              No registration data available
+            <% end %>
           </p>
         </div>
       </div>
       <div>
         <%
           percent = 1.05
-          max_y_value = ((@registrations.values&.last || 0) * percent).round
+          max_y_value = ((@registrations.values&.last || 0) * percent).round(-2)
         %>
-        <div class="d-flex h-200px">
-          <% @registrations.each_with_index do |registrations, index| %>
-            <%
-              total_registrations = registrations[1]
-              registration_percent = compute_percentage(registrations[1], max_y_value)
-            %>
-            <div class="d-flex flex-1 fd-column jc-flex-end px-1px">
-              <% if total_registrations > 0 %>
-                <table class="split-bars" style="height: <%= registration_percent %>;">
-                  <tr style="height: <%= registration_percent %>">
-                    <td
-                      class="bt-2px bt-purple-dark bg-purple-light"
-                      data-toggle="tooltip"
-                      data-placement="top"
-                      data-trigger="hover focus click"
-                      title="<%= number_with_delimiter(registrations[1]) %> patients in <%= registrations[0] %>"
-                    >
-                    </td>
-                  </tr>
-                </table>
-              <% else %>
-                <table class="split-bars h-10pt">
-                  <tr class="h-100pt">
-                    <td
-                      class="bt-2px bt-grey-medium bg-grey-light"
-                      data-toggle="tooltip"
-                      data-placement="top"
-                      data-trigger="hover focus click"
-                      title="No registration data available"
-                    >
-                    </td>
-                  </tr>
-                </table>
-              <% end %>
+        <div class="p-relative">
+          <div class="d-flex h-200px">
+            <% @registrations.each_with_index do |registrations, index| %>
+              <%
+                total_registrations = registrations[1]
+                registration_percent = compute_percentage(registrations[1], max_y_value)
+              %>
+              <div class="d-flex flex-1 fd-column jc-flex-end px-1px">
+                <% if total_registrations > 0 %>
+                  <table class="split-bars" style="height: <%= registration_percent %>;">
+                    <tr style="height: <%= registration_percent %>">
+                      <td
+                        class="bt-2px bt-purple-dark bg-purple-light"
+                        data-toggle="tooltip"
+                        data-placement="top"
+                        data-trigger="hover focus click"
+                        title="<%= number_with_delimiter(registrations[1]) %> patients in <%= registrations[0] %>"
+                      >
+                      </td>
+                    </tr>
+                  </table>
+                <% else %>
+                  <table class="split-bars h-10pt">
+                    <tr class="h-100pt">
+                      <td
+                        class="bt-2px bt-grey-medium bg-grey-light"
+                        data-toggle="tooltip"
+                        data-placement="top"
+                        data-trigger="hover focus click"
+                        title="No registration data available"
+                      >
+                      </td>
+                    </tr>
+                  </table>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+          <div class="p-absolute t-0 l-0 pe-none d-flex ai-center jc-center w-100pt h-100pt bb-1px bl-1px bb-grey-medium bl-grey-medium">
+            <% unless @registrations.values.last %>
+              <p class="c-grey-medium">
+                No data available
+              </p>
+            <% end %>
+          </div>
+          <% if @registrations.values.last %>
+            <div class="p-absolute t-0 l-0 pe-none d-flex fd-column h-100pt">
+              <div class="flex-1 ml-8px">
+                <p class="c-grey-medium">
+                  <%= number_with_delimiter(max_y_value) %>
+                </p>
+              </div>
+              <div class="flex-1 ml-8px">
+                <p class="c-grey-medium">
+                  <%= number_with_delimiter((max_y_value/2).to_i) %>
+                </p>
+              </div>
             </div>
           <% end %>
         </div>
@@ -159,11 +222,19 @@
               <div class="split-row mt-lg-1 pt-lg-1">
                 <div class="row px-lg-0">
                   <div class="col-lg-5 nowrap order-lg-1">
-                    <h6>
-                      <%= cohort["registered"] %> patients registered in <%= cohort["patients_registered"] %>
+                    <h6 class="<% unless cohort["registered"] == 0 %>c-black<% else %>c-grey-medium<% end %>">
+                      <% unless cohort["registered"] == 0 %>
+                        <%= cohort["registered"] %> patients registered in <%= cohort["patients_registered"] %>
+                      <% else %>
+                        <span class="fw-bold">No data</span>
+                      <% end %>
                     </h6>
                     <p class="mb-2 fs-small c-grey-medium">
-                      Result from last visit in <%= cohort["results_in"] %>
+                      <% unless cohort["registered"] == 0 %>
+                        Result from last visit in <%= cohort["results_in"] %>
+                      <% else %>
+                        No data available for <%= cohort["results_in"] %>
+                      <% end %>
                     </p>
                   </div>
                   <div class="col-lg-7 order-lg-2">
@@ -252,12 +323,12 @@
           <div class="d-none d-lg-block flex-lg-1 align-lg-center justify-lg-center">
             <p class="ta-lg-center mb-lg-0 fw-lg-bold tt-lg-uppercase ls-lg-145 c-lg-grey-dark">
             <!-- <%= @top_district_benchmarks[:district].name %> -->
-              Top district
+              Top <%= @scope == :facility_group ? "District" : "Facility" %>
             </p>
           </div>
           <div class="d-none d-lg-block flex-lg-1 align-lg-center justify-lg-center">
             <p class="ta-lg-center mb-lg-0 fw-lg-bold tt-lg-uppercase ls-lg-145 c-lg-grey-dark">
-              <%= @district.name %>
+              <%= @region.name %>
             </p>
           </div>
           <div class="d-none d-lg-block flex-lg-1 align-lg-center justify-lg-center">
@@ -275,7 +346,7 @@
           <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
               <span class="fw-bold d-lg-none">
-                Top District:
+                Top <%= @scope == :facility_group ? "District" : "Facility" %>
               </span>
               <span>
                 <%= number_to_percentage(
@@ -288,7 +359,7 @@
           <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
               <span class="fw-bold d-lg-none">
-                <%= @district.name %>:
+                <%= @region.name %>:
               </span>
               <span>
                 <%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>
@@ -330,16 +401,32 @@
     </div>
   </div>
 </div>
+<% if @region.is_a?(FacilityGroup) %>
+  <div class="card">
+    <h2>
+      Facilities
+    </h2>
+    <% @region.facilities.order(:name).each do |facility| %>
+      <%= link_to(reports_facility_path(facility.friendly_id), class: "link-row") do %>
+        <i class='fas fa-angle-right light'></i>
+        <%= facility.name %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>
 <div class="card o-hidden mt-0 p-0">
-  <%= image_tag("screenshot.png", :class => "mw-100pt") %>
+  <%= image_tag(
+      @region.is_a?(FacilityGroup) ? "screenshot.png" : "facility-screenshot.png",
+      :class => "mw-100pt"
+  )%>
 </div>
 <!-- Dump all reporting data in a hidden div to parse in JS -->
 <%= content_tag :div,
                 id: "reporting",
                 data: {
+                  control_rate: @data[:controlled_patients_rate],
                   controlled_patients: @controlled_patients,
-                  registrations: @registrations,
-                  quarterly_registrations: @quarterly_registrations
+                  registrations: @registrations
                 },
                 style: "display: none;" do %>
 <% end %>
