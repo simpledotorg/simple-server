@@ -5,7 +5,7 @@ class MergePatientService
   end
 
   def merge
-    existing_patient = Patient.with_discarded.find_by(id: payload['id'])
+    existing_patient = existing_patient(payload['id'])
     merged_address = Address.merge(payload[:address]) if payload[:address].present?
 
     patient_attributes = payload
@@ -25,7 +25,7 @@ class MergePatientService
 
   private
 
-  attr_reader :request_metadata, :payload
+  attr_reader :payload, :request_metadata
 
   def set_metadata(patient_params)
     new_patient_params = patient_params.merge(new_patient_metadata)
@@ -34,7 +34,7 @@ class MergePatientService
     if merge_status == :new
       new_patient_params
     else
-      patient_params.merge(existing_patient_metadata(patient_params[:id]))
+      patient_params.merge(existing_patient_metadata)
     end
   end
 
@@ -95,11 +95,15 @@ class MergePatientService
 
   def new_patient_metadata
     {registration_facility_id: request_metadata[:request_facility_id],
-     registration_user_id: request_metadata[:request_user_id]}
+      registration_user_id: request_metadata[:request_user_id]}
   end
 
-  def existing_patient_metadata(id)
-    Patient.find(id).slice(*new_patient_metadata.keys)
+  def existing_patient_metadata
+    existing_patient.slice(*new_patient_metadata.keys)
+  end
+
+  def existing_patient(id)
+    Patient.with_discarded.find_by(id: id)
   end
 
   def log_update_discarded_patient(merged_patient)

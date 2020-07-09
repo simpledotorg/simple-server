@@ -40,6 +40,7 @@ RSpec.describe MergePatientService, type: :model do
     it "should discard_data when deleted_at exists and is not already deleted" do
       patient = create(:patient)
       now = Time.current
+      # set the updated_at so that it is treated as an update
       patient_attributes = build_patient_payload(patient).merge(updated_at: now, deleted_at: now)
       payload = Api::V3::PatientTransformer.from_nested_request(patient_attributes)
 
@@ -47,7 +48,28 @@ RSpec.describe MergePatientService, type: :model do
       described_class.new(payload, request_metadata: metadata).merge
     end
 
-    it "should not update phone numbers, address or business identifiers for discarded patients"
+    it "if patient associations are updated, updated the patient updated_at" do
+      patient = create(:patient, deleted_at: Time.current)
+
+      updated_phone_numbers = build(:patient_phone_number, patient: patient)
+      updated_business_ids = build(:patient_business_identifier, patient: patient)
+      updated_address = build(:address)
+      updated_attributes =
+        build_patient_payload(patient)
+          .merge(
+            "phone_numbers" => [build_patient_phone_number_payload(updated_phone_numbers)],
+            "address" => updated_address.attributes,
+            "business_identifiers" => [build_business_identifier_payload(updated_business_ids)]
+          )
+
+      payload = Api::V3::PatientTransformer.from_nested_request(updated_attributes)
+      described_class.new(payload, request_metadata: metadata).merge
+
+      expect {
+        described_class.new(payload, request_metadata: metadata).merge
+        patient.reload
+      }.to change { patient.updated_at }
+    end
 
     it "sets metadata for a new patient" do
       new_patient_attrs = build_patient_payload

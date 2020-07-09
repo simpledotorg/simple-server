@@ -3,15 +3,12 @@ require "rails_helper"
 RSpec.describe Api::V3::PatientsController, type: :controller do
   let(:request_user) { FactoryBot.create(:user) }
   let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
-
   let(:model) { Patient }
   let(:patient_metadata) { {registration_facility_id: request_facility.id, assigned_facility_id: request_facility.id} }
-
   let(:build_payload) { ->(patient = build(:patient)) { build_patient_payload(patient).merge(patient_metadata) } }
   let(:build_invalid_payload) { -> { build_invalid_patient_payload } }
   let(:update_payload) { ->(record) { updated_patient_payload record } }
   let(:invalid_record) { build_invalid_payload.call }
-
   let(:number_of_schema_errors_in_invalid_payload) { 2 + invalid_record["phone_numbers"].count }
 
   def create_record(options = {})
@@ -304,8 +301,8 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
       let(:delete_patient_payload) do
         build_payload.call(existing_patient)
           .merge(deleted_at: deleted_time,
-                 updated_at: deleted_time,
-                 deleted_reason: "duplicate")
+            updated_at: deleted_time,
+            deleted_reason: "duplicate")
       end
 
       it "deletes a patient when the patient payload has the deleted_at field set" do
@@ -328,8 +325,9 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
         existing_patient_name = existing_patient.full_name
 
         existing_patient.discard_data
-        update_payload_for_discarded_patient = build_payload.call(existing_patient)
-                                                 .merge(full_name: "Test Patient Name Xcad7asd")
+
+        update_payload_for_discarded_patient =
+          build_payload.call(existing_patient).merge(full_name: "Test Patient Name Xcad7asd")
 
         post :sync_from_user, params: {patients: [update_payload_for_discarded_patient]}, as: :json
 
