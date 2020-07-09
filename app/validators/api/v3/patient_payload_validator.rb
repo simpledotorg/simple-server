@@ -11,7 +11,6 @@ class Api::V3::PatientPayloadValidator < Api::V3::PayloadValidator
     :updated_at,
     :recorded_at,
     :deleted_at,
-    :recorded_at,
     :address,
     :phone_numbers,
     :registration_facility_id,
@@ -34,7 +33,7 @@ class Api::V3::PatientPayloadValidator < Api::V3::PayloadValidator
 
   def presence_of_age
     unless date_of_birth.present? || (age.present? && age_updated_at.present?)
-      errors.add(:age, 'Either date_of_birth or age and age_updated_at should be present')
+      errors.add(:age, "Either date_of_birth or age and age_updated_at should be present")
     end
   end
 

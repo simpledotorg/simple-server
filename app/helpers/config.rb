@@ -7,11 +7,9 @@ module Config
 
   def self.ensure_required_keys_have_fallbacks(required_keys: {})
     required_keys.each do |key, fallback|
-      begin
-        ENV.fetch(key)
-      rescue KeyError
-        ENV.fetch(fallback)
-      end
+      ENV.fetch(key)
+    rescue KeyError
+      ENV.fetch(fallback)
     end
   end
 

@@ -7,7 +7,7 @@ class Api::V3::EncounterPayloadValidator < Api::V3::PayloadValidator
     :deleted_at,
     :notes,
     :encountered_on,
-    :observations,
+    :observations
   )
 
   validate :validate_schema

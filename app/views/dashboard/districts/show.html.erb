@@ -45,13 +45,10 @@
         </div>
         <div>
           <h3 class="mb-1 fs-xlarge fw-bold c-green-dark">
-            <%= compute_percentage(
-              @controlled_patients.values.last.to_f,
-              @registrations.values.last.to_f, precision: 0
-            ) %>
+            <%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>
           </h3>
           <p>
-            <span class="fw-bold"><%= number_with_delimiter(@controlled_patients.values.last) %></span> of <%= number_with_delimiter(@registrations.values.last) %> registered patients
+            <span class="fw-bold"><%= number_with_delimiter(@data[:controlled_patients].values.last) %></span> of <%= number_with_delimiter(@registrations.values.last) %> registered patients
           </p>
         </div>
       </div>
@@ -87,7 +84,7 @@
             <%= number_with_delimiter(@registrations.values.last) || "N/A" %> patients
           </h3>
           <p>
-            <span class="fw-bold"><%= @controlled_patients.values.last %> (<%= compute_percentage(@controlled_patients.values.last, @registrations.values.last, precision: 0) %>)</span> controlled patients
+            <span class="fw-bold"><%= @controlled_patients.values.last %> (<%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>)</span> controlled patients
           </p>
         </div>
       </div>
@@ -294,8 +291,7 @@
                 <%= @district.name %>:
               </span>
               <span>
-                <% control_rate = compute_percentage(@controlled_patients.values.last.to_f, @registrations.values.last.to_f) %>
-                <%= control_rate %>
+                <%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>
               </span>
             </p>
           </div>
@@ -304,7 +300,7 @@
               <span class="fw-bold d-lg-none">
                 Difference:
               </span>
-              <% controlled_percentage = (control_rate.to_f - @top_district_benchmarks[:controlled_percentage]).round %>
+              <% controlled_percentage = (@data[:controlled_patients_rate].values.last.to_f - @top_district_benchmarks[:controlled_percentage]).round %>
               <span class="<%= controlled_percentage > 0 ? "c-green-dark" : "c-red" %>">
                 <%= controlled_percentage > 0 ? "+" : "" %><%= controlled_percentage %>%
               </span>
