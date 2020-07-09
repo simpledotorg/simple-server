@@ -20,9 +20,8 @@ module TelemedicineReports
       }
     end
 
-    def generate_report(mixpanel_data, p1_start, p1_end, p2_start, p2_end)
-      p1_mixpanel_data = format_mixpanel_data(mixpanel_data.select { |row| (row[:date] >= p1_start) && (row[:date] <= p1_end) })
-      p2_mixpanel_data = format_mixpanel_data(mixpanel_data.select { |row| (row[:date] >= p2_start) && (row[:date] <= p2_end) })
+    def generate_report(mixpanel_data, period_start, period_end)
+      period_mixpanel_data = format_mixpanel_data(mixpanel_data.select { |row| (row[:date] >= period_start) && (row[:date] <= period_end) })
 
       facilities = Facility.where(enable_teleconsultation: true).map { |facility|
         if (facility.facility_type == "HWC" || facility.facility_type == "SC")
@@ -31,8 +30,7 @@ module TelemedicineReports
             state: facility.state,
             district: facility.district,
             type: facility.facility_type,
-            p1: facility_measures(facility, p1_start, p1_end),
-            p2: facility_measures(facility, p2_start, p2_end),
+            period: facility_measures(facility, period_start, period_end),
             users: facility.users.count }
         else
           { id: facility.id,
@@ -45,7 +43,7 @@ module TelemedicineReports
 
       facilities_data = format_facility_data(facilities)
 
-      CSV.open("telemedicine_report_#{p1_start.strftime("%d_%b")}_to_#{p2_end.strftime("%d_%b")}.csv", "w") do |csv|
+      CSV.open("telemedicine_report_#{period_start.strftime("%d_%b")}_to_#{period_end.strftime("%d_%b")}.csv", "w") do |csv|
         csv << [
           "",
           "",
@@ -54,14 +52,7 @@ module TelemedicineReports
           "",
           "",
           "",
-          "Between #{p1_start.strftime("%d %b %Y")} and #{p1_end.strftime("%d %b %Y")}",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "Between #{p2_start.strftime("%d %b %Y")} and #{p2_end.strftime("%d %b %Y")}",
+          "Between #{period_start.strftime("%d %b %Y")} and #{period_end.strftime("%d %b %Y")}",
           "",
           "",
           "",
@@ -82,19 +73,11 @@ module TelemedicineReports
           "Patients with High Blood Sugar",
           "Patients with High BP or Sugar",
           "Teleconsult Button Clicks",
-          "Teleconsult requests percentage",
-          "",
-          "Patients who visited",
-          "Patients with High BP",
-          "Patients with High Blood Sugar",
-          "Patients with High BP or Sugar",
-          "Teleconsult Button Clicks",
           "Teleconsult requests percentage"
         ]
 
         facilities_data.each do |state|
-          p1_clicks = fetch_clicks(p1_mixpanel_data, state, true)
-          p2_clicks = fetch_clicks(p2_mixpanel_data, state, true)
+          period_clicks = fetch_clicks(period_mixpanel_data, state, true)
           csv << [
             state[:state],
             "",
@@ -103,24 +86,16 @@ module TelemedicineReports
             state[:hwc_and_sc],
             state[:users],
             "",
-            state[:p1][:visits],
-            state[:p1][:high_bp],
-            state[:p1][:high_bs],
-            state[:p1][:high_bp_or_bs],
-            p1_clicks,
-            percentage(p1_clicks, state[:p1][:high_bp_or_bs]),
-            "",
-            state[:p2][:visits],
-            state[:p2][:high_bp],
-            state[:p2][:high_bs],
-            state[:p2][:high_bp_or_bs],
-            p2_clicks,
-            percentage(p2_clicks, state[:p2][:high_bp_or_bs])
+            state[:period][:visits],
+            state[:period][:high_bp],
+            state[:period][:high_bs],
+            state[:period][:high_bp_or_bs],
+            period_clicks,
+            percentage(period_clicks, state[:period][:high_bp_or_bs]),
           ]
 
           state[:districts].each do |district|
-            p1_clicks = fetch_clicks(p1_mixpanel_data, district, false)
-            p2_clicks = fetch_clicks(p2_mixpanel_data, district, false)
+            period_clicks = fetch_clicks(period_mixpanel_data, district, false)
             csv << [
               "",
               district[:district],
@@ -129,19 +104,12 @@ module TelemedicineReports
               district[:hwc_and_sc],
               district[:users],
               "",
-              district[:p1][:visits],
-              district[:p1][:high_bp],
-              district[:p1][:high_bs],
-              district[:p1][:high_bp_or_bs],
-              p1_clicks,
-              percentage(p1_clicks, district[:p1][:high_bp_or_bs]),
-              "",
-              district[:p2][:visits],
-              district[:p2][:high_bp],
-              district[:p2][:high_bs],
-              district[:p2][:high_bp_or_bs],
-              p2_clicks,
-              percentage(p2_clicks, district[:p2][:high_bp_or_bs])
+              district[:period][:visits],
+              district[:period][:high_bp],
+              district[:period][:high_bs],
+              district[:period][:high_bp_or_bs],
+              period_clicks,
+              percentage(period_clicks, district[:period][:high_bp_or_bs]),
             ]
 
             district[:facilities].each do |facility|
@@ -153,17 +121,10 @@ module TelemedicineReports
                 "",
                 facility[:users],
                 "",
-                facility[:p1][:visits],
-                facility[:p1][:high_bp],
-                facility[:p1][:high_bs],
-                facility[:p1][:high_bp_or_bs],
-                "",
-                "",
-                "",
-                facility[:p2][:visits],
-                facility[:p2][:high_bp],
-                facility[:p2][:high_bs],
-                facility[:p2][:high_bp_or_bs],
+                facility[:period][:visits],
+                facility[:period][:high_bp],
+                facility[:period][:high_bs],
+                facility[:period][:high_bp_or_bs],
                 "",
                 ""
               ]
@@ -203,16 +164,14 @@ module TelemedicineReports
         { state: state,
           count: districts.count,
           hwc_and_sc: hwc_and_sc_count(districts),
-          p1: aggregate_period(:p1, districts),
-          p2: aggregate_period(:p2, districts),
+          period: aggregate_period(:period, districts),
           users: sum_rows(districts, :users),
           districts: districts.group_by { |row| row[:district] }.map { |district, facilities|
             { district: district,
               state: state,
               count: facilities.count,
               hwc_and_sc: hwc_and_sc_count(facilities),
-              p1: aggregate_period(:p1, facilities),
-              p2: aggregate_period(:p2, facilities),
+              period: aggregate_period(:period, facilities),
               users: sum_rows(facilities, :users),
               facilities: facilities.select { |facility| %w[HWC SC].include? facility[:type] }.sort_by { |facility| facility[:name] } }
           }.sort_by { |district| district[:district] } }
