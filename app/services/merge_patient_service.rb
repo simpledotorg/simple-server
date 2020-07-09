@@ -10,17 +10,19 @@ class MergePatientService
 
     patient_attributes = payload
                            .except(:address, :phone_numbers, :business_identifiers)
-                           .yield_self { |attrs| set_patient_address(attrs, merged_address) }
-                           .yield_self { |attrs| set_metadata(attrs) }
-                           .yield_self { |attrs| set_assigned_facility(attrs) }
+                           .yield_self { |params| set_metadata(params) }
+                           .yield_self { |params| set_address_id(params, merged_address) }
+                           .yield_self { |params| set_assigned_facility(params) }
 
     merged_patient = Patient.merge(patient_attributes)
     merged_patient.address = merged_address
     merged_phone_numbers = merge_phone_numbers(payload[:phone_numbers], merged_patient)
     merged_business_ids = merge_business_identifiers(payload[:business_identifiers], merged_patient)
 
-    merged_patient = touch_patient(merged_patient, merged_address, merged_phone_numbers, merged_business_ids)
-    discard_patient_data(merged_patient, existing_patient)
+    touch_patient(merged_patient, merged_address, merged_phone_numbers, merged_business_ids)
+    discard_patient_data(merged_patient)
+
+    merged_patient
   end
 
   private
@@ -31,24 +33,20 @@ class MergePatientService
     new_patient_params = patient_params.merge(new_patient_metadata)
     merge_status = Patient.compute_merge_status(new_patient_params)
 
-    if merge_status == :new
-      new_patient_params
-    else
-      patient_params.merge(existing_patient_metadata)
-    end
+    merge_status == :new ? new_patient_params : with_existing_metadata(patient_params)
   end
 
-  def set_patient_address(patient_attributes, address)
-    patient_attributes["address_id"] = address.id if address.present?
-    patient_attributes
+  def set_address_id(patient_params, address)
+    patient_params["address_id"] = address.id if address.present?
+    patient_params
   end
 
-  def set_assigned_facility(patient_attributes)
-    if patient_attributes[:assigned_facility_id].nil?
-      patient_attributes[:assigned_facility_id] = patient_attributes[:registration_facility_id]
+  def set_assigned_facility(patient_params)
+    if patient_params[:assigned_facility_id].nil?
+      patient_params[:assigned_facility_id] = patient_params[:registration_facility_id]
     end
 
-    patient_attributes
+    patient_params
   end
 
   def merge_phone_numbers(phone_number_params, patient)
@@ -65,14 +63,12 @@ class MergePatientService
     end
   end
 
-  def discard_patient_data(patient, existing_patient)
+  def discard_patient_data(patient)
     if patient.deleted_at.present? && existing_patient&.deleted_at.nil?
-      # Patient has been soft-deleted by the client, server should soft-delete the patient and their associated data
+    # Patient has been soft-deleted by the client, server should soft-delete the patient and their associated data.
       patient.update(deleted_by_user_id: request_metadata[:request_user_id])
       patient.discard_data
     end
-
-    patient
   end
 
   def touch_patient(patient, address, phone_numbers, business_ids)
@@ -89,8 +85,6 @@ class MergePatientService
       # track the incidence rate, so we can plan for a fix if necessary.
       log_update_discarded_patient if patient.discarded?
     end
-
-    patient
   end
 
   def new_patient_metadata
@@ -98,8 +92,9 @@ class MergePatientService
       registration_user_id: request_metadata[:request_user_id]}
   end
 
-  def existing_patient_metadata
-    existing_patient.slice(*new_patient_metadata.keys)
+  def with_existing_metadata(patient_params)
+    existing_metadata = existing_patient.slice(*new_patient_metadata.keys)
+    patient_params.merge(existing_metadata)
   end
 
   def log_update_discarded_patient
