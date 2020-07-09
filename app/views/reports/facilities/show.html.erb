@@ -50,8 +50,11 @@
         </div>
         <div>
           <h3 class="mb-1 fs-xlarge fw-bold <% if @data[:controlled_patients_rate].values.last %>c-green-dark<% else %>c-grey-medium<% end %>">
-            <% current_control_rate = number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) || "No data" %>
-            <%= current_control_rate %>
+            <% if @data[:controlled_patients_rate].values.last %>
+              <%= @data[:controlled_patients_rate].values.last %>
+            <% else %>
+              No data
+            <% end %>
           </h3>
           <p class="<% if @data[:controlled_patients_rate].values.last %>c-black<% else %>c-grey-medium<% end %>">
             <% if @data[:controlled_patients_rate].values.last %>
@@ -124,7 +127,7 @@
             <% if @last_registration_value.zero? %>
               No registration data available
             <% else %>
-              <span class="fw-bold"><%= @controlled_patients.values.last %> (<%= current_control_rate %>)</span> controlled patients
+              <span class="fw-bold"><%= @controlled_patients.values.last %> (<%= @data[:controlled_patients_rate].values.last %>)</span> controlled patients
             <% end %>
           </p>
         </div>
