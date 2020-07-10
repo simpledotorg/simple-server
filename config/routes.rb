@@ -158,13 +158,13 @@ Rails.application.routes.draw do
   resources :organizations, only: [:index], path: "dashboard"
 
   get "/dashboard/districts/preview", to: redirect("/dashboard/districts")
+  get "/dashboard/districts/:slug", to: redirect("/reports/districts/%{slug}")
   namespace :dashboard do
-    resources :districts do
-    end
+    resources :districts
   end
   namespace :reports do
-    resources :facilities do
-    end
+    resources :districts, controller: "regions", defaults: {scope: "facility_group"}
+    resources :facilities, controller: "regions", defaults: {scope: "facility"}
   end
 
   namespace :my_facilities do
