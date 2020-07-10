@@ -3,6 +3,7 @@ class Organization < ApplicationRecord
 
   has_many :facility_groups, dependent: :destroy
   has_many :facilities, through: :facility_groups
+  has_many :appointments, through: :facilities
   has_many :users
   has_many :protocols, through: :facility_groups
 
@@ -14,9 +15,5 @@ class Organization < ApplicationRecord
 
   def districts
     facilities.select(:district).distinct.pluck(:district)
-  end
-
-  def appointments
-    Appointment.where(facility: facilities)
   end
 end
