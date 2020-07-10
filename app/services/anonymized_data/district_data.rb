@@ -18,7 +18,7 @@ class AnonymizedData::DistrictData
       AnonymizedData::Constants::SMS_REMINDERS_FILE =>
         communication_data(appointments),
       AnonymizedData::Constants::PHONE_CALLS_FILE =>
-        phone_call_data(users_phone_numbers),
+        phone_call_data(users_phone_numbers)
     }
   end
 

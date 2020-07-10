@@ -1,4 +1,4 @@
-class Dashboard::DistrictsController < AdminController
+class Reports::FacilitiesController < AdminController
   layout "application"
   skip_after_action :verify_policy_scoped
   around_action :set_time_zone
@@ -10,12 +10,11 @@ class Dashboard::DistrictsController < AdminController
   end
 
   def show
-    @region = FacilityGroup.find_by(slug: district_params[:id])
-    @scope = :facility_group
+    @region = Facility.find_by!(slug: facility_params[:id])
     authorize(:dashboard, :show?)
 
-    @selected_date = if district_params[:selected_date]
-      Time.parse(district_params[:selected_date])
+    @selected_date = if facility_params[:selected_date]
+      Time.parse(facility_params[:selected_date])
     else
       Date.current.advance(months: -1)
     end
@@ -27,12 +26,11 @@ class Dashboard::DistrictsController < AdminController
     @quarterly_registrations = @data[:quarterly_registrations]
     @top_district_benchmarks = @data[:top_district_benchmarks]
     @last_registration_value = @data[:registrations].values&.last || 0
-    render "reports/facilities/show"
   end
 
   private
 
-  def district_params
+  def facility_params
     params.permit(:selected_date, :id)
   end
 

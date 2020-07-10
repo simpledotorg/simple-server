@@ -12,7 +12,7 @@ class SendPatientOtpSmsJob < ApplicationJob
   private
 
   def otp_message(passport_authentication)
-    app_signature = ENV['SIMPLE_APP_SIGNATURE']
+    app_signature = ENV["SIMPLE_APP_SIGNATURE"]
     I18n.t("sms.patient_request_otp", otp: passport_authentication.otp, app_signature: app_signature)
   end
 end

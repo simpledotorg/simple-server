@@ -1,5 +1,4 @@
 class Api::V3::MedicalHistoryPayloadValidator < Api::V3::PayloadValidator
-
   attr_accessor(
     :id,
     :patient_id,
