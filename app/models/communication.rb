@@ -59,10 +59,9 @@ class Communication < ApplicationRecord
   def self.next_messaging_time
     now = DateTime.now.in_time_zone(Rails.application.config.country[:time_zone])
 
-    case
-    when now.hour < messaging_start_hour
+    if now.hour < messaging_start_hour
       now.change(hour: messaging_start_hour)
-    when now.hour >= messaging_end_hour
+    elsif now.hour >= messaging_end_hour
       now.change(hour: messaging_start_hour).advance(days: 1)
     else
       now

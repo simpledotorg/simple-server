@@ -14,6 +14,6 @@ class AppointmentNotification::MissedVisitJob
   private
 
   def enabled_organizations
-    Organization.where(id: ENV['APPOINTMENT_NOTIFICATION_ORG_IDS'].split(','))
+    Organization.where(id: ENV["APPOINTMENT_NOTIFICATION_ORG_IDS"].split(","))
   end
 end

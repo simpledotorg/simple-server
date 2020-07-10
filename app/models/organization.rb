@@ -17,6 +17,6 @@ class Organization < ApplicationRecord
   end
 
   def appointments
-    Appointment.where(facility: self.facilities)
+    Appointment.where(facility: facilities)
   end
 end
