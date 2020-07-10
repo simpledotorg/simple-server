@@ -2,7 +2,7 @@ class MergePatientService
   def initialize(payload, request_metadata:)
     @payload = payload
     @request_metadata = request_metadata
-    @existing_patient = Patient.with_discarded.find_by(id: payload['id'])
+    @existing_patient = Patient.with_discarded.find_by(id: payload["id"])
   end
 
   def merge
@@ -33,7 +33,14 @@ class MergePatientService
     new_patient_params = patient_params.merge(new_patient_metadata)
     merge_status = Patient.compute_merge_status(new_patient_params)
 
-    merge_status == :new ? new_patient_params : with_existing_metadata(patient_params)
+    case merge_status
+    when :invalid
+      patient_params
+    when :new
+      new_patient_params
+    else
+      patient_params.merge(existing_patient_metadata)
+    end
   end
 
   def set_address_id(patient_params, address)
@@ -65,7 +72,7 @@ class MergePatientService
 
   def discard_patient_data(patient)
     if patient.deleted_at.present? && existing_patient&.deleted_at.nil?
-    # Patient has been soft-deleted by the client, server should soft-delete the patient and their associated data.
+      # Patient has been soft-deleted by the client, server should soft-delete the patient and their associated data.
       patient.update(deleted_by_user_id: request_metadata[:request_user_id])
       patient.discard_data
     end
@@ -88,16 +95,15 @@ class MergePatientService
   end
 
   def new_patient_metadata
-    {registration_facility_id: request_metadata[:request_facility_id],
-      registration_user_id: request_metadata[:request_user_id]}
+    {registration_facility_id: payload[:registration_facility_id].presence || request_metadata[:request_facility_id],
+     registration_user_id: request_metadata[:request_user_id]}
   end
 
-  def with_existing_metadata(patient_params)
-    existing_metadata = existing_patient.slice(*new_patient_metadata.keys)
-    patient_params.merge(existing_metadata)
+  def existing_patient_metadata
+    existing_patient.slice(*new_patient_metadata.keys)
   end
 
   def log_update_discarded_patient
-    NewRelic::Agent.increment_metric('MergePatientService/update_discarded_patient')
+    NewRelic::Agent.increment_metric("MergePatientService/update_discarded_patient")
   end
 end

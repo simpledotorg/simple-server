@@ -2,7 +2,8 @@ require "rails_helper"
 
 RSpec.describe Api::V3::PatientsController, type: :controller do
   let(:request_user) { FactoryBot.create(:user) }
-  let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
+  let(:request_facility_group) { request_user.facility.facility_group }
+  let(:request_facility) { FactoryBot.create(:facility, facility_group: request_facility_group ) }
   let(:model) { Patient }
   let(:patient_metadata) { {registration_facility_id: request_facility.id, assigned_facility_id: request_facility.id} }
   let(:build_payload) { ->(patient = build(:patient)) { build_patient_payload(patient).merge(patient_metadata) } }
@@ -12,12 +13,12 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
   let(:number_of_schema_errors_in_invalid_payload) { 2 + invalid_record["phone_numbers"].count }
 
   def create_record(options = {})
-    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
+    facility = FactoryBot.create(:facility, facility_group: request_facility_group)
     FactoryBot.create(:patient, options.merge(registration_facility: facility))
   end
 
   def create_record_list(n, options = {})
-    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
+    facility = FactoryBot.create(:facility, facility_group: request_facility_group)
     FactoryBot.create_list(:patient, n, options.merge(registration_facility: facility))
   end
 
@@ -55,8 +56,8 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
       end
 
       context "registration_facility_id param is available" do
-        xit "is assigned to the patient" do
-          new_registration_facility = create(:facility)
+        it "is assigned to the patient" do
+          new_registration_facility = create(:facility, facility_group: request_facility_group)
           patient = FactoryBot.build(:patient, registration_facility: new_registration_facility)
           patient_payload = build_payload.call(patient)
 
@@ -69,7 +70,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
 
       context "registration_facility_id param is missing" do
         it "assigns the registration_facility_id from the headers" do
-          new_registration_facility = create(:facility, facility_group: request_user.facility.facility_group)
+          new_registration_facility = create(:facility, facility_group: request_facility_group)
           request.env["HTTP_X_FACILITY_ID"] = new_registration_facility.id
           patient = FactoryBot.build(:patient)
           patient_payload = build_payload.call(patient).except(:registration_facility_id)
@@ -340,7 +341,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
 
     describe "v3 facility prioritisation" do
       it "syncs request facility's records first" do
-        request_2_facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
+        request_2_facility = FactoryBot.create(:facility, facility_group: request_facility_group)
         FactoryBot.create_list(:patient, 2, registration_facility: request_2_facility, updated_at: 3.minutes.ago)
         FactoryBot.create_list(:patient, 2, registration_facility: request_2_facility, updated_at: 5.minutes.ago)
         FactoryBot.create_list(:patient, 2, registration_facility: request_facility, updated_at: 7.minutes.ago)
@@ -368,7 +369,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
     end
 
     describe "syncing within a facility group" do
-      let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
+      let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_facility_group) }
       let(:facility_in_another_group) { FactoryBot.create(:facility) }
 
       let(:patients_in_another_group) {
