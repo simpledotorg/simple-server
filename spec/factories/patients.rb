@@ -48,6 +48,10 @@ FactoryBot.define do
       medical_history { build(:medical_history, :diabetes_yes, patient_id: id) }
     end
 
+    trait :without_medical_history do
+      medical_history { nil }
+    end
+
     trait :denied do
       reminder_consent { Patient.reminder_consents[:denied] }
     end
