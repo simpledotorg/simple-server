@@ -28,8 +28,8 @@ class Api::V3::PatientPayloadValidator < Api::V3::PayloadValidator
   validate :validate_schema, unless: -> { FeatureToggle.enabled?("SKIP_API_VALIDATION") }
   validate :presence_of_age
   validate :past_date_of_birth
-  validate :user_can_access_assigned_facility
-  validate :user_can_access_registration_facility
+  validate :authorized_assigned_facility
+  validate :authorized_registration_facility
 
   def presence_of_age
     unless date_of_birth.present? || (age.present? && age_updated_at.present?)
@@ -43,8 +43,8 @@ class Api::V3::PatientPayloadValidator < Api::V3::PayloadValidator
     end
   end
 
-  def user_can_access_assigned_facility
-    if assigned_facility_id.present? && !can_user_access_facility?(assigned_facility_id)
+  def authorized_assigned_facility
+    unless authorized_facility?(assigned_facility_id)
       errors.add(
         :assigned_facility_does_not_belong_to_user,
         "Assigned facility must belong to the Facility Group of the User"
@@ -52,8 +52,8 @@ class Api::V3::PatientPayloadValidator < Api::V3::PayloadValidator
     end
   end
 
-  def user_can_access_registration_facility
-    if registration_facility_id.present? && !can_user_access_facility?(registration_facility_id)
+  def authorized_registration_facility
+    unless authorized_facility?(registration_facility_id)
       errors.add(
         :registration_facility_does_not_belong_to_user,
         "Registration facility must belong to the Facility Group of the User"
@@ -67,7 +67,8 @@ class Api::V3::PatientPayloadValidator < Api::V3::PayloadValidator
 
   private
 
-  def can_user_access_facility?(facility_id)
+  def authorized_facility?(facility_id)
+    return if facility_id.blank?
     request_user.present? && request_user.facility.facility_group.facilities.where(id: facility_id).present?
   end
 
