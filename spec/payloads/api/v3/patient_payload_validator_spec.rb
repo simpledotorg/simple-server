@@ -105,7 +105,7 @@ describe Api::V3::PatientPayloadValidator, type: :model do
 
     describe "Data validations" do
       let!(:valid_facility) { create(:facility, facility_group: facility.facility_group) }
-      let!(:invalid_facility) { create(:facility)}
+      let!(:invalid_facility) { create(:facility) }
 
       it "validates that the request user can access the patient's registration facility" do
         valid_payload = new_patient_payload("registration_facility_id" => valid_facility.id)

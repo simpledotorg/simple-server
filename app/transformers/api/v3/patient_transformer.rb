@@ -59,10 +59,10 @@ class Api::V3::PatientTransformer
 
     def to_nested_response(patient)
       Api::V3::Transformer.to_response(patient)
-        .except('address_id')
-        .except('registration_user_id')
-        .except('test_data')
-        .except('deleted_by_user_id')
+        .except("address_id")
+        .except("registration_user_id")
+        .except("test_data")
+        .except("deleted_by_user_id")
         .merge(
           "address" => Api::V3::Transformer.to_response(patient.address),
           "phone_numbers" => patient.phone_numbers.map do |phone_number|
