@@ -84,6 +84,11 @@ class Facility < ApplicationRecord
 
   friendly_id :name, use: :slugged
 
+  # For compatibility w/ parent FacilityGroups
+  def facilities
+    [self]
+  end
+
   def cohort_analytics(period, prev_periods)
     query = CohortAnalyticsQuery.new(registered_hypertension_patients)
     query.patient_counts_by_period(period, prev_periods)
