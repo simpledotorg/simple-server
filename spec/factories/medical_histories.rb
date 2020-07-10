@@ -53,11 +53,11 @@ FactoryBot.define do
       diabetes_boolean { true }
       chronic_kidney_disease_boolean { true }
 
-      prior_heart_attack { 'yes' }
-      prior_stroke { 'yes' }
-      diabetes { 'yes' }
+      prior_heart_attack { "yes" }
+      prior_stroke { "yes" }
+      diabetes { "yes" }
       hypertension { "yes" }
-      chronic_kidney_disease { 'yes' }
+      chronic_kidney_disease { "yes" }
     end
   end
 end
@@ -70,8 +70,8 @@ end
 
 def build_invalid_medical_history_payload
   build_medical_history_payload.merge(
-    prior_heart_attack: 'invalid',
-    prior_stroke: 'invalid'
+    prior_heart_attack: "invalid",
+    prior_stroke: "invalid"
   )
 end
 
@@ -79,7 +79,7 @@ def updated_medical_history_payload(existing_medical_history)
   update_time = 10.days.from_now
 
   build_medical_history_payload(existing_medical_history).merge(
-    'updated_at' => update_time,
-    'prior_heart_attack' => MedicalHistory::MEDICAL_HISTORY_ANSWERS.values.sample
+    "updated_at" => update_time,
+    "prior_heart_attack" => MedicalHistory::MEDICAL_HISTORY_ANSWERS.values.sample
   )
 end

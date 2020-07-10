@@ -110,7 +110,8 @@ class Admin::FacilitiesController < AdminController
       :zone,
       :enable_teleconsultation,
       :teleconsultation_phone_number,
-      :teleconsultation_isd_code
+      :teleconsultation_isd_code,
+      teleconsultation_phone_numbers_attributes: [:isd_code, :phone_number, :_destroy]
     )
   end
 

@@ -1,5 +1,4 @@
 class CohortReport::OrganizationDistrictPolicy < ApplicationPolicy
-
   def show?
     view_cohort_reports? || patient_list?
   end
@@ -21,5 +20,9 @@ class CohortReport::OrganizationDistrictPolicy < ApplicationPolicy
 
   def patient_list?
     user.user_permissions.where(permission_slug: :download_patient_line_list).present?
+  end
+
+  def patient_list_with_history?
+    patient_list?
   end
 end

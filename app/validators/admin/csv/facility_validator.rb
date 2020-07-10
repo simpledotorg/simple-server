@@ -29,13 +29,21 @@ class Admin::CSV::FacilityValidator
   def facilities
     row_errors = []
     @facilities.each.with_index(2) do |facility, row_num|
-      import_facility = Facility.new(facility)
+      import_facility = Facility.new(facility_params(facility))
       row_errors << [row_num, import_facility.errors.full_messages.to_sentence] if import_facility.invalid?
     end
     group_row_errors(row_errors).each { |error| @errors << error } if row_errors.present?
   end
 
   private
+
+  def facility_params(facility)
+    return facility unless facility[:enable_teleconsultation]
+
+    facility[:teleconsultation_phone_numbers] = [{isd_code: facility[:teleconsultation_isd_code],
+                                                  phone_number: facility[:teleconsultation_phone_number]}]
+    facility
+  end
 
   def group_row_errors(row_errors)
     unique_errors = row_errors.map { |row, message| message }.uniq

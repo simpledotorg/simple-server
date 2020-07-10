@@ -23,6 +23,9 @@ $green-light: #E0FFED;
 $green-mid: #5CFF9D;
 $green: #00B849;
 $green-dark: #007A31;
+$purple: #5300E0;
+$purple-mid: #A980EF;
+$purple-light: #EEE5FC;
 
 $font-condensed: 'Roboto Condensed', sans-serif;
 $font-small: 11px;
@@ -41,6 +44,7 @@ $font-small: 11px;
 @import "partials/resources";
 @import "partials/snapshots";
 @import "partials/search";
+@import "partials/reports";
 
 body {
     padding-top: 5rem;
@@ -185,6 +189,7 @@ nav.secondary-nav a.active {
 
 .tooltip-inner {
     font-family: $font-condensed;
+    padding: 6px 8px;
 }
 
 #app-footer {

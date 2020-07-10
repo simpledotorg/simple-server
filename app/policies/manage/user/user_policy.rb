@@ -9,7 +9,8 @@ class Manage::User::UserPolicy < ApplicationPolicy
     user_has_any_permissions?(
       [:approve_health_workers, nil],
       [:approve_health_workers, record.organization],
-      [:approve_health_workers, record.facility_group])
+      [:approve_health_workers, record.facility_group]
+    )
   end
 
   def update?
@@ -49,13 +50,13 @@ class Manage::User::UserPolicy < ApplicationPolicy
 
       facility_group_ids = facility_group_ids_for_permission(:approve_health_workers)
       user_scope = scope.joins(:phone_number_authentications)
-                     .where.not(phone_number_authentications: { id: nil })
+        .where.not(phone_number_authentications: {id: nil})
 
       return user_scope.all if facility_group_ids.blank?
 
       facilities = ::Facility.where(facility_group_id: facility_group_ids)
       user_scope.where(phone_number_authentications:
-                         { registration_facility_id: facilities })
+                         {registration_facility_id: facilities})
     end
   end
 end

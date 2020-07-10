@@ -157,6 +157,33 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
     end
   end
 
+  describe "#patient_list" do
+    render_views
+
+    it "should queue job for line list download" do
+      expect(PatientListDownloadJob).to receive(:perform_later).with(admin.email,
+        "district",
+        district_name: district_name,
+        organization_id: organization.id)
+
+      get :patient_list, params: {organization_id: organization.id, district_id: district_name}
+    end
+  end
+
+  describe "#patient_list_with_history" do
+    render_views
+
+    it "should queue job for line list with history download" do
+      expect(PatientListDownloadJob).to receive(:perform_later).with(admin.email,
+        "district",
+        {district_name: district_name,
+         organization_id: organization.id},
+        with_medication_history: true)
+
+      get :patient_list_with_history, params: {organization_id: organization.id, district_id: district_name}
+    end
+  end
+
   describe "#whatsapp_graphics" do
     render_views
 
