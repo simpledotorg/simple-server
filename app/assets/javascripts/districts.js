@@ -2,7 +2,6 @@ window.addEventListener("DOMContentLoaded", initializeCharts);
 
 function initializeCharts() {
   const data = getReportingData();
-  console.log(data);
   const lineGraphOptions = {
     animation: false,
     responsive: true,
@@ -89,33 +88,18 @@ function initializeCharts() {
 
 function getReportingData() {
   const $reportingDiv = document.getElementById("reporting");
+  const controlRate =
+    JSON.parse($reportingDiv.attributes.getNamedItem("data-control-rate").value);
   const controlledPatients = 
     JSON.parse($reportingDiv.attributes.getNamedItem("data-controlled-patients").value);
   const registrations =
     JSON.parse($reportingDiv.attributes.getNamedItem("data-registrations").value);
-  const quarterlyRegistrations =
-    JSON.parse($reportingDiv.attributes.getNamedItem("data-quarterly-registrations").value);
   
   let data = {
+    controlRate: Object.entries(controlRate),
     controlledPatients: Object.entries(controlledPatients),
     registrations: Object.entries(registrations),
   };
 
-  let controlRate = computeControlRate(data.controlledPatients, data.registrations);
-  data.controlRate = controlRate;
-
   return data;
-};
-
-function computeControlRate(controlledPatients, registrations) {
-  return controlledPatients.map(function(key, index) {
-    const registrationData = registrations[index];
-    const controlRate = numberToPercent(key[1], registrationData[1]);
-
-    return [key[0], controlRate];
-  });
-};
-
-function numberToPercent(numerator, denominator) {
-  return parseFloat(((numerator/denominator)*100).toFixed(0));
 };

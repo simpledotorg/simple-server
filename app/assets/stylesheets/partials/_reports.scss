@@ -1,3 +1,10 @@
+// Position
+.p-relative { position: relative; }
+.p-absolute { position: absolute; }
+.t-0 { top: 0; }
+.l-0 { left: 0; }
+// Pointer events
+.pe-none { pointer-events: none; }
 // Display
 .d-none { display: none; }
 .d-flex { display: flex; }
@@ -6,14 +13,17 @@
 .fd-column { flex-direction: column; }
 .ai-center { align-items: center; }
 .jc-flex-end { justify-content: flex-end; }
+.jc-center { justify-content: center; }
 .jc-between { justify-content: space-between; }
 // Overflow
 .o-hidden { overflow: hidden; }
 // Spacing
 .mt-0 { margin-top: 0; }
+.ml-8px { margin-left: 8px; }
 .p-0 { padding: 0; }
 .px-1px { padding-right: 1px; padding-left: 1px; }
 // Width
+.w-100pt { width: 100%; }
 .mw-100pt { max-width: 100%; }
 // Height
 .h-10pt { height: 10%; }
@@ -38,10 +48,13 @@
 .bt-2px { border-top: 2px solid; }
 .bb-1px { border-bottom: 1px solid; }
 .bb-2px { border-bottom: 2px solid; }
+.bl-1px { border-left: 1px solid; }
 .bt-grey-light { border-top-color: $grey-light; }
 .bb-grey-light { border-bottom-color: $grey-light; }
+.bb-grey-medium { border-bottom-color: $grey-mid; }
 .bt-grey-medium { border-top-color: $grey-mid; }
 .bt-purple-dark { border-top-color: $purple; }
+.bl-grey-medium { border-left-color: $grey-mid; }
 // Background colors
 .bg-purple-medium { background-color: $purple-mid; }
 .bg-purple-light { background-color: $purple-light; }

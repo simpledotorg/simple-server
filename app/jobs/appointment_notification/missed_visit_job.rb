@@ -1,10 +1,10 @@
 class AppointmentNotification::MissedVisitJob
   include Sidekiq::Worker
 
-  sidekiq_options queue: 'high'
+  sidekiq_options queue: "high"
 
   def perform
-    return unless FeatureToggle.enabled?('APPOINTMENT_REMINDERS')
+    return unless FeatureToggle.enabled?("APPOINTMENT_REMINDERS")
 
     enabled_organizations.each do |organization|
       AppointmentNotificationService.send_after_missed_visit(appointments: organization.appointments)
