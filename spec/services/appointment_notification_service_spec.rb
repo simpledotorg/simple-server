@@ -18,16 +18,58 @@ RSpec.describe AppointmentNotificationService do
       allow_any_instance_of(AppointmentNotification::Worker).to receive(:perform)
     end
 
-    it "should spawn a reminder job for each appointment" do
+    it "spawns a reminder job for each appointment" do
       expect {
         AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments)
       }.to change(AppointmentNotification::Worker.jobs, :size).by(4)
     end
 
-    it "should ignore appointments which are recently overdue (< 3 days)" do
+    it "ignores appointments which are recently overdue (< 3 days)" do
       expect {
         AppointmentNotificationService.send_after_missed_visit(appointments: recently_overdue_appointments)
       }.to change(AppointmentNotification::Worker.jobs, :size).by(0)
+    end
+
+    it "schedules a whatsapp reminder for the correct time when whatsapp is enabled" do
+      whatsapp_appointment_reminders = ENV["ENABLE_WHATSAPP_APPOINTMENT_REMINDERS"]
+      ENV["ENABLE_WHATSAPP_APPOINTMENT_REMINDERS"] = "true"
+
+      message_time = DateTime.now
+      allow(Communication).to receive(:next_messaging_time).and_return(message_time)
+      appointment = overdue_appointments.first
+
+      appointments = Appointment.where(id: appointment.id)
+
+      expect(AppointmentNotification::Worker).to receive(:perform_at).with(
+        message_time,
+        appointment.id,
+        "missed_visit_whatsapp_reminder"
+      )
+
+      AppointmentNotificationService.send_after_missed_visit(appointments: appointments)
+
+      ENV["ENABLE_WHATSAPP_APPOINTMENT_REMINDERS"] = whatsapp_appointment_reminders
+    end
+
+    it "schedules an SMS reminder for the correct time when whatsapp is enabled" do
+      whatsapp_appointment_reminders = ENV["ENABLE_WHATSAPP_APPOINTMENT_REMINDERS"]
+      ENV["ENABLE_WHATSAPP_APPOINTMENT_REMINDERS"] = "false"
+
+      message_time = DateTime.now
+      allow(Communication).to receive(:next_messaging_time).and_return(message_time)
+      appointment = overdue_appointments.first
+
+      appointments = Appointment.where(id: appointment.id)
+
+      expect(AppointmentNotification::Worker).to receive(:perform_at).with(
+        message_time,
+        appointment.id,
+        "missed_visit_sms_reminder"
+      )
+
+      AppointmentNotificationService.send_after_missed_visit(appointments: appointments)
+
+      ENV["ENABLE_WHATSAPP_APPOINTMENT_REMINDERS"] = whatsapp_appointment_reminders
     end
 
     context "if WHATSAPP_APPOINTMENT_REMINDERS feature is disabled" do
