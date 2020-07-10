@@ -13,6 +13,8 @@ class Dashboard::DistrictsController < AdminController
     @region = FacilityGroup.find_by(slug: district_params[:id])
     @scope = :facility_group
     authorize(:dashboard, :show?)
+    force_cache = true if params[:force_cache].present?
+
 
     @selected_date = if district_params[:selected_date]
       Time.parse(district_params[:selected_date])
@@ -21,7 +23,8 @@ class Dashboard::DistrictsController < AdminController
     end
     @data = RegionReportService.new(region: @region,
                                     selected_date: @selected_date,
-                                    current_user: current_admin).call
+                                    current_user: current_admin,
+                                    force_cache: force_cache).call
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
@@ -33,7 +36,7 @@ class Dashboard::DistrictsController < AdminController
   private
 
   def district_params
-    params.permit(:selected_date, :id)
+    params.permit(:selected_date, :id, :force_cache)
   end
 
   def set_time_zone

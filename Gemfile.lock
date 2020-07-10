@@ -295,6 +295,8 @@ GEM
     pundit (2.1.0)
       activesupport (>= 3.0.0)
     rack (2.2.3)
+    rack-mini-profiler (2.0.2)
+      rack (>= 1.2.0)
     rack-protection (2.0.8.1)
       rack
     rack-test (1.1.0)
@@ -573,6 +575,7 @@ DEPENDENCIES
   pry-rails
   puma
   pundit
+  rack-mini-profiler
   rails (= 5.2.4.3)
   rails-controller-testing
   rails-erd

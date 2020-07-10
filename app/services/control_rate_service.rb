@@ -1,10 +1,11 @@
 class ControlRateService
+  CACHE_VERSION = 1
   PERCENTAGE_PRECISION = 1
 
   # Can be initialized with _either_ a date range or a single date to calculate
   # control rates. Note that for the date range the returned values will be for each month going back
   # to the beginning of registrations for the region.
-  def initialize(region, range: nil, date: nil)
+  def initialize(region, range: nil, date: nil, force_cache: false)
     raise ArgumentError, "Cannot provide both a range and date" if range && date
     raise ArgumentError, "Must provide either a range or a single date" if range.nil? && date.nil?
     @region = region
@@ -12,30 +13,50 @@ class ControlRateService
     @range = range
     @date = date
     @end_of_date_range = date || range.end
+    @force_cache = force_cache
     logger.info "#{self.class} created for range: #{range} facilities: #{facilities.map(&:id)} #{facilities.map(&:name)}"
   end
 
   delegate :logger, to: Rails
   attr_reader :date
+  attr_reader :force_cache
   attr_reader :facilities
   attr_reader :range
   attr_reader :region
 
-  def call
-    data = {
-      controlled_patients: {},
-      controlled_patients_rate: {},
-      registrations: {}
-    }
+  def cache_key
+    "#{self.class}/#{region.model_name}/#{region.id}/#{date_or_range_cache_key}"
+  end
 
-    data[:cumulative_registrations] = registrations(@end_of_date_range)
-    registration_counts.each do |(date, count)|
-      formatted_period = date.to_s(:month_year)
-      data[:controlled_patients][formatted_period] = controlled_patients(date).count
-      data[:controlled_patients_rate][formatted_period] = percentage(controlled_patients(date).count, count)
-      data[:registrations][formatted_period] = count
+  def date_or_range_cache_key
+    if range
+      "#{range.min.to_s(:iso8601)}/#{range.max.to_s(:iso8601)}"
+    else
+      date.to_s(:iso8601)
     end
-    data
+  end
+
+  def cache_version
+    "#{region.updated_at.utc.to_s(:usec)}/#{CACHE_VERSION}"
+  end
+
+  def call
+    Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache) do
+      data = {
+        controlled_patients: {},
+        controlled_patients_rate: {},
+        registrations: {}
+      }
+
+      data[:cumulative_registrations] = registrations(@end_of_date_range)
+      registration_counts.each do |(date, count)|
+        formatted_period = date.to_s(:month_year)
+        data[:controlled_patients][formatted_period] = controlled_patients(date).count
+        data[:controlled_patients_rate][formatted_period] = percentage(controlled_patients(date).count, count)
+        data[:registrations][formatted_period] = count
+      end
+      data
+    end
   end
 
   def registrations(time)

@@ -19,6 +19,12 @@ RSpec.describe ControlRateService, type: :model do
     end
   end
 
+  it "has a cache key" do
+    range = (june_2018..june_30_2020)
+    service = ControlRateService.new(facility_group_1, range: range)
+    expect(service.cache_key).to eq("ControlRateService/FacilityGroup/#{facility_group_1.id}/#{june_2018.iso8601}/#{june_30_2020.iso8601}")
+  end
+
   it "does not include months without registration data" do
     facility = FactoryBot.create(:facility, facility_group: facility_group_1)
     Timecop.freeze("April 15th 2020") do
