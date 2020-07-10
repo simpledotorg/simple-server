@@ -26,6 +26,7 @@ class Dashboard::DistrictsController < AdminController
     @registrations = @data[:registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
     @top_district_benchmarks = @data[:top_district_benchmarks]
+    @last_registration_value = @data[:registrations].values&.last || 0
     render "reports/facilities/show"
   end
 
