@@ -13,11 +13,11 @@ te-IN:
       invalid_password: "మీ పాస్‌వర్డ్ సరిపోలలేదు. మళ్లీ ప్రయత్నించాలా?"
       account_locked: "మీ ఖాతా తర్వాతి %{minutes} నిమిషాలు లాక్ చేయబడింది. దయచేసి వేచి ఉండి, ఆ తర్వాత మళ్లీ ప్రయత్నించండి."
   sms:
-    request_otp: "<#> %{otp}, ఇది మీ సరళమైన ధృవీకరణ కోడ్\n%{app_signature}"
+    request_otp: "<#> %{otp} ఇది మీ సింపుల్ ధృవీకరణ కోడ్\n%{app_signature}"
     appointment_reminders:
       missed_visit_sms_reminder: "%{facility_name} లోని మా స్టాఫ్ మీ గురించి, మీ గుండె ఆరోగ్యం గురించి ఆలోచిస్తున్నారు. దయచేసి మీ రక్త పోటు మందుల వాడకం కొనసాగించండి. దగ్గరలోని ఉప కేంద్రం వద్ద మీ మందులు తీసుకోండి. మీ ANM లేదా ASHAని సంప్రదించండి."
       missed_visit_whatsapp_reminder: "%{facility_name} లోని మా స్టాఫ్ మీ గురించి, మీ గుండె ఆరోగ్యం గురించి ఆలోచిస్తున్నారు. దయచేసి మీ రక్త పోటు మందుల వాడకం కొనసాగించండి. దగ్గరలోని ఉప కేంద్రం వద్ద మీ మందులు తీసుకోండి. మీ ANM లేదా ASHAని సంప్రదించండి."
-    patient_request_otp: "<#> %{otp}, ఇది మీ బిపి పాస్‌పోర్ట్ ధృవీకరణ కోడ్\n%{app_signature}"
+    patient_request_otp: "<#> %{otp} ఇది మీ బిపి పాస్‌పోర్ట్ ధృవీకరణ కోడ్\n%{app_signature}"
   analytics:
     followup_patients: "ఎంత మంది ఫాలో-అప్ రోగులు %{facility_name}ని సందర్శించారు?"
     patients_enrolled: "%{facility_name}లో ఎంత మంది కొత్త రోగులు నమోదు చేసుకున్నారు?"
