@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Api::V3::PatientsController, type: :controller do
   let(:request_user) { FactoryBot.create(:user) }
   let(:request_facility_group) { request_user.facility.facility_group }
-  let(:request_facility) { FactoryBot.create(:facility, facility_group: request_facility_group ) }
+  let(:request_facility) { FactoryBot.create(:facility, facility_group: request_facility_group) }
   let(:model) { Patient }
   let(:patient_metadata) { {registration_facility_id: request_facility.id, assigned_facility_id: request_facility.id} }
   let(:build_payload) { ->(patient = build(:patient)) { build_patient_payload(patient).merge(patient_metadata) } }
@@ -56,10 +56,10 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
       end
 
       context "registration_facility_id param is available" do
-        it "is assigned to the patient" do
+        it "sets it on the patient" do
           new_registration_facility = create(:facility, facility_group: request_facility_group)
           patient = FactoryBot.build(:patient, registration_facility: new_registration_facility)
-          patient_payload = build_payload.call(patient)
+          patient_payload = build_patient_payload(patient)
 
           post :sync_from_user, params: {patients: [patient_payload]}, as: :json
 
@@ -69,7 +69,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
       end
 
       context "registration_facility_id param is missing" do
-        it "assigns the registration_facility_id from the headers" do
+        it "picks up the registration_facility_id from the headers" do
           new_registration_facility = create(:facility, facility_group: request_facility_group)
           request.env["HTTP_X_FACILITY_ID"] = new_registration_facility.id
           patient = FactoryBot.build(:patient)
@@ -301,8 +301,8 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
       let(:delete_patient_payload) do
         build_payload.call(existing_patient)
           .merge(deleted_at: deleted_time,
-                 updated_at: deleted_time,
-                 deleted_reason: "duplicate")
+            updated_at: deleted_time,
+            deleted_reason: "duplicate")
       end
 
       it "deletes a patient when the patient payload has the deleted_at field set" do

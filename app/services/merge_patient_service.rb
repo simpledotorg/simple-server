@@ -8,11 +8,12 @@ class MergePatientService
   def merge
     merged_address = Address.merge(payload[:address]) if payload[:address].present?
 
-    patient_attributes = payload
-                           .except(:address, :phone_numbers, :business_identifiers)
-                           .yield_self { |params| set_metadata(params) }
-                           .yield_self { |params| set_address_id(params, merged_address) }
-                           .yield_self { |params| set_assigned_facility(params) }
+    patient_attributes =
+      payload
+        .except(:address, :phone_numbers, :business_identifiers)
+        .yield_self { |params| set_metadata(params) }
+        .yield_self { |params| set_address_id(params, merged_address) }
+        .yield_self { |params| set_assigned_facility(params) }
 
     merged_patient = Patient.merge(patient_attributes)
     merged_patient.address = merged_address
@@ -34,12 +35,12 @@ class MergePatientService
     merge_status = Patient.compute_merge_status(new_patient_params)
 
     case merge_status
-    when :invalid
-      patient_params
-    when :new
-      new_patient_params
-    else
-      patient_params.merge(existing_patient_metadata)
+      when :invalid
+        patient_params
+      when :new
+        new_patient_params
+      else
+        patient_params.merge(existing_patient_metadata)
     end
   end
 
@@ -95,8 +96,10 @@ class MergePatientService
   end
 
   def new_patient_metadata
-    {registration_facility_id: payload[:registration_facility_id].presence || request_metadata[:request_facility_id],
-     registration_user_id: request_metadata[:request_user_id]}
+    {
+      registration_facility_id: payload[:registration_facility_id].presence || request_metadata[:request_facility_id],
+      registration_user_id: request_metadata[:request_user_id]
+    }
   end
 
   def existing_patient_metadata
