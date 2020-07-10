@@ -49,11 +49,11 @@ class Communication < ApplicationRecord
   end
 
   def self.messaging_start_hour
-    @messaging_start_hour ||= ENV.fetch("APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_START").to_i
+    @messaging_start_hour ||= ENV.fetch("APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_START", 14).to_i
   end
 
   def self.messaging_end_hour
-    @messaging_end_hour ||= ENV.fetch("APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_FINISH").to_i
+    @messaging_end_hour ||= ENV.fetch("APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_FINISH", 16).to_i
   end
 
   def self.next_messaging_time
