@@ -3,7 +3,6 @@ class ImportFacilitiesJob < ApplicationJob
   self.queue_adapter = :sidekiq
 
   def perform(facilities)
-
     import_facilities = []
     facilities.each do |facility|
       organization = Organization.find_by(name: facility[:organization_name])

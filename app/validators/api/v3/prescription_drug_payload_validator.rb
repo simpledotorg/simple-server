@@ -1,5 +1,4 @@
 class Api::V3::PrescriptionDrugPayloadValidator < Api::V3::PayloadValidator
-
   attr_accessor(
     :id,
     :name,
