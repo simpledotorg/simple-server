@@ -37,7 +37,7 @@ RSpec.describe MergePatientService, type: :model do
       end
     end
 
-    it "should discard_data when deleted_at exists and is not already deleted" do
+    it "should discard_data when deleted_at exists and the patient is not already deleted" do
       patient = create(:patient)
       now = Time.current
       # set the updated_at so that it is treated as an update
