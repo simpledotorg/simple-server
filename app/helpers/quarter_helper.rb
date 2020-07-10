@@ -1,4 +1,9 @@
+# NOTE: The Quarter value object is preferred over these static methods, consider using
+# that object for a more object oriented apporach if you need to iterate over quarters or
+# get previous / next quarters.
 module QuarterHelper
+  module_function
+
   def quarter(date)
     ((date.month - 1) / 3) + 1
   end
@@ -64,9 +69,9 @@ module QuarterHelper
 
   def last_n_quarters(n:, inclusive: false)
     initial_quarter = if inclusive
-                        [current_year, current_quarter]
-                      else previous_year_and_quarter(current_year, current_quarter)
-                      end
+      [current_year, current_quarter]
+    else previous_year_and_quarter(current_year, current_quarter)
+    end
 
     (1...n).reduce([initial_quarter]) do |quarter_list, _|
       quarter_list << previous_year_and_quarter(*quarter_list.last)

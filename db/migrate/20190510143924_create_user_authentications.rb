@@ -10,8 +10,8 @@ class CreateUserAuthentications < ActiveRecord::Migration[5.1]
     end
 
     add_index :user_authentications,
-              [:master_user_id, :authenticatable_type, :authenticatable_id],
-              unique: true,
-              name: 'user_authentications_master_users_authenticatable_uniq_index'
+      [:master_user_id, :authenticatable_type, :authenticatable_id],
+      unique: true,
+      name: "user_authentications_master_users_authenticatable_uniq_index"
   end
 end

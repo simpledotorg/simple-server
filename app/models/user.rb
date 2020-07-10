@@ -2,14 +2,14 @@ class User < ApplicationRecord
   include PgSearch::Model
 
   AUTHENTICATION_TYPES = {
-    email_authentication: 'EmailAuthentication',
-    phone_number_authentication: 'PhoneNumberAuthentication'
+    email_authentication: "EmailAuthentication",
+    phone_number_authentication: "PhoneNumberAuthentication"
   }
 
   enum sync_approval_status: {
-    requested: 'requested',
-    allowed: 'allowed',
-    denied: 'denied'
+    requested: "requested",
+    allowed: "allowed",
+    denied: "denied"
   }, _prefix: true
 
   belongs_to :organization, optional: true
@@ -18,19 +18,19 @@ class User < ApplicationRecord
   has_many :blood_pressures
   has_many :patients, -> { distinct }, through: :blood_pressures
   has_many :registered_patients,
-           inverse_of: :registration_user,
-           class_name: 'Patient',
-           foreign_key: :registration_user_id
+    inverse_of: :registration_user,
+    class_name: "Patient",
+    foreign_key: :registration_user_id
 
   has_many :phone_number_authentications,
-           through: :user_authentications,
-           source: :authenticatable,
-           source_type: 'PhoneNumberAuthentication'
+    through: :user_authentications,
+    source: :authenticatable,
+    source_type: "PhoneNumberAuthentication"
 
   has_many :email_authentications,
-           through: :user_authentications,
-           source: :authenticatable,
-           source_type: 'EmailAuthentication'
+    through: :user_authentications,
+    source: :authenticatable,
+    source_type: "EmailAuthentication"
 
   has_many :appointments
   has_many :medical_histories
@@ -39,9 +39,9 @@ class User < ApplicationRecord
   has_many :user_permissions, foreign_key: :user_id, dependent: :delete_all
 
   has_many :deleted_patients,
-           inverse_of: :deleted_by_user,
-           class_name: 'Patient',
-           foreign_key: :deleted_by_user_id
+    inverse_of: :deleted_by_user,
+    class_name: "Patient",
+    foreign_key: :deleted_by_user_id
 
   pg_search_scope :search_by_name, against: [:full_name], using: {tsearch: {prefix: true, any_word: true}}
   scope :search_by_email,
@@ -51,7 +51,6 @@ class User < ApplicationRecord
   scope :search_by_name_or_email, ->(term) { search_by_name(term).union(search_by_email(term)) }
   scope :search_by_name_or_phone, ->(term) { search_by_name(term).union(search_by_phone(term)) }
 
-
   validates :full_name, presence: true
   validates :role, presence: true, if: -> { email_authentication.present? }
 
@@ -59,20 +58,22 @@ class User < ApplicationRecord
   validates :device_updated_at, presence: true
 
   delegate :registration_facility,
-           :access_token,
-           :logged_in_at,
-           :has_never_logged_in?,
-           :mark_as_logged_in,
-           :phone_number,
-           :otp,
-           :otp_valid?,
-           :facility_group,
-           :password_digest, to: :phone_number_authentication, allow_nil: true
+    :access_token,
+    :logged_in_at,
+    :has_never_logged_in?,
+    :mark_as_logged_in,
+    :phone_number,
+    :otp,
+    :otp_valid?,
+    :facility_group,
+    :password_digest, to: :phone_number_authentication, allow_nil: true
 
   delegate :email,
-           :password,
-           :authenticatable_salt,
-           :invited_to_sign_up?, to: :email_authentication, allow_nil: true
+    :password,
+    :authenticatable_salt,
+    :invited_to_sign_up?, to: :email_authentication, allow_nil: true
+
+  after_destroy :destroy_email_authentications
 
   def phone_number_authentication
     phone_number_authentications.first
@@ -86,10 +87,10 @@ class User < ApplicationRecord
     registration_facility.id
   end
 
-  alias_method :facility, :registration_facility
+  alias facility registration_facility
 
   def access_token_valid?
-    self.sync_approval_status_allowed?
+    sync_approval_status_allowed?
   end
 
   def self.build_with_phone_number_authentication(params)
@@ -108,7 +109,7 @@ class User < ApplicationRecord
       device_created_at: params[:device_created_at],
       device_updated_at: params[:device_updated_at]
     )
-    user.sync_approval_requested(I18n.t('registration'))
+    user.sync_approval_requested(I18n.t("registration"))
 
     user.phone_number_authentications = [phone_number_authentication]
     user
@@ -156,9 +157,9 @@ class User < ApplicationRecord
       authentication = phone_number_authentication
       authentication.password_digest = password_digest
       authentication.set_access_token
-      self.sync_approval_requested(I18n.t('reset_password'))
+      sync_approval_requested(I18n.t("reset_password"))
       authentication.save!
-      self.save!
+      save!
     end
   end
 
@@ -167,10 +168,19 @@ class User < ApplicationRecord
   end
 
   def has_role?(*roles)
-    roles.map(&:to_sym).include?(self.role.to_sym)
+    roles.map(&:to_sym).include?(role.to_sym)
   end
 
   def resources
     user_permissions.map(&:resource)
+  end
+
+  def destroy_email_authentications
+    destroyable_email_authentications = email_authentications.load
+
+    user_authentications.each(&:destroy)
+    destroyable_email_authentications.each(&:destroy)
+
+    true
   end
 end

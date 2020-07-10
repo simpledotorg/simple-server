@@ -6,5 +6,8 @@ class LatestBloodPressuresPerPatientPerMonth < ApplicationRecord
   end
 
   belongs_to :patient
-  belongs_to :facility, class_name: 'Facility', foreign_key: 'bp_facility_id'
+  belongs_to :medical_history, primary_key: :patient_id, foreign_key: :patient_id
+  belongs_to :facility, class_name: "Facility", foreign_key: "bp_facility_id"
+
+  scope :with_hypertension, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes) }
 end

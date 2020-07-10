@@ -1,5 +1,4 @@
 class Manage::Facility::OrganizationPolicy < ApplicationPolicy
-
   class Scope < Scope
     attr_reader :user, :scope
 

@@ -1,7 +1,7 @@
 class BloodSugar < ApplicationRecord
   include Mergeable
   include Observeable
-  include SQLHelpers
+  extend SQLHelpers
 
   belongs_to :patient, optional: true
   belongs_to :user, optional: true
@@ -14,24 +14,35 @@ class BloodSugar < ApplicationRecord
   validates :device_updated_at, presence: true
 
   enum blood_sugar_type: {
-    random: 'random',
-    post_prandial: 'post_prandial',
-    fasting: 'fasting',
-    hba1c: 'hba1c'
+    random: "random",
+    post_prandial: "post_prandial",
+    fasting: "fasting",
+    hba1c: "hba1c"
   }, _prefix: true
+
+  BLOOD_SUGAR_UNITS = {
+    random: "mg/dL",
+    post_prandial: "mg/dL",
+    fasting: "mg/dL",
+    hba1c: "%"
+  }.with_indifferent_access.freeze
 
   V3_TYPES = %i[random post_prandial fasting].freeze
 
   scope :for_v3, -> { where(blood_sugar_type: V3_TYPES) }
 
   THRESHOLDS = {
-    high: { random: 300,
-            post_prandial: 300,
-            fasting: 200,
-            hba1c: 9.0 }
-   }.with_indifferent_access.freeze
+    high: {random: 300,
+           post_prandial: 300,
+           fasting: 200,
+           hba1c: 9.0}
+  }.with_indifferent_access.freeze
 
   def diabetic?
     blood_sugar_value >= THRESHOLDS[:high][blood_sugar_type]
+  end
+
+  def to_s
+    "#{blood_sugar_value} #{BLOOD_SUGAR_UNITS[blood_sugar_type]}"
   end
 end

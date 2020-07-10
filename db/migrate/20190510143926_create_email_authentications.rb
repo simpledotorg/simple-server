@@ -43,7 +43,7 @@ class CreateEmailAuthentications < ActiveRecord::Migration[5.1]
     add_index :email_authentications, :invitations_count
     add_index :email_authentications, :invitation_token, unique: true # for invitable
     add_index :email_authentications, :invited_by_id
-    add_index :email_authentications, [:invited_by_type, :invited_by_id], name: 'index_email_authentications_invited_by'
+    add_index :email_authentications, [:invited_by_type, :invited_by_id], name: "index_email_authentications_invited_by"
 
     add_index :email_authentications, :deleted_at
   end

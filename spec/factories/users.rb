@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :user do
     transient do
-      password { '1234' }
+      password { "1234" }
       registration_facility { create(:facility) }
       phone_number { Faker::PhoneNumber.phone_number }
     end
@@ -34,17 +34,17 @@ FactoryBot.define do
 
     trait :sync_requested do
       sync_approval_status { User.sync_approval_statuses[:requested] }
-      sync_approval_status_reason { 'New registration' }
+      sync_approval_status_reason { "New registration" }
     end
 
     trait :sync_allowed do
       sync_approval_status { User.sync_approval_statuses[:allowed] }
-      sync_approval_status_reason { 'User is allowed' }
+      sync_approval_status_reason { "User is allowed" }
     end
 
     trait :sync_denied do
       sync_approval_status { User.sync_approval_statuses[:denied] }
-      sync_approval_status_reason { 'No particular reason' }
+      sync_approval_status_reason { "No particular reason" }
     end
 
     trait :created_on_device
@@ -126,11 +126,11 @@ FactoryBot.define do
 end
 
 def register_user_request_params(arguments = {})
-  { id: SecureRandom.uuid,
-    full_name: Faker::Name.name,
-    phone_number: Faker::PhoneNumber.phone_number,
-    password_digest: BCrypt::Password.create('1234'),
-    registration_facility_id: SecureRandom.uuid,
-    created_at: Time.current.iso8601,
-    updated_at: Time.current.iso8601 }.merge(arguments)
+  {id: SecureRandom.uuid,
+   full_name: Faker::Name.name,
+   phone_number: Faker::PhoneNumber.phone_number,
+   password_digest: BCrypt::Password.create("1234"),
+   registration_facility_id: SecureRandom.uuid,
+   created_at: Time.current.iso8601,
+   updated_at: Time.current.iso8601}.merge(arguments)
 end
