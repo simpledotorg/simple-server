@@ -2,11 +2,11 @@ class AuditLog
   include ActiveModel::Model
 
   MERGE_STATUS_TO_ACTION = {
-    discarded: 'update_on_discarded',
-    invalid: 'invalid',
-    new: 'create',
-    updated: 'update',
-    old: 'touch'
+    discarded: "update_on_discarded",
+    invalid: "invalid",
+    new: "create",
+    updated: "update",
+    old: "touch"
   }.freeze
 
   validates :action, presence: true
@@ -30,7 +30,7 @@ class AuditLog
       user: user.id,
       auditable_type: record.class.to_s,
       auditable_id: record.id,
-      action: 'fetch',
+      action: "fetch",
       time: Time.current
     )
   end
@@ -39,9 +39,9 @@ class AuditLog
     return unless user.present?
     write_audit_log(
       user: user.id,
-      auditable_type: 'User',
+      auditable_type: "User",
       auditable_id: user.id,
-      action: 'login',
+      action: "login",
       time: Time.current
     )
   end

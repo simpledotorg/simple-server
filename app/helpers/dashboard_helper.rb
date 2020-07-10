@@ -40,8 +40,8 @@ module DashboardHelper
   end
 
   def percentage_string(percentage)
-    return '0%'   if percentage.zero?
-    return '< 1%' if percentage < 1
+    return "0%" if percentage.zero?
+    return "< 1%" if percentage < 1
 
     "#{percentage.round(0)}%"
   end

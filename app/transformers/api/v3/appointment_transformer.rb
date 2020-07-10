@@ -5,7 +5,7 @@ class Api::V3::AppointmentTransformer
     end
 
     def to_response(appointment)
-      Api::V3::Transformer.to_response(appointment).except('user_id')
+      Api::V3::Transformer.to_response(appointment).except("user_id")
     end
 
     def from_request(appointment_payload)

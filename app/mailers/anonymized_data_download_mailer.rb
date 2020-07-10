@@ -10,7 +10,7 @@ class AnonymizedDataDownloadMailer < ApplicationMailer
       next if file_contents.blank?
 
       attachments[file_name] = {
-        mime_type: 'text/csv',
+        mime_type: "text/csv",
         content: file_contents
       }
     end
@@ -22,14 +22,14 @@ class AnonymizedDataDownloadMailer < ApplicationMailer
   private
 
   def subject
-    if @resource.keys.include?(:district_name)
-      I18n.t('anonymized_data_download_email.district_subject',
-             district_name: @resource[:district_name],
-             recipient_name: @recipient_name)
+    if @resource.key?(:district_name)
+      I18n.t("anonymized_data_download_email.district_subject",
+        district_name: @resource[:district_name],
+        recipient_name: @recipient_name)
     else
-      I18n.t('anonymized_data_download_email.facility_subject',
-             facility_name: @resource[:facility_name],
-             recipient_name: @recipient_name)
+      I18n.t("anonymized_data_download_email.facility_subject",
+        facility_name: @resource[:facility_name],
+        recipient_name: @recipient_name)
     end
   end
 end

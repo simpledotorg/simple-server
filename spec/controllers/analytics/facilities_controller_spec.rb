@@ -186,6 +186,28 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
     end
   end
 
+  describe "#patient_list" do
+    render_views
+    it "should queue job for line list download" do
+      expect(PatientListDownloadJob).to receive(:perform_later).with(admin.email, "facility", facility_id: facility.id)
+
+      get :patient_list, params: {facility_id: facility.id}
+    end
+  end
+
+  describe "#patient_list_with_history" do
+    render_views
+
+    it "should queue job for line list with history download" do
+      expect(PatientListDownloadJob).to receive(:perform_later).with(admin.email,
+        "facility",
+        {facility_id: facility.id},
+        with_medication_history: true)
+
+      get :patient_list_with_history, params: {facility_id: facility.id}
+    end
+  end
+
   describe "#whatsapp_graphics" do
     render_views
 

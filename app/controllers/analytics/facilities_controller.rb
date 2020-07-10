@@ -50,6 +50,20 @@ class Analytics::FacilitiesController < AnalyticsController
     )
   end
 
+  def patient_list_with_history
+    recipient_email = current_admin.email
+
+    PatientListDownloadJob.perform_later(recipient_email,
+      "facility",
+      {facility_id: @facility.id},
+      with_medication_history: true)
+
+    redirect_to(
+      analytics_facility_path(@facility),
+      notice: I18n.t("patient_list_email.notice", model_type: "facility", model_name: @facility.name)
+    )
+  end
+
   def whatsapp_graphics
     set_cohort_analytics(:quarter, 3)
     set_dashboard_analytics(:quarter, 4)

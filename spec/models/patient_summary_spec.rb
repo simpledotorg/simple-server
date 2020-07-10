@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 describe PatientSummary, type: :model do
   include QuarterHelper
@@ -122,23 +122,23 @@ describe PatientSummary, type: :model do
     end
 
     describe "Risk level" do
-      describe '#risk_priority' do
+      describe "#risk_priority" do
         before { Appointment.destroy_all }
 
-        it 'returns 0 for patients recently overdue' do
+        it "returns 0 for patients recently overdue" do
           create(:appointment, scheduled_date: 29.days.ago, status: :scheduled, patient: patient)
 
           expect(PatientSummary.find_by(id: patient.id).risk_level).to eq(0)
         end
 
-        it 'returns 1 for patients overdue with critical bp' do
+        it "returns 1 for patients overdue with critical bp" do
           create(:blood_pressure, :critical, patient: patient)
           create(:appointment, scheduled_date: 31.days.ago, status: :scheduled, patient: patient)
 
           expect(PatientSummary.find_by(id: patient.id).risk_level).to eq(1)
         end
 
-        it 'returns 1 for hypertensive bp patients with medical history risks' do
+        it "returns 1 for hypertensive bp patients with medical history risks" do
           patient.medical_history.delete
           create(:medical_history, :prior_risk_history, patient: patient)
           create(:blood_pressure, :hypertensive, patient: patient)
@@ -147,35 +147,35 @@ describe PatientSummary, type: :model do
           expect(PatientSummary.find_by(id: patient.id).risk_level).to eq(1)
         end
 
-        it 'returns 0 for patients overdue with only hypertensive bp' do
+        it "returns 0 for patients overdue with only hypertensive bp" do
           create(:blood_pressure, :hypertensive, patient: patient)
           create(:appointment, :overdue, patient: patient)
 
           expect(PatientSummary.find_by(id: patient.id).risk_level).to eq(0)
         end
 
-        it 'returns 0 for patients overdue with only medical risk history' do
+        it "returns 0 for patients overdue with only medical risk history" do
           create(:medical_history, :prior_risk_history, patient: patient)
           create(:appointment, :overdue, patient: patient)
 
           expect(PatientSummary.find_by(id: patient.id).risk_level).to eq(0)
         end
 
-        it 'returns 0 for patients overdue with hypertension' do
+        it "returns 0 for patients overdue with hypertension" do
           create(:blood_pressure, :hypertensive, patient: patient)
           create(:appointment, :overdue, patient: patient)
 
           expect(PatientSummary.find_by(id: patient.id).risk_level).to eq(0)
         end
 
-        it 'returns 0 for patients overdue with low risk' do
+        it "returns 0 for patients overdue with low risk" do
           create(:blood_pressure, :under_control, patient: patient)
           create(:appointment, scheduled_date: 2.years.ago, status: :scheduled, patient: patient)
 
           expect(PatientSummary.find_by(id: patient.id).risk_level).to eq(0)
         end
 
-        it 'returns 1 for patients overdue with high blood sugar' do
+        it "returns 1 for patients overdue with high blood sugar" do
           create(:blood_sugar, patient: patient, blood_sugar_type: :random, blood_sugar_value: 300)
           create(:appointment, scheduled_date: 31.days.ago, status: :scheduled, patient: patient)
 
@@ -202,11 +202,11 @@ describe PatientSummary, type: :model do
     let!(:overdue_appointment) { create(:appointment, :overdue) }
     let!(:upcoming_appointment) { create(:appointment) }
 
-    it 'includes overdue appointments' do
+    it "includes overdue appointments" do
       expect(PatientSummary.overdue.map(&:id)).to include(overdue_appointment.patient_id)
     end
 
-    it 'excludes non-overdue appointments' do
+    it "excludes non-overdue appointments" do
       expect(PatientSummary.overdue.map(&:id)).not_to include(upcoming_appointment.patient_id)
     end
   end

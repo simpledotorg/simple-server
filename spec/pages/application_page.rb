@@ -1,7 +1,7 @@
 class ApplicationPage
   include Capybara::DSL
 
-  def element_attribute(element, attribute, scope = { Capybara.default_selector => 'html' })
+  def element_attribute(element, attribute, scope = {Capybara.default_selector => "html"})
     scope_key = scope.keys[0]
     within(scope_key, scope[scope_key]) do
       key = element.keys[0]
@@ -10,12 +10,12 @@ class ApplicationPage
   end
 
   def wait_until(condition, timeout = 60)
-    WaitUtil.wait_for_condition('page wait condition', timeout_sec: timeout) do
+    WaitUtil.wait_for_condition("page wait condition", timeout_sec: timeout) do
       condition
     end
   end
 
-  def present?(element, scope = { Capybara.default_selector => 'html' })
+  def present?(element, scope = {Capybara.default_selector => "html"})
     scope_key = scope.keys[0]
     within(scope_key, scope[scope_key]) do
       key = element.keys[0]
@@ -23,7 +23,7 @@ class ApplicationPage
     end
   end
 
-  def click(element, scope = { Capybara.default_selector => 'html' })
+  def click(element, scope = {Capybara.default_selector => "html"})
     scope_key = scope.keys[0]
     within(scope_key, scope[scope_key]) do
       key = element.keys[0]
@@ -31,7 +31,7 @@ class ApplicationPage
     end
   end
 
-  def enter(element, scope = { Capybara.default_selector => 'html' })
+  def enter(element, scope = {Capybara.default_selector => "html"})
     scope_key = scope.keys[0]
     within(scope_key, scope[scope_key]) do
       key = element.keys[0]
@@ -39,7 +39,7 @@ class ApplicationPage
     end
   end
 
-  def type(element, value, scope = { Capybara.default_selector => 'html' })
+  def type(element, value, scope = {Capybara.default_selector => "html"})
     scope_key = scope.keys[0]
     within(scope_key, scope[scope_key]) do
       key = element.keys[0]
@@ -47,7 +47,7 @@ class ApplicationPage
     end
   end
 
-  def not_present?(element, scope = { Capybara.default_selector => 'html' })
+  def not_present?(element, scope = {Capybara.default_selector => "html"})
     scope_key = scope.keys[0]
     within(scope_key, scope[scope_key]) do
       key = element.keys[0]
@@ -55,7 +55,7 @@ class ApplicationPage
     end
   end
 
-  def all_elements(element, scope = { Capybara.default_selector => 'html' })
+  def all_elements(element, scope = {Capybara.default_selector => "html"})
     scope_key = scope.keys[0]
     within(scope_key, scope[scope_key]) do
       key = element.keys[0]
@@ -63,7 +63,7 @@ class ApplicationPage
     end
   end
 
-  def verify_text(element, value, scope = { Capybara.default_selector => 'html' })
+  def verify_text(element, value, scope = {Capybara.default_selector => "html"})
     scope_key = scope.keys[0]
     within(scope_key, scope[scope_key]) do
       key = element.keys[0]
