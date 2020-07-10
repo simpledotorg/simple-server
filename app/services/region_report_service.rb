@@ -1,12 +1,12 @@
-class DistrictReportService
+class RegionReportService
   include SQLHelpers
   MAX_MONTHS_OF_DATA = 24
 
-  def initialize(district:, selected_date:, current_user:)
+  def initialize(region:, selected_date:, current_user:)
     @current_user = current_user
     @organizations = Pundit.policy_scope(current_user, [:cohort_report, Organization]).order(:name)
-    @district = district
-    @facilities = district.facilities
+    @region = region
+    @facilities = region.facilities
     @selected_date = selected_date.end_of_month
     @data = {
       controlled_patients: {},
@@ -19,7 +19,7 @@ class DistrictReportService
 
   attr_reader :current_user
   attr_reader :data
-  attr_reader :district
+  attr_reader :region
   attr_reader :facilities
   attr_reader :organizations
   attr_reader :selected_date
@@ -34,7 +34,7 @@ class DistrictReportService
 
   def compile_control_and_registration_data
     start_range = selected_date.advance(months: -MAX_MONTHS_OF_DATA).to_date
-    result = ControlRateService.new(district, range: (start_range..selected_date.to_date)).call
+    result = ControlRateService.new(region, range: (start_range..selected_date.to_date)).call
     @data.merge! result
   end
 
@@ -69,6 +69,7 @@ class DistrictReportService
   end
 
   def top_district_benchmarks
-    TopRegionService.new(organizations, selected_date).call
+    scope = region.class.to_s.underscore.to_sym
+    TopRegionService.new(organizations, selected_date, scope: scope).call
   end
 end
