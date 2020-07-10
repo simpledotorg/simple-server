@@ -7,33 +7,47 @@ RSpec.describe MergePatientService, type: :model do
     let!(:metadata) { {request_facility_id: registration_facility.id, request_user_id: user.id} }
 
     context "Assigned facility" do
-      it "keeps assigned_facility_id if it is already present" do
-        assigned_facility = build(:facility)
-        patient_attributes =
-          build_patient_payload(
-            build(:patient,
-              registration_facility: registration_facility,
-              assigned_facility: assigned_facility)
-          )
+      context "when assigned_facility_id param is available" do
+        it "keeps assigned_facility_id if it is present in params" do
+          assigned_facility = build(:facility)
+          patient_attributes =
+            build_patient_payload(
+              build(:patient,
+                registration_facility: registration_facility,
+                assigned_facility: assigned_facility)
+            )
 
-        payload = Api::V3::PatientTransformer.from_nested_request(patient_attributes)
-        merged_patient = described_class.new(payload, request_metadata: metadata).merge
+          payload = Api::V3::PatientTransformer.from_nested_request(patient_attributes)
+          merged_patient = described_class.new(payload, request_metadata: metadata).merge
 
-        expect(merged_patient[:assigned_facility_id]).to eq(assigned_facility.id)
+          expect(merged_patient[:assigned_facility_id]).to eq(assigned_facility.id)
+        end
       end
 
-      it "sets to registration_facility_id if assigned facility missing" do
-        patient_attributes =
-          build_patient_payload(
-            build(:patient,
-              registration_facility: registration_facility,
-              assigned_facility: nil)
-          )
+      context "when assigned_facility_id param is missing" do
+        context "for new patients" do
+          it "sets to registration_facility_id from request" do
+            patient = build(:patient)
+            patient_attributes = build_patient_payload(patient).except(:assigned_facility_id)
 
-        payload = Api::V3::PatientTransformer.from_nested_request(patient_attributes)
-        merged_patient = described_class.new(payload, request_metadata: metadata).merge
+            payload = Api::V3::PatientTransformer.from_nested_request(patient_attributes)
+            merged_patient = described_class.new(payload, request_metadata: metadata).merge
 
-        expect(merged_patient[:assigned_facility_id]).to eq(registration_facility.id)
+            expect(merged_patient[:assigned_facility_id]).to eq(patient_attributes[:registration_facility_id])
+          end
+        end
+
+        context "for existing patients" do
+          it "sets to existing registration_facility_id" do
+            patient = create(:patient, registration_facility: registration_facility)
+            patient_attributes = build_patient_payload(patient).except(:assigned_facility_id)
+
+            payload = Api::V3::PatientTransformer.from_nested_request(patient_attributes)
+            merged_patient = described_class.new(payload, request_metadata: metadata).merge
+
+            expect(merged_patient[:assigned_facility_id]).to eq(registration_facility.id)
+          end
+        end
       end
     end
 
