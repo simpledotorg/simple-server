@@ -48,7 +48,7 @@ RSpec.describe MergePatientService, type: :model do
       described_class.new(payload, request_metadata: metadata).merge
     end
 
-    it "if patient associations are updated, updated the patient updated_at" do
+    it "touches the patient if patient associations are updated" do
       patient = create(:patient)
 
       updated_phone_numbers = build(:patient_phone_number, patient: patient)
@@ -72,7 +72,7 @@ RSpec.describe MergePatientService, type: :model do
     end
 
     it "sets metadata for a new patient" do
-      new_patient_attrs = build_patient_payload
+      new_patient_attrs = build_patient_payload.merge(registration_facility_id: registration_facility.id)
       payload = Api::V3::PatientTransformer.from_nested_request(new_patient_attrs)
 
       merged_patient = described_class.new(payload, request_metadata: metadata).merge
@@ -81,7 +81,7 @@ RSpec.describe MergePatientService, type: :model do
       expect(merged_patient.registration_facility).to eq(registration_facility)
     end
 
-    it "doesn't change metadata for existing patient" do
+    it "doesn't set metadata for existing patient" do
       existing_patient = create(:patient)
       existing_patient_attrs = build_patient_payload(existing_patient)
       payload = Api::V3::PatientTransformer.from_nested_request(existing_patient_attrs)
