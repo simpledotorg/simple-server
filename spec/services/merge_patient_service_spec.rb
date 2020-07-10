@@ -8,7 +8,7 @@ RSpec.describe MergePatientService, type: :model do
 
     context "Assigned facility" do
       context "when assigned_facility_id param is available" do
-        it "keeps assigned_facility_id if it is present in params" do
+        it "sets to param assigned_facility_id" do
           assigned_facility = build(:facility)
           patient_attributes =
             build_patient_payload(
