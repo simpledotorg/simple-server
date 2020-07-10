@@ -188,7 +188,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
         end
       end
 
-      describe "with all attributes and associations updated" do
+      context "with all attributes and associations updated" do
         let!(:patients_payload) { updated_patients_payload }
         let!(:sync_time) { Time.current }
 
@@ -249,7 +249,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
         end
       end
 
-      describe "patient business_identifier" do
+      context "patient business_identifier" do
         it "disallows missing identifier for bangladesh_national_id" do
           patients_payload = build_payload.call(FactoryBot.create(:patient))
           business_identifier = build_business_identifier_payload
@@ -300,9 +300,11 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
       let(:deleted_time) { Time.current }
       let(:delete_patient_payload) do
         build_payload.call(existing_patient)
-          .merge(deleted_at: deleted_time,
+          .merge(
+            deleted_at: deleted_time,
             updated_at: deleted_time,
-            deleted_reason: "duplicate")
+            deleted_reason: "duplicate"
+          )
       end
 
       it "deletes a patient when the patient payload has the deleted_at field set" do
