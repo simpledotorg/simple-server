@@ -70,7 +70,7 @@ class Api::V3::PatientPayloadValidator < Api::V3::PayloadValidator
   def authorized_facility?(facility_id)
     return true if facility_id.blank?
 
-    request_user.present? && request_user.facility.facility_group.facilities.where(id: facility_id).present?
+    request_user.present? && request_user.facility_in_facility_group?(facility_id)
   end
 
   def request_user

@@ -89,6 +89,10 @@ class User < ApplicationRecord
 
   alias facility registration_facility
 
+  def facility_in_facility_group?(facility_id)
+    facility.presence && facility.facility_group.facilities.where(id: facility_id).present?
+  end
+
   def access_token_valid?
     sync_approval_status_allowed?
   end
