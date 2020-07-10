@@ -21,7 +21,7 @@ class MergePatientService
     merged_business_ids = merge_business_identifiers(payload[:business_identifiers], merged_patient)
 
     touch_patient(merged_patient, merged_address, merged_phone_numbers, merged_business_ids)
-    discard_patient_data(merged_patient)
+    discard_patient_data(merged_patient) if discarded?(merged_patient)
 
     merged_patient
   end
@@ -71,12 +71,14 @@ class MergePatientService
     end
   end
 
+  def discarded?(patient)
+    patient.deleted_at.present? && existing_patient&.deleted_at.nil?
+  end
+
   def discard_patient_data(patient)
-    if patient.deleted_at.present? && existing_patient&.deleted_at.nil?
-      # Patient has been soft-deleted by the client, server should soft-delete the patient and their associated data.
-      patient.update(deleted_by_user_id: request_metadata[:request_user_id])
-      patient.discard_data
-    end
+    # Patient has been soft-deleted by the client, server should soft-delete the patient and their associated data.
+    patient.update(deleted_by_user_id: request_metadata[:request_user_id])
+    patient.discard_data
   end
 
   def touch_patient(patient, address, phone_numbers, business_ids)

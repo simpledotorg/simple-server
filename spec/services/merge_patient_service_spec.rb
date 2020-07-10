@@ -95,7 +95,7 @@ RSpec.describe MergePatientService, type: :model do
       expect(merged_patient.registration_facility).to eq(registration_facility)
     end
 
-    it "doesn't set metadata for existing patient" do
+    it "doesn't update metadata for existing patient" do
       existing_patient = create(:patient)
       existing_patient_attrs = build_patient_payload(existing_patient)
       payload = Api::V3::PatientTransformer.from_nested_request(existing_patient_attrs)
