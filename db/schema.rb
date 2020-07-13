@@ -503,6 +503,8 @@ ActiveRecord::Schema.define(version: 2020_07_03_070251) do
   add_foreign_key "observations", "users"
   add_foreign_key "patient_phone_numbers", "patients"
   add_foreign_key "patients", "addresses"
+  add_foreign_key "patients", "facilities", column: "assigned_facility_id"
+  add_foreign_key "patients", "facilities", column: "registration_facility_id"
   add_foreign_key "protocol_drugs", "protocols"
 
   create_view "blood_pressures_per_facility_per_days", materialized: true, sql_definition: <<-SQL
