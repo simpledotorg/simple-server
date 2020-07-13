@@ -15,7 +15,6 @@ class Dashboard::DistrictsController < AdminController
     authorize(:dashboard, :show?)
     force_cache = true if params[:force_cache].present?
 
-
     @selected_date = if district_params[:selected_date]
       Time.parse(district_params[:selected_date])
     else

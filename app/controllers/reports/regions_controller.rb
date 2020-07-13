@@ -12,7 +12,7 @@ class Reports::RegionsController < AdminController
   def show
     @region = scope.find_by!(slug: facility_params[:id])
     authorize(:dashboard, :show?)
-    RequestStore.store[:force_cache] = force_cache if force_cache?
+    RequestStore.store[:force_cache] = true if force_cache?
 
     @selected_date = if facility_params[:selected_date]
       Time.parse(facility_params[:selected_date])
