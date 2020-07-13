@@ -39,7 +39,7 @@ class Reports::RegionsController < AdminController
     when "facility"
       then Facility
     else
-      raise ArguementError, "unknown scope #{scope}"
+      raise ArgumentError, "unknown scope #{scope}"
     end
   end
 
