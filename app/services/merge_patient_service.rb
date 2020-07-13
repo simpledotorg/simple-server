@@ -102,7 +102,7 @@ class MergePatientService
 
   def new_patient_metadata
     {
-      registration_facility_id: payload[:registration_facility_id].presence || request_metadata[:request_facility_id],
+      registration_facility_id: payload[:registration_facility_id] || request_metadata[:request_facility_id],
       registration_user_id: request_metadata[:request_user_id]
     }
   end
