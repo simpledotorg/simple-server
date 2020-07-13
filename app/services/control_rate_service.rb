@@ -22,22 +22,6 @@ class ControlRateService
   attr_reader :range
   attr_reader :region
 
-  def cache_key
-    "#{self.class}/#{region.model_name}/#{region.id}/#{date_or_range_cache_key}"
-  end
-
-  def date_or_range_cache_key
-    if range
-      "#{range.min.to_s(:iso8601)}/#{range.max.to_s(:iso8601)}"
-    else
-      date.to_s(:iso8601)
-    end
-  end
-
-  def cache_version
-    "#{region.updated_at.utc.to_s(:usec)}/#{CACHE_VERSION}"
-  end
-
   def call
     Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) do
       data = {
@@ -100,6 +84,22 @@ class ControlRateService
   end
 
   private
+
+  def cache_key
+    "#{self.class}/#{region.model_name}/#{region.id}/#{date_or_range_cache_key}"
+  end
+
+  def date_or_range_cache_key
+    if range
+      "#{range.min.to_s(:iso8601)}/#{range.max.to_s(:iso8601)}"
+    else
+      date.to_s(:iso8601)
+    end
+  end
+
+  def cache_version
+    "#{region.updated_at.utc.to_s(:usec)}/#{CACHE_VERSION}"
+  end
 
   def force_cache?
     RequestStore.store[:force_cache]

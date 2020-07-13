@@ -1,6 +1,7 @@
 class RegionReportService
   include SQLHelpers
   MAX_MONTHS_OF_DATA = 24
+  CACHE_VERSION = 1
 
   def initialize(region:, selected_date:, current_user:)
     @current_user = current_user
@@ -38,15 +39,11 @@ class RegionReportService
     @data.merge! result
   end
 
-  def cohort_cache_key
-    "#{self.class}/cohort_trend_data/#{region.model_name}/#{region.id}/#{organizations.map(&:id)}/#{selected_date.to_s(:iso8601)}"
-  end
-
   # We want to return cohort data for the current quarter for the selected date, and then
   # the previous three quarters. Each quarter cohort is made up of patients registered
   # in the previous quarter who has had a follow up visit in the current quarter.
   def compile_cohort_trend_data
-    Rails.cache.fetch(cohort_cache_key, expires_in: 7.days, force: force_cache?) do
+    Rails.cache.fetch(cohort_cache_key, version: cohort_cache_version, expires_in: 7.days, force: force_cache?) do
       Quarter.new(date: selected_date).downto(3).each do |results_quarter|
         cohort_quarter = results_quarter.previous_quarter
 
@@ -64,6 +61,16 @@ class RegionReportService
         }.with_indifferent_access
       end
     end
+  end
+
+  private
+
+  def cohort_cache_key
+    "#{self.class}/cohort_trend_data/#{region.model_name}/#{region.id}/#{organizations.map(&:id)}/#{selected_date.to_s(:iso8601)}"
+  end
+
+  def cohort_cache_version
+    "#{region.updated_at.utc.to_s(:usec)}/#{CACHE_VERSION}"
   end
 
   def force_cache?
