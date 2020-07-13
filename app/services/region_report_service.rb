@@ -2,13 +2,12 @@ class RegionReportService
   include SQLHelpers
   MAX_MONTHS_OF_DATA = 24
 
-  def initialize(region:, selected_date:, current_user:, force_cache: false)
+  def initialize(region:, selected_date:, current_user:)
     @current_user = current_user
     @organizations = Pundit.policy_scope(current_user, [:cohort_report, Organization]).order(:name)
     @region = region
     @facilities = region.facilities
     @selected_date = selected_date.end_of_month
-    @force_cache = force_cache
     @data = {
       controlled_patients: {},
       registrations: {},
@@ -20,7 +19,6 @@ class RegionReportService
 
   attr_reader :current_user
   attr_reader :data
-  attr_reader :force_cache
   attr_reader :region
   attr_reader :facilities
   attr_reader :organizations
@@ -36,7 +34,7 @@ class RegionReportService
 
   def compile_control_and_registration_data
     start_range = selected_date.advance(months: -MAX_MONTHS_OF_DATA).to_date
-    result = ControlRateService.new(region, range: (start_range..selected_date.to_date), force_cache: force_cache).call
+    result = ControlRateService.new(region, range: (start_range..selected_date.to_date)).call
     @data.merge! result
   end
 
@@ -48,7 +46,7 @@ class RegionReportService
   # the previous three quarters. Each quarter cohort is made up of patients registered
   # in the previous quarter who has had a follow up visit in the current quarter.
   def compile_cohort_trend_data
-    Rails.cache.fetch(cohort_cache_key, expires_in: 7.days) do
+    Rails.cache.fetch(cohort_cache_key, expires_in: 7.days, force: force_cache?) do
       Quarter.new(date: selected_date).downto(3).each do |results_quarter|
         cohort_quarter = results_quarter.previous_quarter
 
@@ -68,6 +66,10 @@ class RegionReportService
     end
   end
 
+  def force_cache?
+    RequestStore.store[:force_cache]
+  end
+
   def compile_benchmarks
     @data[:top_district_benchmarks].merge!(top_district_benchmarks)
   end
@@ -78,6 +80,6 @@ class RegionReportService
 
   def top_district_benchmarks
     scope = region.class.to_s.underscore.to_sym
-    TopRegionService.new(organizations, selected_date, scope: scope, force_cache: force_cache).call
+    TopRegionService.new(organizations, selected_date, scope: scope).call
   end
 end

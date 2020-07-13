@@ -5,7 +5,7 @@ class ControlRateService
   # Can be initialized with _either_ a date range or a single date to calculate
   # control rates. Note that for the date range the returned values will be for each month going back
   # to the beginning of registrations for the region.
-  def initialize(region, range: nil, date: nil, force_cache: false)
+  def initialize(region, range: nil, date: nil)
     raise ArgumentError, "Cannot provide both a range and date" if range && date
     raise ArgumentError, "Must provide either a range or a single date" if range.nil? && date.nil?
     @region = region
@@ -13,13 +13,11 @@ class ControlRateService
     @range = range
     @date = date
     @end_of_date_range = date || range.end
-    @force_cache = force_cache
     logger.info "#{self.class} created for range: #{range} facilities: #{facilities.map(&:id)} #{facilities.map(&:name)}"
   end
 
   delegate :logger, to: Rails
   attr_reader :date
-  attr_reader :force_cache
   attr_reader :facilities
   attr_reader :range
   attr_reader :region
@@ -41,7 +39,7 @@ class ControlRateService
   end
 
   def call
-    Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache) do
+    Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) do
       data = {
         controlled_patients: {},
         controlled_patients_rate: {},
@@ -102,6 +100,10 @@ class ControlRateService
   end
 
   private
+
+  def force_cache?
+    RequestStore.store[:force_cache]
+  end
 
   def percentage(numerator, denominator)
     return 0 if denominator == 0

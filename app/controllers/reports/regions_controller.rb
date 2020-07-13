@@ -12,7 +12,7 @@ class Reports::RegionsController < AdminController
   def show
     @region = scope.find_by!(slug: facility_params[:id])
     authorize(:dashboard, :show?)
-    force_cache = true if facility_params[:force_cache].present?
+    RequestStore.store[:force_cache] = force_cache if force_cache?
 
     @selected_date = if facility_params[:selected_date]
       Time.parse(facility_params[:selected_date])
@@ -21,8 +21,7 @@ class Reports::RegionsController < AdminController
     end
     @data = RegionReportService.new(region: @region,
                                     selected_date: @selected_date,
-                                    current_user: current_admin,
-                                    force_cache: force_cache).call
+                                    current_user: current_admin).call
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
@@ -45,6 +44,10 @@ class Reports::RegionsController < AdminController
 
   def facility_params
     params.permit(:selected_date, :id, :force_cache, :scope)
+  end
+
+  def force_cache?
+    facility_params[:force_cache].present?
   end
 
   def set_time_zone
