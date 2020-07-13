@@ -13,11 +13,11 @@ om-ET:
       invalid_password: "Jechi darbaan kee wal hin fakkaatu Deebisii yaali?"
       account_locked: "Heddi kee yeroowwan %{minutes} daqiiqaawwan dhufaniif cufamee jira. Maaloo xiqqoo turii akkasumas deebisii yaali"
   sms:
-    request_otp: "<#> %{otp} koodii mirkaneeffannaa kee isa salphaadha\n%{app_signature}"
+    request_otp: "<#> %{otp}koodii mirkaneeffannaa kee isa salphaadha\n%{app_signature}"
     appointment_reminders:
       missed_visit_sms_reminder: "Hojjattoonni keenya kan %{facility_name} waa’ee kee fii waa’e fayyummaa onnee keetii yaaddaa jiru. Maaloo dawaa dhiibbaa dhiigaa kee itti fufi. Dawaa kee jiddu gala dhiyeenyaa jiru irraa walitti qabadhu. ANM yookan ASHA kee qunnami."
       missed_visit_whatsapp_reminder: "Hojjattoonni keenya kan %{facility_name} waa’ee kee fii waa’e fayyummaa onnee keetii yaaddaa jiru. Maaloo dawaa dhiibbaa dhiigaa kee itti fufi. Dawaa kee jiddu gala dhiyeenyaa jiru irraa walitti qabadhu. ANM yookan ASHA kee qunnami."
-    patient_request_otp: "<#> %{otp} koodii rageeffannaa BP keetiiti \n%{app_signature}"
+    patient_request_otp: "<#>%{otp}koodii Paaspoortii mirkaneeffannaa PB keetiti\n%{app_signature}"
   analytics:
     followup_patients: "Dhukkubsattoota hordoffii meeqatu %{facility_name}ilaalame ?"
     patients_enrolled: "Dhubsattoota haaraa meeqatu %{facility_name}tti makame?"
@@ -26,7 +26,7 @@ om-ET:
   user_analytics:
     hypertension: "Baayyina dhiiga"
     diabetes: "Sukkaara"
-    genders: ["Hunda", "Dhiira", "Dubara", "Saaldarba"]
+    genders: ["Hunda", "dhiira", "Dubara", "Saaldarba"]
     all_time: "Yeroo hunda"
     follow_up_patients: "Dhukkubsattoota baayyina dhiigaa hordofi"
     registered_patients: "Dhukkubsattoota galmaa’an"
