@@ -90,7 +90,7 @@ class User < ApplicationRecord
   alias facility registration_facility
 
   def authorized_facility?(facility_id)
-    facility.presence && registration_facility.facility_group.facilities.where(id: facility_id).present?
+    registration_facility && registration_facility.facility_group.facilities.where(id: facility_id).present?
   end
 
   def access_token_valid?
