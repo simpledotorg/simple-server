@@ -18,6 +18,8 @@ class FacilityGroup < ApplicationRecord
   has_many :medical_histories, through: :patients
   has_many :communications, through: :appointments
 
+  has_many :user_resources, as: :resource
+
   validates :name, presence: true
   validates :organization, presence: true
 

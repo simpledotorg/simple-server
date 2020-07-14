@@ -55,7 +55,7 @@ class User < ApplicationRecord
   scope :search_by_name_or_phone, ->(term) { search_by_name(term).union(search_by_phone(term)) }
 
   validates :full_name, presence: true
-  validates :role, presence: true, if: -> { email_authentication.present? }
+  validates :designation, presence: true, if: -> { email_authentication.present? }
 
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true

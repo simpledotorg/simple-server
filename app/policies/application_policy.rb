@@ -16,6 +16,10 @@ class ApplicationPolicy
     end
   end
 
+  def user_has_any_roles?(*roles)
+    roles.include? User.role.name
+  end
+
   class Scope
     attr_reader :user, :scope
 
