@@ -385,7 +385,7 @@ ActiveRecord::Schema.define(version: 2020_07_08_113205) do
     t.index ["updated_at"], name: "index_patients_on_updated_at"
   end
 
-  create_table "permissions", force: :cascade do |t|
+  create_table "permissions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -393,8 +393,8 @@ ActiveRecord::Schema.define(version: 2020_07_08_113205) do
   end
 
   create_table "permissions_roles", id: false, force: :cascade do |t|
-    t.bigint "role_id", null: false
-    t.bigint "permission_id", null: false
+    t.uuid "permission_id", null: false
+    t.uuid "role_id", null: false
     t.index ["permission_id", "role_id"], name: "index_permissions_roles_on_permission_id_and_role_id"
   end
 
@@ -454,7 +454,7 @@ ActiveRecord::Schema.define(version: 2020_07_08_113205) do
     t.index ["deleted_at"], name: "index_protocols_on_deleted_at"
   end
 
-  create_table "roles", force: :cascade do |t|
+  create_table "roles", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -494,7 +494,7 @@ ActiveRecord::Schema.define(version: 2020_07_08_113205) do
     t.index ["resource_type", "resource_id"], name: "index_user_permissions_on_resource_type_and_resource_id"
   end
 
-  create_table "user_resources", force: :cascade do |t|
+  create_table "user_resources", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id", null: false
     t.uuid "resource_id", null: false
     t.string "resource_type", null: false
