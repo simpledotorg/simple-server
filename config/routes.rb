@@ -217,4 +217,6 @@ Rails.application.routes.draw do
   authenticate :email_authentication, ->(a) { a.user.has_permission?(:view_flipper_ui) } do
     mount Flipper::UI.app(Flipper) => "/flipper"
   end
+
+  get "ping", to: "health#ping"
 end
