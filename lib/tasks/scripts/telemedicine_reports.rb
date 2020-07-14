@@ -112,6 +112,80 @@ module TelemedicineReports
               percentage(period_clicks, district[:period][:high_bp_or_bs]),
             ]
 
+            end
+          end
+
+        csv << []
+        csv << []
+
+        csv << [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "Between #{period_start.strftime("%d %b %Y")} and #{period_end.strftime("%d %b %Y")}",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+
+        csv << [
+          "State",
+          "District",
+          "Facility",
+          "Facilities with TM",
+          "HWCs & SCs with TM",
+          "Users at HWCs & SCs",
+          "",
+          "Patients who visited",
+          "Patients with High BP",
+          "Patients with High Blood Sugar",
+          "Patients with High BP or Sugar",
+          "Teleconsult Button Clicks",
+          "Teleconsult requests percentage"
+        ]
+
+        facilities_data.each do |state|
+          period_clicks = fetch_clicks(period_mixpanel_data, state, true)
+          csv << [
+            state[:state],
+            "",
+            "",
+            state[:count],
+            state[:hwc_and_sc],
+            state[:users],
+            "",
+            state[:period][:visits],
+            state[:period][:high_bp],
+            state[:period][:high_bs],
+            state[:period][:high_bp_or_bs],
+            period_clicks,
+            percentage(period_clicks, state[:period][:high_bp_or_bs]),
+          ]
+
+          state[:districts].each do |district|
+            period_clicks = fetch_clicks(period_mixpanel_data, district, false)
+            csv << [
+              "",
+              district[:district],
+              "",
+              district[:count],
+              district[:hwc_and_sc],
+              district[:users],
+              "",
+              district[:period][:visits],
+              district[:period][:high_bp],
+              district[:period][:high_bs],
+              district[:period][:high_bp_or_bs],
+              period_clicks,
+              percentage(period_clicks, district[:period][:high_bp_or_bs]),
+            ]
+
             district[:facilities].each do |facility|
               csv << [
                 "",
