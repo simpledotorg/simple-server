@@ -134,10 +134,8 @@
       </div>
       <div>
         <%
-          percent = 1.05
-          max_y_value = case
-          when @last_registration_value >= 0
-            (@last_registration_value * percent).round((@last_registration_value.to_s.length-2)*-1)
+          max_y_value = if @last_registration_value >= 0
+            @last_registration_value.ceil(-1)
           else
             0
           end
