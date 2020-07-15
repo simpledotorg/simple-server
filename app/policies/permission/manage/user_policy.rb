@@ -7,7 +7,7 @@ class Permission::Manage::UserPolicy < ApplicationPolicy
   end
 
   def manage_user?
-    user.role.permissions.where(name: "manage_users").present?
+    user.role.permissions.manage_users.exists?
   end
 
   class Scope < Scope
