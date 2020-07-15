@@ -28,7 +28,7 @@ describe Communication, type: :model do
         Time.zone = @original_time_zone
       end
 
-      it "returns the current time if currently ithin the messaging window" do
+      it "returns the current time if currently within the messaging window" do
         Timecop.freeze(Time.zone.parse("January 1, 2020 12:00pm")) do
           expect(Communication.next_messaging_time).to eq(Time.zone.parse("January 1, 2020 12:00pm"))
         end
