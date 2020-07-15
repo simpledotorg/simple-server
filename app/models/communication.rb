@@ -27,6 +27,9 @@ class Communication < ApplicationRecord
   ANONYMIZED_DATA_FIELDS = %w[id appointment_id patient_id user_id created_at communication_type
     communication_result]
 
+  DEFAULT_MESSAGING_START_HOUR = 14
+  DEFAULT_MESSAGING_END_HOUR = 16
+
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
@@ -49,11 +52,11 @@ class Communication < ApplicationRecord
   end
 
   def self.messaging_start_hour
-    @messaging_start_hour ||= ENV.fetch("APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_START", 14).to_i
+    @messaging_start_hour ||= ENV.fetch("APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_START", DEFAULT_MESSAGING_START_HOUR).to_i
   end
 
   def self.messaging_end_hour
-    @messaging_end_hour ||= ENV.fetch("APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_FINISH", 16).to_i
+    @messaging_end_hour ||= ENV.fetch("APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_FINISH", DEFAULT_MESSAGING_END_HOUR).to_i
   end
 
   def self.next_messaging_time
