@@ -18,9 +18,14 @@ describe Communication, type: :model do
   context "Utilities" do
     describe ".next_appointment_time" do
       before do
+        @original_time_zone = Time.zone
         Time.zone = Rails.application.config.country[:time_zone]
         allow(Communication).to receive(:messaging_start_hour).and_return(10)
         allow(Communication).to receive(:messaging_end_hour).and_return(16)
+      end
+
+      after do
+        Time.zone = @original_time_zone
       end
 
       it "returns the current time if currently ithin the messaging window" do
