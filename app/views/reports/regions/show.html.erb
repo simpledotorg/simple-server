@@ -51,7 +51,7 @@
         <div>
           <h3 class="mb-1 fs-xlarge fw-bold <% if @data[:controlled_patients_rate].values.last %>c-green-dark<% else %>c-grey-medium<% end %>">
             <% if @data[:controlled_patients_rate].values.last %>
-              <%= @data[:controlled_patients_rate].values.last %>
+              <%= @data[:controlled_patients_rate].values.last %>%
             <% else %>
               No data
             <% end %>
