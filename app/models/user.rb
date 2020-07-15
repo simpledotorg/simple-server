@@ -35,7 +35,6 @@ class User < ApplicationRecord
   has_many :appointments
   has_many :medical_histories
   has_many :prescription_drugs
-
   has_many :user_permissions, foreign_key: :user_id, dependent: :delete_all
 
   has_many :deleted_patients,
@@ -45,6 +44,11 @@ class User < ApplicationRecord
 
   belongs_to :role, optional: true
   has_many :user_resources, foreign_key: :user_id
+  has_many :accessible_organizations, through: :user_resources, source: :resource, source_type: "Organization"
+  has_many :accessible_facility_groups, through: :user_resources, source: :resource, source_type: "FacilityGroup"
+
+  scope :admins, -> { joins(:email_authentications).where.not(email_authentications: {id: nil}) }
+  scope :nurses, -> { joins(:phone_number_authentications).where.not(phone_number_authentications: {id: nil}) }
 
   pg_search_scope :search_by_name, against: [:full_name], using: {tsearch: {prefix: true, any_word: true}}
   scope :search_by_email,
@@ -172,6 +176,13 @@ class User < ApplicationRecord
 
   def has_role?(*roles)
     roles.map(&:to_sym).include?(role.to_sym)
+  end
+
+  def accessible_facilities
+    Facility
+      .where(facility_group: accessible_facility_groups)
+      .or(Facility
+            .where(organization: accessible_organizations))
   end
 
   def resources

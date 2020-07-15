@@ -1,4 +1,4 @@
-class Permission::Manage::UserPolicy < ApplicationPolicy
+class Permission::Manage::AdminPolicy < ApplicationPolicy
   attr_reader :user, :record
 
   def initialize(user, record)
@@ -35,9 +35,7 @@ class Permission::Manage::UserPolicy < ApplicationPolicy
       #
       #
 
-      scope
-        .where(phone_number_authentications: {registration_facility: user.accessible_facilities})
-        .or(scope.where(email_authentications: {registration_facility: user.accessible_facilities}))
+      scope.admins.where(email_authentications: {registration_facility: user.accessible_facilities})
     end
   end
 end
