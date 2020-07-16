@@ -41,6 +41,17 @@ RSpec.describe LatestBloodPressuresPerPatientPerMonth, type: :model do
     end
   end
 
+  describe "assigned facility" do
+    let!(:facility) { create(:facility) }
+    let!(:patient) { create(:patient, assigned_facility: facility) }
+    let!(:blood_pressure) { create(:blood_pressure, patient: patient) }
+    before { described_class.refresh }
+
+    it "stores the assigned facility" do
+      expect(described_class.find_by_bp_id(blood_pressure.id).assigned_facility_id).to eq facility.id
+    end
+  end
+
   describe "patient status and medical history fields" do
     it "stores and updates patient status" do
       patient_1 = create(:patient, status: :migrated)
