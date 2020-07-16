@@ -11,6 +11,8 @@ class Admin::FacilitiesController < AdminController
   def index
     authorize([:manage, :facility, Facility])
 
+    @admin = current_admin
+
     if searching?
       facilities = policy_scope([:manage, :facility, Facility]).search_by_name(search_query)
       facility_groups = FacilityGroup.where(facilities: facilities)
@@ -30,6 +32,7 @@ class Admin::FacilitiesController < AdminController
   end
 
   def show
+    @admin = current_admin
   end
 
   def new

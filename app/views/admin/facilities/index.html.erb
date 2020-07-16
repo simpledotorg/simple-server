@@ -5,7 +5,7 @@
     <% if policy([:manage, :facility, Facility]).upload? %>
       <%= link_to 'Bulk add facilities', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
     <% end %>
-    <% if policy([:manage, FacilityGroup]).new? %>
+    <% if @admin.can_manage?(Organization) %>
       <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-success" do %>
         <i class="fas fa-plus mr-1"></i>
         Add facility group

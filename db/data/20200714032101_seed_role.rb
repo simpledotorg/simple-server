@@ -1,9 +1,8 @@
 class SeedRole < ActiveRecord::Migration[5.2]
   def up
-    permissions = Permission.where(name: %w[manage_region manage_users access_aggregate_data access_pii])
-
-    admin = Role.create(name: "admin")
-    admin.permissions << permissions
+    Role.create(name: "super_admin")
+    Role.create(name: "admin")
+    Role.create(name: "analyst")
   end
 
   def down
