@@ -1,7 +1,7 @@
 class RegionReportService
   include SQLHelpers
   MAX_MONTHS_OF_DATA = 24
-  CACHE_VERSION = 1
+  CACHE_VERSION = 2
 
   def initialize(region:, selected_date:, current_user:)
     @current_user = current_user
@@ -27,7 +27,7 @@ class RegionReportService
 
   def call
     compile_control_and_registration_data
-    compile_cohort_trend_data
+    data.merge! compile_cohort_trend_data
     compile_benchmarks
 
     data
@@ -44,6 +44,7 @@ class RegionReportService
   # in the previous quarter who has had a follow up visit in the current quarter.
   def compile_cohort_trend_data
     Rails.cache.fetch(cohort_cache_key, version: cohort_cache_version, expires_in: 7.days, force: force_cache?) do
+      result = {quarterly_registrations: []}
       Quarter.new(date: selected_date).downto(3).each do |results_quarter|
         cohort_quarter = results_quarter.previous_quarter
 
@@ -51,7 +52,7 @@ class RegionReportService
                   registration_quarter: cohort_quarter.number,
                   registration_year: cohort_quarter.year}
         query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities, cohort_period: period)
-        @data[:quarterly_registrations] << {
+        result[:quarterly_registrations] << {
           results_in: format_quarter(results_quarter),
           patients_registered: format_quarter(cohort_quarter),
           registered: query.cohort_registrations.count,
@@ -60,6 +61,7 @@ class RegionReportService
           uncontrolled: query.cohort_uncontrolled_bps.count
         }.with_indifferent_access
       end
+      result
     end
   end
 
