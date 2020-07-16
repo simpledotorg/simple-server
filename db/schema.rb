@@ -12,7 +12,6 @@
 
 ActiveRecord::Schema.define(version: 2020_07_16_084425) do
 
-
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -978,4 +977,5 @@ ActiveRecord::Schema.define(version: 2020_07_16_084425) do
     ORDER BY latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.bp_recorded_at DESC, latest_blood_pressures_per_patient_per_months.bp_id;
   SQL
   add_index "latest_blood_pressures_per_patients", ["bp_id"], name: "index_latest_blood_pressures_per_patients", unique: true
+
 end
