@@ -1,4 +1,4 @@
-name: Run Android QA test suite
+name: Android QA tests
 
 on: workflow_dispatch
 
