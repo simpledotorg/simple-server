@@ -9,7 +9,7 @@ class Region < ApplicationRecord
   }
 
   validates :name, presence: true
-  validates :slug, presence: true
+  validates :slug, presence: true, uniqueness: true
 
   belongs_to :parent_region, polymorphic: true, optional: true
   has_many :_child_regions, as: :parent_region, class_name: "Region"

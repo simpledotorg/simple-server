@@ -1,7 +1,6 @@
 class CreateStateRegions < ActiveRecord::Migration[5.2]
   def up
-    Facility.group("lower(state)").pluck("lower(state)").each do |state|
-    end
+    StateRegionCreator.new.call
   end
 
   def down

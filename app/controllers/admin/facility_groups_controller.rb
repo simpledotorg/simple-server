@@ -68,6 +68,7 @@ class Admin::FacilityGroupsController < AdminController
       :organization_id,
       :name,
       :description,
+      :parent_region_id,
       :protocol_id,
       :enable_diabetes_management,
       facility_ids: []

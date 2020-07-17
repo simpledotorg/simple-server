@@ -18,6 +18,8 @@
 
       <%= form.select(:organization_id, organizations.map { |organization| [organization.name, organization.id] }) %>
 
+      <%= form.select(:parent_region_id, organizations.flat_map(&:children).map { |region| [region.name, region.id] }, label: "State") %>
+
       <%= form.text_field :name, id: :facility_name, required: true, help: "Usually the name of a District", autocomplete: "off" %>
 
       <% if facility_group.facilities.present? %>
