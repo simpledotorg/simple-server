@@ -10,11 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_08_113205) do
+ActiveRecord::Schema.define(version: 2020_07_08_201410) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
+
+  create_table "accesses", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.string "role", null: false
+    t.string "resource_type"
+    t.uuid "resource_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["resource_type", "resource_id"], name: "idx_accesses_on_resource_type_and_id", unique: true
+    t.index ["role"], name: "index_accesses_on_role"
+    t.index ["user_id"], name: "index_accesses_on_user_id"
+  end
 
   create_table "addresses", id: :uuid, default: nil, force: :cascade do |t|
     t.string "street_address"
@@ -385,19 +398,6 @@ ActiveRecord::Schema.define(version: 2020_07_08_113205) do
     t.index ["updated_at"], name: "index_patients_on_updated_at"
   end
 
-  create_table "permissions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "deleted_at"
-  end
-
-  create_table "permissions_roles", id: false, force: :cascade do |t|
-    t.uuid "permission_id", null: false
-    t.uuid "role_id", null: false
-    t.index ["permission_id", "role_id"], name: "index_permissions_roles_on_permission_id_and_role_id"
-  end
-
   create_table "phone_number_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "phone_number", null: false
     t.string "password_digest", null: false
@@ -454,13 +454,6 @@ ActiveRecord::Schema.define(version: 2020_07_08_113205) do
     t.index ["deleted_at"], name: "index_protocols_on_deleted_at"
   end
 
-  create_table "roles", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "deleted_at"
-  end
-
   create_table "twilio_sms_delivery_details", force: :cascade do |t|
     t.string "session_id"
     t.string "result"
@@ -494,18 +487,6 @@ ActiveRecord::Schema.define(version: 2020_07_08_113205) do
     t.index ["resource_type", "resource_id"], name: "index_user_permissions_on_resource_type_and_resource_id"
   end
 
-  create_table "user_resources", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "user_id", null: false
-    t.uuid "resource_id", null: false
-    t.string "resource_type", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "deleted_at"
-    t.index ["resource_id"], name: "index_user_resources_on_resource_id"
-    t.index ["resource_type"], name: "index_user_resources_on_resource_type"
-    t.index ["user_id"], name: "index_user_resources_on_user_id"
-  end
-
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "full_name"
     t.string "sync_approval_status", null: false
@@ -515,14 +496,14 @@ ActiveRecord::Schema.define(version: 2020_07_08_113205) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
-    t.string "designation"
+    t.string "role"
     t.uuid "organization_id"
-    t.uuid "role_id"
     t.index "to_tsvector('simple'::regconfig, COALESCE((full_name)::text, ''::text))", name: "index_gin_users_on_full_name", using: :gin
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["organization_id"], name: "index_users_on_organization_id"
   end
 
+  add_foreign_key "accesses", "users"
   add_foreign_key "appointments", "facilities"
   add_foreign_key "blood_sugars", "facilities"
   add_foreign_key "blood_sugars", "users"
@@ -708,29 +689,34 @@ ActiveRecord::Schema.define(version: 2020_07_08_113205) do
            SELECT DISTINCT ON (blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text) blood_pressures.id AS bp_id,
               blood_pressures.patient_id,
               patients.registration_facility_id,
+              patients.status AS patient_status,
               blood_pressures.facility_id AS bp_facility_id,
               timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at)) AS bp_recorded_at,
               timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at)) AS patient_recorded_at,
               blood_pressures.systolic,
               blood_pressures.diastolic,
               timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.deleted_at)) AS deleted_at,
+              medical_histories.hypertension AS medical_history_hypertension,
               (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS month,
               (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS quarter,
               (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS year
-             FROM (blood_pressures
+             FROM ((blood_pressures
                JOIN patients ON ((patients.id = blood_pressures.patient_id)))
+               LEFT JOIN medical_histories ON ((medical_histories.patient_id = blood_pressures.patient_id)))
             WHERE (blood_pressures.deleted_at IS NULL)
             ORDER BY blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, blood_pressures.recorded_at DESC, blood_pressures.id
           )
    SELECT latest_bp_per_patient_per_month.bp_id,
       latest_bp_per_patient_per_month.patient_id,
       latest_bp_per_patient_per_month.registration_facility_id,
+      latest_bp_per_patient_per_month.patient_status,
       latest_bp_per_patient_per_month.bp_facility_id,
       latest_bp_per_patient_per_month.bp_recorded_at,
       latest_bp_per_patient_per_month.patient_recorded_at,
       latest_bp_per_patient_per_month.systolic,
       latest_bp_per_patient_per_month.diastolic,
       latest_bp_per_patient_per_month.deleted_at,
+      latest_bp_per_patient_per_month.medical_history_hypertension,
       latest_bp_per_patient_per_month.month,
       latest_bp_per_patient_per_month.quarter,
       latest_bp_per_patient_per_month.year,
@@ -741,38 +727,24 @@ ActiveRecord::Schema.define(version: 2020_07_08_113205) do
   add_index "latest_blood_pressures_per_patient_per_months", ["bp_id"], name: "index_latest_blood_pressures_per_patient_per_months", unique: true
 
   create_view "latest_blood_pressures_per_patient_per_quarters", materialized: true, sql_definition: <<-SQL
-      WITH latest_bp_per_patient_per_quarter AS (
-           SELECT DISTINCT ON (latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.year, latest_blood_pressures_per_patient_per_months.quarter) latest_blood_pressures_per_patient_per_months.bp_id,
-              latest_blood_pressures_per_patient_per_months.patient_id,
-              latest_blood_pressures_per_patient_per_months.registration_facility_id,
-              latest_blood_pressures_per_patient_per_months.bp_facility_id,
-              latest_blood_pressures_per_patient_per_months.bp_recorded_at,
-              latest_blood_pressures_per_patient_per_months.patient_recorded_at,
-              latest_blood_pressures_per_patient_per_months.systolic,
-              latest_blood_pressures_per_patient_per_months.diastolic,
-              latest_blood_pressures_per_patient_per_months.deleted_at,
-              latest_blood_pressures_per_patient_per_months.month,
-              latest_blood_pressures_per_patient_per_months.quarter,
-              latest_blood_pressures_per_patient_per_months.year,
-              latest_blood_pressures_per_patient_per_months.responsible_facility_id,
-              latest_blood_pressures_per_patient_per_months.previous_bp_id
-             FROM latest_blood_pressures_per_patient_per_months
-            ORDER BY latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.year, latest_blood_pressures_per_patient_per_months.quarter, latest_blood_pressures_per_patient_per_months.bp_recorded_at DESC, latest_blood_pressures_per_patient_per_months.bp_id
-          )
-   SELECT latest_bp_per_patient_per_quarter.bp_id,
-      latest_bp_per_patient_per_quarter.patient_id,
-      latest_bp_per_patient_per_quarter.registration_facility_id,
-      latest_bp_per_patient_per_quarter.bp_facility_id,
-      latest_bp_per_patient_per_quarter.bp_recorded_at,
-      latest_bp_per_patient_per_quarter.patient_recorded_at,
-      latest_bp_per_patient_per_quarter.systolic,
-      latest_bp_per_patient_per_quarter.diastolic,
-      latest_bp_per_patient_per_quarter.deleted_at,
-      latest_bp_per_patient_per_quarter.month,
-      latest_bp_per_patient_per_quarter.quarter,
-      latest_bp_per_patient_per_quarter.year,
-      lag(latest_bp_per_patient_per_quarter.bp_facility_id, 1) OVER (PARTITION BY latest_bp_per_patient_per_quarter.patient_id ORDER BY latest_bp_per_patient_per_quarter.bp_recorded_at, latest_bp_per_patient_per_quarter.bp_id) AS responsible_facility_id
-     FROM latest_bp_per_patient_per_quarter;
+      SELECT DISTINCT ON (latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.year, latest_blood_pressures_per_patient_per_months.quarter) latest_blood_pressures_per_patient_per_months.bp_id,
+      latest_blood_pressures_per_patient_per_months.patient_id,
+      latest_blood_pressures_per_patient_per_months.registration_facility_id,
+      latest_blood_pressures_per_patient_per_months.patient_status,
+      latest_blood_pressures_per_patient_per_months.bp_facility_id,
+      latest_blood_pressures_per_patient_per_months.bp_recorded_at,
+      latest_blood_pressures_per_patient_per_months.patient_recorded_at,
+      latest_blood_pressures_per_patient_per_months.systolic,
+      latest_blood_pressures_per_patient_per_months.diastolic,
+      latest_blood_pressures_per_patient_per_months.deleted_at,
+      latest_blood_pressures_per_patient_per_months.medical_history_hypertension,
+      latest_blood_pressures_per_patient_per_months.month,
+      latest_blood_pressures_per_patient_per_months.quarter,
+      latest_blood_pressures_per_patient_per_months.year,
+      latest_blood_pressures_per_patient_per_months.responsible_facility_id,
+      latest_blood_pressures_per_patient_per_months.previous_bp_id
+     FROM latest_blood_pressures_per_patient_per_months
+    ORDER BY latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.year, latest_blood_pressures_per_patient_per_months.quarter, latest_blood_pressures_per_patient_per_months.bp_recorded_at DESC, latest_blood_pressures_per_patient_per_months.bp_id;
   SQL
   add_index "latest_blood_pressures_per_patient_per_quarters", ["bp_id"], name: "index_latest_blood_pressures_per_patient_per_quarters", unique: true
 
@@ -780,12 +752,14 @@ ActiveRecord::Schema.define(version: 2020_07_08_113205) do
       SELECT DISTINCT ON (latest_blood_pressures_per_patient_per_months.patient_id) latest_blood_pressures_per_patient_per_months.bp_id,
       latest_blood_pressures_per_patient_per_months.patient_id,
       latest_blood_pressures_per_patient_per_months.registration_facility_id,
+      latest_blood_pressures_per_patient_per_months.patient_status,
       latest_blood_pressures_per_patient_per_months.bp_facility_id,
       latest_blood_pressures_per_patient_per_months.bp_recorded_at,
       latest_blood_pressures_per_patient_per_months.patient_recorded_at,
       latest_blood_pressures_per_patient_per_months.systolic,
       latest_blood_pressures_per_patient_per_months.diastolic,
       latest_blood_pressures_per_patient_per_months.deleted_at,
+      latest_blood_pressures_per_patient_per_months.medical_history_hypertension,
       latest_blood_pressures_per_patient_per_months.month,
       latest_blood_pressures_per_patient_per_months.quarter,
       latest_blood_pressures_per_patient_per_months.year,

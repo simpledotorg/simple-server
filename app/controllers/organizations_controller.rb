@@ -4,11 +4,7 @@ class OrganizationsController < AdminController
   def index
     authorize(:dashboard, :show?)
 
-    policy_scope([:permission, :manage, User])
-    policy_scope([:permission, :manage, User.admins])
-    policy_scope([:permission, :manage, Admin])
-
-    @users_requesting_approval = policy_scope([:permission, :manage, User])
+    @users_requesting_approval = policy_scope([:manage, :user, User])
       .requested_sync_approval
       .order(updated_at: :desc)
 

@@ -27,9 +27,7 @@
             <% end %>
          </div>
          <div class="col-sm-7 col-lg-5 mt-3">
-           <% if policy([:permission, :manage, :user]).manage_user? %>
              <%= render "shared/user_approvals" %>
-           <% end %>
          </div>
   </div>
 </div>

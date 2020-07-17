@@ -42,13 +42,7 @@ class User < ApplicationRecord
     class_name: "Patient",
     foreign_key: :deleted_by_user_id
 
-  belongs_to :role, optional: true
-  has_many :user_resources, foreign_key: :user_id
-  has_many :accessible_organizations, through: :user_resources, source: :resource, source_type: "Organization"
-  has_many :accessible_facility_groups, through: :user_resources, source: :resource, source_type: "FacilityGroup"
-
-  scope :admins, -> { joins(:email_authentications).where.not(email_authentications: {id: nil}) }
-  scope :nurses, -> { joins(:phone_number_authentications).where.not(phone_number_authentications: {id: nil}) }
+  has_many :accesses
 
   pg_search_scope :search_by_name, against: [:full_name], using: {tsearch: {prefix: true, any_word: true}}
   scope :search_by_email,
@@ -159,6 +153,14 @@ class User < ApplicationRecord
     user_permissions.where(permission_slug: permission_slug).present?
   end
 
+  def has_role?(*roles)
+    roles.map(&:to_sym).include?(role.to_sym)
+  end
+
+  def resources
+    user_permissions.map(&:resource)
+  end
+
   def reset_phone_number_authentication_password!(password_digest)
     transaction do
       authentication = phone_number_authentication
@@ -174,19 +176,92 @@ class User < ApplicationRecord
     where(sync_approval_status: :requested)
   end
 
-  def has_role?(*roles)
-    roles.map(&:to_sym).include?(role.to_sym)
+  def can_manage?(scope)
+    admin = Role.admin.first
+    
+    value =
+      case scope.class.model_name.name.to_sym
+        when :Organization
+          accesses.where(role: admin, resourceable: scope).exists?
+        when :FacilityGroup
+          organizations = Organization.includes(:facility_groups).where(facility_groups: scope)
+
+          accesses
+            .where(role: admin, resourceable: organizations)
+            .or(accesses.where(role: admin, resourceable: scope)).exists?
+        when :Facility
+          organizations = Organization.includes(:facilities).where(facilities: scope)
+          facility_group = scope.facility_group
+
+          accesses
+            .where(role: admin, resourceable: organizations)
+            .or(accesses.where(role: admin, resourceable: facility_group))
+            .or(accesses.where(role: admin, resourceable: scope)).exists?
+        else
+          nil
+      end
+
+    return value unless value.nil?
+
+    case scope.class.to_sym
+      when Class
+        case scope.model_name.name.to_sym
+          when :Organization
+            accesses.where(role: admin, resourceable_type: %w[Organization]).exists?
+          when :FacilityGroup
+            accesses.where(role: admin, resourceable_type: %w[Organization FacilityGroup]).exists?
+          when :Facility
+            accesses.where(role: admin, resourceable_type: %w[Organization FacilityGroup Facility]).exists?
+          else
+            raise ArgumentError, "Invalid scope name"
+        end
+      when ActiveRecord::Relation
+        case scope.model_name.name.to_sym
+          when :Organization
+            accesses.where(role: admin, resourceable: scope).exists?
+          when :FacilityGroup
+            organizations = Organization.includes(:facility_groups).where(facility_groups: scope)
+
+            accesses
+              .where(role: admin, resourceable: organizations)
+              .or(accesses.where(role: admin, resourceable: scope)).exists?
+
+          when :Facility
+            organizations = Organization.includes(:facilities).where(facilities: scope)
+            facility_group = scope.facility_group
+
+            accesses
+              .where(role: admin, resourceable: organizations)
+              .or(accesses.where(role: admin, resourceable: facility_group))
+              .or(accesses.where(role: admin, resourceable: scope)).exists?
+
+          else
+            raise ArgumentError, "Invalid scope name"
+        end
+      else
+        raise ArgumentError, "Invalid scope type"
+    end
   end
 
-  def accessible_facilities
-    Facility
-      .where(facility_group: accessible_facility_groups)
-      .or(Facility
-            .where(organization: accessible_organizations))
-  end
+  def read_agg_facilities
+    read_agg_organizations =
+      Facility.where(id: accesses
+                           .where(role: [Role.admin.first, Role.analyst.first], resourceable_type: "Organization")
+                           .map(&:resourceable)
+                           .map(&:facilities))
+    read_agg_facility_groups =
+      Facility.where(id: accesses
+                           .where(role: [Role.admin.first, Role.analyst.first], resourceable_type: "FacilityGroup")
+                           .map(&:resourceable)
+                           .map(&:facilities))
+    read_agg_facilities =
+      Facility.where(id: accesses
+                           .where(role: [Role.admin.first, Role.analyst.first], resourceable_type: "Facility")
+                           .map(&:resourceable))
 
-  def resources
-    user_permissions.map(&:resource)
+    read_agg_organizations
+      .union(read_agg_facility_groups)
+      .union(read_agg_facilities)
   end
 
   def destroy_email_authentications
