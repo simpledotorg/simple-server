@@ -1,6 +1,10 @@
 name: Android QA tests
 
 on: workflow_dispatch
+inputs:
+  PRNumber:
+    description: 'PR number'
+    required: true
 
 jobs:
   android_qa_tests:
@@ -24,4 +28,4 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
-          script: simple-android/gradlew -p simple-android -PqaManifestEndpoint="https://simple-review-pr-${{github.event.pull_request.number}}.herokuapp.com/api/" connectedQaDebugAndroidTest
+          script: simple-android/gradlew -p simple-android -PqaManifestEndpoint="https://simple-review-pr-${{github.event.inputs.PRNumber}}.herokuapp.com/api/" connectedQaDebugAndroidTest
