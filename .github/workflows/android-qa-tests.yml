@@ -1,0 +1,27 @@
+name: Android QA tests
+
+on: workflow_dispatch
+
+jobs:
+  android_qa_tests:
+    runs-on: [macos-latest]
+    steps:
+      - name: Checkout simple-android
+        uses: actions/checkout@v2
+        with:
+          repository: simpledotorg/simple-android
+          path: simple-android
+
+      - name: Setup JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Turn on capturing of flaky tests
+        run: cat simple-android/app/src/androidTest/resources/quarantine_ci.properties > simple-android/app/src/androidTest/resources/quarantine.properties
+
+      - name: QA Android Tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          script: simple-android/gradlew -p simple-android -PqaManifestEndpoint="https://simple-review-pr-${{github.event.pull_request.number}}.herokuapp.com/api/" connectedQaDebugAndroidTest
