@@ -6,7 +6,7 @@
     <%= link_to 'All reports', dashboard_districts_path %>
     <% if @region.respond_to?(:facility_group) %>
       <i class="fas fa-chevron-right"></i>
-      <%= link_to @region.facility_group.name, dashboard_district_path(@region.facility_group) %>
+      <%= link_to @region.facility_group.name, reports_district_path(@region.facility_group) %>
     <% end %>
     <i class="fas fa-chevron-right"></i>
     <%= @region.name %>
@@ -21,7 +21,7 @@
         Report: <%= @selected_date.to_s(:month_year) %>
       </a>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-      <% url = @scope == :facility_group ? dashboard_district_path(@region) : reports_facility_path(@region) %>
+      <% url = @scope == :facility_group ? reports_district_path(@region) : reports_facility_path(@region) %>
         <%= form_tag url, method: :get do %>
           <% last_n_months(n: 12, end_of_month: true).each do |time| %>
             <% selected = (time.year == @selected_date.year && time.month == @selected_date.month) %>
@@ -51,7 +51,7 @@
         <div>
           <h3 class="mb-1 fs-xlarge fw-bold <% if @data[:controlled_patients_rate].values.last %>c-green-dark<% else %>c-grey-medium<% end %>">
             <% if @data[:controlled_patients_rate].values.last %>
-              <%= @data[:controlled_patients_rate].values.last %>
+              <%= @data[:controlled_patients_rate].values.last %>%
             <% else %>
               No data
             <% end %>
