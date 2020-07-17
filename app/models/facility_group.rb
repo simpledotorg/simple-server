@@ -3,6 +3,7 @@ class FacilityGroup < ApplicationRecord
   default_scope -> { kept }
 
   belongs_to :organization
+  belongs_to :parent_region, class_name: "Region", optional: true
   belongs_to :protocol
 
   has_many :facilities, dependent: :nullify

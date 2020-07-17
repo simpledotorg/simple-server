@@ -242,6 +242,7 @@ ActiveRecord::Schema.define(version: 2020_07_16_224002) do
     t.datetime "deleted_at"
     t.uuid "protocol_id"
     t.string "slug"
+    t.uuid "parent_region_id"
     t.index ["deleted_at"], name: "index_facility_groups_on_deleted_at"
     t.index ["organization_id"], name: "index_facility_groups_on_organization_id"
     t.index ["protocol_id"], name: "index_facility_groups_on_protocol_id"
@@ -441,23 +442,16 @@ ActiveRecord::Schema.define(version: 2020_07_16_224002) do
     t.index ["deleted_at"], name: "index_protocols_on_deleted_at"
   end
 
-  create_table "region_types", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "name", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "regions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name", null: false
+    t.integer "level", null: false
     t.string "description"
     t.string "slug", null: false
-    t.string "parent_type", null: false
-    t.uuid "parent_id", null: false
-    t.uuid "region_type_id", null: false
+    t.uuid "parent_region_id"
+    t.string "parent_region_type"
+    t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["parent_type", "parent_id"], name: "index_regions_on_parent_type_and_parent_id"
-    t.index ["region_type_id"], name: "index_regions_on_region_type_id"
   end
 
   create_table "twilio_sms_delivery_details", force: :cascade do |t|
@@ -521,7 +515,6 @@ ActiveRecord::Schema.define(version: 2020_07_16_224002) do
   add_foreign_key "patient_phone_numbers", "patients"
   add_foreign_key "patients", "addresses"
   add_foreign_key "protocol_drugs", "protocols"
-  add_foreign_key "regions", "region_types"
 
   create_view "blood_pressures_per_facility_per_days", materialized: true, sql_definition: <<-SQL
       WITH latest_bp_per_patient_per_day AS (
