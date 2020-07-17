@@ -63,7 +63,7 @@ RSpec.describe MessagePatients do
           .to eq({queued: [patients.first.id]})
       end
 
-      it "messages all patients if `contactable: false`" do
+      it "messages all patients if `only_contactable: false`" do
         patients = create_list(:patient, 2)
 
         patients.second.phone_numbers.each do |phone_number|
@@ -73,8 +73,21 @@ RSpec.describe MessagePatients do
         mock_notification_service(patients.first)
         mock_notification_service(patients.second)
 
-        expect(MessagePatients.call(Patient.all, message, channel: :sms, contactable: false, verbose: false).report)
+        expect(MessagePatients.call(Patient.all, message, channel: :sms, only_contactable: false, verbose: false).report)
           .to eq({queued: [patients.first.id, patients.second.id]})
+      end
+
+      it "no-ops if a patient does not have a phone number" do
+        patients = create_list(:patient, 2)
+
+        patients.second.phone_numbers.each do |phone_number|
+          phone_number.destroy!
+        end
+
+        mock_notification_service(patients.first)
+
+        expect(MessagePatients.call(Patient.all, message, channel: :sms, only_contactable: false, verbose: false).report)
+          .to eq({queued: [patients.first.id]})
       end
     end
 
