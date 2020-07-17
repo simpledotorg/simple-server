@@ -18,7 +18,7 @@ jobs:
           java-version: 1.8
 
       - name: Turn on capturing of flaky tests
-        run: cat app/src/androidTest/resources/quarantine_ci.properties > app/src/androidTest/resources/quarantine.properties
+        run: cat simple-android/app/src/androidTest/resources/quarantine_ci.properties > simple-android/app/src/androidTest/resources/quarantine.properties
 
       - name: QA Android Tests
         uses: reactivecircus/android-emulator-runner@v2
