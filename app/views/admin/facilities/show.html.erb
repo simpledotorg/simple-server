@@ -8,7 +8,7 @@
     <%= @facility.name %>
   </h1>
   <nav class="page-nav">
-    <% if @admin.can_manage?(@facility) %>
+    <% if policy([:manage, :facility, @facility]).edit? %>
       <%= link_to 'Edit facility', edit_admin_facility_group_facility_path(@facility_group, @facility), class: "btn btn-sm btn-primary" %>
     <% end %>
   </nav>

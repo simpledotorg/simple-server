@@ -16,8 +16,8 @@ class MyFacilitiesController < AdminController
   before_action :set_selected_period, only: [:registrations, :missed_visits]
 
   def index
-    # @facilities = policy_scope([:manage, :facility, Facility])
-    @facilities = current_admin.read_agg_facilities
+    @facilities = policy_scope([:upcoming, Facility])
+
     @users_requesting_approval = paginate(policy_scope([:manage, :user, User])
                                             .requested_sync_approval
                                             .order(updated_at: :desc))

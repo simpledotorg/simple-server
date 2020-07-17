@@ -10,7 +10,6 @@ class Admin::FacilitiesController < AdminController
 
   def index
     authorize([:manage, :facility, Facility])
-
     @admin = current_admin
 
     if searching?

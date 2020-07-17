@@ -2,10 +2,11 @@
   <h1 class="page-title">Facilities</h1>
 
   <div class="page-nav">
-    <% if policy([:manage, :facility, Facility]).upload? %>
+    <% if policy([:upcoming, FacilityGroup.all]).manage? %>
       <%= link_to 'Bulk add facilities', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
     <% end %>
-    <% if @admin.can_manage?(Organization) %>
+
+    <% if policy([:upcoming, @admin.organization]).manage? %>
       <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-success" do %>
         <i class="fas fa-plus mr-1"></i>
         Add facility group

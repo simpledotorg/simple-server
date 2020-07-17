@@ -1,9 +1,8 @@
 class Access < ApplicationRecord
-  ALLOWED_TYPES = %w[Organization FacilityGroup Facility].freeze
+  ALLOWED_RESOURCE_TYPES = %w[Organization FacilityGroup Facility].freeze
 
   belongs_to :user
-  belongs_to :resourceable, polymorphic: true, optional: true
-  belongs_to :role
+  belongs_to :resource, polymorphic: true, optional: true
 
   enum role: {
     super_admin: "super_admin",
@@ -11,5 +10,5 @@ class Access < ApplicationRecord
     analyst: "analyst"
   }
 
-  validates :resourceable_type, presence: true, inclusion: {in: ALLOWED_TYPES}
+  validates :resource_type, presence: true, inclusion: {in: ALLOWED_RESOURCE_TYPES}
 end
