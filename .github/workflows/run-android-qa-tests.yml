@@ -1,6 +1,6 @@
 name: Run Android QA test suite
 
-on: pull_request
+on: workflow_dispatch
 
 jobs:
   android_qa_tests:
