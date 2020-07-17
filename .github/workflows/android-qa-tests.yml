@@ -1,6 +1,6 @@
 name: Android QA tests
 
-on: workflow_dispatch
+on: pull_request
 
 jobs:
   android_qa_tests:
