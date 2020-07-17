@@ -12,8 +12,10 @@ RSpec.describe MessagePatients do
         mock_notification_service(patients.first)
         mock_notification_service(patients.second)
 
-        expect(MessagePatients.call(Patient.all, message, verbose: false).report)
-          .to eq({queued: [patients.first.id, patients.second.id]})
+        report = MessagePatients.call(Patient.all, message, verbose: false).report
+
+        expect(report[:queued]).to contain_exactly(patients.first.id, patients.second.id)
+        expect(report[:exception]).to be_nil
       end
 
       it "logs exceptions in the error report" do
@@ -22,8 +24,9 @@ RSpec.describe MessagePatients do
         mock_notification_service(patients.first)
         mock_notification_service(patients.second, exception: true)
 
-        expect(MessagePatients.call(Patient.all, message, verbose: false).report)
-          .to eq({queued: [patients.first.id], exception: [patients.second.id]})
+        report = MessagePatients.call(Patient.all, message, verbose: false).report
+        expect(report[:queued]).to contain_exactly(patients.first.id)
+        expect(report[:exception]).to contain_exactly(patients.second.id)
       end
     end
 
@@ -34,8 +37,9 @@ RSpec.describe MessagePatients do
         mock_notification_service(patients.first)
         mock_notification_service(patients.second)
 
-        expect(MessagePatients.call(Patient.all, message, channel: :sms, verbose: false).report)
-          .to eq({queued: [patients.first.id, patients.second.id]})
+        report = MessagePatients.call(Patient.all, message, channel: :sms, verbose: false).report
+        expect(report[:queued]).to contain_exactly(patients.first.id, patients.second.id)
+        expect(report[:exception]).to be_nil
       end
 
       it "logs exceptions in the error report" do
@@ -44,8 +48,9 @@ RSpec.describe MessagePatients do
         mock_notification_service(patients.first)
         mock_notification_service(patients.second, exception: true)
 
-        expect(MessagePatients.call(Patient.all, message, channel: :sms, verbose: false).report)
-          .to eq({queued: [patients.first.id], exception: [patients.second.id]})
+        report = MessagePatients.call(Patient.all, message, channel: :sms, verbose: false).report
+        expect(report[:queued]).to contain_exactly(patients.first.id)
+        expect(report[:exception]).to contain_exactly(patients.second.id)
       end
     end
 
@@ -59,8 +64,9 @@ RSpec.describe MessagePatients do
 
         mock_notification_service(patients.first)
 
-        expect(MessagePatients.call(Patient.all, message, channel: :sms, verbose: false).report)
-          .to eq({queued: [patients.first.id]})
+        report = MessagePatients.call(Patient.all, message, channel: :sms, verbose: false).report
+        expect(report[:queued]).to contain_exactly(patients.first.id)
+        expect(report[:exception]).to be_nil
       end
 
       it "messages all patients if `only_contactable: false`" do
@@ -73,8 +79,9 @@ RSpec.describe MessagePatients do
         mock_notification_service(patients.first)
         mock_notification_service(patients.second)
 
-        expect(MessagePatients.call(Patient.all, message, channel: :sms, only_contactable: false, verbose: false).report)
-          .to eq({queued: [patients.first.id, patients.second.id]})
+        report = MessagePatients.call(Patient.all, message, channel: :sms, only_contactable: false, verbose: false).report
+        expect(report[:queued]).to contain_exactly(patients.first.id, patients.second.id)
+        expect(report[:exception]).to be_nil
       end
 
       it "no-ops if a patient does not have a phone number" do
@@ -86,8 +93,9 @@ RSpec.describe MessagePatients do
 
         mock_notification_service(patients.first)
 
-        expect(MessagePatients.call(Patient.all, message, channel: :sms, only_contactable: false, verbose: false).report)
-          .to eq({queued: [patients.first.id]})
+        report = MessagePatients.call(Patient.all, message, channel: :sms, only_contactable: false, verbose: false).report
+        expect(report[:queued]).to contain_exactly(patients.first.id)
+        expect(report[:exception]).to be_nil
       end
     end
 
