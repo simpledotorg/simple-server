@@ -3,13 +3,14 @@ class MessagePatients
     new(*args).call
   end
 
-  attr_reader :patients, :message, :channel, :dryrun, :verbose, :report
+  attr_reader :patients, :message, :channel, :contactable, :dryrun, :verbose, :report
   VALID_CHANNELS = [:whatsapp, :sms]
 
-  def initialize(patients, message, channel: :whatsapp, dryrun: false, verbose: true)
+  def initialize(patients, message, channel: :whatsapp, contactable: true, dryrun: false, verbose: true)
     @patients = patients
     @message = message
     @channel = channel
+    @contactable = contactable
     @dryrun = dryrun
     @verbose = verbose
     @report = {}
@@ -37,7 +38,7 @@ class MessagePatients
 
   def send_messages
     contactable_patients.each do |patient|
-      phone_number = patient.latest_mobile_number
+      phone_number = phone_number_for(patient)
 
       begin
         response =
@@ -59,7 +60,19 @@ class MessagePatients
   end
 
   def contactable_patients
-    @contactable_patients ||= patients.contactable
+    @contactable_patients ||= if contactable
+      patients.contactable
+    else
+      patients
+    end
+  end
+
+  def phone_number_for(patient)
+    if contactable
+      patient.latest_mobile_number
+    else
+      patient.latest_phone_number
+    end
   end
 
   def whatsapp?

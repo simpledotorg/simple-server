@@ -49,6 +49,35 @@ RSpec.describe MessagePatients do
       end
     end
 
+    describe "contactable patients" do
+      it "only messages contactable patients by default" do
+        patients = create_list(:patient, 2)
+
+        patients.second.phone_numbers.each do |phone_number|
+          phone_number.update!(phone_type: "landline")
+        end
+
+        mock_notification_service(patients.first)
+
+        expect(MessagePatients.call(Patient.all, message, channel: :sms, verbose: false).report)
+          .to eq({queued: [patients.first.id]})
+      end
+
+      it "messages all patients if `contactable: false`" do
+        patients = create_list(:patient, 2)
+
+        patients.second.phone_numbers.each do |phone_number|
+          phone_number.update!(phone_type: "landline")
+        end
+
+        mock_notification_service(patients.first)
+        mock_notification_service(patients.second)
+
+        expect(MessagePatients.call(Patient.all, message, channel: :sms, contactable: false, verbose: false).report)
+          .to eq({queued: [patients.first.id, patients.second.id]})
+      end
+    end
+
     it "only accepts patients as ActiveRecord::Relation" do
       patients = create_list(:patient, 2)
 
