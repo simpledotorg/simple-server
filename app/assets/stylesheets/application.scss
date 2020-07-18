@@ -46,6 +46,10 @@ $font-small: 11px;
 @import "partials/search";
 @import "partials/reports";
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
     padding-top: 5rem;
     font-size: 15px;
