@@ -1,12 +1,17 @@
 require "rails_helper"
 
-def new_patient_payload(attrs = {})
-  payload = Api::V3::PatientPayloadValidator.new(build_patient_payload.deep_merge(attrs))
-  payload.validate
-  payload
-end
-
 describe Api::V3::PatientPayloadValidator, type: :model do
+  let!(:facility) { create(:facility) }
+  let!(:user) { create(:user, registration_facility: facility) }
+  let!(:patient) { create(:patient, registration_facility: facility, registration_user: user) }
+
+  def new_patient_payload(attrs = {})
+    attrs = attrs.merge(request_user_id: user.id)
+    payload = Api::V3::PatientPayloadValidator.new(build_patient_payload(patient).deep_merge(attrs))
+    payload.validate
+    payload
+  end
+
   describe "Validations" do
     it "Validates that either age or date of birth is present" do
       expect(new_patient_payload("address" => nil,
@@ -95,6 +100,27 @@ describe Api::V3::PatientPayloadValidator, type: :model do
         payload = new_patient_payload("status" => "foo")
         expect(payload.valid?).to be false
         expect(payload.errors[:schema]).to be_present
+      end
+    end
+
+    describe "Data validations" do
+      let!(:valid_facility) { create(:facility, facility_group: facility.facility_group) }
+      let!(:invalid_facility) { create(:facility) }
+
+      it "validates that the request user can access the patient's registration facility" do
+        valid_payload = new_patient_payload("registration_facility_id" => valid_facility.id)
+        invalid_payload = new_patient_payload("registration_facility_id" => invalid_facility.id)
+
+        expect(valid_payload.valid?).to be true
+        expect(invalid_payload.valid?).to be false
+      end
+
+      it "validates that the request user can access the patient's assigned facility" do
+        valid_payload = new_patient_payload("assigned_facility_id" => valid_facility.id)
+        invalid_payload = new_patient_payload("assigned_facility_id" => invalid_facility.id)
+
+        expect(valid_payload.valid?).to be true
+        expect(invalid_payload.valid?).to be false
       end
     end
 
