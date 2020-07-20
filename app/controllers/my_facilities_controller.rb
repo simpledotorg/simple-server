@@ -95,6 +95,6 @@ class MyFacilitiesController < AdminController
   end
 
   def set_facilities
-    @facilities = policy_scope([:upcoming, Facility])
+    @facilities = policy_scope([:upcoming, :viewer, Facility])
   end
 end

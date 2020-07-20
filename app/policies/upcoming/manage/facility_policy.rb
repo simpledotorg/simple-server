@@ -6,6 +6,17 @@ class Upcoming::Manage::FacilityPolicy < Upcoming::ApplicationPolicy
     @record = record
   end
 
+  def allowed?
+    admin_accesses = user.accesses.admin
+    facility_groups = FacilityGroup.includes(:facilities).where(facilities: record)
+    organizations = Organization.includes(:facility_groups).where(facility_groups: facility_groups)
+    admin_accesses
+      .where(resource: organizations)
+      .or(admin_accesses.where(resource: facility_groups))
+      .or(admin_accesses.where(resource: record))
+      .exists?
+  end
+
   class Scope
     attr_reader :user, :scope
 
@@ -15,7 +26,7 @@ class Upcoming::Manage::FacilityPolicy < Upcoming::ApplicationPolicy
     end
 
     def resolve
-      Facility.where(id: user.admin.accesses.map(&:resource).map(&:facilities))
+      Facility.where(id: user.accesses.admin.map(&:resource).map(&:facilities))
     end
   end
 end

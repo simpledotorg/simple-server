@@ -19,7 +19,7 @@ class Upcoming::Manage::OrganizationPolicy < Upcoming::ApplicationPolicy
     end
 
     def resolve
-      Organization.where(id: user.admin.accesses.map(&:resource).map(&:organizations))
+      Organization.where(id: user.accesses.admin.map(&:resource).map(&:organizations))
     end
   end
 end

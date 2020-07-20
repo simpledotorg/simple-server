@@ -8,7 +8,7 @@ class Upcoming::ApplicationPolicy
 
   def allowed?
     # if user is super_admin, return true
-    true
+    false
   end
 
   class Scope

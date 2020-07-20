@@ -2,7 +2,7 @@
   <h1 class="page-title">Facilities</h1>
 
   <div class="page-nav">
-    <% if policy([:upcoming, FacilityGroup.all]).manage? %>
+    <% if policy([:upcoming, :manage, FacilityGroup.all]).allowed? %>
       <%= link_to 'Bulk add facilities', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
     <% end %>
 
@@ -38,7 +38,7 @@
             <h3><span class="heading-label">Facility group</span><%= facility_group.name %></h3>
           </div>
 
-          <% if policy([:manage, facility_group]).edit? %>
+          <% if policy([:upcoming, :manage, facility_group]).allowed? %>
             <div class="col-2 text-right">
               <strong><%= link_to 'Edit group', edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %></strong>
             </div>
@@ -49,7 +49,7 @@
 
         <div class="row card-row">
           <div class="col-md-4">
-            <% if policy([:manage, :facility, facility_group.facilities.new]).new? %>
+            <% if policy([:upcoming, :manage, facility_group]).allowed? %>
               <%= link_to new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-outline-success" do %>
                 <i class="fas fa-plus mr-1"></i>
                 Add a facility
@@ -63,7 +63,7 @@
           <div class="row card-row">
             <div class="col-md-4">
               <h5>
-                <% if policy([:manage, :facility, facility]).show? %>
+                <% if policy([:upcoming, :manage, facility]).allowed? %>
                   <%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %>
                 <% else %>
                   <%= facility.name %>

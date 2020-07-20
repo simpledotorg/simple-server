@@ -7,7 +7,12 @@ class Upcoming::Manage::FacilityGroupPolicy < Upcoming::ApplicationPolicy
   end
 
   def allowed?
-    user.accesses.admin.where(resource: record).exists?
+    admin_accesses = user.accesses.admin
+    organizations = Organization.includes(:facility_groups).where(facility_groups: record)
+    admin_accesses
+      .where(resource: organizations)
+      .or(admin_accesses.where(resource: record))
+      .exists?
   end
 
   class Scope
@@ -19,7 +24,7 @@ class Upcoming::Manage::FacilityGroupPolicy < Upcoming::ApplicationPolicy
     end
 
     def resolve
-      FacilityGroup.where(id: user.admin.accesses.map(&:resource).map(&:facility_groups))
+      FacilityGroup.where(id: user.accesses.admin.map(&:resource).map(&:facility_groups))
     end
   end
 end

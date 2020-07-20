@@ -1,11 +1,4 @@
 class Upcoming::Viewer::FacilityPolicy < Upcoming::ApplicationPolicy
-  attr_reader :user, :record
-
-  def initialize(user, record)
-    @user = user
-    @record = record
-  end
-
   class Scope
     attr_reader :user, :scope
 
