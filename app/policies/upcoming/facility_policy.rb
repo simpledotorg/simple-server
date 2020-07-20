@@ -15,25 +15,7 @@ class Upcoming::FacilityPolicy < Upcoming::ApplicationPolicy
     end
 
     def resolve
-      organizations =
-        Facility.where(id: user
-                             .accesses
-                             .where(resource_type: "Organization")
-                             .map(&:resource)
-                             .map(&:facilities))
-      facility_groups =
-        Facility.where(id: user
-                             .accesses
-                             .where(resource_type: "FacilityGroup")
-                             .map(&:resource)
-                             .map(&:facilities))
-      facilities =
-        Facility.where(id: user
-                             .accesses
-                             .where(resource_type: "Facility")
-                             .map(&:resource))
-
-      organizations.union(facility_groups).union(facilities)
+      Facility.where(id: user.accesses.map(&:resource).map(&:facilities))
     end
   end
 end

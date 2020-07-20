@@ -86,7 +86,7 @@ class Facility < ApplicationRecord
 
   # For compatibility w/ parent FacilityGroups
   def facilities
-    [self]
+    Facility.where(id: self)
   end
 
   def cohort_analytics(period, prev_periods)
