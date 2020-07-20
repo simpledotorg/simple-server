@@ -9,9 +9,8 @@ class Api::V3::PatientsController < Api::V3::SyncController
     end
   end
 
-  def metadata
-    {registration_user_id: current_user.id,
-     registration_facility_id: current_facility.id}
+  def request_metadata
+    {request_user_id: current_user.id, request_facility_id: current_facility.id}
   end
 
   def current_facility_records
@@ -42,15 +41,16 @@ class Api::V3::PatientsController < Api::V3::SyncController
   end
 
   def merge_if_valid(single_patient_params)
-    validator = Api::V3::PatientPayloadValidator.new(single_patient_params)
-    logger.debug "Patient had errors: #{validator.errors_hash}" if validator.invalid?
+    validator_params = single_patient_params.merge(request_user_id: current_user.id)
+    validator = Api::V3::PatientPayloadValidator.new(validator_params)
+
     if validator.invalid?
+      logger.debug "Patient had errors: #{validator.errors_hash}"
       NewRelic::Agent.increment_metric("Merge/Patient/schema_invalid")
       {errors_hash: validator.errors_hash}
     else
-      patients_params_with_metadata = single_patient_params.merge(metadata: metadata)
-      transformed_params = Api::V3::PatientTransformer.from_nested_request(patients_params_with_metadata)
-      patient = MergePatientService.new(transformed_params).merge
+      transformed_params = Api::V3::PatientTransformer.from_nested_request(single_patient_params)
+      patient = MergePatientService.new(transformed_params, request_metadata: request_metadata).merge
       {record: patient}
     end
   end
@@ -109,6 +109,8 @@ class Api::V3::PatientsController < Api::V3::SyncController
         :reminder_consent,
         :deleted_at,
         :deleted_reason,
+        :registration_facility_id,
+        :assigned_facility_id,
         phone_numbers: [permitted_phone_number_params],
         address: permitted_address_params,
         business_identifiers: [permitted_business_identifier_params]

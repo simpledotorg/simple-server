@@ -390,6 +390,8 @@ ActiveRecord::Schema.define(version: 2020_07_20_085855) do
     t.string "reminder_consent", default: "denied", null: false
     t.uuid "deleted_by_user_id"
     t.string "deleted_reason"
+    t.uuid "assigned_facility_id"
+    t.index ["assigned_facility_id"], name: "index_patients_on_assigned_facility_id"
     t.index ["deleted_at"], name: "index_patients_on_deleted_at"
     t.index ["recorded_at"], name: "index_patients_on_recorded_at"
     t.index ["registration_facility_id"], name: "index_patients_on_registration_facility_id"
@@ -515,6 +517,8 @@ ActiveRecord::Schema.define(version: 2020_07_20_085855) do
   add_foreign_key "observations", "users"
   add_foreign_key "patient_phone_numbers", "patients"
   add_foreign_key "patients", "addresses"
+  add_foreign_key "patients", "facilities", column: "assigned_facility_id"
+  add_foreign_key "patients", "facilities", column: "registration_facility_id"
   add_foreign_key "protocol_drugs", "protocols"
 
   create_view "blood_pressures_per_facility_per_days", materialized: true, sql_definition: <<-SQL

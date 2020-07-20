@@ -1,4 +1,4 @@
-**Story card:** <pivotal story link>
+**Story card:** <story link>
 
 ## Because
 
