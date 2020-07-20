@@ -16,7 +16,7 @@ RSpec.describe TopRegionService, type: :model do
     end
   end
 
-  it "gets top district benchmarks" do
+  it "gets top district benchmark for control rate" do
     darrang = FactoryBot.create(:facility_group, name: "Darrang", organization: organization)
     darrang_facilities = FactoryBot.create_list(:facility, 2, facility_group: darrang)
     kadapa = FactoryBot.create(:facility_group, name: "Kadapa", organization: organization)
@@ -45,7 +45,7 @@ RSpec.describe TopRegionService, type: :model do
     expect(result[:controlled_percentage]).to eq(100.0)
   end
 
-  it "gets top facility benchmarks" do
+  it "gets top facility benchmark for control rate" do
     darrang = FactoryBot.create(:facility_group, name: "Darrang", organization: organization)
     darrang_facility_1 = FactoryBot.create(:facility, name: "darrang-1", facility_group: darrang)
     darrang_facility_2 = FactoryBot.create(:facility, name: "darrang-2", facility_group: darrang)
@@ -72,6 +72,9 @@ RSpec.describe TopRegionService, type: :model do
           create(:blood_pressure, :under_control, facility: kadapa_facility, patient: patient, recorded_at: Time.current)
         end
       end
+      # Kadapa facility has 6 registrations
+      _other_kadapa_patients = create_list(:patient, 3, recorded_at: 1.month.ago, registration_facility: kadapa_facility, registration_user: user)
+
       # darrang_facility_2 control rate is 0%
       other_darrang_patients = create_list(:patient, 2, recorded_at: 1.month.ago, registration_facility: darrang_facility_2, registration_user: user)
       other_darrang_patients.each do |patient|
@@ -90,5 +93,7 @@ RSpec.describe TopRegionService, type: :model do
     result = service.call
     expect(result[:controlled_percentage]).to eq(75.0)
     expect(result[:region]).to eq(darrang_facility_1)
+    expect(result[:registrations][:region]).to eq(kadapa_facility)
+    expect(result[:registrations][:value]).to eq(6)
   end
 end

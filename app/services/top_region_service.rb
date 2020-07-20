@@ -7,9 +7,11 @@ class TopRegionService
     @organizations = organizations
     @date = date
     @scope = scope
+    @formatted_date = date.to_s(:month_year)
   end
 
   attr_reader :date
+  attr_reader :formatted_date
   attr_reader :organizations
   attr_reader :scope
 
@@ -19,15 +21,24 @@ class TopRegionService
     else
       organizations.flat_map { |org| org.facilities }
     end
-    regions_by_rate = accessible_regions.each_with_object({}) { |region, hsh|
+    all_region_data = accessible_regions.each_with_object({}) { |region, hsh|
       result = ControlRateService.new(region, date: date).call
-      hsh[region] = result[:controlled_patients_rate][date.to_s(:month_year)]
+      hsh[region] = result
     }
-    region, percentage = regions_by_rate.max_by { |region, rate| rate }
+    top_region_for_rate, control_rate_result = all_region_data.max_by { |region, result|
+      result[:controlled_patients_rate][formatted_date]
+    }
+    top_region_for_registrations, registrations_result = all_region_data.max_by { |region, result|
+      result[:registrations][formatted_date]
+    }
     {
-      region: region,
-      district: region,
-      controlled_percentage: percentage
+      region: top_region_for_rate,
+      district: top_region_for_rate,
+      controlled_percentage: control_rate_result[:controlled_patients_rate][formatted_date],
+      registrations: {
+        region: top_region_for_registrations,
+        value: registrations_result[:registrations][formatted_date]
+      }
     }
   end
 end

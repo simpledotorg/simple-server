@@ -28,7 +28,7 @@ class RegionReportService
   def call
     compile_control_and_registration_data
     data.merge! compile_cohort_trend_data
-    compile_benchmarks
+    data[:top_district_benchmarks].merge!(top_district_benchmarks)
 
     data
   end
@@ -77,10 +77,6 @@ class RegionReportService
 
   def force_cache?
     RequestStore.store[:force_cache]
-  end
-
-  def compile_benchmarks
-    @data[:top_district_benchmarks].merge!(top_district_benchmarks)
   end
 
   def format_quarter(quarter)
