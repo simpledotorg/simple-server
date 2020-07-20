@@ -34,7 +34,7 @@ class TopRegionService
     {
       control_rate: {
         region: top_region_for_rate,
-        value: control_rate_result[:controlled_patients_rate][formatted_date],
+        value: control_rate_result[:controlled_patients_rate][formatted_date]
       },
       registrations: {
         region: top_region_for_registrations,
