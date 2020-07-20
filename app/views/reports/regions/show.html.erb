@@ -378,7 +378,7 @@
               <span class="fw-bold d-lg-none">
                 Difference:
               </span>
-              <% controlled_percentage = (@data[:controlled_patients_rate].values.last.to_f - @top_region_benchmarks[:controlled_percentage]).round %>
+              <% controlled_percentage = (@data[:controlled_patients_rate].values.last.to_f - @top_region_benchmarks[:control_rate][:value]).round %>
               <span class="<%= controlled_percentage > 0 ? "c-green-dark" : "c-red" %>">
                 <%= controlled_percentage > 0 ? "+" : "" %><%= controlled_percentage %>%
               </span>
