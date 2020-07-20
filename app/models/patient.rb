@@ -35,6 +35,7 @@ class Patient < ApplicationRecord
   has_many :observations, through: :encounters
 
   belongs_to :registration_facility, class_name: "Facility", optional: true
+  belongs_to :assigned_facility, class_name: "Facility", optional: true
   belongs_to :registration_user, class_name: "User"
 
   has_many :latest_blood_pressures, -> { order(recorded_at: :desc) }, class_name: "BloodPressure"

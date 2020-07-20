@@ -244,7 +244,6 @@ RSpec.describe PatientsWithHistoryExporter do
 
     it "generates a CSV of patient records" do
       travel_to now do
-        puts subject.csv(Patient.all)
         expect(subject.csv(Patient.all)).to eq(timestamp.to_csv + headers.to_csv + fields.to_csv)
       end
     end

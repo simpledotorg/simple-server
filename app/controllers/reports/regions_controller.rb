@@ -1,4 +1,4 @@
-class Reports::FacilitiesController < AdminController
+class Reports::RegionsController < AdminController
   layout "application"
   skip_after_action :verify_policy_scoped
   around_action :set_time_zone
@@ -10,8 +10,9 @@ class Reports::FacilitiesController < AdminController
   end
 
   def show
-    @region = Facility.find_by!(slug: facility_params[:id])
+    @region = scope.find_by!(slug: facility_params[:id])
     authorize(:dashboard, :show?)
+    RequestStore.store[:force_cache] = true if force_cache?
 
     @selected_date = if facility_params[:selected_date]
       Time.parse(facility_params[:selected_date])
@@ -30,8 +31,23 @@ class Reports::FacilitiesController < AdminController
 
   private
 
+  def scope
+    case scope = facility_params[:scope]
+    when "facility_group"
+      then FacilityGroup
+    when "facility"
+      then Facility
+    else
+      raise ArgumentError, "unknown scope #{scope}"
+    end
+  end
+
   def facility_params
-    params.permit(:selected_date, :id)
+    params.permit(:selected_date, :id, :force_cache, :scope)
+  end
+
+  def force_cache?
+    facility_params[:force_cache].present?
   end
 
   def set_time_zone
