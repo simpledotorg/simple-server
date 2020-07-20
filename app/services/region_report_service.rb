@@ -1,7 +1,7 @@
 class RegionReportService
   include SQLHelpers
   MAX_MONTHS_OF_DATA = 24
-  CACHE_VERSION = 2
+  CACHE_VERSION = 3
 
   def initialize(region:, selected_date:, current_user:)
     @current_user = current_user
@@ -68,7 +68,7 @@ class RegionReportService
   private
 
   def cohort_cache_key
-    "#{self.class}/cohort_trend_data/#{region.model_name}/#{region.id}/#{organizations.map(&:id)}/#{selected_date.to_s(:iso8601)}"
+    "#{self.class}/cohort_trend_data/#{region.model_name}/#{region.id}/#{organizations.map(&:id)}/#{selected_date.to_s(:iso8601)}/#{CACHE_VERSION}"
   end
 
   def cohort_cache_version
