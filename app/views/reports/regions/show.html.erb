@@ -387,20 +387,27 @@
         </div>
         <div class="mb-2 d-lg-flex mb-lg-2 pb-lg-0">
           <div class="mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center">
-            <p class="mb-0 ls-145 c-grey-dark">
-              More benchmarks coming soon
+            <p class="mb-0 ls-145">
+              Registrations
             </p>
           </div>
           <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
+              <!-- <%= @top_district_benchmarks[:registrations][:region].name %> -->
+              <%= @top_district_benchmarks[:registrations][:value]%>
             </p>
           </div>
           <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
+              <%= @data[:registrations].values.last %>
             </p>
           </div>
           <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
+            <% difference = @data[:registrations].values.last - @top_district_benchmarks[:registrations][:value] %>
+              <span class="<%= difference >= 0 ? "c-green-dark" : "c-red" %>">
+                <%= difference %>
+              </span>
             </p>
           </div>
         </div>
