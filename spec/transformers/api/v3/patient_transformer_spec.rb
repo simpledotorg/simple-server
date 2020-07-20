@@ -36,5 +36,10 @@ RSpec.describe Api::V3::PatientTransformer do
       transformed_nested_patient = Api::V3::PatientTransformer.to_nested_response(patient)
       expect(transformed_nested_patient["reminder_consent"]).to eq(patient.reminder_consent)
     end
+
+    it "includes registration_facility in the response" do
+      transformed_nested_patient = Api::V3::PatientTransformer.to_nested_response(patient)
+      expect(transformed_nested_patient["registration_facility_id"]).to eq(patient.registration_facility.id)
+    end
   end
 end

@@ -106,10 +106,10 @@ class ExotelAPIService
   end
 
   def phone_number_details_url(phone_number)
-    URI.parse("#{base_uri}/Numbers/#{URI.encode(phone_number)}#{RESPONSE_FORMAT}")
+    URI.parse("#{base_uri}/Numbers/#{ERB::Util.url_encode(phone_number)}#{RESPONSE_FORMAT}")
   end
 
   def whitelist_details_url(phone_number)
-    URI.parse("#{base_uri}/CustomerWhitelist/#{URI.encode(phone_number)}#{RESPONSE_FORMAT}")
+    URI.parse("#{base_uri}/CustomerWhitelist/#{ERB::Util.url_encode(phone_number)}#{RESPONSE_FORMAT}")
   end
 end
