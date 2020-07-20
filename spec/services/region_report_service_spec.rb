@@ -148,8 +148,8 @@ RSpec.describe RegionReportService, type: :model do
 
       service = RegionReportService.new(region: darrang, selected_date: june_1, current_user: user)
       result = service.call
-      expect(result[:top_district_benchmarks][:controlled_percentage]).to eq(100.0)
-      expect(result[:top_district_benchmarks][:district]).to eq(koriya)
+      expect(result[:top_region_benchmarks][:controlled_percentage]).to eq(100.0)
+      expect(result[:top_region_benchmarks][:district]).to eq(koriya)
     end
   end
 

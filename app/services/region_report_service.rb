@@ -14,7 +14,7 @@ class RegionReportService
       registrations: {},
       cumulative_registrations: 0,
       quarterly_registrations: [],
-      top_district_benchmarks: {}
+      top_region_benchmarks: {}
     }.with_indifferent_access
   end
 
@@ -28,7 +28,7 @@ class RegionReportService
   def call
     compile_control_and_registration_data
     data.merge! compile_cohort_trend_data
-    data[:top_district_benchmarks].merge!(top_district_benchmarks)
+    data[:top_region_benchmarks].merge!(top_region_benchmarks)
 
     data
   end
@@ -83,7 +83,7 @@ class RegionReportService
     "#{quarter.year} Q#{quarter.number}"
   end
 
-  def top_district_benchmarks
+  def top_region_benchmarks
     scope = region.class.to_s.underscore.to_sym
     TopRegionService.new(organizations, selected_date, scope: scope).call
   end

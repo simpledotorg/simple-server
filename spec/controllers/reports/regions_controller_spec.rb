@@ -24,11 +24,11 @@ RSpec.describe Reports::RegionsController, type: :controller do
       @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
     end
 
-    it "raises error if no scope param" do
+    it "raises error if no report_scope param" do
       expect {
         sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.facility_group.slug, scope: "bad-scope"}
-      }.to raise_error(ArgumentError, "unknown scope bad-scope")
+        get :show, params: {id: @facility.facility_group.slug, report_scope: "bad-report_scope"}
+      }.to raise_error(ArgumentError, "unknown report_scope bad-report_scope")
     end
 
     it "retrieves district data" do
@@ -41,7 +41,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.facility_group.slug, scope: "facility_group"}
+        get :show, params: {id: @facility.facility_group.slug, report_scope: "facility_group"}
       end
       expect(response).to be_successful
       data = assigns(:data)
@@ -59,7 +59,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.slug, scope: "facility"}
+        get :show, params: {id: @facility.slug, report_scope: "facility"}
       end
       expect(response).to be_successful
       data = assigns(:data)
