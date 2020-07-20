@@ -19,7 +19,7 @@ class Upcoming::OrganizationPolicy < Upcoming::ApplicationPolicy
     end
 
     def resolve
-      scope.all
+      scope.none
     end
   end
 end

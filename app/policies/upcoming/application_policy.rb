@@ -8,6 +8,7 @@ class Upcoming::ApplicationPolicy
 
   def manage?
     # if user is super_admin, return true
+    true
   end
 
   class Scope

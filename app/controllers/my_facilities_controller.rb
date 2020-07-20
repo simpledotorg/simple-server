@@ -11,13 +11,12 @@ class MyFacilitiesController < AdminController
   PERIODS_TO_DISPLAY = {quarter: 3, month: 3, day: 14}.freeze
 
   around_action :set_time_zone
-  before_action :authorize_my_facilities
+  before_action :authorize_view
+  before_action :set_facilities, only: [:index, :blood_pressure_control, :registrations, :missed_visits]
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]
   before_action :set_selected_period, only: [:registrations, :missed_visits]
 
   def index
-    @facilities = policy_scope([:upcoming, Facility])
-
     @users_requesting_approval = paginate(policy_scope([:manage, :user, User])
                                             .requested_sync_approval
                                             .order(updated_at: :desc))
@@ -34,8 +33,6 @@ class MyFacilitiesController < AdminController
   end
 
   def blood_pressure_control
-    @facilities = filter_facilities([:manage, :facility])
-
     bp_query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
                                                            cohort_period: @selected_cohort_period)
 
@@ -55,8 +52,6 @@ class MyFacilitiesController < AdminController
   end
 
   def registrations
-    @facilities = filter_facilities([:manage, :facility])
-
     registrations_query = MyFacilities::RegistrationsQuery.new(facilities: @facilities,
                                                                period: @selected_period,
                                                                last_n: PERIODS_TO_DISPLAY[@selected_period])
@@ -76,8 +71,6 @@ class MyFacilitiesController < AdminController
   end
 
   def missed_visits
-    @facilities = filter_facilities([:manage, :facility])
-
     missed_visits_query = MyFacilities::MissedVisitsQuery.new(facilities: @facilities,
                                                               period: @selected_period,
                                                               last_n: PERIODS_TO_DISPLAY[@selected_period])
@@ -97,7 +90,11 @@ class MyFacilitiesController < AdminController
     Time.use_zone(time_zone) { yield }
   end
 
-  def authorize_my_facilities
-    authorize(:dashboard, :view_my_facilities?)
+  def authorize_view
+    authorize([:upcoming, :viewer], :aggregates?)
+  end
+
+  def set_facilities
+    @facilities = policy_scope([:upcoming, Facility])
   end
 end
