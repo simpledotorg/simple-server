@@ -2,74 +2,74 @@
 Resources
 *****************/
 
-.resource-link {
+.page#resources {
+  .resource-link {
     position: relative;
     padding-left: 60px;
     margin: 8px 0;
-    
+
     span {
-        display: block;
-        color: #666;
+      display: block;
+      color: #666;
     }
-    
+
     i {
-        position: absolute;
-        left: 12px;
-        top: 8px;
-        font-size: 24px;
+      position: absolute;
+      left: 12px;
+      top: 8px;
+      font-size: 24px;
     }
-    
+
     &.resource-presentation i {
-        color: Gold;
+      color: Gold;
     }
-    
+
     &.resource-doc i {
-        color: ForestGreen;
-        font-size: 28px;
+      color: ForestGreen;
+      font-size: 28px;
     }
-    
+
     &.resource-video i {
-        color: Red;
-        font-size: 28px;
+      color: Red;
+      font-size: 28px;
     }
-    
+
     a:hover {
-        text-decoration: none;
+      text-decoration: none;
     }
-}
+  }
 
-.col-video {
+  .col-video {
     margin: 16px 0;
-    
-    strong {
-        display: block;
-        margin: 6px 0 0 0;
-    }
-    
-    span {
-        display: block;
-        color: #999;
-        font-size: 85%;
-    }
-    
-    .fa-youtube {
-        color: orangered;
-    }
-    
-    a {
-        display: block;
-        position: relative;
-        padding: 4px 0 4px 28px;
-        
-        i {
-            position: absolute;
-            left: 2px;
-            top: 7px;
-        }
-    }
-}
 
-.page#resources {
+    strong {
+      display: block;
+      margin: 6px 0 0 0;
+    }
+
+    span {
+      display: block;
+      color: #999;
+      font-size: 85%;
+    }
+
+    .fa-youtube {
+      color: orangered;
+    }
+
+    a {
+      display: block;
+      position: relative;
+      padding: 4px 0 4px 28px;
+
+      i {
+        position: absolute;
+        left: 2px;
+        top: 7px;
+      }
+    }
+  }
+
   .video-container {
       position: relative;
       padding-bottom: 56.25%;
