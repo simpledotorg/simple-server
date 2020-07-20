@@ -6,8 +6,6 @@ class Organization < ApplicationRecord
   has_many :users
   has_many :protocols, through: :facility_groups
 
-  has_many :user_resources, as: :resource
-
   validates :name, presence: true
 
   friendly_id :name, use: :slugged

@@ -25,8 +25,6 @@ class Facility < ApplicationRecord
   has_many :prescription_drugs
   has_many :appointments
 
-  has_many :user_resources, as: :resource
-
   has_many :registered_patients,
     class_name: "Patient",
     foreign_key: "registration_facility_id"

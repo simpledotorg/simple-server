@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_08_201410) do
+ActiveRecord::Schema.define(version: 2020_07_20_085855) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -496,7 +496,7 @@ ActiveRecord::Schema.define(version: 2020_07_08_201410) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
-    t.string "role"
+    t.string "designation"
     t.uuid "organization_id"
     t.index "to_tsvector('simple'::regconfig, COALESCE((full_name)::text, ''::text))", name: "index_gin_users_on_full_name", using: :gin
     t.index ["deleted_at"], name: "index_users_on_deleted_at"

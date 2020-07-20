@@ -153,14 +153,6 @@ class User < ApplicationRecord
     user_permissions.where(permission_slug: permission_slug).present?
   end
 
-  def has_role?(*roles)
-    roles.map(&:to_sym).include?(role.to_sym)
-  end
-
-  def resources
-    user_permissions.map(&:resource)
-  end
-
   def reset_phone_number_authentication_password!(password_digest)
     transaction do
       authentication = phone_number_authentication
@@ -174,6 +166,14 @@ class User < ApplicationRecord
 
   def self.requested_sync_approval
     where(sync_approval_status: :requested)
+  end
+
+  def has_role?(*roles)
+    roles.map(&:to_sym).include?(role.to_sym)
+  end
+
+  def resources
+    user_permissions.map(&:resource)
   end
 
   def destroy_email_authentications
