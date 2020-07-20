@@ -11,7 +11,7 @@ class Admin::FacilitiesController < AdminController
     :validate_facility_rows, if: :file_exists?, only: [:upload]
 
   def index
-    authorize([:upcoming, :manage, Facility.all], :allowed?)
+    authorize([:upcoming, :manage, Facility], :allowed?)
 
     if searching?
       facilities = policy_scope([:upcoming, :manage, Facility.all]).search_by_name(search_query)
@@ -65,7 +65,7 @@ class Admin::FacilitiesController < AdminController
   end
 
   def upload
-    authorize([:upcoming, :manage, FacilityGroup.all], :allowed?)
+    authorize([:upcoming, :manage, FacilityGroup], :allowed?)
     return render :upload, status: :bad_request if @errors.present?
 
     if @facilities.present?

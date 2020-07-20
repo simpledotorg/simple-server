@@ -7,6 +7,8 @@ class Upcoming::Manage::FacilityGroupPolicy < Upcoming::ApplicationPolicy
   end
 
   def allowed?
+    record = resolve_record(record, FacilityGroup)
+
     admin_accesses = user.accesses.admin
     organizations = Organization.includes(:facility_groups).where(facility_groups: record)
     admin_accesses

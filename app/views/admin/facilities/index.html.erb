@@ -2,7 +2,7 @@
   <h1 class="page-title">Facilities</h1>
 
   <div class="page-nav">
-    <% if policy([:upcoming, :manage, FacilityGroup.all]).allowed? %>
+    <% if policy([:upcoming, :manage, FacilityGroup]).allowed? %>
       <%= link_to 'Bulk add facilities', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
     <% end %>
 

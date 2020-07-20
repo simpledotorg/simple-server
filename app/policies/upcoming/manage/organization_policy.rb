@@ -7,7 +7,7 @@ class Upcoming::Manage::OrganizationPolicy < Upcoming::ApplicationPolicy
   end
 
   def allowed?
-    user.accesses.admin.where(resource: record).exists?
+    user.accesses.admin.where(resource: resolve_record(record, Organization)).exists?
   end
 
   class Scope

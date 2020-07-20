@@ -6,6 +6,14 @@ class Upcoming::ApplicationPolicy
     @record = record
   end
 
+  def resolve_record(record, record_type)
+    if record.instance_of?(record_type)
+      record
+    else
+      record_type.all
+    end
+  end
+
   def allowed?
     # if user is super_admin, return true
     false
