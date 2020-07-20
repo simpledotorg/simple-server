@@ -16,7 +16,7 @@ RSpec.describe TopRegionService, type: :model do
     end
   end
 
-  it "gets top district benchmark for control rate" do
+  it "gets top district benchmarks" do
     darrang = FactoryBot.create(:facility_group, name: "Darrang", organization: organization)
     darrang_facilities = FactoryBot.create_list(:facility, 2, facility_group: darrang)
     kadapa = FactoryBot.create(:facility_group, name: "Kadapa", organization: organization)
@@ -41,11 +41,11 @@ RSpec.describe TopRegionService, type: :model do
 
     service = TopRegionService.new([organization], june_1.end_of_month)
     result = service.call
-    expect(result[:district]).to eq(koriya)
-    expect(result[:controlled_percentage]).to eq(100.0)
+    expect(result[:control_rate][:region]).to eq(koriya)
+    expect(result[:control_rate][:value]).to eq(100.0)
   end
 
-  it "gets top facility benchmark for control rate" do
+  it "gets top facility benchmarks" do
     darrang = FactoryBot.create(:facility_group, name: "Darrang", organization: organization)
     darrang_facility_1 = FactoryBot.create(:facility, name: "darrang-1", facility_group: darrang)
     darrang_facility_2 = FactoryBot.create(:facility, name: "darrang-2", facility_group: darrang)
@@ -91,8 +91,8 @@ RSpec.describe TopRegionService, type: :model do
 
     service = TopRegionService.new([organization], june_1.end_of_month, scope: :facility)
     result = service.call
-    expect(result[:controlled_percentage]).to eq(75.0)
-    expect(result[:region]).to eq(darrang_facility_1)
+    expect(result[:control_rate][:region]).to eq(darrang_facility_1)
+    expect(result[:control_rate][:value]).to eq(75.0)
     expect(result[:registrations][:region]).to eq(kadapa_facility)
     expect(result[:registrations][:value]).to eq(6)
   end

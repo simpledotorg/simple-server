@@ -32,9 +32,10 @@ class TopRegionService
       result[:registrations][formatted_date]
     }
     {
-      region: top_region_for_rate,
-      district: top_region_for_rate,
-      controlled_percentage: control_rate_result[:controlled_patients_rate][formatted_date],
+      control_rate: {
+        region: top_region_for_rate,
+        value: control_rate_result[:controlled_patients_rate][formatted_date],
+      },
       registrations: {
         region: top_region_for_registrations,
         value: registrations_result[:registrations][formatted_date]

@@ -329,7 +329,7 @@
           </div>
           <div class="d-none d-lg-block flex-lg-1 align-lg-center justify-lg-center">
             <p class="ta-lg-center mb-lg-0 fw-lg-bold tt-lg-uppercase ls-lg-145 c-lg-grey-dark">
-            <!-- <%= @top_region_benchmarks[:district].name %> -->
+            <!-- <%= @top_region_benchmarks[:control_rate][:region].name %> -->
               Top <%= @report_scope == FacilityGroup ? "District" : "Facility" %>
             </p>
           </div>
@@ -357,7 +357,7 @@
               </span>
               <span>
                 <%= number_to_percentage(
-                   @top_region_benchmarks[:controlled_percentage],
+                   @top_region_benchmarks[:control_rate][:value],
                    precision: 0
                 ) %>
               </span>
