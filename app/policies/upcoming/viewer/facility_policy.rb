@@ -1,14 +1,9 @@
-class Upcoming::ApplicationPolicy
+class Upcoming::Viewer::FacilityPolicy < Upcoming::ApplicationPolicy
   attr_reader :user, :record
 
   def initialize(user, record)
     @user = user
     @record = record
-  end
-
-  def allowed?
-    # if user is super_admin, return true
-    true
   end
 
   class Scope
@@ -20,7 +15,7 @@ class Upcoming::ApplicationPolicy
     end
 
     def resolve
-      scope.all
+      Facility.where(id: user.accesses.map(&:resource).map(&:facilities))
     end
   end
 end

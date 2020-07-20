@@ -86,7 +86,15 @@ class Facility < ApplicationRecord
 
   # For compatibility w/ parent FacilityGroups
   def facilities
-    Facility.where(id: self)
+    [self]
+  end
+
+  def facility_groups
+    [facility_group]
+  end
+
+  def organizations
+    [organization]
   end
 
   def cohort_analytics(period, prev_periods)

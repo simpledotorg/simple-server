@@ -1,5 +1,5 @@
 class Upcoming::NilClassPolicy < Upcoming::ApplicationPolicy
-  def manage?
+  def allowed?
     super
   end
 

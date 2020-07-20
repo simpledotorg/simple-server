@@ -1,4 +1,4 @@
-class Upcoming::FacilityPolicy < Upcoming::ApplicationPolicy
+class Upcoming::Manage::FacilityPolicy < Upcoming::ApplicationPolicy
   attr_reader :user, :record
 
   def initialize(user, record)
@@ -15,7 +15,7 @@ class Upcoming::FacilityPolicy < Upcoming::ApplicationPolicy
     end
 
     def resolve
-      Facility.where(id: user.accesses.map(&:resource).map(&:facilities))
+      Facility.where(id: user.admin.accesses.map(&:resource).map(&:facilities))
     end
   end
 end

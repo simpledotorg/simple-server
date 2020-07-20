@@ -1,4 +1,4 @@
-class Upcoming::ApplicationPolicy
+class Upcoming::Manage::FacilityGroupPolicy < Upcoming::ApplicationPolicy
   attr_reader :user, :record
 
   def initialize(user, record)
@@ -7,8 +7,7 @@ class Upcoming::ApplicationPolicy
   end
 
   def allowed?
-    # if user is super_admin, return true
-    true
+    user.accesses.admin.where(resource: record).exists?
   end
 
   class Scope
@@ -20,7 +19,7 @@ class Upcoming::ApplicationPolicy
     end
 
     def resolve
-      scope.all
+      FacilityGroup.where(id: user.admin.accesses.map(&:resource).map(&:facility_groups))
     end
   end
 end

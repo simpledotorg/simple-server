@@ -1,4 +1,4 @@
-class Upcoming::OrganizationPolicy < Upcoming::ApplicationPolicy
+class Upcoming::Manage::OrganizationPolicy < Upcoming::ApplicationPolicy
   attr_reader :user, :record
 
   def initialize(user, record)
@@ -6,7 +6,7 @@ class Upcoming::OrganizationPolicy < Upcoming::ApplicationPolicy
     @record = record
   end
 
-  def manage?
+  def allowed?
     user.accesses.admin.where(resource: record).exists?
   end
 
@@ -19,7 +19,7 @@ class Upcoming::OrganizationPolicy < Upcoming::ApplicationPolicy
     end
 
     def resolve
-      scope.none
+      Organization.where(id: user.admin.accesses.map(&:resource).map(&:organizations))
     end
   end
 end
