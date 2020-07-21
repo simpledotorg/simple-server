@@ -180,6 +180,10 @@ class User < ApplicationRecord
     user_permissions.map(&:resource)
   end
 
+  def super_admin?
+    accesses.super_admin.exists?
+  end
+
   def destroy_email_authentications
     destroyable_email_authentications = email_authentications.load
 

@@ -6,6 +6,10 @@ class Upcoming::ApplicationPolicy
     @record = record
   end
 
+  def allowed?
+    user.super_admin?
+  end
+
   def resolve_record(record, record_type)
     if record.instance_of?(record_type)
       record
@@ -13,12 +17,7 @@ class Upcoming::ApplicationPolicy
       record_type.all
     end
   end
-
-  def allowed?
-    # if user is super_admin, return true
-    false
-  end
-
+  
   class Scope
     attr_reader :user, :scope
 
