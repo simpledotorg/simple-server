@@ -45,12 +45,12 @@ class MyFacilitiesController < AdminController
                overall_patients: bp_query.overall_patients.count,
                overall_controlled_bps: bp_query.overall_controlled_bps.count}
 
-    @registered_patients_per_facility = bp_query.cohort_registrations.group(:registration_facility_id).count
-    @controlled_bps_per_facility = bp_query.cohort_controlled_bps.group(:registration_facility_id).count
-    @uncontrolled_bps_per_facility = bp_query.cohort_uncontrolled_bps.group(:registration_facility_id).count
-    @missed_visits_by_facility = bp_query.cohort_missed_visits_count_by_facility
-    @overall_patients_per_facility = bp_query.overall_patients.group(:registration_facility_id).count
-    @overall_controlled_bps_per_facility = bp_query.overall_controlled_bps.group(:registration_facility_id).count
+    @registered_patients_per_facility = bp_query.cohort_registrations_per_facility
+    @controlled_bps_per_facility = bp_query.cohort_controlled_bps_per_facility
+    @uncontrolled_bps_per_facility = bp_query.cohort_uncontrolled_bps_per_facility
+    @missed_visits_by_facility = bp_query.cohort_missed_visits_count_per_facility
+    @overall_patients_per_facility = bp_query.overall_patients_per_facility
+    @overall_controlled_bps_per_facility = bp_query.overall_controlled_bps_per_facility
   end
 
   def registrations

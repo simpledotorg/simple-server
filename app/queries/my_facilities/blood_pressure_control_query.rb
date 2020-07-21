@@ -22,6 +22,23 @@ class MyFacilities::BloodPressureControlQuery
     @facilities = facilities
   end
 
+  def cohort_registrations_per_facility
+    cohort_registrations.group(:assigned_facility_id).count
+  end
+
+  def cohort_controlled_bps_per_facility
+    cohort_controlled_bps.group(:assigned_facility_id).count
+  end
+
+  def cohort_uncontrolled_bps_per_facility
+    cohort_uncontrolled_bps.group(:assigned_facility_id).count
+  end
+
+  def cohort_bps_by_facility
+    @cohort_bps_by_facility ||=
+      cohort_bps.group(:assigned_facility_id).count
+  end
+
   def cohort_registrations
     @cohort_period == :month ? monthly_registrations : quarterly_registrations
   end
@@ -42,20 +59,28 @@ class MyFacilities::BloodPressureControlQuery
     cohort_registrations.count - cohort_bps.count
   end
 
-  def cohort_missed_visits_count_by_facility
-    registrations = cohort_registrations.group(:registration_facility_id).count
-    bps = cohort_bps.group(:registration_facility_id).count
+  def cohort_missed_visits_count_per_facility
+    registrations = cohort_registrations_per_facility
+    bps = cohort_bps_by_facility
 
     @facilities.map { |f|
       [f.id, (registrations[f.id].to_i - bps[f.id].to_i)]
     }.to_h
   end
 
+  def overall_patients_per_facility
+    overall_patients.group(:assigned_facility_id).count
+  end
+
+  def overall_controlled_bps_per_facility
+    overall_controlled_bps.group(:assigned_facility_id).count
+  end
+
   def overall_patients
     @overall_patients ||= Patient
       .with_hypertension
       .where("recorded_at < ?", Time.current.beginning_of_day - REGISTRATION_BUFFER)
-      .where(registration_facility: facilities)
+      .where(assigned_facility: facilities)
   end
 
   def overall_controlled_bps
@@ -73,7 +98,7 @@ class MyFacilities::BloodPressureControlQuery
   def quarterly_registrations
     patients = Patient
       .with_hypertension
-      .where(registration_facility: facilities)
+      .where(assigned_facility: facilities)
 
     @quarterly_registrations ||=
       patients.where("recorded_at >= ? AND recorded_at <= ?",
@@ -100,7 +125,7 @@ class MyFacilities::BloodPressureControlQuery
   def monthly_registrations
     patients = Patient
       .with_hypertension
-      .where(registration_facility: facilities)
+      .where(assigned_facility: facilities)
 
     @monthly_registrations ||=
       patients.where("recorded_at >= ? AND recorded_at <= ?",
