@@ -30,7 +30,13 @@ class Upcoming::Manage::FacilityPolicy < Upcoming::ApplicationPolicy
 
     def resolve
       return scope.all if user.super_admin?
-      Facility.where(id: user.accesses.admin.map(&:resource).map(&:facilities))
+
+      Facility
+        .where(id: user.accesses.admin.facilities)
+        .or(Facility
+              .where(facility_group: FacilityGroup
+                                       .where(organization: user.accesses.admin.organizations)
+                                       .or(FacilityGroup.where(id: user.accesses.admin.facility_groups))))
     end
   end
 end
