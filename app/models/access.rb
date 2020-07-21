@@ -14,15 +14,27 @@ class Access < ApplicationRecord
 
   class << self
     def organizations
-      where(resource_type: "Organization")
+      resources_for(Organization)
+        .or(Organization.where(facilities: resources_for(Facility)))
+        .or(Organization.where(facility_groups: resources_for(FacilityGroup)))
     end
 
     def facilities
-      where(resource_type: "Facility")
+      resources_for(Facility)
+        .or(Facility.where(facility_group: FacilityGroup.where(organization: resources_for(Organization))))
+        .or(Facility.where(facility_group: resources_for(FacilityGroup)))
     end
 
     def facility_groups
-      where(resource_type: "FacilityGroup")
+      resources_for(FacilityGroup)
+        .or(FacilityGroup.where(organization: resources_for(Organization)))
+        .or(FacilityGroup.where(facilities: resources_for(Facility)))
+    end
+
+    private
+
+    def resources_for(type)
+      type.where(id: where(resource_type: type.to_s).pluck(:resource_id))
     end
   end
 end

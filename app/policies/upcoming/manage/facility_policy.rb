@@ -8,16 +8,7 @@ class Upcoming::Manage::FacilityPolicy < Upcoming::ApplicationPolicy
 
   def allowed?
     return true if user.super_admin?
-
-    record = resolve_record(record, Facility)
-    admin_accesses = user.accesses.admin
-    facility_groups = FacilityGroup.includes(:facilities).where(facilities: record)
-    organizations = Organization.includes(:facility_groups).where(facility_groups: facility_groups)
-    admin_accesses
-      .where(resource: organizations)
-      .or(admin_accesses.where(resource: facility_groups))
-      .or(admin_accesses.where(resource: record))
-      .exists?
+    user.accesses.admin.facilities.where(id: resolve_record(record, Facility)).exists?
   end
 
   class Scope
@@ -30,13 +21,7 @@ class Upcoming::Manage::FacilityPolicy < Upcoming::ApplicationPolicy
 
     def resolve
       return scope.all if user.super_admin?
-
-      Facility
-        .where(id: user.accesses.admin.facilities)
-        .or(Facility
-              .where(facility_group: FacilityGroup
-                                       .where(organization: user.accesses.admin.organizations)
-                                       .or(FacilityGroup.where(id: user.accesses.admin.facility_groups))))
+      scope.where(id: user.accesses.admin.facilities)
     end
   end
 end

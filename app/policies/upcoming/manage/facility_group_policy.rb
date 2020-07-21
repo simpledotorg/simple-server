@@ -28,10 +28,7 @@ class Upcoming::Manage::FacilityGroupPolicy < Upcoming::ApplicationPolicy
 
     def resolve
       return scope.all if user.super_admin?
-
-      FacilityGroup
-        .where(organizations: user.accesses.admin.organizations)
-        .or(FacilityGroup.where(id: user.accesses.admin.facility_groups))
+      scope.where(id: user.accesses.admin.facility_groups)
     end
   end
 end
