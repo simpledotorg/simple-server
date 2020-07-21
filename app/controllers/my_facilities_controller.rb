@@ -91,10 +91,10 @@ class MyFacilitiesController < AdminController
   end
 
   def authorize_view
-    authorize([:upcoming, :viewer], :aggregates?)
+    authorize([:upcoming, :read], :aggregates?)
   end
 
   def set_facilities
-    @facilities = policy_scope([:upcoming, :viewer, Facility])
+    @facilities = policy_scope([:upcoming, :read, Facility])
   end
 end

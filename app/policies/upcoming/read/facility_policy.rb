@@ -1,4 +1,4 @@
-class Upcoming::Viewer::FacilityPolicy < Upcoming::ApplicationPolicy
+class Upcoming::Read::FacilityPolicy < Upcoming::ApplicationPolicy
   class Scope
     attr_reader :user, :scope
 
@@ -8,6 +8,7 @@ class Upcoming::Viewer::FacilityPolicy < Upcoming::ApplicationPolicy
     end
 
     def resolve
+      return scope.all if user.super_admin?
       Facility.where(id: user.accesses.map(&:resource).map(&:facilities))
     end
   end

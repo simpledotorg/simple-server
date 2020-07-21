@@ -185,7 +185,8 @@ Rails.application.routes.draw do
         post "upload"
       end
     end
-    resources :facility_groups do
+
+    resources :facility_groups, except: [:index, :show] do
       resources :facilities
     end
 

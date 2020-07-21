@@ -10,5 +10,5 @@ class Access < ApplicationRecord
     analyst: "analyst"
   }
 
-  validates :resource_type, presence: true, inclusion: {in: ALLOWED_RESOURCE_TYPES}
+  validates :resource_type, inclusion: {in: ALLOWED_RESOURCE_TYPES}, allow_nil: true
 end

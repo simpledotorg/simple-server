@@ -5,8 +5,7 @@ class Admin::FacilitiesController < AdminController
 
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
   before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy]
-  before_action :authorize_facility, only: [:show, :edit, :update, :destroy]
-  before_action :authorize_facility_group, only: [:new, :create]
+  before_action :authorize_facility, only: [:show, :new, :create, :edit, :update, :destroy]
   before_action :initialize_upload, :validate_file_type, :validate_file_size, :parse_file,
     :validate_facility_rows, if: :file_exists?, only: [:upload]
 
@@ -89,10 +88,6 @@ class Admin::FacilitiesController < AdminController
 
   def authorize_facility
     authorize([:upcoming, :manage, @facility], :allowed?)
-  end
-
-  def authorize_facility_group
-    authorize([:upcoming, :manage, @facility_group], :allowed?)
   end
 
   def set_facility_group

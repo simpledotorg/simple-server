@@ -7,8 +7,9 @@ class Upcoming::Manage::FacilityGroupPolicy < Upcoming::ApplicationPolicy
   end
 
   def allowed?
-    record = resolve_record(record, FacilityGroup)
+    return true if user.super_admin?
 
+    record = resolve_record(record, FacilityGroup)
     admin_accesses = user.accesses.admin
     organizations = Organization.includes(:facility_groups).where(facility_groups: record)
     admin_accesses
@@ -26,6 +27,7 @@ class Upcoming::Manage::FacilityGroupPolicy < Upcoming::ApplicationPolicy
     end
 
     def resolve
+      return scope.all if user.super_admin?
       FacilityGroup.where(id: user.accesses.admin.map(&:resource).map(&:facility_groups))
     end
   end
