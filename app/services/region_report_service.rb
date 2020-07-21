@@ -25,9 +25,13 @@ class RegionReportService
   attr_reader :organizations
   attr_reader :selected_date
 
+  def cohort_data
+    data.merge! compile_cohort_trend_data
+    data
+  end
+
   def call
     compile_control_and_registration_data
-    data.merge! compile_cohort_trend_data
     data[:top_region_benchmarks].merge!(top_region_benchmarks)
 
     data

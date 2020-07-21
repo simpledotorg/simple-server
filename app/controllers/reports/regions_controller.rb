@@ -9,6 +9,26 @@ class Reports::RegionsController < AdminController
     @organizations = policy_scope([:cohort_report, Organization]).order(:name)
   end
 
+  def cohort
+    @region = report_scope.find_by!(slug: facility_params[:id])
+    authorize(:dashboard, :show?)
+    RequestStore.store[:force_cache] = true if force_cache?
+
+    @selected_date = if facility_params[:selected_date]
+      Time.parse(facility_params[:selected_date])
+    else
+      Date.current.advance(months: -1)
+    end
+    @data = RegionReportService.new(region: @region,
+                                    selected_date: @selected_date,
+                                    current_user: current_admin).cohort_data
+    # @controlled_patients = @data[:controlled_patients]
+    # @registrations = @data[:registrations]
+    @quarterly_registrations = @data[:quarterly_registrations]
+    # @top_region_benchmarks = @data[:top_region_benchmarks]
+    # @last_registration_value = @data[:registrations].values&.last || 0
+  end
+
   def show
     @region = report_scope.find_by!(slug: facility_params[:id])
     authorize(:dashboard, :show?)
