@@ -36,17 +36,11 @@ class MyFacilities::MissedVisitsQuery
   def bp_query_by_cohort
     @bp_query_by_cohort ||=
       @periods.map { |year, period|
-        bp_query = if @period == :month
-          MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
-                                                      cohort_period: {cohort_period: :month,
-                                                                      registration_year: year,
-                                                                      registration_month: period})
-        else
-          MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
-                                                      cohort_period: {cohort_period: :quarter,
-                                                                      registration_year: year,
-                                                                      registration_quarter: period})
-        end
+        bp_query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
+                                                               cohort_period: {cohort_period: @period,
+                                                                               registration_year: year,
+                                                                               registration_month: period,
+                                                                               registration_quarter: period})
         [[year, period], bp_query]
       }.to_h
   end
@@ -54,7 +48,7 @@ class MyFacilities::MissedVisitsQuery
   def missed_visits_by_facility
     @missed_visits_by_facility ||=
       bp_query_by_cohort.map { |(year, period), bp_query|
-        bp_query.cohort_registrations.group(:registration_facility_id).count.map { |facility_id, patient_count|
+        bp_query.cohort_registrations.group(:assigned_facility_id).count.map { |facility_id, patient_count|
           [[facility_id, year, period],
             {patients: patient_count.to_i,
              missed: bp_query.cohort_missed_visits_count_per_facility[facility_id].to_i}]
