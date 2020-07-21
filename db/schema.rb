@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_17_062323) do
+ActiveRecord::Schema.define(version: 2020_07_21_203734) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -436,6 +436,16 @@ ActiveRecord::Schema.define(version: 2020_07_17_062323) do
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_protocols_on_deleted_at"
+  end
+
+  create_table "roles", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name", null: false
+    t.uuid "user_id", null: false
+    t.uuid "resource_id", null: false
+    t.string "resource_type", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "twilio_sms_delivery_details", force: :cascade do |t|

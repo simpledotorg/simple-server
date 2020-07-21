@@ -1,8 +1,8 @@
 class AdminController < ApplicationController
   before_action :authenticate_email_authentication!
 
-  after_action :verify_authorized, except: [:root]
-  after_action :verify_policy_scoped, only: :index
+  after_action :verify_authorized, except: [:root], unless: -> { Flipper.enabled?(:user_roles)}
+  after_action :verify_policy_scoped, only: :index, unless: -> { Flipper.enabled?(:user_roles)}
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 

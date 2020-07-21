@@ -55,6 +55,21 @@ FactoryBot.define do
     [Faker::Name.first_name, Faker::Name.last_name, Faker::Internet.domain_word, n].join("-")
   end
 
+  factory :admin_v2, class: User do
+    transient do
+      email { Faker::Internet.email(name: full_name) }
+      password { generate(:strong_password) }
+    end
+
+    full_name { Faker::Name.name }
+    device_created_at { Time.current }
+    device_updated_at { Time.current }
+    sync_approval_status { User.sync_approval_statuses[:denied] }
+    email_authentications { build_list(:email_authentication, 1, email: email, password: password) }
+    user_permissions { [] }
+    organization
+  end
+
   factory :admin, class: User do
     transient do
       email { Faker::Internet.email(name: full_name) }

@@ -9,23 +9,35 @@ class Admin::FacilitiesController < AdminController
     :validate_facility_rows, if: :file_exists?, only: [:upload]
 
   def index
-    authorize([:manage, :facility, Facility])
+    unless Flipper.enabled?(:user_roles)
+      authorize([:manage, :facility, Facility])
+    end
 
     if searching?
-      facilities = policy_scope([:manage, :facility, Facility]).search_by_name(search_query)
+      facilities = if Flipper.enabled?(:user_roles)
+        current_admin.facilities.search_by_name(search_query)
+      else
+        policy_scope([:manage, :facility, Facility]).search_by_name(search_query)
+      end
       facility_groups = FacilityGroup.where(facilities: facilities)
 
       @organizations = Organization.where(facility_groups: facility_groups)
       @facility_groups = facility_groups.group_by(&:organization)
       @facilities = facilities.group_by(&:facility_group)
     else
-      @organizations = policy_scope([:manage, :facility, Organization])
-      @facility_groups = @organizations.map { |organization|
-        [organization, policy_scope([:manage, :facility, organization.facility_groups])]
-      }.to_h
-      @facilities = @facility_groups.values.flatten.map { |facility_group|
-        [facility_group, policy_scope([:manage, :facility, facility_group.facilities])]
-      }.to_h
+      if Flipper.enabled?(:user_roles)
+        # @organizations = policy_scope([:manage, :facility, Organization])
+        @facility_groups = current_admin.facility_groups.group_by(&:organization)
+        @facilities = current_admin.facilities.group_by(&:facility_group)
+      else
+        @organizations = policy_scope([:manage, :facility, Organization])
+        @facility_groups = @organizations.map { |organization|
+          [organization, policy_scope([:manage, :facility, organization.facility_groups])]
+        }.to_h
+        @facilities = @facility_groups.values.flatten.map { |facility_group|
+          [facility_group, policy_scope([:manage, :facility, facility_group.facilities])]
+        }.to_h
+      end
     end
   end
 
@@ -85,11 +97,17 @@ class Admin::FacilitiesController < AdminController
 
   def set_facility
     @facility = Facility.friendly.find(params[:id])
-    authorize([:manage, :facility, @facility])
+    unless Flipper.enabled?(:user_roles)
+      authorize([:manage, :facility, @facility])
+    end
   end
 
   def set_facility_group
-    @facility_group = FacilityGroup.friendly.find(params[:facility_group_id])
+    @facility_group = if Flipper.enabled?(:user_roles)
+      current_admin.facility_groups.friendly.find(params[:facility_group_id])
+    else
+      FacilityGroup.friendly.find(params[:facility_group_id])
+    end
   end
 
   def facility_params

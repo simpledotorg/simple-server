@@ -14,6 +14,12 @@ class User < ApplicationRecord
 
   belongs_to :organization, optional: true
 
+  has_many :roles
+  include RoleScopedRegions
+  has_many :managed_organizations, -> { Role.super_admin_or_admin }, through: :roles, source: :resource, source_type: "Organization"
+  has_many :managed_facility_groups, -> { Role.super_admin_or_admin }, through: :roles, source: :resource, source_type: "FacilityGroup"
+  has_many :managed_facilities, through: :managed_facility_groups, source: :facilities
+
   has_many :user_authentications
   has_many :blood_pressures
   has_many :patients, -> { distinct }, through: :blood_pressures

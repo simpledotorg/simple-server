@@ -10,6 +10,66 @@ RSpec.describe User, type: :model do
     it_behaves_like "a record that validates device timestamps"
   end
 
+  context "roles" do
+    before do
+      other_admin = create(:admin_v2, role: "anything")
+      _facility_group_role = other_admin.roles.create! name: "admin", resource: create(:facility_group)
+      _facility_role = other_admin.roles.create! name: "admin", resource: create(:facility)
+    end
+
+    let(:organization) do
+      create(:organization)
+    end
+    let(:facility_group) do
+      create(:facility_group, organization: organization)
+    end
+    let(:facilities) do
+      create_list(:facility, 2, facility_group: facility_group)
+    end
+
+    it "admin of an org has access to facility_groups and facilities in that org" do
+      facility = facilities.first
+
+      admin = create(:admin_v2, role: :supervisor)
+      role = admin.roles.create! name: "admin", resource: organization
+      expect(role.name).to eq("admin")
+
+      expect(admin.facility_groups).to match_array(facility_group)
+      expect(admin.facility_groups.find_by(name: facility_group.name)).to eq(facility_group)
+
+      expect(admin.facilities).to match_array(facilities)
+      expect(admin.facilities.find_by(name: facility.name)).to eq(facility)
+    end
+
+    it "admin of a facility group has access to all facilities" do
+      facilities
+
+      admin = create(:admin_v2, role: :supervisor)
+      admin.roles.create! name: :admin, resource: facility_group
+      expect(admin.facility_groups).to contain_exactly(facility_group)
+      expect(admin.facilities).to match_array(facilities)
+      facility = admin.facilities.find_by(name: facilities.first.name)
+      expect(facility).to eq(facilities.first)
+    end
+
+    it "reader of a facility_group has only read access to the group and its facilities" do
+      facilities
+
+      admin = create(:admin_v2, role: :supervisor)
+      admin.roles.create! name: :analyst, resource: facility_group
+      expect(admin.facility_groups(role: :write)).to be_empty
+      expect(admin.facility_groups(role: :read)).to eq([facility_group])
+
+      expect(admin.facilities(role: :write)).to be_empty
+      expect(admin.facilities(role: :read)).to match_array(facilities)
+
+      expect(admin.facilities(role: :write).find_by(name: facilities.first.name)).to eq(nil)
+
+      facility = admin.facilities(role: :read).find_by(name: facilities.first.name)
+      expect(facility).to eq(facilities.first)
+    end
+  end
+
   describe ".build_with_phone_number_authentication" do
     context "all required params are present and are valid" do
       let(:registration_facility) { create(:facility) }

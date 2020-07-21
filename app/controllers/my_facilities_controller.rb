@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class MyFacilitiesController < AdminController
-  include DistrictFiltering
   include Pagination
   include MyFacilitiesFiltering
   include CohortPeriodSelection
@@ -11,15 +10,24 @@ class MyFacilitiesController < AdminController
   PERIODS_TO_DISPLAY = {quarter: 3, month: 3, day: 14}.freeze
 
   around_action :set_time_zone
+  before_action :set_district, only: [:index]
   before_action :authorize_my_facilities
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]
   before_action :set_selected_period, only: [:registrations, :missed_visits]
 
   def index
-    @facilities = policy_scope([:manage, :facility, Facility])
-    @users_requesting_approval = paginate(policy_scope([:manage, :user, User])
-                                            .requested_sync_approval
-                                            .order(updated_at: :desc))
+    if Flipper[:user_roles].enabled?
+      @facilities = current_admin.facilities
+      @users_requesting_approval = User.includes(:phone_number_authentications)
+        .where(phone_number_authentications: {registration_facility_id: @facilities})
+        .requested_sync_approval
+        .order(updated_at: :desc)
+    else
+      @facilities = policy_scope([:manage, :facility, Facility])
+      @users_requesting_approval = paginate(policy_scope([:manage, :user, User])
+                                              .requested_sync_approval
+                                              .order(updated_at: :desc))
+    end
 
     overview_query = MyFacilities::OverviewQuery.new(facilities: @facilities)
     @inactive_facilities = overview_query.inactive_facilities
@@ -97,6 +105,20 @@ class MyFacilitiesController < AdminController
   end
 
   def authorize_my_facilities
-    authorize(:dashboard, :view_my_facilities?)
+    unless Flipper[:user_roles].enabled?
+      authorize(:dashboard, :view_my_facilities?)
+    end
+  end
+
+  def set_district
+    @district = params[:district].present? ? params[:district] : "All"
+  end
+
+  def selected_district_facilities(scope_namespace = [])
+    if @district == "All"
+      policy_scope(scope_namespace.concat([Facility.all]))
+    else
+      policy_scope(scope_namespace.concat([Facility.where(district: @district)]))
+    end
   end
 end
