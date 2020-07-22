@@ -21,7 +21,7 @@
         Report: <%= @selected_date.to_s(:month_year) %>
       </a>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-      <% url = @scope == :facility_group ? reports_district_path(@region) : reports_facility_path(@region) %>
+      <% url = @report_scope == FacilityGroup ? reports_district_path(@region) : reports_facility_path(@region) %>
         <%= form_tag url, method: :get do %>
           <% last_n_months(n: 12, end_of_month: true).each do |time| %>
             <% selected = (time.year == @selected_date.year && time.month == @selected_date.month) %>
@@ -329,8 +329,8 @@
           </div>
           <div class="d-none d-lg-block flex-lg-1 align-lg-center justify-lg-center">
             <p class="ta-lg-center mb-lg-0 fw-lg-bold tt-lg-uppercase ls-lg-145 c-lg-grey-dark">
-            <!-- <%= @top_district_benchmarks[:district].name %> -->
-              Top <%= @scope == :facility_group ? "District" : "Facility" %>
+            <!-- <%= @top_region_benchmarks[:control_rate][:region].name %> -->
+              Top <%= @report_scope == FacilityGroup ? "District" : "Facility" %>
             </p>
           </div>
           <div class="d-none d-lg-block flex-lg-1 align-lg-center justify-lg-center">
@@ -353,11 +353,11 @@
           <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
               <span class="fw-bold d-lg-none">
-                Top <%= @scope == :facility_group ? "District" : "Facility" %>
+                Top <%= @report_scope == FacilityGroup ? "District" : "Facility" %>
               </span>
               <span>
                 <%= number_to_percentage(
-                   @top_district_benchmarks[:controlled_percentage],
+                   @top_region_benchmarks[:control_rate][:value],
                    precision: 0
                 ) %>
               </span>
@@ -378,7 +378,7 @@
               <span class="fw-bold d-lg-none">
                 Difference:
               </span>
-              <% controlled_percentage = (@data[:controlled_patients_rate].values.last.to_f - @top_district_benchmarks[:controlled_percentage]).round %>
+              <% controlled_percentage = (@data[:controlled_patients_rate].values.last.to_f - @top_region_benchmarks[:control_rate][:value]).round %>
               <span class="<%= controlled_percentage > 0 ? "c-green-dark" : "c-red" %>">
                 <%= controlled_percentage > 0 ? "+" : "" %><%= controlled_percentage %>%
               </span>
@@ -387,20 +387,27 @@
         </div>
         <div class="mb-2 d-lg-flex mb-lg-2 pb-lg-0">
           <div class="mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center">
-            <p class="mb-0 ls-145 c-grey-dark">
-              More benchmarks coming soon
+            <p class="mb-0 ls-145">
+              Registrations
             </p>
           </div>
           <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
+              <!-- <%= @top_region_benchmarks[:registrations][:region].name %> -->
+              <%= @top_region_benchmarks[:registrations][:value]%>
             </p>
           </div>
           <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
+              <%= @data[:registrations].values.last %>
             </p>
           </div>
           <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
             <p class="mb-0 ta-lg-center c-grey-dark">
+            <% difference = @data[:registrations].values.last - @top_region_benchmarks[:registrations][:value] %>
+              <span class="<%= difference >= 0 ? "c-green-dark" : "c-red" %>">
+                <%= difference %>
+              </span>
             </p>
           </div>
         </div>
