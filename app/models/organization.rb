@@ -15,8 +15,4 @@ class Organization < ApplicationRecord
   def districts
     facilities.select(:district).distinct.pluck(:district)
   end
-
-  def organizations
-    [self]
-  end
 end
