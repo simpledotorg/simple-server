@@ -8,7 +8,7 @@ class Upcoming::Manage::FacilityGroupPolicy < Upcoming::ApplicationPolicy
 
   def allowed?
     return true if user.super_admin?
-    user.accesses.admin.where(resource: resolve_record(record, FacilityGroup)).exists?
+    user.accesses.admin.facility_groups.where(id: resolve_record(record, FacilityGroup)).exists?
   end
 
   class Scope
