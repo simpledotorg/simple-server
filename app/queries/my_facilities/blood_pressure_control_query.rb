@@ -34,8 +34,8 @@ class MyFacilities::BloodPressureControlQuery
     cohort_uncontrolled_bps.group(:assigned_facility_id).count
   end
 
-  def cohort_bps_by_facility
-    @cohort_bps_by_facility ||=
+  def cohort_bps_per_facility
+    @cohort_bps_per_facility ||=
       cohort_bps.group(:assigned_facility_id).count
   end
 
@@ -59,9 +59,9 @@ class MyFacilities::BloodPressureControlQuery
     cohort_registrations.count - cohort_bps.count
   end
 
-  def cohort_missed_visits_count_per_facility
+  def cohort_missed_visits_count_by_facility
     registrations = cohort_registrations_per_facility
-    bps = cohort_bps_by_facility
+    bps = cohort_bps_per_facility
 
     @facilities.map { |f|
       [f.id, (registrations[f.id].to_i - bps[f.id].to_i)]

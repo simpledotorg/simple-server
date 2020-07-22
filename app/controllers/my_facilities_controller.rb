@@ -48,7 +48,7 @@ class MyFacilitiesController < AdminController
     @registered_patients_per_facility = bp_query.cohort_registrations_per_facility
     @controlled_bps_per_facility = bp_query.cohort_controlled_bps_per_facility
     @uncontrolled_bps_per_facility = bp_query.cohort_uncontrolled_bps_per_facility
-    @missed_visits_by_facility = bp_query.cohort_missed_visits_count_per_facility
+    @missed_visits_by_facility = bp_query.cohort_missed_visits_count_by_facility
     @overall_patients_per_facility = bp_query.overall_patients_per_facility
     @overall_controlled_bps_per_facility = bp_query.overall_controlled_bps_per_facility
   end
