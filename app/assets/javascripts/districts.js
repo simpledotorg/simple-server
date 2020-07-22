@@ -9,12 +9,12 @@ function initializeCharts() {
   const data = getReportingData();
 
   const controlledGraphConfig = createGraphConfig(data.controlRate, darkGreenColor, lightGreenColor);
-  controlledGraphConfig.options = createGraphOptions(data.controlRate, "control rate");
+  controlledGraphConfig.options = createGraphOptions(data.controlRate, data.controlledPatients, "control rate");
   const controlledGraphCanvas = document.getElementById("controlledPatientsTrend").getContext("2d");
   new Chart(controlledGraphCanvas, controlledGraphConfig);
 
   const uncontrolledGraphConfig = createGraphConfig(data.uncontrolledRate, darkRedColor, lightRedColor);
-  uncontrolledGraphConfig.options = createGraphOptions(data.uncontrolledRate, "not under control rate");
+  uncontrolledGraphConfig.options = createGraphOptions(data.uncontrolledRate, data.uncontrolledPatients, "not under control rate");
   const uncontrolledGraphCanvas = document.getElementById("uncontrolledPatientsTrend").getContext("2d");
   new Chart(uncontrolledGraphCanvas, uncontrolledGraphConfig);
 };
@@ -22,21 +22,20 @@ function initializeCharts() {
 function getReportingData() {
   const $reportingDiv = document.getElementById("reporting");
   const $newData = document.getElementById("data-json");
-  const zeData = JSON.parse($newData.textContent);
-  console.log(zeData);
+  const jsonData = JSON.parse($newData.textContent);
 
-  const controlRate = zeData.controlled_patients_rate;
-  const controlledPatients = zeData.controlled_patients;
-  const registrations = zeData.registrations;
-  const uncontrolledRate = zeData.uncontrolled_patients_rate;
-  const uncontrolledPatients = zeData.uncontrolled_patients;
+  const controlRate = jsonData.controlled_patients_rate;
+  const controlledPatients = jsonData.controlled_patients;
+  const registrations = jsonData.registrations;
+  const uncontrolledRate = jsonData.uncontrolled_patients_rate;
+  const uncontrolledPatients = jsonData.uncontrolled_patients;
 
   let data = {
-    controlRate: Object.entries(controlRate),
-    controlledPatients: Object.entries(controlledPatients),
-    registrations: Object.entries(registrations),
-    uncontrolledRate: Object.entries(uncontrolledRate),
-    uncontrolledPatients: Object.entries(uncontrolledPatients),
+    controlRate: controlRate,
+    controlledPatients: controlledPatients,
+    registrations: registrations,
+    uncontrolledRate: uncontrolledRate,
+    uncontrolledPatients: uncontrolledPatients,
   };
 
   return data;
@@ -46,23 +45,31 @@ function createGraphConfig(data, rgbaLineColor, rgbaBackgroundColor) {
   return {
     type: "line",
     data: {
-      labels: data.map(key => key[0]),
+      labels: Object.keys(data),
       datasets: [{
         backgroundColor: rgbaBackgroundColor,
         borderColor: rgbaLineColor,
         borderWidth: 1,
         pointBackgroundColor: rgbaLineColor,
-        data: data.map(key => key[1]),
+        data: Object.values(data),
       }],
     },
   };
 };
 
-function createGraphOptions(data, label) {
+function createGraphOptions(rates, counts, label) {
   return {
     animation: false,
     responsive: true,
     maintainAspectRatio: false,
+    layout: {
+      padding: {
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0
+      }
+    },
     elements: {
       point: {
         pointStyle: "circle",
@@ -75,47 +82,64 @@ function createGraphOptions(data, label) {
     },
     scales: {
       xAxes: [{
-        display: false,
+        display: true,
         gridLines: {
-          display: false,
-          drawBorder: false,
-        },
-      }],
-      yAxes: [{
-        display: false,
-        gridLines: {
-          display: false,
+          display: true,
           drawBorder: false,
         },
         ticks: {
+          fontColor: "#ADB2B8",
+          fontSize: 14,
+          fontFamily: "Roboto Condensed",
+          maxRotation: 0,
+          minRotation: 0
+        }
+      }],
+      yAxes: [{
+        display: true,
+        gridLines: {
+          display: true,
+          drawBorder: false,
+        },
+        ticks: {
+          fontColor: "#ADB2B8",
+          fontSize: 12,
+          fontFamily: "Roboto Condensed",
+          stepSize: 25,
+          suggestedMax: 100,
           suggestedMin: 0,
-          suggestedMax: 60
+          callback: function(value, index, values) {
+            return value + "%";
+          }
         }
       }],
     },
     tooltips: {
-      caretSize: 6,
-      position: "average",
-      yAlign: "bottom",
-      xAlign: "center",
-      titleFontFamily: "Roboto Condensed",
-      bodyFontFamily: "Roboto Condensed",
       backgroundColor: "rgb(0, 0, 0)",
-      titleFontSize: 16,
-      bodyFontSize: 14,
-      titleAlign: "center",
       bodyAlign: "center",
+      bodyFontFamily: "Roboto Condensed",
+      bodyFontSize: 12,
+      caretSize: 6,
       displayColors: false,
-      yPadding: 12,
+      position: "nearest",
+      titleAlign: "center",
+      titleFontFamily: "Roboto Condensed",
+      titleFontSize: 16,
+      xAlign: "center",
       xPadding: 12,
+      yAlign: "bottom",
+      yPadding: 12,
       callbacks: {
         title: function() {},
         label: function(tooltipItem, _) {
-          const date = data.map(key => key[0])[tooltipItem.index];
-          const value = data.map(key => key[1])[tooltipItem.index];
-          const formattedValue = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+          const index = tooltipItem.index;
+          console.log(rates);
+          const date = Object.keys(rates)[index];
+          const rate = Object.values(rates)[index];
+          const count = Object.values(counts)[index];
+          // const formattedValue = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
           const percent = parseInt(tooltipItem.value).toFixed(0);
-          return `${percent}% ${label} (${formattedValue} patients) in ${date}`;
+          return `${percent}% ${label} (${count} patients) in ${date}`;
         },
       },
     }
