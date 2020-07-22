@@ -23,7 +23,11 @@ class Upcoming::ApplicationPolicy
     end
 
     def resolve
-      return scope.all if user.super_admin?
+      if user.super_admin?
+        scope.all
+      else
+        scope.none
+      end
     end
   end
 end
