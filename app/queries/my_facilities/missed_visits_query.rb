@@ -67,12 +67,9 @@ class MyFacilities::MissedVisitsQuery
       }.to_h
   end
 
-  def total_registrations
-    registrations_query = MyFacilities::RegistrationsQuery.new(facilities: @facilities,
-                                                               period: @selected_period,
-                                                               last_n: @last_n)
-    @total_registrations ||=
-      registrations_query.total_registrations.group(:registration_facility_id).count
+  def total_patients
+    bp_query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities)
+    @total_patients ||= bp_query.overall_patients_per_facility
   end
 
   private

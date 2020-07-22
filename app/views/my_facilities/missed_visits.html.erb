@@ -87,7 +87,7 @@
                                                               @display_periods.first.second)) %>
             <% end %>
           </th>
-          <th class="row-label sort-label">Registered patients</th>
+          <th class="row-label sort-label">Total patients</th>
           <th class="mobile">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
         </tr>
         </thead>
@@ -109,7 +109,7 @@
           <% end %>
 
           <td class="type-number"><%= @calls_made.values.sum %></td>
-          <td class="type-number"><%= @total_registrations.values.sum %></td>
+          <td class="type-number"><%= @total_patients.values.sum %></td>
         </tr>
 
         <% @facilities.each do |facility| %>
@@ -128,7 +128,7 @@
               </td>
             <% end %>
             <td class="type-number"><%= @calls_made.dig(facility.id) || 0 %></td>
-            <td class="type-number"><%= @total_registrations[facility.id].to_i %></td>
+            <td class="type-number"><%= @total_patients[facility.id].to_i %></td>
           </tr>
         <% end %>
         </tbody>
@@ -141,6 +141,7 @@
           their
           personal phone number or used another phone.
         </li>
+        <li><strong>Total patients:</strong>Patients with this preferred facility.</li>
       </ol>
     </section>
   </div>
