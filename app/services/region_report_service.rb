@@ -1,7 +1,7 @@
 class RegionReportService
   include SQLHelpers
   MAX_MONTHS_OF_DATA = 24
-  CACHE_VERSION = 2
+  CACHE_VERSION = 3
 
   def initialize(region:, selected_date:, current_user:)
     @current_user = current_user
@@ -14,7 +14,7 @@ class RegionReportService
       registrations: {},
       cumulative_registrations: 0,
       quarterly_registrations: [],
-      top_district_benchmarks: {}
+      top_region_benchmarks: {}
     }.with_indifferent_access
   end
 
@@ -28,7 +28,7 @@ class RegionReportService
   def call
     compile_control_and_registration_data
     data.merge! compile_cohort_trend_data
-    compile_benchmarks
+    data[:top_region_benchmarks].merge!(top_region_benchmarks)
 
     data
   end
@@ -68,7 +68,7 @@ class RegionReportService
   private
 
   def cohort_cache_key
-    "#{self.class}/cohort_trend_data/#{region.model_name}/#{region.id}/#{organizations.map(&:id)}/#{selected_date.to_s(:iso8601)}"
+    "#{self.class}/cohort_trend_data/#{region.model_name}/#{region.id}/#{organizations.map(&:id)}/#{selected_date.to_s(:iso8601)}/#{CACHE_VERSION}"
   end
 
   def cohort_cache_version
@@ -79,15 +79,11 @@ class RegionReportService
     RequestStore.store[:force_cache]
   end
 
-  def compile_benchmarks
-    @data[:top_district_benchmarks].merge!(top_district_benchmarks)
-  end
-
   def format_quarter(quarter)
     "#{quarter.year} Q#{quarter.number}"
   end
 
-  def top_district_benchmarks
+  def top_region_benchmarks
     scope = region.class.to_s.underscore.to_sym
     TopRegionService.new(organizations, selected_date, scope: scope).call
   end
