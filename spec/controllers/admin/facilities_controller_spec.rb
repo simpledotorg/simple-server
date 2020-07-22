@@ -43,7 +43,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
     end
 
     describe "GET #show" do
-      fit "returns a success response" do
+      it "returns a success response" do
         facility = Facility.create! valid_attributes
         admin = create(:admin_v2, role: :supervisor)
         admin.roles.create! name: :admin, resource: facility.facility_group
