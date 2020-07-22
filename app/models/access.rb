@@ -10,25 +10,23 @@ class Access < ApplicationRecord
     analyst: "analyst"
   }
 
+  validates :role, presence: true
   validates :resource_type, inclusion: {in: ALLOWED_RESOURCE_TYPES}, allow_nil: true
 
   class << self
     def organizations
       resources_for(Organization)
-        .or(Organization.where(facilities: resources_for(Facility)))
-        .or(Organization.where(facility_groups: resources_for(FacilityGroup)))
+    end
+
+    def facility_groups
+      resources_for(FacilityGroup)
+        .or(FacilityGroup.where(organization: resources_for(Organization)))
     end
 
     def facilities
       resources_for(Facility)
         .or(Facility.where(facility_group: FacilityGroup.where(organization: resources_for(Organization))))
         .or(Facility.where(facility_group: resources_for(FacilityGroup)))
-    end
-
-    def facility_groups
-      resources_for(FacilityGroup)
-        .or(FacilityGroup.where(organization: resources_for(Organization)))
-        .or(FacilityGroup.where(facilities: resources_for(Facility)))
     end
 
     private

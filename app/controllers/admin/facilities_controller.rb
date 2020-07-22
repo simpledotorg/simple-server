@@ -12,22 +12,17 @@ class Admin::FacilitiesController < AdminController
   def index
     authorize([:upcoming, :manage, Facility], :allowed?)
 
-    if searching?
-      facilities = policy_scope([:upcoming, :manage, Facility.all]).search_by_name(search_query)
-      facility_groups = FacilityGroup.where(facilities: facilities)
+    facilities =
+      if searching?
+        policy_scope([:upcoming, :manage, Facility]).search_by_name(search_query)
+      else
+        policy_scope([:upcoming, :manage, Facility])
+      end
 
-      @organizations = Organization.where(facility_groups: facility_groups)
-      @facility_groups = facility_groups.group_by(&:organization)
-      @facilities = facilities.group_by(&:facility_group)
-    else
-      @organizations = policy_scope([:upcoming, :manage, Organization.all])
-      @facility_groups = @organizations.map { |organization|
-        [organization, policy_scope([:upcoming, :manage, organization.facility_groups])]
-      }.to_h
-      @facilities = @facility_groups.values.flatten.map { |facility_group|
-        [facility_group, policy_scope([:upcoming, :manage, facility_group.facilities])]
-      }.to_h
-    end
+    facility_groups = FacilityGroup.where(facilities: facilities)
+    @organizations = Organization.where(facility_groups: facility_groups)
+    @facility_groups = facility_groups.group_by(&:organization)
+    @facilities = facilities.group_by(&:facility_group)
   end
 
   def show

@@ -1,16 +1,4 @@
 class Upcoming::Read::OrganizationPolicy < Upcoming::ApplicationPolicy
-  attr_reader :user, :record
-
-  def initialize(user, record)
-    @user = user
-    @record = record
-  end
-
-  def allowed?
-    return true if user.super_admin?
-    user.accesses.where(resource: resolve_record(record, Organization)).exists?
-  end
-
   class Scope
     attr_reader :user, :scope
 
