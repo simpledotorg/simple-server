@@ -17,11 +17,10 @@ class MyFacilitiesController < AdminController
 
   def index
     if Flipper[:user_roles].enabled?
-      @facilities = current_admin.facilities
+      @facilities = current_admin.facilities(role: :read)
       @users_requesting_approval = User.includes(:phone_number_authentications)
         .where(phone_number_authentications: {registration_facility_id: @facilities})
-        .requested_sync_approval
-        .order(updated_at: :desc)
+        .requested_sync_approval.order(updated_at: :desc)
     else
       @facilities = policy_scope([:manage, :facility, Facility])
       @users_requesting_approval = paginate(policy_scope([:manage, :user, User])
