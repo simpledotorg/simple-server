@@ -10,30 +10,33 @@ function initializeCharts() {
 
   const controlledGraphConfig = createGraphConfig(data.controlRate, darkGreenColor, lightGreenColor);
   controlledGraphConfig.options = createGraphOptions(data.controlRate, "control rate");
-  const controlledGraphCanvas =
-    document.getElementById("controlledPatientsTrend").getContext("2d");
+  const controlledGraphCanvas = document.getElementById("controlledPatientsTrend").getContext("2d");
   new Chart(controlledGraphCanvas, controlledGraphConfig);
 
-  const uncontrolledGraphConfig = createGraphConfig(data.controlRate, darkRedColor, lightRedColor);
-  uncontrolledGraphConfig.options = createGraphOptions(data.controlRate, "control rate");
-  const uncontrolledGraphCanvas =
-    document.getElementById("uncontrolledPatientsTrend").getContext("2d");
+  const uncontrolledGraphConfig = createGraphConfig(data.uncontrolledRate, darkRedColor, lightRedColor);
+  uncontrolledGraphConfig.options = createGraphOptions(data.uncontrolledRate, "not under control rate");
+  const uncontrolledGraphCanvas = document.getElementById("uncontrolledPatientsTrend").getContext("2d");
   new Chart(uncontrolledGraphCanvas, uncontrolledGraphConfig);
 };
 
 function getReportingData() {
   const $reportingDiv = document.getElementById("reporting");
-  const controlRate =
-    JSON.parse($reportingDiv.attributes.getNamedItem("data-control-rate").value);
-  const controlledPatients = 
-    JSON.parse($reportingDiv.attributes.getNamedItem("data-controlled-patients").value);
-  const registrations =
-    JSON.parse($reportingDiv.attributes.getNamedItem("data-registrations").value);
-  
+  const $newData = document.getElementById("data-json");
+  const zeData = JSON.parse($newData.textContent);
+  console.log(zeData);
+
+  const controlRate = zeData.controlled_patients_rate;
+  const controlledPatients = zeData.controlled_patients;
+  const registrations = zeData.registrations;
+  const uncontrolledRate = zeData.uncontrolled_patients_rate;
+  const uncontrolledPatients = zeData.uncontrolled_patients;
+
   let data = {
     controlRate: Object.entries(controlRate),
     controlledPatients: Object.entries(controlledPatients),
     registrations: Object.entries(registrations),
+    uncontrolledRate: Object.entries(uncontrolledRate),
+    uncontrolledPatients: Object.entries(uncontrolledPatients),
   };
 
   return data;

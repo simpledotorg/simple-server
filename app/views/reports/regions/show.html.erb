@@ -223,15 +223,15 @@
         </div>
         <div>
           <h3 class="mb-1 fs-xlarge fw-bold <% if @data[:controlled_patients_rate].values.last %>c-red<% else %>c-grey-medium<% end %>">
-            <% if @data[:controlled_patients_rate].values.last %>
-              <%= @data[:controlled_patients_rate].values.last %>%
+            <% if @data[:uncontrolled_patients_rate].values.last %>
+              <%= @data[:uncontrolled_patients_rate].values.last %>%
             <% else %>
               No data
             <% end %>
           </h3>
-          <p class="<% if @data[:controlled_patients_rate].values.last %>c-black<% else %>c-grey-medium<% end %>">
-            <% if @data[:controlled_patients_rate].values.last %>
-              <span class="fw-bold"><%= number_with_delimiter(@data[:controlled_patients].values.last) %></span> of <%= number_with_delimiter(@last_registration_value) %> registered patients
+          <p class="<% if @data[:uncontrolled_patients].values.last %>c-black<% else %>c-grey-medium<% end %>">
+            <% if @data[:uncontrolled_patients].values.last %>
+              <span class="fw-bold"><%= number_with_delimiter(@data[:uncontrolled_patients].values.last) %></span> of <%= number_with_delimiter(@last_registration_value) %> registered patients
             <% else %>
               No control rate data available
             <% end %>
@@ -405,14 +405,9 @@
       :class => "mw-100pt"
   )%>
 </div>
-<!-- Dump all reporting data in a hidden div to parse in JS -->
-<%= content_tag :div,
-                id: "reporting",
-                data: {
-                  control_rate: @data[:controlled_patients_rate],
-                  controlled_patients: @controlled_patients,
-                  registrations: @registrations
-                },
-                style: "display: none;" do %>
-<% end %>
+
+<div id="data-json" style="display: none;">
+  <%= raw @data.to_json %>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
