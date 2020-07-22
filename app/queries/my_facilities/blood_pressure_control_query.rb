@@ -8,8 +8,6 @@ class MyFacilities::BloodPressureControlQuery
   include QuarterHelper
   include MonthHelper
 
-  REGISTRATION_BUFFER = 2.months
-
   def initialize(facilities: Facility.all, cohort_period: {})
     # cohort_period is map that contains
     # - :cohort_period (:quarter/:month),
@@ -79,7 +77,6 @@ class MyFacilities::BloodPressureControlQuery
   def overall_patients
     @overall_patients ||= Patient
       .with_hypertension
-      .where("recorded_at < ?", Time.current.beginning_of_day - REGISTRATION_BUFFER)
       .where(assigned_facility: facilities)
   end
 

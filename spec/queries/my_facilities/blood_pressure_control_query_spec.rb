@@ -316,14 +316,6 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       let!(:assigned_facility) { create(:facility) }
       let!(:user) { create(:user) }
 
-      let!(:recent_patient) do
-        create(:patient,
-          registration_facility: facility,
-          assigned_facility: assigned_facility,
-          registration_user: user,
-          recorded_at: 1.month.ago)
-      end
-
       let!(:patient_with_recent_bp) do
         create(:patient,
           registration_facility: facility,
@@ -371,15 +363,6 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
           assigned_facility: assigned_facility,
           registration_user: user,
           recorded_at: 6.months.ago)
-      end
-
-      let!(:bp_for_recent_patient) do
-        create(:blood_pressure,
-          :under_control,
-          patient: recent_patient,
-          recorded_at: 1.week.ago,
-          facility: facility,
-          user: user)
       end
 
       let!(:bp_for_patient_with_recent_bp) do
