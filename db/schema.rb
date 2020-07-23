@@ -129,6 +129,11 @@ ActiveRecord::Schema.define(version: 2020_07_17_062323) do
     t.index ["user_id"], name: "index_communications_on_user_id"
   end
 
+  create_table "data_migrations", id: false, force: :cascade do |t|
+    t.string "version", null: false
+    t.index ["version"], name: "unique_data_migrations", unique: true
+  end
+
   create_table "email_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -209,8 +214,8 @@ ActiveRecord::Schema.define(version: 2020_07_17_062323) do
     t.datetime "updated_at", null: false
     t.float "latitude"
     t.float "longitude"
-    t.datetime "deleted_at"
     t.uuid "facility_group_id"
+    t.datetime "deleted_at"
     t.string "slug"
     t.string "zone"
     t.boolean "enable_diabetes_management", default: false, null: false
@@ -502,6 +507,32 @@ ActiveRecord::Schema.define(version: 2020_07_17_062323) do
   add_foreign_key "patients", "facilities", column: "registration_facility_id"
   add_foreign_key "protocol_drugs", "protocols"
 
+  create_view "blood_pressures_per_facility_per_days", materialized: true, sql_definition: <<-SQL
+      WITH latest_bp_per_patient_per_day AS (
+           SELECT DISTINCT ON (blood_pressures.facility_id, blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text) blood_pressures.id AS bp_id,
+              blood_pressures.facility_id,
+              (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS day,
+              (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS month,
+              (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS quarter,
+              (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS year
+             FROM (blood_pressures
+               JOIN medical_histories ON (((blood_pressures.patient_id = medical_histories.patient_id) AND (medical_histories.hypertension = 'yes'::text))))
+            WHERE (blood_pressures.deleted_at IS NULL)
+            ORDER BY blood_pressures.facility_id, blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, blood_pressures.recorded_at DESC, blood_pressures.id
+          )
+   SELECT count(latest_bp_per_patient_per_day.bp_id) AS bp_count,
+      facilities.id AS facility_id,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, facilities.deleted_at)) AS deleted_at,
+      latest_bp_per_patient_per_day.day,
+      latest_bp_per_patient_per_day.month,
+      latest_bp_per_patient_per_day.quarter,
+      latest_bp_per_patient_per_day.year
+     FROM (latest_bp_per_patient_per_day
+       JOIN facilities ON ((facilities.id = latest_bp_per_patient_per_day.facility_id)))
+    GROUP BY latest_bp_per_patient_per_day.day, latest_bp_per_patient_per_day.month, latest_bp_per_patient_per_day.quarter, latest_bp_per_patient_per_day.year, facilities.deleted_at, facilities.id;
+  SQL
+  add_index "blood_pressures_per_facility_per_days", ["facility_id", "day", "year"], name: "index_blood_pressures_per_facility_per_days", unique: true
+
   create_view "bp_drugs_views", sql_definition: <<-SQL
       SELECT bp.id AS bp_id,
       bp.systolic,
@@ -677,72 +708,6 @@ ActiveRecord::Schema.define(version: 2020_07_17_062323) do
        JOIN users u ON ((u.id = bp.user_id)))
        LEFT JOIN patient_phone_numbers pn ON ((pn.patient_id = p.id)));
   SQL
-  create_view "patients_blood_pressures_facilities", sql_definition: <<-SQL
-      SELECT patients.id AS p_id,
-      patients.age AS p_age,
-      patients.gender AS p_gender,
-      blood_pressures.id,
-      blood_pressures.systolic,
-      blood_pressures.diastolic,
-      blood_pressures.patient_id,
-      blood_pressures.created_at,
-      blood_pressures.updated_at,
-      blood_pressures.device_created_at,
-      blood_pressures.device_updated_at,
-      blood_pressures.facility_id,
-      blood_pressures.user_id,
-      blood_pressures.deleted_at,
-      facilities.name,
-      facilities.district,
-      facilities.state,
-      facilities.facility_type,
-      users.full_name,
-      users.sync_approval_status
-     FROM patients,
-      blood_pressures,
-      facilities,
-      users
-    WHERE ((blood_pressures.patient_id = patients.id) AND (blood_pressures.facility_id = facilities.id) AND (blood_pressures.user_id = users.id));
-  SQL
-  create_view "latest_blood_pressures_per_patient_per_days", materialized: true, sql_definition: <<-SQL
-      WITH latest_bp_per_patient_per_day AS (
-           SELECT DISTINCT ON (blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text) blood_pressures.id AS bp_id,
-              blood_pressures.patient_id,
-              patients.registration_facility_id,
-              blood_pressures.facility_id AS bp_facility_id,
-              timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at)) AS bp_recorded_at,
-              timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at)) AS patient_recorded_at,
-              blood_pressures.systolic,
-              blood_pressures.diastolic,
-              timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.deleted_at)) AS deleted_at,
-              (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS day,
-              (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS month,
-              (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS quarter,
-              (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS year
-             FROM (blood_pressures
-               JOIN patients ON ((patients.id = blood_pressures.patient_id)))
-            WHERE (blood_pressures.deleted_at IS NULL)
-            ORDER BY blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, blood_pressures.recorded_at DESC, blood_pressures.id
-          )
-   SELECT latest_bp_per_patient_per_day.bp_id,
-      latest_bp_per_patient_per_day.patient_id,
-      latest_bp_per_patient_per_day.registration_facility_id,
-      latest_bp_per_patient_per_day.bp_facility_id,
-      latest_bp_per_patient_per_day.bp_recorded_at,
-      latest_bp_per_patient_per_day.patient_recorded_at,
-      latest_bp_per_patient_per_day.systolic,
-      latest_bp_per_patient_per_day.diastolic,
-      latest_bp_per_patient_per_day.deleted_at,
-      latest_bp_per_patient_per_day.day,
-      latest_bp_per_patient_per_day.month,
-      latest_bp_per_patient_per_day.quarter,
-      latest_bp_per_patient_per_day.year,
-      lag(latest_bp_per_patient_per_day.bp_facility_id, 1) OVER (PARTITION BY latest_bp_per_patient_per_day.patient_id ORDER BY latest_bp_per_patient_per_day.bp_recorded_at, latest_bp_per_patient_per_day.bp_id) AS responsible_facility_id,
-      lag(latest_bp_per_patient_per_day.bp_id, 1) OVER (PARTITION BY latest_bp_per_patient_per_day.patient_id ORDER BY latest_bp_per_patient_per_day.bp_recorded_at, latest_bp_per_patient_per_day.bp_id) AS previous_bp_id
-     FROM latest_bp_per_patient_per_day;
-  SQL
-  add_index "latest_blood_pressures_per_patient_per_days", ["bp_id"], name: "index_latest_blood_pressures_per_patient_per_days", unique: true
-
   create_view "patient_registrations_per_day_per_facilities", materialized: true, sql_definition: <<-SQL
       SELECT count(patients.id) AS registration_count,
       patients.registration_facility_id AS facility_id,
@@ -758,32 +723,6 @@ ActiveRecord::Schema.define(version: 2020_07_17_062323) do
     GROUP BY (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, patients.registration_facility_id, facilities.deleted_at;
   SQL
   add_index "patient_registrations_per_day_per_facilities", ["facility_id", "day", "year"], name: "index_patient_registrations_per_day_per_facilities", unique: true
-
-  create_view "blood_pressures_per_facility_per_days", materialized: true, sql_definition: <<-SQL
-      WITH latest_bp_per_patient_per_day AS (
-           SELECT DISTINCT ON (blood_pressures.facility_id, blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text) blood_pressures.id AS bp_id,
-              blood_pressures.facility_id,
-              (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS day,
-              (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS month,
-              (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS quarter,
-              (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS year
-             FROM (blood_pressures
-               JOIN medical_histories ON (((blood_pressures.patient_id = medical_histories.patient_id) AND (medical_histories.hypertension = 'yes'::text))))
-            WHERE (blood_pressures.deleted_at IS NULL)
-            ORDER BY blood_pressures.facility_id, blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, blood_pressures.recorded_at DESC, blood_pressures.id
-          )
-   SELECT count(latest_bp_per_patient_per_day.bp_id) AS bp_count,
-      facilities.id AS facility_id,
-      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, facilities.deleted_at)) AS deleted_at,
-      latest_bp_per_patient_per_day.day,
-      latest_bp_per_patient_per_day.month,
-      latest_bp_per_patient_per_day.quarter,
-      latest_bp_per_patient_per_day.year
-     FROM (latest_bp_per_patient_per_day
-       JOIN facilities ON ((facilities.id = latest_bp_per_patient_per_day.facility_id)))
-    GROUP BY latest_bp_per_patient_per_day.day, latest_bp_per_patient_per_day.month, latest_bp_per_patient_per_day.quarter, latest_bp_per_patient_per_day.year, facilities.deleted_at, facilities.id;
-  SQL
-  add_index "blood_pressures_per_facility_per_days", ["facility_id", "day", "year"], name: "index_blood_pressures_per_facility_per_days", unique: true
 
   create_view "patient_summaries", sql_definition: <<-SQL
       SELECT p.recorded_at,
@@ -921,45 +860,79 @@ ActiveRecord::Schema.define(version: 2020_07_17_062323) do
             ORDER BY appointments.patient_id, appointments.scheduled_date DESC) next_appointment ON ((next_appointment.patient_id = p.id)))
        LEFT JOIN facilities next_appointment_facility ON ((next_appointment_facility.id = next_appointment.facility_id)));
   SQL
+  create_view "patients_blood_pressures_facilities", sql_definition: <<-SQL
+      SELECT patients.id AS p_id,
+      patients.age AS p_age,
+      patients.gender AS p_gender,
+      blood_pressures.id,
+      blood_pressures.systolic,
+      blood_pressures.diastolic,
+      blood_pressures.patient_id,
+      blood_pressures.created_at,
+      blood_pressures.updated_at,
+      blood_pressures.device_created_at,
+      blood_pressures.device_updated_at,
+      blood_pressures.facility_id,
+      blood_pressures.user_id,
+      blood_pressures.deleted_at,
+      facilities.name,
+      facilities.district,
+      facilities.state,
+      facilities.facility_type,
+      users.full_name,
+      users.sync_approval_status
+     FROM patients,
+      blood_pressures,
+      facilities,
+      users
+    WHERE ((blood_pressures.patient_id = patients.id) AND (blood_pressures.facility_id = facilities.id) AND (blood_pressures.user_id = users.id));
+  SQL
+  create_view "latest_blood_pressures_per_patient_per_days", materialized: true, sql_definition: <<-SQL
+      SELECT DISTINCT ON (blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text) blood_pressures.id AS bp_id,
+      blood_pressures.patient_id,
+      patients.registration_facility_id,
+      patients.assigned_facility_id,
+      patients.status AS patient_status,
+      blood_pressures.facility_id AS bp_facility_id,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at)) AS bp_recorded_at,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at)) AS patient_recorded_at,
+      blood_pressures.systolic,
+      blood_pressures.diastolic,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.deleted_at)) AS deleted_at,
+      medical_histories.hypertension AS medical_history_hypertension,
+      (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS day,
+      (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS month,
+      (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS quarter,
+      (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS year
+     FROM ((blood_pressures
+       JOIN patients ON ((patients.id = blood_pressures.patient_id)))
+       LEFT JOIN medical_histories ON ((medical_histories.patient_id = blood_pressures.patient_id)))
+    WHERE (blood_pressures.deleted_at IS NULL)
+    ORDER BY blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, blood_pressures.recorded_at DESC, blood_pressures.id;
+  SQL
+  add_index "latest_blood_pressures_per_patient_per_days", ["bp_id"], name: "index_latest_blood_pressures_per_patient_per_days", unique: true
+
   create_view "latest_blood_pressures_per_patient_per_months", materialized: true, sql_definition: <<-SQL
-      WITH latest_bp_per_patient_per_month AS (
-           SELECT DISTINCT ON (blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text) blood_pressures.id AS bp_id,
-              blood_pressures.patient_id,
-              patients.registration_facility_id,
-              patients.status AS patient_status,
-              blood_pressures.facility_id AS bp_facility_id,
-              timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at)) AS bp_recorded_at,
-              timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at)) AS patient_recorded_at,
-              blood_pressures.systolic,
-              blood_pressures.diastolic,
-              timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.deleted_at)) AS deleted_at,
-              medical_histories.hypertension AS medical_history_hypertension,
-              (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS month,
-              (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS quarter,
-              (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS year
-             FROM ((blood_pressures
-               JOIN patients ON ((patients.id = blood_pressures.patient_id)))
-               LEFT JOIN medical_histories ON ((medical_histories.patient_id = blood_pressures.patient_id)))
-            WHERE (blood_pressures.deleted_at IS NULL)
-            ORDER BY blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, blood_pressures.recorded_at DESC, blood_pressures.id
-          )
-   SELECT latest_bp_per_patient_per_month.bp_id,
-      latest_bp_per_patient_per_month.patient_id,
-      latest_bp_per_patient_per_month.registration_facility_id,
-      latest_bp_per_patient_per_month.patient_status,
-      latest_bp_per_patient_per_month.bp_facility_id,
-      latest_bp_per_patient_per_month.bp_recorded_at,
-      latest_bp_per_patient_per_month.patient_recorded_at,
-      latest_bp_per_patient_per_month.systolic,
-      latest_bp_per_patient_per_month.diastolic,
-      latest_bp_per_patient_per_month.deleted_at,
-      latest_bp_per_patient_per_month.medical_history_hypertension,
-      latest_bp_per_patient_per_month.month,
-      latest_bp_per_patient_per_month.quarter,
-      latest_bp_per_patient_per_month.year,
-      lag(latest_bp_per_patient_per_month.bp_facility_id, 1) OVER (PARTITION BY latest_bp_per_patient_per_month.patient_id ORDER BY latest_bp_per_patient_per_month.bp_recorded_at, latest_bp_per_patient_per_month.bp_id) AS responsible_facility_id,
-      lag(latest_bp_per_patient_per_month.bp_id, 1) OVER (PARTITION BY latest_bp_per_patient_per_month.patient_id ORDER BY latest_bp_per_patient_per_month.bp_recorded_at, latest_bp_per_patient_per_month.bp_id) AS previous_bp_id
-     FROM latest_bp_per_patient_per_month;
+      SELECT DISTINCT ON (blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text) blood_pressures.id AS bp_id,
+      blood_pressures.patient_id,
+      patients.registration_facility_id,
+      patients.assigned_facility_id,
+      patients.status AS patient_status,
+      blood_pressures.facility_id AS bp_facility_id,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at)) AS bp_recorded_at,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at)) AS patient_recorded_at,
+      blood_pressures.systolic,
+      blood_pressures.diastolic,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.deleted_at)) AS deleted_at,
+      medical_histories.hypertension AS medical_history_hypertension,
+      (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS month,
+      (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS quarter,
+      (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS year
+     FROM ((blood_pressures
+       JOIN patients ON ((patients.id = blood_pressures.patient_id)))
+       LEFT JOIN medical_histories ON ((medical_histories.patient_id = blood_pressures.patient_id)))
+    WHERE (blood_pressures.deleted_at IS NULL)
+    ORDER BY blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, blood_pressures.recorded_at DESC, blood_pressures.id;
   SQL
   add_index "latest_blood_pressures_per_patient_per_months", ["bp_id"], name: "index_latest_blood_pressures_per_patient_per_months", unique: true
 
@@ -967,6 +940,7 @@ ActiveRecord::Schema.define(version: 2020_07_17_062323) do
       SELECT DISTINCT ON (latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.year, latest_blood_pressures_per_patient_per_months.quarter) latest_blood_pressures_per_patient_per_months.bp_id,
       latest_blood_pressures_per_patient_per_months.patient_id,
       latest_blood_pressures_per_patient_per_months.registration_facility_id,
+      latest_blood_pressures_per_patient_per_months.assigned_facility_id,
       latest_blood_pressures_per_patient_per_months.patient_status,
       latest_blood_pressures_per_patient_per_months.bp_facility_id,
       latest_blood_pressures_per_patient_per_months.bp_recorded_at,
@@ -977,9 +951,7 @@ ActiveRecord::Schema.define(version: 2020_07_17_062323) do
       latest_blood_pressures_per_patient_per_months.medical_history_hypertension,
       latest_blood_pressures_per_patient_per_months.month,
       latest_blood_pressures_per_patient_per_months.quarter,
-      latest_blood_pressures_per_patient_per_months.year,
-      latest_blood_pressures_per_patient_per_months.responsible_facility_id,
-      latest_blood_pressures_per_patient_per_months.previous_bp_id
+      latest_blood_pressures_per_patient_per_months.year
      FROM latest_blood_pressures_per_patient_per_months
     ORDER BY latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.year, latest_blood_pressures_per_patient_per_months.quarter, latest_blood_pressures_per_patient_per_months.bp_recorded_at DESC, latest_blood_pressures_per_patient_per_months.bp_id;
   SQL
@@ -989,6 +961,7 @@ ActiveRecord::Schema.define(version: 2020_07_17_062323) do
       SELECT DISTINCT ON (latest_blood_pressures_per_patient_per_months.patient_id) latest_blood_pressures_per_patient_per_months.bp_id,
       latest_blood_pressures_per_patient_per_months.patient_id,
       latest_blood_pressures_per_patient_per_months.registration_facility_id,
+      latest_blood_pressures_per_patient_per_months.assigned_facility_id,
       latest_blood_pressures_per_patient_per_months.patient_status,
       latest_blood_pressures_per_patient_per_months.bp_facility_id,
       latest_blood_pressures_per_patient_per_months.bp_recorded_at,
@@ -999,9 +972,7 @@ ActiveRecord::Schema.define(version: 2020_07_17_062323) do
       latest_blood_pressures_per_patient_per_months.medical_history_hypertension,
       latest_blood_pressures_per_patient_per_months.month,
       latest_blood_pressures_per_patient_per_months.quarter,
-      latest_blood_pressures_per_patient_per_months.year,
-      latest_blood_pressures_per_patient_per_months.responsible_facility_id,
-      latest_blood_pressures_per_patient_per_months.previous_bp_id
+      latest_blood_pressures_per_patient_per_months.year
      FROM latest_blood_pressures_per_patient_per_months
     ORDER BY latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.bp_recorded_at DESC, latest_blood_pressures_per_patient_per_months.bp_id;
   SQL
