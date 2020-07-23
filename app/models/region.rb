@@ -13,7 +13,7 @@ class Region < ApplicationRecord
   has_many :_child_regions, as: :parent_region, class_name: "Region"
   has_many :_facility_groups, inverse_of: :parent_region, foreign_key: :parent_region_id
 
-  validates :level, presence: true, uniqueness: { conditions: -> { where(level: 0) }, message: "can only have one root Region" }
+  validates :level, presence: true, uniqueness: {conditions: -> { where(level: 0) }, message: "can only have one root Region"}
   validates :name, presence: true
   validates :slug, presence: true, uniqueness: true
   validates :parent_region, presence: true, unless: :root?

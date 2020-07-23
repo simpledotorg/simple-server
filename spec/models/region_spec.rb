@@ -16,7 +16,7 @@ RSpec.describe Region, type: :model do
     }.to raise_error(ActiveRecord::ReadOnlyRecord)
   end
 
-  it "cannot have more than one root level Region"  do
+  it "cannot have more than one root level Region" do
     region = Region.new(name: "top", level: :root, parent_region: nil)
     expect(region).to_not be_valid
     expect(region.errors[:level]).to eq(["can only have one root Region"])
