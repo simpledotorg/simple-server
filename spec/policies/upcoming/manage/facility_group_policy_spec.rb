@@ -12,7 +12,8 @@ RSpec.describe Upcoming::Manage::FacilityGroupPolicy do
 
     permissions :allowed? do
       it "allows the user" do
-        expect(subject).to permit(super_admin, FacilityGroup)
+        expect(subject).to permit(super_admin, facility_group_1)
+        expect(subject).to permit(super_admin, facility_group_2)
       end
     end
   end
@@ -29,6 +30,29 @@ RSpec.describe Upcoming::Manage::FacilityGroupPolicy do
     permissions :allowed? do
       it "allows the user" do
         expect(subject).to permit(admin, facility_group_1)
+      end
+
+      it "denies the user" do
+        expect(subject).not_to permit(admin, facility_group_2)
+      end
+    end
+  end
+
+  context "user can manage a single facility_group" do
+    let!(:admin) { create(:admin) }
+
+    let!(:facility_group_1) { create(:facility_group) }
+    let!(:facility_group_2) { create(:facility_group) }
+
+    let!(:admin_access) { create(:access, user: admin, role: :admin, resource: facility_group_1) }
+
+    permissions :allowed? do
+      it "allows the user" do
+        expect(subject).to permit(admin, facility_group_1)
+      end
+
+      it "denies the user" do
+        expect(subject).not_to permit(admin, facility_group_2)
       end
     end
   end
