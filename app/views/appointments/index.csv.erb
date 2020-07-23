@@ -29,7 +29,6 @@
     ('High' if patient_summary.risk_level > 0),
     patient_summary.street_address,
     patient_summary.village_or_colony,
-    patient_summary.latest_phone_number,
-    "Patient Summary"
+    patient_summary.latest_phone_number
   ].to_csv -%>
 <% end %>
