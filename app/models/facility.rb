@@ -84,6 +84,11 @@ class Facility < ApplicationRecord
 
   friendly_id :name, use: :slugged
 
+  # For compatibility w/ Regions
+  def parent_region
+    facility_group
+  end
+
   # For compatibility w/ parent FacilityGroups
   def facilities
     [self]

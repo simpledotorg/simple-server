@@ -7,32 +7,39 @@ RSpec.describe StateRegionCreator, type: :model do
   let(:facility_group_3) { FactoryBot.create(:facility_group, name: "facility_group_3", organization: organization) }
 
   it "creates Regions for all states from Facilities" do
-    facility_1 = create(:facility, state: "state-1")
-    facility_2 = create(:facility, state: "state-1")
-    facility_3 = create(:facility, state: "state-2")
+    state1_facilities = create_list(:facility, 2, state: "state-1", facility_group: facility_group_1)
+    state2_facilities = create_list(:facility, 2, state: "state-2", facility_group: facility_group_2)
     StateRegionCreator.new.call
+    state1_facilities.each do |facility|
+      state = facility.reload.parent_region.parent_region
+      expect(state.name).to eq("state-1")
+    end
+    state2_facilities.each do |facility|
+      state = facility.reload.parent_region.parent_region
+      expect(state.name).to eq("state-2")
+    end
+
     expect(Region.state.size).to eq(2)
     expect(Region.state.map(&:name)).to contain_exactly("state-1", "state-2")
   end
 
   it "assigns Organization as parent region" do
-    facility_1 = create(:facility, state: "state-1", facility_group: facility_group_1)
-    facility_2 = create(:facility, state: "state-1", facility_group: facility_group_1)
-    facility_3 = create(:facility, state: "state-1", facility_group: facility_group_3)
+    _state1_facilities = create_list(:facility, 2, state: "state-1", facility_group: facility_group_1)
+    _state2_facilities = create_list(:facility, 2, state: "state-2", facility_group: facility_group_1)
 
-    facility_4 = create(:facility, state: "state-2", facility_group: facility_group_2)
     StateRegionCreator.new.call
+
     Region.state.each do |region|
       expect(region.parent_region).to eq(organization)
     end
   end
 
   it "creates Regions inside the appropriate FacilityGroup" do
-    facility_1 = create(:facility, state: "state-1", facility_group: facility_group_1)
-    facility_2 = create(:facility, state: "state-1", facility_group: facility_group_1)
-    facility_3 = create(:facility, state: "state-1", facility_group: facility_group_3)
+    _facility_1 = create(:facility, state: "state-1", facility_group: facility_group_1)
+    _facility_2 = create(:facility, state: "state-1", facility_group: facility_group_1)
+    _facility_3 = create(:facility, state: "state-1", facility_group: facility_group_3)
 
-    facility_4 = create(:facility, state: "state-2", facility_group: facility_group_2)
+    _facility_4 = create(:facility, state: "state-2", facility_group: facility_group_2)
     StateRegionCreator.new.call
     expect(Region.state.size).to eq(2)
     expect(Region.state.map(&:name)).to contain_exactly("state-1", "state-2")
