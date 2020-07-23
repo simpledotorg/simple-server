@@ -10,7 +10,7 @@ class Reports::RegionsController < AdminController
   end
 
   def show
-    @region = scope.find_by!(slug: facility_params[:id])
+    @region = report_scope.find_by!(slug: facility_params[:id])
     authorize(:dashboard, :show?)
     RequestStore.store[:force_cache] = true if force_cache?
 
@@ -25,25 +25,25 @@ class Reports::RegionsController < AdminController
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
-    @top_district_benchmarks = @data[:top_district_benchmarks]
+    @top_region_benchmarks = @data[:top_region_benchmarks]
     @last_registration_value = @data[:registrations].values&.last || 0
   end
 
   private
 
-  def scope
-    case scope = facility_params[:scope]
+  def report_scope
+    @report_scope ||= case facility_params[:report_scope]
     when "facility_group"
       then FacilityGroup
     when "facility"
       then Facility
     else
-      raise ArgumentError, "unknown scope #{scope}"
+      raise ArgumentError, "unknown report_scope #{facility_params[:report_scope]}"
     end
   end
 
   def facility_params
-    params.permit(:selected_date, :id, :force_cache, :scope)
+    params.permit(:selected_date, :id, :force_cache, :report_scope)
   end
 
   def force_cache?
