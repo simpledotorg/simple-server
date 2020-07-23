@@ -1,6 +1,8 @@
 class StateRegionCreator
   def call
-    Region.create!
+    Organization.find_each do |org|
+      org.update! parent_region: Region.root
+    end
 
     Facility.find_each do |facility|
       state = facility.state
