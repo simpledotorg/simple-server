@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_17_062323) do
+ActiveRecord::Schema.define(version: 2020_07_21_203734) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -307,6 +307,7 @@ ActiveRecord::Schema.define(version: 2020_07_17_062323) do
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
     t.string "slug"
+    t.uuid "parent_region_id"
     t.index ["deleted_at"], name: "index_organizations_on_deleted_at"
     t.index ["slug"], name: "index_organizations_on_slug", unique: true
   end
@@ -444,11 +445,12 @@ ActiveRecord::Schema.define(version: 2020_07_17_062323) do
     t.integer "level", null: false
     t.string "description"
     t.string "slug", null: false
-    t.uuid "parent_region_id"
     t.string "parent_region_type"
+    t.uuid "parent_region_id"
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["parent_region_type", "parent_region_id"], name: "index_regions_on_parent_region_type_and_parent_region_id"
   end
 
   create_table "twilio_sms_delivery_details", force: :cascade do |t|
