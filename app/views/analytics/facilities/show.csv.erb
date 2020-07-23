@@ -1,10 +1,8 @@
-<%= [
-  'Report generated at:',
-  Time.current
-].to_csv -%>
+<% csv = CSV.generate(headers: true) do |csv| %>
+<% csv << ["Report generated at:", Time.current] %>
 <% period = @period == :quarter ? 'Quarterly' : 'Monthly' %>
-<%= ["#{@facility.name} #{period} Cohort Report"].to_csv -%>
-<%= [
+<% csv << ["#{@facility.name} #{period} Cohort Report"] %>
+<% csv << [
   'Cohort period',
   'Follow up period',
   'Patients in cohort',
@@ -15,7 +13,7 @@
   'Control rate',
   'Uncontrolled rate',
   'Default rate'
-].to_csv -%>
+] %>
 <% @cohort_analytics.each_with_index do |(report_dates, analytics), index| %>
   <%
     cohort_start, report_start = report_dates
@@ -41,7 +39,7 @@
       default_percent = 0
     end
   %>
-<%= [
+<% csv << [
   cohort_period,
   report_period,
   registered,
@@ -52,5 +50,7 @@
   "#{controlled_percent}%",
   "#{uncontrolled_percent}%",
   "#{default_percent}%"
-].to_csv -%>
+] %>
 <% end %>
+<% end.html_safe %>
+<%= csv %>
