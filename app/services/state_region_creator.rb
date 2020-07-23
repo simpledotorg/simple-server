@@ -1,5 +1,7 @@
 class StateRegionCreator
   def call
+    Region.create!
+
     Facility.find_each do |facility|
       state = facility.state
       facility_group = facility.facility_group

@@ -1,25 +1,38 @@
 require "rails_helper"
 
 RSpec.describe Region, type: :model do
+  let(:organization) { create(:organization) }
+
+  it "root region has no parents" do
+    region = Region.root
+    expect(region.parent_region).to be_nil
+    expect(region.root?).to be_truthy
+  end
+
+  it "root region cannot be destroyed" do
+    region = Region.root
+    expect {
+      region.destroy!
+    }.to raise_error(ActiveRecord::ReadOnlyRecord)
+  end
+
+  it "cannot have more than one root level Region"  do
+    region = Region.new(name: "top", level: :root, parent_region: nil)
+    expect(region).to_not be_valid
+    expect(region.errors[:level]).to eq(["can only have one root Region"])
+  end
+
   it "can be a state" do
     region = Region.new
     region.level = :state
     expect(region.level).to eq("state")
   end
 
-  it "is the top of the hiearchy if its own parent" do
-    region = Region.new(name: "top", level: :organization, parent_region: nil)
-
-    region.save!
-    expect(region.parent_region).to be_nil
-    expect(region.top_level?).to be_truthy
-  end
-
   it "can be parent of many children" do
-    region = Region.new(name: "top", level: :organization)
+    region = Region.new(name: "top", level: :organization, parent_region: Region.root)
 
     region.save!
-    expect(region.top_level?).to be_truthy
+    expect(region.root?).to be_falsey
 
     child1 = Region.create!(name: "child1", level: :state, parent_region: region)
     child2 = Region.create!(name: "child2", level: :state, parent_region: region)
@@ -28,14 +41,14 @@ RSpec.describe Region, type: :model do
   end
 
   it "can be a parent of facility groups" do
-    region = Region.new(name: "state", level: :state)
+    region = Region.new(name: "state", level: :state, parent_region: organization)
     facility_group_1 = create(:facility_group, parent_region: region)
     facility_group_2 = create(:facility_group, parent_region: region)
     expect(region.children).to contain_exactly(facility_group_1, facility_group_2)
   end
 
   it "can build a hiearchy" do
-    org = create(:organization)
+    org = create(:organization, parent_region: Region.root)
 
     state1 = create(:region, level: :state, parent_region: org)
     state2 = create(:region, level: :state, parent_region: org)

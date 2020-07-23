@@ -31,6 +31,14 @@ RSpec.configure do |config|
   config.include Devise::Test::IntegrationHelpers, type: :feature
   config.include Warden::Test::Helpers
 
+  config.before(:context) do
+    Region.root.reload
+  end
+
+  config.before(:example) do
+    Region.root.reload
+  end
+
   Shoulda::Matchers.configure do |config|
     config.integrate do |with|
       with.test_framework :rspec
