@@ -71,7 +71,7 @@ RSpec.describe Upcoming::Manage::FacilityGroupPolicy::Scope do
 
     it "resolve all facility groups" do
       resolved_records = subject.new(super_admin, FacilityGroup).resolve
-      expect(resolved_records).to match_array(FacilityGroup.all)
+      expect(resolved_records).to include(facility_group_1, facility_group_2, facility_group_3)
     end
   end
 
@@ -81,7 +81,8 @@ RSpec.describe Upcoming::Manage::FacilityGroupPolicy::Scope do
 
     it "resolves all facility groups in their organization" do
       resolved_records = subject.new(admin, FacilityGroup).resolve
-      expect(resolved_records).to match_array([facility_group_1, facility_group_2])
+      expect(resolved_records).to include(facility_group_1, facility_group_2)
+      expect(resolved_records).not_to include(facility_group_3)
     end
   end
 

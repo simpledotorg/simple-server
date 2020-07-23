@@ -1,7 +1,7 @@
 class Access < ApplicationRecord
   ALLOWED_RESOURCE_TYPES = %w[Organization FacilityGroup Facility].freeze
 
-  belongs_to :user
+  belongs_to :user, required: true
   belongs_to :resource, polymorphic: true, optional: true
 
   enum role: {
