@@ -8,9 +8,7 @@
     <%= @facility.name %>
   </h1>
   <nav class="page-nav">
-    <% if @admin.can_manage?(@facility) %>
-      <%= link_to 'Edit facility', edit_admin_facility_group_facility_path(@facility_group, @facility), class: "btn btn-sm btn-primary" %>
-    <% end %>
+    <%= link_to 'Edit facility', edit_admin_facility_group_facility_path(@facility_group, @facility), class: "btn btn-sm btn-primary" %>
   </nav>
 </div>
 
@@ -30,7 +28,8 @@
     <div class="card flex-fill">
       <h3>Latitude/longitude</h3>
       <% if @facility.latitude.present? && @facility.longitude.present? %>
-        <div><i class="fas fa-map-marker-alt light mr-2"></i> <%= @facility.latitude %>, <%= @facility.longitude %></div>
+        <div><i class="fas fa-map-marker-alt light mr-2"></i> <%= @facility.latitude %>, <%= @facility.longitude %>
+        </div>
       <% else %>
         <div><i class="fas fa-angle-left light"></i> None entered <i class="fas fa-angle-right light"></i></div>
       <% end %>
@@ -51,7 +50,7 @@
   <div class="col-md-3 d-flex">
     <div class="card flex-fill">
       <h3>Features</h3>
-      Diabetes Management: <%= @facility.diabetes_enabled? ? "Enabled" : "Disabled"  %>
+      Diabetes Management: <%= @facility.diabetes_enabled? ? "Enabled" : "Disabled" %>
       Teleconsultation:    <%= @facility.teleconsultation_enabled? ? "Enabled" : "Disabled" %>
     </div>
   </div>
@@ -91,7 +90,7 @@
             <% end %>
 
             <% if policy([:manage, :user, user]).destroy? %>
-              <%= link_to 'Delete', [:admin, user], method: :delete, data: { confirm: "Are you sure you want to delete #{user.full_name}?" }, class: "btn btn-sm btn-outline-danger" %>
+              <%= link_to 'Delete', [:admin, user], method: :delete, data: {confirm: "Are you sure you want to delete #{user.full_name}?"}, class: "btn btn-sm btn-outline-danger" %>
             <% end %>
 
             <% unless user.sync_approval_status == 'denied' %>
@@ -101,10 +100,10 @@
             <% end %>
 
             <% unless user.sync_approval_status == 'allowed' %>
-              <%= link_to 'Allow access', admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') }, class: "btn btn-sm btn-outline-success" %>
+              <%= link_to 'Allow access', admin_user_enable_access_path(user), method: :put, data: {confirm: I18n.t('admin.enable_access_alert')}, class: "btn btn-sm btn-outline-success" %>
             <% end %>
 
-            <%= render partial: "admin/users/deny_access_modal", locals: { user: user } %>
+            <%= render partial: "admin/users/deny_access_modal", locals: {user: user} %>
 
           </div>
         </div>

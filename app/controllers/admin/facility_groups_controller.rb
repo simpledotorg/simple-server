@@ -1,21 +1,12 @@
 class Admin::FacilityGroupsController < AdminController
   before_action :set_organizations, only: [:new, :edit, :update, :create]
-  before_action :set_facility_group, only: [:show, :edit, :update, :destroy]
+  before_action :set_facility_group, only: [:edit, :update, :destroy]
   before_action :set_protocols, only: [:new, :edit, :update, :create]
-
-  def index
-    authorize([:manage, FacilityGroup])
-    @facility_groups = policy_scope([:manage, FacilityGroup]).order(:name)
-  end
-
-  def show
-    @facilities = @facility_group.facilities.order(:name)
-    @users = @facility_group.users.order(:full_name)
-  end
+  before_action :authorize_facility_group, only: [:edit, :update, :destroy]
 
   def new
     @facility_group = FacilityGroup.new
-    authorize([:manage, @facility_group])
+    authorize([:upcoming, :manage, Organization], :allowed?)
   end
 
   def edit
@@ -23,7 +14,7 @@ class Admin::FacilityGroupsController < AdminController
 
   def create
     @facility_group = FacilityGroup.new(facility_group_params)
-    authorize([:manage, @facility_group])
+    authorize([:upcoming, :manage, @facility_group.organization], :allowed?)
 
     if @facility_group.save && @facility_group.toggle_diabetes_management
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully created."
@@ -51,7 +42,7 @@ class Admin::FacilityGroupsController < AdminController
   private
 
   def set_organizations
-    @organizations = policy_scope([:manage, :facility, Organization])
+    @organizations = policy_scope([:upcoming, :manage, Organization])
   end
 
   def set_protocols
@@ -60,7 +51,10 @@ class Admin::FacilityGroupsController < AdminController
 
   def set_facility_group
     @facility_group = FacilityGroup.friendly.find(params[:id])
-    authorize([:manage, @facility_group])
+  end
+
+  def authorize_facility_group
+    authorize([:upcoming, :manage, @facility_group], :allowed?)
   end
 
   def facility_group_params

@@ -16,7 +16,10 @@
         </div>
       <% end %>
 
-      <%= form.select(:organization_id, organizations.map { |organization| [organization.name, organization.id] }) %>
+      <% unless organizations.empty? %>
+        <%= form.select(:organization_id, organizations.map { |organization| [organization.name, organization.id] }) %>
+      <% end %>
+
 
       <%= form.text_field :name, id: :facility_name, required: true, help: "Usually the name of a District", autocomplete: "off" %>
 

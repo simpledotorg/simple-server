@@ -21,6 +21,7 @@ FactoryBot.define do
     association :address, strategy: :build
     phone_numbers { build_list(:patient_phone_number, 1, patient_id: id) }
     association :registration_facility, factory: :facility
+    assigned_facility { registration_facility }
     association :registration_user, factory: :user_created_on_device
     business_identifiers do
       build_list(:patient_business_identifier,
@@ -48,6 +49,10 @@ FactoryBot.define do
       medical_history { build(:medical_history, :diabetes_yes, patient_id: id) }
     end
 
+    trait :without_medical_history do
+      medical_history { nil }
+    end
+
     trait :denied do
       reminder_consent { Patient.reminder_consents[:denied] }
     end
@@ -55,9 +60,11 @@ FactoryBot.define do
     trait(:with_sanitized_phone_number) do
       phone_numbers { build_list(:patient_phone_number, 1, patient_id: id, number: "9876543210") }
     end
+
     trait(:with_appointments) do
       appointments { build_list(:appointment, 2, facility: registration_facility) }
     end
+
     trait(:with_overdue_appointments) do
       appointments { build_list(:appointment, 2, :overdue, facility: registration_facility) }
     end
@@ -68,7 +75,6 @@ def build_patient_payload(patient = FactoryBot.build(:patient))
   patient.attributes.with_payload_keys
     .except("address_id")
     .except("registration_user_id")
-    .except("registration_facility_id")
     .except("test_data")
     .except("deleted_by_user_id")
     .merge(

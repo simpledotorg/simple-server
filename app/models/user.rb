@@ -90,6 +90,10 @@ class User < ApplicationRecord
 
   alias facility registration_facility
 
+  def authorized_facility?(facility_id)
+    registration_facility && registration_facility.facility_group.facilities.where(id: facility_id).present?
+  end
+
   def access_token_valid?
     sync_approval_status_allowed?
   end
@@ -176,92 +180,16 @@ class User < ApplicationRecord
     where(sync_approval_status: :requested)
   end
 
-  def can_manage?(scope)
-    admin = Role.admin.first
-    
-    value =
-      case scope.class.model_name.name.to_sym
-        when :Organization
-          accesses.where(role: admin, resourceable: scope).exists?
-        when :FacilityGroup
-          organizations = Organization.includes(:facility_groups).where(facility_groups: scope)
-
-          accesses
-            .where(role: admin, resourceable: organizations)
-            .or(accesses.where(role: admin, resourceable: scope)).exists?
-        when :Facility
-          organizations = Organization.includes(:facilities).where(facilities: scope)
-          facility_group = scope.facility_group
-
-          accesses
-            .where(role: admin, resourceable: organizations)
-            .or(accesses.where(role: admin, resourceable: facility_group))
-            .or(accesses.where(role: admin, resourceable: scope)).exists?
-        else
-          nil
-      end
-
-    return value unless value.nil?
-
-    case scope.class.to_sym
-      when Class
-        case scope.model_name.name.to_sym
-          when :Organization
-            accesses.where(role: admin, resourceable_type: %w[Organization]).exists?
-          when :FacilityGroup
-            accesses.where(role: admin, resourceable_type: %w[Organization FacilityGroup]).exists?
-          when :Facility
-            accesses.where(role: admin, resourceable_type: %w[Organization FacilityGroup Facility]).exists?
-          else
-            raise ArgumentError, "Invalid scope name"
-        end
-      when ActiveRecord::Relation
-        case scope.model_name.name.to_sym
-          when :Organization
-            accesses.where(role: admin, resourceable: scope).exists?
-          when :FacilityGroup
-            organizations = Organization.includes(:facility_groups).where(facility_groups: scope)
-
-            accesses
-              .where(role: admin, resourceable: organizations)
-              .or(accesses.where(role: admin, resourceable: scope)).exists?
-
-          when :Facility
-            organizations = Organization.includes(:facilities).where(facilities: scope)
-            facility_group = scope.facility_group
-
-            accesses
-              .where(role: admin, resourceable: organizations)
-              .or(accesses.where(role: admin, resourceable: facility_group))
-              .or(accesses.where(role: admin, resourceable: scope)).exists?
-
-          else
-            raise ArgumentError, "Invalid scope name"
-        end
-      else
-        raise ArgumentError, "Invalid scope type"
-    end
+  def has_role?(*roles)
+    roles.map(&:to_sym).include?(role.to_sym)
   end
 
-  def read_agg_facilities
-    read_agg_organizations =
-      Facility.where(id: accesses
-                           .where(role: [Role.admin.first, Role.analyst.first], resourceable_type: "Organization")
-                           .map(&:resourceable)
-                           .map(&:facilities))
-    read_agg_facility_groups =
-      Facility.where(id: accesses
-                           .where(role: [Role.admin.first, Role.analyst.first], resourceable_type: "FacilityGroup")
-                           .map(&:resourceable)
-                           .map(&:facilities))
-    read_agg_facilities =
-      Facility.where(id: accesses
-                           .where(role: [Role.admin.first, Role.analyst.first], resourceable_type: "Facility")
-                           .map(&:resourceable))
+  def resources
+    user_permissions.map(&:resource)
+  end
 
-    read_agg_organizations
-      .union(read_agg_facility_groups)
-      .union(read_agg_facilities)
+  def super_admin?
+    accesses.super_admin.exists?
   end
 
   def destroy_email_authentications

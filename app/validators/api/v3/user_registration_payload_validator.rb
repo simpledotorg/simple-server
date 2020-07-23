@@ -1,5 +1,4 @@
 class Api::V3::UserRegistrationPayloadValidator < Api::V3::PayloadValidator
-
   attr_accessor(
     :id,
     :full_name,

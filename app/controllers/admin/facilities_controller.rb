@@ -5,30 +5,24 @@ class Admin::FacilitiesController < AdminController
 
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
   before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy]
+  before_action :authorize_facility, only: [:show, :new, :create, :edit, :update, :destroy]
   before_action :initialize_upload, :validate_file_type, :validate_file_size, :parse_file,
     :validate_facility_rows, if: :file_exists?, only: [:upload]
 
   def index
-    authorize([:manage, :facility, Facility])
+    authorize([:upcoming, :manage, Facility], :allowed?)
 
-    @admin = current_admin
+    facilities =
+      if searching?
+        policy_scope([:upcoming, :manage, Facility]).search_by_name(search_query)
+      else
+        policy_scope([:upcoming, :manage, Facility])
+      end
 
-    if searching?
-      facilities = policy_scope([:manage, :facility, Facility]).search_by_name(search_query)
-      facility_groups = FacilityGroup.where(facilities: facilities)
-
-      @organizations = Organization.where(facility_groups: facility_groups)
-      @facility_groups = facility_groups.group_by(&:organization)
-      @facilities = facilities.group_by(&:facility_group)
-    else
-      @organizations = policy_scope([:manage, :facility, Organization])
-      @facility_groups = @organizations.map { |organization|
-        [organization, policy_scope([:manage, :facility, organization.facility_groups])]
-      }.to_h
-      @facilities = @facility_groups.values.flatten.map { |facility_group|
-        [facility_group, policy_scope([:manage, :facility, facility_group.facilities])]
-      }.to_h
-    end
+    facility_groups = FacilityGroup.where(facilities: facilities)
+    @organizations = Organization.where(facility_groups: facility_groups)
+    @facility_groups = facility_groups.group_by(&:organization)
+    @facilities = facilities.group_by(&:facility_group)
   end
 
   def show
@@ -37,21 +31,19 @@ class Admin::FacilitiesController < AdminController
 
   def new
     @facility = new_facility
-    authorize([:manage, :facility, @facility])
-  end
-
-  def edit
   end
 
   def create
     @facility = new_facility(facility_params)
-    authorize([:manage, :facility, @facility])
 
     if @facility.save
       redirect_to [:admin, @facility_group, @facility], notice: "Facility was successfully created."
     else
       render :new
     end
+  end
+
+  def edit
   end
 
   def update
@@ -68,7 +60,7 @@ class Admin::FacilitiesController < AdminController
   end
 
   def upload
-    authorize([:manage, :facility, Facility])
+    authorize([:upcoming, :manage, FacilityGroup], :allowed?)
     return render :upload, status: :bad_request if @errors.present?
 
     if @facilities.present?
@@ -88,7 +80,10 @@ class Admin::FacilitiesController < AdminController
 
   def set_facility
     @facility = Facility.friendly.find(params[:id])
-    authorize([:manage, :facility, @facility])
+  end
+
+  def authorize_facility
+    authorize([:upcoming, :manage, @facility], :allowed?)
   end
 
   def set_facility_group

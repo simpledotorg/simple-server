@@ -1,6 +1,7 @@
 require "tasks/scripts/move_user_recorded_data_to_registration_facility"
 require "tasks/scripts/clean_ancient_dates"
 require "tasks/scripts/delete_bangladesh_demo_facility"
+require "tasks/scripts/clean_bangladesh_phone_numbers"
 
 namespace :data_fixes do
   desc "Move all data recorded by a user from a source facility to a destination facility"
@@ -48,5 +49,15 @@ namespace :data_fixes do
   desc "Delete Bangladesh demo facility (dryrun)"
   task delete_bangladesh_demo_facility_dryrun: :environment do
     DeleteBangladeshDemoFacility.delete_facility(dryrun: true)
+  end
+
+  desc "Clean Bangladesh phone numbers"
+  task clean_bangladesh_phone_numbers: :environment do
+    CleanBangladeshPhoneNumbers.call
+  end
+
+  desc "Clean Bangladesh phone numbers (dryrun)"
+  task clean_bangladesh_phone_numbers_dryrun: :environment do
+    CleanBangladeshPhoneNumbers.call(dryrun: true)
   end
 end

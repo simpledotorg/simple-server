@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_08_201410) do
+ActiveRecord::Schema.define(version: 2020_07_20_085855) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -18,14 +18,14 @@ ActiveRecord::Schema.define(version: 2020_07_08_201410) do
 
   create_table "accesses", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id", null: false
-    t.uuid "role_id", null: false
-    t.string "resourceable_type"
-    t.uuid "resourceable_id"
+    t.string "role", null: false
+    t.string "resource_type"
+    t.uuid "resource_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
-    t.index ["resourceable_type", "resourceable_id"], name: "idx_accesses_on_resourceable_type_and_id", unique: true
-    t.index ["role_id"], name: "index_accesses_on_role_id"
+    t.index ["resource_type", "resource_id"], name: "idx_accesses_on_resource_type_and_id", unique: true
+    t.index ["role"], name: "index_accesses_on_role"
     t.index ["user_id"], name: "index_accesses_on_user_id"
   end
 
@@ -390,19 +390,14 @@ ActiveRecord::Schema.define(version: 2020_07_08_201410) do
     t.string "reminder_consent", default: "denied", null: false
     t.uuid "deleted_by_user_id"
     t.string "deleted_reason"
+    t.uuid "assigned_facility_id"
+    t.index ["assigned_facility_id"], name: "index_patients_on_assigned_facility_id"
     t.index ["deleted_at"], name: "index_patients_on_deleted_at"
     t.index ["recorded_at"], name: "index_patients_on_recorded_at"
     t.index ["registration_facility_id"], name: "index_patients_on_registration_facility_id"
     t.index ["registration_user_id"], name: "index_patients_on_registration_user_id"
     t.index ["reminder_consent"], name: "index_patients_on_reminder_consent"
     t.index ["updated_at"], name: "index_patients_on_updated_at"
-  end
-
-  create_table "permissions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "deleted_at"
   end
 
   create_table "phone_number_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -461,13 +456,6 @@ ActiveRecord::Schema.define(version: 2020_07_08_201410) do
     t.index ["deleted_at"], name: "index_protocols_on_deleted_at"
   end
 
-  create_table "roles", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "deleted_at"
-  end
-
   create_table "twilio_sms_delivery_details", force: :cascade do |t|
     t.string "session_id"
     t.string "result"
@@ -517,7 +505,6 @@ ActiveRecord::Schema.define(version: 2020_07_08_201410) do
     t.index ["organization_id"], name: "index_users_on_organization_id"
   end
 
-  add_foreign_key "accesses", "roles"
   add_foreign_key "accesses", "users"
   add_foreign_key "appointments", "facilities"
   add_foreign_key "blood_sugars", "facilities"
@@ -530,6 +517,8 @@ ActiveRecord::Schema.define(version: 2020_07_08_201410) do
   add_foreign_key "observations", "users"
   add_foreign_key "patient_phone_numbers", "patients"
   add_foreign_key "patients", "addresses"
+  add_foreign_key "patients", "facilities", column: "assigned_facility_id"
+  add_foreign_key "patients", "facilities", column: "registration_facility_id"
   add_foreign_key "protocol_drugs", "protocols"
 
   create_view "blood_pressures_per_facility_per_days", materialized: true, sql_definition: <<-SQL

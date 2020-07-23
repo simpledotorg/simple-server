@@ -25,8 +25,6 @@ class Facility < ApplicationRecord
   has_many :prescription_drugs
   has_many :appointments
 
-  has_many :user_resources, as: :resource
-
   has_many :registered_patients,
     class_name: "Patient",
     foreign_key: "registration_facility_id"
@@ -86,6 +84,11 @@ class Facility < ApplicationRecord
 
   friendly_id :name, use: :slugged
 
+  # For compatibility w/ parent FacilityGroups
+  def facilities
+    [self]
+  end
+
   def cohort_analytics(period, prev_periods)
     query = CohortAnalyticsQuery.new(registered_hypertension_patients)
     query.patient_counts_by_period(period, prev_periods)
@@ -133,7 +136,7 @@ class Facility < ApplicationRecord
       facility = CSV_IMPORT_COLUMNS.map { |attribute, column_name| [attribute, row[column_name]] }.to_h
       next if facility.values.all?(&:blank?)
 
-      facilities << facility.merge(enable_diabetes_management: facility[:enable_diabetes] || false,
+      facilities << facility.merge(enable_diabetes_management: facility[:enable_diabetes_management] || false,
                                    enable_teleconsultation: facility[:enable_teleconsultation] || false,
                                    import: true)
     end

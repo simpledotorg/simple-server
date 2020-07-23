@@ -9,6 +9,7 @@ class FacilityGroup < ApplicationRecord
   has_many :users, through: :facilities
 
   has_many :patients, through: :facilities, source: :registered_patients
+  alias registered_patients patients
   has_many :blood_pressures, through: :facilities
   has_many :blood_sugars, through: :facilities
   has_many :encounters, through: :facilities
@@ -17,8 +18,6 @@ class FacilityGroup < ApplicationRecord
 
   has_many :medical_histories, through: :patients
   has_many :communications, through: :appointments
-
-  has_many :user_resources, as: :resource
 
   validates :name, presence: true
   validates :organization, presence: true

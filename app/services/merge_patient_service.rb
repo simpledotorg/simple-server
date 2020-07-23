@@ -1,64 +1,63 @@
 class MergePatientService
-  def initialize(payload)
+  def initialize(payload, request_metadata:)
     @payload = payload
+    @request_metadata = request_metadata
+    @existing_patient = Patient.with_discarded.find_by(id: payload["id"])
   end
 
   def merge
-    existing_patient_attributes = Patient.with_discarded.find_by(id: payload['id'])&.attributes
     merged_address = Address.merge(payload[:address]) if payload[:address].present?
 
-    patient_attributes = payload.except(:address, :phone_numbers, :business_identifiers)
+    patient_attributes =
+      payload
+        .except(:address, :phone_numbers, :business_identifiers)
+        .yield_self { |params| set_metadata(params) }
+        .yield_self { |params| set_address_id(params, merged_address) }
+        .yield_self { |params| set_assigned_facility(params) }
 
-    patient_attributes['address_id'] = merged_address.id if merged_address.present?
-    merged_patient = Patient.merge(attributes_with_metadata(patient_attributes))
+    merged_patient = Patient.merge(patient_attributes)
     merged_patient.address = merged_address
-
     merged_phone_numbers = merge_phone_numbers(payload[:phone_numbers], merged_patient)
-    merged_business_identifiers = merge_business_identifiers(payload[:business_identifiers], merged_patient)
+    merged_business_ids = merge_business_identifiers(payload[:business_identifiers], merged_patient)
 
-    if (merged_address.present? && merged_address.merged?) || merged_phone_numbers.any?(&:merged?) || merged_business_identifiers.any?(&:merged?)
-      merged_patient.touch
+    touch_patient(merged_patient) if associations_updated?(merged_address, merged_phone_numbers, merged_business_ids)
 
-      #
-      # This is a rare scenario that might be possible in the future.
-      # If the client allows the user to update the patient's address or phone_number,
-      # there might be a case where the address or phone_number for a patient is updated for a discarded patient.
-      #
-      # These updates should not ideally be made at all because they will be invisible to the user.
-      #
-      # We can fix this issue, but it requires re-working the merge function, so we'll currently just
-      # track the incidence rate, so we can plan for a fix if necessary.
-      log_update_discarded_patient(merged_patient)
-    end
-
-    if (merged_patient.deleted_at.present? && existing_patient_attributes&.dig('deleted_at').nil?)
-      # Patient has been soft-deleted by the client, server should soft-delete the patient and their associated data
-      # patient_attributes[:metadata][:registration_user_id] contains the current user's id
-      merged_patient.update(deleted_by_user_id: patient_attributes[:metadata][:registration_user_id])
-      merged_patient.discard_data
-    end
+    # Patient has been soft-deleted by the client, server should soft-delete the patient and their associated data.
+    discard_patient_data(merged_patient) if discarded?(merged_patient)
 
     merged_patient
   end
 
   private
 
-  def attributes_with_metadata(patient_attributes)
-    with_request_metadata = patient_attributes.merge(patient_attributes[:metadata]).except(:metadata)
-    metadata_keys = patient_attributes[:metadata].keys
+  attr_reader :existing_patient, :payload, :request_metadata
 
-    case Patient.compute_merge_status(with_request_metadata)
-    when :new
-      with_request_metadata
-    when Set[:updated, :old]
-      existing_metadata = Patient.find(patient_attributes[:id]).slice(*metadata_keys)
-      patient_attributes.merge(existing_metadata).except(:metadata)
-    else
-      patient_attributes.except(:metadata)
+  def set_metadata(patient_params)
+    new_patient_params = patient_params.merge(new_patient_metadata)
+    merge_status = Patient.compute_merge_status(new_patient_params)
+
+    case merge_status
+      when :invalid
+        patient_params
+      when :new
+        new_patient_params
+      else
+        patient_params.merge(existing_patient_metadata)
     end
   end
 
-  attr_reader :payload
+  def set_address_id(patient_params, address)
+    patient_params["address_id"] = address.id if address.present?
+    patient_params
+  end
+
+  def set_assigned_facility(patient_params)
+    if patient_params[:assigned_facility_id].nil?
+      patient_params[:assigned_facility_id] = patient_params[:registration_facility_id]
+    end
+
+    patient_params
+  end
 
   def merge_phone_numbers(phone_number_params, patient)
     return [] unless phone_number_params.present?
@@ -74,7 +73,45 @@ class MergePatientService
     end
   end
 
-  def log_update_discarded_patient(merged_patient)
-    NewRelic::Agent.increment_metric('MergePatientService/update_discarded_patient') if merged_patient.discarded?
+  def discarded?(patient)
+    patient.deleted_at.present? && existing_patient&.deleted_at.nil?
+  end
+
+  def discard_patient_data(patient)
+    patient.update(deleted_by_user_id: request_metadata[:request_user_id])
+    patient.discard_data
+  end
+
+  def associations_updated?(address, phone_numbers, business_ids)
+    (address.present? && address.merged?) || phone_numbers.any?(&:merged?) || business_ids.any?(&:merged?)
+  end
+
+  def touch_patient(patient)
+    patient.touch
+    #
+    # This is a rare scenario that might be possible in the future.
+    # If the client allows the user to update the patient's address or phone_number,
+    # there might be a case where the address or phone_number for a patient is updated for a discarded patient.
+    #
+    # These updates should not ideally be made at all because they will be invisible to the user.
+    #
+    # We can fix this issue, but it requires re-working the merge function, so we'll currently just
+    # track the incidence rate, so we can plan for a fix if necessary.
+    log_update_discarded_patient if patient.discarded?
+  end
+
+  def new_patient_metadata
+    {
+      registration_facility_id: payload[:registration_facility_id] || request_metadata[:request_facility_id],
+      registration_user_id: request_metadata[:request_user_id]
+    }
+  end
+
+  def existing_patient_metadata
+    existing_patient.slice(*new_patient_metadata.keys)
+  end
+
+  def log_update_discarded_patient
+    NewRelic::Agent.increment_metric("MergePatientService/update_discarded_patient")
   end
 end
