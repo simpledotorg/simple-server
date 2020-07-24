@@ -37,7 +37,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
         get :details, params: {id: @facility.facility_group.slug, report_scope: "facility_group"}
       end
       expect(response).to be_successful
-      data = assigns(:data)
     end
   end
 
@@ -62,7 +61,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
         get :cohort, params: {id: @facility.facility_group.slug, report_scope: "facility_group"}
       end
       expect(response).to be_successful
-      data = assigns(:data)
     end
   end
 
