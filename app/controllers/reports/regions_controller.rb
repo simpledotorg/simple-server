@@ -45,7 +45,6 @@ class Reports::RegionsController < AdminController
     @quarterly_registrations = @data[:quarterly_registrations]
     @top_region_benchmarks = @data[:top_region_benchmarks]
     @last_registration_value = @data[:registrations].values&.last || 0
-    render :show
   end
 
   def cohort
@@ -64,7 +63,6 @@ class Reports::RegionsController < AdminController
     @quarterly_registrations = @data[:quarterly_registrations]
     @top_region_benchmarks = @data[:top_region_benchmarks]
     @last_registration_value = @data[:registrations].values&.last || 0
-    render :show
   end
 
   private
