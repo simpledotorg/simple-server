@@ -2,6 +2,7 @@ class Reports::RegionsController < AdminController
   layout "application"
   skip_after_action :verify_policy_scoped
   before_action :set_force_cache
+  before_action :set_selected_date, except: :index
   before_action :find_region, except: :index
   around_action :set_time_zone
 
@@ -14,11 +15,6 @@ class Reports::RegionsController < AdminController
   def show
     authorize(:dashboard, :show?)
 
-    @selected_date = if facility_params[:selected_date]
-      Time.parse(facility_params[:selected_date])
-    else
-      Date.current.advance(months: -1)
-    end
     @data = RegionReportService.new(region: @region,
                                     selected_date: @selected_date,
                                     current_user: current_admin).call
@@ -32,11 +28,6 @@ class Reports::RegionsController < AdminController
   def details
     authorize(:dashboard, :show?)
 
-    @selected_date = if facility_params[:selected_date]
-      Time.parse(facility_params[:selected_date])
-    else
-      Date.current.advance(months: -1)
-    end
     @data = RegionReportService.new(region: @region,
                                     selected_date: @selected_date,
                                     current_user: current_admin).call
@@ -50,11 +41,6 @@ class Reports::RegionsController < AdminController
   def cohort
     authorize(:dashboard, :show?)
 
-    @selected_date = if facility_params[:selected_date]
-      Time.parse(facility_params[:selected_date])
-    else
-      Date.current.advance(months: -1)
-    end
     @data = RegionReportService.new(region: @region,
                                     selected_date: @selected_date,
                                     current_user: current_admin).call
@@ -66,6 +52,14 @@ class Reports::RegionsController < AdminController
   end
 
   private
+
+  def set_selected_date
+    @selected_date = if facility_params[:selected_date]
+      Time.parse(facility_params[:selected_date])
+    else
+      Date.current.advance(months: -1)
+    end
+  end
 
   def set_force_cache
     RequestStore.store[:force_cache] = true if force_cache?
