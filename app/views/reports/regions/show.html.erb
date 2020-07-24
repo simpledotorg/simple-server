@@ -11,10 +11,18 @@
     <i class="fas fa-chevron-right"></i>
     <%= @region.name %>
   </nav>
-  <div class="d-flex ai-center jc-between mb-3">
-    <h1>
-      <%= @region.name %>
-    </h1>
+  <h1>
+    <%= @region.name %>
+  </h1>
+  <div class="d-lg-flex align-lg-center justify-lg-between mb-3">
+    <div class="d-flex ai-center">
+      <p class="pb-8px fs-large c-grey-dark">
+        Overview
+      </p>
+      <p class="pb-8px fs-large c-grey-dark">
+        Cohort reports
+      </p>
+    </div>
     <div class="dropdown show">
       <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">

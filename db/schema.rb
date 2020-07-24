@@ -214,8 +214,8 @@ ActiveRecord::Schema.define(version: 2020_07_17_062323) do
     t.datetime "updated_at", null: false
     t.float "latitude"
     t.float "longitude"
-    t.uuid "facility_group_id"
     t.datetime "deleted_at"
+    t.uuid "facility_group_id"
     t.string "slug"
     t.string "zone"
     t.boolean "enable_diabetes_management", default: false, null: false
