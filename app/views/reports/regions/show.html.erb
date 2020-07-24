@@ -11,7 +11,7 @@
     <i class="fas fa-chevron-right"></i>
     <%= @region.name %>
   </nav>
-  <div class="d-flex ai-center jc-between mb-3">
+  <div class="d-flex align-center jc-between mb-3">
     <h1>
       <%= @region.name %>
     </h1>
@@ -70,7 +70,7 @@
           <div class="h-200px">
             <canvas id="controlledPatientsTrend"></canvas>
           </div>
-          <div class="p-absolute t-0 l-0 pe-none d-flex ai-center jc-center w-100pt h-100pt bb-1px bl-1px bb-grey-medium bl-grey-medium">
+          <div class="p-absolute t-0 l-0 pe-none d-flex align-center jc-center w-100pt h-100pt bb-1px bl-1px bb-grey-medium bl-grey-medium">
             <% unless @data[:controlled_patients_rate].values.last %>
               <p class="c-grey-medium">
                 No data available
@@ -178,7 +178,7 @@
               </div>
             <% end %>
           </div>
-          <div class="p-absolute t-0 l-0 pe-none d-flex ai-center jc-center w-100pt h-100pt bb-1px bl-1px bb-grey-medium bl-grey-medium">
+          <div class="p-absolute t-0 l-0 pe-none d-flex align-center jc-center w-100pt h-100pt bb-1px bl-1px bb-grey-medium bl-grey-medium">
             <% if @last_registration_value.zero? %>
               <p class="c-grey-medium">
                 No data available
@@ -319,97 +319,99 @@
     </div>
   </div>
   <div class="d-lg-flex order-lg-2 w-lg-50 pl-lg-2">
-    <div class="card h-lg-full w-lg-full mt-lg-0">
-      <div class="mb-2">
-        <div class="d-lg-flex align-lg-baseline pb-lg-3 bb-1px bb-grey-light">
-          <div class="flex-lg-2 align-lg-center justify-lg-center">
-            <h3 class="mb-lg-0">
-              Benchmarks
-            </h3>
+    <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+      <div>
+        <div class="mb-2">
+          <h3>
+            No BP measure
+          </h3>
+          <p class="c-grey-dark">
+            Registered HTN patients with no BP measure recorded in the last 3 months
+          </p>
+        </div>
+        <div>
+          <div class="d-flex align-center">
+            <div class="w-12px h-12px mr-12px br-2px bg-grey-lightest"></div>
+            <div class="d-flex align-baseline">
+              <div class="w-44px">
+                <p class="mb-0 mr-12px fs-18px fw-bold">
+                  10%
+                </p>
+              </div>
+              <div class="flex-1">
+                <p class="mb-0 fs-small">
+                  Lost to follow-up
+                </p>
+              </div>
+            </div>
           </div>
-          <div class="d-none d-lg-block flex-lg-1 align-lg-center justify-lg-center">
-            <p class="ta-lg-center mb-lg-0 fw-lg-bold tt-lg-uppercase ls-lg-145 c-lg-grey-dark">
-            <!-- <%= @top_region_benchmarks[:control_rate][:region].name %> -->
-              Top <%= @report_scope == FacilityGroup ? "District" : "Facility" %>
-            </p>
+          <div class="d-flex align-center">
+            <div class="w-12px h-12px mr-12px br-2px bg-grey-medium"></div>
+            <div class="d-flex align-baseline">
+              <div class="w-44px">
+                <p class="mb-0 mr-12px fs-18px fw-bold">
+                  40% 
+                </p>
+              </div>
+              <div class="flex-1">
+                <p class="mb-0 fs-small">
+                  Missed visit
+                </p>
+              </div>
+            </div>
           </div>
-          <div class="d-none d-lg-block flex-lg-1 align-lg-center justify-lg-center">
-            <p class="ta-lg-center mb-lg-0 fw-lg-bold tt-lg-uppercase ls-lg-145 c-lg-grey-dark">
-              <%= @region.name %>
-            </p>
-          </div>
-          <div class="d-none d-lg-block flex-lg-1 align-lg-center justify-lg-center">
-            <p class="ta-lg-center mb-lg-0 c-lg-grey-dark"></p>
+          <div class="d-flex align-center">
+            <div class="w-12px h-12px mr-12px br-2px bg-grey-dark"></div>
+            <div class="d-flex align-baseline">
+              <div class="w-44px">
+                <p class="mb-0 mr-12px fs-18px fw-bold">
+                  4%
+                </p>
+              </div>
+              <div class="flex-1">
+                <p class="mb-0 fs-small">
+                  Visited in the last 3 months but no BP measure
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
       <div>
-        <div class="mb-3 pb-3 bb-1px bb-grey-light d-lg-flex mb-lg-2 pb-lg-0">
-          <div class="mb-1 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center">
-            <p class="mb-0 ls-145">
-              Control rate of all HTN patients
-            </p>
+        <div class="p-relative">
+          <div class="h-200px">
+            <canvas id="controlledPatientsTrend"></canvas>
           </div>
-          <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
-            <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">
-                Top <%= @report_scope == FacilityGroup ? "District" : "Facility" %>
-              </span>
-              <span>
-                <%= number_to_percentage(
-                   @top_region_benchmarks[:control_rate][:value],
-                   precision: 0
-                ) %>
-              </span>
-            </p>
+          <div class="p-absolute t-0 l-0 pe-none d-flex align-center jc-center w-100pt h-100pt bb-1px bl-1px bb-grey-medium bl-grey-medium">
+            <% unless @data[:controlled_patients_rate].values.last %>
+              <p class="c-grey-medium">
+                No data available
+              </p>
+            <% end %>
           </div>
-          <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
-            <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">
-                <%= @region.name %>:
-              </span>
-              <span>
-                <%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>
-              </span>
-            </p>
-          </div>
-          <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
-            <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">
-                Difference:
-              </span>
-              <% controlled_percentage = (@data[:controlled_patients_rate].values.last.to_f - @top_region_benchmarks[:control_rate][:value]).round %>
-              <span class="<%= controlled_percentage > 0 ? "c-green-dark" : "c-red" %>">
-                <%= controlled_percentage > 0 ? "+" : "" %><%= controlled_percentage %>%
-              </span>
-            </p>
-          </div>
+          <% if @data[:controlled_patients_rate].values.last %>
+            <div class="p-absolute t-0 l-0 pe-none d-flex fd-column h-100pt">
+              <div class="flex-1 ml-8px">
+                <p class="c-grey-medium">
+                  60%
+                </p>
+              </div>
+              <div class="flex-1 ml-8px">
+                <p class="c-grey-medium">
+                  30%
+                </p>
+              </div>
+            </div>
+          <% end %>
         </div>
-        <div class="mb-2 d-lg-flex mb-lg-2 pb-lg-0">
-          <div class="mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center">
-            <p class="mb-0 ls-145">
-              Registrations
-            </p>
-          </div>
-          <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
-            <p class="mb-0 ta-lg-center c-grey-dark">
-              <!-- <%= @top_region_benchmarks[:registrations][:region].name %> -->
-              <%= @top_region_benchmarks[:registrations][:value]%>
-            </p>
-          </div>
-          <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
-            <p class="mb-0 ta-lg-center c-grey-dark">
-              <%= @data[:registrations].values.last %>
-            </p>
-          </div>
-          <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
-            <p class="mb-0 ta-lg-center c-grey-dark">
-            <% difference = @data[:registrations].values.last - @top_region_benchmarks[:registrations][:value] %>
-              <span class="<%= difference >= 0 ? "c-green-dark" : "c-red" %>">
-                <%= difference %>
-              </span>
-            </p>
-          </div>
+        <div class="d-flex justify-content-between mt-2">
+          <p class="mb-0">
+            <%= @controlled_patients.keys[0] %>
+          </p>
+          <p class="mb-0">
+            <% total_controlled_patient_periods = @registrations.length - 1 %>
+            <%= @registrations.keys[total_controlled_patient_periods] %>
+          </p>
         </div>
       </div>
     </div>
