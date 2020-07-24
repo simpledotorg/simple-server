@@ -162,14 +162,14 @@ Rails.application.routes.draw do
   namespace :reports do
     resources :districts, controller: "regions", defaults: {report_scope: "facility_group"} do
       member do
-        get 'cohort'
-        get 'details'
+        get "cohort"
+        get "details"
       end
     end
     resources :facilities, controller: "regions", defaults: {report_scope: "facility"} do
       member do
-        get 'cohort'
-        get 'details'
+        get "cohort"
+        get "details"
       end
     end
   end
