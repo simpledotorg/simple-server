@@ -16,6 +16,9 @@ class MyFacilitiesController < AdminController
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]
   before_action :set_selected_period, only: [:registrations, :missed_visits]
 
+  skip_after_action :verify_authorized
+  skip_after_action :verify_policy_scoped
+
   def index
     @users_requesting_approval = paginate(policy_scope([:manage, :user, User])
                                             .requested_sync_approval
@@ -91,10 +94,10 @@ class MyFacilitiesController < AdminController
   end
 
   def authorize_view
-    authorize([:upcoming, :read], :aggregates?)
+    raise Pundit::NotAuthorizedError unless current_admin.can_read_aggregates?
   end
 
   def set_facilities
-    @facilities = policy_scope([:upcoming, :read, Facility])
+    @facilities = current_admin.accessible_facilities(:view)
   end
 end

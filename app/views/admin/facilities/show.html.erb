@@ -8,7 +8,9 @@
     <%= @facility.name %>
   </h1>
   <nav class="page-nav">
-    <%= link_to 'Edit facility', edit_admin_facility_group_facility_path(@facility_group, @facility), class: "btn btn-sm btn-primary" %>
+    <% if current_admin.can_manage_facilities?(@facility) %>
+      <%= link_to 'Edit facility', edit_admin_facility_group_facility_path(@facility_group, @facility), class: "btn btn-sm btn-primary" %>
+    <% end %>
   </nav>
 </div>
 

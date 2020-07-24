@@ -79,8 +79,11 @@ class User < ApplicationRecord
     :facility_groups, to: :accesses, prefix: :accessible
 
   delegate :can_manage_facilities?,
+    :can_manage_facility_groups?,
+    :can_manage_organizations?,
     :can_view_identifiable_info?,
-    :can_read_aggregates?, to: :accesses
+    :can_read_aggregates?,
+    :super_admin?, to: :accesses
 
   after_destroy :destroy_email_authentications
 
@@ -100,10 +103,6 @@ class User < ApplicationRecord
 
   def authorized_facility?(facility_id)
     registration_facility && registration_facility.facility_group.facilities.where(id: facility_id).present?
-  end
-
-  def super_admin?
-    accesses.super_admin.exists?
   end
 
   def access_token_valid?
