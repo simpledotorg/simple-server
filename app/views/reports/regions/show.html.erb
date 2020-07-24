@@ -14,22 +14,29 @@
   <p class="mb-12px fs-xxlarge fw-bold">
     <%= @region.name %>
   </p>
-  <div class="d-lg-flex align-lg-center justify-lg-between mb-3">
-    <div class="d-flex ai-center">
-      <p class="mr-24px pb-8px fs-large fw-bold c-red bb-2px bb-red">
+  <div class="d-flex fd-column fd-lg-row justify-lg-between mb-24px">
+    <div class="d-flex order-2 order-lg-1">
+      <p class="mr-24px mb-0 pb-8px fs-large fw-bold c-red bb-2px bb-red">
         Overview
       </p>
-      <p class="mr-24px pb-8px fs-large fw-bold c-grey-dark">
+      <p class="mr-24px mb-0 pb-8px fs-large fw-bold c-grey-dark">
         Cohort reports
       </p>
-      <p class="mr-24px pb-8px fs-large fw-bold c-grey-dark">
+      <p class="mr-24px mb-0 pb-8px fs-large fw-bold c-grey-dark">
         Details
       </p>
     </div>
-    <div class="dropdown show">
-      <a class="d-block d-lg-inline-block dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">
-        Report: <%= @selected_date.to_s(:month_year) %>
+    <div class="dropdown show order-1 mb-24px order-lg-2 mb-lg-0">
+      <a
+        class="d-block d-lg-inline-block btn btn-primary btn-sm dropdown-toggle"
+        href="#"
+        role="button"
+        id="dropdownMenuLink"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        <%= @selected_date.to_s(:month_year) %> report
       </a>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
       <% url = @report_scope == FacilityGroup ? reports_district_path(@region) : reports_facility_path(@region) %>
