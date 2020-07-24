@@ -208,6 +208,67 @@ span.percent {
   }
 }
 
+p.control-desc {
+    line-height: 1.5;
+    
+    .green {
+        color: $green;
+        font-size: 32px;
+        font-weight: bold;
+    }
+}
+
+.bar-chart {
+    width: 100%;
+    
+    tbody td {
+        height: 180px;
+        vertical-align: bottom;
+        text-align: center;
+    }
+    
+    .bar {
+        background: $green-light;
+        width: 12px;
+        margin: 0 auto;
+        position: relative;
+        border-radius: 100px;
+        
+        &.current {
+            background: $green;
+        }
+        
+        span {
+            display: block;
+            background: #fff;
+            border: 2px solid $green;
+            height: 10px;
+            width: 10px;
+            border-radius: 100px;
+            margin-left: -1px;
+        }
+    }
+    
+    .bar-value {
+        position: relative;
+        height: 30px;
+        width: 10px;
+        margin: 0 auto 16px auto;
+        
+        span {
+            font-size: 14px;
+            transform: rotate(90deg);
+            display: block;
+            color: $green;
+        }
+    }
+    
+    tfoot td {
+        text-align: center;
+        padding-top: 8px;
+    }
+}
+
 .trophies {
   text-align: center;
   padding-top: 30px;
