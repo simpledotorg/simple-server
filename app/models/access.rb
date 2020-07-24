@@ -58,7 +58,7 @@ class Access < ApplicationRecord
     private
 
     def resources_for(scope, role)
-      type.where(id: where(resource_type: type.to_s, role: role).pluck(:resource_id))
+      scope.where(id: where(resource_type: scope.to_s, role: role).pluck(:resource_id))
     end
   end
 end
