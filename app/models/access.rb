@@ -39,20 +39,18 @@ class Access < ApplicationRecord
       super_admin.exists? || admin.exists?
     end
 
-    def organizations(role: :analyst)
+    def organizations(role)
       resources_for(Organization, role)
     end
 
-    def facility_groups(role: :analyst)
-      resources_for(FacilityGroup, role)
-        .or(resources_for(FacilityGroup, role)
-              .where(organization: organizations))
+    def facility_groups(role)
+      facility_groups = resources_for(FacilityGroup, role)
+      facility_groups.or(facility_groups.where(organization: organizations(role)))
     end
 
-    def facilities(role: :analyst)
-      resources_for(Facility, role)
-        .or(resources_for(Facility, role)
-              .where(facility_group: facility_groups))
+    def facilities(role)
+      facilities = resources_for(Facility, role)
+      facilities.or(facilities.where(facility_group: facility_groups(role)))
     end
 
     private
