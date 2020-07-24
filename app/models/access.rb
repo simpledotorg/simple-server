@@ -14,25 +14,51 @@ class Access < ApplicationRecord
   validates :resource_type, inclusion: {in: ALLOWED_RESOURCE_TYPES}, allow_nil: true
 
   class << self
-    def organizations
-      resources_for(Organization)
+    def can_manage_facilities?(record)
+      return true if super_admin?
+
+      manageable_facilities = facilities(role: :admin)
+
+      record =
+        if record.instance_of?(Facility)
+          record
+        else
+          manageable_facilities
+        end
+
+      manageable_facilities
+        .where(resource: record)
+        .exists?
     end
 
-    def facility_groups
-      resources_for(FacilityGroup)
-        .or(FacilityGroup.where(organization: resources_for(Organization)))
+    def can_read_aggregates?
+      super_admin? || exists?
     end
 
-    def facilities
-      resources_for(Facility)
-        .or(Facility.where(facility_group: FacilityGroup.where(organization: resources_for(Organization))))
-        .or(Facility.where(facility_group: resources_for(FacilityGroup)))
+    def can_view_identifiable_info?
+      super_admin? || admin.exists?
+    end
+
+    def organizations(role: :analyst)
+      resources_for(Organization, role)
+    end
+
+    def facility_groups(role: :analyst)
+      resources_for(FacilityGroup, role)
+        .or(resources_for(FacilityGroup, role)
+              .where(organization: organizations))
+    end
+
+    def facilities(role: :analyst)
+      resources_for(Facility, role)
+        .or(resources_for(Facility, role)
+              .where(facility_group: facility_groups))
     end
 
     private
 
-    def resources_for(type)
-      type.where(id: where(resource_type: type.to_s).pluck(:resource_id))
+    def resources_for(scope, role)
+      type.where(id: where(resource_type: type.to_s, role: role).pluck(:resource_id))
     end
   end
 end

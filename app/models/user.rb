@@ -74,6 +74,10 @@ class User < ApplicationRecord
     :authenticatable_salt,
     :invited_to_sign_up?, to: :email_authentication, allow_nil: true
 
+  delegate :organizations,
+    :facilities,
+    :facility_groups, to: :accesses, prefix: :accessible
+
   after_destroy :destroy_email_authentications
 
   def phone_number_authentication
@@ -92,6 +96,10 @@ class User < ApplicationRecord
 
   def authorized_facility?(facility_id)
     registration_facility && registration_facility.facility_group.facilities.where(id: facility_id).present?
+  end
+
+  def super_admin?
+    accesses.super_admin.exists?
   end
 
   def access_token_valid?
@@ -178,18 +186,6 @@ class User < ApplicationRecord
 
   def self.requested_sync_approval
     where(sync_approval_status: :requested)
-  end
-
-  def has_role?(*roles)
-    roles.map(&:to_sym).include?(role.to_sym)
-  end
-
-  def resources
-    user_permissions.map(&:resource)
-  end
-
-  def super_admin?
-    accesses.super_admin.exists?
   end
 
   def destroy_email_authentications
