@@ -78,6 +78,10 @@ class User < ApplicationRecord
     :facilities,
     :facility_groups, to: :accesses, prefix: :accessible
 
+  delegate :can_manage_facilities?,
+    :can_view_identifiable_info?,
+    :can_read_aggregates?, to: :accesses
+
   after_destroy :destroy_email_authentications
 
   def phone_number_authentication

@@ -15,7 +15,7 @@ class Access < ApplicationRecord
 
   class << self
     def can_manage_facilities?(record)
-      return true if super_admin?
+      return true if super_admin.exists?
 
       manageable_facilities = facilities(role: :admin)
 
@@ -27,16 +27,16 @@ class Access < ApplicationRecord
         end
 
       manageable_facilities
-        .where(resource: record)
+        .where(id: record)
         .exists?
     end
 
     def can_read_aggregates?
-      super_admin? || exists?
+      super_admin.exists? || exists?
     end
 
     def can_view_identifiable_info?
-      super_admin? || admin.exists?
+      super_admin.exists? || admin.exists?
     end
 
     def organizations(role: :analyst)
