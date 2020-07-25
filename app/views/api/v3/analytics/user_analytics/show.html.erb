@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="scroll-behavior: auto;">
 <head>
   <meta charset="utf-8">
   <meta name="HandheldFriendly" content="True">
@@ -10,10 +10,27 @@
 
   <%= inline_stylesheet('common_webview.css') %>
   <%= inline_stylesheet('user_analytics.css') %>
+    
+     <script type="text/javascript">// Hides and shows each page of Progress
+
+        function open_window(id) {
+           var element = document.getElementById(id);
+           element.style.display = 'block';
+           document.body.scrollTop = 0; // For Safari
+           document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+        }
+
+        function close_window(id) {
+           var element = document.getElementById(id);
+           element.style.display = 'none';
+        }
+     </script>
 </head>
 
-<body>
-<div class="progress-contents">
+<body id="progress">
+<div id="progress-start" class="progress-body">
+  <div class="progress-contents">
+      
   <div class="updated-date">
     Updated: <span><%= @user_analytics.last_updated_at %></span>
   </div>
@@ -117,7 +134,7 @@
     
     <p class="desc control-desc">
         <strong>June-2020</strong>
-        <br>166 of 1,613 patients
+        <br>1,210 of 1,613 patients
         <br><strong class="green">75%</strong>
     </p>
     
@@ -174,12 +191,11 @@
                 </td>
             </tr>
         </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="12">Last 12 months</td>
-            </tr>
-        </tfoot>
     </table>
+    <p class="center">Last 12 months</p>
+  </div>
+  <div class="card">
+     <a href="#"  onclick="open_window('progress-cohort'); return false" class="nav-next">View cohort report</a>  
   </div>
 
   <!-- all trophies view -->
@@ -222,6 +238,62 @@
       and strokes.</p>
     <div style="height: 100px;"></div>
   </footer>
+  </div>
+</div>
+    
+<div id="progress-cohort" class="progress-body" style="display: none; padding-bottom: 400px;">
+    <div class="progress-contents">
+        <a href="#" onclick="close_window('progress-cohort'); return false" class="help-back">
+            <%= inline_svg('icon_back.svg') %>
+        </a>
+
+        <h2 style="padding-top: 80px; padding-left: 8px;">HTN cohort report</h2>
+        <p class="left">Cohort reports shows the outcome for new hypertension patients in the months after registration.</p>
+        <div class="key">
+            <p class="left"><span class="key-color green"></span> Visited with BP &lt;140/90</p>
+            <p class="left"><span class="key-color red"></span> Visited with BP &ge;140/90</p>
+            <p class="left"><span class="key-color grey-dark"></span> Visited but no BP</p>
+            <p class="left"><span class="key-color grey"></span> Did not have a BP measure</p>
+        </div>
+        <div class="card cohort">
+            <h6>43 patients registered in Q1-2020</h6>
+            <p>Result from last visit in Q2-2020</p>
+            <div class="cohort-bars">
+                <div class="cohort-controlled" style="width: 26%;">26%</div>
+                <div class="cohort-uncontrolled" style="width: 14%;">14%</div>
+                <div class="cohort-nobp" style="width: 60%;">60%</div>
+            </div>
+        </div>
+        
+        <div class="card cohort">
+            <h6>56 patients registered in Q4-2019</h6>
+            <p>Result from last visit in Q1-2020</p>
+            <div class="cohort-bars">
+                <div class="cohort-controlled" style="width: 26%;">26%</div>
+                <div class="cohort-uncontrolled" style="width: 14%;">14%</div>
+                <div class="cohort-nobp" style="width: 60%;">60%</div>
+            </div>
+        </div>
+        
+        <div class="card cohort">
+            <h6>93 patients registered in Q3-2019</h6>
+            <p>Result from last visit in Q4-2019</p>
+            <div class="cohort-bars">
+                <div class="cohort-controlled" style="width: 26%;">26%</div>
+                <div class="cohort-uncontrolled" style="width: 14%;">14%</div>
+                <div class="cohort-nobp" style="width: 60%;">60%</div>
+            </div>
+        </div>
+        
+        <div class="card cohort">
+            <h6>0 patients registered in Q2-2019</h6>
+            <p>Result from last visit in Q3-2019</p>
+            <div class="cohort-bars">
+                <div class="cohort-none" style="width: 100%;">N/A</div>
+            </div>
+        </div>
+        
+    </div>
 </div>
 </body>
 
