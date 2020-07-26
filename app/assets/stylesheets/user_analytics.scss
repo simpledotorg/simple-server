@@ -270,7 +270,7 @@ p.desc {
 
 .progress-table td {
   padding: 8px 16px 8px 0;
-  border-top: 1px solid #EFECDF;
+  border-top: 1px solid $grey-light;
   text-align: right;
   font-size: 18px;
 }
@@ -347,23 +347,29 @@ p.control-desc {
     }
 }
 
+.footnotes {
+    li {
+         margin: 0 16px 1.5em 0;
+        line-height: 1.3;
+    }
+}
+
 .bar-chart {
     width: 100%;
     margin-bottom: 8px;
     background-image: linear-gradient(to top, 
-        #fff 5px, $grey-light 5px, #fff 6px,
-        #fff 25px, $grey-lightest 25px, #fff 26px,
-        #fff 45px, $grey-lightest 45px, #fff 46px,
-        #fff 65px, $grey-lightest 65px, #fff 66px,
-        #fff 85px, $grey-lightest 85px, #fff 86px,
-        #fff 105px, $grey-lightest 105px, #fff 106px,
-        #fff 125px, $grey-lightest 125px, #fff 126px,
-        #fff 145px, $grey-lightest 145px, #fff 146px,
-        #fff 165px, $grey-lightest 165px, #fff 166px,
-        #fff 185px, $grey-lightest 185px, #fff 186px,
-        #fff 205px, $grey-lightest 205px, #fff 206px,
-        #fff 225px, $grey-lightest 225px, #fff 226px,
-        #fff 245px, $grey-lightest 245px, #fff 246px,
+        #fff 35px, $grey-lightest 35px, #fff 36px,
+        #fff 55px, $grey-light 55px, #fff 56px,
+        #fff 75px, $grey-lightest 75px, #fff 76px,
+        #fff 95px, $grey-light 95px, #fff 96px,
+        #fff 115px, $grey-lightest 115px, #fff 116px,
+        #fff 135px, $grey-light 135px, #fff 136px,
+        #fff 155px, $grey-lightest 155px, #fff 156px,
+        #fff 175px, $grey-light 175px, #fff 176px,
+        #fff 195px, $grey-lightest 195px, #fff 196px,
+        #fff 215px, $grey-light 215px, #fff 216px,
+        #fff 235px, $grey-lightest 235px, #fff 236px,
+        #fff 255px, $grey-light 255px, #fff 256px,
     );
     
     tbody td {
