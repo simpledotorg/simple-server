@@ -144,7 +144,7 @@ class Facility < ApplicationRecord
   end
 
   def region_slug
-    "facility-#{slug}"
+    "#{model_name.to_s.underscore}-#{slug}"
   end
 
   def organization_exists
