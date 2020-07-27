@@ -16,6 +16,54 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
   end
 
+  context "details" do
+    render_views
+
+    before do
+      @facility_group = create(:facility_group, organization: organization)
+      @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
+    end
+
+    it "is successful" do
+      jan_2020 = Time.parse("January 1 2020")
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      LatestBloodPressuresPerPatient.refresh
+      LatestBloodPressuresPerPatientPerMonth.refresh
+
+      Timecop.freeze("June 1 2020") do
+        sign_in(cvho.email_authentication)
+        get :details, params: {id: @facility.facility_group.region_slug}
+      end
+      expect(response).to be_successful
+    end
+  end
+
+  context "cohort" do
+    render_views
+
+    before do
+      @facility_group = create(:facility_group, organization: organization)
+      @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
+    end
+
+    it "is successful" do
+      jan_2020 = Time.parse("January 1 2020")
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      LatestBloodPressuresPerPatient.refresh
+      LatestBloodPressuresPerPatientPerMonth.refresh
+
+      Timecop.freeze("June 1 2020") do
+        sign_in(cvho.email_authentication)
+        get :cohort, params: {id: @facility.facility_group.region_slug}
+      end
+      expect(response).to be_successful
+    end
+  end
+
   context "show" do
     render_views
 
@@ -24,11 +72,11 @@ RSpec.describe Reports::RegionsController, type: :controller do
       @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
     end
 
-    it "raises error if no report_scope param" do
+    it "raises error if matching region slug found" do
       expect {
         sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.facility_group.slug, report_scope: "bad-report_scope"}
-      }.to raise_error(ArgumentError, "unknown report_scope bad-report_scope")
+        get :show, params: {id: "String-unknown", report_scope: "bad-report_scope"}
+      }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
     it "retrieves district data" do
@@ -41,7 +89,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.facility_group.slug, report_scope: "facility_group"}
+        get :show, params: {id: @facility.facility_group.region_slug}
       end
       expect(response).to be_successful
       data = assigns(:data)
@@ -59,7 +107,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.slug, report_scope: "facility"}
+        get :show, params: {id: @facility.region_slug}
       end
       expect(response).to be_successful
       data = assigns(:data)
