@@ -16,7 +16,7 @@
         <div>
           <h3 class="mb-1 fs-xlarge fw-bold <% if @data[:controlled_patients_rate].values.last %>c-green-dark<% else %>c-grey-medium<% end %>">
             <% if @data[:controlled_patients_rate].values.last %>
-              <%= @data[:controlled_patients_rate].values.last %>%
+              <%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>
             <% else %>
               No data
             <% end %>
@@ -78,14 +78,16 @@
             current_uncontrolled_rate = @data[:uncontrolled_patients_rate]&.values&.last
            %>
             <% if current_uncontrolled_rate %>
-              <%= current_uncontrolled_rate %>%
+              <%= number_to_percentage(current_uncontrolled_rate, precision: 0) %>
             <% else %>
               No data
             <% end %>
           </h3>
           <p class="<% if current_uncontrolled_rate %>c-black<% else %>c-grey-medium<% end %>">
             <% if current_uncontrolled_rate %>
-              <span class="fw-bold"><%= current_uncontrolled_rate %></span> of <%= number_with_delimiter(@last_registration_value) %> registered patients
+              <span class="fw-bold">
+                <%= number_with_delimiter(@data[:uncontrolled_patients].values.last) %>
+                </span> of <%= number_with_delimiter(@last_registration_value) %> registered patients
             <% else %>
               No control rate data available
             <% end %>
@@ -131,7 +133,7 @@
             <% if @last_registration_value.zero? %>
               No registration data available
             <% else %>
-              <span class="fw-bold"><%= @controlled_patients.values.last %> (<%= @data[:controlled_patients_rate].values.last %>)</span> controlled patients
+              <span class="fw-bold"><%= @controlled_patients.values.last %> (<%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>)</span> controlled patients
             <% end %>
           </p>
         </div>

@@ -133,12 +133,10 @@ function createGraphOptions(rates, counts, label) {
         title: function() {},
         label: function(tooltipItem, _) {
           const index = tooltipItem.index;
-          console.log(rates);
           const date = Object.keys(rates)[index];
-          const rate = Object.values(rates)[index];
           const count = Object.values(counts)[index];
           // const formattedValue = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-          const percent = parseInt(tooltipItem.value).toFixed(0);
+          const percent = Math.round(tooltipItem.value);
           return `${percent}% ${label} (${count} patients) in ${date}`;
         },
       },
