@@ -74,17 +74,6 @@ class Reports::RegionsController < AdminController
     @region = klass.find_by!(slug: slug)
   end
 
-  def region_class
-    @region_class ||= case facility_params[:report_scope]
-    when "facility_group"
-      then FacilityGroup
-    when "facility"
-      then Facility
-    else
-      raise ArgumentError, "unknown report_scope #{facility_params[:report_scope]}"
-    end
-  end
-
   def facility_params
     params.permit(:selected_date, :id, :force_cache, :report_scope)
   end
