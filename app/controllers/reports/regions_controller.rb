@@ -17,6 +17,7 @@ class Reports::RegionsController < AdminController
 
     @data = RegionReportService.new(region: @region,
                                     selected_date: @selected_date,
+                                    period: @period,
                                     current_user: current_admin).call
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:registrations]
@@ -54,6 +55,7 @@ class Reports::RegionsController < AdminController
   private
 
   def set_selected_date
+    @period = facility_params[:period] || "month"
     @selected_date = if facility_params[:selected_date]
       Time.parse(facility_params[:selected_date])
     else
@@ -75,7 +77,7 @@ class Reports::RegionsController < AdminController
   end
 
   def facility_params
-    params.permit(:selected_date, :id, :force_cache, :report_scope)
+    params.permit(:selected_date, :id, :force_cache, :period, :report_scope)
   end
 
   def force_cache?

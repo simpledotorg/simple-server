@@ -3,6 +3,29 @@ require "rails_helper"
 RSpec.describe Quarter, type: :model do
   let(:jan_1) { Time.parse("January 1st, 2020") }
 
+  it "can parse" do
+    quarter = Quarter.parse("Q2-2020")
+    expect(quarter.number).to eq(2)
+    expect(quarter.year).to eq(2020)
+  end
+
+  it "raises for bad string parsing" do
+    expect {
+      Quarter.parse("Qx-2020")
+    }.to raise_error(ArgumentError)
+  end
+
+  it "same quarters are equal and have same hash code" do
+    q1_01 = Quarter.new(date: Time.parse("January 1st, 2020"))
+    q1_02 = Quarter.new(date: Time.parse("March 1st, 2020"))
+    q2 = Quarter.new(date: Time.parse("April 1st, 2020"))
+    expect(q1_01).to eq(q1_02)
+    expect(q1_01.hash).to eq(q1_02.hash)
+    expect(q1_01).to_not eq(q2)
+    expect(q1_01.hash).to_not eq(q2.hash)
+  end
+
+
   it "can create from date" do
     date = Time.parse("January 1st, 2020")
     quarter = Quarter.new(date: date)

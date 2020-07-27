@@ -48,6 +48,13 @@
               <%= time.to_s(:month_year) %>
             </button>
           <% end %>
+          <div class="dropdown-divider"></div>
+          <% Quarter.current.downto(6).each do |quarter| %>
+            <button class="dropdown-item query-filter-month <%= 'active' if false %>"
+                    name="selected_date"
+                    type="submit" value="<%= quarter.to_s %>">
+              <%= quarter %>
+            <% end %>
         <% end %>
       </div>
     </div>

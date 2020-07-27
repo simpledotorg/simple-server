@@ -151,6 +151,50 @@ RSpec.describe RegionReportService, type: :model do
       expect(result[:top_region_benchmarks][:control_rate][:value]).to eq(100.0)
       expect(result[:top_region_benchmarks][:control_rate][:region]).to eq(koriya)
     end
+
+    fit "can return data for past 8 quarters" do
+      facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group_1)
+      facility = facilities.first
+      facility_2 = create(:facility)
+
+      controlled_in_jan_and_june = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2020, registration_facility: facility, registration_user: user)
+      controlled_just_for_june = create(:patient, full_name: "just for june", recorded_at: june_1, registration_facility: facility, registration_user: user)
+      patient_from_other_facility = create(:patient, full_name: "other facility", recorded_at: 8.months.ago, registration_facility: facility_2, registration_user: user)
+
+      Timecop.freeze(jan_2020) do
+        controlled_in_jan_and_june.map do |patient|
+          create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago)
+          create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago)
+        end
+        create(:blood_pressure, :under_control, facility: facility, patient: patient_from_other_facility, recorded_at: 2.days.ago)
+      end
+
+      Timecop.freeze(june_1) do
+        controlled_in_jan_and_june.map do |patient|
+          create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago)
+          create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago)
+        end
+
+        create(:blood_pressure, :under_control, facility: facility, patient: controlled_just_for_june, recorded_at: 4.days.ago)
+
+        uncontrolled = create_list(:patient, 2, recorded_at: Time.current, registration_facility: facility, registration_user: user)
+        uncontrolled.map do |patient|
+          create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 1.days.ago)
+          create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago)
+        end
+      end
+
+      refresh_views
+
+      service = RegionReportService.new(region: facility_group_1, selected_date: july_2020, period: "quarter", current_user: user)
+      result = service.call
+
+      p result[:controlled_patients].keys
+      expect(result[:controlled_patients].size).to eq(8)
+      # expect(result[:controlled_patients][jan_2020.to_s(:month_year)]).to eq(controlled_in_jan_and_june.size)
+      # june_controlled = controlled_in_jan_and_june << controlled_just_for_june
+      # expect(result[:controlled_patients][june_1.to_s(:month_year)]).to eq(june_controlled.size)
+    end
   end
 
   context "facilities" do

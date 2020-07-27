@@ -3,10 +3,11 @@ class RegionReportService
   MAX_MONTHS_OF_DATA = 24
   CACHE_VERSION = 3
 
-  def initialize(region:, selected_date:, current_user:)
+  def initialize(region:, selected_date:, period: "month", current_user:)
     @current_user = current_user
     @organizations = Pundit.policy_scope(current_user, [:cohort_report, Organization]).order(:name)
     @region = region
+    @period = period
     @facilities = region.facilities
     @selected_date = selected_date.end_of_month
     @data = {
@@ -20,9 +21,10 @@ class RegionReportService
 
   attr_reader :current_user
   attr_reader :data
-  attr_reader :region
   attr_reader :facilities
+  attr_reader :period
   attr_reader :organizations
+  attr_reader :region
   attr_reader :selected_date
 
   def call
@@ -35,7 +37,7 @@ class RegionReportService
 
   def compile_control_and_registration_data
     start_range = selected_date.advance(months: -MAX_MONTHS_OF_DATA).to_date
-    result = ControlRateService.new(region, range: (start_range..selected_date.to_date)).call
+    result = ControlRateService.new(region, period: period, range: (start_range..selected_date.to_date)).call
     @data.merge! result
   end
 

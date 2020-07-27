@@ -97,6 +97,22 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(data[:controlled_patients]["Dec 2019"]).to eq(1)
     end
 
+    it "can retrieve quarterly data" do
+      jan_2020 = Time.parse("January 1 2020")
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      LatestBloodPressuresPerPatient.refresh
+      LatestBloodPressuresPerPatientPerMonth.refresh
+
+      Timecop.freeze("December 1 2019") do
+        sign_in(cvho.email_authentication)
+        get :show, params: {id: @facility.facility_group.region_slug, selected_date: Time.current, period: "quarter"}
+        expect(data[:controlled_patients].size).to eq(6) # retrieves data back to first registration
+        expect(data[:controlled_patients]["Q 2019"]).to eq(1)
+      end
+    end
+
     it "retrieves facility data" do
       jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
